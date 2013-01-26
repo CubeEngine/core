@@ -46,8 +46,12 @@ public abstract class BaseModuleManager implements ModuleManager
         {
             return null;
         }
-
         return this.modules.get(name.toLowerCase(Locale.ENGLISH));
+    }
+
+    @Override
+    public <T extends Module> T getModule(Class<T> mainClass) {
+        return (T)this.classMap.get(mainClass);
     }
 
     /**

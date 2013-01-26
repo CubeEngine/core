@@ -1,11 +1,10 @@
 package de.cubeisland.cubeengine.log.logger;
 
-import de.cubeisland.cubeengine.core.config.annotations.Option;
 import de.cubeisland.cubeengine.core.util.BlockUtil;
-import de.cubeisland.cubeengine.log.SubLogConfig;
-import java.util.Collection;
-import java.util.LinkedList;
+import de.cubeisland.cubeengine.log.Log;
+import de.cubeisland.cubeengine.log.logger.config.BlockBreakConfig;
 import org.bukkit.Material;
+import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.BlockState;
@@ -17,12 +16,11 @@ import org.bukkit.event.player.PlayerBucketFillEvent;
 
 import static de.cubeisland.cubeengine.log.logger.BlockLogger.BlockChangeCause.PLAYER;
 
-public class BlockBreakLogger extends
-    BlockLogger<BlockBreakLogger.BlockBreakConfig>
+public class BlockBreakLogger extends    BlockLogger<BlockBreakConfig>
 {
-    public BlockBreakLogger()
-    {
-        this.config = new BlockBreakConfig();
+
+    public BlockBreakLogger(Log module) {
+        super(module, BlockBreakConfig.class);
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
@@ -74,26 +72,16 @@ public class BlockBreakLogger extends
 
     private void log(BlockChangeCause cause, Player player, BlockState oldState)
     {
-        if (!this.config.noLogging.contains(oldState.getType()))
+        World world = oldState.getWorld();
+        BlockBreakConfig config = this.configs.get(world);
+        if (config.enabled)
         {
-            this.logBlockChange(cause, player, oldState, null);
+            if (!config.noLogging.contains(oldState.getType()))
+            {
+                this.logBlockChange(cause, world, player, oldState, null);
+            }
         }
     }
 
-    public static class BlockBreakConfig extends SubLogConfig
-    {
-        public BlockBreakConfig()
-        {
-            this.enabled = true;
-        }
 
-        @Option("no-logging")
-        public Collection<Material> noLogging = new LinkedList<Material>();
-
-        @Override
-        public String getName()
-        {
-            return "block-break";
-        }
-    }
 }

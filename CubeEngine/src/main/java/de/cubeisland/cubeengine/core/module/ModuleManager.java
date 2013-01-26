@@ -18,6 +18,8 @@ public interface ModuleManager extends Cleanable
 {
     Module getModule(String id);
 
+    <T extends Module> T getModule(Class<T> mainClass);
+
     /**
      * This method returns a collection of the modules
      *

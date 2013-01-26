@@ -1,34 +1,43 @@
 package de.cubeisland.cubeengine.log;
 
+import org.bukkit.World;
 import org.bukkit.event.Listener;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public abstract class Logger<T extends SubLogConfig> implements Listener
 {
-    protected Log module;
-    protected T config;
-    public final LogAction action;
+    protected final Log module;
+    protected Map<World,T> configs;
+    private Class<T> configClass;
 
-    public Logger(LogAction action)
+    public Logger(Log module,Class<T> configClass)
     {
-        this.module = Log.getInstance();
-        this.action = action;
+        this.configClass = configClass;
+        this.module = module;
+        this.configs = new HashMap<World, T>();
+        this.reloadAndApplyConfigs();
     }
 
-    public T getConfig()
+    public T getConfig(World world)
     {
-        return this.config;
+        return this.configs.get(world);
     }
 
-    @SuppressWarnings("unchecked")
-    public void applyConfig(SubLogConfig config)
+    public void reloadAndApplyConfigs()
     {
-        this.config = (T)config;
-        this.applyConfig();
-    }
-
-    public void applyConfig()
-    {
-        if (this.config.enabled)
+        boolean enabled = false;
+        for (Map.Entry<World,LogConfiguration> worldConfig : module.getConfigurations().entrySet())
+        {
+            T subLogConfig = worldConfig.getValue().getSubLogConfig(configClass);
+            if (subLogConfig.enabled)
+            {
+                enabled = true;
+            }
+            this.configs.put(worldConfig.getKey(),subLogConfig);
+        }
+        if (enabled)
         {
             this.module.registerListener(this);
         }
@@ -36,5 +45,9 @@ public abstract class Logger<T extends SubLogConfig> implements Listener
         {
             this.module.unregisterListener(this);
         }
+    }
+
+    public Class<T> getConfigClass() {
+        return configClass;
     }
 }

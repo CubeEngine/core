@@ -1,20 +1,21 @@
 package de.cubeisland.cubeengine.log.logger;
 
 import de.cubeisland.cubeengine.core.user.User;
-import de.cubeisland.cubeengine.log.LogAction;
+import de.cubeisland.cubeengine.log.Log;
 import de.cubeisland.cubeengine.log.Logger;
 import de.cubeisland.cubeengine.log.SubLogConfig;
+import org.bukkit.World;
 import org.bukkit.block.BlockState;
 import org.bukkit.entity.Player;
 
 public abstract class BlockLogger<T extends SubLogConfig> extends Logger<T>
 {
-    public BlockLogger()
+    public BlockLogger(Log module, Class<T> configClass)
     {
-        super(LogAction.BLOCKCHANGE);
+        super(module,configClass);
     }
 
-    public void logBlockChange(BlockChangeCause cause, Player player, BlockState oldState, BlockState newState)
+    public void logBlockChange(BlockChangeCause cause, World world, Player player, BlockState oldState, BlockState newState)
     {
         if (oldState == newState)
         {
@@ -36,11 +37,11 @@ public abstract class BlockLogger<T extends SubLogConfig> extends Logger<T>
         if (cause == BlockChangeCause.PLAYER || player != null)
         {
             User user = this.module.getUserManager().getExactUser(player);
-            this.module.getLogManager().logBlockLog(cause, user.getKey().intValue(), newState, oldState); //TODO type
+            this.module.getLogManager().logBlockLog(cause, user.getKey().intValue(), world, newState, oldState);
         }
         else
         {
-            this.module.getLogManager().logBlockLog(cause, cause.getId(), newState, oldState);
+            this.module.getLogManager().logBlockLog(cause, cause.getId(), world,  newState, oldState);
         }
     }
 

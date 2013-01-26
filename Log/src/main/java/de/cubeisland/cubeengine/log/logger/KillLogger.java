@@ -1,11 +1,9 @@
 package de.cubeisland.cubeengine.log.logger;
 
 import de.cubeisland.cubeengine.core.CubeEngine;
-import de.cubeisland.cubeengine.core.config.annotations.Comment;
-import de.cubeisland.cubeengine.core.config.annotations.Option;
-import de.cubeisland.cubeengine.log.LogAction;
+import de.cubeisland.cubeengine.log.Log;
 import de.cubeisland.cubeengine.log.Logger;
-import de.cubeisland.cubeengine.log.SubLogConfig;
+import de.cubeisland.cubeengine.log.logger.config.KillConfig;
 import org.bukkit.Location;
 import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
@@ -15,12 +13,10 @@ import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.event.entity.EntityDeathEvent;
 
-public class KillLogger extends Logger<KillLogger.KillConfig>
+public class KillLogger extends Logger<KillConfig>
 {
-    public KillLogger()
-    {
-        super(LogAction.KILL);
-        this.config = new KillConfig();
+    public KillLogger(Log module) {
+        super(module, KillConfig.class);
     }
 
     public void logKill(DamageCause cause, Entity damager, Entity damagee, Location loc)
@@ -93,160 +89,115 @@ public class KillLogger extends Logger<KillLogger.KillConfig>
 
     private boolean checkLog(KillCause killer, Entity killed)
     {
-        switch (killer)
+        KillConfig config = this.configs.get( killed.getWorld());
+        if (config.enabled)
         {
-            case PLAYER:
-                if (killed instanceof Player)
-                {
-                    if (!this.config.logPvp)
+            switch (killer)
+            {
+                case PLAYER:
+                    if (killed instanceof Player)
+                    {
+                        if (!config.logPvp)
+                        {
+                            return false;
+                        }
+                        return true;
+                    }
+                    if (!config.logKillsByPlayer)
                     {
                         return false;
                     }
-                    return true;
-                }
-                if (!this.config.logKillsByPlayer)
+                    break;
+    
+                case MONSTER:
+                    if (!config.logKillsByMonster)
+                    {
+                        return false;
+                    }
+                    break;
+                case BOSSMONSTER:
+                    if (!config.logKillsByBoss)
+                    {
+                        return false;
+                    }
+                    break;
+                case ENVIRONEMENT:
+                case PLAYERSTATUS:
+                    if (!config.logKillsByEnvironement)
+                    {
+                        return false;
+                    }
+                    break;
+                case LAVA:
+                    if (!config.logKillsByLava)
+                    {
+                        return false;
+                    }
+                    break;
+                case MAGIC:
+                    if (!config.logKillsByMagic)
+                    {
+                        return false;
+                    }
+                    break;
+                case OTHER:
+                    if (!config.logKillsByOther)
+                    {
+                        return false;
+                    }
+            }
+            if (killed instanceof Player)
+            {
+                if (!config.logPlayerKilled)
                 {
                     return false;
                 }
-                break;
-
-            case MONSTER:
-                if (!this.config.logKillsByMonster)
+            }
+            else if (killed instanceof Wither || killed instanceof Giant || killed instanceof EnderDragon)
+            {
+                if (!config.logBossKilled)
                 {
                     return false;
                 }
-                break;
-            case BOSSMONSTER:
-                if (!this.config.logKillsByBoss)
+            }
+            else if (killed instanceof Monster || killed instanceof Ghast || killed instanceof Slime)
+            {
+    
+                if (!config.logMonsterKilled)
                 {
                     return false;
                 }
-                break;
-            case ENVIRONEMENT:
-            case PLAYERSTATUS:
-                if (!this.config.logKillsByEnvironement)
+            }
+            else if (killed instanceof Animals)
+            {
+                if (killed instanceof Tameable)
+                {
+                    if (!config.logPetKilled)
+                    {
+                        return false;
+                    }
+                }
+                else if (!config.logAnimalKilled)
                 {
                     return false;
                 }
-                break;
-            case LAVA:
-                if (!this.config.logKillsByLava)
+            }
+            else if (killed instanceof NPC)
+            {
+                if (!config.logNpcKilled)
                 {
                     return false;
                 }
-                break;
-            case MAGIC:
-                if (!this.config.logKillsByMagic)
-                {
-                    return false;
-                }
-                break;
-            case OTHER:
-                if (!this.config.logKillsByOther)
-                {
-                    return false;
-                }
-        }
-        if (killed instanceof Player)
-        {
-            if (!this.config.logPlayerKilled)
+            }
+            else if (!config.logOtherKilled)
             {
                 return false;
             }
+            return true;
         }
-        else if (killed instanceof Wither || killed instanceof Giant || killed instanceof EnderDragon)
-        {
-            if (!this.config.logBossKilled)
-            {
-                return false;
-            }
-        }
-        else if (killed instanceof Monster || killed instanceof Ghast || killed instanceof Slime)
-        {
-
-            if (!this.config.logMonsterKilled)
-            {
-                return false;
-            }
-        }
-        else if (killed instanceof Animals)
-        {
-            if (killed instanceof Tameable)
-            {
-                if (!this.config.logPetKilled)
-                {
-                    return false;
-                }
-            }
-            else if (!this.config.logAnimalKilled)
-            {
-                return false;
-            }
-        }
-        else if (killed instanceof NPC)
-        {
-            if (!this.config.logNpcKilled)
-            {
-                return false;
-            }
-        }
-        else if (!this.config.logOtherKilled)
-        {
-            return false;
-        }
-        return true;
+        return false;
     }
 
-    public static class KillConfig extends SubLogConfig
-    {
-        @Option("log-when-killer-is.player")
-        public boolean logKillsByPlayer = true;
-        @Option("log-when-killer-is.monster")
-        public boolean logKillsByMonster = false;
-        @Option("log-when-killer-is.boss")
-        public boolean logKillsByBoss = false;
-        @Comment("Environemental damage such as: lightning, fall-damage, drowning, suffocation, cacti, starvation BUT NOT lava")
-        @Option("log-when-killer-is.environement")
-        public boolean logKillsByEnvironement = false;
-        @Option("log-when-killer-is.lava")
-        public boolean logKillsByLava = false;
-        @Option("log-when-killer-is.magic")
-        public boolean logKillsByMagic = true;
-        @Option("log-when-killer-is.unkown")
-        public boolean logKillsByOther = true;
-        @Comment("Log player-deaths BUT NOT pvp")
-        @Option("log-when-killed-is.player")
-        public boolean logPlayerKilled = true;
-        @Comment("Will log pvp even if killer and/or killed is player is disabled")
-        @Option("log-pvp")
-        public boolean logPvp = true;
-        @Option("log-when-killed-is.monster")
-        public boolean logMonsterKilled = false;
-        @Option("log-when-killed-is.boss")
-        public boolean logBossKilled = true;
-        @Comment("Animals are here: chickens, cows, pigs, sheeps")
-        @Option("log-when-killed-is.animal")
-        public boolean logAnimalKilled = true;
-        @Comment("Pets are here: Tamed wolfes and ocelots")
-        @Option("log-when-killed-is.pet")
-        public boolean logPetKilled = true;
-        @Option("log-when-killed-is.npc")
-        public boolean logNpcKilled = true;
-        @Comment("Other are here: bats, squid, golems and more")
-        @Option("log-when-killed-is.other")
-        public boolean logOtherKilled = false;
-
-        public KillConfig()
-        {
-            this.enabled = false;
-        }
-
-        @Override
-        public String getName()
-        {
-            return "kills";
-        }
-    }
 
     public static enum KillCause
     {

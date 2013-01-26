@@ -4,7 +4,6 @@ import de.cubeisland.cubeengine.core.Core;
 import de.cubeisland.cubeengine.core.config.Configuration;
 import de.cubeisland.cubeengine.core.config.annotations.Codec;
 import de.cubeisland.cubeengine.core.config.annotations.DefaultConfig;
-import de.cubeisland.cubeengine.core.config.annotations.LoadFrom;
 import de.cubeisland.cubeengine.core.filesystem.FileManager;
 import de.cubeisland.cubeengine.core.module.event.ModuleLoadedEvent;
 import de.cubeisland.cubeengine.core.module.exception.IncompatibleCoreException;
@@ -128,9 +127,9 @@ public class ModuleLoader
                     {
                         filename = "config";
                     }
-                    if (field.isAnnotationPresent(LoadFrom.class))
+                    else
                     {
-                        filename = field.getAnnotation(LoadFrom.class).value();
+                        continue;
                     }
                     field.setAccessible(true);
                     field.set(module, Configuration.load(configClass, new File(module.getFolder(), filename + "." + configClass.getAnnotation(Codec.class).value())));

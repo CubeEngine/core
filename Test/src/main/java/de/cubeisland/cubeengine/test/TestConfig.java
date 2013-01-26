@@ -2,19 +2,16 @@ package de.cubeisland.cubeengine.test;
 
 import de.cubeisland.cubeengine.core.CubeEngine;
 import de.cubeisland.cubeengine.core.config.Configuration;
-import de.cubeisland.cubeengine.core.config.annotations.Codec;
-import de.cubeisland.cubeengine.core.config.annotations.Comment;
-import de.cubeisland.cubeengine.core.config.annotations.MapComment;
-import de.cubeisland.cubeengine.core.config.annotations.MapComments;
-import de.cubeisland.cubeengine.core.config.annotations.Option;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.LinkedList;
+import de.cubeisland.cubeengine.core.config.annotations.*;
 import org.bukkit.Location;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.Server;
 import org.bukkit.plugin.Plugin;
+
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
 
 /**
  * This configuration is used to test a lot of configstuff.
@@ -26,6 +23,7 @@ import org.bukkit.plugin.Plugin;
     @MapComment(path = "list.stringlist", text = "comment for my list :)")
 })
 @Codec("yml")
+@DefaultConfig()
 public class TestConfig extends Configuration
 {
     private final Server server = ((Plugin)CubeEngine.getCore()).getServer();

@@ -1,7 +1,8 @@
 package de.cubeisland.cubeengine.log.logger;
 
-import de.cubeisland.cubeengine.core.config.annotations.Option;
-import de.cubeisland.cubeengine.log.SubLogConfig;
+import de.cubeisland.cubeengine.log.Log;
+import de.cubeisland.cubeengine.log.logger.config.BlockGrowConfig;
+import org.bukkit.World;
 import org.bukkit.block.BlockState;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -10,54 +11,38 @@ import org.bukkit.event.world.StructureGrowEvent;
 
 import static de.cubeisland.cubeengine.log.logger.BlockLogger.BlockChangeCause.GROW;
 
-public class BlockGrowLogger extends
-    BlockLogger<BlockGrowLogger.BlockGrowConfig>
+public class BlockGrowLogger extends    BlockLogger<BlockGrowConfig>
 {
-    public BlockGrowLogger()
-    {
-        this.config = new BlockGrowConfig();
+    public BlockGrowLogger(Log module) {
+        super(module, BlockGrowConfig.class);
     }
-
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onStructureGrow(StructureGrowEvent event)
-    {//TODO on no change
-        Player player = null;
-        if (event.isFromBonemeal())
+    {
+        World world = event.getWorld();
+        BlockGrowConfig config = this.configs.get(world);
+        if (config.enabled)
         {
-            if (!this.config.logPlayer)
+            Player player = null;
+            if (event.isFromBonemeal())
+            {
+                if (!config.logPlayer)
+                {
+                    return;
+                }
+                player = event.getPlayer();
+            }
+            else if (!config.logNatural)
             {
                 return;
             }
-            player = event.getPlayer();
-        }
-        else if (!this.config.logNatural)
-        {
-            return;
-        }
-        for (BlockState block : event.getBlocks())
-        {
-            if (player == null)
+            for (BlockState newBlock : event.getBlocks())
             {
-                this.logBlockChange(GROW, null, event.getWorld().getBlockAt(block.getLocation()).getState(), block);
+                BlockState oldBlock =  event.getWorld().getBlockAt(newBlock.getLocation()).getState();
+                if (oldBlock.getTypeId() == newBlock.getTypeId()
+                &&  oldBlock.getRawData() == newBlock.getRawData())
+                    this.logBlockChange(GROW, world, player,oldBlock , newBlock);
             }
-            else
-            {
-                this.logBlockChange(GROW, player, event.getWorld().getBlockAt(block.getLocation()).getState(), block);
-            }
-        }
-    }
-
-    public static class BlockGrowConfig extends SubLogConfig
-    {
-        @Option("log-natural-grow")
-        public boolean logNatural = false;
-        @Option("log-player-grow")
-        public boolean logPlayer = true;
-
-        @Override
-        public String getName()
-        {
-            return "block-grow";
         }
     }
 }

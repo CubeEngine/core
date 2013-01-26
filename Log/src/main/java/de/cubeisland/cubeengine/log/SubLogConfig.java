@@ -5,8 +5,12 @@ import de.cubeisland.cubeengine.core.config.annotations.Option;
 
 public abstract class SubLogConfig extends Configuration
 {
+    protected SubLogConfig(boolean enabled) {
+        this.enabled = enabled;
+    }
+
     @Option("enabled")
-    public boolean enabled = false;
+    public boolean enabled;
 
     public abstract String getName();
 }

@@ -35,47 +35,20 @@ public class CollectionConverter
      *
      * @param <V>            the ValueType
      * @param <S>            the Type of collection
-     * @param type          the type of the collection
+     * @param ptype          the type of the collection
      * @param object         the object to convert
      * @return the converted collection
      * @throws ConversionException
      */
     @SuppressWarnings("unchecked")
-    public <V, S extends Collection<V>> S fromObject(ParameterizedType type, Object object) throws ConversionException
+    public <V, S extends Collection<V>> S fromObject(ParameterizedType ptype, Object object) throws ConversionException
     {
         try
         {
-            if (type.getRawType() instanceof Class)
+            if (ptype.getRawType() instanceof Class)
             {
-                Class<S> collectionType = (Class)type.getRawType();
-                S result;
-                Type subType = type.getActualTypeArguments()[0];
-                if (collectionType.isInterface() || Modifier.isAbstract(collectionType.getModifiers()))
-                {
-                    if (Set.class.isAssignableFrom(collectionType))
-                    {
-                        if (SortedSet.class.isAssignableFrom(collectionType))
-                        {
-                            result = (S)new TreeSet<V>();
-                        }
-                        else
-                        {
-                            result = (S)new HashSet<V>();
-                        }
-                    }
-                    else if (List.class.isAssignableFrom(collectionType))
-                    {
-                        result = (S)new LinkedList<S>();
-                    }
-                    else
-                    {
-                        result = (S)new LinkedList<S>(); // other collection
-                    }
-                }
-                else
-                {
-                    result = collectionType.newInstance();
-                }
+                S result = (S)getCollectionFor(ptype);
+                Type subType = ptype.getActualTypeArguments()[0];
                 if (object instanceof Collection)
                 {
                     Collection col = (Collection)object;
@@ -91,19 +64,55 @@ public class CollectionConverter
                     throw new IllegalStateException("Collection-conversion failed: Cannot convert not a collection to a collection.");
                 }
             }
-            throw new IllegalArgumentException("Unkown Collection-Type: " + type);
-        }
-        catch (IllegalAccessException ex)
-        {
-            throw new IllegalArgumentException("Collection-conversion failed: Could not access the default constructor of: " + type.getRawType(), ex);
-        }
-        catch (InstantiationException ex)
-        {
-            throw new IllegalArgumentException("Collection-conversion failed: Could not create an instance of: " + type.getRawType(), ex);
+            throw new IllegalArgumentException("Unkown Collection-Type: " + ptype);
         }
         catch (ConversionException ex)
         {
             throw new IllegalStateException("Collection-conversion failed: Error while converting the values in the collection.", ex);
+        }
+    }
+
+    public static <V, S extends Collection<V>> S getCollectionFor(ParameterizedType ptype) {
+
+        try
+        {
+            Class<S> collectionType = (Class)ptype.getRawType();
+            S result;
+            if (collectionType.isInterface() || Modifier.isAbstract(collectionType.getModifiers()))
+            {
+                if (Set.class.isAssignableFrom(collectionType))
+                {
+                    if (SortedSet.class.isAssignableFrom(collectionType))
+                    {
+                        result = (S)new TreeSet<V>();
+                    }
+                    else
+                    {
+                        result = (S)new HashSet<V>();
+                    }
+                }
+                else if (List.class.isAssignableFrom(collectionType))
+                {
+                    result = (S)new LinkedList<S>();
+                }
+                else
+                {
+                    result = (S)new LinkedList<S>(); // other collection
+                }
+            }
+            else
+            {
+                result = collectionType.newInstance();
+            }
+            return result;
+        }
+        catch (IllegalAccessException ex)
+        {
+            throw new IllegalArgumentException("Collection-conversion failed: Could not access the default constructor of: " + ptype.getRawType(), ex);
+        }
+        catch (InstantiationException ex)
+        {
+            throw new IllegalArgumentException("Collection-conversion failed: Could not create an instance of: " + ptype.getRawType(), ex);
         }
     }
 }

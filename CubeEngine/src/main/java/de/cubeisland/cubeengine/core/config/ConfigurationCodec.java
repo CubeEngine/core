@@ -10,6 +10,7 @@ import de.cubeisland.cubeengine.core.util.StringUtils;
 import de.cubeisland.cubeengine.core.util.convert.ConversionException;
 import de.cubeisland.cubeengine.core.util.convert.Convert;
 import de.cubeisland.cubeengine.core.util.convert.Converter;
+import de.cubeisland.cubeengine.core.util.converter.generic.CollectionConverter;
 import gnu.trove.map.hash.THashMap;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -20,6 +21,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Locale;
 import java.util.Map;
@@ -332,7 +334,7 @@ public abstract class ConfigurationCodec
                         String path = field.getAnnotation(Option.class).value().replace(".", PATH_SEPARATOR);
                         if (Configuration.class.isAssignableFrom(field.getType()))
                         {
-                            Configuration subConfig = (Configuration)field.get(this.config);
+                            Configuration subConfig = (Configuration)field.get(this.config).getClass().newInstance();
                             CodecContainer subContainer = new CodecContainer();
                             if (parent == null)
                             {
@@ -344,6 +346,43 @@ public abstract class ConfigurationCodec
                             }
                             continue;
                         }
+                        if (field.getGenericType() instanceof ParameterizedType)
+                        {
+                            ParameterizedType ptype = (ParameterizedType)field.getGenericType();
+
+                            if (Collection.class.isAssignableFrom((Class)ptype.getRawType()))
+                            {
+                                Type subType1 = ptype.getActualTypeArguments()[0];
+                                if (Configuration.class.isAssignableFrom((Class)subType1))
+                                {
+                                    Collection loadedValues = this.getOrCreateSubSection(path, section).values();
+                                    if (parent == null)
+                                    {//No parent given: iterate throuh given configs & load them
+
+                                        for (Configuration subConfig : (Collection<Configuration>) field.get(config))
+                                        {
+                                            new CodecContainer().dumpIntoFields(subConfig, this.getOrCreateSubSection(path, section), null);
+                                        }
+                                    }
+                                    else
+                                    {
+                                        Collection collection = CollectionConverter.getCollectionFor(ptype); // Get correct CollectionType
+                                        field.set(config, collection);
+                                    }
+
+                                }
+                            }
+                            else if (Map.class.isAssignableFrom((Class)ptype.getRawType()))
+                            {
+                                Type subType2 = ptype.getActualTypeArguments()[1];
+                                if (Configuration.class.isAssignableFrom((Class)subType2))
+                                {
+                                    //TODO subconfigs in map
+                                }
+                            }
+
+                        }
+                        //TODO handle subconfigs in maps/collections
                         int mask = field.getModifiers();
                         if ((((mask & Modifier.STATIC) == Modifier.STATIC))) // skip static fields
                         {
@@ -450,7 +489,6 @@ public abstract class ConfigurationCodec
          * @param baseSection the base section
          * @return the requested subSection
          */
-        @SuppressWarnings("unchecked")
         private Map<String, Object> getOrCreateSubSection(String path, Map<String, Object> baseSection)
         {
             if (path.contains(PATH_SEPARATOR))

@@ -1,7 +1,10 @@
 package de.cubeisland.cubeengine.log;
 
-import de.cubeisland.cubeengine.log.logger.*;
-import gnu.trove.map.hash.THashMap;
+import de.cubeisland.cubeengine.log.logger.config.*;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 public enum LogAction
 {
@@ -31,53 +34,49 @@ public enum LogAction
      */
     BLOCKCHANGE(
         true,
-        BlockBreakLogger.class,
-        BlockBurnLogger.class,
-        BlockDecayLogger.class,
-        BlockExplosionLogger.class,
-        BlockFadeLogger.class,
-        BlockFluidFlowLogger.class,
-        BlockFormLogger.class,
-        BlockGrowLogger.class,
-        BlockPlaceLogger.class,
-        EndermanLogger.class),
+        BlockBreakConfig.class,
+        BlockBurnConfig.class,
+        BlockDecayConfig.class,
+        BlockExplosionConfig.class,
+        BlockFadeConfig.class,
+        BlockFluidFlowConfig.class,
+        BlockFormConfig.class,
+        BlockGrowConfig.class,
+        BlockPlaceConfig.class,
+        EndermanConfig.class,
+        InteractionConfig.class),
     SIGNCHANGE(
         false,
-        SignChangeLogger.class),
+        SignChangeConfig.class),
     CONTAINER(
         true,
-        ContainerLogger.class),
+        ContainerConfig.class),
     CHAT(
         false,
-        ChatLogger.class),
-    INTERACTION(
-        false,
-        InteractionLogger.class),
+        ChatConfig.class),
     KILL(
         false,
-        KillLogger.class), ;
-    private Class<? extends Logger>[] loggerClasses;
-    private LogActionConfig configuration;
-    private static THashMap<String, Logger> loggers = new THashMap<String, Logger>();
+        KillConfig.class), ;
 
-    private LogAction(boolean defaultEnabled, Class<? extends Logger>... logger)
+    private Class<? extends SubLogConfig>[] configClasses;
+    private boolean defaultEnabled;
+
+    private LogAction(boolean defaultEnabled, Class<? extends SubLogConfig>... loggerConfigs)
     {
-        this.loggerClasses = logger;
-        this.configuration = new LogActionConfig(defaultEnabled);
+        this.defaultEnabled = defaultEnabled;
+        this.configClasses = loggerConfigs;
     }
 
-    public LogActionConfig getConfiguration() // returns the config for this action -> can contain more sublogconfigs
+    public Collection<SubLogConfig> getConfigs()
     {
+        List<SubLogConfig> result = new ArrayList<SubLogConfig>();
         try
         {
-
-            for (Class<? extends Logger> loggerClass : loggerClasses)
+            for (Class<? extends SubLogConfig> configClass : configClasses)
             {
-                Logger logger = loggerClass.newInstance();
-                configuration.configs.put(logger.getConfig().getName(), logger.getConfig());
-                loggers.put(logger.getConfig().getName(), logger);
+                result.add(configClass.newInstance());
             }
-            return configuration;
+            return result;
         }
         catch (Exception ex)
         {
@@ -85,12 +84,8 @@ public enum LogAction
         }
     }
 
-    public void applyLoadedConfig(LogActionConfig actionConfig)
-    {
-        for (SubLogConfig config : actionConfig.configs.values())
-        {
-            loggers.get(config.getName()).applyConfig(config);
-        }
+    public boolean isDefaultEnabled() {
+        return defaultEnabled;
     }
     //BlockFormEvent & BlockFadeEvent for SnowCover and Ice
     //

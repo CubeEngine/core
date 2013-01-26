@@ -1,12 +1,11 @@
 package de.cubeisland.cubeengine.log.logger;
 
-import de.cubeisland.cubeengine.core.config.annotations.Option;
 import de.cubeisland.cubeengine.core.user.User;
-import de.cubeisland.cubeengine.log.LogAction;
+import de.cubeisland.cubeengine.log.Log;
 import de.cubeisland.cubeengine.log.Logger;
-import de.cubeisland.cubeengine.log.SubLogConfig;
-import org.bukkit.Location;
+import de.cubeisland.cubeengine.log.logger.config.InteractionConfig;
 import org.bukkit.Material;
+import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.NoteBlock;
@@ -19,149 +18,122 @@ import org.bukkit.material.Door;
 import org.bukkit.material.MaterialData;
 import org.bukkit.material.Openable;
 
-public class InteractionLogger extends Logger<InteractionLogger.InteractionConfig>
+public class InteractionLogger extends Logger<InteractionConfig>
 {
-    private final Location helper = new Location(null, 0, 0, 0);
-
-    public InteractionLogger()
-    {
-        super(LogAction.INTERACTION);
-        this.config = new InteractionConfig();
+    public InteractionLogger(Log module) {
+        super(module, InteractionConfig.class);
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onPlayerInteract(PlayerInteractEvent event)
     {
-        Block block = event.getClickedBlock();
-
-        if (event.getAction().equals(Action.RIGHT_CLICK_BLOCK))
+        World world = event.getClickedBlock().getWorld();
+        InteractionConfig config = this.configs.get(world);
+        if (config.enabled)
         {
-            MaterialData blockData = block.getState().getData();
-            User user = this.module.getUserManager().getExactUser(event.getPlayer());
-            byte newData = -1;
-            switch (event.getClickedBlock().getType())
+            Block block = event.getClickedBlock();
+
+            if (event.getAction().equals(Action.RIGHT_CLICK_BLOCK))
             {
-                //toggle 0x4
+                MaterialData blockData = block.getState().getData();
+                User user = this.module.getUserManager().getExactUser(event.getPlayer());
+                byte newData = -1;
+                switch (event.getClickedBlock().getType())
+                {
+                    //toggle 0x4
 
-                case WOODEN_DOOR:
-                    if (!(block.getType().equals(Material.WOODEN_DOOR) && this.config.logDoor))
-                    {
-                        return;
+                    case WOODEN_DOOR:
+                        if (!(block.getType().equals(Material.WOODEN_DOOR) && config.logDoor))
+                        {
+                            return;
 
-                    }
-                    if (((Door)blockData).isTopHalf())
-                    {
-                        block = block.getRelative(BlockFace.DOWN);
-                        blockData = block.getState().getData();
-                    }
-                    //this is not working correctly for top half doors
-                    ((Openable)blockData).setOpen(!((Openable)blockData).isOpen());
-                    newData = blockData.getData();
-                    break;
-                case TRAP_DOOR:
-                case FENCE_GATE:
-                    if (!(block.getType().equals(Material.TRAP_DOOR) && this.config.logTrapDoor)
-                            || (block.getType().equals(Material.FENCE_GATE) && this.config.logfenceGate))
-                    {
+                        }
+                        if (((Door)blockData).isTopHalf())
+                        {
+                            block = block.getRelative(BlockFace.DOWN);
+                            blockData = block.getState().getData();
+                        }
+                        //this is not working correctly for top half doors
+                        ((Openable)blockData).setOpen(!((Openable)blockData).isOpen());
+                        newData = blockData.getData();
+                        break;
+                    case TRAP_DOOR:
+                    case FENCE_GATE:
+                        if (!(block.getType().equals(Material.TRAP_DOOR) && config.logTrapDoor)
+                                || (block.getType().equals(Material.FENCE_GATE) && config.logfenceGate))
+                        {
+                            return;
+                        }
+                        break;
+                    case LEVER:
+                        if (!config.logLever)
+                        {
+                            return;
+                        }
+                        newData = block.getData();
+                        newData ^= 0x8;
+                        break;
+                    case STONE_BUTTON:
+                    case WOOD_BUTTON:
+                        if (!config.logButtons)
+                        {
+                            return;
+                        }
+                        newData = block.getData();
+                        newData &= 0x8;
+                        break;
+                    case CAKE_BLOCK: // data: remaining slices
+                        if (!config.logCake)
+                        {
+                            return;
+                        }
+                        newData = block.getData();
+                        newData += 1;
+                        break;
+                    case NOTE_BLOCK:
+                        if (!config.logNoteBlock)
+                        {
+                            return;
+                        }
+                        newData = ((NoteBlock)block.getState()).getRawNote();
+                        newData += 1;
+                        if (newData == 25)
+                        {
+                            newData = 0;
+                        }
+                        break;
+                    case DIODE_BLOCK_OFF:
+                    case DIODE_BLOCK_ON:
+                        if (!config.logDiode)
+                        {
+                            return;
+                        }
+                        int delay = ((Diode)blockData).getDelay();
+                        delay += 1;
+                        if (delay == 5)
+                        {
+                            delay = 1;
+                        }
+                        ((Diode)blockData).setDelay(delay);
+                        newData = blockData.getData();
+                        break;
+                    default:
                         return;
-                    }
-                    break;
-                case LEVER:
-                    if (!this.config.logLever)
-                    {
-                        return;
-                    }
-                    newData = block.getData();
-                    newData ^= 0x8;
-                    break;
-                case STONE_BUTTON:
-                case WOOD_BUTTON:
-                    if (!this.config.logButtons)
-                    {
-                        return;
-                    }
-                    newData = block.getData();
-                    newData &= 0x8;
-                    break;
-                case CAKE_BLOCK: // data: remaining slices
-                    if (!this.config.logCake)
-                    {
-                        return;
-                    }
-                    newData = block.getData();
-                    newData += 1;
-                    break;
-                case NOTE_BLOCK:
-                    if (!this.config.logNoteBlock)
-                    {
-                        return;
-                    }
-                    newData = ((NoteBlock)block.getState()).getRawNote();
-                    newData += 1;
-                    if (newData == 25)
-                    {
-                        newData = 0;
-                    }
-                    break;
-                case DIODE_BLOCK_OFF:
-                case DIODE_BLOCK_ON:
-                    if (!this.config.logDiode)
-                    {
-                        return;
-                    }
-                    int delay = ((Diode)blockData).getDelay();
-                    delay += 1;
-                    if (delay == 5)
-                    {
-                        delay = 1;
-                    }
-                    ((Diode)blockData).setDelay(delay);
-                    newData = blockData.getData();
-                    break;
-                default:
-                    return;
-                    //TODO add new blocks in 1.5
-                    //TODO anvil
+                        //TODO add new blocks in 1.5
+                        //TODO anvil
+                }
+                this.module.getLogManager().logBlockChange(user.key, world, block.getState(), newData);
             }
-            this.module.getLogManager().logBlockChange(user.key, block.getState(), newData);
-        }
-        else if (event.getAction().equals(Action.PHYSICAL) && this.config.logPressurePlate)
-        {
-            User user = this.module.getUserManager().getExactUser(event.getPlayer());
-            switch (block.getType())
+            else if (event.getAction().equals(Action.PHYSICAL) && config.logPressurePlate)
             {
-                case WOOD_PLATE:
-                case STONE_PLATE:
-                    this.module.getLogManager().logBlockChange(user.key, block.getState(), (byte)1);
+                User user = this.module.getUserManager().getExactUser(event.getPlayer());
+                switch (block.getType())
+                {
+                    case WOOD_PLATE:
+                    case STONE_PLATE:
+                        this.module.getLogManager().logBlockChange(user.key, world, block.getState(), (byte)1);
+                }
             }
-        }
-    }
-
-    public static class InteractionConfig extends SubLogConfig
-    {
-        @Option("log-pressureplate")
-        public boolean logPressurePlate = false;
-        @Option("log-door")
-        public boolean logDoor = false;
-        @Option("log-trapDoor")
-        public boolean logTrapDoor = false;
-        @Option("log-fenceGate")
-        public boolean logfenceGate = false;
-        @Option("log-lever")
-        public boolean logLever = false;
-        @Option("log-button")
-        public boolean logButtons = false;
-        @Option("log-cake")
-        public boolean logCake = false;
-        @Option("log-noteblock")
-        public boolean logNoteBlock = false;
-        @Option("log-diode")
-        public boolean logDiode = false;
-
-        @Override
-        public String getName()
-        {
-            return "interact";
         }
     }
 }

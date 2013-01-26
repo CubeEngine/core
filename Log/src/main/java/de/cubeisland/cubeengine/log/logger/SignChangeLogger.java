@@ -1,9 +1,10 @@
 package de.cubeisland.cubeengine.log.logger;
 
 import de.cubeisland.cubeengine.core.user.User;
-import de.cubeisland.cubeengine.log.LogAction;
+import de.cubeisland.cubeengine.log.Log;
 import de.cubeisland.cubeengine.log.Logger;
-import de.cubeisland.cubeengine.log.SubLogConfig;
+import de.cubeisland.cubeengine.log.logger.config.SignChangeConfig;
+import org.bukkit.World;
 import org.bukkit.block.BlockState;
 import org.bukkit.block.Sign;
 import org.bukkit.entity.Player;
@@ -11,18 +12,22 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.block.SignChangeEvent;
 
-public class SignChangeLogger extends Logger<SignChangeLogger.SignChangeConfig>
+public class SignChangeLogger extends Logger<SignChangeConfig>
 {
-    public SignChangeLogger()
-    {
-        super(LogAction.SIGNCHANGE);
-        this.config = new SignChangeConfig();
+    public SignChangeLogger(Log module) {
+        super(module, SignChangeConfig.class);
     }
+
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onSignChange(SignChangeEvent event)
     {
-        this.logSignChange(event.getPlayer(), event.getLines(), event.getBlock().getState());
+        World world = event.getBlock().getWorld();
+        SignChangeConfig config = this.configs.get(world);
+        if (config.enabled)
+        {
+            this.logSignChange(event.getPlayer(), event.getLines(), event.getBlock().getState());
+        }
     }
 
     public void logSignChange(Player player, String[] newLines, BlockState state)
@@ -49,17 +54,5 @@ public class SignChangeLogger extends Logger<SignChangeLogger.SignChangeConfig>
         }
     }
 
-    public static class SignChangeConfig extends SubLogConfig
-    {
-        public SignChangeConfig()
-        {
-            this.enabled = false;
-        }
 
-        @Override
-        public String getName()
-        {
-            return "sign-changes";
-        }
-    }
 }

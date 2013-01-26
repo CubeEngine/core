@@ -1,22 +1,18 @@
 package de.cubeisland.cubeengine.log.logger;
 
 import de.cubeisland.cubeengine.core.CubeEngine;
-import de.cubeisland.cubeengine.core.config.annotations.Option;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.util.InventoryUtil;
-import de.cubeisland.cubeengine.log.LogAction;
+import de.cubeisland.cubeengine.log.Log;
 import de.cubeisland.cubeengine.log.Logger;
-import de.cubeisland.cubeengine.log.SubLogConfig;
+import de.cubeisland.cubeengine.log.logger.config.ContainerConfig;
 import de.cubeisland.cubeengine.log.storage.ItemData;
 import gnu.trove.map.hash.TIntObjectHashMap;
 import gnu.trove.map.hash.TObjectIntHashMap;
 import org.bukkit.Location;
-import org.bukkit.block.BlockState;
-import org.bukkit.block.BrewingStand;
-import org.bukkit.block.Chest;
-import org.bukkit.block.Dispenser;
-import org.bukkit.block.DoubleChest;
-import org.bukkit.block.Furnace;
+import org.bukkit.World;
+import org.bukkit.block.*;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.StorageMinecart;
@@ -25,29 +21,16 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryOpenEvent;
-import org.bukkit.inventory.AnvilInventory;
-import org.bukkit.inventory.BeaconInventory;
-import org.bukkit.inventory.CraftingInventory;
-import org.bukkit.inventory.EnchantingInventory;
-import org.bukkit.inventory.Inventory;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.MerchantInventory;
-import org.bukkit.inventory.PlayerInventory;
+import org.bukkit.inventory.*;
 
-public class ContainerLogger extends Logger<ContainerLogger.ContainerConfig>
+public class ContainerLogger extends Logger<ContainerConfig>
 {
-    public ContainerLogger()
-    {
-        super(LogAction.CONTAINER);
-        this.config = new ContainerConfig();
+    public ContainerLogger(Log module) {
+        super(module, ContainerConfig.class);
     }
 
     private static TIntObjectHashMap<TObjectIntHashMap<ItemData>> openedInventories = new TIntObjectHashMap<TObjectIntHashMap<ItemData>>();
 
-    public void logContainerChange(User user, ItemData data, int amount, Location loc, int type)
-    {
-        this.module.getLogManager().logChestLog(user.key.intValue(), loc, data, amount, type);
-    }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onInventoryClose(InventoryCloseEvent event)
@@ -59,8 +42,9 @@ public class ContainerLogger extends Logger<ContainerLogger.ContainerConfig>
             return;
         }
         ContainerType type = ContainerType.getContainerType(event.getView().getTopInventory());
-        if (this.checkLog(type))
-        {
+        World world = this.getLocationForHolder(event.getView().getTopInventory().getHolder()).getWorld();
+        if (this.checkLog(type, world))
+        {//TODO inventories that are not a Blockstate
             Location loc;
             Inventory topInv = event.getView().getTopInventory();
             if (topInv.getHolder() instanceof DoubleChest)
@@ -77,16 +61,34 @@ public class ContainerLogger extends Logger<ContainerLogger.ContainerConfig>
             {
                 return;
             }
-            this.logContainerChanges(user, type, loggedItems, loc);
+            this.logContainerChanges(user, type, loggedItems, world, loc);
         }
         openedInventories.remove(user.key.intValue());
+    }
+
+    private Location getLocationForHolder(InventoryHolder holder) {
+        if (holder instanceof Entity)
+        {
+            return ((Entity)holder).getLocation();
+        }
+        else if (holder instanceof DoubleChest)
+        {
+            return ((DoubleChest)holder).getLocation();//TODO get a blocklocation
+        }
+        else if (holder instanceof BlockState)
+        {
+            return ((BlockState)holder).getLocation();
+        }
+        this.module.getLogger().warning("Unknown InventoryHolder:" + holder.toString());
+        return null;
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onInventoryOpen(InventoryOpenEvent event)
     {
+        World world = this.getLocationForHolder(event.getView().getTopInventory().getHolder()).getWorld();
         ContainerType type = ContainerType.getContainerType(event.getView().getTopInventory());
-        if (this.checkLog(type))
+        if (this.checkLog(type, world))
         {
             if (event.getPlayer() instanceof Player)
             {
@@ -160,40 +162,45 @@ public class ContainerLogger extends Logger<ContainerLogger.ContainerConfig>
         }
     }
 
-    private boolean checkLog(ContainerType type)
+    private boolean checkLog(ContainerType type, World world)
     {
-        switch (type)
+        ContainerConfig config = this.configs.get(world);
+        if (config.enabled)
         {
-            case BREWINGSTAND:
-                return this.config.logBrewingstand;
-            case CHEST:
-                return this.config.logChest;
-            case DISPENSER:
-                return this.config.logDispenser;
-            case FURNACE:
-                return this.config.logFurnace;
-            case OTHER:
-                return this.config.logOtherBlock;
-            default:
-                return false;
-                //TODO storage minecart
+            switch (type)
+            {
+                case BREWINGSTAND:
+                    return config.logBrewingstand;
+                case CHEST:
+                    return config.logChest;
+                case DISPENSER:
+                    return config.logDispenser;
+                case FURNACE:
+                    return config.logFurnace;
+                case OTHER:
+                    return config.logOtherBlock;
+                default:
+                    return false;
+                    //TODO storage minecart
+            }
         }
+        return false;
     }
 
-    private void logContainerChanges(User user, ContainerType type, TObjectIntHashMap<ItemData> loggedChanges, Location loc)
+    private void logContainerChanges(User user, ContainerType type, TObjectIntHashMap<ItemData> loggedChanges, World world, Location loc)
     {
         boolean logged = false;
         for (ItemData data : loggedChanges.keySet())
         {
             if (loggedChanges.get(data) != 0)
             {
-                this.logContainerChange(user, data, loggedChanges.get(data), loc, type.getId());
+                this.module.getLogManager().logChestLog(user.key.intValue(), world, loc, data, loggedChanges.get(data), type.getId());
                 logged = true;
             }
         }
-        if (!logged && this.config.logNothing) //Player just looked into container
+        if (!logged &&  this.configs.get(world).logNothing) //Player just looked into container
         {
-            this.logContainerChange(user, new ItemData(0, (short)0), 0, loc, type.getId());
+            this.module.getLogManager().logChestLog(user.key.intValue(), world, loc, new ItemData(0, (short)0), 0, type.getId());
         }
     }
 
@@ -205,34 +212,7 @@ public class ContainerLogger extends Logger<ContainerLogger.ContainerConfig>
      * (amount == null) { amount = 0; } amount += item.getAmount();
      * map.put(itemData, amount); } return map; } //
      */
-    public static class ContainerConfig extends SubLogConfig
-    {
-        @Option("log-chest")
-        public boolean logChest = true;
-        @Option("log-furnace")
-        public boolean logFurnace = false;
-        @Option("log-brewing")
-        public boolean logBrewingstand = false;
-        @Option("log-dispenser")
-        public boolean logDispenser = true;
-        @Option("log-other-block")
-        public boolean logOtherBlock = true;
-        @Option("log-storage-minecart")
-        public boolean logStorageMinecart = false;
-        @Option("log-looked-into-chest")
-        public boolean logNothing = true;
 
-        public ContainerConfig()
-        {
-            this.enabled = true;
-        }
-
-        @Override
-        public String getName()
-        {
-            return "container";
-        }
-    }
 
     public static enum ContainerType
     {

@@ -1,43 +1,35 @@
 package de.cubeisland.cubeengine.log.logger;
 
-import de.cubeisland.cubeengine.core.config.annotations.Option;
-import de.cubeisland.cubeengine.log.SubLogConfig;
+import de.cubeisland.cubeengine.log.Log;
+import de.cubeisland.cubeengine.log.logger.config.BlockFormConfig;
 import org.bukkit.Material;
+import org.bukkit.World;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.block.BlockFormEvent;
 
 import static de.cubeisland.cubeengine.log.logger.BlockLogger.BlockChangeCause.FORM;
 
-public class BlockFormLogger extends
-    BlockLogger<BlockFormLogger.BlockFormConfig>
+public class BlockFormLogger extends    BlockLogger<BlockFormConfig>
 {
-    public BlockFormLogger()
-    {
-        this.config = new BlockFormConfig();
+    public BlockFormLogger(Log module) {
+        super(module, BlockFormConfig.class);
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onBlockForm(BlockFormEvent event)
     {
-        if ((event.getNewState().getType().equals(Material.ICE) && this.config.logIceForm)
-            || event.getNewState().getType().equals(Material.SNOW) && this.config.logSnowForm)
+        World world = event.getBlock().getWorld();
+        BlockFormConfig config = this.configs.get(world);
+        if (config.enabled)
         {
-            this.logBlockChange(FORM, null, event.getBlock().getState(), event.getNewState());
+            if ((event.getNewState().getType().equals(Material.ICE) && config.logIceForm)
+                || event.getNewState().getType().equals(Material.SNOW) && config.logSnowForm)
+            {
+                this.logBlockChange(FORM,world,null, event.getBlock().getState(), event.getNewState());
+            }
         }
     }
 
-    public static class BlockFormConfig extends SubLogConfig
-    {
-        @Option("log-snow-form")
-        public boolean logSnowForm = false;
-        @Option("log-ice-form")
-        public boolean logIceForm = false;
 
-        @Override
-        public String getName()
-        {
-            return "block-form";
-        }
-    }
 }

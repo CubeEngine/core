@@ -1,86 +1,76 @@
 package de.cubeisland.cubeengine.log.logger;
 
-import de.cubeisland.cubeengine.core.config.annotations.Comment;
-import de.cubeisland.cubeengine.core.config.annotations.Option;
 import de.cubeisland.cubeengine.core.user.User;
-import de.cubeisland.cubeengine.log.LogAction;
+import de.cubeisland.cubeengine.log.Log;
 import de.cubeisland.cubeengine.log.Logger;
-import de.cubeisland.cubeengine.log.SubLogConfig;
-import java.util.ArrayList;
-import java.util.List;
-import org.bukkit.Location;
+import de.cubeisland.cubeengine.log.logger.config.ChatConfig;
+import org.bukkit.World;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.server.ServerCommandEvent;
 
-public class ChatLogger extends Logger<ChatLogger.ChatConfig>
+public class ChatLogger extends Logger<ChatConfig>
 {
-    private final Location helper = new Location(null, 0, 0, 0);
-
-    public ChatLogger()
-    {
-        super(LogAction.CHAT);
-        this.config = new ChatConfig();
+    public ChatLogger(Log module) {
+        super(module, ChatConfig.class);
     }
+
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onPlayerCommandPreprocess(PlayerCommandPreprocessEvent event)
     {
-        if (this.config.logPlayerCommand)
+        World world = event.getPlayer().getWorld();
+        ChatConfig config = this.configs.get(world);
+        if (config.enabled)
         {
-            if (!this.config.ignoreRegex.isEmpty())
+            if (event.getMessage().trim().isEmpty()) return;
+            if (config.logPlayerCommand)
             {
-                for (String regex : this.config.ignoreRegex)
+                if (!config.ignoreRegex.isEmpty())
                 {
-                    if (event.getMessage().matches(regex))
+                    for (String regex : config.ignoreRegex)
                     {
-                        return;
+                        if (event.getMessage().matches(regex))
+                        {
+                            return;
+                        }
                     }
                 }
+                User user = this.module.getUserManager().getExactUser(event.getPlayer());
+                this.module.getLogManager().logChatLog(user.key.intValue(), world,  user.getLocation(), event.getMessage(), false);
             }
-            User user = this.module.getUserManager().getExactUser(event.getPlayer());
-            this.module.getLogManager().logChatLog(user.key.intValue(), user.getLocation(this.helper), event.getMessage(), false);
         }
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onPlayerChat(AsyncPlayerChatEvent event)
     {
-        if (this.config.logPlayerChat)
+        World world = event.getPlayer().getWorld();
+        ChatConfig config = this.configs.get(world);
+        if (config.enabled)
         {
-            User user = this.module.getUserManager().getExactUser(event.getPlayer());
-            // creating a new Location instance to ensure thread safety
-            this.module.getLogManager().logChatLog(user.key.intValue(), user.getLocation(), event.getMessage(), true);
+            if (event.getMessage().trim().isEmpty()) return;
+            if (config.logPlayerChat)
+            {
+                User user = this.module.getUserManager().getExactUser(event.getPlayer());
+                // creating a new Location instance to ensure thread safety
+                this.module.getLogManager().logChatLog(user.key.intValue(), world, user.getLocation(), event.getMessage(), true);
+            }
         }
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onServerCommand(ServerCommandEvent event)
     {
-        if (this.config.logConsoleCommand)
+        if (event.getCommand().trim().isEmpty()) return;
+        ChatConfig config = this.module.getGlobalConfiguration().getSubLogConfig(this.getConfigClass());
+        if (config.logConsoleCommand)
         {
-            this.module.getLogManager().logChatLog(0, null, event.getCommand(), false);
+            this.module.getLogManager().logChatLog(0, null, null, event.getCommand(), false);
         }
     }
 
-    public static class ChatConfig extends SubLogConfig
-    {
-        @Option("log-console-command")
-        public boolean logConsoleCommand = true;
-        @Option("log-player-command")
-        public boolean logPlayerCommand = true;
-        @Option("log-player-chat")
-        public boolean logPlayerChat = true;
-        @Comment("Regex of commands to ignore when logging player commands.")
-        @Option("ignore-commands")
-        public List<String> ignoreRegex = new ArrayList<String>();//TODO add default CE pw setting
 
-        @Override
-        public String getName()
-        {
-            return "chat";
-        }
-    }
 }

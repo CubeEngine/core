@@ -1,32 +1,30 @@
 package de.cubeisland.cubeengine.log.logger;
 
-import de.cubeisland.cubeengine.log.SubLogConfig;
+import de.cubeisland.cubeengine.log.Log;
+import de.cubeisland.cubeengine.log.logger.config.BlockDecayConfig;
+import org.bukkit.World;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.block.LeavesDecayEvent;
 
 import static de.cubeisland.cubeengine.log.logger.BlockLogger.BlockChangeCause.DECAY;
 
-public class BlockDecayLogger extends
-    BlockLogger<BlockDecayLogger.BlockDecayConfig>
+public class BlockDecayLogger extends    BlockLogger<BlockDecayConfig>
 {
-    public BlockDecayLogger()
-    {
-        this.config = new BlockDecayConfig();
+    public BlockDecayLogger(Log module) {
+        super(module, BlockDecayConfig.class);
     }
+
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onLeavesDecay(LeavesDecayEvent event)
     {
-        this.logBlockChange(DECAY, null, event.getBlock().getState(), null);
-    }
-
-    public static class BlockDecayConfig extends SubLogConfig
-    {
-        @Override
-        public String getName()
+        World world = event.getBlock().getWorld();
+        BlockDecayConfig config = this.configs.get(world);
+        if (config.enabled)
         {
-            return "block-decay";
+            this.logBlockChange(DECAY, world, null, event.getBlock().getState(), null);
         }
     }
+
 }

@@ -370,7 +370,7 @@ public class LogManager
      * @param newState
      * @param oldState
      */
-    public void logBlockLog(BlockLogger.BlockChangeCause cause, long causerId, BlockState newState, BlockState oldState)
+    public void logBlockLog(BlockLogger.BlockChangeCause cause, long causerId, World world, BlockState newState, BlockState oldState)
     {
         Location location;
         int type;
@@ -392,7 +392,7 @@ public class LogManager
         {
             type = BLOCK_GROW_BP;
         }
-        this.logBlockLog(location, type, causerId, BlockData.get(oldState), BlockData.get(newState));
+        this.logBlockLog(location, type, causerId, world, BlockData.get(oldState), BlockData.get(newState));
     }
 
     /**
@@ -402,16 +402,16 @@ public class LogManager
      * @param state
      * @param newData
      */
-    public void logBlockChange(long causerId, BlockState state, byte newData)
+    public void logBlockChange(long causerId, World world, BlockState state, byte newData)
     {
         Location location = state.getLocation();
-        this.logBlockLog(location, BLOCK_CHANGE, causerId, BlockData.get(state), BlockData.get(state, newData));
+        this.logBlockLog(location, BLOCK_CHANGE, causerId, world, BlockData.get(state), BlockData.get(state, newData));
     }
 
-    private void logBlockLog(final Location location, final int type, final long causerId, final BlockData oldData, final BlockData newData)
+    private void logBlockLog(final Location location, final int type, final long causerId, final World world, final BlockData oldData, final BlockData newData)
     {
         final Timestamp timestamp = new Timestamp(System.currentTimeMillis());
-        this.storeLog(location.getWorld(), location, type, causerId, timestamp, new QueuedLog()
+        this.storeLog(world, location, type, causerId, timestamp, new QueuedLog()
         {
             @Override
             public void run()
@@ -494,10 +494,10 @@ public class LogManager
      * @param chat
      * @param isChat
      */
-    public void logChatLog(final long causerId, final Location location, final String message, final boolean isChat)
+    public void logChatLog(final long causerId, final World world, final Location location, final String message, final boolean isChat)
     {
         final Timestamp timestamp = new Timestamp(System.currentTimeMillis());
-        this.storeLog(location == null ? null : location.getWorld(), location, isChat ? CHAT : COMMAND, causerId, timestamp, new QueuedLog() {
+        this.storeLog(world, location, isChat ? CHAT : COMMAND, causerId, timestamp, new QueuedLog() {
             @Override
             public void run()
             {
@@ -515,10 +515,10 @@ public class LogManager
      * @param amount
      * @param containerType
      */
-    public void logChestLog(final long userId, final Location location, final ItemData itemData, final int amount, final int containerType)
+    public void logChestLog(final long userId, final World world, final Location location, final ItemData itemData, final int amount, final int containerType)
     {
         final Timestamp timestamp = new Timestamp(System.currentTimeMillis());
-        storeLog(location.getWorld(), location, (amount > 0 ? CHEST_PUT : CHEST_TAKE), userId, timestamp, new QueuedLog()
+        storeLog(world, location, (amount > 0 ? CHEST_PUT : CHEST_TAKE), userId, timestamp, new QueuedLog()
         {
             @Override
             public void run()

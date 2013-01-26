@@ -1,14 +1,9 @@
 package de.cubeisland.cubeengine.log.logger;
 
-import static de.cubeisland.cubeengine.core.bukkit.BlockUtil.isFluidBlock;
-import static de.cubeisland.cubeengine.core.bukkit.BlockUtil.isNonFluidProofBlock;
-import de.cubeisland.cubeengine.core.config.annotations.Comment;
-import de.cubeisland.cubeengine.core.config.annotations.Option;
-import de.cubeisland.cubeengine.log.SubLogConfig;
-import static de.cubeisland.cubeengine.log.logger.BlockLogger.BlockChangeCause.*;
-import java.util.EnumSet;
-import java.util.Set;
+import de.cubeisland.cubeengine.log.Log;
+import de.cubeisland.cubeengine.log.logger.config.BlockFluidFlowConfig;
 import org.bukkit.Material;
+import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.BlockState;
@@ -16,16 +11,22 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.block.BlockFromToEvent;
 
-public class BlockFluidFlowLogger extends
-    BlockLogger<BlockFluidFlowLogger.BlockFluidFlowConfig>
+import java.util.EnumSet;
+import java.util.Set;
+
+import static de.cubeisland.cubeengine.core.bukkit.BlockUtil.isFluidBlock;
+import static de.cubeisland.cubeengine.core.bukkit.BlockUtil.isNonFluidProofBlock;
+import static de.cubeisland.cubeengine.log.logger.BlockLogger.BlockChangeCause.LAVA;
+import static de.cubeisland.cubeengine.log.logger.BlockLogger.BlockChangeCause.WATER;
+
+public class BlockFluidFlowLogger extends     BlockLogger<BlockFluidFlowConfig>
 {
-    public BlockFluidFlowLogger()
-    {
-        this.config = new BlockFluidFlowConfig();
+    public BlockFluidFlowLogger(Log module) {
+        super(module, BlockFluidFlowConfig.class);
     }
 
-    //TODO do this better
 
+    //TODO do this better
     private static final BlockFace[] DIRECTIONS = new BlockFace[]
     {
         BlockFace.DOWN, BlockFace.NORTH, BlockFace.WEST, BlockFace.EAST, BlockFace.SOUTH
@@ -34,6 +35,7 @@ public class BlockFluidFlowLogger extends
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onBlockFromTo(BlockFromToEvent event)
     {
+        World world = event.getBlock().getWorld();
         Material mat = event.getBlock().getType();
         BlockState fromBlock = event.getBlock().getState();
         BlockState toBlock = event.getToBlock().getState();
@@ -84,7 +86,7 @@ public class BlockFluidFlowLogger extends
                 newToBlock.setType(Material.LAVA);
                 newToBlock.setRawData((byte)(fromBlock.getRawData() + 1));
             }
-            this.log(LAVA, toBlock, newToBlock);
+            this.log(LAVA, world, toBlock, newToBlock);
         }
         else if (mat.equals(Material.WATER) || mat.equals(Material.STATIONARY_WATER))
         {
@@ -103,7 +105,7 @@ public class BlockFluidFlowLogger extends
                 {
                     newToBlock.setType(Material.STATIONARY_WATER);
                     newToBlock.setRawData((byte)0);
-                    this.log(WATER, toBlock, newToBlock);
+                    this.log(WATER, world, toBlock, newToBlock);
                 }
                 return; // changing water-level do not log
             }
@@ -123,55 +125,59 @@ public class BlockFluidFlowLogger extends
                         BlockState newNearBlock = nearBlock.getState();
                         newNearBlock.setTypeId(nearBlock.getData() == 0 ? 49 : 4);
                         newNearBlock.setRawData((byte)0);
-                        this.log(WATER, oldNearBlock, newNearBlock);
+                        this.log(WATER, world, oldNearBlock, newNearBlock);
                     }
                 }
                 newToBlock.setType(Material.WATER);
                 newToBlock.setRawData((byte)(fromBlock.getRawData() + 1));
             }
-            this.log(WATER, toBlock, newToBlock);
+            this.log(WATER, world, toBlock, newToBlock);
         }
     }
 
     private static Set<Material> lava = EnumSet.of(Material.LAVA, Material.STATIONARY_LAVA);
     private static Set<Material> water = EnumSet.of(Material.WATER, Material.STATIONARY_WATER);
 
-    public void log(BlockChangeCause cause, BlockState oldState, BlockState newState)
+    public void log(BlockChangeCause cause, World world, BlockState oldState, BlockState newState)
     {
-        if ((water.contains(oldState.getType()) && (water.contains(newState.getType()) || newState.getTypeId() == 0) && !this.config.logWaterFlow)
-            || (lava.contains(oldState.getType()) && (lava.contains(newState.getType()) || newState.getTypeId() == 0) && !this.config.logLavaFlow))
+        BlockFluidFlowConfig config = this.configs.get(world);
+        if (config.enabled)
         {
-            return;
-        }
-        else if (!isFluidBlock(oldState.getType()) && isFluidBlock(newState.getType()))
-        {
-
-            if ((lava.contains(newState.getType()) && !this.config.logLavaDestruct)
-                || (water.contains(newState.getType()) && !this.config.logWaterDestruct))
+            if ((water.contains(oldState.getType()) && (water.contains(newState.getType()) || newState.getTypeId() == 0) && !config.logWaterFlow)
+                || (lava.contains(oldState.getType()) && (lava.contains(newState.getType()) || newState.getTypeId() == 0) && !config.logLavaFlow))
             {
                 return;
             }
-        }
-        else if (!isFluidBlock(newState.getType()) && newState.getTypeId() != 0) //newBlock is not fluid or air
-        {
-            if (isFluidBlock(oldState.getType()))
+            else if (!isFluidBlock(oldState.getType()) && isFluidBlock(newState.getType()))
             {
-                if (!this.config.logLavaWaterCreation)
+
+                if ((lava.contains(newState.getType()) && !config.logLavaDestruct)
+                    || (water.contains(newState.getType()) && !config.logWaterDestruct))
                 {
                     return;
                 }
             }
-            else
+            else if (!isFluidBlock(newState.getType()) && newState.getTypeId() != 0) //newBlock is not fluid or air
             {
-                if (oldState.getType().equals(Material.REDSTONE_WIRE)
-                    && newState.getType().equals(Material.OBSIDIAN)
-                    && !this.config.logRedsObsiCreation)
+                if (isFluidBlock(oldState.getType()))
                 {
-                    return;
+                    if (!config.logLavaWaterCreation)
+                    {
+                        return;
+                    }
+                }
+                else
+                {
+                    if (oldState.getType().equals(Material.REDSTONE_WIRE)
+                        && newState.getType().equals(Material.OBSIDIAN)
+                        && !config.logRedsObsiCreation)
+                    {
+                        return;
+                    }
                 }
             }
+            this.logBlockChange(cause, world,null, oldState, newState);
         }
-        this.logBlockChange(cause, null, oldState, newState);
     }
 
     private boolean isSurroundedByWater(Block block)
@@ -187,31 +193,5 @@ public class BlockFluidFlowLogger extends
         return false;
     }
 
-    public static class BlockFluidFlowConfig extends SubLogConfig
-    {
-        @Comment("Logging water flowing normally and replacing air or water")
-        @Option("log-water-flow")
-        public boolean logWaterFlow = false;
-        @Comment("Logging lava flowing normally and replacing air or lava")
-        @Option("log-lava-flow")
-        public boolean logLavaFlow = false;
-        @Comment("Logging water destroying blocks like redstone etc.")
-        @Option("log-water-destruction")
-        public boolean logWaterDestruct = true;
-        @Comment("Logging lava destroying blocks like redstone etc.")
-        @Option("log-lava-destruction")
-        public boolean logLavaDestruct = true;
-        @Comment("Logging lava or water creating stone, cobblestone or obsidian")
-        @Option("log-water-lava-creation")
-        public boolean logLavaWaterCreation = true;
-        @Comment("Logging obsidian creation with redstone")
-        @Option("log-redstone-obsidian-creation")
-        public boolean logRedsObsiCreation = true;
 
-        @Override
-        public String getName()
-        {
-            return "block-fluids";
-        }
-    }
 }

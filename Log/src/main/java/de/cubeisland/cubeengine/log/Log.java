@@ -1,9 +1,11 @@
 package de.cubeisland.cubeengine.log;
 
 import com.sk89q.worldedit.WorldEdit;
+import de.cubeisland.cubeengine.core.config.Configuration;
 import de.cubeisland.cubeengine.core.module.Module;
 import de.cubeisland.cubeengine.core.util.convert.Convert;
 import de.cubeisland.cubeengine.log.commands.LogCommands;
+import de.cubeisland.cubeengine.log.logger.LoggerManager;
 import de.cubeisland.cubeengine.log.logger.worldedit.LogEditSessionFactory;
 import de.cubeisland.cubeengine.log.storage.*;
 import de.cubeisland.cubeengine.log.tool.ToolListener;
@@ -20,6 +22,7 @@ public class Log extends Module
     private LogConfiguration globalConfig;
     private Map<World, LogConfiguration> worldConfigs = new HashMap<World, LogConfiguration>();
     private LogManager logManager;
+    private LoggerManager loggerManager;
 
     static
     {
@@ -32,8 +35,6 @@ public class Log extends Module
         instance = this;
     }
 
-    //TODO config for each world -> config should be empty!
-    //but inherit from global config how to do this???
     @Override
     public void onEnable()
     {
@@ -44,18 +45,21 @@ public class Log extends Module
         // perhaps make possible to select this cuboid to rollback later
         //flag to ignore what block
         //possibility to select the region containing the last search results
-        //this.lm = new LogManager(this);
         this.logManager = new LogManager(this);
         this.registerCommand(new LogCommands(this));
         File file = new File(this.getFolder(), "worlds");
         file.mkdir();
+
+        this.globalConfig = Configuration.load(LogConfiguration.class, new File(this.getFolder(),"globalconfig.yml"));
         for (World world : Bukkit.getServer().getWorlds())
-        {//TODO check if one world has logging enabled
-            //TODO use world configs instead of global
+        {
+            //TODO config to disable logging in the entire world
             file = new File(this.getFolder(), "worlds" + File.separator + world.getName());
             file.mkdir();
             this.worldConfigs.put(world, (LogConfiguration)globalConfig.loadChild(new File(file, "config.yml")));
         }
+        this.loggerManager = new LoggerManager(this);
+
         this.registerListener(new ToolListener(this));
 
         try {
@@ -74,9 +78,9 @@ public class Log extends Module
         super.onDisable();
     }
 
-    public LogConfiguration getConfiguration()
+    public Map<World, LogConfiguration> getConfigurations()
     {
-        return null;
+        return this.worldConfigs;
     }
 
     public LogManager getLogManager()
@@ -84,8 +88,7 @@ public class Log extends Module
         return this.logManager;
     }
 
-    public static Log getInstance()
-    {
-        return instance;
+    public LogConfiguration getGlobalConfiguration() {
+        return this.globalConfig;
     }
 }
