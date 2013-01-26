@@ -15,5 +15,10 @@
             <artifactId>cubeengine</artifactId>
             <version>${project.parent.version}</version>
         </dependency>
+        <dependency>
+            <groupId>com.sk89q</groupId>
+            <artifactId>worldedit</artifactId>
+            <version>5.5.2-SNAPSHOT</version>
+        </dependency>
     </dependencies>
 </project>

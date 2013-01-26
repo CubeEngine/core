@@ -30,9 +30,9 @@ public abstract class QueuedLog
         this.run();
     }
 
-    public void addMainLogData(Object... maindata)
+    public void addMainLogData(Object... mainData)
     {
-        this.mainData = maindata;
+        this.mainData = mainData;
     }
 
     public void addMainDataToBatch(PreparedStatement stmt) throws SQLException

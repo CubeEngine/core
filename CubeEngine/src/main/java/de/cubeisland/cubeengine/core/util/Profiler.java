@@ -44,8 +44,7 @@ public class Profiler
         Validate.notNull(id, "The ID must not be null!");
         synchronized (startTimes)
         {
-            startTimes.remove(id);
+            return delta - startTimes.remove(id);
         }
-        return delta;
     }
 }

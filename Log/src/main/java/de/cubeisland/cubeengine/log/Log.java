@@ -1,19 +1,18 @@
 package de.cubeisland.cubeengine.log;
 
+import com.sk89q.worldedit.WorldEdit;
 import de.cubeisland.cubeengine.core.module.Module;
 import de.cubeisland.cubeengine.core.util.convert.Convert;
 import de.cubeisland.cubeengine.log.commands.LogCommands;
-import de.cubeisland.cubeengine.log.storage.BlockData;
-import de.cubeisland.cubeengine.log.storage.BlockDataConverter;
-import de.cubeisland.cubeengine.log.storage.ItemData;
-import de.cubeisland.cubeengine.log.storage.ItemDataConverter;
-import de.cubeisland.cubeengine.log.storage.LogManager;
+import de.cubeisland.cubeengine.log.logger.worldedit.LogEditSessionFactory;
+import de.cubeisland.cubeengine.log.storage.*;
 import de.cubeisland.cubeengine.log.tool.ToolListener;
+import org.bukkit.Bukkit;
+import org.bukkit.World;
+
 import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
-import org.bukkit.Bukkit;
-import org.bukkit.World;
 
 public class Log extends Module
 {
@@ -59,6 +58,13 @@ public class Log extends Module
         }
         this.registerListener(new ToolListener(this));
 
+        try {
+            Class.forName("com.sk89q.worldedit.WorldEdit");
+            LogEditSessionFactory.initialize(WorldEdit.getInstance(),this);
+        }catch (ClassNotFoundException ignored)
+        {
+            System.out.print("No WorldEdit found!");
+        }
     }
 
     @Override

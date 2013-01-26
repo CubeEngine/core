@@ -7,29 +7,16 @@ import de.cubeisland.cubeengine.log.LogAction;
 import de.cubeisland.cubeengine.log.Logger;
 import de.cubeisland.cubeengine.log.SubLogConfig;
 import org.bukkit.Location;
-import org.bukkit.entity.Animals;
-import org.bukkit.entity.EnderDragon;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.Ghast;
-import org.bukkit.entity.Giant;
-import org.bukkit.entity.LivingEntity;
-import org.bukkit.entity.Monster;
-import org.bukkit.entity.NPC;
-import org.bukkit.entity.Player;
-import org.bukkit.entity.Projectile;
-import org.bukkit.entity.Slime;
-import org.bukkit.entity.Tameable;
-import org.bukkit.entity.Wither;
+import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
+import org.bukkit.event.entity.EntityDeathEvent;
 
 public class KillLogger extends Logger<KillLogger.KillConfig>
 {
-    private final Location helper = new Location(null, 0, 0, 0);
-
     public KillLogger()
     {
         super(LogAction.KILL);
@@ -69,33 +56,37 @@ public class KillLogger extends Logger<KillLogger.KillConfig>
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
-    public void onEntityDamageEvent(EntityDamageEvent event)
+    public void onEntityDeath(EntityDeathEvent event)
     {
         if (event.getEntity() instanceof LivingEntity)
         {
             LivingEntity entity = (LivingEntity)event.getEntity();
-            if (entity.getHealth() - event.getDamage() <= 0)
+            EntityDamageEvent dmgEvent = entity.getLastDamageCause();
+
+            if (dmgEvent == null)
             {
-                if (event instanceof EntityDamageByEntityEvent)
+                System.out.println("No Damage but dead!?");
+                return;
+            }
+            if (dmgEvent instanceof EntityDamageByEntityEvent)
+            {
+                Entity damager = ((EntityDamageByEntityEvent)dmgEvent).getDamager();
+                if (dmgEvent.getCause().equals(DamageCause.PROJECTILE) && damager instanceof Projectile)
                 {
-                    Entity damager = ((EntityDamageByEntityEvent)event).getDamager();
-                    if (event.getCause().equals(DamageCause.PROJECTILE) && damager instanceof Projectile)
+                    if (((Projectile)damager).getShooter() != null)
                     {
-                        if (((Projectile)damager).getShooter() != null)
-                        {
-                            this.logKill(event.getCause(), ((Projectile)damager).getShooter(), event.getEntity(), event.getEntity().getLocation(this.helper));
-                        }
-                        // else Projectile shot by Dispenser ?
+                        this.logKill(dmgEvent.getCause(), ((Projectile)damager).getShooter(), event.getEntity(), event.getEntity().getLocation());
                     }
-                    else
-                    {
-                        this.logKill(event.getCause(), damager, event.getEntity(), event.getEntity().getLocation(this.helper));
-                    }
+                    // else Projectile shot by Dispenser ?
                 }
                 else
                 {
-                    this.logKill(event.getCause(), null, event.getEntity(), event.getEntity().getLocation(this.helper));
+                    this.logKill(dmgEvent.getCause(), damager, event.getEntity(), event.getEntity().getLocation());
                 }
+            }
+            else
+            {
+                this.logKill(dmgEvent.getCause(), null, event.getEntity(), event.getEntity().getLocation());
             }
         }
     }

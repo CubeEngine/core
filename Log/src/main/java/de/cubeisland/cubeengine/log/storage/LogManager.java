@@ -161,50 +161,6 @@ public class LogManager
                     .cols("key", "item", "data", "name", "amount", "containerType")
                     .end().end();
             this.database.storeStatement(this.getClass(), "storeChestLogs", sql);
-
-            /* //INSERTING 160k TESTOBJECTS
-             Location locc = new Location(Bukkit.getWorlds().get(0), 1, 1, 1);
-             String[] ar1 =
-             {
-             "alte", "Zeilen", "toll", ":)"
-             };
-             String[] ar2 =
-             {
-             "neue", "Zeilen", "besser", ":)"
-             };
-            
-             long a = System.currentTimeMillis();
-             database.getConnection().setAutoCommit(false);
-             for (int j = 1; j < 50; j++)
-             {
-             for (int i = 1; i < 2000; i++)
-             {
-             this.logSignLog(1, locc, ar1, ar2);
-             }
-             database.getConnection().commit();
-             System.out.println(j*2000);
-             }
-             database.getConnection().commit();
-             database.getConnection().setAutoCommit(true);
-             System.out.println((System.currentTimeMillis() - a) / 1000 + "sec");
-             Bukkit.shutdown();
-             //*/
-            /*//TEST FOR querybuilding:
-             this.getBlockLogs(
-             Bukkit.getWorlds().get(0),
-             new Location(null, -1000, 0, -1000),
-             new Location(null, 1000, 120, 1000),
-             new Integer[]
-             {
-             1, 2
-             }, new Long[]
-             {
-             }, new BlockData[]
-             {
-             },
-             new Timestamp(System.currentTimeMillis() - 50000),
-             new Timestamp(System.currentTimeMillis()));
-             //*/
         }
         catch (SQLException ex)
         {
@@ -224,7 +180,7 @@ public class LogManager
                     }
                 });
             }
-        }, 20 * 5, 20 * 5);
+        }, 20, 20);
     }
 
     private Queue<QueuedLog> queuedLogs = new ConcurrentLinkedQueue<QueuedLog>();
@@ -247,19 +203,7 @@ public class LogManager
         log.addMainLogData(current, world_id, x, y, z, action, causer);
 
         this.queuedLogs.offer(log);
-        //System.out.print("Added Log: " + this.queuedLogs.size());
-
-        if (this.queuedLogs.size() % logBuffer == 0)
-        {
-            this.taskQueue.addTask(new Runnable()
-            {
-                @Override
-                public void run()
-                {
-                    doEmptyLogs(logBuffer);
-                }
-            });
-        }
+        System.out.println("Added Log-Type-"+ action+": "+ this.queuedLogs.size());
     }
 
     private volatile boolean running = false;
@@ -553,8 +497,7 @@ public class LogManager
     public void logChatLog(final long causerId, final Location location, final String message, final boolean isChat)
     {
         final Timestamp timestamp = new Timestamp(System.currentTimeMillis());
-        this.storeLog(location == null ? null : location.getWorld(), location, isChat ? CHAT : COMMAND, causerId, timestamp, new QueuedLog()
-        {
+        this.storeLog(location == null ? null : location.getWorld(), location, isChat ? CHAT : COMMAND, causerId, timestamp, new QueuedLog() {
             @Override
             public void run()
             {
@@ -619,7 +562,7 @@ public class LogManager
             Integer[] actions,//blocks only
             Long[] causers, boolean exludeCausers,
             BlockData[] blockdatas, boolean exludeDatas,
-            String text, boolean excludeText, //signs only            
+            String text, boolean excludeText, //signs only
             Timestamp fromDate, Timestamp toDate)
     {
         boolean hasSign = false;
