@@ -1,34 +1,34 @@
 package de.cubeisland.cubeengine.log.storage;
 
+import de.cubeisland.cubeengine.core.config.node.Node;
+import de.cubeisland.cubeengine.core.config.node.StringNode;
 import de.cubeisland.cubeengine.core.util.convert.ConversionException;
+import de.cubeisland.cubeengine.core.util.convert.Convert;
 import de.cubeisland.cubeengine.core.util.convert.Converter;
 
 public class ItemDataConverter implements Converter<ItemData>
 {
     @Override
-    public Object toNode(ItemData object) throws ConversionException
+    public Node toNode(ItemData object) throws ConversionException
     {
-        return this.toString(object);
+        if (object.data == 0)
+        {
+            return Convert.wrapIntoNode(String.valueOf(object.mat));
+        }
+        return Convert.wrapIntoNode(object.mat + ":" + object.data);
     }
 
     @Override
-    public ItemData fromObject(Object object) throws ConversionException
+    public ItemData fromNode(Node node) throws ConversionException
     {
-        if (object instanceof String)
+        if (node instanceof StringNode)
         {
-            return fromString((String)object);
+            return fromString(node.unwrap());
         }
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
-    public String toString(ItemData object)
-    {
-        if (object.data == 0)
-        {
-            return String.valueOf(object.mat);
-        }
-        return object.mat + ":" + object.data;
-    }
+
 
     public ItemData fromString(String string) throws ConversionException
     {

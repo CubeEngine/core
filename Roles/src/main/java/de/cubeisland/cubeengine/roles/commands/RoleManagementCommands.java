@@ -4,6 +4,7 @@ import de.cubeisland.cubeengine.core.command.CommandContext;
 import de.cubeisland.cubeengine.core.command.annotation.Command;
 import de.cubeisland.cubeengine.core.command.annotation.Flag;
 import de.cubeisland.cubeengine.core.command.annotation.Param;
+import de.cubeisland.cubeengine.core.config.node.StringNode;
 import de.cubeisland.cubeengine.core.util.convert.ConversionException;
 import de.cubeisland.cubeengine.core.util.convert.Convert;
 import de.cubeisland.cubeengine.core.util.convert.Converter;
@@ -319,7 +320,7 @@ public class RoleManagementCommands extends RoleCommandHelper
         Priority priority;
         try
         {
-            priority = converter.fromObject(context.getString(1));
+            priority = converter.fromNode(new StringNode(context.getString(1)));
             provider.setRolePriority(role, priority);
             if (global)
             {

@@ -1,11 +1,16 @@
 package de.cubeisland.cubeengine.roles.role.config;
 
 import de.cubeisland.cubeengine.core.CubeEngine;
+import de.cubeisland.cubeengine.core.config.node.ListNode;
+import de.cubeisland.cubeengine.core.config.node.MapNode;
+import de.cubeisland.cubeengine.core.config.node.Node;
 import de.cubeisland.cubeengine.core.util.convert.ConversionException;
+import de.cubeisland.cubeengine.core.util.convert.Convert;
 import de.cubeisland.cubeengine.core.util.convert.Converter;
 import de.cubeisland.cubeengine.roles.Roles;
+
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -19,10 +24,10 @@ public class RoleMirrorConverter implements Converter<RoleMirror>
     }
 
     @Override
-    public Object toNode(RoleMirror object) throws ConversionException
+    public Node toNode(RoleMirror object) throws ConversionException
     {
-        Map<String, List<Map<String, List<String>>>> result = new HashMap<String, List<Map<String, List<String>>>>();
-        List<Map<String, List<String>>> worlds = new ArrayList<Map<String, List<String>>>();
+        Map<String, Map<String, List<String>>> result = new LinkedHashMap<String, Map<String, List<String>>>();
+        Map<String, List<String>> worlds = new LinkedHashMap<String, List<String>>();
         result.put(object.mainWorld, worlds);
         for (long worldId : object.getWorlds().keys())
         {
@@ -32,9 +37,7 @@ public class RoleMirrorConverter implements Converter<RoleMirror>
             {
                 continue;
             }
-            Map<String, List<String>> world = new HashMap<String, List<String>>();
-            worlds.add(world);
-            world.put(worldName, values);
+            worlds.put(worldName, values);
             if (object.getWorlds().get(worldId).getLeft())
             {
                 values.add("roles");
@@ -44,37 +47,45 @@ public class RoleMirrorConverter implements Converter<RoleMirror>
                 values.add("users");
             }
         }
-        return result;
+        return Convert.wrapIntoNode(result); //TODO check if this works
     }
 
     @Override
     @SuppressWarnings("unchecked")
-    public RoleMirror fromObject(Object object) throws ConversionException
+    public RoleMirror fromNode(Node node) throws ConversionException
     {
-        Map<String, List<Map<String, List<String>>>> read = (Map<String, List<Map<String, List<String>>>>)object;
+        //TODO rework this
+        MapNode read = (MapNode)node;
+        //Map<String, List<Map<String, List<String>>>> read = (Map<String, List<Map<String, List<String>>>>)object;
         if (read.isEmpty())
         {
             return null;
         }
-        String mainworld = read.keySet().iterator().next();
+        String mainworld = read.getMappedNodes().keySet().iterator().next();
         RoleMirror mirror = new RoleMirror(this.module, mainworld);
-        if (read.get(mainworld) != null)
+        MapNode worldsNode = (MapNode)read.getMappedNodes().get(mainworld);
+        for (Map.Entry<String,Node> worlds : worldsNode.getMappedNodes().entrySet())
         {
-            for (Map<String, List<String>> world : read.get(mainworld))
+            MapNode world = ((MapNode)worlds.getValue());
+            if (world.isEmpty())
             {
-                if (world.isEmpty())
-                {
-                    continue;
-                }
-                String worldName = world.keySet().iterator().next();
-                if (world.get(worldName) == null)
-                {
-                    continue;
-                }
-                boolean roles = world.get(worldName).contains("roles");
-                boolean users = world.get(worldName).contains("users");
-                mirror.setWorld(worldName, roles, users);
+                continue;
             }
+            String worldName = worlds.getKey();
+            ListNode list = (ListNode)worlds.getValue();
+            boolean roles = false;
+            boolean users = false;
+            for (Node inList : list.getListedNodes())
+            {
+                if (inList.unwrap().equals("roles"))
+                {
+                    roles =  true;
+                }else if (inList.unwrap().equals("users"))
+                {
+                    users =  true;
+                }
+            }
+            mirror.setWorld(worldName, roles, users);
         }
         return mirror;
     }
