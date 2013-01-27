@@ -15,18 +15,14 @@ public class ShortConverter extends BasicConverter<Short>
         {
             return ((ShortNode)node).getValue();
         }
-        else if (node instanceof StringNode)
+        String s = node.unwrap();
+        try
         {
-            String s = ((StringNode) node).getValue();
-            try
-            {
-                return Short.parseShort(s.toString());
-            }
-            catch (NumberFormatException e)
-            {
-                throw new ConversionException(e);
-            }
+            return Short.parseShort(s);
         }
-        throw  new ConversionException("Invalid Node!"+ node.getClass());
+        catch (NumberFormatException e)
+        {
+            throw  new ConversionException("Invalid Node!"+ node.getClass(), e);
+        }
     }
 }

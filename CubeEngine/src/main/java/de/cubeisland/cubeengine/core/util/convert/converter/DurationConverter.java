@@ -19,10 +19,6 @@ public class DurationConverter implements Converter<Duration>
     @Override
     public Duration fromNode(Node node) throws ConversionException
     {
-        if (node instanceof StringNode)
-        {
-            return new Duration(((StringNode) node).getValue());
-        }
-        throw  new ConversionException("Invalid Node!"+ node.getClass());
+        return new Duration(node.unwrap());
     }
 }

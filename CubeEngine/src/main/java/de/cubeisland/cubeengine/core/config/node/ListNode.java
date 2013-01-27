@@ -8,7 +8,7 @@ public class ListNode extends ParentNode{
 
     private ArrayList<Node> listedNodes = new ArrayList<Node>();
     public ListNode(Iterable list) {
-        if (list == null)
+        if (list != null)
         {
             for (Object object : list)
             {
@@ -20,7 +20,7 @@ public class ListNode extends ParentNode{
     }
 
     public ListNode(Object[] array) {
-        if (array == null)
+        if (array != null)
         {
             for (Object object : array)
             {

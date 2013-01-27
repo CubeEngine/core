@@ -79,130 +79,87 @@ public class YamlCodec extends ConfigurationCodec
     {
         StringBuilder sb = new StringBuilder();
         String offset = this.offset(off);
-        if (value instanceof MapNode)
+        if (! (value instanceof NullNode)) // null-Node ?
         {
-            if (!inCollection) //do not append offset when converting a value in a list
+            if (value instanceof StringNode) // String-Node ?
             {
-                sb.append(offset);
-            }
-            Map<String,Node> map = ((MapNode)value).getMappedNodes();
-            for (Entry<String,Node> entry : map.entrySet())
-            {
-                sb.append(entry.getKey()).append(":");
-                if (entry.getValue() instanceof NullNode)
+                String string = ((StringNode)value).getValue();
+                if (this.needsQuote(string))
                 {
-                    sb.append(" ");
+                    sb.append(QUOTE).append(string).append(QUOTE);
                 }
                 else
                 {
-                    if (value instanceof MapNode)
+                    sb.append(string);
+                }
+            }
+            else if (value instanceof MapNode) // Map-Node ? -> redirect
+            {
+                first = true;
+                sb.append(LINE_BREAK).append(this.convertMap(container,((MapNode)value), off + 1, inCollection));
+                return sb.toString();
+            }
+            else  if (value instanceof ListNode) // List-Node? -> list the nodes
+            {
+                if (((ListNode)value).isEmpty())
+                {
+                    return sb.append("[]").append(LINE_BREAK).toString();
+                }
+                for (Node listedNode : ((ListNode)value).getListedNodes()) //Convert Collection
+                {
+                    sb.append(LINE_BREAK).append(offset).append(OFFSET).append("- ");
+                    if (listedNode instanceof MapNode)
                     {
-                        sb.append(LINE_BREAK);
-                        sb.append(this.convertMap(container,entry.getValue(), off + 1, inCollection));
-                        return sb.toString();
+                        first = true;
+                        sb.append(this.convertMap(container, (MapNode)listedNode, off + 2, true));
                     }
                     else
                     {
-                        if (value instanceof StringNode)
-                        {
-                            sb.append(" ");
-                            String string = ((StringNode)value).getValue();
-                            if (this.needsQuote(string))
-                            {
-                                sb.append(QUOTE).append(string).append(QUOTE);
-                            }
-                            else
-                            {
-                                sb.append(value.toString());
-                            }
-                        }
-                        else
-                        {
-                            if (value instanceof ListNode)
-                            {
-                                if (((ListNode)value).isEmpty())
-                                {
-                                    return sb.append(" []").append(LINE_BREAK).toString();
-                                }
-                                for (Node listedNode : ((ListNode)value).getListedNodes()) //Convert Collection
-                                {
-                                    sb.append(LINE_BREAK).append(offset).append("- ");
-                                    if (listedNode instanceof StringNode)
-                                    {
-                                        String string = ((StringNode)value).getPath(PATH_SEPARATOR);
-                                        if (this.needsQuote(string))
-                                        {
-                                            sb.append(QUOTE).append(string).append(QUOTE);
-                                        }
-                                        else
-                                        {
-                                            sb.append(string);
-                                        }
-                                    }
-                                    else if (listedNode instanceof MapNode)
-                                    {
-                                        sb.append(this.convertMap(container, listedNode, off + 1, true));
-                                    }
-                                    else
-                                    {
-                                        sb.append(listedNode.unwrap());
-                                    }
-                                }
-                            }
-                            else
-                            {
-                                sb.append(" ").append(value.unwrap());
-                            }
-                        }
+                        sb.append(this.convertValue(container, listedNode, off +1, true));
                     }
                 }
             }
-            if (!inCollection && !sb.toString().endsWith(LINE_BREAK + LINE_BREAK)) // if in collection the collection will append its linebreak
-            {
-                sb.append(LINE_BREAK);
+            else
+                {
+                    sb.append(" ").append(value.unwrap());
             }
-            this.first = false;
-            return sb.toString();
         }
-        else
-        {
-            throw new IllegalStateException("Error Something went wrong!");
-        }
+        this.first = false;
+        return sb.toString();
     }
 
     @Override
-    public String convertMap(CodecContainer container, Node values, int off, boolean inCollection)
+    public String convertMap(CodecContainer container, MapNode values, int off, boolean inCollection)
     {
         StringBuilder sb = new StringBuilder();
-        if (values instanceof MapNode)
+        Map<String,Node> map = values.getMappedNodes();
+        if (map.isEmpty())
         {
-            Map<String,Node> map = ((MapNode)values).getMappedNodes();
-            if (map.isEmpty())
+            return sb.append(this.offset(off)).append("{}").append(LINE_BREAK).toString();
+        }
+        for (Entry<String,Node> entry : map.entrySet())
+        {
+            String path = entry.getValue().getPath(PATH_SEPARATOR);
+            String comment = this.buildComment(container, path, off);
+            if (!comment.isEmpty())
             {
-                return sb.append(this.offset(off)).append("{}").append(LINE_BREAK).toString();
-            }
-            for (Entry<String,Node> entry : map.entrySet())
-            {
-                String path = entry.getValue().getPath(PATH_SEPARATOR);
-                String comment = this.buildComment(container, path, off);
-                if (!comment.isEmpty())
+                if (!first && !sb.toString().endsWith(LINE_BREAK + LINE_BREAK)) // if not already one line free
                 {
-                    if (!sb.toString().endsWith(LINE_BREAK + LINE_BREAK)) // if not already one line free
-                    {
-                        sb.append(LINE_BREAK); // add free line before comment
-                    }
-                    sb.append(comment);
+                    sb.append(LINE_BREAK); // add free line before comment
                 }
-                sb.append(this.convertValue(container, entry.getValue(), off, inCollection));
+                sb.append(comment);
+                first = false;
             }
-            if (!sb.toString().endsWith(LINE_BREAK + LINE_BREAK))
+            if (!(first && inCollection))
+            {
+                sb.append(this.offset(off)); // Map in collection first does not get offset
+            }
+            sb.append(values.getOriginalKey(Node.getSubKey(path, PATH_SEPARATOR))).append(": ");
+            sb.append(this.convertValue(container, entry.getValue(), off, inCollection));
+            if (!sb.toString().endsWith(LINE_BREAK+LINE_BREAK))
             {
                 sb.append(LINE_BREAK);
             }
-        }
-        else
-        {
-            throw new IllegalStateException("Error Something went wrong!");
         }
         first = true;
         return sb.toString();
@@ -219,10 +176,6 @@ public class YamlCodec extends ConfigurationCodec
         String offset = this.offset(off);
         comment = comment.replace(LINE_BREAK, LINE_BREAK + offset + COMMENT_PREFIX); // multi line
         comment = offset + COMMENT_PREFIX + comment + LINE_BREAK;
-        if (this.first)
-        {
-            this.first = false;
-        }
         return comment;
     }
 

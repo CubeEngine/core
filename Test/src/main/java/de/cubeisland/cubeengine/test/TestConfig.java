@@ -134,32 +134,4 @@ public class TestConfig extends Configuration
             this.put("keks", intmap);
         }
     };
-    @Option("subconfig")
-    public TestSubConfig subConfig = new TestSubConfig();
-
-    public class TestSubConfig extends Configuration
-    {
-        @Option("sub.int")
-        @Comment("SubMapComment1")
-        public int subInt = 1;
-        @Option("sub.doub")
-        public double subdoub = 2.3;
-        @Option("sub.string")
-        public String substri = "nothin";
-        @Option("subsubconfig")
-        public TestSubSubConfig suboptimaleConfig = new TestSubSubConfig();
-
-        public class TestSubSubConfig extends Configuration
-        {
-            @Comment("SubMapComment2")
-            @Option("sub.int")
-            public int subInt = 1;
-            @Option("sub.doub")
-            public double subdoub = 2.3;
-            @Option("sub.string")
-            public String substri = "something";
-            @Option("offlineplayer")
-            public String offlineplayer = "noplayer";
-        }
-    }
 }

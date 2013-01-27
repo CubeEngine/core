@@ -50,7 +50,7 @@ public abstract class ParentNode extends Node{
             String basePath = this.getBasePath(path,pathSeparator);
             String subPath = this.getSubPath(path,pathSeparator);
             Node baseNode = this.getNodeAt(basePath,pathSeparator);
-            if (baseNode == null) // node not found -> create new node
+            if (baseNode instanceof NullNode) // node not found -> create new node
             {
                 if (subPath.startsWith("[")) //  baseNode is a List!
                 {
@@ -62,7 +62,8 @@ public abstract class ParentNode extends Node{
                 }
                 baseNode.setParentNode(this);
                 this.setExactNode(basePath, baseNode);
-            }else if (!(baseNode instanceof ParentNode))
+            }
+            else if (!(baseNode instanceof ParentNode))
             {
                 throw new IllegalArgumentException("Could not resolve path ("+path+") for "+ baseNode);
             }

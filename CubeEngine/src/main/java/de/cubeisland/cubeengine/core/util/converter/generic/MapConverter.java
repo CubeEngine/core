@@ -66,7 +66,7 @@ public class MapConverter
                 S result = (S)getMapFor(ptype);
                     for (Map.Entry<String, Node> entry : mapNode.getMappedNodes().entrySet())
                     {
-                        StringNode keyNode = new StringNode(entry.getKey());
+                        StringNode keyNode = new StringNode(mapNode.getOriginalKey(entry.getKey())); // preserve Casing in Key
                         K newKey = Convert.fromNode(keyNode, keyType);
                         V newVal = Convert.fromNode(entry.getValue(),valType);
                         result.put(newKey, newVal);

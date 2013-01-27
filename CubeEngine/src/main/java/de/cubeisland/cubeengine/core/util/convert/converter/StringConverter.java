@@ -14,6 +14,6 @@ public class StringConverter extends BasicConverter<String>
         {
             return ((StringNode) node).getValue();
         }
-        throw  new ConversionException("Invalid Node!"+ node.getClass());
+        return node.unwrap();
     }
 }

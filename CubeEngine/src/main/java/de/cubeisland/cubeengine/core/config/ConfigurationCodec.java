@@ -133,7 +133,7 @@ public abstract class ConfigurationCodec
      * @param inCollection
      * @return  the serialized value
      */
-    public abstract String convertMap(CodecContainer container, Node values, int off, boolean inCollection);
+    public abstract String convertMap(CodecContainer container, MapNode values, int off, boolean inCollection);
 
     /**
      * Serializes a single value
@@ -259,7 +259,7 @@ public abstract class ConfigurationCodec
                                 if (Collection.class.isAssignableFrom((Class)pType.getRawType()))
                                 {
                                     Type subType1 = pType.getActualTypeArguments()[0];
-                                    if (Configuration.class.isAssignableFrom((Class)subType1)) // is Collection of Configuration
+                                    if (subType1 instanceof Class && Configuration.class.isAssignableFrom((Class)subType1)) // is Collection of Configuration
                                     {
                                         if (fieldNode instanceof ListNode)
                                         {
@@ -305,7 +305,7 @@ public abstract class ConfigurationCodec
                                 else if (Map.class.isAssignableFrom((Class)pType.getRawType()))
                                 {
                                     Type subType2 = pType.getActualTypeArguments()[1];
-                                    if (Configuration.class.isAssignableFrom((Class)subType2))  // is Map of Configuration
+                                    if (subType2 instanceof Class && Configuration.class.isAssignableFrom((Class)subType2))  // is Map of Configuration
                                     {
                                         if (fieldNode instanceof MapNode)
                                         {
@@ -544,7 +544,7 @@ public abstract class ConfigurationCodec
                                 if (Collection.class.isAssignableFrom((Class)pType.getRawType()))
                                 {
                                     Type subType1 = pType.getActualTypeArguments()[0];
-                                    if (Configuration.class.isAssignableFrom((Class)subType1)) // is Collection of Configuration
+                                    if (subType1  instanceof  Class && Configuration.class.isAssignableFrom((Class)subType1)) // is Collection of Configuration
                                     {
                                         ListNode listNode = ListNode.emptyList();
                                         baseNode.setNodeAt(path,PATH_SEPARATOR,listNode);
@@ -568,7 +568,7 @@ public abstract class ConfigurationCodec
                                 else if (Map.class.isAssignableFrom((Class)pType.getRawType()))
                                 {
                                     Type subType2 = pType.getActualTypeArguments()[1];
-                                    if (Configuration.class.isAssignableFrom((Class)subType2))  // is Map of Configuration
+                                    if (subType2 instanceof Class && Configuration.class.isAssignableFrom((Class)subType2))  // is Map of Configuration
                                     {
                                         MapNode mapNode = MapNode.emptyMap();
                                         baseNode.setNodeAt(path,PATH_SEPARATOR,mapNode);

@@ -14,6 +14,7 @@ public class RoleMirror
 
     public RoleMirror(Roles module, String mainWorld)
     {
+        this.module = module;
         this.mainWorld = mainWorld;
         Long worldId = CubeEngine.getCore().getWorldManager().getWorldId(mainWorld);
         if (worldId == null)

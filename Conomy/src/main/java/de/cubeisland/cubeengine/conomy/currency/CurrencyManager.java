@@ -47,6 +47,7 @@ public class CurrencyManager
                     if (relatedCurrency == null)
                     {
                         module.getLogger().warning("Unknown currency in relations! " + relation.getKey());
+                        continue;
                     }
                     currency.addConversionRate(relatedCurrency, relation.getValue());
                     relatedCurrency.addConversionRate(currency, 1 / relation.getValue());

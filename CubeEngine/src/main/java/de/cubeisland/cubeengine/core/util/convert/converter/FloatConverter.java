@@ -15,18 +15,14 @@ public class FloatConverter extends BasicConverter<Float>
         {
             return ((FloatNode)node).getValue();
         }
-        else if (node instanceof StringNode)
+        String s = node.unwrap();
+        try
         {
-            String s = ((StringNode) node).getValue();
-            try
-            {
-                return Float.parseFloat(s.toString());
-            }
-            catch (NumberFormatException e)
-            {
-                throw new ConversionException(e);
-            }
+            return Float.parseFloat(s);
         }
-        throw  new ConversionException("Invalid Node!"+ node.getClass());
+        catch (NumberFormatException e)
+        {
+            throw  new ConversionException("Invalid Node!"+ node.getClass(), e);
+        }
     }
 }

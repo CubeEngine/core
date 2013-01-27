@@ -22,4 +22,9 @@ public class StringNode extends Node {
     public String unwrap() {
         return value;
     }
+
+    public static StringNode of(String string)
+    {
+        return new StringNode(string);
+    }
 }

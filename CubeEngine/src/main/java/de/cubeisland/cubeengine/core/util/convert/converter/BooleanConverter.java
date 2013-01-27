@@ -2,7 +2,6 @@ package de.cubeisland.cubeengine.core.util.convert.converter;
 
 import de.cubeisland.cubeengine.core.config.node.BooleanNode;
 import de.cubeisland.cubeengine.core.config.node.Node;
-import de.cubeisland.cubeengine.core.config.node.StringNode;
 import de.cubeisland.cubeengine.core.util.convert.BasicConverter;
 import de.cubeisland.cubeengine.core.util.convert.ConversionException;
 
@@ -15,9 +14,9 @@ public class BooleanConverter extends BasicConverter<Boolean>
         {
             return ((BooleanNode)node).getValue();
         }
-        else if (node instanceof StringNode)
+        String s = node.unwrap();
+        try
         {
-            String s = ((StringNode) node).getValue();
             if (s.equalsIgnoreCase("true") || s.equalsIgnoreCase("on") || s.equalsIgnoreCase("yes") || s.equalsIgnoreCase("1"))
             {
                 return true;
@@ -31,6 +30,9 @@ public class BooleanConverter extends BasicConverter<Boolean>
                 return null;
             }
         }
-        throw  new ConversionException("Invalid Node!"+ node.getClass());
+        catch (NumberFormatException e)
+        {
+            throw  new ConversionException("Invalid Node!"+ node.getClass(), e);
+        }
     }
 }

@@ -24,7 +24,7 @@ public class CurrencyConfigurationConverter implements Converter<CurrencyConfigu
         }
         currency.setNode(new StringNode("sub-currencies"), subCurrencies);
         MapNode firstSub = (MapNode)subCurrencies.getMappedNodes().entrySet().iterator().next().getValue();
-        firstSub.removeNode("value", null);
+        firstSub.removeNode("value", ":");
         MapNode format =  MapNode.emptyMap();
         currency.setNode(new StringNode("formatting"), format);
         format.setNode(new StringNode("long"), new StringNode(object.formatLong));

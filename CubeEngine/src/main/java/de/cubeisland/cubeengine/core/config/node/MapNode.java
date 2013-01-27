@@ -26,19 +26,10 @@ public class MapNode extends ParentNode {
         {
             for (Map.Entry<Object,Object> entry : map.entrySet())
             {
-                String key = entry.getKey().toString().trim().toLowerCase();
-                if (this.mappedNodes.containsKey(key))
-                {
-                    CubeEngine.getLogger().warning("Duplicate key-mapping for: "+key);
-                }
-                if (key.isEmpty())
-                {
-                    CubeEngine.getLogger().warning("Empty key-mapping!");
-                }
-                this.keys.put(key,entry.getKey().toString());
+
                 Node node = Convert.wrapIntoNode(entry.getValue());
                 node.setParentNode(this);
-                this.setExactNode(key,node);
+                this.setExactNode(entry.getKey().toString(), node);
             }
         }
     }
@@ -65,7 +56,12 @@ public class MapNode extends ParentNode {
     @Override
     protected Node setExactNode(String key, Node node) {
         String loweredKey = key.trim().toLowerCase();
+        if (loweredKey.isEmpty())
+        {
+            CubeEngine.getLogger().warning("Empty key-mapping!");
+        }
         this.keys.put(loweredKey, key);
+        node.setParentNode(this);
         this.reverseMappedNodes.put(node,loweredKey);
         return this.mappedNodes.put(loweredKey ,node);
     }
