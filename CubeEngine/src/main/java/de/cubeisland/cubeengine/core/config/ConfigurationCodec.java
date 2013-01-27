@@ -454,7 +454,7 @@ public abstract class ConfigurationCodec
         {
             if (parentContainer == null)
             {
-                this.comments.put(commentPath, comment);
+                this.comments.put(commentPath.toLowerCase(), comment);
             }
             else
             {
@@ -495,7 +495,7 @@ public abstract class ConfigurationCodec
                 MapComment[] mapComments = configClass.getAnnotation(MapComments.class).value();
                 for (MapComment comment : mapComments)
                 {
-                    this.addComment(comment.path(), comment.text());
+                    this.addComment(comment.path().replace(".", PATH_SEPARATOR), comment.text());
                 }
             }
             boolean advanced = true;
@@ -556,12 +556,12 @@ public abstract class ConfigurationCodec
                                     baseNode.setNodeAt(path,PATH_SEPARATOR,listNode);
                                     if (parentConfig == null) // No parent given: iterate through given configs & load them
                                     {
+                                        int pos = 0;
                                         for (Configuration subConfig : (Collection<Configuration>) fieldValue)
                                         {
                                             MapNode configNode = MapNode.emptyMap();
                                             listNode.addNode(configNode);
-                                            //TODO adjust path how to make a path into a collection???
-                                            new CodecContainer(this, path).fillFromFields(null,subConfig,configNode);
+                                            new CodecContainer(this, path + PATH_SEPARATOR + "["+pos++).fillFromFields(null,subConfig,configNode);
                                         }
                                     }
                                     else // Parent given: NOT ALLOWED
@@ -589,7 +589,7 @@ public abstract class ConfigurationCodec
                                             {
                                                 MapNode configNode = MapNode.emptyMap();
                                                 mapNode.setNode((StringNode) keyNode, configNode);
-                                                new CodecContainer(this,((StringNode) keyNode).getValue() + PATH_SEPARATOR + path)
+                                                new CodecContainer(this,path + PATH_SEPARATOR + ((StringNode) keyNode).getValue())
                                                         .fillFromFields(null, entry.getValue(), configNode);
                                             }
                                             else
@@ -610,7 +610,7 @@ public abstract class ConfigurationCodec
                                             {
                                                 MapNode configNode = MapNode.emptyMap();
                                                 mapNode.setNode((StringNode) keyNode, configNode);
-                                                new CodecContainer(this,((StringNode) keyNode).getValue() + PATH_SEPARATOR + path)
+                                                new CodecContainer(this,path + PATH_SEPARATOR +((StringNode) keyNode).getValue())
                                                         .fillFromFields(parentEntry.getValue(), childFieldMap.get(parentEntry.getKey()), configNode);
                                             }
                                             else
