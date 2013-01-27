@@ -1,5 +1,7 @@
 package de.cubeisland.cubeengine.core.util.converter.generic;
 
+import de.cubeisland.cubeengine.core.config.node.ListNode;
+import de.cubeisland.cubeengine.core.config.node.Node;
 import de.cubeisland.cubeengine.core.util.convert.ConversionException;
 import de.cubeisland.cubeengine.core.util.convert.Convert;
 import java.lang.reflect.Array;
@@ -8,40 +10,33 @@ import java.util.LinkedList;
 
 public class ArrayConverter
 {
-    public Object toObject(Object[] array) throws ConversionException
+    public ListNode toNode(Object[] array) throws ConversionException
     {
-        Collection<Object> result = new LinkedList<Object>();
+        ListNode result = ListNode.emptyList();
         if (array.length == 0)
         {
             return result;
         }
         for (Object value : array)
         {
-            result.add(Convert.toObject(value));
+            result.addNode(Convert.toNode(value));
         }
         return result;
     }
 
     @SuppressWarnings("unchecked")
-    public <V> V[] fromObject(Class<V[]> arrayType, Object object) throws ConversionException
+    public <V> V[] fromNode(Class<V[]> arrayType, ListNode listNode) throws ConversionException
     {
         Class<V> valueType = (Class<V>)arrayType.getComponentType();
         try
         {
             Collection<V> result = new LinkedList<V>();
-            if (object instanceof Collection)
+            for (Node node : listNode.getListedNodes())
             {
-                for (Object o : (Collection)object)
-                {
-                    V value = Convert.fromObject(valueType, o);
-                    result.add(value);
-                }
-                return result.toArray((V[])Array.newInstance((Class)valueType, result.size()));
+                V value = Convert.fromNode(node,valueType);
+                result.add(value);
             }
-            else
-            {
-                throw new IllegalStateException("Array-conversion failed: Cannot convert not a collection to an array.");
-            }
+            return result.toArray((V[])Array.newInstance((Class)valueType, result.size()));
         }
         catch (ConversionException ex)
         {

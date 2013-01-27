@@ -1,6 +1,9 @@
 package de.cubeisland.cubeengine.core.util.convert.converter;
 
+import de.cubeisland.cubeengine.core.config.node.Node;
+import de.cubeisland.cubeengine.core.config.node.StringNode;
 import de.cubeisland.cubeengine.core.util.convert.ConversionException;
+import de.cubeisland.cubeengine.core.util.convert.Convert;
 import de.cubeisland.cubeengine.core.util.convert.Converter;
 import de.cubeisland.cubeengine.core.util.matcher.MaterialMatcher;
 import org.bukkit.inventory.ItemStack;
@@ -8,22 +11,18 @@ import org.bukkit.inventory.ItemStack;
 public class ItemStackConverter implements Converter<ItemStack>
 {
     @Override
-    public Object toObject(ItemStack object) throws ConversionException
+    public Node toNode(ItemStack object) throws ConversionException
     {
-        return object.getType().getId() + ":" + object.getDurability();
+        return Convert.wrapIntoNode(object.getType().getId() + ":" + object.getDurability());
     }
 
     @Override
-    public ItemStack fromObject(Object object) throws ConversionException
+    public ItemStack fromNode(Node node) throws ConversionException
     {
-        if (object instanceof ItemStack)
+        if (node instanceof StringNode)
         {
-            return (ItemStack)object;
+            return MaterialMatcher.get().matchItemStack(((StringNode) node).getValue());
         }
-        else if (object instanceof String)
-        {
-            return MaterialMatcher.get().matchItemStack(object.toString());
-        }
-        throw new ConversionException("Could not convert to ItemStack!");
+        throw  new ConversionException("Invalid Node!"+ node.getClass());
     }
 }

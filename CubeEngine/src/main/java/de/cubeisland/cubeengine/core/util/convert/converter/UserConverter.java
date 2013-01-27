@@ -1,35 +1,28 @@
 package de.cubeisland.cubeengine.core.util.convert.converter;
 
 import de.cubeisland.cubeengine.core.CubeEngine;
+import de.cubeisland.cubeengine.core.config.node.Node;
+import de.cubeisland.cubeengine.core.config.node.StringNode;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.util.convert.ConversionException;
+import de.cubeisland.cubeengine.core.util.convert.Convert;
 import de.cubeisland.cubeengine.core.util.convert.Converter;
-import org.bukkit.OfflinePlayer;
-import org.bukkit.command.CommandSender;
 
 public class UserConverter implements Converter<User>
 {
     @Override
-    public Object toObject(User object) throws ConversionException
+    public Node toNode(User user) throws ConversionException
     {
-        return object.getName();
+        return Convert.wrapIntoNode(user.getName());
     }
 
     @Override
-    public User fromObject(Object object) throws ConversionException
+    public User fromNode(Node node) throws ConversionException
     {
-        if (object instanceof OfflinePlayer)
+        if (node instanceof StringNode)
         {
-            return CubeEngine.getUserManager().getExactUser((OfflinePlayer)object);
+            return CubeEngine.getUserManager().findUser(((StringNode) node).getValue());
         }
-        if (object instanceof CommandSender)
-        {
-            return CubeEngine.getUserManager().getExactUser((CommandSender)object);
-        }
-        if (object instanceof String)
-        {
-            return CubeEngine.getUserManager().findUser(object.toString());
-        }
-        throw new ConversionException("Could not convert to User!");
+        throw  new ConversionException("Invalid Node!"+ node.getClass());
     }
 }

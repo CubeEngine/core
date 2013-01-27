@@ -1,8 +1,12 @@
 package de.cubeisland.cubeengine.core.util.convert.converter;
 
 import de.cubeisland.cubeengine.core.Core;
+import de.cubeisland.cubeengine.core.config.node.Node;
+import de.cubeisland.cubeengine.core.config.node.StringNode;
 import de.cubeisland.cubeengine.core.util.convert.ConversionException;
+import de.cubeisland.cubeengine.core.util.convert.Convert;
 import de.cubeisland.cubeengine.core.util.convert.Converter;
+import de.cubeisland.cubeengine.core.util.matcher.MaterialMatcher;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.Server;
 import org.bukkit.plugin.Plugin;
@@ -17,18 +21,18 @@ public class PlayerConverter implements Converter<OfflinePlayer>
     }
 
     @Override
-    public Object toObject(OfflinePlayer object)
+    public Node toNode(OfflinePlayer object)
     {
-        return object.getName();
+        return Convert.wrapIntoNode(object.getName());
     }
 
     @Override
-    public OfflinePlayer fromObject(Object object) throws ConversionException
+    public OfflinePlayer fromNode(Node node) throws ConversionException
     {
-        if (object instanceof String)
+        if (node instanceof StringNode)
         {
-            return this.server.getOfflinePlayer((String)object);
+            return this.server.getOfflinePlayer(((StringNode) node).getValue());
         }
-        throw new ConversionException("Could not convert to OfflinePlayer!");
+        throw  new ConversionException("Invalid Node!"+ node.getClass());
     }
 }

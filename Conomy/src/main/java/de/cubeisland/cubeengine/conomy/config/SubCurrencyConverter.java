@@ -1,5 +1,6 @@
 package de.cubeisland.cubeengine.conomy.config;
 
+import de.cubeisland.cubeengine.core.config.node.Node;
 import de.cubeisland.cubeengine.core.util.convert.ConversionException;
 import de.cubeisland.cubeengine.core.util.convert.Converter;
 import java.util.HashMap;
@@ -7,7 +8,7 @@ import java.util.HashMap;
 public class SubCurrencyConverter implements Converter<SubCurrencyConfig>
 {
     @Override
-    public Object toObject(SubCurrencyConfig object) throws ConversionException
+    public Node toNode(SubCurrencyConfig object) throws ConversionException
     {
         HashMap<String, Object> map = new HashMap<String, Object>();
         map.put("value", object.value);
@@ -16,7 +17,7 @@ public class SubCurrencyConverter implements Converter<SubCurrencyConfig>
     }
 
     @Override
-    public SubCurrencyConfig fromObject(Object object) throws ConversionException
+    public SubCurrencyConfig fromNode(Node node) throws ConversionException
     {
         try
         {

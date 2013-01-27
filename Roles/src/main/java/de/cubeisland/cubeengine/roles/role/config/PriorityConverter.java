@@ -6,7 +6,7 @@ import de.cubeisland.cubeengine.core.util.convert.Converter;
 public class PriorityConverter implements Converter<Priority>
 {
     @Override
-    public Object toObject(Priority object) throws ConversionException
+    public Object toNode(Priority object) throws ConversionException
     {
         return object.toString();
     }

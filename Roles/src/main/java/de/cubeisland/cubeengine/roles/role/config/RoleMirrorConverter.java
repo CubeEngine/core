@@ -19,7 +19,7 @@ public class RoleMirrorConverter implements Converter<RoleMirror>
     }
 
     @Override
-    public Object toObject(RoleMirror object) throws ConversionException
+    public Object toNode(RoleMirror object) throws ConversionException
     {
         Map<String, List<Map<String, List<String>>>> result = new HashMap<String, List<Map<String, List<String>>>>();
         List<Map<String, List<String>>> worlds = new ArrayList<Map<String, List<String>>>();

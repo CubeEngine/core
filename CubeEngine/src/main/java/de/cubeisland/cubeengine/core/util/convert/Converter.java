@@ -1,20 +1,22 @@
 package de.cubeisland.cubeengine.core.util.convert;
 
+import de.cubeisland.cubeengine.core.config.node.Node;
+
 public interface Converter<T extends Object>
 {
     /**
      * Converts this class to an serializable object
      *
      * @param object the fieldvalue
-     * @return the serialized fieldvalue
+     * @return the fieldvalue as node
      */
-    public Object toObject(T object) throws ConversionException;
+    public Node toNode(T object) throws ConversionException;
 
     /**
      * Converts the given object to this class
      *
-     * @param object the object to deserialize
+     * @param node the node to deserialize
      * @return the deserialized fieldvalue
      */
-    public T fromObject(Object object) throws ConversionException;
+    public T fromNode(Node node) throws ConversionException;
 }

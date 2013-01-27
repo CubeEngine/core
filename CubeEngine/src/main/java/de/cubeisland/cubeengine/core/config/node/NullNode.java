@@ -1,8 +1,16 @@
 package de.cubeisland.cubeengine.core.config.node;
 
 public class NullNode extends Node {
-    public static final NullNode INSTANCE = new NullNode();
-
     private NullNode() {
+    }
+
+    public static NullNode emptyNode()
+    {
+        return new NullNode();
+    }
+
+    @Override
+    public String unwrap() {
+        return "";
     }
 }

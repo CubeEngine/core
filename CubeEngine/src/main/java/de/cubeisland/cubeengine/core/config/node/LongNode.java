@@ -1,16 +1,18 @@
 package de.cubeisland.cubeengine.core.config.node;
 
-/**
- * Created with IntelliJ IDEA.
- * User: Anselm
- * Date: 26.01.13
- * Time: 23:28
- * To change this template use File | Settings | File Templates.
- */
 public class LongNode extends Node {
-    private long val;
+    private long value;
 
-    public LongNode(Long val) {
-        this.val = val;
+    public LongNode(Long value) {
+        this.value = value;
+    }
+
+    public long getValue() {
+        return value;
+    }
+
+    @Override
+    public String unwrap() {
+        return String.valueOf(value);
     }
 }

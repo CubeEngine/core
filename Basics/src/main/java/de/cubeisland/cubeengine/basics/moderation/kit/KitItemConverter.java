@@ -12,7 +12,7 @@ public class KitItemConverter implements Converter<KitItem>
     private static final Pattern pat = Pattern.compile("(?:([0-9]+)\\*)?([a-zA-Z0-9]+)(?::([0-9]+))?(?: (.+))?");
 
     @Override
-    public Object toObject(KitItem object) throws ConversionException
+    public Object toNode(KitItem object) throws ConversionException
     {
         return object.amount + "*" + object.mat.getId() + ":" + object.dura + (object.customName == null ? "" : " " + object.customName);
     }

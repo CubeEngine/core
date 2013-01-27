@@ -1,20 +1,32 @@
 package de.cubeisland.cubeengine.core.util.convert.converter;
 
+import de.cubeisland.cubeengine.core.config.node.Node;
+import de.cubeisland.cubeengine.core.config.node.ShortNode;
+import de.cubeisland.cubeengine.core.config.node.StringNode;
 import de.cubeisland.cubeengine.core.util.convert.BasicConverter;
 import de.cubeisland.cubeengine.core.util.convert.ConversionException;
 
 public class ShortConverter extends BasicConverter<Short>
 {
     @Override
-    public Short fromObject(Object object) throws ConversionException
+    public Short fromNode(Node node) throws ConversionException
     {
-        try
+        if (node instanceof ShortNode)
         {
-            return Short.parseShort(object.toString());
+            return ((ShortNode)node).getValue();
         }
-        catch (NumberFormatException e)
+        else if (node instanceof StringNode)
         {
-            throw new ConversionException(e);
+            String s = ((StringNode) node).getValue();
+            try
+            {
+                return Short.parseShort(s.toString());
+            }
+            catch (NumberFormatException e)
+            {
+                throw new ConversionException(e);
+            }
         }
+        throw  new ConversionException("Invalid Node!"+ node.getClass());
     }
 }

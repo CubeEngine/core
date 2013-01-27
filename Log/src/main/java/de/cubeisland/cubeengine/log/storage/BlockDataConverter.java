@@ -7,7 +7,7 @@ import org.bukkit.Material;
 public class BlockDataConverter implements Converter<BlockData>
 {
     @Override
-    public Object toObject(BlockData object) throws ConversionException
+    public Object toNode(BlockData object) throws ConversionException
     {
         return this.toString(object);
     }

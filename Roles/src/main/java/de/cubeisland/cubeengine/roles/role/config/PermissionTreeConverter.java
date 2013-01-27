@@ -7,7 +7,7 @@ import java.util.List;
 public class PermissionTreeConverter implements Converter<PermissionTree>
 {
     @Override
-    public Object toObject(PermissionTree object) throws ConversionException
+    public Object toNode(PermissionTree object) throws ConversionException
     {
         return object.convertToConfigObject();
     }

@@ -10,7 +10,7 @@ import java.util.Map;
 public class CurrencyConfigurationConverter implements Converter<CurrencyConfiguration>
 {
     @Override
-    public Object toObject(CurrencyConfiguration object) throws ConversionException
+    public Object toNode(CurrencyConfiguration object) throws ConversionException
     {
         LinkedHashMap<String, Object> currency = new LinkedHashMap<String, Object>();
         LinkedHashMap<String, Object> subCurrencies = new LinkedHashMap<String, Object>();

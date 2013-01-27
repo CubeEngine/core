@@ -6,7 +6,7 @@ import de.cubeisland.cubeengine.core.util.convert.Converter;
 public class ItemDataConverter implements Converter<ItemData>
 {
     @Override
-    public Object toObject(ItemData object) throws ConversionException
+    public Object toNode(ItemData object) throws ConversionException
     {
         return this.toString(object);
     }

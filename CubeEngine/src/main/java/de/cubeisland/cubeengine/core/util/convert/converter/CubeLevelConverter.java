@@ -1,6 +1,9 @@
 package de.cubeisland.cubeengine.core.util.convert.converter;
 
+import de.cubeisland.cubeengine.core.config.node.Node;
+import de.cubeisland.cubeengine.core.config.node.StringNode;
 import de.cubeisland.cubeengine.core.util.convert.ConversionException;
+import de.cubeisland.cubeengine.core.util.convert.Convert;
 import de.cubeisland.cubeengine.core.util.convert.Converter;
 import de.cubeisland.cubeengine.core.util.log.CubeLevel;
 import de.cubeisland.cubeengine.core.util.log.LogLevel;
@@ -8,19 +11,23 @@ import de.cubeisland.cubeengine.core.util.log.LogLevel;
 public class CubeLevelConverter implements Converter<CubeLevel>
 {
     @Override
-    public Object toObject(CubeLevel object) throws ConversionException
+    public Node toNode(CubeLevel object) throws ConversionException
     {
-        return object.toString();
+       return Convert.wrapIntoNode(object.toString());
     }
 
     @Override
-    public CubeLevel fromObject(Object object) throws ConversionException
+    public CubeLevel fromNode(Node node) throws ConversionException
     {
-        CubeLevel lv = LogLevel.parse(object.toString());
-        if (lv == null)
+        if (node instanceof StringNode)
         {
-            throw new ConversionException("Unknown LogLevel. " + object.toString());
+            CubeLevel lv = LogLevel.parse(((StringNode) node).getValue());
+            if (lv == null)
+            {
+                throw new ConversionException("Unknown LogLevel. " +((StringNode) node).getValue());
+            }
+            return lv;
         }
-        return lv;
+        throw  new ConversionException("Invalid Node!"+ node.getClass());
     }
 }

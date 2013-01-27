@@ -2,14 +2,12 @@ package de.cubeisland.cubeengine.core.config.codec;
 
 import de.cubeisland.cubeengine.core.CubeEngine;
 import de.cubeisland.cubeengine.core.config.ConfigurationCodec;
-import de.cubeisland.cubeengine.core.config.node.Node;
-import de.cubeisland.cubeengine.core.util.convert.ConversionException;
+import de.cubeisland.cubeengine.core.config.node.*;
 import de.cubeisland.cubeengine.core.util.convert.Convert;
 import de.cubeisland.cubeengine.core.util.log.LogLevel;
 import org.yaml.snakeyaml.Yaml;
 
 import java.io.InputStream;
-import java.util.Collection;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -26,7 +24,7 @@ public class YamlCodec extends ConfigurationCodec
         this.yaml = new Yaml();
 
         COMMENT_PREFIX = "# ";
-        SPACES = "  ";
+        OFFSET = "  ";
         LINE_BREAK = "\n";
         QUOTE = "'";
     }
@@ -34,31 +32,38 @@ public class YamlCodec extends ConfigurationCodec
     //TODO \n in Strings do get lost when restarting
     @Override
     @SuppressWarnings("unchecked")
-    public Node loadFromInputStream(InputStream is)
+    public void loadFromInputStream(CodecContainer container, InputStream is)
     {
+        if (is == null)
+        {
+            container.values = MapNode.emptyMap(); // InputStream null -> config was not existent
+            return;
+        }
         Map<Object, Object> map = (Map<Object, Object>)yaml.load(is);
         if (map == null)
         {
-            return null;
+            container.values = MapNode.emptyMap(); // loadValues null -> config exists but was empty
         }
-        try
+        else
         {
-            Object rev = map.get("revision");
-            if (rev != null)
+            container.values = (MapNode)Convert.wrapIntoNode(map);
+            Node revisionNode = container.values.getNodeAt("revision",PATH_SEPARATOR);
+            if (! (revisionNode instanceof NullNode))
             {
-                this.revision = Convert.fromObject(Integer.class, rev);
+                if (revisionNode instanceof IntNode)
+                {
+                    container.revision = ((IntNode)revisionNode).getValue();
+                }
+                else
+                {
+                    CubeEngine.getLogger().log(LogLevel.WARNING, "Invalid revision in a configuration!");
+                }
             }
         }
-        catch (ConversionException ex)
-        {
-            CubeEngine.getLogger().log(LogLevel.WARNING, "Invalid revision in a configuration!", ex);
-        }
-        return Convert.toNode(map);
     }
 
-    private boolean needsQuote(Object o)
+    private boolean needsQuote(String s)
     {
-        String s = o.toString();
         return (s.startsWith("#") || s.contains(" #") || s.startsWith("@")
                 || s.startsWith("`") || s.startsWith("[") || s.startsWith("]")
                 || s.startsWith("{") || s.startsWith("}") || s.startsWith("|")
@@ -70,123 +75,143 @@ public class YamlCodec extends ConfigurationCodec
 
     @Override
     @SuppressWarnings("unchecked")
-    public String convertValue(String path, Object value, int off, boolean inCollection)
+    public String convertValue(CodecContainer container, Node value, int off, boolean inCollection)
     {
         StringBuilder sb = new StringBuilder();
         String offset = this.offset(off);
-        String key = this.getSubKey(path);
-        if (!inCollection) //do not append offset when converting a value in a list
+        if (value instanceof MapNode)
         {
-            sb.append(offset);
-        }
-        sb.append(key).append(":");
-        if (value == null)
-        {
-            sb.append(" ");
-        }
-        else
-        {
-            if (value instanceof Map)
+            if (!inCollection) //do not append offset when converting a value in a list
             {
-                sb.append(LINE_BREAK);
-                sb.append(this.convertMap(path, (Map<String, Object>)value, off + 1, inCollection));
-                return sb.toString();
+                sb.append(offset);
             }
-            else
+            Map<String,Node> map = ((MapNode)value).getMappedNodes();
+            for (Entry<String,Node> entry : map.entrySet())
             {
-                if (value instanceof String)
+                sb.append(entry.getKey()).append(":");
+                if (entry.getValue() instanceof NullNode)
                 {
                     sb.append(" ");
-                    if (this.needsQuote(value))
-                    {
-                        sb.append(QUOTE).append(value.toString()).append(QUOTE);
-                    }
-                    else
-                    {
-                        sb.append(value.toString());
-                    }
                 }
                 else
                 {
-                    if (value instanceof Collection<?>)
+                    if (value instanceof MapNode)
                     {
-                        if (((Collection<?>)value).isEmpty())
-                        {
-                            return sb.append(" []").append(LINE_BREAK).toString();
-                        }
-                        for (Object o : (Collection<?>)value) //Convert Collection
-                        {
-                            sb.append(LINE_BREAK).append(offset).append("- ");
-                            if (o instanceof String)
-                            {
-                                if (this.needsQuote(o))
-                                {
-                                    sb.append(QUOTE).append(o.toString()).append(QUOTE);
-                                }
-                                else
-                                {
-                                    sb.append(o.toString());
-                                }
-                            }
-                            else if (o instanceof Map)
-                            {
-                                sb.append(this.convertMap(path, (Map<String, Object>)o, off + 1, true));
-                            }
-                            else
-                            {
-                                sb.append(o.toString());
-                            }
-                        }
+                        sb.append(LINE_BREAK);
+                        sb.append(this.convertMap(container,entry.getValue(), off + 1, inCollection));
+                        return sb.toString();
                     }
                     else
                     {
-                        sb.append(" ").append(value.toString());
+                        if (value instanceof StringNode)
+                        {
+                            sb.append(" ");
+                            String string = ((StringNode)value).getValue();
+                            if (this.needsQuote(string))
+                            {
+                                sb.append(QUOTE).append(string).append(QUOTE);
+                            }
+                            else
+                            {
+                                sb.append(value.toString());
+                            }
+                        }
+                        else
+                        {
+                            if (value instanceof ListNode)
+                            {
+                                if (((ListNode)value).isEmpty())
+                                {
+                                    return sb.append(" []").append(LINE_BREAK).toString();
+                                }
+                                for (Node listedNode : ((ListNode)value).getListedNodes()) //Convert Collection
+                                {
+                                    sb.append(LINE_BREAK).append(offset).append("- ");
+                                    if (listedNode instanceof StringNode)
+                                    {
+                                        String string = ((StringNode)value).getPath(PATH_SEPARATOR);
+                                        if (this.needsQuote(string))
+                                        {
+                                            sb.append(QUOTE).append(string).append(QUOTE);
+                                        }
+                                        else
+                                        {
+                                            sb.append(string);
+                                        }
+                                    }
+                                    else if (listedNode instanceof MapNode)
+                                    {
+                                        sb.append(this.convertMap(container, listedNode, off + 1, true));
+                                    }
+                                    else
+                                    {
+                                        sb.append(listedNode.unwrap());
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                sb.append(" ").append(value.unwrap());
+                            }
+                        }
                     }
                 }
             }
+            if (!inCollection && !sb.toString().endsWith(LINE_BREAK + LINE_BREAK)) // if in collection the collection will append its linebreak
+            {
+                sb.append(LINE_BREAK);
+            }
+            this.first = false;
+            return sb.toString();
         }
-        if (!inCollection && !sb.toString().endsWith(LINE_BREAK + LINE_BREAK)) // if in collection the collection will append its linebreak
+        else
         {
-            sb.append(LINE_BREAK);
+            throw new IllegalStateException("Error Something went wrong!");
         }
-        this.first = false;
-        return sb.toString();
     }
 
     @Override
-    public String convertMap(String path, Map<String, Object> values, int off, boolean inCollection)
+    public String convertMap(CodecContainer container, Node values, int off, boolean inCollection)
     {
         StringBuilder sb = new StringBuilder();
-        if (values.isEmpty())
+        if (values instanceof MapNode)
         {
-            return sb.append(this.offset(off)).append("{}").append(LINE_BREAK).toString();
-        }
-        for (Entry<String, Object> entry : values.entrySet())
-        {
-            String subPath = off == 0 ? entry.getKey() : (path + PATH_SEPARATOR + entry.getKey());
-            String comment = this.buildComment(subPath, off);
-            if (!comment.isEmpty())
+            Map<String,Node> map = ((MapNode)values).getMappedNodes();
+            if (map.isEmpty())
             {
-                if (!sb.toString().endsWith(LINE_BREAK + LINE_BREAK)) // if not already one line free
-                {
-                    sb.append(LINE_BREAK); // add free line before comment
-                }
-                sb.append(comment);
+                return sb.append(this.offset(off)).append("{}").append(LINE_BREAK).toString();
             }
-            sb.append(this.convertValue(subPath, entry.getValue(), off, inCollection));
+            for (Entry<String,Node> entry : map.entrySet())
+            {
+                String path = entry.getValue().getPath(PATH_SEPARATOR);
+                String comment = this.buildComment(container, path, off);
+                if (!comment.isEmpty())
+                {
+                    if (!sb.toString().endsWith(LINE_BREAK + LINE_BREAK)) // if not already one line free
+                    {
+                        sb.append(LINE_BREAK); // add free line before comment
+                    }
+                    sb.append(comment);
+                }
+                sb.append(this.convertValue(container, entry.getValue(), off, inCollection));
+            }
+            if (!sb.toString().endsWith(LINE_BREAK + LINE_BREAK))
+            {
+                sb.append(LINE_BREAK);
+            }
         }
-        if (!sb.toString().endsWith(LINE_BREAK + LINE_BREAK))
+        else
         {
-            sb.append(LINE_BREAK);
+            throw new IllegalStateException("Error Something went wrong!");
         }
         first = true;
         return sb.toString();
     }
 
     @Override
-    public String buildComment(String path, int off)
+    public String buildComment(CodecContainer container, String path, int off)
     {
-        String comment = this.getContainer().getComment(path);
+        String comment = container.getComment(path);
         if (comment == null)
         {
             return ""; //No Comment

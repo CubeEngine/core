@@ -1,20 +1,32 @@
 package de.cubeisland.cubeengine.core.util.convert.converter;
 
+import de.cubeisland.cubeengine.core.config.node.IntNode;
+import de.cubeisland.cubeengine.core.config.node.Node;
+import de.cubeisland.cubeengine.core.config.node.StringNode;
 import de.cubeisland.cubeengine.core.util.convert.BasicConverter;
 import de.cubeisland.cubeengine.core.util.convert.ConversionException;
 
 public class IntegerConverter extends BasicConverter<Integer>
 {
     @Override
-    public Integer fromObject(Object object) throws ConversionException
+    public Integer fromNode(Node node) throws ConversionException
     {
-        try
+        if (node instanceof IntNode)
         {
-            return Integer.parseInt(object.toString());
+            return ((IntNode)node).getValue();
         }
-        catch (NumberFormatException e)
+        else if (node instanceof StringNode)
         {
-            throw new ConversionException(e);
+            String s = ((StringNode) node).getValue();
+            try
+            {
+                return Integer.parseInt(s.toString());
+            }
+            catch (NumberFormatException e)
+            {
+                throw new ConversionException(e);
+            }
         }
+        throw  new ConversionException("Invalid Node!"+ node.getClass());
     }
 }

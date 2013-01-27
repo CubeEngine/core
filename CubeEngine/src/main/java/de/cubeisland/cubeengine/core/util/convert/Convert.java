@@ -5,7 +5,6 @@ import de.cubeisland.cubeengine.core.CubeEngine;
 import de.cubeisland.cubeengine.core.config.node.*;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.util.convert.converter.*;
-import de.cubeisland.cubeengine.core.util.convert.converter.BooleanConverter;
 import de.cubeisland.cubeengine.core.util.converter.generic.ArrayConverter;
 import de.cubeisland.cubeengine.core.util.converter.generic.CollectionConverter;
 import de.cubeisland.cubeengine.core.util.converter.generic.MapConverter;
@@ -133,70 +132,16 @@ public class Convert
         throw new ConverterNotFoundException("Converter not found for: " + objectClass.getName());
     }
 
-    @SuppressWarnings("unchecked")
-    public static <T> Object toObject(T object) throws ConversionException
-    {
-        if (object == null)
-        {
-            return null;
-        }
-        if (object.getClass().isArray())
-        {
-            return ARRAY_CONVERTER.toObject((Object[])object);
-        }
-        else if (object instanceof Collection)
-        {
-            return COLLECTION_CONVERTER.toObject((Collection)object);
-        }
-        else if (object instanceof Map)
-        {
-            return MAP_CONVERTER.toObject((Map)object);
-        }
-        Converter<T> converter = (Converter<T>)matchConverter(object.getClass());
-        return converter.toObject(object);
-    }
-
-    @SuppressWarnings("unchecked")
-    public static <T> T fromObject(Type type, Object object) throws ConversionException
-    {
-        if (type == null)
-        {
-            return null;
-        }
-        if (type instanceof Class)
-        {
-            if (((Class)type).isArray())
-            {
-                return (T)ARRAY_CONVERTER.fromObject((Class<T[]>)type, object);
-            }
-            else
-            {
-                Converter<T> converter = matchConverter((Class<T>)type);
-                return converter.fromObject(object);
-            }
-        }
-        else if (type instanceof ParameterizedType)
-        {
-            ParameterizedType ptype = (ParameterizedType)type;
-            if (ptype.getRawType() instanceof Class)
-            {
-                if (Collection.class.isAssignableFrom((Class)ptype.getRawType()))
-                {
-                    return (T)COLLECTION_CONVERTER.fromObject(ptype, object);
-                }
-                else if (Map.class.isAssignableFrom((Class)ptype.getRawType()))
-                {
-                    return (T)MAP_CONVERTER.fromObject(ptype, object);
-                }
-            }
-        }
-        throw new IllegalArgumentException("Unknown Type: " + type);
-    }
-
-    public static Node toNode(Object o) {
+    /**
+     * Wraps a serialized Object into a Node
+     *
+     * @param o a serialized Object
+     * @return the Node
+     */
+    public static Node wrapIntoNode(Object o) {
         if (o == null)
         {
-            return NullNode.INSTANCE;
+            return NullNode.emptyNode();
         }
         if (o instanceof Map)
         {
@@ -246,6 +191,99 @@ public class Convert
         {
             return new CharNode((Character) o);
         }
-        return new ObjectNode(o);
+        throw  new IllegalArgumentException("Cannot wrap into Node: "+o.getClass());
+
+    }
+
+    /**
+     * Converts a convertible Object into a Node
+     *
+     * @param object the Object
+     * @return the serialized Node
+     */
+    public static <T>  Node toNode(T object) throws ConversionException
+    {
+        if (object == null)
+        {
+            return null;
+        }
+        if (object.getClass().isArray())
+        {
+            return ARRAY_CONVERTER.toNode((Object[]) object);
+        }
+        else if (object instanceof Collection)
+        {
+            return COLLECTION_CONVERTER.toNode((Collection) object);
+        }
+        else if (object instanceof Map)
+        {
+            return MAP_CONVERTER.toNode((Map) object);
+        }
+        Converter<T> converter = (Converter<T>)matchConverter(object.getClass());
+        return converter.toNode(object);
+    }
+
+    /**
+     * Converts a Node back into the original Object
+     *
+     * @param node the node
+     * @param type the type of the object
+     * @return
+     */
+    public static <T> T fromNode(Node node, Type type) throws ConversionException
+    {
+        if (node == null || node instanceof NullNode || type == null)
+            return null;
+        if (type instanceof Class)
+        {
+            if (((Class)type).isArray())
+            {
+                if (node instanceof ListNode)
+                {
+                    return (T)ARRAY_CONVERTER.fromNode((Class<T[]>)type, (ListNode)node);
+                }
+                else
+                {
+                    throw new ConversionException("Cannot convert to Array! Node is not a ListNode!");
+                }
+            }
+            else
+            {
+                Converter<T> converter = matchConverter((Class<T>)type);
+                return converter.fromNode(node);
+            }
+        }
+        else if (type instanceof ParameterizedType)
+        {
+            ParameterizedType ptype = (ParameterizedType)type;
+            if (ptype.getRawType() instanceof Class)
+            {
+                if (Collection.class.isAssignableFrom((Class)ptype.getRawType()))
+                {
+                    if (node instanceof ListNode)
+                    {
+                        return (T)COLLECTION_CONVERTER.fromNode(ptype, (ListNode)node);
+                    }
+                    else
+                    {
+                        throw new ConversionException("Cannot convert to Collection! Node is not a ListNode!");
+                    }
+
+                }
+                else if (Map.class.isAssignableFrom((Class)ptype.getRawType()))
+                {
+                    if (node instanceof MapNode)
+                    {
+                        return (T)MAP_CONVERTER.fromNode(ptype, (MapNode)node);
+                    }
+                    else
+                    {
+                        throw new ConversionException("Cannot convert to Map! Node is not a MapNode!");
+                    }
+
+                }
+            }
+        }
+        throw new IllegalArgumentException("Unknown Type: " + type);
     }
 }

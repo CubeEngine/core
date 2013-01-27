@@ -1,11 +1,16 @@
 package de.cubeisland.cubeengine.core.util.converter.generic;
 
+import de.cubeisland.cubeengine.core.config.node.MapNode;
+import de.cubeisland.cubeengine.core.config.node.Node;
+import de.cubeisland.cubeengine.core.config.node.StringNode;
 import de.cubeisland.cubeengine.core.util.convert.ConversionException;
 import de.cubeisland.cubeengine.core.util.convert.Convert;
+
 import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
-import java.util.*;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 public class MapConverter
 {
@@ -16,16 +21,24 @@ public class MapConverter
      * @return the serializable map
      * @throws ConversionException
      */
-    public Object toObject(Map<?, ?> map) throws ConversionException
+    public MapNode toNode(Map<?, ?> map) throws ConversionException
     {
-        Map<Object, Object> result = new LinkedHashMap<Object, Object>();
+        MapNode result = MapNode.emptyMap();
         if (map.isEmpty())
         {
             return result;
         }
         for (Object key : map.keySet())
         {
-            result.put(Convert.toObject(key), Convert.toObject(map.get(key)));
+            Node keyNode = Convert.toNode(key);
+            if (keyNode instanceof StringNode)
+            {
+                result.setNode((StringNode)keyNode, Convert.toNode(map.get(key)));
+            }
+            else
+            {
+                throw new ConversionException("Map-Key did not serialize into a StringNode!");
+            }
         }
         return result;
     }
@@ -37,33 +50,28 @@ public class MapConverter
      * @param <V>     the ValueType
      * @param <S>     the MapType
      * @param ptype   the MapTypeClass
-     * @param object  the object to convert
+     * @param mapNode  the object to convert
      * @return the converted map
      * @throws ConversionException
      */
     @SuppressWarnings("unchecked")
-    public <K, V, S extends Map<K, V>> S fromObject(ParameterizedType ptype, Object object) throws ConversionException
+    public <K, V, S extends Map<K, V>> S fromNode(ParameterizedType ptype, MapNode mapNode) throws ConversionException
     {
         try
         {
             if (ptype.getRawType() instanceof Class)
             {
-
                 Type keyType = ptype.getActualTypeArguments()[0];
                 Type valType = ptype.getActualTypeArguments()[1];
                 S result = (S)getMapFor(ptype);
-                if (object instanceof Map)
-                {
-                    Map<?, ?> objectMap = (Map<?, ?>)object;
-                    for (Object key : objectMap.keySet())
+                    for (Map.Entry<String, Node> entry : mapNode.getMappedNodes().entrySet())
                     {
-                        K newKey = Convert.fromObject(keyType, key);
-                        V newVal = Convert.fromObject(valType, objectMap.get(key));
+                        StringNode keyNode = new StringNode(entry.getKey());
+                        K newKey = Convert.fromNode(keyNode, keyType);
+                        V newVal = Convert.fromNode(entry.getValue(),valType);
                         result.put(newKey, newVal);
                     }
                     return result;
-                }
-                throw new IllegalStateException("Map-conversion failed: Cannot convert not a map to a map.");
             }
             throw new IllegalArgumentException("Unkown Map-Type: " + ptype);
         }
@@ -73,13 +81,13 @@ public class MapConverter
         }
     }
 
-    public static <K, V, S extends Map<K, V>> S getMapFor(ParameterizedType ptype) {
+    public static <S extends Map> S getMapFor(ParameterizedType ptype) {
         try
         {
             Class<S> mapType = (Class<S>)ptype.getRawType();
             if (mapType.isInterface() || Modifier.isAbstract(mapType.getModifiers()))
             {
-                return (S)new LinkedHashMap<K, V>();
+                return (S)new LinkedHashMap();
             }
             else
             {

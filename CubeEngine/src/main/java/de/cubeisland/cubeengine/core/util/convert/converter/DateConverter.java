@@ -1,20 +1,28 @@
 package de.cubeisland.cubeengine.core.util.convert.converter;
 
+import de.cubeisland.cubeengine.core.config.node.Node;
+import de.cubeisland.cubeengine.core.config.node.StringNode;
 import de.cubeisland.cubeengine.core.util.convert.ConversionException;
+import de.cubeisland.cubeengine.core.util.convert.Convert;
 import de.cubeisland.cubeengine.core.util.convert.Converter;
+
 import java.sql.Date;
 
 public class DateConverter implements Converter<Date>
 {
     @Override
-    public Object toObject(Date object) throws ConversionException
+    public Node toNode(Date object) throws ConversionException
     {
-        return object;
+        return Convert.wrapIntoNode(object.toString());
     }
 
     @Override
-    public Date fromObject(Object object) throws ConversionException
+    public Date fromNode(Node node) throws ConversionException
     {
-        return Date.valueOf(object.toString());
+        if (node instanceof StringNode)
+        {
+            return Date.valueOf(((StringNode) node).getValue());
+        }
+        throw  new ConversionException("Invalid Node!"+ node.getClass());
     }
 }

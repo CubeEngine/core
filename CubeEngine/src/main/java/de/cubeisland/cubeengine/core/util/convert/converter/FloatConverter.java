@@ -1,20 +1,32 @@
 package de.cubeisland.cubeengine.core.util.convert.converter;
 
+import de.cubeisland.cubeengine.core.config.node.FloatNode;
+import de.cubeisland.cubeengine.core.config.node.Node;
+import de.cubeisland.cubeengine.core.config.node.StringNode;
 import de.cubeisland.cubeengine.core.util.convert.BasicConverter;
 import de.cubeisland.cubeengine.core.util.convert.ConversionException;
 
 public class FloatConverter extends BasicConverter<Float>
 {
     @Override
-    public Float fromObject(Object object) throws ConversionException
+    public Float fromNode(Node node) throws ConversionException
     {
-        try
+        if (node instanceof FloatNode)
         {
-            return Float.parseFloat(object.toString());
+            return ((FloatNode)node).getValue();
         }
-        catch (NumberFormatException e)
+        else if (node instanceof StringNode)
         {
-            throw new ConversionException(e);
+            String s = ((StringNode) node).getValue();
+            try
+            {
+                return Float.parseFloat(s.toString());
+            }
+            catch (NumberFormatException e)
+            {
+                throw new ConversionException(e);
+            }
         }
+        throw  new ConversionException("Invalid Node!"+ node.getClass());
     }
 }

@@ -1,16 +1,17 @@
 package de.cubeisland.cubeengine.core.config.node;
 
-/**
- * Created with IntelliJ IDEA.
- * User: Anselm
- * Date: 26.01.13
- * Time: 23:27
- * To change this template use File | Settings | File Templates.
- */
 public class ShortNode  extends Node {
-    private short val;
+    private short value;
 
-    public ShortNode(Short val) {
-        this.val = val;
+    public ShortNode(Short value) {
+        this.value = value;
+    }
+
+    public short getValue() {
+        return value;
+    }
+    @Override
+    public String unwrap() {
+        return String.valueOf(value);
     }
 }

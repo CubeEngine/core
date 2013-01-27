@@ -1,16 +1,19 @@
 package de.cubeisland.cubeengine.core.config.node;
 
-/**
- * Created with IntelliJ IDEA.
- * User: Anselm
- * Date: 26.01.13
- * Time: 23:27
- * To change this template use File | Settings | File Templates.
- */
 public class ByteNode extends Node {
-    private byte val;
+    private byte value;
 
-    public ByteNode(Byte val) {
-        this.val = val;
+    public ByteNode(Byte value) {
+        this.value = value;
+    }
+
+    public byte getValue() {
+
+        return this.value;
+    }
+
+    @Override
+    public String unwrap() {
+        return String.valueOf(value);
     }
 }

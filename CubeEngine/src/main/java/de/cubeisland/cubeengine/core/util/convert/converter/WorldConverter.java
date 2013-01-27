@@ -1,26 +1,30 @@
 package de.cubeisland.cubeengine.core.util.convert.converter;
 
+import de.cubeisland.cubeengine.core.CubeEngine;
+import de.cubeisland.cubeengine.core.config.node.Node;
+import de.cubeisland.cubeengine.core.config.node.StringNode;
 import de.cubeisland.cubeengine.core.util.convert.ConversionException;
+import de.cubeisland.cubeengine.core.util.convert.Convert;
 import de.cubeisland.cubeengine.core.util.convert.Converter;
-import java.util.UUID;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
+
+import java.util.UUID;
 
 public class WorldConverter implements Converter<World>
 {
     @Override
-    public Object toObject(World object) throws ConversionException
+    public Node toNode(World object) throws ConversionException
     {
-        return object.getName() + "(" + object.getUID().toString() + ")";
+        return Convert.wrapIntoNode(object.getName() + "(" + object.getUID().toString() + ")");
     }
 
     @Override
-    public World fromObject(Object object) throws ConversionException
+    public World fromNode(Node node) throws ConversionException
     {
-
-        if (object instanceof String)
+        if (node instanceof StringNode)
         {
-            String string = (String)object;
+            String string = ((StringNode) node).getValue();
             World world = null;
             if (string.contains("(") && string.contains(")"))
             {
@@ -37,6 +41,7 @@ public class WorldConverter implements Converter<World>
                 return world;
             }
         }
-        throw new ConversionException("Could not \"" + object + "\" convert to World!");
+        throw new ConversionException("Could not convert to User!");
+
     }
 }

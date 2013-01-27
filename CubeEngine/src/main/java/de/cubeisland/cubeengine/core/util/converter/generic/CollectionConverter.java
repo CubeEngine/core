@@ -1,5 +1,7 @@
 package de.cubeisland.cubeengine.core.util.converter.generic;
 
+import de.cubeisland.cubeengine.core.config.node.ListNode;
+import de.cubeisland.cubeengine.core.config.node.Node;
 import de.cubeisland.cubeengine.core.util.convert.ConversionException;
 import de.cubeisland.cubeengine.core.util.convert.Convert;
 import java.lang.reflect.Modifier;
@@ -12,20 +14,20 @@ public class CollectionConverter
     /**
      * Returns the converted collection
      *
-     * @param col the collection to convert
+     * @param collection the collection to convert
      * @return the converted collection
      * @throws ConversionException
      */
-    public Object toObject(Collection col) throws ConversionException
+    public ListNode toNode(Collection collection) throws ConversionException
     {
-        Collection<Object> result = new LinkedList<Object>();
-        if (col.isEmpty())
+        ListNode result = ListNode.emptyList();
+        if (collection.isEmpty())
         {
             return result;
         }
-        for (Object value : col)
+        for (Object value : collection)
         {
-            result.add(Convert.toObject(value));
+            result.addNode(Convert.toNode(value));
         }
         return result;
     }
@@ -35,36 +37,28 @@ public class CollectionConverter
      *
      * @param <V>            the ValueType
      * @param <S>            the Type of collection
-     * @param ptype          the type of the collection
-     * @param object         the object to convert
+     * @param pType          the Type of the collection
+     * @param listNode       the Node to convert
      * @return the converted collection
      * @throws ConversionException
      */
     @SuppressWarnings("unchecked")
-    public <V, S extends Collection<V>> S fromObject(ParameterizedType ptype, Object object) throws ConversionException
+    public <V, S extends Collection<V>> S fromNode(ParameterizedType pType, ListNode listNode) throws ConversionException
     {
         try
         {
-            if (ptype.getRawType() instanceof Class)
+            if (pType.getRawType() instanceof Class)
             {
-                S result = (S)getCollectionFor(ptype);
-                Type subType = ptype.getActualTypeArguments()[0];
-                if (object instanceof Collection)
+                S result = (S)getCollectionFor(pType);
+                Type subType = pType.getActualTypeArguments()[0];
+                for (Node node : listNode.getListedNodes())
                 {
-                    Collection col = (Collection)object;
-                    for (Object o : col)
-                    {
-                        V value = Convert.fromObject(subType, o);
-                        result.add(value);
-                    }
-                    return result;
+                    V value = Convert.fromNode(node, subType);
+                    result.add(value);
                 }
-                else
-                {
-                    throw new IllegalStateException("Collection-conversion failed: Cannot convert not a collection to a collection.");
-                }
+                return result;
             }
-            throw new IllegalArgumentException("Unkown Collection-Type: " + ptype);
+            throw new IllegalArgumentException("Unknown Collection-Type: " + pType);
         }
         catch (ConversionException ex)
         {
@@ -72,7 +66,8 @@ public class CollectionConverter
         }
     }
 
-    public static <V, S extends Collection<V>> S getCollectionFor(ParameterizedType ptype) {
+    @SuppressWarnings("unchecked")
+    public static <S extends Collection> S getCollectionFor(ParameterizedType ptype) {
         try
         {
             Class<S> collectionType = (Class)ptype.getRawType();
@@ -83,20 +78,20 @@ public class CollectionConverter
                 {
                     if (SortedSet.class.isAssignableFrom(collectionType))
                     {
-                        result = (S)new TreeSet<V>();
+                        result = (S)new TreeSet();
                     }
                     else
                     {
-                        result = (S)new HashSet<V>();
+                        result = (S)new HashSet();
                     }
                 }
                 else if (List.class.isAssignableFrom(collectionType))
                 {
-                    result = (S)new LinkedList<S>();
+                    result = (S)new LinkedList();
                 }
                 else
                 {
-                    result = (S)new LinkedList<S>(); // other collection
+                    result = (S)new LinkedList(); // other collection
                 }
             }
             else
