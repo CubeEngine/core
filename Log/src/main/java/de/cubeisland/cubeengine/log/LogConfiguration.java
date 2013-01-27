@@ -15,13 +15,13 @@ public class LogConfiguration extends Configuration
     public boolean enableLogging = true;
 
     @Option("log-actions")
-    public Map<String, LogActionConfig> configs = new THashMap<String, LogActionConfig>();
+    public Map<String, LogActionConfig> logActionConfigs = new THashMap<String, LogActionConfig>();
 
     public Map<Class<? extends SubLogConfig>,SubLogConfig> subConfigs = new HashMap<Class<? extends SubLogConfig>, SubLogConfig>();
 
     public LogConfiguration()
     {
-        this.onLoaded(); // This has to be here to initialize all the configs for loading
+        this.onLoaded(); // This has to be here to initialize all the logActionConfigs for loading
     }
 
     @Override
@@ -34,17 +34,17 @@ public class LogConfiguration extends Configuration
                 LogActionConfig laConfig = new LogActionConfig(action.isDefaultEnabled());
                 for (SubLogConfig subLogConfig: action.getConfigs())
                 {
-                    laConfig.configs.put(subLogConfig.getName(),subLogConfig);
+                    laConfig.subLogConfigs.put(subLogConfig.getName(),subLogConfig);
                     this.subConfigs.put(subLogConfig.getClass(),subLogConfig);
                 }
-                this.configs.put(action.name(),laConfig);
+                this.logActionConfigs.put(action.name(), laConfig);
             }
         }
     }
 
     public LogActionConfig getActionConfig(LogAction action)
     {
-        return this.configs.get(action.name());
+        return this.logActionConfigs.get(action.name());
     }
 
     public <T extends SubLogConfig> T getSubLogConfig(Class<T> configClass)
