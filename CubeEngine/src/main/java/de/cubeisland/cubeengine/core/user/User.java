@@ -315,7 +315,6 @@ public class User extends UserBase implements LinkingModel<Long>
         attributeMap.remove(name);
     }
 
-    // TODO move this into a Util class !
     public void safeTeleport(Location location, TeleportCause cause, boolean keepDirection)
     {
         Location checkLocation = location.clone().add(0, 1, 0);

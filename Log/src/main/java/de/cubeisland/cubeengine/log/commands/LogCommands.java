@@ -7,11 +7,11 @@ import de.cubeisland.cubeengine.core.command.annotation.Flag;
 import de.cubeisland.cubeengine.core.command.annotation.Param;
 import de.cubeisland.cubeengine.core.module.Module;
 import de.cubeisland.cubeengine.core.user.User;
-import java.util.Collection;
-import java.util.Date;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.inventory.ItemStack;
+
+import java.util.Date;
 
 public class LogCommands extends ContainerCommand
 {
@@ -32,7 +32,7 @@ public class LogCommands extends ContainerCommand
      * @param context
      * @return
      */
-    //TODO change return to a selection
+    //TODO change return to a selection See WE how they did it
     private Location getSelection(CommandContext context)
     {
         if (!context.hasFlag("sel"))
@@ -40,7 +40,6 @@ public class LogCommands extends ContainerCommand
             throw new IllegalStateException("Did not choose selection!");
         }
         return null;
-        //TODO
     }
 
     @Command(names = {

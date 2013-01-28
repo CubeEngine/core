@@ -7,11 +7,6 @@ import java.util.Map;
 
 public class LogActionConfig extends Configuration
 {
-    public LogActionConfig(boolean defaultEnabled)
-    {
-        this.enabled = defaultEnabled;
-    }
-
     @Option("enabled")
     public boolean enabled;
     @Option("sub-actions")

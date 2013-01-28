@@ -241,6 +241,8 @@ public abstract class AbstractDatabase implements Database
         this.getConnection().setAutoCommit(false);
     }
 
+    //TODO end Transaction
+
     @Override
     public void commit() throws SQLException
     {

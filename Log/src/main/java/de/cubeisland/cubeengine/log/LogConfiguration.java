@@ -29,15 +29,24 @@ public class LogConfiguration extends Configuration
     {
         for (LogAction action : LogAction.values())
         {
-            if (this.getActionConfig(action) == null) // load from default if not found
+            LogActionConfig laConfig = this.getActionConfig(action);
+            if (laConfig == null)
             {
-                LogActionConfig laConfig = new LogActionConfig(action.isDefaultEnabled());
+                laConfig = new LogActionConfig();
+                laConfig.enabled = action.isDefaultEnabled();
                 for (SubLogConfig subLogConfig: action.getConfigs())
                 {
                     laConfig.subLogConfigs.put(subLogConfig.getName(),subLogConfig);
                     this.subConfigs.put(subLogConfig.getClass(),subLogConfig);
                 }
                 this.logActionConfigs.put(action.name(), laConfig);
+            }
+            else
+            {
+                for (SubLogConfig subLogConfig: laConfig.subLogConfigs.values())
+                {
+                    this.subConfigs.put(subLogConfig.getClass(),subLogConfig);
+                }
             }
         }
     }

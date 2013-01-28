@@ -264,7 +264,6 @@ public class PlayerCommands
     })
     public void kill(CommandContext context)
     {
-        //TODO kill a player looking at if possible
         boolean lightning = context.hasFlag("l") && BasicsPerm.COMMAND_KILL_LIGHTNING.isAuthorized(context.getSender());
         boolean force = context.hasFlag("f") && BasicsPerm.COMMAND_KILL_FORCE.isAuthorized(context.getSender());
         User user = null;

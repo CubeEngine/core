@@ -4,6 +4,7 @@ import de.cubeisland.cubeengine.core.config.annotations.*;
 import de.cubeisland.cubeengine.core.config.node.*;
 import de.cubeisland.cubeengine.core.util.StringUtils;
 import de.cubeisland.cubeengine.core.util.convert.Convert;
+import de.cubeisland.cubeengine.core.util.converter.generic.CollectionConverter;
 import de.cubeisland.cubeengine.core.util.converter.generic.MapConverter;
 import gnu.trove.map.hash.THashMap;
 
@@ -15,7 +16,6 @@ import java.lang.reflect.Type;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.NoSuchElementException;
 
 /**
  * This abstract Codec can be implemented to read and write configurations.
@@ -210,6 +210,11 @@ public abstract class ConfigurationCodec
             loadFromInputStream(this, is);
         }
 
+        private static final int NORMAL_FIELD = 0;
+        private static final int CONFIG_FIELD = 1;
+        private static final int COLLECTION_CONFIG_FIELD = 2;
+        private static final int MAP_CONFIG_FIELD = 3;
+
         /**
          * Dumps the values from given Node into the fields of the Configuration
          *
@@ -233,168 +238,220 @@ public abstract class ConfigurationCodec
                         String path = field.getAnnotation(Option.class).value().replace(".", PATH_SEPARATOR);
                         Node fieldNode = currentNode.getNodeAt(path, PATH_SEPARATOR);
                         Type type = field.getGenericType();
-                        // First check for possible SubConfigurations...
-                        if (Configuration.class.isAssignableFrom(field.getType())) // SingleSubConfig
+                        int fieldType = NORMAL_FIELD;
+                        if (Configuration.class.isAssignableFrom(field.getType()))
                         {
-                            Configuration subConfig = (Configuration)field.get(config).getClass().newInstance(); // create freshConfig from Class
-                            CodecContainer subContainer = new CodecContainer(); // Create new container
-                            if (fieldNode instanceof MapNode)
-                            {
-                                subContainer.dumpIntoFields(subConfig, (MapNode)fieldNode,
-                                        parentConfig == null ? null : (Configuration)field.get(parentConfig));
-                            }
-                            else
-                            {
-                                throw new InvalidConfigurationException("Invalid Node for Configuration at " + path +
-                                                                    "\nConfig:"+config.getClass()+
-                                                                    "\nSubConfig:"+subConfig.getClass());
-                            }
+                            fieldType = CONFIG_FIELD;
                         }
-                        else  if (type instanceof ParameterizedType)// Next check for possible SubConfiguration in Maps/Collections...
+                        else if (type instanceof ParameterizedType)
                         {
                             ParameterizedType pType = (ParameterizedType)type;
                             if (Collection.class.isAssignableFrom((Class)pType.getRawType()))
                             {
                                 Type subType1 = pType.getActualTypeArguments()[0];
-                                if (subType1 instanceof Class && Configuration.class.isAssignableFrom((Class)subType1)) // is Collection of Configuration
+                                if (subType1 instanceof Class && Configuration.class.isAssignableFrom((Class)subType1))
                                 {
-                                    if (fieldNode instanceof ListNode)
-                                    {
-                                        Iterator<Node> listedNodes = ((ListNode)fieldNode).getListedNodes().iterator();
-                                        if (parentConfig == null) // No parent given: iterate through given configs & load them
-                                        {
-                                            try
-                                            {
-                                                for (Configuration subConfig : (Collection<Configuration>) field.get(config))
-                                                {
-                                                    Node listedNode = listedNodes.next();
-                                                    if (listedNode instanceof MapNode)
-                                                    {
-                                                        new CodecContainer().dumpIntoFields(subConfig, (MapNode)listedNode, null);
-                                                        continue;
-                                                    }
-                                                    else
-                                                    {
-                                                        throw new InvalidConfigurationException("Invalid Node for Configuration in Collection at " + path +
-                                                                "\nConfig:"+config.getClass()+
-                                                                "\nSubConfig:"+subConfig.getClass());
-                                                    }
-                                                }
-                                            }
-                                            catch (NoSuchElementException ex)
-                                            {
-                                                throw new InvalidConfigurationException("Missing Node in Collection at "+path +
-                                                        "\nConfig:"+config.getClass());
-                                            }
-                                        }
-                                        else // Parent given: NOT ALLOWED
-                                        {
-                                            throw new InvalidConfigurationException("ChildConfigs are not allowed for Configurations in Collections"+
-                                                    "\nConfig:"+config.getClass());
-                                        }
-                                    }
-                                    else if (fieldNode instanceof NullNode)
-                                    {
-                                        continue;
-                                    }
-                                    else
-                                    {
-                                        throw new InvalidConfigurationException("Invalid Node for Collection of Configuration at "+path +
-                                                "\nConfig:"+config.getClass()+
-                                                "\nNode:"+fieldNode.getClass());
-                                    }
-                                    continue; // field read
+                                    fieldType = COLLECTION_CONFIG_FIELD;
                                 }
                             }
                             else if (Map.class.isAssignableFrom((Class)pType.getRawType()))
                             {
                                 Type subType2 = pType.getActualTypeArguments()[1];
-                                if (subType2 instanceof Class && Configuration.class.isAssignableFrom((Class)subType2))  // is Map of Configuration
+                                if (subType2 instanceof Class && Configuration.class.isAssignableFrom((Class)subType2))
                                 {
-                                    if (fieldNode instanceof MapNode)
-                                    {
-                                        if (parentConfig == null) // no parent: iterate through existing Configurations and load them
-                                        {
-                                            Map<Object,Configuration> fieldMap = (Map<Object,Configuration>) field.get(config);
-                                            for (Map.Entry<Object,Configuration> entry : fieldMap.entrySet())
-                                            {
-                                                Node keyNode = Convert.toNode(entry.getKey());
-                                                if (keyNode instanceof StringNode)
-                                                {
-                                                    Node valueNode = ((MapNode)fieldNode).getNodeAt(((StringNode)keyNode).getValue(),PATH_SEPARATOR);
-                                                    if (valueNode instanceof MapNode)
-                                                    {
-                                                        new CodecContainer().dumpIntoFields(entry.getValue(),(MapNode)valueNode, null);
-                                                    }
-                                                    else
-                                                    {
-                                                        throw new InvalidConfigurationException("Invalid Value-Node for Map of Configuration at "+path +
-                                                                "\nConfig:"+config.getClass()+
-                                                                "\nSubConfig:"+entry.getValue().getClass());
-                                                    }
-                                                }
-                                                else
-                                                {
-                                                    throw new InvalidConfigurationException("Invalid Key-Node for Map of Configuration at "+path +
-                                                            "\nConfig:"+config.getClass());
-                                                }
-                                            }
-                                        }
-                                        else // parent not null: iterate parentConfig and override child with new values
-                                        {
-                                            Map<Object,Configuration> parentFieldMap = (Map<Object,Configuration>) field.get(parentConfig);
-                                            Map<Object,Configuration> childFieldMap = MapConverter.getMapFor(pType);
-                                            for (Map.Entry<Object,Configuration> entry : parentFieldMap.entrySet())
-                                            {
-                                                Node keyNode = Convert.toNode(entry.getKey());
-                                                if (keyNode instanceof StringNode)
-                                                {
-                                                    Node valueNode = ((MapNode)fieldNode).getNodeAt(((StringNode)keyNode).getValue(),PATH_SEPARATOR);
-                                                    if (valueNode instanceof MapNode)
-                                                    {
-                                                        Configuration subConfig = entry.getValue().getClass().newInstance(); // Create fresh copy of subConfig
-                                                        childFieldMap.put(entry.getKey(),subConfig); // Put into map (Key is the same Object!)
-                                                        new CodecContainer().dumpIntoFields(subConfig,(MapNode)valueNode, entry.getValue()); // finally load in values
-                                                    }
-                                                    else
-                                                    {
-                                                        throw new InvalidConfigurationException("Invalid Value-Node for Map of Configuration at "+path +
-                                                                "\nConfig:"+config.getClass()+
-                                                                "\nSubConfig:"+entry.getValue().getClass());
-                                                    }
-                                                }
-                                                else
-                                                {
-                                                    throw new InvalidConfigurationException("Invalid Key-Node for Map of Configuration at "+path +
-                                                            "\nConfig:"+config.getClass());
-                                                }
-                                            }
-                                            field.set(config, childFieldMap); // override old Map with loaded map
-                                        }
-                                    }
-                                    else if (fieldNode instanceof NullNode)
-                                    {
-                                        continue;
-                                    }
-                                    else
-                                    {
-                                        throw new InvalidConfigurationException("Invalid Node for Map of Configuration at "+path +
-                                                "\nConfig:"+config.getClass()+
-                                                "\nNode:"+fieldNode.getClass());
-                                    }
-                                    continue; // Field read
+                                    fieldType = MAP_CONFIG_FIELD;
                                 }
                             }
                         }
-                        // else not Collection or Map (Arrays of Configurations are not allowed)
-                        Object object = Convert.fromNode(fieldNode, type); // Convert the value
-                        if (object != null)
+                        switch (fieldType)
                         {
-                            field.set(config, object);//Set loaded Value into Field
-                        }
-                        else if (parentConfig != null) // If not loaded but is child-config get from parent-config
-                        {
-                            field.set(config, field.get(parentConfig));
+                            case NORMAL_FIELD:
+                                if (fieldNode instanceof NullNode)
+                                {
+                                    if (parentConfig != null)
+                                    {
+                                        field.set(config, field.get(parentConfig));
+                                    }
+                                    continue;
+                                }
+                                Object object = Convert.fromNode(fieldNode, type); // Convert the value
+                                if (object != null)
+                                {
+                                    field.set(config, object);//Set loaded Value into Field
+                                }
+                                else if (parentConfig != null) // If not loaded but is child-config get from parent-config
+                                {
+                                    field.set(config, field.get(parentConfig));
+                                }
+                                continue;
+                            case CONFIG_FIELD:
+                                MapNode loadFrom_singleConfig;
+                                Configuration singleSubConfig = (Configuration)field.get(config); // Get Config from field
+                                if (singleSubConfig == null)
+                                {
+                                    singleSubConfig = (Configuration)field.getType().newInstance(); // create new if null
+                                    field.set(config,singleSubConfig); // Set new instance
+                                }
+                                if (fieldNode instanceof MapNode)
+                                {
+                                    loadFrom_singleConfig = (MapNode)fieldNode;
+                                }
+                                else if (fieldNode instanceof NullNode) // Empty Node
+                                {
+                                    loadFrom_singleConfig = MapNode.emptyMap(); // Create Empty Map
+                                    currentNode.setNodeAt(path,PATH_SEPARATOR,loadFrom_singleConfig); // and attach
+                                }
+                                else
+                                {
+                                    throw new InvalidConfigurationException("Invalid Node for Configuration at " + path +
+                                            "\nConfig:"+config.getClass()+
+                                            "\nSubConfig:"+singleSubConfig.getClass());
+                                }
+                                new CodecContainer().dumpIntoFields(singleSubConfig, loadFrom_singleConfig,
+                                    parentConfig == null ? null : (Configuration)field.get(parentConfig));
+                                continue;
+                            case COLLECTION_CONFIG_FIELD:
+                                ListNode loadFrom_List;
+                                if (fieldNode instanceof ListNode)
+                                {
+                                    loadFrom_List = (ListNode)fieldNode;
+                                }
+                                else if (fieldNode instanceof NullNode) // Empty Node
+                                {
+                                    loadFrom_List = ListNode.emptyList(); // Create Empty List
+                                    currentNode.setNodeAt(path,PATH_SEPARATOR,loadFrom_List); // and attach
+                                }
+                                else
+                                {
+                                    throw new InvalidConfigurationException("Invalid Node for List-Configurations at " + path +
+                                            "\nConfig:"+config.getClass());
+                                }
+                                Collection<Configuration> subConfigs;
+                                Collection<Configuration> parentSubConfigs = null;
+                                Iterator<Configuration> parentConfig_Iterator = null;
+                                if (parentConfig == null) // Get configs from field
+                                {
+                                    subConfigs = (Collection<Configuration>) field.get(config);
+                                }
+                                else // get configs from parent & create new Collection with new instances
+                                {
+                                    parentSubConfigs = (Collection<Configuration>) field.get(parentConfig);
+                                    subConfigs = CollectionConverter.getCollectionFor((ParameterizedType)type);
+                                    for (Configuration configuration : parentSubConfigs)
+                                    {
+                                        subConfigs.add(configuration.getClass().newInstance());
+                                    }
+                                    field.set(config,subConfigs);
+                                    parentConfig_Iterator = parentSubConfigs.iterator();
+                                }
+                                // Now iterate through the subConfigs
+                                Iterator<Node> loadFrom_Iterator = loadFrom_List.getListedNodes().iterator();
+                                for (Configuration subConfig : subConfigs)
+                                {
+                                    Node loadFrom_listElem;
+                                    if (loadFrom_Iterator.hasNext())
+                                    {
+                                        loadFrom_listElem = loadFrom_Iterator.next();
+                                        if (loadFrom_listElem instanceof NullNode)
+                                        {
+                                            loadFrom_listElem = MapNode.emptyMap();
+                                            loadFrom_List.addNode(loadFrom_listElem);
+                                        }
+                                    }
+                                    else
+                                    {
+                                        loadFrom_listElem = MapNode.emptyMap();
+                                        loadFrom_List.addNode(loadFrom_listElem);
+                                    }
+                                    if (loadFrom_listElem instanceof MapNode)
+                                    {
+                                        if (parentConfig == null)
+                                        {
+                                            new CodecContainer().dumpIntoFields(subConfig, (MapNode)loadFrom_listElem, null);
+                                        }
+                                        else
+                                        {
+                                            new CodecContainer().dumpIntoFields(subConfig, (MapNode)loadFrom_listElem, parentConfig_Iterator.next());
+                                        }
+                                    }
+                                    else
+                                    {
+                                        throw new InvalidConfigurationException("Invalid Node for List-Configurations at " + path +
+                                                "\nConfig:"+config.getClass()+
+                                                "\nSubConfig:"+subConfig.getClass());
+                                    }
+                                }
+                                continue;
+                            case MAP_CONFIG_FIELD:
+                                MapNode loadFrom_Map;
+                                if (fieldNode instanceof MapNode)
+                                {
+                                    loadFrom_Map = (MapNode)fieldNode;
+                                }
+                                else if (fieldNode instanceof NullNode) // Empty Node
+                                {
+                                    loadFrom_Map = MapNode.emptyMap(); // Create Empty List
+                                    currentNode.setNodeAt(path,PATH_SEPARATOR,loadFrom_Map); // and attach
+                                }
+                                else
+                                {
+                                    throw new InvalidConfigurationException("Invalid Node for Map-Configurations at " + path +
+                                            "\nConfig:"+config.getClass());
+                                }
+                                Map<Object,Configuration> mapConfigs;
+                                Map<Object,Configuration> parentMapConfigs = null;
+                                if (parentConfig == null)
+                                {
+                                    mapConfigs = (Map<Object,Configuration>) field.get(config);
+                                }
+                                else
+                                {
+                                    parentMapConfigs = (Map<Object,Configuration>) field.get(parentConfig);
+                                    mapConfigs = MapConverter.getMapFor((ParameterizedType)type);
+                                    for (Map.Entry<Object,Configuration> entry : parentMapConfigs.entrySet())
+                                    {
+                                        mapConfigs.put(entry.getKey(),entry.getValue().getClass().newInstance());
+                                    }
+                                    field.set(config,mapConfigs);
+                                }
+                                for (Map.Entry<Object,Configuration> entry : mapConfigs.entrySet())
+                                {
+                                    Node keyNode = Convert.toNode(entry.getKey());
+                                    if (keyNode instanceof StringNode)
+                                    {
+                                        Node valueNode = loadFrom_Map.getNodeAt(((StringNode)keyNode).getValue(),PATH_SEPARATOR);
+                                        if (valueNode instanceof NullNode)
+                                        {
+                                            valueNode = MapNode.emptyMap();
+                                            loadFrom_Map.setNode((StringNode)keyNode,valueNode);
+                                        }
+                                        if (valueNode instanceof MapNode)
+                                        {
+                                            if (parentConfig == null)
+                                            {
+                                                new CodecContainer().dumpIntoFields(entry.getValue(),(MapNode)valueNode, null);
+                                            }
+                                            else
+                                            {
+                                                new CodecContainer().dumpIntoFields(entry.getValue(),(MapNode)valueNode,
+                                                        parentMapConfigs.get(entry.getKey()));
+                                            }
+                                        }
+                                        else
+                                        {
+                                            throw new InvalidConfigurationException("Invalid Value-Node for Map of Configuration at "+path +
+                                                    "\nConfig:"+config.getClass()+
+                                                    "\nSubConfig:"+entry.getValue().getClass());
+                                        }
+                                    }
+                                    else
+                                    {
+                                        throw new InvalidConfigurationException("Invalid Key-Node for Map of Configuration at "+path +
+                                                "\nConfig:"+config.getClass()+
+                                                "\nSubConfig:"+entry.getValue().getClass());
+                                    }
+                                }
+                                continue;
                         }
                     }
                 }

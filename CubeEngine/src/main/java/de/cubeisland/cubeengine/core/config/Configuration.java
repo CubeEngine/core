@@ -120,6 +120,8 @@ public abstract class Configuration
             {
                 childConfig.codec.load(childConfig, null);
             }
+            childConfig.onLoaded();
+            childConfig.configurationClass = this.configurationClass;
             childConfig.saveChild();
             return (T)childConfig;
         }
