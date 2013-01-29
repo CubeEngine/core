@@ -73,7 +73,7 @@ public class ListNode extends ParentNode{
     }
 
     @Override
-    protected Node getExactNode(String key) {
+    public Node getExactNode(String key) {
         if (key.startsWith("["))
         {
             try

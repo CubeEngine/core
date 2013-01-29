@@ -91,7 +91,7 @@ public abstract class ParentNode extends Node{
      * @param key the key
      * @return the matched Node or null
      */
-    protected abstract Node getExactNode(String key);
+    public abstract Node getExactNode(String key);
 
     /**
      * Removes the Node for given path

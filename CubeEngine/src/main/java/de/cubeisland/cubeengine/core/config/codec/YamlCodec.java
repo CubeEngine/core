@@ -96,22 +96,37 @@ public class YamlCodec extends ConfigurationCodec
             else if (value instanceof MapNode) // Map-Node ? -> redirect
             {
                 first = true;
-                sb.append(LINE_BREAK).append(this.convertMap(container,((MapNode)value), off + 1, inCollection));
-                return sb.toString();
+                if (!inCollection)
+                {
+                    sb.append(LINE_BREAK);
+                }
+                sb.append(this.convertMap(container,((MapNode)value), off + 1, inCollection));
+                if (!sb.toString().endsWith(LINE_BREAK+LINE_BREAK))
+                {
+                    sb.append(LINE_BREAK);
+                }
             }
             else  if (value instanceof ListNode) // List-Node? -> list the nodes
             {
                 if (((ListNode)value).isEmpty())
                 {
-                    return sb.append("[]").append(LINE_BREAK).toString();
+                    sb.append("[]").toString();
                 }
                 for (Node listedNode : ((ListNode)value).getListedNodes()) //Convert Collection
                 {
-                    sb.append(LINE_BREAK).append(offset).append(OFFSET).append("- ");
+                    if (!sb.toString().endsWith(LINE_BREAK+LINE_BREAK))
+                    {
+                        sb.append(LINE_BREAK);
+                    }
+                    sb.append(offset).append(OFFSET).append("- ");
                     if (listedNode instanceof MapNode)
                     {
                         first = true;
                         sb.append(this.convertMap(container, (MapNode)listedNode, off + 2, true));
+                        if (!sb.toString().endsWith(LINE_BREAK+LINE_BREAK))
+                        {
+                            sb.append(LINE_BREAK);
+                        }
                     }
                     else
                     {
@@ -120,11 +135,18 @@ public class YamlCodec extends ConfigurationCodec
                 }
             }
             else
-                {
-                    sb.append(" ").append(value.unwrap());
+            {
+                sb.append(value.unwrap());
             }
         }
         this.first = false;
+        if (!inCollection)
+        {
+            if (!sb.toString().endsWith(LINE_BREAK+LINE_BREAK))
+            {
+                sb.append(LINE_BREAK);
+            }
+        }
         return sb.toString();
     }
 
@@ -135,7 +157,7 @@ public class YamlCodec extends ConfigurationCodec
         Map<String,Node> map = values.getMappedNodes();
         if (map.isEmpty())
         {
-            return sb.append(this.offset(off)).append("{}").append(LINE_BREAK).toString();
+            return sb.append(this.offset(off)).append("{}").toString();
         }
         for (Entry<String,Node> entry : map.entrySet())
         {
@@ -155,11 +177,8 @@ public class YamlCodec extends ConfigurationCodec
                 sb.append(this.offset(off)); // Map in collection first does not get offset
             }
             sb.append(values.getOriginalKey(Node.getSubKey(path, PATH_SEPARATOR))).append(": ");
-            sb.append(this.convertValue(container, entry.getValue(), off, inCollection));
-            if (!sb.toString().endsWith(LINE_BREAK+LINE_BREAK))
-            {
-                sb.append(LINE_BREAK);
-            }
+            sb.append(this.convertValue(container, entry.getValue(), off, false));
+
         }
         first = true;
         return sb.toString();

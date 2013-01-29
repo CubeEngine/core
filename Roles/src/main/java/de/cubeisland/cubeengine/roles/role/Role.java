@@ -1,15 +1,14 @@
 package de.cubeisland.cubeengine.roles.role;
 
+import de.cubeisland.cubeengine.core.CubeEngine;
+import de.cubeisland.cubeengine.roles.Roles;
 import de.cubeisland.cubeengine.roles.role.config.PermissionTree;
 import de.cubeisland.cubeengine.roles.role.config.Priority;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
-import java.util.TreeSet;
 import org.bukkit.Bukkit;
+import org.bukkit.permissions.Permission;
+
+import java.util.*;
+import java.util.Map.Entry;
 
 public abstract class Role implements Comparable<Role>
 {
@@ -162,7 +161,13 @@ public abstract class Role implements Comparable<Role>
 
     protected void resolveBukkitPermission(String name, Map<String, Boolean> childs)
     {
-        Map<String, Boolean> childPerm = Bukkit.getPluginManager().getPermission(name).getChildren();
+        Permission bukkitPerm = Bukkit.getPluginManager().getPermission(name);
+        if (bukkitPerm == null)
+        {
+            CubeEngine.getModuleManager().getModule(Roles.class).getLogger().warning("Permission \""+name+"\" not found in bukkit-perms!");
+            return;
+        }
+        Map<String, Boolean> childPerm = bukkitPerm.getChildren();
         for (String permKey : childPerm.keySet())
         {
             if (permKey.endsWith("*"))

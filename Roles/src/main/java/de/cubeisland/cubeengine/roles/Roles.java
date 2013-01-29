@@ -32,7 +32,7 @@ public class Roles extends Module
 
     public Roles()
     {
-        Convert.registerConverter(PermissionTree.class, new PermissionTreeConverter());
+        Convert.registerConverter(PermissionTree.class, new PermissionTreeConverter(this));
         Convert.registerConverter(Priority.class, new PriorityConverter());
         Convert.registerConverter(RoleMirror.class, new RoleMirrorConverter(this));
     }

@@ -48,7 +48,7 @@ public class MapNode extends ParentNode {
     }
 
     @Override
-    protected Node getExactNode(String key)
+    public Node getExactNode(String key)
     {
         return this.mappedNodes.get(key.trim().toLowerCase());
     }
