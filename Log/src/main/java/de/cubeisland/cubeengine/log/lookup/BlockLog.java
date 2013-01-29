@@ -4,10 +4,11 @@ import de.cubeisland.cubeengine.core.CubeEngine;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.log.storage.BlockData;
 import de.cubeisland.cubeengine.log.storage.LogManager;
+import org.bukkit.Location;
+
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import org.bukkit.Location;
 
 public class BlockLog implements Comparable<BlockLog>
 {
@@ -169,11 +170,30 @@ public class BlockLog implements Comparable<BlockLog>
         }
         else if (action == LogManager.BLOCK_SIGN)
         {
-            message += "&ewrote &f%s&e|&f%s&e|&f%s&e|&f%s";
-            list.add(this.newLines[0]);
-            list.add(this.newLines[1]);
-            list.add(this.newLines[2]);
-            list.add(this.newLines[3]);
+            if (this.newLines[0] == null)
+            {
+                message += "&edestroyed a sign with &f%s&e|&f%s&e|&f%s&e|&f%s";
+                list.add(this.oldLines[0]);
+                list.add(this.oldLines[1]);
+                list.add(this.oldLines[2]);
+                list.add(this.oldLines[3]);
+            }
+            else if (this.oldLines[0] == null)
+            {
+                message += "&eplaced a sign with &f%s&e|&f%s&e|&f%s&e|&f%s";
+                list.add(this.newLines[0]);
+                list.add(this.newLines[1]);
+                list.add(this.newLines[2]);
+                list.add(this.newLines[3]);
+            }
+            else
+            {
+                message += "&ewrote &f%s&e|&f%s&e|&f%s&e|&f%s";
+                list.add(this.newLines[0]);
+                list.add(this.newLines[1]);
+                list.add(this.newLines[2]);
+                list.add(this.newLines[3]);
+            }
         }
         else if (action == LogManager.BLOCK_GROW_BP)
         {
@@ -184,6 +204,17 @@ public class BlockLog implements Comparable<BlockLog>
                 message += " &ereplacing &6%s";
                 list.add(this.oldBlock.toString());
             }
+        }
+        else if (action == LogManager.BLOCK_CHANGE_WE)
+        {
+            message += "&echanged &6%s &eto &6%s &ewith &6WorldEdit";
+            list.add(this.oldBlock.toString());
+            list.add(this.newBlock.toString());
+        }
+        else if (action == LogManager.BLOCK_EXPLODE)
+        {
+            message += "&elet a Creeper explode &6%s";
+            list.add(this.oldBlock.toString());
         }
         if (showLoc)
         {

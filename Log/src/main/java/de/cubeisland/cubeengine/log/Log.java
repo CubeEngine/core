@@ -58,17 +58,20 @@ public class Log extends Module
             file.mkdir();
             this.worldConfigs.put(world, (LogConfiguration)globalConfig.loadChild(new File(file, "config.yml")));
         }
-        this.loggerManager = new LoggerManager(this);
-
-        this.registerListener(new ToolListener(this));
 
         try {
             Class.forName("com.sk89q.worldedit.WorldEdit");
-            LogEditSessionFactory.initialize(WorldEdit.getInstance(),this);
+            LogEditSessionFactory.initialize(WorldEdit.getInstance(), this);
         }catch (ClassNotFoundException ignored)
         {
             System.out.print("No WorldEdit found!");
         }
+
+        this.loggerManager = new LoggerManager(this);
+
+        this.registerListener(new ToolListener(this));
+
+
     }
 
     @Override
@@ -90,5 +93,9 @@ public class Log extends Module
 
     public LogConfiguration getGlobalConfiguration() {
         return this.globalConfig;
+    }
+
+    public LoggerManager getLoggerManager() {
+        return loggerManager;
     }
 }

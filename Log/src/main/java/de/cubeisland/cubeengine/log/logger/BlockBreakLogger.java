@@ -8,6 +8,7 @@ import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.BlockState;
+import org.bukkit.block.Sign;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -26,7 +27,10 @@ public class BlockBreakLogger extends    BlockLogger<BlockBreakConfig>
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onBlockBreak(BlockBreakEvent event)
     {
-
+        if (event.getBlock().getState() instanceof Sign)
+        {
+            this.module.getLoggerManager().getLogger(SignChangeLogger.class).logSignBreak(event.getPlayer(), (Sign) event.getBlock().getState());
+        }
         for (Block block : BlockUtil.getAttachedBlocks(event.getBlock()))
         {
             this.log(PLAYER, event.getPlayer(), block.getState());
@@ -57,7 +61,6 @@ public class BlockBreakLogger extends    BlockLogger<BlockBreakConfig>
                 this.log(PLAYER, event.getPlayer(), event.getBlock().getRelative(BlockFace.UP).getState());
         }
         this.log(PLAYER, event.getPlayer(), event.getBlock().getState());
-
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)

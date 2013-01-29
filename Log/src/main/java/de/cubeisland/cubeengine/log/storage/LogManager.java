@@ -9,14 +9,11 @@ import de.cubeisland.cubeengine.core.storage.database.querybuilder.SelectBuilder
 import de.cubeisland.cubeengine.core.util.worker.AsyncTaskQueue;
 import de.cubeisland.cubeengine.log.Log;
 import de.cubeisland.cubeengine.log.logger.BlockLogger;
-import de.cubeisland.cubeengine.log.lookup.BlockLog;
-import de.cubeisland.cubeengine.log.lookup.BlockLookup;
-import de.cubeisland.cubeengine.log.lookup.ChestLog;
-import de.cubeisland.cubeengine.log.lookup.ChestLookup;
-import de.cubeisland.cubeengine.log.lookup.KillLog;
-import de.cubeisland.cubeengine.log.lookup.KillLookup;
-import de.cubeisland.cubeengine.log.lookup.MessageLog;
-import de.cubeisland.cubeengine.log.lookup.MessageLookup;
+import de.cubeisland.cubeengine.log.lookup.*;
+import org.bukkit.Location;
+import org.bukkit.World;
+import org.bukkit.block.BlockState;
+
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -24,9 +21,6 @@ import java.sql.Timestamp;
 import java.util.LinkedList;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
-import org.bukkit.Location;
-import org.bukkit.World;
-import org.bukkit.block.BlockState;
 
 public class LogManager
 {
@@ -35,6 +29,8 @@ public class LogManager
     public static final int BLOCK_CHANGE = 0x02; //changing blockdata / interactlog
     public static final int BLOCK_SIGN = 0x03; //sign change
     public static final int BLOCK_GROW_BP = 0x04; //growth induced by a player
+    public static final int BLOCK_CHANGE_WE = 0x05;
+    public static final int BLOCK_EXPLODE = 0x06; // Creeper attacking a player
     public static final int KILL_PVP = 0x10; //player killed by player
     public static final int KILL_PVE = 0x11; //player killed by environement
     public static final int KILL_EVE = 0x12; //mob killed by environement
@@ -100,14 +96,14 @@ public class LogManager
             //Sign logging:
             sql = builder.createTable("log_sign", true).beginFields()
                     .field("key", AttrType.INT, true)
-                    .field("oldLine1", AttrType.VARCHAR, 16)
-                    .field("oldLine2", AttrType.VARCHAR, 16)
-                    .field("oldLine3", AttrType.VARCHAR, 16)
-                    .field("oldLine4", AttrType.VARCHAR, 16)
-                    .field("newLine1", AttrType.VARCHAR, 16)
-                    .field("newLine2", AttrType.VARCHAR, 16)
-                    .field("newLine3", AttrType.VARCHAR, 16)
-                    .field("newLine4", AttrType.VARCHAR, 16)
+                    .field("oldLine1", AttrType.VARCHAR, 16, false)
+                    .field("oldLine2", AttrType.VARCHAR, 16, false)
+                    .field("oldLine3", AttrType.VARCHAR, 16, false)
+                    .field("oldLine4", AttrType.VARCHAR, 16, false)
+                    .field("newLine1", AttrType.VARCHAR, 16, false)
+                    .field("newLine2", AttrType.VARCHAR, 16, false)
+                    .field("newLine3", AttrType.VARCHAR, 16, false)
+                    .field("newLine4", AttrType.VARCHAR, 16, false)
                     .foreignKey("key").references("log_logs", "key").onDelete("CASCADE")
                     .primaryKey("key").endFields()
                     .engine("innoDB").defaultcharset("utf8")
@@ -294,9 +290,24 @@ public class LogManager
     {
         try
         {
-            this.database.preparedExecute(this.getClass(), "storeSignLog", logID,
-                    oldLines[0], oldLines[1], oldLines[2], oldLines[3],
-                    newLines[0], newLines[1], newLines[2], newLines[3]);
+            if (oldLines == null)
+            {
+                this.database.preparedExecute(this.getClass(), "storeSignLog", logID,
+                        null, null,null,null,
+                        newLines[0], newLines[1], newLines[2], newLines[3]);
+            }
+            else if (newLines == null)
+            {
+                this.database.preparedExecute(this.getClass(), "storeSignLog", logID,
+                        oldLines[0], oldLines[1], oldLines[2], oldLines[3],
+                        null, null,null,null);
+            }
+            else
+            {
+                this.database.preparedExecute(this.getClass(), "storeSignLog", logID,
+                        oldLines[0], oldLines[1], oldLines[2], oldLines[3],
+                        newLines[0], newLines[1], newLines[2], newLines[3]);
+            }
         }
         catch (SQLException ex)
         {
@@ -366,7 +377,8 @@ public class LogManager
     /**
      * Blocks placed or destroyed
      *
-     * @param causeId
+     * @param cause
+     * @param causerId
      * @param newState
      * @param oldState
      */
@@ -388,9 +400,17 @@ public class LogManager
         {
             throw new IllegalArgumentException("Both states cannot be null!");
         }
-        if (cause.equals(BlockLogger.BlockChangeCause.GROW) && causerId > 0)
+        if (cause.equals(BlockLogger.BlockChangeCause.WORLDEDIT))
+        {
+            type = BLOCK_CHANGE_WE;
+        }
+        else if (cause.equals(BlockLogger.BlockChangeCause.GROW) && causerId > 0)
         {
             type = BLOCK_GROW_BP;
+        }
+        else if (cause.equals(BlockLogger.BlockChangeCause.EXPLOSION) && causerId > 0)
+        {
+            type = BLOCK_EXPLODE;
         }
         this.logBlockLog(location, type, causerId, world, BlockData.get(oldState), BlockData.get(newState));
     }
@@ -398,7 +418,8 @@ public class LogManager
     /**
      * Blocks changed (interaction)
      *
-     * @param key
+     * @param causerId
+     * @param world
      * @param state
      * @param newData
      */
@@ -489,9 +510,10 @@ public class LogManager
     /**
      * Message typed
      *
-     * @param userId
-     * @param loc
-     * @param chat
+     * @param causerId
+     * @param world
+     * @param location
+     * @param message
      * @param isChat
      */
     public void logChatLog(final long causerId, final World world, final Location location, final String message, final boolean isChat)
@@ -576,6 +598,8 @@ public class LogManager
                 case BLOCK_BREAK:
                 case BLOCK_CHANGE:
                 case BLOCK_GROW_BP:
+                case BLOCK_CHANGE_WE:
+                case BLOCK_EXPLODE:
                     break;
                 default:
                     throw new IllegalStateException("Not a Block-Log!");

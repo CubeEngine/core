@@ -5,12 +5,14 @@ import de.cubeisland.cubeengine.log.Log;
 import de.cubeisland.cubeengine.log.lookup.BlockLog;
 import de.cubeisland.cubeengine.log.lookup.BlockLookup;
 import de.cubeisland.cubeengine.log.storage.BlockData;
-import java.sql.Timestamp;
+import de.cubeisland.cubeengine.log.storage.LogManager;
 import org.bukkit.Location;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
+
+import java.sql.Timestamp;
 
 public class ToolListener implements Listener
 {
@@ -33,7 +35,9 @@ public class ToolListener implements Listener
                     loc.getWorld(), loc, null,
                     new Integer[]
                     {
-                        0, 1, 2, 3, 4
+                            LogManager.BLOCK_BREAK,LogManager.BLOCK_CHANGE,LogManager.BLOCK_PLACE,
+                            LogManager.BLOCK_SIGN, LogManager.BLOCK_CHANGE_WE, LogManager.BLOCK_GROW_BP,
+                            LogManager.BLOCK_EXPLODE
                     },
                     new Long[]
                     {

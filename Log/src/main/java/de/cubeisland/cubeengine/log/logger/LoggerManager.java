@@ -2,6 +2,7 @@ package de.cubeisland.cubeengine.log.logger;
 
 import de.cubeisland.cubeengine.log.Log;
 import de.cubeisland.cubeengine.log.Logger;
+import de.cubeisland.cubeengine.log.logger.worldedit.WorldEditLogger;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -31,6 +32,7 @@ public class LoggerManager {
         this.createLogger(InteractionLogger.class);
         this.createLogger(KillLogger.class);
         this.createLogger(SignChangeLogger.class);
+        this.createLogger(WorldEditLogger.class);
     }
 
     public <T extends Logger> void createLogger(Class<T> loggerClass)

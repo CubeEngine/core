@@ -11,7 +11,7 @@ import org.bukkit.event.world.StructureGrowEvent;
 
 import static de.cubeisland.cubeengine.log.logger.BlockLogger.BlockChangeCause.GROW;
 
-public class BlockGrowLogger extends    BlockLogger<BlockGrowConfig>
+public class BlockGrowLogger extends BlockLogger<BlockGrowConfig>
 {
     public BlockGrowLogger(Log module) {
         super(module, BlockGrowConfig.class);
@@ -39,8 +39,8 @@ public class BlockGrowLogger extends    BlockLogger<BlockGrowConfig>
             for (BlockState newBlock : event.getBlocks())
             {
                 BlockState oldBlock =  event.getWorld().getBlockAt(newBlock.getLocation()).getState();
-                if (oldBlock.getTypeId() == newBlock.getTypeId()
-                &&  oldBlock.getRawData() == newBlock.getRawData())
+                if (!(oldBlock.getTypeId() == newBlock.getTypeId()
+                &&  oldBlock.getRawData() == newBlock.getRawData()))
                     this.logBlockChange(GROW, world, player,oldBlock , newBlock);
             }
         }

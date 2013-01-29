@@ -4,8 +4,8 @@ import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.log.Log;
 import de.cubeisland.cubeengine.log.Logger;
 import de.cubeisland.cubeengine.log.logger.config.SignChangeConfig;
+import org.bukkit.Location;
 import org.bukkit.World;
-import org.bukkit.block.BlockState;
 import org.bukkit.block.Sign;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -26,33 +26,57 @@ public class SignChangeLogger extends Logger<SignChangeConfig>
         SignChangeConfig config = this.configs.get(world);
         if (config.enabled)
         {
-            this.logSignChange(event.getPlayer(), event.getLines(), event.getBlock().getState());
+            this.logSignChange(event.getPlayer(), event.getLines(), ((Sign)event.getBlock().getState()).getLines(), event.getBlock().getLocation());
         }
     }
 
-    public void logSignChange(Player player, String[] newLines, BlockState state)
+    public void logSignChange(Player player, String[] newLines, String[] oldlines, Location location)
     {
-        String[] oldlines = ((Sign)state).getLines();
-        for (int i = 0; i < 4; ++i)
+        if (newLines != null && oldlines != null)
         {
-            if (newLines[0].equals(oldlines[0])
-                && newLines[1].equals(oldlines[1])
-                && newLines[2].equals(oldlines[2])
-                && newLines[3].equals(oldlines[3]))
+            for (int i = 0; i < 4; ++i)
             {
-                return; //No change -> return
+                if (newLines[0].equals(oldlines[0])
+                        && newLines[1].equals(oldlines[1])
+                        && newLines[2].equals(oldlines[2])
+                        && newLines[3].equals(oldlines[3]))
+                {
+                    return; //No change -> return
+                }
             }
         }
         User user = module.getUserManager().getExactUser(player);
         if (user == null)
         {
-            this.module.getLogManager().logSignLog(0, state.getLocation(), oldlines, newLines);
+            this.module.getLogManager().logSignLog(0, location, oldlines, newLines);
         }
         else
         {
-            this.module.getLogManager().logSignLog(user.key.intValue(), state.getLocation(), oldlines, newLines);
+            this.module.getLogManager().logSignLog(user.key.intValue(), location, oldlines, newLines);
+        }
+    }
+
+    public void logSignPlaceWithData(Player player, Sign state)
+    {
+        for (String line : state.getLines())
+        {
+            if (!line.isEmpty())
+            {
+                this.logSignChange(player,state.getLines(),null,state.getLocation()); // Only log if there are lines
+                return;
+            }
         }
     }
 
 
+    public void logSignBreak(Player player, Sign state) {
+        for (String line : state.getLines())
+        {
+            if (!line.isEmpty())
+            {
+                this.logSignChange(player,null,state.getLines(),state.getLocation()); // Only log if there are lines
+                return;
+            }
+        }
+    }
 }

@@ -16,6 +16,11 @@ public class BlockData
         this.data = data;
     }
 
+    public BlockData(int material, byte data)
+    {
+        this(Material.getMaterial(material),data);
+    }
+
     public static BlockData get(Integer mat, Byte data)
     {
         if (mat == null)

@@ -59,7 +59,6 @@ public class BlockExplosionLogger extends    BlockLogger<BlockExplosionConfig>
             for (Block block : event.blockList())
             {
                 this.logBlockChange(BlockChangeCause.EXPLOSION, world, player, block.getState(), null);
-                //TODO save information about the player!!!
             }
         }
     }

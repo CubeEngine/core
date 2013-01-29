@@ -56,7 +56,9 @@ public enum LogAction
         ChatConfig.class),
     KILL(
         false,
-        KillConfig.class), ;
+        KillConfig.class),
+    WORLDEDIT
+    (false,WorldEditConfig.class);
 
     private Class<? extends SubLogConfig>[] configClasses;
     private boolean defaultEnabled;

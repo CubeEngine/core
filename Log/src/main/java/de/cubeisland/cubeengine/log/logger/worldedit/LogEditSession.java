@@ -6,7 +6,11 @@ import com.sk89q.worldedit.LocalWorld;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.bags.BlockBag;
 import com.sk89q.worldedit.blocks.BaseBlock;
+import com.sk89q.worldedit.bukkit.BukkitPlayer;
+import com.sk89q.worldedit.bukkit.BukkitWorld;
 import de.cubeisland.cubeengine.log.Log;
+import org.bukkit.World;
+import org.bukkit.block.BlockState;
 
 public class LogEditSession extends EditSession {
 
@@ -39,7 +43,24 @@ public class LogEditSession extends EditSession {
 
     @Override
     public boolean rawSetBlock(Vector pt, BaseBlock block) {
-        //TODO do log the changes
+        if (player instanceof BukkitPlayer)
+        {
+            if (player.getWorld() instanceof BukkitWorld)
+            {
+                World world = ((BukkitWorld)player.getWorld()).getWorld();
+                WorldEditLogger logger =  module.getLoggerManager().getLogger(WorldEditLogger.class);
+                if (logger.getConfig(world).enabled)
+                {
+                    BlockState oldState = world.getBlockAt(pt.getBlockX(),pt.getBlockY(),pt.getBlockZ()).getState();
+                    boolean success = super.rawSetBlock(pt, block);
+                    if (success)
+                    {
+                        logger.logWorldEditChange(((BukkitPlayer)player).getPlayer(), oldState, world.getBlockAt(pt.getBlockX(),pt.getBlockY(),pt.getBlockZ()).getState());
+                    }
+                    return success;
+                }
+            }
+        }
         return super.rawSetBlock(pt, block);
     }
 }

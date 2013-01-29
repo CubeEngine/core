@@ -17,9 +17,6 @@ public class BlockBreakConfig extends SubLogConfig
     @Option("no-logging")
     public Collection<Material> noLogging = new LinkedList<Material>();
 
-    @Option("log-worldedit")
-    public boolean logWorldEdit = true;
-
     @Override
     public String getName()
     {

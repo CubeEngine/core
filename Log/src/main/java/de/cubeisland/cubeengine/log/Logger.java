@@ -1,5 +1,6 @@
 package de.cubeisland.cubeengine.log;
 
+import de.cubeisland.cubeengine.log.logger.worldedit.WorldEditLogger;
 import org.bukkit.World;
 import org.bukkit.event.Listener;
 
@@ -39,6 +40,7 @@ public abstract class Logger<T extends SubLogConfig> implements Listener
         }
         if (enabled)
         {
+            if (!(this instanceof WorldEditLogger))
             this.module.registerListener(this);
         }
         else

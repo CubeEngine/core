@@ -68,7 +68,8 @@ public abstract class BlockLogger<T extends SubLogConfig> extends Logger<T>
         GROW(
             -8),
         WITHER(
-            -9);
+            -9),
+        WORLDEDIT(-10);
 
         private BlockChangeCause(int causeID)
         {
