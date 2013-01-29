@@ -84,7 +84,12 @@ public class YamlCodec extends ConfigurationCodec
             if (value instanceof StringNode) // String-Node ?
             {
                 String string = ((StringNode)value).getValue();
-                if (this.needsQuote(string))
+                if (string.contains(LINE_BREAK)) // MultiLine String
+                {
+                    sb.append("|").append(LINE_BREAK).append(offset).append(OFFSET);
+                    sb.append(string.trim().replace(LINE_BREAK,LINE_BREAK+offset+OFFSET));
+                }
+                else if (this.needsQuote(string))
                 {
                     sb.append(QUOTE).append(string).append(QUOTE);
                 }
