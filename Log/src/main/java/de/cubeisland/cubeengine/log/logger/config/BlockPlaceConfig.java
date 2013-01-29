@@ -1,13 +1,13 @@
 package de.cubeisland.cubeengine.log.logger.config;
 
 import de.cubeisland.cubeengine.core.config.annotations.Option;
-import de.cubeisland.cubeengine.log.SubLogConfig;
+import de.cubeisland.cubeengine.log.LoggerConfig;
 import org.bukkit.Material;
 
 import java.util.Collection;
 import java.util.LinkedList;
 
-public  class BlockPlaceConfig extends SubLogConfig
+public  class BlockPlaceConfig extends LoggerConfig
 {
     public BlockPlaceConfig()
     {

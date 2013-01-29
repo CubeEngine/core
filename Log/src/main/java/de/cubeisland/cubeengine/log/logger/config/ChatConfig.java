@@ -2,12 +2,12 @@ package de.cubeisland.cubeengine.log.logger.config;
 
 import de.cubeisland.cubeengine.core.config.annotations.Comment;
 import de.cubeisland.cubeengine.core.config.annotations.Option;
-import de.cubeisland.cubeengine.log.SubLogConfig;
+import de.cubeisland.cubeengine.log.LoggerConfig;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class ChatConfig extends SubLogConfig
+public class ChatConfig extends LoggerConfig
 {
     public ChatConfig() {
         super(false);

@@ -10,5 +10,5 @@ public class LogActionConfig extends Configuration
     @Option("enabled")
     public boolean enabled;
     @Option("sub-actions")
-    public Map<String, SubLogConfig> subLogConfigs = new THashMap<String, SubLogConfig>();
+    public Map<String, LoggerConfig> loggerConfigs = new THashMap<String, LoggerConfig>();
 }

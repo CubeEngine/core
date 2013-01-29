@@ -7,7 +7,7 @@ import org.bukkit.event.Listener;
 import java.util.HashMap;
 import java.util.Map;
 
-public abstract class Logger<T extends SubLogConfig> implements Listener
+public abstract class Logger<T extends LoggerConfig> implements Listener
 {
     protected final Log module;
     protected Map<World,T> configs;

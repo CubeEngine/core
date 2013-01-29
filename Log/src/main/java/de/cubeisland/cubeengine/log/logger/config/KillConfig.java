@@ -3,9 +3,9 @@ package de.cubeisland.cubeengine.log.logger.config;
 
 import de.cubeisland.cubeengine.core.config.annotations.Comment;
 import de.cubeisland.cubeengine.core.config.annotations.Option;
-import de.cubeisland.cubeengine.log.SubLogConfig;
+import de.cubeisland.cubeengine.log.LoggerConfig;
 
-public  class KillConfig extends SubLogConfig
+public  class KillConfig extends LoggerConfig
 {
     public KillConfig()
     {

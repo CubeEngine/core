@@ -3,9 +3,9 @@ package de.cubeisland.cubeengine.log;
 import de.cubeisland.cubeengine.core.config.Configuration;
 import de.cubeisland.cubeengine.core.config.annotations.Option;
 
-public abstract class SubLogConfig extends Configuration
+public abstract class LoggerConfig extends Configuration
 {
-    protected SubLogConfig(boolean enabled) {
+    protected LoggerConfig(boolean enabled) {
         this.enabled = enabled;
     }
 

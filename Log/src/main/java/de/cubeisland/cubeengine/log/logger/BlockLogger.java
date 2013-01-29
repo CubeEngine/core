@@ -3,12 +3,12 @@ package de.cubeisland.cubeengine.log.logger;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.log.Log;
 import de.cubeisland.cubeengine.log.Logger;
-import de.cubeisland.cubeengine.log.SubLogConfig;
+import de.cubeisland.cubeengine.log.LoggerConfig;
 import org.bukkit.World;
 import org.bukkit.block.BlockState;
 import org.bukkit.entity.Player;
 
-public abstract class BlockLogger<T extends SubLogConfig> extends Logger<T>
+public abstract class BlockLogger<T extends LoggerConfig> extends Logger<T>
 {
     public BlockLogger(Log module, Class<T> configClass)
     {

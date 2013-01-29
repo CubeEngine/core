@@ -199,7 +199,6 @@ public class LogManager
         log.addMainLogData(current, world_id, x, y, z, action, causer);
 
         this.queuedLogs.offer(log);
-        System.out.println("Added Log-Type-"+ action+": "+ this.queuedLogs.size());
     }
 
     private volatile boolean running = false;

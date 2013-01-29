@@ -1,8 +1,8 @@
 package de.cubeisland.cubeengine.log.logger.config;
 
-import de.cubeisland.cubeengine.log.SubLogConfig;
+import de.cubeisland.cubeengine.log.LoggerConfig;
 
-public class BlockBurnConfig extends SubLogConfig
+public class BlockBurnConfig extends LoggerConfig
 {
     public BlockBurnConfig() {
         super(false);
