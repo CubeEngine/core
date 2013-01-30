@@ -4,7 +4,7 @@ import de.cubeisland.cubeengine.core.config.node.Node;
 import de.cubeisland.cubeengine.core.util.convert.ConversionException;
 import de.cubeisland.cubeengine.core.util.convert.Convert;
 import de.cubeisland.cubeengine.core.util.convert.Converter;
-import de.cubeisland.cubeengine.core.util.matcher.MaterialMatcher;
+import de.cubeisland.cubeengine.core.util.matcher.Match;
 import org.bukkit.Material;
 
 import java.util.regex.Matcher;
@@ -40,7 +40,7 @@ public class KitItemConverter implements Converter<KitItem>
             short dura;
             try
             {
-                Material mat = MaterialMatcher.get().matchMaterial(materialString);
+                Material mat = Match.material().material(materialString);
                 if (amountString == null)
                 {
                     amount = mat.getMaxStackSize();

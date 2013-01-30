@@ -7,21 +7,13 @@ import de.cubeisland.cubeengine.core.util.StringUtils;
 import de.cubeisland.cubeengine.core.util.log.LogLevel;
 import gnu.trove.map.hash.THashMap;
 import gnu.trove.map.hash.TIntObjectHashMap;
-import org.bukkit.DyeColor;
+import gnu.trove.map.hash.TShortObjectHashMap;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.SkullMeta;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.EnumSet;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeMap;
+import java.util.*;
 
 /**
  * This Matcher provides methods to match Material or Items.
@@ -30,18 +22,38 @@ public class MaterialMatcher
 {
     //TODO rename item ; is it possible?
     private THashMap<String, ItemStack> items;
-    private THashMap<ItemStack, String> itemnames;
-    private TIntObjectHashMap<THashMap<String, Short>> datavalues;
-    private static MaterialMatcher instance = null;
+    private TIntObjectHashMap<TShortObjectHashMap<String>> itemnames;
+
     private THashMap<String, ItemStack> bukkitnames;
 
-    private MaterialMatcher()
+    private MaterialDataMatcher materialDataMatcher;
+
+
+    private final Set<Material> repairableMaterials = Collections.synchronizedSet(
+        EnumSet.of(
+            Material.IRON_SPADE, Material.IRON_PICKAXE, Material.IRON_AXE, Material.IRON_SWORD, Material.IRON_HOE,
+            Material.WOOD_SPADE, Material.WOOD_PICKAXE, Material.WOOD_AXE, Material.WOOD_SWORD, Material.WOOD_HOE,
+            Material.STONE_SPADE, Material.STONE_PICKAXE, Material.STONE_AXE, Material.STONE_SWORD, Material.STONE_HOE,
+            Material.DIAMOND_SPADE, Material.DIAMOND_PICKAXE, Material.DIAMOND_AXE, Material.DIAMOND_SWORD, Material.DIAMOND_HOE,
+            Material.GOLD_SPADE, Material.GOLD_PICKAXE, Material.GOLD_AXE, Material.GOLD_SWORD, Material.GOLD_HOE,
+            Material.LEATHER_HELMET, Material.LEATHER_CHESTPLATE, Material.LEATHER_LEGGINGS, Material.LEATHER_BOOTS,
+            Material.CHAINMAIL_HELMET, Material.CHAINMAIL_CHESTPLATE, Material.CHAINMAIL_LEGGINGS, Material.CHAINMAIL_BOOTS,
+            Material.IRON_HELMET, Material.IRON_CHESTPLATE, Material.IRON_LEGGINGS, Material.IRON_BOOTS,
+            Material.DIAMOND_HELMET, Material.DIAMOND_CHESTPLATE, Material.DIAMOND_LEGGINGS, Material.DIAMOND_BOOTS,
+            Material.GOLD_HELMET, Material.GOLD_CHESTPLATE, Material.GOLD_LEGGINGS, Material.GOLD_BOOTS,
+            Material.FLINT_AND_STEEL,
+            Material.BOW,
+            Material.FISHING_ROD,
+            Material.SHEARS));
+
+
+    MaterialMatcher(MaterialDataMatcher materialDataMatcher)
     {
+        this.materialDataMatcher = materialDataMatcher;
         this.items = new THashMap<String, ItemStack>();
-        this.itemnames = new THashMap<ItemStack, String>();
+        this.itemnames = new TIntObjectHashMap<TShortObjectHashMap<String>>();
         this.bukkitnames = new THashMap<String, ItemStack>();
         TreeMap<Integer, TreeMap<Short, List<String>>> readItems = this.readItems();
-        this.readDataValues();
         for (Integer item : readItems.keySet())
         {
             for (short data : readItems.get(item).keySet())
@@ -57,20 +69,6 @@ public class MaterialMatcher
     }
 
     /**
-     * Returns an instance of the matcher
-     *
-     * @return the singleton instance of the material matcher
-     */
-    public static MaterialMatcher get()
-    {
-        if (instance == null)
-        {
-            instance = new MaterialMatcher();
-        }
-        return instance;
-    }
-
-    /**
      * Registers an ItemStack for the matcher with a list of names
      *
      * @param item the Item
@@ -82,194 +80,17 @@ public class MaterialMatcher
         {
             return;
         }
-        this.itemnames.put(new ItemStack(item.getType(), 1, item.getDurability()), names.get(0));
+        TShortObjectHashMap<String> dataMap = this.itemnames.get(item.getTypeId());
+        if (dataMap == null)
+        {
+            dataMap = new TShortObjectHashMap<String>();
+            this.itemnames.put(item.getTypeId(),dataMap);
+        }
+        dataMap.put(item.getDurability(), names.get(0));
         for (String s : names)
         {
             this.items.put(s.toLowerCase(Locale.ENGLISH), item);
         }
-    }
-
-    /**
-     * Tries to match a ItemStack for given name
-     *
-     * @param name the name
-     * @return the found ItemStack
-     */
-    public ItemStack matchItemStack(String name)
-    {
-        if (name == null)
-        {
-            return null;
-        }
-        String s = name.toLowerCase(Locale.ENGLISH);
-        ItemStack item = this.items.get(s);//direct match
-        if (item == null)
-        {
-            try
-            { // id match
-                Material mat = Material.getMaterial(Integer.parseInt(s));
-                if (mat != null)
-                {
-                    return new ItemStack(mat, 1);
-                }
-            }
-            catch (NumberFormatException e)
-            {
-                try
-                {
-                    // id and data match
-                    item = new ItemStack(Integer.parseInt(s.substring(0, s.indexOf(":"))), 1);
-                    item = this.setData(item, name.substring(name.indexOf(":") + 1)); // Try to set data / returns null if couldn't
-                    return item;
-                }
-                catch (Exception ignored)
-                {}
-            }
-            if (s.contains(":"))
-            {
-                // name match with data
-                String material = s.substring(0, s.indexOf(":"));
-                String data = name.substring(name.indexOf(":") + 1);
-                item = this.setData(this.items.get(material), data); // Try to set data / returns null if couldn't
-                if (item == null)
-                {
-                    //name was probably wrong check ld:
-                    item = matchWithLevenshteinDistance(material, items);
-                    item = this.setData(item, data); // Try to set data / returns null if couldn't
-                }
-                if (item == null) // Contained ":" but could not find any matching item
-                {
-                    // Try to match bukkit name
-                    item = this.matchWithLevenshteinDistance(s, bukkitnames);
-                    item = this.setData(item, data);
-                    return item;
-                }
-            }
-            if (item == null)
-            {
-                // ld-match
-                item = matchWithLevenshteinDistance(s, items);
-                if (item == null)
-                {
-                    // Try to match bukkit name
-                    return this.matchWithLevenshteinDistance(s, bukkitnames);
-                }
-            }
-        }
-        return item.clone();
-    }
-
-    /**
-     * Matches a DyeColor
-     *
-     * @param data the data
-     * @return the dye color
-     */
-    public DyeColor matchColorData(String data)
-    {
-        Short dataVal = this.datavalues.get(35).get(StringUtils.matchString(data, this.datavalues.get(35).keySet()));
-        if (dataVal == null)
-        {
-            return null;
-        }
-        return DyeColor.getByData(dataVal.byteValue());
-    }
-
-    /**
-     * Sets the data for an ItemStack
-     *
-     * @param item the item
-     * @param rawData the data
-     * @return the modified clone of the item
-     */
-    private ItemStack setData(ItemStack item, String rawData)
-    {
-        String data = rawData.toLowerCase(Locale.ENGLISH);
-        if (item == null)
-        {
-            return null;
-        }
-        item = item.clone();
-        try
-        { // try dataValue as Number
-            item.setDurability(Short.parseShort(data));
-            return item;
-        }
-        catch (NumberFormatException e)
-        { // check for special cases
-            switch (item.getType())
-            {
-                case WOOD:
-                case LOG:
-                case LEAVES:
-                case WOOD_STEP:
-                case WOOD_DOUBLE_STEP:
-                case WOOL:
-                case INK_SACK:
-                case DOUBLE_STEP:
-                case STEP:
-                case SANDSTONE:
-                case BRICK:
-                case HUGE_MUSHROOM_1:
-                case HUGE_MUSHROOM_2:
-                case POTION:
-                    String foundData = StringUtils.matchString(data, this.datavalues.get(item.getTypeId()).keySet());
-                    if (foundData != null)
-                    {
-                        item.setDurability(this.datavalues.get(item.getType().getId()).get(foundData));
-                    }
-                    return item;
-                case MONSTER_EGG:
-                    EntityType foundEggData = EntityMatcher.get().matchSpawnEggMobs(data);
-                    if (foundEggData != null)
-                    {
-                        item.setDurability(foundEggData.getBukkitType().getTypeId());
-                    }
-                    return item;
-                case SKULL_ITEM:
-                    item.setDurability((short)3);
-                    SkullMeta meta = ((SkullMeta)item.getItemMeta());
-                    meta.setOwner(rawData);
-                    item.setItemMeta(meta);
-                    return item;
-                default:
-                    return null;
-            }
-        }
-    }
-
-    private ItemStack matchWithLevenshteinDistance(String s, Map<String, ItemStack> map)
-    {
-        String t_key = StringUtils.matchString(s, map.keySet(), false);
-        if (t_key != null)
-        {
-            return map.get(t_key);
-        }
-        return null;
-    }
-
-    /**
-     * Tries to match a Material for given name
-     *
-     * @param name the name
-     * @return the material or null if not found
-     */
-    public Material matchMaterial(String name)
-    {
-        String s = name.toLowerCase(Locale.ENGLISH);
-        try
-        {
-            int matId = Integer.parseInt(s);
-            return Material.getMaterial(matId);
-        }
-        catch (NumberFormatException ignored)
-        {}
-        ItemStack item = this.matchItemStack(s);
-        if (item != null)
-        {
-            return item.getType();
-        }
-        return null;
     }
 
     /**
@@ -400,125 +221,107 @@ public class MaterialMatcher
     }
 
     /**
-     * Loads in the file with the saved item-datavalues
+     * Tries to match a ItemStack for given name
+     *
+     * @param name the name
+     * @return the found ItemStack
      */
-    private void readDataValues()
+    public ItemStack itemStack(String name)
     {
-        this.datavalues = new TIntObjectHashMap<THashMap<String, Short>>();
-        try
+        if (name == null)
         {
-            File file = new File(CubeEngine.getFileManager().getDataFolder(), CoreResource.DATAVALUES.getTarget());
-            List<String> input = FileUtil.readStringList(file);
-            THashMap<String, Short> data = new THashMap<String, Short>();
-            for (String line : input)
+            return null;
+        }
+        String s = name.toLowerCase(Locale.ENGLISH);
+        ItemStack item = this.items.get(s);//direct match
+        if (item == null)
+        {
+            try
+            { // id match
+                Material mat = Material.getMaterial(Integer.parseInt(s));
+                if (mat != null)
+                {
+                    return new ItemStack(mat, 1);
+                }
+            }
+            catch (NumberFormatException e)
             {
-                line = line.trim();
-                if (line.isEmpty() || line.startsWith("#"))
+                try
                 {
-                    continue;
+                    // id and data match
+                    item = new ItemStack(Integer.parseInt(s.substring(0, s.indexOf(":"))), 1);
+                    item = materialDataMatcher.setData(item, name.substring(name.indexOf(":") + 1)); // Try to set data / returns null if couldn't
+                    return item;
                 }
-                if (line.endsWith(":"))
+                catch (Exception ignored)
+                {}
+            }
+            if (s.contains(":"))
+            {
+                // name match with data
+                String material = s.substring(0, s.indexOf(":"));
+                String data = name.substring(name.indexOf(":") + 1);
+                item = materialDataMatcher.setData(this.items.get(material), data); // Try to set data / returns null if couldn't
+                if (item == null)
                 {
-                    for (String key : StringUtils.explode(",", line.substring(0, line.length() - 1)))
-                    {
-                        data = new THashMap<String, Short>();
-                        this.datavalues.put(Integer.parseInt(key), data);
-                    }
+                    //name was probably wrong check ld:
+                    item = matchWithLevenshteinDistance(material, items);
+                    item = materialDataMatcher.setData(item, data); // Try to set data / returns null if couldn't
                 }
-                else
+                if (item == null) // Contained ":" but could not find any matching item
                 {
-                    if (line.contains(":"))
-                    {
-                        for (String key : StringUtils.explode(",", line.substring(0, line.indexOf(":"))))
-                        {
-                            data.put(key, Short.parseShort(line.substring(line.indexOf(":") + 1).trim()));
-                        }
-                    }
+                    // Try to match bukkit name
+                    item = this.matchWithLevenshteinDistance(s, bukkitnames);
+                    item = materialDataMatcher.setData(item, data);
+                    return item;
+                }
+            }
+            if (item == null)
+            {
+                // ld-match
+                item = matchWithLevenshteinDistance(s, items);
+                if (item == null)
+                {
+                    // Try to match bukkit name
+                    return this.matchWithLevenshteinDistance(s, bukkitnames);
                 }
             }
         }
-        catch (NumberFormatException ex)
+        return item.clone();
+    }
+
+    private ItemStack matchWithLevenshteinDistance(String s, Map<String, ItemStack> map)
+    {
+        String t_key = StringUtils.matchString(s, map.keySet(), false);
+        if (t_key != null)
         {
-            throw new IllegalStateException("datavalues.txt is corrupted!", ex);
+            return map.get(t_key);
         }
+        return null;
     }
 
     /**
-     * This enum contains all repairable items
+     * Tries to match a Material for given name
+     *
+     * @param name the name
+     * @return the material or null if not found
      */
-    public enum RepairableMaterials
+    public Material material(String name)
     {
-        IRON_SPADE,
-        IRON_PICKAXE,
-        IRON_AXE,
-        IRON_SWORD,
-        WOOD_SPADE,
-        WOOD_PICKAXE,
-        WOOD_AXE,
-        WOOD_SWORD,
-        STONE_SPADE,
-        STONE_PICKAXE,
-        STONE_AXE,
-        STONE_SWORD,
-        DIAMOND_SPADE,
-        DIAMOND_PICKAXE,
-        DIAMOND_AXE,
-        DIAMOND_SWORD,
-        GOLD_SPADE,
-        GOLD_PICKAXE,
-        GOLD_AXE,
-        GOLD_SWORD,
-        WOOD_HOE,
-        STONE_HOE,
-        IRON_HOE,
-        DIAMOND_HOE,
-        GOLD_HOE,
-        LEATHER_HELMET,
-        LEATHER_CHESTPLATE,
-        LEATHER_LEGGINGS,
-        LEATHER_BOOTS,
-        CHAINMAIL_HELMET,
-        CHAINMAIL_CHESTPLATE,
-        CHAINMAIL_LEGGINGS,
-        CHAINMAIL_BOOTS,
-        IRON_HELMET,
-        IRON_CHESTPLATE,
-        IRON_LEGGINGS,
-        IRON_BOOTS,
-        DIAMOND_HELMET,
-        DIAMOND_CHESTPLATE,
-        DIAMOND_LEGGINGS,
-        DIAMOND_BOOTS,
-        GOLD_HELMET,
-        GOLD_CHESTPLATE,
-        GOLD_LEGGINGS,
-        GOLD_BOOTS,
-        FLINT_AND_STEEL,
-        BOW,
-        FISHING_ROD,
-        SHEARS;
-        private static final Set<Material> mats = Collections.synchronizedSet(EnumSet.noneOf(Material.class));
-
-        static
+        String s = name.toLowerCase(Locale.ENGLISH);
+        try
         {
-            for (RepairableMaterials rMats : values())
-            {
-                mats.add(Material.matchMaterial(rMats.name()));
-            }
-
+            int matId = Integer.parseInt(s);
+            return Material.getMaterial(matId);
         }
-
-        /**
-         * Returns whether the given ItemStack is repairable
-         */
-        public static boolean isRepairable(ItemStack item)
+        catch (NumberFormatException ignored)
+        {}
+        ItemStack item = this.itemStack(s);
+        if (item != null)
         {
-            if (item == null)
-            {
-                return false;
-            }
-            return mats.contains(item.getType());
+            return item.getType();
         }
+        return null;
     }
 
     /**
@@ -526,7 +329,7 @@ public class MaterialMatcher
      */
     public boolean isRepairable(ItemStack item)
     {
-        return RepairableMaterials.isRepairable(item);
+        return this.repairableMaterials.contains(item.getType());
     }
 
     /**
@@ -541,7 +344,17 @@ public class MaterialMatcher
         {
             return null;
         }
-        // TODO find a better solution
-        return this.itemnames.get(new ItemStack(item.getType(), 1, item.getDurability()));
+        TShortObjectHashMap<String > dataMap = this.itemnames.get(item.getTypeId());
+        if (dataMap == null)
+        {
+            CubeEngine.getLogger().warning("Unknown Item! ("+item.toString()+")");
+            return null;
+        }
+        String itemName = dataMap.get(item.getDurability());
+        if (itemName == null)
+        {
+            return dataMap.get((short) 0);
+        }
+        return itemName;
     }
 }

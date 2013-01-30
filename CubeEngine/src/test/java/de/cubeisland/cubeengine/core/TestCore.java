@@ -13,6 +13,7 @@ import de.cubeisland.cubeengine.core.storage.TableManager;
 import de.cubeisland.cubeengine.core.storage.database.Database;
 import de.cubeisland.cubeengine.core.storage.world.WorldManager;
 import de.cubeisland.cubeengine.core.user.UserManager;
+import de.cubeisland.cubeengine.core.util.matcher.Match;
 import de.cubeisland.cubeengine.core.webapi.ApiServer;
 import java.io.File;
 import java.util.logging.Logger;
@@ -131,6 +132,11 @@ public class TestCore implements Core
     @Override
     public WorldManager getWorldManager()
     {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public Match getMatcherManager() {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 }

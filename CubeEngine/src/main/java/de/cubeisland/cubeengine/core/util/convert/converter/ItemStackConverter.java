@@ -5,7 +5,7 @@ import de.cubeisland.cubeengine.core.config.node.StringNode;
 import de.cubeisland.cubeengine.core.util.convert.ConversionException;
 import de.cubeisland.cubeengine.core.util.convert.Convert;
 import de.cubeisland.cubeengine.core.util.convert.Converter;
-import de.cubeisland.cubeengine.core.util.matcher.MaterialMatcher;
+import de.cubeisland.cubeengine.core.util.matcher.Match;
 import org.bukkit.inventory.ItemStack;
 
 public class ItemStackConverter implements Converter<ItemStack>
@@ -21,7 +21,7 @@ public class ItemStackConverter implements Converter<ItemStack>
     {
         if (node instanceof StringNode)
         {
-            return MaterialMatcher.get().matchItemStack(((StringNode) node).getValue());
+            return Match.material().itemStack(((StringNode) node).getValue());
         }
         throw  new ConversionException("Invalid Node!"+ node.getClass());
     }

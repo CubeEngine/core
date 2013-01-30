@@ -15,7 +15,6 @@ import de.cubeisland.cubeengine.core.i18n.I18n;
 import de.cubeisland.cubeengine.core.module.ModuleManager;
 import de.cubeisland.cubeengine.core.module.event.FinishedLoadModulesEvent;
 import de.cubeisland.cubeengine.core.permission.PermissionManager;
-import de.cubeisland.cubeengine.core.storage.Registry;
 import de.cubeisland.cubeengine.core.storage.TableManager;
 import de.cubeisland.cubeengine.core.storage.database.Database;
 import de.cubeisland.cubeengine.core.storage.database.DatabaseFactory;
@@ -24,6 +23,7 @@ import de.cubeisland.cubeengine.core.user.UserManager;
 import de.cubeisland.cubeengine.core.util.log.CubeFileHandler;
 import de.cubeisland.cubeengine.core.util.log.CubeLogger;
 import de.cubeisland.cubeengine.core.util.log.LogLevel;
+import de.cubeisland.cubeengine.core.util.matcher.Match;
 import de.cubeisland.cubeengine.core.util.worker.CubeThreadFactory;
 import de.cubeisland.cubeengine.core.webapi.ApiConfig;
 import de.cubeisland.cubeengine.core.webapi.ApiServer;
@@ -60,6 +60,7 @@ public class BukkitCore extends JavaPlugin implements Core
     private ObjectMapper jsonObjectMapper;
     private ApiServer apiServer;
     private WorldManager worldManager;
+    private Match matcherManager;
 
     @Override
     public void onEnable()
@@ -171,6 +172,8 @@ public class BukkitCore extends JavaPlugin implements Core
 
         // depends on: server
         BukkitUtils.registerPacketHookInjector(this);
+
+        this.matcherManager = new Match();
 
         this.getServer().getScheduler().scheduleSyncDelayedTask(this, new Runnable()
         {
@@ -354,5 +357,10 @@ public class BukkitCore extends JavaPlugin implements Core
     public WorldManager getWorldManager()
     {
         return this.worldManager;
+    }
+
+    @Override
+    public Match getMatcherManager() {
+        return this.matcherManager;
     }
 }

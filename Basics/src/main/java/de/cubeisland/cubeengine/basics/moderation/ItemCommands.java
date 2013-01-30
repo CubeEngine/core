@@ -6,8 +6,8 @@ import de.cubeisland.cubeengine.core.command.CommandContext;
 import de.cubeisland.cubeengine.core.command.annotation.Command;
 import de.cubeisland.cubeengine.core.command.annotation.Flag;
 import de.cubeisland.cubeengine.core.user.User;
-import de.cubeisland.cubeengine.core.util.matcher.EnchantMatcher;
-import de.cubeisland.cubeengine.core.util.matcher.MaterialMatcher;
+import de.cubeisland.cubeengine.core.util.ChatFormat;
+import de.cubeisland.cubeengine.core.util.matcher.Match;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemStack;
@@ -21,7 +21,6 @@ import java.util.List;
 import static de.cubeisland.cubeengine.core.command.exception.IllegalParameterValue.illegalParameter;
 import static de.cubeisland.cubeengine.core.command.exception.InvalidUsageException.*;
 import static de.cubeisland.cubeengine.core.command.exception.PermissionDeniedException.denyAccess;
-import de.cubeisland.cubeengine.core.util.ChatFormat;
 
 /**
  * item-related commands /itemdb /rename /headchange /unlimited /enchant /give
@@ -41,11 +40,11 @@ public class ItemCommands
     {
         if (context.hasIndexed(0))
         {
-            ItemStack item = MaterialMatcher.get().matchItemStack(context.getString(0));
+            ItemStack item = Match.material().itemStack(context.getString(0));
             if (item != null)
             {
                 context.sendMessage("basics", "&aMatched &e%s &f(&e%d&f:&e%d&f) &afor &f%s",
-                        MaterialMatcher.get().getNameFor(item), item.getType().getId(), item.getDurability(), context.getString(0));
+                        Match.material().getNameFor(item), item.getType().getId(), item.getDurability(), context.getString(0));
             }
             else
             {
@@ -61,7 +60,7 @@ public class ItemCommands
             }
             else
             {
-                String found = MaterialMatcher.get().getNameFor(sender.getItemInHand());
+                String found = Match.material().getNameFor(sender.getItemInHand());
                 if (found == null)
                 {
                     context.sendMessage("basics", "&cItemname unknown! Itemdata: &e%d&f:&e%d&f",
@@ -202,7 +201,7 @@ public class ItemCommands
             {
                 item.addUnsafeEnchantment(ench, level);
                 context.sendMessage("basics", "&aAdded unsafe enchantment: &6%s %d &ato your item!",
-                        EnchantMatcher.get().getNameFor(ench), level);
+                        Match.enchant().nameFor(ench), level);
                 return;
             }
             denyAccess(sender, "basics", "&cYou are not allowed to add unsafe enchantments!");
@@ -215,7 +214,7 @@ public class ItemCommands
                         getMaxLevel()))
                 {
                     item.addUnsafeEnchantment(ench, level);
-                    context.sendMessage("bascics", "&aAdded enchantment: &6%s %d &ato your item!", EnchantMatcher.get().getNameFor(ench), level);
+                    context.sendMessage("bascics", "&aAdded enchantment: &6%s %d &ato your item!", Match.enchant().nameFor(ench), level);
                     return;
                 }
                 blockCommand(context, "basics", "&cThis enchantment-level is not allowed!");
@@ -242,12 +241,12 @@ public class ItemCommands
             {
                 if (first)
                 {
-                    sb.append("&e").append(EnchantMatcher.get().getNameFor(enchantment));
+                    sb.append("&e").append(Match.enchant().nameFor(enchantment));
                     first = false;
                 }
                 else
                 {
-                    sb.append("&f, &e").append(EnchantMatcher.get().getNameFor(enchantment));
+                    sb.append("&f, &e").append(Match.enchant().nameFor(enchantment));
                 }
             }
         }
@@ -293,7 +292,7 @@ public class ItemCommands
         item.setAmount(amount);
         user.getInventory().addItem(item);
         user.updateInventory();
-        String matname = MaterialMatcher.get().getNameFor(item);
+        String matname = Match.material().getNameFor(item);
         context.sendMessage("basics", "&aYou gave &2%s &e%d %s&a!", user.getName(), amount, matname);
         user.sendMessage("basics", "&2%s &ajust gave you &e%d %s&a!", context.getSender().getName(), amount, matname);
     }
@@ -331,7 +330,7 @@ public class ItemCommands
         item.setAmount(amount);
         sender.getInventory().addItem(item);
         sender.updateInventory();
-        sender.sendMessage("basics", "&eReceived: %d %s ", amount, MaterialMatcher.get().getNameFor(item));
+        sender.sendMessage("basics", "&eReceived: %d %s ", amount, Match.material().getNameFor(item));
     }
 
     @Command(desc = "Refills the stack in hand", usage = "[amount] [-a]", flags = {
@@ -395,7 +394,7 @@ public class ItemCommands
             int repaired = 0;
             for (ItemStack item : list)
             {
-                if (MaterialMatcher.get().isRepairable(item))
+                if (Match.material().isRepairable(item))
                 {
                     item.setDurability((short)0);
                     repaired++;
@@ -413,7 +412,7 @@ public class ItemCommands
         else
         {
             ItemStack item = sender.getItemInHand();
-            if (MaterialMatcher.get().isRepairable(item))
+            if (Match.material().isRepairable(item))
             {
                 if (item.getDurability() == 0)
                 {

@@ -5,7 +5,7 @@ import de.cubeisland.cubeengine.core.config.node.StringNode;
 import de.cubeisland.cubeengine.core.util.convert.ConversionException;
 import de.cubeisland.cubeengine.core.util.convert.Convert;
 import de.cubeisland.cubeengine.core.util.convert.Converter;
-import de.cubeisland.cubeengine.core.util.matcher.EnchantMatcher;
+import de.cubeisland.cubeengine.core.util.matcher.Match;
 import org.bukkit.enchantments.Enchantment;
 
 public class EnchantmentConverter implements Converter<Enchantment>
@@ -13,7 +13,7 @@ public class EnchantmentConverter implements Converter<Enchantment>
     @Override
     public Node toNode(Enchantment object) throws ConversionException
     {
-        return Convert.wrapIntoNode(EnchantMatcher.get().getNameFor(object));
+        return Convert.wrapIntoNode(Match.enchant().nameFor(object));
     }
 
     @Override
@@ -21,7 +21,7 @@ public class EnchantmentConverter implements Converter<Enchantment>
     {
         if (node instanceof StringNode)
         {
-            return  EnchantMatcher.get().matchEnchantment(((StringNode) node).getValue());
+            return Match.enchant().enchantment(((StringNode) node).getValue());
         }
         throw  new ConversionException("Invalid Node!"+ node.getClass());
     }

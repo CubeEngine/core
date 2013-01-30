@@ -12,6 +12,7 @@ import de.cubeisland.cubeengine.core.storage.TableManager;
 import de.cubeisland.cubeengine.core.storage.database.Database;
 import de.cubeisland.cubeengine.core.storage.world.WorldManager;
 import de.cubeisland.cubeengine.core.user.UserManager;
+import de.cubeisland.cubeengine.core.util.matcher.Match;
 import de.cubeisland.cubeengine.core.webapi.ApiServer;
 
 import java.util.logging.Logger;
@@ -136,4 +137,11 @@ public interface Core
      * @return the world manager
      */
     public WorldManager getWorldManager();
+
+    /**
+     * This method returns the MatcherManager containing all matchers
+     *
+     * @return
+     */
+    public Match getMatcherManager();
 }

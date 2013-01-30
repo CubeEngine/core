@@ -7,11 +7,8 @@ import de.cubeisland.cubeengine.core.command.annotation.Command;
 import de.cubeisland.cubeengine.core.command.exception.InvalidUsageException;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.util.StringUtils;
-import de.cubeisland.cubeengine.core.util.matcher.EntityMatcher;
 import de.cubeisland.cubeengine.core.util.matcher.EntityType;
-import de.cubeisland.cubeengine.core.util.matcher.MaterialMatcher;
-import de.cubeisland.cubeengine.core.util.matcher.ProfessionMatcher;
-import java.util.Locale;
+import de.cubeisland.cubeengine.core.util.matcher.Match;
 import org.bukkit.DyeColor;
 import org.bukkit.Location;
 import org.bukkit.command.CommandSender;
@@ -19,13 +16,15 @@ import org.bukkit.entity.*;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Vector;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Locale;
+
 import static de.cubeisland.cubeengine.core.command.exception.IllegalParameterValue.illegalParameter;
 import static de.cubeisland.cubeengine.core.command.exception.InvalidUsageException.*;
 import static de.cubeisland.cubeengine.core.command.exception.PermissionDeniedException.denyAccess;
 import static de.cubeisland.cubeengine.core.i18n.I18n._;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 
 /**
  * The /spawnmob command.
@@ -133,11 +132,11 @@ public class SpawnMobCommand
         {
             entityData = Arrays.asList(StringUtils.explode(":", entityName.substring(entityName.indexOf(":") + 1, entityName.length())));
             entityName = entityName.substring(0, entityName.indexOf(":"));
-            entityType = EntityMatcher.get().matchMob(entityName);
+            entityType = Match.entity().mob(entityName);
         }
         else
         {
-            entityType = EntityMatcher.get().matchMob(entityName);
+            entityType = Match.entity().mob(entityName);
         }
         if (entityName.isEmpty())
         {
@@ -263,7 +262,7 @@ public class SpawnMobCommand
                 }
                 else if (entityType.equals(EntityType.SHEEP))
                 {
-                    DyeColor color = MaterialMatcher.get().matchColorData(data);
+                    DyeColor color = Match.materialData().colorData(data);
                     if (color == null)
                     {
                         try
@@ -318,7 +317,7 @@ public class SpawnMobCommand
                 }
                 else if (entityType.equals(EntityType.VILLAGER))
                 {
-                    Villager.Profession profession = ProfessionMatcher.get().matchProfession(data);
+                    Villager.Profession profession = Match.profession().profession(data);
                     if (profession == null)
                     {
                         illegalParameter(sender, "basics", "Unknown villager-profession!");
@@ -327,7 +326,7 @@ public class SpawnMobCommand
                 }
                 else if (entityType.equals(EntityType.ENDERMAN))
                 {
-                    ItemStack item = MaterialMatcher.get().matchItemStack(data);
+                    ItemStack item = Match.material().itemStack(data);
                     if (item == null)
                     {
                         illegalParameter(sender, "basics", "Material not found!");

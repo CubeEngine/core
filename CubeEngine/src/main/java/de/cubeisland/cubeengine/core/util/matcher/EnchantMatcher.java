@@ -22,9 +22,8 @@ public class EnchantMatcher
     private THashMap<String, Enchantment> enchantments;
     private THashMap<String, Enchantment> bukkitnames;
     private THashMap<Enchantment, String> enchantmentName;
-    private static EnchantMatcher instance = null;
 
-    private EnchantMatcher()
+    EnchantMatcher()
     {
         this.enchantments = new THashMap<String, Enchantment>();
         this.enchantmentName = new THashMap<Enchantment, String>();
@@ -43,31 +42,6 @@ public class EnchantMatcher
     }
 
     /**
-     * Returns an instance of the matcher
-     *
-     * @return the singleton instance of the enchantment matcher
-     */
-    public static EnchantMatcher get()
-    {
-        if (instance == null)
-        {
-            instance = new EnchantMatcher();
-        }
-        return instance;
-    }
-
-    /**
-     * Gets the name for the given Enchantment
-     *
-     * @param enchant the enchantment to get the name for
-     * @return the name corresponding to the enchantment
-     */
-    public String getNameFor(Enchantment enchant)
-    {
-        return this.enchantmentName.get(enchant);
-    }
-
-    /**
      * Registers an enchantment for the matcher with a list of names
      *
      * @param ench  the enchantment
@@ -82,12 +56,52 @@ public class EnchantMatcher
     }
 
     /**
+     * Loads in the file with the saved enchantment-names
+     *
+     * @return the loaded enchantments with corresponding names
+     */
+    private TreeMap<Integer, List<String>> readEnchantments()
+    {
+        try
+        {
+            File file = new File(CubeEngine.getFileManager().getDataFolder(), CoreResource.ENCHANTMENTS.getTarget());
+            TreeMap<Integer, List<String>> enchantments = new TreeMap<Integer, List<String>>();
+            AliasMapFormat.parseStringList(file, enchantments, false);
+            if (AliasMapFormat.parseStringList(CubeEngine.getFileManager().getSourceOf(file), enchantments, true))
+            {
+                CubeEngine.getLogger().log(LogLevel.NOTICE, "Updated enchantments.txt");
+                AliasMapFormat.parseAndSaveStringListMap(enchantments, file);
+            }
+            return enchantments;
+        }
+        catch (NumberFormatException ex)
+        {
+            throw new IllegalStateException("enchantments.txt is corrupted!", ex);
+        }
+        catch (IOException ex)
+        {
+            throw new IllegalStateException("Error while reading enchantments.txt", ex);
+        }
+    }
+
+    /**
+     * Gets the name for the given Enchantment
+     *
+     * @param enchant the enchantment to get the name for
+     * @return the name corresponding to the enchantment
+     */
+    public String nameFor(Enchantment enchant)
+    {
+        return this.enchantmentName.get(enchant);
+    }
+
+    /**
      * Tries to match an Enchantment for given string
      *
      * @param s the string to match
      * @return the found Enchantment
      */
-    public Enchantment matchEnchantment(String s)
+    public Enchantment enchantment(String s)
     {
         Enchantment enchantment = this.enchantments.get(s.toLowerCase(Locale.ENGLISH));
         try
@@ -118,34 +132,5 @@ public class EnchantMatcher
             }
         }
         return enchantment;
-    }
-
-    /**
-     * Loads in the file with the saved enchantment-names
-     *
-     * @return the loaded enchantments with corresponding names
-     */
-    private TreeMap<Integer, List<String>> readEnchantments()
-    {
-        try
-        {
-            File file = new File(CubeEngine.getFileManager().getDataFolder(), CoreResource.ENCHANTMENTS.getTarget());
-            TreeMap<Integer, List<String>> enchantments = new TreeMap<Integer, List<String>>();
-            AliasMapFormat.parseStringList(file, enchantments, false);
-            if (AliasMapFormat.parseStringList(CubeEngine.getFileManager().getSourceOf(file), enchantments, true))
-            {
-                CubeEngine.getLogger().log(LogLevel.NOTICE, "Updated enchantments.txt");
-                AliasMapFormat.parseAndSaveStringListMap(enchantments, file);
-            }
-            return enchantments;
-        }
-        catch (NumberFormatException ex)
-        {
-            throw new IllegalStateException("enchantments.txt is corrupted!", ex);
-        }
-        catch (IOException ex)
-        {
-            throw new IllegalStateException("Error while reading enchantments.txt", ex);
-        }
     }
 }

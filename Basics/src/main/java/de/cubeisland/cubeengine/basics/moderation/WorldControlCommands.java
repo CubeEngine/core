@@ -7,35 +7,22 @@ import de.cubeisland.cubeengine.core.command.CommandContext;
 import de.cubeisland.cubeengine.core.command.annotation.Command;
 import de.cubeisland.cubeengine.core.command.annotation.Flag;
 import de.cubeisland.cubeengine.core.command.annotation.Param;
-import static de.cubeisland.cubeengine.core.command.exception.IllegalParameterValue.illegalParameter;
-import static de.cubeisland.cubeengine.core.command.exception.InvalidUsageException.*;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.util.StringUtils;
-import de.cubeisland.cubeengine.core.util.matcher.EntityMatcher;
 import de.cubeisland.cubeengine.core.util.matcher.EntityType;
-import de.cubeisland.cubeengine.core.util.matcher.MaterialMatcher;
+import de.cubeisland.cubeengine.core.util.matcher.Match;
+import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.World;
+import org.bukkit.entity.*;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.World;
-import org.bukkit.entity.Ambient;
-import org.bukkit.entity.Animals;
-import org.bukkit.entity.EnderDragon;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.Ghast;
-import org.bukkit.entity.Golem;
-import org.bukkit.entity.Item;
-import org.bukkit.entity.LivingEntity;
-import org.bukkit.entity.Monster;
-import org.bukkit.entity.NPC;
-import org.bukkit.entity.Player;
-import org.bukkit.entity.Slime;
-import org.bukkit.entity.Tameable;
-import org.bukkit.entity.WaterMob;
-import org.bukkit.entity.Wither;
+
+import static de.cubeisland.cubeengine.core.command.exception.IllegalParameterValue.illegalParameter;
+import static de.cubeisland.cubeengine.core.command.exception.InvalidUsageException.*;
 
 /**
  * Commands controlling / affecting worlds. /weather /remove /butcher
@@ -182,10 +169,10 @@ public class WorldControlCommands
             {
                 if (s_entityType.contains(":"))
                 {
-                    EntityType type = EntityMatcher.get().matchEntity(s_entityType.substring(0, s_entityType.indexOf(":")));
+                    EntityType type = Match.entity().any(s_entityType.substring(0, s_entityType.indexOf(":")));
                     if (EntityType.DROPPED_ITEM.equals(type))
                     {
-                        Material itemtype = MaterialMatcher.get().matchMaterial(s_entityType.substring(s_entityType.indexOf(":") + 1));
+                        Material itemtype = Match.material().material(s_entityType.substring(s_entityType.indexOf(":") + 1));
                         List<Entity> remList = new ArrayList<Entity>();
                         for (Entity entity : list)
                         {
@@ -204,7 +191,7 @@ public class WorldControlCommands
                 }
                 else
                 {
-                    EntityType type = EntityMatcher.get().matchEntity(s_entityType);
+                    EntityType type = Match.entity().any(s_entityType);
                     if (type == null)
                     {
                         context.sendMessage("basics", "&cInvalid entity-type!\n&eUse &6"
@@ -361,7 +348,7 @@ public class WorldControlCommands
                             || (match.equals("boss") && (entity instanceof EnderDragon || entity instanceof Wither)) //TODO perm
                         || (match.equals("monster") && entity instanceof Monster || entity instanceof Slime || entity instanceof Ghast)//TODO perm
                         || (specialmatch
-                            && (entity.getType().equals(EntityMatcher.get().matchEntity(match).getBukkitType()))) //TODO perms
+                            && (entity.getType().equals(Match.entity().any(match).getBukkitType()))) //TODO perms
                     )
                     {
                         remList.add(entity);

@@ -17,9 +17,7 @@ import java.util.TreeMap;
  */
 public class EntityMatcher
 {
-    private static EntityMatcher instance = null;
-
-    private EntityMatcher()
+    EntityMatcher()
     {
         TreeMap<Integer, List<String>> entityList = this.readEntities();
         for (int id : entityList.keySet())
@@ -36,17 +34,32 @@ public class EntityMatcher
     }
 
     /**
-     * Returns an instance of the matcher
+     * Loads in the file with the saved entity-names
      *
-     * @return the singleton instance of the entity matcher
+     * @return the loaded entities with corresponding names
      */
-    public static EntityMatcher get()
+    private TreeMap<Integer, List<String>> readEntities()
     {
-        if (instance == null)
+        try
         {
-            instance = new EntityMatcher();
+            File file = new File(CubeEngine.getFileManager().getDataFolder(), CoreResource.ENTITIES.getTarget());
+            TreeMap<Integer, List<String>> entityList = new TreeMap<Integer, List<String>>();
+            AliasMapFormat.parseStringList(file, entityList, false);
+            if (AliasMapFormat.parseStringList(CubeEngine.getFileManager().getSourceOf(file), entityList, true))
+            {
+                CubeEngine.getLogger().log(LogLevel.NOTICE, "Updated entities.txt");
+                AliasMapFormat.parseAndSaveStringListMap(entityList, file);
+            }
+            return entityList;
         }
-        return instance;
+        catch (NumberFormatException ex)
+        {
+            throw new IllegalStateException("enchantments.txt is corrupted!", ex);
+        }
+        catch (IOException ex)
+        {
+            throw new IllegalStateException("Error while reading enchantments.txt", ex);
+        }
     }
 
     /**
@@ -55,7 +68,7 @@ public class EntityMatcher
      * @param name the name to match
      * @return the found EntityType
      */
-    public EntityType matchEntity(String name)
+    public EntityType any(String name)
     {
         if (name == null)
         {
@@ -92,9 +105,9 @@ public class EntityMatcher
      * @param s the string to match
      * @return the found Mob
      */
-    public EntityType matchMob(String s)
+    public EntityType mob(String s)
     {
-        EntityType type = this.matchEntity(s);
+        EntityType type = this.any(s);
         if (type != null && type.isAlive())
         {
             return type;
@@ -108,9 +121,9 @@ public class EntityMatcher
      * @param s the string to match
      * @return the found Mob
      */
-    public EntityType matchSpawnEggMobs(String s)
+    public EntityType spawnEggMob(String s)
     {
-        EntityType type = this.matchMob(s);
+        EntityType type = this.mob(s);
         if (type != null && type.canBeSpawnedBySpawnEgg())
         {
             return type;
@@ -124,9 +137,9 @@ public class EntityMatcher
      * @param s the string to match
      * @return the found Monster
      */
-    public EntityType matchMonster(String s)
+    public EntityType monster(String s)
     {
-        EntityType type = this.matchEntity(s);
+        EntityType type = this.any(s);
         if (type != null && type.isMonster())
         {
             return type;
@@ -140,9 +153,9 @@ public class EntityMatcher
      * @param s the string to match
      * @return the found friendly Mob
      */
-    public EntityType matchFriendlyMob(String s)
+    public EntityType friendlyMob(String s)
     {
-        EntityType type = this.matchEntity(s);
+        EntityType type = this.any(s);
         if (type != null && type.isFriendly())
         {
             return type;
@@ -156,9 +169,9 @@ public class EntityMatcher
      * @param s the string to match
      * @return the found Projectile
      */
-    public EntityType matchProjectile(String s)
+    public EntityType projectile(String s)
     {
-        EntityType type = this.matchEntity(s);
+        EntityType type = this.any(s);
         if (type != null && type.isProjectile())
         {
             return type;
@@ -166,32 +179,5 @@ public class EntityMatcher
         return null;
     }
 
-    /**
-     * Loads in the file with the saved entity-names
-     *
-     * @return the loaded entities with corresponding names
-     */
-    private TreeMap<Integer, List<String>> readEntities()
-    {
-        try
-        {
-            File file = new File(CubeEngine.getFileManager().getDataFolder(), CoreResource.ENTITIES.getTarget());
-            TreeMap<Integer, List<String>> entityList = new TreeMap<Integer, List<String>>();
-            AliasMapFormat.parseStringList(file, entityList, false);
-            if (AliasMapFormat.parseStringList(CubeEngine.getFileManager().getSourceOf(file), entityList, true))
-            {
-                CubeEngine.getLogger().log(LogLevel.NOTICE, "Updated entities.txt");
-                AliasMapFormat.parseAndSaveStringListMap(entityList, file);
-            }
-            return entityList;
-        }
-        catch (NumberFormatException ex)
-        {
-            throw new IllegalStateException("enchantments.txt is corrupted!", ex);
-        }
-        catch (IOException ex)
-        {
-            throw new IllegalStateException("Error while reading enchantments.txt", ex);
-        }
-    }
+
 }

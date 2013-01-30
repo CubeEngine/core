@@ -1,21 +1,22 @@
 package de.cubeisland.cubeengine.basics.moderation;
 
-import de.cubeisland.cubeengine.core.bukkit.BukkitUtils;
 import de.cubeisland.cubeengine.core.command.CommandContext;
 import de.cubeisland.cubeengine.core.command.ContainerCommand;
 import de.cubeisland.cubeengine.core.command.annotation.Alias;
 import de.cubeisland.cubeengine.core.command.annotation.Command;
 import de.cubeisland.cubeengine.core.command.annotation.Flag;
-import static de.cubeisland.cubeengine.core.command.exception.InvalidUsageException.blockCommand;
 import de.cubeisland.cubeengine.core.module.Module;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.util.ChatFormat;
-import de.cubeisland.cubeengine.core.util.matcher.MaterialMatcher;
-import java.util.ArrayList;
-import java.util.List;
+import de.cubeisland.cubeengine.core.util.matcher.Match;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import static de.cubeisland.cubeengine.core.command.exception.InvalidUsageException.blockCommand;
 
 /**
  * The powertool command allows binding commands/chatmacros to a specific item
@@ -161,7 +162,7 @@ public class PowerToolCommand extends ContainerCommand
                 String itemName = item.getItemMeta().getDisplayName();
                 if (itemName == null)
                 {
-                    sender.sendMessage("&6" + MaterialMatcher.get().getNameFor(item) + "&6:");
+                    sender.sendMessage("&6" + Match.material().getNameFor(item) + "&6:");
                 }
                 else
                 {

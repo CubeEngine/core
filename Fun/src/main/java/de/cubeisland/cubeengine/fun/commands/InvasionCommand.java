@@ -2,8 +2,8 @@ package de.cubeisland.cubeengine.fun.commands;
 
 import de.cubeisland.cubeengine.core.command.CommandContext;
 import de.cubeisland.cubeengine.core.command.annotation.Command;
-import de.cubeisland.cubeengine.core.util.matcher.EntityMatcher;
 import de.cubeisland.cubeengine.core.util.matcher.EntityType;
+import de.cubeisland.cubeengine.core.util.matcher.Match;
 import de.cubeisland.cubeengine.fun.Fun;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -24,7 +24,7 @@ public class InvasionCommand
     @Command(desc = "spawns the mob next to every player on the server", min = 1, max = 1, usage = "<mob>")
     public void invasion(CommandContext context)
     {
-        EntityType entityType = EntityMatcher.get().matchMob(context.getString(0, null));
+        EntityType entityType = Match.entity().mob(context.getString(0, null));
         if (entityType == null)
         {
             illegalParameter(context, "fun", "&cEntityType %s not found", context.getString(0));

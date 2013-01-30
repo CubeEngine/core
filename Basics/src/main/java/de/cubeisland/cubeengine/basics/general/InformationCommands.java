@@ -8,7 +8,7 @@ import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.util.Pair;
 import de.cubeisland.cubeengine.core.util.StringUtils;
 import de.cubeisland.cubeengine.core.util.matcher.EntityType;
-import de.cubeisland.cubeengine.core.util.matcher.MaterialMatcher;
+import de.cubeisland.cubeengine.core.util.matcher.Match;
 import de.cubeisland.cubeengine.core.util.math.MathHelper;
 import de.cubeisland.cubeengine.core.util.time.Duration;
 import org.bukkit.Bukkit;
@@ -21,12 +21,7 @@ import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 
 import java.lang.management.ManagementFactory;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.LinkedHashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.TreeMap;
+import java.util.*;
 
 import static de.cubeisland.cubeengine.core.command.exception.IllegalParameterValue.illegalParameter;
 import static de.cubeisland.cubeengine.core.i18n.I18n._;
@@ -193,7 +188,7 @@ public class InformationCommands
                     }
                     else if (entity instanceof Item)
                     {
-                        key = "&7" + MaterialMatcher.get().getNameFor(((Item)entity).getItemStack());
+                        key = "&7" + Match.material().getNameFor(((Item)entity).getItemStack());
                     }
                     else
                     {
@@ -251,7 +246,7 @@ public class InformationCommands
         {
             if (entity instanceof Item)
             {
-                list.add(String.format("&7%s&f (&e%dm&f)", MaterialMatcher.get().getNameFor(((Item)entity).getItemStack()), (int)distance));
+                list.add(String.format("&7%s&f (&e%dm&f)", Match.material().getNameFor(((Item)entity).getItemStack()), (int)distance));
             }
             else
             {
