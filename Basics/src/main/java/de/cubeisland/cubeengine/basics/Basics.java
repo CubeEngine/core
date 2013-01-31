@@ -73,7 +73,7 @@ public class Basics extends Module
         //Moderation:
         this.registerCommands(new InventoryCommands(this));
         this.registerCommands(new ItemCommands(this));
-        this.registerCommands(new KickBanCommands());
+        this.registerCommands(new KickBanCommands(this));
         this.registerCommands(new SpawnMobCommand(this));
         this.registerCommands(new TimeControlCommands(this));
         this.registerCommands(new WorldControlCommands(this));

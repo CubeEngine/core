@@ -1,17 +1,20 @@
 package de.cubeisland.cubeengine.basics.moderation;
 
+import de.cubeisland.cubeengine.basics.Basics;
 import de.cubeisland.cubeengine.basics.BasicsPerm;
 import de.cubeisland.cubeengine.core.command.CommandContext;
 import de.cubeisland.cubeengine.core.command.annotation.Command;
 import de.cubeisland.cubeengine.core.command.annotation.Flag;
 import de.cubeisland.cubeengine.core.user.User;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 
-import static de.cubeisland.cubeengine.core.command.exception.InvalidUsageException.*;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+
+import static de.cubeisland.cubeengine.core.command.exception.InvalidUsageException.blockCommand;
+import static de.cubeisland.cubeengine.core.command.exception.InvalidUsageException.paramNotFound;
 import static de.cubeisland.cubeengine.core.command.exception.PermissionDeniedException.denyAccess;
 import static de.cubeisland.cubeengine.core.i18n.I18n._;
 
@@ -25,6 +28,12 @@ import static de.cubeisland.cubeengine.core.i18n.I18n._;
  */
 public class KickBanCommands
 {
+    private Basics module;
+
+    public KickBanCommands(Basics module) {
+        this.module = module;
+    }
+
     @Command(desc = "Kicks a player from the server", usage = "<<player>|-all> [message]", flags = {
         @Flag(longName = "all", name = "a")
     })
@@ -75,6 +84,12 @@ public class KickBanCommands
     {
         if (!Bukkit.getOnlineMode())
         {
+            if (this.module.getConfiguration().disallowBanIfOfflineMode)
+            {
+                context.sendMessage("basics", "&cBanning players by name is not allowed in offline-mode!"
+                        + "\n&eYou can change this in your Basics-Configuration.");
+                return;
+            }
             context.sendMessage("basics", "&eThe server is running in &cOFFLINE-mode&e. "
                     + "\nPlayers could change their username with a cracked client!\n"
                     + "&aYou can IP-ban to prevent banning a real player in that case.");

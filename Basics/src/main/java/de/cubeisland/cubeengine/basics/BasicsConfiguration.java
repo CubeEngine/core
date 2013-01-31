@@ -88,4 +88,6 @@ public class BasicsConfiguration extends Configuration
     public int jumpThruMaxWallThickness = 15;
     @Option("navigation.jumpto.max-range")
     public int jumpToMaxRange = 300;
+    @Option("commands.ban.disallow-if-offline-mode")
+    public boolean disallowBanIfOfflineMode;
 }
