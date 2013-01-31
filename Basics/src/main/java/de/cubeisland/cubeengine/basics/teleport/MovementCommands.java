@@ -4,8 +4,6 @@ import de.cubeisland.cubeengine.basics.Basics;
 import de.cubeisland.cubeengine.core.command.CommandContext;
 import de.cubeisland.cubeengine.core.command.annotation.Command;
 import de.cubeisland.cubeengine.core.command.annotation.Flag;
-import static de.cubeisland.cubeengine.core.command.exception.IllegalParameterValue.illegalParameter;
-import static de.cubeisland.cubeengine.core.command.exception.InvalidUsageException.blockCommand;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.util.LocationUtil;
 import org.bukkit.Location;
@@ -13,6 +11,9 @@ import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Player;
+
+import static de.cubeisland.cubeengine.core.command.exception.IllegalParameterValue.illegalParameter;
+import static de.cubeisland.cubeengine.core.command.exception.InvalidUsageException.blockCommand;
 
 /**
  * Contains commands for fast movement. /up /ascend /descend /jumpto /through
@@ -123,7 +124,7 @@ public class MovementCommands
     public void jumpTo(CommandContext context)
     {
         User sender = context.getSenderAsUser("basics", "&eJumping in the console is not allowed! Go play outside!");
-        Location loc = sender.getTargetBlock(null, 350).getLocation();
+        Location loc = sender.getTargetBlock(null, this.basics.getConfiguration().jumpToMaxRange).getLocation();
         if (loc.getBlock().getType().equals(Material.AIR))
         {
             blockCommand(context, "basics", "&cNo block in sight!");
@@ -139,7 +140,9 @@ public class MovementCommands
     public void through(CommandContext context)
     {
         User sender = context.getSenderAsUser("basics", "&ePassing through firewalls in the console is not allowed! Go play outside!");
-        Location loc = LocationUtil.getBlockBehindWall(sender, 20, 30); //TODO these values in config
+        Location loc = LocationUtil.getBlockBehindWall(sender,
+                this.basics.getConfiguration().jumpThruMaxRange,
+                this.basics.getConfiguration().jumpThruMaxWallThickness);
         if (loc == null)
         {
             sender.sendMessage("basics", "&cNothing to pass through!");

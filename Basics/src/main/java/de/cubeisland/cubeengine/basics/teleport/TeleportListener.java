@@ -7,11 +7,13 @@ import de.cubeisland.cubeengine.core.util.LocationUtil;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
+import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
+
 
 public class TeleportListener implements Listener
 {
@@ -45,18 +47,21 @@ public class TeleportListener implements Listener
         }
     }
 
-    @EventHandler(ignoreCancelled = true)
+    @EventHandler
     public void onClick(PlayerInteractEvent event)
     {
         if (event.getPlayer().getItemInHand().getType().equals(Material.COMPASS))
         {
+            if (event.useItemInHand().equals(Event.Result.DENY))
+                return;
+            event.setUseItemInHand(Event.Result.DENY);
             switch (event.getAction())
             {
                 case LEFT_CLICK_AIR:
                 case LEFT_CLICK_BLOCK:
                     if (BasicsPerm.COMPASS_JUMPTO_LEFT.isAuthorized(event.getPlayer()))
                     {
-                        Block block = event.getPlayer().getTargetBlock(null, 300);
+                        Block block = event.getPlayer().getTargetBlock(null, this.basics.getConfiguration().jumpToMaxRange);
                         if (block.getTypeId() != 0)
                         {
                             User user = this.basics.getUserManager().getExactUser(event.getPlayer());
@@ -73,7 +78,8 @@ public class TeleportListener implements Listener
                     if (BasicsPerm.COMPASS_JUMPTO_RIGHT.isAuthorized(event.getPlayer()))
                     {
                         User user = this.basics.getUserManager().getExactUser(event.getPlayer());
-                        Location loc = LocationUtil.getBlockBehindWall(user, 20, 30); //TODO these values in config
+                        Location loc = LocationUtil.getBlockBehindWall(user, this.basics.getConfiguration().jumpThruMaxRange,
+                                this.basics.getConfiguration().jumpThruMaxWallThickness);
                         if (loc == null)
                         {
                             user.sendMessage("basics", "&cNothing to pass through!");

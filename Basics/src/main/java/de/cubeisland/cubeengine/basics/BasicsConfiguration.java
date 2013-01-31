@@ -81,4 +81,11 @@ public class BasicsConfiguration extends Configuration
             this.add(new ItemStack(Material.SKULL));
         }
     };
+
+    @Option("navigation.thru.max-range")
+    public int jumpThruMaxRange = 15;
+    @Option("navigation.thru.max-wall-thickness")
+    public int jumpThruMaxWallThickness = 15;
+    @Option("navigation.jumpto.max-range")
+    public int jumpToMaxRange = 300;
 }
