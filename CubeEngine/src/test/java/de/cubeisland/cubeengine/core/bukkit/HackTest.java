@@ -7,8 +7,8 @@ import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.List;
 import junit.framework.TestCase;
-import net.minecraft.server.v1_4_6.Connection;
-import net.minecraft.server.v1_4_6.Packet;
+import net.minecraft.server.v1_4_R1.Connection;
+import net.minecraft.server.v1_4_R1.Packet;
 
 public class HackTest extends TestCase
 {

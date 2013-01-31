@@ -1,6 +1,6 @@
 package de.cubeisland.cubeengine.core.bukkit.event;
 
-import net.minecraft.server.v1_4_6.Packet;
+import net.minecraft.server.v1_4_R1.Packet;
 import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
 

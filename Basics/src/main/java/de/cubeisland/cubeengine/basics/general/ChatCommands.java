@@ -4,13 +4,16 @@ import de.cubeisland.cubeengine.basics.BasicUser;
 import de.cubeisland.cubeengine.basics.Basics;
 import de.cubeisland.cubeengine.core.command.CommandContext;
 import de.cubeisland.cubeengine.core.command.annotation.Command;
-import static de.cubeisland.cubeengine.core.command.exception.IllegalParameterValue.illegalParameter;
-import static de.cubeisland.cubeengine.core.command.exception.InvalidUsageException.*;
-import static de.cubeisland.cubeengine.core.i18n.I18n._;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.user.UserManager;
 import de.cubeisland.cubeengine.core.util.time.Duration;
+
 import java.sql.Timestamp;
+
+import static de.cubeisland.cubeengine.core.command.exception.IllegalParameterValue.illegalParameter;
+import static de.cubeisland.cubeengine.core.command.exception.InvalidUsageException.blockCommand;
+import static de.cubeisland.cubeengine.core.command.exception.InvalidUsageException.paramNotFound;
+import static de.cubeisland.cubeengine.core.i18n.I18n._;
 
 public class ChatCommands
 {
@@ -159,7 +162,7 @@ public class ChatCommands
     }
 
     @Command(desc = "Mutes a player", usage = "<player> [duration]", min = 1)
-    public void mute(CommandContext context) // mute will be unset when user is unloaded
+    public void mute(CommandContext context)
     {
         User user = context.getUser(0);
         if (user == null)
@@ -187,7 +190,7 @@ public class ChatCommands
         this.basics.getBasicUserManager().update(bUser);
         String timeString = dura.toMillis() == -1 ? "ever" : dura.format("%www %ddd %hhh %mmm %sss");
         user.sendMessage("basics", "&cYou are now muted for &6%s&c!", timeString);
-        context.sendMessage("basics", "&eYou muted &2%s &efor &6%s&c!", user.getName(), timeString);
+        context.sendMessage("basics", "&eYou muted &2%s &eglobally for &6%s&c!", user.getName(), timeString);
     }
 
     @Command(desc = "Unmutes a player", usage = "<player>", min = 1, max = 1)
@@ -201,7 +204,7 @@ public class ChatCommands
         BasicUser bUser = this.basics.getBasicUserManager().getBasicUser(user);
         bUser.muted = null;
         this.basics.getBasicUserManager().update(bUser);
-        context.sendMessage("basics", "&2%s &ais not muted now!", user.getName());
+        context.sendMessage("basics", "&2%s &ais no longer muted!", user.getName());
     }
 
     @Command(desc = "Shows a random number from 0 to 100", max = 1)
