@@ -1,13 +1,14 @@
 package de.cubeisland.cubeengine.core.util;
 
 import de.cubeisland.cubeengine.core.user.User;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
 import org.bukkit.Bukkit;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 public class InventoryUtil
 {
@@ -51,7 +52,11 @@ public class InventoryUtil
 
     public static boolean checkForPlace(Inventory inventory, ItemStack... items)
     {
-        Inventory inv = Bukkit.createInventory(null, inventory.getSize());
+        Inventory inv =
+            inventory.getSize() <= 27
+            ? Bukkit.createInventory(null, inventory.getType())
+            : Bukkit.createInventory(null, inventory.getSize());
+
         inv.setContents(inventory.getContents().clone());
         Map map;
         for (ItemStack item : items)
