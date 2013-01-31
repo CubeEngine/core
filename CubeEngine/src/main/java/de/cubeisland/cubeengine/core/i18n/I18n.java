@@ -8,9 +8,9 @@ import de.cubeisland.cubeengine.core.filesystem.FileManager;
 import de.cubeisland.cubeengine.core.module.Module;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.util.Cleanable;
-import de.cubeisland.cubeengine.core.util.StringUtils;
 import de.cubeisland.cubeengine.core.util.log.CubeFileHandler;
 import de.cubeisland.cubeengine.core.util.log.LogLevel;
+import de.cubeisland.cubeengine.core.util.matcher.Match;
 import gnu.trove.map.hash.THashMap;
 import gnu.trove.set.hash.THashSet;
 import org.apache.commons.lang.Validate;
@@ -20,12 +20,7 @@ import org.bukkit.command.CommandSender;
 import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Set;
-import java.util.Stack;
+import java.util.*;
 import java.util.logging.Logger;
 
 import static de.cubeisland.cubeengine.core.util.log.LogLevel.ERROR;
@@ -213,7 +208,7 @@ public class I18n implements Cleanable
 
     public Set<Language> searchLanguages(String name, int maximumEditDistance)
     {
-        List<String> matches = StringUtils.getBestMatches(name, this.languageMap.keySet(), maximumEditDistance);
+        List<String> matches = Match.string().getBestMatches(name, this.languageMap.keySet(), maximumEditDistance);
         Set<Language> languages = new THashSet<Language>(matches.size());
 
         for (String match : matches)

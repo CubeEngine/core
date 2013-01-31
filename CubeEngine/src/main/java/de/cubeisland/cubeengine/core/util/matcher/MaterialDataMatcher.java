@@ -75,7 +75,7 @@ public class MaterialDataMatcher {
      */
     public DyeColor colorData(String data)
     {
-        Short dataVal = this.datavalues.get(35).get(StringUtils.matchString(data, this.datavalues.get(35).keySet()));
+        Short dataVal = this.datavalues.get(35).get(Match.string().matchString(data, this.datavalues.get(35).keySet()));
         if (dataVal == null)
         {
             return null;
@@ -121,7 +121,7 @@ public class MaterialDataMatcher {
                 case HUGE_MUSHROOM_1:
                 case HUGE_MUSHROOM_2:
                 case POTION:
-                    String foundData = StringUtils.matchString(data, this.datavalues.get(item.getTypeId()).keySet());
+                    String foundData = Match.string().matchString(data, this.datavalues.get(item.getTypeId()).keySet());
                     if (foundData != null)
                     {
                         item.setDurability(this.datavalues.get(item.getType().getId()).get(foundData));

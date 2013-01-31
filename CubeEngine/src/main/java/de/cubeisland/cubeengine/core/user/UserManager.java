@@ -11,6 +11,7 @@ import de.cubeisland.cubeengine.core.storage.database.DatabaseUpdater;
 import de.cubeisland.cubeengine.core.storage.database.querybuilder.ComponentBuilder;
 import de.cubeisland.cubeengine.core.util.Cleanable;
 import de.cubeisland.cubeengine.core.util.StringUtils;
+import de.cubeisland.cubeengine.core.util.matcher.Match;
 import org.apache.commons.lang.RandomStringUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
@@ -44,7 +45,6 @@ import java.util.concurrent.TimeUnit;
 import static de.cubeisland.cubeengine.core.i18n.I18n._;
 import static de.cubeisland.cubeengine.core.storage.database.querybuilder.ComponentBuilder.EQUAL;
 import static de.cubeisland.cubeengine.core.storage.database.querybuilder.ComponentBuilder.LESS;
-import java.lang.reflect.Field;
 
 /**
  * This Manager provides methods to access the Users and saving/loading from
@@ -422,7 +422,7 @@ public class UserManager extends SingleKeyStorage<Long, User> implements Cleanab
                 {
                     onlinePlayerList.add(player.getName());
                 }
-                user = this.getUser(StringUtils.matchString(name, onlinePlayerList), true);
+                user = this.getUser(Match.string().matchString(name, onlinePlayerList), true);
             }
             if (user != null)
             {

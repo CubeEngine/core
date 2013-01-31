@@ -166,7 +166,7 @@ public class SpawnMobCommand
         {
             if (data != null)
             {
-                String match = StringUtils.matchString(data.toLowerCase(Locale.ENGLISH), "saddled", "baby", "angry", "tamed", "power", "charged", "sitting");
+                String match = Match.string().matchString(data.toLowerCase(Locale.ENGLISH), "saddled", "baby", "angry", "tamed", "power", "charged", "sitting");
                 //TODO this list configurable something like datavalues.txt
                 if (match == null)
                 {
@@ -282,7 +282,7 @@ public class SpawnMobCommand
                 else if (entityType.equals(EntityType.SLIME) || entityType.equals(EntityType.MAGMA_CUBE))
                 {
                     int size = 4;
-                    match = StringUtils.matchString(data, "tiny", "small", "big");
+                    match = Match.string().matchString(data, "tiny", "small", "big");
                     if ("tiny".equals(match))
                     {
                         size = 0;

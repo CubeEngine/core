@@ -3,8 +3,8 @@ package de.cubeisland.cubeengine.core.util.matcher;
 import de.cubeisland.cubeengine.core.CoreResource;
 import de.cubeisland.cubeengine.core.CubeEngine;
 import de.cubeisland.cubeengine.core.util.AliasMapFormat;
-import de.cubeisland.cubeengine.core.util.StringUtils;
 import de.cubeisland.cubeengine.core.util.log.LogLevel;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
@@ -90,7 +90,7 @@ public class EntityMatcher
             {
                 return null;
             }
-            String t_key = StringUtils.matchString(name, entities.keySet());
+            String t_key = Match.string().matchString(name, entities.keySet());
             if (t_key != null)
             {
                 return entities.get(t_key);

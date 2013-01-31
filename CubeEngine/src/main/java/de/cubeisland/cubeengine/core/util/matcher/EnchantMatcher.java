@@ -3,7 +3,6 @@ package de.cubeisland.cubeengine.core.util.matcher;
 import de.cubeisland.cubeengine.core.CoreResource;
 import de.cubeisland.cubeengine.core.CubeEngine;
 import de.cubeisland.cubeengine.core.util.AliasMapFormat;
-import de.cubeisland.cubeengine.core.util.StringUtils;
 import de.cubeisland.cubeengine.core.util.log.LogLevel;
 import gnu.trove.map.hash.THashMap;
 import org.bukkit.enchantments.Enchantment;
@@ -117,14 +116,14 @@ public class EnchantMatcher
             {
                 return null;
             }
-            String t_key = StringUtils.matchString(s, this.enchantments.keySet());
+            String t_key = Match.string().matchString(s, this.enchantments.keySet());
             if (t_key != null)
             {
                 return this.enchantments.get(t_key);
             }
             else
             {
-                t_key = StringUtils.matchString(s, this.bukkitnames.keySet());
+                t_key = Match.string().matchString(s, this.bukkitnames.keySet());
                 if (t_key != null)
                 {
                     return this.bukkitnames.get(t_key);

@@ -1,6 +1,5 @@
 package de.cubeisland.cubeengine.core.util.matcher;
 
-import de.cubeisland.cubeengine.core.util.StringUtils;
 import org.bukkit.entity.Villager.Profession;
 
 import java.util.ArrayList;
@@ -21,7 +20,7 @@ public class ProfessionMatcher
 
     public Profession profession(String name)
     {
-        String match = StringUtils.matchString(name.toUpperCase(Locale.ENGLISH), this.professions);
+        String match = Match.string().matchString(name.toUpperCase(Locale.ENGLISH), this.professions);
         return Profession.valueOf(match);
     }
 }

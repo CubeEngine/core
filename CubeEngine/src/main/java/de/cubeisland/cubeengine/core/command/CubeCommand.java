@@ -8,6 +8,7 @@ import de.cubeisland.cubeengine.core.command.exception.PermissionDeniedException
 import de.cubeisland.cubeengine.core.module.CoreModule;
 import de.cubeisland.cubeengine.core.module.Module;
 import de.cubeisland.cubeengine.core.util.StringUtils;
+import de.cubeisland.cubeengine.core.util.matcher.Match;
 import org.apache.commons.lang.Validate;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -181,7 +182,7 @@ public abstract class CubeCommand extends Command
         CubeCommand child = this.children.get(name);
         if (correct && child == null)
         {
-            List<String> matches = StringUtils.getBestMatches(name, this.children.keySet(), 1);
+            List<String> matches = Match.string().getBestMatches(name, this.children.keySet(), 1);
             if (matches.size() == 1)
             {
                 child = this.getChild(matches.get(0), false);

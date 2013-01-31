@@ -6,6 +6,7 @@ import de.cubeisland.cubeengine.core.command.CubeCommand;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.user.UserManager;
 import de.cubeisland.cubeengine.core.util.StringUtils;
+import de.cubeisland.cubeengine.core.util.matcher.Match;
 import org.bukkit.Server;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandException;
@@ -96,7 +97,7 @@ public class CubeCommandMap extends SimpleCommandMap
             {
                 sender = user;
             }
-            List<String> matches = StringUtils.getBestMatches(label, this.knownCommands.keySet(), 1);
+            List<String> matches = Match.string().getBestMatches(label, this.knownCommands.keySet(), 1);
             if (matches.size() == 1)
             {
                 sender.sendMessage(_(sender, "core", "&cCouldn't find &e/%s&c, but &a/%s&c seems to be the one you searched...", label, matches.get(0)));

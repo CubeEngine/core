@@ -7,6 +7,7 @@ import de.cubeisland.cubeengine.core.config.annotations.Comment;
 import de.cubeisland.cubeengine.core.config.annotations.Option;
 import de.cubeisland.cubeengine.core.util.StringUtils;
 import de.cubeisland.cubeengine.core.util.log.LogLevel;
+import de.cubeisland.cubeengine.core.util.matcher.Match;
 import de.cubeisland.cubeengine.core.util.time.Duration;
 import gnu.trove.map.hash.THashMap;
 import java.io.File;
@@ -61,7 +62,7 @@ public class KitConfiguration extends Configuration
 
     public static Kit getKit(String name)
     {
-        List<String> match = StringUtils.getBestMatches(name.toLowerCase(Locale.ENGLISH), kitMap.keySet(), 2);
+        List<String> match = Match.string().getBestMatches(name.toLowerCase(Locale.ENGLISH), kitMap.keySet(), 2);
         if (match.isEmpty())
         {
             return null;

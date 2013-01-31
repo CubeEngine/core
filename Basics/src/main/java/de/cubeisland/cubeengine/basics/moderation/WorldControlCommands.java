@@ -44,7 +44,7 @@ public class WorldControlCommands
         boolean sunny = true;
         boolean noThunder = true;
         int duration = 10000000;
-        String weather = StringUtils.matchString(context.getString(0), "sun", "rain", "storm");
+        String weather = Match.string().matchString(context.getString(0), "sun", "rain", "storm");
         if (weather == null)
         {
             paramNotFound(context, "basics", "&cInvalid weather!\n&eUse &6sun&e, &6rain &eor &6storm&e!");
@@ -325,11 +325,11 @@ public class WorldControlCommands
         {
             for (String s_type : s_types)
             {
-                String match = StringUtils.matchString(s_type, this.BUTCHER_TARGETS);
+                String match = Match.string().matchString(s_type, this.BUTCHER_TARGETS);
                 boolean specialmatch = false;
                 if (match == null)
                 {
-                    match = StringUtils.matchString(s_type, EntityType.livingEntities());
+                    match = Match.string().matchString(s_type, EntityType.livingEntities());
                     if (match == null)
                     {
                         return; //TODO msg

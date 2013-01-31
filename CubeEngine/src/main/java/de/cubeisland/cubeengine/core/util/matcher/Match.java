@@ -9,6 +9,7 @@ public class Match {
     private EnchantMatcher enchantMatcher;
     private ProfessionMatcher professionMatcher;
     private EntityMatcher entityMatcher;
+    private StringMatcher stringMatcher;
 
 
 
@@ -18,6 +19,7 @@ public class Match {
         this.enchantMatcher = new EnchantMatcher();
         this.professionMatcher = new ProfessionMatcher();
         this.entityMatcher = new EntityMatcher();
+        this.stringMatcher = new StringMatcher();
 
     }
 
@@ -44,5 +46,9 @@ public class Match {
     public static EntityMatcher entity()
     {
         return CubeEngine.getCore().getMatcherManager().entityMatcher;
+    }
+
+    public static StringMatcher string() {
+        return CubeEngine.getCore().getMatcherManager().stringMatcher;
     }
 }

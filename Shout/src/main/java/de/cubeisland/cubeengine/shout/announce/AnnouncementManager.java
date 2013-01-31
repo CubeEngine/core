@@ -7,6 +7,7 @@ import de.cubeisland.cubeengine.core.i18n.I18n;
 import de.cubeisland.cubeengine.core.i18n.Language;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.util.StringUtils;
+import de.cubeisland.cubeengine.core.util.matcher.Match;
 import de.cubeisland.cubeengine.shout.Shout;
 import de.cubeisland.cubeengine.shout.ShoutException;
 import de.cubeisland.cubeengine.shout.announce.announcer.Announcer;
@@ -101,7 +102,7 @@ public class AnnouncementManager
         Announcement announcement = this.announcements.get(name);
         if (announcement == null)
         {
-            List<String> matches = StringUtils.getBestMatches(name, this.announcements.keySet(), 3);
+            List<String> matches = Match.string().getBestMatches(name, this.announcements.keySet(), 3);
 
             if (matches.size() == 1)
             {

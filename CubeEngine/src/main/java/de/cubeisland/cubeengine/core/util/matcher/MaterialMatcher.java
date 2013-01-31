@@ -3,7 +3,6 @@ package de.cubeisland.cubeengine.core.util.matcher;
 import de.cubeisland.cubeengine.core.CoreResource;
 import de.cubeisland.cubeengine.core.CubeEngine;
 import de.cubeisland.cubeengine.core.filesystem.FileUtil;
-import de.cubeisland.cubeengine.core.util.StringUtils;
 import de.cubeisland.cubeengine.core.util.log.LogLevel;
 import gnu.trove.map.hash.THashMap;
 import gnu.trove.map.hash.TIntObjectHashMap;
@@ -292,7 +291,7 @@ public class MaterialMatcher
 
     private ItemStack matchWithLevenshteinDistance(String s, Map<String, ItemStack> map)
     {
-        String t_key = StringUtils.matchString(s, map.keySet(), false);
+        String t_key = Match.string().matchString(s, map.keySet(), false);
         if (t_key != null)
         {
             return map.get(t_key);
