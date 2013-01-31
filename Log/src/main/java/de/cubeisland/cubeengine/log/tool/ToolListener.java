@@ -50,9 +50,17 @@ public class ToolListener implements Listener
                     new Timestamp(System.currentTimeMillis()));
             event.setCancelled(true);
             User user = this.module.getUserManager().getExactUser(event.getPlayer());
-            for (BlockLog entry : lookup.getEntries())
+            if (!lookup.getEntries().isEmpty())
             {
-                entry.sendToUser(user, false);
+                user.sendMessage("log","&6%d &elogs found at &6%d:%d:%d &ein &6%s&e:",lookup.getEntries().size(),loc.getBlockX(),loc.getBlockY(),loc.getBlockZ(),loc.getWorld().getName());
+                for (BlockLog entry : lookup.getEntries())
+                {
+                    entry.sendToUser(user, false);
+                }
+            }
+            else
+            {
+                user.sendMessage("log","&cNo logs found at &6%d:%d:%d &cin &6%s&c!",loc.getBlockX(),loc.getBlockY(),loc.getBlockZ(),loc.getWorld().getName());
             }
         }
     }

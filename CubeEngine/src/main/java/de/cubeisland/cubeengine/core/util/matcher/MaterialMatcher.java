@@ -327,7 +327,7 @@ public class MaterialMatcher
     /**
      * Returns whether the given ItemStack is repairable
      */
-    public boolean isRepairable(ItemStack item)
+    public boolean repairable(ItemStack item)
     {
         return this.repairableMaterials.contains(item.getType());
     }
@@ -351,6 +351,21 @@ public class MaterialMatcher
             return null;
         }
         String itemName = dataMap.get(item.getDurability());
+        if (itemName == null)
+        {
+            return dataMap.get((short) 0);
+        }
+        return itemName;
+    }
+
+    public String getNameFor(int id, short data) {
+        TShortObjectHashMap<String > dataMap = this.itemnames.get(id);
+        if (dataMap == null)
+        {
+            CubeEngine.getLogger().warning("Unknown Item! ID: "+id+ " DATA: "+ data);
+            return null;
+        }
+        String itemName = dataMap.get(data);
         if (itemName == null)
         {
             return dataMap.get((short) 0);

@@ -1,3 +1,5 @@
+0:0
+  air
 1:0
   stone
   cleanstone
@@ -715,6 +717,40 @@
 145:0
   anvil
   repairblock
+146:0
+  trapChest
+  trappedChest
+147:0
+  goldplate
+  goldpressureplate
+  weightedpressureplatelight
+148:0
+  ironplate
+  ironpressureplate
+  weightedpressureplatelight
+149:0
+  comparatorblock
+150:0
+  activecomparatorblock
+151:0
+  daylightsensor
+  sensor
+152:0
+  redstoneblock
+  blockOfRedstone
+153:0
+  netherQuartzOre
+154:0
+  hopper
+155:0
+  quartzblock
+  blockoOfQuartz
+156:0
+  quartzstairs
+157:0
+  activatorrail
+158:0
+  dropper
 256:0
   ironshovel
   ironspade
@@ -1468,6 +1504,26 @@
   NetherStar
 400:0
   PumpkinPie
+401:0
+  firework
+  fireworkrocket
+402:0
+  fireworkstar
+403:0
+  enchantedBook
+404:0
+  comparator
+  redstonecomparator
+405:0
+  netherbrickitem
+406:0
+  NetherQuartz
+407:0
+  TNTMinecart
+  MinecartWithTnt
+408:0
+  HopperMinecart
+  MinecartWithHopper
 2256:0
   goldrecord
   golddisk
@@ -1523,3 +1579,8 @@
   crackeddisk
   record11
   disk11
+2267:0
+  lightbluerecord
+  lightbluedisk
+  recordwait
+  diskwait

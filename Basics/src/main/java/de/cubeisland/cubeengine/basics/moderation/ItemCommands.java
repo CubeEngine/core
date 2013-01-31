@@ -394,7 +394,7 @@ public class ItemCommands
             int repaired = 0;
             for (ItemStack item : list)
             {
-                if (Match.material().isRepairable(item))
+                if (Match.material().repairable(item))
                 {
                     item.setDurability((short)0);
                     repaired++;
@@ -412,7 +412,7 @@ public class ItemCommands
         else
         {
             ItemStack item = sender.getItemInHand();
-            if (Match.material().isRepairable(item))
+            if (Match.material().repairable(item))
             {
                 if (item.getDurability() == 0)
                 {
