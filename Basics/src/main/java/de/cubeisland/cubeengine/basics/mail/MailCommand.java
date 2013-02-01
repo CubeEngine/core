@@ -1,6 +1,6 @@
 package de.cubeisland.cubeengine.basics.mail;
 
-import de.cubeisland.cubeengine.basics.BasicUser;
+import de.cubeisland.cubeengine.basics.storage.BasicUser;
 import de.cubeisland.cubeengine.basics.Basics;
 import de.cubeisland.cubeengine.core.command.CommandContext;
 import de.cubeisland.cubeengine.core.command.ContainerCommand;

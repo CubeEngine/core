@@ -1,5 +1,6 @@
 package de.cubeisland.cubeengine.basics;
 
+import de.cubeisland.cubeengine.basics.storage.BasicUserManager;
 import de.cubeisland.cubeengine.basics.general.AfkListener;
 import de.cubeisland.cubeengine.basics.general.ChatCommands;
 import de.cubeisland.cubeengine.basics.general.ColoredSigns;
@@ -24,6 +25,7 @@ import de.cubeisland.cubeengine.basics.moderation.kit.KitConfiguration;
 import de.cubeisland.cubeengine.basics.moderation.kit.KitItem;
 import de.cubeisland.cubeengine.basics.moderation.kit.KitItemConverter;
 import de.cubeisland.cubeengine.basics.moderation.kit.KitsGivenManager;
+import de.cubeisland.cubeengine.basics.storage.IgnoreListManager;
 import de.cubeisland.cubeengine.basics.teleport.MovementCommands;
 import de.cubeisland.cubeengine.basics.teleport.SpawnCommands;
 import de.cubeisland.cubeengine.basics.teleport.TeleportCommands;
@@ -37,13 +39,13 @@ import de.cubeisland.cubeengine.core.util.convert.Convert;
 
 public class Basics extends Module
 {
+
     private BasicsConfiguration config;
     private BasicUserManager basicUM;
     private MailManager mailManager;
     private KitsGivenManager kitGivenManager;
-
+    private IgnoreListManager ignoreListManager;
     private static Basics instance;
-
     public int afkListenerTask;
 
     public static Basics getInstance()
@@ -57,6 +59,7 @@ public class Basics extends Module
         instance = this;
         this.basicUM = new BasicUserManager(this.getDatabase());
         this.mailManager = new MailManager(this.getDatabase(), this.basicUM);
+        this.ignoreListManager = new IgnoreListManager(this.getDatabase());
         this.registerPermissions(BasicsPerm.values());
 
         this.registerListener(new ColoredSigns());
@@ -121,12 +124,9 @@ public class Basics extends Module
          * * //commands TODO
          *
          * helpop -> move to CubePermissions ?? not only op but also "Moderator"
-         * ignore -> move to CubeChat
-         * info
+         * ignore -> move to CubeChat info
          *
-         * nick -> move to CubeChat
-         * realname -> move to CubeChat
-         * rules
+         * nick -> move to CubeChat realname -> move to CubeChat rules
          *
          * help -> Display ALL availiable cmd
          */
@@ -156,5 +156,10 @@ public class Basics extends Module
     public KitsGivenManager getKitGivenManager()
     {
         return kitGivenManager;
+    }
+
+    public IgnoreListManager getIgnoreListManager()
+    {
+        return ignoreListManager;
     }
 }

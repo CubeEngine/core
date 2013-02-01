@@ -1,19 +1,17 @@
 package de.cubeisland.cubeengine.basics.general;
 
-import de.cubeisland.cubeengine.basics.BasicUser;
 import de.cubeisland.cubeengine.basics.Basics;
+import de.cubeisland.cubeengine.basics.storage.BasicUser;
 import de.cubeisland.cubeengine.core.command.CommandContext;
 import de.cubeisland.cubeengine.core.command.annotation.Command;
-import de.cubeisland.cubeengine.core.user.User;
-import de.cubeisland.cubeengine.core.user.UserManager;
-import de.cubeisland.cubeengine.core.util.time.Duration;
-
-import java.sql.Timestamp;
-
 import static de.cubeisland.cubeengine.core.command.exception.IllegalParameterValue.illegalParameter;
 import static de.cubeisland.cubeengine.core.command.exception.InvalidUsageException.blockCommand;
 import static de.cubeisland.cubeengine.core.command.exception.InvalidUsageException.paramNotFound;
 import static de.cubeisland.cubeengine.core.i18n.I18n._;
+import de.cubeisland.cubeengine.core.user.User;
+import de.cubeisland.cubeengine.core.user.UserManager;
+import de.cubeisland.cubeengine.core.util.time.Duration;
+import java.sql.Timestamp;
 
 public class ChatCommands
 {
@@ -27,9 +25,44 @@ public class ChatCommands
         this.um = basics.getUserManager();
     }
 
+    @Command(desc = "Ignores all messages from players", min = 1, max = 1, usage = "<player>")
     public void ignore(CommandContext context)
     {
-    //TODO implement me
+        User sender = context.getSenderAsUser("basics", "&cThis command is not availiable for console!");
+        User user = context.getUser(0);
+        if (user == null)
+        {
+            context.sendMessage("basics","&cUser %s not found!",context.getString(0));
+            return;
+        }
+        if (this.basics.getIgnoreListManager().addIgnore(sender, user))
+        {
+            context.sendMessage("basics", "&aSuccesfully added &2%s &ato your ignore-list", user.getName());
+        }
+        else
+        {
+            context.sendMessage("basics", "&cYou already ignored &2%s&c!", user.getName());
+        }
+    }
+        
+    @Command(desc = "Ignores all messages from players", min = 1, max = 1, usage = "<player>")
+    public void unignore(CommandContext context)
+    {
+        User sender = context.getSenderAsUser("basics", "&cThis command is not availiable for console!");
+        User user = context.getUser(0);
+        if (user == null)
+        {
+            context.sendMessage("basics","&cUser %s not found!",context.getString(0));
+            return;
+        }
+        if (this.basics.getIgnoreListManager().removeIgnore(sender, user))
+        {
+            context.sendMessage("basics", "&aSuccesfully removed &2%s &afrom your ignore-list", user.getName());
+        }
+        else
+        {
+            context.sendMessage("basics", "&cYou haven't ignored &2%s&c!", user.getName());
+        }
     }
 
     @Command(desc = "Allows you to emote", min = 1, usage = "<message>")

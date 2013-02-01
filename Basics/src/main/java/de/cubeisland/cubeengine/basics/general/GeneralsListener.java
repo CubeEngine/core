@@ -1,6 +1,6 @@
 package de.cubeisland.cubeengine.basics.general;
 
-import de.cubeisland.cubeengine.basics.BasicUser;
+import de.cubeisland.cubeengine.basics.storage.BasicUser;
 import de.cubeisland.cubeengine.basics.Basics;
 import de.cubeisland.cubeengine.basics.BasicsPerm;
 import de.cubeisland.cubeengine.core.bukkit.AfterJoinEvent;
