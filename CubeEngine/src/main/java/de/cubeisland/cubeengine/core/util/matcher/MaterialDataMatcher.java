@@ -80,7 +80,7 @@ public class MaterialDataMatcher {
         {
             return null;
         }
-        return DyeColor.getByData(dataVal.byteValue());
+        return DyeColor.getByWoolData(dataVal.byteValue());
     }
 
     /**
