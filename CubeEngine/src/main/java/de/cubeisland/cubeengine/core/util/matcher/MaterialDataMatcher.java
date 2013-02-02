@@ -76,6 +76,17 @@ public class MaterialDataMatcher {
      */
     public DyeColor colorData(String data)
     {
+        try
+        {
+            byte byteData = Byte.parseByte(data);
+            DyeColor color = DyeColor.getByWoolData(byteData);
+            if (color != null)
+            {
+                return color;
+            }
+        }
+        catch (NumberFormatException e)
+        {}
         Short dataVal = this.datavalues.get(35).get(Match.string().matchString(data, this.datavalues.get(35).keySet()));
         if (dataVal == null)
         {

@@ -264,17 +264,7 @@ public class SpawnMobCommand
                     DyeColor color = Match.materialData().colorData(data);
                     if (color == null)
                     {
-                        try
-                        {
-                            byte byteData = Byte.parseByte(data);
-                            color = DyeColor.getByData(byteData);
-                        }
-                        catch (Exception ignored)
-                        {}
-                        if (color == null)
-                        {
-                            blockCommand(sender, "basics", "&cInvalid SheepColor: " + data);
-                        }
+                        blockCommand(sender, "basics", "&cInvalid SheepColor: " + data);
                     }
                     ((Sheep)entity).setColor(color);
                 }
