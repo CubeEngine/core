@@ -7,6 +7,7 @@ import de.cubeisland.cubeengine.core.util.StringUtils;
 import gnu.trove.map.hash.THashMap;
 import gnu.trove.map.hash.TIntObjectHashMap;
 import org.bukkit.DyeColor;
+import org.bukkit.entity.EntityType;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.SkullMeta;
 
@@ -131,7 +132,7 @@ public class MaterialDataMatcher {
                     EntityType foundEggData = Match.entity().spawnEggMob(data);
                     if (foundEggData != null)
                     {
-                        item.setDurability(foundEggData.getBukkitType().getTypeId());
+                        item.setDurability(foundEggData.getTypeId());
                     }
                     return item;
                 case SKULL_ITEM:

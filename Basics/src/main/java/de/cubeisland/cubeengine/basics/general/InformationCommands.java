@@ -7,7 +7,6 @@ import de.cubeisland.cubeengine.core.command.annotation.Flag;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.util.Pair;
 import de.cubeisland.cubeengine.core.util.StringUtils;
-import de.cubeisland.cubeengine.core.util.matcher.EntityType;
 import de.cubeisland.cubeengine.core.util.matcher.Match;
 import de.cubeisland.cubeengine.core.util.math.MathHelper;
 import de.cubeisland.cubeengine.core.util.time.Duration;
@@ -184,7 +183,7 @@ public class InformationCommands
                     }
                     else if (entity instanceof LivingEntity)
                     {
-                        key = "&3" + EntityType.fromBukkitType(entity.getType()).toString();
+                        key = "&3" + Match.entity().getNameFor(entity.getType());
                     }
                     else if (entity instanceof Item)
                     {
@@ -192,7 +191,7 @@ public class InformationCommands
                     }
                     else
                     {
-                        key = "&7" + EntityType.fromBukkitType(entity.getType()).toString();
+                        key = "&7" + Match.entity().getNameFor(entity.getType());
                     }
                     Pair<Double, Integer> pair = groupedEntities.get(key);
                     if (pair == null)
@@ -240,7 +239,7 @@ public class InformationCommands
         }
         else if (entity instanceof LivingEntity)
         {
-            list.add(String.format("&3%s&f (&e%dm&f)", EntityType.fromBukkitType(entity.getType()), (int)distance));
+            list.add(String.format("&3%s&f (&e%dm&f)", Match.entity().getNameFor(entity.getType())));
         }
         else
         {
@@ -250,7 +249,7 @@ public class InformationCommands
             }
             else
             {
-                list.add(String.format("&7%s&f (&e%dm&f)", EntityType.fromBukkitType(entity.getType()), (int)distance));
+                list.add(String.format("&7%s&f (&e%dm&f)", Match.entity().getNameFor(entity.getType())));
             }
         }
     }

@@ -2,12 +2,12 @@ package de.cubeisland.cubeengine.fun.commands;
 
 import de.cubeisland.cubeengine.core.command.CommandContext;
 import de.cubeisland.cubeengine.core.command.annotation.Command;
-import de.cubeisland.cubeengine.core.util.matcher.EntityType;
 import de.cubeisland.cubeengine.core.util.matcher.Match;
 import de.cubeisland.cubeengine.fun.Fun;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 
 import static de.cubeisland.cubeengine.core.command.exception.IllegalParameterValue.illegalParameter;
@@ -40,7 +40,7 @@ public class InvasionCommand
                     location = location.clone();
                     location.subtract(player.getLocation(helperLocation).getDirection().multiply(2));
                 }
-                player.getWorld().spawnEntity(location, entityType.getBukkitType());
+                player.getWorld().spawnEntity(location, entityType);
             }
         }
     }

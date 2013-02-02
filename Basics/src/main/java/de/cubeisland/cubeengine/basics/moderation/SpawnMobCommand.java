@@ -7,7 +7,6 @@ import de.cubeisland.cubeengine.core.command.annotation.Command;
 import de.cubeisland.cubeengine.core.command.exception.InvalidUsageException;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.util.StringUtils;
-import de.cubeisland.cubeengine.core.util.matcher.EntityType;
 import de.cubeisland.cubeengine.core.util.matcher.Match;
 import org.bukkit.DyeColor;
 import org.bukkit.Location;
@@ -88,15 +87,15 @@ public class SpawnMobCommand
         Entity entitySpawned = this.spawnMobs(context, context.getString(0), loc, amount);
         if (entitySpawned.getPassenger() == null)
         {
-            context.sendMessage("basics", "&aSpawned %d &e%s&a!", amount, EntityType.fromBukkitType(entitySpawned.getType()).toString());
+            context.sendMessage("basics", "&aSpawned %d &e%s&a!", amount, Match.entity().getNameFor(entitySpawned.getType()));
         }
         else
         {
-            String message = EntityType.fromBukkitType(entitySpawned.getType()).toString();
+            String message = Match.entity().getNameFor(entitySpawned.getType());
             while (entitySpawned.getPassenger() != null)
             {
                 entitySpawned = entitySpawned.getPassenger();
-                message = _(context.getSender(), "basics", "%s &ariding &e%s", EntityType.fromBukkitType(entitySpawned.getType()).toString(), message);
+                message = _(context.getSender(), "basics", "%s &ariding &e%s", Match.entity().getNameFor(entitySpawned.getType()), message);
             }
             message = _(context.getSender(), "basics", "&aSpawned %d &e%s!", amount, message);
             context.sendMessage(message);
@@ -149,7 +148,7 @@ public class SpawnMobCommand
         Entity[] spawnedMobs = new Entity[amount];
         for (int i = 0; i < amount; ++i)
         {
-            spawnedMobs[i] = loc.getWorld().spawnEntity(loc, entityType.getBukkitType());
+            spawnedMobs[i] = loc.getWorld().spawnEntity(loc, entityType);
             this.applyDataToMob(context.getSender(), entityType, spawnedMobs[i], entityData);
             if (ridingOn != null)
             {
@@ -187,7 +186,7 @@ public class SpawnMobCommand
                 }
                 if ("baby".equals(match))
                 {
-                    if (entityType.isAnimal())
+                    if (Match.entity().isAnimal(entityType))
                     {
                         ((Animals)entity).setBaby();
                     }

@@ -9,7 +9,6 @@ import de.cubeisland.cubeengine.core.command.annotation.Flag;
 import de.cubeisland.cubeengine.core.command.annotation.Param;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.util.StringUtils;
-import de.cubeisland.cubeengine.core.util.matcher.EntityType;
 import de.cubeisland.cubeengine.core.util.matcher.Match;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -176,7 +175,7 @@ public class WorldControlCommands
                         List<Entity> remList = new ArrayList<Entity>();
                         for (Entity entity : list)
                         {
-                            if (entity.getType().equals(EntityType.DROPPED_ITEM.getBukkitType()) && ((Item)entity).getItemStack().getType().equals(itemtype))
+                            if (entity.getType().equals(EntityType.DROPPED_ITEM) && ((Item)entity).getItemStack().getType().equals(itemtype))
                             {
                                 remList.add(entity);
                             }
@@ -205,7 +204,7 @@ public class WorldControlCommands
                     {
                         blockCommand(context, "basics", "&cTo kill living entities use the &e/butcher &ccommand!");
                     }
-                    types.add(type.getBukkitType());
+                    types.add(type);
                 }
             }
             List<Entity> remList = new ArrayList<Entity>();
@@ -329,7 +328,7 @@ public class WorldControlCommands
                 boolean specialmatch = false;
                 if (match == null)
                 {
-                    match = Match.string().matchString(s_type, EntityType.livingEntities());
+                    match = Match.entity().getNameFor(Match.entity().living(s_type));
                     if (match == null)
                     {
                         return; //TODO msg
@@ -348,7 +347,7 @@ public class WorldControlCommands
                             || (match.equals("boss") && (entity instanceof EnderDragon || entity instanceof Wither)) //TODO perm
                         || (match.equals("monster") && entity instanceof Monster || entity instanceof Slime || entity instanceof Ghast)//TODO perm
                         || (specialmatch
-                            && (entity.getType().equals(Match.entity().any(match).getBukkitType()))) //TODO perms
+                            && (entity.getType().equals(Match.entity().any(match)))) //TODO perms
                     )
                     {
                         remList.add(entity);

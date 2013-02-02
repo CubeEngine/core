@@ -4,19 +4,22 @@ import de.cubeisland.cubeengine.core.CoreResource;
 import de.cubeisland.cubeengine.core.CubeEngine;
 import de.cubeisland.cubeengine.core.util.AliasMapFormat;
 import de.cubeisland.cubeengine.core.util.log.LogLevel;
+import gnu.trove.map.hash.THashMap;
+import net.minecraft.server.v1_4_R1.EntityTypes;
+import org.bukkit.entity.*;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.TreeMap;
+import java.util.*;
 
 /**
  * This Matcher provides methods to match Entities.
  */
 public class EntityMatcher
 {
+    private final Map<EntityType, String> reverseNameMap = new EnumMap<EntityType, String>(EntityType.class);
+    private final Map<String, EntityType> nameMap = new THashMap<String, EntityType>();
+
     EntityMatcher()
     {
         TreeMap<Integer, List<String>> entityList = this.readEntities();
@@ -24,7 +27,18 @@ public class EntityMatcher
         {
             try
             {
-                EntityType.fromId((short)id).registerNames(entityList.get(id));
+                EntityType entityType = EntityType.fromId((short)id);
+                boolean first = true;
+                for (String name : entityList.get(id))
+                {
+                    if (first)
+                    {
+                        this.reverseNameMap.put(entityType,name);
+                    }
+                    this.nameMap.put(name,entityType);
+                    first = false;
+
+                }
             }
             catch (NullPointerException e)
             {
@@ -74,22 +88,18 @@ public class EntityMatcher
         {
             return null;
         }
-        Map<String, EntityType> entities = EntityType.getNameSets();
+        Map<String, EntityType> entities = this.nameMap;
         String s = name.toLowerCase(Locale.ENGLISH);
         EntityType entity = entities.get(s);
-        try
-        {
-            short entityId = Short.parseShort(s);
-            return EntityType.fromId(entityId);
-        }
-        catch (NumberFormatException ignored)
-        {}
         if (entity == null)
         {
-            if (s.length() < 4)
+            try
             {
-                return null;
+                short entityId = Short.parseShort(s);
+                return EntityType.fromId(entityId);
             }
+            catch (NumberFormatException ignored)
+            {}
             String t_key = Match.string().matchString(name, entities.keySet());
             if (t_key != null)
             {
@@ -124,7 +134,7 @@ public class EntityMatcher
     public EntityType spawnEggMob(String s)
     {
         EntityType type = this.mob(s);
-        if (type != null && type.canBeSpawnedBySpawnEgg())
+        if (type != null && this.canBeSpawnedBySpawnEgg(type))
         {
             return type;
         }
@@ -140,7 +150,7 @@ public class EntityMatcher
     public EntityType monster(String s)
     {
         EntityType type = this.any(s);
-        if (type != null && type.isMonster())
+        if (type != null && this.isMonster(type))
         {
             return type;
         }
@@ -156,7 +166,7 @@ public class EntityMatcher
     public EntityType friendlyMob(String s)
     {
         EntityType type = this.any(s);
-        if (type != null && type.isFriendly())
+        if (type != null && this.isFriendly(type))
         {
             return type;
         }
@@ -172,12 +182,72 @@ public class EntityMatcher
     public EntityType projectile(String s)
     {
         EntityType type = this.any(s);
-        if (type != null && type.isProjectile())
+        if (type != null && this.isProjectile(type))
         {
             return type;
         }
         return null;
     }
 
+    public EntityType living(String s)
+    {
+        EntityType type = this.any(s);
+        if (type != null && type.isAlive())
+        {
+            return type;
+        }
+        return null;
+    }
 
+    /**
+     * Returns if this EntityType can be spawned via SpawnEgg.
+     */
+    public boolean canBeSpawnedBySpawnEgg(EntityType entityType)
+    {
+        return EntityTypes.a.containsKey(entityType.getTypeId());
+    }
+
+    /**
+     * Returns whether this Entity is a monster
+     *
+     * @return true if this type is an monster
+     */
+    public boolean isMonster(EntityType entityType)
+    {
+        return Monster.class.isAssignableFrom(entityType.getClass());
+    }
+
+    /**
+     * Returns whether this Entity is a friendly mob
+     *
+     * @return true if this type is an friendly entity
+     */
+    public boolean isFriendly(EntityType entityType)
+    {
+        return this.isAnimal(entityType) || NPC.class.isAssignableFrom(entityType.getClass());
+    }
+
+    /**
+     * Returns whether this type is an animal
+     *
+     * @return true if this type is an animal
+     */
+    public boolean isAnimal(EntityType entityType)
+    {
+        return Animals.class.isAssignableFrom(entityType.getClass());
+    }
+
+    /**
+     * Returns whether this type is a projectile
+     *
+     * @return true if this type is an projectile
+     */
+    public boolean isProjectile(EntityType entityType)
+    {
+        return Projectile.class.isAssignableFrom(entityType.getClass());
+    }
+
+    public String getNameFor(EntityType type) {
+        return this.reverseNameMap.get(type);
+    }
 }
