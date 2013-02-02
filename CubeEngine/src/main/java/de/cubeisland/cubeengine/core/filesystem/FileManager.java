@@ -13,6 +13,8 @@ import java.util.logging.Logger;
 import static de.cubeisland.cubeengine.core.util.log.LogLevel.INFO;
 import static de.cubeisland.cubeengine.core.util.log.LogLevel.NOTICE;
 import static de.cubeisland.cubeengine.core.util.log.LogLevel.WARNING;
+import java.nio.charset.Charset;
+import java.util.Map;
 
 /**
  * Manages all the configurations of the CubeEngine.
@@ -77,6 +79,10 @@ public class FileManager implements Cleanable
         {
             throw new IOException("The modules folder is not writable!");
         }
+        if (!createSymLink(new File(System.getProperty("user.dir", "."), "modules"), this.modulesDir))
+        {
+            LOGGER.log(NOTICE, "Linking to the modules directory failed! This can be ignored.");
+        }
 
         this.tempDir = new File(this.dataFolder, "temp");
         if (!this.tempDir.isDirectory() && !this.tempDir.mkdirs())
@@ -87,19 +93,53 @@ public class FileManager implements Cleanable
         {
             throw new IOException("The temp folder is not writable!");
         }
+        if (!hideFile(this.tempDir))
+        {
+            LOGGER.log(NOTICE, "Hiding the temp folder failed! This can be ignored!");
+        }
+
+        this.fileSources = new ConcurrentHashMap<File, Resource>();
+    }
+    
+    public static boolean hideFile(File file)
+    {
         if (WINDOWS)
         {
             try
             {
-                Runtime.getRuntime().exec(new String[] {"attrib", "+H", this.tempDir.getAbsolutePath()});
+                return Runtime.getRuntime().exec(new String[] {"attrib", "+H", file.getAbsolutePath()}).waitFor() == 0;
             }
             catch (Exception e)
+            {}
+        }
+        return false;
+    }
+    
+    private static boolean createSymLink(File source, File target)
+    {
+        final String[] command;
+        if (WINDOWS)
+        {
+            if (target.isDirectory())
             {
-                LOGGER.log(NOTICE, "Your OS was detected as Windows, but setting the temp folder hidden failed. This can be ignored!");
+                command = new String[] {"cmd", "/c", "mklink", "/d", source.getAbsolutePath(), target.getAbsolutePath()};
+            }
+            else
+            {
+                command = new String[] {"cmd", "/c", "mklink", source.getAbsolutePath(), target.getAbsolutePath()};
             }
         }
-
-        this.fileSources = new ConcurrentHashMap<File, Resource>();
+        else
+        {
+            command = new String[] {"ln", "-s", target.getAbsolutePath(), source.getAbsolutePath()};
+        }
+        try
+        {
+            return Runtime.getRuntime().exec(command).waitFor() == 0;
+        }
+        catch (Exception e)
+        {}
+        return false;
     }
 
     /**

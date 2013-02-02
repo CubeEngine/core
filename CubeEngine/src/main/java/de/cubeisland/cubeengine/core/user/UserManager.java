@@ -2,6 +2,7 @@ package de.cubeisland.cubeengine.core.user;
 
 import de.cubeisland.cubeengine.core.Core;
 import de.cubeisland.cubeengine.core.bukkit.BukkitCore;
+import de.cubeisland.cubeengine.core.filesystem.FileManager;
 import de.cubeisland.cubeengine.core.module.Module;
 import de.cubeisland.cubeengine.core.storage.SingleKeyStorage;
 import de.cubeisland.cubeengine.core.storage.StorageException;
@@ -45,6 +46,7 @@ import java.util.concurrent.TimeUnit;
 import static de.cubeisland.cubeengine.core.i18n.I18n._;
 import static de.cubeisland.cubeengine.core.storage.database.querybuilder.ComponentBuilder.EQUAL;
 import static de.cubeisland.cubeengine.core.storage.database.querybuilder.ComponentBuilder.LESS;
+import java.io.FileNotFoundException;
 
 /**
  * This Manager provides methods to access the Users and saving/loading from
@@ -551,7 +553,7 @@ public class UserManager extends SingleKeyStorage<Long, User> implements Cleanab
             salt = reader.readLine();
             reader.close();
         }
-        catch (Exception e)
+        catch (FileNotFoundException e)
         {
             if (salt == null)
             {
@@ -562,9 +564,17 @@ public class UserManager extends SingleKeyStorage<Long, User> implements Cleanab
                     fileWriter.write(salt);
                     fileWriter.close();
                 }
-                catch (Exception ignored)
-                {}
+                catch (Exception inner)
+                {
+                    throw new IllegalStateException("Could not store the static salt in '" + file.getAbsolutePath() + "'!", inner);
+                }
             }
         }
+        catch (Exception e)
+        {
+            throw new IllegalStateException("Could not store the static salt in '" + file.getAbsolutePath() + "'!", e);
+        }
+        FileManager.hideFile(file);
+        file.setReadOnly();
     }
 }
