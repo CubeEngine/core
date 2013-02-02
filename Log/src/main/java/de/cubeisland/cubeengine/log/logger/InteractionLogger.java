@@ -14,7 +14,6 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.material.Diode;
-import org.bukkit.material.Door;
 import org.bukkit.material.MaterialData;
 import org.bukkit.material.Openable;
 
@@ -25,6 +24,7 @@ public class InteractionLogger extends Logger<InteractionConfig>
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    @SuppressWarnings("deprecation")
     public void onPlayerInteract(PlayerInteractEvent event)
     {
         World world = event.getClickedBlock().getWorld();
@@ -48,7 +48,7 @@ public class InteractionLogger extends Logger<InteractionConfig>
                             return;
 
                         }
-                        if (((Door)blockData).isTopHalf())
+                        if (((org.bukkit.material.Door)blockData).isTopHalf())
                         {
                             block = block.getRelative(BlockFace.DOWN);
                             blockData = block.getState().getData();
