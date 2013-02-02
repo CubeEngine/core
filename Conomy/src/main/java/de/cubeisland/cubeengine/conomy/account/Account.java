@@ -1,5 +1,6 @@
 package de.cubeisland.cubeengine.conomy.account;
 
+import de.cubeisland.cubeengine.conomy.ConomyPermissions;
 import de.cubeisland.cubeengine.conomy.account.storage.AccountModel;
 import de.cubeisland.cubeengine.conomy.currency.Currency;
 import de.cubeisland.cubeengine.core.CubeEngine;
@@ -118,5 +119,24 @@ public class Account
 
     public void setHidden(boolean hidden) {
         this.model.hidden = hidden;
+    }
+
+    public boolean canAfford(long amount)
+    {
+        if (this.isUserAccount())
+        {
+            if (!ConomyPermissions.ACCOUNT_ALLOWUNDERMIN.isAuthorized(this.user))
+            {
+                if (this.getBalance() - amount < this.getCurrency().getMinMoney())
+                {
+                    return false;
+                }
+            }
+            return true; // Has perm or money
+        }
+        else
+        {
+            return true; //TODO bank-accs later
+        }
     }
 }

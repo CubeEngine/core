@@ -1,7 +1,6 @@
 package de.cubeisland.cubeengine.conomy.account;
 
 import de.cubeisland.cubeengine.conomy.Conomy;
-import de.cubeisland.cubeengine.conomy.ConomyPermissions;
 import de.cubeisland.cubeengine.conomy.account.storage.AccountModel;
 import de.cubeisland.cubeengine.conomy.account.storage.AccountStorage;
 import de.cubeisland.cubeengine.conomy.currency.Currency;
@@ -9,6 +8,7 @@ import de.cubeisland.cubeengine.conomy.currency.CurrencyManager;
 import de.cubeisland.cubeengine.core.user.User;
 import gnu.trove.map.hash.THashMap;
 import gnu.trove.map.hash.TLongObjectHashMap;
+
 import java.util.Collection;
 
 public class AccountManager
@@ -284,37 +284,17 @@ public class AccountManager
      * @param source the source
      * @param target the target
      * @param amount the amount in target-currency
-     * @param force force the transaction ingoring possible user-permissions
-     * @return true if the transaction was succesful
+     * @return true if the transaction was successful
      * @throws IllegalArgumentException when currencies are not convertible
      */
-    public boolean transaction(Account source, Account target, Long amount, boolean force) throws IllegalArgumentException
+    public boolean transaction(Account source, Account target, Long amount) throws IllegalArgumentException
     {
         if (!(source == null || target == null))
             if (!source.getCurrency().canConvert(target.getCurrency()))
             {
-                return false; // currencies are not convertible  //TODO messages could be wrong
+                return false; // currencies are not convertible
             }
-        if (!force)
-        {
-            if (source != null)
-            {
-                if (source.getBalance() - amount < source.getCurrency().getMinMoney())
-                {
-                    if (source.isUserAccount() && !ConomyPermissions.ACCOUNT_ALLOWUNDERMIN.isAuthorized(source.getUser()))
-                    {
-                        return false;
-                    }
-                    else
-                    {
-                        return false; // TODO bank minimum
-                    }
-                }
-            }
-            //TODO perm checks etc.
-        }
         target.transaction(source, amount);
-        //TODO logging
         return true;
     }
 

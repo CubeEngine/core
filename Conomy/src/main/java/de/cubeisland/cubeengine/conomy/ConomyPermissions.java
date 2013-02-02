@@ -12,7 +12,7 @@ public enum ConomyPermissions implements Permission
 {
     ACCOUNT_ALLOWUNDERMIN, // Allows the user to have less money then the minimum (default 0)
 
-    ACCOUNT_SHOWHIDDEN;
+    ACCOUNT_SHOWHIDDEN, COMMAND_PAY_FORCE;
     private String permission;
     private PermDefault def;
 

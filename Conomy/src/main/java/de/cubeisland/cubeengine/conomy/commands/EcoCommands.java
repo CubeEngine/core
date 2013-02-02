@@ -39,8 +39,7 @@ public class EcoCommands extends ContainerCommand
                 return;
             }
         }
-        else
-        // try to match if fail default
+        else // try to match if fail default
         {
             currency = this.module.getCurrencyManager().matchCurrency(amountString, true).iterator().next(); // can never be empty
         }
@@ -81,13 +80,11 @@ public class EcoCommands extends ContainerCommand
                             user.getName(), currency.getName());
                     continue;
                 }
-                if (this.module.getAccountsManager().transaction(null, target, amount, true))
+                this.module.getAccountsManager().transaction(null, target, amount);
+                context.sendMessage("conomy", "&aYou gave &6%s &ato &2%s&a!", currency.formatLong(amount), user.getName());
+                if (!context.getSender().getName().equals(user.getName()))
                 {
-                    context.sendMessage("conomy", "&aYou gave &6%s &ato &2%s&a!", currency.formatLong(amount), user.getName());
-                    if (!context.getSender().getName().equals(user.getName()))
-                    {
-                        user.sendMessage("conomy", "&aYou were granted &6%s&a.", currency.formatLong(amount));
-                    }
+                    user.sendMessage("conomy", "&aYou were granted &6%s&a.", currency.formatLong(amount));
                 }
             }
         }
@@ -111,8 +108,7 @@ public class EcoCommands extends ContainerCommand
                 return;
             }
         }
-        else
-        // try to match if fail default
+        else // try to match if fail default
         {
             currency = this.module.getCurrencyManager().matchCurrency(amountString, true).iterator().next(); // can never be empty
         }
@@ -153,13 +149,11 @@ public class EcoCommands extends ContainerCommand
                             user.getName(), currency.getName());
                     return;
                 }
-                if (this.module.getAccountsManager().transaction(null, target, -amount, true))
+                this.module.getAccountsManager().transaction(null, target, -amount);
+                context.sendMessage("conomy", "&aYou took &6%s &afrom &2%s&a!", currency.formatLong(amount), user.getName());
+                if (!context.getSender().getName().equals(user.getName()))
                 {
-                    context.sendMessage("conomy", "&aYou took &6%s &afrom &2%s&a!", currency.formatLong(amount), user.getName());
-                    if (!context.getSender().getName().equals(user.getName()))
-                    {
-                        user.sendMessage("conomy", "&eWithdrawed &6%s &efrom your account.", currency.formatLong(amount));
-                    }
+                    user.sendMessage("conomy", "&eWithdrawed &6%s &efrom your account.", currency.formatLong(amount));
                 }
             }
         }

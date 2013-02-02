@@ -26,8 +26,21 @@ public class MoneyCommand extends ContainerCommand
         this.module = module;
     }
 
+    @Override
+    public void run(CommandContext context) {
+        super.run(context);
+        /*
+        if (context.hasIndexed(0))
+        {
+            super.run(context);
+        }
+        else
+        {
+            this.balance(context); // Alias for balance //TODO this is broken because of flags checks in balance
+        }*/
+    }
+
     @Alias(names = {
-        "money",//TODO this does not WORK  :( fix it @Quick_Wango
         "balance", "moneybalance"
     })
     @Command(desc = "Shows your balance",
@@ -255,7 +268,22 @@ public class MoneyCommand extends ContainerCommand
                         sender.getName(), currency.getName());
                 continue;
             }
-            if (this.module.getAccountsManager().transaction(source, target, amount, context.hasFlag("f")))
+            if (!(context.hasFlag("f") && ConomyPermissions.COMMAND_PAY_FORCE.isAuthorized(context.getSender()))) //force allowed
+            {
+                if (!source.canAfford(amount))
+                {
+                    if (asSomeOneElse)
+                    {
+                        context.sendMessage("conomy", "&2%s &ccannot afford &6%s&c!", sender.getName(), currency.formatLong(amount));
+                    }
+                    else
+                    {
+                        context.sendMessage("conomy", "&cYou cannot afford &6%s&c!", currency.formatLong(amount));
+                    }
+                    return;
+                }
+            }
+            if (this.module.getAccountsManager().transaction(source, target, amount))
             {
                 if (asSomeOneElse)
                 {
@@ -266,16 +294,6 @@ public class MoneyCommand extends ContainerCommand
                     context.sendMessage("conomy", "&6%s &atransfered to &2%s's &aaccount!", formattedAmount, user.getName());
                 }
                 user.sendMessage("conomy", "&2%s &ajust send you &6%s!", sender.getName(), formattedAmount);
-            }
-            else if (context.hasNamed("as"))
-            {
-                context.sendMessage("conomy", "&2%s &ccannot afford &6%s&c!", sender.getName(), currency.formatLong(amount));
-                return;
-            }
-            else
-            {
-                context.sendMessage("conomy", "&cYou cannot afford &6%s&c!", currency.formatLong(amount));
-                return;
             }
         }
     }
