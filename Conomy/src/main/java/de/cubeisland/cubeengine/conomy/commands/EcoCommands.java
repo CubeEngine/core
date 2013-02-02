@@ -9,6 +9,7 @@ import de.cubeisland.cubeengine.core.command.annotation.Command;
 import de.cubeisland.cubeengine.core.command.annotation.Flag;
 import de.cubeisland.cubeengine.core.command.annotation.Param;
 import de.cubeisland.cubeengine.core.user.User;
+import de.cubeisland.cubeengine.core.util.StringUtils;
 
 public class EcoCommands extends ContainerCommand
 {
@@ -20,7 +21,6 @@ public class EcoCommands extends ContainerCommand
         this.module = module;
     }
 
-    //TODO give a , separated list of users for all cmds
     @Command(names = {"give", "grant"},
             desc = "Gives money to given user or all [online] users",
             usage = "<player>|* [-o] <amount> [in <currency>]",
@@ -65,25 +65,29 @@ public class EcoCommands extends ContainerCommand
         }
         else
         {
-            User user = context.getUser(0);
-            if (user == null)
+            String[] users =  StringUtils.explode(",", context.getString(0));
+            for (String userString : users)
             {
-                context.sendMessage("conomy", "&cUser %s not found!", context.getString(0));
-                return;
-            }
-            Account target = this.module.getAccountsManager().getAccount(user, currency);
-            if (target == null)
-            {
-                context.sendMessage("conomy", "&2%s &cdoes not have an account for &6%s&c!",
-                        user.getName(), currency.getName());
-                return;
-            }
-            if (this.module.getAccountsManager().transaction(null, target, amount, true))
-            {
-                context.sendMessage("conomy", "&aYou gave &6%s &ato &2%s&a!", currency.formatLong(amount), user.getName());
-                if (!context.getSender().getName().equals(user.getName()))
+                User user = this.module.getUserManager().findUser(userString);
+                if (user == null)
                 {
-                    user.sendMessage("conomy", "&aYou were granted &6%s&a.", currency.formatLong(amount));
+                    context.sendMessage("conomy", "&cUser %s not found!", context.getString(0));
+                    continue;
+                }
+                Account target = this.module.getAccountsManager().getAccount(user, currency);
+                if (target == null)
+                {
+                    context.sendMessage("conomy", "&2%s &cdoes not have an account for &6%s&c!",
+                            user.getName(), currency.getName());
+                    continue;
+                }
+                if (this.module.getAccountsManager().transaction(null, target, amount, true))
+                {
+                    context.sendMessage("conomy", "&aYou gave &6%s &ato &2%s&a!", currency.formatLong(amount), user.getName());
+                    if (!context.getSender().getName().equals(user.getName()))
+                    {
+                        user.sendMessage("conomy", "&aYou were granted &6%s&a.", currency.formatLong(amount));
+                    }
                 }
             }
         }
@@ -133,25 +137,29 @@ public class EcoCommands extends ContainerCommand
         }
         else
         {
-            User user = context.getUser(0);
-            if (user == null)
+            String[] users =  StringUtils.explode(",", context.getString(0));
+            for (String userString : users)
             {
-                context.sendMessage("conomy", "&cUser %s not found!", context.getString(0));
-                return;
-            }
-            Account target = this.module.getAccountsManager().getAccount(user, currency);
-            if (target == null)
-            {
-                context.sendMessage("conomy", "&2%s &cdoes not have an account for &6%s&c!",
-                        user.getName(), currency.getName());
-                return;
-            }
-            if (this.module.getAccountsManager().transaction(null, target, -amount, true))
-            {
-                context.sendMessage("conomy", "&aYou took &6%s &afrom &2%s&a!", currency.formatLong(amount), user.getName());
-                if (!context.getSender().getName().equals(user.getName()))
+                User user = this.module.getUserManager().findUser(userString);
+                if (user == null)
                 {
-                    user.sendMessage("conomy", "&eWithdrawed &6%s &efrom your account.", currency.formatLong(amount));
+                    context.sendMessage("conomy", "&cUser %s not found!", context.getString(0));
+                    return;
+                }
+                Account target = this.module.getAccountsManager().getAccount(user, currency);
+                if (target == null)
+                {
+                    context.sendMessage("conomy", "&2%s &cdoes not have an account for &6%s&c!",
+                            user.getName(), currency.getName());
+                    return;
+                }
+                if (this.module.getAccountsManager().transaction(null, target, -amount, true))
+                {
+                    context.sendMessage("conomy", "&aYou took &6%s &afrom &2%s&a!", currency.formatLong(amount), user.getName());
+                    if (!context.getSender().getName().equals(user.getName()))
+                    {
+                        user.sendMessage("conomy", "&eWithdrawed &6%s &efrom your account.", currency.formatLong(amount));
+                    }
                 }
             }
         }
@@ -192,24 +200,28 @@ public class EcoCommands extends ContainerCommand
         }
         else
         {
-            User user = context.getUser(0);
-            if (user == null)
+            String[] users =  StringUtils.explode(",", context.getString(0));
+            for (String userString : users)
             {
-                context.sendMessage("conomy", "&cUser %s not found!", context.getString(0));
-                return;
-            }
-            Account target = this.module.getAccountsManager().getAccount(user, currency);
-            if (target == null)
-            {
-                context.sendMessage("conomy", "&2%s &cdoes not have an account for &6%s&c!",
-                        user.getName(), currency.getName());
-                return;
-            }
-            target.resetToDefault();
-            context.sendMessage("conomy", "&2%s &aaccount reset to &6%s&a!", user.getName(), currency.formatLong(target.getBalance()));
-            if (!context.getSender().getName().equals(user.getName()))
-            {
-                user.sendMessage("conomy", "&eYour balance got resetted to &6%s&e.", currency.formatLong(target.getBalance()));
+                User user = this.module.getUserManager().findUser(userString);
+                if (user == null)
+                {
+                    context.sendMessage("conomy", "&cUser %s not found!", context.getString(0));
+                    return;
+                }
+                Account target = this.module.getAccountsManager().getAccount(user, currency);
+                if (target == null)
+                {
+                    context.sendMessage("conomy", "&2%s &cdoes not have an account for &6%s&c!",
+                            user.getName(), currency.getName());
+                    return;
+                }
+                target.resetToDefault();
+                context.sendMessage("conomy", "&2%s &aaccount reset to &6%s&a!", user.getName(), currency.formatLong(target.getBalance()));
+                if (!context.getSender().getName().equals(user.getName()))
+                {
+                    user.sendMessage("conomy", "&eYour balance got resetted to &6%s&e.", currency.formatLong(target.getBalance()));
+                }
             }
         }
     }
@@ -257,24 +269,28 @@ public class EcoCommands extends ContainerCommand
         }
         else
         {
-            User user = context.getUser(0);
-            if (user == null)
+            String[] users =  StringUtils.explode(",", context.getString(0));
+            for (String userString : users)
             {
-                context.sendMessage("conomy", "&cUser %s not found!", context.getString(0));
-                return;
-            }
-            Account target = this.module.getAccountsManager().getAccount(user, currency);
-            if (target == null)
-            {
-                context.sendMessage("conomy", "&2%s &cdoes not have an account for &6%s&c!",
-                        user.getName(), currency.getName());
-                return;
-            }
-            target.set(amount);
-            context.sendMessage("conomy", "&2%s &aaccount set to &6%s&a!", user.getName(), currency.formatLong(amount));
-            if (!context.getSender().getName().equals(user.getName()))
-            {
-                user.sendMessage("conomy", "&eYour balance got set to &6%s&e.", currency.formatLong(amount));
+                User user = this.module.getUserManager().findUser(userString);
+                if (user == null)
+                {
+                    context.sendMessage("conomy", "&cUser %s not found!", context.getString(0));
+                    return;
+                }
+                Account target = this.module.getAccountsManager().getAccount(user, currency);
+                if (target == null)
+                {
+                    context.sendMessage("conomy", "&2%s &cdoes not have an account for &6%s&c!",
+                            user.getName(), currency.getName());
+                    return;
+                }
+                target.set(amount);
+                context.sendMessage("conomy", "&2%s &aaccount set to &6%s&a!", user.getName(), currency.formatLong(amount));
+                if (!context.getSender().getName().equals(user.getName()))
+                {
+                    user.sendMessage("conomy", "&eYour balance got set to &6%s&e.", currency.formatLong(amount));
+                }
             }
         }
     }
@@ -301,28 +317,33 @@ public class EcoCommands extends ContainerCommand
         {
             currency = this.module.getCurrencyManager().getMainCurrency();
         }
-        User user = context.getUser(0);
-        if (user == null)
+        String[] users =  StringUtils.explode(",", context.getString(0));
+        for (String userString : users)
         {
-            context.sendMessage("conomy", "&cUser %s not found!", context.getString(0));
-            return;
-        }
-        Account target = this.module.getAccountsManager().getAccount(user, currency);
-        if (target == null)
-        {
-            context.sendMessage("conomy", "&2%s &cdoes not have an account for &6%s&c!",
-                    user.getName(), currency.getName());
-            return;
-        }
-        boolean isHidden = target.isHidden();
-        if (isHidden)
-        {
-            context.sendMessage("conomny","&2%s's %eaccount in &6%s &eis already hidden!", user.getName(), currency.getName());
-        }
-        else
-        {
-            target.setHidden(true);
-            context.sendMessage("conomny","&2%s's %aaccount in &6%s &ais now hidden!", user.getName(), currency.getName());
+            User user = this.module.getUserManager().findUser(userString);
+            if (user == null)
+            {
+                context.sendMessage("conomy", "&cUser %s not found!", context.getString(0));
+                return;
+            }
+            Account target = this.module.getAccountsManager().getAccount(user, currency);
+            if (target == null)
+            {
+                context.sendMessage("conomy", "&2%s &cdoes not have an account for &6%s&c!",
+                        user.getName(), currency.getName());
+                return;
+            }
+            boolean isHidden = target.isHidden();
+
+            if (isHidden)
+            {
+                context.sendMessage("conomny","&2%s's %eaccount in &6%s &eis already hidden!", user.getName(), currency.getName());
+            }
+            else
+            {
+                target.setHidden(true);
+                context.sendMessage("conomny","&2%s's %aaccount in &6%s &ais now hidden!", user.getName(), currency.getName());
+            }
         }
     }
 
@@ -345,29 +366,33 @@ public class EcoCommands extends ContainerCommand
         {
             currency = this.module.getCurrencyManager().getMainCurrency();
         }
-        User user = context.getUser(0);
-        if (user == null)
+        String[] users =  StringUtils.explode(",", context.getString(0));
+        for (String userString : users)
         {
-            context.sendMessage("conomy", "&cUser %s not found!", context.getString(0));
-            return;
-        }
-        Account target = this.module.getAccountsManager().getAccount(user, currency);
-        if (target == null)
-        {
-            context.sendMessage("conomy", "&2%s &cdoes not have an account for &6%s&c!",
-                    user.getName(), currency.getName());
-            return;
-        }
-        boolean isHidden = target.isHidden();
+            User user = this.module.getUserManager().findUser(userString);
+            if (user == null)
+            {
+                context.sendMessage("conomy", "&cUser %s not found!", context.getString(0));
+                return;
+            }
+            Account target = this.module.getAccountsManager().getAccount(user, currency);
+            if (target == null)
+            {
+                context.sendMessage("conomy", "&2%s &cdoes not have an account for &6%s&c!",
+                        user.getName(), currency.getName());
+                return;
+            }
+            boolean isHidden = target.isHidden();
 
-        if (isHidden)
-        {
-            target.setHidden(false);
-            context.sendMessage("conomny","&2%s's %aaccount in &6%s &ais no longer hidden!", user.getName(), currency.getName());
-        }
-        else
-        {
-            context.sendMessage("conomny","&2%s's %eaccount in &6%s &ewas not hidden!", user.getName(), currency.getName());
+            if (isHidden)
+            {
+                target.setHidden(false);
+                context.sendMessage("conomny","&2%s's %aaccount in &6%s &ais no longer hidden!", user.getName(), currency.getName());
+            }
+            else
+            {
+                context.sendMessage("conomny","&2%s's %eaccount in &6%s &ewas not hidden!", user.getName(), currency.getName());
+            }
         }
     }
 }

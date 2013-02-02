@@ -189,7 +189,7 @@ public class AccountManager
      */
     private Account createNewAccountNoCheck(User user, Currency currency)
     {
-        AccountModel model = new AccountModel(user.key, null, currency.getName(), currency.getDefaultBalance(), true);
+        AccountModel model = new AccountModel(user.key, null, currency.getName(), currency.getDefaultBalance(), false);
         this.accountStorage.store(model);
         Account account = new Account(this, currency, model);
         this.useraccounts.get(user.key).put(currency, account);
@@ -225,7 +225,7 @@ public class AccountManager
 
     private Account createNewAccountNoCheck(String name, Currency currency)
     {
-        AccountModel model = new AccountModel(null, name, currency.getName(), currency.getDefaultBalance(), true);
+        AccountModel model = new AccountModel(null, name, currency.getName(), currency.getDefaultBalance(), false);
         this.accountStorage.store(model);
         Account account = new Account(this, currency, model);
         this.bankaccounts.get(name).put(currency, account);
@@ -290,17 +290,18 @@ public class AccountManager
      */
     public boolean transaction(Account source, Account target, Long amount, boolean force) throws IllegalArgumentException
     {
-        if (source.getCurrency().canConvert(target.getCurrency()))
-        {
-            return false; // currencies are not convertible
-        }
+        if (!(source == null || target == null))
+            if (!source.getCurrency().canConvert(target.getCurrency()))
+            {
+                return false; // currencies are not convertible  //TODO messages could be wrong
+            }
         if (!force)
         {
             if (source != null)
             {
                 if (source.getBalance() - amount < source.getCurrency().getMinMoney())
                 {
-                    if (source.isUserAccount() && !ConomyPermissions.ACCOOUNT_ALLOWUNDERMIN.isAuthorized(source.getUser()))
+                    if (source.isUserAccount() && !ConomyPermissions.ACCOUNT_ALLOWUNDERMIN.isAuthorized(source.getUser()))
                     {
                         return false;
                     }

@@ -30,7 +30,7 @@ public class CurrencyManager
         {
             this.currencies.put(entry.getKey().toLowerCase(), new Currency(this, entry.getKey(), entry.getValue()));
         }
-        this.mainCurrency = this.currencies.get(config.currencies.keySet().iterator().next());
+        this.mainCurrency = this.currencies.get(config.currencies.keySet().iterator().next().toLowerCase());
 
         if (this.config.relations != null)
         {
@@ -68,7 +68,7 @@ public class CurrencyManager
 
     public Currency getCurrencyByName(String currencyName)
     {
-        return this.currencies.get(currencyName);
+        return this.currencies.get(currencyName.toLowerCase());
     }
 
     public Currency matchCurrency(String amountString)

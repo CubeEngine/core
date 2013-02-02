@@ -29,7 +29,7 @@ public class AccountModel implements Model<Long>
     @Attribute(type = AttrType.BIGINT)
     public long value;
     @Attribute(type = AttrType.BOOLEAN)
-    public boolean hidden;
+    public boolean hidden = false;
 
     @Override
     public Long getKey()
@@ -50,7 +50,7 @@ public class AccountModel implements Model<Long>
     {
         this.user_id = user_id;
         this.name = name;
-        this.currencyName = currencyName;
+        this.currencyName = currencyName.toLowerCase();
         this.value = balance;
         this.hidden = hidden;
     }

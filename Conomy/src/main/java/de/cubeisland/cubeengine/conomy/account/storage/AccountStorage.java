@@ -38,7 +38,7 @@ public class AccountStorage extends SingleKeyStorage<Long, AccountModel>
             this.database.storeStatement(modelClass, "getTopBalance",
                     builder.select().cols(allFields).from(this.tableName).
                         where().field("currencyName").isEqual().value().
-                            and().field("hidden").isEqual().value(true).
+                            and().field("hidden").isEqual().value(false).
                         orderBy("value").desc().limit().offset().end().end());
             this.database.storeStatement(modelClass, "getTopBalanceWithHidden",
                     builder.select().cols(allFields).from(this.tableName).
@@ -121,11 +121,11 @@ public class AccountStorage extends SingleKeyStorage<Long, AccountModel>
             ResultSet resultSet;
             if (showHidden)
             {
-                resultSet = this.database.preparedQuery(modelClass, "getTopBalanceWithHidden", currency.getName(), toRank - fromRank, fromRank - 1);
+                resultSet = this.database.preparedQuery(modelClass, "getTopBalanceWithHidden", currency.getName().toLowerCase(), toRank - fromRank, fromRank - 1);
             }
             else
             {
-                resultSet = this.database.preparedQuery(modelClass, "getTopBalance", currency.getName(), toRank - fromRank, fromRank - 1);
+                resultSet = this.database.preparedQuery(modelClass, "getTopBalance", currency.getName().toLowerCase(), toRank - fromRank, fromRank - 1);
             }
             LinkedList<AccountModel> list = new LinkedList<AccountModel>();
             while (resultSet.next())

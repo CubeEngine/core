@@ -1,6 +1,7 @@
 package de.cubeisland.cubeengine.conomy.commands;
 
 import de.cubeisland.cubeengine.conomy.Conomy;
+import de.cubeisland.cubeengine.conomy.ConomyPermissions;
 import de.cubeisland.cubeengine.conomy.account.Account;
 import de.cubeisland.cubeengine.conomy.account.storage.AccountModel;
 import de.cubeisland.cubeengine.conomy.currency.Currency;
@@ -11,6 +12,8 @@ import de.cubeisland.cubeengine.core.command.annotation.Command;
 import de.cubeisland.cubeengine.core.command.annotation.Flag;
 import de.cubeisland.cubeengine.core.command.annotation.Param;
 import de.cubeisland.cubeengine.core.user.User;
+import de.cubeisland.cubeengine.core.util.StringUtils;
+
 import java.util.Collection;
 
 public class MoneyCommand extends ContainerCommand
@@ -38,7 +41,8 @@ public class MoneyCommand extends ContainerCommand
         boolean showHidden = context.hasFlag("f");
         if (showHidden)
         {
-            //TODO permission for flag (reset if doesn't have)
+            if (!ConomyPermissions.ACCOUNT_SHOWHIDDEN.isAuthorized(context.getSender()))
+                showHidden = false;
         }
         if (context.hasIndexed(0))
         {
@@ -80,7 +84,7 @@ public class MoneyCommand extends ContainerCommand
                 acc = this.module.getAccountsManager().getAccount(user);
             }
             if (!acc.isHidden() || showHidden)
-            context.sendMessage("conomy", "&2%s's &aBalance: &6%s", user.getName(), acc.getCurrency().formatLong(acc.getBalance()));
+                context.sendMessage("conomy", "&2%s's &aBalance: &6%s", user.getName(), acc.getCurrency().formatLong(acc.getBalance()));
             else
                 context.sendMessage("conomy","&cNo account found for &2%s&c!", user.getName());
         }
@@ -98,7 +102,8 @@ public class MoneyCommand extends ContainerCommand
         boolean showHidden = context.hasFlag("f");
         if (showHidden)
         {
-            //TODO permission for flag (reset if doesn't have)
+            if (!ConomyPermissions.ACCOUNT_SHOWHIDDEN.isAuthorized(context.getSender()))
+                showHidden = false;
         }
         int fromRank = 1;
         int toRank = 10;
@@ -153,13 +158,12 @@ public class MoneyCommand extends ContainerCommand
     })
     @Command(names = {
         "pay", "give"
-    }, desc = "Transfer the given amount to another account.", usage = "<player> [as <player>] <amount> [-bank]", params = {
+    }, desc = "Transfer the given amount to another account.",
+       usage = "<player> [as <player>] <amount>", params = {
         @Param(names = "as", type = User.class),
         @Param(names = "in", type = String.class)
-    }, flags = {
-        @Flag(longName = "bank", name = "b"),
-        @Flag(longName = "force", name = "f")
-    }, min = 2, max = 2)
+    }, flags = @Flag(longName = "force", name = "f")
+            , min = 2, max = 2)
     public void pay(CommandContext context)
     {
         Currency currency;
@@ -185,6 +189,7 @@ public class MoneyCommand extends ContainerCommand
         }
         String formattedAmount = currency.formatLong(amount);
         User sender;
+        boolean asSomeOneElse = false;
         if (context.hasNamed("as"))
         {
             sender = context.getUser("as");
@@ -193,11 +198,13 @@ public class MoneyCommand extends ContainerCommand
                 context.sendMessage("conomy", "&cUser %s not found!", context.getString("as"));
                 return;
             }
+            asSomeOneElse = true;
         }
         else
         {
             sender = context.getSenderAsUser("conomy", "&cPlease specify a user to use his account.");
         }
+        /* TODO bank accounts stuff
         if (context.hasFlag("b"))
         {
             Account source = this.module.getAccountsManager().getAccount(sender, currency);
@@ -224,35 +231,51 @@ public class MoneyCommand extends ContainerCommand
             {
                 context.sendMessage("conomy", "&cYou cannot afford &6%s&c!", currency.formatLong(amount));
             }
-        }
-        else
+        }*/
+        Account source = this.module.getAccountsManager().getAccount(sender, currency);
+        if (source == null)
         {
-            User user = context.getUser(0);
+            context.sendMessage("conomy", "&2%s &cdoes not have an account for &6%s&c!",
+                    sender.getName(), currency.getName());
+            return;
+        }
+        String[] users =  StringUtils.explode(",",context.getString(0));
+        for (String userString : users)
+        {
+            User user = this.module.getUserManager().findUser(userString);
             if (user == null)
             {
                 context.sendMessage("conomy", "&cUser %s not found!", context.getString(0));
-                return;
+                continue;
             }
-            Account source = this.module.getAccountsManager().getAccount(sender, currency);
             Account target = this.module.getAccountsManager().getAccount(user, currency);
-            if (source == null || target == null)
+            if (target == null)
             {
                 context.sendMessage("conomy", "&2%s &cdoes not have an account for &6%s&c!",
-                        source == null ? sender.getName() : user.getName(), currency.getName());
-                return;
+                        sender.getName(), currency.getName());
+                continue;
             }
             if (this.module.getAccountsManager().transaction(source, target, amount, context.hasFlag("f")))
             {
-                context.sendMessage("conomy", "&6%s &atransfered from &2%s's &ato &2%s's &aaccount!", formattedAmount, sender.getName(), user.getName());
+                if (asSomeOneElse)
+                {
+                    context.sendMessage("conomy", "&6%s &atransfered from &2%s's &ato &2%s's &aaccount!", formattedAmount, sender.getName(), user.getName());
+                }
+                else
+                {
+                    context.sendMessage("conomy", "&6%s &atransfered to &2%s's &aaccount!", formattedAmount, user.getName());
+                }
                 user.sendMessage("conomy", "&2%s &ajust send you &6%s!", sender.getName(), formattedAmount);
             }
             else if (context.hasNamed("as"))
             {
                 context.sendMessage("conomy", "&2%s &ccannot afford &6%s&c!", sender.getName(), currency.formatLong(amount));
+                return;
             }
             else
             {
                 context.sendMessage("conomy", "&cYou cannot afford &6%s&c!", currency.formatLong(amount));
+                return;
             }
         }
     }

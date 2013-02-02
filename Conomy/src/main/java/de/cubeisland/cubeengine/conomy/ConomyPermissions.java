@@ -1,16 +1,18 @@
 package de.cubeisland.cubeengine.conomy;
 
 import de.cubeisland.cubeengine.core.permission.PermDefault;
-import static de.cubeisland.cubeengine.core.permission.PermDefault.OP;
 import de.cubeisland.cubeengine.core.permission.Permission;
-import java.util.Locale;
 import org.bukkit.permissions.Permissible;
+
+import java.util.Locale;
+
+import static de.cubeisland.cubeengine.core.permission.PermDefault.OP;
 
 public enum ConomyPermissions implements Permission
 {
-    ACCOOUNT_ALLOWUNDERMIN, // Allows the user to have less money then the minimum (default 0)
+    ACCOUNT_ALLOWUNDERMIN, // Allows the user to have less money then the minimum (default 0)
 
-    ;
+    ACCOUNT_SHOWHIDDEN;
     private String permission;
     private PermDefault def;
 
