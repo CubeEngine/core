@@ -6,10 +6,20 @@ import de.cubeisland.cubeengine.conomy.account.storage.AccountStorage;
 import de.cubeisland.cubeengine.conomy.currency.Currency;
 import de.cubeisland.cubeengine.conomy.currency.CurrencyManager;
 import de.cubeisland.cubeengine.core.user.User;
+import de.cubeisland.cubeengine.core.util.log.CubeFileHandler;
+import de.cubeisland.cubeengine.core.util.log.CubeLogger;
+import de.cubeisland.cubeengine.core.util.log.LogLevel;
 import gnu.trove.map.hash.THashMap;
 import gnu.trove.map.hash.TLongObjectHashMap;
 
+import java.io.File;
+import java.text.MessageFormat;
+import java.text.SimpleDateFormat;
 import java.util.Collection;
+import java.util.Date;
+import java.util.logging.Formatter;
+import java.util.logging.LogRecord;
+import java.util.logging.Logger;
 
 public class AccountManager
 {
@@ -18,12 +28,32 @@ public class AccountManager
     private final Conomy module;
     private THashMap<String, THashMap<Currency, Account>> bankaccounts = new THashMap<String, THashMap<Currency, Account>>();
     private TLongObjectHashMap<THashMap<Currency, Account>> useraccounts = new TLongObjectHashMap<THashMap<Currency, Account>>();
+    private Logger transactionLogger;
 
     public AccountManager(Conomy module)
     {
         this.module = module;
         this.currencyManager = module.getCurrencyManager();
         this.accountStorage = module.getAccountsStorage();
+        this.transactionLogger = new CubeLogger("conomy_transactions");
+        try
+        {   CubeFileHandler handler = new CubeFileHandler(LogLevel.ALL,
+                new File(this.module.getFileManager().getLogDir(),"conomy_transactions").toString());
+            this.transactionLogger.addHandler(handler);
+            handler.setFormatter(new Formatter() {
+                @Override
+                public String format(LogRecord record) {
+                    StringBuilder sb = new StringBuilder();
+                    sb.append(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date(record.getMillis())))
+                    .append(" ").append(record.getMessage());
+                    return sb.toString();
+                }
+            });
+        }
+        catch (Exception ex)
+        {
+            throw new IllegalStateException("Could not create handler for transactin-logger",ex);
+        }
     }
 
     public AccountStorage getStorage()
@@ -295,6 +325,10 @@ public class AccountManager
                 return false; // currencies are not convertible
             }
         target.transaction(source, amount);
+        //TODO config doLog?
+        StringBuilder sb = new StringBuilder();
+        sb.append("TRANSACTION: ").append(source).append("->").append(target).append(" AMOUNT:").append(amount);
+        this.transactionLogger.info(sb.toString());
         return true;
     }
 

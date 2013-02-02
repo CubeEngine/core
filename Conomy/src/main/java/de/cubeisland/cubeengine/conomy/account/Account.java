@@ -139,4 +139,18 @@ public class Account
             return true; //TODO bank-accs later
         }
     }
+
+    @Override
+    public String toString()
+    {
+        if (this.isUserAccount())
+        {
+            return "USER:"+ this.user.getName();
+        }
+        else
+        {
+            return "BANK:"+ this.model.name;
+        }
+
+    }
 }

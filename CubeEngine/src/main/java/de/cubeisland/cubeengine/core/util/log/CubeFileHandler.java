@@ -2,6 +2,7 @@ package de.cubeisland.cubeengine.core.util.log;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.text.MessageFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
@@ -64,8 +65,6 @@ public class CubeFileHandler extends FileHandler
             sb.append(" [");
             sb.append(record.getLevel().getLocalizedName().toUpperCase(Locale.ENGLISH));
             sb.append("] ");
-            sb.append(record.getLoggerName());
-            sb.append(" - ");
             sb.append(record.getMessage());
             sb.append(LINEBREAK);
             Throwable t = record.getThrown();
@@ -74,7 +73,7 @@ public class CubeFileHandler extends FileHandler
                 sb.append("  ").append(t.getMessage());
                 sb.append(LINEBREAK);
             }
-            return sb.toString();
+            return MessageFormat.format(sb.toString(),record.getParameters());
         }
     }
 }

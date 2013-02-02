@@ -217,34 +217,6 @@ public class MoneyCommand extends ContainerCommand
         {
             sender = context.getSenderAsUser("conomy", "&cPlease specify a user to use his account.");
         }
-        /* TODO bank accounts stuff
-        if (context.hasFlag("b"))
-        {
-            Account source = this.module.getAccountsManager().getAccount(sender, currency);
-            Account target = this.module.getAccountsManager().getAccount(context.getString(0), currency);
-            if (source == null)
-            {
-                context.sendMessage("conomy", "&cCannot find user-account for &2%s&c!", sender.getName());
-                return;
-            }
-            if (target == null)
-            {
-                context.sendMessage("conomy", "&cCannot find bank-account &6%s&c!", context.getString(0));
-                return;
-            }
-            if (this.module.getAccountsManager().transaction(source, target, amount, context.hasFlag("f")))
-            {
-                context.sendMessage("conomy", "&6%s &atransfered from &2%s's &ato the bank.account &6%s!", formattedAmount, sender.getName(), context.getString(0));
-            }
-            else if (context.hasNamed("as"))
-            {
-                context.sendMessage("conomy", "&2%s &ccannot afford &6%s&c!", sender.getName(), currency.formatLong(amount));
-            }
-            else
-            {
-                context.sendMessage("conomy", "&cYou cannot afford &6%s&c!", currency.formatLong(amount));
-            }
-        }*/
         Account source = this.module.getAccountsManager().getAccount(sender, currency);
         if (source == null)
         {

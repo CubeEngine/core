@@ -24,7 +24,6 @@ public class Conomy extends Module
     private CurrencyManager currencyManager;
 
     //TODO Roles support (e.g. allow all user of a role to access a bank)
-    //TODO logfile for all transactions
     public Conomy()
     {
         Convert.registerConverter(SubCurrencyConfig.class, new SubCurrencyConverter());
