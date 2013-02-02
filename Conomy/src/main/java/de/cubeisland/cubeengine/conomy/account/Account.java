@@ -6,7 +6,7 @@ import de.cubeisland.cubeengine.core.CubeEngine;
 import de.cubeisland.cubeengine.core.user.User;
 
 public class Account
-{//TODO hide account (dont show unless forced)
+{
     private User user;
     private AccountModel model;
     private final Currency currency;
@@ -110,5 +110,13 @@ public class Account
         this.model.value = (long)(factor * this.model.value);
         this.updateModel();
         return this.model.value;
+    }
+
+    public boolean isHidden() {
+        return this.model.hidden;
+    }
+
+    public void setHidden(boolean hidden) {
+        this.model.hidden = hidden;
     }
 }

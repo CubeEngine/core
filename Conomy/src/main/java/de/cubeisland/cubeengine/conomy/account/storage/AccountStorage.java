@@ -38,8 +38,12 @@ public class AccountStorage extends SingleKeyStorage<Long, AccountModel>
             this.database.storeStatement(modelClass, "getTopBalance",
                     builder.select().cols(allFields).from(this.tableName).
                         where().field("currencyName").isEqual().value().
+                            and().field("hidden").isEqual().value(true).
                         orderBy("value").desc().limit().offset().end().end());
-
+            this.database.storeStatement(modelClass, "getTopBalanceWithHidden",
+                    builder.select().cols(allFields).from(this.tableName).
+                            where().field("currencyName").isEqual().value().
+                            orderBy("value").desc().limit().offset().end().end());
             this.database.storeStatement(modelClass, "setAllUser",
                     builder.update(this.tableName).set("value").
                         where().field("currencyName").isEqual().value().
@@ -110,18 +114,26 @@ public class AccountStorage extends SingleKeyStorage<Long, AccountModel>
         }
     }
 
-    public Collection<AccountModel> getTopAccounts(Currency currency, int fromRank, int toRank)
+    public Collection<AccountModel> getTopAccounts(Currency currency, int fromRank, int toRank, boolean showHidden)
     {
         try
         {
-            ResultSet resulsSet = this.database.preparedQuery(modelClass, "getTopBalance", currency.getName(), toRank - fromRank, fromRank - 1);
+            ResultSet resultSet;
+            if (showHidden)
+            {
+                resultSet = this.database.preparedQuery(modelClass, "getTopBalanceWithHidden", currency.getName(), toRank - fromRank, fromRank - 1);
+            }
+            else
+            {
+                resultSet = this.database.preparedQuery(modelClass, "getTopBalance", currency.getName(), toRank - fromRank, fromRank - 1);
+            }
             LinkedList<AccountModel> list = new LinkedList<AccountModel>();
-            while (resulsSet.next())
+            while (resultSet.next())
             {
                 AccountModel loadedModel = this.modelClass.newInstance();
                 for (Field field : this.fieldNames.keySet())
                 {
-                    field.set(loadedModel, resulsSet.getObject(this.fieldNames.get(field)));
+                    field.set(loadedModel, resultSet.getObject(this.fieldNames.get(field)));
                 }
                 list.add(loadedModel);
             }

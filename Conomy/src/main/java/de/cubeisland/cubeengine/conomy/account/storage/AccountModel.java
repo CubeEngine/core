@@ -4,9 +4,10 @@ import de.cubeisland.cubeengine.core.storage.Model;
 import de.cubeisland.cubeengine.core.storage.database.AttrType;
 import de.cubeisland.cubeengine.core.storage.database.Attribute;
 import de.cubeisland.cubeengine.core.storage.database.Index;
+import de.cubeisland.cubeengine.core.storage.database.SingleKeyEntity;
+
 import static de.cubeisland.cubeengine.core.storage.database.Index.IndexType.FOREIGN_KEY;
 import static de.cubeisland.cubeengine.core.storage.database.Index.IndexType.UNIQUE;
-import de.cubeisland.cubeengine.core.storage.database.SingleKeyEntity;
 
 @SingleKeyEntity(tableName = "accounts", primaryKey = "key", autoIncrement = true, indices = {
     @Index(value = FOREIGN_KEY, fields = "user_id", f_table = "user", f_field = "key"),
@@ -27,6 +28,8 @@ public class AccountModel implements Model<Long>
     public String currencyName;
     @Attribute(type = AttrType.BIGINT)
     public long value;
+    @Attribute(type = AttrType.BOOLEAN)
+    public boolean hidden;
 
     @Override
     public Long getKey()
@@ -43,11 +46,12 @@ public class AccountModel implements Model<Long>
     public AccountModel()
     {}
 
-    public AccountModel(Long user_id, String name, String currencyName, long balance)
+    public AccountModel(Long user_id, String name, String currencyName, long balance, boolean hidden)
     {
         this.user_id = user_id;
         this.name = name;
         this.currencyName = currencyName;
         this.value = balance;
+        this.hidden = hidden;
     }
 }

@@ -2,18 +2,9 @@ package de.cubeisland.cubeengine.core.util.matcher;
 
 import gnu.trove.map.hash.THashMap;
 import gnu.trove.map.hash.TShortObjectHashMap;
-import java.util.ArrayList;
-import java.util.Collection;
-import org.bukkit.entity.Animals;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.Monster;
-import org.bukkit.entity.NPC;
-import org.bukkit.entity.Projectile;
+import org.bukkit.entity.*;
 
-import java.util.EnumMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
+import java.util.*;
 
 /**
  * This class extends the bukkit EntityType.

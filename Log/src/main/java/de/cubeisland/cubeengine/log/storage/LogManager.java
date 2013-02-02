@@ -43,7 +43,7 @@ public class LogManager
     private final Database database;
     private final Log module;
     private final PreparedStatement storeLog;
-    private int logBuffer = 2000; //TODO config (100 in ~4sec)
+    private int logBuffer = 2000; // TODO config
     private final int repeatingTaskId;
 
     public LogManager(Log module)
@@ -215,9 +215,9 @@ public class LogManager
             return;
         }
         running = true;
-        System.out.print("Logs queued: " + queuedLogs.size());
+        System.out.print(queuedLogs.size()+ " logs queued.");
         final Queue<QueuedLog> logs = new LinkedList<QueuedLog>();
-        for (int i = 0; i < amount; i++) // log 10 next logs...
+        for (int i = 0; i < amount; i++) // log <smount> next logs...
         {
             QueuedLog toLog = this.queuedLogs.poll();
             if (toLog == null)
@@ -234,12 +234,9 @@ public class LogManager
             {
                 log.addMainDataToBatch(this.storeLog);
             }
-            System.out.println("batch filled: " + (System.currentTimeMillis() - a) + "ms");
             this.database.getConnection().setAutoCommit(false);
             this.storeLog.executeBatch();
-            System.out.println("batch executed: " + (System.currentTimeMillis() - a) + "ms");
             ResultSet genKeys = storeLog.getGeneratedKeys();
-            System.out.println("keys got: " + (System.currentTimeMillis() - a) + "ms");
             while (genKeys.next())
             {
                 long key = genKeys.getLong("GENERATED_KEY");
@@ -252,9 +249,12 @@ public class LogManager
         {
             throw new StorageException("Error while storing main Log-Entry", ex);
         }
+        finally
+        {
+            running = false;
+        }
         a = System.currentTimeMillis() - a;
         System.out.println("log finished: " + a / 1000 + "." + a % 1000 + "s");
-        running = false;
     }
 
     /**

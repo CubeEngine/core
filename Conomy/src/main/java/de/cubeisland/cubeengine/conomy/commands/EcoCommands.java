@@ -280,4 +280,7 @@ public class EcoCommands extends ContainerCommand
 
     public void scale(CommandContext context)//TODO
     {}
+
+    public void hide(CommandContext context) //TODO
+    {}
 }
