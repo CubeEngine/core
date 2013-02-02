@@ -21,11 +21,11 @@ public class EcoCommands extends ContainerCommand
     }
 
     //TODO give a , separated list of users for all cmds
-    @Command(names = {
-        "give", "grant"
-    }, desc = "Gives money to given user or all [online] users", usage = "<player>|* [-o] <amount> [in <currency>]", flags = @Flag(longName = "online", name = "o"), params = @Param(names = {
-        "in", "c", "currency"
-    }, type = String.class), min = 2, max = 2)
+    @Command(names = {"give", "grant"},
+            desc = "Gives money to given user or all [online] users",
+            usage = "<player>|* [-o] <amount> [in <currency>]",
+            flags = @Flag(longName = "online", name = "o"),
+            params = @Param(names = {"in", "c", "currency"}, type = String.class), min = 2, max = 2)
     public void give(CommandContext context)
     {
         Currency currency;
@@ -89,11 +89,11 @@ public class EcoCommands extends ContainerCommand
         }
     }
 
-    @Command(names = {
-        "take", "remove"
-    }, desc = "Takes money from given user", usage = "<player>|* [-o] <amount> [in <currency>]", flags = @Flag(longName = "online", name = "o"), params = @Param(names = {
-        "in", "c", "currency"
-    }, type = String.class), min = 1, max = 2)
+    @Command(names = { "take", "remove"},
+            desc = "Takes money from given user",
+            usage = "<player>|* [-o] <amount> [in <currency>]",
+            flags = @Flag(longName = "online", name = "o"),
+            params = @Param(names = {"in", "c", "currency"}, type = String.class), min = 1, max = 2)
     public void take(CommandContext context)
     {
         Currency currency;
@@ -157,9 +157,10 @@ public class EcoCommands extends ContainerCommand
         }
     }
 
-    @Command(desc = "Reset the money from given user", usage = "<player>|* [-o] [in <currency>]", flags = @Flag(longName = "online", name = "o"), params = @Param(names = {
-        "in", "c", "currency"
-    }, type = String.class), max = 1)
+    @Command(desc = "Reset the money from given user",
+            usage = "<player>|* [-o] [in <currency>]",
+            flags = @Flag(longName = "online", name = "o"),
+            params = @Param(names = {"in", "c", "currency"}, type = String.class), max = 1)
     public void reset(CommandContext context)
     {
         Currency currency;
@@ -172,8 +173,7 @@ public class EcoCommands extends ContainerCommand
                 return;
             }
         }
-        else
-        // default
+        else // default
         {
             currency = this.module.getCurrencyManager().getMainCurrency();
         }
@@ -214,9 +214,10 @@ public class EcoCommands extends ContainerCommand
         }
     }
 
-    @Command(desc = "Sets the money from given user", usage = "<player>|* [-o] <amount> [in <currency>]", flags = @Flag(longName = "online", name = "o"), params = @Param(names = {
-        "in", "c", "currency"
-    }, type = String.class), min = 1, max = 2)
+    @Command(desc = "Sets the money from given user",
+            usage = "<player>|* [-o] <amount> [in <currency>]",
+            flags = @Flag(longName = "online", name = "o"),
+            params = @Param(names = { "in", "c", "currency" }, type = String.class), min = 1, max = 2)
     public void set(CommandContext context)
     {
         Currency currency;
@@ -281,6 +282,92 @@ public class EcoCommands extends ContainerCommand
     public void scale(CommandContext context)//TODO
     {}
 
-    public void hide(CommandContext context) //TODO
-    {}
+    @Command(desc = "Hides the account of given player",
+            usage = "<player> [in <currency>]",
+            params = @Param(names = { "in", "c", "currency" }, type = String.class), min = 1, max = 2)
+    public void hide(CommandContext context)
+    {
+        Currency currency;
+        if (context.hasNamed("in"))
+        {
+            currency = this.module.getCurrencyManager().getCurrencyByName(context.getString("in"));
+            if (currency == null)
+            {
+                context.sendMessage("conomy", "&cCurrency %s not found!", context.getString("in"));
+                return;
+            }
+        }
+        else // default
+        {
+            currency = this.module.getCurrencyManager().getMainCurrency();
+        }
+        User user = context.getUser(0);
+        if (user == null)
+        {
+            context.sendMessage("conomy", "&cUser %s not found!", context.getString(0));
+            return;
+        }
+        Account target = this.module.getAccountsManager().getAccount(user, currency);
+        if (target == null)
+        {
+            context.sendMessage("conomy", "&2%s &cdoes not have an account for &6%s&c!",
+                    user.getName(), currency.getName());
+            return;
+        }
+        boolean isHidden = target.isHidden();
+        if (isHidden)
+        {
+            context.sendMessage("conomny","&2%s's %eaccount in &6%s &eis already hidden!", user.getName(), currency.getName());
+        }
+        else
+        {
+            target.setHidden(true);
+            context.sendMessage("conomny","&2%s's %aaccount in &6%s &ais now hidden!", user.getName(), currency.getName());
+        }
+    }
+
+    @Command(desc = "Unhides the account of given player",
+            usage = "<player> [in <currency>]",
+            params = @Param(names = { "in", "c", "currency" }, type = String.class), min = 1, max = 2)
+    public void unhide(CommandContext context)
+    {
+        Currency currency;
+        if (context.hasNamed("in"))
+        {
+            currency = this.module.getCurrencyManager().getCurrencyByName(context.getString("in"));
+            if (currency == null)
+            {
+                context.sendMessage("conomy", "&cCurrency %s not found!", context.getString("in"));
+                return;
+            }
+        }
+        else // default
+        {
+            currency = this.module.getCurrencyManager().getMainCurrency();
+        }
+        User user = context.getUser(0);
+        if (user == null)
+        {
+            context.sendMessage("conomy", "&cUser %s not found!", context.getString(0));
+            return;
+        }
+        Account target = this.module.getAccountsManager().getAccount(user, currency);
+        if (target == null)
+        {
+            context.sendMessage("conomy", "&2%s &cdoes not have an account for &6%s&c!",
+                    user.getName(), currency.getName());
+            return;
+        }
+        boolean isHidden = target.isHidden();
+
+        if (isHidden)
+        {
+            target.setHidden(false);
+            context.sendMessage("conomny","&2%s's %aaccount in &6%s &ais no longer hidden!", user.getName(), currency.getName());
+        }
+        else
+        {
+            context.sendMessage("conomny","&2%s's %eaccount in &6%s &ewas not hidden!", user.getName(), currency.getName());
+        }
+    }
 }
