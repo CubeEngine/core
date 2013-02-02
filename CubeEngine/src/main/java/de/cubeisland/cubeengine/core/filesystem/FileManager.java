@@ -91,7 +91,7 @@ public class FileManager implements Cleanable
         {
             try
             {
-                Runtime.getRuntime().exec("attrib +H \"" + this.tempDir.getAbsolutePath() + "\"");
+                Runtime.getRuntime().exec(new String[] {"attrib", "+H", this.tempDir.getAbsolutePath()});
             }
             catch (Exception e)
             {
