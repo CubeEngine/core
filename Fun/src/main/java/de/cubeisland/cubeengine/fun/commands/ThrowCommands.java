@@ -30,7 +30,6 @@ import java.util.Map;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.ExperienceOrb;
-import org.bukkit.entity.Fireball;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
@@ -80,12 +79,18 @@ public class ThrowCommands
             return;
         }
         User user = (User)context.getSender();
+        EntityType type = null;
+        boolean showNotification = true;
 
         ThrowTask task = this.thrownItems.remove(user.getName());
         if (task != null)
         {
-            task.stop();
-            return;
+            if (!context.hasIndexed(0) || (type = Match.entity().any(context.getString(0))) == task.getType() && task.getInterval() == context.getNamed("d", int.class, task.getInterval()) && task.getPreventDamage() != context.hasFlag("u"))
+            {
+                task.stop(true);
+                return;
+            }
+            task.stop(showNotification = false);
         }
         
         if (context.getIndexed().isEmpty())
@@ -106,7 +111,10 @@ public class ThrowCommands
         }
         
         String object = context.getString(0);
-        EntityType type = Match.entity().any(object);
+        if (type == null)
+        {
+            type = Match.entity().any(object);
+        }
         if (type == null)
         {
             context.sendMessage("fun", "&cThe given object was not found!");
@@ -129,14 +137,9 @@ public class ThrowCommands
         }
 
         task = new ThrowTask(user, type, amount, delay, !context.hasFlag("u"));
-        if (task.start())
+        if (task.start(showNotification))
         {
             this.thrownItems.put(user.getName(), task);
-
-            if (amount == -1)
-            {
-                user.sendMessage("fun", "&aYou will kepp throwing until you run this command again.");
-            }
         }
         else
         {
@@ -182,11 +185,32 @@ public class ThrowCommands
             return this.user;
         }
         
+        public EntityType getType()
+        {
+            return this.type;
+        }
+        
+        public int getInterval()
+        {
+            return this.interval;
+        }
+        
+        public boolean getPreventDamage()
+        {
+            return this.preventDamage;
+        }
+        
         public boolean start()
         {
-            if (this.amount == -1)
+            return this.start(true);
+        }
+        
+        public boolean start(boolean notify)
+        {
+            if (this.amount == -1 && notify)
             {
                 this.user.sendMessage("fun", "&aStarted throwing!");
+                this.user.sendMessage("fun", "&aYou will keep throwing until you run this command again.");
             }
             this.taskId = fun.getCore().getTaskManager().scheduleSyncRepeatingTask(fun, this, 0, this.interval);
             return this.taskId != -1;
@@ -194,15 +218,23 @@ public class ThrowCommands
         
         public void stop()
         {
+            this.stop(true);
+        }
+        
+        public void stop(boolean notify)
+        {
             if (this.taskId != -1)
             {
-                if (this.amount == -1)
+                if (notify)
                 {
-                    this.user.sendMessage("fun", "&aYou are no longer throwing.");
-                }
-                else
-                {
-                    this.user.sendMessage("fun", "&aAll objects thrown.");
+                    if (this.amount == -1)
+                    {
+                        this.user.sendMessage("fun", "&aYou are no longer throwing.");
+                    }
+                    else
+                    {
+                        this.user.sendMessage("fun", "&aAll objects thrown.");
+                    }
                 }
                 fun.getCore().getTaskManager().cancelTask(fun, this.taskId);
                 this.taskId = -1;
