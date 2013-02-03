@@ -5,7 +5,6 @@ import de.cubeisland.cubeengine.core.CubeEngine;
 import de.cubeisland.cubeengine.core.filesystem.FileUtil;
 import de.cubeisland.cubeengine.core.util.log.LogLevel;
 import gnu.trove.map.hash.THashMap;
-import gnu.trove.map.hash.TIntObjectHashMap;
 import gnu.trove.map.hash.TShortObjectHashMap;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
@@ -20,10 +19,10 @@ import java.util.*;
 public class MaterialMatcher
 {
     //TODO rename item ; is it possible?
-    private THashMap<String, ItemStack> items;
-    private TIntObjectHashMap<TShortObjectHashMap<String>> itemnames;
+    private THashMap<String, ImmutableItemStack> items;
+    private THashMap<Material,TShortObjectHashMap<String>> itemnames;
 
-    private THashMap<String, ItemStack> bukkitnames;
+    private THashMap<String, ImmutableItemStack> bukkitnames;
 
     private MaterialDataMatcher materialDataMatcher;
 
@@ -49,46 +48,56 @@ public class MaterialMatcher
     MaterialMatcher(MaterialDataMatcher materialDataMatcher)
     {
         this.materialDataMatcher = materialDataMatcher;
-        this.items = new THashMap<String, ItemStack>();
-        this.itemnames = new TIntObjectHashMap<TShortObjectHashMap<String>>();
-        this.bukkitnames = new THashMap<String, ItemStack>();
-        TreeMap<Integer, TreeMap<Short, List<String>>> readItems = this.readItems();
-        for (Integer item : readItems.keySet())
+        this.items = new THashMap<String, ImmutableItemStack>();
+        this.itemnames = new THashMap<Material,TShortObjectHashMap<String>>();
+        this.bukkitnames = new THashMap<String, ImmutableItemStack>();
+        TreeMap<String, TreeMap<Short, List<String>>> readItems = this.readItems();
+        for (String item : readItems.keySet())
         {
             for (short data : readItems.get(item).keySet())
             {
-                this.registerItemStack(new ItemStack(item, 1, data), readItems.get(item).get(data));
+                this.registerItem(item, data, readItems.get(item).get(data));
             }
         }
         // Read Bukkit names
         for (Material mat : Material.values())
         {
-            this.bukkitnames.put(mat.name(), new ItemStack(mat));
+            this.bukkitnames.put(mat.name(), new ImmutableItemStack(mat, 0, (short) 0));
         }
     }
 
     /**
      * Registers an ItemStack for the matcher with a list of names
      *
-     * @param item the Item
+     * @param materialName the Item
      * @param names the corresponding names
      */
-    private void registerItemStack(ItemStack item, List<String> names)
+    private void registerItem(String materialName, short data, List<String> names)
     {
         if (names.isEmpty())
         {
             return;
         }
-        TShortObjectHashMap<String> dataMap = this.itemnames.get(item.getTypeId());
-        if (dataMap == null)
+        try
         {
-            dataMap = new TShortObjectHashMap<String>();
-            this.itemnames.put(item.getTypeId(),dataMap);
+            Material material = Material.valueOf(materialName);
+            TShortObjectHashMap<String> dataMap = this.itemnames.get(materialName);
+            if (dataMap == null)
+            {
+                dataMap = new TShortObjectHashMap<String>();
+                this.itemnames.put(material,dataMap);
+            }
+            dataMap.put(data, names.get(0));
+            ImmutableItemStack item = new ImmutableItemStack(material,0,data);
+            for (String name : names)
+            {
+                this.items.put(name.toLowerCase(Locale.ENGLISH), item);
+            }
         }
-        dataMap.put(item.getDurability(), names.get(0));
-        for (String s : names)
+        catch (IllegalArgumentException ex)
         {
-            this.items.put(s.toLowerCase(Locale.ENGLISH), item);
+            CubeEngine.getLogger().warning("Unkown Material: "+materialName);
+            return;
         }
     }
 
@@ -100,12 +109,12 @@ public class MaterialMatcher
      * @param update whether to update
      * @return whether it was updated
      */
-    private boolean readItems(TreeMap<Integer, TreeMap<Short, List<String>>> map, List<String> input, boolean update)
+    private boolean readItems(TreeMap<String, TreeMap<Short, List<String>>> map, List<String> input, boolean update)
     {
         boolean updated = false;
         TreeMap<Short, List<String>> readData = new TreeMap<Short, List<String>>();
         ArrayList<String> names = new ArrayList<String>();
-        int currentId = 0;
+        String currentItemName = "";
         short currentData = 0;
         for (String line : input)
         {
@@ -116,7 +125,7 @@ public class MaterialMatcher
             }
             if (line.contains(":"))
             {
-                int id = Integer.parseInt(line.substring(0, line.indexOf(":")));
+                String name = line.substring(0, line.indexOf(":"));
                 short data = Short.parseShort(line.substring(line.indexOf(":") + 1));
                 if (!update)
                 {
@@ -126,14 +135,14 @@ public class MaterialMatcher
                         readData.put(data, names);
                         currentData = data;
                     }
-                    if (currentId != id)
+                    if (!currentItemName.equals(name))
                     {
                         readData = new TreeMap<Short, List<String>>(); // New ID Create new ID & DATA
                         names = new ArrayList<String>(); // New DATA Create new nameList
                         readData.put(data, names);
-                        map.put(id, readData);
+                        map.put(name, readData);
                         currentData = data;
-                        currentId = id;
+                        currentItemName = name;
                     }
                 }
                 else
@@ -143,26 +152,24 @@ public class MaterialMatcher
                         names = new ArrayList<String>(); // New DATA Create new nameList
                         currentData = data;
                     }
-                    if (currentId != id)
+                    if (!currentItemName.equals(name))
                     {
                         readData = new TreeMap<Short, List<String>>(); // New ID Create new DataValContainer
                         names = new ArrayList<String>(); // New DATA Create new nameList
                         currentData = data;
-                        currentId = id;
+                        currentItemName = name;
                     }
-                    if (map.get(id) == null || map.get(id).isEmpty()) // Unkown ID -> Create new ID & DATA
+                    if (map.get(name) == null || map.get(name).isEmpty()) // Unkown ID -> Create new ID & DATA
                     {
-
                         readData.put(data, names);
-                        map.put(id, readData);
-
+                        map.put(name, readData);
                         updated = true;
                     }
                     else
                     {
-                        if (map.get(id).get(data) == null || map.get(id).get(data).isEmpty()) // Known ID unkown DATA -> Create new DATA
+                        if (map.get(name).get(data) == null || map.get(name).get(data).isEmpty()) // Known ID unkown DATA -> Create new DATA
                         {
-                            map.get(id).put(data, names);
+                            map.get(name).put(data, names);
                         }
                     }
                 }
@@ -178,14 +185,14 @@ public class MaterialMatcher
     /**
      * Loads in the file with the saved item-names.
      */
-    private TreeMap<Integer, TreeMap<Short, List<String>>> readItems()
+    private TreeMap<String, TreeMap<Short, List<String>>> readItems()
     {
         try
         {
             File file = new File(CubeEngine.getFileManager().getDataFolder(), CoreResource.ITEMS.getTarget());
             List<String> input = FileUtil.readStringList(file);
 
-            TreeMap<Integer, TreeMap<Short, List<String>>> readItems = new TreeMap<Integer, TreeMap<Short, List<String>>>();
+            TreeMap<String, TreeMap<Short, List<String>>> readItems = new TreeMap<String, TreeMap<Short, List<String>>>();
             this.readItems(readItems, input, false);
 
             List<String> jarinput = FileUtil.readStringList(CubeEngine.getFileManager().getSourceOf(file));
@@ -193,12 +200,12 @@ public class MaterialMatcher
             {
                 CubeEngine.getLogger().log(LogLevel.NOTICE, "Updated items.txt");
                 StringBuilder sb = new StringBuilder();
-                for (Integer item : readItems.keySet())
+                for (String itemName : readItems.keySet())
                 {
-                    for (short data : readItems.get(item).keySet())
+                    for (short data : readItems.get(itemName).keySet())
                     {
-                        sb.append(item).append(":").append(data).append("\n");
-                        List<String> list = readItems.get(item).get(data);
+                        sb.append(itemName).append(":").append(data).append("\n");
+                        List<String> list = readItems.get(itemName).get(data);
                         for (String itemname : list)
                         {
                             sb.append("  ").append(itemname).append("\n");
@@ -289,7 +296,7 @@ public class MaterialMatcher
         return item.clone();
     }
 
-    private ItemStack matchWithLevenshteinDistance(String s, Map<String, ItemStack> map)
+    private ImmutableItemStack matchWithLevenshteinDistance(String s, Map<String, ImmutableItemStack> map)
     {
         String t_key = Match.string().matchString(s, map.keySet(), false);
         if (t_key != null)
@@ -370,5 +377,12 @@ public class MaterialMatcher
             return dataMap.get((short) 0);
         }
         return itemName;
+    }
+
+    private static final class ImmutableItemStack extends ItemStack
+    {
+        private ImmutableItemStack(Material type, int amount, short damage) {
+            super(type, amount, damage);
+        }
     }
 }
