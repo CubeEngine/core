@@ -1,347 +1,324 @@
 package de.cubeisland.cubeengine.fun.commands;
 
-import de.cubeisland.cubeengine.core.CubeEngine;
 import de.cubeisland.cubeengine.core.command.CommandContext;
 import de.cubeisland.cubeengine.core.command.annotation.Command;
 import de.cubeisland.cubeengine.core.command.annotation.Flag;
 import de.cubeisland.cubeengine.core.command.annotation.Param;
+import de.cubeisland.cubeengine.core.permission.PermDefault;
+import de.cubeisland.cubeengine.core.permission.PermissionManager;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.fun.Fun;
 import de.cubeisland.cubeengine.fun.FunPerm;
 import org.bukkit.Location;
 import org.bukkit.entity.Arrow;
-import org.bukkit.entity.Egg;
 import org.bukkit.entity.Entity;
-import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Explosive;
-import org.bukkit.entity.Fireball;
 import org.bukkit.entity.Projectile;
-import org.bukkit.entity.SmallFireball;
-import org.bukkit.entity.Snowball;
-import org.bukkit.entity.ThrownExpBottle;
-import org.bukkit.entity.WitherSkull;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityExplodeEvent;
-
-import java.util.HashSet;
 import java.util.Set;
-
 import static de.cubeisland.cubeengine.core.command.exception.IllegalParameterValue.illegalParameter;
 import static de.cubeisland.cubeengine.core.command.exception.InvalidUsageException.invalidUsage;
 import static de.cubeisland.cubeengine.core.command.exception.PermissionDeniedException.denyAccess;
+import de.cubeisland.cubeengine.core.util.matcher.Match;
+import gnu.trove.map.hash.THashMap;
+import gnu.trove.set.hash.THashSet;
+import java.util.EnumSet;
+import java.util.Locale;
+import java.util.Map;
+import org.bukkit.command.CommandSender;
+import org.bukkit.entity.EntityType;
+import org.bukkit.entity.ExperienceOrb;
+import org.bukkit.entity.Fireball;
+import org.bukkit.event.EventPriority;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.util.Vector;
 
 public class ThrowCommands
 {
-    private static Set<ThrowItem> throwItems = new HashSet<ThrowItem>();
+    private final Map<String, ThrowTask> thrownItems;
+    // entities that can't be safe due to bukkit flaws
+    private final EnumSet<EntityType> BUGGED_ENTITES = EnumSet.of(EntityType.SMALL_FIREBALL, EntityType.FIREBALL);
 
-    private final Fun module;
+    private static final String BASE_THROW_PERM = FunPerm.BASE + "throw.";
+
+    private final Fun fun;
     private final ThrowListener throwListener;
 
-    public ThrowCommands(Fun module)
+    public ThrowCommands(Fun fun)
     {
-        this.module = module;
+        this.fun = fun;
+        this.thrownItems = new THashMap<String, ThrowTask>();
         this.throwListener = new ThrowListener();
-        module.registerListener(throwListener);
+        fun.registerListener(this.throwListener);
+        
+        PermissionManager perm = fun.getCore().getPermissionManager();
+        for (EntityType type : EntityType.values())
+        {
+            if (type.isSpawnable())
+            {
+                perm.registerPermission(fun, BASE_THROW_PERM + type.name().toLowerCase(Locale.ENGLISH).replace("_", "-"), PermDefault.OP);
+            }
+        }
     }
 
-    private ThrowItem getThrowItem(User user)
+    @Command(
+        names = "throw",
+        desc = "Throw something!",
+        max = 2,
+        params = @Param(names = {"delay", "d"}, type = Integer.class),
+        flags = @Flag(longName = "unsafe", name = "u"),
+        usage = "<material> [amount] [delay <value>] [-unsafe]"
+    )
+    public void throwCommand(CommandContext context)
     {
-        for (ThrowItem throwItem : throwItems)
+        if (!(context.getSender() instanceof CommandSender))
         {
-            if (throwItem.getUser().getName().equals(user.getName()))
-            {
-                return throwItem;
-            }
+            context.sendMessage("fun", "&cThis command can only be used by a player!");
+            return;
         }
-        return null;
-    }
+        User user = (User)context.getSender();
 
-    @Command(names = {
-        "throw"
-    }, desc = "The CommandSender throws arrow/snowballs/eggs/xp/orb/fireball/smallfireball/witherskull", max = 2, params = {
-        @Param(names = {
-            "delay", "d"
-        }, type = Integer.class)
-    }, flags = {
-        @Flag(longName = "unsafe", name = "u")
-    }, usage = "<material> [amount] [delay <value>] [-unsafe]")
-    public void throwItem(CommandContext context)
-    {
-        User user = context.getSenderAsUser("fun", "&cThis command can only be used by a player!");
-
-        ThrowItem throwItem = this.getThrowItem(user);
-
-        if (throwItem == null && context.getIndexed().isEmpty())
+        ThrowTask task = this.thrownItems.remove(user.getName());
+        if (task != null)
         {
-            invalidUsage(context, "fun", "&cYou has to add the material you wanna throw.");
+            task.stop();
+            return;
         }
-        else if (throwItem != null)
+        
+        if (context.getIndexed().isEmpty())
         {
-            throwItem.remove();
-            user.sendMessage("&aYou throw not longer any item.");
+            invalidUsage(context, "fun", "&cYou have to add the material you want to throw.");
         }
-        else
+        
+        int amount = context.getIndexed(1, Integer.class, -1);
+        if ((amount > this.fun.getConfig().maxThrowNumber || amount < 1) && amount != -1)
         {
-            int amount = context.getIndexed(1, Integer.class, -1);
-            int delay = context.getNamed("delay", Integer.class, 3);
+            illegalParameter(context, "fun", "&cThe amount has to be a number from 1 to %d", this.fun.getConfig().maxThrowNumber);
+        }
+        
+        int delay = context.getNamed("delay", Integer.class, 3);
+        if (delay > this.fun.getConfig().maxThrowDelay || delay < 0)
+        {
+            illegalParameter(context, "fun", "&cThe delay has to be a number from 0 to %d", this.fun.getConfig().maxThrowDelay);
+        }
+        
+        String object = context.getString(0);
+        EntityType type = Match.entity().any(object);
+        if (type == null)
+        {
+            context.sendMessage("fun", "&cThe given object was not found!");
+            return;
+        }
+        if (!type.isSpawnable())
+        {
+            illegalParameter(context, "fun", "&cThe Item %s is not supported!", object);
+        }
 
-            String material = context.getString(0);
-            Class<? extends Projectile> materialClass = null;
+        if (!user.hasPermission(BASE_THROW_PERM + type.name().toLowerCase(Locale.ENGLISH).replace("_", "-")))
+        {
+            denyAccess(context, "fun", "&cYou are not allowed to throw this");
+        }
+        
+        if ((BUGGED_ENTITES.contains(type) || Match.entity().isMonster(type)) && !context.hasFlag("u"))
+        {
+            context.sendMessage("fun", "&eThis object can only be thrown in unsafe mode. Add -u to enable the unsafe mode.");
+            return;
+        }
 
-            if ((amount > this.module.getConfig().maxThrowNumber || amount < 1) && amount != -1)
-            {
-                illegalParameter(context, "fun", "&cThe amount has to be a number from 1 to %d", this.module.getConfig().maxThrowNumber);
-            }
-            if (delay > this.module.getConfig().maxThrowDelay || delay < 0)
-            {
-                illegalParameter(context, "fun", "&cThe delay has to be a number from 0 to %d", this.module.getConfig().maxThrowDelay);
-            }
-            if (material.equalsIgnoreCase("snowball"))
-            {
-                if (FunPerm.THROW_SNOW.isAuthorized(user))
-                {
-                    materialClass = Snowball.class;
-                }
-                else
-                {
-                    denyAccess(context, "fun", "&cYou are not allowed to throw snow");
-                }
-            }
-            else if (material.equalsIgnoreCase("egg"))
-            {
-                if (FunPerm.THROW_EGG.isAuthorized(user))
-                {
-                    materialClass = Egg.class;
-                }
-                else
-                {
-                    denyAccess(context, "fun", "&cYou are not allowed to throw eggs");
-                }
-            }
-            else if (material.equalsIgnoreCase("xp") || material.equalsIgnoreCase("xpbottle"))
-            {
-                if (FunPerm.THROW_XP.isAuthorized(user))
-                {
-                    materialClass = ThrownExpBottle.class;
-                }
-                else
-                {
-                    denyAccess(context, "fun", "&cYou are not allowed to throw xp.");
-                }
-            }
-            // TODO FIX ME!
-            //            else if(material.equalsIgnoreCase("orb"))
-            //            {
-            //                if(FunPerm.THROW_ORB.isAuthorized(user))
-            //                {
-            //                    materialClass = ExperienceOrb.class;
-            //                }
-            //                else
-            //                {
-            //                    denyAccess(context, "fun", "&cYou are not allowed to throw orbs.");
-            //                }
-            //            }
-            else if (material.equalsIgnoreCase("fireball"))
-            {
-                if (FunPerm.THROW_FIREBALL.isAuthorized(user))
-                {
-                    materialClass = Fireball.class;
-                }
-                else
-                {
-                    denyAccess(context, "fun", "&cYou are not allowed to throw fireballs.");
-                }
-            }
-            else if (material.equalsIgnoreCase("smallfireball"))
-            {
-                if (FunPerm.THROW_SMALLFIREBALL.isAuthorized(user))
-                {
-                    materialClass = SmallFireball.class;
-                }
-                else
-                {
-                    denyAccess(context, "fun", "&cYou are not allowed to throw small fireballs.");
-                }
-            }
-            else if (material.equalsIgnoreCase("witherskull"))
-            {
-                if (FunPerm.THROW_WITHERSKULL.isAuthorized(user))
-                {
-                    materialClass = WitherSkull.class;
-                }
-                else
-                {
-                    denyAccess(context, "fun", "&cYou are not allowed to throw wither skulls.");
-                }
-            }
-            else if (material.equalsIgnoreCase("arrow"))
-            {
-                if (FunPerm.THROW_ARROW.isAuthorized(user))
-                {
-                    materialClass = Arrow.class;
-                }
-                else
-                {
-                    denyAccess(context, "fun", "&cYou are not allowed to throw arrows.");
-                }
-            }
-            else
-            {
-                illegalParameter(context, "fun", "&cThe Item %s is not supported!", material);
-            }
-
-            throwItem = new ThrowItem(user, materialClass, amount, delay);
-            throwItems.add(throwItem);
-
-            if (context.hasFlag("u") && (materialClass == Fireball.class || materialClass == WitherSkull.class))
-            {
-                throwItem.setUnsafe(true);
-            }
+        task = new ThrowTask(user, type, amount, delay, !context.hasFlag("u"));
+        if (task.start())
+        {
+            this.thrownItems.put(user.getName(), task);
 
             if (amount == -1)
             {
-                user.sendMessage("fun", "&aYou throw this item until you execute this command again.");
+                user.sendMessage("fun", "&aYou will kepp throwing until you run this command again.");
             }
         }
-
+        else
+        {
+            context.sendMessage("fun", "&cFailed to throw this!");
+        }
     }
 
-    private class ThrowItem implements Runnable
+    private class ThrowTask implements Runnable
     {
-        Class<? extends Projectile> material;
-        User user;
-        int amount;
-        boolean unsafe;
+        private final EntityType type;
+        private final User user;
+        private final int interval;
+        private final boolean save;
+        private final boolean preventDamage;
+        private int amount;
+        private int taskId;
 
-        int taskId;
-
-        public ThrowItem(User user, Class<? extends Projectile> materialClass, int amount, int delay)
+        public ThrowTask(User user, EntityType type, int amount, int interval, boolean preventDamage)
         {
             this.user = user;
-            this.material = materialClass;
+            this.type = type;
             this.amount = amount;
-            this.unsafe = false;
-
-            this.taskId = CubeEngine.getTaskManager().scheduleSyncRepeatingTask(module, this, 0, delay);
+            this.interval = interval;
+            this.preventDamage = preventDamage;
+            this.save = this.isSafe(type.getEntityClass());
+        }
+        
+        private boolean isSafe(Class entityClass)
+        {
+            if (Explosive.class.isAssignableFrom(entityClass))
+            {
+                return false;
+            }
+            if (Arrow.class == entityClass)
+            {
+                return false;
+            }
+            return true;
         }
 
         public User getUser()
         {
             return this.user;
         }
-
-        public void remove()
+        
+        public boolean start()
         {
-            CubeEngine.getTaskManager().cancelTask(module, taskId);
-            throwItems.remove(this);
+            if (this.amount == -1)
+            {
+                this.user.sendMessage("fun", "&aStarted throwing!");
+            }
+            this.taskId = fun.getCore().getTaskManager().scheduleSyncRepeatingTask(fun, this, 0, this.interval);
+            return this.taskId != -1;
         }
-
-        public void setUnsafe(boolean unsafe)
+        
+        public void stop()
         {
-            this.unsafe = unsafe;
+            if (this.taskId != -1)
+            {
+                if (this.amount == -1)
+                {
+                    this.user.sendMessage("fun", "&aYou are no longer throwing.");
+                }
+                else
+                {
+                    this.user.sendMessage("fun", "&aAll objects thrown.");
+                }
+                fun.getCore().getTaskManager().cancelTask(fun, this.taskId);
+                this.taskId = -1;
+            }
+        }
+    
+        private void throwItem()
+        {
+            final Location location = this.user.getEyeLocation();
+            final Vector direction = location.getDirection();
+            location.add(direction).add(direction);
+
+            Entity entity = this.user.getWorld().spawnEntity(location, type);
+            entity.setVelocity(direction.multiply(10));
+            if (entity instanceof Projectile)
+            {
+                Projectile projectile = (Projectile)entity;
+                projectile.setShooter(this.user.getPlayer());
+                projectile.setBounce(false);
+                if (projectile instanceof Fireball)
+                {
+                    ((Fireball)projectile).setDirection(direction);
+                }
+            }
+            else if (entity instanceof ExperienceOrb)
+            {
+                ((ExperienceOrb)entity).setExperience(0);
+            }
+            if (this.preventDamage && !this.save)
+            {
+                throwListener.add(entity);
+                if (entity instanceof Explosive)
+                {
+                    Explosive explosive = (Explosive)entity;
+                    explosive.setIsIncendiary(false);
+                    explosive.isIncendiary();
+                    // explosive.setYield(0); TODO disabling the explosion vs catching it
+                }
+            }
         }
 
         @Override
         public void run()
         {
-            Location loc = user.getLocation();
-            loc.add(loc.getDirection().multiply(2));
-            if (material == Snowball.class || material == Egg.class || material == Arrow.class)
+            this.throwItem();
+            if (this.amount > 0)
             {
-                user.launchProjectile(material);
+                this.amount--;
             }
-            else if (material == ThrownExpBottle.class)
+            if (amount == 0)
             {
-                ThrownExpBottle bottle = (ThrownExpBottle)user.getWorld().spawnEntity(loc, EntityType.THROWN_EXP_BOTTLE);
-                bottle.setShooter(user);
-                bottle.setVelocity(loc.getDirection());
-            }
-            // TODO FIX ME AS WELL!
-            //            else if (material == ExperienceOrb.class)
-            //            {
-            //                ExperienceOrb orb = (ExperienceOrb)user.getWorld().spawnEntity(loc.subtract(0, 0.25, 0), EntityType.EXPERIENCE_ORB);
-            //                orb.setExperience(0);
-            //                orb.setVelocity(loc.getDirection());
-            //            }
-            else
-            {
-                Explosive explosive;
-                if (material == Fireball.class)
-                {
-                    explosive = (Fireball)user.getWorld().spawnEntity(loc, EntityType.FIREBALL);
-                }
-                else if (material == SmallFireball.class)
-                {
-                    explosive = (SmallFireball)user.getWorld().spawnEntity(loc, EntityType.SMALL_FIREBALL);
-                }
-                else if (material == WitherSkull.class)
-                {
-                    explosive = (WitherSkull)user.getWorld().spawnEntity(loc, EntityType.WITHER_SKULL);
-                }
-                else
-                {
-                    this.remove();
-                    return;
-                }
-                explosive.setVelocity(loc.getDirection());
-
-                if (!this.unsafe && this.material != SmallFireball.class)
-                {
-                    throwListener.add(explosive);
-                }
-                else if (!this.unsafe && this.material == SmallFireball.class)
-                {
-                    explosive.setFireTicks(0);
-                }
-            }
-            if (!this.user.isOnline())
-            {
-                this.remove();
-            }
-            if (this.amount != -1)
-            {
-                if (--amount == 0)
-                {
-                    this.remove();
-                }
+                this.stop();
+                thrownItems.remove(this.user.getName());
             }
         }
     }
 
     public class ThrowListener implements Listener
     {
-        Set<Explosive> explosive;
+        private final Set<Entity> entities;
+        private Entity removal;
 
         public ThrowListener()
         {
-            this.explosive = new HashSet<Explosive>();
+            this.entities = new THashSet<Entity>();
+            this.removal = null;
         }
 
-        public void add(Explosive explosive)
+        public void add(Entity entity)
         {
-            this.explosive.add(explosive);
-        }
-
-        public boolean contains(Explosive explosive)
-        {
-            return this.explosive.contains(explosive);
-        }
-
-        public void remove(Explosive explosive)
-        {
-            this.explosive.remove(explosive);
+            this.entities.add(entity);
         }
 
         @EventHandler
+        public void onPlayerQuit(PlayerQuitEvent event)
+        {
+            ThrowTask task = thrownItems.remove(event.getPlayer().getName());
+            if (task != null)
+            {
+                task.stop();
+            }
+        }
+
+        @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
         public void onBlockDamage(EntityExplodeEvent event)
         {
-            Entity entity = event.getEntity();
-            if (entity != null && entity instanceof Explosive && this.contains((Explosive)entity))
+            if (this.handleEntity(event.getEntity()))
             {
                 event.blockList().clear();
-                this.remove((Explosive)entity);
             }
+        }
+        
+        @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
+        public void onEntityByEntityDamage(EntityDamageByEntityEvent event)
+        {
+            if (this.handleEntity(event.getEntity()))
+            {
+                event.setDamage(0);
+            }
+        }
+        
+        private boolean handleEntity(final Entity entity)
+        {
+            if (this.entities.contains(entity) && this.removal != entity)
+            {
+                fun.getCore().getTaskManager().scheduleSyncDelayedTask(fun, new Runnable() {
+                    @Override
+                    public void run()
+                    {
+                        entities.remove(removal);
+                        removal = null;
+                    }
+                });
+                return true;
+            }
+            return false;
         }
     }
 }

@@ -12,18 +12,13 @@ public enum FunPerm implements Permission
     EXPLOSION_BLOCK_DAMAGE,
     EXPLOSION_FIRE,
     LIGHTNING_PLAYER_DAMAGE,
-    LIGHTNING_UNSAFE,
-    THROW_ARROW,
-    THROW_EGG,
-    THROW_FIREBALL,
-    THROW_SNOW,
-    THROW_ORB,
-    THROW_SMALLFIREBALL,
-    THROW_WITHERSKULL,
-    THROW_XP, ;
+    LIGHTNING_UNSAFE;
 
     private String permission;
     private PermDefault def;
+
+
+    public static final String BASE = "cubeengine.fun.";
 
     private FunPerm()
     {
@@ -32,7 +27,7 @@ public enum FunPerm implements Permission
 
     private FunPerm(PermDefault def)
     {
-        this.permission = "cubeengine.fun." + this.name().toLowerCase(Locale.ENGLISH).replace('_', '.');
+        this.permission = BASE + this.name().toLowerCase(Locale.ENGLISH).replace('_', '.');
         this.def = def;
     }
 
