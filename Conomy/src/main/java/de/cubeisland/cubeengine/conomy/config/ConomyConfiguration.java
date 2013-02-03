@@ -17,6 +17,8 @@ public class ConomyConfiguration extends Configuration
     public LinkedHashMap<String, CurrencyConfiguration> currencies = new LinkedHashMap<String, CurrencyConfiguration>();
     @Option("relations")
     public LinkedHashMap<String, Map<String, Double>> relations = new LinkedHashMap<String, Map<String, Double>>();
+    @Option("enable-logging")
+    public boolean enableLogging = true;
 
     @Override
     public void onLoaded()

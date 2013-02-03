@@ -13,7 +13,6 @@ import gnu.trove.map.hash.THashMap;
 import gnu.trove.map.hash.TLongObjectHashMap;
 
 import java.io.File;
-import java.text.MessageFormat;
 import java.text.SimpleDateFormat;
 import java.util.Collection;
 import java.util.Date;
@@ -36,6 +35,7 @@ public class AccountManager
         this.currencyManager = module.getCurrencyManager();
         this.accountStorage = module.getAccountsStorage();
         this.transactionLogger = new CubeLogger("conomy_transactions");
+        if (this.module.getConfig().enableLogging)
         try
         {   CubeFileHandler handler = new CubeFileHandler(LogLevel.ALL,
                 new File(this.module.getFileManager().getLogDir(),"conomy_transactions").toString());
@@ -190,6 +190,7 @@ public class AccountManager
      */
     public Account createNewAccount(User user)
     {
+        //TODO log creation
         return this.createNewAccount(user, this.getMainCurrency());
     }
 
@@ -223,6 +224,12 @@ public class AccountManager
         this.accountStorage.store(model);
         Account account = new Account(this, currency, model);
         this.useraccounts.get(user.key).put(currency, account);
+        if (this.module.getConfig().enableLogging)
+        {
+            StringBuilder sb = new StringBuilder();
+            sb.append("ACCOUNT CREATED: ").append(account);
+            this.transactionLogger.info(sb.toString());
+        }
         return account;
     }
 
@@ -259,6 +266,12 @@ public class AccountManager
         this.accountStorage.store(model);
         Account account = new Account(this, currency, model);
         this.bankaccounts.get(name).put(currency, account);
+        if (this.module.getConfig().enableLogging)
+        {
+            StringBuilder sb = new StringBuilder();
+            sb.append("ACCOUNT CREATED: ").append(account);
+            this.transactionLogger.info(sb.toString());
+        }
         return account;
     }
 
@@ -325,10 +338,12 @@ public class AccountManager
                 return false; // currencies are not convertible
             }
         target.transaction(source, amount);
-        //TODO config doLog?
-        StringBuilder sb = new StringBuilder();
-        sb.append("TRANSACTION: ").append(source).append("->").append(target).append(" AMOUNT:").append(amount);
-        this.transactionLogger.info(sb.toString());
+        if (this.module.getConfig().enableLogging)
+        {
+            StringBuilder sb = new StringBuilder();
+            sb.append("TRANSACTION: ").append(source).append("->").append(target).append(" AMOUNT:").append(amount);
+            this.transactionLogger.info(sb.toString());
+        }
         return true;
     }
 
