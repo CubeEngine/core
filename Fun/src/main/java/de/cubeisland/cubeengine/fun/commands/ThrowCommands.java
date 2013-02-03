@@ -215,21 +215,19 @@ public class ThrowCommands
             final Vector direction = location.getDirection();
             location.add(direction).add(direction);
 
-            Entity entity = this.user.getWorld().spawnEntity(location, type);
-            entity.setVelocity(direction.multiply(10));
-            if (entity instanceof Projectile)
+            Entity entity;
+            if (Projectile.class.isAssignableFrom(this.type.getEntityClass()))
             {
-                Projectile projectile = (Projectile)entity;
-                projectile.setShooter(this.user.getPlayer());
-                projectile.setBounce(false);
-                if (projectile instanceof Fireball)
-                {
-                    ((Fireball)projectile).setDirection(direction);
-                }
+                entity = this.user.launchProjectile((Class<? extends Projectile>)this.type.getEntityClass());
             }
-            else if (entity instanceof ExperienceOrb)
+            else
             {
-                ((ExperienceOrb)entity).setExperience(0);
+                entity = this.user.getWorld().spawnEntity(location, type);
+                entity.setVelocity(direction.multiply(8));
+                if (entity instanceof ExperienceOrb)
+                {
+                    ((ExperienceOrb)entity).setExperience(0);
+                }
             }
             if (this.preventDamage && !this.save)
             {
