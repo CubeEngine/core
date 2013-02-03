@@ -73,6 +73,10 @@ public class CubeFileHandler extends FileHandler
                 sb.append("  ").append(t.getMessage());
                 sb.append(LINEBREAK);
             }
+            if (record.getParameters() == null || record.getParameters().length == 0)
+            {
+                return sb.toString();
+            }
             return MessageFormat.format(sb.toString(),record.getParameters());
         }
     }
