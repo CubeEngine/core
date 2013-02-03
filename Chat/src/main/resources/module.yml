@@ -1,4 +1,4 @@
-name: Chat
+name: ${project.name}
 revision: 1
 description: Chat formatting
 soft-dependency:

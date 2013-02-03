@@ -1,3 +1,3 @@
-name: Log
+name: ${project.name}
 revision: 1
 description: Log everything you want!

@@ -1,3 +1,3 @@
-name: Fly
+name: ${project.name}
 revision: 1
 description: Flying without CreativeMode

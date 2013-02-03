@@ -27,6 +27,7 @@
         <module>Rulebook</module>
         <module>Irc</module>
         <module>Chat</module>
+        <module>Border</module>
 
         <!--
         <module>CubeWar</module>

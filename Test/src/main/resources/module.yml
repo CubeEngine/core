@@ -1,4 +1,4 @@
-name: Test
+name: ${project.name}
 revision: 1
 description: Test for testing
 soft-dependencies:
