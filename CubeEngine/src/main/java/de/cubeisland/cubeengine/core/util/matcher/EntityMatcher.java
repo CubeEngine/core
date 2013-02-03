@@ -35,7 +35,7 @@ public class EntityMatcher
                     {
                         this.reverseNameMap.put(entityType,name);
                     }
-                    this.nameMap.put(name,entityType);
+                    this.nameMap.put(name.toLowerCase(Locale.ENGLISH), entityType);
                     first = false;
                 }
             }
@@ -214,7 +214,7 @@ public class EntityMatcher
      */
     public boolean isMonster(EntityType entityType)
     {
-        return Monster.class.isAssignableFrom(entityType.getClass());
+        return Monster.class.isAssignableFrom(entityType.getEntityClass()) || entityType == EntityType.ENDER_DRAGON;
     }
 
     /**
@@ -224,7 +224,7 @@ public class EntityMatcher
      */
     public boolean isFriendly(EntityType entityType)
     {
-        return this.isAnimal(entityType) || NPC.class.isAssignableFrom(entityType.getClass());
+        return this.isAnimal(entityType) || NPC.class.isAssignableFrom(entityType.getEntityClass());
     }
 
     /**
@@ -234,7 +234,7 @@ public class EntityMatcher
      */
     public boolean isAnimal(EntityType entityType)
     {
-        return Animals.class.isAssignableFrom(entityType.getClass());
+        return Animals.class.isAssignableFrom(entityType.getEntityClass());
     }
 
     /**
@@ -244,7 +244,7 @@ public class EntityMatcher
      */
     public boolean isProjectile(EntityType entityType)
     {
-        return Projectile.class.isAssignableFrom(entityType.getClass());
+        return Projectile.class.isAssignableFrom(entityType.getEntityClass());
     }
 
     public String getNameFor(EntityType type) {
