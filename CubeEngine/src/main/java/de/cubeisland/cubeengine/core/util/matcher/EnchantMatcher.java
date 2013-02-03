@@ -24,19 +24,26 @@ public class EnchantMatcher
 
     EnchantMatcher()
     {
-        this.enchantments = new THashMap<String, Enchantment>();
-        this.enchantmentName = new THashMap<Enchantment, String>();
         this.bukkitnames = new THashMap<String, Enchantment>();
-
-        TreeMap<Integer, List<String>> enchs = this.readEnchantments();
-        for (int id : enchs.keySet())
-        {
-            this.registerEnchantment(Enchantment.getById(id), enchs.get(id));
-            this.enchantmentName.put(Enchantment.getById(id), enchs.get(id).get(0));
-        }
         for (Enchantment enchantment : Enchantment.values())
         {
             this.bukkitnames.put(enchantment.getName(), enchantment);
+        }
+
+        this.enchantments = new THashMap<String, Enchantment>();
+        this.enchantmentName = new THashMap<Enchantment, String>();
+
+        TreeMap<String, List<String>> enchs = this.readEnchantments();
+        for (String bukkitName : enchs.keySet())
+        {
+            Enchantment ench = this.bukkitnames.get(bukkitName);
+            if (ench == null)
+            {
+                CubeEngine.getLogger().warning("Unkown Enchantment: "+ bukkitName);
+                continue;
+            }
+            this.registerEnchantment(ench, enchs.get(bukkitName));
+
         }
     }
 
@@ -48,9 +55,15 @@ public class EnchantMatcher
      */
     private void registerEnchantment(Enchantment ench, List<String> names)
     {
-        for (String s : names)
+        boolean first = true;
+        for (String name : names)
         {
-            this.enchantments.put(s.toLowerCase(Locale.ENGLISH), ench);
+            if (first)
+            {
+                this.enchantmentName.put(ench, name);
+                first = false;
+            }
+            this.enchantments.put(name.toLowerCase(Locale.ENGLISH), ench);
         }
     }
 
@@ -59,12 +72,12 @@ public class EnchantMatcher
      *
      * @return the loaded enchantments with corresponding names
      */
-    private TreeMap<Integer, List<String>> readEnchantments()
+    private TreeMap<String, List<String>> readEnchantments()
     {
         try
         {
             File file = new File(CubeEngine.getFileManager().getDataFolder(), CoreResource.ENCHANTMENTS.getTarget());
-            TreeMap<Integer, List<String>> enchantments = new TreeMap<Integer, List<String>>();
+            TreeMap<String, List<String>> enchantments = new TreeMap<String, List<String>>();
             AliasMapFormat.parseStringList(file, enchantments, false);
             if (AliasMapFormat.parseStringList(CubeEngine.getFileManager().getSourceOf(file), enchantments, true))
             {
@@ -72,10 +85,6 @@ public class EnchantMatcher
                 AliasMapFormat.parseAndSaveStringListMap(enchantments, file);
             }
             return enchantments;
-        }
-        catch (NumberFormatException ex)
-        {
-            throw new IllegalStateException("enchantments.txt is corrupted!", ex);
         }
         catch (IOException ex)
         {

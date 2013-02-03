@@ -22,14 +22,14 @@ public class EntityMatcher
 
     EntityMatcher()
     {
-        TreeMap<Integer, List<String>> entityList = this.readEntities();
-        for (int id : entityList.keySet())
+        TreeMap<String, List<String>> entityList = this.readEntities();
+        for (String key : entityList.keySet())
         {
             try
             {
-                EntityType entityType = EntityType.fromId((short)id);
+                EntityType entityType = EntityType.valueOf(key);
                 boolean first = true;
-                for (String name : entityList.get(id))
+                for (String name : entityList.get(key))
                 {
                     if (first)
                     {
@@ -37,12 +37,12 @@ public class EntityMatcher
                     }
                     this.nameMap.put(name,entityType);
                     first = false;
-
                 }
             }
-            catch (NullPointerException e)
+            catch (IllegalArgumentException ex)
             {
-                CubeEngine.getLogger().log(LogLevel.WARNING, "Unknown Entity ID: " + id + " " + entityList.get(id).get(0));
+                CubeEngine.getLogger().warning("Unkown EntityType:"+ key);
+                continue;
             }
         }
     }
@@ -52,12 +52,12 @@ public class EntityMatcher
      *
      * @return the loaded entities with corresponding names
      */
-    private TreeMap<Integer, List<String>> readEntities()
+    private TreeMap<String, List<String>> readEntities()
     {
         try
         {
             File file = new File(CubeEngine.getFileManager().getDataFolder(), CoreResource.ENTITIES.getTarget());
-            TreeMap<Integer, List<String>> entityList = new TreeMap<Integer, List<String>>();
+            TreeMap<String, List<String>> entityList = new TreeMap<String, List<String>>();
             AliasMapFormat.parseStringList(file, entityList, false);
             if (AliasMapFormat.parseStringList(CubeEngine.getFileManager().getSourceOf(file), entityList, true))
             {
