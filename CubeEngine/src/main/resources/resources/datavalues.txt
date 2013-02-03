@@ -1,9 +1,18 @@
-5,17,18,125,126:
+WOOD,SAPLING,LEAVES,WOOD_DOUBLE_STEP,WOOD_STEP,LOG:
     oak: 0
     pine,spruce: 1
     birch: 2
     jungle: 3
-35:
+LOG:
+    oak: 0x0
+    pine,spruce: 0x1
+    birch: 0x2
+    jungle: 0x3
+    up-down: 0x0
+    east-west: 0x4
+    north-south: 0x8
+    all-bark: 0xC
+WOOL:
     white: 0
     orange: 1
     magenta: 2
@@ -20,7 +29,7 @@
     green: 13
     red: 14
     black: 15
-351:
+INK_SACK:
     white: 15
     orange: 14
     magenta: 13
@@ -37,44 +46,271 @@
     green: 2
     red: 1
     black: 0
-43,44:
+DOUBLE_STEP:
     clean,stone: 0
     sandstone: 1
     wood: 2
     cobble: 3
     brick: 4
     stonebrick: 5
-24:
+    netherbrick: 6
+    quartz: 7
+    smooth: 8
+    smoothsandstone: 9
+STEP:
+    clean,stone: 0x0
+    sandstone: 0x1
+    wood: 0x2
+    cobble: 0x3
+    brick: 0x4
+    stonebrick: 0x5
+    netherbrick: 0x6
+    quartz: 0x7
+    upsidedown: 0x8
+SANDSTONE:
     normal: 0
     chiseled,creeper: 0
     smooth,clean: 0
-98:
+SMOOTH_BRICK:
     normal: 0
     mossy: 1
     cracked,old: 2
     chiseled,round: 3
-99,100:
+HUGE_MUSHROOM_1,HUGE_MUSHROOM_2:
     pores: 0
     cap: 5
     stem: 10
     allstem: 14
     allcap: 15
-373:
+POTION:
     water: 0
     awkward: 16
     thick: 32
     mundane: 64
-#regen: 1
-#speed: 2
-#fireresistance: 3
-#poison: 4
-#heal: 5
-#nightvision: 6
-#weak: 8
-#strength: 9
-#slow: 10
-#damage: 12
-#invisible invisibility: 14
-#tier2: 32
-#long: 64
-#splash: 16384
+LADDER,WALL_SIGN,FURNACE,BURNING_FURNACE,DISPENSER,CHEST:
+    north: 2
+    south: 3
+    west: 4
+    east: 5
+BED_BLOCK:
+    south: 0x0
+    west: 0x1
+    north: 0x2
+    east: 0x3
+    occupied: 0x4
+    head: 0x8
+    foot: 0x0
+LONG_GRASS:
+    deadshrub: 0
+    tallgrass: 1
+    fern: 2
+PISTON_BASE,PISTON_STICKY_BASE:
+    down: 0x0
+    up: 0x1
+    north: 0x2
+    south: 0x3
+    west: 0x4
+    east: 0x5
+    extended: 0x8
+PISTON_EXTENSION:
+    down: 0x0
+    up: 0x1
+    north: 0x2
+    south: 0x3
+    west: 0x4
+    east: 0x5
+    sticky: 0x8
+TORCH,REDSTONE_TORCH_OFF,REDSTONE_TORCH_ON:
+    east: 1
+    west: 2
+    south: 3
+    north: 4
+    floor: 5
+    ground: 6
+WOOD_STAIRS,COBBLESTONE_STAIRS,BRICK_STAIRS,SMOOTH_STAIRS,NETHERBRICK_STAIRS,SANDSTONE_STAIRS,SPRUCE_WOOD_STAIRS,BIRCH_WOOD_STAIRS,JUNGLE_WOOD_STAIRS:
+    east: 0
+    west: 1
+    south: 2
+    north: 3
+    upsidedown: 4
+CROPS,CARROT,POTATO:
+    planted: 0
+    fullygrown: 7
+SOIL:
+    dry: 0
+    wet: 1
+    wet: 2
+    wet: 3
+    wet: 4
+    wet: 5
+    wet: 6
+    wet: 7
+    wet: 8
+SIGN_POST:
+    south: 0
+    south-southwest: 1
+    southwest: 2
+    west-southwest: 3
+    west: 4
+    west-northwest: 5
+    northwest: 6
+    north-northwest: 7
+    north: 8
+    north-northeast: 9
+    northeast: 10
+    east-northeast: 11
+    east: 12
+    east-southeast: 13
+    southeast: 14
+    south-southeast: 15
+WOOD_DOOR,IRON_DOOR:
+    west-closed: 0
+    north-closed: 1
+    east-closed: 2
+    south-closed: 3
+    west-opened: 4
+    north-opened: 5
+    east-opened: 6
+    south-opened: 7
+    top-right: 8
+    top-left: 9
+POWERED_RAIL,DETECTOR_RAIL:
+    north-south: 0
+    west-east: 1
+    asc-east: 2
+    asc-west: 3
+    asc-north: 4
+    asc-south: 5
+RAILS:
+    north-south: 0
+    west-east: 1
+    asc-east: 2
+    asc-west: 3
+    asc-north: 4
+    asc-south: 5
+    east-south: 6
+    west-south: 7
+    west-north: 8
+    east-south: 9
+LEVER:
+    east: 0x1
+    west: 0x2
+    south: 0x3
+    north: 0x4
+    ground-south: 0x5
+    ground-east: 0x6
+    ceiling-south: 0x7
+    ceiling-east: 0x0
+    active: 0x8
+    inactive: 0x0
+STONE_BUTTON,WOOD_BUTTON:
+    east: 0x1
+    west: 0x2
+    south: 0x3
+    north: 0x4
+    pressed: 0x8
+JUKEBOX:
+    nothing,empty: 0
+    gold-disc,13: 1
+    green-disc,cat: 2
+    orange-disc,blocks: 3
+    red-disc,chirp: 4
+    lime-disc,far: 5
+    purple-disc,mall: 6
+    violet-disc,mellohi: 7
+    black-disc,stal: 8
+    white-disc,strad: 9
+    sea-green-disc,ward: 10
+    broken-disc,11: 11
+    blue-disc,wait: 12
+PUMPKIN,JACK_O_LANTERN:
+    south: 0
+    west: 1
+    north: 2
+    east: 3
+    faceless: 4
+CAKE_BLOCK:
+    new: 0
+    1piece-eaten: 1
+    2piece-eaten: 2
+    3piece-eaten: 3
+    4piece-eaten: 4
+    5piece-eaten: 5
+DIODE_BLOCK_OFF,DIODE_BLOCK_OFF:
+    north: 0x0
+    east: 0x1
+    south: 0x2
+    west: 0x3
+    1-tick: 0x0
+    2-tick: 0x4
+    3-tick: 0x8
+    4-tick: 0xC
+TRAP_DOOR:
+    south: 0x0
+    north: 0x1
+    east: 0x2
+    west: 0x3
+    closed: 0x0
+    opened: 0x4
+    bottom: 0x0
+    top: 0x8
+MONSTER_EGGS:
+    stone: 0
+    cobblestone: 1
+    stonebrick: 2
+PUMPKIN_STEM,MELON_STEM:
+    planted: 0
+    fullygrown: 7
+VINE:
+    south: 0x1
+    west: 0x2
+    north: 0x4
+    east: 0x8
+FENCE_GATE:
+    opened: 0x4
+    closed: 0x0
+NETHER_WARTS:
+    planted: 0
+    fullygrown: 3
+BREWING_STAND:
+    east-full: 0x1
+    south-west-full: 0x2
+    north-west-full: 0x4
+ENDER_PORTAL_FRAME:
+    south: 0x0
+    west: 0x1
+    north: 0x2
+    east: 0x3
+    empty: 0x0
+    full: 0x4
+COCOA:
+    north: 0x0
+    east: 0x1
+    south: 0x2
+    west: 0x3
+    small: 0x0
+    medium: 0x4
+    large: 0x8
+    giant: 0xC
+COBBLE_WALL:
+    normal: 0
+    mossy: 1
+FLOWER_POT
+    empty: 0
+    rose: 1
+    dandelion: 2
+    oak-sapling: 3
+    spruce-sapling: 4
+    birch-sapling: 5
+    jungle-sapling: 6
+    red-mushroom: 7
+    brown-mushroom: 8
+    cactus: 9
+    dead-bush: 10
+    fern: 11
+QUARTZ_BLOCK:
+    normal: 0
+    chiseled: 1
+    pillar-vertical: 2
+    pillar-north-south: 3
+    pillar-east-west: 4
