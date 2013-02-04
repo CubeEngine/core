@@ -55,6 +55,7 @@ public class MaterialDataMatcher {
         TByteObjectHashMap<Set<String>> reverseCurrentBlockData = null;
         TObjectShortHashMap<String> currentItemData = null;
         TObjectByteHashMap<String> currentBlockData = null;
+        Set<Material> currentMaterials = new HashSet<Material>();
         for (String line : input)
         {
             line = line.trim();
@@ -64,62 +65,25 @@ public class MaterialDataMatcher {
             }
             if (line.endsWith(":"))
             {
-                // clean up empty maps in last material
-                Collection<Material> mats = new HashSet<Material>(this.itemData.keySet());
-                for (Material mat : mats)
+                if (this.saveData(currentMaterials, reverseCurrentItemData, reverseCurrentBlockData, currentItemData, currentBlockData))
                 {
-                    if (itemData.get(mat) != null && itemData.get(mat).isEmpty())
-                    {
-                        itemData.remove(mat);
-                    }
-                    if (reverseItemData.get(mat) != null && reverseItemData.get(mat).isEmpty())
-                    {
-                        reverseItemData.remove(mat);
-                    }
-                    if (blockData.get(mat) != null && blockData.get(mat).isEmpty())
-                    {
-                        blockData.remove(mat);
-                    }
-                    if (reverseBlockData.get(mat) != null && reverseBlockData.get(mat).isEmpty())
-                    {
-                        reverseBlockData.remove(mat);
-                    }
+                    updated = true;
                 }
-
                 boolean first = true;
                 for (String key : StringUtils.explode(",", line.substring(0, line.length() - 1)))
                 {
                     try
                     {
                         Material material = Material.valueOf(key);
+                        currentMaterials.add(material);
                         if (first)
                         {
-                            reverseCurrentItemData = reverseItemData.get(material);
-                            reverseCurrentBlockData =reverseBlockData.get(material);
-                            currentItemData = itemData.get(material);
-                            currentBlockData = blockData.get(material);
-                            if (reverseCurrentItemData == null)
-                            {
-                                reverseCurrentItemData = new TShortObjectHashMap<Set<String>>();
-                            }
-                            if (reverseCurrentBlockData == null)
-                            {
-                                reverseCurrentBlockData = new TByteObjectHashMap<Set<String>>();
-                            }
-                            if (currentItemData == null)
-                            {
-                                currentItemData = new TObjectShortHashMap<String>();
-                            }
-                            if (currentBlockData == null)
-                            {
-                                currentBlockData = new TObjectByteHashMap<String>();
-                            }
+                            reverseCurrentItemData = new TShortObjectHashMap<Set<String>>();
+                            reverseCurrentBlockData = new TByteObjectHashMap<Set<String>>();
+                            currentItemData = new TObjectShortHashMap<String>();
+                            currentBlockData = new TObjectByteHashMap<String>();
                             first = false;
                         }
-                        this.reverseItemData.put(material, reverseCurrentItemData);
-                        this.reverseBlockData.put(material, reverseCurrentBlockData);
-                        this.itemData.put(material,currentItemData);
-                        this.blockData.put(material,currentBlockData);
                     }
                     catch (IllegalArgumentException ex)
                     {
@@ -150,7 +114,6 @@ public class MaterialDataMatcher {
                             {
                                 names = new HashSet<String>();
                                 reverseCurrentBlockData.put( blockDataVal, names);
-                                updated = true;
                             }
                         }
                         else
@@ -161,7 +124,6 @@ public class MaterialDataMatcher {
                             {
                                 names = new HashSet<String>();
                                 reverseCurrentItemData.put(itemDataVal,names);
-                                updated = true;
                             }
                         }
                     }
@@ -186,6 +148,10 @@ public class MaterialDataMatcher {
                     }
                 }
             }
+        }
+        if (this.saveData(currentMaterials, reverseCurrentItemData, reverseCurrentBlockData, currentItemData, currentBlockData))
+        {
+            updated = true;
         }
         if (update && updated)
         {
@@ -260,6 +226,67 @@ public class MaterialDataMatcher {
                 CubeEngine.getLogger().warning("Could not save changed datavalues.txt");
             }
         }
+    }
+
+    private boolean saveData(Set<Material> currentMaterials, TShortObjectHashMap<Set<String>> reverseCurrentItemData, TByteObjectHashMap<Set<String>> reverseCurrentBlockData, TObjectShortHashMap<String> currentItemData, TObjectByteHashMap<String> currentBlockData) {
+        boolean updated = false;
+        for (Material material : currentMaterials)
+        {
+            if (!reverseCurrentItemData.isEmpty())
+            {
+                TShortObjectHashMap<Set<String>> replaced = this.reverseItemData.put(material, reverseCurrentItemData);
+                if (replaced != null)
+                {
+                    replaced.keySet().removeAll(this.reverseItemData.get(material).keys());
+                    if (replaced.isEmpty())
+                    {
+                        this.reverseItemData.get(material).putAll(replaced);
+                        updated = true;
+                    }
+                }
+            }
+            if (!reverseCurrentBlockData.isEmpty())
+            {
+                TByteObjectHashMap<Set<String>> replaced = this.reverseBlockData.put(material, reverseCurrentBlockData);
+                if (replaced != null)
+                {
+                    replaced.keySet().removeAll(this.reverseBlockData.get(material).keys());
+                    if (replaced.isEmpty())
+                    {
+                        this.reverseBlockData.get(material).putAll(replaced);
+                        updated = true;
+                    }
+                }
+            }
+            if (!currentItemData.isEmpty())
+            {
+                TObjectShortHashMap<String> replaced = this.itemData.put(material, currentItemData);
+                if (replaced != null)
+                {
+                    replaced.keySet().removeAll(this.itemData.get(material).keySet());
+                    if (replaced.isEmpty())
+                    {
+                        this.itemData.get(material).putAll(replaced);
+                        updated = true;
+                    }
+                }
+            }
+            if (!currentBlockData.isEmpty())
+            {
+                TObjectByteHashMap<String> replaced = this.blockData.put(material, currentBlockData);
+                if (replaced != null)
+                {
+                    replaced.keySet().removeAll(this.blockData.get(material).keySet());
+                    if (replaced.isEmpty())
+                    {
+                        this.blockData.get(material).putAll(replaced);
+                        updated = true;
+                    }
+                }
+            }
+        }
+        currentMaterials.clear();
+        return updated;
     }
 
 
@@ -352,10 +379,10 @@ public class MaterialDataMatcher {
     {
         TByteObjectHashMap<Set<String>> map = this.reverseBlockData.get(mat);
         String dataNames = "";
+        byte mask = blockData;
         if (map != null)
         {
             String zeroData = null;
-            byte mask = blockData;
             for (Byte flag : map.keys())
             {
                 if (flag < 0)
@@ -394,12 +421,12 @@ public class MaterialDataMatcher {
         }
         else
         {
-            Set<String> names = itemMap.get(blockData.shortValue());
+            Set<String> names = itemMap.get((short)mask);
             if (names == null)
             {
                 if (dataNames.isEmpty())
                 {
-                    CubeEngine.getLogger().warning("Unknown Block-Data: "+ mat + "DATA: "+blockData);
+                    CubeEngine.getLogger().warning("Unknown Block-Data: "+ mat + "DATA: "+mask);
                     return null;
                 }
             }
@@ -408,7 +435,7 @@ public class MaterialDataMatcher {
         }
         if (dataNames.isEmpty())
         {
-            CubeEngine.getLogger().warning("Unknown Block-Data: "+ mat + "DATA: "+blockData);
+            CubeEngine.getLogger().warning("Unknown Block-Data: "+ mat + "DATA: "+mask);
             return null;
         }
         return dataNames;

@@ -51,9 +51,18 @@ CAKE_BLOCK:
     2piece-eaten: 2
     1piece-eaten: 1
     new: 0
-COBBLE_WALL:
-    normal: 0
-    mossy: 1
+LONG_GRASS:
+    fern: 2
+    tallgrass: 1
+    deadshrub: 0
+NETHER_WARTS:
+    fullygrown: 3
+    planted: 0
+ENDER_PORTAL_FRAME,BED_BLOCK:
+    east: 3
+    north: 2
+    west: 1
+    south: 0
 FLOWER_POT:
     fern: 11
     dead-bush: 10
@@ -67,22 +76,9 @@ FLOWER_POT:
     dandelion: 2
     rose: 1
     empty: 0
-LONG_GRASS:
-    fern: 2
-    tallgrass: 1
-    deadshrub: 0
-NETHER_WARTS:
-    fullygrown: 3
-    planted: 0
-BED_BLOCK,ENDER_PORTAL_FRAME:
-    east: 3
-    north: 2
-    west: 1
-    south: 0
-SANDSTONE:
+COBBLE_WALL:
+    mossy: 1
     normal: 0
-    smooth,clean: 2
-    chiseled,creeper: 1
 PISTON_EXTENSION,PISTON_STICKY_BASE:
     east: 5
     west: 4
@@ -90,13 +86,13 @@ PISTON_EXTENSION,PISTON_STICKY_BASE:
     north: 2
     up: 1
     down: 0
-JACK_O_LANTERN,PUMPKIN:
+PUMPKIN,JACK_O_LANTERN:
     faceless: 4
     east: 3
     north: 2
     west: 1
     south: 0
-HUGE_MUSHROOM_1,HUGE_MUSHROOM_2:
+HUGE_MUSHROOM_2,HUGE_MUSHROOM_1:
     allcap: 15
     allstem: 14
     stem: 10
@@ -113,12 +109,12 @@ DOUBLE_STEP:
     wood: 2
     sandstone: 1
     clean,stone: 0
-LEAVES,LOG,SAPLING,WOOD,WOOD_DOUBLE_STEP,WOOD_STEP:
+LOG,LEAVES,WOOD_DOUBLE_STEP,WOOD_STEP,WOOD,SAPLING:
     jungle: 3
     birch: 2
     spruce,pine: 1
     oak: 0
-CARROT,CROPS,MELON_STEM,POTATO,PUMPKIN_STEM:
+CROPS,MELON_STEM,CARROT,POTATO,PUMPKIN_STEM:
     fullygrown: 7
     planted: 0
 TRAP_DOOR:
@@ -131,23 +127,23 @@ DIODE_BLOCK_OFF,DIODE_BLOCK_ON:
     south: 2
     east: 1
     north: 0
-REDSTONE_TORCH_OFF,REDSTONE_TORCH_ON,TORCH:
+REDSTONE_TORCH_ON,REDSTONE_TORCH_OFF,TORCH:
     ground: 6
     floor: 5
     north: 4
     south: 3
     west: 2
     east: 1
+DISPENSER,LADDER,WALL_SIGN,CHEST,BURNING_FURNACE,FURNACE:
+    east: 5
+    west: 4
+    south: 3
+    north: 2
 STONE_BUTTON:
     north: 4
     south: 3
     west: 2
     east: 1
-BURNING_FURNACE,CHEST,DISPENSER,FURNACE,LADDER,WALL_SIGN:
-    east: 5
-    west: 4
-    south: 3
-    north: 2
 IRON_DOOR,WOOD_DOOR:
     top-left: 9
     top-right: 8
@@ -159,6 +155,10 @@ IRON_DOOR,WOOD_DOOR:
     east-closed: 2
     north-closed: 1
     west-closed: 0
+SANDSTONE:
+    smooth,clean: 2
+    chiseled,creeper: 1
+    normal: 0
 POTION:
     mundane: 64
     awkward: 16
@@ -204,7 +204,7 @@ JUKEBOX:
     orange-disc,blocks: 3
     cat,green-disc: 2
     gold-disc,13: 1
-    nothing,empty: 0
+    empty,nothing: 0
 RAILS:
     east-south: 9
     west-north: 8
@@ -237,8 +237,8 @@ SIGN_POST:
     southwest: 2
     south-southwest: 1
     south: 0
-BIRCH_WOOD_STAIRS,BRICK_STAIRS,COBBLESTONE_STAIRS,JUNGLE_WOOD_STAIRS,SANDSTONE_STAIRS,SMOOTH_STAIRS,SPRUCE_WOOD_STAIRS,WOOD_STAIRS:
-    upsidedown: 4
+BRICK_STAIRS,SPRUCE_WOOD_STAIRS,SANDSTONE_STAIRS,BIRCH_WOOD_STAIRS,WOOD_STAIRS,JUNGLE_WOOD_STAIRS,SMOOTH_STAIRS,COBBLESTONE_STAIRS:
+    upsidedown: 0x4
     north: 3
     south: 2
     west: 1
@@ -253,6 +253,9 @@ LOG:
 FENCE_GATE:
     opened: 0x4
     closed: -0x4
+LEAVES:
+    decay: 0x8
+    permanent,perm: 0x4
 TRAP_DOOR:
     bottom: -0x8
     top: 0x8
@@ -273,12 +276,12 @@ VINE:
     north: 0x4
     west: 0x2
     south: 0x1
+STEP:
+    upsidedown: 0x8
 ENDER_PORTAL_FRAME:
     full: 0x4
     empty: 0x0
-STEP:
-    upsidedown: 0x8
-DIODE_BLOCK_OFF,DIODE_BLOCK_ON:
+DIODE_BLOCK_ON,DIODE_BLOCK_OFF:
     4-tick: 0xc
     3-tick: 0x8
     2-tick: 0x4
@@ -293,9 +296,3 @@ COCOA:
     large: 0x8
     medium: 0x4
     small: 0x0
-#QUARTZ_BLOCK:
-#     normal: 0
-#     chiseled: 1
-#     pillar-vertical: 2
-#     pillar-north-south: 3
-#     pillar-east-west: 4
