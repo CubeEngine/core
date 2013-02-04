@@ -370,6 +370,27 @@ public class MaterialMatcher
         return itemName;
     }
 
+    public String getNameForBlock(Material mat, Byte blockData)
+    {
+        TShortObjectHashMap<String > dataMap = this.itemnames.get(mat);
+        if (dataMap == null)
+        {
+            CubeEngine.getLogger().warning("Unknown Block! ID: "+mat+ " DATA: "+ blockData);
+            return null;
+        }
+        String itemName = dataMap.get((short) 0);
+        String data = Match.materialData().getDataNameFor(mat,blockData);
+        if (data == null)
+        {
+            itemName += ":"+blockData;
+        }
+        else
+        {
+            itemName += data;
+        }
+        return itemName;
+    }
+
     private static final class ImmutableItemStack extends ItemStack
     {
         private ImmutableItemStack(Material type, int amount, short damage) {

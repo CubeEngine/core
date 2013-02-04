@@ -108,20 +108,20 @@ public class BlockLog implements Comparable<BlockLog>
         if (action == LogManager.BLOCK_BREAK)
         {
             message += "&edestroyed &6%s";
-            list.add(Match.material().getNameForItem(this.oldBlock.mat, this.oldBlock.data.shortValue()));
+            list.add(Match.material().getNameForBlock(this.oldBlock.mat, this.oldBlock.data));
         }
         else if (action == LogManager.BLOCK_PLACE)
         {
             if (this.oldBlock == null || this.oldBlock.mat.getId() == 0)
             {
                 message += "&eplaced &6%s";
-                list.add(Match.material().getNameForItem(this.newBlock.mat, this.newBlock.data.shortValue()));
+                list.add(Match.material().getNameForBlock(this.newBlock.mat, this.newBlock.data));
             }
             else
             {
                 message += "&ereplaced &6%s &ewith &6%s";
-                list.add(Match.material().getNameForItem(this.oldBlock.mat, this.oldBlock.data.shortValue()));
-                list.add(Match.material().getNameForItem(this.newBlock.mat, this.newBlock.data.shortValue()));
+                list.add(Match.material().getNameForBlock(this.oldBlock.mat, this.oldBlock.data));
+                list.add(Match.material().getNameForBlock(this.newBlock.mat, this.newBlock.data));
             }
         }
         else if (action == LogManager.BLOCK_CHANGE)
@@ -139,7 +139,7 @@ public class BlockLog implements Comparable<BlockLog>
                     {
                         message += "&eclosed &6%s";
                     }
-                    list.add(Match.material().getNameForItem(this.oldBlock.mat, this.oldBlock.data.shortValue()));
+                    list.add(Match.material().getNameForBlock(this.oldBlock.mat, this.oldBlock.data));
                     break;
                 case LEVER:
                     if ((this.newBlock.data & 0x8) == 0x8)
@@ -150,22 +150,22 @@ public class BlockLog implements Comparable<BlockLog>
                     {
                         message += "&edeactivated &6%s";
                     }
-                    list.add(Match.material().getNameForItem(this.oldBlock.mat, this.oldBlock.data.shortValue()));
+                    list.add(Match.material().getNameForBlock(this.oldBlock.mat, this.oldBlock.data));
                     break;
                 case STONE_BUTTON:
                 case WOOD_BUTTON:
                     message += "&epressed &6%s";
-                    list.add(Match.material().getNameForItem(this.oldBlock.mat, this.oldBlock.data.shortValue()));
+                    list.add(Match.material().getNameForBlock(this.oldBlock.mat, this.oldBlock.data));
                     break;
                 case CAKE_BLOCK: // data: remaining slices
                     message += "&eeat &6%s";
-                    list.add(Match.material().getNameForItem(this.oldBlock.mat, this.oldBlock.data.shortValue()));
+                    list.add(Match.material().getNameForBlock(this.oldBlock.mat, this.oldBlock.data));
                     break;
                 case NOTE_BLOCK:
                 case DIODE_BLOCK_OFF:
                 case DIODE_BLOCK_ON:
                     message += "&eadjusted &6%s";
-                    list.add(Match.material().getNameForItem(this.oldBlock.mat, this.oldBlock.data.shortValue()));
+                    list.add(Match.material().getNameForBlock(this.oldBlock.mat, this.oldBlock.data));
                     break;
             }
         }
@@ -203,19 +203,19 @@ public class BlockLog implements Comparable<BlockLog>
             if (this.oldBlock != null && this.oldBlock.mat.getId() != 0)
             {
                 message += " &ereplacing &6%s";
-                list.add(Match.material().getNameForItem(this.oldBlock.mat, this.oldBlock.data.shortValue()));
+                list.add(Match.material().getNameForBlock(this.oldBlock.mat, this.oldBlock.data));
             }
         }
         else if (action == LogManager.BLOCK_CHANGE_WE)
         {
             message += "&echanged &6%s &eto &6%s &ewith &6WorldEdit";
-            list.add(Match.material().getNameForItem(this.oldBlock.mat, this.oldBlock.data.shortValue()));
-            list.add(Match.material().getNameForItem(this.newBlock.mat, this.newBlock.data.shortValue()));
+            list.add(Match.material().getNameForBlock(this.oldBlock.mat, this.oldBlock.data));
+            list.add(Match.material().getNameForBlock(this.newBlock.mat, this.newBlock.data));
         }
         else if (action == LogManager.BLOCK_EXPLODE)
         {
             message += "&elet a Creeper explode &6%s";
-            list.add(Match.material().getNameForItem(this.oldBlock.mat, this.oldBlock.data.shortValue()));
+            list.add(Match.material().getNameForBlock(this.oldBlock.mat, this.oldBlock.data));
         }
         if (showLoc)
         {
