@@ -81,7 +81,7 @@ public class MaterialMatcher
         try
         {
             Material material = Material.valueOf(materialName);
-            TShortObjectHashMap<String> dataMap = this.itemnames.get(materialName);
+            TShortObjectHashMap<String> dataMap = this.itemnames.get(material);
             if (dataMap == null)
             {
                 dataMap = new TShortObjectHashMap<String>();
@@ -346,35 +346,26 @@ public class MaterialMatcher
      */
     public String getNameFor(ItemStack item)
     {
-        if (item == null)
-        {
-            return null;
-        }
-        TShortObjectHashMap<String > dataMap = this.itemnames.get(item.getTypeId());
-        if (dataMap == null)
-        {
-            CubeEngine.getLogger().warning("Unknown Item! ("+item.toString()+")");
-            return null;
-        }
-        String itemName = dataMap.get(item.getDurability());
-        if (itemName == null)
-        {
-            return dataMap.get((short) 0);
-        }
-        return itemName;
+        return this.getNameForItem(item.getType(), item.getDurability());
     }
 
-    public String getNameFor(int id, short data) {
-        TShortObjectHashMap<String > dataMap = this.itemnames.get(id);
+    public String getNameForItem(Material mat, short data) {
+        TShortObjectHashMap<String > dataMap = this.itemnames.get(mat);
         if (dataMap == null)
         {
-            CubeEngine.getLogger().warning("Unknown Item! ID: "+id+ " DATA: "+ data);
+            CubeEngine.getLogger().warning("Unknown Item! ID: "+mat+ " DATA: "+ data);
             return null;
         }
         String itemName = dataMap.get(data);
         if (itemName == null)
         {
-            return dataMap.get((short) 0);
+            itemName = dataMap.get((short) 0);
+            if (itemName == null)
+            {
+                CubeEngine.getLogger().warning("Unknown Item! ID: "+mat+ " DATA: "+ data);
+                return mat.name()+":"+data;
+            }
+            itemName+=":"+data;
         }
         return itemName;
     }
