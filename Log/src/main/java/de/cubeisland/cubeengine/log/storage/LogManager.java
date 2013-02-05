@@ -215,7 +215,6 @@ public class LogManager
             return;
         }
         running = true;
-        System.out.print(queuedLogs.size()+ " logs queued.");
         final Queue<QueuedLog> logs = new LinkedList<QueuedLog>();
         for (int i = 0; i < amount; i++) // log <smount> next logs...
         {
@@ -227,7 +226,7 @@ public class LogManager
             logs.offer(toLog);
         }
         long a = System.currentTimeMillis();
-        System.out.println("Start logging... (" + logs.size() + ")");
+        int logSize =  logs.size();
         try
         {
             for (QueuedLog log : logs)
@@ -254,7 +253,8 @@ public class LogManager
             running = false;
         }
         a = System.currentTimeMillis() - a;
-        System.out.println("log finished: " + a / 1000 + "." + a % 1000 + "s");
+        if (logSize == logBuffer)
+            System.out.println("Logged "+logSize+ " logs in: " + a / 1000 + "." + a % 1000 + "s | remaining logs: " + queuedLogs.size());
     }
 
     /**
