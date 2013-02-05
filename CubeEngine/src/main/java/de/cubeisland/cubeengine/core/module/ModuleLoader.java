@@ -193,7 +193,7 @@ public class ModuleLoader
             InputStream configStream = jarFile.getInputStream(entry);
             try
             {
-                info = new ModuleInfo(file, Configuration.load(ModuleConfig.class, configStream));
+                info = new ModuleInfo(file, Configuration.load(ModuleConfig.class, configStream, null));
             }
             finally
             {

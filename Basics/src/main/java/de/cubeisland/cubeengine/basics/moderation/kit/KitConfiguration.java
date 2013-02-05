@@ -49,6 +49,8 @@ public class KitConfiguration extends Configuration
     @Override
     public void onLoaded()
     {
+        String fileName = this.getFile().getName();
+        this.kitName = fileName.substring(0, fileName.indexOf(".yml"));
         if (this.kitName.length() > 50)
         {
             this.kitName = this.kitName.substring(0, 50); // limit for db

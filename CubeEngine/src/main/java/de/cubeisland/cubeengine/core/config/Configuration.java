@@ -215,7 +215,7 @@ public abstract class Configuration
         {
             logger.log(LogLevel.NOTICE, "{0} not found! Creating new config...", file.getName());
         }
-        T config = load(clazz, inputStream); //loading config from InputSream or Default
+        T config = load(clazz, inputStream, file); //loading config from InputSream or Default
 
         if (inputStream != null)
         {
@@ -226,7 +226,6 @@ public abstract class Configuration
             catch (IOException ignored)
             {}
         }
-
         config.file = file;
         if (save)
         {
@@ -242,9 +241,10 @@ public abstract class Configuration
      * @param clazz the Configuration to use
      * @return the loaded Configuration
      */
-    public static <T extends Configuration> T load(Class<T> clazz, InputStream is)
+    public static <T extends Configuration> T load(Class<T> clazz, InputStream is, File ifGiven)
     {
         T config = createInstance(clazz);
+        config.file = ifGiven;
         if (config.codec == null)
         {
             throw new InvalidConfigurationException("No codec specified for " + clazz.getName());
