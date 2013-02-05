@@ -298,7 +298,7 @@ public class MaterialMatcher
 
     private ImmutableItemStack matchWithLevenshteinDistance(String s, Map<String, ImmutableItemStack> map)
     {
-        String t_key = Match.string().matchString(s, map.keySet(), false);
+        String t_key = Match.string().matchString(s, map.keySet());
         if (t_key != null)
         {
             return map.get(t_key);

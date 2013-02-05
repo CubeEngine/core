@@ -15,6 +15,7 @@ import java.io.FileFilter;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
+import java.util.Set;
 
 @Codec("yml")
 public class KitConfiguration extends Configuration
@@ -62,15 +63,12 @@ public class KitConfiguration extends Configuration
 
     public static Kit getKit(String name)
     {
-        List<String> match = Match.string().getBestMatches(name.toLowerCase(Locale.ENGLISH), kitMap.keySet(), 2);
+        Set<String> match = Match.string().getBestMatches(name.toLowerCase(Locale.ENGLISH), kitMap.keySet(), 2);
         if (match.isEmpty())
         {
             return null;
         }
-        else
-        {
-            return kitMap.get(match.get(0));
-        }
+        return kitMap.get(match.iterator().next());
     }
 
     public static void saveKit(Kit kit)

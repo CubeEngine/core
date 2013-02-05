@@ -102,11 +102,11 @@ public class AnnouncementManager
         Announcement announcement = this.announcements.get(name);
         if (announcement == null)
         {
-            List<String> matches = Match.string().getBestMatches(name, this.announcements.keySet(), 3);
+            Set<String> matches = Match.string().getBestMatches(name, this.announcements.keySet(), 3);
 
             if (matches.size() == 1)
             {
-                announcement = this.announcements.get(matches.get(0));
+                announcement = this.announcements.get(matches.iterator().next());
             }
         }
         return announcement;

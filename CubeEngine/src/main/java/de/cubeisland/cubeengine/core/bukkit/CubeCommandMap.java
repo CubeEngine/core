@@ -8,17 +8,13 @@ import de.cubeisland.cubeengine.core.user.UserManager;
 import de.cubeisland.cubeengine.core.util.StringUtils;
 import de.cubeisland.cubeengine.core.util.matcher.Match;
 import org.bukkit.Server;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandException;
-import org.bukkit.command.CommandSender;
-import org.bukkit.command.PluginCommand;
-import org.bukkit.command.SimpleCommandMap;
+import org.bukkit.command.*;
 import org.bukkit.command.defaults.BukkitCommand;
 
 import java.util.Arrays;
-import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 
 import static de.cubeisland.cubeengine.core.i18n.I18n._;
 
@@ -97,11 +93,11 @@ public class CubeCommandMap extends SimpleCommandMap
             {
                 sender = user;
             }
-            List<String> matches = Match.string().getBestMatches(label, this.knownCommands.keySet(), 1);
+            Set<String> matches = Match.string().getBestMatches(label, this.knownCommands.keySet(), 1);
             if (matches.size() == 1)
             {
-                sender.sendMessage(_(sender, "core", "&cCouldn't find &e/%s&c, but &a/%s&c seems to be the one you searched...", label, matches.get(0)));
-                label = matches.get(0);
+                sender.sendMessage(_(sender, "core", "&cCouldn't find &e/%s&c, but &a/%s&c seems to be the one you searched...", label, matches.iterator().next()));
+                label = matches.iterator().next();
                 command = this.getCommand(label);
 
             }

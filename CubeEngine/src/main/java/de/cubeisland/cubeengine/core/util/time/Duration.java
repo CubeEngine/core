@@ -4,7 +4,8 @@ import de.cubeisland.cubeengine.core.util.StringUtils;
 import de.cubeisland.cubeengine.core.util.matcher.Match;
 import gnu.trove.map.hash.TCharLongHashMap;
 import gnu.trove.map.hash.TObjectLongHashMap;
-import java.util.List;
+
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 public class Duration
@@ -90,10 +91,10 @@ public class Duration
                 String unit = Match.string().matchString(timeUnitString, longerNames.keySet());
                 if (unit == null)
                 {
-                    List<String> matches = Match.string().getBestMatches(timeUnitString, shortNames.keySet(), 1);
+                    Set<String> matches = Match.string().getBestMatches(timeUnitString, shortNames.keySet(), 1);
                     if (!matches.isEmpty())
                     {
-                        timeUnitFactor = shortNames.get(matches.get(0));
+                        timeUnitFactor = shortNames.get(matches.iterator().next());
                     }
                 }
                 else

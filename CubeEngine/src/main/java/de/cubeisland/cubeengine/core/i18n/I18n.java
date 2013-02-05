@@ -208,7 +208,7 @@ public class I18n implements Cleanable
 
     public Set<Language> searchLanguages(String name, int maximumEditDistance)
     {
-        List<String> matches = Match.string().getBestMatches(name, this.languageMap.keySet(), maximumEditDistance);
+        Set<String> matches = Match.string().getBestMatches(name, this.languageMap.keySet(), maximumEditDistance);
         Set<Language> languages = new THashSet<Language>(matches.size());
 
         for (String match : matches)

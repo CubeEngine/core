@@ -182,10 +182,10 @@ public abstract class CubeCommand extends Command
         CubeCommand child = this.children.get(name);
         if (correct && child == null)
         {
-            List<String> matches = Match.string().getBestMatches(name, this.children.keySet(), 1);
+            Set<String> matches = Match.string().getBestMatches(name, this.children.keySet(), 1);
             if (matches.size() == 1)
             {
-                child = this.getChild(matches.get(0), false);
+                child = this.getChild(matches.iterator().next(), false);
             }
         }
 
