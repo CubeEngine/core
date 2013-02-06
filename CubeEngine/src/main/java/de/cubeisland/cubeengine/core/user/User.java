@@ -7,11 +7,7 @@ import de.cubeisland.cubeengine.core.i18n.Language;
 import de.cubeisland.cubeengine.core.module.Module;
 import de.cubeisland.cubeengine.core.storage.LinkingModel;
 import de.cubeisland.cubeengine.core.storage.Model;
-import de.cubeisland.cubeengine.core.storage.database.AttrType;
-import de.cubeisland.cubeengine.core.storage.database.Attribute;
-import de.cubeisland.cubeengine.core.storage.database.DatabaseConstructor;
-import de.cubeisland.cubeengine.core.storage.database.Index;
-import de.cubeisland.cubeengine.core.storage.database.SingleKeyEntity;
+import de.cubeisland.cubeengine.core.storage.database.*;
 import de.cubeisland.cubeengine.core.util.ChatFormat;
 import de.cubeisland.cubeengine.core.util.convert.ConversionException;
 import org.apache.commons.lang.Validate;
@@ -19,8 +15,11 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
+import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.Spider;
 import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
 import org.bukkit.permissions.Permission;
 import org.bukkit.permissions.PermissionAttachment;
@@ -28,28 +27,17 @@ import org.bukkit.permissions.PermissionAttachmentInfo;
 import org.bukkit.permissions.PermissionDefault;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
+import org.bukkit.util.BlockIterator;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.sql.Timestamp;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 import static de.cubeisland.cubeengine.core.i18n.I18n._;
 import static de.cubeisland.cubeengine.core.storage.database.Index.IndexType.UNIQUE;
 import static de.cubeisland.cubeengine.core.util.log.LogLevel.DEBUG;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.LinkedHashSet;
-import java.util.TreeSet;
-import org.bukkit.block.Block;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.Spider;
-import org.bukkit.util.BlockIterator;
 
 /**
  * A CubeEngine User (can exist offline too).
@@ -396,6 +384,7 @@ public class User extends UserBase implements LinkingModel<Long>
         {
             this.isLoggedIn = this.checkPassword(password);
         }
+        CubeEngine.getEventManager().fireEvent(new UserAuthorizedEvent(CubeEngine.getCore(),this));
         return this.isLoggedIn;
     }
 
@@ -439,7 +428,7 @@ public class User extends UserBase implements LinkingModel<Long>
     public void setPermission(Map<String, Boolean> permissions, Player player)
     {
         String posName = this.getName();
-        String negName = "!" + this.getName();
+        String negName = "-" + this.getName();
         PluginManager pm = Bukkit.getServer().getPluginManager();
         Permission posPerm = pm.getPermission(posName);
         Permission negPerm = pm.getPermission(negName);
@@ -467,7 +456,7 @@ public class User extends UserBase implements LinkingModel<Long>
         negative.clear();
         for (String perm : permissions.keySet())
         {
-            if (perm.endsWith("*"))
+            if (perm.endsWith("*") && (perm.startsWith("-cubeengine.") || perm.startsWith("cubeengine.")))
             {
                 continue;
             }

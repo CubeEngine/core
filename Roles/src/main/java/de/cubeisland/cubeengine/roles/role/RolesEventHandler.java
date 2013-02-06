@@ -2,6 +2,7 @@ package de.cubeisland.cubeengine.roles.role;
 
 import de.cubeisland.cubeengine.core.module.event.FinishedLoadModulesEvent;
 import de.cubeisland.cubeengine.core.user.User;
+import de.cubeisland.cubeengine.core.user.UserAuthorizedEvent;
 import de.cubeisland.cubeengine.roles.Roles;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -62,5 +63,11 @@ public class RolesEventHandler implements Listener
             manager.preCalculateRoles(user.getName(), false);
             manager.applyRole(user.getPlayer());
         }
+    }
+
+    @EventHandler
+    public void onAuthorized(UserAuthorizedEvent event)
+    {
+        this.manager.reloadAllRolesAndApply(event.getUser(), event.getUser().getPlayer());
     }
 }

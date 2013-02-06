@@ -218,7 +218,7 @@ public class RoleManager
     private void applyRole(Player player, long worldId)
     {
         User user = this.module.getUserManager().getExactUser(player);
-        if (!Bukkit.getServer().getOnlineMode() && this.module.getConfiguration().doNotAssignPermIfOffline)
+        if (!Bukkit.getServer().getOnlineMode() && this.module.getConfiguration().doNotAssignPermIfOffline && !user.isLoggedIn())
         {
             user.sendMessage("roles","&cPermissions not applied! Contact an Admin if you think this is an error.");
             this.module.getLogger().warning("Role-permissions not applied! Server is running in unsecured offline-mode!");

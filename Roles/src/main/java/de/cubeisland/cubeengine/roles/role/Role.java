@@ -1,7 +1,5 @@
 package de.cubeisland.cubeengine.roles.role;
 
-import de.cubeisland.cubeengine.core.CubeEngine;
-import de.cubeisland.cubeengine.roles.Roles;
 import de.cubeisland.cubeengine.roles.role.config.PermissionTree;
 import de.cubeisland.cubeengine.roles.role.config.Priority;
 import org.bukkit.Bukkit;
@@ -41,7 +39,7 @@ public abstract class Role implements Comparable<Role>
             if (entry.getKey().endsWith("*"))
             {
                 Map<String, Boolean> subperms = new HashMap<String, Boolean>();
-                this.resolveBukkitPermission(entry.getKey(), subperms);
+                this.resolveBukkitPermission(entry.getKey(), entry.getValue(), subperms);
                 for (Entry<String, Boolean> subEntry : subperms.entrySet())
                 {
                     this.perms.put(subEntry.getKey(), new RolePermission(subEntry.getKey(), subEntry.getValue() == entry.getValue(), this));
@@ -159,12 +157,21 @@ public abstract class Role implements Comparable<Role>
         return result;
     }
 
-    protected void resolveBukkitPermission(String name, Map<String, Boolean> childs)
+    protected void resolveBukkitPermission(String name, boolean set, Map<String, Boolean> resolvedPermissions)
     {
         Permission bukkitPerm = Bukkit.getPluginManager().getPermission(name);
         if (bukkitPerm == null)
         {
-            CubeEngine.getModuleManager().getModule(Roles.class).getLogger().warning("Permission \""+name+"\" not found in bukkit-perms!");
+            // manually search for child-perms...
+            String baseName = name.substring(0, name.indexOf(".*"));
+            for (Permission permission : Bukkit.getPluginManager().getPermissions())
+            {
+                if (permission.getName().startsWith(baseName))
+                {
+                    resolvedPermissions.put(permission.getName(), set);
+                }
+            }
+            resolvedPermissions.put(name, set);
             return;
         }
         Map<String, Boolean> childPerm = bukkitPerm.getChildren();
@@ -172,9 +179,9 @@ public abstract class Role implements Comparable<Role>
         {
             if (permKey.endsWith("*"))
             {
-                this.resolveBukkitPermission(permKey, childs);
+                this.resolveBukkitPermission(permKey, set, resolvedPermissions);
             }
-            childs.put(permKey, childPerm.get(permKey));
+            resolvedPermissions.put(permKey, set && childPerm.get(permKey));
         }
     }
 
