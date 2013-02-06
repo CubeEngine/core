@@ -10,12 +10,14 @@ import de.cubeisland.cubeengine.roles.role.config.RoleMirror;
 import de.cubeisland.cubeengine.roles.storage.AssignedRole;
 import gnu.trove.map.hash.THashMap;
 import gnu.trove.map.hash.TLongObjectHashMap;
+import org.bukkit.Bukkit;
+import org.bukkit.World;
+import org.bukkit.entity.Player;
+
 import java.io.File;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
-import org.bukkit.World;
-import org.bukkit.entity.Player;
 
 public class RoleManager
 {
@@ -216,6 +218,12 @@ public class RoleManager
     private void applyRole(Player player, long worldId)
     {
         User user = this.module.getUserManager().getExactUser(player);
+        if (!Bukkit.getServer().getOnlineMode() && this.module.getConfiguration().doNotAssignPermIfOffline)
+        {
+            user.sendMessage("roles","&cPermissions not applied! Contact an Admin if you think this is an error.");
+            this.module.getLogger().warning("Role-permissions not applied! Server is running in unsecured offline-mode!");
+            return;
+        }
         TLongObjectHashMap<MergedRole> roleContainer = user.getAttribute(module, "roleContainer");
         MergedRole role = roleContainer.get(worldId);
         if (role.getParentRoles().isEmpty())
@@ -289,7 +297,7 @@ public class RoleManager
      * Creates a new role
      *
      * @param roleName
-     * @param worldId the worldId or null for global-roles
+     * @param world the worldId or null for global-roles
      * @return
      */
     public boolean createRole(String roleName, World world)

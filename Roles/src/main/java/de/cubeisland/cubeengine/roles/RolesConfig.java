@@ -15,6 +15,9 @@ import java.util.Map;
 @DefaultConfig
 public class RolesConfig extends Configuration
 {
+    @Option("disable-permission-in-offlinemode")
+    @Comment("If this is set to true no permissions will be assigned to any user if the server runs in offline-mode")
+    public boolean doNotAssignPermIfOffline = true;
     @Option("default.roles")
     @Comment("The list of roles a user will get when first joining the server.")
     public Map<String, List<String>> defaultRoles = new HashMap<String, List<String>>();
