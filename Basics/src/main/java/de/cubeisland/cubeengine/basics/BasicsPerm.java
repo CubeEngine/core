@@ -1,17 +1,21 @@
 package de.cubeisland.cubeengine.basics;
 
 import de.cubeisland.cubeengine.core.permission.PermDefault;
+import de.cubeisland.cubeengine.core.permission.Permission;
+import org.bukkit.permissions.Permissible;
+
+import java.util.Locale;
+
 import static de.cubeisland.cubeengine.core.permission.PermDefault.FALSE;
 import static de.cubeisland.cubeengine.core.permission.PermDefault.OP;
-import de.cubeisland.cubeengine.core.permission.Permission;
-import java.util.Locale;
-import org.bukkit.permissions.Permissible;
 
 public enum BasicsPerm implements Permission
 {
     COMMAND_ENCHANT_UNSAFE,
     COMMAND_GIVE_BLACKLIST,
     COMMAND_ITEM_BLACKLIST,
+    COMMAND_ITEM_ENCHANTMENTS,
+    COMMAND_ITEM_ENCHANTMENTS_UNSAFE,
     COMMAND_GAMEMODE_OTHER,
     COMMAND_PTIME_OTHER,
     COMMAND_CLEARINVENTORY_OTHER,

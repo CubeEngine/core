@@ -6,6 +6,7 @@ import de.cubeisland.cubeengine.core.util.AliasMapFormat;
 import de.cubeisland.cubeengine.core.util.log.LogLevel;
 import gnu.trove.map.hash.THashMap;
 import org.bukkit.enchantments.Enchantment;
+import org.bukkit.inventory.ItemStack;
 
 import java.io.File;
 import java.io.IOException;
@@ -43,7 +44,6 @@ public class EnchantMatcher
                 continue;
             }
             this.registerEnchantment(ench, enchs.get(bukkitName));
-
         }
     }
 
@@ -140,5 +140,30 @@ public class EnchantMatcher
             }
         }
         return enchantment;
+    }
+
+    public boolean applyMatchedEnchantment(ItemStack item , String enchName, int enchStrength, boolean force)
+    {
+        Enchantment ench = this.enchantment(enchName);
+        if (ench == null)
+            return false;
+        if (enchStrength == 0)
+        {
+            enchStrength = ench.getMaxLevel();
+        }
+        if (force)
+        {
+            item.addUnsafeEnchantment(ench, enchStrength);
+            return true;
+        }
+        try
+        {
+            item.addEnchantment(ench,enchStrength);
+            return true;
+        }
+        catch (IllegalArgumentException ignored)
+        {
+            return false;
+        }
     }
 }

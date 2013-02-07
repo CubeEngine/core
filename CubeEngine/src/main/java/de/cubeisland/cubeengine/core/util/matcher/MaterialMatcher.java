@@ -226,6 +226,16 @@ public class MaterialMatcher
         }
     }
 
+    private ImmutableItemStack matchWithLevenshteinDistance(String s, Map<String, ImmutableItemStack> map)
+    {
+        String t_key = Match.string().matchString(s, map.keySet());
+        if (t_key != null)
+        {
+            return map.get(t_key);
+        }
+        return null;
+    }
+
     /**
      * Tries to match a ItemStack for given name
      *
@@ -296,15 +306,7 @@ public class MaterialMatcher
         return item.clone();
     }
 
-    private ImmutableItemStack matchWithLevenshteinDistance(String s, Map<String, ImmutableItemStack> map)
-    {
-        String t_key = Match.string().matchString(s, map.keySet());
-        if (t_key != null)
-        {
-            return map.get(t_key);
-        }
-        return null;
-    }
+
 
     /**
      * Tries to match a Material for given name

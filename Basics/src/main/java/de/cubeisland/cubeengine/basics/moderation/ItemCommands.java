@@ -299,9 +299,9 @@ public class ItemCommands
 
     @Command(names = {
         "item", "i"
-    }, desc = "Gives the specified Item to you", max = 2, min = 1, flags = {
+    }, desc = "Gives the specified Item to you", min = 1, flags = {
         @Flag(longName = "blacklist", name = "b")
-    }, usage = "<material[:data]> [amount] [-blacklist]")
+    }, usage = "<material[:data]> [enchantment[:level]] [amount] [-blacklist]")
     @SuppressWarnings("deprecation")
     public void item(CommandContext context)
     {
@@ -319,15 +319,39 @@ public class ItemCommands
             }
         }
         int amount = item.getMaxStackSize();
-        if (context.hasIndexed(1))
+        int curIndex = 1;
+        while (context.hasIndexed(curIndex))
         {
-            amount = context.getIndexed(1, Integer.class, 0);
-            if (amount == 0)
+            String enchName = context.getString(curIndex);
+            if (!enchName.matches("(?!^\\d+$)^.+$"))
             {
-                illegalParameter(context, "basics", "&cThe amount has to be a Number greater than 0!");
+                amount = context.getIndexed(curIndex, Integer.class, 0);
+                if (amount == 0)
+                {
+                    illegalParameter(context, "basics", "&cThe amount has to be a Number greater than 0!");
+                }
+                item.setAmount(amount);
+                break;
             }
+            int enchLvl = 0;
+            if (enchName.contains(":"))
+            {
+                enchLvl = Integer.parseInt(enchName.substring(enchName.indexOf(":")+1,enchName.length()));
+                enchName = enchName.substring(0,enchName.indexOf(":"));
+            }
+            if (BasicsPerm.COMMAND_ITEM_ENCHANTMENTS.isAuthorized(sender))
+            {
+                if (BasicsPerm.COMMAND_ITEM_ENCHANTMENTS_UNSAFE.isAuthorized(sender))
+                {
+                    Match.enchant().applyMatchedEnchantment(item,enchName,enchLvl,true);
+                }
+                else
+                {
+                    Match.enchant().applyMatchedEnchantment(item,enchName,enchLvl,false);
+                }
+            }
+            curIndex++;
         }
-        item.setAmount(amount);
         sender.getInventory().addItem(item);
         sender.updateInventory();
         sender.sendMessage("basics", "&eReceived: %d %s ", amount, Match.material().getNameFor(item));
