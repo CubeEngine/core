@@ -26,7 +26,7 @@ public class BorderListener implements Listener
             Chunk spawnChunk = to.getWorld().getSpawnLocation().getChunk();
             BlockVector2 spawnPos = new BlockVector2(spawnChunk.getX(), spawnChunk.getZ());
             double distanceSquared = spawnPos.squaredDistance(new BlockVector2(to.getX(), to.getZ()));
-            if (distanceSquared > this.config.radius)
+            if (distanceSquared > this.config.radius * this.config.radius)
             {
                 event.setCancelled(true);
             }
