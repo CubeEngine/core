@@ -44,7 +44,6 @@ import static de.cubeisland.cubeengine.core.util.log.LogLevel.ERROR;
  */
 public class BukkitCore extends JavaPlugin implements Core
 {
-    private boolean debug = true;
     private Database database;
     private PermissionManager permissionRegistration;
     private UserManager userManager;
