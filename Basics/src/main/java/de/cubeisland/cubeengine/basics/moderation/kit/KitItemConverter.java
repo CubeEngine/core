@@ -26,6 +26,7 @@ public class KitItemConverter implements Converter<KitItem>
     @Override
     public KitItem fromNode(Node node) throws ConversionException
     {
+        //TODO add support for enchantments
         //suported formats: [amount*]id[:data][ customname] 
         String itemString = node.unwrap();
         if (itemString.matches(pat.pattern()))

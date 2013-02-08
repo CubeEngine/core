@@ -8,8 +8,9 @@ import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.roles.Roles;
 import de.cubeisland.cubeengine.roles.role.Role;
 import de.cubeisland.cubeengine.roles.role.UserSpecificRole;
-import java.util.Set;
 import org.bukkit.World;
+
+import java.util.Set;
 
 public class UserManagementCommands extends UserCommandHelper
 {
@@ -157,8 +158,8 @@ public class UserManagementCommands extends UserCommandHelper
     }
 
     @Command(names = {
-        "resetdata", "resetmeta", "resetmetadata"
-    }, desc = "Resets metadata for this user [in world]", usage = "<metaKey> <player> [in <world>]", params = @Param(names = "in", type = World.class), max = 4, min = 3)
+        "resetdata", "resetmeta", "resetmetadata" , "deletedata" , "deletemetadata", "deletemeta"
+    }, desc = "Resets metadata for this user [in world]", usage = "<metaKey> <player> [in <world>]", params = @Param(names = "in", type = World.class), max = 3, min = 2)
     public void resetmetadata(CommandContext context)
     {
         String metaKey = context.getString(0);

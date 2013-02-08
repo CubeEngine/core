@@ -1,15 +1,17 @@
 package de.cubeisland.cubeengine.basics.moderation;
 
 import de.cubeisland.cubeengine.basics.BasicsPerm;
-import java.util.ArrayList;
-import java.util.List;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
+import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.meta.ItemMeta;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class PowerToolListener implements Listener
 {
@@ -52,7 +54,8 @@ public class PowerToolListener implements Listener
                         }
                         if (!powerTool.isEmpty())
                         {
-                            event.setCancelled(true);
+                            event.setUseItemInHand(Event.Result.DENY);
+                            event.setUseInteractedBlock(Event.Result.DENY);
                         }
                     }
                 }

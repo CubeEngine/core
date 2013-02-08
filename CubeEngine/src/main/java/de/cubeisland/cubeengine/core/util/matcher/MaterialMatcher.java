@@ -226,12 +226,12 @@ public class MaterialMatcher
         }
     }
 
-    private ImmutableItemStack matchWithLevenshteinDistance(String s, Map<String, ImmutableItemStack> map)
+    private ItemStack matchWithLevenshteinDistance(String s, Map<String, ImmutableItemStack> map)
     {
         String t_key = Match.string().matchString(s, map.keySet());
         if (t_key != null)
         {
-            return map.get(t_key);
+            return new ItemStack(map.get(t_key));
         }
         return null;
     }
@@ -302,6 +302,10 @@ public class MaterialMatcher
                     return this.matchWithLevenshteinDistance(s, bukkitnames);
                 }
             }
+        }
+        else
+        {
+            item = new ItemStack(item);
         }
         return item.clone();
     }

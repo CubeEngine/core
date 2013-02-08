@@ -330,7 +330,6 @@ public class ItemCommands
                 {
                     illegalParameter(context, "basics", "&cThe amount has to be a Number greater than 0!");
                 }
-                item.setAmount(amount);
                 break;
             }
             int enchLvl = 0;
@@ -352,6 +351,7 @@ public class ItemCommands
             }
             curIndex++;
         }
+        item.setAmount(amount);
         sender.getInventory().addItem(item);
         sender.updateInventory();
         sender.sendMessage("basics", "&eReceived: %d %s ", amount, Match.material().getNameFor(item));

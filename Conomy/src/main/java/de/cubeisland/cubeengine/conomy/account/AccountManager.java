@@ -285,7 +285,7 @@ public class AccountManager
             Account account = new Account(this, currency, model);
             this.useraccounts.get(user.key).put(currency, account);
         }
-        if (user.hasPlayedBefore()) // only if user has played on the server create missing accounts
+        if (user.hasPlayedBefore() || user.isOnline()) // only if user has played on the server create missing accounts
         {
             for (Currency currency : this.currencyManager.getAllCurrencies())
             {

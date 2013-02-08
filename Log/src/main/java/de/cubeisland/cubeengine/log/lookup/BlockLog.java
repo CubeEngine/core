@@ -173,7 +173,11 @@ public class BlockLog implements Comparable<BlockLog>
         {
             if (this.newLines[0] == null)
             {
-                message += "&edestroyed a sign with &f%s&e|&f%s&e|&f%s&e|&f%s";
+                message += "&edestroyed a sign with \n" +
+                        " - &f%s&e\n" +
+                        " - &f%s&e\n" +
+                        " - &f%s&e\n" +
+                        " - &f%s";
                 list.add(this.oldLines[0]);
                 list.add(this.oldLines[1]);
                 list.add(this.oldLines[2]);
@@ -181,7 +185,11 @@ public class BlockLog implements Comparable<BlockLog>
             }
             else if (this.oldLines[0] == null)
             {
-                message += "&eplaced a sign with &f%s&e|&f%s&e|&f%s&e|&f%s";
+                message += "&eplaced a sign with \n" +
+                        " - &f%s&e\n" +
+                        " - &f%s&e\n" +
+                        " - &f%s&e\n" +
+                        " - &f%s";
                 list.add(this.newLines[0]);
                 list.add(this.newLines[1]);
                 list.add(this.newLines[2]);
@@ -189,7 +197,11 @@ public class BlockLog implements Comparable<BlockLog>
             }
             else
             {
-                message += "&ewrote &f%s&e|&f%s&e|&f%s&e|&f%s";
+                message += "&ewrote \n" +
+                        " - &f%s&e\n" +
+                        " - &f%s&e\n" +
+                        " - &f%s&e\n" +
+                        " - &f%s";
                 list.add(this.newLines[0]);
                 list.add(this.newLines[1]);
                 list.add(this.newLines[2]);
