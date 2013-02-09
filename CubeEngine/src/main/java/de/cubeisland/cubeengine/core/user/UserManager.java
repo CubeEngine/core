@@ -12,7 +12,9 @@ import de.cubeisland.cubeengine.core.storage.database.DatabaseUpdater;
 import de.cubeisland.cubeengine.core.storage.database.querybuilder.ComponentBuilder;
 import de.cubeisland.cubeengine.core.util.Cleanable;
 import de.cubeisland.cubeengine.core.util.StringUtils;
+import de.cubeisland.cubeengine.core.util.Triplet;
 import de.cubeisland.cubeengine.core.util.matcher.Match;
+import gnu.trove.map.hash.TLongObjectHashMap;
 import org.apache.commons.lang.RandomStringUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
@@ -27,10 +29,7 @@ import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.plugin.Plugin;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
+import java.io.*;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
@@ -46,7 +45,6 @@ import java.util.concurrent.TimeUnit;
 import static de.cubeisland.cubeengine.core.i18n.I18n._;
 import static de.cubeisland.cubeengine.core.storage.database.querybuilder.ComponentBuilder.EQUAL;
 import static de.cubeisland.cubeengine.core.storage.database.querybuilder.ComponentBuilder.LESS;
-import java.io.FileNotFoundException;
 
 /**
  * This Manager provides methods to access the Users and saving/loading from
@@ -576,5 +574,33 @@ public class UserManager extends SingleKeyStorage<Long, User> implements Cleanab
         }
         FileManager.hideFile(file);
         file.setReadOnly();
+    }
+
+    private TLongObjectHashMap<Triplet<Long,String,Integer>> failedLogins = new TLongObjectHashMap<Triplet<Long, String,Integer>>();
+
+    public Triplet<Long,String,Integer> getFailedLogin(User user)
+    {
+        return this.failedLogins.get(user.key);
+    }
+
+    public void addFailedLogin(User user)
+    {
+        Triplet<Long,String,Integer> loginFail = this.getFailedLogin(user);
+        if (loginFail == null)
+        {
+            loginFail = new Triplet<Long, String, Integer>(System.currentTimeMillis(),user.getAddress().getAddress().getHostAddress(),1);
+            this.failedLogins.put(user.key, loginFail);
+        }
+        else
+        {
+            loginFail.setFirst(System.currentTimeMillis());
+            loginFail.setSecond(user.getAddress().getAddress().getHostAddress());
+            loginFail.setThird(loginFail.getThird()+1);
+        }
+    }
+
+    public void removeFailedLogins(User user)
+    {
+        this.failedLogins.remove(user.key);
     }
 }

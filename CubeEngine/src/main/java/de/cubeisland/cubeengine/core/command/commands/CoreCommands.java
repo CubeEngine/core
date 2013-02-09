@@ -7,25 +7,32 @@ import de.cubeisland.cubeengine.core.command.CommandContext;
 import de.cubeisland.cubeengine.core.command.ContainerCommand;
 import de.cubeisland.cubeengine.core.command.annotation.Command;
 import de.cubeisland.cubeengine.core.command.annotation.Flag;
+import de.cubeisland.cubeengine.core.i18n.Language;
+import de.cubeisland.cubeengine.core.user.User;
+import de.cubeisland.cubeengine.core.user.UserManager;
+import de.cubeisland.cubeengine.core.util.Triplet;
+
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
+
 import static de.cubeisland.cubeengine.core.command.exception.IllegalParameterValue.illegalParameter;
 import static de.cubeisland.cubeengine.core.command.exception.InvalidUsageException.blockCommand;
 import static de.cubeisland.cubeengine.core.command.exception.InvalidUsageException.paramNotFound;
 import static de.cubeisland.cubeengine.core.command.exception.PermissionDeniedException.denyAccess;
-import de.cubeisland.cubeengine.core.i18n.Language;
-import de.cubeisland.cubeengine.core.user.User;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
 
 public class CoreCommands extends ContainerCommand
 {
 
     private final BukkitCore core;
+    private final UserManager userManager;
 
     public CoreCommands(Core core)
     {
         super(core.getModuleManager().getCoreModule(), "cubeengine", "These are the basic commands of the CubeEngine.", "ce");
         this.core = (BukkitCore)core;
+        this.userManager = core.getUserManager();
     }
 
     @Command(desc = "Disables the CubeEngine")
@@ -148,14 +155,28 @@ public class CoreCommands extends ContainerCommand
         {
             blockCommand(context, "core", "&aYou are already logged in!");
         }
+        Triplet<Long,String,Integer> lastFail = this.userManager.getFailedLogin(sender);
+        if (lastFail != null && lastFail.getFirst() < (System.currentTimeMillis() - 5000))//5sec delay
+        {
+            context.sendMessage("core","&cYour last failed login is less than 5 seconds ago. &eTry again in just a moment!");
+            return;
+        }
         boolean isLoggedIn = sender.login(context.getString(0));
         if (isLoggedIn)
         {
+            if (lastFail != null)
+            {
+                context.sendMessage("core","&6%d &cfailed attempts to login. Last fail: &6%s &cwith the IP: &6%s",
+                        lastFail.getThird(), new Date(lastFail.getFirst()).toString(), lastFail.getSecond());
+            }
             context.sendMessage("core", "&aYou logged in successfully!");
+            this.userManager.removeFailedLogins(sender);
         }
         else
         {
             context.sendMessage("core", "&cWrong password!");
+            this.userManager.addFailedLogin(sender);
+            this.core.getLogger().warning(sender.getName() + " failed to login! IP: "+ sender.getAddress().getAddress().getHostAddress());
         }
     }
 
