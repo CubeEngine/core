@@ -10,6 +10,7 @@ import de.cubeisland.cubeengine.core.storage.database.AttrType;
 import de.cubeisland.cubeengine.core.storage.database.Database;
 import de.cubeisland.cubeengine.core.storage.database.DatabaseUpdater;
 import de.cubeisland.cubeengine.core.storage.database.querybuilder.ComponentBuilder;
+import de.cubeisland.cubeengine.core.util.ChatFormat;
 import de.cubeisland.cubeengine.core.util.Cleanable;
 import de.cubeisland.cubeengine.core.util.StringUtils;
 import de.cubeisland.cubeengine.core.util.Triplet;
@@ -532,6 +533,22 @@ public class UserManager extends SingleKeyStorage<Long, User> implements Cleanab
             this.getExactUser(player).sendMessage(category, message, args);
         }
         Bukkit.getServer().getConsoleSender().sendMessage(_(category, message, args));
+    }
+
+    public void broadcastStatus(String message,String username)
+    {
+        message = "* &2"+username + " &f" + message;
+        message = ChatFormat.parseFormats(message);
+        for (Player player : this.server.getOnlinePlayers())
+        {
+            this.getExactUser(player).sendMessage("* &2"+username +" &f"+ message);
+        }
+    }
+
+    public void broadcastStatus(String category, String message, String username, Object... args)
+    {
+        message = "* &2"+username + " &f" + message;
+        this.broadcastMessage(category,message,args);
     }
 
     public void clearAttributes(Module module)

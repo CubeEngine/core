@@ -176,7 +176,7 @@ public class TeleportCommands
             boolean safe = !context.hasFlag("u");
             TeleportCommands.teleport(CubeEngine.getUserManager().getExactUser(player), user.getLocation(), safe, force, true);
         }
-        context.getCore().getUserManager().broadcastMessage("basucs", "&aTeleporting everyone to %s", user.getName());
+        context.getCore().getUserManager().broadcastMessage("basics", "&aTeleporting everyone to %s", user.getName());
     }
 
     @Command(desc = "Teleport a player directly to you.", usage = "<player>", min = 1, max = 1, flags = {

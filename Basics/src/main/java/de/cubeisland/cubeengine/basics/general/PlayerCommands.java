@@ -1,25 +1,27 @@
 package de.cubeisland.cubeengine.basics.general;
 
-import de.cubeisland.cubeengine.basics.storage.BasicUser;
 import de.cubeisland.cubeengine.basics.Basics;
 import de.cubeisland.cubeengine.basics.BasicsPerm;
+import de.cubeisland.cubeengine.basics.storage.BasicUser;
 import de.cubeisland.cubeengine.core.command.CommandContext;
 import de.cubeisland.cubeengine.core.command.annotation.Command;
 import de.cubeisland.cubeengine.core.command.annotation.Flag;
-import static de.cubeisland.cubeengine.core.command.exception.IllegalParameterValue.illegalParameter;
-import static de.cubeisland.cubeengine.core.command.exception.InvalidUsageException.*;
-import static de.cubeisland.cubeengine.core.command.exception.PermissionDeniedException.denyAccess;
-import static de.cubeisland.cubeengine.core.i18n.I18n._;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.user.UserManager;
 import de.cubeisland.cubeengine.core.util.time.Duration;
-import java.sql.Timestamp;
-import java.util.TreeSet;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageEvent;
+
+import java.sql.Timestamp;
+import java.util.TreeSet;
+
+import static de.cubeisland.cubeengine.core.command.exception.IllegalParameterValue.illegalParameter;
+import static de.cubeisland.cubeengine.core.command.exception.InvalidUsageException.*;
+import static de.cubeisland.cubeengine.core.command.exception.PermissionDeniedException.denyAccess;
+import static de.cubeisland.cubeengine.core.i18n.I18n._;
 
 public class PlayerCommands
 {
@@ -45,7 +47,7 @@ public class PlayerCommands
                 player.setExhaustion(0);
             }
             context.sendMessage("basics", "&6You made everyone fat!");
-            this.um.broadcastMessage("basics", "&2%s &ashared food with everyone.", context.getSender().getName());
+            this.um.broadcastStatus("basics", "&ashared food with everyone.", context.getSender().getName());
         }
         else
         {
@@ -96,7 +98,7 @@ public class PlayerCommands
                 player.setExhaustion(4);
             }
             context.sendMessage("basics", "&eYou starve everyone to death!");
-            this.um.broadcastMessage("basics", "&2%s &etook away all food.", context.getSender().getName());
+            this.um.broadcastStatus("basics", "&etook away all food.", context.getSender().getName());
         }
         else
         {
@@ -148,7 +150,7 @@ public class PlayerCommands
                 player.setExhaustion(0);
             }
             context.sendMessage("basics", "&aYou healed everyone!");
-            this.um.broadcastMessage("basics", "&2%s &ahealed every player.", context.getSender().getName());
+            this.um.broadcastStatus("basics", "&ahealed every player.", context.getSender().getName());
         }
         else
         {
@@ -419,7 +421,7 @@ public class PlayerCommands
     {
         User sender = context.getSenderAsUser("basics", "&cJust go!");
         sender.setAttribute(basics, "afk", true);
-        this.basics.getUserManager().broadcastMessage("basics", "* &2%s &fis now afk.", sender.getName());
+        this.um.broadcastStatus("basics", "is now afk.", context.getSender().getName());
     }
 
     @Command(desc = "Displays informations from a player!", usage = "<player>", min = 1)

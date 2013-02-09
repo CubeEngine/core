@@ -4,14 +4,16 @@ import de.cubeisland.cubeengine.basics.Basics;
 import de.cubeisland.cubeengine.basics.storage.BasicUser;
 import de.cubeisland.cubeengine.core.command.CommandContext;
 import de.cubeisland.cubeengine.core.command.annotation.Command;
+import de.cubeisland.cubeengine.core.user.User;
+import de.cubeisland.cubeengine.core.user.UserManager;
+import de.cubeisland.cubeengine.core.util.time.Duration;
+
+import java.sql.Timestamp;
+
 import static de.cubeisland.cubeengine.core.command.exception.IllegalParameterValue.illegalParameter;
 import static de.cubeisland.cubeengine.core.command.exception.InvalidUsageException.blockCommand;
 import static de.cubeisland.cubeengine.core.command.exception.InvalidUsageException.paramNotFound;
 import static de.cubeisland.cubeengine.core.i18n.I18n._;
-import de.cubeisland.cubeengine.core.user.User;
-import de.cubeisland.cubeengine.core.user.UserManager;
-import de.cubeisland.cubeengine.core.util.time.Duration;
-import java.sql.Timestamp;
 
 public class ChatCommands
 {
@@ -69,7 +71,7 @@ public class ChatCommands
     public void me(CommandContext context)
     {
         String message = context.getStrings(0);
-        this.um.broadcastMessage("basics", "* &2%s &f%s", context.getSender().getName(), message);
+        this.um.broadcastStatus(message ,context.getSender().getName());
     }
 
     @Command(desc = "Sends a private message to someone", names = {
@@ -243,6 +245,6 @@ public class ChatCommands
     @Command(desc = "Shows a random number from 0 to 100", max = 1)
     public void rand(CommandContext context)
     {
-        this.basics.getUserManager().broadcastMessage("basics", "* &2%s &frolled a &6%d&f!", context.getSender().getName(), (int)(Math.random() * 100));
+        this.um.broadcastStatus("basics", "rolled a &6%d&f!" ,context.getSender().getName(),(int)(Math.random() * 100));
     }
 }
