@@ -13,6 +13,7 @@ import de.cubeisland.cubeengine.core.storage.database.Database;
 import de.cubeisland.cubeengine.core.user.UserManager;
 import de.cubeisland.cubeengine.core.webapi.ApiServer;
 
+import java.io.File;
 import java.util.logging.Logger;
 
 /**
@@ -20,6 +21,7 @@ import java.util.logging.Logger;
  */
 public final class CubeEngine
 {
+    private static final boolean WINDOWS = File.separatorChar == '\\' && File.pathSeparatorChar == ';';
     private static Core core = null;
     private static Thread mainThread;
 
@@ -28,6 +30,11 @@ public final class CubeEngine
      */
     private CubeEngine()
     {}
+
+    public static boolean runsOnWindows()
+    {
+        return WINDOWS;
+    }
 
     /**
      * Checks whether the CubeEngine class has been initialized.

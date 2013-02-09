@@ -31,14 +31,14 @@ import de.cubeisland.cubeengine.core.webapi.exception.ApiStartupException;
 import org.bukkit.Server;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
+import sun.misc.Signal;
+import sun.misc.SignalHandler;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
-import static de.cubeisland.cubeengine.core.util.log.LogLevel.ALL;
-import static de.cubeisland.cubeengine.core.util.log.LogLevel.DEBUG;
-import static de.cubeisland.cubeengine.core.util.log.LogLevel.ERROR;
+import static de.cubeisland.cubeengine.core.util.log.LogLevel.*;
 
 /**
  * This represents the Bukkit-JavaPlugin that gets loaded and implements the Core
@@ -103,6 +103,71 @@ public class BukkitCore extends JavaPlugin implements Core
         {
             this.logger.log(ERROR, e.getLocalizedMessage(), e);
         }
+
+
+        try
+        {
+            Class.forName("sun.misc.Signal");
+
+            Signal.handle(new Signal("INT"), new SignalHandler() {
+                private long lastReceived = 0;
+                @Override
+                public void handle(Signal signal)
+                {
+                    if (this.lastReceived == -1)
+                    {
+                        return;
+                    }
+                    final long time = System.currentTimeMillis();
+                    if (time - this.lastReceived <= 5000)
+                    {
+                        getCoreLogger().log(NOTICE, "Shutting down the server now!");
+                        getServer().shutdown();
+                        this.lastReceived = -1;
+                    }
+                    else
+                    {
+                        this.lastReceived = time;
+                        getCoreLogger().log(NOTICE, "You can't copy content from the console using CTRL-C!");
+                        getCoreLogger().log(NOTICE, "If you really want shutdown the server use the stop command or press CTRL-C again within 5 seconds!");
+                    }
+                }
+            });
+
+            Signal.handle(new Signal("ABRT"), new SignalHandler() {
+                private volatile boolean reloading = false;
+
+                @Override
+                public void handle(Signal signal)
+                {
+                    if (!this.reloading)
+                    {
+                        this.reloading = true;
+                        getCoreLogger().log(NOTICE, "Reloading the server!");
+                        getServer().reload();
+                        getCoreLogger().log(NOTICE, "Done reloading the server!");
+                        this.reloading = false;
+                    }
+                }
+            });
+
+            Signal.handle(new Signal("TERM"), new SignalHandler() {
+                private volatile boolean shuttingDown = false;
+
+                @Override
+                public void handle(Signal signal)
+                {
+                    if (!this.shuttingDown)
+                    {
+                        this.shuttingDown = true;
+                        getCoreLogger().log(NOTICE, "Shutting down the server!");
+                        getServer().shutdown();
+                    }
+                }
+            });
+        }
+        catch (ClassNotFoundException e)
+        {}
 
         // depends on: file manager
         this.config = Configuration.load(CoreConfiguration.class, new File(this.fileManager.getDataFolder(), "core.yml"));

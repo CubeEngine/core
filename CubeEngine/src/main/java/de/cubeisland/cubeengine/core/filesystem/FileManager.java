@@ -10,6 +10,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.logging.Logger;
 
+import static de.cubeisland.cubeengine.core.CubeEngine.runsOnWindows;
 import static de.cubeisland.cubeengine.core.util.log.LogLevel.INFO;
 import static de.cubeisland.cubeengine.core.util.log.LogLevel.NOTICE;
 import static de.cubeisland.cubeengine.core.util.log.LogLevel.WARNING;
@@ -21,7 +22,6 @@ import java.util.Map;
  */
 public class FileManager implements Cleanable
 {
-    private static final boolean WINDOWS = File.separatorChar == '\\' && File.pathSeparatorChar == ';';
     private static final Logger LOGGER = CubeEngine.getLogger();
     private final File dataFolder;
     private final File languageDir;
@@ -103,7 +103,7 @@ public class FileManager implements Cleanable
     
     public static boolean hideFile(File file)
     {
-        if (WINDOWS)
+        if (runsOnWindows())
         {
             try
             {
@@ -118,7 +118,7 @@ public class FileManager implements Cleanable
     private static boolean createSymLink(File source, File target)
     {
         final String[] command;
-        if (WINDOWS)
+        if (runsOnWindows())
         {
             if (target.isDirectory())
             {
