@@ -861,6 +861,7 @@ IRON_HOE:0
   steelhoe
 DIAMOND_HOE:0
   diamondhoe
+  diahoe
 GOLD_HOE:0
   goldhoe
 SEEDS:0

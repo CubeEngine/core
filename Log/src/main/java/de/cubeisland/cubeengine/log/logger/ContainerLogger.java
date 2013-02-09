@@ -79,23 +79,58 @@ public class ContainerLogger extends Logger<ContainerConfig>
         {
             return ((BlockState)holder).getLocation();
         }
-        this.module.getLogger().warning("Unknown InventoryHolder:" + holder.toString());
+        if (holder == null)
+        {
+            this.module.getLogger().warning("Inventory Holder is null! Logging is impossible.");
+        }
+        else
+        {
+            this.module.getLogger().warning("Unknown InventoryHolder:" + holder.toString());
+        }
         return null;
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onInventoryOpen(InventoryOpenEvent event)
     {
-        World world = this.getLocationForHolder(event.getView().getTopInventory().getHolder()).getWorld();
-        ContainerType type = ContainerType.getContainerType(event.getView().getTopInventory());
-        if (this.checkLog(type, world))
+        if (this.canLog(event.getView().getTopInventory()))
         {
-            if (event.getPlayer() instanceof Player)
+            World world = this.getLocationForHolder(event.getView().getTopInventory().getHolder()).getWorld();
+            ContainerType type = ContainerType.getContainerType(event.getView().getTopInventory());
+            if (this.checkLog(type, world))
             {
-                User user = CubeEngine.getUserManager().getExactUser((Player)event.getPlayer());
-                openedInventories.put(user.getKey().intValue(), new TObjectIntHashMap<ItemData>());
+                if (event.getPlayer() instanceof Player)
+                {
+                    User user = CubeEngine.getUserManager().getExactUser((Player)event.getPlayer());
+                    openedInventories.put(user.getKey().intValue(), new TObjectIntHashMap<ItemData>());
+                }
             }
         }
+    }
+
+    private boolean canLog(Inventory inventory)
+    {
+        switch (inventory.getType())
+        {
+            case CHEST:
+            case DISPENSER:
+            case FURNACE:
+            case BREWING:
+                return true;
+            //Cannot hold items after closing view:
+            case WORKBENCH:
+            case CRAFTING:
+            case ENCHANTING:
+            case ANVIL:
+            case MERCHANT:
+            // special cases:
+            case CREATIVE: //no need to log
+            case PLAYER: //no need to log
+            case ENDER_CHEST: //TODO could log this but should we?
+            case BEACON: //TODO should be able to log this
+                return false;
+        }
+        return false;
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
