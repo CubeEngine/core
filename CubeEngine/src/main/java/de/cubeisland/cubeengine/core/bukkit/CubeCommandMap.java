@@ -76,6 +76,11 @@ public class CubeCommandMap extends SimpleCommandMap
     @Override
     public boolean dispatch(CommandSender sender, String commandLine) throws CommandException
     {
+        if (commandLine.isEmpty())
+        {
+            return true;
+        }
+
         String[] args = commandLine.split(" ");
 
         if (args.length == 0)
