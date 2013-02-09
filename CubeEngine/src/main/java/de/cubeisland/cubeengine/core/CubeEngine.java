@@ -96,7 +96,7 @@ public final class CubeEngine
      *
      * @return the PermissionRegistration
      */
-    public static PermissionManager getPermissionRegistration()
+    public static PermissionManager getPermissionManager()
     {
         return core.getPermissionManager();
     }

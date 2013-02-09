@@ -37,6 +37,7 @@ import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
 import static de.cubeisland.cubeengine.core.util.log.LogLevel.ALL;
+import static de.cubeisland.cubeengine.core.util.log.LogLevel.DEBUG;
 import static de.cubeisland.cubeengine.core.util.log.LogLevel.ERROR;
 
 /**
@@ -45,7 +46,7 @@ import static de.cubeisland.cubeengine.core.util.log.LogLevel.ERROR;
 public class BukkitCore extends JavaPlugin implements Core
 {
     private Database database;
-    private PermissionManager permissionRegistration;
+    private PermissionManager permissionManager;
     private UserManager userManager;
     private FileManager fileManager;
     private ModuleManager moduleManager;
@@ -143,7 +144,7 @@ public class BukkitCore extends JavaPlugin implements Core
         this.tableManager = new TableManager(this);
 
         // depends on: plugin manager
-        this.permissionRegistration = new BukkitPermissionManager(this);
+        this.permissionManager = new BukkitPermissionManager(this);
 
         // depends on: plugin manager
         this.eventRegistration = new EventManager(this);
@@ -196,22 +197,26 @@ public class BukkitCore extends JavaPlugin implements Core
     @Override
     public void onDisable()
     {
+        this.getCoreLogger().log(DEBUG, "utils cleanup");
         BukkitUtils.cleanup();
 
         if (this.moduleManager != null)
         {
+            this.getCoreLogger().log(DEBUG, "module manager cleanup");
             this.moduleManager.clean();
             this.moduleManager = null;
         }
 
         if (this.commandManager != null)
         {
+            this.getCoreLogger().log(DEBUG, "command manager cleanup");
             this.commandManager.unregister();
             this.commandManager = null;
         }
 
         if (this.apiServer != null)
         {
+            this.getCoreLogger().log(DEBUG, "api server shutdown and cleanup");
             this.apiServer.stop();
             this.apiServer.unregisterApiHandlers();
             this.apiServer = null;
@@ -219,17 +224,24 @@ public class BukkitCore extends JavaPlugin implements Core
 
         if (this.fileManager != null)
         {
+            this.getCoreLogger().log(DEBUG, "file manager cleanup");
             this.fileManager.clean();
             this.fileManager = null;
         }
 
         if (this.userManager != null)
         {
+            this.getCoreLogger().log(DEBUG, "user manager cleanup");
             this.userManager.clean();
             this.userManager = null;
         }
 
-        this.permissionRegistration = null;
+        if (this.permissionManager != null)
+        {
+            this.getCoreLogger().log(DEBUG, "permission manager cleanup");
+            this.permissionManager.clean();
+            this.permissionManager = null;
+        }
 
         if (this.i18n != null)
         {
@@ -238,6 +250,7 @@ public class BukkitCore extends JavaPlugin implements Core
         }
         if (this.taskManager != null)
         {
+            this.getCoreLogger().log(DEBUG, "task manager cleanup");
             try
             {
                 this.taskManager.getExecutorService().shutdown();
@@ -256,7 +269,9 @@ public class BukkitCore extends JavaPlugin implements Core
 
         if (this.database != null)
         {
+            this.getCoreLogger().log(DEBUG, "database shutdown");
             this.database.shutdown();
+            this.database = null;
         }
 
         CubeEngine.clean();
@@ -271,7 +286,7 @@ public class BukkitCore extends JavaPlugin implements Core
     @Override
     public PermissionManager getPermissionManager()
     {
-        return this.permissionRegistration;
+        return this.permissionManager;
     }
 
     @Override

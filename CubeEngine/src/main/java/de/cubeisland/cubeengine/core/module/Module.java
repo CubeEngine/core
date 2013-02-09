@@ -6,19 +6,20 @@ import de.cubeisland.cubeengine.core.bukkit.TaskManager;
 import de.cubeisland.cubeengine.core.command.CommandManager;
 import de.cubeisland.cubeengine.core.command.CubeCommand;
 import de.cubeisland.cubeengine.core.filesystem.FileManager;
-import de.cubeisland.cubeengine.core.module.event.ModuleDisabledEvent;
-import de.cubeisland.cubeengine.core.module.event.ModuleEnabledEvent;
 import de.cubeisland.cubeengine.core.permission.Permission;
 import de.cubeisland.cubeengine.core.storage.ModuleRegistry;
 import de.cubeisland.cubeengine.core.storage.SimpleModuleRegistry;
 import de.cubeisland.cubeengine.core.storage.database.Database;
 import de.cubeisland.cubeengine.core.user.UserManager;
-import static de.cubeisland.cubeengine.core.util.log.LogLevel.*;
 import de.cubeisland.cubeengine.core.util.log.ModuleLogger;
-import java.io.File;
-import java.io.InputStream;
 import org.apache.commons.lang.Validate;
 import org.bukkit.event.Listener;
+
+import java.io.File;
+import java.io.InputStream;
+
+import static de.cubeisland.cubeengine.core.util.log.LogLevel.ERROR;
+import static de.cubeisland.cubeengine.core.util.log.LogLevel.WARNING;
 
 /**
  * Module for CubeEngine.
@@ -69,6 +70,16 @@ public abstract class Module
     public String getName()
     {
         return this.info.getName();
+    }
+
+    /**
+     * Returns the revision of this module
+     *
+     * @return the revision number
+     */
+    public int getRevision()
+    {
+        return this.info.getRevision();
     }
 
     /**
@@ -283,15 +294,12 @@ public abstract class Module
         {
             try
             {
-                this.logger.log(INFO, "Enabling revision {0}...", this.getInfo().getRevision());
                 this.onEnable();
                 this.enabled = true;
-                this.core.getEventManager().fireEvent(new ModuleEnabledEvent(this.core, this));
             }
             catch (Throwable t)
             {
-                this.logger.log(ERROR, t.getClass().getSimpleName() + " while enabling: " + t.getLocalizedMessage(), t);
-                this.logger.log(NOTICE, " failed to load.");
+                this.getLogger().log(ERROR, t.getClass().getSimpleName() + " while enabling: " + t.getLocalizedMessage(), t);
             }
         }
         return this.enabled;
@@ -310,9 +318,8 @@ public abstract class Module
             }
             catch (Throwable t)
             {
-                this.logger.log(ERROR, t.getClass().getSimpleName() + " while disabling: " + t.getLocalizedMessage(), t);
+                this.getLogger().log(WARNING, t.getClass().getSimpleName() + " while disabling: " + t.getLocalizedMessage(), t);
             }
-            this.core.getEventManager().fireEvent(new ModuleDisabledEvent(this.core, this));
             this.enabled = false;
         }
     }

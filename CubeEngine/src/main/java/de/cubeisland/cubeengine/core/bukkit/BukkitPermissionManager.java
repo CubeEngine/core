@@ -1,6 +1,5 @@
 package de.cubeisland.cubeengine.core.bukkit;
 
-import de.cubeisland.cubeengine.core.Core;
 import de.cubeisland.cubeengine.core.CubeEngine;
 import de.cubeisland.cubeengine.core.module.Module;
 import de.cubeisland.cubeengine.core.permission.PermDefault;
@@ -13,8 +12,10 @@ import org.bukkit.permissions.Permission;
 import org.bukkit.permissions.PermissionDefault;
 import org.bukkit.plugin.PluginManager;
 
+import java.util.Iterator;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 
 public class BukkitPermissionManager implements PermissionManager
@@ -160,5 +161,35 @@ public class BukkitPermissionManager implements PermissionManager
                 }
             }
         }
+    }
+
+    public void unregisterPermissions()
+    {
+        Iterator<Map.Entry<Module, Set<String>>> modulesIter = this.modulePermissionMap.entrySet().iterator();
+        Map.Entry<Module, Set<String>> entry;
+
+        while (modulesIter.hasNext())
+        {
+            entry = modulesIter.next();
+            modulesIter.remove();
+            for (String perm : entry.getValue())
+            {
+                this.pm.removePermission(perm);
+            }
+        }
+
+        Iterator<Entry<String, Permission>> wildcardsIter = this.wildcards.entrySet().iterator();
+        while (wildcardsIter.hasNext())
+        {
+            this.pm.removePermission(wildcardsIter.next().getKey());
+            wildcardsIter.remove();
+        }
+    }
+
+    public void clean()
+    {
+        this.unregisterPermissions();
+        this.wildcards.clear();
+        this.modulePermissionMap.clear();
     }
 }

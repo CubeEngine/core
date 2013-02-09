@@ -1,11 +1,12 @@
 package de.cubeisland.cubeengine.core.permission;
 
 import de.cubeisland.cubeengine.core.module.Module;
+import de.cubeisland.cubeengine.core.util.Cleanable;
 
 /**
  * Registers permissions to the server.
  */
-public interface PermissionManager
+public interface PermissionManager extends Cleanable
 {
     /**
      * Registers a String as a permission

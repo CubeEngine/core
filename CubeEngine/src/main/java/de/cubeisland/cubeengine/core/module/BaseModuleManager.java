@@ -3,7 +3,10 @@ package de.cubeisland.cubeengine.core.module;
 import de.cubeisland.cubeengine.core.Core;
 import de.cubeisland.cubeengine.core.CubeEngine;
 import de.cubeisland.cubeengine.core.filesystem.FileExtentionFilter;
+import de.cubeisland.cubeengine.core.module.event.ModuleDisabledEvent;
+import de.cubeisland.cubeengine.core.module.event.ModuleEnabledEvent;
 import de.cubeisland.cubeengine.core.module.exception.*;
+import de.cubeisland.cubeengine.core.util.Profiler;
 import de.cubeisland.cubeengine.core.util.log.LogLevel;
 import gnu.trove.map.hash.THashMap;
 import org.apache.commons.lang.Validate;
@@ -14,10 +17,10 @@ import java.io.FileFilter;
 import java.lang.reflect.Field;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
 
-import static de.cubeisland.cubeengine.core.util.log.LogLevel.INFO;
-import static de.cubeisland.cubeengine.core.util.log.LogLevel.WARNING;
+import static de.cubeisland.cubeengine.core.util.log.LogLevel.*;
 
 public abstract class BaseModuleManager implements ModuleManager
 {
@@ -292,17 +295,15 @@ public abstract class BaseModuleManager implements ModuleManager
             }
         }
 
-        if (!module.enable())
+        if (this.enableModule(module))
         {
-            return null;
+            this.modules.put(module.getId(), module);
+            this.classMap.put(module.getClass(), module);
+
+            return module;
         }
 
-        this.classMap.put(module.getClass(), module);
-
-        module.getLogger().log(INFO, "successfully enabled!");
-        this.modules.put(module.getId(), module);
-
-        return module;
+        return null;
     }
 
     /**
@@ -311,9 +312,22 @@ public abstract class BaseModuleManager implements ModuleManager
      * @param module the module
      * @return true if it succeeded
      */
-    public boolean enableModule(Module module)
+    public synchronized boolean enableModule(Module module)
     {
-        return module.enable();
+        module.getLogger().log(INFO, "Enabling revision {0}...", module.getRevision());
+        Profiler.startProfiling("enable-module");
+        boolean result = module.enable();
+        final long enableTime = Profiler.endProfiling("enable-module", TimeUnit.MICROSECONDS);
+        if (!result)
+        {
+            module.getLogger().log(ERROR, " Module failed to load.");
+        }
+        else
+        {
+            this.core.getEventManager().fireEvent(new ModuleEnabledEvent(this.core, module));
+            module.getLogger().log(INFO, "Successfully enabled within {0} microseconds!", enableTime);
+        }
+        return result;
     }
 
     /**
@@ -325,7 +339,7 @@ public abstract class BaseModuleManager implements ModuleManager
         {
             if (module.getInfo().providesWorldGenerator())
             {
-                module.enable();
+                this.enableModule(module);
             }
         }
     }
@@ -341,7 +355,7 @@ public abstract class BaseModuleManager implements ModuleManager
         {
             if (!module.getInfo().providesWorldGenerator() || worldGenerators)
             {
-                module.enable();
+                this.enableModule(module);
             }
         }
     }
@@ -351,8 +365,9 @@ public abstract class BaseModuleManager implements ModuleManager
      *
      * @param module the module
      */
-    public void disableModule(Module module)
+    public synchronized void disableModule(Module module)
     {
+        Profiler.startProfiling("disable-module");
         module.disable();
         this.core.getEventManager().unregisterListener(module);
         this.core.getPermissionManager().unregisterPermissions(module);
@@ -360,6 +375,9 @@ public abstract class BaseModuleManager implements ModuleManager
         this.core.getCommandManager().unregister(module);
         this.core.getApiServer().unregisterApiHandlers(module);
         this.core.getUserManager().clearAttributes(module);
+
+        this.core.getEventManager().fireEvent(new ModuleDisabledEvent(this.core, module));
+        module.getLogger().log(INFO, "Module disabled within {0} microseconds", Profiler.endProfiling("disable-module", TimeUnit.MICROSECONDS));
     }
 
     /**
@@ -374,6 +392,11 @@ public abstract class BaseModuleManager implements ModuleManager
      */
     public void unloadModule(Module module)
     {
+        if (this.modules.remove(module.getId()) == null)
+        {
+            return;
+        }
+        Profiler.startProfiling("unload-" + module.getId());
         Set<Module> disable = new HashSet<Module>();
         for (Module m : this.modules.values())
         {
@@ -390,7 +413,6 @@ public abstract class BaseModuleManager implements ModuleManager
 
         this.disableModule(module);
         this.loader.unloadModule(module);
-        this.modules.remove(module.getId());
         this.moduleInfos.remove(module.getId());
 
         // null all the fields referencing this module
@@ -414,6 +436,7 @@ public abstract class BaseModuleManager implements ModuleManager
 
         System.gc();
         System.gc();
+        LOGGER.log(DEBUG, "Unloading '" + module.getName() + "' took {0} milliseconds!", Profiler.endProfiling("unload-" + module.getId(), TimeUnit.MILLISECONDS));
     }
 
     /**
@@ -432,11 +455,11 @@ public abstract class BaseModuleManager implements ModuleManager
      */
     public void unloadModules()
     {
-        this.disableModules();
         Iterator<Map.Entry<String, Module>> iter = this.modules.entrySet().iterator();
         while (iter.hasNext())
         {
             this.unloadModule(iter.next().getValue());
+            iter.remove();
         }
         this.modules.clear();
     }
@@ -444,9 +467,13 @@ public abstract class BaseModuleManager implements ModuleManager
     @Override
     public void clean()
     {
+        LOGGER.log(DEBUG, "unload modules");
+        Profiler.startProfiling("unload-modules");
         this.unloadModules();
+        LOGGER.log(DEBUG, "Unloading the module took {0} milliseconds!", Profiler.endProfiling("unload-modules", TimeUnit.MILLISECONDS));
         this.modules.clear();
         this.moduleInfos.clear();
+        LOGGER.log(DEBUG, "shutting down the loader");
         this.loader.shutdown();
     }
 

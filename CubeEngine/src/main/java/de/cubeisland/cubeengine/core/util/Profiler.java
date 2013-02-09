@@ -4,6 +4,8 @@ import gnu.trove.map.TObjectLongMap;
 import gnu.trove.map.hash.TObjectLongHashMap;
 import org.apache.commons.lang.Validate;
 
+import java.util.concurrent.TimeUnit;
+
 /**
  * This class helps profiling code
  */
@@ -38,6 +40,11 @@ public class Profiler
         }
     }
 
+    public static long getCurrentDelta(String id, TimeUnit unit)
+    {
+        return unit.convert(getCurrentDelta(id), TimeUnit.NANOSECONDS);
+    }
+
     public static long endProfiling(String id)
     {
         final long delta = System.nanoTime();
@@ -46,5 +53,10 @@ public class Profiler
         {
             return delta - startTimes.remove(id);
         }
+    }
+
+    public static long endProfiling(String id, TimeUnit unit)
+    {
+        return unit.convert(endProfiling(id), TimeUnit.NANOSECONDS);
     }
 }
