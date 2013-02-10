@@ -12,6 +12,7 @@ public class Signmarket extends Module
     private SignMarketBlockManager smblockManager;
     private SignMarketInfoManager sminfoManager;
     private MarketSignInventoryListener inventoryListener;
+    private MarketSignFactory marketSignFactory;
 
 
     @Override
@@ -19,6 +20,7 @@ public class Signmarket extends Module
     {
         this.smblockManager = new SignMarketBlockManager(this);
         this.sminfoManager = new SignMarketInfoManager(this);
+        this.marketSignFactory = new MarketSignFactory(this);
 
         this.registerListener(new MarketSignListener(this));
         this.inventoryListener = new MarketSignInventoryListener(this);
@@ -39,5 +41,9 @@ public class Signmarket extends Module
 
     public SignMarketInfoManager getSminfoManager() {
         return sminfoManager;
+    }
+
+    public MarketSignFactory getMarketSignFactory() {
+        return marketSignFactory;
     }
 }

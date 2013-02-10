@@ -43,7 +43,7 @@ public class SignMarketInfoModel implements Model<Long>
     @Attribute(type = AttrType.VARCHAR, length = 32)
     public String item;
     @Attribute(type = AttrType.SMALLINT, unsigned = true)
-    public Short damageValue;
+    public Integer damageValue;
     @Attribute(type = AttrType.VARCHAR, length = 100, notnull = false)
     public String customName;
     @Attribute(type = AttrType.VARCHAR, length = 1000, notnull = false)
@@ -70,7 +70,7 @@ public class SignMarketInfoModel implements Model<Long>
     public void setItem(ItemStack item)
     {
         this.item = item.getType().name();
-        this.damageValue = item.getDurability();
+        this.damageValue = (int)item.getDurability();
         this.enchantments = this.getEnchantmentsAsString(item);
         ItemMeta meta = item.getItemMeta();
         if (meta.hasDisplayName())
@@ -110,7 +110,7 @@ public class SignMarketInfoModel implements Model<Long>
     {
         if (this.itemStack == null)
         {
-            this.itemStack = new ItemStack(Material.valueOf(this.item),0, this.damageValue);
+            this.itemStack = new ItemStack(Material.valueOf(this.item),0, this.damageValue.shortValue());
             ItemMeta meta = this.itemStack.getItemMeta();
             if (this.customName != null)
             {
@@ -131,6 +131,7 @@ public class SignMarketInfoModel implements Model<Long>
                     this.itemStack.addUnsafeEnchantment(ench,level);
                 }
             }
+            itemStack.setItemMeta(meta);
         }
         return itemStack;
     }

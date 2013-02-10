@@ -1,10 +1,12 @@
 package de.cubeisland.cubeengine.signmarket.storage;
 
+import de.cubeisland.cubeengine.core.CubeEngine;
 import de.cubeisland.cubeengine.core.storage.Model;
 import de.cubeisland.cubeengine.core.storage.database.AttrType;
 import de.cubeisland.cubeengine.core.storage.database.Attribute;
 import de.cubeisland.cubeengine.core.storage.database.Index;
 import de.cubeisland.cubeengine.core.storage.database.SingleKeyEntity;
+import org.bukkit.Location;
 
 @SingleKeyEntity(autoIncrement = true, primaryKey = "key", tableName = "signmarketblocks",
 indices = {
@@ -18,11 +20,20 @@ public class SignMarketBlockModel implements Model<Long>
     @Attribute(type = AttrType.INT, unsigned = true)
     public long world;
     @Attribute(type = AttrType.INT)
-    public long x;
+    public int x;
     @Attribute(type = AttrType.INT)
-    public long y;
+    public int y;
     @Attribute(type = AttrType.INT)
-    public long z;
+    public int z;
+
+    public SignMarketBlockModel(Long marketSignId, Location location)
+    {
+        this.key = marketSignId;
+        this.world = CubeEngine.getCore().getWorldManager().getWorldId(location.getWorld());
+        this.x = location.getBlockX();
+        this.y = location.getBlockY();
+        this.z = location.getBlockZ();
+    }
 
     @Override
     public Long getKey() {

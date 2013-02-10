@@ -16,10 +16,10 @@ import org.bukkit.inventory.ItemStack;
 
 public class MarketSign implements InventoryHolder
 {
+    private final Signmarket module;
     private final Location location;
     private SignMarketInfoModel info;
     private SignMarketBlockModel blockInfo;
-    private final Signmarket module;
 
     private Inventory inventory = null;
 
@@ -137,7 +137,7 @@ public class MarketSign implements InventoryHolder
      * @param user
      * @return
      */
-    private boolean executeAction(User user, Action type) //TODO return enum of possible results:
+    public boolean executeAction(User user, Action type) //TODO return enum of possible results:
     {
         boolean sneaking = user.isSneaking();
         ItemStack itemInHand = user.getItemInHand();
@@ -372,6 +372,14 @@ public class MarketSign implements InventoryHolder
     public int getAmount()
     {
         return this.info.amount;
+    }
+
+    public void setInfoModel(SignMarketInfoModel infoModel) {
+        this.info = infoModel;
+    }
+
+    public void setBlockModel(SignMarketBlockModel blockModel) {
+        this.blockInfo = blockModel;
     }
 }
 

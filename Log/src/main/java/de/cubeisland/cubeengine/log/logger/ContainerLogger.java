@@ -95,7 +95,10 @@ public class ContainerLogger extends Logger<ContainerConfig>
     {
         if (this.canLog(event.getView().getTopInventory()))
         {
-            World world = this.getLocationForHolder(event.getView().getTopInventory().getHolder()).getWorld();
+            Location loc = this.getLocationForHolder(event.getView().getTopInventory().getHolder());
+            if (loc == null)
+                return;
+            World world = loc.getWorld();
             ContainerType type = ContainerType.getContainerType(event.getView().getTopInventory());
             if (this.checkLog(type, world))
             {

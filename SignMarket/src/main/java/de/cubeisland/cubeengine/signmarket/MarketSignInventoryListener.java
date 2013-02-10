@@ -41,7 +41,7 @@ public class MarketSignInventoryListener implements Listener
         Inventory inventory = marketSign.getInventory();
         if (marketSign.isAdminSign())
         {
-            inventory.setItem(5, marketSign.getItem());
+            inventory.setItem(4, marketSign.getItem());
         }
         else
         {
@@ -87,14 +87,14 @@ public class MarketSignInventoryListener implements Listener
             if (humanEntity instanceof Player)
             {
                 User user = this.module.getUserManager().getExactUser((Player) humanEntity);
-                MarketSign marketSign = (MarketSign) event.getInventory();
+                MarketSign marketSign = (MarketSign) event.getInventory().getHolder();
                 if (this.viewingInventories.containsKey(user.key))
                 {
                     event.setCancelled(true); // changes are not allowed
                 }
                 if (this.editingInventories.containsKey(user.key))
                 {
-                    if (!event.getCurrentItem().isSimilar(marketSign.getItem())) // Cancel if item is not accepted
+                    if (!marketSign.getItem().isSimilar(event.getCurrentItem())) // Cancel if item is not accepted
                     {
                         event.setCancelled(true);
                     }
