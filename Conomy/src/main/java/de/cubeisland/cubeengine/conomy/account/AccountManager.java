@@ -31,6 +31,8 @@ public class AccountManager
 
     public AccountManager(Conomy module)
     {
+        final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+
         this.module = module;
         this.currencyManager = module.getCurrencyManager();
         this.accountStorage = module.getAccountsStorage();
@@ -44,7 +46,7 @@ public class AccountManager
                 @Override
                 public String format(LogRecord record) {
                     StringBuilder sb = new StringBuilder();
-                    sb.append(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date(record.getMillis())))
+                    sb.append(dateFormat.format(new Date(record.getMillis())))
                     .append(" ").append(record.getMessage());
                     return sb.toString();
                 }
@@ -52,7 +54,7 @@ public class AccountManager
         }
         catch (Exception ex)
         {
-            throw new IllegalStateException("Could not create handler for transactin-logger",ex);
+            throw new IllegalStateException("Could not create handler for transaction-logger",ex);
         }
     }
 
