@@ -4,13 +4,18 @@ import de.cubeisland.cubeengine.core.CubeEngine;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.user.UserManager;
 import de.cubeisland.cubeengine.core.util.Task;
+import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.craftbukkit.v1_4_R1.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Vector;
 
@@ -23,10 +28,56 @@ public class FlyListener implements Listener
     private Fly fly;
     private final Location helperLocation = new Location(null, 0, 0, 0);
 
+    private static final float FLY_SPEED_MARKER = 3.0f;
+
     public FlyListener(Fly fly)
     {
         this.fly = fly;
         this.usermanager = fly.getUserManager();
+    }
+
+    private static boolean wasFlying(Player p)
+    {
+        return ((CraftPlayer)p).getHandle().abilities.flySpeed < -1.0f;
+    }
+
+    private static void setWasFlying(Player p, boolean wasFlying)
+    {
+        if (wasFlying)
+        {
+            ((CraftPlayer)p).getHandle().abilities.flySpeed -= FLY_SPEED_MARKER;
+        }
+        else
+        {
+            ((CraftPlayer)p).getHandle().abilities.flySpeed += FLY_SPEED_MARKER;
+        }
+    }
+
+    @EventHandler(priority = EventPriority.LOWEST)
+    public void join(final PlayerJoinEvent event)
+    {
+        final Player player = (CraftPlayer)event.getPlayer();
+
+        if (player.getGameMode() != GameMode.CREATIVE && wasFlying(player) && FlyPerm.FLY_CANFLY.isAuthorized(player))
+        {
+            player.setAllowFlight(true);
+            player.setFlying(true);
+        }
+
+        if (wasFlying(player))
+        {
+            setWasFlying(player, false);
+        }
+    }
+
+    @EventHandler(priority = EventPriority.LOWEST)
+    public void quit(final PlayerQuitEvent event)
+    {
+        final CraftPlayer player = (CraftPlayer)event.getPlayer();
+        if (player.getGameMode() != GameMode.CREATIVE && player.isFlying())
+        {
+            setWasFlying(player, true);
+        }
     }
 
     @EventHandler
