@@ -6,6 +6,16 @@ import de.cubeisland.cubeengine.core.storage.database.AttrType;
 import de.cubeisland.cubeengine.core.storage.database.Attribute;
 import de.cubeisland.cubeengine.core.storage.database.Index;
 import de.cubeisland.cubeengine.core.storage.database.SingleKeyEntity;
+import de.cubeisland.cubeengine.core.util.StringUtils;
+import org.bukkit.Material;
+import org.bukkit.enchantments.Enchantment;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
 
 
 @SingleKeyEntity(autoIncrement = true, primaryKey = "key", tableName = "signmarketinfo",
@@ -41,6 +51,8 @@ public class SignMarketInfoModel implements Model<Long>
     @Attribute(type = AttrType.VARCHAR, length = 255, notnull = false)
     public String enchantments;
 
+    private ItemStack itemStack = null;
+
 
 
     @Override
@@ -55,6 +67,75 @@ public class SignMarketInfoModel implements Model<Long>
         this.key = key;
     }
 
+    public void setItem(ItemStack item)
+    {
+        this.item = item.getType().name();
+        this.damageValue = item.getDurability();
+        this.enchantments = this.getEnchantmentsAsString(item);
+        ItemMeta meta = item.getItemMeta();
+        if (meta.hasDisplayName())
+        {
+            this.customName = meta.getDisplayName() ;
+        }
+        if (meta.hasLore())
+        {
+            this.lore = StringUtils.implode("\n",meta.getLore());
+        }
+    }
+
+    private String getEnchantmentsAsString(ItemStack item)
+    {
+        Map<Enchantment,Integer> enchs = item.getEnchantments ();
+        if (!enchs.isEmpty())
+        {
+            List<String> enchStrings = new ArrayList<String>();
+            for (Enchantment ench : enchs.keySet())
+            {
+                enchStrings.add(ench.getId() + ":" + enchs.get(ench));
+            }
+            return StringUtils.implode(",",enchStrings);
+        }
+        return null;
+    }
+
     public SignMarketInfoModel() {
+    }
+
+    public boolean isItem(ItemStack itemInHand)
+    {
+        return this.getItem().isSimilar(itemInHand);
+    }
+
+    public ItemStack getItem()
+    {
+        if (this.itemStack == null)
+        {
+            this.itemStack = new ItemStack(Material.valueOf(this.item),0, this.damageValue);
+            ItemMeta meta = this.itemStack.getItemMeta();
+            if (this.customName != null)
+            {
+                meta.setDisplayName(this.customName);
+            }
+            if (this.lore != null)
+            {
+                meta.setLore(Arrays.asList(StringUtils.explode("\n",this.lore)));
+            }
+            if (this.enchantments != null)
+            {
+                String[] enchStrings = StringUtils.explode(",",this.enchantments);
+                for (String enchString: enchStrings)
+                {
+                    String[] split = StringUtils.explode(":",enchString);
+                    Enchantment ench = Enchantment.getById(Integer.parseInt(split[0]));
+                    int level = Integer.parseInt(split[1]);
+                    this.itemStack.addUnsafeEnchantment(ench,level);
+                }
+            }
+        }
+        return itemStack;
+    }
+
+    public boolean isAdminSign() {
+        return this.owner == null;
     }
 }

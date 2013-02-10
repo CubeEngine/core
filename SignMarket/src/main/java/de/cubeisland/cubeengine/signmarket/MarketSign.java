@@ -1,9 +1,14 @@
 package de.cubeisland.cubeengine.signmarket;
 
 import de.cubeisland.cubeengine.core.user.User;
+import de.cubeisland.cubeengine.core.util.InventoryUtil;
+import de.cubeisland.cubeengine.core.util.matcher.Match;
 import de.cubeisland.cubeengine.signmarket.storage.SignMarketBlockModel;
 import de.cubeisland.cubeengine.signmarket.storage.SignMarketInfoModel;
+import org.bukkit.GameMode;
 import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.event.block.Action;
 import org.bukkit.inventory.ItemStack;
 
 public class MarketSign
@@ -114,13 +119,216 @@ public class MarketSign
     private void takeFromStock(int amount)//interaction update imediatly
     {}
 
-    private boolean executeAction(User user) //TODO return enum of possible results:
+    /**
+     * Tries to execute the appropriate action
+     * <p>on right-click: use the sign (buy/sell) / if owner take out of stock
+     * <p>on left-click: BUY-sign: if correct item in hand & owner of sign -> refill stock
+     * <p>on shift left-click: open sign-inventory OR if correct item in hand & owner put all in stock
+     * <p>on shift right-click: inspect the sign, shows all information saved
+     *
+     * @param user
+     * @return
+     */
+    private boolean executeAction(User user, Action type) //TODO return enum of possible results:
             // not enough money
             // sign disabled
             //etc..
             //OR string with error/success-message
     {
+        boolean sneaking = user.isSneaking();
+        ItemStack itemInHand = user.getItemInHand();
+        if (itemInHand == null)
+        {
+            itemInHand = new ItemStack(Material.AIR);
+        }
+        switch (type)
+        {
+            case LEFT_CLICK_BLOCK:
+                if (sneaking)
+                {
+                    if (MarketSignPerm.SIGN_INVENTORY_SHOW.isAuthorized(user))
+                    {
+                        if (this.isOwner(user)) // owner OR can access other
+                        {
+                            //TODO open sign inventory can edit inventory
+                        }
+                        else if (MarketSignPerm.SIGN_INVENTORY_ACCESS_OTHER.isAuthorized(user))
+                        {
+                            //TODO open sign inventory can edit inventory
+                        }
+                        else
+                        {
+                            //TODO open sign inventory cannot edit inventory
+                        }
+                    }
+                    else
+                    {
+                        user.sendMessage("signmarket","&cYou are not allowed to see the market-signs inventory");
+                    }
+                }
+                else // no sneak -> empty & break signs
+                {
+                    if (user.getGameMode().equals(GameMode.CREATIVE)) // instabreak items
+                    {
+                        //TODO let drop all items ? in config
+                        if (this.isOwner(user))
+                        {
+                            if (MarketSignPerm.SIGN_DESTROY_OWN.isAuthorized(user))
+                            {
+                                //allow
+                            }
+                            else
+                            {
+                                user.sendMessage("signmarket","&cYou are not allowed to break your own market-signs!");
+                                //deny
+                            }
+                        }
+                        else if (this.info.isAdminSign())
+                        {
+                            if (MarketSignPerm.SIGN_DESTROY_ADMIN.isAuthorized(user))
+                            {
+                                // allow
+                            }
+                            else
+                            {
+                                user.sendMessage("signmarket","&cYou are not allowed to break admin-market-signs!");
+                               // deny
+                            }
+                        }
+                        else
+                        {
+                            if (MarketSignPerm.SIGN_DESTROY_OTHER.isAuthorized(user))
+                            {
+                                // allow
+                            }
+                            else
+                            {
+                                user.sendMessage("signmarket","&cYou are not allowed to break others market-signs!");
+                                //deny
+                            }
+                        }
+                    }
+                    else // first empty items then break
+                    {
+                        if (this.info.isAdminSign())
+                        {
+                            if (MarketSignPerm.SIGN_DESTROY_ADMIN.isAuthorized(user))
+                            {
+                                //allow destroying
+                            }
+                            else
+                            {
+                                user.sendMessage("signmarket","&cYou are not allowed to break admin-signs!");
+                                //deny
+                            }
+                        }
+                        else if (this.isOwner(user))
+                        {
+                            if (this.info.amount > 0)
+                            {
+                                //take
+                            }
+                            else if (this.info.amount == 0)
+                            {
+                                if (MarketSignPerm.SIGN_DESTROY_OWN.isAuthorized(user))
+                                {
+                                    // allow break
+                                }
+                                else
+                                {
+                                    user.sendMessage("signmarket","&cYou are not allowed to break your own market-signs!");
+                                    //deny
+                                }
+                            }
+                        }
+                        else // not owner / not admin
+                        {
+                            if (this.info.amount > 0)
+                            {
+                                if (MarketSignPerm.SIGN_INVENTORY_TAKE_OTHER.isAuthorized(user))
+                                {
+                                    //take
+                                }
+                                else
+                                {
+                                    user.sendMessage("signmarket","&cYou are not allowed to destroy others market-signs!");
+                                    //deny
+                                }
+                            }
+                            else if (this.info.amount == 0)
+                            {
+                                if (MarketSignPerm.SIGN_DESTROY_OTHER.isAuthorized(user))
+                                {
+                                    //allow break
+                                }
+                                else
+                                {
+                                    user.sendMessage("signmarket","&cYou are not allowed to destroy others market-signs!");
+                                    //deny
+                                }
+                            }
+                        }
+                    }
+                }
+                return true;
+            case RIGHT_CLICK_BLOCK:
+                if (sneaking)
+                {
+                    if (this.isOwner(user))
+                    {
+                        if (this.info.isItem(itemInHand))
+                        {
+                            int amount = InventoryUtil.getAmountOf(user.getInventory(),itemInHand);
+                            this.info.amount = this.info.amount + amount;
+                            user.getInventory().removeItem(itemInHand); // this should remove all items of this type
+                            user.sendMessage("signmarket","&aAdded all (&6%d&a) &6%s &ato the stock!",amount, Match.material().getNameFor(this.info.getItem()));
+                            user.updateInventory();
+                            this.updateSign();
+                            this.saveToDatabase();
+                            return true;
+                        }
+                    }
+                    //TODO show all info
+                }
+                else
+                {
+                    if (this.isOwner(user))
+                    {
+                        if (this.info.isItem(itemInHand))
+                        {
+                            int amount = itemInHand.getAmount();
+                            this.info.amount = this.info.amount + amount;
+                            user.setItemInHand(new ItemStack(Material.AIR));
+                            user.sendMessage("signmarket","&aAdded &6%d&ax &6%s &ato the stock!",amount, Match.material().getNameFor(this.info.getItem()));
+                            user.updateInventory();
+                            this.updateSign();
+                            this.saveToDatabase();
+                        }
+                        else
+                        {
+                            user.sendMessage("signmarket","&cWrong item to put into the market-sign!");
+                        }
+                        return true; // prevent placing etc
+                    }
+                    return this.useSign(user);
+                }
+        }
         return false;
+    }
+
+    private boolean useSign(User user)
+    {
+        return false; //TODO sell / buy
+    }
+
+    public boolean isOwner(User user)
+    {
+        return false;
+    }
+
+    private void updateSign()
+    {
+
     }
 }
 

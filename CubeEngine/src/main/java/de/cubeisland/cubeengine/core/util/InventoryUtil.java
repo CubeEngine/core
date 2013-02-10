@@ -69,4 +69,22 @@ public class InventoryUtil
         }
         return true;
     }
+
+    /**
+     * Returns the amount of this itemstack in the given inventory
+     *
+     * @param inventory
+     * @param itemStack
+     * @return
+     */
+    public static int getAmountOf(Inventory inventory, ItemStack itemStack)
+    {
+        int amount = 0;
+        for (ItemStack i : inventory.getContents()) {
+            if (itemStack.isSimilar(i)) {
+                amount += i.getAmount();
+            }
+        }
+        return amount;
+    }
 }
