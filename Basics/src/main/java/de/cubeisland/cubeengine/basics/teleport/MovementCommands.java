@@ -2,8 +2,9 @@ package de.cubeisland.cubeengine.basics.teleport;
 
 import de.cubeisland.cubeengine.basics.Basics;
 import de.cubeisland.cubeengine.core.command.CommandContext;
-import de.cubeisland.cubeengine.core.command.annotation.Command;
-import de.cubeisland.cubeengine.core.command.annotation.Flag;
+import de.cubeisland.cubeengine.core.command.parameterized.ParameterizedContext;
+import de.cubeisland.cubeengine.core.command.reflected.Command;
+import de.cubeisland.cubeengine.core.command.parameterized.Flag;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.util.LocationUtil;
 import org.bukkit.Location;
@@ -32,8 +33,17 @@ public class MovementCommands
     @Command(desc = "Teleports you x-amount of blocks into the air and puts a glasblock beneath you.", usage = "<height>", min = 1, max = 1)
     public void up(CommandContext context)
     {
-        User sender = context.getSenderAsUser("basics", "&eProTip: Teleport does not work IRL!");
-        int height = context.getIndexed(0, Integer.class, -1);
+        User sender = null;
+        if (context.getSender() instanceof User)
+        {
+            sender = (User)context.getSender();
+        }
+        if (sender == null)
+        {
+            context.sendMessage("basics", "&eProTip: Teleport does not work IRL!");
+            return;
+        }
+        int height = context.getArg(0, Integer.class, -1);
         if ((height < 0))
         {
             illegalParameter(context, "basics", "&cInvalid height. The height has to be a number greater than 0!");
@@ -62,7 +72,16 @@ public class MovementCommands
     @Command(desc = "Teleports you to the next safe spot upwards.", max = 0)
     public void ascend(CommandContext context)
     {
-        User sender = context.getSenderAsUser("basics", "&eProTip: Teleport does not work IRL!");
+        User sender = null;
+        if (context.getSender() instanceof User)
+        {
+            sender = (User)context.getSender();
+        }
+        if (sender == null)
+        {
+            context.sendMessage("basics", "&eProTip: Teleport does not work IRL!");
+            return;
+        }
         final Location userLocation = sender.getLocation();
         final Location currentLocation = userLocation.clone();
         //go upwards until hitting solid blocks
@@ -93,7 +112,16 @@ public class MovementCommands
     @Command(desc = "Teleports you to the next safe spot downwards.", max = 0)
     public void descend(CommandContext context)
     {
-        User sender = context.getSenderAsUser("basics", "&eProTip: Teleport does not work IRL!");
+        User sender = null;
+        if (context.getSender() instanceof User)
+        {
+            sender = (User)context.getSender();
+        }
+        if (sender == null)
+        {
+            context.sendMessage("basics", "&eProTip: Teleport does not work IRL!");
+            return;
+        }
         final Location userLocation = sender.getLocation();
         final Location currentLocation = userLocation.clone();
         //go downwards until hitting solid blocks
@@ -123,7 +151,16 @@ public class MovementCommands
     }, desc = "Jumps to the position you are looking at.", max = 0)
     public void jumpTo(CommandContext context)
     {
-        User sender = context.getSenderAsUser("basics", "&eJumping in the console is not allowed! Go play outside!");
+        User sender = null;
+        if (context.getSender() instanceof User)
+        {
+            sender = (User)context.getSender();
+        }
+        if (sender == null)
+        {
+            context.sendMessage("basics", "&eJumping in the console is not allowed! Go play outside!");
+            return;
+        }
         Location loc = sender.getTargetBlock(null, this.basics.getConfiguration().jumpToMaxRange).getLocation();
         if (loc.getBlock().getType().equals(Material.AIR))
         {
@@ -139,7 +176,16 @@ public class MovementCommands
     }, desc = "Jumps to the position you are looking at.", max = 0)
     public void through(CommandContext context)
     {
-        User sender = context.getSenderAsUser("basics", "&ePassing through firewalls in the console is not allowed! Go play outside!");
+        User sender = null;
+        if (context.getSender() instanceof User)
+        {
+            sender = (User)context.getSender();
+        }
+        if (sender == null)
+        {
+            context.sendMessage("basics", "&ePassing through firewalls in the console is not allowed! Go play outside!");
+            return;
+        }
         Location loc = LocationUtil.getBlockBehindWall(sender,
                 this.basics.getConfiguration().jumpThruMaxRange,
                 this.basics.getConfiguration().jumpThruMaxWallThickness);
@@ -155,9 +201,18 @@ public class MovementCommands
     @Command(desc = "Teleports you to your last location", max = 0, flags = {
         @Flag(longName = "unsafe", name = "u")
     })
-    public void back(CommandContext context)
+    public void back(ParameterizedContext context)
     {
-        User sender = context.getSenderAsUser("basics", "&cYou never teleported!");
+        User sender = null;
+        if (context.getSender() instanceof User)
+        {
+            sender = (User)context.getSender();
+        }
+        if (sender == null)
+        {
+            context.sendMessage("basics", "&cYou never teleported!");
+            return;
+        }
         Location loc = sender.getAttribute(basics, "lastLocation");
         if (loc == null)
         {
@@ -173,7 +228,16 @@ public class MovementCommands
     }, desc = "Jumps to the position you are looking at.", max = 1, min = 1, usage = "<player>")
     public void place(CommandContext context)
     {
-        User sender = context.getSenderAsUser("basics", "&eJumping in the console is not allowed! Go play outside!");
+        User sender = null;
+        if (context.getSender() instanceof User)
+        {
+            sender = (User)context.getSender();
+        }
+        if (sender == null)
+        {
+            context.sendMessage("basics", "&eJumping in the console is not allowed! Go play outside!");
+            return;
+        }
         User user = context.getUser(0);
         if (user == null)
         {
@@ -194,7 +258,7 @@ public class MovementCommands
     public void swap(CommandContext context)
     {
         User sender;
-        if (context.hasIndexed(1))
+        if (context.hasArg(1))
         {
             sender = context.getUser(1);
             if (sender == null)
@@ -204,10 +268,13 @@ public class MovementCommands
         }
         else
         {
-            sender = context.getSenderAsUser();
+            sender = null;
+            if (context.getSender() instanceof User)
+            {
+                sender = (User)context.getSender();
+            }
             if (sender == null)
             {
-
                 context.sendMessage("basics", "&cSuccesfully swapped your socks!\n"
                         + "&eAs console you have to provide both players!");
                 return;
@@ -233,7 +300,7 @@ public class MovementCommands
         Location userLoc = user.getLocation();
         TeleportCommands.teleport(user, sender.getLocation(), true, false, false);
         TeleportCommands.teleport(sender, userLoc, true, false, false);
-        if (context.hasIndexed(1))
+        if (context.hasArg(1))
         {
             context.sendMessage("basics", "&aSwapped position of &2%s &aand &2%s&a!", user.getName(), sender.getName());
         }

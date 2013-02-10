@@ -89,6 +89,13 @@ public interface ModuleManager extends Cleanable
     void unloadModule(Module module);
 
     /**
+     * Reloads the given module
+     *
+     * @param module the module to reload
+     */
+    void reloadModule(Module module);
+
+    /**
      * This method disables all modules
      */
     void disableModules();
@@ -96,12 +103,12 @@ public interface ModuleManager extends Cleanable
     /**
      * This method disables all modules
      */
-    public void unloadModules();
+    void unloadModules();
 
     /**
      * Returns a dummy module
      *
      * @return the singleton instance of the dummy CoreModule
      */
-    public CoreModule getCoreModule();
+    CoreModule getCoreModule();
 }

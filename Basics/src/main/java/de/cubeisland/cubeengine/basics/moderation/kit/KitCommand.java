@@ -1,19 +1,23 @@
 package de.cubeisland.cubeengine.basics.moderation.kit;
 
 import de.cubeisland.cubeengine.basics.BasicsPerm;
-import de.cubeisland.cubeengine.core.bukkit.BukkitUtils;
+import de.cubeisland.cubeengine.core.command.reflected.Alias;
 import de.cubeisland.cubeengine.core.command.CommandContext;
+import de.cubeisland.cubeengine.core.command.CommandResult;
 import de.cubeisland.cubeengine.core.command.ContainerCommand;
-import de.cubeisland.cubeengine.core.command.annotation.Alias;
-import de.cubeisland.cubeengine.core.command.annotation.Command;
-import de.cubeisland.cubeengine.core.command.annotation.Flag;
-import static de.cubeisland.cubeengine.core.command.exception.InvalidUsageException.*;
+import de.cubeisland.cubeengine.core.command.parameterized.Flag;
+import de.cubeisland.cubeengine.core.command.parameterized.ParameterizedContext;
+import de.cubeisland.cubeengine.core.command.reflected.Command;
 import de.cubeisland.cubeengine.core.module.Module;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.util.FileUtil;
+import org.bukkit.inventory.ItemStack;
+
 import java.util.ArrayList;
 import java.util.List;
-import org.bukkit.inventory.ItemStack;
+
+import static de.cubeisland.cubeengine.core.command.exception.InvalidUsageException.blockCommand;
+import static de.cubeisland.cubeengine.core.command.exception.InvalidUsageException.paramNotFound;
 
 public class KitCommand extends ContainerCommand
 {
@@ -22,23 +26,34 @@ public class KitCommand extends ContainerCommand
         super(module, "kit", "Manages item-kits");
     }
 
+    // TODO this is horribly broken
     @Override
-    public void run(CommandContext context)
+    public CommandResult run(CommandContext context) throws Exception
     {
-        if (context.hasIndexed(0))
+        if (context.hasArg(0))
         {
-            this.give(context); //TODO as flags are not declared this cannot work
+            this.give((ParameterizedContext)context); //TODO as flags are not declared this cannot work
+            return null;
         }
         else
         {
-            super.run(context);
+            return super.run(context);
         }
     }
 
     @Command(desc = "Creates a new kit with the items in your inventory.", flags = @Flag(longName = "toolbar", name = "t"), usage = "<kitName> [-toolbar]")
-    public void create(CommandContext context)
+    public void create(ParameterizedContext context)
     {
-        User sender = context.getSenderAsUser("basics", "&cJust log in or use the config!");
+        User sender = null;
+        if (context.getSender() instanceof User)
+        {
+            sender = (User)context.getSender();
+        }
+        if (sender == null)
+        {
+            context.sendMessage("basics", "&cJust log in or use the config!");
+            return;
+        }
         List<KitItem> itemList = new ArrayList<KitItem>();
         if (context.hasFlag("t"))
         {
@@ -86,10 +101,10 @@ public class KitCommand extends ContainerCommand
         @Flag(longName = "all", name = "a"),
         @Flag(longName = "force", name = "f")
     })
-    public void give(CommandContext context)
+    public void give(ParameterizedContext context)
     {
         String kitname = context.getString(0);
-        User user;
+        User user = null;
         Kit kit = KitConfiguration.getKit(kitname);
         boolean force = false;
         if (context.hasFlag("f") && BasicsPerm.COMMAND_KIT_GIVE_FORCE.isAuthorized(context.getSender()))
@@ -139,14 +154,14 @@ public class KitCommand extends ContainerCommand
         else
         {
             boolean other = false;
-            if (context.hasIndexed(1))
+            if (context.hasArg(1))
             {
                 user = context.getUser(1);
                 other = true;
             }
-            else
+            else if (context.getSender() instanceof User)
             {
-                user = context.getSenderAsUser();
+                user = (User)context.getSender();
             }
             if (user == null)
             {

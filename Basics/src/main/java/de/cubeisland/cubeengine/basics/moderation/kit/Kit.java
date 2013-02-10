@@ -1,30 +1,25 @@
 package de.cubeisland.cubeengine.basics.moderation.kit;
 
 import de.cubeisland.cubeengine.basics.Basics;
-import de.cubeisland.cubeengine.core.bukkit.BukkitUtils;
+import de.cubeisland.cubeengine.core.CubeEngine;
+import de.cubeisland.cubeengine.core.command.sender.CommandSender;
 import de.cubeisland.cubeengine.core.permission.PermDefault;
 import de.cubeisland.cubeengine.core.permission.Permission;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.util.InventoryUtil;
 import de.cubeisland.cubeengine.core.util.time.Duration;
-import org.bukkit.Bukkit;
 import org.bukkit.Server;
-import org.bukkit.command.CommandSender;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.permissions.Permissible;
 import org.bukkit.permissions.PermissionAttachment;
 import org.bukkit.permissions.PermissionAttachmentInfo;
 import org.bukkit.plugin.Plugin;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Locale;
-import java.util.Set;
+import java.util.*;
 
 import static de.cubeisland.cubeengine.core.command.exception.InvalidUsageException.blockCommand;
 import static de.cubeisland.cubeengine.core.command.exception.PermissionDeniedException.denyAccess;
-import org.bukkit.inventory.meta.ItemMeta;
 
 /**
  * A Kit of Items a User can receive
@@ -127,7 +122,7 @@ public class Kit
             for (String cmd : commands)
             {
                 cmd = cmd.replace("{PLAYER}", user.getName());
-                Bukkit.dispatchCommand(KitCommandSender.instance, cmd);
+                CubeEngine.getCommandManager().runCommand(new KitCommandSender(user), cmd);
             }
         }
     }
@@ -178,31 +173,58 @@ public class Kit
 
     private static class KitCommandSender implements CommandSender
     {
-        protected static KitCommandSender instance;
+        private final User user;
 
-        static
+        public KitCommandSender(User user)
         {
-            instance = new KitCommandSender();
+            this.user = user;
+        }
+
+        public User getUser()
+        {
+            return this.user;
+        }
+
+        @Override
+        public boolean isAuthorized(Permission perm)
+        {
+            return this.hasPermission(perm.getPermission());
+        }
+
+        @Override
+        public String getLanguage()
+        {
+            return this.user.getLanguage();
+        }
+
+        @Override
+        public void sendMessage(String category, String message, Object... params)
+        {
+            this.user.sendMessage(category, message, params);
         }
 
         @Override
         public void sendMessage(String string)
-        {}
+        {
+            this.user.sendMessage(string);
+        }
 
         @Override
         public void sendMessage(String[] strings)
-        {}
+        {
+            this.user.sendMessage(strings);
+        }
 
         @Override
         public Server getServer()
         {
-            return Bukkit.getServer();
+            return this.user.getServer();
         }
 
         @Override
         public String getName()
         {
-            return "~Server~";
+            return "Kit:" + this.user.getName();
         }
 
         @Override
@@ -270,7 +292,7 @@ public class Kit
         @Override
         public boolean isOp()
         {
-            return true;
+            return true; // TODO I'd set this to false
         }
 
         @Override

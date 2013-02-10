@@ -1,19 +1,19 @@
 package de.cubeisland.cubeengine.writer;
 
 import de.cubeisland.cubeengine.core.CubeEngine;
-import de.cubeisland.cubeengine.core.command.CommandContext;
-import de.cubeisland.cubeengine.core.command.annotation.Command;
-import de.cubeisland.cubeengine.core.command.annotation.Param;
+import de.cubeisland.cubeengine.core.command.parameterized.Param;
+import de.cubeisland.cubeengine.core.command.parameterized.ParameterizedContext;
+import de.cubeisland.cubeengine.core.command.reflected.Command;
 import de.cubeisland.cubeengine.core.user.User;
-import java.util.Map;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.Sign;
 import org.bukkit.event.block.SignChangeEvent;
 import org.bukkit.inventory.ItemStack;
-
-import static de.cubeisland.cubeengine.core.command.exception.InvalidUsageException.invalidUsage;
 import org.bukkit.inventory.meta.BookMeta;
+
+import java.util.Map;
+import java.util.Map.Entry;
 
 public class EditCommand
 {
@@ -37,9 +37,13 @@ public class EditCommand
             "4", "Line4"
         })
     }, max = 0)
-    public void edit(CommandContext context)
+    public void edit(ParameterizedContext context)
     {
-        User user = context.getSenderAsUser("writer", "This command can only be used by players");
+        if (!(context.getSender() instanceof User))
+        {
+            context.sendMessage("writer", "This command can only be used by players");
+        }
+        User user = (User)context.getSender();
 
         if (user.getItemInHand().getType() == Material.WRITTEN_BOOK)
         {
@@ -58,16 +62,17 @@ public class EditCommand
 
             if (target.getType() == Material.WALL_SIGN || target.getType() == Material.SIGN_POST)
             {
-                if (context.namedCount() < 1)
+                Map<String, Object> params = context.getParams();
+                if (params.size() < 1)
                 {
-                    invalidUsage(context, "writer", "&cYou need to specify at least one parameter");
+                    context.sendMessage("writer", "&cYou need to specify at least one parameter");
+                    return;
                 }
                 Sign sign = (Sign)target.getState();
                 String[] lines = sign.getLines();
-                Map<String, Object> params = context.getNamed();
-                for (String key : params.keySet()) // TODO refactor
+                for (Entry<String, Object> entry : params.entrySet()) // TODO refactor
                 {
-                    lines[Integer.parseInt(key) - 1] = context.getNamed(key, String.class);
+                    lines[Integer.parseInt(entry.getKey()) - 1] = (String)entry.getValue();
                 }
                 SignChangeEvent event = new SignChangeEvent(sign.getBlock(), user, sign.getLines());
                 CubeEngine.getEventManager().fireEvent(event);

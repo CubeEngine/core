@@ -2,9 +2,10 @@ package de.cubeisland.cubeengine.log.commands;
 
 import de.cubeisland.cubeengine.core.command.CommandContext;
 import de.cubeisland.cubeengine.core.command.ContainerCommand;
-import de.cubeisland.cubeengine.core.command.annotation.Command;
-import de.cubeisland.cubeengine.core.command.annotation.Flag;
-import de.cubeisland.cubeengine.core.command.annotation.Param;
+import de.cubeisland.cubeengine.core.command.parameterized.Flag;
+import de.cubeisland.cubeengine.core.command.parameterized.Param;
+import de.cubeisland.cubeengine.core.command.parameterized.ParameterizedContext;
+import de.cubeisland.cubeengine.core.command.reflected.Command;
 import de.cubeisland.cubeengine.core.module.Module;
 import de.cubeisland.cubeengine.core.user.User;
 import org.bukkit.Location;
@@ -33,7 +34,7 @@ public class LogCommands extends ContainerCommand
      * @return
      */
     //TODO change return to a selection See WE how they did it
-    private Location getSelection(CommandContext context)
+    private Location getSelection(ParameterizedContext context)
     {
         if (!context.hasFlag("sel"))
         {
@@ -101,12 +102,12 @@ public class LogCommands extends ContainerCommand
         @Param(names = "limit", type = Date.class),
         @Param(names = "world", type = World.class),
     })
-    public void lookup(CommandContext context)
+    public void lookup(ParameterizedContext context)
     {
         ItemStack[] blocktypes;
-        if (context.hasNamed("block"))
+        if (context.hasParam("block"))
         {
-            blocktypes = context.getNamed("block", ItemStack[].class);
+            blocktypes = context.getParam("block");
         }
     }
 }

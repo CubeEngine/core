@@ -1,10 +1,12 @@
 package de.cubeisland.cubeengine.basics.moderation;
 
 import de.cubeisland.cubeengine.core.command.CommandContext;
+import de.cubeisland.cubeengine.core.command.CommandResult;
 import de.cubeisland.cubeengine.core.command.ContainerCommand;
-import de.cubeisland.cubeengine.core.command.annotation.Alias;
-import de.cubeisland.cubeengine.core.command.annotation.Command;
-import de.cubeisland.cubeengine.core.command.annotation.Flag;
+import de.cubeisland.cubeengine.core.command.parameterized.Flag;
+import de.cubeisland.cubeengine.core.command.parameterized.ParameterizedContext;
+import de.cubeisland.cubeengine.core.command.reflected.Alias;
+import de.cubeisland.cubeengine.core.command.reflected.Command;
 import de.cubeisland.cubeengine.core.module.Module;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.util.ChatFormat;
@@ -17,6 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static de.cubeisland.cubeengine.core.command.exception.InvalidUsageException.blockCommand;
+import static java.util.Arrays.asList;
 
 /**
  * The powertool command allows binding commands/chatmacros to a specific item
@@ -26,26 +29,36 @@ public class PowerToolCommand extends ContainerCommand
 {
     public PowerToolCommand(Module module)
     {
-        super(module, "pt", "Binding shortcuts to an item.", "powertool");
+        super(module, "powertool", "Binding shortcuts to an item.", asList("pt"));
     }
 
+    // TODO horrible broken
     @Override
-    public void run(CommandContext context)
+    public CommandResult run(CommandContext context) throws Exception
     {
-        if (context.hasIndexed(0))
+        if (context.hasArg(0))
         {
             //TODO change context to have the replace flag set
-            this.add(context);
-            return;
+            this.add((ParameterizedContext)context);
+            return null;
         }
-        super.run(context);
+        return super.run(context);
     }
 
     @Alias(names = "ptc")
     @Command(desc = "Removes all command from your powertool", flags = @Flag(longName = "all", name = "a"), usage = "[-a]")
-    public void clear(CommandContext context)
+    public void clear(ParameterizedContext context)
     {
-        User sender = context.getSenderAsUser("basics", "&eNo more power for you!");
+        User sender = null;
+        if (context.getSender() instanceof User)
+        {
+            sender = (User)context.getSender();
+        }
+        if (sender == null)
+        {
+            context.sendMessage("basics", "&eNo more power for you!");
+            return;
+        }
         if (context.hasFlag("a"))
         {
             for (ItemStack item : sender.getInventory().getContents())
@@ -69,15 +82,24 @@ public class PowerToolCommand extends ContainerCommand
     @Command(names = {
         "remove", "del", "delete", "rm"
     }, desc = "Removes a command from your powertool", flags = @Flag(longName = "chat", name = "c"), usage = "[command] [-chat]")
-    public void remove(CommandContext context)
+    public void remove(ParameterizedContext context)
     {
-        User sender = context.getSenderAsUser("basics", "&eNo more power for you!");
+        User sender = null;
+        if (context.getSender() instanceof User)
+        {
+            sender = (User)context.getSender();
+        }
+        if (sender == null)
+        {
+            context.sendMessage("basics", "&eNo more power for you!");
+            return;
+        }
         if (sender.getItemInHand().getTypeId() == 0)
         {
             context.sendMessage("basics", "&eYou are not holding any item in your hand.");
             return;
         }
-        if (context.hasIndexed(0))
+        if (context.hasArg(0))
         {
             String cmd = context.getStrings(0);
             if (!context.hasFlag("c"))
@@ -133,9 +155,18 @@ public class PowerToolCommand extends ContainerCommand
         @Flag(longName = "chat", name = "c"),
         @Flag(longName = "replace", name = "r")
     }, usage = "<commandstring>", min = 1)
-    public void add(CommandContext context)
+    public void add(ParameterizedContext context)
     {
-        User sender = context.getSenderAsUser("basics", "&eYou already have enough power!");
+        User sender = null;
+        if (context.getSender() instanceof User)
+        {
+            sender = (User)context.getSender();
+        }
+        if (sender == null)
+        {
+            context.sendMessage("basics", "&eYou already have enough power!");
+            return;
+        }
         String cmd = context.getStrings(0);
         if (sender.getItemInHand().getType().equals(Material.AIR))
         {
@@ -152,9 +183,18 @@ public class PowerToolCommand extends ContainerCommand
 
     @Alias(names = "ptl")
     @Command(desc = "Lists your powertool-bindings.", flags = @Flag(longName = "all", name = "a"))
-    public void list(CommandContext context)
+    public void list(ParameterizedContext context)
     {
-        User sender = context.getSenderAsUser("basics", "&eYou already have enough power!");
+        User sender = null;
+        if (context.getSender() instanceof User)
+        {
+            sender = (User)context.getSender();
+        }
+        if (sender == null)
+        {
+            context.sendMessage("basics", "&eYou already have enough power!");
+            return;
+        }
         if (context.hasFlag("a"))
         {
             for (ItemStack item : sender.getInventory().getContents())

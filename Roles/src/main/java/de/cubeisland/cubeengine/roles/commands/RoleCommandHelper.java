@@ -2,7 +2,9 @@ package de.cubeisland.cubeengine.roles.commands;
 
 import de.cubeisland.cubeengine.core.command.CommandContext;
 import de.cubeisland.cubeengine.core.command.ContainerCommand;
-import static de.cubeisland.cubeengine.core.command.exception.InvalidUsageException.*;
+import de.cubeisland.cubeengine.core.command.parameterized.ParameterizedContext;
+import de.cubeisland.cubeengine.core.command.reflected.ReflectedCommandFactory;
+import de.cubeisland.cubeengine.core.command.sender.CommandSender;
 import de.cubeisland.cubeengine.core.storage.world.WorldManager;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.roles.Roles;
@@ -10,6 +12,9 @@ import de.cubeisland.cubeengine.roles.role.Role;
 import de.cubeisland.cubeengine.roles.role.RoleManager;
 import de.cubeisland.cubeengine.roles.role.RoleProvider;
 import org.bukkit.World;
+
+import static de.cubeisland.cubeengine.core.command.exception.InvalidUsageException.invalidUsage;
+import static de.cubeisland.cubeengine.core.command.exception.InvalidUsageException.paramNotFound;
 
 public abstract class RoleCommandHelper extends ContainerCommand
 {
@@ -26,13 +31,26 @@ public abstract class RoleCommandHelper extends ContainerCommand
         this.worldManager = module.getCore().getWorldManager();
     }
 
-    protected World getWorld(CommandContext context)
+    protected World getWorld(ParameterizedContext context)
     {
-        User sender = context.getSenderAsUser();
         World world;
-        if (!context.hasNamed("in"))
+        if (!context.hasParam("in"))
         {
-            if (sender == null)
+            CommandSender sender = context.getSender();
+            if (sender instanceof User)
+            {
+                User user = (User)sender;
+                world = this.worldManager.getWorld((Long)user.getAttribute(this.module, "curWorldId"));
+                if (world == null)
+                {
+                    world = user.getWorld();
+                }
+                else
+                {
+                    context.sendMessage("roles", "&eYou are using &6%s &eas current world.", world.getName());
+                }
+            }
+            else
             {
                 if (ModuleManagementCommands.curWorldIdOfConsole == null)
                 {
@@ -41,22 +59,10 @@ public abstract class RoleCommandHelper extends ContainerCommand
                 world = this.worldManager.getWorld(ModuleManagementCommands.curWorldIdOfConsole);
                 context.sendMessage("roles", "&eYou are using &6%s &eas current world.", world.getName());
             }
-            else
-            {
-                world = this.worldManager.getWorld((Long)sender.getAttribute(this.module, "curWorldId"));
-                if (world == null)
-                {
-                    world = sender.getWorld();
-                }
-                else
-                {
-                    context.sendMessage("roles", "&eYou are using &6%s &eas current world.", world.getName());
-                }
-            }
         }
         else
         {
-            world = context.getNamed("in", World.class);
+            world = context.getParam("in");
             if (world == null)
             {
                 paramNotFound(context, "roles", "&cWorld %s not found!", context.getString("in"));

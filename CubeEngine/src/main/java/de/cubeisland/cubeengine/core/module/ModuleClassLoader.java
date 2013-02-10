@@ -95,6 +95,7 @@ public class ModuleClassLoader extends URLClassLoader
             clazz = iter.next().getValue();
             Convert.unregisterConverter(clazz);
             ArgumentReader.unregisterReader(clazz);
+            CubeEngine.getCommandManager().removeCommandFactory(clazz);
             iter.remove();
         }
 

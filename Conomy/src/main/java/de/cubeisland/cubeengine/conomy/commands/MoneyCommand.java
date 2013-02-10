@@ -5,12 +5,12 @@ import de.cubeisland.cubeengine.conomy.ConomyPermissions;
 import de.cubeisland.cubeengine.conomy.account.Account;
 import de.cubeisland.cubeengine.conomy.account.storage.AccountModel;
 import de.cubeisland.cubeengine.conomy.currency.Currency;
-import de.cubeisland.cubeengine.core.command.CommandContext;
+import de.cubeisland.cubeengine.core.command.reflected.Alias;
 import de.cubeisland.cubeengine.core.command.ContainerCommand;
-import de.cubeisland.cubeengine.core.command.annotation.Alias;
-import de.cubeisland.cubeengine.core.command.annotation.Command;
-import de.cubeisland.cubeengine.core.command.annotation.Flag;
-import de.cubeisland.cubeengine.core.command.annotation.Param;
+import de.cubeisland.cubeengine.core.command.parameterized.Flag;
+import de.cubeisland.cubeengine.core.command.parameterized.Param;
+import de.cubeisland.cubeengine.core.command.parameterized.ParameterizedContext;
+import de.cubeisland.cubeengine.core.command.reflected.Command;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.util.StringUtils;
 
@@ -26,19 +26,19 @@ public class MoneyCommand extends ContainerCommand
         this.module = module;
     }
 
-    @Override
-    public void run(CommandContext context) {
-        super.run(context);
-        /*
-        if (context.hasIndexed(0))
-        {
-            super.run(context);
-        }
-        else
-        {
-            this.balance(context); // Alias for balance //TODO this is broken because of flags checks in balance
-        }*/
-    }
+//    @Override
+//    public void run(CommandContext context) {
+//        super.run(context);
+//        /*
+//        if (context.hasIndexed(0))
+//        {
+//            super.run(context);
+//        }
+//        else
+//        {
+//            this.balance(context); // Alias for balance //TODO this is broken because of flags checks in balance
+//        }*/
+//    }
 
     @Alias(names = {
         "balance", "moneybalance"
@@ -48,7 +48,7 @@ public class MoneyCommand extends ContainerCommand
             flags = {@Flag(longName = "all", name = "a"),
             @Flag(longName = "showHidden", name = "f")} ,
             params = @Param(names = "in", type = String.class), max = 1)
-    public void balance(CommandContext context)
+    public void balance(ParameterizedContext context)
     {
         User user;
         boolean showHidden = context.hasFlag("f");
@@ -57,7 +57,7 @@ public class MoneyCommand extends ContainerCommand
             if (!ConomyPermissions.ACCOUNT_SHOWHIDDEN.isAuthorized(context.getSender()))
                 showHidden = false;
         }
-        if (context.hasIndexed(0))
+        if (context.hasArg(0))
         {
             user = context.getUser(0);
             if (user == null)
@@ -68,7 +68,12 @@ public class MoneyCommand extends ContainerCommand
         }
         else
         {
-            user = context.getSenderAsUser("conomy", "&cYou are out of money! Better go work than typing silly commands in the console.");
+            if (!(context.getSender() instanceof User))
+            {
+                context.sendMessage("conomy", "&cYou are out of money! Better go work than typing silly commands in the console.");
+                return;
+            }
+            user = (User)context.getSender();
         }
         if (context.hasFlag("a"))
         {
@@ -82,7 +87,7 @@ public class MoneyCommand extends ContainerCommand
         else
         {
             Account acc;
-            if (context.hasNamed("in"))
+            if (context.hasParam("in"))
             {
                 Currency currency = this.module.getCurrencyManager().getCurrencyByName(context.getString("in"));
                 if (currency == null)
@@ -110,7 +115,7 @@ public class MoneyCommand extends ContainerCommand
             usage = "[[fromRank]-ToRank] [in <currency>]",
             params = @Param(names = "in", type = String.class),
             flags = @Flag(longName = "showhidden", name = "f"))
-    public void top(CommandContext context)
+    public void top(ParameterizedContext context)
     {
         boolean showHidden = context.hasFlag("f");
         if (showHidden)
@@ -120,7 +125,7 @@ public class MoneyCommand extends ContainerCommand
         }
         int fromRank = 1;
         int toRank = 10;
-        if (context.hasIndexed(0))
+        if (context.hasArg(0))
         {
             try
             {
@@ -140,7 +145,7 @@ public class MoneyCommand extends ContainerCommand
         }
         Collection<AccountModel> models;
         Currency currency = this.module.getAccountsManager().getMainCurrency();
-        if (context.hasNamed("in"))
+        if (context.hasParam("in"))
         {
             currency = this.module.getCurrencyManager().getCurrencyByName(context.getString("in"));
             if (currency == null)
@@ -177,11 +182,11 @@ public class MoneyCommand extends ContainerCommand
         @Param(names = "in", type = String.class)
     }, flags = @Flag(longName = "force", name = "f")
             , min = 2, max = 2)
-    public void pay(CommandContext context)
+    public void pay(ParameterizedContext context)
     {
         Currency currency;
         String amountString = context.getString(1);
-        if (context.hasNamed("in"))
+        if (context.hasParam("in"))
         {
             currency = this.module.getCurrencyManager().getCurrencyByName(context.getString("in"));
             if (currency == null)
@@ -203,7 +208,7 @@ public class MoneyCommand extends ContainerCommand
         String formattedAmount = currency.formatLong(amount);
         User sender;
         boolean asSomeOneElse = false;
-        if (context.hasNamed("as"))
+        if (context.hasParam("as"))
         {
             sender = context.getUser("as");
             if (sender == null)
@@ -215,7 +220,12 @@ public class MoneyCommand extends ContainerCommand
         }
         else
         {
-            sender = context.getSenderAsUser("conomy", "&cPlease specify a user to use his account.");
+            if (!(context.getSender() instanceof User))
+            {
+                context.sendMessage("conomy", "&cPlease specify a user to use his account.");
+                return;
+            }
+            sender = (User)context.getSender();
         }
         Account source = this.module.getAccountsManager().getAccount(sender, currency);
         if (source == null)

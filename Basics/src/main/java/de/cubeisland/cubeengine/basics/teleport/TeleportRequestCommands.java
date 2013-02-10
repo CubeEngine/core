@@ -2,7 +2,7 @@ package de.cubeisland.cubeengine.basics.teleport;
 
 import de.cubeisland.cubeengine.basics.Basics;
 import de.cubeisland.cubeengine.core.command.CommandContext;
-import de.cubeisland.cubeengine.core.command.annotation.Command;
+import de.cubeisland.cubeengine.core.command.reflected.Command;
 import de.cubeisland.cubeengine.core.user.User;
 
 import static de.cubeisland.cubeengine.core.command.exception.InvalidUsageException.*;
@@ -26,7 +26,16 @@ public class TeleportRequestCommands
     @Command(desc = "Requests to teleport to a player.", usage = "<player>", min = 1, max = 1)
     public void tpa(CommandContext context)
     {
-        final User sender = context.getSenderAsUser("basics", "&6ProTip: &cTeleport does not work IRL!");
+        User sender = null;
+        if (context.getSender() instanceof User)
+        {
+            sender = (User)context.getSender();
+        }
+        if (sender == null)
+        {
+            context.sendMessage("basics", "&6ProTip: &cTeleport does not work IRL!");
+            return;
+        }
         sender.removeAttribute(basics, "tpRequestCancelTask");
         final User user = context.getUser(0);
         if (user == null)
@@ -40,14 +49,15 @@ public class TeleportRequestCommands
         int waitTime = this.basics.getConfiguration().tpRequestWait * 20;
         if (waitTime > 0)
         {
+            final User sendingUser = sender;
             final int taskID = context.getCore().getTaskManager().scheduleSyncDelayedTask(basics, new Runnable()
             {
                 public void run()
                 {
                     user.removeAttribute(basics, "tpRequestCancelTask");
                     user.removeAttribute(basics, "pendingTpToRequest");
-                    sender.sendMessage("basics", "&2%s &cdid not accept your teleport-request.", user.getName());
-                    user.sendMessage("basics", "&cTeleport-request of &2%s &ctimed out.", sender.getName());
+                    sendingUser.sendMessage("basics", "&2%s &cdid not accept your teleport-request.", user.getName());
+                    user.sendMessage("basics", "&cTeleport-request of &2%s &ctimed out.", sendingUser.getName());
                 }
             }, waitTime); // wait x - seconds
             Integer oldtaskID = (Integer)user.getAttribute(basics, "tpRequestCancelTask");
@@ -62,7 +72,16 @@ public class TeleportRequestCommands
     @Command(desc = "Requests to teleport a player to you.", usage = "<player>", min = 1, max = 1)
     public void tpahere(CommandContext context)
     {
-        final User sender = context.getSenderAsUser("basics", "&6ProTip: &cTeleport does not work IRL!");
+        User sender = null;
+        if (context.getSender() instanceof User)
+        {
+            sender = (User)context.getSender();
+        }
+        if (sender == null)
+        {
+            context.sendMessage("basics", "&6ProTip: &cTeleport does not work IRL!");
+            return;
+        }
         sender.removeAttribute(basics, "tpRequestCancelTask");
         final User user = context.getUser(0);
         if (user == null)
@@ -76,14 +95,15 @@ public class TeleportRequestCommands
         int waitTime = this.basics.getConfiguration().tpRequestWait * 20;
         if (waitTime > 0)
         {
+            final User sendingUser = sender;
             final int taskID = context.getCore().getTaskManager().scheduleSyncDelayedTask(basics, new Runnable()
             {
                 public void run()
                 {
                     user.removeAttribute(basics, "tpRequestCancelTask");
                     user.removeAttribute(basics, "pendingTpFromRequest");
-                    sender.sendMessage("basics", "&2%s &cdid not accept your teleport-request.", user.getName());
-                    user.sendMessage("basics", "&cTeleport-request of &2%s &ctimed out.", sender.getName());
+                    sendingUser.sendMessage("basics", "&2%s &cdid not accept your teleport-request.", user.getName());
+                    user.sendMessage("basics", "&cTeleport-request of &2%s &ctimed out.", sendingUser.getName());
                 }
             }, waitTime); // wait x - seconds
             Integer oldtaskID = (Integer)user.getAttribute(basics, "tpRequestCancelTask");
@@ -100,7 +120,16 @@ public class TeleportRequestCommands
     }, desc = "Accepts any pending teleport-request.", max = 0)
     public void tpaccept(CommandContext context)
     {
-        User sender = context.getSenderAsUser("basics", "&cNo one wants to teleport to you!");
+        User sender = null;
+        if (context.getSender() instanceof User)
+        {
+            sender = (User)context.getSender();
+        }
+        if (sender == null)
+        {
+            context.sendMessage("basics", "&cNo one wants to teleport to you!");
+            return;
+        }
         String name = sender.getAttribute(basics, "pendingTpToRequest");
         if (name == null)
         {
@@ -143,7 +172,16 @@ public class TeleportRequestCommands
     @Command(desc = "Denies any pending teleport-request.", max = 0)
     public void tpdeny(CommandContext context)
     {
-        User sender = context.getSenderAsUser("basics", "&cNo one wants to teleport to you!");
+        User sender = null;
+        if (context.getSender() instanceof User)
+        {
+            sender = (User)context.getSender();
+        }
+        if (sender == null)
+        {
+            context.sendMessage("basics", "&cNo one wants to teleport to you!");
+            return;
+        }
         String tpa = sender.getAttribute(basics, "pendingTpToRequest");
         String tpahere = sender.getAttribute(basics, "pendingTpFromRequest");
         if (tpa != null)

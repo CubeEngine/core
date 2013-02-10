@@ -5,9 +5,11 @@ import de.cubeisland.cubeengine.conomy.account.Account;
 import de.cubeisland.cubeengine.conomy.currency.Currency;
 import de.cubeisland.cubeengine.core.command.CommandContext;
 import de.cubeisland.cubeengine.core.command.ContainerCommand;
-import de.cubeisland.cubeengine.core.command.annotation.Command;
-import de.cubeisland.cubeengine.core.command.annotation.Flag;
-import de.cubeisland.cubeengine.core.command.annotation.Param;
+import de.cubeisland.cubeengine.core.command.parameterized.ParameterizedContext;
+import de.cubeisland.cubeengine.core.command.reflected.Command;
+import de.cubeisland.cubeengine.core.command.parameterized.Flag;
+import de.cubeisland.cubeengine.core.command.parameterized.Param;
+import de.cubeisland.cubeengine.core.command.reflected.ReflectedCommandFactory;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.util.StringUtils;
 
@@ -26,11 +28,11 @@ public class EcoCommands extends ContainerCommand
             usage = "<player>|* [-o] <amount> [in <currency>]",
             flags = @Flag(longName = "online", name = "o"),
             params = @Param(names = {"in", "c", "currency"}, type = String.class), min = 2, max = 2)
-    public void give(CommandContext context)
+    public void give(ParameterizedContext context)
     {
         Currency currency;
         String amountString = context.getString(1);
-        if (context.hasNamed("in"))
+        if (context.hasParam("in"))
         {
             currency = this.module.getCurrencyManager().getCurrencyByName(context.getString("in"));
             if (currency == null)
@@ -95,11 +97,11 @@ public class EcoCommands extends ContainerCommand
             usage = "<player>|* [-o] <amount> [in <currency>]",
             flags = @Flag(longName = "online", name = "o"),
             params = @Param(names = {"in", "c", "currency"}, type = String.class), min = 1, max = 2)
-    public void take(CommandContext context)
+    public void take(ParameterizedContext context)
     {
         Currency currency;
         String amountString = context.getString(1);
-        if (context.hasNamed("in"))
+        if (context.hasParam("in"))
         {
             currency = this.module.getCurrencyManager().getCurrencyByName(context.getString("in"));
             if (currency == null)
@@ -163,10 +165,10 @@ public class EcoCommands extends ContainerCommand
             usage = "<player>|* [-o] [in <currency>]",
             flags = @Flag(longName = "online", name = "o"),
             params = @Param(names = {"in", "c", "currency"}, type = String.class), max = 1)
-    public void reset(CommandContext context)
+    public void reset(ParameterizedContext context)
     {
         Currency currency;
-        if (context.hasNamed("in"))
+        if (context.hasParam("in"))
         {
             currency = this.module.getCurrencyManager().getCurrencyByName(context.getString("in"));
             if (currency == null)
@@ -224,11 +226,11 @@ public class EcoCommands extends ContainerCommand
             usage = "<player>|* [-o] <amount> [in <currency>]",
             flags = @Flag(longName = "online", name = "o"),
             params = @Param(names = { "in", "c", "currency" }, type = String.class), min = 1, max = 2)
-    public void set(CommandContext context)
+    public void set(ParameterizedContext context)
     {
         Currency currency;
         String amountString = context.getString(1);
-        if (context.hasNamed("in"))
+        if (context.hasParam("in"))
         {
             currency = this.module.getCurrencyManager().getCurrencyByName(context.getString("in"));
             if (currency == null)
@@ -295,10 +297,10 @@ public class EcoCommands extends ContainerCommand
     @Command(desc = "Hides the account of given player",
             usage = "<player> [in <currency>]",
             params = @Param(names = { "in", "c", "currency" }, type = String.class), min = 1, max = 2)
-    public void hide(CommandContext context)
+    public void hide(ParameterizedContext context)
     {
         Currency currency;
-        if (context.hasNamed("in"))
+        if (context.hasParam("in"))
         {
             currency = this.module.getCurrencyManager().getCurrencyByName(context.getString("in"));
             if (currency == null)
@@ -344,10 +346,10 @@ public class EcoCommands extends ContainerCommand
     @Command(desc = "Unhides the account of given player",
             usage = "<player> [in <currency>]",
             params = @Param(names = { "in", "c", "currency" }, type = String.class), min = 1, max = 2)
-    public void unhide(CommandContext context)
+    public void unhide(ParameterizedContext context)
     {
         Currency currency;
-        if (context.hasNamed("in"))
+        if (context.hasParam("in"))
         {
             currency = this.module.getCurrencyManager().getCurrencyByName(context.getString("in"));
             if (currency == null)

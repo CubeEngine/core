@@ -372,7 +372,7 @@ public abstract class BaseModuleManager implements ModuleManager
         this.core.getEventManager().unregisterListener(module);
         this.core.getPermissionManager().unregisterPermissions(module);
         this.core.getTaskManager().cancelTasks(module);
-        this.core.getCommandManager().unregister(module);
+        this.core.getCommandManager().removeCommands(module);
         this.core.getApiServer().unregisterApiHandlers(module);
         this.core.getUserManager().clearAttributes(module);
 
@@ -437,6 +437,11 @@ public abstract class BaseModuleManager implements ModuleManager
         System.gc();
         System.gc();
         LOGGER.log(DEBUG, "Unloading '" + module.getName() + "' took {0} milliseconds!", Profiler.endProfiling("unload-" + module.getId(), TimeUnit.MILLISECONDS));
+    }
+
+    public void reloadModule(Module module)
+    {
+        module.reload();
     }
 
     /**

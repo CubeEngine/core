@@ -1,5 +1,6 @@
 package de.cubeisland.cubeengine.roles;
 
+import de.cubeisland.cubeengine.core.command.reflected.ReflectedCommand;
 import de.cubeisland.cubeengine.core.module.Module;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.util.convert.Convert;
@@ -46,11 +47,11 @@ public class Roles extends Module
         this.manager = new RoleManager(this);
 
         this.registerCommand(new RoleCommands(this));
-        this.getCommandManager().registerCommand(new RoleInformationCommands(this), "roles");
-        this.registerCommands(new RoleManagementCommands(this), "roles", "role");
-        this.getCommandManager().registerCommand(new UserInformationCommands(this), "roles");
-        this.registerCommands(new UserManagementCommands(this), "roles", "user");
-        this.getCommandManager().registerCommand(new ModuleManagementCommands(this), "roles");
+        this.registerCommand(new RoleInformationCommands(this), "roles");
+        this.registerCommands(new RoleManagementCommands(this), ReflectedCommand.class, "roles", "role");
+        this.registerCommand(new UserInformationCommands(this), "roles");
+        this.registerCommands(new UserManagementCommands(this), ReflectedCommand.class, "roles", "user");
+        this.registerCommand(new ModuleManagementCommands(this), "roles");
 
         this.getEventManager().registerListener(this, new RolesEventHandler(this));
         //init on FinishedLoadModulesEvent

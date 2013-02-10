@@ -3,7 +3,7 @@ package de.cubeisland.cubeengine.basics.general;
 import de.cubeisland.cubeengine.basics.Basics;
 import de.cubeisland.cubeengine.basics.storage.BasicUser;
 import de.cubeisland.cubeengine.core.command.CommandContext;
-import de.cubeisland.cubeengine.core.command.annotation.Command;
+import de.cubeisland.cubeengine.core.command.reflected.Command;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.user.UserManager;
 import de.cubeisland.cubeengine.core.util.time.Duration;
@@ -14,6 +14,7 @@ import static de.cubeisland.cubeengine.core.command.exception.IllegalParameterVa
 import static de.cubeisland.cubeengine.core.command.exception.InvalidUsageException.blockCommand;
 import static de.cubeisland.cubeengine.core.command.exception.InvalidUsageException.paramNotFound;
 import static de.cubeisland.cubeengine.core.i18n.I18n._;
+import static de.cubeisland.cubeengine.core.util.Misc.arr;
 
 public class ChatCommands
 {
@@ -30,7 +31,16 @@ public class ChatCommands
     @Command(desc = "Ignores all messages from players", min = 1, max = 1, usage = "<player>")
     public void ignore(CommandContext context)
     {
-        User sender = context.getSenderAsUser("basics", "&cThis command is not availiable for console!");
+        User sender = null;
+        if (context.getSender() instanceof User)
+        {
+            sender = (User)context.getSender();
+        }
+        if (sender == null)
+        {
+            context.sendMessage("basics", "&cThis command is not availiable for console!");
+            return;
+        }
         User user = context.getUser(0);
         if (user == null)
         {
@@ -50,7 +60,16 @@ public class ChatCommands
     @Command(desc = "Ignores all messages from players", min = 1, max = 1, usage = "<player>")
     public void unignore(CommandContext context)
     {
-        User sender = context.getSenderAsUser("basics", "&cThis command is not availiable for console!");
+        User sender = null;
+        if (context.getSender() instanceof User)
+        {
+            sender = (User)context.getSender();
+        }
+        if (sender == null)
+        {
+            context.sendMessage("basics", "&cThis command is not availiable for console!");
+            return;
+        }
         User user = context.getUser(0);
         if (user == null)
         {
@@ -80,7 +99,11 @@ public class ChatCommands
     public void msg(CommandContext context)
     {
         String message = context.getStrings(1);
-        User sender = context.getSenderAsUser();
+        User sender = null;
+        if (context.getSender() instanceof User)
+        {
+            sender = (User)context.getSender();
+        }
         User user = context.getUser(0);
         if (user == null)
         {
@@ -91,7 +114,7 @@ public class ChatCommands
             if (context.getString(0).equalsIgnoreCase("console"))
             {
                 context.getSender().getServer().getConsoleSender().
-                        sendMessage(_("basics", "&2%s &6-> &eYou: &f%s", context.getSender().getName(), message));
+                        sendMessage(_("basics", "&2%s &6-> &eYou: &f%s", arr(context.getSender().getName(), message)));
                 context.sendMessage("basics", "&eYou &6-> &2%s&e: &f%s", "CONSOLE", message);
             }
             else
@@ -111,7 +134,7 @@ public class ChatCommands
             {
                 context.sendMessage("basics", "&2%s &7is afk!", user.getName());
             }
-            context.sendMessage(_("basics", "&eYou &6-> &2%s&e: &f%s", user.getName(), message));
+            context.sendMessage(_("basics", "&eYou &6-> &2%s&e: &f%s", arr(user.getName(), message)));
         }
 
         if (sender == null)
@@ -139,7 +162,11 @@ public class ChatCommands
     }, desc = "Replies to the last person that whispered to you.", usage = "<message>")
     public void reply(CommandContext context)
     {
-        User sender = context.getSenderAsUser();
+        User sender = null;
+        if (context.getSender() instanceof User)
+        {
+            sender = (User)context.getSender();
+        }
         boolean replyToConsole = false;
         User user;
         String lastWhisperer;
@@ -169,7 +196,7 @@ public class ChatCommands
         String message = context.getStrings(0);
         if (replyToConsole)
         {
-            sender.getServer().getConsoleSender().sendMessage(_("basics", "&e%s -> You: &f%s", context.getSender().getName(), message));
+            sender.getServer().getConsoleSender().sendMessage(_("basics", "&e%s -> You: &f%s", arr(context.getSender().getName(), message)));
             context.sendMessage("basics", "&eYou &6-> &2%s&e: &f%s", "CONSOLE", message);
         }
         else
@@ -180,7 +207,7 @@ public class ChatCommands
             {
                 context.sendMessage("basics", "&2%s &7is afk!", user.getName());
             }
-            context.sendMessage(_("basics", "&eYou &6-> %&2s&e: &f%s", user.getName(), message));
+            context.sendMessage(_("basics", "&eYou &6-> %&2s&e: &f%s", arr(user.getName(), message)));
         }
     }
 
@@ -189,7 +216,7 @@ public class ChatCommands
     {
         StringBuilder sb = new StringBuilder();
         int i = 0;
-        while (context.hasIndexed(i))
+        while (context.hasArg(i))
         {
             sb.append(context.getString(i++)).append(" ");
         }
@@ -210,7 +237,7 @@ public class ChatCommands
             context.sendMessage("basics", "&2%s &ewas already muted!", user.getName());
         }
         Duration dura = basics.getConfiguration().defaultMuteTime;
-        if (context.hasIndexed(1))
+        if (context.hasArg(1))
         {
             try
             {

@@ -1,7 +1,5 @@
 package de.cubeisland.cubeengine.core.webapi;
 
-import de.cubeisland.cubeengine.core.command.ArgumentReader;
-import de.cubeisland.cubeengine.core.command.InvalidArgumentException;
 import org.apache.commons.lang.Validate;
 
 import java.util.List;
@@ -17,7 +15,7 @@ public class Parameters
     }
 
     @SuppressWarnings("unchecked")
-    public <T> T get(String name, int index, Class<T> type) throws InvalidArgumentException
+    public <T> T get(String name, int index, Class<T> type)
     {
         List<String> values = this.data.get(name);
         if (values == null)
@@ -27,7 +25,7 @@ public class Parameters
         String value = values.get(index);
         if (type != String.class)
         {
-            return ArgumentReader.read(type, value).getRight();
+            //return ArgumentReader.read(type, value).getRight(); TODO BROKEN
         }
         return (T)value;
     }
@@ -38,34 +36,23 @@ public class Parameters
         Validate.notNull(def, "The default value must not be null!");
 
         T value = def;
-        try
-        {
-            value = (T)this.get(name, index, def.getClass());
-        }
-        catch (InvalidArgumentException ignored)
-        {}
+        value = (T)this.get(name, index, def.getClass());
         return value;
     }
 
-    public <T> T get(String name, Class<T> type) throws InvalidArgumentException
+    public <T> T get(String name, Class<T> type)
     {
         return this.get(name, 0, type);
     }
 
-    public <T> T get(String name, T def) throws InvalidArgumentException
+    public <T> T get(String name, T def)
     {
         return this.get(name, 0, def);
     }
 
     public String getString(String name, int index)
     {
-        try
-        {
-            return this.get(name, index, String.class);
-        }
-        catch (InvalidArgumentException ignored)
-        {}
-        return null;
+        return this.get(name, index, String.class);
     }
 
     public String getString(String name, int index, String def)

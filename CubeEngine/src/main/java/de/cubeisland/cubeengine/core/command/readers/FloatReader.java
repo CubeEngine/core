@@ -1,8 +1,7 @@
 package de.cubeisland.cubeengine.core.command.readers;
 
 import de.cubeisland.cubeengine.core.command.ArgumentReader;
-import de.cubeisland.cubeengine.core.command.InvalidArgumentException;
-import de.cubeisland.cubeengine.core.util.Pair;
+import de.cubeisland.cubeengine.core.command.exception.InvalidArgumentException;
 
 public class FloatReader extends ArgumentReader<Float>
 {
@@ -12,16 +11,16 @@ public class FloatReader extends ArgumentReader<Float>
     }
 
     @Override
-    public Pair<Integer, Float> read(String... args) throws InvalidArgumentException
+    public Float read(String arg) throws InvalidArgumentException
     {
-        String num = args[0].replaceFirst("\\D", ".").replaceAll("[^\\d\\.]]", "");
+        String num = arg.replaceFirst("\\D", ".").replaceAll("[^\\d\\.]]", "");
         try
         {
-            return new Pair<Integer, Float>(1, Float.parseFloat(num));
+            return Float.parseFloat(num);
         }
         catch (NumberFormatException e)
         {
-            throw new InvalidArgumentException("Could not parse " + args[0] + " to Float!");
+            throw new InvalidArgumentException("Could not parse " + arg + " to Float!");
         }
     }
 }

@@ -1,18 +1,19 @@
 package de.cubeisland.cubeengine.roles.commands;
 
-import de.cubeisland.cubeengine.core.command.CommandContext;
-import de.cubeisland.cubeengine.core.command.annotation.Alias;
-import de.cubeisland.cubeengine.core.command.annotation.Command;
-import de.cubeisland.cubeengine.core.command.annotation.Param;
+import de.cubeisland.cubeengine.core.command.reflected.Alias;
+import de.cubeisland.cubeengine.core.command.parameterized.Param;
+import de.cubeisland.cubeengine.core.command.parameterized.ParameterizedContext;
+import de.cubeisland.cubeengine.core.command.reflected.Command;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.roles.Roles;
 import de.cubeisland.cubeengine.roles.role.Role;
 import de.cubeisland.cubeengine.roles.role.RoleMetaData;
 import de.cubeisland.cubeengine.roles.role.RolePermission;
 import de.cubeisland.cubeengine.roles.role.UserSpecificRole;
+import org.bukkit.World;
+
 import java.util.Collection;
 import java.util.Map;
-import org.bukkit.World;
 
 public class UserInformationCommands extends UserCommandHelper
 {
@@ -23,10 +24,10 @@ public class UserInformationCommands extends UserCommandHelper
 
     @Alias(names = "listuroles")
     @Command(desc = "Lists roles of a user [in world]", usage = "[player] [in <world>]", params = @Param(names = "in", type = World.class), max = 2)
-    public void list(CommandContext context)
+    public void list(ParameterizedContext context)
     {
         User user = this.getUser(context, 0);
-        World world = this.getWorld(context, user);
+        World world = this.getWorld(context);
         Role role = this.getUserRole(user, world);
         // List all assigned roles
         Collection<Role> roles = role.getParentRoles();
@@ -48,10 +49,10 @@ public class UserInformationCommands extends UserCommandHelper
     @Command(names = {
         "checkperm", "checkpermission"
     }, desc = "Checks for permissions of a user [in world]", usage = "<permission> [player] [in <world>]", params = @Param(names = "in", type = World.class), max = 3, min = 1)
-    public void checkpermission(CommandContext context)
+    public void checkpermission(ParameterizedContext context)
     {
         User user = this.getUser(context, 1);
-        World world = this.getWorld(context, user);
+        World world = this.getWorld(context);
         UserSpecificRole role = this.getUserRole(user, world);
         // Search for permission
         String permission = context.getString(0);
@@ -106,10 +107,10 @@ public class UserInformationCommands extends UserCommandHelper
     @Command(names = {
         "listperm", "listpermission"
     }, desc = "List permission of a user [in world]", usage = "[player] [in <world>]", params = @Param(names = "in", type = World.class), max = 2)
-    public void listpermission(CommandContext context)
+    public void listpermission(ParameterizedContext context)
     {
         User user = this.getUser(context, 0);
-        World world = this.getWorld(context, user);
+        World world = this.getWorld(context);
         UserSpecificRole role = this.getUserRole(user, world);
         // List permissions
         if (role.getAllLiteralPerms().isEmpty())
@@ -130,10 +131,10 @@ public class UserInformationCommands extends UserCommandHelper
     @Command(names = {
         "checkdata", "checkmeta", "checkmetadata"
     }, desc = "Checks for metadata of a user [in world]", usage = "<metadatakey> [player] [in <world>]", params = @Param(names = "in", type = World.class), max = 3, min = 1)
-    public void checkmetadata(CommandContext context)
+    public void checkmetadata(ParameterizedContext context)
     {
         User user = this.getUser(context, 1);
-        World world = this.getWorld(context, user);
+        World world = this.getWorld(context);
         UserSpecificRole role = this.getUserRole(user, world);
         // Check metadata
         String metaKey = context.getString(0);
@@ -154,10 +155,10 @@ public class UserInformationCommands extends UserCommandHelper
     @Command(names = {
         "listdata", "listmeta", "listmetadata"
     }, desc = "List metadata of a user [in world]", usage = "[player] [in <world>]", params = @Param(names = "in", type = World.class), max = 2)
-    public void listmetadata(CommandContext context)
+    public void listmetadata(ParameterizedContext context)
     {
         User user = this.getUser(context, 0);
-        World world = this.getWorld(context, user);
+        World world = this.getWorld(context);
         UserSpecificRole role = this.getUserRole(user, world);
         // List all metadata
         context.sendMessage("roles", "&eMetadata of &2%s&e in &6%s&e.:", user.getName(), world.getName());

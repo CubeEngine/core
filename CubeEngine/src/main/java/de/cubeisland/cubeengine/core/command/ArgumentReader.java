@@ -1,14 +1,7 @@
 package de.cubeisland.cubeengine.core.command;
 
-import de.cubeisland.cubeengine.core.command.readers.EnchantmentReader;
-import de.cubeisland.cubeengine.core.command.readers.FloatReader;
-import de.cubeisland.cubeengine.core.command.readers.IntReader;
-import de.cubeisland.cubeengine.core.command.readers.ItemStackReader;
-import de.cubeisland.cubeengine.core.command.readers.LongReader;
-import de.cubeisland.cubeengine.core.command.readers.StringReader;
-import de.cubeisland.cubeengine.core.command.readers.UserReader;
-import de.cubeisland.cubeengine.core.command.readers.WorldReader;
-import de.cubeisland.cubeengine.core.util.Pair;
+import de.cubeisland.cubeengine.core.command.exception.InvalidArgumentException;
+import de.cubeisland.cubeengine.core.command.readers.*;
 import org.apache.commons.lang.Validate;
 
 import java.util.Iterator;
@@ -40,11 +33,10 @@ public abstract class ArgumentReader<T>
 
     /**
      *
-     * @param args an string array of arguments
+     * @param arg an string
      * @return the number of arguments paired with the value that got read from the input array
-     * @throws InvalidArgumentException
      */
-    public abstract Pair<Integer, T> read(String... args) throws InvalidArgumentException;
+    public abstract T read(String arg) throws InvalidArgumentException;
 
     public Class<T> getType()
     {
@@ -78,7 +70,7 @@ public abstract class ArgumentReader<T>
     }
 
     @SuppressWarnings("unchecked")
-    public static <T> Pair<Integer, T> read(Class<T> clazz, String... strings) throws InvalidArgumentException
+    public static <T> T read(Class<T> clazz, String string) throws InvalidArgumentException
     {
         ArgumentReader<T> reader = READERS.get(clazz);
         if (reader == null)
@@ -96,6 +88,6 @@ public abstract class ArgumentReader<T>
         {
             throw new IllegalStateException("No reader found for " + clazz.getName() + "!");
         }
-        return reader.read(strings);
+        return reader.read(string);
     }
 }

@@ -11,10 +11,7 @@ import org.apache.commons.lang.Validate;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Server;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandMap;
-import org.bukkit.command.PluginCommand;
-import org.bukkit.command.SimpleCommandMap;
+import org.bukkit.command.*;
 import org.bukkit.command.defaults.BukkitCommand;
 import org.bukkit.craftbukkit.v1_4_R1.CraftServer;
 import org.bukkit.craftbukkit.v1_4_R1.entity.CraftPlayer;
@@ -74,13 +71,31 @@ public class BukkitUtils
         return (hackSucceeded && CraftServer.class == Bukkit.getServer().getClass() && SimplePluginManager.class == Bukkit.getPluginManager().getClass() && SimpleHelpMap.class == Bukkit.getHelpMap().getClass());
     }
 
+    public static String getLanguage(CommandSender sender)
+    {
+        if (sender instanceof de.cubeisland.cubeengine.core.command.sender.CommandSender)
+        {
+            return ((de.cubeisland.cubeengine.core.command.sender.CommandSender)sender).getLanguage();
+        }
+        String language = null;
+        if (sender instanceof Player)
+        {
+            language = getLanguage((Player)sender);
+        }
+        if (language == null)
+        {
+            language = CubeEngine.getConfiguration().defaultLanguage;
+        }
+        return language;
+    }
+
     /**
      * Returns the locale string of a player.
      *
      * @param player the Player instance
      * @return the locale string of the player
      */
-    public static String getLanguage(Player player)
+    private static String getLanguage(Player player)
     {
         if (player.getClass() == CraftPlayer.class)
         {

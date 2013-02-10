@@ -4,6 +4,7 @@ import de.cubeisland.cubeengine.basics.Basics;
 import de.cubeisland.cubeengine.core.CubeEngine;
 import de.cubeisland.cubeengine.core.bukkit.BukkitCore;
 import de.cubeisland.cubeengine.core.bukkit.event.PlayerLanguageReceivedEvent;
+import de.cubeisland.cubeengine.core.command.reflected.ReflectedCommand;
 import de.cubeisland.cubeengine.core.config.Configuration;
 import de.cubeisland.cubeengine.core.filesystem.FileUtil;
 import de.cubeisland.cubeengine.core.logger.CubeFileHandler;
@@ -74,7 +75,7 @@ public class Test extends Module
         this.testMatchers();
         this.testsomeUtils();
 
-        this.registerCommands(new TestCommands());
+        this.registerCommands(new TestCommands(), ReflectedCommand.class);
 
         this.registerListener(new Listener()
         {

@@ -1,39 +1,36 @@
 package de.cubeisland.cubeengine.fun.commands;
 
-import de.cubeisland.cubeengine.core.command.CommandContext;
-import de.cubeisland.cubeengine.core.command.annotation.Command;
-import de.cubeisland.cubeengine.core.command.annotation.Flag;
-import de.cubeisland.cubeengine.core.command.annotation.Param;
+import de.cubeisland.cubeengine.core.command.parameterized.Flag;
+import de.cubeisland.cubeengine.core.command.parameterized.Param;
+import de.cubeisland.cubeengine.core.command.parameterized.ParameterizedContext;
+import de.cubeisland.cubeengine.core.command.reflected.Command;
 import de.cubeisland.cubeengine.core.permission.PermDefault;
 import de.cubeisland.cubeengine.core.permission.PermissionManager;
 import de.cubeisland.cubeengine.core.user.User;
+import de.cubeisland.cubeengine.core.util.matcher.Match;
 import de.cubeisland.cubeengine.fun.Fun;
 import de.cubeisland.cubeengine.fun.FunPerm;
-import org.bukkit.Location;
-import org.bukkit.entity.Arrow;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.Explosive;
-import org.bukkit.entity.Projectile;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.Listener;
-import org.bukkit.event.entity.EntityExplodeEvent;
-import java.util.Set;
-import static de.cubeisland.cubeengine.core.command.exception.IllegalParameterValue.illegalParameter;
-import static de.cubeisland.cubeengine.core.command.exception.InvalidUsageException.invalidUsage;
-import static de.cubeisland.cubeengine.core.command.exception.PermissionDeniedException.denyAccess;
-import de.cubeisland.cubeengine.core.util.matcher.Match;
 import gnu.trove.map.hash.THashMap;
 import gnu.trove.set.hash.THashSet;
+import org.bukkit.Location;
+import org.bukkit.command.CommandSender;
+import org.bukkit.entity.*;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
+import org.bukkit.event.Listener;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.EntityExplodeEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.util.Vector;
+
 import java.util.EnumSet;
 import java.util.Locale;
 import java.util.Map;
-import org.bukkit.command.CommandSender;
-import org.bukkit.entity.EntityType;
-import org.bukkit.entity.ExperienceOrb;
-import org.bukkit.event.EventPriority;
-import org.bukkit.event.entity.EntityDamageByEntityEvent;
-import org.bukkit.event.player.PlayerQuitEvent;
-import org.bukkit.util.Vector;
+import java.util.Set;
+
+import static de.cubeisland.cubeengine.core.command.exception.IllegalParameterValue.illegalParameter;
+import static de.cubeisland.cubeengine.core.command.exception.InvalidUsageException.invalidUsage;
+import static de.cubeisland.cubeengine.core.command.exception.PermissionDeniedException.denyAccess;
 
 public class ThrowCommands
 {
@@ -71,7 +68,7 @@ public class ThrowCommands
         flags = @Flag(longName = "unsafe", name = "u"),
         usage = "<material> [amount] [delay <value>] [-unsafe]"
     )
-    public void throwCommand(CommandContext context)
+    public void throwCommand(ParameterizedContext context)
     {
         if (!(context.getSender() instanceof CommandSender))
         {
@@ -85,7 +82,7 @@ public class ThrowCommands
         ThrowTask task = this.thrownItems.remove(user.getName());
         if (task != null)
         {
-            if (!context.hasIndexed(0) || (type = Match.entity().any(context.getString(0))) == task.getType() && task.getInterval() == context.getNamed("d", int.class, task.getInterval()) && task.getPreventDamage() != context.hasFlag("u"))
+            if (!context.hasArg(0) || (type = Match.entity().any(context.getString(0))) == task.getType() && task.getInterval() == context.getParam("d", task.getInterval()) && task.getPreventDamage() != context.hasFlag("u"))
             {
                 task.stop(true);
                 return;
@@ -93,18 +90,18 @@ public class ThrowCommands
             task.stop(showNotification = false);
         }
         
-        if (context.getIndexed().isEmpty())
+        if (context.getArgCount() == 0)
         {
             invalidUsage(context, "fun", "&cYou have to add the material you want to throw.");
         }
         
-        int amount = context.getIndexed(1, Integer.class, -1);
+        int amount = context.getArg(1, int.class, -1);
         if ((amount > this.fun.getConfig().maxThrowNumber || amount < 1) && amount != -1)
         {
             illegalParameter(context, "fun", "&cThe amount has to be a number from 1 to %d", this.fun.getConfig().maxThrowNumber);
         }
         
-        int delay = context.getNamed("delay", Integer.class, 3);
+        int delay = context.getParam("delay", 3);
         if (delay > this.fun.getConfig().maxThrowDelay || delay < 0)
         {
             illegalParameter(context, "fun", "&cThe delay has to be a number from 0 to %d", this.fun.getConfig().maxThrowDelay);

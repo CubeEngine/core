@@ -1,12 +1,14 @@
 package de.cubeisland.cubeengine.roles.commands;
 
+import de.cubeisland.cubeengine.core.command.reflected.Alias;
 import de.cubeisland.cubeengine.core.command.CommandContext;
 import de.cubeisland.cubeengine.core.command.ContainerCommand;
-import de.cubeisland.cubeengine.core.command.annotation.Alias;
-import de.cubeisland.cubeengine.core.command.annotation.Command;
+import de.cubeisland.cubeengine.core.command.reflected.Command;
+import de.cubeisland.cubeengine.core.command.sender.CommandSender;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.roles.Roles;
 
+// TODO rename!
 public class ModuleManagementCommands extends ContainerCommand
 {
     public ModuleManagementCommands(Roles module)
@@ -47,7 +49,7 @@ public class ModuleManagementCommands extends ContainerCommand
     public void defaultworld(CommandContext context)
     {
         Long worldId = null;
-        if (context.hasIndexed(0))
+        if (context.hasArg(0))
         {
             worldId = this.getModule().getCore().getWorldManager().getWorldId(context.getString(0));
             if (worldId == null)
@@ -61,27 +63,27 @@ public class ModuleManagementCommands extends ContainerCommand
         {
             context.sendMessage("roles", "&eCurrent world for roles resetted!");
         }
-        User user = context.getSenderAsUser();
-        if (user == null)
+        CommandSender sender = context.getSender();
+        if (sender instanceof User)
         {
-            if (context.hasIndexed(0))
+            if (worldId == null)
+            {
+                ((User)sender).removeAttribute(this.getModule(), "curWorldId");
+            }
+            else
+            {
+                ((User)sender).setAttribute(this.getModule(), "curWorldId", worldId);
+            }
+        }
+        else
+        {
+            if (context.hasArg(0))
             {
                 curWorldIdOfConsole = worldId;
             }
             else
             {
                 curWorldIdOfConsole = null;
-            }
-        }
-        else
-        {
-            if (worldId == null)
-            {
-                user.removeAttribute(this.getModule(), "curWorldId");
-            }
-            else
-            {
-                user.setAttribute(this.getModule(), "curWorldId", worldId);
             }
         }
     }

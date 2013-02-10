@@ -1,38 +1,65 @@
 package de.cubeisland.cubeengine.core.command;
 
+import de.cubeisland.cubeengine.core.command.parameterized.ParameterizedCommand;
+import de.cubeisland.cubeengine.core.command.parameterized.ParameterizedContextFactory;
+import de.cubeisland.cubeengine.core.command.reflected.ReflectedCommand;
+import de.cubeisland.cubeengine.core.command.sender.CommandSender;
 import de.cubeisland.cubeengine.core.module.Module;
-import java.util.Arrays;
+
 import java.util.Collections;
-import org.bukkit.command.CommandSender;
+import java.util.List;
 
 import static de.cubeisland.cubeengine.core.i18n.I18n._;
 
 /**
- * This class is just a container for other commands that provides a help command
+ *
+ * @author Phillip Schichtel
  */
-public class ContainerCommand extends CubeCommand
+public abstract class ContainerCommand extends ParameterizedCommand implements CommandHolder
 {
+    private static final List<String> NO_ALIASES = Collections.emptyList();
+    private final Class<? extends CubeCommand> subCommandType;
+
     public ContainerCommand(Module module, String name, String description)
     {
-        super(module, name, description, "[command]", Collections.<String> emptyList());
+        this(module, ReflectedCommand.class, name, description, NO_ALIASES);
     }
 
-    public ContainerCommand(Module module, String name, String description, String... aliases)
+    public ContainerCommand(Module module, Class<? extends CubeCommand> subCommandType, String name, String description)
     {
-        super(module, name, description, "[command]", Arrays.asList(aliases));
+        this(module, subCommandType, name, description, NO_ALIASES);
+    }
+
+    public ContainerCommand(Module module, String name, String description, List<String> aliases)
+    {
+        this(module, ReflectedCommand.class, name, description, aliases);
+    }
+
+    public ContainerCommand(Module module, Class<? extends CubeCommand> subCommandType, String name, String description, List<String> aliases)
+    {
+        super(module, name, description, "[action]", aliases, new ParameterizedContextFactory());
+        this.subCommandType = subCommandType;
+    }
+
+    public Class<? extends CubeCommand> getCommandType()
+    {
+        return this.subCommandType;
     }
 
     @Override
-    public void run(CommandContext context)
+    public CommandResult run(CommandContext context) throws Exception
     {
-        this.showHelp(context);
+        this.help(new HelpContext(context));
+        return null;
     }
 
     @Override
-    public void showHelp(CommandContext context)
+    public void help(HelpContext context) throws Exception
     {
         CommandSender sender = context.getSender();
-        context.sendMessage("core", "The Following commands are available:");
+        context.sendMessage("core", "Usage: " + this.getUsage(context));
+        context.sendMessage(" ");
+        context.sendMessage("core", "The following actions are available:");
         context.sendMessage(" ");
 
         for (CubeCommand command : context.getCommand().getChildren())

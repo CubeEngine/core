@@ -3,8 +3,9 @@ package de.cubeisland.cubeengine.basics.moderation;
 import de.cubeisland.cubeengine.basics.Basics;
 import de.cubeisland.cubeengine.basics.BasicsPerm;
 import de.cubeisland.cubeengine.core.command.CommandContext;
-import de.cubeisland.cubeengine.core.command.annotation.Command;
-import de.cubeisland.cubeengine.core.command.annotation.Flag;
+import de.cubeisland.cubeengine.core.command.parameterized.ParameterizedContext;
+import de.cubeisland.cubeengine.core.command.reflected.Command;
+import de.cubeisland.cubeengine.core.command.parameterized.Flag;
 import de.cubeisland.cubeengine.core.user.User;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
@@ -37,7 +38,7 @@ public class KickBanCommands
     @Command(desc = "Kicks a player from the server", usage = "<<player>|-all> [message]", flags = {
         @Flag(longName = "all", name = "a")
     })
-    public void kick(CommandContext context)
+    public void kick(ParameterizedContext context)
     {
         String message = context.getStrings(1);
         if (message.isEmpty())
@@ -46,7 +47,7 @@ public class KickBanCommands
         }
         if (!context.hasFlag("a"))
         {
-            if (!context.hasIndexed(0))
+            if (!context.hasArg(0))
             {
                 blockCommand(context, "basics", "&cYou need to specify a player!");
             }
@@ -80,7 +81,7 @@ public class KickBanCommands
     }, desc = "Bans a player permanently on your server.", min = 1, usage = "<player> [message] [-ipban]", flags = {
         @Flag(longName = "ipban", name = "ip")
     })
-    public void ban(CommandContext context)
+    public void ban(ParameterizedContext context)
     {
         if (!Bukkit.getOnlineMode())
         {
@@ -111,7 +112,7 @@ public class KickBanCommands
                 {
                     String ipadress = player.getPlayer().getAddress().getAddress().getHostAddress();
                     Bukkit.banIP(ipadress);
-                    for (Player ipPlayer : context.getCore().getUserManager().getOnlinePlayers())
+                    for (User ipPlayer : context.getCore().getUserManager().getOnlineUsers())
                     {
                         if (!ipPlayer.getName().equals(player.getName()))
                         {
@@ -168,7 +169,7 @@ public class KickBanCommands
             InetAddress adress = InetAddress.getByName(ipadress);
             Bukkit.banIP(adress.getHostAddress());
             context.sendMessage("basics", "&cYou banned the IP &6%s &cfrom your server!", adress.getHostAddress());
-            for (Player player : context.getCore().getUserManager().getOnlinePlayers())
+            for (User player : context.getCore().getUserManager().getOnlineUsers())
             {
                 if (player.getAddress() != null && player.getAddress().getAddress().getHostAddress().equals(ipadress))
                 {

@@ -1,8 +1,9 @@
 package de.cubeisland.cubeengine.fun.commands;
 
 import de.cubeisland.cubeengine.core.command.CommandContext;
-import de.cubeisland.cubeengine.core.command.annotation.Command;
-import de.cubeisland.cubeengine.core.command.annotation.Param;
+import de.cubeisland.cubeengine.core.command.parameterized.ParameterizedContext;
+import de.cubeisland.cubeengine.core.command.reflected.Command;
+import de.cubeisland.cubeengine.core.command.parameterized.Param;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.fun.Fun;
 import org.bukkit.World;
@@ -30,7 +31,7 @@ public class DiscoCommand
         max = 0,
         params = @Param(names = {"delay", "d"}, type = Integer.class)
     )
-    public void disco(CommandContext context)
+    public void disco(ParameterizedContext context)
     {
         final CommandSender sender = context.getSender();
         
@@ -40,9 +41,9 @@ public class DiscoCommand
             world = ((User)sender).getWorld();
         }
         
-        if (context.hasIndexed(0))
+        if (context.hasArg(0))
         {
-            world = context.getIndexed(0, World.class);
+            world = context.getArg(0, World.class);
             if (world == null)
             {
                 context.sendMessage("fun", "&cThe given world was not found!");
@@ -56,7 +57,7 @@ public class DiscoCommand
             return;
         }
 
-        final int delay = context.getNamed("delay", int.class, 10);
+        final int delay = context.getParam("delay", 10);
         if (delay < 1 || delay > this.module.getConfig().maxDiscoDelay)
         {
             illegalParameter(context, "fun", "&cThe delay has to be a number between 0 and %d", this.module.getConfig().maxDiscoDelay);

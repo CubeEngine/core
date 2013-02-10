@@ -1,16 +1,12 @@
 package de.cubeisland.cubeengine.fun.commands;
 
-import de.cubeisland.cubeengine.core.command.CommandContext;
-import de.cubeisland.cubeengine.core.command.annotation.Command;
-import de.cubeisland.cubeengine.core.command.annotation.Flag;
-import de.cubeisland.cubeengine.core.command.annotation.Param;
+import de.cubeisland.cubeengine.core.command.parameterized.Flag;
+import de.cubeisland.cubeengine.core.command.parameterized.Param;
+import de.cubeisland.cubeengine.core.command.parameterized.ParameterizedContext;
+import de.cubeisland.cubeengine.core.command.reflected.Command;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.fun.Fun;
 import de.cubeisland.cubeengine.fun.FunConfiguration;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.EntityType;
@@ -19,6 +15,11 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.util.Vector;
+
+import java.util.HashSet;
+import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import static de.cubeisland.cubeengine.core.command.exception.IllegalParameterValue.illegalParameter;
 import static de.cubeisland.cubeengine.core.command.exception.InvalidUsageException.invalidUsage;
@@ -51,24 +52,24 @@ public class NukeCommand
                 "range", "r"
             }, type = Integer.class)
     })
-    public void nuke(CommandContext context)
+    public void nuke(ParameterizedContext context)
     {
         int noBlock = 0;
 
         int numberOfBlocks = 0;
 
-        int radius = context.getIndexed(0, Integer.class, 0);
-        int height = context.getNamed("height", Integer.class, Integer.valueOf(5));
+        int radius = context.getArg(0, int.class, 0);
+        int height = context.getParam("height", 5);
         int concentration = 1;
         int concentrationOfBlocksPerCircle = 1;
-        int range = context.getNamed("range", Integer.class, 4);
+        int range = context.getParam("range", 4);
 
         Location centerOfTheCircle;
-        User user;
+        User user = null;
 
-        if (context.hasNamed("concentration"))
+        if (context.hasParam("concentration"))
         {
-            String concNamed = context.getNamed("concentration", String.class, null);
+            String concNamed = context.getString("concentration");
             Matcher matcher = Pattern.compile("(\\d*)(\\.(\\d+))?").matcher(concNamed);
             if (concNamed != null && matcher.matches())
             {
@@ -114,9 +115,9 @@ public class NukeCommand
             illegalParameter(context, "fun", "&cThe explosion range can't be less than 0 or over %d", this.config.nukeMaxExplosionRange);
         }
 
-        if (context.hasNamed("player"))
+        if (context.hasParam("player"))
         {
-            user = context.getNamed("player", User.class);
+            user = context.getUser("player");
             if (user == null)
             {
                 invalidUsage(context, "fun", "&cUser not found");
@@ -125,7 +126,15 @@ public class NukeCommand
         }
         else
         {
-            user = context.getSenderAsUser("core", "&cThis command can only be used by a player!");
+            if (context.getSender() instanceof User)
+            {
+                user = (User)context.getSender();
+            }
+            if (user == null)
+            {
+                context.sendMessage("core", "&cThis command can only be used by a player!");
+                return;
+            }
             centerOfTheCircle = user.getTargetBlock(null, 40).getLocation();
         }
 

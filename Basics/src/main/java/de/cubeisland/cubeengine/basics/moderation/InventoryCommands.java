@@ -3,8 +3,9 @@ package de.cubeisland.cubeengine.basics.moderation;
 import de.cubeisland.cubeengine.basics.Basics;
 import de.cubeisland.cubeengine.basics.BasicsPerm;
 import de.cubeisland.cubeengine.core.command.CommandContext;
-import de.cubeisland.cubeengine.core.command.annotation.Command;
-import de.cubeisland.cubeengine.core.command.annotation.Flag;
+import de.cubeisland.cubeengine.core.command.parameterized.ParameterizedContext;
+import de.cubeisland.cubeengine.core.command.reflected.Command;
+import de.cubeisland.cubeengine.core.command.parameterized.Flag;
 import de.cubeisland.cubeengine.core.user.User;
 import org.bukkit.inventory.ItemStack;
 
@@ -31,7 +32,16 @@ public class InventoryCommands
     @Command(desc = "Allows you to see into the inventory of someone else.", usage = "<player>", min = 1, max = 1)
     public void invsee(CommandContext context)
     {
-        User sender = context.getSenderAsUser("bascics", "&cThis command can only be used by a player!");
+        User sender = null;
+        if (context.getSender() instanceof User)
+        {
+            sender = (User)context.getSender();
+        }
+        if (sender == null)
+        {
+            context.sendMessage("basics", "&cThis command can only be used by a player!");
+            return;
+        }
         User user = context.getUser(0);
         if (user == null)
         {
@@ -57,7 +67,16 @@ public class InventoryCommands
     @Command(desc = "Stashes or unstashes your inventory to reuse later", max = 0)
     public void stash(CommandContext context)
     {
-        User sender = context.getSenderAsUser("core", "&cYeah you better put it away!");
+        User sender = null;
+        if (context.getSender() instanceof User)
+        {
+            sender = (User)context.getSender();
+        }
+        if (sender == null)
+        {
+            context.sendMessage("core", "&cYeah you better put it away!");
+            return;
+        }
         ItemStack[] stashedInv = sender.getAttribute(basics, "stash_Inventory");
         ItemStack[] stashedArmor = sender.getAttribute(basics, "stash_Armor");
         ItemStack[] InvToStash = sender.getInventory().getContents().clone();
@@ -95,12 +114,16 @@ public class InventoryCommands
         @Flag(longName = "removeArmor", name = "ra")
     }, max = 1)
     @SuppressWarnings("deprecation")
-    public void clearinventory(CommandContext context)
+    public void clearinventory(ParameterizedContext context)
     {
-        User sender = context.getSenderAsUser();
+        User sender = null;
+        if (context.getSender() instanceof User)
+        {
+            sender = (User)context.getSender();
+        }
         User user = sender;
         boolean other = false;
-        if (context.hasIndexed(0))
+        if (context.hasArg(0))
         {
             user = context.getUser(0);
             if (user == null)

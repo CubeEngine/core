@@ -4,8 +4,9 @@ import de.cubeisland.cubeengine.basics.Basics;
 import de.cubeisland.cubeengine.basics.BasicsPerm;
 import de.cubeisland.cubeengine.basics.storage.BasicUser;
 import de.cubeisland.cubeengine.core.command.CommandContext;
-import de.cubeisland.cubeengine.core.command.annotation.Command;
-import de.cubeisland.cubeengine.core.command.annotation.Flag;
+import de.cubeisland.cubeengine.core.command.parameterized.ParameterizedContext;
+import de.cubeisland.cubeengine.core.command.reflected.Command;
+import de.cubeisland.cubeengine.core.command.parameterized.Flag;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.user.UserManager;
 import de.cubeisland.cubeengine.core.util.time.Duration;
@@ -35,7 +36,7 @@ public class PlayerCommands
     }
 
     @Command(desc = "Refills your hunger bar", max = 1, flags = @Flag(longName = "all", name = "a"), usage = "[player]|[-a]")
-    public void feed(CommandContext context)
+    public void feed(ParameterizedContext context)
     {
         if (context.hasFlag("a"))
         {
@@ -51,10 +52,14 @@ public class PlayerCommands
         }
         else
         {
-            User sender = context.getSenderAsUser();
+            User sender = null;
+            if (context.getSender() instanceof User)
+            {
+                sender = (User)context.getSender();
+            }
             User user = sender;
             boolean other = false;
-            if (context.hasIndexed(0))
+            if (context.hasArg(0))
             {
                 user = context.getUser(0);
                 if (user == null)
@@ -86,7 +91,7 @@ public class PlayerCommands
     }
 
     @Command(desc = "Empties the hunger bar", max = 1, flags = @Flag(longName = "all", name = "a"), usage = "[player]|[-a]")
-    public void starve(CommandContext context)
+    public void starve(ParameterizedContext context)
     {
         if (context.hasFlag("a"))
         {
@@ -102,10 +107,14 @@ public class PlayerCommands
         }
         else
         {
-            User sender = context.getSenderAsUser();
+            User sender = null;
+            if (context.getSender() instanceof User)
+            {
+                sender = (User)context.getSender();
+            }
             User user = sender;
             boolean other = false;
-            if (context.hasIndexed(0))
+            if (context.hasArg(0))
             {
                 user = context.getUser(0);
                 if (user == null)
@@ -137,7 +146,7 @@ public class PlayerCommands
     }
 
     @Command(desc = "Heals a Player", max = 1, flags = @Flag(longName = "all", name = "a"), usage = "[player]|[-a]")
-    public void heal(CommandContext context)
+    public void heal(ParameterizedContext context)
     {
         if (context.hasFlag("a"))
         {
@@ -154,10 +163,14 @@ public class PlayerCommands
         }
         else
         {
-            User sender = context.getSenderAsUser();
+            User sender = null;
+            if (context.getSender() instanceof User)
+            {
+                sender = (User)context.getSender();
+            }
             User user = sender;
             boolean other = false;
-            if (context.hasIndexed(0))
+            if (context.hasArg(0))
             {
                 user = context.getUser(0);
                 if (user == null)
@@ -195,13 +208,17 @@ public class PlayerCommands
     public void gamemode(CommandContext context)
     {
         boolean changeOther = false;
-        User sender = context.getSenderAsUser();
+        User sender = null;
+        if (context.getSender() instanceof User)
+        {
+            sender = (User)context.getSender();
+        }
         User user = sender;
         if (user == null)
         {
             invalidUsage(context, "basics", "&cYou do not not have any gamemode!");
         }
-        if (context.hasIndexed(1))
+        if (context.hasArg(1))
         {
             user = context.getUser(1);
             if (user == null)
@@ -214,7 +231,7 @@ public class PlayerCommands
         {
             denyAccess(context, "basics", "&cYou are not allowed to change the gamemode of an other player!");
         }
-        if (context.hasIndexed(0))
+        if (context.hasArg(0))
         {
             String mode = context.getString(0);
             if (mode.equals("survival") || mode.equals("s"))
@@ -264,18 +281,27 @@ public class PlayerCommands
         @Flag(longName = "force", name = "f"),
         @Flag(longName = "lightning", name = "l")
     })
-    public void kill(CommandContext context)
+    public void kill(ParameterizedContext context)
     {
         boolean lightning = context.hasFlag("l") && BasicsPerm.COMMAND_KILL_LIGHTNING.isAuthorized(context.getSender());
         boolean force = context.hasFlag("f") && BasicsPerm.COMMAND_KILL_FORCE.isAuthorized(context.getSender());
         User user = null;
-        if (context.hasIndexed(0))
+        if (context.hasArg(0))
         {
             user = context.getUser(0);
         }
         else if (!context.hasFlag("a"))
         {
-            User sender = context.getSenderAsUser("basics", "&cPlease speicify a victim!");
+            User sender = null;
+            if (context.getSender() instanceof User)
+            {
+                sender = (User)context.getSender();
+            }
+            if (sender == null)
+            {
+                context.sendMessage("basics", "&cPlease speicify a victim!");
+                return;
+            }
             TreeSet<Entity> entities = sender.getTargets(150);
             for (Entity entity : entities)
             {
@@ -352,30 +378,6 @@ public class PlayerCommands
         }
     }
 
-    @Command(desc = "Makes a player execute a command", usage = "<player> <command>", min = 2, flags = @Flag(longName = "chat", name = "c"))
-    public void sudo(CommandContext context)
-    {
-        User user = context.getUser(0);
-        if (user == null)
-        {
-            paramNotFound(context, "core", "&cUser %s not found!", context.getString(0));
-        }
-        StringBuilder sb = new StringBuilder();
-        int i = 1;
-        while (context.hasIndexed(i))
-        {
-            sb.append(context.getString(i++)).append(" ");
-        }
-        if (context.hasFlag("c"))
-        {
-            user.chat(sb.toString());
-        }
-        else
-        {
-            user.chat("/" + sb.toString()); //TODO later msg to sender if cmd worked??
-        }
-    }
-
     @Command(desc = "Shows when given player was online the last time", min = 1, max = 1, usage = "<player>")
     public void seen(CommandContext context)
     {
@@ -403,6 +405,30 @@ public class PlayerCommands
         }
     }
 
+    @Command(desc = "Makes a player execute a command", usage = "<player> <command>", min = 2, flags = @Flag(longName = "chat", name = "c"))
+    public void sudo(ParameterizedContext context)
+    {
+        User user = context.getUser(0);
+        if (user == null)
+        {
+            paramNotFound(context, "core", "&cUser %s not found!", context.getString(0));
+        }
+        StringBuilder sb = new StringBuilder();
+        int i = 1;
+        while (context.hasArg(i))
+        {
+            sb.append(context.getString(i++)).append(" ");
+        }
+        if (context.hasFlag("c"))
+        {
+            user.chat(sb.toString());
+        }
+        else
+        {
+            user.chat("/" + sb.toString()); //TODO later msg to sender if cmd worked??
+        }
+    }
+
     @Command(desc = "Kills yourself", max = 0)
     public void suicide(CommandContext context)
     {
@@ -419,7 +445,16 @@ public class PlayerCommands
     @Command(desc = "Displays that you are afk", max = 0)
     public void afk(CommandContext context)
     {
-        User sender = context.getSenderAsUser("basics", "&cJust go!");
+        User sender = null;
+        if (context.getSender() instanceof User)
+        {
+            sender = (User)context.getSender();
+        }
+        if (sender == null)
+        {
+            context.sendMessage("basics", "&cJust go!");
+            return;
+        }
         sender.setAttribute(basics, "afk", true);
         this.um.broadcastStatus("basics", "is now afk.", context.getSender().getName());
     }
@@ -475,9 +510,9 @@ public class PlayerCommands
     @Command(desc = "Toggles the god-mode!", usage = "[player]")
     public void god(CommandContext context)
     {
-        User user;
+        User user = null;
         boolean other = false;
-        if (context.hasIndexed(0))
+        if (context.hasArg(0))
         {
             user = context.getUser(0);
             if (user == null)
@@ -492,7 +527,15 @@ public class PlayerCommands
         }
         else
         {
-            user = context.getSenderAsUser("basics", "&aYou are god already!");
+            if (context.getSender() instanceof User)
+            {
+                user = (User)context.getSender();
+            }
+            if (user == null)
+            {
+                context.sendMessage("basics", "&aYou are god already!");
+                return;
+            }
         }
         BasicUser bUser = this.basics.getBasicUserManager().getBasicUser(user);
         bUser.godMode = !bUser.godMode;
@@ -523,14 +566,18 @@ public class PlayerCommands
     }
 
     @Command(desc = "Changes your walkspeed.", usage = "<speed> [player <player>]", min = 1)
-    public void walkspeed(CommandContext context)
+    public void walkspeed(ParameterizedContext context)
     {
-        User sender = context.getSenderAsUser();
+        User sender = null;
+        if (context.getSender() instanceof User)
+        {
+            sender = (User)context.getSender();
+        }
         User user = sender;
         boolean other = false;
-        if (context.hasNamed("player"))
+        if (context.hasParam("player"))
         {
-            user = context.getNamed("player", User.class);
+            user = context.getParam("player");
             if (user != sender)
             {
                 other = true;
@@ -564,7 +611,7 @@ public class PlayerCommands
             denyAccess(context, "The User %s is not allowed to walk faster!", user.getName());
         }
         user.setWalkSpeed(0.2f);
-        Float speed = context.getIndexed(0, Float.class);
+        Float speed = context.getArg(0, Float.class);
         if (speed != null && speed >= -10 && speed <= 10)
         {
             if (speed > 0 && speed <= 10)

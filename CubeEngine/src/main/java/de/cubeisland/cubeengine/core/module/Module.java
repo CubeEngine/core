@@ -3,15 +3,16 @@ package de.cubeisland.cubeengine.core.module;
 import de.cubeisland.cubeengine.core.Core;
 import de.cubeisland.cubeengine.core.bukkit.EventManager;
 import de.cubeisland.cubeengine.core.bukkit.TaskManager;
+import de.cubeisland.cubeengine.core.command.CommandHolder;
 import de.cubeisland.cubeengine.core.command.CommandManager;
 import de.cubeisland.cubeengine.core.command.CubeCommand;
 import de.cubeisland.cubeengine.core.filesystem.FileManager;
+import de.cubeisland.cubeengine.core.logger.ModuleLogger;
 import de.cubeisland.cubeengine.core.permission.Permission;
 import de.cubeisland.cubeengine.core.storage.ModuleRegistry;
 import de.cubeisland.cubeengine.core.storage.SimpleModuleRegistry;
 import de.cubeisland.cubeengine.core.storage.database.Database;
 import de.cubeisland.cubeengine.core.user.UserManager;
-import de.cubeisland.cubeengine.core.logger.ModuleLogger;
 import org.apache.commons.lang.Validate;
 import org.bukkit.event.Listener;
 
@@ -334,14 +335,19 @@ public abstract class Module
         this.core.getPermissionManager().registerPermissions(this, permissions);
     }
 
-    public void registerCommand(CubeCommand command)
+    public void registerCommand(CubeCommand command, String ... parents)
     {
-        this.core.getCommandManager().registerCommand(command);
+        this.core.getCommandManager().registerCommand(command, parents);
     }
 
-    public void registerCommands(Object commandHolder, String... parents)
+    public void registerCommands(CommandHolder commandHolder, String... parents)
     {
         this.core.getCommandManager().registerCommands(this, commandHolder, parents);
+    }
+
+    public void registerCommands(Object commandHolder, Class<? extends CubeCommand> commandType, String... parents)
+    {
+        this.core.getCommandManager().registerCommands(this, commandHolder, commandType, parents);
     }
 
     public void registerListener(Listener listener)

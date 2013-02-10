@@ -3,24 +3,22 @@ package de.cubeisland.cubeengine.basics.moderation;
 import de.cubeisland.cubeengine.basics.Basics;
 import de.cubeisland.cubeengine.basics.BasicsPerm;
 import de.cubeisland.cubeengine.core.bukkit.TaskManager;
-import de.cubeisland.cubeengine.core.command.CommandContext;
-import de.cubeisland.cubeengine.core.command.annotation.Command;
-import de.cubeisland.cubeengine.core.command.annotation.Flag;
-import static de.cubeisland.cubeengine.core.command.exception.InvalidUsageException.invalidUsage;
-import static de.cubeisland.cubeengine.core.command.exception.PermissionDeniedException.denyAccess;
+import de.cubeisland.cubeengine.core.command.parameterized.Flag;
+import de.cubeisland.cubeengine.core.command.parameterized.ParameterizedContext;
+import de.cubeisland.cubeengine.core.command.reflected.Command;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.util.StringUtils;
 import gnu.trove.map.hash.THashMap;
 import gnu.trove.map.hash.TLongObjectHashMap;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
+
+import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import static de.cubeisland.cubeengine.core.command.exception.InvalidUsageException.invalidUsage;
+import static de.cubeisland.cubeengine.core.command.exception.PermissionDeniedException.denyAccess;
 
 /**
  * Commands changing time. /time /ptime
@@ -208,12 +206,16 @@ public class TimeControlCommands
         }
     }
 
-    @Command(desc = "Changes the time of a world", flags = @Flag(longName = "lock", name = "l"), max = -1, usage = "<time> [worlds]...")
-    public void time(CommandContext context)
+    @Command(desc = "Changes the time of a world", flags = @Flag(longName = "lock", name = "l"), max = -1, usage = "<time> {worlds}...")
+    public void time(ParameterizedContext context)
     {
-        User sender = context.getSenderAsUser();
+        User sender = null;
+        if (context.getSender() instanceof User)
+        {
+            sender = (User)context.getSender();
+        }
 
-        if (!context.hasIndexed(0))
+        if (!context.hasArg(0))
         {
             context.sendMessage("basics", "&aIt's currently &e%s&a in &6%s&a.",
                     Time.format(sender.getWorld().getTime()), sender.getWorld().getName());
@@ -236,7 +238,7 @@ public class TimeControlCommands
                 }
                 return;
             }
-            if (context.hasIndexed(1))
+            if (context.hasArg(1))
             {
                 if (context.getString(1).equals("*"))
                 {
@@ -306,7 +308,7 @@ public class TimeControlCommands
     @Command(desc = "Changes the time for a player", min = 1, max = 2, flags = {
         @Flag(longName = "lock", name = "l")
     }, usage = "<<time>|reset> [player]")
-    public void ptime(CommandContext context)
+    public void ptime(ParameterizedContext context)
     {
         Long time = 0L;
         boolean other = false;
@@ -325,8 +327,12 @@ public class TimeControlCommands
             }
         }
 
-        User user = context.getSenderAsUser();
-        if (context.hasIndexed(1))
+        User user = null;
+        if (context.getSender() instanceof User)
+        {
+            user = (User)context.getSender();
+        }
+        if (context.hasArg(1))
         {
             user = context.getUser(1);
             if (user == null)

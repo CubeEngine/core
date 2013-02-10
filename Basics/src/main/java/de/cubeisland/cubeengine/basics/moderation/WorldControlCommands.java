@@ -4,9 +4,10 @@ import de.cubeisland.cubeengine.basics.Basics;
 import de.cubeisland.cubeengine.basics.BasicsConfiguration;
 import de.cubeisland.cubeengine.basics.BasicsPerm;
 import de.cubeisland.cubeengine.core.command.CommandContext;
-import de.cubeisland.cubeengine.core.command.annotation.Command;
-import de.cubeisland.cubeengine.core.command.annotation.Flag;
-import de.cubeisland.cubeengine.core.command.annotation.Param;
+import de.cubeisland.cubeengine.core.command.parameterized.ParameterizedContext;
+import de.cubeisland.cubeengine.core.command.reflected.Command;
+import de.cubeisland.cubeengine.core.command.parameterized.Flag;
+import de.cubeisland.cubeengine.core.command.parameterized.Param;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.util.StringUtils;
 import de.cubeisland.cubeengine.core.util.matcher.Match;
@@ -37,9 +38,13 @@ public class WorldControlCommands
     }
 
     @Command(desc = "Changes the weather", min = 1, max = 3, usage = "<sun|rain|storm> [duration] [in <world>]", params = @Param(names = "in", type = World.class))
-    public void weather(CommandContext context)
+    public void weather(ParameterizedContext context)
     {
-        User sender = context.getSenderAsUser();
+        User sender = null;
+        if (context.getSender() instanceof User)
+        {
+            sender = (User)context.getSender();
+        }
         boolean sunny = true;
         boolean noThunder = true;
         int duration = 10000000;
@@ -63,9 +68,9 @@ public class WorldControlCommands
             sunny = false;
             noThunder = false;
         }
-        if (context.hasIndexed(1))
+        if (context.hasArg(1))
         {
-            duration = context.getIndexed(1, Integer.class, 0);
+            duration = context.getArg(1, Integer.class, 0);
             if (duration == 0)
             {
                 illegalParameter(context, "basics", "&cThe given duration is invalid!");
@@ -73,9 +78,9 @@ public class WorldControlCommands
             duration *= 20;
         }
         World world = null;
-        if (context.hasNamed("in"))
+        if (context.hasParam("in"))
         {
-            world = context.getNamed("in", World.class, null);
+            world = context.getParam("in", null);
             if (world == null)
             {
                 illegalParameter(context, "basics", "&cWorld &6%s &cnot found!", context.getString(1));
@@ -108,13 +113,17 @@ public class WorldControlCommands
     @Command(desc = "Removes entity", usage = "<entityType[:itemMaterial]> [radius]|[-all] [in <world>]", flags = @Flag(longName = "all", name = "a"), params = @Param(names = {
         "in"
     }, type = World.class), min = 1)
-    public void remove(CommandContext context)
+    public void remove(ParameterizedContext context)
     {
-        User sender = context.getSenderAsUser();
-        World world;
-        if (context.hasNamed("in"))
+        User sender = null;
+        if (context.getSender() instanceof User)
         {
-            world = context.getNamed("in", World.class);
+            sender = (User)context.getSender();
+        }
+        World world;
+        if (context.hasParam("in"))
+        {
+            world = context.getParam("in");
         }
         else
         {
@@ -133,9 +142,9 @@ public class WorldControlCommands
         {
             invalidUsage(context, "basics", "&cIf not used ingame you can only remove all!");
         }
-        if (context.hasIndexed(1))
+        if (context.hasArg(1))
         {
-            radius = context.getIndexed(1, Integer.class, 0);
+            radius = context.getArg(1, Integer.class, 0);
             if (radius <= 0)
             {
                 illegalParameter(context, "basics", "&cThe radius has to be a number greater than 0!");
@@ -267,9 +276,13 @@ public class WorldControlCommands
         @Flag(longName = "all", name = "a")
     // infinite radius
     }, params = @Param(names = "in", type = World.class), usage = "[types...] [radius] [in world] [-l] [-all]")
-    public void butcher(CommandContext context)
+    public void butcher(ParameterizedContext context)
     {
-        User sender = context.getSenderAsUser();
+        User sender = null;
+        if (context.getSender() instanceof User)
+        {
+            sender = (User)context.getSender();
+        }
         Location loc;
         int radius = this.config.butcherCmdDefaultRadius;
         int removed;
@@ -282,9 +295,9 @@ public class WorldControlCommands
         {
             loc = sender.getLocation();
         }
-        if (context.hasIndexed(1))
+        if (context.hasArg(1))
         {
-            radius = context.getIndexed(1, Integer.class, 0);
+            radius = context.getArg(1, Integer.class, 0);
             if (radius < 0)
             {
                 if (!(radius == -1 && BasicsPerm.COMMAND_BUTCHER_FLAG_ALL.isAuthorized(context.getSender())))
@@ -308,7 +321,7 @@ public class WorldControlCommands
             "monster"
         };
         boolean allTypes = false;
-        if (context.hasIndexed(0))
+        if (context.hasArg(0))
         {
             if (context.getString(0).equals("*"))
             {

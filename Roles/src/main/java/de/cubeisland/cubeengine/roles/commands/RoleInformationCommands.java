@@ -1,18 +1,15 @@
 package de.cubeisland.cubeengine.roles.commands;
 
-import de.cubeisland.cubeengine.core.command.CommandContext;
-import de.cubeisland.cubeengine.core.command.annotation.Alias;
-import de.cubeisland.cubeengine.core.command.annotation.Command;
-import de.cubeisland.cubeengine.core.command.annotation.Flag;
-import de.cubeisland.cubeengine.core.command.annotation.Param;
+import de.cubeisland.cubeengine.core.command.reflected.Alias;
+import de.cubeisland.cubeengine.core.command.parameterized.Flag;
+import de.cubeisland.cubeengine.core.command.parameterized.Param;
+import de.cubeisland.cubeengine.core.command.parameterized.ParameterizedContext;
+import de.cubeisland.cubeengine.core.command.reflected.Command;
 import de.cubeisland.cubeengine.roles.Roles;
-import de.cubeisland.cubeengine.roles.role.Role;
-import de.cubeisland.cubeengine.roles.role.RoleMetaData;
-import de.cubeisland.cubeengine.roles.role.RolePermission;
-import de.cubeisland.cubeengine.roles.role.RoleProvider;
-import de.cubeisland.cubeengine.roles.role.WorldRoleProvider;
-import java.util.Set;
+import de.cubeisland.cubeengine.roles.role.*;
 import org.bukkit.World;
+
+import java.util.Set;
 
 public class RoleInformationCommands extends RoleCommandHelper
 {
@@ -23,7 +20,7 @@ public class RoleInformationCommands extends RoleCommandHelper
 
     @Alias(names = "listroles")
     @Command(desc = "Lists all roles [in world]|[-global]", usage = "[in <world>]", params = @Param(names = "in", type = World.class), flags = @Flag(longName = "global", name = "g"), max = 1)
-    public void list(CommandContext context)
+    public void list(ParameterizedContext context)
     {
         boolean global = context.hasFlag("g");
         World world = global ? null : this.getWorld(context);
@@ -60,7 +57,7 @@ public class RoleInformationCommands extends RoleCommandHelper
     @Command(names = {
         "checkperm", "checkpermission"
     }, desc = "Checks the permission in given role [in world]", usage = "<[g:]role> <permission> [in <world>]", params = @Param(names = "in", type = World.class), max = 3, min = 2)
-    public void checkperm(CommandContext context)
+    public void checkperm(ParameterizedContext context)
     {
         String roleName = context.getString(0);
         boolean global = roleName.startsWith(GLOBAL_PREFIX);
@@ -145,7 +142,7 @@ public class RoleInformationCommands extends RoleCommandHelper
     @Command(names = {
         "listperm", "listpermission"
     }, desc = "Lists all permissions of given role [in world]", usage = "<[g:]role> [in <world>]", params = @Param(names = "in", type = World.class), max = 2, min = 1)
-    public void listperm(CommandContext context)
+    public void listperm(ParameterizedContext context)
     {
         String roleName = context.getString(0);
         boolean global = roleName.startsWith(GLOBAL_PREFIX);
@@ -191,7 +188,7 @@ public class RoleInformationCommands extends RoleCommandHelper
     @Command(names = {
         "listdata", "listmeta", "listmetadata"
     }, desc = "Lists all metadata of given role [in world]", usage = "<[g:]role> [in <world>]", params = @Param(names = "in", type = World.class), max = 2, min = 1)
-    public void listmetadata(CommandContext context)
+    public void listmetadata(ParameterizedContext context)
     {
         String roleName = context.getString(0);
         boolean global = roleName.startsWith(GLOBAL_PREFIX);
@@ -227,7 +224,7 @@ public class RoleInformationCommands extends RoleCommandHelper
     }
 
     @Command(desc = "Lists all parents of given role [in world]", usage = "<[g:]role> [in <world>]", params = @Param(names = "in", type = World.class), max = 2, min = 1)
-    public void listParent(CommandContext context)
+    public void listParent(ParameterizedContext context)
     {
         String roleName = context.getString(0);
         boolean global = roleName.startsWith(GLOBAL_PREFIX);
@@ -265,7 +262,7 @@ public class RoleInformationCommands extends RoleCommandHelper
     @Command(names = {
         "prio", "priotory"
     }, desc = "Show the priority of given role [in world]", usage = "<[g:]role> [in <world>]", params = @Param(names = "in", type = World.class), max = 2, min = 1)
-    public void priority(CommandContext context)
+    public void priority(ParameterizedContext context)
     {
         String roleName = context.getString(0);
         World world = roleName.startsWith(GLOBAL_PREFIX) ? null : this.getWorld(context);
@@ -284,7 +281,7 @@ public class RoleInformationCommands extends RoleCommandHelper
     @Command(names = {
         "listdefault", "listdefroles", "listdefaultroles"
     }, desc = "Lists all default roles [in world]", usage = "[in <world>]", params = @Param(names = "in", type = World.class), max = 1)
-    public void listDefaultRoles(CommandContext context)
+    public void listDefaultRoles(ParameterizedContext context)
     {
         World world = this.getWorld(context);
         WorldRoleProvider provider = this.manager.getProvider(world);

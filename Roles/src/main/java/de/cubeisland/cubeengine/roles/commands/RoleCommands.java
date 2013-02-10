@@ -7,6 +7,6 @@ public class RoleCommands extends ContainerCommand
 {
     public RoleCommands(Roles module)
     {
-        super(module, "role", "Manages the roles", "roles");
+        super(module, "roles", "Manages the roles");
     }
 }

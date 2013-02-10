@@ -3,9 +3,10 @@ package de.cubeisland.cubeengine.basics.teleport;
 import de.cubeisland.cubeengine.basics.Basics;
 import de.cubeisland.cubeengine.basics.BasicsPerm;
 import de.cubeisland.cubeengine.core.command.CommandContext;
-import de.cubeisland.cubeengine.core.command.annotation.Command;
-import de.cubeisland.cubeengine.core.command.annotation.Flag;
-import de.cubeisland.cubeengine.core.command.annotation.Param;
+import de.cubeisland.cubeengine.core.command.parameterized.ParameterizedContext;
+import de.cubeisland.cubeengine.core.command.reflected.Command;
+import de.cubeisland.cubeengine.core.command.parameterized.Flag;
+import de.cubeisland.cubeengine.core.command.parameterized.Param;
 import de.cubeisland.cubeengine.core.user.User;
 import org.bukkit.Location;
 import org.bukkit.World;
@@ -32,12 +33,16 @@ public class SpawnCommands
     @Command(desc = "Changes the global respawnpoint", usage = "[world] [<x> <y> <z>]", max = 4)
     public void setSpawn(CommandContext context)
     {
-        User sender = context.getSenderAsUser();
+        User sender = null;
+        if (context.getSender() instanceof User)
+        {
+            sender = (User)context.getSender();
+        }
         Integer x;
         Integer y;
         Integer z;
         World world;
-        if (context.hasIndexed(0))
+        if (context.hasArg(0))
         {
             world = context.getSender().getServer().getWorld(context.getString(0));
             if (world == null)
@@ -54,11 +59,11 @@ public class SpawnCommands
             world = sender.getWorld();
         }
 
-        if (context.hasIndexed(3))
+        if (context.hasArg(3))
         {
-            x = context.getIndexed(1, Integer.class, null);
-            y = context.getIndexed(2, Integer.class, null);
-            z = context.getIndexed(3, Integer.class, null);
+            x = context.getArg(1, Integer.class, null);
+            y = context.getArg(2, Integer.class, null);
+            z = context.getArg(3, Integer.class, null);
             if (x == null || y == null || z == null)
             {
                 illegalParameter(context, "basics", "&cCoordinates are invalid!");
@@ -85,9 +90,13 @@ public class SpawnCommands
             @Flag(longName = "force", name = "f"),
             @Flag(longName = "all", name = "a")
     })
-    public void spawn(CommandContext context)
+    public void spawn(ParameterizedContext context)
     {
-        User user = context.getSenderAsUser();
+        User user = null;
+        if (context.getSender() instanceof User)
+        {
+            user = (User)context.getSender();
+        }
         World world = basics.getConfiguration().mainWorld;
         if (world == null)
         {
@@ -101,9 +110,9 @@ public class SpawnCommands
                 force = true;
             } // if not allowed ignore flag
         }
-        if (context.hasNamed("world"))
+        if (context.hasParam("world"))
         {
-            world = context.getNamed("world", World.class, null);
+            world = context.getParam("world", null);
             if (world == null)
             {
                 paramNotFound(context, "basics", "&cWorld not found!");
@@ -130,12 +139,12 @@ public class SpawnCommands
             this.basics.getUserManager().broadcastMessage("basics", "&aTeleported everyone to the spawn of %s!", world.getName());
             return;
         }
-        if (user == null && !context.hasIndexed(0))
+        if (user == null && !context.hasArg(0))
         {
             invalidUsage(context, "basics", "&6ProTip: &cTeleport does not work IRL!");
         }
 
-        if (context.hasIndexed(0))
+        if (context.hasArg(0))
         {
             user = context.getUser(0);
             if (user == null)
@@ -162,8 +171,17 @@ public class SpawnCommands
     @Command(desc = "Teleports you to the spawn of given world", usage = "<world>", min = 1, max = 1)
     public void tpworld(CommandContext context)
     {
-        User sender = context.getSenderAsUser("basics", "&eProTip: Teleport does not work IRL!");
-        World world = context.getIndexed(0, World.class, null);
+        User sender = null;
+        if (context.getSender() instanceof User)
+        {
+            sender = (User)context.getSender();
+        }
+        if (sender == null)
+        {
+            context.sendMessage("basics", "&eProTip: Teleport does not work IRL!");
+            return;
+        }
+        World world = context.getArg(0, World.class, null);
         if (world == null)
         {
             illegalParameter(context, "basics", "&cWorld not found!");

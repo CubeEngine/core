@@ -2,8 +2,11 @@ package de.cubeisland.cubeengine.basics.general;
 
 import de.cubeisland.cubeengine.basics.Basics;
 import de.cubeisland.cubeengine.core.command.CommandContext;
-import de.cubeisland.cubeengine.core.command.annotation.Command;
-import de.cubeisland.cubeengine.core.command.annotation.Flag;
+import de.cubeisland.cubeengine.core.command.parameterized.ParameterizedContext;
+import de.cubeisland.cubeengine.core.command.reflected.Command;
+import de.cubeisland.cubeengine.core.command.parameterized.Flag;
+import de.cubeisland.cubeengine.core.command.sender.CommandSender;
+import de.cubeisland.cubeengine.core.command.sender.ConsoleCommandSender;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.util.Pair;
 import de.cubeisland.cubeengine.core.util.StringUtils;
@@ -14,7 +17,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.block.Biome;
-import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Item;
 import org.bukkit.entity.LivingEntity;
@@ -36,21 +38,54 @@ public class InformationCommands
     }
 
     @Command(desc = "Displays the Biome-Type you are standing in.")
-    public void biome(CommandContext context)
+    public void biome(CommandContext context) // TODO console support by specifying coordinates
     {
-        User sender = context.getSenderAsUser("basics", "&eBiome: reallife");
-        Biome biome = sender.getWorld().getBiome(sender.getLocation().getBlockX(), sender.getLocation().getBlockZ());
-        sender.sendMessage("basics", "&eCurrent Biome: &6%s", biome.name());
+        User user = null;
+        if (context.getSender() instanceof User)
+        {
+            user = (User)context.getSender();
+        }
+        if (user != null)
+        {
+            final Location loc = user.getLocation();
+            Biome biome = user.getWorld().getBiome(loc.getBlockX(), loc.getBlockZ());
+            user.sendMessage("basics", "&eCurrent Biome: &6%s", biome.name());
+        }
+        else
+        {
+            context.sendMessage("basics", "I want console support!");
+        }
     }
 
-    @Command(desc = "Displays the seed of the current world.")
+    @Command(desc = "Displays the seed of a world.", usage = "{world}")
     public void seed(CommandContext context)
     {
-        User sender = context.getSenderAsUser("basics", "&eSeed: reallife");
-        sender.sendMessage("basics", "&eSeed of &6%s&e: &6%d", sender.getWorld().getName(), sender.getWorld().getSeed());
+        World world = null;
+        if (context.hasArg(0))
+        {
+            world = context.getArg(0, World.class, null);
+            if (world == null)
+            {
+                context.sendMessage("basics", "&cThe given world is was not found!");
+                return;
+            }
+        }
+        if (world == null)
+        {
+            if (context.getSender() instanceof User)
+            {
+                world = ((User)context.getSender()).getWorld();
+            }
+            else
+            {
+                context.sendMessage("basics", "&cNot world specified!");
+                return;
+            }
+        }
+        context.sendMessage("basics", "&eSeed of &6%s&e is &6%d", world.getName(), world.getSeed());
     }
 
-    public enum Direction
+    public enum Direction // TODO move me to core!
     {
         N(23),
         NE(68),
@@ -83,59 +118,88 @@ public class InformationCommands
     @Command(desc = "Displays the direction in which you are looking.")
     public void compass(CommandContext context)
     {
-        User sender = context.getSenderAsUser("basics", "&6ProTip: &eI assume you are looking right at your screen. Right?");
-        int direction = (int)(sender.getLocation().getYaw() + 180 + 360) % 360;
-        String dir;
-        dir = Direction.matchDirection(direction).name();
-        sender.sendMessage("basics", "&eYou are looking to &6%s&e!", _(sender, "basics", dir));
+        CommandSender sender = context.getSender();
+        if (sender instanceof User)
+        {
+            int direction = Math.round(((User)sender).getLocation().getYaw() + 180f + 360f) % 360;
+            String dir;
+            dir = Direction.matchDirection(direction).name();
+            sender.sendMessage("basics", "&eYou are looking to &6%s&e!", _(sender, "basics", dir));
+        }
+        else
+        {
+            context.sendMessage("basics", "&6ProTip: &eI assume you are looking right at your screen. Right?");
+        }
     }
 
     @Command(desc = "Displays your current depth.")
     public void depth(CommandContext context)
     {
-        User sender = context.getSenderAsUser("basics", "&cYou dug too deep!");
-        int height = sender.getLocation().getBlockY();
-        if (height > 62)
+        if (context.getSender() instanceof User)
         {
-            sender.sendMessage("basics", "You are on heightlevel %d (%d above sealevel)", height, height - 62);
+            final int height = ((User)context.getSender()).getLocation().getBlockY();
+            if (height > 62)
+            {
+                context.sendMessage("basics", "You are on heightlevel %d (%d above sealevel)", height, height - 62);
+            }
+            else
+            {
+                context.sendMessage("basics", "You are on heightlevel %d (%d below sealevel)", height, 62 - height);
+            }
         }
         else
         {
-            sender.sendMessage("basics", "You are on heightlevel %d (%d below sealevel)", height, 62 - height);
+            context.sendMessage("basics", "&cYou dug too deep!");
         }
     }
 
     @Command(desc = "Displays your current location.")
     public void getPos(CommandContext context)
     {
-        User sender = context.getSenderAsUser("basics", "&eYour position: &cRight in front of your screen!");
-        final Location loc = sender.getLocation();
-        sender.sendMessage("basics", "&eYour position is &6X:&f%d &6Y:&f%d &6Z:&f%d", loc.getBlockX(), loc.getBlockY(), loc.getBlockZ());
+        if (context.getSender() instanceof User)
+        {
+            final Location loc = ((User)context.getSender()).getLocation();
+            context.sendMessage("basics", "&eYour position is &6X:&f%d &6Y:&f%d &6Z:&f%d", loc.getBlockX(), loc.getBlockY(), loc.getBlockZ());
+        }
+        else
+        {
+            context.sendMessage("basics", "&eYour position: &cRight in front of your screen!");
+        }
     }
 
     @Command(desc = "Displays near players(entities/mobs) to you.", max = 2, usage = "[radius] [player] [-entity]|[-mob]", flags = {
         @Flag(longName = "entity", name = "e"),
         @Flag(longName = "mob", name = "m")
     })
-    public void near(CommandContext context)
+    public void near(ParameterizedContext context)
     {
         User user;
-        if (context.hasIndexed(1))
+        if (context.hasArg(1))
         {
             user = context.getUser(1);
+            if (user == null)
+            {
+                context.sendMessage("basics", "&cThe given user was not found!");
+                return;
+            }
+        }
+        else if (context.getSender() instanceof User)
+        {
+            user = (User)context.getSender();
         }
         else
         {
-            user = context.getSenderAsUser("basics", "&eI'am right &cbehind &eyou!");
+            context.sendMessage("basics", "&eI'am right &cbehind &eyou!");
+            return;
         }
         if (user == null)
         {
             illegalParameter(context, "basics", "User not found!");
         }
         int radius = this.basics.getConfiguration().nearDefaultRadius;
-        if (context.hasIndexed(0))
+        if (context.hasArg(0))
         {
-            radius = context.getIndexed(0, Integer.class, radius);
+            radius = context.getArg(0, int.class, radius);
         }
         int squareRadius = radius * radius;
         Location userLocation = user.getLocation();

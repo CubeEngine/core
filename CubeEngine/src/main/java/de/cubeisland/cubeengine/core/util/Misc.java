@@ -5,7 +5,7 @@ public final class Misc
     private Misc()
     {}
 
-    public static Object[] arr(Object... objects)
+    public static <T> T[] arr(T... objects)
     {
         return objects;
     }

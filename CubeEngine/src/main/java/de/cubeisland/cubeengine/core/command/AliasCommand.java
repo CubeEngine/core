@@ -1,78 +1,54 @@
 package de.cubeisland.cubeengine.core.command;
 
-import de.cubeisland.cubeengine.core.command.annotation.Flag;
-import de.cubeisland.cubeengine.core.command.annotation.Param;
-
 import java.util.List;
 
-/**
- * This class is a simple alias command the revers to a single command on ANY level.
- */
-public class AliasCommand extends CubeCommand
+import static de.cubeisland.cubeengine.core.util.StringUtils.explode;
+
+public final class AliasCommand extends CubeCommand
 {
-    private final CubeCommand command;
+    private static final String[] NO_ADDITION = new String[0];
+    private final CubeCommand target;
+    private final String[] prefix;
+    private final String[] suffix;
 
-    public AliasCommand(String name, List<String> aliases, CubeCommand command)
+    public AliasCommand(CubeCommand target, String name, List<String> aliases, String prefix, String suffix)
     {
-        super(command.getModule(), name, command.getDescription(), command.getUsage(), aliases);
-        this.command = command;
+        super(target.getModule(), name, target.getDescription(), target.getUsage(), aliases, target.getContextFactory());
+        this.target = target;
+        this.prefix = (prefix == null || prefix.isEmpty() ? NO_ADDITION : explode(" ", prefix));
+        this.suffix = (suffix == null || suffix.isEmpty() ? NO_ADDITION : explode(" ", suffix));
+    }
+
+    public CubeCommand getTarget()
+    {
+        return target;
+    }
+
+    public String[] getPrefix()
+    {
+        return this.prefix;
+    }
+
+    public String[] getSuffix()
+    {
+        return this.suffix;
     }
 
     @Override
-    public void run(CommandContext context) throws Exception
+    public ContextFactory getContextFactory()
     {
-        this.command.run(context);
+        return this.target.getContextFactory();
     }
 
     @Override
-    public void addChild(CubeCommand command)
+    public CommandResult run(CommandContext context) throws Exception
     {
-        this.command.addChild(command);
+        return this.target.run(context);
     }
 
     @Override
-    public void removeChild(String command)
+    public void help(HelpContext context) throws Exception
     {
-        this.command.removeChild(command);
-    }
-
-    @Override
-    public boolean hasChild(String name)
-    {
-        return this.command.hasChild(name);
-    }
-
-    @Override
-    public boolean hasChildren()
-    {
-        return this.command.hasChildren();
-    }
-
-    @Override
-    public Param[] getParams()
-    {
-        return this.command.getParams();
-    }
-
-    @Override
-    public Flag[] getFlags()
-    {
-        return this.command.getFlags();
-    }
-
-    @Override
-    public void showHelp(CommandContext context) throws Exception
-    {
-        this.command.showHelp(context);
-    }
-
-    /**
-     * Returns the command this alias points to
-     *
-     * @return the actual command
-     */
-    public CubeCommand getActualCommand()
-    {
-        return this.command;
+        this.target.help(context);
     }
 }

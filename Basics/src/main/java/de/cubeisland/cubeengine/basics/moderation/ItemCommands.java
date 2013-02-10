@@ -3,8 +3,9 @@ package de.cubeisland.cubeengine.basics.moderation;
 import de.cubeisland.cubeengine.basics.Basics;
 import de.cubeisland.cubeengine.basics.BasicsPerm;
 import de.cubeisland.cubeengine.core.command.CommandContext;
-import de.cubeisland.cubeengine.core.command.annotation.Command;
-import de.cubeisland.cubeengine.core.command.annotation.Flag;
+import de.cubeisland.cubeengine.core.command.parameterized.ParameterizedContext;
+import de.cubeisland.cubeengine.core.command.reflected.Command;
+import de.cubeisland.cubeengine.core.command.parameterized.Flag;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.util.ChatFormat;
 import de.cubeisland.cubeengine.core.util.matcher.Match;
@@ -38,7 +39,7 @@ public class ItemCommands
     @Command(desc = "Looks up an item for you!", max = 1, usage = "[item]")
     public void itemDB(CommandContext context)
     {
-        if (context.hasIndexed(0))
+        if (context.hasArg(0))
         {
             ItemStack item = Match.material().itemStack(context.getString(0));
             if (item != null)
@@ -53,7 +54,16 @@ public class ItemCommands
         }
         else
         {
-            User sender = context.getSenderAsUser("basics", "&cYou need 1 parameter!");
+            User sender = null;
+            if (context.getSender() instanceof User)
+            {
+                sender = (User)context.getSender();
+            }
+            if (sender == null)
+            {
+                context.sendMessage("basics", "&cYou need 1 parameter!");
+                return;
+            }
             if (sender.getItemInHand().getType().equals(Material.AIR))
             {
                 invalidUsage(context, "basics", "&eYou hold nothing in your hands!");
@@ -77,11 +87,21 @@ public class ItemCommands
     }
 
     @Command(desc = "Changes the display name of the item in your hand.", usage = "<name> [-lore]", min = 1, flags = @Flag(longName = "lore", name = "l"))
-    public void rename(CommandContext context)
+    public void rename(ParameterizedContext context)
     {//TODO better lore
-        String name = context.getStrings(0);
-        ItemStack item = context.getSenderAsUser("basics", "&cTrying to give your &etoys &ca name?").getItemInHand();
+        User sender = null;
+        if (context.getSender() instanceof User)
+        {
+            sender = (User)context.getSender();
+        }
+        if (sender == null)
+        {
+            context.sendMessage("basics", "&cTrying to give your &etoys &ca name?");
+            return;
+        }
+        ItemStack item = sender.getItemInHand();
         ItemMeta meta = item.getItemMeta();
+        String name = context.getStrings(0);
         name = ChatFormat.parseFormats(name);
         if (context.hasFlag("l"))
         {
@@ -102,7 +122,16 @@ public class ItemCommands
     public void headchange(CommandContext context)
     {
         String name = context.getString(0);
-        User sender = context.getSenderAsUser("basics", "&cTrying to give your &etoys &ca name?");
+        User sender = null;
+        if (context.getSender() instanceof User)
+        {
+            sender = (User)context.getSender();
+        }
+        if (sender == null)
+        {
+            context.sendMessage("basics", "&cTrying to give your &etoys &ca name?");
+            return;
+        }
 
         if (sender.getItemInHand().getType().equals(Material.SKULL_ITEM))
         {
@@ -122,9 +151,18 @@ public class ItemCommands
     @SuppressWarnings("deprecation")
     public void unlimited(CommandContext context)
     {
-        User sender = context.getSenderAsUser("core", "&cThis command can only be used by a player!");
+        User sender = null;
+        if (context.getSender() instanceof User)
+        {
+            sender = (User)context.getSender();
+        }
+        if (sender == null)
+        {
+            context.sendMessage("core", "&cThis command can only be used by a player!");
+            return;
+        }
         boolean unlimited = false;
-        if (context.hasIndexed(0))
+        if (context.hasArg(0))
         {
             if (context.getString(0).equalsIgnoreCase("on"))
             {
@@ -159,20 +197,29 @@ public class ItemCommands
     @Command(desc = "Adds an Enchantment to the item in your hand", max = 2, flags = {
         @Flag(longName = "unsafe", name = "u")
     }, usage = "<enchantment> [level] [-unsafe]")
-    public void enchant(CommandContext context)
+    public void enchant(ParameterizedContext context)
     {
-        if (!context.hasIndexed(0))
+        if (!context.hasArg(0))
         {
             context.sendMessage("&aFollowing Enchantments are availiable:\n%s", this.getPossibleEnchantments(null));
             return;
         }
-        User sender = context.getSenderAsUser("core", "&eWant to be Harry Potter?");
+        User sender = null;
+        if (context.getSender() instanceof User)
+        {
+            sender = (User)context.getSender();
+        }
+        if (sender == null)
+        {
+            context.sendMessage("basics", "&eWant to be Harry Potter?");
+            return;
+        }
         ItemStack item = sender.getItemInHand();
         if (item.getType().equals(Material.AIR))
         {
             blockCommand(context, "basics", "&6ProTip: &eYou cannot enchant your fists!");
         }
-        Enchantment ench = context.getIndexed(0, Enchantment.class, null);
+        Enchantment ench = context.getArg(0, Enchantment.class, null);
         if (ench == null)
         {
             String possibleEnchs = this.getPossibleEnchantments(item);
@@ -187,9 +234,9 @@ public class ItemCommands
             }
         }
         int level = ench.getMaxLevel();
-        if (context.hasIndexed(1))
+        if (context.hasArg(1))
         {
-            level = context.getIndexed(1, Integer.class, 0);
+            level = context.getArg(1, Integer.class, 0);
             if (level <= 0)
             {
                 illegalParameter(context, "basics", "&cThe enchantment-level has to be a number greater than 0!");
@@ -261,14 +308,14 @@ public class ItemCommands
         @Flag(name = "b", longName = "blacklist")
     }, min = 2, max = 3, usage = "<player> <material[:data]> [amount] [-blacklist]")
     @SuppressWarnings("deprecation")
-    public void give(CommandContext context)
+    public void give(ParameterizedContext context)
     {
         User user = context.getUser(0);
         if (user == null)
         {
             paramNotFound(context, "core", "&cUser &2%s &cnot found!", context.getString(0));
         }
-        ItemStack item = context.getIndexed(1, ItemStack.class, null);
+        ItemStack item = context.getArg(1, ItemStack.class, null);
         if (item == null)
         {
             paramNotFound(context, "core", "&cUnknown Item: &6%s&c!", context.getString(1));
@@ -281,9 +328,9 @@ public class ItemCommands
             }
         }
         int amount = item.getMaxStackSize();
-        if (context.hasIndexed(2))
+        if (context.hasArg(2))
         {
-            amount = context.getIndexed(2, Integer.class, 0);
+            amount = context.getArg(2, Integer.class, 0);
             if (amount == 0)
             {
                 illegalParameter(context, "basics", "&cThe amount has to be a number greater than 0!");
@@ -303,10 +350,19 @@ public class ItemCommands
         @Flag(longName = "blacklist", name = "b")
     }, usage = "<material[:data]> [enchantment[:level]] [amount] [-blacklist]")
     @SuppressWarnings("deprecation")
-    public void item(CommandContext context)
+    public void item(ParameterizedContext context)
     {
-        User sender = context.getSenderAsUser("core", "&eDid you try to use &6/give &eon your new I-Tem?");
-        ItemStack item = context.getIndexed(0, ItemStack.class, null);
+        User sender = null;
+        if (context.getSender() instanceof User)
+        {
+            sender = (User)context.getSender();
+        }
+        if (sender == null)
+        {
+            context.sendMessage("basics", "&eDid you try to use &6/give &eon your new I-Tem?");
+            return;
+        }
+        ItemStack item = context.getArg(0, ItemStack.class, null);
         if (item == null)
         {
             paramNotFound(context, "core", "&cUnknown Item: &6%s&c!", context.getString(0));
@@ -320,12 +376,12 @@ public class ItemCommands
         }
         int amount = item.getMaxStackSize();
         int curIndex = 1;
-        while (context.hasIndexed(curIndex))
+        while (context.hasArg(curIndex))
         {
             String enchName = context.getString(curIndex);
             if (!enchName.matches("(?!^\\d+$)^.+$"))
             {
-                amount = context.getIndexed(curIndex, Integer.class, 0);
+                amount = context.getArg(curIndex, Integer.class, 0);
                 if (amount == 0)
                 {
                     illegalParameter(context, "basics", "&cThe amount has to be a Number greater than 0!");
@@ -360,9 +416,18 @@ public class ItemCommands
     @Command(desc = "Refills the stack in hand", usage = "[amount] [-a]", flags = {
         @Flag(longName = "all", name = "a")
     }, max = 1)
-    public void more(CommandContext context)
+    public void more(ParameterizedContext context)
     {
-        User sender = context.getSenderAsUser("core", "&cYou can't get enough of it. Don't you?");
+        User sender = null;
+        if (context.getSender() instanceof User)
+        {
+            sender = (User)context.getSender();
+        }
+        if (sender == null)
+        {
+            context.sendMessage("basics", "&cYou can't get enough of it. Don't you?");
+            return;
+        }
         if (sender.getItemInHand() == null || sender.getItemInHand().getType() == Material.AIR)
         {
             invalidUsage(context, "basics", "&eMore nothing is still nothing!");
@@ -381,9 +446,9 @@ public class ItemCommands
         else
         {
             sender.getItemInHand().setAmount(64);
-            if (context.hasIndexed(0))
+            if (context.hasArg(0))
             {
-                Integer amount = context.getIndexed(0, Integer.class);
+                Integer amount = context.getArg(0, Integer.class);
                 if (amount == null || amount <= 1)
                 {
                     context.sendMessage("basics", "&cInvalid amount! (%s)", context.getString(0));
@@ -407,9 +472,18 @@ public class ItemCommands
         @Flag(longName = "all", name = "a")
     }, usage = "[-all]")
     // without item in hand
-    public void repair(CommandContext context)
+    public void repair(ParameterizedContext context)
     {
-        User sender = context.getSenderAsUser("core", "&eIf you do this you'll &cloose &eyour warranty!");
+        User sender = null;
+        if (context.getSender() instanceof User)
+        {
+            sender = (User)context.getSender();
+        }
+        if (sender == null)
+        {
+            context.sendMessage("core", "&eIf you do this you'll &cloose &eyour warranty!");
+            return;
+        }
         if (context.hasFlag("a"))
         {
             List<ItemStack> list = new ArrayList<ItemStack>();
@@ -456,7 +530,16 @@ public class ItemCommands
     @Command(desc = "Stacks your items up to 64")
     public void stack(CommandContext context)
     {
-        User user = context.getSenderAsUser("basics", "&eNo stacking for you.");
+        User user = null;
+        if (context.getSender() instanceof User)
+        {
+            user = (User)context.getSender();
+        }
+        if (user == null)
+        {
+            context.sendMessage("basics", "&eNo stacking for you.");
+            return;
+        }
         boolean allow64 = BasicsPerm.COMMAND_STACK_FULLSTACK.isAuthorized(user);
         ItemStack[] items = user.getInventory().getContents();
         int size = items.length;

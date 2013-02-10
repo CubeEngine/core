@@ -1,8 +1,6 @@
 package de.cubeisland.cubeengine.core.command.readers;
 
 import de.cubeisland.cubeengine.core.command.ArgumentReader;
-import de.cubeisland.cubeengine.core.command.InvalidArgumentException;
-import de.cubeisland.cubeengine.core.util.Pair;
 import de.cubeisland.cubeengine.core.util.matcher.Match;
 import org.bukkit.inventory.ItemStack;
 
@@ -14,9 +12,8 @@ public class ItemStackReader extends ArgumentReader<ItemStack>
     }
 
     @Override
-    public Pair<Integer, ItemStack> read(String... args) throws InvalidArgumentException
+    public ItemStack read(String arg)
     {
-        ItemStack value = Match.material().itemStack(args[0]);
-        return new Pair<Integer, ItemStack>(1, value);
+        return Match.material().itemStack(arg);
     }
 }

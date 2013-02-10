@@ -32,6 +32,7 @@ import de.cubeisland.cubeengine.basics.teleport.TeleportCommands;
 import de.cubeisland.cubeengine.basics.teleport.TeleportListener;
 import de.cubeisland.cubeengine.basics.teleport.TeleportRequestCommands;
 import de.cubeisland.cubeengine.basics.teleport.TpWorldPermissions;
+import de.cubeisland.cubeengine.core.command.reflected.ReflectedCommand;
 import de.cubeisland.cubeengine.core.module.Module;
 import de.cubeisland.cubeengine.core.util.StringUtils;
 import de.cubeisland.cubeengine.core.util.convert.ConversionException;
@@ -65,21 +66,21 @@ public class Basics extends Module
         this.registerListener(new ColoredSigns());
 
         //General:
-        this.registerCommands(new ChatCommands(this));
-        this.registerCommands(new InformationCommands(this));
-        this.registerCommands(new ListCommand());
+        this.registerCommands(new ChatCommands(this), ReflectedCommand.class);
+        this.registerCommands(new InformationCommands(this), ReflectedCommand.class);
+        this.registerCommands(new ListCommand(), ReflectedCommand.class);
         this.registerCommand(new MailCommand(this));
-        this.registerCommands(new PlayerCommands(this));
+        this.registerCommands(new PlayerCommands(this), ReflectedCommand.class);
         this.registerListener(new GeneralsListener(this));
         this.registerListener(new MuteListener(this));
 
         //Moderation:
-        this.registerCommands(new InventoryCommands(this));
-        this.registerCommands(new ItemCommands(this));
-        this.registerCommands(new KickBanCommands(this));
-        this.registerCommands(new SpawnMobCommand(this));
-        this.registerCommands(new TimeControlCommands(this));
-        this.registerCommands(new WorldControlCommands(this));
+        this.registerCommands(new InventoryCommands(this), ReflectedCommand.class);
+        this.registerCommands(new ItemCommands(this), ReflectedCommand.class);
+        this.registerCommands(new KickBanCommands(this), ReflectedCommand.class);
+        this.registerCommands(new SpawnMobCommand(this), ReflectedCommand.class);
+        this.registerCommands(new TimeControlCommands(this), ReflectedCommand.class);
+        this.registerCommands(new WorldControlCommands(this), ReflectedCommand.class);
         this.registerCommand(new PowerToolCommand(this));
         this.registerCommand(new KitCommand(this));
         this.registerListener(new PowerToolListener());
@@ -88,10 +89,10 @@ public class Basics extends Module
         this.kitGivenManager = new KitsGivenManager(this.getDatabase());
 
         //Teleport:
-        this.registerCommands(new MovementCommands(this));
-        this.registerCommands(new SpawnCommands(this));
-        this.registerCommands(new TeleportCommands(this));
-        this.registerCommands(new TeleportRequestCommands(this));
+        this.registerCommands(new MovementCommands(this), ReflectedCommand.class);
+        this.registerCommands(new SpawnCommands(this), ReflectedCommand.class);
+        this.registerCommands(new TeleportCommands(this), ReflectedCommand.class);
+        this.registerCommands(new TeleportRequestCommands(this), ReflectedCommand.class);
         this.registerListener(new TeleportListener(this));
 
         this.registerPermissions(new TpWorldPermissions(this).getPermissions()); // per world permissions

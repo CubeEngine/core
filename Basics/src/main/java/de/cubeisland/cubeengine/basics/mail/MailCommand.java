@@ -1,19 +1,18 @@
 package de.cubeisland.cubeengine.basics.mail;
 
-import de.cubeisland.cubeengine.basics.storage.BasicUser;
 import de.cubeisland.cubeengine.basics.Basics;
+import de.cubeisland.cubeengine.basics.storage.BasicUser;
+import de.cubeisland.cubeengine.core.command.reflected.Alias;
 import de.cubeisland.cubeengine.core.command.CommandContext;
 import de.cubeisland.cubeengine.core.command.ContainerCommand;
-import de.cubeisland.cubeengine.core.command.annotation.Alias;
-import de.cubeisland.cubeengine.core.command.annotation.Command;
+import de.cubeisland.cubeengine.core.command.reflected.Command;
 import de.cubeisland.cubeengine.core.user.User;
-import gnu.trove.set.TIntSet;
-import gnu.trove.set.hash.TIntHashSet;
+import gnu.trove.set.TLongSet;
+import gnu.trove.set.hash.TLongHashSet;
+
 import java.util.List;
 
 import static de.cubeisland.cubeengine.core.command.exception.InvalidUsageException.paramNotFound;
-import gnu.trove.set.TLongSet;
-import gnu.trove.set.hash.TLongHashSet;
 
 public class MailCommand extends ContainerCommand
 {
@@ -34,10 +33,18 @@ public class MailCommand extends ContainerCommand
         User sender;
         User mailof = null;
         String nameMailOf = null;
-        if (context.hasIndexed(0))
+        if (context.hasArg(0))
         {
-            sender = context.getSenderAsUser("basics", "&eIf you wanted to look into other players mails use: &6/mail spy %s&e."
-                + "\n&cOtherwise be quiet!", context.getString(0));
+            sender = null;
+            if (context.getSender() instanceof User)
+            {
+                sender = (User)context.getSender();
+            }
+            if (sender == null)
+            {
+                context.sendMessage("basics", "&eIf you wanted to look into other players mails use: &6/mail spy %s&e.\n&cOtherwise be quiet!", context.getString(0));
+                return;
+            }
             mailof = context.getUser(0);
             if (mailof == null)
             {
@@ -54,7 +61,16 @@ public class MailCommand extends ContainerCommand
         }
         else
         {
-            sender = context.getSenderAsUser("basics", "&eLog into the game to check your mailbox!");
+            sender = null;
+            if (context.getSender() instanceof User)
+            {
+                sender = (User)context.getSender();
+            }
+            if (sender == null)
+            {
+                context.sendMessage("basics", "&eLog into the game to check your mailbox!");
+                return;
+            }
         }
         BasicUser bUser = this.basics.getBasicUserManager().getBasicUser(sender);
         if (bUser.mailbox.isEmpty())
@@ -127,7 +143,7 @@ public class MailCommand extends ContainerCommand
             paramNotFound(context, "basics", "&cUser %s not found!", context.getString(0));
         }
         String message = context.getStrings(1);
-        this.mail(message, context.getSenderAsUser(), user);
+        this.mail(message, (User)context.getSender(), user);
         context.sendMessage("basics", "&aMail send to &2%s&a!", user.getName());
     }
 
@@ -137,13 +153,18 @@ public class MailCommand extends ContainerCommand
     {
         List<User> users = this.basics.getUserManager().getOnlineUsers();
         final TLongSet alreadySend = new TLongHashSet();
-        final User sender = context.getSenderAsUser();
+        User sender = null;
+        if (context.getSender() instanceof User)
+        {
+            sender = (User)context.getSender();
+        }
         final String message = context.getStrings(0);
         for (User user : users)
         {
             this.mailManager.addMail(user, sender, message);
             alreadySend.add(user.key);
         }
+        final User sendingUser = sender;
         this.basics.getTaskManger().getExecutorService().submit(new Runnable()
         {
             public void run() // Async sending to all Users ever
@@ -152,7 +173,7 @@ public class MailCommand extends ContainerCommand
                 {
                     if (!alreadySend.contains(user.key))
                     {
-                        mailManager.addMail(user, sender, message);
+                        mailManager.addMail(user, sendingUser, message);
                     }
                 }
             }
@@ -165,8 +186,17 @@ public class MailCommand extends ContainerCommand
     }, desc = "Clears your mails.", usage = "[player]")
     public void clear(CommandContext context)
     {
-        User sender = context.getSenderAsUser("basics", "&cYou will never have mails here!");
-        if (!context.hasIndexed(0))
+        User sender = null;
+        if (context.getSender() instanceof User)
+        {
+            sender = (User)context.getSender();
+        }
+        if (sender == null)
+        {
+            context.sendMessage("basics", "&cYou will never have mails here!");
+            return;
+        }
+        if (!context.hasArg(0))
         {
             this.mailManager.removeMail(sender);
             context.sendMessage("basics", "&eCleared all mails!");

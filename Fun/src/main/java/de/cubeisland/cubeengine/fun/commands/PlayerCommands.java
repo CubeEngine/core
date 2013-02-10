@@ -1,9 +1,10 @@
 package de.cubeisland.cubeengine.fun.commands;
 
 import de.cubeisland.cubeengine.core.command.CommandContext;
-import de.cubeisland.cubeengine.core.command.annotation.Command;
-import de.cubeisland.cubeengine.core.command.annotation.Flag;
-import de.cubeisland.cubeengine.core.command.annotation.Param;
+import de.cubeisland.cubeengine.core.command.parameterized.ParameterizedContext;
+import de.cubeisland.cubeengine.core.command.reflected.Command;
+import de.cubeisland.cubeengine.core.command.parameterized.Flag;
+import de.cubeisland.cubeengine.core.command.parameterized.Param;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.fun.Fun;
 import de.cubeisland.cubeengine.fun.FunPerm;
@@ -42,19 +43,19 @@ public class PlayerCommands
             @Flag(longName = "blockDamage", name = "b"),
             @Flag(longName = "playerDamage", name = "p")
     }, max = 0, usage = "[player <name>] [damage <value>] [-blockDamage] [-playerDamage] [-fire] [-unsafe]")
-    public void explosion(CommandContext context)
+    public void explosion(ParameterizedContext context)
     {
         User user;
         Location location;
-        int power = context.getNamed("damage", Integer.class, 1);
+        int power = context.getParam("damage", 1);
 
-        if (context.hasNamed("player"))
+        if (context.hasParam("player"))
         {
             if (!FunPerm.EXPLOSION_OTHER.isAuthorized(context.getSender()))
             {
                 denyAccess(context, "rulebook", "&cYou are not allowed to use the player parameter.");
             }
-            user = context.getNamed("player", User.class);
+            user = context.getUser("player");
             if (user == null)
             {
                 illegalParameter(context, "core", "&cUser not found!");
@@ -63,7 +64,12 @@ public class PlayerCommands
         }
         else
         {
-            user = context.getSenderAsUser("fun", "&cThis command can only be used by a player!");
+            if (!(context.getSender() instanceof User))
+            {
+                context.sendMessage("fun", "&cThis command can only be used by a player!");
+                return;
+            }
+            user = (User)context.getSender();
             location = user.getTargetBlock(null, this.module.getConfig().explosionDistance).getLocation();
         }
 
@@ -108,11 +114,11 @@ public class PlayerCommands
     }, flags = {
         @Flag(longName = "unsafe", name = "u")
     }, usage = "[player <name>] [damage <value>] [fireticks <seconds>] [-unsafe]")
-    public void lightning(CommandContext context)
+    public void lightning(ParameterizedContext context)
     {
         User user;
         Location location;
-        int damage = context.getNamed("damage", Integer.class, -1);
+        int damage = context.getParam("damage", -1);
 
         if (damage != -1 && !FunPerm.LIGHTNING_PLAYER_DAMAGE.isAuthorized(context.getSender()))
         {
@@ -123,9 +129,9 @@ public class PlayerCommands
             denyAccess(context, "fun", "You are not allowed to use the unsafe flag");
         }
 
-        if (context.hasNamed("player"))
+        if (context.hasParam("player"))
         {
-            user = context.getNamed("player", User.class);
+            user = context.getUser("player");
             if (user == null)
             {
                 illegalParameter(context, "core", "&cUser not found!");
@@ -135,11 +141,16 @@ public class PlayerCommands
             {
                 illegalParameter(context, "fun", "&cThe damage value has to be a number from 1 to 20");
             }
-            user.setFireTicks(20 * context.getNamed("fireticks", Integer.class, Integer.valueOf(0)));
+            user.setFireTicks(20 * context.getParam("fireticks", Integer.valueOf(0)));
         }
         else
         {
-            user = context.getSenderAsUser("fun", "&cThis command can only be used by a player!");
+            if (!(context.getSender() instanceof User))
+            {
+                context.sendMessage("fun", "&cThis command can only be used by a player!");
+                return;
+            }
+            user = (User)context.getSender();
             location = user.getTargetBlock(null, this.module.getConfig().lightningDistance).getLocation();
         }
 
@@ -166,7 +177,7 @@ public class PlayerCommands
             illegalParameter(context, "core", "&cUser not found!");
         }
 
-        int damage = context.getIndexed(1, Integer.class, 3);
+        int damage = context.getArg(1, int.class, 3);
 
         if (damage < 1 || damage > 20)
         {
@@ -182,7 +193,7 @@ public class PlayerCommands
     @Command(desc = "Burns a player", min = 1, max = 2, flags = {
         @Flag(longName = "unset", name = "u")
     }, usage = "<player> [seconds] [-unset]")
-    public void burn(CommandContext context)
+    public void burn(ParameterizedContext context)
     {
         User user = context.getUser(0);
         if (user == null)
@@ -190,7 +201,7 @@ public class PlayerCommands
             illegalParameter(context, "core", "&cUser not found!");
         }
 
-        int seconds = context.getIndexed(1, Integer.class, 5);
+        int seconds = context.getArg(1, int.class, 5);
 
         if (context.hasFlag("u"))
         {

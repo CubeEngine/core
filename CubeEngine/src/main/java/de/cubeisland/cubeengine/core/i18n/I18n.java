@@ -2,21 +2,19 @@ package de.cubeisland.cubeengine.core.i18n;
 
 import de.cubeisland.cubeengine.core.Core;
 import de.cubeisland.cubeengine.core.CubeEngine;
+import de.cubeisland.cubeengine.core.command.sender.CommandSender;
 import de.cubeisland.cubeengine.core.config.Configuration;
 import de.cubeisland.cubeengine.core.filesystem.FileExtentionFilter;
 import de.cubeisland.cubeengine.core.filesystem.FileManager;
-import de.cubeisland.cubeengine.core.logger.CubeLogger;
-import de.cubeisland.cubeengine.core.module.Module;
-import de.cubeisland.cubeengine.core.user.User;
-import de.cubeisland.cubeengine.core.util.Cleanable;
 import de.cubeisland.cubeengine.core.logger.CubeFileHandler;
+import de.cubeisland.cubeengine.core.logger.CubeLogger;
 import de.cubeisland.cubeengine.core.logger.LogLevel;
+import de.cubeisland.cubeengine.core.module.Module;
+import de.cubeisland.cubeengine.core.util.Cleanable;
 import de.cubeisland.cubeengine.core.util.matcher.Match;
 import gnu.trove.map.hash.THashMap;
 import gnu.trove.set.hash.THashSet;
 import org.apache.commons.lang.Validate;
-import org.bukkit.Bukkit;
-import org.bukkit.command.CommandSender;
 
 import java.io.File;
 import java.io.FileFilter;
@@ -51,7 +49,7 @@ public class I18n implements Cleanable
         }
         catch (IOException e)
         {
-            Bukkit.getLogger().log(ERROR, e.getLocalizedMessage(), e);
+            core.getCoreLogger().log(ERROR, e.getLocalizedMessage(), e);
         }
     }
 
@@ -323,42 +321,53 @@ public class I18n implements Cleanable
         LOGGER.log(LogLevel.INFO, String.format("\"%s\" - \"%s\" - \"%s\"", language, category, message));
     }
 
-    public static String _(CommandSender sender, Module module, String message, Object... params)
+    private static final Object[] NO_PARAMS = {};
+    public static String _(CommandSender sender, Module module, String message, Object[] params)
     {
         return _(sender, module.getId(), message, params);
     }
-
-    public static String _(CommandSender sender, String category, String message, Object... params)
+    public static String _(CommandSender sender, Module module, String message)
     {
-        if (sender instanceof User)
-        {
-            return _((User)sender, category, message, params);
-        }
-        return _(category, message, params);
+        return _(sender, module, message, NO_PARAMS);
     }
 
-    public static String _(User user, Module module, String message, Object... params)
+    public static String _(CommandSender sender, String category, String message, Object[] params)
     {
-        return _(user, module.getId(), message, params);
+        return _(sender.getLanguage(), category, message, params);
     }
 
-    public static String _(User user, String category, String message, Object... params)
+    public static String _(CommandSender sender, String category, String message)
     {
-        return __(user.getLanguage(), category, message, params);
+        return _(sender, category, message, NO_PARAMS);
     }
 
-    public static String _(Module module, String message, Object... params)
+    public static String _(Module module, String message, Object[] params)
     {
         return _(module.getId(), message, params);
     }
 
-    public static String _(String category, String message, Object... params)
+    public static String _(Module module, String message)
     {
-        return __(CubeEngine.getI18n().getDefaultLanguage(), category, message, params);
+        return _(module, message, NO_PARAMS);
     }
 
-    public static String __(String language, String category, String message, Object... params)
+    public static String _(String category, String message, Object[] params)
+    {
+        return _(CubeEngine.getI18n().getDefaultLanguage(), category, message, params);
+    }
+
+    public static String _(String category, String message)
+    {
+        return _(category, message, NO_PARAMS);
+    }
+
+    public static String _(String language, String category, String message, Object[] params)
     {
         return CubeEngine.getI18n().translate(language, category, message, params);
+    }
+
+    public static String _(String language, String category, String message)
+    {
+        return _(language, category, message, NO_PARAMS);
     }
 }

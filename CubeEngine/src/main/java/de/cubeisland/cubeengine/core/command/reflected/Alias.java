@@ -1,4 +1,4 @@
-package de.cubeisland.cubeengine.core.command.annotation;
+package de.cubeisland.cubeengine.core.command.reflected;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
@@ -6,15 +6,16 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-/**
- * This annotation is used to declare alias commands.
- */
+@Documented
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)
-@Documented
 public @interface Alias
 {
-    public String[] names();
+    String[] names();
 
-    public String[] parentPath() default {};
+    String[] parents() default {};
+
+    String prefix() default "";
+
+    String suffix() default "";
 }

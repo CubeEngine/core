@@ -1,9 +1,9 @@
 package de.cubeisland.cubeengine.fun.commands;
 
 import de.cubeisland.cubeengine.core.CubeEngine;
-import de.cubeisland.cubeengine.core.command.CommandContext;
-import de.cubeisland.cubeengine.core.command.annotation.Command;
-import de.cubeisland.cubeengine.core.command.annotation.Param;
+import de.cubeisland.cubeengine.core.command.parameterized.Param;
+import de.cubeisland.cubeengine.core.command.parameterized.ParameterizedContext;
+import de.cubeisland.cubeengine.core.command.reflected.Command;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.user.UserManager;
 import de.cubeisland.cubeengine.fun.Fun;
@@ -43,12 +43,28 @@ public class RocketCommand
             "player", "p"
         }, type = User.class)
     })
-    public void rocket(CommandContext context)
+    public void rocket(ParameterizedContext context)
     {
-        int height = context.getIndexed(0, Integer.class, 10);
-        User user = (context.hasNamed("player"))
-            ? context.getNamed("player", User.class, null)
-            : context.getSenderAsUser("fun", "&cThis command can only be used by a player!");
+        int height = context.getArg(0, int.class, 10);
+        User user = null;
+        if (context.hasParam("player"))
+        {
+            user = context.getParam("player");
+            if (user == null)
+            {
+                context.sendMessage("fun", "&cThe given user was not found!");
+                return;
+            }
+        }
+        else
+        {
+            if (!(context.getSender() instanceof User))
+            {
+                context.sendMessage("fun", "&cYou have to specify a user!");
+                return;
+            }
+            user = (User)context.getSender();
+        }
 
         if (user == null)
         {

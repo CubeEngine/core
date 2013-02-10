@@ -1,33 +1,28 @@
 package de.cubeisland.cubeengine.core.command;
 
 import de.cubeisland.cubeengine.core.CubeEngine;
-import de.cubeisland.cubeengine.core.command.annotation.Flag;
-import de.cubeisland.cubeengine.core.command.annotation.Param;
+import de.cubeisland.cubeengine.core.bukkit.TaskManager;
 import de.cubeisland.cubeengine.core.command.exception.InvalidUsageException;
+import de.cubeisland.cubeengine.core.command.exception.MissingParameterException;
 import de.cubeisland.cubeengine.core.command.exception.PermissionDeniedException;
-import de.cubeisland.cubeengine.core.module.CoreModule;
+import de.cubeisland.cubeengine.core.command.result.ErrorResult;
+import de.cubeisland.cubeengine.core.command.sender.BlockCommandSender;
+import de.cubeisland.cubeengine.core.command.sender.CommandSender;
+import de.cubeisland.cubeengine.core.command.sender.ConsoleCommandSender;
+import de.cubeisland.cubeengine.core.command.sender.WrappedCommandSender;
 import de.cubeisland.cubeengine.core.module.Module;
+import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.util.StringUtils;
-import de.cubeisland.cubeengine.core.util.matcher.Match;
+import gnu.trove.map.hash.THashMap;
+import gnu.trove.set.hash.THashSet;
 import org.apache.commons.lang.Validate;
 import org.bukkit.command.Command;
-import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Set;
-import java.util.Stack;
+import java.util.*;
 
-import static de.cubeisland.cubeengine.core.logger.LogLevel.ERROR;
 import static de.cubeisland.cubeengine.core.i18n.I18n._;
+import static de.cubeisland.cubeengine.core.logger.LogLevel.ERROR;
 
 /**
  * This class is the base for all of our commands
@@ -36,84 +31,138 @@ import static de.cubeisland.cubeengine.core.i18n.I18n._;
  */
 public abstract class CubeCommand extends Command
 {
-    protected static final Flag[] NO_FLAGS = new Flag[0];
-    protected static final Param[] NO_PARAMS = new Param[0];
     private CubeCommand parent;
     private final Module module;
     private final Map<String, CubeCommand> children;
-    private final String usageBase;
+    private final ContextFactory contextFactory;
+    private boolean async;
+    private boolean loggable;
 
-    public CubeCommand(Module module, String name, String description)
+    public CubeCommand(Module module, String name, String description, ContextFactory contextFactory)
     {
-        this(module, name, description, null);
+        this(module, name, description, "", new ArrayList<String>(0), contextFactory);
     }
 
-    public CubeCommand(Module module, String name, String description, CubeCommand parent)
-    {
-        this(module, name, "", description, new ArrayList<String>(0), parent);
-    }
-
-    public CubeCommand(Module module, String name, String description, String usageMessage, List<String> aliases)
-    {
-        this(module, name, description, usageMessage, aliases, null);
-    }
-
-    public CubeCommand(Module module, String name, String description, String usage, List<String> aliases, CubeCommand parent)
+    public CubeCommand(Module module, String name, String description, String usage, List<String> aliases, ContextFactory contextFactory)
     {
         super(name, description, usage.trim(), aliases);
-        this.parent = parent;
+        this.async = false;
+        if ("?".equals(name))
+        {
+            throw new IllegalArgumentException("Invalid command name: " + name);
+        }
+        this.parent = null;
         this.module = module;
+        this.contextFactory = contextFactory;
 
-        this.children = new LinkedHashMap<String, CubeCommand>();
+        this.children = new THashMap<String, CubeCommand>();
+        this.loggable = true;
+    }
 
-        this.usageBase = "/" + this.implodeCommandPathNames(" ") + " ";
+    public void setAsync(boolean state)
+    {
+        this.async = state;
+    }
+
+    public boolean isAsync()
+    {
+        return this.async;
+    }
+
+    public void setLoggable(boolean state)
+    {
+        this.loggable = state;
+    }
+
+    public boolean isLoggable()
+    {
+        return this.loggable;
+    }
+
+    protected void registerAlias(String[] names, String[] parents)
+    {
+        this.registerAlias(names, parents, "", "");
+    }
+
+    protected void registerAlias(String[] names, String[] parents, String prefix, String suffix)
+    {
+        if (names.length == 0)
+        {
+            throw new IllegalArgumentException("You have to specify at least 1 name!");
+        }
+        List<String> aliases = Collections.EMPTY_LIST;
+        if (names.length > 1)
+        {
+            aliases = new ArrayList<String>(names.length - 1);
+            for (int i = 1; i < names.length; ++i)
+            {
+                aliases.add(names[i]);
+            }
+        }
+        this.getModule().registerCommand(new AliasCommand(this, names[0], aliases, prefix, suffix), parents);
+    }
+
+    public ContextFactory getContextFactory()
+    {
+        return this.contextFactory;
     }
 
     /**
      * This method implodes the path of this command, so the name of the command and the name of every parent
      *
-     * @param delim the delimiter
+     * @param delimiter the delimiter
      * @return the imploded path
      */
-    protected final String implodeCommandPathNames(String delim)
+    protected final String implodeCommandParentNames(String delimiter)
     {
-        List<String> cmds = new LinkedList<String>();
+        LinkedList<String> cmds = new LinkedList<String>();
         CubeCommand cmd = this;
         do
         {
-            cmds.add(cmd.getName());
+            cmds.addFirst(cmd.getName());
         }
-        while ((cmd = this.getParent()) != null);
-        Collections.reverse(cmds);
+        while ((cmd = cmd.getParent()) != null);
 
-        return StringUtils.implode(delim, cmds);
+        return StringUtils.implode(delimiter, cmds);
     }
 
     /**
-     * Returns the minimum number of indexed parameters this command requires
+     * Returns the minimum number of args this command requires
      *
      * @return minimum params
      */
-    public int getMinimumParams()
+    public int getMinimumArgs()
     {
         return 0;
     }
 
     /**
-     * Returns the maximum number of indexed parameters this command allowes.
+     * Returns the maximum number of args this command allows.
      * A value lower than 0 indicates that there is no limit
      *
      * @return maximum params
      */
-    public int getMaximumParams()
+    public int getMaximumArgs()
     {
         return -1;
+    }
+
+    private static String replaceSemiOptionalArgs(CommandSender sender, String usage)
+    {
+        if (sender instanceof User)
+        {
+            return usage.replace('{', '[').replace('}', ']');
+        }
+        else
+        {
+            return usage.replace('{', '<').replace('}', '>');
+        }
     }
 
     @Override
     public String getUsage()
     {
-        return this.usageBase + _(this.module, super.getUsage());
+        return "/" + this.implodeCommandParentNames(" ") + " " + _(this.module, this.usageMessage);
     }
 
     /**
@@ -124,7 +173,7 @@ public abstract class CubeCommand extends Command
      */
     public String getUsage(CommandSender sender)
     {
-        return this.usageBase + _(sender, this.module, super.getUsage());
+        return "/" + this.implodeCommandParentNames(" ") + " " + replaceSemiOptionalArgs(sender, _(sender, this.module, super.getUsage()));
     }
 
     /**
@@ -136,7 +185,8 @@ public abstract class CubeCommand extends Command
      */
     public String getUsage(CommandContext context)
     {
-        return "/" + StringUtils.implode(" ", context.getLabels()) + " " + _(context.getSender(), this.module, super.getUsage());
+        final CommandSender sender = context.getSender();
+        return "/" + StringUtils.implode(" ", context.getLabels()) + " " + replaceSemiOptionalArgs(sender, _(sender, this.module, super.getUsage()));
     }
 
     /**
@@ -177,19 +227,7 @@ public abstract class CubeCommand extends Command
             return null;
         }
 
-        name = name.toLowerCase(Locale.ENGLISH);
-
-        CubeCommand child = this.children.get(name);
-        if (correct && child == null)
-        {
-            Set<String> matches = Match.string().getBestMatches(name, this.children.keySet(), 1);
-            if (matches.size() == 1)
-            {
-                child = this.getChild(matches.iterator().next(), false);
-            }
-        }
-
-        return child;
+        return this.children.get(name.toLowerCase(Locale.ENGLISH));
     }
 
     /**
@@ -201,8 +239,19 @@ public abstract class CubeCommand extends Command
     {
         Validate.notNull(command, "The command must not be null!");
 
-        final String name = command.getName();
-        this.children.put(name, command);
+        if (this == command)
+        {
+            throw new IllegalArgumentException("You can't register a command as a child of itself!");
+        }
+
+        if (command.getParent() != null)
+        {
+            throw new IllegalArgumentException("The given command is already registered! Use aliases instead!");
+        }
+
+        this.children.put(command.getName(), command);
+        command.parent = this;
+        this.onRegister();
         for (String alias : command.getAliases())
         {
             this.children.put(alias.toLowerCase(Locale.ENGLISH), command);
@@ -217,11 +266,7 @@ public abstract class CubeCommand extends Command
      */
     public boolean hasChild(String name)
     {
-        if (name != null)
-        {
-            return this.children.containsKey(name.toLowerCase());
-        }
-        return false;
+        return name != null && this.children.containsKey(name.toLowerCase());
     }
 
     /**
@@ -241,7 +286,7 @@ public abstract class CubeCommand extends Command
      */
     public Set<CubeCommand> getChildren()
     {
-        return new LinkedHashSet<CubeCommand>(this.children.values());
+        return new THashSet<CubeCommand>(this.children.values());
     }
 
     /**
@@ -251,7 +296,7 @@ public abstract class CubeCommand extends Command
      */
     public Set<String> getChildrenNames()
     {
-        return this.children.keySet();
+        return new THashSet<String>(this.children.keySet());
     }
 
     /**
@@ -262,76 +307,155 @@ public abstract class CubeCommand extends Command
     public void removeChild(String name)
     {
         CubeCommand cmd = this.getChild(name);
-        Iterator<CubeCommand> iter = this.children.values().iterator();
+        Iterator<Map.Entry<String,CubeCommand>> iter = this.children.entrySet().iterator();
 
         while (iter.hasNext())
         {
-            if (iter.next() == cmd)
+            if (iter.next().getValue() == cmd)
             {
                 iter.remove();
             }
         }
+        cmd.onRemove();
+        cmd.parent = null;
     }
 
-    @Override
-    public final boolean execute(CommandSender sender, String label, String[] args)
+    public static CommandSender wrapSender(org.bukkit.command.CommandSender bukkitSender)
     {
-        return this.execute(sender, args, label, new Stack<String>());
+        if (bukkitSender instanceof CommandSender)
+        {
+            return (CommandSender)bukkitSender;
+        }
+        else if (bukkitSender instanceof Player)
+        {
+            return CubeEngine.getUserManager().getExactUser((Player)bukkitSender);
+        }
+        else if (bukkitSender instanceof org.bukkit.command.ConsoleCommandSender)
+        {
+            return new ConsoleCommandSender((org.bukkit.command.ConsoleCommandSender)bukkitSender);
+        }
+        else if (bukkitSender instanceof org.bukkit.command.BlockCommandSender)
+        {
+            return new BlockCommandSender((org.bukkit.command.BlockCommandSender)bukkitSender);
+        }
+        else
+        {
+            return new WrappedCommandSender(bukkitSender);
+        }
+    }
+
+    /**
+     * This is the entry point from Bukkit into our own command handling code
+     *
+     * @param bukkitSender the Bukkit command sender which will be wrapped
+     * @param label the command label
+     * @param args the command arguments
+     * @return true if the command succeeded
+     */
+    @Override
+    public final boolean execute(org.bukkit.command.CommandSender bukkitSender, String label, String[] args)
+    {
+        return this.execute(wrapSender(bukkitSender), args, label, new Stack<String>());
     }
 
     private boolean execute(CommandSender sender, String[] args, String label, Stack<String> labels)
     {
-        labels.push(label);
-        if (args.length > 0)
-        {
-            CubeCommand child = this.getChild(args[0], true);
-            if (child != null)
-            {
-                return child.execute(sender, Arrays.copyOfRange(args, 1, args.length), args[0], labels);
-            }
-        }
-
-        CommandContext context = new CommandContext(this.module.getCore(), sender, this, labels);
         try
         {
-            context.parseCommandArgs(args, this.getFlags(), this.getParams());
-
-            if (context.isHelpCall())
+            labels.push(label);
+            if (args.length > 0)
             {
-                this.showHelp(context);
+                if ("?".equals(args[0]))
+                {
+                    this.help(new HelpContext(this, sender, labels, args));
+                    return true;
+                }
+                CubeCommand child = this.getChild(args[0], true);
+                if (child != null)
+                {
+                    return child.execute(sender, Arrays.copyOfRange(args, 1, args.length), args[0], labels);
+                }
+            }
+            final CommandContext ctx = this.getContextFactory().parse(this, sender, labels, args);
+            if (this.isAsync())
+            {
+                final TaskManager taskmgr = CubeEngine.getTaskManager();
+                Thread executionThread = new Thread(new Runnable() { // TODO <-- create the thread using our ThreadFactory
+                    @Override
+                    public void run()
+                    {
+                        CommandResult commandResult;
+                        try
+                        {
+                            commandResult = CubeCommand.this.run(ctx);
+                        }
+                        catch (Exception e)
+                        {
+                            commandResult = new ErrorResult(e);
+                        }
+                        if (commandResult != null)
+                        {
+                            final CommandResult result = commandResult;
+                            taskmgr.scheduleSyncDelayedTask(ctx.getCommand().getModule(), new Runnable() {
+                                @Override
+                                public void run()
+                                {
+                                    result.show(ctx.getSender());
+                                }
+                            }, 0L);
+                        }
+                    }
+                });
             }
             else
             {
-                this.run(context);
+                CommandResult result = this.run(ctx);
+                if (result != null)
+                {
+                    result.show(ctx.getSender());
+                }
             }
+        }
+        catch (MissingParameterException e)
+        {
+            sender.sendMessage("core", "&cThe parameter &e%s&c is missing!", e.getMessage());
         }
         catch (InvalidUsageException e)
         {
-            context.sendMessage(e.getMessage());
+            sender.sendMessage(e.getMessage());
             if (e.showUsage())
             {
-                context.sendMessage("core", "&eProper usage: &f%s", this.getUsage(context));
+                sender.sendMessage("core", "&eProper usage: &f%s", this.getUsage(sender));
             }
         }
         catch (PermissionDeniedException e)
         {
-            context.sendMessage(e.getMessage());
+            sender.sendMessage(e.getMessage());
         }
         catch (Exception e)
         {
-            context.sendMessage("core", "&4An unknown error occurred while executing this command!");
-            context.sendMessage("core", "&4Please report this error to an administrator.");
-            if (this.module instanceof CoreModule)
-            {
-                CubeEngine.getLogger().log(ERROR, e.getLocalizedMessage(), e);
-            }
-            else
-            {
-                this.module.getLogger().log(ERROR, e.getLocalizedMessage(), e);
-            }
+            sender.sendMessage("core", "&4An unknown error occurred while executing this command!");
+            sender.sendMessage("core", "&4Please report this error to an administrator.");
+            this.module.getLogger().log(ERROR, e.getLocalizedMessage(), e);
         }
 
         return true;
+    }
+
+    @Override
+    public final List<String> tabComplete(org.bukkit.command.CommandSender bukkitSender, String alias, String[] args) throws IllegalArgumentException
+    {
+        List<String> result = this.tabComplete(this.wrapSender(bukkitSender), alias, args);
+        if (result == null)
+        {
+            result = super.tabComplete(bukkitSender, alias, args);
+        }
+        return result;
+    }
+
+    public List<String> tabComplete(CommandSender sender, String label, String[] args)
+    {
+        return null;
     }
 
     /**
@@ -355,38 +479,24 @@ public abstract class CubeCommand extends Command
     }
 
     /**
-     * Returns an array of the defined flags
-     *
-     * @return the defined flags
-     */
-    public Flag[] getFlags()
-    {
-        return NO_FLAGS;
-    }
-
-    /**
-     * Returns an array of the defined named parameters
-     *
-     * @return the defined named parameters
-     */
-    public Param[] getParams()
-    {
-        return NO_PARAMS;
-    }
-
-    /**
      * This method handles the command execution
      *
-     * @param context The CommandContext containg all the necessary information
-     * @throws Exception if an error occures
+     * @param context The CommandContext containing all the necessary information
+     * @throws Exception if an error occurs
      */
-    public abstract void run(CommandContext context) throws Exception;
+    public abstract CommandResult run(CommandContext context) throws Exception;
 
     /**
      * This method is called if the help page of this command was requested by the ?-action
      *
-     * @param context The CommandContext containg all the necessary information
-     * @throws Exception if an error occures
+     * @param context The CommandContext containing all the necessary information
+     * @throws Exception if an error occurs
      */
-    public abstract void showHelp(CommandContext context) throws Exception;
+    public abstract void help(HelpContext context) throws Exception;
+
+    public void onRegister()
+    {}
+
+    public void onRemove()
+    {}
 }

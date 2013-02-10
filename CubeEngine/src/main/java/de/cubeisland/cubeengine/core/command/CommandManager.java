@@ -5,31 +5,29 @@ import de.cubeisland.cubeengine.core.CubeEngine;
 import de.cubeisland.cubeengine.core.bukkit.BukkitCore;
 import de.cubeisland.cubeengine.core.bukkit.BukkitUtils;
 import de.cubeisland.cubeengine.core.bukkit.CubeCommandMap;
-import de.cubeisland.cubeengine.core.command.annotation.Alias;
+import de.cubeisland.cubeengine.core.command.sender.CommandSender;
 import de.cubeisland.cubeengine.core.module.Module;
-import de.cubeisland.cubeengine.core.logger.LogLevel;
-import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.logging.Logger;
+import de.cubeisland.cubeengine.core.util.Cleanable;
+import gnu.trove.map.hash.THashMap;
 import org.bukkit.Server;
 import org.bukkit.command.Command;
 import org.bukkit.command.SimpleCommandMap;
 import org.bukkit.craftbukkit.v1_4_R1.CraftServer;
 
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.logging.Logger;
+
 /**
  * This class manages the registration of commands.
  */
-public class CommandManager
+public class CommandManager implements Cleanable
 {
     private static final Logger LOGGER = CubeEngine.getLogger();
     private final CubeCommandMap commandMap;
     private final Map<String, Command> knownCommands;
+    private final Map<Class<? extends CubeCommand>, CommandFactory> commandFactories;
 
     public CommandManager(Core core)
     {
@@ -37,32 +35,34 @@ public class CommandManager
         SimpleCommandMap oldMap = ((CraftServer)server).getCommandMap();
         this.commandMap = new CubeCommandMap(core, server, oldMap);
         this.knownCommands = this.commandMap.getKnownCommands();
+        this.commandFactories = new THashMap<Class<? extends CubeCommand>, CommandFactory>();
         BukkitUtils.swapCommandMap(this.commandMap);
     }
 
     /**
      * Removes a command by its name
      *
-     * @param names the names of the commands to remove
+     * @param name the name of the command to remove
      */
-    public void unregister(String... names)
+    public void removeCommands(String name)
     {
-        for (String name : names)
+        Command command = this.knownCommands.remove(name.toLowerCase());
+        if (command != null)
         {
-            Command command = this.knownCommands.remove(name.toLowerCase());
-            if (command != null)
+            command.unregister(this.commandMap);
+            if (command instanceof CubeCommand)
             {
-                command.unregister(this.commandMap);
+                ((CubeCommand)command).onRemove();
             }
         }
     }
 
     /**
-     * Unregisters all commands of a module
+     * Removes all commands of a module
      *
      * @param module the module
      */
-    public void unregister(Module module)
+    public void removeCommands(Module module)
     {
         Command command;
         CubeCommand cubeCommand;
@@ -77,6 +77,7 @@ public class CommandManager
                 {
                     iter.remove();
                     command.unregister(this.commandMap);
+                    cubeCommand.onRemove();
                 }
                 else
                 {
@@ -99,6 +100,7 @@ public class CommandManager
             child = iter.next();
             if (child.getModule() == module)
             {
+                child.onRemove();
                 iter.remove();
             }
             else
@@ -109,15 +111,18 @@ public class CommandManager
     }
 
     /**
-     * Unregisters all commands of the CubeEngine
+     * Removes all commands of the CubeEngine
      */
-    public void unregister()
+    public void removeCommands()
     {
         Iterator<Map.Entry<String, Command>> iter = this.knownCommands.entrySet().iterator();
+        Entry<String, Command> entry;
         while (iter.hasNext())
         {
-            if (iter.next().getValue() instanceof CubeCommand)
+            entry = iter.next();
+            if (entry.getValue() instanceof CubeCommand)
             {
+                ((CubeCommand)entry.getValue()).onRemove();
                 iter.remove();
             }
         }
@@ -126,9 +131,11 @@ public class CommandManager
     /**
      * Clears the server's command map (unregisters all commands)
      */
-    public void clear()
+    public void clean()
     {
+        this.removeCommands();
         this.commandMap.clearCommands();
+        this.commandFactories.clear();
     }
 
     /**
@@ -139,6 +146,10 @@ public class CommandManager
      */
     public void registerCommand(CubeCommand command, String... parents)
     {
+        if (command.getParent() != null)
+        {
+            throw new IllegalArgumentException("The given command is already registered!");
+        }
         CubeCommand parentCommand = null;
         for (String parent : parents)
         {
@@ -164,14 +175,15 @@ public class CommandManager
         {
             parentCommand.addChild(command);
         }
+        command.onRegister();
 
-        if (command instanceof ContainerCommand)
+        if (command instanceof CommandHolder)
         {
             String[] newParents = new String[parents.length + 1];
             newParents[parents.length] = command.getName();
             System.arraycopy(parents, 0, newParents, 0, parents.length);
 
-            this.registerCommands(command.getModule(), command, newParents);
+            this.registerCommands(command.getModule(), (CommandHolder)command, newParents);
         }
 
         // if the module is already enabled we have to reload the help map
@@ -181,6 +193,11 @@ public class CommandManager
         }
     }
 
+    public void registerCommands(Module module, CommandHolder commandHolder, String[] parents)
+    {
+        this.registerCommands(module, commandHolder, commandHolder.getCommandType(), parents);
+    }
+
     /**
      * Registers all methods annotated as a command in the given command holder object
      *
@@ -188,82 +205,39 @@ public class CommandManager
      * @param commandHolder the command holder containing the commands
      * @param parents       the path under which the command should be registered
      */
-    public void registerCommands(Module module, Object commandHolder, String... parents)
+    public void registerCommands(Module module, Object commandHolder, Class<? extends CubeCommand> commandTyoe, String... parents)
     {
-        Method[] methods = commandHolder.getClass().getDeclaredMethods();
-        de.cubeisland.cubeengine.core.command.annotation.Command commandAnnotation;
-        for (Method method : methods)
+        CommandFactory<? extends CubeCommand> commandFactory = this.getCommandFactory(commandTyoe);
+        if (commandFactory == null)
         {
-            if ((method.getModifiers() & Modifier.STATIC) == Modifier.STATIC)
+            throw new IllegalArgumentException("The given command factory is not registered!");
+        }
+        for (CubeCommand command : commandFactory.parseCommands(module, commandHolder))
+        {
+            this.registerCommand(command, parents);
+        }
+    }
+
+    public void registerCommandFactory(CommandFactory factory)
+    {
+        this.commandFactories.put(factory.getCommandType(), factory);
+    }
+
+    public CommandFactory<? extends CubeCommand> getCommandFactory(Class<? extends CubeCommand> type)
+    {
+        return this.commandFactories.get(type);
+    }
+
+    public void removeCommandFactory(Class clazz)
+    {
+        this.commandFactories.remove(clazz);
+
+        Iterator<Entry<Class<? extends CubeCommand>, CommandFactory>> iter = this.commandFactories.entrySet().iterator();
+        while (iter.hasNext())
+        {
+            if (iter.next().getValue().getClass() == clazz)
             {
-                continue;
-            }
-
-            commandAnnotation = method.getAnnotation(de.cubeisland.cubeengine.core.command.annotation.Command.class);
-            if (commandAnnotation == null)
-            {
-                continue;
-            }
-
-            Class<?>[] params = method.getParameterTypes();
-            if (params.length != 1 || params[0] != CommandContext.class)
-            {
-                LOGGER.log(LogLevel.WARNING, "The method ''{0}.{1}'' does not match the required method signature: public void {2}(CommandContext context)", new Object[]
-                    {
-                        commandHolder.getClass().getSimpleName(), method.getName(), method.getName()
-                    });
-                continue;
-            }
-
-            String[] names = commandAnnotation.names();
-            if (names.length == 0)
-            {
-                names = new String[]
-                {
-                    method.getName()
-                };
-            }
-
-            String name = names[0].trim().toLowerCase(Locale.ENGLISH);
-            List<String> aliases = new ArrayList<String>(names.length - 1);
-            for (int i = 1; i < names.length; ++i)
-            {
-                aliases.add(names[i].toLowerCase(Locale.ENGLISH));
-            }
-
-            ReflectedCommand cmd = new ReflectedCommand(
-                module,
-                commandHolder,
-                method,
-                commandAnnotation,
-                name,
-                commandAnnotation.desc(),
-                commandAnnotation.usage(),
-                aliases);
-
-            this.registerCommand(cmd, parents);
-
-            Alias aliasAnnotation = method.getAnnotation(Alias.class);
-            if (aliasAnnotation != null && aliasAnnotation.names().length > 0)
-            {
-                if (aliasAnnotation.parentPath().length == parents.length)
-                {
-                    continue;
-                }
-                names = aliasAnnotation.names();
-                if (names.length > 1)
-                {
-                    aliases = new ArrayList<String>(names.length - 1);
-                    for (int i = 1; i < names.length; ++i)
-                    {
-                        aliases.add(names[i]);
-                    }
-                }
-                else
-                {
-                    aliases = Collections.<String> emptyList();
-                }
-                this.registerCommand(new AliasCommand(names[0], aliases, cmd), aliasAnnotation.parentPath());
+                iter.remove();
             }
         }
     }
@@ -282,5 +256,10 @@ public class CommandManager
             return (CubeCommand)command;
         }
         return null;
+    }
+
+    public boolean runCommand(CommandSender sender, String commandLine)
+    {
+        return this.commandMap.dispatch(sender, commandLine);
     }
 }

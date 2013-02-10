@@ -3,10 +3,10 @@ package de.cubeisland.cubeengine.basics.teleport;
 import de.cubeisland.cubeengine.basics.Basics;
 import de.cubeisland.cubeengine.basics.BasicsPerm;
 import de.cubeisland.cubeengine.core.CubeEngine;
-import de.cubeisland.cubeengine.core.command.CommandContext;
-import de.cubeisland.cubeengine.core.command.annotation.Command;
-import de.cubeisland.cubeengine.core.command.annotation.Flag;
-import de.cubeisland.cubeengine.core.command.annotation.Param;
+import de.cubeisland.cubeengine.core.command.parameterized.Flag;
+import de.cubeisland.cubeengine.core.command.parameterized.Param;
+import de.cubeisland.cubeengine.core.command.parameterized.ParameterizedContext;
+import de.cubeisland.cubeengine.core.command.reflected.Command;
 import de.cubeisland.cubeengine.core.user.User;
 import org.bukkit.Location;
 import org.bukkit.World;
@@ -14,7 +14,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerTeleportEvent;
 
 import static de.cubeisland.cubeengine.core.command.exception.IllegalParameterValue.illegalParameter;
-import static de.cubeisland.cubeengine.core.command.exception.InvalidUsageException.*;
+import static de.cubeisland.cubeengine.core.command.exception.InvalidUsageException.invalidUsage;
+import static de.cubeisland.cubeengine.core.command.exception.InvalidUsageException.paramNotFound;
 import static de.cubeisland.cubeengine.core.command.exception.PermissionDeniedException.denyAccess;
 
 /**
@@ -63,9 +64,13 @@ public class TeleportCommands
             @Flag(longName = "force", name = "f"), // is not shown directly in usage
             @Flag(longName = "unsafe", name = "u")
     })
-    public void tp(CommandContext context)
+    public void tp(ParameterizedContext context)
     {
-        User user = context.getSenderAsUser();
+        User user = null;
+        if (context.getSender() instanceof User)
+        {
+            user = (User)context.getSender();
+        }
         User target = context.getUser(0);
         if (target == null)
         {
@@ -79,7 +84,7 @@ public class TeleportCommands
                 force = true;
             } // if not allowed ignore flag
         }
-        if (context.hasIndexed(1)) //tp player1 player2
+        if (context.hasArg(1)) //tp player1 player2
         {
             user = target; // The first user is not the target
             target = context.getUser(1);
@@ -142,7 +147,7 @@ public class TeleportCommands
             @Flag(longName = "force", name = "f"),
             @Flag(longName = "unsafe", name = "u")
     })
-    public void tpall(CommandContext context)
+    public void tpall(ParameterizedContext context)
     {
         User user = context.getUser(0);
         if (user == null)
@@ -183,9 +188,18 @@ public class TeleportCommands
             @Flag(longName = "force", name = "f"),
             @Flag(longName = "unsafe", name = "u")
     })
-    public void tphere(CommandContext context)
+    public void tphere(ParameterizedContext context)
     {
-        User sender = context.getSenderAsUser("basics", "&6ProTip: &cTeleport does not work IRL!");
+        User sender = null;
+        if (context.getSender() instanceof User)
+        {
+            sender = (User)context.getSender();
+        }
+        if (sender == null)
+        {
+            context.sendMessage("basics", "&6ProTip: &cTeleport does not work IRL!");
+            return;
+        }
         User target = context.getUser(0);
         if (target == null)
         {
@@ -222,9 +236,18 @@ public class TeleportCommands
             @Flag(longName = "force", name = "f"),
             @Flag(longName = "unsafe", name = "u")
     })
-    public void tphereall(CommandContext context)
+    public void tphereall(ParameterizedContext context)
     {
-        User sender = context.getSenderAsUser("basics", "&6ProTip: &cTeleport does not work IRL!");
+        User sender = null;
+        if (context.getSender() instanceof User)
+        {
+            sender = (User)context.getSender();
+        }
+        if (sender == null)
+        {
+            context.sendMessage("basics", "&6ProTip: &cTeleport does not work IRL!");
+            return;
+        }
         boolean force = false;
         if (context.hasFlag("f"))
         {
@@ -252,30 +275,39 @@ public class TeleportCommands
     @Command(desc = "Teleport a directly to you.", usage = "<x> [y] <z> [world <world>]", min = 2, max = 4, params = @Param(names = {
         "world", "w"
     }, type = World.class), flags = @Flag(longName = "unsafe", name = "u"))
-    public void tppos(CommandContext context)
+    public void tppos(ParameterizedContext context)
     {
-        User sender = context.getSenderAsUser("basics", "&6ProTip: &cTeleport does not work IRL!");
-        Integer x = context.getIndexed(0, Integer.class);
+        User sender = null;
+        if (context.getSender() instanceof User)
+        {
+            sender = (User)context.getSender();
+        }
+        if (sender == null)
+        {
+            context.sendMessage("basics", "&6ProTip: &cTeleport does not work IRL!");
+            return;
+        }
+        Integer x = context.getArg(0, Integer.class);
         Integer y;
         Integer z;
         World world = sender.getWorld();
-        if (context.hasIndexed(2))
+        if (context.hasArg(2))
         {
-            y = context.getIndexed(1, Integer.class);
-            z = context.getIndexed(2, Integer.class);
+            y = context.getArg(1, Integer.class);
+            z = context.getArg(2, Integer.class);
         }
         else
         {
-            z = context.getIndexed(1, Integer.class);
+            z = context.getArg(1, Integer.class);
             if (x == null || z == null)
             {
                 illegalParameter(context, "basics", "&cCoordinates have to be numbers!");
             }
             y = sender.getWorld().getHighestBlockAt(x, z).getY() + 1;
         }
-        if (context.hasNamed("world"))
+        if (context.hasParam("world"))
         {
-            world = context.getNamed("world", World.class);
+            world = context.getParam("world");
             if (world == null)
             {
                 paramNotFound(context, "basics", "&cWorld not found!");

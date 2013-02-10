@@ -2,7 +2,8 @@ package de.cubeisland.cubeengine.roles.commands;
 
 import de.cubeisland.cubeengine.core.command.CommandContext;
 import de.cubeisland.cubeengine.core.command.ContainerCommand;
-import static de.cubeisland.cubeengine.core.command.exception.InvalidUsageException.*;
+import de.cubeisland.cubeengine.core.command.parameterized.ParameterizedContext;
+import de.cubeisland.cubeengine.core.command.sender.CommandSender;
 import de.cubeisland.cubeengine.core.storage.world.WorldManager;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.roles.Roles;
@@ -10,6 +11,8 @@ import de.cubeisland.cubeengine.roles.role.RoleManager;
 import de.cubeisland.cubeengine.roles.role.UserSpecificRole;
 import gnu.trove.map.hash.TLongObjectHashMap;
 import org.bukkit.World;
+
+import static de.cubeisland.cubeengine.core.command.exception.InvalidUsageException.*;
 
 public class UserCommandHelper extends ContainerCommand
 {
@@ -27,14 +30,21 @@ public class UserCommandHelper extends ContainerCommand
 
     protected User getUser(CommandContext context, int pos)
     {
-        User user;
-        if (context.hasIndexed(pos))
+        User user = null;
+        if (context.hasArg(pos))
         {
             user = context.getUser(pos);
         }
         else
         {
-            user = context.getSenderAsUser("roles", "&cYou have to specify a player.");
+            if (context.getSender() instanceof User)
+            {
+                user = (User)context.getSender();
+            }
+            if (user == null)
+            {
+                invalidSender(user, "roles", "&cYou have to specify a player.");
+            }
         }
         if (user == null)
         {
@@ -75,16 +85,14 @@ public class UserCommandHelper extends ContainerCommand
      * Returns the world defined with named param "in" or the users world
      *
      * @param context
-     * @param user
      * @return
      */
-    protected World getWorld(CommandContext context, User user)
+    protected World getWorld(ParameterizedContext context)
     {
-        User sender = context.getSenderAsUser();
         World world;
-        if (context.hasNamed("in"))
+        if (context.hasParam("in"))
         {
-            world = context.getNamed("in", World.class);
+            world = context.getParam("in");
             if (world == null)
             {
                 paramNotFound(context, "roles", "&cWorld %s not found!", context.getString("in"));
@@ -92,12 +100,14 @@ public class UserCommandHelper extends ContainerCommand
         }
         else
         {
-            if (sender == null)
+            CommandSender sender = context.getSender();
+            if (sender instanceof User)
             {
-                world = this.worldManager.getWorld(ModuleManagementCommands.curWorldIdOfConsole);
+                User user = (User)sender;
+                world = this.worldManager.getWorld((Long)user.getAttribute(this.module, "curWorldId"));
                 if (world == null)
                 {
-                    invalidUsage(context, "roles", "&ePlease provide a world.\n&aYou can define a world with &6/roles admin defaultworld <world>");
+                    world = user.getWorld();
                 }
                 else
                 {
@@ -106,10 +116,10 @@ public class UserCommandHelper extends ContainerCommand
             }
             else
             {
-                world = this.worldManager.getWorld((Long)sender.getAttribute(this.module, "curWorldId"));
+                world = this.worldManager.getWorld(ModuleManagementCommands.curWorldIdOfConsole);
                 if (world == null)
                 {
-                    world = sender.getWorld();
+                    invalidUsage(context, "roles", "&ePlease provide a world.\n&aYou can define a world with &6/roles admin defaultworld <world>");
                 }
                 else
                 {

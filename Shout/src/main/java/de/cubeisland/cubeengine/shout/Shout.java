@@ -1,12 +1,14 @@
 package de.cubeisland.cubeengine.shout;
 
-import de.cubeisland.cubeengine.core.module.Module;
+import de.cubeisland.cubeengine.core.command.reflected.ReflectedCommand;
 import de.cubeisland.cubeengine.core.logger.LogLevel;
+import de.cubeisland.cubeengine.core.module.Module;
 import de.cubeisland.cubeengine.shout.announce.AnnouncementManager;
 import de.cubeisland.cubeengine.shout.announce.announcer.Announcer;
 import de.cubeisland.cubeengine.shout.interactions.ShoutCommand;
 import de.cubeisland.cubeengine.shout.interactions.ShoutListener;
 import de.cubeisland.cubeengine.shout.interactions.ShoutSubCommands;
+
 import java.io.File;
 import java.io.IOException;
 
@@ -67,8 +69,8 @@ public class Shout extends Module
         }
         this.announcementManager.loadAnnouncements(this.announcementFolder);
         this.registerListener(listener);
-        this.registerCommands(command);
-        this.registerCommands(subCommands, "shout");
+        this.registerCommands(command, ReflectedCommand.class);
+        this.registerCommands(subCommands, ReflectedCommand.class, "shout");
 
         this.announcementManager.initUsers();
     }

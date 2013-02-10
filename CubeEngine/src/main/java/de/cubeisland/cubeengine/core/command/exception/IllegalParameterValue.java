@@ -1,7 +1,7 @@
 package de.cubeisland.cubeengine.core.command.exception;
 
 import de.cubeisland.cubeengine.core.command.CommandContext;
-import org.bukkit.command.CommandSender;
+import de.cubeisland.cubeengine.core.command.sender.CommandSender;
 
 import static de.cubeisland.cubeengine.core.i18n.I18n._;
 

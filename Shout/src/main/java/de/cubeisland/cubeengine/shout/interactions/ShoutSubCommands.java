@@ -1,12 +1,12 @@
 package de.cubeisland.cubeengine.shout.interactions;
 
+import de.cubeisland.cubeengine.core.command.reflected.Alias;
 import de.cubeisland.cubeengine.core.command.CommandContext;
-import de.cubeisland.cubeengine.core.command.annotation.Alias;
-import de.cubeisland.cubeengine.core.command.annotation.Command;
-import de.cubeisland.cubeengine.core.command.annotation.Param;
+import de.cubeisland.cubeengine.core.command.parameterized.Param;
+import de.cubeisland.cubeengine.core.command.parameterized.ParameterizedContext;
+import de.cubeisland.cubeengine.core.command.reflected.Command;
 import de.cubeisland.cubeengine.core.i18n.I18n;
 import de.cubeisland.cubeengine.core.permission.Permission;
-import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.shout.Shout;
 import de.cubeisland.cubeengine.shout.announce.Announcement;
 import de.cubeisland.cubeengine.shout.announce.MessageOfTheDay;
@@ -72,23 +72,19 @@ public class ShoutSubCommands
         })
     }, usage = "<name> message \"<message>\" [delay \"<x minutes|hours|days>\"] [world <world>] " +
             "[permission <permission node>] [group <group>] [locale <locale>]")
-    public void create(CommandContext context)
+    public void create(ParameterizedContext context)
     {
-        if (!context.hasNamed("message"))
+        if (!context.hasParam("message"))
         {
             context.sendMessage("shout", "You have to include a message!");
             return;
         }
 
         String message = context.getString("message");
-        String locale = this.module.getCore().getConfiguration().defaultLanguage;
-        if (context.hasNamed("locale"))
+        String locale = context.getSender().getLanguage();
+        if (context.hasParam("locale"))
         {
             locale = I18n.normalizeLanguage(context.getString("locale"));
-        }
-        else if (context.getSenderAsUser() != null)
-        {
-            locale = context.getSenderAsUser().getLanguage();
         }
 
         try
@@ -130,21 +126,17 @@ public class ShoutSubCommands
     public void motd(CommandContext context)
     {
         MessageOfTheDay motd = this.module.getAnnouncementManager().getMotd();
-        if (motd == null)
+        if (motd != null)
         {
-            context.sendMessage("shout", "&eThere is no message of the day yet.");
-            return;
+            context.sendMessage(" ");
+            for (String line : motd.getMessage(context.getSender().getLanguage()))
+            {
+                context.sendMessage(line);
+            }
         }
-
-        String locale = this.module.getCore().getI18n().getDefaultLanguage();
-        if (context.getSender() instanceof User)
+        else
         {
-            locale = context.getSenderAsUser().getLanguage();
-        }
-        context.sendMessage(" ");
-        for (String line : motd.getMessage(locale))
-        {
-            context.sendMessage(line);
+            context.sendMessage("shout", "&eThere is no message of the day.");
         }
     }
 }

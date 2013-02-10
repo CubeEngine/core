@@ -8,6 +8,8 @@ import de.cubeisland.cubeengine.core.CubeEngine;
 import de.cubeisland.cubeengine.core.command.CommandManager;
 import de.cubeisland.cubeengine.core.command.commands.CoreCommands;
 import de.cubeisland.cubeengine.core.command.commands.ModuleCommands;
+import de.cubeisland.cubeengine.core.command.reflected.readable.ReadableCommandFactory;
+import de.cubeisland.cubeengine.core.command.reflected.ReflectedCommandFactory;
 import de.cubeisland.cubeengine.core.config.Configuration;
 import de.cubeisland.cubeengine.core.filesystem.FileManager;
 import de.cubeisland.cubeengine.core.i18n.I18n;
@@ -240,6 +242,8 @@ public class BukkitCore extends JavaPlugin implements Core
 
         // depends on: server
         this.commandManager = new CommandManager(this);
+        this.commandManager.registerCommandFactory(new ReflectedCommandFactory());
+        this.commandManager.registerCommandFactory(new ReadableCommandFactory());
 
         // depends on: database
         this.moduleManager = new BukkitModuleManager(this);
@@ -289,7 +293,7 @@ public class BukkitCore extends JavaPlugin implements Core
         if (this.commandManager != null)
         {
             this.getCoreLogger().log(DEBUG, "command manager cleanup");
-            this.commandManager.unregister();
+            this.commandManager.clean();
             this.commandManager = null;
         }
 

@@ -1,7 +1,7 @@
 package de.cubeisland.cubeengine.test.commands;
 
 import de.cubeisland.cubeengine.core.command.CommandContext;
-import de.cubeisland.cubeengine.core.command.annotation.Command;
+import de.cubeisland.cubeengine.core.command.reflected.Command;
 import de.cubeisland.cubeengine.core.util.time.Duration;
 import java.util.LinkedList;
 import java.util.concurrent.TimeUnit;
@@ -24,7 +24,7 @@ public class TestCommands
     {
         LinkedList<String> list = new LinkedList<String>();
         int i = 0;
-        while (context.hasIndexed(i))
+        while (context.hasArg(i))
         {
             list.add(context.getString(i));
             i++;

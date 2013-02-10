@@ -1,5 +1,6 @@
 package de.cubeisland.cubeengine.fly;
 
+import de.cubeisland.cubeengine.core.command.reflected.ReflectedCommand;
 import de.cubeisland.cubeengine.core.module.Module;
 
 public class Fly extends Module
@@ -11,7 +12,7 @@ public class Fly extends Module
     {
         if (this.config.flycommand)
         {
-            this.registerCommands(new FlyCommand());
+            this.registerCommands(new FlyCommand(), ReflectedCommand.class);
         }
         if (this.config.flyfeather)
         {

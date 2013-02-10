@@ -3,14 +3,14 @@ package de.cubeisland.cubeengine.basics.moderation;
 import de.cubeisland.cubeengine.basics.Basics;
 import de.cubeisland.cubeengine.basics.BasicsConfiguration;
 import de.cubeisland.cubeengine.core.command.CommandContext;
-import de.cubeisland.cubeengine.core.command.annotation.Command;
+import de.cubeisland.cubeengine.core.command.reflected.Command;
 import de.cubeisland.cubeengine.core.command.exception.InvalidUsageException;
+import de.cubeisland.cubeengine.core.command.sender.CommandSender;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.util.StringUtils;
 import de.cubeisland.cubeengine.core.util.matcher.Match;
 import org.bukkit.DyeColor;
 import org.bukkit.Location;
-import org.bukkit.command.CommandSender;
 import org.bukkit.entity.*;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Vector;
@@ -24,6 +24,7 @@ import static de.cubeisland.cubeengine.core.command.exception.IllegalParameterVa
 import static de.cubeisland.cubeengine.core.command.exception.InvalidUsageException.*;
 import static de.cubeisland.cubeengine.core.command.exception.PermissionDeniedException.denyAccess;
 import static de.cubeisland.cubeengine.core.i18n.I18n._;
+import static de.cubeisland.cubeengine.core.util.Misc.arr;
 
 /**
  * The /spawnmob command.
@@ -43,17 +44,21 @@ public class SpawnMobCommand
         // TODO fix skeleton not having a bow
         // TODO custom loot items
         // TODO adjust MaxHealth of a mob
-        User sender = context.getSenderAsUser();
-        if (!context.hasIndexed(2) && sender == null)
+        User sender = null;
+        if (context.getSender() instanceof User)
+        {
+            sender = (User)context.getSender();
+        }
+        if (!context.hasArg(2) && sender == null)
         {
             invalidUsage(context, "basics", "&eSuccesfully spawned some &cbugs &einside your server!");
         }
-        if (!context.hasIndexed(0))
+        if (!context.hasArg(0))
         {
             invalidUsage(context, "basics", "&cYou need to define what mob to spawn!");
         }
         Location loc;
-        if (context.hasIndexed(2))
+        if (context.hasArg(2))
         {
             User user = context.getUser(2);
             if (user == null)
@@ -67,9 +72,9 @@ public class SpawnMobCommand
             loc = sender.getTargetBlock(null, 200).getLocation().add(new Vector(0, 1, 0));
         }
         Integer amount = 1;
-        if (context.hasIndexed(1))
+        if (context.hasArg(1))
         {
-            amount = context.getIndexed(1, Integer.class, null);
+            amount = context.getArg(1, Integer.class, null);
             if (amount == null)
             {
                 illegalParameter(context, "basics", "&e%s is not a number! Really!", context.getString(1));
@@ -95,9 +100,9 @@ public class SpawnMobCommand
             while (entitySpawned.getPassenger() != null)
             {
                 entitySpawned = entitySpawned.getPassenger();
-                message = _(context.getSender(), "basics", "%s &ariding &e%s", Match.entity().getNameFor(entitySpawned.getType()), message);
+                message = _(context.getSender(), "basics", "%s &ariding &e%s", arr(Match.entity().getNameFor(entitySpawned.getType()), message));
             }
-            message = _(context.getSender(), "basics", "&aSpawned %d &e%s!", amount, message);
+            message = _(context.getSender(), "basics", "&aSpawned %d &e%s!", arr(amount, message));
             context.sendMessage(message);
         }
     }
@@ -180,7 +185,8 @@ public class SpawnMobCommand
                         }
                         catch (NumberFormatException e)
                         {
-                            blockCommand(sender, "basics", "&cInvalid HP amount!");
+                            sender.sendMessage("basics", "&cInvalid HP amount!");
+                            return;
                         }
                     }
                 }

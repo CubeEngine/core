@@ -2,15 +2,17 @@ package de.cubeisland.cubeengine.guests;
 
 import de.cubeisland.cubeengine.core.command.CommandContext;
 import de.cubeisland.cubeengine.core.command.ContainerCommand;
-import de.cubeisland.cubeengine.core.command.annotation.Command;
+import de.cubeisland.cubeengine.core.command.parameterized.ParameterizedContext;
+import de.cubeisland.cubeengine.core.command.reflected.Command;
+import de.cubeisland.cubeengine.core.logger.LogLevel;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.util.ChatFormat;
-import de.cubeisland.cubeengine.core.logger.LogLevel;
 import de.cubeisland.cubeengine.guests.prevention.Prevention;
 import de.cubeisland.cubeengine.guests.prevention.PreventionManager;
 import gnu.trove.set.hash.THashSet;
-import java.util.Set;
 import org.bukkit.command.CommandSender;
+
+import java.util.Set;
 
 import static de.cubeisland.cubeengine.core.i18n.I18n._;
 
@@ -31,7 +33,7 @@ public class Commands extends ContainerCommand
     @Command(desc = "", usage = "[prevention]")
     public void reload(CommandContext context)
     {
-        if (context.hasIndexed(0))
+        if (context.hasArg(0))
         {
             final Prevention prevention = this.pm.getPrevention(context.getString(0));
             if (prevention != null)
@@ -85,9 +87,9 @@ public class Commands extends ContainerCommand
     }
 
     @Command(desc = "", usage = "<prevention|*> [-t]")
-    public void enable(CommandContext context)
+    public void enable(ParameterizedContext context)
     {
-        if (context.hasIndexed(0))
+        if (context.hasArg(0))
         {
             boolean temporary = context.hasFlag("t");
             if ("*".equals(context.getString(0)))
@@ -143,9 +145,9 @@ public class Commands extends ContainerCommand
     }
 
     @Command(desc = "", usage = "<prevention> [-t]")
-    public void disable(CommandContext context)
+    public void disable(ParameterizedContext context)
     {
-        if (context.hasIndexed(0))
+        if (context.hasArg(0))
         {
             boolean temporary = context.hasFlag("t");
             if ("*".equals(context.getString(0)))
@@ -197,7 +199,7 @@ public class Commands extends ContainerCommand
     @Command(desc = "", usage = "<prevention>")
     public void enabled(CommandContext context)
     {
-        if (context.hasIndexed(0))
+        if (context.hasArg(0))
         {
             Prevention prevention = this.pm.getPrevention(context.getString(0));
             if (prevention != null)
@@ -223,7 +225,7 @@ public class Commands extends ContainerCommand
     }
 
     @Command(desc = "", usage = "[-a]")
-    public void list(CommandContext context)
+    public void list(ParameterizedContext context)
     {
         if (context.hasFlag("a"))
         {
@@ -255,14 +257,18 @@ public class Commands extends ContainerCommand
     @Command(desc = "", usage = "[player] <prevention>")
     public void can(CommandContext context)
     {
-        User target = context.getSenderAsUser();
+        User target = null;
+        if (context.getSender() instanceof User)
+        {
+            target = (User)context.getSender();
+        }
         Prevention prevention;
-        if (context.hasIndexed(1))
+        if (context.hasArg(1))
         {
             target = context.getUser(0);
             prevention = this.pm.getPrevention(context.getString(1));
         }
-        else if (context.hasIndexed(0) && target != null)
+        else if (context.hasArg(0) && target != null)
         {
             prevention = this.pm.getPrevention(context.getString(0));
         }
@@ -279,7 +285,7 @@ public class Commands extends ContainerCommand
             {
                 if (prevention.can(target))
                 {
-                    if (context.getSenderAsUser() == target)
+                    if (context.getSender() == target)
                     {
                         context.sendMessage("guests", "you_ableToPass");
                     }
@@ -290,7 +296,7 @@ public class Commands extends ContainerCommand
                 }
                 else
                 {
-                    if (context.getSenderAsUser() == target)
+                    if (context.getSender() == target)
                     {
                         context.sendMessage("guests", "you_unableToPass");
                     }
@@ -314,7 +320,7 @@ public class Commands extends ContainerCommand
     @Command(desc = "", usage = "<prevention> <message>")
     public void setMessage(CommandContext context)
     {
-        if (context.hasIndexed(0))
+        if (context.hasArg(0))
         {
             Prevention prevention = this.pm.getPrevention(context.getString(0));
             if (prevention != null)
@@ -343,7 +349,7 @@ public class Commands extends ContainerCommand
         {
             this.guests.getLogger().log(LogLevel.INFO, message);
         }
-        final User sender = context.getSenderAsUser();
+        final CommandSender sender = context.getSender();
         for (User user : this.guests.getCore().getUserManager().getOnlineUsers())
         {
             if (sender != user && user.hasPermission(context.getCommand().getPermission()))

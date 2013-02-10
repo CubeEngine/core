@@ -1,22 +1,28 @@
 package de.cubeisland.cubeengine.core.bukkit;
 
 import de.cubeisland.cubeengine.core.Core;
+import de.cubeisland.cubeengine.core.command.AliasCommand;
 import de.cubeisland.cubeengine.core.command.CommandExecuteEvent;
 import de.cubeisland.cubeengine.core.command.CubeCommand;
-import de.cubeisland.cubeengine.core.user.User;
-import de.cubeisland.cubeengine.core.user.UserManager;
+import de.cubeisland.cubeengine.core.logger.CubeFileHandler;
+import de.cubeisland.cubeengine.core.logger.CubeLogger;
 import de.cubeisland.cubeengine.core.util.StringUtils;
 import de.cubeisland.cubeengine.core.util.matcher.Match;
 import org.bukkit.Server;
 import org.bukkit.command.*;
 import org.bukkit.command.defaults.BukkitCommand;
 
-import java.util.Arrays;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Set;
+import java.io.File;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.*;
+import java.util.logging.*;
+import java.util.logging.Formatter;
 
 import static de.cubeisland.cubeengine.core.i18n.I18n._;
+import static de.cubeisland.cubeengine.core.logger.LogLevel.INFO;
+import static de.cubeisland.cubeengine.core.logger.LogLevel.WARNING;
+import static de.cubeisland.cubeengine.core.util.Misc.arr;
 
 /**
  * This CommandMap extends the SimpleCommandMap to add some functionality:
@@ -26,13 +32,33 @@ import static de.cubeisland.cubeengine.core.i18n.I18n._;
 public class CubeCommandMap extends SimpleCommandMap
 {
     private final Core core;
-    private final UserManager um;
+    private final Logger commandLogger;
 
     public CubeCommandMap(Core core, Server server, SimpleCommandMap oldMap)
     {
         super(server);
         this.core = core;
-        this.um = core.getUserManager();
+        this.commandLogger = new CubeLogger("commands");
+        try
+        {
+            FileHandler handler = new CubeFileHandler(Level.ALL,  new File(core.getFileManager().getLogDir(), "commands").getPath());
+            handler.setFormatter(new Formatter() {
+                private final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+
+                @Override
+                public String format(LogRecord record)
+                {
+                    StringBuilder sb = new StringBuilder(this.dateFormat.format(new Date(record.getMillis())));
+                    sb.append(' ').append(record.getMessage());
+                    return sb.toString();
+                }
+            });
+            this.commandLogger.addHandler(handler);
+        }
+        catch (IOException e)
+        {
+            core.getCoreLogger().log(WARNING, "Failed to create the command log!", e);
+        }
         for (Command command : oldMap.getCommands())
         {
             command.unregister(oldMap);
@@ -51,9 +77,10 @@ public class CubeCommandMap extends SimpleCommandMap
     }
 
     @Override
-    public Command getCommand(final String name)
+    public Command getCommand(String name)
     {
-        if (name == null)
+        name = name.trim();
+        if (name == null || name.isEmpty())
         {
             return null;
         }
@@ -74,50 +101,62 @@ public class CubeCommandMap extends SimpleCommandMap
      * {@inheritDoc}
      */
     @Override
-    public boolean dispatch(CommandSender sender, String commandLine) throws CommandException
+    public boolean dispatch(CommandSender sender, final String commandLine) throws CommandException
     {
         if (commandLine.isEmpty())
         {
             return true;
         }
 
-        String[] args = commandLine.split(" ");
+        String[] parts = commandLine.split(" ");
 
-        if (args.length == 0)
+        if (parts.length == 0)
         {
             return false;
         }
 
-        String label = args[0].toLowerCase();
+        String label = parts[0].toLowerCase();
         Command command = getCommand(label);
 
-        if (command == null && !"".equals(label))
+        if (command == null)
         {
-            User user = this.um.getExactUser(sender);
-            if (user != null)
-            {
-                sender = user;
-            }
+            final String language = BukkitUtils.getLanguage(sender);
             Set<String> matches = Match.string().getBestMatches(label, this.knownCommands.keySet(), 1);
-            if (matches.size() == 1)
+            if (matches.size() > 0 && matches.size() <= this.core.getConfiguration().commandOffers)
             {
-                sender.sendMessage(_(sender, "core", "&cCouldn't find &e/%s&c, but &a/%s&c seems to be the one you searched...", label, matches.iterator().next()));
-                label = matches.iterator().next();
-                command = this.getCommand(label);
-
-            }
-            else if (matches.size() > 1 && matches.size() <= this.core.getConfiguration().commandOffers)
-            {
-                sender.sendMessage(_(sender, "core", "&cI could not find the command &e/%s &c...", label));
-                sender.sendMessage(_(sender, "core", "&eDid you mean one of these: &a%s &e?", "/" + StringUtils.implode(", /", matches)));
+                if (matches.size() == 1)
+                {
+                    sender.sendMessage(_(language, "core", "&cCouldn't find &e/%s&c. Did you mean &a/%s&c?", arr(label, matches.iterator().next())));
+                }
+                else
+                {
+                    sender.sendMessage(_(language, "core", "&eDid you mean one of these: &a%s &e?", arr("/" + StringUtils.implode(", /", matches))));
+                }
             }
             else
             {
-                sender.sendMessage(_(sender, "core", "&cI could not find any matching command for &e/%s &c...", label));
+                sender.sendMessage(_(language, "core", "&cI couldn't find any command for &e/%s &c...", arr(label)));
             }
+            return true;
         }
 
-        if (command == null || this.core.getEventManager().fireEvent(new CommandExecuteEvent(this.core, command, commandLine)).isCancelled())
+        String[] args = Arrays.copyOfRange(parts, 1, parts.length);
+        if (command instanceof AliasCommand)
+        {
+            AliasCommand alias = ((AliasCommand)command);
+            String[] prefix = alias.getPrefix();
+            String[] suffix = alias.getSuffix();
+
+            String[] newArgs = new String[prefix.length + args.length + suffix.length];
+            System.arraycopy(prefix, 0, newArgs, 0, prefix.length);
+            System.arraycopy(args, 0, newArgs, prefix.length, args.length);
+            System.arraycopy(suffix, 0, newArgs, prefix.length + args.length, suffix.length);
+
+            args = newArgs;
+            command = alias.getTarget();
+        }
+
+        if (this.core.getEventManager().fireEvent(new CommandExecuteEvent(this.core, command, commandLine)).isCancelled())
         {
             return false;
         }
@@ -125,7 +164,11 @@ public class CubeCommandMap extends SimpleCommandMap
         try
         {
             // TODO we might catch errors here instead of on CubeCommand
-            command.execute(sender, label, Arrays.copyOfRange(args, 1, args.length));
+            command.execute(sender, label, args);
+            if (!(command instanceof CubeCommand) || ((CubeCommand)command).isLoggable())
+            {
+                this.commandLogger.log(INFO, sender.getName() + " " + commandLine);
+            }
         }
         catch (CommandException e)
         {

@@ -1,8 +1,7 @@
 package de.cubeisland.cubeengine.core.command.readers;
 
 import de.cubeisland.cubeengine.core.command.ArgumentReader;
-import de.cubeisland.cubeengine.core.command.InvalidArgumentException;
-import de.cubeisland.cubeengine.core.util.Pair;
+import de.cubeisland.cubeengine.core.command.exception.InvalidArgumentException;
 
 public class LongReader extends ArgumentReader<Long>
 {
@@ -12,17 +11,16 @@ public class LongReader extends ArgumentReader<Long>
     }
 
     @Override
-    public Pair<Integer, Long> read(String... args) throws InvalidArgumentException
+    public Long read(String arg) throws InvalidArgumentException
     {
-        String num = args[0].replace(',', '.').replace(".", "");
+        String num = arg.replace(',', '.').replace(".", "");
         try
         {
-            Long value = Long.parseLong(num);
-            return new Pair<Integer, Long>(1, value);
+            return Long.parseLong(num);
         }
         catch (NumberFormatException e)
         {
-            throw new InvalidArgumentException("Could not parse " + args[0] + " to Long!");
+            throw new InvalidArgumentException("Could not parse " + arg + " to Long!");
         }
     }
 }

@@ -3,6 +3,7 @@ package de.cubeisland.cubeengine.core.user;
 import de.cubeisland.cubeengine.core.CubeEngine;
 import de.cubeisland.cubeengine.core.bukkit.BukkitCore;
 import de.cubeisland.cubeengine.core.bukkit.BukkitUtils;
+import de.cubeisland.cubeengine.core.command.sender.CommandSender;
 import de.cubeisland.cubeengine.core.i18n.Language;
 import de.cubeisland.cubeengine.core.module.Module;
 import de.cubeisland.cubeengine.core.storage.LinkingModel;
@@ -45,7 +46,7 @@ import static de.cubeisland.cubeengine.core.logger.LogLevel.DEBUG;
 @SingleKeyEntity(tableName = "user", primaryKey = "key", autoIncrement = true, indices = {
     @Index(value = UNIQUE, fields = "player")
 })
-public class User extends UserBase implements LinkingModel<Long>
+public class User extends UserBase implements LinkingModel<Long>, CommandSender
 {
     public static Long NO_ID = -1L;
     @Attribute(type = AttrType.INT, unsigned = true)
@@ -176,6 +177,12 @@ public class User extends UserBase implements LinkingModel<Long>
             return null;
         }
         return (T)this.attachments.get(modelClass);
+    }
+
+    @Override
+    public boolean isAuthorized(de.cubeisland.cubeengine.core.permission.Permission perm)
+    {
+        return this.hasPermission(perm.getPermission());
     }
 
     /**
