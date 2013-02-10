@@ -20,7 +20,7 @@ public class Signmarket extends Module
         this.smblockManager = new SignMarketBlockManager(this);
         this.sminfoManager = new SignMarketInfoManager(this);
 
-        this.registerListener(new MarketSignListener());
+        this.registerListener(new MarketSignListener(this));
         this.inventoryListener = new MarketSignInventoryListener(this);
         this.registerListener(this.inventoryListener);
     }
