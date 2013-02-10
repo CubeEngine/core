@@ -3,7 +3,6 @@ package de.cubeisland.cubeengine.core.bukkit;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import de.cubeisland.cubeengine.core.Core;
-import de.cubeisland.cubeengine.core.CoreConfiguration;
 import de.cubeisland.cubeengine.core.CoreResource;
 import de.cubeisland.cubeengine.core.CubeEngine;
 import de.cubeisland.cubeengine.core.command.CommandManager;
@@ -51,7 +50,7 @@ public class BukkitCore extends JavaPlugin implements Core
     private FileManager fileManager;
     private ModuleManager moduleManager;
     private I18n i18n;
-    private CoreConfiguration config;
+    private BukkitCoreConfiguration config;
     private CubeLogger logger;
     private EventManager eventRegistration;
     private CommandManager commandManager;
@@ -134,23 +133,6 @@ public class BukkitCore extends JavaPlugin implements Core
                 }
             });
 
-            Signal.handle(new Signal("ABRT"), new SignalHandler() {
-                private volatile boolean reloading = false;
-
-                @Override
-                public void handle(Signal signal)
-                {
-                    if (!this.reloading)
-                    {
-                        this.reloading = true;
-                        getCoreLogger().log(NOTICE, "Reloading the server!");
-                        getServer().reload();
-                        getCoreLogger().log(NOTICE, "Done reloading the server!");
-                        this.reloading = false;
-                    }
-                }
-            });
-
             Signal.handle(new Signal("TERM"), new SignalHandler() {
                 private volatile boolean shuttingDown = false;
 
@@ -170,12 +152,17 @@ public class BukkitCore extends JavaPlugin implements Core
         {}
 
         // depends on: file manager
-        this.config = Configuration.load(CoreConfiguration.class, new File(this.fileManager.getDataFolder(), "core.yml"));
+        this.config = Configuration.load(BukkitCoreConfiguration.class, new File(this.fileManager.getDataFolder(), "core.yml"));
 
         CubeLogger.setLoggingLevel(this.config.loggingLevel);
         if (!this.config.logCommands)
         {
             BukkitUtils.disableCommandLogging();
+        }
+
+        if (this.config.preventSpamKick)
+        {
+            pm.registerEvents(new PreventSpamKickListener(), this);
         }
 
         // depends on: object mapper
@@ -391,7 +378,7 @@ public class BukkitCore extends JavaPlugin implements Core
     }
 
     @Override
-    public CoreConfiguration getConfiguration()
+    public BukkitCoreConfiguration getConfiguration()
     {
         return this.config;
     }

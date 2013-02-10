@@ -164,6 +164,11 @@ public abstract class Configuration
     {
         String codec = null;
         Codec codecAnnotation = clazz.getAnnotation(Codec.class);
+        Class<? extends Configuration> tmpClass = clazz;
+        while (codecAnnotation == null && (tmpClass = (Class<? extends Configuration>)tmpClass.getSuperclass()) != Configuration.class)
+        {
+            codecAnnotation = tmpClass.getAnnotation(Codec.class);
+        }
         if (codecAnnotation != null)
         {
             codec = codecAnnotation.value();
@@ -241,10 +246,23 @@ public abstract class Configuration
      * @param clazz the Configuration to use
      * @return the loaded Configuration
      */
-    public static <T extends Configuration> T load(Class<T> clazz, InputStream is, File ifGiven)
+    public static <T extends Configuration> T load(Class<T> clazz, InputStream is)
+    {
+        return load(clazz, is, null);
+    }
+
+    /**
+     * Loads and returns the loaded Configuration from InputStream
+     *
+     * @param is    the Inputstream to load the codec from
+     * @param clazz the Configuration to use
+     * @param file  the file this configration should belong to
+     * @return the loaded Configuration
+     */
+    public static <T extends Configuration> T load(Class<T> clazz, InputStream is, File file)
     {
         T config = createInstance(clazz);
-        config.file = ifGiven;
+        config.file = file;
         if (config.codec == null)
         {
             throw new InvalidConfigurationException("No codec specified for " + clazz.getName());
