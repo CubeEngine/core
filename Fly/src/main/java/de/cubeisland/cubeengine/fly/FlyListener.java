@@ -28,7 +28,9 @@ public class FlyListener implements Listener
     private Fly fly;
     private final Location helperLocation = new Location(null, 0, 0, 0);
 
-    private static final float FLY_SPEED_MARKER = 3.0f;
+    private static final float FLY_SPEED_MARKER = 42.0f;
+    private static final float FLY_SPEED_DETECT = -10.0f;
+    private static final float FLY_SPEED_DEFAULT = 0.05f;
 
     public FlyListener(Fly fly)
     {
@@ -38,45 +40,56 @@ public class FlyListener implements Listener
 
     private static boolean wasFlying(Player p)
     {
-        return ((CraftPlayer)p).getHandle().abilities.flySpeed < -1.0f;
+        return p.getFlySpeed() < FLY_SPEED_DETECT;
     }
 
-    private static void setWasFlying(Player p, boolean wasFlying)
+    private static void resetFlySpeed(Player p)
     {
-        if (wasFlying)
+        try
+        {
+            p.setFlySpeed(p.getFlySpeed() + FLY_SPEED_MARKER * 2f);
+        }
+        catch (IllegalArgumentException e)
+        {
+            p.setFlySpeed(FLY_SPEED_DEFAULT);
+        }
+    }
+
+    private static void markFlySpeed(Player p)
+    {
+        if (wasFlying(p))
+        {
+            // already marked
+            return;
+        }
+        try
         {
             ((CraftPlayer)p).getHandle().abilities.flySpeed -= FLY_SPEED_MARKER;
         }
-        else
-        {
-            ((CraftPlayer)p).getHandle().abilities.flySpeed += FLY_SPEED_MARKER;
-        }
+        catch (IllegalArgumentException e)
+        {}
     }
 
     @EventHandler(priority = EventPriority.LOWEST)
     public void join(final PlayerJoinEvent event)
     {
-        final Player player = (CraftPlayer)event.getPlayer();
+        final Player player = event.getPlayer();
 
         if (player.getGameMode() != GameMode.CREATIVE && wasFlying(player) && FlyPerm.FLY_CANFLY.isAuthorized(player))
         {
             player.setAllowFlight(true);
             player.setFlying(true);
-        }
-
-        if (wasFlying(player))
-        {
-            setWasFlying(player, false);
+            resetFlySpeed(player);
         }
     }
 
     @EventHandler(priority = EventPriority.LOWEST)
     public void quit(final PlayerQuitEvent event)
     {
-        final CraftPlayer player = (CraftPlayer)event.getPlayer();
-        if (player.getGameMode() != GameMode.CREATIVE && player.isFlying())
+        final Player player = (CraftPlayer)event.getPlayer();
+        if (player.getGameMode() != GameMode.CREATIVE && player.isFlying() && FlyPerm.FLY_CANFLY.isAuthorized(player))
         {
-            setWasFlying(player, true);
+            markFlySpeed(player);
         }
     }
 
