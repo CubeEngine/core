@@ -5,30 +5,37 @@ import de.cubeisland.cubeengine.core.util.InventoryUtil;
 import de.cubeisland.cubeengine.core.util.matcher.Match;
 import de.cubeisland.cubeengine.signmarket.storage.SignMarketBlockModel;
 import de.cubeisland.cubeengine.signmarket.storage.SignMarketInfoModel;
+import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.event.block.Action;
+import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 
-public class MarketSign
+public class MarketSign implements InventoryHolder
 {
     private final Location location;
     private SignMarketInfoModel info;
     private SignMarketBlockModel blockInfo;
+    private final Signmarket module;
 
-    public MarketSign(Location location)
+    private Inventory inventory = null;
+
+    public MarketSign(Signmarket module, Location location)
     {
-        this(location, null);
+        this(module, location, null);
     }
 
-    public MarketSign(Location location, User owner)
+    public MarketSign(Signmarket module, Location location, User owner)
     {
         //TODO get info from database if it already exists
         this.location = location;
         this.info = new SignMarketInfoModel();
         if (owner != null)
             this.info.owner = owner.key;
+        this.module = module;
     }
 
     /**
@@ -38,6 +45,7 @@ public class MarketSign
      */
     public boolean saveToDatabase()
     {
+        //TODO update from current inventory if given
         //TODO save/update/delete in database
         //delete on sign destroy
         //delete on invalid sign
@@ -130,10 +138,6 @@ public class MarketSign
      * @return
      */
     private boolean executeAction(User user, Action type) //TODO return enum of possible results:
-            // not enough money
-            // sign disabled
-            //etc..
-            //OR string with error/success-message
     {
         boolean sneaking = user.isSneaking();
         ItemStack itemInHand = user.getItemInHand();
@@ -150,14 +154,17 @@ public class MarketSign
                     {
                         if (this.isOwner(user)) // owner OR can access other
                         {
+                            this.module.getInventoryListener().openInventoryCanEdit(user, this);
                             //TODO open sign inventory can edit inventory
                         }
                         else if (MarketSignPerm.SIGN_INVENTORY_ACCESS_OTHER.isAuthorized(user))
                         {
+                            this.module.getInventoryListener().openInventoryCanEdit(user, this);
                             //TODO open sign inventory can edit inventory
                         }
                         else
                         {
+                            this.module.getInventoryListener().openInventoryCannotEdit(user, this);
                             //TODO open sign inventory cannot edit inventory
                         }
                     }
@@ -170,6 +177,7 @@ public class MarketSign
                 {
                     if (user.getGameMode().equals(GameMode.CREATIVE)) // instabreak items
                     {
+                        //TODO if amount == 1337 explosion easteregg
                         //TODO let drop all items ? in config
                         if (this.isOwner(user))
                         {
@@ -329,6 +337,41 @@ public class MarketSign
     private void updateSign()
     {
 
+    }
+
+    public ItemStack getItem() {
+        return this.info.getItem();
+    }
+
+    public boolean isAdminSign() {
+        return this.info.isAdminSign();
+    }
+
+    @Override
+    public Inventory getInventory() {
+
+        if (this.inventory == null)
+        {
+            if (this.isAdminSign())
+            {
+                this.inventory = Bukkit.getServer().createInventory(this, 9, "Market-Sign"); // Dispenser would be nice BUT cannot rename
+            }
+            else
+            {
+                this.inventory = Bukkit.getServer().createInventory(this, 54, "Market-Sign"); // DOUBLE-CHEST
+            }
+        }
+        return this.inventory;
+    }
+
+    public void resetInventory()
+    {
+        this.inventory = null;
+    }
+
+    public int getAmount()
+    {
+        return this.info.amount;
     }
 }
 
