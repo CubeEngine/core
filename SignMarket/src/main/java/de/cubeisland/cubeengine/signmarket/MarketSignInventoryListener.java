@@ -2,14 +2,12 @@ package de.cubeisland.cubeengine.signmarket;
 
 import de.cubeisland.cubeengine.core.user.User;
 import gnu.trove.map.hash.TLongObjectHashMap;
-import org.bukkit.Material;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
-import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
@@ -88,7 +86,7 @@ public class MarketSignInventoryListener implements Listener
             HumanEntity humanEntity = event.getWhoClicked();
             if (humanEntity instanceof Player)
             {
-                User user = this.module.getUserManager().getExactUser((Player)humanEntity);
+                User user = this.module.getUserManager().getExactUser((Player) humanEntity);
                 MarketSign marketSign = (MarketSign) event.getInventory();
                 if (this.viewingInventories.containsKey(user.key))
                 {
