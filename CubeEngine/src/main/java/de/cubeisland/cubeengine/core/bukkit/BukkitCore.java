@@ -133,6 +133,30 @@ public class BukkitCore extends JavaPlugin implements Core
                 }
             });
 
+            try
+            {
+                Signal.handle(new Signal("HUP"), new SignalHandler() {
+                    private volatile boolean reloading = false;
+
+                    @Override
+                    public void handle(Signal signal)
+                    {
+                        if (!this.reloading)
+                        {
+                            this.reloading = true;
+                            getCoreLogger().log(NOTICE, "Reloading the server!");
+                            getServer().reload();
+                            getCoreLogger().log(NOTICE, "Done reloading the server!");
+                            this.reloading = false;
+                        }
+                    }
+                });
+            }
+            catch (IllegalArgumentException e)
+            {
+                this.getCoreLogger().log(NOTICE, "You're OS does not support the HUP signal! This can be ignored.");
+            }
+
             Signal.handle(new Signal("TERM"), new SignalHandler() {
                 private volatile boolean shuttingDown = false;
 
