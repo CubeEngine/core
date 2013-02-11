@@ -64,18 +64,19 @@ public class BukkitCore extends JavaPlugin implements Core
     @Override
     public void onEnable()
     {
+        final Server server = this.getServer();
+        final PluginManager pm = server.getPluginManager();
+
         if (!BukkitUtils.isCompatible())
         {
             this.getLogger().log(ERROR, "Your Bukkit server is incompatible with this CubeEngine revision.");
+            pm.disablePlugin(this);
             return;
         }
         CubeEngine.initialize(this);
 
         this.jsonObjectMapper = new ObjectMapper();
         this.jsonObjectMapper.configure(SerializationFeature.INDENT_OUTPUT, true);
-
-        final Server server = this.getServer();
-        final PluginManager pm = server.getPluginManager();
 
         this.logger = new CubeLogger("Core", this.getLogger());
         // TODO RemoteHandler is not yet implemented this.logger.addHandler(new RemoteHandler(LogLevelERROR, this));
@@ -178,7 +179,6 @@ public class BukkitCore extends JavaPlugin implements Core
         // depends on: file manager
         this.config = Configuration.load(BukkitCoreConfiguration.class, new File(this.fileManager.getDataFolder(), "core.yml"));
 
-        CubeLogger.setLoggingLevel(this.config.loggingLevel);
         if (!this.config.logCommands)
         {
             BukkitUtils.disableCommandLogging();

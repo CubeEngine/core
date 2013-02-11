@@ -14,6 +14,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 
+import static de.cubeisland.cubeengine.core.logger.LogLevel.DEBUG;
+
 public class WorldRoleProvider extends RoleProvider
 {
     private RoleMirror mirrorConfig;
@@ -111,7 +113,7 @@ public class WorldRoleProvider extends RoleProvider
             // Sets the folder for this provider
             this.folder = new File(rolesFolder, this.mirrorConfig.mainWorld);
         }
-        this.module.getLogger().debug("Loading roles for provider of " + this.mirrorConfig.mainWorld + ":");
+        this.module.getLogger().log(DEBUG, "Loading roles for provider of " + this.mirrorConfig.mainWorld + ":");
         super.loadInConfigurations(rolesFolder);
     }
 

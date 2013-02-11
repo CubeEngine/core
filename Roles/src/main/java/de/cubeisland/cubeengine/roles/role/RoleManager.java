@@ -19,6 +19,8 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
+import static de.cubeisland.cubeengine.core.logger.LogLevel.DEBUG;
+
 public class RoleManager
 {
     private final File rolesFolder;
@@ -74,14 +76,14 @@ public class RoleManager
 
     public void recalculateAllRoles()
     {
-        this.module.getLogger().debug("Calculating global Roles...");
+        this.module.getLogger().log(DEBUG, "Calculating global Roles...");
         this.globalProvider.calculateRoles(true);
         // Calculate world roles for each world-provider:
         for (WorldRoleProvider provider : providers.valueCollection())
         {
             if (!provider.isCalculated())
             {
-                this.module.getLogger().debug("Calculating roles for " + provider.getMainWorld() + "...");
+                this.module.getLogger().log(DEBUG, "Calculating roles for " + provider.getMainWorld() + "...");
                 provider.calculateRoles(false);
             }
         }

@@ -6,12 +6,12 @@ import de.cubeisland.cubeengine.core.bukkit.BukkitCore;
 import de.cubeisland.cubeengine.core.bukkit.event.PlayerLanguageReceivedEvent;
 import de.cubeisland.cubeengine.core.config.Configuration;
 import de.cubeisland.cubeengine.core.filesystem.FileUtil;
+import de.cubeisland.cubeengine.core.logger.CubeFileHandler;
+import de.cubeisland.cubeengine.core.logger.LogLevel;
 import de.cubeisland.cubeengine.core.module.Module;
 import de.cubeisland.cubeengine.core.storage.database.Database;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.user.UserManager;
-import de.cubeisland.cubeengine.core.logger.CubeFileHandler;
-import de.cubeisland.cubeengine.core.logger.LogLevel;
 import de.cubeisland.cubeengine.core.util.matcher.Match;
 import de.cubeisland.cubeengine.test.commands.TestCommands;
 import de.cubeisland.cubeengine.test.database.TestManager;
@@ -31,6 +31,7 @@ import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.*;
 
+import static de.cubeisland.cubeengine.core.logger.LogLevel.DEBUG;
 import static de.cubeisland.cubeengine.core.logger.LogLevel.ERROR;
 
 public class Test extends Module
@@ -169,32 +170,32 @@ public class Test extends Module
 
     public void testl18n()
     {
-        this.getLogger().debug(CubeEngine.getCore().getI18n().
+        this.getLogger().log(DEBUG, CubeEngine.getCore().getI18n().
             translate("de_DE", "test", "english TEST"));
-        this.getLogger().debug(CubeEngine.getCore().getI18n().
+        this.getLogger().log(DEBUG, CubeEngine.getCore().getI18n().
             translate("fr_FR", "test", "english TEST"));
     }
 
     private void testMatchers()
     {
-        this.getLogger().debug(String.valueOf(Match.enchant().enchantment("infinity")));
-        this.getLogger().debug(String.valueOf(Match.enchant().enchantment("infini")));
-        this.getLogger().debug(String.valueOf(Match.enchant().enchantment("hablablubb")) + " is null");
-        this.getLogger().debug(String.valueOf(Match.enchant().enchantment("protect")));
-        this.getLogger().debug(String.valueOf(Match.material().itemStack("stone").serialize()));
-        this.getLogger().debug(String.valueOf(Match.material().itemStack("stoned").serialize()));
-        this.getLogger().debug(String.valueOf(Match.material().itemStack("hablablubb")) + " is null");
-        this.getLogger().debug(String.valueOf(Match.material().itemStack("wool:red").serialize()));
-        this.getLogger().debug(String.valueOf(Match.material().itemStack("35").serialize()));
-        this.getLogger().debug(String.valueOf(Match.material().itemStack("35:15").serialize()));
-        this.getLogger().debug(String.valueOf(Match.material().itemStack("35:red").serialize()));
-        this.getLogger().debug(String.valueOf(Match.material().itemStack("wood:birch").serialize()));
-        this.getLogger().debug(String.valueOf(Match.material().itemStack("leves:pine").serialize()));
-        this.getLogger().debug(String.valueOf(Match.material().itemStack("spawnegg:pig").serialize()));
-        this.getLogger().debug(String.valueOf(Match.entity().any("pig")));
-        this.getLogger().debug(String.valueOf(Match.entity().monster("zombi")));
-        this.getLogger().debug(String.valueOf(Match.entity().friendlyMob("shep")));
-        this.getLogger().debug(String.valueOf(Match.entity().friendlyMob("ghast")) + " is null");
+        this.getLogger().log(DEBUG, String.valueOf(Match.enchant().enchantment("infinity")));
+        this.getLogger().log(DEBUG, String.valueOf(Match.enchant().enchantment("infini")));
+        this.getLogger().log(DEBUG, String.valueOf(Match.enchant().enchantment("hablablubb")) + " is null");
+        this.getLogger().log(DEBUG, String.valueOf(Match.enchant().enchantment("protect")));
+        this.getLogger().log(DEBUG, String.valueOf(Match.material().itemStack("stone").serialize()));
+        this.getLogger().log(DEBUG, String.valueOf(Match.material().itemStack("stoned").serialize()));
+        this.getLogger().log(DEBUG, String.valueOf(Match.material().itemStack("hablablubb")) + " is null");
+        this.getLogger().log(DEBUG, String.valueOf(Match.material().itemStack("wool:red").serialize()));
+        this.getLogger().log(DEBUG, String.valueOf(Match.material().itemStack("35").serialize()));
+        this.getLogger().log(DEBUG, String.valueOf(Match.material().itemStack("35:15").serialize()));
+        this.getLogger().log(DEBUG, String.valueOf(Match.material().itemStack("35:red").serialize()));
+        this.getLogger().log(DEBUG, String.valueOf(Match.material().itemStack("wood:birch").serialize()));
+        this.getLogger().log(DEBUG, String.valueOf(Match.material().itemStack("leves:pine").serialize()));
+        this.getLogger().log(DEBUG, String.valueOf(Match.material().itemStack("spawnegg:pig").serialize()));
+        this.getLogger().log(DEBUG, String.valueOf(Match.entity().any("pig")));
+        this.getLogger().log(DEBUG, String.valueOf(Match.entity().monster("zombi")));
+        this.getLogger().log(DEBUG, String.valueOf(Match.entity().friendlyMob("shep")));
+        this.getLogger().log(DEBUG, String.valueOf(Match.entity().friendlyMob("ghast")) + " is null");
     }
 
     private void testsomeUtils()

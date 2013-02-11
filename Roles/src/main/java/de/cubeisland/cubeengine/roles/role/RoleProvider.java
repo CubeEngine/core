@@ -1,22 +1,21 @@
 package de.cubeisland.cubeengine.roles.role;
 
 import de.cubeisland.cubeengine.core.config.Configuration;
+import de.cubeisland.cubeengine.core.logger.LogLevel;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.util.StringUtils;
-import de.cubeisland.cubeengine.core.logger.LogLevel;
 import de.cubeisland.cubeengine.roles.Roles;
 import de.cubeisland.cubeengine.roles.exception.CircularRoleDepedencyException;
 import de.cubeisland.cubeengine.roles.exception.RoleDependencyMissingException;
 import de.cubeisland.cubeengine.roles.role.config.Priority;
 import de.cubeisland.cubeengine.roles.role.config.RoleConfig;
 import gnu.trove.map.hash.THashMap;
-import java.io.File;
-import java.util.HashSet;
-import java.util.Locale;
-import java.util.Set;
-import java.util.Stack;
-import java.util.TreeSet;
 import org.apache.commons.lang.Validate;
+
+import java.io.File;
+import java.util.*;
+
+import static de.cubeisland.cubeengine.core.logger.LogLevel.DEBUG;
 
 public abstract class RoleProvider
 {
@@ -81,10 +80,10 @@ public abstract class RoleProvider
                 ++i;
                 RoleConfig config = Configuration.load(RoleConfig.class, configFile);
                 this.addConfig(config);
-                this.module.getLogger().debug(config.roleName);
+                this.module.getLogger().log(DEBUG, config.roleName);
             }
         }
-        this.module.getLogger().debug(i + " roles read!");
+        this.module.getLogger().log(DEBUG, i + " roles read!");
         this.init = true;
     }
 
@@ -225,7 +224,7 @@ public abstract class RoleProvider
             }
             role = new ConfigRole(config, parentRoles, false);
             this.roleStack.pop();
-            this.module.getLogger().debug(role.getName() + " loaded!");
+            this.module.getLogger().log(DEBUG, role.getName() + " loaded!");
             return role;
         }
         catch (CircularRoleDepedencyException ex)

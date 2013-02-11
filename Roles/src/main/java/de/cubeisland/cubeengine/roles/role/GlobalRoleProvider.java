@@ -1,8 +1,11 @@
 package de.cubeisland.cubeengine.roles.role;
 
 import de.cubeisland.cubeengine.roles.Roles;
+
 import java.io.File;
 import java.util.Locale;
+
+import static de.cubeisland.cubeengine.core.logger.LogLevel.DEBUG;
 
 public class GlobalRoleProvider extends RoleProvider
 {
@@ -14,7 +17,7 @@ public class GlobalRoleProvider extends RoleProvider
     @Override
     public void loadInConfigurations(File rolesFolder)
     {
-        this.module.getLogger().debug("Loading global roles...");
+        this.module.getLogger().log(DEBUG, "Loading global roles...");
         if (this.init) // provider is already initialized!
         {
             return;

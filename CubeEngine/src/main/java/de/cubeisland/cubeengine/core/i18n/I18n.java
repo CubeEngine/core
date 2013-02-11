@@ -5,6 +5,7 @@ import de.cubeisland.cubeengine.core.CubeEngine;
 import de.cubeisland.cubeengine.core.config.Configuration;
 import de.cubeisland.cubeengine.core.filesystem.FileExtentionFilter;
 import de.cubeisland.cubeengine.core.filesystem.FileManager;
+import de.cubeisland.cubeengine.core.logger.CubeLogger;
 import de.cubeisland.cubeengine.core.module.Module;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.util.Cleanable;
@@ -31,7 +32,7 @@ import static de.cubeisland.cubeengine.core.logger.LogLevel.WARNING;
  */
 public class I18n implements Cleanable
 {
-    private static final Logger LOGGER = Logger.getLogger("language");
+    private static final Logger LOGGER = new CubeLogger("language");
     public static final SourceLanguage SOURCE_LANGUAGE = SourceLanguage.getInstance();
     private final Map<String, Language> languageMap;
     private String defaultLanguage;
