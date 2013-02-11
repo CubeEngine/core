@@ -3,8 +3,6 @@ package de.cubeisland.cubeengine.core.bukkit;
 import de.cubeisland.cubeengine.core.CubeEngine;
 import de.cubeisland.cubeengine.core.command.CubeCommand;
 import de.cubeisland.cubeengine.core.user.User;
-import de.cubeisland.cubeengine.core.util.worker.AsyncTaskQueue;
-import de.cubeisland.cubeengine.core.util.worker.TaskQueue;
 import net.minecraft.server.v1_4_R1.EntityPlayer;
 import net.minecraft.server.v1_4_R1.LocaleLanguage;
 import net.minecraft.server.v1_4_R1.PlayerConnection;
@@ -223,18 +221,15 @@ public class BukkitUtils
         public static final PacketHookInjector INSTANCE = new PacketHookInjector();
         public static boolean injected = false;
         private final ExecutorService executorService;
-        private final TaskQueue taskQueue;
 
         private PacketHookInjector()
         {
             this.executorService = Executors.newSingleThreadExecutor(CubeEngine.getTaskManager().getThreadFactory());
-            this.taskQueue = new AsyncTaskQueue(this.executorService);
         }
 
         public void shutdown()
         {
             HandlerList.unregisterAll(this);
-            this.taskQueue.shutdown();
             this.executorService.shutdown();
 
             for (Player player : Bukkit.getOnlinePlayers())
@@ -260,7 +255,7 @@ public class BukkitUtils
         {
             final EntityPlayer entity = ((CraftPlayer)player).getHandle();
 
-            swapPlayerNetServerHandler(entity, new CubeEngineNetServerHandler(entity, this.taskQueue));
+            swapPlayerNetServerHandler(entity, new CubePlayerConnection(entity));
         }
     }
 

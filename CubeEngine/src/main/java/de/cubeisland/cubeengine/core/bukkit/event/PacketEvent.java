@@ -10,7 +10,6 @@ public abstract class PacketEvent extends Event
 
     public PacketEvent(Packet packet)
     {
-        super(true);
         this.packetId = packet.k();
         this.packet = packet;
     }

@@ -17,7 +17,6 @@ public class PlayerLanguageReceivedEvent extends Event
 
     public PlayerLanguageReceivedEvent(Player player, String language)
     {
-        super(true);
         this.language = language;
         this.player = player;
     }

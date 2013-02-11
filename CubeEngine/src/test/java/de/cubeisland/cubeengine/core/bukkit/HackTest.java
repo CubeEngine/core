@@ -21,7 +21,7 @@ public class HackTest extends TestCase
     public void testImplementedPacketMethods()
     {
         Method[] nhMethods = readMethods(Connection.class);
-        Method[] ceMethods = readMethods(CubeEngineNetServerHandler.class);
+        Method[] ceMethods = readMethods(CubePlayerConnection.class);
 
         System.out.println("nh methods: " + nhMethods.length);
         System.out.println("ce methods: " + ceMethods.length);
