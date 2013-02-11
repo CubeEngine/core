@@ -1,4 +1,4 @@
-package de.cubeisland.cubeengine.core.util.log;
+package de.cubeisland.cubeengine.core.logger;
 
 import de.cubeisland.cubeengine.core.Core;
 import de.cubeisland.cubeengine.core.module.ModuleInfo;

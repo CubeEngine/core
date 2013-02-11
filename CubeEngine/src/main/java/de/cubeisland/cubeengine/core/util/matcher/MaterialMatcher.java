@@ -3,7 +3,7 @@ package de.cubeisland.cubeengine.core.util.matcher;
 import de.cubeisland.cubeengine.core.CoreResource;
 import de.cubeisland.cubeengine.core.CubeEngine;
 import de.cubeisland.cubeengine.core.filesystem.FileUtil;
-import de.cubeisland.cubeengine.core.util.log.LogLevel;
+import de.cubeisland.cubeengine.core.logger.LogLevel;
 import gnu.trove.map.hash.THashMap;
 import gnu.trove.map.hash.TShortObjectHashMap;
 import org.bukkit.Material;

@@ -16,7 +16,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.logging.Logger;
 
-import static de.cubeisland.cubeengine.core.util.log.LogLevel.ERROR;
+import static de.cubeisland.cubeengine.core.logger.LogLevel.ERROR;
 
 /**
  * This class provides some methods to read Files lineByLine

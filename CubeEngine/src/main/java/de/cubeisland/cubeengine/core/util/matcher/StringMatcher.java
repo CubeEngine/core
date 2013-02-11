@@ -3,7 +3,7 @@ package de.cubeisland.cubeengine.core.util.matcher;
 import com.google.common.base.Functions;
 import com.google.common.collect.Ordering;
 import de.cubeisland.cubeengine.core.CubeEngine;
-import de.cubeisland.cubeengine.core.util.log.LogLevel;
+import de.cubeisland.cubeengine.core.logger.LogLevel;
 import gnu.trove.map.hash.THashMap;
 
 import java.util.*;

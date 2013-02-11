@@ -39,7 +39,7 @@ import java.util.concurrent.Executors;
 import java.util.logging.Filter;
 import java.util.logging.Logger;
 
-import static de.cubeisland.cubeengine.core.util.log.LogLevel.DEBUG;
+import static de.cubeisland.cubeengine.core.logger.LogLevel.DEBUG;
 
 /**
  * This class contains various methods to access bukkit-related stuff.

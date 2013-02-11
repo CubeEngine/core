@@ -1,8 +1,8 @@
-package de.cubeisland.cubeengine.core.util.log;
+package de.cubeisland.cubeengine.core.logger;
 
 import de.cubeisland.cubeengine.core.CubeEngine;
-import static de.cubeisland.cubeengine.core.util.log.LogLevel.ALL;
-import static de.cubeisland.cubeengine.core.util.log.LogLevel.DEBUG;
+import static de.cubeisland.cubeengine.core.logger.LogLevel.ALL;
+import static de.cubeisland.cubeengine.core.logger.LogLevel.DEBUG;
 import java.util.logging.Level;
 import static java.util.logging.Level.INFO;
 import static java.util.logging.Level.SEVERE;

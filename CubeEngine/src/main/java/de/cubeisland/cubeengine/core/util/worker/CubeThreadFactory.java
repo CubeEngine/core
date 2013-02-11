@@ -5,7 +5,7 @@ import de.cubeisland.cubeengine.core.CubeEngine;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import static de.cubeisland.cubeengine.core.util.log.LogLevel.DEBUG;
+import static de.cubeisland.cubeengine.core.logger.LogLevel.DEBUG;
 
 public class CubeThreadFactory implements ThreadFactory
 {

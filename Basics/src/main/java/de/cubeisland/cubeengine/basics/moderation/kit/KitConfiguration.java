@@ -6,7 +6,7 @@ import de.cubeisland.cubeengine.core.config.annotations.Codec;
 import de.cubeisland.cubeengine.core.config.annotations.Comment;
 import de.cubeisland.cubeengine.core.config.annotations.Option;
 import de.cubeisland.cubeengine.core.util.StringUtils;
-import de.cubeisland.cubeengine.core.util.log.LogLevel;
+import de.cubeisland.cubeengine.core.logger.LogLevel;
 import de.cubeisland.cubeengine.core.util.matcher.Match;
 import de.cubeisland.cubeengine.core.util.time.Duration;
 import gnu.trove.map.hash.THashMap;

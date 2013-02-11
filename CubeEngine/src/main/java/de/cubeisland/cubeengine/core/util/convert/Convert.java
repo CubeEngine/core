@@ -8,7 +8,7 @@ import de.cubeisland.cubeengine.core.util.convert.converter.*;
 import de.cubeisland.cubeengine.core.util.converter.generic.ArrayConverter;
 import de.cubeisland.cubeengine.core.util.converter.generic.CollectionConverter;
 import de.cubeisland.cubeengine.core.util.converter.generic.MapConverter;
-import de.cubeisland.cubeengine.core.util.log.CubeLevel;
+import de.cubeisland.cubeengine.core.logger.CubeLevel;
 import de.cubeisland.cubeengine.core.util.time.Duration;
 import org.bukkit.Location;
 import org.bukkit.OfflinePlayer;

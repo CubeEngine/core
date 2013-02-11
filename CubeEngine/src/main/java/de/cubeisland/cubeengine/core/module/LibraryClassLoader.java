@@ -6,7 +6,7 @@ import java.lang.reflect.Method;
 import java.net.URL;
 import java.net.URLClassLoader;
 
-import static de.cubeisland.cubeengine.core.util.log.LogLevel.WARNING;
+import static de.cubeisland.cubeengine.core.logger.LogLevel.WARNING;
 
 /**
  * This is a global ClassLoader that should be used to load classes from libraries.

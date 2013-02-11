@@ -38,7 +38,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Logger;
 
 import static de.cubeisland.cubeengine.core.filesystem.FileExtentionFilter.TXT;
-import static de.cubeisland.cubeengine.core.util.log.LogLevel.*;
+import static de.cubeisland.cubeengine.core.logger.LogLevel.*;
 
 /**
  * Class to manage all the announcements and their receivers

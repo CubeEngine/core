@@ -2,7 +2,7 @@ package de.cubeisland.cubeengine.roles.role.config;
 
 import de.cubeisland.cubeengine.core.CubeEngine;
 import de.cubeisland.cubeengine.core.util.Pair;
-import de.cubeisland.cubeengine.core.util.log.LogLevel;
+import de.cubeisland.cubeengine.core.logger.LogLevel;
 import de.cubeisland.cubeengine.roles.Roles;
 import gnu.trove.map.hash.TLongObjectHashMap;
 

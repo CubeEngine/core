@@ -8,8 +8,8 @@ import de.cubeisland.cubeengine.core.filesystem.FileManager;
 import de.cubeisland.cubeengine.core.module.Module;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.util.Cleanable;
-import de.cubeisland.cubeengine.core.util.log.CubeFileHandler;
-import de.cubeisland.cubeengine.core.util.log.LogLevel;
+import de.cubeisland.cubeengine.core.logger.CubeFileHandler;
+import de.cubeisland.cubeengine.core.logger.LogLevel;
 import de.cubeisland.cubeengine.core.util.matcher.Match;
 import gnu.trove.map.hash.THashMap;
 import gnu.trove.set.hash.THashSet;
@@ -23,8 +23,8 @@ import java.io.IOException;
 import java.util.*;
 import java.util.logging.Logger;
 
-import static de.cubeisland.cubeengine.core.util.log.LogLevel.ERROR;
-import static de.cubeisland.cubeengine.core.util.log.LogLevel.WARNING;
+import static de.cubeisland.cubeengine.core.logger.LogLevel.ERROR;
+import static de.cubeisland.cubeengine.core.logger.LogLevel.WARNING;
 
 /**
  * This class provides functionality to translate messages.

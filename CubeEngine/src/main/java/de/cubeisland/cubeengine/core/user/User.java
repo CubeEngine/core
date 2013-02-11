@@ -37,7 +37,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import static de.cubeisland.cubeengine.core.i18n.I18n._;
 import static de.cubeisland.cubeengine.core.storage.database.Index.IndexType.UNIQUE;
-import static de.cubeisland.cubeengine.core.util.log.LogLevel.DEBUG;
+import static de.cubeisland.cubeengine.core.logger.LogLevel.DEBUG;
 
 /**
  * A CubeEngine User (can exist offline too).

@@ -19,7 +19,7 @@ import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.ThreadPoolExecutor;
 
-import static de.cubeisland.cubeengine.core.util.log.LogLevel.DEBUG;
+import static de.cubeisland.cubeengine.core.logger.LogLevel.DEBUG;
 
 /**
  * This class provides methods to register and unregister tasks and the global

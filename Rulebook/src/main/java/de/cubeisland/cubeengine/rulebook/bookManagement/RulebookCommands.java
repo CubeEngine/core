@@ -8,7 +8,7 @@ import de.cubeisland.cubeengine.core.command.annotation.Flag;
 import de.cubeisland.cubeengine.core.command.annotation.Param;
 import de.cubeisland.cubeengine.core.i18n.Language;
 import de.cubeisland.cubeengine.core.user.User;
-import de.cubeisland.cubeengine.core.util.log.LogLevel;
+import de.cubeisland.cubeengine.core.logger.LogLevel;
 import de.cubeisland.cubeengine.rulebook.Rulebook;
 import de.cubeisland.cubeengine.rulebook.RulebookPermissions;
 import gnu.trove.iterator.TIntIterator;

@@ -6,8 +6,8 @@ import de.cubeisland.cubeengine.core.config.annotations.Comment;
 import de.cubeisland.cubeengine.core.config.annotations.Option;
 import de.cubeisland.cubeengine.core.config.annotations.Revision;
 import de.cubeisland.cubeengine.core.i18n.I18n;
-import de.cubeisland.cubeengine.core.util.log.CubeLevel;
-import de.cubeisland.cubeengine.core.util.log.LogLevel;
+import de.cubeisland.cubeengine.core.logger.CubeLevel;
+import de.cubeisland.cubeengine.core.logger.LogLevel;
 
 /**
  * This Configuration holds all basic settings for CubeEngine.

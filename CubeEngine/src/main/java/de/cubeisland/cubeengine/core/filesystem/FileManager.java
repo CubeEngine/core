@@ -2,7 +2,7 @@ package de.cubeisland.cubeengine.core.filesystem;
 
 import de.cubeisland.cubeengine.core.CubeEngine;
 import de.cubeisland.cubeengine.core.util.Cleanable;
-import de.cubeisland.cubeengine.core.util.log.LogLevel;
+import de.cubeisland.cubeengine.core.logger.LogLevel;
 import org.apache.commons.lang.Validate;
 
 import java.io.*;
@@ -11,11 +11,9 @@ import java.util.concurrent.ConcurrentMap;
 import java.util.logging.Logger;
 
 import static de.cubeisland.cubeengine.core.CubeEngine.runsOnWindows;
-import static de.cubeisland.cubeengine.core.util.log.LogLevel.INFO;
-import static de.cubeisland.cubeengine.core.util.log.LogLevel.NOTICE;
-import static de.cubeisland.cubeengine.core.util.log.LogLevel.WARNING;
-import java.nio.charset.Charset;
-import java.util.Map;
+import static de.cubeisland.cubeengine.core.logger.LogLevel.INFO;
+import static de.cubeisland.cubeengine.core.logger.LogLevel.NOTICE;
+import static de.cubeisland.cubeengine.core.logger.LogLevel.WARNING;
 
 /**
  * Manages all the configurations of the CubeEngine.

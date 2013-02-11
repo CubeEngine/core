@@ -1,4 +1,4 @@
-package de.cubeisland.cubeengine.core.util.log;
+package de.cubeisland.cubeengine.core.logger;
 
 import java.util.Locale;
 import java.util.logging.Level;

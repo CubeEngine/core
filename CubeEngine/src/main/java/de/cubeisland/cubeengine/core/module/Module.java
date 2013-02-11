@@ -11,15 +11,15 @@ import de.cubeisland.cubeengine.core.storage.ModuleRegistry;
 import de.cubeisland.cubeengine.core.storage.SimpleModuleRegistry;
 import de.cubeisland.cubeengine.core.storage.database.Database;
 import de.cubeisland.cubeengine.core.user.UserManager;
-import de.cubeisland.cubeengine.core.util.log.ModuleLogger;
+import de.cubeisland.cubeengine.core.logger.ModuleLogger;
 import org.apache.commons.lang.Validate;
 import org.bukkit.event.Listener;
 
 import java.io.File;
 import java.io.InputStream;
 
-import static de.cubeisland.cubeengine.core.util.log.LogLevel.ERROR;
-import static de.cubeisland.cubeengine.core.util.log.LogLevel.WARNING;
+import static de.cubeisland.cubeengine.core.logger.LogLevel.ERROR;
+import static de.cubeisland.cubeengine.core.logger.LogLevel.WARNING;
 
 /**
  * Module for CubeEngine.

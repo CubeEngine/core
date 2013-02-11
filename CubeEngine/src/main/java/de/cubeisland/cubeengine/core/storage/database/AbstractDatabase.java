@@ -13,7 +13,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.logging.Logger;
 
-import static de.cubeisland.cubeengine.core.util.log.LogLevel.ERROR;
+import static de.cubeisland.cubeengine.core.logger.LogLevel.ERROR;
 
 /**
  * Abstract Database implementing most of the database methods.

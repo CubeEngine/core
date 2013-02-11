@@ -5,8 +5,8 @@ import de.cubeisland.cubeengine.core.config.node.StringNode;
 import de.cubeisland.cubeengine.core.util.convert.ConversionException;
 import de.cubeisland.cubeengine.core.util.convert.Convert;
 import de.cubeisland.cubeengine.core.util.convert.Converter;
-import de.cubeisland.cubeengine.core.util.log.CubeLevel;
-import de.cubeisland.cubeengine.core.util.log.LogLevel;
+import de.cubeisland.cubeengine.core.logger.CubeLevel;
+import de.cubeisland.cubeengine.core.logger.LogLevel;
 
 public class CubeLevelConverter implements Converter<CubeLevel>
 {

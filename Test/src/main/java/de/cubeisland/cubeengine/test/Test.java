@@ -10,8 +10,8 @@ import de.cubeisland.cubeengine.core.module.Module;
 import de.cubeisland.cubeengine.core.storage.database.Database;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.user.UserManager;
-import de.cubeisland.cubeengine.core.util.log.CubeFileHandler;
-import de.cubeisland.cubeengine.core.util.log.LogLevel;
+import de.cubeisland.cubeengine.core.logger.CubeFileHandler;
+import de.cubeisland.cubeengine.core.logger.LogLevel;
 import de.cubeisland.cubeengine.core.util.matcher.Match;
 import de.cubeisland.cubeengine.test.commands.TestCommands;
 import de.cubeisland.cubeengine.test.database.TestManager;
@@ -31,7 +31,7 @@ import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.*;
 
-import static de.cubeisland.cubeengine.core.util.log.LogLevel.ERROR;
+import static de.cubeisland.cubeengine.core.logger.LogLevel.ERROR;
 
 public class Test extends Module
 {

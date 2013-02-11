@@ -1,7 +1,7 @@
 package de.cubeisland.cubeengine.guests;
 
 import de.cubeisland.cubeengine.core.module.Module;
-import de.cubeisland.cubeengine.core.util.log.LogLevel;
+import de.cubeisland.cubeengine.core.logger.LogLevel;
 import de.cubeisland.cubeengine.guests.prevention.PreventionManager;
 import de.cubeisland.cubeengine.guests.prevention.preventions.*;
 import de.cubeisland.cubeengine.guests.prevention.punishments.*;

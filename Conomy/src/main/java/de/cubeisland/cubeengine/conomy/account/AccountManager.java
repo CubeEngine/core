@@ -6,9 +6,9 @@ import de.cubeisland.cubeengine.conomy.account.storage.AccountStorage;
 import de.cubeisland.cubeengine.conomy.currency.Currency;
 import de.cubeisland.cubeengine.conomy.currency.CurrencyManager;
 import de.cubeisland.cubeengine.core.user.User;
-import de.cubeisland.cubeengine.core.util.log.CubeFileHandler;
-import de.cubeisland.cubeengine.core.util.log.CubeLogger;
-import de.cubeisland.cubeengine.core.util.log.LogLevel;
+import de.cubeisland.cubeengine.core.logger.CubeFileHandler;
+import de.cubeisland.cubeengine.core.logger.CubeLogger;
+import de.cubeisland.cubeengine.core.logger.LogLevel;
 import gnu.trove.map.hash.THashMap;
 import gnu.trove.map.hash.TLongObjectHashMap;
 

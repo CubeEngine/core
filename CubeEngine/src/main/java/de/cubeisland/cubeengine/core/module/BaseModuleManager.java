@@ -7,7 +7,7 @@ import de.cubeisland.cubeengine.core.module.event.ModuleDisabledEvent;
 import de.cubeisland.cubeengine.core.module.event.ModuleEnabledEvent;
 import de.cubeisland.cubeengine.core.module.exception.*;
 import de.cubeisland.cubeengine.core.util.Profiler;
-import de.cubeisland.cubeengine.core.util.log.LogLevel;
+import de.cubeisland.cubeengine.core.logger.LogLevel;
 import gnu.trove.map.hash.THashMap;
 import org.apache.commons.lang.Validate;
 import org.bukkit.plugin.Plugin;
@@ -20,7 +20,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
 
-import static de.cubeisland.cubeengine.core.util.log.LogLevel.*;
+import static de.cubeisland.cubeengine.core.logger.LogLevel.*;
 
 public abstract class BaseModuleManager implements ModuleManager
 {

@@ -3,7 +3,6 @@ package de.cubeisland.cubeengine.core.module;
 import de.cubeisland.cubeengine.core.CubeEngine;
 import de.cubeisland.cubeengine.core.command.ArgumentReader;
 import de.cubeisland.cubeengine.core.util.convert.Convert;
-import de.cubeisland.cubeengine.core.util.log.LogLevel;
 
 import java.lang.reflect.Method;
 import java.net.MalformedURLException;
@@ -12,9 +11,8 @@ import java.net.URLClassLoader;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.logging.Level;
 
-import static de.cubeisland.cubeengine.core.util.log.LogLevel.WARNING;
+import static de.cubeisland.cubeengine.core.logger.LogLevel.WARNING;
 
 /**
  * This is the ClassLoader used by modules

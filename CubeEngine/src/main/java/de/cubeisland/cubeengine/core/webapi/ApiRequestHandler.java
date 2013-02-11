@@ -4,7 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import de.cubeisland.cubeengine.core.CubeEngine;
-import de.cubeisland.cubeengine.core.util.log.CubeLogger;
+import de.cubeisland.cubeengine.core.logger.CubeLogger;
 import de.cubeisland.cubeengine.core.webapi.exception.ApiRequestException;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
@@ -21,7 +21,7 @@ import java.util.*;
 import java.util.logging.FileHandler;
 import java.util.logging.Logger;
 
-import static de.cubeisland.cubeengine.core.util.log.LogLevel.*;
+import static de.cubeisland.cubeengine.core.logger.LogLevel.*;
 import static de.cubeisland.cubeengine.core.webapi.RequestError.*;
 import static io.netty.handler.codec.http.HttpHeaders.Names.*;
 

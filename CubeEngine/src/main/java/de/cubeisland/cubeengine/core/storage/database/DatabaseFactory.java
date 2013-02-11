@@ -3,7 +3,7 @@ package de.cubeisland.cubeengine.core.storage.database;
 import de.cubeisland.cubeengine.core.CubeEngine;
 import de.cubeisland.cubeengine.core.config.Configuration;
 import de.cubeisland.cubeengine.core.storage.database.mysql.MySQLDatabaseConfiguration;
-import de.cubeisland.cubeengine.core.util.log.LogLevel;
+import de.cubeisland.cubeengine.core.logger.LogLevel;
 import java.io.File;
 import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;

@@ -3,7 +3,7 @@ package de.cubeisland.cubeengine.roles.role;
 import de.cubeisland.cubeengine.core.config.Configuration;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.util.StringUtils;
-import de.cubeisland.cubeengine.core.util.log.LogLevel;
+import de.cubeisland.cubeengine.core.logger.LogLevel;
 import de.cubeisland.cubeengine.roles.Roles;
 import de.cubeisland.cubeengine.roles.exception.CircularRoleDepedencyException;
 import de.cubeisland.cubeengine.roles.exception.RoleDependencyMissingException;

@@ -5,7 +5,7 @@ import de.cubeisland.cubeengine.core.command.ContainerCommand;
 import de.cubeisland.cubeengine.core.command.annotation.Command;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.util.ChatFormat;
-import de.cubeisland.cubeengine.core.util.log.LogLevel;
+import de.cubeisland.cubeengine.core.logger.LogLevel;
 import de.cubeisland.cubeengine.guests.prevention.Prevention;
 import de.cubeisland.cubeengine.guests.prevention.PreventionManager;
 import gnu.trove.set.hash.THashSet;

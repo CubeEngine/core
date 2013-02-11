@@ -2,7 +2,7 @@ package de.cubeisland.cubeengine.shout.interactions;
 
 import de.cubeisland.cubeengine.core.bukkit.event.PlayerLanguageReceivedEvent;
 import de.cubeisland.cubeengine.core.user.User;
-import de.cubeisland.cubeengine.core.util.log.LogLevel;
+import de.cubeisland.cubeengine.core.logger.LogLevel;
 import de.cubeisland.cubeengine.shout.Shout;
 import de.cubeisland.cubeengine.shout.announce.AnnouncementManager;
 import org.bukkit.event.EventHandler;

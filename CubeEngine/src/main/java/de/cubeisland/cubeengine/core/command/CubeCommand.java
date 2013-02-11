@@ -26,7 +26,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Stack;
 
-import static de.cubeisland.cubeengine.core.util.log.LogLevel.ERROR;
+import static de.cubeisland.cubeengine.core.logger.LogLevel.ERROR;
 import static de.cubeisland.cubeengine.core.i18n.I18n._;
 
 /**

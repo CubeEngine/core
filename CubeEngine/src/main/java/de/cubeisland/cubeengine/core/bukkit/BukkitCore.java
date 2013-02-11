@@ -19,9 +19,9 @@ import de.cubeisland.cubeengine.core.storage.database.Database;
 import de.cubeisland.cubeengine.core.storage.database.DatabaseFactory;
 import de.cubeisland.cubeengine.core.storage.world.WorldManager;
 import de.cubeisland.cubeengine.core.user.UserManager;
-import de.cubeisland.cubeengine.core.util.log.CubeFileHandler;
-import de.cubeisland.cubeengine.core.util.log.CubeLogger;
-import de.cubeisland.cubeengine.core.util.log.LogLevel;
+import de.cubeisland.cubeengine.core.logger.CubeFileHandler;
+import de.cubeisland.cubeengine.core.logger.CubeLogger;
+import de.cubeisland.cubeengine.core.logger.LogLevel;
 import de.cubeisland.cubeengine.core.util.matcher.Match;
 import de.cubeisland.cubeengine.core.util.worker.CubeThreadFactory;
 import de.cubeisland.cubeengine.core.webapi.ApiConfig;
@@ -37,7 +37,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
-import static de.cubeisland.cubeengine.core.util.log.LogLevel.*;
+import static de.cubeisland.cubeengine.core.logger.LogLevel.*;
 
 /**
  * This represents the Bukkit-JavaPlugin that gets loaded and implements the Core

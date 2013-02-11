@@ -4,7 +4,7 @@ import de.cubeisland.cubeengine.core.CubeEngine;
 import de.cubeisland.cubeengine.core.config.ConfigurationCodec;
 import de.cubeisland.cubeengine.core.config.node.*;
 import de.cubeisland.cubeengine.core.util.convert.Convert;
-import de.cubeisland.cubeengine.core.util.log.LogLevel;
+import de.cubeisland.cubeengine.core.logger.LogLevel;
 import org.yaml.snakeyaml.Yaml;
 
 import java.io.InputStream;
