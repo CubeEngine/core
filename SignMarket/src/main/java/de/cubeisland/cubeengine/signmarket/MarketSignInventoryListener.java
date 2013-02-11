@@ -1,6 +1,7 @@
 package de.cubeisland.cubeengine.signmarket;
 
 import de.cubeisland.cubeengine.core.user.User;
+import de.cubeisland.cubeengine.core.util.InventoryUtil;
 import gnu.trove.map.hash.TLongObjectHashMap;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
@@ -39,16 +40,7 @@ public class MarketSignInventoryListener implements Listener
     private Inventory prepareInventory(MarketSign marketSign)
     {
         Inventory inventory = marketSign.getInventory();
-        if (marketSign.isAdminSign())
-        {
-            inventory.setItem(4, marketSign.getItem());
-        }
-        else
-        {
-            ItemStack item = marketSign.getItem();
-            item.setAmount(marketSign.getAmount());
-            inventory.addItem(item);
-        }
+
         return inventory;
     }
 
@@ -62,11 +54,8 @@ public class MarketSignInventoryListener implements Listener
             if (humanEntity instanceof Player)
             {
                 User user = this.module.getUserManager().getExactUser((Player)humanEntity);
-                if (this.viewingInventories.remove(user.key) != null)
-                {
-                    ((MarketSign)inventory.getHolder()).resetInventory(); // no changes can be made
-                }
-                else if (this.editingInventories.remove(user.key) != null)
+                this.viewingInventories.remove(user.key);// no changes can be made
+                if (this.editingInventories.remove(user.key) != null)
                 {
                     ((MarketSign)inventory.getHolder()).saveToDatabase(); // save possible changes
                 }
@@ -91,14 +80,49 @@ public class MarketSignInventoryListener implements Listener
                 if (this.viewingInventories.containsKey(user.key))
                 {
                     event.setCancelled(true); // changes are not allowed
+                    ((Player) humanEntity).updateInventory();
+                    return;
                 }
                 if (this.editingInventories.containsKey(user.key))
                 {
-                    if (!marketSign.getItem().isSimilar(event.getCurrentItem())) // Cancel if item is not accepted
+                    ItemStack cursor = event.getCursor();
+                    ItemStack invent = event.getCurrentItem();
+
+                    if ((invent == null || invent.getTypeId() == 0) || (cursor == null || cursor.getTypeId() == 0))
                     {
-                        event.setCancelled(true);
-                    }
+                        if (marketSign.getItem().isSimilar(invent)
+                         || marketSign.getItem().isSimilar(cursor))
+                        {
+                            if (!marketSign.isBuySign()) // sell sign does not allow putting in top
+                            {
+                                if (event.getRawSlot() <= event.getInventory().getSize()) // top
+                                {
+                                    if (cursor != null && cursor.getTypeId() !=0)
+                                    {
+                                        event.setCancelled(true);
+                                        ((Player) humanEntity).updateInventory();
+                                        return;
+                                    }
+                                }
+                                else
+                                {
+                                    if (invent != null && invent.getTypeId() != 0)
+                                    {
+                                        event.setCancelled(true);
+                                        ((Player) humanEntity).updateInventory();
+                                        return;
+                                    }
+                                }
+                            }
+                            return;
+                        }
+                    } // else swapping items is not allowed -> cancel
+                    event.setCancelled(true);
+                    ((Player) humanEntity).updateInventory();
+                    return;
                 }
+                marketSign.setStock(InventoryUtil.getAmountOf(event.getInventory(),marketSign.getItem()));
+                marketSign.updateSign();
             }
             else
             {

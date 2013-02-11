@@ -34,8 +34,13 @@ public class SignMarketInfoModel implements Model<Long>
     public int amount;
     @Attribute(type = AttrType.INT, unsigned = true)
     public long price;
+    @Attribute(type = AttrType.VARCHAR, length = 64)
+    public String currency;
+
     @Attribute(type = AttrType.MEDIUMINT, unsigned = true, notnull = false)
     public Integer stock;
+    @Attribute(type = AttrType.MEDIUMINT, unsigned = true, notnull = false)
+    public Integer demand;
     @Attribute(type = AttrType.INT, unsigned = true, notnull = false)
     public Long owner; //TODO foreign key to user
 
@@ -52,8 +57,6 @@ public class SignMarketInfoModel implements Model<Long>
     public String enchantments;
 
     private ItemStack itemStack = null;
-
-
 
     @Override
     public Long getKey()
@@ -101,7 +104,7 @@ public class SignMarketInfoModel implements Model<Long>
     public SignMarketInfoModel() {
     }
 
-    public boolean isItem(ItemStack itemInHand)
+    public boolean matchesItem(ItemStack itemInHand)
     {
         return this.getItem().isSimilar(itemInHand);
     }
@@ -120,6 +123,7 @@ public class SignMarketInfoModel implements Model<Long>
             {
                 meta.setLore(Arrays.asList(StringUtils.explode("\n",this.lore)));
             }
+            itemStack.setItemMeta(meta);
             if (this.enchantments != null)
             {
                 String[] enchStrings = StringUtils.explode(",",this.enchantments);
@@ -131,12 +135,16 @@ public class SignMarketInfoModel implements Model<Long>
                     this.itemStack.addUnsafeEnchantment(ench,level);
                 }
             }
-            itemStack.setItemMeta(meta);
+
         }
         return itemStack;
     }
 
     public boolean isAdminSign() {
         return this.owner == null;
+    }
+
+    public void updateFromItem() {
+        this.setItem(this.itemStack);
     }
 }

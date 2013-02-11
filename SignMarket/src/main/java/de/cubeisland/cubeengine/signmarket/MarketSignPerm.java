@@ -30,7 +30,7 @@ public enum MarketSignPerm implements Permission
 
     private MarketSignPerm(PermDefault def)
     {
-        this.permission = "cubeengine.basics." + this.name().
+        this.permission = "cubeengine.signmarket." + this.name().
                 toLowerCase(Locale.ENGLISH).replace('_', '.');
         this.def = def;
     }

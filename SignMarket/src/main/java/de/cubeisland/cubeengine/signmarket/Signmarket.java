@@ -25,6 +25,8 @@ public class Signmarket extends Module
         this.registerListener(new MarketSignListener(this));
         this.inventoryListener = new MarketSignInventoryListener(this);
         this.registerListener(this.inventoryListener);
+
+        this.registerPermissions(MarketSignPerm.values());
     }
 
     public MarketSignInventoryListener getInventoryListener() {
