@@ -216,6 +216,11 @@ public class BukkitUtils
         }
     }
 
+    public static int getPing(Player onlinePlayer)
+    {
+        return ((CraftPlayer)onlinePlayer).getHandle().ping;
+    }
+
     private static class PacketHookInjector implements Listener
     {
         public static final PacketHookInjector INSTANCE = new PacketHookInjector();

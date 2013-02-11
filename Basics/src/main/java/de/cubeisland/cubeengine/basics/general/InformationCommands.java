@@ -14,6 +14,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.block.Biome;
+import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Item;
 import org.bukkit.entity.LivingEntity;
@@ -259,16 +260,14 @@ public class InformationCommands
     }, desc = "Pong!", max = 0)
     public void ping(CommandContext context)
     {
-        if (context.getLabel().equalsIgnoreCase("ping"))
+        final String label = context.getLabel().toLowerCase(Locale.ENGLISH);
+        if (context.getSender() instanceof ConsoleCommandSender)
         {
-            context.sendMessage("basics", "&6Pong!");
+            context.sendMessage("basics", "&e" + label + " in the console?");
         }
         else
         {
-            if (context.getLabel().equalsIgnoreCase("pong"))
-            {
-                context.sendMessage("basics", "&6Ping!");
-            }
+            context.sendMessage("basics", ("ping".equals(label) ? "pong" : "ping") + "! Your latency: %s", ((User)context.getSender()).getPing());
         }
     }
 

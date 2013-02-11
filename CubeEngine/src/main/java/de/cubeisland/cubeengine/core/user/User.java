@@ -207,6 +207,19 @@ public class User extends UserBase implements LinkingModel<Long>
         this.language = lang.getCode();
     }
 
+    public int getPing()
+    {
+        Player onlinePlayer = this.offlinePlayer.getPlayer();
+        if (onlinePlayer == null)
+        {
+            return BukkitUtils.getPing(onlinePlayer);
+        }
+        else
+        {
+            return -1;
+        }
+    }
+
     @Override
     public long getLastPlayed()
     {

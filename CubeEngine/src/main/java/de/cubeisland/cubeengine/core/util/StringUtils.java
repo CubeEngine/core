@@ -362,4 +362,9 @@ public final class StringUtils
 
         return padLeft(string, padChar, numLeft) + string + padRight(string, padChar, numRight);
     }
+
+    public static String ucFirst(String string)
+    {
+        return string.substring(0, 1) + string.substring(1);
+    }
 }
