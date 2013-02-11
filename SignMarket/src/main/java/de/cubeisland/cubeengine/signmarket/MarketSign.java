@@ -1,5 +1,6 @@
 package de.cubeisland.cubeengine.signmarket;
 
+import de.cubeisland.cubeengine.conomy.account.Account;
 import de.cubeisland.cubeengine.conomy.currency.Currency;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.util.ChatFormat;
@@ -33,6 +34,8 @@ public class MarketSign implements InventoryHolder
     private TLongLongHashMap breakingSign = new TLongLongHashMap();
 
     private Inventory inventory = null;
+    private User owner;
+    private Currency currency;
 
     public MarketSign(Signmarket module, Location location)
     {
@@ -55,10 +58,9 @@ public class MarketSign implements InventoryHolder
      */
     public boolean saveToDatabase()
     {
-        if (this.inventory != null)
+        if (!this.isAdminSign() && this.inventory != null)
         {
             this.info.stock = InventoryUtil.getAmountOf(this.inventory, this.getItem());
-
         }
         this.info.updateFromItem();
         //TODO store new marketsigns
@@ -211,12 +213,7 @@ public class MarketSign implements InventoryHolder
                         {
                             if (MarketSignPerm.SIGN_DESTROY_OWN.isAuthorized(user))
                             {
-                                if (this.getStock() == 1337) //pssst i am not here
-                                {
-                                    this.location.getWorld().strikeLightningEffect(location);
-                                }
-                                this.breakSign();
-                                return false;
+                                this.tryBreak(user);
                             }
                             else
                             {
@@ -227,8 +224,7 @@ public class MarketSign implements InventoryHolder
                         {
                             if (MarketSignPerm.SIGN_DESTROY_ADMIN.isAuthorized(user))
                             {
-                                this.breakSign();
-                                return false;
+                                this.tryBreak(user);
                             }
                             else
                             {
@@ -239,8 +235,7 @@ public class MarketSign implements InventoryHolder
                         {
                             if (MarketSignPerm.SIGN_DESTROY_OTHER.isAuthorized(user))
                             {
-                                this.breakSign();
-                                return false;
+                                this.tryBreak(user);
                             }
                             else
                             {
@@ -254,7 +249,7 @@ public class MarketSign implements InventoryHolder
                         {
                             if (MarketSignPerm.SIGN_DESTROY_ADMIN.isAuthorized(user))
                             {
-                                tryBreak(user);
+                                this.tryBreak(user);
                             }
                             else
                             {
@@ -482,6 +477,11 @@ public class MarketSign implements InventoryHolder
     private void tryBreak(User user) {
         if (this.breakingSign.containsKey(user.key) && System.currentTimeMillis() - this.breakingSign.get(user.key) <= 200)//0.2 sec
         {
+            if (this.getStock() == 1337) //pssst i am not here
+            {
+                this.location.getWorld().strikeLightningEffect(location);
+            }
+
             this.breakSign();
             location.getWorld().getBlockAt(location).breakNaturally();
             this.breakingSign.remove(user.key);
@@ -495,8 +495,141 @@ public class MarketSign implements InventoryHolder
 
     private boolean useSign(User user)
     {
-        user.sendMessage("Not implemented yet!");
-        return false; //TODO sell / buy
+        if (this.isValidSign(user))
+        {
+            if (this.isBuySign())
+            {
+                if (this.isAdminSign() || this.getStock() >= this.getAmount())
+                {
+                    if (this.canAfford(user))
+                    {
+                        Account userAccount = this.module.getConomy().getAccountsManager().getAccount(user,this.getCurrency());
+                        Account ownerAccount = this.module.getConomy().getAccountsManager().getAccount(this.getOwner(),this.getCurrency());
+                        ItemStack item = this.getItem();
+                        item.setAmount(this.getAmount());
+                        if (InventoryUtil.checkForPlace(user.getInventory(),item.clone()))
+                        {
+                            this.module.getConomy().getAccountsManager().transaction(userAccount,ownerAccount,this.getPrice());
+                            if (!this.isAdminSign())
+                            {
+                                this.getInventory().removeItem(item);
+                                this.saveToDatabase();
+                            } // else admin sign -> no change
+                            user.getInventory().addItem(item);
+                            user.updateInventory();
+                            //TODO buy message
+                        }
+                        else
+                        {
+                            user.sendMessage("signmarket","&cYou do not have enough space for these items!");
+                        }
+                    }
+                    else
+                    {
+                        user.sendMessage("signmarket","&cYou cannot afford the price of these items!");
+                    }
+                }
+                else
+                {
+                    user.sendMessage("signmarket","&cThis market-sign is &4&lSold Out&c!");
+                }
+            }
+            else
+            {
+                if (this.isAdminSign() || this.getDemand() - this.getStock() > 0)
+                {
+                    if (this.isAdminSign() || this.canAfford(this.getOwner()))
+                    {
+                        if (InventoryUtil.getAmountOf(user.getInventory(),this.getItem()) >= this.getAmount())
+                        {
+                            if (!this.isAdminSign() && (InventoryUtil.getAmountOf(this.getInventory(),this.getItem())+this.getAmount()) > 3456 )
+                            {
+                                user.sendMessage("signmarket","&cThis market-sign is full and cannot accept more items!");
+                            }
+                            else
+                            {
+                                Account userAccount = this.module.getConomy().getAccountsManager().getAccount(user,this.getCurrency());
+                                Account ownerAccount = this.module.getConomy().getAccountsManager().getAccount(this.getOwner(),this.getCurrency());
+                                ItemStack item = this.getItem();
+                                item.setAmount(this.getAmount());
+                                this.module.getConomy().getAccountsManager().transaction(ownerAccount,userAccount,this.getPrice());
+                                user.getInventory().removeItem(item);
+                                if (!this.isAdminSign())
+                                {
+                                    this.getInventory().removeItem(item);
+                                    this.saveToDatabase();
+                                } // else admin sign -> no change
+                                user.updateInventory();
+                                //TODO sell message
+                            }
+                        }
+                        else
+                        {
+                            user.sendMessage("signmarket","&cYou do not have enough items to sell!");
+                        }
+                    }
+                    else
+                    {
+                        user.sendMessage("signmarket","&cThe owner cannot afford the money to aquire your items!");
+                    }
+                }
+                else
+                {
+                    user.sendMessage("signmarket","&cThis market-sign is &4&lsatisfied&c! You can no longer sell items to it.");
+                }
+            }
+            return true;
+        }
+        return false;
+    }
+
+    private boolean isValidSign(User user)
+    {
+        boolean result = true;
+        if (this.info.isBuySign == null)
+        {
+            user.sendMessage("signmarket","&cSign is still in editing mode.");
+            result= false;
+        }
+        if (this.info.amount <= 0)
+        {
+            user.sendMessage("signmarket","&cInvalid amount!");
+            result= false;
+        }
+        if (this.info.price <= 0)
+        {
+            user.sendMessage("signmarket","&cInvalid price!");
+            result= false;
+        }
+        if (this.info.item == null)
+        {
+            user.sendMessage("signmarket","&cNo item given!");
+            result= false;
+        }
+        if (this.info.damageValue == null)
+        {
+            user.sendMessage("signmarket","&cNo item-data given!");
+            result= false;
+        }
+        if (this.info.currency == null)
+        {
+            user.sendMessage("signmarket","&cNo currency given!");
+            result= false;
+        }
+        if (this.info.owner == null)
+        {
+            if (this.info.stock != null)
+            {
+                user.sendMessage("signmarket","&cAdmin signs have no stock!");
+                result= false;
+            }
+            if (this.info.demand != null)
+            {
+                user.sendMessage("signmarket","&cAdmin signs have no demand!");
+                result= false;
+            }
+        }
+        return result;
     }
 
     public boolean isOwner(User user)
@@ -574,12 +707,14 @@ public class MarketSign implements InventoryHolder
             }
             else
             {
-                if (this.getDemand()-this.getStock() <= 0)
+                if (this.isAdminSign() || (this.getDemand()-this.getStock() > 0))
+                {
+                    lines[0] = "&1&lSell";
+                }
+                else
                 {
                     lines[0] = "&4&lsatisfied";
                 }
-                else
-                    lines[0] = "&1&lSell";
             }
             lines[0] = ChatFormat.parseFormats(lines[0]);
             lines[1] = ChatFormat.parseFormats(lines[1]);
@@ -645,36 +780,57 @@ public class MarketSign implements InventoryHolder
         return this.info.amount;
     }
 
-    public void setInfoModel(SignMarketInfoModel infoModel) {
+    public void setInfoModel(SignMarketInfoModel infoModel)
+    {
         this.info = infoModel;
     }
 
-    public void setBlockModel(SignMarketBlockModel blockModel) {
+    public void setBlockModel(SignMarketBlockModel blockModel)
+    {
         this.blockInfo = blockModel;
     }
 
-    public Integer getStock() {
+    public Integer getStock()
+    {
         return this.info.stock;
     }
 
-    public void setStock(int stock) {
+    public void setStock(int stock)
+    {
         this.info.stock = stock;
     }
 
-    public boolean isBuySign() {
+    public boolean isBuySign()
+    {
         return this.info.isBuySign;
     }
 
-    public Integer getDemand() {
+    public Integer getDemand()
+    {
         return this.info.demand;
     }
 
-    public Currency getCurrency() {
-        return this.module.getConomy().getCurrencyManager().getCurrencyByName(this.info.currency);
+    public Currency getCurrency()
+    {
+        if (this.currency == null)
+        {
+            this.currency =  this.module.getConomy().getCurrencyManager().getCurrencyByName(this.info.currency);
+        }
+        return this.currency;
     }
 
-    public long getPrice() {
+    public long getPrice()
+    {
         return this.info.price;
+    }
+
+    public User getOwner()
+    {
+        if (this.owner == null && !this.isAdminSign())
+        {
+            this.owner = this.module.getUserManager().getUser(this.info.owner);
+        }
+        return this.owner;
     }
 }
 

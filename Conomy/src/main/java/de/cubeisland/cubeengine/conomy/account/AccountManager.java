@@ -93,6 +93,8 @@ public class AccountManager
      */
     public Account getAccount(User user, Currency currency)
     {
+        if (user == null)
+            return null;
         this.userAccountExists(user, currency); //loads accounts if not yet loaded
         return this.useraccounts.get(user.key).get(currency);
     }
@@ -334,6 +336,10 @@ public class AccountManager
      */
     public boolean transaction(Account source, Account target, Long amount) throws IllegalArgumentException
     {
+        if (target == null)
+        {
+            return this.transaction(target,source,-amount);
+        }
         if (!(source == null || target == null))
             if (!source.getCurrency().canConvert(target.getCurrency()))
             {

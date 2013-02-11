@@ -341,6 +341,8 @@ public class MaterialMatcher
      */
     public boolean repairable(ItemStack item)
     {
+        if (item == null)
+            return false;
         return this.repairableMaterials.contains(item.getType());
     }
 

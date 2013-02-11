@@ -31,7 +31,7 @@ public class SignMarketInfoModel implements Model<Long>
 
 
     @Attribute(type = AttrType.SMALLINT, unsigned = true)
-    public int amount;
+    public int amount = 0;
     @Attribute(type = AttrType.INT, unsigned = true)
     public long price;
     @Attribute(type = AttrType.VARCHAR, length = 64)
