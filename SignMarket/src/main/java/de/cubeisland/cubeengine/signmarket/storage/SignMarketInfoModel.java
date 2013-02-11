@@ -135,8 +135,8 @@ public class SignMarketInfoModel implements Model<Long>
                     this.itemStack.addUnsafeEnchantment(ench,level);
                 }
             }
-
         }
+        itemStack.setAmount(this.amount);
         return itemStack;
     }
 

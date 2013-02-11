@@ -87,4 +87,21 @@ public class InventoryUtil
         }
         return amount;
     }
+
+    public static ItemStack[] splitIntoMaxItems(ItemStack item, int maxStackSize)
+    {
+        int itemAmount = item.getAmount();
+        List<ItemStack> list = new ArrayList<ItemStack>();
+        while (itemAmount > maxStackSize)
+        {
+            itemAmount -= maxStackSize;
+            ItemStack itemToAdd = new ItemStack(item);
+            itemToAdd.setAmount(maxStackSize);
+            list.add(itemToAdd);
+        }
+        ItemStack itemToAdd = new ItemStack(item);
+        itemToAdd.setAmount(itemAmount);
+        list.add(itemToAdd);
+        return list.toArray(new ItemStack[list.size()]);
+    }
 }

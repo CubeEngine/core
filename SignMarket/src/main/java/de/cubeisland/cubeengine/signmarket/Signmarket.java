@@ -13,7 +13,7 @@ public class Signmarket extends Module
     private SignMarketInfoManager sminfoManager;
     private MarketSignInventoryListener inventoryListener;
     private MarketSignFactory marketSignFactory;
-
+    private SignMarketConfig config;
 
     @Override
     public void onEnable()
@@ -47,5 +47,9 @@ public class Signmarket extends Module
 
     public MarketSignFactory getMarketSignFactory() {
         return marketSignFactory;
+    }
+
+    public SignMarketConfig getConfig() {
+        return config;
     }
 }

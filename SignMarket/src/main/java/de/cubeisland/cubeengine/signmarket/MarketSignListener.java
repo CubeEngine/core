@@ -54,6 +54,8 @@ public class MarketSignListener implements Listener
                         break;
                     }
                 }
+                if (lastSignFound == null)
+                    return;
                 MarketSign marketSign = this.module.getMarketSignFactory().getSignAt(lastSignFound.getLocation());
                 if (marketSign == null)
                     return;
