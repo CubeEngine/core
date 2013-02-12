@@ -4,6 +4,8 @@ import de.cubeisland.cubeengine.conomy.account.Account;
 import de.cubeisland.cubeengine.conomy.currency.Currency;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.util.ChatFormat;
+import de.cubeisland.cubeengine.core.util.InventoryGuard;
+import de.cubeisland.cubeengine.core.util.InventoryUtil;
 import de.cubeisland.cubeengine.core.util.RomanNumbers;
 import de.cubeisland.cubeengine.core.util.matcher.Match;
 import de.cubeisland.cubeengine.signmarket.storage.SignMarketBlockModel;
@@ -204,21 +206,40 @@ public class MarketSign implements InventoryHolder
                     }
                     if (MarketSignPerm.SIGN_INVENTORY_SHOW.isAuthorized(user))
                     {
+                        Runnable onClose =  new Runnable() {
+                            @Override
+                            public void run() {
+                                MarketSign.this.saveToDatabase();
+                            }};
+                        Runnable onChange =  new Runnable() {
+                            @Override
+                            public void run() {
+                                MarketSign.this.setStock(InventoryUtil.getAmountOf(MarketSign.this.getInventory(), MarketSign.this.getItem()));
+                                MarketSign.this.updateSign();
+                            }};
+                        InventoryGuard guard = InventoryGuard.prepareInventory(this.getInventory(), user)
+                                .blockPutInAll().blockTakeOutAll()
+                                .onClose(onClose).onChange(onChange);
                         if (this.isAdminSign())
                         {
-                            this.module.getInventoryListener().openInventoryCannotEdit(user, this);
+                            guard.submitInventory(this.module, true);
                         }
-                        else if (this.isOwner(user)) // owner OR can access other
+                        else if (this.isOwner(user) || MarketSignPerm.SIGN_INVENTORY_ACCESS_OTHER.isAuthorized(user))
                         {
-                            this.module.getInventoryListener().openInventoryCanEdit(user, this);
-                        }
-                        else if (MarketSignPerm.SIGN_INVENTORY_ACCESS_OTHER.isAuthorized(user))
-                        {
-                            this.module.getInventoryListener().openInventoryCanEdit(user, this);
+
+                            if (this.isBuySign())
+                            {
+                                guard.notBlockPutIn(this.getItem()).notBlockTakeOut(this.getItem());
+                            }
+                            else
+                            {
+                                guard.notBlockTakeOut(this.getItem());
+                            }
+                            guard.submitInventory(this.module, true);
                         }
                         else
                         {
-                            this.module.getInventoryListener().openInventoryCannotEdit(user, this);
+                            guard.submitInventory(this.module, true);
                         }
                     }
                     else

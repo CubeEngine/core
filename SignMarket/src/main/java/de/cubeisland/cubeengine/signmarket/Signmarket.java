@@ -11,7 +11,6 @@ public class Signmarket extends Module
     private Conomy conomy;
     private SignMarketBlockManager smblockManager;
     private SignMarketInfoManager sminfoManager;
-    private MarketSignInventoryListener inventoryListener;
     private MarketSignFactory marketSignFactory;
     private SignMarketConfig config;
 
@@ -23,14 +22,8 @@ public class Signmarket extends Module
         this.marketSignFactory = new MarketSignFactory(this);
 
         this.registerListener(new MarketSignListener(this));
-        this.inventoryListener = new MarketSignInventoryListener(this);
-        this.registerListener(this.inventoryListener);
 
         this.registerPermissions(MarketSignPerm.values());
-    }
-
-    public MarketSignInventoryListener getInventoryListener() {
-        return inventoryListener;
     }
 
     public Conomy getConomy() {

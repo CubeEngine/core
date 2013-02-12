@@ -12,6 +12,7 @@ import de.cubeisland.cubeengine.core.storage.TableManager;
 import de.cubeisland.cubeengine.core.storage.database.Database;
 import de.cubeisland.cubeengine.core.storage.world.WorldManager;
 import de.cubeisland.cubeengine.core.user.UserManager;
+import de.cubeisland.cubeengine.core.util.InventoryGuard;
 import de.cubeisland.cubeengine.core.util.matcher.Match;
 import de.cubeisland.cubeengine.core.webapi.ApiServer;
 
@@ -144,4 +145,6 @@ public interface Core
      * @return
      */
     public Match getMatcherManager();
+
+    InventoryGuard getInventoryGuard();
 }

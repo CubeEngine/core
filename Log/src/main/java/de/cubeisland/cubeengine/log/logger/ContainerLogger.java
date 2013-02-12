@@ -2,7 +2,6 @@ package de.cubeisland.cubeengine.log.logger;
 
 import de.cubeisland.cubeengine.core.CubeEngine;
 import de.cubeisland.cubeengine.core.user.User;
-import de.cubeisland.cubeengine.core.util.InventoryUtil;
 import de.cubeisland.cubeengine.log.Log;
 import de.cubeisland.cubeengine.log.Logger;
 import de.cubeisland.cubeengine.log.logger.config.ContainerConfig;
@@ -22,6 +21,8 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.inventory.*;
+
+import static de.cubeisland.cubeengine.core.util.InventoryUtil.checkForPlace;
 
 public class ContainerLogger extends Logger<ContainerConfig>
 {
@@ -193,7 +194,7 @@ public class ContainerLogger extends Logger<ContainerConfig>
         else if (event.isShiftClick()) // ShiftClick
         {
             int giveOrTake = event.getRawSlot() < event.getView().getTopInventory().getSize() ? -1 : 1; //top or bot inv ?
-            if (InventoryUtil.checkForPlace(giveOrTake == 1 ? event.getView().getTopInventory() : event.getView().getBottomInventory(), inInvent)) //check for enough space
+            if (checkForPlace(giveOrTake == 1 ? event.getView().getTopInventory() : event.getView().getBottomInventory(), inInvent)) //check for enough space
             {
                 log.put(datainInvent, log.get(datainInvent) + giveOrTake * inInvent.getAmount());
             }
