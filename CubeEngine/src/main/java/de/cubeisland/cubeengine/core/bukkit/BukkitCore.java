@@ -22,7 +22,7 @@ import de.cubeisland.cubeengine.core.user.UserManager;
 import de.cubeisland.cubeengine.core.logger.CubeFileHandler;
 import de.cubeisland.cubeengine.core.logger.CubeLogger;
 import de.cubeisland.cubeengine.core.logger.LogLevel;
-import de.cubeisland.cubeengine.core.util.InventoryGuard;
+import de.cubeisland.cubeengine.core.util.InventoryGuardFactory;
 import de.cubeisland.cubeengine.core.util.matcher.Match;
 import de.cubeisland.cubeengine.core.util.worker.CubeThreadFactory;
 import de.cubeisland.cubeengine.core.webapi.ApiConfig;
@@ -61,7 +61,7 @@ public class BukkitCore extends JavaPlugin implements Core
     private ApiServer apiServer;
     private WorldManager worldManager;
     private Match matcherManager;
-    private InventoryGuard inventoryGuard;
+    private InventoryGuardFactory inventoryGuard;
 
     @Override
     public void onEnable()
@@ -252,7 +252,7 @@ public class BukkitCore extends JavaPlugin implements Core
         BukkitUtils.registerPacketHookInjector(this);
 
         this.matcherManager = new Match();
-        this.inventoryGuard = new InventoryGuard(this);
+        this.inventoryGuard = new InventoryGuardFactory(this);
 
         this.getServer().getScheduler().scheduleSyncDelayedTask(this, new Runnable()
         {
@@ -458,7 +458,7 @@ public class BukkitCore extends JavaPlugin implements Core
     }
 
     @Override
-    public InventoryGuard getInventoryGuard() {
+    public InventoryGuardFactory getInventoryGuard() {
         return this.inventoryGuard;
     }
 }

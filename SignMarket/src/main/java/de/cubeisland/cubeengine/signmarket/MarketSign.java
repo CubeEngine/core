@@ -4,7 +4,7 @@ import de.cubeisland.cubeengine.conomy.account.Account;
 import de.cubeisland.cubeengine.conomy.currency.Currency;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.util.ChatFormat;
-import de.cubeisland.cubeengine.core.util.InventoryGuard;
+import de.cubeisland.cubeengine.core.util.InventoryGuardFactory;
 import de.cubeisland.cubeengine.core.util.InventoryUtil;
 import de.cubeisland.cubeengine.core.util.RomanNumbers;
 import de.cubeisland.cubeengine.core.util.matcher.Match;
@@ -217,7 +217,7 @@ public class MarketSign implements InventoryHolder
                                 MarketSign.this.setStock(InventoryUtil.getAmountOf(MarketSign.this.getInventory(), MarketSign.this.getItem()));
                                 MarketSign.this.updateSign();
                             }};
-                        InventoryGuard guard = InventoryGuard.prepareInventory(this.getInventory(), user)
+                        InventoryGuardFactory guard = InventoryGuardFactory.prepareInventory(this.getInventory(), user)
                                 .blockPutInAll().blockTakeOutAll()
                                 .onClose(onClose).onChange(onChange);
                         if (this.isAdminSign())

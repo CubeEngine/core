@@ -13,7 +13,7 @@ import de.cubeisland.cubeengine.core.storage.TableManager;
 import de.cubeisland.cubeengine.core.storage.database.Database;
 import de.cubeisland.cubeengine.core.storage.world.WorldManager;
 import de.cubeisland.cubeengine.core.user.UserManager;
-import de.cubeisland.cubeengine.core.util.InventoryGuard;
+import de.cubeisland.cubeengine.core.util.InventoryGuardFactory;
 import de.cubeisland.cubeengine.core.util.matcher.Match;
 import de.cubeisland.cubeengine.core.webapi.ApiServer;
 import java.io.File;
@@ -142,7 +142,7 @@ public class TestCore implements Core
     }
 
     @Override
-    public InventoryGuard getInventoryGuard() {
+    public InventoryGuardFactory getInventoryGuard() {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 }
