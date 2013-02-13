@@ -18,7 +18,7 @@ import java.util.List;
 import java.util.Map;
 
 
-@SingleKeyEntity(autoIncrement = true, primaryKey = "key", tableName = "signmarketinfo",
+@SingleKeyEntity(autoIncrement = false, primaryKey = "key", tableName = "signmarketinfo",
         indices = {
                 @Index(value = Index.IndexType.FOREIGN_KEY, fields = "key", f_field = "key", f_table = "signmarketblocks", onDelete = "CASCADE"),
         })

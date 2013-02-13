@@ -211,11 +211,11 @@ public class EditModeListener implements Listener
                 }
                 else
                 {
-                    user.sendMessage("marketsign","&cInvalid command!");
+                    user.sendMessage("marketsign","&cInvalid command! "+ splitted[i]);
                     //TODO print list of possible cmds!
                 }
-                marketSign.showInfo(user);
             }
+            marketSign.showInfo(user);
             marketSign.updateSign();
             event.setCancelled(true);
         }
@@ -228,8 +228,10 @@ public class EditModeListener implements Listener
     }
 
     @EventHandler
-    public void onLeftClick(PlayerInteractEvent event)
+    public void onClick(PlayerInteractEvent event)
     {
+        if (event.getPlayer().isSneaking())
+            return;
         if (event.getAction().equals(Action.LEFT_CLICK_BLOCK))
         {
             if (event.getClickedBlock().getState() instanceof Sign)
@@ -247,7 +249,10 @@ public class EditModeListener implements Listener
                 if (oldMarketSign != null)
                 {
                     oldMarketSign.exitEditMode();
-                    oldMarketSign.isValidSign(user);
+                    if (oldMarketSign.isValidSign(user))
+                    {
+                        oldMarketSign.saveToDatabase();
+                    }
                     this.previousSignLocation.put(user.key,this.currentSignLocation.remove(user.key));
                 }
                 MarketSign marketSign = this.module.getMarketSignFactory().getSignAt(event.getClickedBlock().getLocation());
@@ -266,5 +271,11 @@ public class EditModeListener implements Listener
                 marketSign.showInfo(user);
             }
         }
+        else
+        {
+            //TODO else right click sets the item in currently editing sign with amount
+            //TODO handle right click air on blocks here too
+        }
+
     }
 }

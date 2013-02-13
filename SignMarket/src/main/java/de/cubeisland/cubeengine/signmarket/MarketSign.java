@@ -62,21 +62,23 @@ public class MarketSign implements InventoryHolder
      */
     public boolean saveToDatabase()
     {
+        //TODO delete invalid/destroyed signs from database
         if (!this.isAdminSign() && this.inventory != null)
         {
             this.info.stock = getAmountOf(this.inventory, this.getItem());
         }
         this.info.updateFromItem();
-        //TODO store new marketsigns
         if (this.blockInfo.key == 0)
         {
             this.module.getSmblockManager().store(this.blockInfo);
+            this.info.setKey(this.blockInfo.getKey());
+            this.module.getSminfoManager().store(this.info);
         }
-        this.info.setKey(this.blockInfo.getKey());
-        this.module.getSminfoManager().update(this.info);
+        else
+        {
+            this.module.getSminfoManager().update(this.info);
+        }
         this.updateSign();
-        //delete on sign destroy
-        //delete on invalid sign
         return false;
     }
 
@@ -88,15 +90,18 @@ public class MarketSign implements InventoryHolder
             {
                 ItemStack item = this.getItem();
                 item.setAmount(this.getStock());
-                if (this.module.getConfig().allowOverStackedOutOfSign && !editMode)
+                if (!editMode)
                 {
-                    this.location.getWorld().dropItemNaturally(location,item);
-                }
-                else
-                {
-                    for (ItemStack itemStack : splitIntoMaxItems(item, item.getMaxStackSize()))
+                    if (this.module.getConfig().allowOverStackedOutOfSign)
                     {
-                        this.location.getWorld().dropItemNaturally(location,itemStack);
+                        this.location.getWorld().dropItemNaturally(location,item);
+                    }
+                    else
+                    {
+                        for (ItemStack itemStack : splitIntoMaxItems(item, item.getMaxStackSize()))
+                        {
+                            this.location.getWorld().dropItemNaturally(location,itemStack);
+                        }
                     }
                 }
             }
@@ -571,6 +576,7 @@ public class MarketSign implements InventoryHolder
         else
         {
             this.module.getEditModeListener().enterEditMode(user); //TODO testing
+            user.sendMessage("&5TESTING EDIT MODE ON!");
 
             this.breakingSign.put(user.key,System.currentTimeMillis());
             user.sendMessage("signmarket","&eDoubleclick to break the sign!");
