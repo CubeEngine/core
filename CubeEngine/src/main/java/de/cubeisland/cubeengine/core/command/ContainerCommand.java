@@ -6,8 +6,10 @@ import de.cubeisland.cubeengine.core.command.reflected.ReflectedCommand;
 import de.cubeisland.cubeengine.core.command.sender.CommandSender;
 import de.cubeisland.cubeengine.core.module.Module;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 
 import static de.cubeisland.cubeengine.core.i18n.I18n._;
 
@@ -66,5 +68,26 @@ public abstract class ContainerCommand extends ParameterizedCommand implements C
         {
             context.sendMessage(command.getName() + ": " + _(sender, command.getModule(), command.getDescription()));
         }
+    }
+
+    @Override
+    public List<String> tabComplete(CommandSender sender, String label, String[] args)
+    {
+        if (args.length == 1 && !(!args[0].isEmpty() && args[0].charAt(0) == '-'))
+        {
+            List<String> actions = new ArrayList<String>();
+            String token = args[0].toLowerCase(Locale.ENGLISH);
+            for (String child : this.getChildrenNames())
+            {
+                if (child.startsWith(token))
+                {
+                    actions.add(child);
+                }
+            }
+            Collections.sort(actions);
+
+            return actions;
+        }
+        return super.tabComplete(sender, label, args);
     }
 }

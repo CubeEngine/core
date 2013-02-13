@@ -445,7 +445,7 @@ public abstract class CubeCommand extends Command
     @Override
     public final List<String> tabComplete(org.bukkit.command.CommandSender bukkitSender, String alias, String[] args) throws IllegalArgumentException
     {
-        List<String> result = this.tabComplete(this.wrapSender(bukkitSender), alias, args);
+        List<String> result = this.tabComplete(wrapSender(bukkitSender), alias, args);
         if (result == null)
         {
             result = super.tabComplete(bukkitSender, alias, args);

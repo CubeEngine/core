@@ -1,5 +1,7 @@
 package de.cubeisland.cubeengine.core.command;
 
+import de.cubeisland.cubeengine.core.command.sender.CommandSender;
+
 import java.util.List;
 
 import static de.cubeisland.cubeengine.core.util.StringUtils.explode;
@@ -50,5 +52,11 @@ public final class AliasCommand extends CubeCommand
     public void help(HelpContext context) throws Exception
     {
         this.target.help(context);
+    }
+
+    @Override
+    public List<String> tabComplete(CommandSender sender, String label, String[] args)
+    {
+        return this.target.tabComplete(sender, label, args);
     }
 }

@@ -5,7 +5,12 @@ import de.cubeisland.cubeengine.core.command.sender.CommandSender;
 import de.cubeisland.cubeengine.core.module.Module;
 import de.cubeisland.cubeengine.core.user.User;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+
 
 public abstract class ParameterizedCommand extends CubeCommand
 {
@@ -45,15 +50,16 @@ public abstract class ParameterizedCommand extends CubeCommand
         if (args.length > 0)
         {
             String token = args[args.length - 1];
-            ParameterizedContextFactory parser = (ParameterizedContextFactory)this.getContextFactory();
+            ParameterizedContextFactory contextFactory = this.getContextFactory();
             if (args.length == 1)
             {
                 List<String> flagNames = new ArrayList<String>();
-                if (args[0].charAt(0) == '-')
+                if (!token.isEmpty() && token.charAt(0) == '-')
                 {
-                    token = token.toLowerCase(Locale.ENGLISH);
-                    for (String flagName : parser.getFlagMap().keySet())
+                    token = token.substring(1).toLowerCase(Locale.ENGLISH);
+                    for (String flagName : contextFactory.getFlagMap().keySet())
                     {
+                        // TODO filter out aliases?
                         if (flagName.toLowerCase(Locale.ENGLISH).startsWith(token))
                         {
                             flagNames.add("-" + flagName);
@@ -65,7 +71,7 @@ public abstract class ParameterizedCommand extends CubeCommand
             }
             else
             {
-                Map<String, CommandParameter> params = parser.getParamMap();
+                Map<String, CommandParameter> params = contextFactory.getParamMap();
                 CommandParameter param = params.get(args[args.length - 2].toLowerCase(Locale.ENGLISH));
                 if (params != null)
                 {
