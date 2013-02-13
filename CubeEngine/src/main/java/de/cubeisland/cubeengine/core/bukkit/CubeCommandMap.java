@@ -9,15 +9,26 @@ import de.cubeisland.cubeengine.core.logger.CubeLogger;
 import de.cubeisland.cubeengine.core.util.StringUtils;
 import de.cubeisland.cubeengine.core.util.matcher.Match;
 import org.bukkit.Server;
-import org.bukkit.command.*;
+import org.bukkit.command.Command;
+import org.bukkit.command.CommandException;
+import org.bukkit.command.CommandSender;
+import org.bukkit.command.PluginCommand;
+import org.bukkit.command.SimpleCommandMap;
 import org.bukkit.command.defaults.BukkitCommand;
 
 import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
-import java.util.*;
-import java.util.logging.*;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Set;
+import java.util.logging.FileHandler;
 import java.util.logging.Formatter;
+import java.util.logging.Level;
+import java.util.logging.LogRecord;
+import java.util.logging.Logger;
 
 import static de.cubeisland.cubeengine.core.i18n.I18n._;
 import static de.cubeisland.cubeengine.core.logger.LogLevel.INFO;
@@ -140,6 +151,16 @@ public class CubeCommandMap extends SimpleCommandMap
             return true;
         }
 
+        // our commands expect spaces to be preserved
+        if (command instanceof CubeCommand)
+        {
+            final int spaceIndex = commandLine.indexOf(' ');
+            if (spaceIndex > -1 && spaceIndex + 1 < commandLine.length())
+            {
+                parts = StringUtils.explode(" ", commandLine.substring(spaceIndex + 1));
+            }
+        }
+
         String[] args = Arrays.copyOfRange(parts, 1, parts.length);
         if (command instanceof AliasCommand)
         {
@@ -153,7 +174,7 @@ public class CubeCommandMap extends SimpleCommandMap
             System.arraycopy(suffix, 0, newArgs, prefix.length + args.length, suffix.length);
 
             args = newArgs;
-            command = alias.getTarget();
+            command = alias.getTarget(); // TODO does this actually work? (test usage strings!)
         }
 
         if (this.core.getEventManager().fireEvent(new CommandExecuteEvent(this.core, command, commandLine)).isCancelled())

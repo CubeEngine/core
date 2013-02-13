@@ -13,7 +13,7 @@ import java.util.Set;
 /**
  * This class provides information about a module.
  */
-public final class ModuleInfo
+public class ModuleInfo
 {
     private static final char DEP_VERSION_DELIM = '/';
     private final File file;

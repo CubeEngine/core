@@ -14,3 +14,4 @@ nb-actions.xml
 *.iml
 .settings/
 .project
+test-data/

@@ -2,10 +2,15 @@ package de.cubeisland.cubeengine.test.commands;
 
 import de.cubeisland.cubeengine.core.command.CommandContext;
 import de.cubeisland.cubeengine.core.command.CommandResult;
+import de.cubeisland.cubeengine.core.command.parameterized.Flag;
+import de.cubeisland.cubeengine.core.command.parameterized.Param;
+import de.cubeisland.cubeengine.core.command.parameterized.ParameterizedContext;
 import de.cubeisland.cubeengine.core.command.reflected.Command;
 import de.cubeisland.cubeengine.core.command.sender.CommandSender;
 import de.cubeisland.cubeengine.core.util.time.Duration;
+
 import java.util.LinkedList;
+import java.util.Map.Entry;
 import java.util.concurrent.TimeUnit;
 
 public class TestCommands
@@ -37,7 +42,7 @@ public class TestCommands
     }
 
     @Command(desc = "A command that tests async execution.", async = true)
-    public CommandResult async(CommandContext context)
+    public CommandResult asyncCommand(CommandContext context)
     {
         try
         {
@@ -52,5 +57,27 @@ public class TestCommands
                 sender.sendMessage("Delayed!");
             }
         };
+    }
+
+    @Command(desc = "This command prints out the args he gets", flags = @Flag(name = "a"), params = @Param(names = "param"))
+    public void testArgs(ParameterizedContext context)
+    {
+        context.sendMessage("Arg dump:");
+        context.sendMessage(" ");
+
+        for (String arg : context.getArgs())
+        {
+            context.sendMessage("Arg: '" + arg + "'");
+        }
+
+        for (String flag : context.getFlags())
+        {
+            context.sendMessage("Flag: -" + flag);
+        }
+
+        for (Entry<String, Object> entry : context.getParams().entrySet())
+        {
+            context.sendMessage("Param: " + entry.getKey() + " => '" + entry.getValue().toString() + "'");
+        }
     }
 }

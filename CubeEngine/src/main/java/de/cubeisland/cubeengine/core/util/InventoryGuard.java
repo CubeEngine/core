@@ -120,6 +120,7 @@ public class InventoryGuard implements Listener
     }
 
     @EventHandler
+    @SuppressWarnings("deprecation")
     public void onInventoryClick(InventoryClickEvent event)
     {
         if ((event.getInventory().equals(this.inventory)

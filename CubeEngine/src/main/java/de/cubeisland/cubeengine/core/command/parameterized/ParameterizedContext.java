@@ -4,6 +4,7 @@ import de.cubeisland.cubeengine.core.command.BasicContext;
 import de.cubeisland.cubeengine.core.command.CubeCommand;
 import de.cubeisland.cubeengine.core.command.sender.CommandSender;
 import de.cubeisland.cubeengine.core.user.User;
+import gnu.trove.map.hash.THashMap;
 import gnu.trove.set.hash.THashSet;
 
 import java.util.*;
@@ -60,7 +61,7 @@ public class ParameterizedContext extends BasicContext
 
     public Map<String, Object> getParams()
     {
-        return Collections.unmodifiableMap(this.params);
+        return new THashMap<String, Object>(this.params);
     }
 
     public boolean hasParam(String name)

@@ -206,8 +206,8 @@
                     <forkMode>never</forkMode>
                     <useSystemClassLoader>false</useSystemClassLoader>
                     <printSummary>true</printSummary>
-                    <skipTests>false</skipTests>
-                    <skip>false</skip>
+                    <!-- Move the working directory up to the modules -->
+                    <workingDirectory>${project.build.outputDirectory}/../../test-data</workingDirectory>
                 </configuration>
             </plugin>
             <plugin>

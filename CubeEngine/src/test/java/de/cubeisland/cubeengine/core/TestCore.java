@@ -6,8 +6,10 @@ import de.cubeisland.cubeengine.core.bukkit.TaskManager;
 import de.cubeisland.cubeengine.core.command.CommandManager;
 import de.cubeisland.cubeengine.core.config.Configuration;
 import de.cubeisland.cubeengine.core.filesystem.FileManager;
+import de.cubeisland.cubeengine.core.filesystem.TestFileManager;
 import de.cubeisland.cubeengine.core.i18n.I18n;
 import de.cubeisland.cubeengine.core.module.ModuleManager;
+import de.cubeisland.cubeengine.core.module.TestModuleManager;
 import de.cubeisland.cubeengine.core.permission.PermissionManager;
 import de.cubeisland.cubeengine.core.storage.TableManager;
 import de.cubeisland.cubeengine.core.storage.database.Database;
@@ -16,7 +18,9 @@ import de.cubeisland.cubeengine.core.user.UserManager;
 import de.cubeisland.cubeengine.core.util.InventoryGuardFactory;
 import de.cubeisland.cubeengine.core.util.matcher.Match;
 import de.cubeisland.cubeengine.core.webapi.ApiServer;
+
 import java.io.File;
+import java.io.IOException;
 import java.util.logging.Logger;
 
 /**
@@ -28,9 +32,8 @@ public class TestCore implements Core
     private static final Logger LOGGER = Logger.getAnonymousLogger();
     private ObjectMapper jsonObjectMapper = null;
     private CoreConfiguration config = null;
-
-    public TestCore()
-    {}
+    private FileManager fileManager = null;
+    private ModuleManager moduleManager = null;
 
     @Override
     public ApiServer getApiServer()
@@ -49,7 +52,7 @@ public class TestCore implements Core
     {
         if (this.config == null)
         {
-            this.config = Configuration.load(CoreConfiguration.class, new File("core.yml"));
+            this.config = Configuration.load(CoreConfiguration.class, new File(this.getFileManager().getDataFolder(), "core.yml"));
         }
         return this.config;
     }
@@ -81,7 +84,18 @@ public class TestCore implements Core
     @Override
     public FileManager getFileManager()
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        if (this.fileManager == null)
+        {
+            try
+            {
+                this.fileManager = new TestFileManager();
+            }
+            catch (IOException e)
+            {
+                throw new RuntimeException(e);
+            }
+        }
+        return this.fileManager;
     }
 
     @Override
@@ -97,7 +111,11 @@ public class TestCore implements Core
     @Override
     public ModuleManager getModuleManager()
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        if (this.moduleManager == null)
+        {
+            this.moduleManager = new TestModuleManager(this);
+        }
+        return this.moduleManager;
     }
 
     @Override

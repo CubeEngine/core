@@ -162,8 +162,8 @@ public class ParameterizedContextFactory implements ContextFactory
             {
                 if (commandLine[offset].isEmpty())
                 {
-                    offset++;
-                    continue; // part is empty, ignoring...
+                    offset++; // TODO should we preserve empty args?
+                    continue; // ignore empty args
                 }
                 if (commandLine[offset].length() >= 2 && commandLine[offset].charAt(0) == '-') // is flag?
                 {
@@ -238,36 +238,46 @@ public class ParameterizedContextFactory implements ContextFactory
 
     protected static int readString(StringBuilder sb, String[] args, int offset)
     {
-        if (args[offset] != null && !args[offset].isEmpty())
+        // string is empty? return an empty string
+        if (offset >= args.length || args[offset].isEmpty())
         {
-            char quoteChar = args[offset].charAt(0);
-
-            if (quoteChar == '"' || quoteChar == '\'')
-            {
-                if (args[offset].length() > 1 && args[offset].charAt(args[offset].length() - 1) == quoteChar)//ends with quotechar AND is not 1 long?
-                {
-                    sb.append(args[offset].substring(1, args[offset].length() - 1));
-                    return 1;
-                }
-
-                int i = 1;
-                sb.append(args[offset].substring(1));
-
-                for (; offset < args.length;)
-                {
-                    ++i;
-                    ++offset;
-                    if (args[offset].charAt(args[offset].length() - 1) == quoteChar)
-                    {
-                        sb.append(' ').append(args[offset].substring(0, args[offset].length() - 1));
-                        break;
-                    }
-                    sb.append(' ').append(args[offset]);
-                }
-                return i;
-            }
+            sb.append("");
+            return 1;
         }
-        sb.append(args[offset]);
-        return 1;
+
+        // first char is not a quote char? return the string
+        final char quoteChar = args[offset].charAt(0);
+        if (quoteChar != '"' && quoteChar != '\'')
+        {
+            sb.append(args[offset]);
+            return 1;
+        }
+
+        String string = args[offset].substring(1);
+        // string has at least 2 chars and ends with the same quote char? return the string without quotes
+        if (string.length() > 0 && string.charAt(string.length() - 1) == quoteChar)
+        {
+            sb.append(string.substring(0, string.length() - 1));
+            return 1;
+        }
+
+        sb.append(string);
+        offset++;
+        int argCounter = 1;
+
+        while (offset < args.length)
+        {
+            sb.append(' ');
+            argCounter++;
+            string = args[offset++];
+            if (string.length() > 0 && string.charAt(string.length() - 1) == quoteChar)
+            {
+                sb.append(string.substring(0, string.length() - 1));
+                break;
+            }
+            sb.append(string);
+        }
+
+        return argCounter;
     }
 }

@@ -30,30 +30,31 @@ public class FileManager implements Cleanable
 
     public FileManager(File dataFolder) throws IOException
     {
-        Validate.notNull(dataFolder, "The data folder must not be null!");
+        Validate.notNull(dataFolder, "The CubeEngine plugin folder must not be null!");
         if (!dataFolder.exists())
         {
-            if (dataFolder.mkdirs())
+            if (!dataFolder.mkdirs())
             {
-                LOGGER.log(LogLevel.INFO, "Folder {0} successfully created!");
+                throw new IOException("The CubeEngine plugin folder could not be created: " + dataFolder.getAbsolutePath());
             }
+            dataFolder.setWritable(true, true);
         }
         else if (!dataFolder.isDirectory())
         {
-            throw new IOException("The data folder was found, but it doesn't seem to be directory!");
+            throw new IOException("The CubeEngine plugin folder was found, but it doesn't seem to be directory: " + dataFolder.getAbsolutePath());
         }
-        if (!dataFolder.canWrite())
+        if (!dataFolder.canWrite() && !dataFolder.setWritable(true, true))
         {
-            throw new IOException("The CubeEngine plugin folder is not writable!");
+            throw new IOException("The CubeEngine plugin folder is not writable: " + dataFolder.getAbsolutePath());
         }
         this.dataFolder = dataFolder;
 
         this.languageDir = new File(this.dataFolder, "language");
         if (!this.languageDir.isDirectory() && !this.languageDir.mkdirs())
         {
-            throw new IOException("Failed to create the language folder");
+            throw new IOException("Failed to create the language folder: " + this.languageDir.getAbsolutePath());
         }
-        if (!this.languageDir.canWrite())
+        if (!this.languageDir.canWrite() && !this.languageDir.setWritable(true, true))
         {
             throw new IOException("The language folder is not writable!");
         }
@@ -61,23 +62,25 @@ public class FileManager implements Cleanable
         this.logDir = new File(this.dataFolder, "log");
         if (!this.logDir.isDirectory() && !this.logDir.mkdirs())
         {
-            throw new IOException("Failed to create the log folder");
+            throw new IOException("Failed to create the log folder: " + this.logDir.getAbsolutePath());
         }
-        if (!this.logDir.canWrite())
+        if (!this.logDir.canWrite() && !this.logDir.setWritable(true, true))
         {
-            throw new IOException("The log folder is not writable!");
+            throw new IOException("The log folder is not writable!: " + this.logDir.getAbsolutePath());
         }
 
         this.modulesDir = new File(this.dataFolder, "modules");
         if (!this.modulesDir.isDirectory() && !this.modulesDir.mkdirs())
         {
-            throw new IOException("Failed to create the modules folder");
+            throw new IOException("Failed to create the modules folder: " + this.modulesDir.getAbsolutePath());
         }
-        if (!this.modulesDir.canWrite())
+        if (!this.modulesDir.canWrite() && !this.modulesDir.setWritable(true, true))
         {
-            throw new IOException("The modules folder is not writable!");
+            throw new IOException("The modules folder is not writable: " + this.modulesDir.getAbsolutePath());
         }
-        if (!createSymLink(new File(System.getProperty("user.dir", "."), "modules"), this.modulesDir))
+
+        final File linkSource = new File(System.getProperty("user.dir", "."), "modules");
+        if (!isSymLink(linkSource) && !createSymLink(linkSource, this.modulesDir))
         {
             LOGGER.log(NOTICE, "Linking to the modules directory failed! This can be ignored.");
         }
@@ -85,11 +88,11 @@ public class FileManager implements Cleanable
         this.tempDir = new File(this.dataFolder, "temp");
         if (!this.tempDir.isDirectory() && !this.tempDir.mkdirs())
         {
-            throw new IOException("Failed to create the temp folder");
+            throw new IOException("Failed to create the temp folder: " + this.tempDir.getAbsolutePath());
         }
-        if (!this.tempDir.canWrite())
+        if (!this.tempDir.canWrite() && !this.tempDir.setWritable(true, true))
         {
-            throw new IOException("The temp folder is not writable!");
+            throw new IOException("The temp folder is not writable: " + this.tempDir.getAbsolutePath());
         }
         if (!hideFile(this.tempDir))
         {
@@ -113,7 +116,7 @@ public class FileManager implements Cleanable
         return false;
     }
     
-    private static boolean createSymLink(File source, File target)
+    public static boolean createSymLink(File source, File target)
     {
         final String[] command;
         if (runsOnWindows())
@@ -138,6 +141,20 @@ public class FileManager implements Cleanable
         catch (Exception e)
         {}
         return false;
+    }
+
+    public static boolean isSymLink(File file) throws IOException
+    {
+        final File canon;
+        if (file.getParent() == null)
+        {
+            canon = file;
+        }
+        else
+        {
+            canon = new File(file.getParentFile().getCanonicalFile(), file.getName());
+        }
+        return !canon.getCanonicalFile().equals(canon.getAbsoluteFile());
     }
 
     /**
