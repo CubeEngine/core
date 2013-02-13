@@ -154,7 +154,7 @@ public class ParameterizedContextFactory implements ContextFactory
         final Set<String> flags = new THashSet<String>();
         final Map<String, Object> params = new THashMap<String, Object>();
 
-        if (commandLine.length == 0)
+        if (commandLine.length > 0)
         {
             String[] names;
 

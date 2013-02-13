@@ -7,6 +7,7 @@ import de.cubeisland.cubeengine.core.command.parameterized.Flag;
 import de.cubeisland.cubeengine.core.command.parameterized.ParameterizedContext;
 import de.cubeisland.cubeengine.core.command.reflected.Alias;
 import de.cubeisland.cubeengine.core.command.reflected.Command;
+import de.cubeisland.cubeengine.core.command.sender.CommandSender;
 import de.cubeisland.cubeengine.core.module.Module;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.util.ChatFormat;
@@ -49,32 +50,31 @@ public class PowerToolCommand extends ContainerCommand
     @Command(desc = "Removes all command from your powertool", flags = @Flag(longName = "all", name = "a"), usage = "[-a]")
     public void clear(ParameterizedContext context)
     {
-        User sender = null;
-        if (context.getSender() instanceof User)
+        CommandSender sender = context.getSender();
+        if (sender instanceof User)
         {
-            sender = (User)context.getSender();
-        }
-        if (sender == null)
-        {
-            context.sendMessage("basics", "&eNo more power for you!");
-            return;
-        }
-        if (context.hasFlag("a"))
-        {
-            for (ItemStack item : sender.getInventory().getContents())
+            User user = (User)sender;
+            if (context.hasFlag("a"))
             {
-                this.setPowerTool(item, null);
+                for (ItemStack item : user.getInventory().getContents())
+                {
+                    this.setPowerTool(item, null);
+                }
+                context.sendMessage("basics", "&aRemoved all commands bound to items in your inventory!");
             }
-            context.sendMessage("basics", "&aRemoved all commands bound to items in your inventory!");
+            else
+            {
+                if (user.getItemInHand().getTypeId() == 0)
+                {
+                    context.sendMessage("basics", "&eYou are not holding any item in your hand.");
+                    return;
+                }
+                this.setPowerTool(user.getItemInHand(), null);
+            }
         }
         else
         {
-            if (sender.getItemInHand().getTypeId() == 0)
-            {
-                context.sendMessage("basics", "&eYou are not holding any item in your hand.");
-                return;
-            }
-            this.setPowerTool(sender.getItemInHand(), null);
+            context.sendMessage("basics", "&eNo more power for you!");
         }
     }
 
@@ -157,28 +157,36 @@ public class PowerToolCommand extends ContainerCommand
     }, usage = "<commandstring>", min = 1)
     public void add(ParameterizedContext context)
     {
-        User sender = null;
-        if (context.getSender() instanceof User)
+        CommandSender sender = context.getSender();
+        if (sender instanceof User)
         {
-            sender = (User)context.getSender();
+            User user = (User)sender;
+            String cmd = context.getStrings(0);
+            if (user.getItemInHand().getType().equals(Material.AIR))
+            {
+                user.sendMessage("basics", "&eYou do not have an item in your hand to bind the command to!");
+                return;
+            }
+            if (!context.hasFlag("c"))
+            {
+                cmd = "/" + cmd;
+            }
+            List<String> powerTools;
+            if (context.hasFlag("r"))
+            {
+                powerTools = new ArrayList<String>(1);
+            }
+            else
+            {
+                powerTools = this.getPowerTools(user.getItemInHand());
+            }
+            powerTools.add(cmd);
+            this.setPowerTool(user.getItemInHand(), powerTools);
         }
-        if (sender == null)
+        else
         {
             context.sendMessage("basics", "&eYou already have enough power!");
-            return;
         }
-        String cmd = context.getStrings(0);
-        if (sender.getItemInHand().getType().equals(Material.AIR))
-        {
-            blockCommand(context, "basics", "&eYou do not have an item in your hand to bind the command to!");
-        }
-        if (!context.hasFlag("c"))
-        {
-            cmd = "/" + cmd;
-        }
-        List<String> powertools = context.hasFlag("r") ? new ArrayList<String>() : this.getPowerTools(sender.getItemInHand());
-        powertools.add(cmd);
-        this.setPowerTool(sender.getItemInHand(), powertools);
     }
 
     @Alias(names = "ptl")
