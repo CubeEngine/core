@@ -29,7 +29,6 @@ public class SignMarketInfoModel implements Model<Long>
     @Attribute(type = AttrType.BOOLEAN)
     public Boolean isBuySign; //else isSellSign / NULL -> Edit illegal value for database!
 
-
     @Attribute(type = AttrType.SMALLINT, unsigned = true)
     public int amount = 0;
     @Attribute(type = AttrType.INT, unsigned = true)
@@ -70,7 +69,7 @@ public class SignMarketInfoModel implements Model<Long>
         this.key = key;
     }
 
-    public void setItem(ItemStack item)
+    public void setItem(ItemStack item, boolean setAmount)
     {
         this.item = item.getType().name();
         this.damageValue = (int)item.getDurability();
@@ -83,6 +82,10 @@ public class SignMarketInfoModel implements Model<Long>
         if (meta.hasLore())
         {
             this.lore = StringUtils.implode("\n",meta.getLore());
+        }
+        if (setAmount)
+        {
+            this.amount = item.getAmount();
         }
     }
 
@@ -113,6 +116,8 @@ public class SignMarketInfoModel implements Model<Long>
     {
         if (this.itemStack == null)
         {
+            if (this.item == null)
+                return null;
             this.itemStack = new ItemStack(Material.valueOf(this.item),0, this.damageValue.shortValue());
             ItemMeta meta = this.itemStack.getItemMeta();
             if (this.customName != null)
@@ -145,6 +150,21 @@ public class SignMarketInfoModel implements Model<Long>
     }
 
     public void updateFromItem() {
-        this.setItem(this.itemStack);
+        this.setItem(this.itemStack,false);
+    }
+
+    public void applyAllValues(SignMarketInfoModel info) {
+        this.isBuySign= info.isBuySign; //else isSellSign / NULL -> Edit illegal value for database!
+        this.amount = info.amount ;
+        this.price= info.price;
+        this.currency= info.currency;
+        this.stock= info.stock;
+        this.demand= info.demand;
+        this.owner= info.owner;
+        this.item= info.item;
+        this. damageValue= info.damageValue;
+        this. customName= info.customName;
+        this. lore= info.lore;
+        this.enchantments= info.enchantments;
     }
 }

@@ -68,6 +68,8 @@ public class CurrencyManager
 
     public Currency getCurrencyByName(String currencyName)
     {
+        if (currencyName == null)
+            return null;
         return this.currencies.get(currencyName.toLowerCase());
     }
 

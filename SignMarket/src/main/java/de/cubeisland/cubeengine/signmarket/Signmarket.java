@@ -13,6 +13,7 @@ public class Signmarket extends Module
     private SignMarketInfoManager sminfoManager;
     private MarketSignFactory marketSignFactory;
     private SignMarketConfig config;
+    private EditModeListener editModeListener;
 
     @Override
     public void onEnable()
@@ -20,7 +21,9 @@ public class Signmarket extends Module
         this.smblockManager = new SignMarketBlockManager(this);
         this.sminfoManager = new SignMarketInfoManager(this);
         this.marketSignFactory = new MarketSignFactory(this);
+        this.editModeListener = new EditModeListener(this);
 
+        this.registerListener(editModeListener);
         this.registerListener(new MarketSignListener(this));
 
         this.registerPermissions(MarketSignPerm.values());
@@ -44,5 +47,9 @@ public class Signmarket extends Module
 
     public SignMarketConfig getConfig() {
         return config;
+    }
+
+    public EditModeListener getEditModeListener() {
+        return editModeListener;
     }
 }

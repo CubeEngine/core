@@ -16,6 +16,8 @@ public class MarketSignFactory
 
     public MarketSign getSignAt(Location location)
     {
+        if (location == null)
+            return null;
         MarketSign result = this.marketSigns.get(location);
         if (result == null)
         {
@@ -33,4 +35,16 @@ public class MarketSignFactory
         return result;
     }
 
+    public MarketSign createSignAt(Location location) {
+        MarketSign marketSign = this.getSignAt(location);
+        if (marketSign != null)
+        {
+            this.module.getLogger().warning("Tried to create sign at occupied position!");
+            return marketSign;
+        }
+        marketSign = new MarketSign(this.module, location);
+        marketSign.setBlockModel(new SignMarketBlockModel(0L,location));
+        this.marketSigns.put(location,marketSign);
+        return marketSign;
+    }
 }
