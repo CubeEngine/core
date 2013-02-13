@@ -16,7 +16,6 @@ import de.cubeisland.cubeengine.basics.moderation.InventoryCommands;
 import de.cubeisland.cubeengine.basics.moderation.ItemCommands;
 import de.cubeisland.cubeengine.basics.moderation.KickBanCommands;
 import de.cubeisland.cubeengine.basics.moderation.PowerToolCommand;
-import de.cubeisland.cubeengine.basics.moderation.PowerToolListener;
 import de.cubeisland.cubeengine.basics.moderation.SpawnMobCommand;
 import de.cubeisland.cubeengine.basics.moderation.TimeControlCommands;
 import de.cubeisland.cubeengine.basics.moderation.WorldControlCommands;
@@ -81,9 +80,11 @@ public class Basics extends Module
         this.registerCommands(new SpawnMobCommand(this), ReflectedCommand.class);
         this.registerCommands(new TimeControlCommands(this), ReflectedCommand.class);
         this.registerCommands(new WorldControlCommands(this), ReflectedCommand.class);
-        this.registerCommand(new PowerToolCommand(this));
+        PowerToolCommand ptCommands = new PowerToolCommand(this);
+        this.registerCommand(ptCommands);
+        this.registerListener(ptCommands);
         this.registerCommand(new KitCommand(this));
-        this.registerListener(new PowerToolListener());
+
         Convert.registerConverter(KitItem.class, new KitItemConverter());
         KitConfiguration.loadKits();
         this.kitGivenManager = new KitsGivenManager(this.getDatabase());

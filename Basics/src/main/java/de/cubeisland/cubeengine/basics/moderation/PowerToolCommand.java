@@ -1,5 +1,6 @@
 package de.cubeisland.cubeengine.basics.moderation;
 
+import de.cubeisland.cubeengine.basics.BasicsPerm;
 import de.cubeisland.cubeengine.core.command.CommandContext;
 import de.cubeisland.cubeengine.core.command.CommandResult;
 import de.cubeisland.cubeengine.core.command.ContainerCommand;
@@ -13,34 +14,42 @@ import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.util.ChatFormat;
 import de.cubeisland.cubeengine.core.util.matcher.Match;
 import org.bukkit.Material;
+import org.bukkit.entity.Player;
+import org.bukkit.event.Event;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.block.Action;
+import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
-import static de.cubeisland.cubeengine.core.command.exception.InvalidUsageException.blockCommand;
 import static java.util.Arrays.asList;
 
 /**
- * The powertool command allows binding commands/chatmacros to a specific item
- * using NBT-Data. /powertool
+ * The PowerTool commands allow binding commands anr/or chat-macros to a specific item.
+ * <p>The data is appended onto the items lore
+ * <p>/powertool
  */
-public class PowerToolCommand extends ContainerCommand
+public class PowerToolCommand extends ContainerCommand implements Listener
 {
     public PowerToolCommand(Module module)
     {
         super(module, "powertool", "Binding shortcuts to an item.", asList("pt"));
     }
 
-    // TODO horrible broken
     @Override
     public CommandResult run(CommandContext context) throws Exception
     {
         if (context.hasArg(0))
         {
-            //TODO change context to have the replace flag set
-            this.add((ParameterizedContext)context);
+            Set<String> flagSet = ((ParameterizedContext)context).getFlags();
+            flagSet.add("r");
+            this.add(new ParameterizedContext(this.getChild("add"),context.getSender(),context.getLabels(),context.getArgs(),
+                    flagSet,((ParameterizedContext)context).getParams()));
             return null;
         }
         return super.run(context);
@@ -71,11 +80,9 @@ public class PowerToolCommand extends ContainerCommand
                 }
                 this.setPowerTool(user.getItemInHand(), null);
             }
+            return;
         }
-        else
-        {
-            context.sendMessage("basics", "&eNo more power for you!");
-        }
+        context.sendMessage("basics", "&eNo more power for you!");
     }
 
     @Alias(names = "ptr")
@@ -84,70 +91,54 @@ public class PowerToolCommand extends ContainerCommand
     }, desc = "Removes a command from your powertool", flags = @Flag(longName = "chat", name = "c"), usage = "[command] [-chat]")
     public void remove(ParameterizedContext context)
     {
-        User sender = null;
         if (context.getSender() instanceof User)
         {
-            sender = (User)context.getSender();
-        }
-        if (sender == null)
-        {
-            context.sendMessage("basics", "&eNo more power for you!");
-            return;
-        }
-        if (sender.getItemInHand().getTypeId() == 0)
-        {
-            context.sendMessage("basics", "&eYou are not holding any item in your hand.");
-            return;
-        }
-        if (context.hasArg(0))
-        {
-            String cmd = context.getStrings(0);
-            if (!context.hasFlag("c"))
+            User sender = (User)context.getSender();
+            if (sender.getItemInHand().getTypeId() == 0)
             {
-                cmd = "/" + cmd;
+                context.sendMessage("basics", "&eYou are not holding any item in your hand.");
+                return;
             }
-            this.remove(context, sender.getItemInHand(), cmd);
+            String cmd = context.getStrings(0);
+            this.remove(context,sender.getItemInHand(),cmd,!context.hasFlag("c"));
+            return;
         }
-        else
-        {
-            this.remove(context, sender.getItemInHand(), null);
-        }
+        context.sendMessage("basics", "&eNo more power for you!");
     }
 
-    private void remove(CommandContext context, ItemStack item, String cmd)
+    private void remove(CommandContext context, ItemStack item, String cmd, boolean isCommand)
     {
         List<String> powertools = this.getPowerTools(item);
-        boolean removed = false;
-        if (cmd == null)
+        if (cmd == null || cmd.isEmpty())
         {
             powertools.remove(powertools.size() - 1);
             context.sendMessage("basics", "&aRemoved the last command bound to this item!");
+            return;
+        }
+        if (isCommand)
+        {
+            cmd = "/"+cmd;
+        }
+        boolean removed = false;
+        while (powertools.remove(cmd)) // removes also multiple same cmds
+        {
+            removed = true;
+        }
+        if (removed)
+        {
+            context.sendMessage("basics", "&aRemoved the command: &e%s &abound to this item!", cmd);
         }
         else
         {
-            while (powertools.remove(cmd))
-            {
-                removed = true;
-            }
-            if (removed)
-            {
-                context.sendMessage("basics", "&aRemoved the command: &e%s &abound to this item!", cmd);
-            }
-            else
-            {
-                context.sendMessage("basics", "&cThe command &e%s &cwas not found on this item!", cmd);
-            }
+            context.sendMessage("basics", "&cThe command &e%s &cwas not found on this item!", cmd);
         }
         this.setPowerTool(item, powertools);
         if (powertools.isEmpty())
         {
             context.sendMessage("basics", "&eNo more commands saved on this item!");
-
+            return;
         }
-        else
-        {
-            this.printList(context, powertools, false, false);
-        }
+        this.showPowerToolList(context, powertools, false, false);
     }
 
     @Alias(names = "pta")
@@ -182,54 +173,49 @@ public class PowerToolCommand extends ContainerCommand
             }
             powerTools.add(cmd);
             this.setPowerTool(user.getItemInHand(), powerTools);
+            return;
         }
-        else
-        {
-            context.sendMessage("basics", "&eYou already have enough power!");
-        }
+        context.sendMessage("basics", "&eYou already have enough power!");
     }
 
     @Alias(names = "ptl")
     @Command(desc = "Lists your powertool-bindings.", flags = @Flag(longName = "all", name = "a"))
     public void list(ParameterizedContext context)
     {
-        User sender = null;
         if (context.getSender() instanceof User)
         {
-            sender = (User)context.getSender();
-        }
-        if (sender == null)
-        {
-            context.sendMessage("basics", "&eYou already have enough power!");
-            return;
-        }
-        if (context.hasFlag("a"))
-        {
-            for (ItemStack item : sender.getInventory().getContents())
+            User sender = (User)context.getSender();
+            if (context.hasFlag("a"))
             {
-                String itemName = item.getItemMeta().getDisplayName();
-                if (itemName == null)
+                for (ItemStack item : sender.getInventory().getContents())
                 {
-                    sender.sendMessage("&6" + Match.material().getNameFor(item) + "&6:");
+                    String itemName = item.getItemMeta().getDisplayName();
+                    if (itemName == null)
+                    {
+                        sender.sendMessage("&6" + Match.material().getNameFor(item) + "&6:");
+                    }
+                    else
+                    {
+                        sender.sendMessage("&6" + itemName + "&6:");
+                    }
+                    this.showPowerToolList(context, this.getPowerTools(item), false, false);
                 }
-                else
-                {
-                    sender.sendMessage("&6" + itemName + "&6:");
-                }
-                this.printList(context, this.getPowerTools(item), false, false);
+                return;
             }
-        }
-        else
-        {
             if (sender.getItemInHand().getType().equals(Material.AIR))
             {
-                blockCommand(context, "basics", "&eYou do not have an item in your hand.");
+                context.sendMessage("basics", "&eYou do not have an item in your hand.");
             }
-            this.printList(context, this.getPowerTools(sender.getItemInHand()), false, true);
+            else
+            {
+                this.showPowerToolList(context, this.getPowerTools(sender.getItemInHand()), false, true);
+            }
+            return;
         }
+        context.sendMessage("basics", "&eYou already have enough power!");
     }
 
-    private void printList(CommandContext context, List<String> powertools, boolean lastAsNew, boolean showIfEmpty)
+    private void showPowerToolList(CommandContext context, List<String> powertools, boolean lastAsNew, boolean showIfEmpty)
     {
         if ((powertools == null || powertools.isEmpty()) && showIfEmpty)
         {
@@ -255,51 +241,76 @@ public class PowerToolCommand extends ContainerCommand
     private void setPowerTool(ItemStack item, List<String> newPowerTools)
     {
         ItemMeta meta = item.getItemMeta();
-        List<String> lore = meta.getLore();
         List<String> newLore = new ArrayList<String>();
-        if (lore != null)
+        if (meta.hasLore())
         {
-            for (String l : lore)
+            for (String line : meta.getLore())
             {
-                if (l.equals("§2PowerTool"))
+                if (line.equals("§2PowerTool"))
                 {
                     break;
                 }
-                newLore.add(l);
+                newLore.add(line);
             }
         }
-        newLore.add(ChatFormat.parseFormats("&2PowerTool"));
         if (newPowerTools != null)
         {
+            newLore.add(ChatFormat.parseFormats("&2PowerTool"));
             newLore.addAll(newPowerTools);
         }
         meta.setLore(newLore);
         item.setItemMeta(meta);
     }
 
+    /**
+     * Gets the PowerTools saved on this item.
+     *
+     * @param item
+     * @return a list of the saved commands and/or chat-macros
+     */
     private List<String> getPowerTools(ItemStack item)
     {
         ItemMeta meta = item.getItemMeta();
-        List<String> lore = meta.getLore();
         List<String> powerTool = new ArrayList<String>();
-        boolean ptStart = false;
-        if (lore != null)
+        if (meta.hasLore())
         {
-            for (String l : lore)
+            boolean ptStart = false;
+            for (String line : meta.getLore())
             {
-                if (!ptStart)
+                if (!ptStart && line.equals("§2PowerTool"))
                 {
-                    if (l.equals("§2PowerTool"))
-                    {
-                        ptStart = true;
-                    }
+                    ptStart = true;
                 }
                 else
                 {
-                    powerTool.add(l);
+                    powerTool.add(line);
                 }
             }
         }
         return powerTool;
+    }
+
+    @EventHandler
+    public void onLeftClick(PlayerInteractEvent event)
+    {
+        if (event.getAction().equals(Action.LEFT_CLICK_AIR) || event.getAction().equals(Action.LEFT_CLICK_BLOCK))
+        {
+            Player player = event.getPlayer();
+            if (!player.getItemInHand().getType().equals(Material.AIR)
+                    && BasicsPerm.POWERTOOL_USE.isAuthorized(event.getPlayer()))
+            {
+                List<String> powerTool = this.getPowerTools(player.getItemInHand());
+                for (String command : powerTool)
+                {
+                    player.chat(command);
+                }
+                if (!powerTool.isEmpty())
+                {
+                    event.setUseItemInHand(Event.Result.DENY);
+                    event.setUseInteractedBlock(Event.Result.DENY);
+                    event.setCancelled(true);
+                }
+            }
+        }
     }
 }
