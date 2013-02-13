@@ -74,6 +74,8 @@ public class SignMarketInfoModel implements Model<Long>
         this.item = item.getType().name();
         this.damageValue = (int)item.getDurability();
         this.enchantments = this.getEnchantmentsAsString(item);
+        this.customName = null;
+        this.lore = null;
         ItemMeta meta = item.getItemMeta();
         if (meta.hasDisplayName())
         {
@@ -87,6 +89,7 @@ public class SignMarketInfoModel implements Model<Long>
         {
             this.amount = item.getAmount();
         }
+        this.itemStack = null;
     }
 
     private String getEnchantmentsAsString(ItemStack item)
@@ -162,9 +165,11 @@ public class SignMarketInfoModel implements Model<Long>
         this.demand= info.demand;
         this.owner= info.owner;
         this.item= info.item;
-        this. damageValue= info.damageValue;
-        this. customName= info.customName;
-        this. lore= info.lore;
+        this.damageValue= info.damageValue;
+        this.customName= info.customName;
+        this.lore= info.lore;
         this.enchantments= info.enchantments;
+
+        this.itemStack = null;
     }
 }

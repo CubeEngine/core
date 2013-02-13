@@ -1,17 +1,20 @@
 package de.cubeisland.cubeengine.signmarket;
 
-import de.cubeisland.cubeengine.core.bukkit.BukkitCore;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.util.StringUtils;
 import de.cubeisland.cubeengine.core.util.matcher.Match;
 import gnu.trove.map.hash.TLongObjectHashMap;
 import gnu.trove.set.hash.TLongHashSet;
 import org.bukkit.Location;
+import org.bukkit.block.BlockState;
 import org.bukkit.block.Sign;
-import org.bukkit.conversations.ConversationFactory;
+import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
+import org.bukkit.event.block.BlockPlaceEvent;
+import org.bukkit.event.block.SignChangeEvent;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
@@ -22,18 +25,32 @@ public class EditModeListener implements Listener
 
     private TLongHashSet editModeUsers = new TLongHashSet();
     private TLongObjectHashMap<Location> currentSignLocation = new TLongObjectHashMap<Location>();
-    private TLongObjectHashMap<Location> previousSignLocation = new TLongObjectHashMap<Location>();
-
-    private ConversationFactory conversationFactory;
+    private TLongObjectHashMap<MarketSign> previousMarketSign = new TLongObjectHashMap<MarketSign>();
 
     public EditModeListener(Signmarket module) {
         this.module = module;
-        this.conversationFactory = new ConversationFactory((BukkitCore)this.module.getCore());
     }
 
     public void enterEditMode(User user)
     {
         this.editModeUsers.add(user.key);
+    }
+
+    private void setEditingSign(User user, Location location, MarketSign marketSign)
+    {
+        Location previous = this.currentSignLocation.put(user.key, location);
+        if (!location.equals(previous))
+        {
+            MarketSign previousSign = this.module.getMarketSignFactory().getSignAt(previous);
+            if (previousSign != null)
+            {
+                this.previousMarketSign.put(user.key, previousSign);
+                previousSign.exitEditMode(user);
+            }
+            user.sendMessage("signmarket","&aChanged active sign:");
+            marketSign.showInfo(user);
+        }
+        marketSign.enterEditMode();
     }
 
     @EventHandler
@@ -49,11 +66,11 @@ public class EditModeListener implements Listener
                 if ("exit".equalsIgnoreCase(event.getMessage()))
                 {
                     this.editModeUsers.remove(user.key);
-                    user.sendMessage("marketsign", "&aEdit mode quit!");
+                    user.sendMessage("signmarket", "&aEdit mode quit!");
                     event.setCancelled(true);
                     return;
                 }
-                user.sendMessage("marketsign","&cPlease do select a sign to edit.");
+                user.sendMessage("signmarket","&cPlease do select a sign to edit.");
                 event.setCancelled(true);
                 return;
             }
@@ -61,11 +78,13 @@ public class EditModeListener implements Listener
             MarketSign marketSign = this.module.getMarketSignFactory().getSignAt(loc);
             if (marketSign == null)
             {
-                user.sendMessage("marketsign","&cNo market-sign at position.");
+                user.sendMessage("signmarket","&cNo market-sign at position.");
                 event.setCancelled(true);
                 return;
             }
-            marketSign.enterEditMode();
+            this.setEditingSign(user,loc,marketSign);
+
+            this.currentSignLocation.put(user.key,loc);
             for (int i = 0; i < splitted.length; ++i)
             {
                 //TODO permissions
@@ -76,9 +95,23 @@ public class EditModeListener implements Listener
                     marketSign.setSell();
                 }
                 else if ("demand".equalsIgnoreCase(splitted[i])) {
+                    if (marketSign.isBuySign() == null)
+                    {
+                        marketSign.setSell();
+                    }
+                    if (marketSign.isBuySign())
+                    {
+                        user.sendMessage("signmarket","&cBuy signs cannot have a demand!");
+                        continue;
+                    }
+                    if (marketSign.isAdminSign())
+                    {
+                        user.sendMessage("signmarket","&cAdmin signs cannot have a demand!");
+                        continue;
+                    }
                     if (++i >= splitted.length)
                     {
-                        user.sendMessage("marketsign","&cMissing demand amount!");
+                        user.sendMessage("signmarket","&cMissing demand amount!");
                         event.setCancelled(true);
                         return;
                     }
@@ -89,7 +122,7 @@ public class EditModeListener implements Listener
                         }
                         catch (NumberFormatException e)
                         {
-                            user.sendMessage("marketsign","&cInvalid demand amount!");
+                            user.sendMessage("signmarket","&cInvalid demand amount!");
                             event.setCancelled(true);
                             return;
                         }
@@ -104,7 +137,7 @@ public class EditModeListener implements Listener
                 else if ("owner".equalsIgnoreCase(splitted[i])) {
                     if (++i >= splitted.length)
                     {
-                        user.sendMessage("marketsign","&cMissing owner-name!");
+                        user.sendMessage("signmarket","&cMissing owner-name!");
                         event.setCancelled(true);
                         return;
                     }
@@ -113,7 +146,7 @@ public class EditModeListener implements Listener
                         User owner = this.module.getUserManager().findUser(splitted[i]);
                         if (owner == null)
                         {
-                            user.sendMessage("marketsign","&cUser %s not found!",splitted[i]);
+                            user.sendMessage("signmarket","&cUser %s not found!",splitted[i]);
                         }
                         else
                         {
@@ -124,7 +157,7 @@ public class EditModeListener implements Listener
                 else if ("price".equalsIgnoreCase(splitted[i])) {
                     if (++i >= splitted.length)
                     {
-                        user.sendMessage("marketsign","&cMissing price!");
+                        user.sendMessage("signmarket","&cMissing price!");
                         event.setCancelled(true);
                         return;
                     }
@@ -137,7 +170,7 @@ public class EditModeListener implements Listener
                         Long price = marketSign.getCurrency().parse(splitted[i]);
                         if (price == null)
                         {
-                            user.sendMessage("marketsign","&cInvalid price for currency!");
+                            user.sendMessage("signmarket","&cInvalid price for currency!");
                         }
                         else
                         {
@@ -148,7 +181,7 @@ public class EditModeListener implements Listener
                 else if ("amount".equalsIgnoreCase(splitted[i])) {
                     if (++i >= splitted.length)
                     {
-                        user.sendMessage("marketsign","&cMissing amount!");
+                        user.sendMessage("signmarket","&cMissing amount!");
                         event.setCancelled(true);
                         return;
                     }
@@ -159,7 +192,7 @@ public class EditModeListener implements Listener
                         }
                         catch (NumberFormatException e)
                         {
-                            user.sendMessage("marketsign","&cInvalid amount!");
+                            user.sendMessage("signmarket","&cInvalid amount!");
                             event.setCancelled(true);
                             return;
                         }
@@ -168,7 +201,7 @@ public class EditModeListener implements Listener
                 else if ("item".equalsIgnoreCase(splitted[i])) {
                     if (++i >= splitted.length)
                     {
-                        user.sendMessage("marketsign","&cMissing item!");
+                        user.sendMessage("signmarket","&cMissing item!");
                         event.setCancelled(true);
                         return;
                     }
@@ -177,7 +210,7 @@ public class EditModeListener implements Listener
                         ItemStack item = Match.material().itemStack(splitted[i]);
                         if (item == null)
                         {
-                            user.sendMessage("marketsign","&cItem not found!");
+                            user.sendMessage("signmarket","&cItem not found!");
                         }
                         else
                         {
@@ -186,16 +219,10 @@ public class EditModeListener implements Listener
                     }
                 }
                 else if ("copy".equalsIgnoreCase(splitted[i])) {
-                    Location prevLoc = this.previousSignLocation.get(user.key);
-                    if (prevLoc == null)
-                    {
-                        user.sendMessage("marketsign","&cNo previous sign found!");
-                        continue;
-                    }
-                    MarketSign prevMarketSign = this.module.getMarketSignFactory().getSignAt(loc);
+                    MarketSign prevMarketSign = this.previousMarketSign.get(user.key);
                     if (prevMarketSign == null)
                     {
-                        user.sendMessage("marketsign","&cNo market-sign at previous position.");
+                        user.sendMessage("signmarket","&cNo market-sign at previous position.");
                         continue;
                     }
                     marketSign.applyAllValues(prevMarketSign);
@@ -203,15 +230,16 @@ public class EditModeListener implements Listener
                 else if ("exit".equalsIgnoreCase(splitted[i]))
                 {
                     this.editModeUsers.remove(user.key);
-                    this.previousSignLocation.put(user.key,this.currentSignLocation.remove(user.key));
-                    marketSign.exitEditMode();
-                    user.sendMessage("marketsign", "&aEdit mode quit!");
+                    this.previousMarketSign.put(user.key,marketSign);
+                    this.currentSignLocation.remove(user.key);
+                    marketSign.exitEditMode(user);
+                    user.sendMessage("signmarket", "&aEdit mode quit!");
                     event.setCancelled(true);
                     return;
                 }
                 else
                 {
-                    user.sendMessage("marketsign","&cInvalid command! "+ splitted[i]);
+                    user.sendMessage("signmarket","&cInvalid command! "+ splitted[i]);
                     //TODO print list of possible cmds!
                 }
             }
@@ -227,55 +255,103 @@ public class EditModeListener implements Listener
         }
     }
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.LOW)
     public void onClick(PlayerInteractEvent event)
     {
+        if (event.useItemInHand().equals(Event.Result.DENY))
+            return;
         if (event.getPlayer().isSneaking())
             return;
+        User user = this.module.getUserManager().getExactUser(event.getPlayer());
+        if (!this.editModeUsers.contains(user.key))
+        {
+            return;
+        }
         if (event.getAction().equals(Action.LEFT_CLICK_BLOCK))
         {
             if (event.getClickedBlock().getState() instanceof Sign)
             {
-                User user = this.module.getUserManager().getExactUser(event.getPlayer());
-                if (!this.editModeUsers.contains(user.key))
-                {
-                    return;
-                }
                 event.setCancelled(true);
-                Location oldLocation = this.currentSignLocation.get(user.key);
-                if (oldLocation != null && event.getClickedBlock().getLocation().equals(oldLocation))
-                    return;
-                MarketSign oldMarketSign = this.module.getMarketSignFactory().getSignAt(oldLocation);
-                if (oldMarketSign != null)
-                {
-                    oldMarketSign.exitEditMode();
-                    if (oldMarketSign.isValidSign(user))
-                    {
-                        oldMarketSign.saveToDatabase();
-                    }
-                    this.previousSignLocation.put(user.key,this.currentSignLocation.remove(user.key));
-                }
-                MarketSign marketSign = this.module.getMarketSignFactory().getSignAt(event.getClickedBlock().getLocation());
+                event.setUseItemInHand(Event.Result.DENY);
+                Location newLoc = event.getClickedBlock().getLocation();
+                MarketSign marketSign = this.module.getMarketSignFactory().getSignAt(newLoc);
                 if (marketSign == null)
                 {
-                    marketSign = this.module.getMarketSignFactory().createSignAt(event.getClickedBlock().getLocation());
+                    marketSign = this.module.getMarketSignFactory().createSignAt(newLoc);
                 }
                 if (marketSign.isInEditMode())
                 {
-                    user.sendMessage("marketsign","&cThis sign is beeing edited right now!");
+                    if (marketSign.tryBreak(user))
+                    {
+                        this.previousMarketSign.put(user.key, marketSign);
+                        this.currentSignLocation.remove(user.key);
+                    }
                     return;
                 }
-                marketSign.enterEditMode();
-                this.currentSignLocation.put(user.key,event.getClickedBlock().getLocation());
-                user.sendMessage("marketsign","&aChanged active sign:");
-                marketSign.showInfo(user);
+                this.setEditingSign(user, newLoc, marketSign);
             }
         }
         else
         {
-            //TODO else right click sets the item in currently editing sign with amount
-            //TODO handle right click air on blocks here too
+            BlockState signFound = null;
+            if (event.getAction().equals(Action.RIGHT_CLICK_AIR))
+            {
+                if (event.getPlayer().getItemInHand() != null && event.getPlayer().getItemInHand().getTypeId() != 0)
+                {
+                    signFound = MarketSignListener.getTargettedSign(event.getPlayer());
+                }
+            }
+            else if (event.getAction().equals(Action.RIGHT_CLICK_BLOCK) && event.getClickedBlock().getState() instanceof Sign)
+            {
+                signFound = event.getClickedBlock().getState();
+            }
+            if (signFound == null)
+            {
+                return;
+            }
+            if (user.getItemInHand() == null || user.getItemInHand().getTypeId() == 0)
+                return;
+            Location curLoc = signFound.getLocation();
+            MarketSign curSign = this.module.getMarketSignFactory().getSignAt(curLoc);
+            if (curSign == null)
+            {
+                user.sendMessage("signmarket", "&eThis sign is not a market-sign!");
+                return; // not a market-sign
+            }
+            this.setEditingSign(user, curLoc, curSign);
+            curSign.setItemStack(user.getItemInHand(), true);
+            curSign.updateSign();
+            user.sendMessage("signmarket", "&aItem in sign updated!");
+            event.setCancelled(true);
+            event.setUseItemInHand(Event.Result.DENY);
         }
+    }
 
+    @EventHandler
+    public void onSignPlace(BlockPlaceEvent event)
+    {
+        if (event.getBlockPlaced().getState() instanceof Sign)
+        {
+            User user = this.module.getUserManager().getExactUser(event.getPlayer());
+            if (this.editModeUsers.contains(user.key))
+            {
+                Location loc = event.getBlockPlaced().getLocation();
+                MarketSign marketSign = this.module.getMarketSignFactory().createSignAt(loc);
+                this.setEditingSign(user,loc, marketSign);
+                marketSign.updateSign();
+            }
+        }
+    }
+
+    @EventHandler
+    public void onSignChange(SignChangeEvent event)
+    {
+        User user = this.module.getUserManager().getExactUser(event.getPlayer());
+        if (this.editModeUsers.contains(user.key))
+        {
+            Location loc = event.getBlock().getLocation();
+            if (loc.equals(this.currentSignLocation.get(user.key)))
+                event.setCancelled(true);
+        }
     }
 }

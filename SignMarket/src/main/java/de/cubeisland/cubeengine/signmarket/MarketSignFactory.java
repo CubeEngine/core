@@ -47,4 +47,10 @@ public class MarketSignFactory
         this.marketSigns.put(location,marketSign);
         return marketSign;
     }
+
+    public void delete(MarketSign marketSign)
+    {
+        this.marketSigns.remove(marketSign.getLocation());
+        marketSign.deleteFromDatabase();
+    }
 }

@@ -4,6 +4,7 @@ import de.cubeisland.cubeengine.core.user.User;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
 import org.bukkit.block.Sign;
+import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -22,6 +23,10 @@ public class MarketSignListener implements Listener
     @EventHandler
     public void onPlayerInteract(PlayerInteractEvent event)
     {
+        if (event.useItemInHand().equals(Event.Result.DENY))
+        {
+            return;
+        }
         if (event.getClickedBlock() != null && event.getClickedBlock().getState() instanceof Sign)
         {
             MarketSign marketSign = this.module.getMarketSignFactory().getSignAt(event.getClickedBlock().getLocation());
@@ -40,20 +45,7 @@ public class MarketSignListener implements Listener
         {
             if (event.getPlayer().getItemInHand() != null && event.getPlayer().getItemInHand().getTypeId() != 0)
             {
-                BlockIterator blockIterator = new BlockIterator(event.getPlayer().getWorld(), event.getPlayer().getEyeLocation().toVector(),event.getPlayer().getEyeLocation().getDirection(),0,7);
-                BlockState lastSignFound = null;
-                while (blockIterator.hasNext())
-                {
-                    Block block = blockIterator.next();
-                    if (block.getState() instanceof Sign)
-                    {
-                        lastSignFound = block.getState();
-                    }
-                    else if (lastSignFound != null && block.getTypeId() != 0)
-                    {
-                        break;
-                    }
-                }
+                BlockState lastSignFound = getTargettedSign(event.getPlayer());
                 if (lastSignFound == null)
                     return;
                 MarketSign marketSign = this.module.getMarketSignFactory().getSignAt(lastSignFound.getLocation());
@@ -69,5 +61,24 @@ public class MarketSignListener implements Listener
                 }
             }
         }
+    }
+
+    public static BlockState getTargettedSign(Player player)
+    {
+        BlockIterator blockIterator = new BlockIterator(player.getWorld(), player.getEyeLocation().toVector(),player.getEyeLocation().getDirection(),0,7);
+        BlockState lastSignFound = null;
+        while (blockIterator.hasNext())
+        {
+            Block block = blockIterator.next();
+            if (block.getState() instanceof Sign)
+            {
+                lastSignFound = block.getState();
+            }
+            else if (lastSignFound != null && block.getTypeId() != 0)
+            {
+                break;
+            }
+        }
+        return lastSignFound;
     }
 }
