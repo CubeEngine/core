@@ -181,9 +181,10 @@ public class ParameterizedContextFactory implements ContextFactory
 
                     flag = flag.toLowerCase(Locale.ENGLISH); // lowercase flag
 
-                    if (this.flagMap.containsKey(flag)) // has flag ?
+                    CommandFlag cmdFlag = this.flagMap.get(flag);
+                    if (cmdFlag != null) // has flag ?
                     {
-                        flags.add(flag); // added flag
+                        flags.add(cmdFlag.getName()); // added flag
                     }
                     else
                     {
@@ -206,7 +207,7 @@ public class ParameterizedContextFactory implements ContextFactory
                             StringBuilder paramValue = new StringBuilder();
                             offset += readString(paramValue, commandLine, offset);
                             //added named param
-                            params.put(paramName, ArgumentReader.read(param.getType(), paramValue.toString()));
+                            params.put(param.getName(), ArgumentReader.read(param.getType(), paramValue.toString()));
                         }
                         catch (InvalidArgumentException ex)
                         {
