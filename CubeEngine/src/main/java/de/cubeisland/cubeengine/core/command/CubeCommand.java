@@ -380,7 +380,7 @@ public abstract class CubeCommand extends Command
             if (this.isAsync())
             {
                 final TaskManager taskmgr = CubeEngine.getTaskManager();
-                Thread executionThread = new Thread(new Runnable() { // TODO <-- create the thread using our ThreadFactory
+                this.module.getCore().getTaskManager().getThreadFactory().newThread(new Runnable() {
                     @Override
                     public void run()
                     {
@@ -405,7 +405,7 @@ public abstract class CubeCommand extends Command
                             }, 0L);
                         }
                     }
-                });
+                }).start();
             }
             else
             {

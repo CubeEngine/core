@@ -1,7 +1,9 @@
 package de.cubeisland.cubeengine.test.commands;
 
 import de.cubeisland.cubeengine.core.command.CommandContext;
+import de.cubeisland.cubeengine.core.command.CommandResult;
 import de.cubeisland.cubeengine.core.command.reflected.Command;
+import de.cubeisland.cubeengine.core.command.sender.CommandSender;
 import de.cubeisland.cubeengine.core.util.time.Duration;
 import java.util.LinkedList;
 import java.util.concurrent.TimeUnit;
@@ -32,5 +34,23 @@ public class TestCommands
         Duration dura = new Duration(list.toArray(new String[0]));
         context.sendMessage("ms: " + dura.toTimeUnit(TimeUnit.MILLISECONDS));
         context.sendMessage(dura.format());
+    }
+
+    @Command(desc = "A command that tests async execution.", async = true)
+    public CommandResult async(CommandContext context)
+    {
+        try
+        {
+            Thread.sleep(1000 * 5L);
+        }
+        catch (InterruptedException e)
+        {}
+        return new CommandResult() {
+            @Override
+            public void show(CommandSender sender)
+            {
+                sender.sendMessage("Delayed!");
+            }
+        };
     }
 }
