@@ -31,7 +31,6 @@ public class CommandParameter
         }
     }
 
-    // TODO unregister classes of modules
     public static void unregisterCompleterClass(Class type)
     {
         Iterator<Map.Entry<Class, ParamCompleter>> iter = completerMap.entrySet().iterator();
