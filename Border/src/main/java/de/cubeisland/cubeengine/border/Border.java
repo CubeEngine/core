@@ -4,11 +4,11 @@ import de.cubeisland.cubeengine.core.module.Module;
 
 public class Border extends Module
 {
-    private BorderConfig config;
+    protected BorderConfig config;
 
     @Override
     public void onEnable()
     {
-        this.registerListener(new BorderListener(this.config));
+        this.registerListener(new BorderListener(this));
     }
 }
