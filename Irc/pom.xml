@@ -20,7 +20,7 @@
         <dependency>
             <groupId>org.pircbotx</groupId>
             <artifactId>pircbotx</artifactId>
-            <version>1.7</version>
+            <version>1.8</version>
         </dependency>
     </dependencies>
 
@@ -36,11 +36,18 @@
                             <goal>shade</goal>
                         </goals>
                         <configuration>
+                            <minimizeJar>true</minimizeJar>
                             <artifactSet>
                                 <includes>
                                     <include>org.pircbotx:pircbotx</include>
                                 </includes>
                             </artifactSet>
+                            <relocations>
+                                <relocation>
+                                    <pattern>org.pircbotx</pattern>
+                                    <shadedPattern>${project.parent.groupId}.cubeengine.${project.artifactId}.external.org.pircbotx</shadedPattern>
+                                </relocation>
+                            </relocations>
                         </configuration>
                     </execution>
                 </executions>

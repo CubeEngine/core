@@ -79,6 +79,20 @@
                                     <include>org.fusesource.jansi:jansi</include>
                                 </includes>
                             </artifactSet>
+                            <relocations>
+                                <relocation>
+                                    <pattern>io.netty</pattern>
+                                    <shadedPattern>${project.parent.groupId}.${project.artifactId}.external.io.netty</shadedPattern>
+                                </relocation>
+                                <relocation>
+                                    <pattern>org.yaml.snakeyaml</pattern>
+                                    <shadedPattern>${project.parent.groupId}.${project.artifactId}.external.org.yaml.org</shadedPattern>
+                                </relocation>
+                                <relocation>
+                                    <pattern>org.fusesource</pattern>
+                                    <shadedPattern>${project.parent.groupId}.${project.artifactId}.external.org.fusesource</shadedPattern>
+                                </relocation>
+                            </relocations>
                         </configuration>
                     </execution>
                 </executions>
