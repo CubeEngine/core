@@ -442,13 +442,28 @@ public abstract class CubeCommand extends Command
         return true;
     }
 
+    private final List<String> tabCompleteFallback(org.bukkit.command.CommandSender bukkitSender, String alias, String[] args) throws IllegalArgumentException
+    {
+        return super.tabComplete(bukkitSender, alias, args);
+    }
+
     @Override
     public final List<String> tabComplete(org.bukkit.command.CommandSender bukkitSender, String alias, String[] args) throws IllegalArgumentException
     {
-        List<String> result = this.tabComplete(wrapSender(bukkitSender), alias, args);
+        CubeCommand completer = this;
+        if (args.length > 0 && !args[0].isEmpty())
+        {
+            CubeCommand child = this.getChild(args[0]);
+            if (child != null)
+            {
+                args = Arrays.copyOfRange(args, 1, args.length - 1);
+                completer = child;
+            }
+        }
+        List<String> result = completer.tabComplete(wrapSender(bukkitSender), alias, args);
         if (result == null)
         {
-            result = super.tabComplete(bukkitSender, alias, args);
+            result = completer.tabCompleteFallback(bukkitSender, alias, args);
         }
         return result;
     }
