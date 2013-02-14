@@ -456,7 +456,7 @@ public abstract class CubeCommand extends Command
             CubeCommand child = this.getChild(args[0]);
             if (child != null)
             {
-                args = Arrays.copyOfRange(args, 1, args.length - 1);
+                args = Arrays.copyOfRange(args, 1, args.length);
                 completer = child;
             }
         }

@@ -151,17 +151,21 @@ public class CubeCommandMap extends SimpleCommandMap
             return true;
         }
 
+        String[] args = null;
         // our commands expect spaces to be preserved
         if (command instanceof CubeCommand)
         {
             final int spaceIndex = commandLine.indexOf(' ');
             if (spaceIndex > -1 && spaceIndex + 1 < commandLine.length())
             {
-                parts = StringUtils.explode(" ", commandLine.substring(spaceIndex + 1));
+                args = StringUtils.explode(" ", commandLine.substring(spaceIndex + 1));
             }
         }
+        if (args == null)
+        {
+            args = Arrays.copyOfRange(parts, 1, parts.length);
+        }
 
-        String[] args = Arrays.copyOfRange(parts, 1, parts.length);
         if (command instanceof AliasCommand)
         {
             AliasCommand alias = ((AliasCommand)command);
