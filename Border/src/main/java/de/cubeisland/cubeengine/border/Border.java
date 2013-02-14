@@ -9,6 +9,7 @@ public class Border extends Module
     @Override
     public void onEnable()
     {
+        this.registerPermissions(BorderPerms.values());
         this.registerListener(new BorderListener(this));
     }
 }
