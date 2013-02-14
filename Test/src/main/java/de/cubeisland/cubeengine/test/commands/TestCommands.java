@@ -7,6 +7,7 @@ import de.cubeisland.cubeengine.core.command.parameterized.Param;
 import de.cubeisland.cubeengine.core.command.parameterized.ParameterizedContext;
 import de.cubeisland.cubeengine.core.command.reflected.Command;
 import de.cubeisland.cubeengine.core.command.sender.CommandSender;
+import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.util.time.Duration;
 
 import java.util.LinkedList;
@@ -78,6 +79,24 @@ public class TestCommands
         for (Entry<String, Object> entry : context.getParams().entrySet())
         {
             context.sendMessage("Param: " + entry.getKey() + " => '" + entry.getValue().toString() + "'");
+        }
+    }
+
+    private static final int MAX_CHAT_LINES = 100;
+
+    @Command(names = {"cls", "clearscreen"}, desc = "Clears the chat", async = true)
+    public void clearscreen(CommandContext context)
+    {
+        if (context.getSender() instanceof User)
+        {
+            for (int i = 0; i < MAX_CHAT_LINES; ++i)
+            {
+                context.sendMessage(" ");
+            }
+        }
+        else
+        {
+            context.sendMessage("&cYou better don't do this.");
         }
     }
 }
