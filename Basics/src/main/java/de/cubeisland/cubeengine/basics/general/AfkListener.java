@@ -87,13 +87,10 @@ public class AfkListener implements Listener, Runnable
                     basics.getUserManager().broadcastStatus("basics", "is no longer afk!", user.getName());
                 }
             }
-            else
+            else if (System.currentTimeMillis() - lastAction > autoAfk)
             {
-                if (System.currentTimeMillis() - lastAction > autoAfk)
-                {
-                    user.setAttribute(basics, "afk", true);
-                    basics.getUserManager().broadcastStatus("basics", "is now afk!", user.getName());
-                }
+                user.setAttribute(basics, "afk", true);
+                basics.getUserManager().broadcastStatus("basics", "is now afk!" ,user.getName());
             }
         }
     }
