@@ -90,4 +90,6 @@ public class BasicsConfiguration extends Configuration
     public int jumpToMaxRange = 300;
     @Option("commands.ban.disallow-if-offline-mode")
     public boolean disallowBanIfOfflineMode;
+    @Option("commands.kick.default-message")
+    public String defaultKickMessage ="&4Kicked!";
 }

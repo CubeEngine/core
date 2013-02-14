@@ -4,6 +4,7 @@ import de.cubeisland.cubeengine.core.Core;
 import de.cubeisland.cubeengine.core.bukkit.BukkitCore;
 import de.cubeisland.cubeengine.core.filesystem.FileManager;
 import de.cubeisland.cubeengine.core.module.Module;
+import de.cubeisland.cubeengine.core.permission.Permission;
 import de.cubeisland.cubeengine.core.storage.SingleKeyStorage;
 import de.cubeisland.cubeengine.core.storage.StorageException;
 import de.cubeisland.cubeengine.core.storage.database.AttrType;
@@ -525,14 +526,21 @@ public class UserManager extends SingleKeyStorage<Long, User> implements Cleanab
             }
         });
     }
-
-    public void broadcastMessage(String category, String message, Object... args)
+    public void broadcastMessage(String category, String message, Permission perm, Object... args)
     {
         for (Player player : this.server.getOnlinePlayers())
         {
-            this.getExactUser(player).sendMessage(category, message, args);
+            if (perm == null || perm.isAuthorized(player))
+            {
+                this.getExactUser(player).sendMessage(category, message, args);
+            }
         }
         Bukkit.getServer().getConsoleSender().sendMessage(_(category, message, args));
+    }
+
+    public void broadcastMessage(String category, String message, Object... args)
+    {
+        this.broadcastMessage(category,message,null,args);
     }
 
     public void broadcastStatus(String message,String username)

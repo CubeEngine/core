@@ -3,116 +3,111 @@ package de.cubeisland.cubeengine.basics.moderation;
 import de.cubeisland.cubeengine.basics.Basics;
 import de.cubeisland.cubeengine.basics.BasicsPerm;
 import de.cubeisland.cubeengine.core.command.CommandContext;
+import de.cubeisland.cubeengine.core.command.parameterized.Flag;
 import de.cubeisland.cubeengine.core.command.parameterized.ParameterizedContext;
 import de.cubeisland.cubeengine.core.command.reflected.Command;
-import de.cubeisland.cubeengine.core.command.parameterized.Flag;
 import de.cubeisland.cubeengine.core.user.User;
+import de.cubeisland.cubeengine.core.util.InventoryGuardFactory;
 import org.bukkit.inventory.ItemStack;
-
-import static de.cubeisland.cubeengine.core.command.exception.InvalidUsageException.*;
-import static de.cubeisland.cubeengine.core.command.exception.PermissionDeniedException.denyAccess;
 
 /**
  * Contains commands that allow to modify an inventory.
- * /invsee
- * /clearinventory
- * /stash
+ * <p>/invsee
+ * <p>/clearinventory
+ * <p>/stash
  */
 public class InventoryCommands
 {
-    private InvseeListener listener;
     private Basics basics;
 
     public InventoryCommands(Basics basics)
     {
         this.basics = basics;
-        this.basics.registerListener(listener = new InvseeListener(basics));
     }
 
-    @Command(desc = "Allows you to see into the inventory of someone else.", usage = "<player>", min = 1, max = 1)
-    public void invsee(CommandContext context)
+    @Command(desc = "Allows you to see into the inventory of someone else.",
+            flags = @Flag(longName = "force", name = "f"),
+            usage = "<player>", min = 1, max = 1)
+    public void invsee(ParameterizedContext context)
     {
-        User sender = null;
         if (context.getSender() instanceof User)
         {
-            sender = (User)context.getSender();
-        }
-        if (sender == null)
-        {
-            context.sendMessage("basics", "&cThis command can only be used by a player!");
+            User sender = (User)context.getSender();
+            User user = context.getUser(0);
+            if (user == null)
+            {
+                context.sendMessage("basics", "&cUser &2%s &cnot found!", context.getString(0));
+                return;
+            }
+            boolean allowModify = false;
+            if (BasicsPerm.COMMAND_INVSEE_MODIFY.isAuthorized(sender))
+            {
+                allowModify = true;
+                if (!(context.hasFlag("f") && BasicsPerm.COMMAND_INVSEE_MODIFY_FORCE.isAuthorized(sender))
+                    && BasicsPerm.COMMAND_INVSEE_MODIFY_PREVENT.isAuthorized(user))
+                {
+                    allowModify = false;
+                }
+            }
+            if (BasicsPerm.COMMAND_INVSEE_NOTIFY.isAuthorized(user))
+            {
+                user.sendMessage("basics", "&2%s &eis looking into your inventory.", sender.getName());
+            }
+            InventoryGuardFactory guard = InventoryGuardFactory.prepareInventory(user.getInventory(), sender);
+            if (!allowModify)
+            {
+                guard.blockPutInAll().blockTakeOutAll();
+            }
+            guard.submitInventory(this.basics,true);
             return;
         }
-        User user = context.getUser(0);
-        if (user == null)
-        {
-            paramNotFound(context, "basics", "&cUser &2%s &cnot found!", context.getString(0));
-        }
-        boolean allowModify = false;
-        if (BasicsPerm.COMMAND_INVSEE_MODIFY.isAuthorized(sender))
-        {
-            allowModify = true;
-        }
-        if (BasicsPerm.COMMAND_INVSEE_PREVENTMODIFY.isAuthorized(user))
-        {
-            allowModify = false;
-        }
-        if (BasicsPerm.COMMAND_INVSEE_NOTIFY.isAuthorized(user))
-        {
-            user.sendMessage("basics", "&2%s &eis looking into your inventory.", sender.getName());
-        }
-        sender.openInventory(user.getInventory());
-        listener.addInventory(sender, allowModify);
+        context.sendMessage("basics", "&cThis command can only be used by a player!");
     }
 
     @Command(desc = "Stashes or unstashes your inventory to reuse later", max = 0)
     public void stash(CommandContext context)
     {
-        User sender = null;
         if (context.getSender() instanceof User)
         {
-            sender = (User)context.getSender();
-        }
-        if (sender == null)
-        {
-            context.sendMessage("core", "&cYeah you better put it away!");
+            User sender = (User)context.getSender();
+            ItemStack[] stashedInv = sender.getAttribute(basics, "stash_Inventory");
+            ItemStack[] stashedArmor = sender.getAttribute(basics, "stash_Armor");
+            ItemStack[] InvToStash = sender.getInventory().getContents().clone();
+            ItemStack[] ArmorToStash = sender.getInventory().getArmorContents().clone();
+            if (stashedInv != null)
+            {
+                sender.getInventory().setContents(stashedInv);
+            }
+            else
+            {
+                sender.getInventory().clear();
+            }
+            sender.setAttribute(basics, "stash_Inventory", InvToStash);
+            if (stashedArmor != null)
+            {
+                sender.getInventory().setBoots(stashedArmor[0]);
+                sender.getInventory().setLeggings(stashedArmor[1]);
+                sender.getInventory().setChestplate(stashedArmor[2]);
+                sender.getInventory().setHelmet(stashedArmor[3]);
+            }
+            else
+            {
+                sender.getInventory().setBoots(null);
+                sender.getInventory().setLeggings(null);
+                sender.getInventory().setChestplate(null);
+                sender.getInventory().setHelmet(null);
+            }
+            sender.setAttribute(basics, "stash_Armor", ArmorToStash);
+            sender.sendMessage("basics", "&aSwapped stashed Inventory!");
             return;
         }
-        ItemStack[] stashedInv = sender.getAttribute(basics, "stash_Inventory");
-        ItemStack[] stashedArmor = sender.getAttribute(basics, "stash_Armor");
-        ItemStack[] InvToStash = sender.getInventory().getContents().clone();
-        ItemStack[] ArmorToStash = sender.getInventory().getArmorContents().clone();
-        if (stashedInv != null)
-        {
-            sender.getInventory().setContents(stashedInv);
-        }
-        else
-        {
-            sender.getInventory().clear();
-        }
-        sender.setAttribute(basics, "stash_Inventory", InvToStash);
-        if (stashedArmor != null)
-        {
-            sender.getInventory().setBoots(stashedArmor[0]);
-            sender.getInventory().setLeggings(stashedArmor[1]);
-            sender.getInventory().setChestplate(stashedArmor[2]);
-            sender.getInventory().setHelmet(stashedArmor[3]);
-        }
-        else
-        {
-            sender.getInventory().setBoots(null);
-            sender.getInventory().setLeggings(null);
-            sender.getInventory().setChestplate(null);
-            sender.getInventory().setHelmet(null);
-        }
-        sender.setAttribute(basics, "stash_Armor", ArmorToStash);
-        sender.sendMessage("basics", "&aSwapped stashed Inventory!");
+        context.sendMessage("core", "&cYeah you better put it away!");
     }
 
     @Command(names = {
-        "clearinventory", "ci", "clear"
-    }, desc = "Clears the inventory", usage = "[player]", flags = {
-        @Flag(longName = "removeArmor", name = "ra")
-    }, max = 1)
+        "clearinventory", "ci", "clear"  },
+        desc = "Clears the inventory", usage = "[player]",
+        flags = @Flag(longName = "removeArmor", name = "ra"), max = 1)
     @SuppressWarnings("deprecation")
     public void clearinventory(ParameterizedContext context)
     {
@@ -125,16 +120,18 @@ public class InventoryCommands
         boolean other = false;
         if (context.hasArg(0))
         {
+            if (!BasicsPerm.COMMAND_CLEARINVENTORY_OTHER.isAuthorized(sender))
+            {
+                context.sendMessage("basics", "&cYou are not allowed to clear the inventory of other users!");
+                return;
+            }
             user = context.getUser(0);
             if (user == null)
             {
-                invalidUsage(context, "core", "&cUser &2%s &cnot found!", context.getString(0));
+                context.sendMessage("core", "&cUser &2%s &cnot found!", context.getString(0));
+                return;
             }
             other = true;
-        }
-        if (other && !BasicsPerm.COMMAND_CLEARINVENTORY_OTHER.isAuthorized(context.getSender()))
-        {
-            denyAccess(context, "basics", "&cYou are not allowed to clear the inventory of other users!");
         }
         user.getInventory().clear();
         if (context.hasFlag("ra"))
@@ -145,10 +142,17 @@ public class InventoryCommands
             user.getInventory().setHelmet(null);
         }
         user.updateInventory();
-        user.sendMessage("basics", "&eCleared inventory!");
         if (other)
         {
             sender.sendMessage("basics", "&aCleared Inventory of &2%s&a!", user.getName());
+            if (BasicsPerm.COMMAND_CLEARINVENTORY_NOTIFY.isAuthorized(user))
+            {
+                user.sendMessage("basics", "&eInventory cleared by &2%s&e!",sender.getName());
+            }
+        }
+        else
+        {
+            sender.sendMessage("basics", "&aCleared inventory!");
         }
     }
 }

@@ -19,10 +19,12 @@ public enum BasicsPerm implements Permission
     COMMAND_GAMEMODE_OTHER,
     COMMAND_PTIME_OTHER,
     COMMAND_CLEARINVENTORY_OTHER,
+    COMMAND_CLEARINVENTORY_NOTIFY,
     COMMAND_KILL_PREVENT(FALSE),
     COMMAND_KILL_ALL,
     COMMAND_INVSEE_MODIFY, // allows to modify the inventory
-    COMMAND_INVSEE_PREVENTMODIFY(FALSE), // prevents from modifying the inventory
+    COMMAND_INVSEE_MODIFY_PREVENT(FALSE), // prevents from modifying the inventory
+    COMMAND_INVSEE_MODIFY_FORCE,
     COMMAND_INVSEE_NOTIFY, // notify if someone looks into your inventory
     COMMAND_KICK_ALL,
     COMMAND_SPAWN_ALL, // spawn all players
@@ -57,7 +59,7 @@ public enum BasicsPerm implements Permission
     COMMAND_BUTCHER_FLAG_NPC,
     COMMAND_WALKSPEED_OTHER,
     WALKSPEED_ISALLOWED,
-    SIGN_COLORED;
+    SIGN_COLORED, KICK_RECEIVEMESSAGE;
 
     private String permission;
     private PermDefault def;
