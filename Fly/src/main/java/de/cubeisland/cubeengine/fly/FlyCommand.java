@@ -60,7 +60,7 @@ public class FlyCommand
         //I Believe I Can Fly ...     
         if (context.hasArg(0))
         {
-            Float speed = context.getArg(0, float.class);
+            Float speed = context.getArg(0, Float.class);
             if (speed != null && speed >= 0 && speed <= 10)
             {
                 if (speed > 0 && speed <= 10)
