@@ -52,9 +52,10 @@ public class TeleportListener implements Listener
     {
         if (event.getPlayer().getItemInHand().getType().equals(Material.COMPASS))
         {
-            if (event.useItemInHand().equals(Event.Result.DENY))
+            if (event.useItemInHand().equals(Event.Result.DENY) || event.useInteractedBlock().equals(Event.Result.DENY))
                 return;
             event.setUseItemInHand(Event.Result.DENY);
+            event.setUseInteractedBlock(Event.Result.DENY);
             switch (event.getAction())
             {
                 case LEFT_CLICK_AIR:

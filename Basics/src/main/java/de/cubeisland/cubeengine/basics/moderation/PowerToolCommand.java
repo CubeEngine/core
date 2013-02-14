@@ -30,7 +30,7 @@ import java.util.Set;
 import static java.util.Arrays.asList;
 
 /**
- * The PowerTool commands allow binding commands anr/or chat-macros to a specific item.
+ * The PowerTool commands allow binding commands and/or chat-macros to a specific item.
  * <p>The data is appended onto the items lore
  * <p>/powertool
  */
