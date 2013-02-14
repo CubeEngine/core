@@ -159,7 +159,7 @@ public class UserManagementCommands extends UserCommandHelper
     }
 
     @Command(names = {
-        "resetdata", "resetmeta", "resetmetadata" , "deletedata" , "deletemetadata", "deletemeta"
+        "resetdata", "resetmeta", "resetmetadata", "deletedata", "deletemetadata", "deletemeta"
     }, desc = "Resets metadata for this user [in world]", usage = "<metaKey> <player> [in <world>]", params = @Param(names = "in", type = World.class), max = 3, min = 2)
     public void resetmetadata(ParameterizedContext context)
     {

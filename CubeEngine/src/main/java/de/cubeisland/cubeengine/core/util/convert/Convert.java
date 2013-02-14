@@ -138,7 +138,8 @@ public class Convert
      * @param o a serialized Object
      * @return the Node
      */
-    public static Node wrapIntoNode(Object o) {
+    public static Node wrapIntoNode(Object o)
+    {
         if (o == null)
         {
             return NullNode.emptyNode();
@@ -169,29 +170,29 @@ public class Convert
         }
         if (o instanceof Integer || o.getClass() == int.class)
         {
-            return new IntNode((Integer) o);
+            return new IntNode((Integer)o);
         }
         if (o instanceof Long || o.getClass() == long.class)
         {
-            return new LongNode((Long) o);
+            return new LongNode((Long)o);
         }
         if (o instanceof Float || o.getClass() == float.class)
         {
-            return new FloatNode((Float) o);
+            return new FloatNode((Float)o);
         }
         if (o instanceof Double || o.getClass() == double.class)
         {
-            return new DoubleNode((Double) o);
+            return new DoubleNode((Double)o);
         }
         if (o instanceof Boolean || o.getClass() == boolean.class)
         {
-            return new BooleanNode((Boolean) o);
+            return new BooleanNode((Boolean)o);
         }
         if (o instanceof Character || o.getClass() == char.class)
         {
-            return new CharNode((Character) o);
+            return new CharNode((Character)o);
         }
-        throw  new IllegalArgumentException("Cannot wrap into Node: "+o.getClass());
+        throw new IllegalArgumentException("Cannot wrap into Node: " + o.getClass());
 
     }
 
@@ -201,7 +202,7 @@ public class Convert
      * @param object the Object
      * @return the serialized Node
      */
-    public static <T>  Node toNode(T object) throws ConversionException
+    public static <T> Node toNode(T object) throws ConversionException
     {
         if (object == null)
         {
@@ -209,15 +210,15 @@ public class Convert
         }
         if (object.getClass().isArray())
         {
-            return ARRAY_CONVERTER.toNode((Object[]) object);
+            return ARRAY_CONVERTER.toNode((Object[])object);
         }
         else if (object instanceof Collection)
         {
-            return COLLECTION_CONVERTER.toNode((Collection) object);
+            return COLLECTION_CONVERTER.toNode((Collection)object);
         }
         else if (object instanceof Map)
         {
-            return MAP_CONVERTER.toNode((Map) object);
+            return MAP_CONVERTER.toNode((Map)object);
         }
         Converter<T> converter = (Converter<T>)matchConverter(object.getClass());
         return converter.toNode(object);

@@ -11,7 +11,7 @@ import static de.cubeisland.cubeengine.core.command.exception.IllegalParameterVa
 public class FlyCommand
 {
     @Command(desc = "Lets you fly away", max = 1, params = @Param(names = {
-    "player", "p"
+        "player", "p"
     }, type = User.class), usage = "[flyspeed] [player <player>]")
     public void fly(ParameterizedContext context)
     {

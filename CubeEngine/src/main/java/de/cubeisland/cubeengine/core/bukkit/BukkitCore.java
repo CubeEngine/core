@@ -108,13 +108,13 @@ public class BukkitCore extends JavaPlugin implements Core
             this.logger.log(ERROR, e.getLocalizedMessage(), e);
         }
 
-
         try
         {
             Class.forName("sun.misc.Signal");
 
             Signal.handle(new Signal("INT"), new SignalHandler() {
                 private long lastReceived = 0;
+
                 @Override
                 public void handle(Signal signal)
                 {
@@ -457,12 +457,14 @@ public class BukkitCore extends JavaPlugin implements Core
     }
 
     @Override
-    public Match getMatcherManager() {
+    public Match getMatcherManager()
+    {
         return this.matcherManager;
     }
 
     @Override
-    public InventoryGuardFactory getInventoryGuard() {
+    public InventoryGuardFactory getInventoryGuard()
+    {
         return this.inventoryGuard;
     }
 }

@@ -5,7 +5,8 @@ import de.cubeisland.cubeengine.log.LoggerConfig;
 
 public class EndermanConfig extends LoggerConfig
 {
-    public EndermanConfig() {
+    public EndermanConfig()
+    {
         super(false);
     }
 

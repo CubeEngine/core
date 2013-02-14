@@ -7,13 +7,15 @@ import de.cubeisland.cubeengine.log.logger.worldedit.WorldEditLogger;
 import java.util.HashMap;
 import java.util.Map;
 
-public class LoggerManager {
+public class LoggerManager
+{
 
     private final Log module;
 
-    public Map<Class<? extends Logger>,Logger> loggerClassMap = new HashMap<Class<? extends Logger>, Logger>();
+    public Map<Class<? extends Logger>, Logger> loggerClassMap = new HashMap<Class<? extends Logger>, Logger>();
 
-    public LoggerManager(Log module) {
+    public LoggerManager(Log module)
+    {
         this.module = module;
 
         // registering loggers:
@@ -37,11 +39,14 @@ public class LoggerManager {
 
     public <T extends Logger> void createLogger(Class<T> loggerClass)
     {
-        try {
-            Logger  logger = loggerClass.getConstructor(Log.class).newInstance(this.module);
-            this.loggerClassMap.put(loggerClass,logger);
-        } catch (Exception ex) {
-            throw  new IllegalStateException("Could not create logger-instance!",ex);
+        try
+        {
+            Logger logger = loggerClass.getConstructor(Log.class).newInstance(this.module);
+            this.loggerClassMap.put(loggerClass, logger);
+        }
+        catch (Exception ex)
+        {
+            throw new IllegalStateException("Could not create logger-instance!", ex);
         }
     }
 
@@ -50,4 +55,3 @@ public class LoggerManager {
         return (T)this.loggerClassMap.get(loggerClass);
     }
 }
-

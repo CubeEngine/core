@@ -16,8 +16,7 @@ public enum MarketSignPerm implements Permission
     SIGN_INVENTORY_SHOW,
     SIGN_INVENTORY_ACCESS_OTHER,
     SIGN_CREATE_USER,
-    SIGN_CREATE_ADMIN,
-    ;
+    SIGN_CREATE_ADMIN, ;
     private String permission;
     private PermDefault def;
 

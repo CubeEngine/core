@@ -20,7 +20,6 @@ public abstract class PacketEvent extends Event implements Cancellable
         this.cancelled = false;
     }
 
-
     /**
      * Returns the user of this event
      *

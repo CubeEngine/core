@@ -7,11 +7,11 @@ import org.bukkit.Material;
 import java.util.Collection;
 import java.util.LinkedList;
 
-public  class BlockPlaceConfig extends LoggerConfig
+public class BlockPlaceConfig extends LoggerConfig
 {
     public BlockPlaceConfig()
     {
-      super(true);
+        super(true);
     }
 
     @Option("no-logging")

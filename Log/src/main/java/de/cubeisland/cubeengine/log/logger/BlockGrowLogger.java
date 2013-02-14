@@ -13,9 +13,11 @@ import static de.cubeisland.cubeengine.log.logger.BlockLogger.BlockChangeCause.G
 
 public class BlockGrowLogger extends BlockLogger<BlockGrowConfig>
 {
-    public BlockGrowLogger(Log module) {
+    public BlockGrowLogger(Log module)
+    {
         super(module, BlockGrowConfig.class);
     }
+
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onStructureGrow(StructureGrowEvent event)
     {
@@ -38,10 +40,9 @@ public class BlockGrowLogger extends BlockLogger<BlockGrowConfig>
             }
             for (BlockState newBlock : event.getBlocks())
             {
-                BlockState oldBlock =  event.getWorld().getBlockAt(newBlock.getLocation()).getState();
-                if (!(oldBlock.getTypeId() == newBlock.getTypeId()
-                &&  oldBlock.getRawData() == newBlock.getRawData()))
-                    this.logBlockChange(GROW, world, player,oldBlock , newBlock);
+                BlockState oldBlock = event.getWorld().getBlockAt(newBlock.getLocation()).getState();
+                if (!(oldBlock.getTypeId() == newBlock.getTypeId() && oldBlock.getRawData() == newBlock.getRawData()))
+                    this.logBlockChange(GROW, world, player, oldBlock, newBlock);
             }
         }
     }

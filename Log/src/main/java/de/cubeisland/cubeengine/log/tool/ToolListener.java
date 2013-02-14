@@ -35,7 +35,7 @@ public class ToolListener implements Listener
                     loc.getWorld(), loc, null,
                     new Integer[]
                     {
-                            LogManager.BLOCK_BREAK,LogManager.BLOCK_CHANGE,LogManager.BLOCK_PLACE,
+                            LogManager.BLOCK_BREAK, LogManager.BLOCK_CHANGE, LogManager.BLOCK_PLACE,
                             LogManager.BLOCK_SIGN, LogManager.BLOCK_CHANGE_WE, LogManager.BLOCK_GROW_BP,
                             LogManager.BLOCK_EXPLODE
                     },
@@ -52,7 +52,7 @@ public class ToolListener implements Listener
             User user = this.module.getUserManager().getExactUser(event.getPlayer());
             if (!lookup.getEntries().isEmpty())
             {
-                user.sendMessage("log","&6%d &elogs found at &6%d:%d:%d &ein &6%s&e:",lookup.getEntries().size(),loc.getBlockX(),loc.getBlockY(),loc.getBlockZ(),loc.getWorld().getName());
+                user.sendMessage("log", "&6%d &elogs found at &6%d:%d:%d &ein &6%s&e:", lookup.getEntries().size(), loc.getBlockX(), loc.getBlockY(), loc.getBlockZ(), loc.getWorld().getName());
                 for (BlockLog entry : lookup.getEntries())
                 {
                     entry.sendToUser(user, false);
@@ -60,7 +60,7 @@ public class ToolListener implements Listener
             }
             else
             {
-                user.sendMessage("log","&cNo logs found at &6%d:%d:%d &cin &6%s&c!",loc.getBlockX(),loc.getBlockY(),loc.getBlockZ(),loc.getWorld().getName());
+                user.sendMessage("log", "&cNo logs found at &6%d:%d:%d &cin &6%s&c!", loc.getBlockX(), loc.getBlockY(), loc.getBlockZ(), loc.getWorld().getName());
             }
         }
     }

@@ -14,10 +14,10 @@ import org.bukkit.event.block.SignChangeEvent;
 
 public class SignChangeLogger extends Logger<SignChangeConfig>
 {
-    public SignChangeLogger(Log module) {
+    public SignChangeLogger(Log module)
+    {
         super(module, SignChangeConfig.class);
     }
-
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onSignChange(SignChangeEvent event)
@@ -62,19 +62,19 @@ public class SignChangeLogger extends Logger<SignChangeConfig>
         {
             if (!line.isEmpty())
             {
-                this.logSignChange(player,state.getLines(),null,state.getLocation()); // Only log if there are lines
+                this.logSignChange(player, state.getLines(), null, state.getLocation()); // Only log if there are lines
                 return;
             }
         }
     }
 
-
-    public void logSignBreak(Player player, Sign state) {
+    public void logSignBreak(Player player, Sign state)
+    {
         for (String line : state.getLines())
         {
             if (!line.isEmpty())
             {
-                this.logSignChange(player,null,state.getLines(),state.getLocation()); // Only log if there are lines
+                this.logSignChange(player, null, state.getLines(), state.getLocation()); // Only log if there are lines
                 return;
             }
         }

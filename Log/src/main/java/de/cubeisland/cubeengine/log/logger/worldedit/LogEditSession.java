@@ -12,50 +12,56 @@ import de.cubeisland.cubeengine.log.Log;
 import org.bukkit.World;
 import org.bukkit.block.BlockState;
 
-public class LogEditSession extends EditSession {
+public class LogEditSession extends EditSession
+{
 
     private LocalPlayer player;
     private Log module;
 
-    public LogEditSession(LocalWorld world, int maxBlocks, LocalPlayer player, Log module) {
+    public LogEditSession(LocalWorld world, int maxBlocks, LocalPlayer player, Log module)
+    {
         super(world, maxBlocks);
-        this.player =player;
+        this.player = player;
         this.module = module;
     }
 
-    public LogEditSession(LocalWorld world, int maxBlocks, BlockBag blockBag, LocalPlayer player, Log module) {
+    public LogEditSession(LocalWorld world, int maxBlocks, BlockBag blockBag, LocalPlayer player, Log module)
+    {
         super(world, maxBlocks, blockBag);
-        this.player =player;
+        this.player = player;
         this.module = module;
     }
 
-    public LogEditSession(LocalWorld world, int maxBlocks, Log module) {
-        super(world,maxBlocks);
+    public LogEditSession(LocalWorld world, int maxBlocks, Log module)
+    {
+        super(world, maxBlocks);
         this.module = module;
         this.player = null;
     }
 
-    public LogEditSession(LocalWorld world, int maxBlocks, BlockBag blockBag, Log module) {
-        super(world,maxBlocks,blockBag);
+    public LogEditSession(LocalWorld world, int maxBlocks, BlockBag blockBag, Log module)
+    {
+        super(world, maxBlocks, blockBag);
         this.module = module;
         this.player = null;
     }
 
     @Override
-    public boolean rawSetBlock(Vector pt, BaseBlock block) {
+    public boolean rawSetBlock(Vector pt, BaseBlock block)
+    {
         if (player instanceof BukkitPlayer)
         {
             if (player.getWorld() instanceof BukkitWorld)
             {
                 World world = ((BukkitWorld)player.getWorld()).getWorld();
-                WorldEditLogger logger =  module.getLoggerManager().getLogger(WorldEditLogger.class);
+                WorldEditLogger logger = module.getLoggerManager().getLogger(WorldEditLogger.class);
                 if (logger.getConfig(world).enabled)
                 {
-                    BlockState oldState = world.getBlockAt(pt.getBlockX(),pt.getBlockY(),pt.getBlockZ()).getState();
+                    BlockState oldState = world.getBlockAt(pt.getBlockX(), pt.getBlockY(), pt.getBlockZ()).getState();
                     boolean success = super.rawSetBlock(pt, block);
                     if (success)
                     {
-                        logger.logWorldEditChange(((BukkitPlayer)player).getPlayer(), oldState, world.getBlockAt(pt.getBlockX(),pt.getBlockY(),pt.getBlockZ()).getState());
+                        logger.logWorldEditChange(((BukkitPlayer)player).getPlayer(), oldState, world.getBlockAt(pt.getBlockX(), pt.getBlockY(), pt.getBlockZ()).getState());
                     }
                     return success;
                 }

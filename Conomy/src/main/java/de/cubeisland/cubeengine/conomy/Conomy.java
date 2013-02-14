@@ -57,7 +57,8 @@ public class Conomy extends Module
         return accountsStorage;
     }
 
-    public ConomyConfiguration getConfig() {
+    public ConomyConfiguration getConfig()
+    {
         return config;
     }
 }

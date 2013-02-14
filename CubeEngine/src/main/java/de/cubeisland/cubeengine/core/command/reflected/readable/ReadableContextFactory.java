@@ -17,7 +17,7 @@ import java.util.regex.Pattern;
 
 public class ReadableContextFactory extends BasicContextFactory
 {
-    private static final Set<String>         NO_FLAGS = new THashSet<String>(0);
+    private static final Set<String> NO_FLAGS = new THashSet<String>(0);
     private static final Map<String, Object> NO_NAMED = new THashMap<String, Object>(0);
     private final Pattern pattern;
 

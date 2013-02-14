@@ -21,8 +21,8 @@ public class ItemStackConverter implements Converter<ItemStack>
     {
         if (node instanceof StringNode)
         {
-            return Match.material().itemStack(((StringNode) node).getValue());
+            return Match.material().itemStack(((StringNode)node).getValue());
         }
-        throw  new ConversionException("Invalid Node!"+ node.getClass());
+        throw new ConversionException("Invalid Node!" + node.getClass());
     }
 }

@@ -140,7 +140,7 @@ public class InventoryGuard implements Listener
                 boolean clickTop = event.getRawSlot() < event.getInventory().getSize();
 
                 if ((!clickTop && event.isShiftClick()) // shift-click bot
-                  || (clickTop && (cursor != null && cursor.getTypeId() != 0))) // click top with item on cursor
+                    || (clickTop && (cursor != null && cursor.getTypeId() != 0))) // click top with item on cursor
                 {// -> PutIntoTop
                     if (this.blockAllIn) // block in
                     {
@@ -160,7 +160,7 @@ public class InventoryGuard implements Listener
                     {
                         if (!this.hasDenyIn(cursor))
                         {
-                            if (invent == null || invent.getTypeId() == 0|| this.hasAllowOut(invent)) // no out OR allow out
+                            if (invent == null || invent.getTypeId() == 0 || this.hasAllowOut(invent)) // no out OR allow out
                             {
                                 for (Runnable runner : this.onChange)
                                 {
@@ -247,11 +247,13 @@ public class InventoryGuard implements Listener
         return false;
     }
 
-    public void addOnClose(Runnable run) {
+    public void addOnClose(Runnable run)
+    {
         this.onClose.add(run);
     }
 
-    public void addOnChange(Runnable run) {
+    public void addOnChange(Runnable run)
+    {
         this.onChange.add(run);
     }
 }

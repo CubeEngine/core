@@ -307,7 +307,7 @@ public abstract class CubeCommand extends Command
     public void removeChild(String name)
     {
         CubeCommand cmd = this.getChild(name);
-        Iterator<Map.Entry<String,CubeCommand>> iter = this.children.entrySet().iterator();
+        Iterator<Map.Entry<String, CubeCommand>> iter = this.children.entrySet().iterator();
 
         while (iter.hasNext())
         {

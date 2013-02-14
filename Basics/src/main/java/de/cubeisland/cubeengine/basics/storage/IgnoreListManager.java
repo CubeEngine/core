@@ -38,7 +38,7 @@ public class IgnoreListManager extends TwoKeyStorage<Long, Long, IgnoreList>
         }
     }
 
-    public boolean  addIgnore(User user, User toIgnore)
+    public boolean addIgnore(User user, User toIgnore)
     {
         if (this.checkIgnore(user, toIgnore))
         {

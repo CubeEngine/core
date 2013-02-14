@@ -91,5 +91,5 @@ public class BasicsConfiguration extends Configuration
     @Option("commands.ban.disallow-if-offline-mode")
     public boolean disallowBanIfOfflineMode;
     @Option("commands.kick.default-message")
-    public String defaultKickMessage ="&4Kicked!";
+    public String defaultKickMessage = "&4Kicked!";
 }

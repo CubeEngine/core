@@ -12,7 +12,7 @@ public class StringConverter extends BasicConverter<String>
     {
         if (node instanceof StringNode)
         {
-            return ((StringNode) node).getValue();
+            return ((StringNode)node).getValue();
         }
         return node.unwrap();
     }

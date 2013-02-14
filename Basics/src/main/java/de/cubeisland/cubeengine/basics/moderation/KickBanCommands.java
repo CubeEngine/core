@@ -29,13 +29,12 @@ public class KickBanCommands
 {
     private Basics module;
 
-    public KickBanCommands(Basics module) {
+    public KickBanCommands(Basics module)
+    {
         this.module = module;
     }
 
-    @Command(desc = "Kicks a player from the server",
-            usage = "<<player>|-all> [message]",
-            flags = @Flag(longName = "all", name = "a"))
+    @Command(desc = "Kicks a player from the server", usage = "<<player>|-all> [message]", flags = @Flag(longName = "all", name = "a"))
     public void kick(ParameterizedContext context)
     {
         String message = context.getStrings(1);
@@ -76,11 +75,9 @@ public class KickBanCommands
         context.getCore().getUserManager().broadcastMessage("basics", "&2%s &4was kicked from the server!", BasicsPerm.KICK_RECEIVEMESSAGE, user.getName());
     }
 
-    @Command(names = { "ban", "kickban" },
-            desc = "Bans a player permanently on your server.",
-            min = 1, usage = "<player> [message] [-ipban]",
-            flags = @Flag(longName = "ipban", name = "ip")
-    )
+    @Command(names = {
+    "ban", "kickban"
+    }, desc = "Bans a player permanently on your server.", min = 1, usage = "<player> [message] [-ipban]", flags = @Flag(longName = "ipban", name = "ip"))
     public void ban(ParameterizedContext context)
     {
         if (!Bukkit.getOnlineMode())
@@ -114,8 +111,8 @@ public class KickBanCommands
                 for (User ipPlayer : context.getCore().getUserManager().getOnlineUsers())
                 {
                     if (!ipPlayer.getName().equals(player.getName())
-                      && ipPlayer.getAddress() != null
-                      && ipPlayer.getAddress().getAddress().getHostAddress().equals(ipadress))
+                        && ipPlayer.getAddress() != null
+                        && ipPlayer.getAddress().getAddress().getHostAddress().equals(ipadress))
                     {
                         ipPlayer.kickPlayer(_(ipPlayer, "basics", "&cYou were ip-banned from this server!"));
                     }
@@ -146,9 +143,9 @@ public class KickBanCommands
         context.sendMessage("basics", "&cYou banned &2%s&c!", player.getName());
     }
 
-    @Command(names = {"unban", "pardon"},
-             desc = "Unbans a previously banned player.",
-             min = 1, max = 1, usage = "<player>")
+    @Command(names = {
+    "unban", "pardon"
+    }, desc = "Unbans a previously banned player.", min = 1, max = 1, usage = "<player>")
     public void unban(CommandContext context)
     {
         OfflinePlayer offlinePlayer = context.getSender().getServer().getOfflinePlayer(context.getString(0));
@@ -161,9 +158,9 @@ public class KickBanCommands
         context.sendMessage("basics", "&aYou unbanned &2%s&a!", offlinePlayer.getName());
     }
 
-    @Command(names = {"ipban", "banip"},
-            desc = "Bans the IP from this server.",
-            min = 1, max = 1, usage = "<IP address>")
+    @Command(names = {
+    "ipban", "banip"
+    }, desc = "Bans the IP from this server.", min = 1, max = 1, usage = "<IP address>")
     public void ipban(CommandContext context)
     {
         String ipadress = context.getString(0);
@@ -186,9 +183,9 @@ public class KickBanCommands
         }
     }
 
-    @Command(names = {"ipunban", "unbanip", "pardonip"},
-            desc = "Bans the IP from this server.",
-            min = 1, usage = "<IP address>")
+    @Command(names = {
+    "ipunban", "unbanip", "pardonip"
+    }, desc = "Bans the IP from this server.", min = 1, usage = "<IP address>")
     public void ipunban(CommandContext context)
     {
         String ipadress = context.getString(0);

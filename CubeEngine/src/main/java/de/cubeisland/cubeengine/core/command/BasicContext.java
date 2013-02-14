@@ -11,9 +11,9 @@ import java.util.Stack;
 public class BasicContext implements CommandContext
 {
     private final Core core;
-    private final CubeCommand        command;
-    private final CommandSender      sender;
-    private final Stack<String>      labels;
+    private final CubeCommand command;
+    private final CommandSender sender;
+    private final Stack<String> labels;
     private final LinkedList<String> args;
     private final int argCount;
 

@@ -322,10 +322,12 @@ public class I18n implements Cleanable
     }
 
     private static final Object[] NO_PARAMS = {};
+
     public static String _(CommandSender sender, Module module, String message, Object[] params)
     {
         return _(sender, module.getId(), message, params);
     }
+
     public static String _(CommandSender sender, Module module, String message)
     {
         return _(sender, module, message, NO_PARAMS);

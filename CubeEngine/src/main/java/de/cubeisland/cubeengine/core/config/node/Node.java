@@ -3,28 +3,31 @@ package de.cubeisland.cubeengine.core.config.node;
 /**
  * A config Node
  */
-public abstract class Node {
+public abstract class Node
+{
 
     private ParentNode parentNode;
 
-    public ParentNode getParentNode() {
+    public ParentNode getParentNode()
+    {
         return parentNode;
     }
 
-    public void setParentNode(ParentNode parentNode) {
+    public void setParentNode(ParentNode parentNode)
+    {
         this.parentNode = parentNode;
     }
 
     public String getPath(String pathSeparator)
     {
-       if (this.getParentNode() == null){
-           return null;
-       }
-       return this.getParentNode().getPath(this,"",pathSeparator);
+        if (this.getParentNode() == null)
+        {
+            return null;
+        }
+        return this.getParentNode().getPath(this, "", pathSeparator);
     }
 
     public abstract String unwrap();
-
 
     /**
      * Returns the last subKey of this path

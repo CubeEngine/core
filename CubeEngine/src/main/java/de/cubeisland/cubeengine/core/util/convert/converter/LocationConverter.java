@@ -43,16 +43,16 @@ public class LocationConverter implements Converter<Location>
     {
         if (node instanceof MapNode)
         {
-            Map<String, Node> input = ((MapNode) node).getMappedNodes();
+            Map<String, Node> input = ((MapNode)node).getMappedNodes();
             World world = server.getWorld(((StringNode)input.get("world")).getValue());
-            double x = Convert.fromNode(input.get("x"),double.class);
-            double y = Convert.fromNode(input.get("y"),double.class);
-            double z = Convert.fromNode(input.get("z"),double.class);
-            double yaw = Convert.fromNode(input.get("yaw"),double.class);
-            double pitch = Convert.fromNode(input.get("pitch"),double.class);
+            double x = Convert.fromNode(input.get("x"), double.class);
+            double y = Convert.fromNode(input.get("y"), double.class);
+            double z = Convert.fromNode(input.get("z"), double.class);
+            double yaw = Convert.fromNode(input.get("yaw"), double.class);
+            double pitch = Convert.fromNode(input.get("pitch"), double.class);
 
             return new Location(world, x, y, z, (float)yaw, (float)pitch);
         }
-        throw  new ConversionException("Invalid Node!"+ node.getClass());
+        throw new ConversionException("Invalid Node!" + node.getClass());
     }
 }

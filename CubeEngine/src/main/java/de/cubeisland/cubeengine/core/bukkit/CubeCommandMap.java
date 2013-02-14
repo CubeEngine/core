@@ -52,7 +52,7 @@ public class CubeCommandMap extends SimpleCommandMap
         this.commandLogger = new CubeLogger("commands");
         try
         {
-            FileHandler handler = new CubeFileHandler(Level.ALL,  new File(core.getFileManager().getLogDir(), "commands").getPath());
+            FileHandler handler = new CubeFileHandler(Level.ALL, new File(core.getFileManager().getLogDir(), "commands").getPath());
             handler.setFormatter(new Formatter() {
                 private final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 

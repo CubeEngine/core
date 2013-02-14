@@ -8,10 +8,11 @@ import de.cubeisland.cubeengine.core.storage.database.Index;
 import de.cubeisland.cubeengine.core.storage.database.SingleKeyEntity;
 import org.bukkit.Location;
 
-@SingleKeyEntity(autoIncrement = true, primaryKey = "key", tableName = "signmarketblocks",
-indices = {
+@SingleKeyEntity(autoIncrement = true, primaryKey = "key", tableName = "signmarketblocks", indices = {
         @Index(value = Index.IndexType.FOREIGN_KEY, fields = "world", f_field = "key", f_table = "worlds", onDelete = "CASCADE"),
-        @Index(value = Index.IndexType.INDEX, fields = {"x","y","z"})
+        @Index(value = Index.IndexType.INDEX, fields = {
+        "x", "y", "z"
+        })
 })
 public class SignMarketBlockModel implements Model<Long>
 {
@@ -36,7 +37,8 @@ public class SignMarketBlockModel implements Model<Long>
     }
 
     @Override
-    public Long getKey() {
+    public Long getKey()
+    {
         return key;
     }
 
@@ -46,6 +48,6 @@ public class SignMarketBlockModel implements Model<Long>
         this.key = key;
     }
 
-    public SignMarketBlockModel() {
-    }
+    public SignMarketBlockModel()
+    {}
 }

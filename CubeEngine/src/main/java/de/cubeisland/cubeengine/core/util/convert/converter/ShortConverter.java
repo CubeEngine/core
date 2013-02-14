@@ -22,7 +22,7 @@ public class ShortConverter extends BasicConverter<Short>
         }
         catch (NumberFormatException e)
         {
-            throw  new ConversionException("Invalid Node!"+ node.getClass(), e);
+            throw new ConversionException("Invalid Node!" + node.getClass(), e);
         }
     }
 }

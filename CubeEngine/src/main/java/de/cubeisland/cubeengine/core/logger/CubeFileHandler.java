@@ -77,7 +77,7 @@ public class CubeFileHandler extends FileHandler
             {
                 return sb.toString();
             }
-            return MessageFormat.format(sb.toString(),record.getParameters());
+            return MessageFormat.format(sb.toString(), record.getParameters());
         }
     }
 }

@@ -33,7 +33,7 @@ public class ArrayConverter
             Collection<V> result = new LinkedList<V>();
             for (Node node : listNode.getListedNodes())
             {
-                V value = Convert.fromNode(node,valueType);
+                V value = Convert.fromNode(node, valueType);
                 result.add(value);
             }
             return result.toArray((V[])Array.newInstance((Class)valueType, result.size()));

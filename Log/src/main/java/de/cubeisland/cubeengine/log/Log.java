@@ -50,7 +50,7 @@ public class Log extends Module
         File file = new File(this.getFolder(), "worlds");
         file.mkdir();
 
-        this.globalConfig = Configuration.load(LogConfiguration.class, new File(this.getFolder(),"globalconfig.yml"));
+        this.globalConfig = Configuration.load(LogConfiguration.class, new File(this.getFolder(), "globalconfig.yml"));
         for (World world : Bukkit.getServer().getWorlds())
         {
             //TODO config to disable logging in the entire world
@@ -59,10 +59,12 @@ public class Log extends Module
             this.worldConfigs.put(world, (LogConfiguration)globalConfig.loadChild(new File(file, "config.yml")));
         }
 
-        try {
+        try
+        {
             Class.forName("com.sk89q.worldedit.WorldEdit");
             LogEditSessionFactory.initialize(WorldEdit.getInstance(), this);
-        }catch (ClassNotFoundException ignored)
+        }
+        catch (ClassNotFoundException ignored)
         {
             System.out.print("No WorldEdit found!");
         }
@@ -70,7 +72,6 @@ public class Log extends Module
         this.loggerManager = new LoggerManager(this);
 
         this.registerListener(new ToolListener(this));
-
 
     }
 
@@ -91,11 +92,13 @@ public class Log extends Module
         return this.logManager;
     }
 
-    public LogConfiguration getGlobalConfiguration() {
+    public LogConfiguration getGlobalConfiguration()
+    {
         return this.globalConfig;
     }
 
-    public LoggerManager getLoggerManager() {
+    public LoggerManager getLoggerManager()
+    {
         return loggerManager;
     }
 }

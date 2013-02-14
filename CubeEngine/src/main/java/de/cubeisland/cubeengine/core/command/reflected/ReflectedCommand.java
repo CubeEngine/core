@@ -15,8 +15,8 @@ import java.util.Set;
 
 public class ReflectedCommand extends ParameterizedCommand
 {
-    private final Object                          holder;
-    private final Method                          method;
+    private final Object holder;
+    private final Method method;
     private final Class<? extends CommandContext> contextType;
 
     public ReflectedCommand(Module module, Object holder, Method method, String name, String description, String usage, List<String> aliases, Set<CommandFlag> flags, Set<CommandParameter> params)

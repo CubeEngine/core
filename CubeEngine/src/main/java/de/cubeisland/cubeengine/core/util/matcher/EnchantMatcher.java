@@ -40,7 +40,7 @@ public class EnchantMatcher
             Enchantment ench = this.bukkitnames.get(bukkitName);
             if (ench == null)
             {
-                CubeEngine.getLogger().warning("Unkown Enchantment: "+ bukkitName);
+                CubeEngine.getLogger().warning("Unkown Enchantment: " + bukkitName);
                 continue;
             }
             this.registerEnchantment(ench, enchs.get(bukkitName));
@@ -142,7 +142,7 @@ public class EnchantMatcher
         return enchantment;
     }
 
-    public boolean applyMatchedEnchantment(ItemStack item , String enchName, int enchStrength, boolean force)
+    public boolean applyMatchedEnchantment(ItemStack item, String enchName, int enchStrength, boolean force)
     {
         //TODO try to match enchNames when they are ids
         Enchantment ench = this.enchantment(enchName);
@@ -159,7 +159,7 @@ public class EnchantMatcher
         }
         try
         {
-            item.addEnchantment(ench,enchStrength);
+            item.addEnchantment(ench, enchStrength);
             return true;
         }
         catch (IllegalArgumentException ignored)

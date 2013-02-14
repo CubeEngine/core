@@ -9,9 +9,10 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.entity.EntityExplodeEvent;
 
-public class BlockExplosionLogger extends    BlockLogger<BlockExplosionConfig>
+public class BlockExplosionLogger extends BlockLogger<BlockExplosionConfig>
 {
-    public BlockExplosionLogger(Log module) {
+    public BlockExplosionLogger(Log module)
+    {
         super(module, BlockExplosionConfig.class);
     }
 
@@ -62,6 +63,5 @@ public class BlockExplosionLogger extends    BlockLogger<BlockExplosionConfig>
             }
         }
     }
-
 
 }

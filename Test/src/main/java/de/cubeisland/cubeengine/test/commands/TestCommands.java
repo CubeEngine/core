@@ -84,7 +84,9 @@ public class TestCommands
 
     private static final int MAX_CHAT_LINES = 100;
 
-    @Command(names = {"cls", "clearscreen"}, desc = "Clears the chat", async = true)
+    @Command(names = {
+    "cls", "clearscreen"
+    }, desc = "Clears the chat", async = true)
     public void clearscreen(CommandContext context)
     {
         if (context.getSender() instanceof User)

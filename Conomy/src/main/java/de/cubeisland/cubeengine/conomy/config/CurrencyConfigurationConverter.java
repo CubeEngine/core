@@ -25,7 +25,7 @@ public class CurrencyConfigurationConverter implements Converter<CurrencyConfigu
         currency.setNode(new StringNode("sub-currencies"), subCurrencies);
         MapNode firstSub = (MapNode)subCurrencies.getMappedNodes().entrySet().iterator().next().getValue();
         firstSub.removeNode("value", ":");
-        MapNode format =  MapNode.emptyMap();
+        MapNode format = MapNode.emptyMap();
         currency.setNode(new StringNode("formatting"), format);
         format.setNode(new StringNode("long"), new StringNode(object.formatLong));
         format.setNode(new StringNode("short"), new StringNode(object.formatShort));
@@ -38,13 +38,13 @@ public class CurrencyConfigurationConverter implements Converter<CurrencyConfigu
     {
         try
         {
-            MapNode currency= (MapNode)node;
+            MapNode currency = (MapNode)node;
             MapNode subCurrencies = (MapNode)currency.getMappedNodes().get("sub-currencies");
             MapNode format = (MapNode)currency.getMappedNodes().get("formatting");
             LinkedHashMap<String, SubCurrencyConfig> subConfigs = new LinkedHashMap<String, SubCurrencyConfig>();
             for (Map.Entry<String, Node> entry : subCurrencies.getMappedNodes().entrySet())
             {
-                subConfigs.put(entry.getKey(), (SubCurrencyConfig)Convert.fromNode(entry.getValue(),SubCurrencyConfig.class));
+                subConfigs.put(entry.getKey(), (SubCurrencyConfig)Convert.fromNode(entry.getValue(), SubCurrencyConfig.class));
             }
             Long defaultBalance = Long.parseLong(currency.getMappedNodes().get("default-balance").unwrap());
             CurrencyConfiguration currencyConfig =

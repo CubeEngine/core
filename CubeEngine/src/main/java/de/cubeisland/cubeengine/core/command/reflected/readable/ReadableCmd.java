@@ -15,7 +15,7 @@ import java.util.regex.Pattern;
 public @interface ReadableCmd
 {
     String[] names();
-    
+
     String desc();
 
     String usage();

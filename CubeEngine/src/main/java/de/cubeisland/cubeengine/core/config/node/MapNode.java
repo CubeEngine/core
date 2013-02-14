@@ -1,6 +1,5 @@
 package de.cubeisland.cubeengine.core.config.node;
 
-
 import de.cubeisland.cubeengine.core.CubeEngine;
 import de.cubeisland.cubeengine.core.util.convert.Convert;
 import gnu.trove.map.hash.THashMap;
@@ -8,12 +7,12 @@ import gnu.trove.map.hash.THashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-public class MapNode extends ParentNode {
+public class MapNode extends ParentNode
+{
 
-    private LinkedHashMap<String,Node> mappedNodes = new LinkedHashMap<String, Node>();
+    private LinkedHashMap<String, Node> mappedNodes = new LinkedHashMap<String, Node>();
     private THashMap<String, String> keys = new THashMap<String, String>(); // LowerCase trimmed -> Original
-    private LinkedHashMap<Node,String> reverseMappedNodes = new LinkedHashMap<Node, String>();
-
+    private LinkedHashMap<Node, String> reverseMappedNodes = new LinkedHashMap<Node, String>();
 
     /**
      * Creates a MapNode with given map as values.
@@ -21,10 +20,11 @@ public class MapNode extends ParentNode {
      *
      * @param map the map to convert into Nodes
      */
-    public MapNode(Map<Object,Object> map) {
+    public MapNode(Map<Object, Object> map)
+    {
         if (map != null)
         {
-            for (Map.Entry<Object,Object> entry : map.entrySet())
+            for (Map.Entry<Object, Object> entry : map.entrySet())
             {
 
                 Node node = Convert.wrapIntoNode(entry.getValue());
@@ -34,8 +34,8 @@ public class MapNode extends ParentNode {
         }
     }
 
-    private MapNode() {
-    }
+    private MapNode()
+    {}
 
     /**
      * Returns an empty MapNode
@@ -43,7 +43,8 @@ public class MapNode extends ParentNode {
      *
      * @return an empty MapNode
      */
-    public static MapNode emptyMap() {
+    public static MapNode emptyMap()
+    {
         return new MapNode();
     }
 
@@ -54,7 +55,8 @@ public class MapNode extends ParentNode {
     }
 
     @Override
-    protected Node setExactNode(String key, Node node) {
+    protected Node setExactNode(String key, Node node)
+    {
         String loweredKey = key.trim().toLowerCase();
         if (loweredKey.isEmpty())
         {
@@ -62,12 +64,13 @@ public class MapNode extends ParentNode {
         }
         this.keys.put(loweredKey, key);
         node.setParentNode(this);
-        this.reverseMappedNodes.put(node,loweredKey);
-        return this.mappedNodes.put(loweredKey ,node);
+        this.reverseMappedNodes.put(node, loweredKey);
+        return this.mappedNodes.put(loweredKey, node);
     }
 
     @Override
-    protected Node removeExactNode(String key) {
+    protected Node removeExactNode(String key)
+    {
         Node node = this.mappedNodes.get(key);
         if (node instanceof NullNode)
         {
@@ -78,8 +81,9 @@ public class MapNode extends ParentNode {
         return node;
     }
 
-    public Node setNode(StringNode keyNode, Node node) {
-        return this.setExactNode(keyNode.getValue(),node);
+    public Node setNode(StringNode keyNode, Node node)
+    {
+        return this.setExactNode(keyNode.getValue(), node);
     }
 
     public String getOriginalKey(String lowerCasedKey)
@@ -87,17 +91,20 @@ public class MapNode extends ParentNode {
         return this.keys.get(lowerCasedKey);
     }
 
-    public LinkedHashMap<String, Node> getMappedNodes() {
+    public LinkedHashMap<String, Node> getMappedNodes()
+    {
         return mappedNodes;
     }
 
     @Override
-    public boolean isEmpty() {
+    public boolean isEmpty()
+    {
         return this.mappedNodes.isEmpty();
     }
 
     @Override
-    protected String getPath(Node node, String path, String pathSeparator) {
+    protected String getPath(Node node, String path, String pathSeparator)
+    {
         String key = this.reverseMappedNodes.get(node);
         if (key == null)
         {
@@ -109,7 +116,7 @@ public class MapNode extends ParentNode {
         }
         else
         {
-            path = key+pathSeparator+path;
+            path = key + pathSeparator + path;
         }
         if (this.getParentNode() != null)
         {

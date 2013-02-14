@@ -1,10 +1,10 @@
 package de.cubeisland.cubeengine.core.config.node;
 
-
 /**
  * A Node that can be a parent of another Node
  */
-public abstract class ParentNode extends Node{
+public abstract class ParentNode extends Node
+{
 
     /**
      * Sets this node for given path
@@ -16,10 +16,10 @@ public abstract class ParentNode extends Node{
      */
     public Node setNodeAt(String path, String pathSeparator, Node node)
     {
-        Node parentNode = this.getNodeAt(path,pathSeparator).getParentNode();
+        Node parentNode = this.getNodeAt(path, pathSeparator).getParentNode();
         if (parentNode instanceof ParentNode)
         {
-            return ((ParentNode)parentNode).setExactNode(this.getSubKey(path, pathSeparator),node);
+            return ((ParentNode)parentNode).setExactNode(this.getSubKey(path, pathSeparator), node);
         }
         throw new UnsupportedOperationException("Not supported!");
     }
@@ -34,7 +34,6 @@ public abstract class ParentNode extends Node{
      */
     protected abstract Node setExactNode(String key, Node node);
 
-
     /**
      * Gets the Node under the specified path,
      * using pathSeparator to separate
@@ -44,12 +43,13 @@ public abstract class ParentNode extends Node{
      * @param pathSeparator the path-separator
      * @return the Node at given path
      */
-    public Node getNodeAt(String path, String pathSeparator) {
+    public Node getNodeAt(String path, String pathSeparator)
+    {
         if (path.contains(pathSeparator))
         {
-            String basePath = this.getBasePath(path,pathSeparator);
-            String subPath = this.getSubPath(path,pathSeparator);
-            Node baseNode = this.getNodeAt(basePath,pathSeparator);
+            String basePath = this.getBasePath(path, pathSeparator);
+            String subPath = this.getSubPath(path, pathSeparator);
+            Node baseNode = this.getNodeAt(basePath, pathSeparator);
             if (baseNode instanceof NullNode) // node not found -> create new node
             {
                 if (subPath.startsWith("[")) //  baseNode is a List!
@@ -65,9 +65,9 @@ public abstract class ParentNode extends Node{
             }
             else if (!(baseNode instanceof ParentNode))
             {
-                throw new IllegalArgumentException("Could not resolve path ("+path+") for "+ baseNode);
+                throw new IllegalArgumentException("Could not resolve path (" + path + ") for " + baseNode);
             }
-            return ((ParentNode)baseNode).getNodeAt(subPath,pathSeparator);
+            return ((ParentNode)baseNode).getNodeAt(subPath, pathSeparator);
         }
         else
         {
@@ -100,9 +100,10 @@ public abstract class ParentNode extends Node{
      * @param pathSeparator the path-separator
      * @return the previously mapped Node or null if not set
      */
-    public Node removeNode(String path, String pathSeparator) {
-        Node nodeToRemove = this.getNodeAt(path,pathSeparator);
-        return nodeToRemove.getParentNode().removeExactNode(this.getSubKey(path,pathSeparator));
+    public Node removeNode(String path, String pathSeparator)
+    {
+        Node nodeToRemove = this.getNodeAt(path, pathSeparator);
+        return nodeToRemove.getParentNode().removeExactNode(this.getSubKey(path, pathSeparator));
     }
 
     /**
@@ -114,11 +115,11 @@ public abstract class ParentNode extends Node{
      */
     protected abstract Node removeExactNode(String key);
 
-
     public abstract boolean isEmpty();
 
     @Override
-    public String unwrap() {
+    public String unwrap()
+    {
         throw new UnsupportedOperationException("Unwrapping is not allowed for ParentNodes");
     }
 }

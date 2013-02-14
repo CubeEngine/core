@@ -25,22 +25,19 @@ public class DiscoCommand
         this.activeTasks = new THashMap<String, DiscoTask>();
     }
 
-    @Command(
-        desc = "Changes from day to night and vice verca",
-        usage = "[world] [delay <value>]",
-        max = 0,
-        params = @Param(names = {"delay", "d"}, type = Integer.class)
-    )
+    @Command(desc = "Changes from day to night and vice verca", usage = "[world] [delay <value>]", max = 0, params = @Param(names = {
+    "delay", "d"
+    }, type = Integer.class))
     public void disco(ParameterizedContext context)
     {
         final CommandSender sender = context.getSender();
-        
+
         World world = null;
         if (sender instanceof User)
         {
             world = ((User)sender).getWorld();
         }
-        
+
         if (context.hasArg(0))
         {
             world = context.getArg(0, World.class);
@@ -50,7 +47,7 @@ public class DiscoCommand
                 return;
             }
         }
-        
+
         if (world == null)
         {
             context.sendMessage("fun", "&cNo world has been specified!");
@@ -62,7 +59,7 @@ public class DiscoCommand
         {
             illegalParameter(context, "fun", "&cThe delay has to be a number between 0 and %d", this.module.getConfig().maxDiscoDelay);
         }
-        
+
         DiscoTask task = this.activeTasks.remove(world.getName());
         if (task != null)
         {
@@ -91,14 +88,14 @@ public class DiscoCommand
             }
         }
     }
-    
+
     private class DiscoTask implements Runnable
     {
         private final World world;
         private long originalTime;
         private int taskID;
         private final long interval;
-        
+
         public DiscoTask(World world, final long delay)
         {
             this.world = world;
@@ -106,19 +103,19 @@ public class DiscoCommand
             this.taskID = -1;
             this.interval = delay;
         }
-        
+
         public World getWorld()
         {
             return this.world;
         }
-        
+
         public boolean start()
         {
             this.originalTime = this.world.getTime();
             this.taskID = module.getCore().getTaskManager().scheduleSyncRepeatingTask(module, this, 0, this.interval);
             return this.taskID != -1;
         }
-        
+
         public void stop()
         {
             if (this.taskID != -1)
@@ -131,7 +128,7 @@ public class DiscoCommand
                 }
             }
         }
-        
+
         @Override
         public void run()
         {

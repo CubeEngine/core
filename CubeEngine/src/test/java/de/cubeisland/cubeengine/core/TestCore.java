@@ -155,12 +155,14 @@ public class TestCore implements Core
     }
 
     @Override
-    public Match getMatcherManager() {
+    public Match getMatcherManager()
+    {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override
-    public InventoryGuardFactory getInventoryGuard() {
+    public InventoryGuardFactory getInventoryGuard()
+    {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 }

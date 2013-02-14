@@ -47,8 +47,8 @@ public class YamlCodec extends ConfigurationCodec
         else
         {
             container.values = (MapNode)Convert.wrapIntoNode(map);
-            Node revisionNode = container.values.getNodeAt("revision",PATH_SEPARATOR);
-            if (! (revisionNode instanceof NullNode))
+            Node revisionNode = container.values.getNodeAt("revision", PATH_SEPARATOR);
+            if (!(revisionNode instanceof NullNode))
             {
                 if (revisionNode instanceof IntNode)
                 {
@@ -79,7 +79,7 @@ public class YamlCodec extends ConfigurationCodec
     {
         StringBuilder sb = new StringBuilder();
         String offset = this.offset(off);
-        if (! (value instanceof NullNode)) // null-Node ?
+        if (!(value instanceof NullNode)) // null-Node ?
         {
             if (value instanceof StringNode) // String-Node ?
             {
@@ -87,7 +87,7 @@ public class YamlCodec extends ConfigurationCodec
                 if (string.contains(LINE_BREAK)) // MultiLine String
                 {
                     sb.append("|").append(LINE_BREAK).append(offset).append(OFFSET);
-                    sb.append(string.trim().replace(LINE_BREAK,LINE_BREAK+offset+OFFSET));
+                    sb.append(string.trim().replace(LINE_BREAK, LINE_BREAK + offset + OFFSET));
                 }
                 else if (this.needsQuote(string))
                 {
@@ -105,13 +105,13 @@ public class YamlCodec extends ConfigurationCodec
                 {
                     sb.append(LINE_BREAK);
                 }
-                sb.append(this.convertMap(container,((MapNode)value), off + 1, inCollection));
-                if (!sb.toString().endsWith(LINE_BREAK+LINE_BREAK))
+                sb.append(this.convertMap(container, ((MapNode)value), off + 1, inCollection));
+                if (!sb.toString().endsWith(LINE_BREAK + LINE_BREAK))
                 {
                     sb.append(LINE_BREAK);
                 }
             }
-            else  if (value instanceof ListNode) // List-Node? -> list the nodes
+            else if (value instanceof ListNode) // List-Node? -> list the nodes
             {
                 if (((ListNode)value).isEmpty())
                 {
@@ -119,7 +119,7 @@ public class YamlCodec extends ConfigurationCodec
                 }
                 for (Node listedNode : ((ListNode)value).getListedNodes()) //Convert Collection
                 {
-                    if (!sb.toString().endsWith(LINE_BREAK+LINE_BREAK))
+                    if (!sb.toString().endsWith(LINE_BREAK + LINE_BREAK))
                     {
                         sb.append(LINE_BREAK);
                     }
@@ -128,14 +128,14 @@ public class YamlCodec extends ConfigurationCodec
                     {
                         first = true;
                         sb.append(this.convertMap(container, (MapNode)listedNode, off + 2, true));
-                        if (!sb.toString().endsWith(LINE_BREAK+LINE_BREAK))
+                        if (!sb.toString().endsWith(LINE_BREAK + LINE_BREAK))
                         {
                             sb.append(LINE_BREAK);
                         }
                     }
                     else
                     {
-                        sb.append(this.convertValue(container, listedNode, off +1, true));
+                        sb.append(this.convertValue(container, listedNode, off + 1, true));
                     }
                 }
             }
@@ -147,7 +147,7 @@ public class YamlCodec extends ConfigurationCodec
         this.first = false;
         if (!inCollection)
         {
-            if (!sb.toString().endsWith(LINE_BREAK+LINE_BREAK))
+            if (!sb.toString().endsWith(LINE_BREAK + LINE_BREAK))
             {
                 sb.append(LINE_BREAK);
             }
@@ -159,12 +159,12 @@ public class YamlCodec extends ConfigurationCodec
     public String convertMap(CodecContainer container, MapNode values, int off, boolean inCollection)
     {
         StringBuilder sb = new StringBuilder();
-        Map<String,Node> map = values.getMappedNodes();
+        Map<String, Node> map = values.getMappedNodes();
         if (map.isEmpty())
         {
             return sb.append(this.offset(off)).append("{}").toString();
         }
-        for (Entry<String,Node> entry : map.entrySet())
+        for (Entry<String, Node> entry : map.entrySet())
         {
             String path = entry.getValue().getPath(PATH_SEPARATOR);
             String comment = this.buildComment(container, path, off);

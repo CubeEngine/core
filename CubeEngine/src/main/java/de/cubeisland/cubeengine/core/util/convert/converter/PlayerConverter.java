@@ -31,8 +31,8 @@ public class PlayerConverter implements Converter<OfflinePlayer>
     {
         if (node instanceof StringNode)
         {
-            return this.server.getOfflinePlayer(((StringNode) node).getValue());
+            return this.server.getOfflinePlayer(((StringNode)node).getValue());
         }
-        throw  new ConversionException("Invalid Node!"+ node.getClass());
+        throw new ConversionException("Invalid Node!" + node.getClass());
     }
 }

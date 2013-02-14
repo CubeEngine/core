@@ -48,7 +48,6 @@ public class ReflectedCommandFactory<T extends CubeCommand> implements CommandFa
     {
         Command annotation = (Command)rawAnnotation;
 
-
         String[] commandNames = annotation.names();
         if (commandNames.length == 0)
         {
@@ -101,12 +100,12 @@ public class ReflectedCommandFactory<T extends CubeCommand> implements CommandFa
             aliases,
             flags,
             params
-        );
+            );
         cmd.setAsync(annotation.async());
         cmd.setLoggable(annotation.loggable());
         return (T)cmd;
     }
-    
+
     @Override
     public List<T> parseCommands(Module module, Object holder)
     {

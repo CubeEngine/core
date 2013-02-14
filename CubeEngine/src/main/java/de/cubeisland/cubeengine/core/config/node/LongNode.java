@@ -1,18 +1,22 @@
 package de.cubeisland.cubeengine.core.config.node;
 
-public class LongNode extends Node {
+public class LongNode extends Node
+{
     private long value;
 
-    public LongNode(Long value) {
+    public LongNode(Long value)
+    {
         this.value = value;
     }
 
-    public long getValue() {
+    public long getValue()
+    {
         return value;
     }
 
     @Override
-    public String unwrap() {
+    public String unwrap()
+    {
         return String.valueOf(value);
     }
 }

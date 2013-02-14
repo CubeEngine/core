@@ -101,21 +101,23 @@ public class FileManager implements Cleanable
 
         this.fileSources = new ConcurrentHashMap<File, Resource>();
     }
-    
+
     public static boolean hideFile(File file)
     {
         if (runsOnWindows())
         {
             try
             {
-                return Runtime.getRuntime().exec(new String[] {"attrib", "+H", file.getAbsolutePath()}).waitFor() == 0;
+                return Runtime.getRuntime().exec(new String[] {
+                "attrib", "+H", file.getAbsolutePath()
+                }).waitFor() == 0;
             }
             catch (Exception e)
             {}
         }
         return false;
     }
-    
+
     public static boolean createSymLink(File source, File target)
     {
         final String[] command;
@@ -123,16 +125,22 @@ public class FileManager implements Cleanable
         {
             if (target.isDirectory())
             {
-                command = new String[] {"cmd", "/c", "mklink", "/d", source.getAbsolutePath(), target.getAbsolutePath()};
+                command = new String[] {
+                "cmd", "/c", "mklink", "/d", source.getAbsolutePath(), target.getAbsolutePath()
+                };
             }
             else
             {
-                command = new String[] {"cmd", "/c", "mklink", source.getAbsolutePath(), target.getAbsolutePath()};
+                command = new String[] {
+                "cmd", "/c", "mklink", source.getAbsolutePath(), target.getAbsolutePath()
+                };
             }
         }
         else
         {
-            command = new String[] {"ln", "-s", target.getAbsolutePath(), source.getAbsolutePath()};
+            command = new String[] {
+            "ln", "-s", target.getAbsolutePath(), source.getAbsolutePath()
+            };
         }
         try
         {

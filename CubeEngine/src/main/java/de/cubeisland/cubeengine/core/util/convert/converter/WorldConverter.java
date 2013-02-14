@@ -24,7 +24,7 @@ public class WorldConverter implements Converter<World>
     {
         if (node instanceof StringNode)
         {
-            String string = ((StringNode) node).getValue();
+            String string = ((StringNode)node).getValue();
             World world = null;
             if (string.contains("(") && string.contains(")"))
             {

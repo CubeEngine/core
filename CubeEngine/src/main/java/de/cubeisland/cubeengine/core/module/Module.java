@@ -335,7 +335,7 @@ public abstract class Module
         this.core.getPermissionManager().registerPermissions(this, permissions);
     }
 
-    public void registerCommand(CubeCommand command, String ... parents)
+    public void registerCommand(CubeCommand command, String... parents)
     {
         this.core.getCommandManager().registerCommand(command, parents);
     }

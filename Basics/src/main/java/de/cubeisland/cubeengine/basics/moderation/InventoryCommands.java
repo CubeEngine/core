@@ -25,9 +25,7 @@ public class InventoryCommands
         this.basics = basics;
     }
 
-    @Command(desc = "Allows you to see into the inventory of someone else.",
-            flags = @Flag(longName = "force", name = "f"),
-            usage = "<player>", min = 1, max = 1)
+    @Command(desc = "Allows you to see into the inventory of someone else.", flags = @Flag(longName = "force", name = "f"), usage = "<player>", min = 1, max = 1)
     public void invsee(ParameterizedContext context)
     {
         if (context.getSender() instanceof User)
@@ -58,7 +56,7 @@ public class InventoryCommands
             {
                 guard.blockPutInAll().blockTakeOutAll();
             }
-            guard.submitInventory(this.basics,true);
+            guard.submitInventory(this.basics, true);
             return;
         }
         context.sendMessage("basics", "&cThis command can only be used by a player!");
@@ -105,9 +103,8 @@ public class InventoryCommands
     }
 
     @Command(names = {
-        "clearinventory", "ci", "clear"  },
-        desc = "Clears the inventory", usage = "[player]",
-        flags = @Flag(longName = "removeArmor", name = "ra"), max = 1)
+        "clearinventory", "ci", "clear"
+    }, desc = "Clears the inventory", usage = "[player]", flags = @Flag(longName = "removeArmor", name = "ra"), max = 1)
     @SuppressWarnings("deprecation")
     public void clearinventory(ParameterizedContext context)
     {
@@ -147,7 +144,7 @@ public class InventoryCommands
             sender.sendMessage("basics", "&aCleared Inventory of &2%s&a!", user.getName());
             if (BasicsPerm.COMMAND_CLEARINVENTORY_NOTIFY.isAuthorized(user))
             {
-                user.sendMessage("basics", "&eInventory cleared by &2%s&e!",sender.getName());
+                user.sendMessage("basics", "&eInventory cleared by &2%s&e!", sender.getName());
             }
         }
         else

@@ -54,7 +54,7 @@ public class RoleMirrorConverter implements Converter<RoleMirror>
         }
         String mainworld = readMap.getMappedNodes().keySet().iterator().next();
         RoleMirror mirror = new RoleMirror(this.module, mainworld);
-        for (Map.Entry<String,Node> worlds : readMap.getMappedNodes().entrySet())
+        for (Map.Entry<String, Node> worlds : readMap.getMappedNodes().entrySet())
         {
             if (worlds.getKey().equals(mainworld))
             {
@@ -72,10 +72,11 @@ public class RoleMirrorConverter implements Converter<RoleMirror>
             {
                 if (inList.unwrap().equals("roles"))
                 {
-                    roles =  true;
-                }else if (inList.unwrap().equals("users"))
+                    roles = true;
+                }
+                else if (inList.unwrap().equals("users"))
                 {
-                    users =  true;
+                    users = true;
                 }
             }
             mirror.setWorld(worldName, roles, users);

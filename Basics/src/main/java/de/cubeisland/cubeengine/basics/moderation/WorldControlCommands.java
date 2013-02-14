@@ -33,9 +33,7 @@ public class WorldControlCommands
         this.config = basics.getConfiguration();
     }
 
-    @Command(desc = "Changes the weather", min = 1, max = 3,
-            usage = "<sun|rain|storm> [duration] [in <world>]",
-            params = @Param(names = "in", type = World.class))
+    @Command(desc = "Changes the weather", min = 1, max = 3, usage = "<sun|rain|storm> [duration] [in <world>]", params = @Param(names = "in", type = World.class))
     public void weather(ParameterizedContext context)
     {
         User sender = null;
@@ -268,7 +266,8 @@ public class WorldControlCommands
 
     @Command(desc = "Gets rid of living mobs nearby you", flags = {
         @Flag(longName = "lightning", name = "l"), // die with style
-        @Flag(longName = "all", name = "a") // infinite radius
+        @Flag(longName = "all", name = "a")
+    // infinite radius
     }, params = @Param(names = "in", type = World.class), usage = "[types...] [radius] [in world] [-l] [-all]")
     public void butcher(ParameterizedContext context)
     {

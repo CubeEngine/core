@@ -20,12 +20,11 @@ public class MaterialMatcher
 {
     //TODO rename item ; is it possible?
     private THashMap<String, ImmutableItemStack> items;
-    private THashMap<Material,TShortObjectHashMap<String>> itemnames;
+    private THashMap<Material, TShortObjectHashMap<String>> itemnames;
 
     private THashMap<String, ImmutableItemStack> bukkitnames;
 
     private MaterialDataMatcher materialDataMatcher;
-
 
     private final Set<Material> repairableMaterials = Collections.synchronizedSet(
         EnumSet.of(
@@ -44,12 +43,11 @@ public class MaterialMatcher
             Material.FISHING_ROD,
             Material.SHEARS));
 
-
     MaterialMatcher(MaterialDataMatcher materialDataMatcher)
     {
         this.materialDataMatcher = materialDataMatcher;
         this.items = new THashMap<String, ImmutableItemStack>();
-        this.itemnames = new THashMap<Material,TShortObjectHashMap<String>>();
+        this.itemnames = new THashMap<Material, TShortObjectHashMap<String>>();
         this.bukkitnames = new THashMap<String, ImmutableItemStack>();
         TreeMap<String, TreeMap<Short, List<String>>> readItems = this.readItems();
         for (String item : readItems.keySet())
@@ -62,7 +60,7 @@ public class MaterialMatcher
         // Read Bukkit names
         for (Material mat : Material.values())
         {
-            this.bukkitnames.put(mat.name(), new ImmutableItemStack(mat, 0, (short) 0));
+            this.bukkitnames.put(mat.name(), new ImmutableItemStack(mat, 0, (short)0));
         }
     }
 
@@ -85,10 +83,10 @@ public class MaterialMatcher
             if (dataMap == null)
             {
                 dataMap = new TShortObjectHashMap<String>();
-                this.itemnames.put(material,dataMap);
+                this.itemnames.put(material, dataMap);
             }
             dataMap.put(data, names.get(0));
-            ImmutableItemStack item = new ImmutableItemStack(material,0,data);
+            ImmutableItemStack item = new ImmutableItemStack(material, 0, data);
             for (String name : names)
             {
                 this.items.put(name.toLowerCase(Locale.ENGLISH), item);
@@ -96,7 +94,7 @@ public class MaterialMatcher
         }
         catch (IllegalArgumentException ex)
         {
-            CubeEngine.getLogger().warning("Unkown Material: "+materialName);
+            CubeEngine.getLogger().warning("Unkown Material: " + materialName);
             return;
         }
     }
@@ -310,8 +308,6 @@ public class MaterialMatcher
         return item.clone();
     }
 
-
-
     /**
      * Tries to match a Material for given name
      *
@@ -357,40 +353,41 @@ public class MaterialMatcher
         return this.getNameForItem(item.getType(), item.getDurability());
     }
 
-    public String getNameForItem(Material mat, short data) {
-        TShortObjectHashMap<String > dataMap = this.itemnames.get(mat);
+    public String getNameForItem(Material mat, short data)
+    {
+        TShortObjectHashMap<String> dataMap = this.itemnames.get(mat);
         if (dataMap == null)
         {
-            CubeEngine.getLogger().warning("Unknown Item! ID: "+mat+ " DATA: "+ data);
+            CubeEngine.getLogger().warning("Unknown Item! ID: " + mat + " DATA: " + data);
             return null;
         }
         String itemName = dataMap.get(data);
         if (itemName == null)
         {
-            itemName = dataMap.get((short) 0);
+            itemName = dataMap.get((short)0);
             if (itemName == null)
             {
-                CubeEngine.getLogger().warning("Unknown Item! ID: "+mat+ " DATA: "+ data);
-                return mat.name()+":"+data;
+                CubeEngine.getLogger().warning("Unknown Item! ID: " + mat + " DATA: " + data);
+                return mat.name() + ":" + data;
             }
-            itemName+=":"+data;
+            itemName += ":" + data;
         }
         return itemName;
     }
 
     public String getNameForBlock(Material mat, Byte blockData)
     {
-        TShortObjectHashMap<String > dataMap = this.itemnames.get(mat);
+        TShortObjectHashMap<String> dataMap = this.itemnames.get(mat);
         if (dataMap == null)
         {
-            CubeEngine.getLogger().warning("Unknown Block! ID: "+mat+ " DATA: "+ blockData);
+            CubeEngine.getLogger().warning("Unknown Block! ID: " + mat + " DATA: " + blockData);
             return null;
         }
-        String itemName = dataMap.get((short) 0);
-        String data = Match.materialData().getDataNameFor(mat,blockData);
+        String itemName = dataMap.get((short)0);
+        String data = Match.materialData().getDataNameFor(mat, blockData);
         if (data == null)
         {
-            itemName += ":"+blockData;
+            itemName += ":" + blockData;
         }
         else
         {
@@ -401,7 +398,8 @@ public class MaterialMatcher
 
     private static final class ImmutableItemStack extends ItemStack
     {
-        private ImmutableItemStack(Material type, int amount, short damage) {
+        private ImmutableItemStack(Material type, int amount, short damage)
+        {
             super(type, amount, damage);
         }
     }

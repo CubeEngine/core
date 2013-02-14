@@ -38,24 +38,26 @@ public class AccountManager
         this.accountStorage = module.getAccountsStorage();
         this.transactionLogger = new CubeLogger("conomy_transactions");
         if (this.module.getConfig().enableLogging)
-        try
-        {   CubeFileHandler handler = new CubeFileHandler(LogLevel.ALL,
-                new File(this.module.getFileManager().getLogDir(),"conomy_transactions").toString());
-            this.transactionLogger.addHandler(handler);
-            handler.setFormatter(new Formatter() {
-                @Override
-                public String format(LogRecord record) {
-                    StringBuilder sb = new StringBuilder();
-                    sb.append(dateFormat.format(new Date(record.getMillis())))
-                    .append(" ").append(record.getMessage());
-                    return sb.toString();
-                }
-            });
-        }
-        catch (Exception ex)
-        {
-            throw new IllegalStateException("Could not create handler for transaction-logger",ex);
-        }
+            try
+            {
+                CubeFileHandler handler = new CubeFileHandler(LogLevel.ALL,
+                    new File(this.module.getFileManager().getLogDir(), "conomy_transactions").toString());
+                this.transactionLogger.addHandler(handler);
+                handler.setFormatter(new Formatter() {
+                    @Override
+                    public String format(LogRecord record)
+                    {
+                        StringBuilder sb = new StringBuilder();
+                        sb.append(dateFormat.format(new Date(record.getMillis())))
+                            .append(" ").append(record.getMessage());
+                        return sb.toString();
+                    }
+                });
+            }
+            catch (Exception ex)
+            {
+                throw new IllegalStateException("Could not create handler for transaction-logger", ex);
+            }
     }
 
     public AccountStorage getStorage()
@@ -338,7 +340,7 @@ public class AccountManager
     {
         if (target == null)
         {
-            return this.transaction(target,source,-amount);
+            return this.transaction(target, source, -amount);
         }
         if (!(source == null || target == null))
             if (!source.getCurrency().canConvert(target.getCurrency()))

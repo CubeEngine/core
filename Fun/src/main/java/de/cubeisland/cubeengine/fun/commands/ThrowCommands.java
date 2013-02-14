@@ -49,7 +49,7 @@ public class ThrowCommands
         this.thrownItems = new THashMap<String, ThrowTask>();
         this.throwListener = new ThrowListener();
         fun.registerListener(this.throwListener);
-        
+
         PermissionManager perm = fun.getCore().getPermissionManager();
         for (EntityType type : EntityType.values())
         {
@@ -60,14 +60,9 @@ public class ThrowCommands
         }
     }
 
-    @Command(
-        names = "throw",
-        desc = "Throw something!",
-        max = 2,
-        params = @Param(names = {"delay", "d"}, type = Integer.class),
-        flags = @Flag(longName = "unsafe", name = "u"),
-        usage = "<material> [amount] [delay <value>] [-unsafe]"
-    )
+    @Command(names = "throw", desc = "Throw something!", max = 2, params = @Param(names = {
+    "delay", "d"
+    }, type = Integer.class), flags = @Flag(longName = "unsafe", name = "u"), usage = "<material> [amount] [delay <value>] [-unsafe]")
     public void throwCommand(ParameterizedContext context)
     {
         if (!(context.getSender() instanceof CommandSender))
@@ -89,24 +84,24 @@ public class ThrowCommands
             }
             task.stop(showNotification = false);
         }
-        
+
         if (context.getArgCount() == 0)
         {
             invalidUsage(context, "fun", "&cYou have to add the material you want to throw.");
         }
-        
+
         int amount = context.getArg(1, int.class, -1);
         if ((amount > this.fun.getConfig().maxThrowNumber || amount < 1) && amount != -1)
         {
             illegalParameter(context, "fun", "&cThe amount has to be a number from 1 to %d", this.fun.getConfig().maxThrowNumber);
         }
-        
+
         int delay = context.getParam("delay", 3);
         if (delay > this.fun.getConfig().maxThrowDelay || delay < 0)
         {
             illegalParameter(context, "fun", "&cThe delay has to be a number from 0 to %d", this.fun.getConfig().maxThrowDelay);
         }
-        
+
         String object = context.getString(0);
         if (type == null)
         {
@@ -126,7 +121,7 @@ public class ThrowCommands
         {
             denyAccess(context, "fun", "&cYou are not allowed to throw this");
         }
-        
+
         if ((BUGGED_ENTITES.contains(type) || Match.entity().isMonster(type)) && !context.hasFlag("u"))
         {
             context.sendMessage("fun", "&eThis object can only be thrown in unsafe mode. Add -u to enable the unsafe mode.");
@@ -163,7 +158,7 @@ public class ThrowCommands
             this.preventDamage = preventDamage;
             this.save = this.isSafe(type.getEntityClass());
         }
-        
+
         private boolean isSafe(Class entityClass)
         {
             if (Explosive.class.isAssignableFrom(entityClass))
@@ -181,27 +176,27 @@ public class ThrowCommands
         {
             return this.user;
         }
-        
+
         public EntityType getType()
         {
             return this.type;
         }
-        
+
         public int getInterval()
         {
             return this.interval;
         }
-        
+
         public boolean getPreventDamage()
         {
             return this.preventDamage;
         }
-        
+
         public boolean start()
         {
             return this.start(true);
         }
-        
+
         public boolean start(boolean notify)
         {
             if (this.amount == -1 && notify)
@@ -212,12 +207,12 @@ public class ThrowCommands
             this.taskId = fun.getCore().getTaskManager().scheduleSyncRepeatingTask(fun, this, 0, this.interval);
             return this.taskId != -1;
         }
-        
+
         public void stop()
         {
             this.stop(true);
         }
-        
+
         public void stop(boolean notify)
         {
             if (this.taskId != -1)
@@ -237,7 +232,7 @@ public class ThrowCommands
                 this.taskId = -1;
             }
         }
-    
+
         private void throwItem()
         {
             final Location location = this.user.getEyeLocation();
@@ -321,7 +316,7 @@ public class ThrowCommands
                 event.blockList().clear();
             }
         }
-        
+
         @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
         public void onEntityByEntityDamage(EntityDamageByEntityEvent event)
         {
@@ -330,7 +325,7 @@ public class ThrowCommands
                 event.setDamage(0);
             }
         }
-        
+
         private boolean handleEntity(final Entity entity)
         {
             if (this.entities.contains(entity) && this.removal != entity)

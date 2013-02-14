@@ -226,7 +226,7 @@ public class LogManager
             logs.offer(toLog);
         }
         long a = System.currentTimeMillis();
-        int logSize =  logs.size();
+        int logSize = logs.size();
         try
         {
             for (QueuedLog log : logs)
@@ -254,7 +254,7 @@ public class LogManager
         }
         a = System.currentTimeMillis() - a;
         if (logSize == logBuffer)
-            System.out.println("Logged "+logSize+ " logs in: " + a / 1000 + "." + a % 1000 + "s | remaining logs: " + queuedLogs.size());
+            System.out.println("Logged " + logSize + " logs in: " + a / 1000 + "." + a % 1000 + "s | remaining logs: " + queuedLogs.size());
     }
 
     /**
@@ -292,14 +292,14 @@ public class LogManager
             if (oldLines == null)
             {
                 this.database.preparedExecute(this.getClass(), "storeSignLog", logID,
-                        null, null,null,null,
+                        null, null, null, null,
                         newLines[0], newLines[1], newLines[2], newLines[3]);
             }
             else if (newLines == null)
             {
                 this.database.preparedExecute(this.getClass(), "storeSignLog", logID,
                         oldLines[0], oldLines[1], oldLines[2], oldLines[3],
-                        null, null,null,null);
+                        null, null, null, null);
             }
             else
             {

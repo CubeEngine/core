@@ -98,7 +98,8 @@ public class Roles extends Module
         return api;
     }
 
-    public RolesConfig getConfig() {
+    public RolesConfig getConfig()
+    {
         return config;
     }
 }

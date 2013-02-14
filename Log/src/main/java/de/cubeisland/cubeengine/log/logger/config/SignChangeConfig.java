@@ -6,7 +6,7 @@ public class SignChangeConfig extends LoggerConfig
 {
     public SignChangeConfig()
     {
-     super(false);
+        super(false);
     }
 
     @Override

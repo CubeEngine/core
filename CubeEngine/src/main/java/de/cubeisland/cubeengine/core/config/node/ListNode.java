@@ -4,10 +4,13 @@ import de.cubeisland.cubeengine.core.util.convert.Convert;
 
 import java.util.ArrayList;
 
-public class ListNode extends ParentNode{
+public class ListNode extends ParentNode
+{
 
     private ArrayList<Node> listedNodes = new ArrayList<Node>();
-    public ListNode(Iterable list) {
+
+    public ListNode(Iterable list)
+    {
         if (list != null)
         {
             for (Object object : list)
@@ -19,7 +22,8 @@ public class ListNode extends ParentNode{
         }
     }
 
-    public ListNode(Object[] array) {
+    public ListNode(Object[] array)
+    {
         if (array != null)
         {
             for (Object object : array)
@@ -31,31 +35,35 @@ public class ListNode extends ParentNode{
         }
     }
 
-    private ListNode() {
-    }
+    private ListNode()
+    {}
 
-    public ArrayList<Node> getListedNodes() {
+    public ArrayList<Node> getListedNodes()
+    {
         return listedNodes;
     }
 
-    public static ListNode emptyList() {
+    public static ListNode emptyList()
+    {
         return new ListNode();
     }
 
-    public void addNode(Node node) {
+    public void addNode(Node node)
+    {
         this.listedNodes.add(node);
         node.setParentNode(this);
     }
 
     @Override
-    protected Node setExactNode(String key, Node node) {
+    protected Node setExactNode(String key, Node node)
+    {
         if (key.startsWith("["))
         {
             try
             {
                 int pos = Integer.valueOf(key.substring(1));
                 node.setParentNode(this);
-                return this.listedNodes.set(pos,node);
+                return this.listedNodes.set(pos, node);
             }
             catch (NumberFormatException ex)
             {
@@ -73,7 +81,8 @@ public class ListNode extends ParentNode{
     }
 
     @Override
-    public Node getExactNode(String key) {
+    public Node getExactNode(String key)
+    {
         if (key.startsWith("["))
         {
             try
@@ -97,7 +106,8 @@ public class ListNode extends ParentNode{
     }
 
     @Override
-    protected Node removeExactNode(String key) {
+    protected Node removeExactNode(String key)
+    {
         if (key.startsWith("["))
         {
             try
@@ -108,7 +118,8 @@ public class ListNode extends ParentNode{
             catch (NumberFormatException ex)
             {
                 throw new IllegalArgumentException("Cannot remove Node! Could not parse ListPath!", ex);
-            }catch (IndexOutOfBoundsException ex)
+            }
+            catch (IndexOutOfBoundsException ex)
             {
                 throw new IllegalArgumentException("Cannot remove Node! Out of Range!", ex);
             }
@@ -119,17 +130,20 @@ public class ListNode extends ParentNode{
         }
     }
 
-    public Node setNode(IntNode keyNode, Node node) {
-        return this.setExactNode("["+keyNode.getValue(),node);
+    public Node setNode(IntNode keyNode, Node node)
+    {
+        return this.setExactNode("[" + keyNode.getValue(), node);
     }
 
     @Override
-    public boolean isEmpty() {
+    public boolean isEmpty()
+    {
         return this.listedNodes.isEmpty();
     }
 
     @Override
-    protected String getPath(Node node, String path, String pathSeparator) {
+    protected String getPath(Node node, String path, String pathSeparator)
+    {
         int pos = this.listedNodes.indexOf(node);
         if (pos == -1)
         {
@@ -137,15 +151,15 @@ public class ListNode extends ParentNode{
         }
         if (path.isEmpty())
         {
-            path = "["+pos;
+            path = "[" + pos;
         }
         else
         {
-            path = "["+pos+pathSeparator+path;
+            path = "[" + pos + pathSeparator + path;
         }
         if (this.getParentNode() != null)
         {
-           return this.getParentNode().getPath(this, path, pathSeparator);
+            return this.getParentNode().getPath(this, path, pathSeparator);
         }
         return path;
     }

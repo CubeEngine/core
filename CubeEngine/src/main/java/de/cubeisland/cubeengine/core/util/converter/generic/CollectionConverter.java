@@ -67,7 +67,8 @@ public class CollectionConverter
     }
 
     @SuppressWarnings("unchecked")
-    public static <S extends Collection> S getCollectionFor(ParameterizedType ptype) {
+    public static <S extends Collection> S getCollectionFor(ParameterizedType ptype)
+    {
         try
         {
             Class<S> collectionType = (Class)ptype.getRawType();

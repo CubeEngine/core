@@ -59,15 +59,17 @@ public class ParameterizedContextFactoryTest extends TestCase
     {
         final ParameterizedContextFactory factory = new ParameterizedContextFactory(
             Arrays.asList(new CommandFlag("a", "all")),
-            Arrays.asList(new CommandParameter("test", new String[]{}, String.class, false))
-        );
+            Arrays.asList(new CommandParameter("test", new String[] {}, String.class, false))
+            );
 
         Stack<String> labels = new Stack<String>();
         labels.add("testCommand");
         CommandSender sender = new TestConsoleSender();
         Module module = this.mm.getModule("test");
         CubeCommand testCommand = new TestCommand(module, labels.get(0), "desscription", factory);
-        ParameterizedContext ctx = factory.parse(testCommand, sender, labels, new String[] {"-a", "test", "\"value\""});
+        ParameterizedContext ctx = factory.parse(testCommand, sender, labels, new String[] {
+        "-a", "test", "\"value\""
+        });
 
         assertEquals(ctx.hasFlag("a"), true);
         assertEquals(ctx.getParam("test"), "value");

@@ -9,7 +9,7 @@ import org.bukkit.Location;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-public class SignMarketBlockManager extends SingleKeyStorage<Long,SignMarketBlockModel>
+public class SignMarketBlockManager extends SingleKeyStorage<Long, SignMarketBlockModel>
 {
     private static final int REVISION = 1;
     private final Signmarket module;
@@ -22,7 +22,8 @@ public class SignMarketBlockManager extends SingleKeyStorage<Long,SignMarketBloc
     }
 
     @Override
-    public void initialize() {
+    public void initialize()
+    {
         super.initialize();
         try
         {
@@ -37,7 +38,7 @@ public class SignMarketBlockManager extends SingleKeyStorage<Long,SignMarketBloc
         }
         catch (SQLException ex)
         {
-            throw new StorageException("Could not initialize SignMarketBlockManager",ex);
+            throw new StorageException("Could not initialize SignMarketBlockManager", ex);
         }
     }
 

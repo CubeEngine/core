@@ -404,7 +404,7 @@ public class User extends UserBase implements LinkingModel<Long>, CommandSender
         {
             this.isLoggedIn = this.checkPassword(password);
         }
-        CubeEngine.getEventManager().fireEvent(new UserAuthorizedEvent(CubeEngine.getCore(),this));
+        CubeEngine.getEventManager().fireEvent(new UserAuthorizedEvent(CubeEngine.getCore(), this));
         return this.isLoggedIn;
     }
 

@@ -17,7 +17,6 @@ public enum FunPerm implements Permission
     private String permission;
     private PermDefault def;
 
-
     public static final String BASE = "cubeengine.fun.";
 
     private FunPerm()

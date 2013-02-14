@@ -10,11 +10,13 @@ import org.bukkit.event.block.BlockFadeEvent;
 
 import static de.cubeisland.cubeengine.log.logger.BlockLogger.BlockChangeCause.FADE;
 
-public class BlockFadeLogger extends     BlockLogger<BlockFadeConfig>
+public class BlockFadeLogger extends BlockLogger<BlockFadeConfig>
 {
-    public BlockFadeLogger(Log module) {
+    public BlockFadeLogger(Log module)
+    {
         super(module, BlockFadeConfig.class);
     }
+
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onBlockFade(BlockFadeEvent event)
     {
@@ -29,6 +31,5 @@ public class BlockFadeLogger extends     BlockLogger<BlockFadeConfig>
             }
         }
     }
-
 
 }

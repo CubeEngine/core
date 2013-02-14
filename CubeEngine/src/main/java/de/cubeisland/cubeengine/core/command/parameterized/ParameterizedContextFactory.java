@@ -14,7 +14,7 @@ import java.util.*;
 
 public class ParameterizedContextFactory implements ContextFactory
 {
-    private final Map<String, CommandFlag>      flagMap;
+    private final Map<String, CommandFlag> flagMap;
     private final Map<String, CommandParameter> paramMap;
 
     public ParameterizedContextFactory()

@@ -16,18 +16,18 @@ public class TestConfig2 extends Configuration
     @Option("string2")
     @Comment("string1 on revision 1 will update to string2")
     public String string = "This will update!";
-/*
-    public static class TestConfig2Updater implements ConfigurationUpdater
-    {
-        @Override
-        public Map<String, Object> update(Map<String, Object> loadedConfig, int fromRevision)
-        {
-            if (fromRevision == 1)
-            {
-                loadedConfig.put("string2", loadedConfig.get("string1"));
-            }
-            return loadedConfig;
-        }
-    }*/
+    /*
+     public static class TestConfig2Updater implements ConfigurationUpdater
+     {
+     @Override
+     public Map<String, Object> update(Map<String, Object> loadedConfig, int fromRevision)
+     {
+     if (fromRevision == 1)
+     {
+     loadedConfig.put("string2", loadedConfig.get("string1"));
+     }
+     return loadedConfig;
+     }
+     }*/
     //TODO rewrite test for updater
 }

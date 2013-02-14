@@ -9,7 +9,8 @@ import java.util.List;
 
 public class ChatConfig extends LoggerConfig
 {
-    public ChatConfig() {
+    public ChatConfig()
+    {
         super(false);
     }
 

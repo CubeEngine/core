@@ -22,7 +22,7 @@ public class FloatConverter extends BasicConverter<Float>
         }
         catch (NumberFormatException e)
         {
-            throw  new ConversionException("Invalid Node!"+ node.getClass(), e);
+            throw new ConversionException("Invalid Node!" + node.getClass(), e);
         }
     }
 }

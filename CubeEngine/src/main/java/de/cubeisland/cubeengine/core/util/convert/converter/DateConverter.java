@@ -21,8 +21,8 @@ public class DateConverter implements Converter<Date>
     {
         if (node instanceof StringNode)
         {
-            return Date.valueOf(((StringNode) node).getValue());
+            return Date.valueOf(((StringNode)node).getValue());
         }
-        throw  new ConversionException("Invalid Node!"+ node.getClass());
+        throw new ConversionException("Invalid Node!" + node.getClass());
     }
 }

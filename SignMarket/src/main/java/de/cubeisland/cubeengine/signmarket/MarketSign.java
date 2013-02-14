@@ -33,7 +33,7 @@ public class MarketSign implements InventoryHolder
     private final Location location;
     private SignMarketInfoModel info;
     private SignMarketBlockModel blockInfo;
-    
+
     private TLongLongHashMap breakingSign = new TLongLongHashMap();
 
     private Inventory inventory = null;
@@ -101,13 +101,13 @@ public class MarketSign implements InventoryHolder
                 {
                     if (this.module.getConfig().allowOverStackedOutOfSign)
                     {
-                        this.location.getWorld().dropItemNaturally(location,item);
+                        this.location.getWorld().dropItemNaturally(location, item);
                     }
                     else
                     {
                         for (ItemStack itemStack : splitIntoMaxItems(item, item.getMaxStackSize()))
                         {
-                            this.location.getWorld().dropItemNaturally(location,itemStack);
+                            this.location.getWorld().dropItemNaturally(location, itemStack);
                         }
                     }
                 }
@@ -229,17 +229,21 @@ public class MarketSign implements InventoryHolder
                     }
                     if (MarketSignPerm.SIGN_INVENTORY_SHOW.isAuthorized(user))
                     {
-                        Runnable onClose =  new Runnable() {
+                        Runnable onClose = new Runnable() {
                             @Override
-                            public void run() {
+                            public void run()
+                            {
                                 MarketSign.this.saveToDatabase();
-                            }};
-                        Runnable onChange =  new Runnable() {
+                            }
+                        };
+                        Runnable onChange = new Runnable() {
                             @Override
-                            public void run() {
+                            public void run()
+                            {
                                 MarketSign.this.setStock(InventoryUtil.getAmountOf(MarketSign.this.getInventory(), MarketSign.this.getItem()));
                                 MarketSign.this.updateSign();
-                            }};
+                            }
+                        };
                         InventoryGuardFactory guard = InventoryGuardFactory.prepareInventory(this.getInventory(), user)
                                 .blockPutInAll().blockTakeOutAll()
                                 .onClose(onClose).onChange(onChange);
@@ -267,10 +271,11 @@ public class MarketSign implements InventoryHolder
                     }
                     else
                     {
-                        user.sendMessage("signmarket","&cYou are not allowed to see the market-signs inventories");
+                        user.sendMessage("signmarket", "&cYou are not allowed to see the market-signs inventories");
                     }
                 }
-                else // no sneak -> empty & break signs
+                else
+                // no sneak -> empty & break signs
                 {
                     if (this.isOwner(user) || MarketSignPerm.SIGN_INVENTORY_ACCESS_OTHER.isAuthorized(user))
                     {
@@ -278,12 +283,12 @@ public class MarketSign implements InventoryHolder
                         {
                             int amount = this.putItems(user, false);
                             if (amount != 0)
-                                user.sendMessage("signmarket","&aAdded &6%d&ax &6%s &ato the stock!",amount, Match.material().getNameFor(this.info.getItem()));
+                                user.sendMessage("signmarket", "&aAdded &6%d&ax &6%s &ato the stock!", amount, Match.material().getNameFor(this.info.getItem()));
                             return true;
                         }
                         else if (itemInHand != null && itemInHand.getTypeId() != 0)
                         {
-                            user.sendMessage("signmarket","&cUse bare hands to break the sign!");
+                            user.sendMessage("signmarket", "&cUse bare hands to break the sign!");
                             return true;
                         }
                     }
@@ -297,7 +302,7 @@ public class MarketSign implements InventoryHolder
                             }
                             else
                             {
-                                user.sendMessage("signmarket","&cYou are not allowed to break your own market-signs!");
+                                user.sendMessage("signmarket", "&cYou are not allowed to break your own market-signs!");
                             }
                         }
                         else if (this.info.isAdminSign())
@@ -308,7 +313,7 @@ public class MarketSign implements InventoryHolder
                             }
                             else
                             {
-                                user.sendMessage("signmarket","&cYou are not allowed to break admin-market-signs!");
+                                user.sendMessage("signmarket", "&cYou are not allowed to break admin-market-signs!");
                             }
                         }
                         else
@@ -319,11 +324,12 @@ public class MarketSign implements InventoryHolder
                             }
                             else
                             {
-                                user.sendMessage("signmarket","&cYou are not allowed to break others market-signs!");
+                                user.sendMessage("signmarket", "&cYou are not allowed to break others market-signs!");
                             }
                         }
                     }
-                    else // first empty items then break
+                    else
+                    // first empty items then break
                     {
                         if (this.info.isAdminSign())
                         {
@@ -344,10 +350,11 @@ public class MarketSign implements InventoryHolder
                             }
                             else
                             {
-                                user.sendMessage("signmarket","&cYou are not allowed to break your own market-signs!");
+                                user.sendMessage("signmarket", "&cYou are not allowed to break your own market-signs!");
                             }
                         }
-                        else // not owner / not admin
+                        else
+                        // not owner / not admin
                         {
                             if (MarketSignPerm.SIGN_DESTROY_OTHER.isAuthorized(user))
                             {
@@ -355,7 +362,7 @@ public class MarketSign implements InventoryHolder
                             }
                             else
                             {
-                                user.sendMessage("signmarket","&cYou are not allowed to destroy others market-signs!");
+                                user.sendMessage("signmarket", "&cYou are not allowed to destroy others market-signs!");
                             }
                         }
                     }
@@ -402,11 +409,11 @@ public class MarketSign implements InventoryHolder
         {
             if (this.isAdminSign())
             {
-                user.sendMessage("signmarket", "&3Buy: &6%d &ffor &6%s &ffrom &6%s",this.getAmount(),this.parsePrice(),"Server");
+                user.sendMessage("signmarket", "&3Buy: &6%d &ffor &6%s &ffrom &6%s", this.getAmount(), this.parsePrice(), "Server");
             }
             else
             {
-                user.sendMessage("signmarket", "&3Buy: &6%d &ffor &6%s &ffrom &2%s",this.getAmount(),this.parsePrice(),
+                user.sendMessage("signmarket", "&3Buy: &6%d &ffor &6%s &ffrom &2%s", this.getAmount(), this.parsePrice(),
                         this.module.getUserManager().getUser(this.info.owner).getName());
             }
         }
@@ -414,61 +421,61 @@ public class MarketSign implements InventoryHolder
         {
             if (this.isAdminSign())
             {
-                user.sendMessage("signmarket", "&3Sell: &6%d &ffor &6%s &fto &6%s",this.getAmount(),this.parsePrice(),"Server");
+                user.sendMessage("signmarket", "&3Sell: &6%d &ffor &6%s &fto &6%s", this.getAmount(), this.parsePrice(), "Server");
             }
             else
             {
-                user.sendMessage("signmarket", "&3Sell: &6%d &ffor &6%s &fto &2%s",this.getAmount(),this.parsePrice(),
+                user.sendMessage("signmarket", "&3Sell: &6%d &ffor &6%s &fto &2%s", this.getAmount(), this.parsePrice(),
                         this.module.getUserManager().getUser(this.info.owner).getName());
             }
         }
         if (this.getItem() == null)
         {
-            user.sendMessage("signmarket","&5No Item");
+            user.sendMessage("signmarket", "&5No Item");
         }
         else if (this.getItem().getItemMeta().hasDisplayName() || this.getItem().getItemMeta().hasLore() || !this.getItem().getEnchantments().isEmpty())
         {
             if (this.getItem().getItemMeta().hasDisplayName())
             {
-                user.sendMessage("&e"+Match.material().getNameFor(this.getItem())+ " &f(&6"+this.getItem().getItemMeta().getDisplayName()+"&f)");
+                user.sendMessage("&e" + Match.material().getNameFor(this.getItem()) + " &f(&6" + this.getItem().getItemMeta().getDisplayName() + "&f)");
                 if (this.getItem().getItemMeta().hasLore())
                 {
-                    for (String loreLine: this.getItem().getItemMeta().getLore())
+                    for (String loreLine : this.getItem().getItemMeta().getLore())
                     {
-                        user.sendMessage(" &e-&f "+ loreLine);
+                        user.sendMessage(" &e-&f " + loreLine);
                     }
                 }
                 if (!this.getItem().getEnchantments().isEmpty())
                 {
-                    user.sendMessage("signmarket","&6Enchantments:");
+                    user.sendMessage("signmarket", "&6Enchantments:");
                 }
-                for (Map.Entry<Enchantment,Integer> entry : this.getItem().getEnchantments().entrySet())
+                for (Map.Entry<Enchantment, Integer> entry : this.getItem().getEnchantments().entrySet())
                 {
-                    user.sendMessage(" &e-&6 " + Match.enchant().nameFor(entry.getKey())+ " &e"+ RomanNumbers.intToRoman(entry.getValue()));
+                    user.sendMessage(" &e-&6 " + Match.enchant().nameFor(entry.getKey()) + " &e" + RomanNumbers.intToRoman(entry.getValue()));
                 }
             }
             else
             {
-                user.sendMessage("&e"+Match.material().getNameFor(this.getItem()));
+                user.sendMessage("&e" + Match.material().getNameFor(this.getItem()));
             }
         }
         else
         {
-            user.sendMessage("&6"+Match.material().getNameFor(this.getItem()));
+            user.sendMessage("&6" + Match.material().getNameFor(this.getItem()));
         }
         if (!this.isAdminSign())
         {
             if (this.isBuySign() == null)
             {
-                user.sendMessage("signmarket","&5New Sign");
+                user.sendMessage("signmarket", "&5New Sign");
             }
             if (this.isBuySign())
             {
-                user.sendMessage("signmarket","&3In stock: &6%d&f/&63456",this.info.stock);
+                user.sendMessage("signmarket", "&3In stock: &6%d&f/&63456", this.info.stock);
             }
             else
             {
-                user.sendMessage("signmarket","&3In stock: &6%d&f/&6%d",this.info.stock, this.info.demand);
+                user.sendMessage("signmarket", "&3In stock: &6%d&f/&6%d", this.info.stock, this.info.demand);
             }
         }
     }
@@ -488,7 +495,7 @@ public class MarketSign implements InventoryHolder
         int amount;
         if (all)
         {
-            amount = getAmountOf(user.getInventory(),user.getItemInHand());
+            amount = getAmountOf(user.getInventory(), user.getItemInHand());
         }
         else
         {
@@ -498,7 +505,7 @@ public class MarketSign implements InventoryHolder
         ItemStack item = this.getItem().clone();
         item.setAmount(amount);
         user.getInventory().removeItem(item);
-        Map<Integer,ItemStack> additional = this.addToInventory(item);
+        Map<Integer, ItemStack> additional = this.addToInventory(item);
         int amountGivenBack = 0;
         for (ItemStack itemStack : additional.values())
         {
@@ -511,18 +518,18 @@ public class MarketSign implements InventoryHolder
         }
         user.updateInventory();
         this.saveToDatabase();
-        return amount-amountGivenBack;
+        return amount - amountGivenBack;
     }
 
-    private Map<Integer,ItemStack> addToInventory(ItemStack item)
+    private Map<Integer, ItemStack> addToInventory(ItemStack item)
     {
         if (this.module.getConfig().allowOverStackedInSign)
         {
             if (this.getAmount() > 64)
             {
-                return this.getInventory().addItem(splitIntoMaxItems(item,64));
+                return this.getInventory().addItem(splitIntoMaxItems(item, 64));
             }
-            return this.getInventory().addItem(splitIntoMaxItems(item,this.getAmount()));
+            return this.getInventory().addItem(splitIntoMaxItems(item, this.getAmount()));
         }
         else
         {
@@ -530,15 +537,15 @@ public class MarketSign implements InventoryHolder
         }
     }
 
-    private Map<Integer,ItemStack> addToUserInventory(User user, ItemStack item)
+    private Map<Integer, ItemStack> addToUserInventory(User user, ItemStack item)
     {
         if (this.module.getConfig().allowOverStackedOutOfSign)
         {
-            return user.getInventory().addItem(splitIntoMaxItems(item,64));
+            return user.getInventory().addItem(splitIntoMaxItems(item, 64));
         }
         else
         {
-            return user.getInventory().addItem(splitIntoMaxItems(item,item.getMaxStackSize()));
+            return user.getInventory().addItem(splitIntoMaxItems(item, item.getMaxStackSize()));
         }
     }
 
@@ -555,11 +562,11 @@ public class MarketSign implements InventoryHolder
         }
         if (item.getAmount() == 0)
         {
-            user.sendMessage("marketsign","&cThere are no more items stored in the sign!");
+            user.sendMessage("marketsign", "&cThere are no more items stored in the sign!");
             return;
         }
         this.getInventory().removeItem(item);
-        Map<Integer,ItemStack> additional = this.addToUserInventory(user,item);
+        Map<Integer, ItemStack> additional = this.addToUserInventory(user, item);
         int amountGivenBack = 0;
         for (ItemStack itemStack : additional.values())
         {
@@ -574,7 +581,8 @@ public class MarketSign implements InventoryHolder
         this.saveToDatabase();
     }
 
-    public boolean tryBreak(User user) {
+    public boolean tryBreak(User user)
+    {
         if (this.breakingSign.containsKey(user.key) && System.currentTimeMillis() - this.breakingSign.get(user.key) <= 200)//0.2 sec
         {
             if (this.getStock() != null && this.getStock() == 1337) //pssst i am not here
@@ -590,8 +598,8 @@ public class MarketSign implements InventoryHolder
         this.module.getEditModeListener().enterEditMode(user); //TODO testing
         user.sendMessage("&5TESTING EDIT MODE ON!");
 
-        this.breakingSign.put(user.key,System.currentTimeMillis());
-        user.sendMessage("signmarket","&eDoubleclick to break the sign!");
+        this.breakingSign.put(user.key, System.currentTimeMillis());
+        user.sendMessage("signmarket", "&eDoubleclick to break the sign!");
         return false;
     }
 
@@ -605,13 +613,13 @@ public class MarketSign implements InventoryHolder
                 {
                     if (this.canAfford(user))
                     {
-                        Account userAccount = this.module.getConomy().getAccountsManager().getAccount(user,this.getCurrency());
-                        Account ownerAccount = this.module.getConomy().getAccountsManager().getAccount(this.getOwner(),this.getCurrency());
+                        Account userAccount = this.module.getConomy().getAccountsManager().getAccount(user, this.getCurrency());
+                        Account ownerAccount = this.module.getConomy().getAccountsManager().getAccount(this.getOwner(), this.getCurrency());
                         ItemStack item = this.getItem().clone();
                         item.setAmount(this.getAmount());
-                        if (checkForPlace(user.getInventory(),item.clone()))
+                        if (checkForPlace(user.getInventory(), item.clone()))
                         {
-                            this.module.getConomy().getAccountsManager().transaction(userAccount,ownerAccount,this.getPrice());
+                            this.module.getConomy().getAccountsManager().transaction(userAccount, ownerAccount, this.getPrice());
                             if (!this.isAdminSign())
                             {
                                 this.getInventory().removeItem(item);
@@ -623,17 +631,17 @@ public class MarketSign implements InventoryHolder
                         }
                         else
                         {
-                            user.sendMessage("signmarket","&cYou do not have enough space for these items!");
+                            user.sendMessage("signmarket", "&cYou do not have enough space for these items!");
                         }
                     }
                     else
                     {
-                        user.sendMessage("signmarket","&cYou cannot afford the price of these items!");
+                        user.sendMessage("signmarket", "&cYou cannot afford the price of these items!");
                     }
                 }
                 else
                 {
-                    user.sendMessage("signmarket","&cThis market-sign is &4&lSold Out&c!");
+                    user.sendMessage("signmarket", "&cThis market-sign is &4&lSold Out&c!");
                 }
             }
             else
@@ -642,19 +650,19 @@ public class MarketSign implements InventoryHolder
                 {
                     if (this.isAdminSign() || this.canAfford(this.getOwner()))
                     {
-                        if (getAmountOf(user.getInventory(),this.getItem()) >= this.getAmount())
+                        if (getAmountOf(user.getInventory(), this.getItem()) >= this.getAmount())
                         {
                             ItemStack item = this.getItem().clone();
                             item.setAmount(this.getAmount());
                             if (this.isAdminSign()
-                            || (this.module.getConfig().allowOverStackedInSign
-                                    &&  checkForPlace(this.getInventory(),splitIntoMaxItems(item,64)))
-                            || (!this.module.getConfig().allowOverStackedInSign
-                                    &&  checkForPlace(this.getInventory(),splitIntoMaxItems(item,item.getMaxStackSize()))))
+                                || (this.module.getConfig().allowOverStackedInSign
+                                    && checkForPlace(this.getInventory(), splitIntoMaxItems(item, 64)))
+                                || (!this.module.getConfig().allowOverStackedInSign
+                                    && checkForPlace(this.getInventory(), splitIntoMaxItems(item, item.getMaxStackSize()))))
                             {
-                                Account userAccount = this.module.getConomy().getAccountsManager().getAccount(user,this.getCurrency());
-                                Account ownerAccount = this.module.getConomy().getAccountsManager().getAccount(this.getOwner(),this.getCurrency());
-                                this.module.getConomy().getAccountsManager().transaction(ownerAccount,userAccount,this.getPrice());
+                                Account userAccount = this.module.getConomy().getAccountsManager().getAccount(user, this.getCurrency());
+                                Account ownerAccount = this.module.getConomy().getAccountsManager().getAccount(this.getOwner(), this.getCurrency());
+                                this.module.getConomy().getAccountsManager().transaction(ownerAccount, userAccount, this.getPrice());
                                 user.getInventory().removeItem(item);
                                 if (!this.isAdminSign())
                                 {
@@ -666,22 +674,22 @@ public class MarketSign implements InventoryHolder
                             }
                             else
                             {
-                                user.sendMessage("signmarket","&cThis market-sign is full and cannot accept more items!");
+                                user.sendMessage("signmarket", "&cThis market-sign is full and cannot accept more items!");
                             }
                         }
                         else
                         {
-                            user.sendMessage("signmarket","&cYou do not have enough items to sell!");
+                            user.sendMessage("signmarket", "&cYou do not have enough items to sell!");
                         }
                     }
                     else
                     {
-                        user.sendMessage("signmarket","&cThe owner cannot afford the money to aquire your items!");
+                        user.sendMessage("signmarket", "&cThe owner cannot afford the money to aquire your items!");
                     }
                 }
                 else
                 {
-                    user.sendMessage("signmarket","&cThis market-sign is &4&lsatisfied&c! You can no longer sell items to it.");
+                    user.sendMessage("signmarket", "&cThis market-sign is &4&lsatisfied&c! You can no longer sell items to it.");
                 }
             }
             return true;
@@ -695,52 +703,52 @@ public class MarketSign implements InventoryHolder
         if (this.info.isBuySign == null)
         {
             if (user != null)
-                user.sendMessage("signmarket","&cSign is still in editing mode.");
-            result= false;
+                user.sendMessage("signmarket", "&cSign is still in editing mode.");
+            result = false;
         }
         if (this.info.amount <= 0)
         {
             if (user != null)
-                user.sendMessage("signmarket","&cInvalid amount!");
-            result= false;
+                user.sendMessage("signmarket", "&cInvalid amount!");
+            result = false;
         }
         if (this.info.price <= 0)
         {
             if (user != null)
-                user.sendMessage("signmarket","&cInvalid price!");
-            result= false;
+                user.sendMessage("signmarket", "&cInvalid price!");
+            result = false;
         }
         if (this.info.item == null)
         {
             if (user != null)
-                user.sendMessage("signmarket","&cNo item given!");
-            result= false;
+                user.sendMessage("signmarket", "&cNo item given!");
+            result = false;
         }
         if (this.info.damageValue == null)
         {
             if (user != null)
-                user.sendMessage("signmarket","&cNo item-data given!");
-            result= false;
+                user.sendMessage("signmarket", "&cNo item-data given!");
+            result = false;
         }
         if (this.info.currency == null)
         {
             if (user != null)
-                user.sendMessage("signmarket","&cNo currency given!");
-            result= false;
+                user.sendMessage("signmarket", "&cNo currency given!");
+            result = false;
         }
         if (this.info.owner == null)
         {
             if (this.info.stock != null)
             {
                 if (user != null)
-                    user.sendMessage("signmarket","&cAdmin signs have no stock!");
-                result= false;
+                    user.sendMessage("signmarket", "&cAdmin signs have no stock!");
+                result = false;
             }
             if (this.info.demand != null)
             {
                 if (user != null)
-                    user.sendMessage("signmarket","&cAdmin signs have no demand!");
-                result= false;
+                    user.sendMessage("signmarket", "&cAdmin signs have no demand!");
+                result = false;
             }
         }
         return result;
@@ -756,7 +764,7 @@ public class MarketSign implements InventoryHolder
         Block block = this.location.getWorld().getBlockAt(this.location);
         if (block.getState() instanceof Sign)
         {
-            Sign blockState = (Sign) block.getState();
+            Sign blockState = (Sign)block.getState();
             String[] lines = new String[4];
             ItemStack item = this.getItem();
             if (item == null)
@@ -765,7 +773,7 @@ public class MarketSign implements InventoryHolder
             }
             else if (item.getItemMeta().hasDisplayName() || item.getItemMeta().hasLore() || !item.getEnchantments().isEmpty())
             {
-                lines[1] = "&e"+Match.material().getNameFor(this.getItem());
+                lines[1] = "&e" + Match.material().getNameFor(this.getItem());
             }
             else
             {
@@ -778,19 +786,19 @@ public class MarketSign implements InventoryHolder
                 {
                     if (this.getStock() < this.getAmount() || this.getStock() == 0)
                     {
-                        lines[2] += " &4x"+this.getStock();
+                        lines[2] += " &4x" + this.getStock();
                     }
                     else
-                        lines[2] += " &1x"+this.getStock();
+                        lines[2] += " &1x" + this.getStock();
                 }
                 else
                 {
                     User user = this.module.getUserManager().getUser(this.info.owner);
-                    if (!this.canAfford(user) || (this.getDemand() != null && this.getDemand()-this.getStock() <= 0)
-                    || (this.module.getConfig().allowOverStackedInSign
+                    if (!this.canAfford(user) || (this.getDemand() != null && this.getDemand() - this.getStock() <= 0)
+                        || (this.module.getConfig().allowOverStackedInSign
                             && this.getInventory().firstEmpty() == -1)
-                    || (!this.module.getConfig().allowOverStackedInSign
-                            && !checkForPlace(this.getInventory(),splitIntoMaxItems(this.getItem(),this.getItem().getMaxStackSize()))))
+                        || (!this.module.getConfig().allowOverStackedInSign
+                            && !checkForPlace(this.getInventory(), splitIntoMaxItems(this.getItem(), this.getItem().getMaxStackSize()))))
                     {
                         if (this.getDemand() == null)
                         {
@@ -798,7 +806,7 @@ public class MarketSign implements InventoryHolder
                         }
                         else
                         {
-                            lines[2] += " &4x"+(this.getDemand()-this.getStock());
+                            lines[2] += " &4x" + (this.getDemand() - this.getStock());
                         }
                     }
                     else
@@ -809,7 +817,7 @@ public class MarketSign implements InventoryHolder
                         }
                         else
                         {
-                            lines[2] += " &bx"+(this.getDemand()-this.getStock());
+                            lines[2] += " &bx" + (this.getDemand() - this.getStock());
                         }
                     }
                 }
@@ -850,7 +858,7 @@ public class MarketSign implements InventoryHolder
                 {
                     lines[0] = "&5&lSell";
                 }
-                else if (this.isAdminSign() || this.getDemand() == null || (this.getDemand()-this.getStock() > 0))
+                else if (this.isAdminSign() || this.getDemand() == null || (this.getDemand() - this.getStock() > 0))
                 {
                     lines[0] = "&1&lSell";
                 }
@@ -863,7 +871,7 @@ public class MarketSign implements InventoryHolder
             lines[1] = ChatFormat.parseFormats(lines[1]);
             lines[2] = ChatFormat.parseFormats(lines[2]);
             lines[3] = ChatFormat.parseFormats(lines[3]);
-            for (int i=0 ;i<4;++i)
+            for (int i = 0; i < 4; ++i)
             {
                 blockState.setLine(i, lines[i]);
             }
@@ -871,24 +879,28 @@ public class MarketSign implements InventoryHolder
         }
         else
         {
-            this.module.getLogger().warning("Market-Sign is not a sign-block! "+ location);
+            this.module.getLogger().warning("Market-Sign is not a sign-block! " + location);
         }
     }
 
-    private boolean canAfford(User user) {
+    private boolean canAfford(User user)
+    {
         return this.module.getConomy().getAccountsManager().getAccount(user, this.getCurrency()).canAfford(this.getPrice());
     }
 
-    public ItemStack getItem() {
+    public ItemStack getItem()
+    {
         return this.info.getItem();
     }
 
-    public boolean isAdminSign() {
+    public boolean isAdminSign()
+    {
         return this.info.isAdminSign();
     }
 
     @Override
-    public Inventory getInventory() {
+    public Inventory getInventory()
+    {
 
         if (this.inventory == null)
         {
@@ -952,7 +964,7 @@ public class MarketSign implements InventoryHolder
     {
         if (this.currency == null)
         {
-            this.currency =  this.module.getConomy().getCurrencyManager().getCurrencyByName(this.info.currency);
+            this.currency = this.module.getConomy().getCurrencyManager().getCurrencyByName(this.info.currency);
         }
         return this.currency;
     }
@@ -971,12 +983,14 @@ public class MarketSign implements InventoryHolder
         return this.owner;
     }
 
-    public void enterEditMode() {
+    public void enterEditMode()
+    {
         this.editMode = true;
         this.updateSign();
     }
 
-    public void exitEditMode(User user) {
+    public void exitEditMode(User user)
+    {
         this.editMode = false;
         this.updateSign();
         if (this.isValidSign(user))
@@ -985,26 +999,29 @@ public class MarketSign implements InventoryHolder
         }
     }
 
-    public void setDemand(Integer demand) {
+    public void setDemand(Integer demand)
+    {
         this.info.demand = demand;
     }
 
-    public void setCurrency(Currency currency) {
+    public void setCurrency(Currency currency)
+    {
         this.currency = currency;
         this.info.currency = currency.getName();
     }
 
-    public void applyAllValues(MarketSign prevMarketSign) {
+    public void applyAllValues(MarketSign prevMarketSign)
+    {
         this.info.applyAllValues(prevMarketSign.info);
     }
 
-    public boolean isInEditMode() {
+    public boolean isInEditMode()
+    {
         return this.editMode;
     }
 
-    public Location getLocation() {
+    public Location getLocation()
+    {
         return location;
     }
 }
-
-

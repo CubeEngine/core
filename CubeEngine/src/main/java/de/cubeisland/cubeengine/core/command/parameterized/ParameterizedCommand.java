@@ -11,7 +11,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-
 public abstract class ParameterizedCommand extends CubeCommand
 {
     protected ParameterizedCommand(Module module, String name, String description, ParameterizedContextFactory parser)

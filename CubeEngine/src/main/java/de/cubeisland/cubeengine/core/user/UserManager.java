@@ -526,6 +526,7 @@ public class UserManager extends SingleKeyStorage<Long, User> implements Cleanab
             }
         });
     }
+
     public void broadcastMessage(String category, String message, Permission perm, Object... args)
     {
         for (Player player : this.server.getOnlinePlayers())
@@ -540,23 +541,23 @@ public class UserManager extends SingleKeyStorage<Long, User> implements Cleanab
 
     public void broadcastMessage(String category, String message, Object... args)
     {
-        this.broadcastMessage(category,message,null,args);
+        this.broadcastMessage(category, message, null, args);
     }
 
-    public void broadcastStatus(String message,String username)
+    public void broadcastStatus(String message, String username)
     {
-        message = "* &2"+username + " &f" + message;
+        message = "* &2" + username + " &f" + message;
         message = ChatFormat.parseFormats(message);
         for (Player player : this.server.getOnlinePlayers())
         {
-            this.getExactUser(player).sendMessage("* &2"+username +" &f"+ message);
+            this.getExactUser(player).sendMessage("* &2" + username + " &f" + message);
         }
     }
 
     public void broadcastStatus(String category, String message, String username, Object... args)
     {
-        message = "* &2"+username + " &f" + message;
-        this.broadcastMessage(category,message,args);
+        message = "* &2" + username + " &f" + message;
+        this.broadcastMessage(category, message, args);
     }
 
     public void clearAttributes(Module module)
@@ -601,26 +602,26 @@ public class UserManager extends SingleKeyStorage<Long, User> implements Cleanab
         file.setReadOnly();
     }
 
-    private TLongObjectHashMap<Triplet<Long,String,Integer>> failedLogins = new TLongObjectHashMap<Triplet<Long, String,Integer>>();
+    private TLongObjectHashMap<Triplet<Long, String, Integer>> failedLogins = new TLongObjectHashMap<Triplet<Long, String, Integer>>();
 
-    public Triplet<Long,String,Integer> getFailedLogin(User user)
+    public Triplet<Long, String, Integer> getFailedLogin(User user)
     {
         return this.failedLogins.get(user.key);
     }
 
     public void addFailedLogin(User user)
     {
-        Triplet<Long,String,Integer> loginFail = this.getFailedLogin(user);
+        Triplet<Long, String, Integer> loginFail = this.getFailedLogin(user);
         if (loginFail == null)
         {
-            loginFail = new Triplet<Long, String, Integer>(System.currentTimeMillis(),user.getAddress().getAddress().getHostAddress(),1);
+            loginFail = new Triplet<Long, String, Integer>(System.currentTimeMillis(), user.getAddress().getAddress().getHostAddress(), 1);
             this.failedLogins.put(user.key, loginFail);
         }
         else
         {
             loginFail.setFirst(System.currentTimeMillis());
             loginFail.setSecond(user.getAddress().getAddress().getHostAddress());
-            loginFail.setThird(loginFail.getThird()+1);
+            loginFail.setThird(loginFail.getThird() + 1);
         }
     }
 

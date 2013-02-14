@@ -37,13 +37,13 @@ public class TestModuleManager implements ModuleManager
     @Override
     public <T extends Module> T getModule(Class<T> mainClass)
     {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        return null; //To change body of implemented methods use File | Settings | File Templates.
     }
 
     @Override
     public Collection<Module> getModules()
     {
-        return Collections.emptyList();  //To change body of implemented methods use File | Settings | File Templates.
+        return Collections.emptyList(); //To change body of implemented methods use File | Settings | File Templates.
     }
 
     @Override
@@ -91,7 +91,7 @@ public class TestModuleManager implements ModuleManager
     @Override
     public void unloadModules()
     {
-        //To change body of implemented methods use File | Settings | File Templates.
+    //To change body of implemented methods use File | Settings | File Templates.
     }
 
     @Override

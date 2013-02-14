@@ -4,7 +4,8 @@ import de.cubeisland.cubeengine.log.LoggerConfig;
 
 public class BlockDecayConfig extends LoggerConfig
 {
-    public BlockDecayConfig() {
+    public BlockDecayConfig()
+    {
         super(false);
     }
 

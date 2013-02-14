@@ -13,7 +13,8 @@ import static de.cubeisland.cubeengine.log.logger.BlockLogger.BlockChangeCause.E
 
 public class EndermanLogger extends BlockLogger<EndermanConfig>
 {
-    public EndermanLogger(Log module) {
+    public EndermanLogger(Log module)
+    {
         super(module, EndermanConfig.class);
     }
 
@@ -37,6 +38,5 @@ public class EndermanLogger extends BlockLogger<EndermanConfig>
             }
         }
     }
-
 
 }

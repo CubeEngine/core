@@ -17,9 +17,11 @@ public class MarketSignListener implements Listener
 
     private final Signmarket module;
 
-    public MarketSignListener(Signmarket module) {
+    public MarketSignListener(Signmarket module)
+    {
         this.module = module;
     }
+
     @EventHandler
     public void onPlayerInteract(PlayerInteractEvent event)
     {
@@ -31,7 +33,7 @@ public class MarketSignListener implements Listener
         {
             MarketSign marketSign = this.module.getMarketSignFactory().getSignAt(event.getClickedBlock().getLocation());
             if (marketSign == null)
-               return;
+                return;
             marketSign.updateSign();
             User user = this.module.getUserManager().getExactUser(event.getPlayer());
             if (marketSign.executeAction(user, event.getAction()))
@@ -65,7 +67,7 @@ public class MarketSignListener implements Listener
 
     public static BlockState getTargettedSign(Player player)
     {
-        BlockIterator blockIterator = new BlockIterator(player.getWorld(), player.getEyeLocation().toVector(),player.getEyeLocation().getDirection(),0,7);
+        BlockIterator blockIterator = new BlockIterator(player.getWorld(), player.getEyeLocation().toVector(), player.getEyeLocation().getDirection(), 0, 7);
         BlockState lastSignFound = null;
         while (blockIterator.hasNext())
         {

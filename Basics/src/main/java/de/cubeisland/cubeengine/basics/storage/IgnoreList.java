@@ -9,10 +9,7 @@ import de.cubeisland.cubeengine.core.storage.database.TwoKeyEntity;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.util.Pair;
 
-@TwoKeyEntity(tableName = "ignorelist",
-firstPrimaryKey = "key", secondPrimaryKey = "ignore",
-indices =
-{
+@TwoKeyEntity(tableName = "ignorelist", firstPrimaryKey = "key", secondPrimaryKey = "ignore", indices = {
     @Index(value = FOREIGN_KEY, fields = "key", f_table = "user", f_field = "key"),
     @Index(value = FOREIGN_KEY, fields = "ignore", f_table = "user", f_field = "key")
 })

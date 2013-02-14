@@ -7,7 +7,7 @@ public class BlockExplosionConfig extends LoggerConfig
 {
     public BlockExplosionConfig()
     {
-       super(true);
+        super(true);
     }
 
     @Option("log-creeper-as-player-who-triggered")

@@ -15,7 +15,8 @@ import org.bukkit.event.entity.EntityDeathEvent;
 
 public class KillLogger extends Logger<KillConfig>
 {
-    public KillLogger(Log module) {
+    public KillLogger(Log module)
+    {
         super(module, KillConfig.class);
     }
 
@@ -89,7 +90,7 @@ public class KillLogger extends Logger<KillConfig>
 
     private boolean checkLog(KillCause killer, Entity killed)
     {
-        KillConfig config = this.configs.get( killed.getWorld());
+        KillConfig config = this.configs.get(killed.getWorld());
         if (config.enabled)
         {
             switch (killer)
@@ -108,7 +109,7 @@ public class KillLogger extends Logger<KillConfig>
                         return false;
                     }
                     break;
-    
+
                 case MONSTER:
                     if (!config.logKillsByMonster)
                     {
@@ -162,7 +163,7 @@ public class KillLogger extends Logger<KillConfig>
             }
             else if (killed instanceof Monster || killed instanceof Ghast || killed instanceof Slime)
             {
-    
+
                 if (!config.logMonsterKilled)
                 {
                     return false;
@@ -197,7 +198,6 @@ public class KillLogger extends Logger<KillConfig>
         }
         return false;
     }
-
 
     public static enum KillCause
     {

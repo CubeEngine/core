@@ -8,16 +8,19 @@ import org.bukkit.block.BlockState;
 import org.bukkit.block.Sign;
 import org.bukkit.entity.Player;
 
-public class WorldEditLogger extends BlockLogger<WorldEditConfig> {
-    public WorldEditLogger(Log module) {
+public class WorldEditLogger extends BlockLogger<WorldEditConfig>
+{
+    public WorldEditLogger(Log module)
+    {
         super(module, WorldEditConfig.class);
     }
 
-    public void logWorldEditChange(Player player, BlockState oldState, BlockState newState) {
-        this.logBlockChange(BlockChangeCause.WORLDEDIT,oldState.getWorld(),player,oldState,newState);
+    public void logWorldEditChange(Player player, BlockState oldState, BlockState newState)
+    {
+        this.logBlockChange(BlockChangeCause.WORLDEDIT, oldState.getWorld(), player, oldState, newState);
         if (newState instanceof Sign)
         {
-            module.getLoggerManager().getLogger(SignChangeLogger.class).logSignPlaceWithData(player,(Sign)newState);
+            module.getLoggerManager().getLogger(SignChangeLogger.class).logSignPlaceWithData(player, (Sign)newState);
         }
     }
 }

@@ -5,7 +5,6 @@ import de.cubeisland.cubeengine.core.module.Module;
 import de.cubeisland.cubeengine.signmarket.storage.SignMarketBlockManager;
 import de.cubeisland.cubeengine.signmarket.storage.SignMarketInfoManager;
 
-
 public class Signmarket extends Module
 {
     private Conomy conomy;
@@ -29,27 +28,33 @@ public class Signmarket extends Module
         this.registerPermissions(MarketSignPerm.values());
     }
 
-    public Conomy getConomy() {
+    public Conomy getConomy()
+    {
         return conomy;
     }
 
-    public SignMarketBlockManager getSmblockManager() {
+    public SignMarketBlockManager getSmblockManager()
+    {
         return smblockManager;
     }
 
-    public SignMarketInfoManager getSminfoManager() {
+    public SignMarketInfoManager getSminfoManager()
+    {
         return sminfoManager;
     }
 
-    public MarketSignFactory getMarketSignFactory() {
+    public MarketSignFactory getMarketSignFactory()
+    {
         return marketSignFactory;
     }
 
-    public SignMarketConfig getConfig() {
+    public SignMarketConfig getConfig()
+    {
         return config;
     }
 
-    public EditModeListener getEditModeListener() {
+    public EditModeListener getEditModeListener()
+    {
         return editModeListener;
     }
 }

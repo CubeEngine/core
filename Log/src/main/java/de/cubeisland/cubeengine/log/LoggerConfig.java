@@ -5,7 +5,8 @@ import de.cubeisland.cubeengine.core.config.annotations.Option;
 
 public abstract class LoggerConfig extends Configuration
 {
-    protected LoggerConfig(boolean enabled) {
+    protected LoggerConfig(boolean enabled)
+    {
         this.enabled = enabled;
     }
 

@@ -21,8 +21,8 @@ public class UserConverter implements Converter<User>
     {
         if (node instanceof StringNode)
         {
-            return CubeEngine.getUserManager().findUser(((StringNode) node).getValue());
+            return CubeEngine.getUserManager().findUser(((StringNode)node).getValue());
         }
-        throw  new ConversionException("Invalid Node!"+ node.getClass());
+        throw new ConversionException("Invalid Node!" + node.getClass());
     }
 }

@@ -10,9 +10,10 @@ import org.bukkit.event.block.BlockFormEvent;
 
 import static de.cubeisland.cubeengine.log.logger.BlockLogger.BlockChangeCause.FORM;
 
-public class BlockFormLogger extends    BlockLogger<BlockFormConfig>
+public class BlockFormLogger extends BlockLogger<BlockFormConfig>
 {
-    public BlockFormLogger(Log module) {
+    public BlockFormLogger(Log module)
+    {
         super(module, BlockFormConfig.class);
     }
 
@@ -26,10 +27,9 @@ public class BlockFormLogger extends    BlockLogger<BlockFormConfig>
             if ((event.getNewState().getType().equals(Material.ICE) && config.logIceForm)
                 || event.getNewState().getType().equals(Material.SNOW) && config.logSnowForm)
             {
-                this.logBlockChange(FORM,world,null, event.getBlock().getState(), event.getNewState());
+                this.logBlockChange(FORM, world, null, event.getBlock().getState(), event.getNewState());
             }
         }
     }
-
 
 }

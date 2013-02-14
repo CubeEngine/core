@@ -32,7 +32,7 @@ public class BooleanConverter extends BasicConverter<Boolean>
         }
         catch (NumberFormatException e)
         {
-            throw  new ConversionException("Invalid Node!"+ node.getClass(), e);
+            throw new ConversionException("Invalid Node!" + node.getClass(), e);
         }
     }
 }

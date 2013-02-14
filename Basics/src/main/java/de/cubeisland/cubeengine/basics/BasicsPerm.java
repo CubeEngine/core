@@ -59,7 +59,8 @@ public enum BasicsPerm implements Permission
     COMMAND_BUTCHER_FLAG_NPC,
     COMMAND_WALKSPEED_OTHER,
     WALKSPEED_ISALLOWED,
-    SIGN_COLORED, KICK_RECEIVEMESSAGE;
+    SIGN_COLORED,
+    KICK_RECEIVEMESSAGE;
 
     private String permission;
     private PermDefault def;

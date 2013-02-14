@@ -23,11 +23,11 @@ public class EcoCommands extends ContainerCommand
         this.module = module;
     }
 
-    @Command(names = {"give", "grant"},
-            desc = "Gives money to given user or all [online] users",
-            usage = "<player>|* [-o] <amount> [in <currency>]",
-            flags = @Flag(longName = "online", name = "o"),
-            params = @Param(names = {"in", "c", "currency"}, type = String.class), min = 2, max = 2)
+    @Command(names = {
+    "give", "grant"
+    }, desc = "Gives money to given user or all [online] users", usage = "<player>|* [-o] <amount> [in <currency>]", flags = @Flag(longName = "online", name = "o"), params = @Param(names = {
+    "in", "c", "currency"
+    }, type = String.class), min = 2, max = 2)
     public void give(ParameterizedContext context)
     {
         Currency currency;
@@ -41,7 +41,8 @@ public class EcoCommands extends ContainerCommand
                 return;
             }
         }
-        else // try to match if fail default
+        else
+        // try to match if fail default
         {
             currency = this.module.getCurrencyManager().matchCurrency(amountString, true).iterator().next(); // can never be empty
         }
@@ -66,7 +67,7 @@ public class EcoCommands extends ContainerCommand
         }
         else
         {
-            String[] users =  StringUtils.explode(",", context.getString(0));
+            String[] users = StringUtils.explode(",", context.getString(0));
             for (String userString : users)
             {
                 User user = this.module.getUserManager().findUser(userString);
@@ -92,11 +93,11 @@ public class EcoCommands extends ContainerCommand
         }
     }
 
-    @Command(names = { "take", "remove"},
-            desc = "Takes money from given user",
-            usage = "<player>|* [-o] <amount> [in <currency>]",
-            flags = @Flag(longName = "online", name = "o"),
-            params = @Param(names = {"in", "c", "currency"}, type = String.class), min = 1, max = 2)
+    @Command(names = {
+    "take", "remove"
+    }, desc = "Takes money from given user", usage = "<player>|* [-o] <amount> [in <currency>]", flags = @Flag(longName = "online", name = "o"), params = @Param(names = {
+    "in", "c", "currency"
+    }, type = String.class), min = 1, max = 2)
     public void take(ParameterizedContext context)
     {
         Currency currency;
@@ -110,7 +111,8 @@ public class EcoCommands extends ContainerCommand
                 return;
             }
         }
-        else // try to match if fail default
+        else
+        // try to match if fail default
         {
             currency = this.module.getCurrencyManager().matchCurrency(amountString, true).iterator().next(); // can never be empty
         }
@@ -135,7 +137,7 @@ public class EcoCommands extends ContainerCommand
         }
         else
         {
-            String[] users =  StringUtils.explode(",", context.getString(0));
+            String[] users = StringUtils.explode(",", context.getString(0));
             for (String userString : users)
             {
                 User user = this.module.getUserManager().findUser(userString);
@@ -161,10 +163,9 @@ public class EcoCommands extends ContainerCommand
         }
     }
 
-    @Command(desc = "Reset the money from given user",
-            usage = "<player>|* [-o] [in <currency>]",
-            flags = @Flag(longName = "online", name = "o"),
-            params = @Param(names = {"in", "c", "currency"}, type = String.class), max = 1)
+    @Command(desc = "Reset the money from given user", usage = "<player>|* [-o] [in <currency>]", flags = @Flag(longName = "online", name = "o"), params = @Param(names = {
+    "in", "c", "currency"
+    }, type = String.class), max = 1)
     public void reset(ParameterizedContext context)
     {
         Currency currency;
@@ -177,7 +178,8 @@ public class EcoCommands extends ContainerCommand
                 return;
             }
         }
-        else // default
+        else
+        // default
         {
             currency = this.module.getCurrencyManager().getMainCurrency();
         }
@@ -196,7 +198,7 @@ public class EcoCommands extends ContainerCommand
         }
         else
         {
-            String[] users =  StringUtils.explode(",", context.getString(0));
+            String[] users = StringUtils.explode(",", context.getString(0));
             for (String userString : users)
             {
                 User user = this.module.getUserManager().findUser(userString);
@@ -222,10 +224,9 @@ public class EcoCommands extends ContainerCommand
         }
     }
 
-    @Command(desc = "Sets the money from given user",
-            usage = "<player>|* [-o] <amount> [in <currency>]",
-            flags = @Flag(longName = "online", name = "o"),
-            params = @Param(names = { "in", "c", "currency" }, type = String.class), min = 1, max = 2)
+    @Command(desc = "Sets the money from given user", usage = "<player>|* [-o] <amount> [in <currency>]", flags = @Flag(longName = "online", name = "o"), params = @Param(names = {
+    "in", "c", "currency"
+    }, type = String.class), min = 1, max = 2)
     public void set(ParameterizedContext context)
     {
         Currency currency;
@@ -265,7 +266,7 @@ public class EcoCommands extends ContainerCommand
         }
         else
         {
-            String[] users =  StringUtils.explode(",", context.getString(0));
+            String[] users = StringUtils.explode(",", context.getString(0));
             for (String userString : users)
             {
                 User user = this.module.getUserManager().findUser(userString);
@@ -294,9 +295,9 @@ public class EcoCommands extends ContainerCommand
     public void scale(CommandContext context)//TODO
     {}
 
-    @Command(desc = "Hides the account of given player",
-            usage = "<player> [in <currency>]",
-            params = @Param(names = { "in", "c", "currency" }, type = String.class), min = 1, max = 2)
+    @Command(desc = "Hides the account of given player", usage = "<player> [in <currency>]", params = @Param(names = {
+    "in", "c", "currency"
+    }, type = String.class), min = 1, max = 2)
     public void hide(ParameterizedContext context)
     {
         Currency currency;
@@ -309,11 +310,12 @@ public class EcoCommands extends ContainerCommand
                 return;
             }
         }
-        else // default
+        else
+        // default
         {
             currency = this.module.getCurrencyManager().getMainCurrency();
         }
-        String[] users =  StringUtils.explode(",", context.getString(0));
+        String[] users = StringUtils.explode(",", context.getString(0));
         for (String userString : users)
         {
             User user = this.module.getUserManager().findUser(userString);
@@ -333,19 +335,19 @@ public class EcoCommands extends ContainerCommand
 
             if (isHidden)
             {
-                context.sendMessage("conomny","&2%s's %eaccount in &6%s &eis already hidden!", user.getName(), currency.getName());
+                context.sendMessage("conomny", "&2%s's %eaccount in &6%s &eis already hidden!", user.getName(), currency.getName());
             }
             else
             {
                 target.setHidden(true);
-                context.sendMessage("conomny","&2%s's %aaccount in &6%s &ais now hidden!", user.getName(), currency.getName());
+                context.sendMessage("conomny", "&2%s's %aaccount in &6%s &ais now hidden!", user.getName(), currency.getName());
             }
         }
     }
 
-    @Command(desc = "Unhides the account of given player",
-            usage = "<player> [in <currency>]",
-            params = @Param(names = { "in", "c", "currency" }, type = String.class), min = 1, max = 2)
+    @Command(desc = "Unhides the account of given player", usage = "<player> [in <currency>]", params = @Param(names = {
+    "in", "c", "currency"
+    }, type = String.class), min = 1, max = 2)
     public void unhide(ParameterizedContext context)
     {
         Currency currency;
@@ -358,11 +360,12 @@ public class EcoCommands extends ContainerCommand
                 return;
             }
         }
-        else // default
+        else
+        // default
         {
             currency = this.module.getCurrencyManager().getMainCurrency();
         }
-        String[] users =  StringUtils.explode(",", context.getString(0));
+        String[] users = StringUtils.explode(",", context.getString(0));
         for (String userString : users)
         {
             User user = this.module.getUserManager().findUser(userString);
@@ -383,11 +386,11 @@ public class EcoCommands extends ContainerCommand
             if (isHidden)
             {
                 target.setHidden(false);
-                context.sendMessage("conomny","&2%s's %aaccount in &6%s &ais no longer hidden!", user.getName(), currency.getName());
+                context.sendMessage("conomny", "&2%s's %aaccount in &6%s &ais no longer hidden!", user.getName(), currency.getName());
             }
             else
             {
-                context.sendMessage("conomny","&2%s's %eaccount in &6%s &ewas not hidden!", user.getName(), currency.getName());
+                context.sendMessage("conomny", "&2%s's %eaccount in &6%s &ewas not hidden!", user.getName(), currency.getName());
             }
         }
     }

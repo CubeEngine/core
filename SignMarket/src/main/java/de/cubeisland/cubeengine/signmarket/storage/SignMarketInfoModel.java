@@ -1,4 +1,3 @@
-
 package de.cubeisland.cubeengine.signmarket.storage;
 
 import de.cubeisland.cubeengine.core.storage.Model;
@@ -17,11 +16,9 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-
-@SingleKeyEntity(autoIncrement = false, primaryKey = "key", tableName = "signmarketinfo",
-        indices = {
-                @Index(value = Index.IndexType.FOREIGN_KEY, fields = "key", f_field = "key", f_table = "signmarketblocks", onDelete = "CASCADE"),
-        })
+@SingleKeyEntity(autoIncrement = false, primaryKey = "key", tableName = "signmarketinfo", indices = {
+    @Index(value = Index.IndexType.FOREIGN_KEY, fields = "key", f_field = "key", f_table = "signmarketblocks", onDelete = "CASCADE"),
+})
 public class SignMarketInfoModel implements Model<Long>
 {
     @Attribute(type = AttrType.INT, unsigned = true)
@@ -79,11 +76,11 @@ public class SignMarketInfoModel implements Model<Long>
         ItemMeta meta = item.getItemMeta();
         if (meta.hasDisplayName())
         {
-            this.customName = meta.getDisplayName() ;
+            this.customName = meta.getDisplayName();
         }
         if (meta.hasLore())
         {
-            this.lore = StringUtils.implode("\n",meta.getLore());
+            this.lore = StringUtils.implode("\n", meta.getLore());
         }
         if (setAmount)
         {
@@ -94,7 +91,7 @@ public class SignMarketInfoModel implements Model<Long>
 
     private String getEnchantmentsAsString(ItemStack item)
     {
-        Map<Enchantment,Integer> enchs = item.getEnchantments ();
+        Map<Enchantment, Integer> enchs = item.getEnchantments();
         if (!enchs.isEmpty())
         {
             List<String> enchStrings = new ArrayList<String>();
@@ -102,13 +99,13 @@ public class SignMarketInfoModel implements Model<Long>
             {
                 enchStrings.add(ench.getId() + ":" + enchs.get(ench));
             }
-            return StringUtils.implode(",",enchStrings);
+            return StringUtils.implode(",", enchStrings);
         }
         return null;
     }
 
-    public SignMarketInfoModel() {
-    }
+    public SignMarketInfoModel()
+    {}
 
     public boolean matchesItem(ItemStack itemInHand)
     {
@@ -121,7 +118,7 @@ public class SignMarketInfoModel implements Model<Long>
         {
             if (this.item == null)
                 return null;
-            this.itemStack = new ItemStack(Material.valueOf(this.item),0, this.damageValue.shortValue());
+            this.itemStack = new ItemStack(Material.valueOf(this.item), 0, this.damageValue.shortValue());
             ItemMeta meta = this.itemStack.getItemMeta();
             if (this.customName != null)
             {
@@ -129,18 +126,18 @@ public class SignMarketInfoModel implements Model<Long>
             }
             if (this.lore != null)
             {
-                meta.setLore(Arrays.asList(StringUtils.explode("\n",this.lore)));
+                meta.setLore(Arrays.asList(StringUtils.explode("\n", this.lore)));
             }
             itemStack.setItemMeta(meta);
             if (this.enchantments != null)
             {
-                String[] enchStrings = StringUtils.explode(",",this.enchantments);
-                for (String enchString: enchStrings)
+                String[] enchStrings = StringUtils.explode(",", this.enchantments);
+                for (String enchString : enchStrings)
                 {
-                    String[] split = StringUtils.explode(":",enchString);
+                    String[] split = StringUtils.explode(":", enchString);
                     Enchantment ench = Enchantment.getById(Integer.parseInt(split[0]));
                     int level = Integer.parseInt(split[1]);
-                    this.itemStack.addUnsafeEnchantment(ench,level);
+                    this.itemStack.addUnsafeEnchantment(ench, level);
                 }
             }
         }
@@ -148,27 +145,30 @@ public class SignMarketInfoModel implements Model<Long>
         return itemStack;
     }
 
-    public boolean isAdminSign() {
+    public boolean isAdminSign()
+    {
         return this.owner == null;
     }
 
-    public void updateFromItem() {
-        this.setItem(this.itemStack,false);
+    public void updateFromItem()
+    {
+        this.setItem(this.itemStack, false);
     }
 
-    public void applyAllValues(SignMarketInfoModel info) {
-        this.isBuySign= info.isBuySign; //else isSellSign / NULL -> Edit illegal value for database!
-        this.amount = info.amount ;
-        this.price= info.price;
-        this.currency= info.currency;
-        this.stock= info.stock;
-        this.demand= info.demand;
-        this.owner= info.owner;
-        this.item= info.item;
-        this.damageValue= info.damageValue;
-        this.customName= info.customName;
-        this.lore= info.lore;
-        this.enchantments= info.enchantments;
+    public void applyAllValues(SignMarketInfoModel info)
+    {
+        this.isBuySign = info.isBuySign; //else isSellSign / NULL -> Edit illegal value for database!
+        this.amount = info.amount;
+        this.price = info.price;
+        this.currency = info.currency;
+        this.stock = info.stock;
+        this.demand = info.demand;
+        this.owner = info.owner;
+        this.item = info.item;
+        this.damageValue = info.damageValue;
+        this.customName = info.customName;
+        this.lore = info.lore;
+        this.enchantments = info.enchantments;
 
         this.itemStack = null;
     }

@@ -70,7 +70,7 @@ public class ReadableCommandFactory extends ReflectedCommandFactory<ReadableComm
             annotation.usage(),
             aliases,
             pattern
-        );
+            );
         cmd.setAsync(annotation.async());
         cmd.setLoggable(annotation.loggable());
         return cmd;

@@ -26,28 +26,27 @@ public class MoneyCommand extends ContainerCommand
         this.module = module;
     }
 
-//    @Override
-//    public void run(CommandContext context) {
-//        super.run(context);
-//        /*
-//        if (context.hasIndexed(0))
-//        {
-//            super.run(context);
-//        }
-//        else
-//        {
-//            this.balance(context); // Alias for balance //TODO this is broken because of flags checks in balance
-//        }*/
-//    }
+    //    @Override
+    //    public void run(CommandContext context) {
+    //        super.run(context);
+    //        /*
+    //        if (context.hasIndexed(0))
+    //        {
+    //            super.run(context);
+    //        }
+    //        else
+    //        {
+    //            this.balance(context); // Alias for balance //TODO this is broken because of flags checks in balance
+    //        }*/
+    //    }
 
     @Alias(names = {
         "balance", "moneybalance"
     })
-    @Command(desc = "Shows your balance",
-            usage = "[player] [in <currency>]|[-a]",
-            flags = {@Flag(longName = "all", name = "a"),
-            @Flag(longName = "showHidden", name = "f")} ,
-            params = @Param(names = "in", type = String.class), max = 1)
+    @Command(desc = "Shows your balance", usage = "[player] [in <currency>]|[-a]", flags = {
+    @Flag(longName = "all", name = "a"),
+            @Flag(longName = "showHidden", name = "f")
+    }, params = @Param(names = "in", type = String.class), max = 1)
     public void balance(ParameterizedContext context)
     {
         User user;
@@ -81,7 +80,7 @@ public class MoneyCommand extends ContainerCommand
             for (Account acc : accs)
             {
                 if (!acc.isHidden() || showHidden)
-                context.sendMessage("conomey", "&2%s's &a%s-Balance: &6%s", user.getName(), acc.getCurrency().getName(), acc.getCurrency().formatLong(acc.getBalance()));
+                    context.sendMessage("conomey", "&2%s's &a%s-Balance: &6%s", user.getName(), acc.getCurrency().getName(), acc.getCurrency().formatLong(acc.getBalance()));
             }
         }
         else
@@ -104,17 +103,14 @@ public class MoneyCommand extends ContainerCommand
             if (!acc.isHidden() || showHidden)
                 context.sendMessage("conomy", "&2%s's &aBalance: &6%s", user.getName(), acc.getCurrency().formatLong(acc.getBalance()));
             else
-                context.sendMessage("conomy","&cNo account found for &2%s&c!", user.getName());
+                context.sendMessage("conomy", "&cNo account found for &2%s&c!", user.getName());
         }
     }
 
     @Alias(names = {
         "toplist", "balancetop"
     })
-    @Command(desc = "Shows the players with the highest balance.",
-            usage = "[[fromRank]-ToRank] [in <currency>]",
-            params = @Param(names = "in", type = String.class),
-            flags = @Flag(longName = "showhidden", name = "f"))
+    @Command(desc = "Shows the players with the highest balance.", usage = "[[fromRank]-ToRank] [in <currency>]", params = @Param(names = "in", type = String.class), flags = @Flag(longName = "showhidden", name = "f"))
     public void top(ParameterizedContext context)
     {
         boolean showHidden = context.hasFlag("f");
@@ -176,12 +172,10 @@ public class MoneyCommand extends ContainerCommand
     })
     @Command(names = {
         "pay", "give"
-    }, desc = "Transfer the given amount to another account.",
-       usage = "<player> [as <player>] <amount>", params = {
+    }, desc = "Transfer the given amount to another account.", usage = "<player> [as <player>] <amount>", params = {
         @Param(names = "as", type = User.class),
         @Param(names = "in", type = String.class)
-    }, flags = @Flag(longName = "force", name = "f")
-            , min = 2, max = 2)
+    }, flags = @Flag(longName = "force", name = "f"), min = 2, max = 2)
     public void pay(ParameterizedContext context)
     {
         Currency currency;
@@ -234,7 +228,7 @@ public class MoneyCommand extends ContainerCommand
                     sender.getName(), currency.getName());
             return;
         }
-        String[] users =  StringUtils.explode(",",context.getString(0));
+        String[] users = StringUtils.explode(",", context.getString(0));
         for (String userString : users)
         {
             User user = this.module.getUserManager().findUser(userString);

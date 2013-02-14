@@ -14,9 +14,10 @@ import org.bukkit.event.player.PlayerBucketEmptyEvent;
 
 import static de.cubeisland.cubeengine.log.logger.BlockLogger.BlockChangeCause.PLAYER;
 
-public class BlockPlaceLogger extends    BlockLogger<BlockPlaceConfig>
+public class BlockPlaceLogger extends BlockLogger<BlockPlaceConfig>
 {
-    public BlockPlaceLogger(Log module) {
+    public BlockPlaceLogger(Log module)
+    {
         super(module, BlockPlaceConfig.class);
     }
 
@@ -28,7 +29,7 @@ public class BlockPlaceLogger extends    BlockLogger<BlockPlaceConfig>
         {
             this.log(PLAYER, world, event.getPlayer(), event.getBlock().getRelative(BlockFace.UP).getState(), null);
         }
-        this.log(PLAYER,world, event.getPlayer(), event.getBlockReplacedState(), event.getBlockPlaced().getState());
+        this.log(PLAYER, world, event.getPlayer(), event.getBlockReplacedState(), event.getBlockPlaced().getState());
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
@@ -50,17 +51,16 @@ public class BlockPlaceLogger extends    BlockLogger<BlockPlaceConfig>
         this.log(PLAYER, world, event.getPlayer(), event.getBlockClicked().getRelative(event.getBlockFace()).getState(), newState);
     }
 
-    private void log(BlockChangeCause cause,  World world, Player player,BlockState oldState, BlockState newState)
+    private void log(BlockChangeCause cause, World world, Player player, BlockState oldState, BlockState newState)
     {
         BlockPlaceConfig config = this.configs.get(world);
         if (config.enabled)
         {
             if (!config.noLogging.contains(newState.getType()))
             {
-                this.logBlockChange(cause,world, player, oldState, newState);
+                this.logBlockChange(cause, world, player, oldState, newState);
             }
         }
     }
-
 
 }

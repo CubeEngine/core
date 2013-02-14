@@ -54,8 +54,8 @@ public class InventoryUtil
     {
         Inventory inv =
             inventory.getSize() <= 27
-            ? Bukkit.createInventory(null, inventory.getType())
-            : Bukkit.createInventory(null, inventory.getSize());
+                ? Bukkit.createInventory(null, inventory.getType())
+                : Bukkit.createInventory(null, inventory.getSize());
 
         inv.setContents(inventory.getContents().clone());
         Map map;
@@ -80,8 +80,10 @@ public class InventoryUtil
     public static int getAmountOf(Inventory inventory, ItemStack itemStack)
     {
         int amount = 0;
-        for (ItemStack i : inventory.getContents()) {
-            if (itemStack.isSimilar(i)) {
+        for (ItemStack i : inventory.getContents())
+        {
+            if (itemStack.isSimilar(i))
+            {
                 amount += i.getAmount();
             }
         }

@@ -64,14 +64,14 @@ public class MapConverter
                 Type keyType = ptype.getActualTypeArguments()[0];
                 Type valType = ptype.getActualTypeArguments()[1];
                 S result = (S)getMapFor(ptype);
-                    for (Map.Entry<String, Node> entry : mapNode.getMappedNodes().entrySet())
-                    {
-                        StringNode keyNode = new StringNode(mapNode.getOriginalKey(entry.getKey())); // preserve Casing in Key
-                        K newKey = Convert.fromNode(keyNode, keyType);
-                        V newVal = Convert.fromNode(entry.getValue(),valType);
-                        result.put(newKey, newVal);
-                    }
-                    return result;
+                for (Map.Entry<String, Node> entry : mapNode.getMappedNodes().entrySet())
+                {
+                    StringNode keyNode = new StringNode(mapNode.getOriginalKey(entry.getKey())); // preserve Casing in Key
+                    K newKey = Convert.fromNode(keyNode, keyType);
+                    V newVal = Convert.fromNode(entry.getValue(), valType);
+                    result.put(newKey, newVal);
+                }
+                return result;
             }
             throw new IllegalArgumentException("Unkown Map-Type: " + ptype);
         }
@@ -81,7 +81,8 @@ public class MapConverter
         }
     }
 
-    public static <S extends Map> S getMapFor(ParameterizedType ptype) {
+    public static <S extends Map> S getMapFor(ParameterizedType ptype)
+    {
         try
         {
             Class<S> mapType = (Class<S>)ptype.getRawType();

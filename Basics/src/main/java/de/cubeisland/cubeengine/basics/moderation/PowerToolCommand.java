@@ -48,8 +48,8 @@ public class PowerToolCommand extends ContainerCommand implements Listener
         {
             Set<String> flagSet = ((ParameterizedContext)context).getFlags();
             flagSet.add("r");
-            this.add(new ParameterizedContext(this.getChild("add"),context.getSender(),context.getLabels(),context.getArgs(),
-                    flagSet,((ParameterizedContext)context).getParams()));
+            this.add(new ParameterizedContext(this.getChild("add"), context.getSender(), context.getLabels(), context.getArgs(),
+                    flagSet, ((ParameterizedContext)context).getParams()));
             return null;
         }
         return super.run(context);
@@ -100,7 +100,7 @@ public class PowerToolCommand extends ContainerCommand implements Listener
                 return;
             }
             String cmd = context.getStrings(0);
-            this.remove(context,sender.getItemInHand(),cmd,!context.hasFlag("c"));
+            this.remove(context, sender.getItemInHand(), cmd, !context.hasFlag("c"));
             return;
         }
         context.sendMessage("basics", "&eNo more power for you!");
@@ -117,7 +117,7 @@ public class PowerToolCommand extends ContainerCommand implements Listener
         }
         if (isCommand)
         {
-            cmd = "/"+cmd;
+            cmd = "/" + cmd;
         }
         boolean removed = false;
         while (powertools.remove(cmd)) // removes also multiple same cmds

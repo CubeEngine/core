@@ -15,8 +15,8 @@ import java.util.regex.Pattern;
 
 public class ReadableCommand extends CubeCommand
 {
-    private final Object                          holder;
-    private final Method                          method;
+    private final Object holder;
+    private final Method method;
     private final Class<? extends CommandContext> contextType;
     private final Pattern pattern;
 

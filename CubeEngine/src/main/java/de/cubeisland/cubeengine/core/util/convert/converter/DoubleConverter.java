@@ -21,7 +21,7 @@ public class DoubleConverter extends BasicConverter<Double>
         }
         catch (NumberFormatException e)
         {
-            throw  new ConversionException("Invalid Node!"+ node.getClass(), e);
+            throw new ConversionException("Invalid Node!" + node.getClass(), e);
         }
     }
 }

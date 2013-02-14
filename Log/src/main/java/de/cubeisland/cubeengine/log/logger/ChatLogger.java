@@ -13,10 +13,10 @@ import org.bukkit.event.server.ServerCommandEvent;
 
 public class ChatLogger extends Logger<ChatConfig>
 {
-    public ChatLogger(Log module) {
+    public ChatLogger(Log module)
+    {
         super(module, ChatConfig.class);
     }
-
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onPlayerCommandPreprocess(PlayerCommandPreprocessEvent event)
@@ -25,7 +25,8 @@ public class ChatLogger extends Logger<ChatConfig>
         ChatConfig config = this.configs.get(world);
         if (config.enabled)
         {
-            if (event.getMessage().trim().isEmpty()) return;
+            if (event.getMessage().trim().isEmpty())
+                return;
             if (config.logPlayerCommand)
             {
                 if (!config.ignoreRegex.isEmpty())
@@ -39,7 +40,7 @@ public class ChatLogger extends Logger<ChatConfig>
                     }
                 }
                 User user = this.module.getUserManager().getExactUser(event.getPlayer());
-                this.module.getLogManager().logChatLog(user.key.intValue(), world,  user.getLocation(), event.getMessage(), false);
+                this.module.getLogManager().logChatLog(user.key.intValue(), world, user.getLocation(), event.getMessage(), false);
             }
         }
     }
@@ -51,7 +52,8 @@ public class ChatLogger extends Logger<ChatConfig>
         ChatConfig config = this.configs.get(world);
         if (config.enabled)
         {
-            if (event.getMessage().trim().isEmpty()) return;
+            if (event.getMessage().trim().isEmpty())
+                return;
             if (config.logPlayerChat)
             {
                 User user = this.module.getUserManager().getExactUser(event.getPlayer());
@@ -64,13 +66,13 @@ public class ChatLogger extends Logger<ChatConfig>
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onServerCommand(ServerCommandEvent event)
     {
-        if (event.getCommand().trim().isEmpty()) return;
+        if (event.getCommand().trim().isEmpty())
+            return;
         ChatConfig config = this.module.getGlobalConfiguration().getSubLogConfig(this.getConfigClass());
         if (config.logConsoleCommand)
         {
             this.module.getLogManager().logChatLog(0, null, null, event.getCommand(), false);
         }
     }
-
 
 }

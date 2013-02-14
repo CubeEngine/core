@@ -13,7 +13,7 @@ public class CubeLevelConverter implements Converter<CubeLevel>
     @Override
     public Node toNode(CubeLevel object) throws ConversionException
     {
-       return Convert.wrapIntoNode(object.toString());
+        return Convert.wrapIntoNode(object.toString());
     }
 
     @Override
@@ -21,13 +21,13 @@ public class CubeLevelConverter implements Converter<CubeLevel>
     {
         if (node instanceof StringNode)
         {
-            CubeLevel lv = LogLevel.parse(((StringNode) node).getValue());
+            CubeLevel lv = LogLevel.parse(((StringNode)node).getValue());
             if (lv == null)
             {
-                throw new ConversionException("Unknown LogLevel. " +((StringNode) node).getValue());
+                throw new ConversionException("Unknown LogLevel. " + ((StringNode)node).getValue());
             }
             return lv;
         }
-        throw  new ConversionException("Invalid Node!"+ node.getClass());
+        throw new ConversionException("Invalid Node!" + node.getClass());
     }
 }

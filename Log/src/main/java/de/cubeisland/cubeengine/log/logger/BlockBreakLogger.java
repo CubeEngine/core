@@ -17,10 +17,11 @@ import org.bukkit.event.player.PlayerBucketFillEvent;
 
 import static de.cubeisland.cubeengine.log.logger.BlockLogger.BlockChangeCause.PLAYER;
 
-public class BlockBreakLogger extends    BlockLogger<BlockBreakConfig>
+public class BlockBreakLogger extends BlockLogger<BlockBreakConfig>
 {
 
-    public BlockBreakLogger(Log module) {
+    public BlockBreakLogger(Log module)
+    {
         super(module, BlockBreakConfig.class);
     }
 
@@ -29,7 +30,7 @@ public class BlockBreakLogger extends    BlockLogger<BlockBreakConfig>
     {
         if (event.getBlock().getState() instanceof Sign)
         {
-            this.module.getLoggerManager().getLogger(SignChangeLogger.class).logSignBreak(event.getPlayer(), (Sign) event.getBlock().getState());
+            this.module.getLoggerManager().getLogger(SignChangeLogger.class).logSignBreak(event.getPlayer(), (Sign)event.getBlock().getState());
         }
         for (Block block : BlockUtil.getAttachedBlocks(event.getBlock()))
         {
@@ -85,6 +86,5 @@ public class BlockBreakLogger extends    BlockLogger<BlockBreakConfig>
             }
         }
     }
-
 
 }

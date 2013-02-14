@@ -77,7 +77,7 @@ public class MergedRole extends Role
                 if (keyPerm.endsWith("*"))
                 {
                     Map<String, Boolean> map = new HashMap<String, Boolean>();
-                    this.resolveBukkitPermission(keyPerm, perms.get(keyPerm) ,map);
+                    this.resolveBukkitPermission(keyPerm, perms.get(keyPerm), map);
                     for (String subPermKey : map.keySet())
                     {
                         this.perms.put(subPermKey, new RolePermission(subPermKey, map.get(subPermKey), this));

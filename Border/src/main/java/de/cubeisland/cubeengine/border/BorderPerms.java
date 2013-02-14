@@ -13,7 +13,6 @@ public enum BorderPerms implements Permission
     private String permission;
     private PermDefault def;
 
-
     public static final String BASE = "cubeengine.border.";
 
     private BorderPerms()

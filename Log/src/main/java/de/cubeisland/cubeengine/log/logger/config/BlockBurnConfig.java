@@ -4,7 +4,8 @@ import de.cubeisland.cubeengine.log.LoggerConfig;
 
 public class BlockBurnConfig extends LoggerConfig
 {
-    public BlockBurnConfig() {
+    public BlockBurnConfig()
+    {
         super(false);
     }
 

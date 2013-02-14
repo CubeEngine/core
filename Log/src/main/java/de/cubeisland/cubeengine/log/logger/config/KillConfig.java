@@ -1,16 +1,16 @@
 package de.cubeisland.cubeengine.log.logger.config;
 
-
 import de.cubeisland.cubeengine.core.config.annotations.Comment;
 import de.cubeisland.cubeengine.core.config.annotations.Option;
 import de.cubeisland.cubeengine.log.LoggerConfig;
 
-public  class KillConfig extends LoggerConfig
+public class KillConfig extends LoggerConfig
 {
     public KillConfig()
     {
         super(true);
     }
+
     @Option("log-when-killer-is.player")
     public boolean logKillsByPlayer = true;
     @Option("log-when-killer-is.monster")
@@ -47,8 +47,6 @@ public  class KillConfig extends LoggerConfig
     @Comment("Other are here: bats, squid, golems and more")
     @Option("log-when-killed-is.other")
     public boolean logOtherKilled = false;
-
-
 
     @Override
     public String getName()

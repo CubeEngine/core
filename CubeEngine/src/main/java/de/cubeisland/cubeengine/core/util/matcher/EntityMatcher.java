@@ -33,7 +33,7 @@ public class EntityMatcher
                 {
                     if (first)
                     {
-                        this.reverseNameMap.put(entityType,name);
+                        this.reverseNameMap.put(entityType, name);
                     }
                     this.nameMap.put(name.toLowerCase(Locale.ENGLISH), entityType);
                     first = false;
@@ -41,7 +41,7 @@ public class EntityMatcher
             }
             catch (IllegalArgumentException ex)
             {
-                CubeEngine.getLogger().warning("Unkown EntityType:"+ key);
+                CubeEngine.getLogger().warning("Unkown EntityType:" + key);
                 continue;
             }
         }
@@ -247,7 +247,8 @@ public class EntityMatcher
         return Projectile.class.isAssignableFrom(entityType.getEntityClass());
     }
 
-    public String getNameFor(EntityType type) {
+    public String getNameFor(EntityType type)
+    {
         return this.reverseNameMap.get(type);
     }
 }

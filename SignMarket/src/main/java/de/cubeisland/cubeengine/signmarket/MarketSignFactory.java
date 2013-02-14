@@ -7,10 +7,11 @@ import org.bukkit.Location;
 
 public class MarketSignFactory
 {
-    private THashMap<Location,MarketSign> marketSigns = new THashMap<Location, MarketSign>();
+    private THashMap<Location, MarketSign> marketSigns = new THashMap<Location, MarketSign>();
     private final Signmarket module;
 
-    public MarketSignFactory(Signmarket module) {
+    public MarketSignFactory(Signmarket module)
+    {
         this.module = module;
     }
 
@@ -27,15 +28,16 @@ public class MarketSignFactory
                 return null;
             }
             SignMarketInfoModel infoModel = this.module.getSminfoManager().get(marketSignId);
-            result = new MarketSign(module,location);
+            result = new MarketSign(module, location);
             result.setInfoModel(infoModel);
-            result.setBlockModel(new SignMarketBlockModel(marketSignId,location));
-            this.marketSigns.put(location,result);
+            result.setBlockModel(new SignMarketBlockModel(marketSignId, location));
+            this.marketSigns.put(location, result);
         }
         return result;
     }
 
-    public MarketSign createSignAt(Location location) {
+    public MarketSign createSignAt(Location location)
+    {
         MarketSign marketSign = this.getSignAt(location);
         if (marketSign != null)
         {
@@ -43,8 +45,8 @@ public class MarketSignFactory
             return marketSign;
         }
         marketSign = new MarketSign(this.module, location);
-        marketSign.setBlockModel(new SignMarketBlockModel(0L,location));
-        this.marketSigns.put(location,marketSign);
+        marketSign.setBlockModel(new SignMarketBlockModel(0L, location));
+        this.marketSigns.put(location, marketSign);
         return marketSign;
     }
 

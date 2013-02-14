@@ -10,7 +10,8 @@ public class ProfessionMatcher
 {
     private List<String> professions;
 
-    public ProfessionMatcher() {
+    public ProfessionMatcher()
+    {
         this.professions = new ArrayList<String>();
         for (Profession profession : Profession.values())
         {

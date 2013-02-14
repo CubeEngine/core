@@ -19,7 +19,8 @@ import org.bukkit.material.Openable;
 
 public class InteractionLogger extends Logger<InteractionConfig>
 {
-    public InteractionLogger(Log module) {
+    public InteractionLogger(Log module)
+    {
         super(module, InteractionConfig.class);
     }
 

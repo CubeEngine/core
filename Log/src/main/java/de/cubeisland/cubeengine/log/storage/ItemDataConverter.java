@@ -28,8 +28,6 @@ public class ItemDataConverter implements Converter<ItemData>
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
-
-
     public ItemData fromString(String string) throws ConversionException
     {
         if (string == null)

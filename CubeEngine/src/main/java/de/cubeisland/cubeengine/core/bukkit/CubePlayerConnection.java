@@ -121,469 +121,536 @@ public class CubePlayerConnection extends PlayerConnection
     @Override
     public void a(Packet0KeepAlive packet0keepalive)
     {
-        if (this.packetReceived(packet0keepalive)) return;
+        if (this.packetReceived(packet0keepalive))
+            return;
         super.a(packet0keepalive);
     }
 
     @Override
     public void a(Packet1Login pl)
     {
-        if (this.packetReceived(pl)) return;
+        if (this.packetReceived(pl))
+            return;
         super.a(pl);
     }
 
     @Override
     public void a(Packet2Handshake ph)
     {
-        if (this.packetReceived(ph)) return;
+        if (this.packetReceived(ph))
+            return;
         super.a(ph);
     }
 
     @Override
     public void a(Packet3Chat packet3chat)
     {
-        if (this.packetReceived(packet3chat)) return;
+        if (this.packetReceived(packet3chat))
+            return;
         super.a(packet3chat);
     }
 
     @Override
     public void a(Packet4UpdateTime put)
     {
-        if (this.packetReceived(put)) return;
+        if (this.packetReceived(put))
+            return;
         super.a(put);
     }
 
     @Override
     public void a(Packet5EntityEquipment pee)
     {
-        if (this.packetReceived(pee)) return;
+        if (this.packetReceived(pee))
+            return;
         super.a(pee);
     }
 
     @Override
     public void a(Packet6SpawnPosition psp)
     {
-        if (this.packetReceived(psp)) return;
+        if (this.packetReceived(psp))
+            return;
         super.a(psp);
     }
 
     @Override
     public void a(Packet7UseEntity packet7useentity)
     {
-        if (this.packetReceived(packet7useentity)) return;
+        if (this.packetReceived(packet7useentity))
+            return;
         super.a(packet7useentity);
     }
 
     @Override
     public void a(Packet8UpdateHealth puh)
     {
-        if (this.packetReceived(puh)) return;
+        if (this.packetReceived(puh))
+            return;
         super.a(puh);
     }
 
     @Override
     public void a(Packet9Respawn packet9respawn)
     {
-        if (this.packetReceived(packet9respawn)) return;
+        if (this.packetReceived(packet9respawn))
+            return;
         super.a(packet9respawn);
     }
 
     @Override
     public void a(Packet10Flying packet10flying)
     {
-        if (this.packetReceived(packet10flying)) return;
+        if (this.packetReceived(packet10flying))
+            return;
         super.a(packet10flying);
     }
 
     @Override
     public void a(Packet14BlockDig packet14blockdig)
     {
-        if (this.packetReceived(packet14blockdig)) return;
+        if (this.packetReceived(packet14blockdig))
+            return;
         super.a(packet14blockdig);
     }
 
     @Override
     public void a(Packet15Place packet15place)
     {
-        if (this.packetReceived(packet15place)) return;
+        if (this.packetReceived(packet15place))
+            return;
         super.a(packet15place);
     }
 
     @Override
     public void a(Packet16BlockItemSwitch packet16blockitemswitch)
     {
-        if (this.packetReceived(packet16blockitemswitch)) return;
+        if (this.packetReceived(packet16blockitemswitch))
+            return;
         super.a(packet16blockitemswitch);
     }
 
     @Override
     public void a(Packet17EntityLocationAction action)
     {
-        if (this.packetReceived(action)) return;
+        if (this.packetReceived(action))
+            return;
         super.a(action);
     }
 
     @Override
     public void a(Packet18ArmAnimation packet18armanimation)
     {
-        if (this.packetReceived(packet18armanimation)) return;
+        if (this.packetReceived(packet18armanimation))
+            return;
         super.a(packet18armanimation);
     }
 
     @Override
     public void a(Packet19EntityAction packet19entityaction)
     {
-        if (this.packetReceived(packet19entityaction)) return;
+        if (this.packetReceived(packet19entityaction))
+            return;
         super.a(packet19entityaction);
     }
 
     @Override
     public void a(Packet20NamedEntitySpawn pnes)
     {
-        if (this.packetReceived(pnes)) return;
+        if (this.packetReceived(pnes))
+            return;
         super.a(pnes);
     }
 
     @Override
     public void a(Packet22Collect pc)
     {
-        if (this.packetReceived(pc)) return;
+        if (this.packetReceived(pc))
+            return;
         super.a(pc);
     }
 
     @Override
     public void a(Packet23VehicleSpawn pvs)
     {
-        if (this.packetReceived(pvs)) return;
+        if (this.packetReceived(pvs))
+            return;
         super.a(pvs);
     }
 
     @Override
     public void a(Packet24MobSpawn pms)
     {
-        if (this.packetReceived(pms)) return;
+        if (this.packetReceived(pms))
+            return;
         super.a(pms);
     }
 
     @Override
     public void a(Packet25EntityPainting pep)
     {
-        if (this.packetReceived(pep)) return;
+        if (this.packetReceived(pep))
+            return;
         super.a(pep);
     }
 
     @Override
     public void a(Packet26AddExpOrb paeo)
     {
-        if (this.packetReceived(paeo)) return;
+        if (this.packetReceived(paeo))
+            return;
         super.a(paeo);
     }
 
     @Override
     public void a(Packet28EntityVelocity pev)
     {
-        if (this.packetReceived(pev)) return;
+        if (this.packetReceived(pev))
+            return;
         super.a(pev);
     }
 
     @Override
     public void a(Packet29DestroyEntity pde)
     {
-        if (this.packetReceived(pde)) return;
+        if (this.packetReceived(pde))
+            return;
         super.a(pde);
     }
 
     @Override
     public void a(Packet30Entity pe)
     {
-        if (this.packetReceived(pe)) return;
+        if (this.packetReceived(pe))
+            return;
         super.a(pe);
     }
 
     @Override
     public void a(Packet34EntityTeleport pet)
     {
-        if (this.packetReceived(pet)) return;
+        if (this.packetReceived(pet))
+            return;
         super.a(pet);
     }
 
     @Override
     public void a(Packet35EntityHeadRotation pehr)
     {
-        if (this.packetReceived(pehr)) return;
+        if (this.packetReceived(pehr))
+            return;
         super.a(pehr);
     }
 
     @Override
     public void a(Packet38EntityStatus pes)
     {
-        if (this.packetReceived(pes)) return;
+        if (this.packetReceived(pes))
+            return;
         super.a(pes);
     }
 
     @Override
     public void a(Packet39AttachEntity pae)
     {
-        if (this.packetReceived(pae)) return;
+        if (this.packetReceived(pae))
+            return;
         super.a(pae);
     }
 
     @Override
     public void a(Packet40EntityMetadata pem)
     {
-        if (this.packetReceived(pem)) return;
+        if (this.packetReceived(pem))
+            return;
         super.a(pem);
     }
 
     @Override
     public void a(Packet41MobEffect pme)
     {
-        if (this.packetReceived(pme)) return;
+        if (this.packetReceived(pme))
+            return;
         super.a(pme);
     }
 
     @Override
     public void a(Packet42RemoveMobEffect prme)
     {
-        if (this.packetReceived(prme)) return;
+        if (this.packetReceived(prme))
+            return;
         super.a(prme);
     }
 
     @Override
     public void a(Packet43SetExperience pse)
     {
-        if (this.packetReceived(pse)) return;
+        if (this.packetReceived(pse))
+            return;
         super.a(pse);
     }
 
     @Override
     public void a(Packet51MapChunk pmc)
     {
-        if (this.packetReceived(pmc)) return;
+        if (this.packetReceived(pmc))
+            return;
         super.a(pmc);
     }
 
     @Override
     public void a(Packet52MultiBlockChange pmbc)
     {
-        if (this.packetReceived(pmbc)) return;
+        if (this.packetReceived(pmbc))
+            return;
         super.a(pmbc);
     }
 
     @Override
     public void a(Packet53BlockChange pbc)
     {
-        if (this.packetReceived(pbc)) return;
+        if (this.packetReceived(pbc))
+            return;
         super.a(pbc);
     }
 
     @Override
     public void a(Packet54PlayNoteBlock ppnb)
     {
-        if (this.packetReceived(ppnb)) return;
+        if (this.packetReceived(ppnb))
+            return;
         super.a(ppnb);
     }
 
     @Override
     public void a(Packet55BlockBreakAnimation pbba)
     {
-        if (this.packetReceived(pbba)) return;
+        if (this.packetReceived(pbba))
+            return;
         super.a(pbba);
     }
 
     @Override
     public void a(Packet56MapChunkBulk pmcb)
     {
-        if (this.packetReceived(pmcb)) return;
+        if (this.packetReceived(pmcb))
+            return;
         super.a(pmcb);
     }
 
     @Override
     public void a(Packet60Explosion pe)
     {
-        if (this.packetReceived(pe)) return;
+        if (this.packetReceived(pe))
+            return;
         super.a(pe);
     }
 
     @Override
     public void a(Packet61WorldEvent pwe)
     {
-        if (this.packetReceived(pwe)) return;
+        if (this.packetReceived(pwe))
+            return;
         super.a(pwe);
     }
 
     @Override
     public void a(Packet62NamedSoundEffect pnse)
     {
-        if (this.packetReceived(pnse)) return;
+        if (this.packetReceived(pnse))
+            return;
         super.a(pnse);
     }
 
     @Override
     public void a(Packet70Bed pb)
     {
-        if (this.packetReceived(pb)) return;
+        if (this.packetReceived(pb))
+            return;
         super.a(pb);
     }
 
     @Override
     public void a(Packet71Weather pw)
     {
-        if (this.packetReceived(pw)) return;
+        if (this.packetReceived(pw))
+            return;
         super.a(pw);
     }
 
     @Override
     public void a(Packet100OpenWindow pow)
     {
-        if (this.packetReceived(pow)) return;
+        if (this.packetReceived(pow))
+            return;
         super.a(pow);
     }
 
     @Override
     public void a(Packet102WindowClick packet102windowclick)
     {
-        if (this.packetReceived(packet102windowclick)) return;
+        if (this.packetReceived(packet102windowclick))
+            return;
         super.a(packet102windowclick);
     }
 
     @Override
     public void a(Packet103SetSlot pss)
     {
-        if (this.packetReceived(pss)) return;
+        if (this.packetReceived(pss))
+            return;
         super.a(pss);
     }
 
     @Override
     public void a(Packet104WindowItems pwi)
     {
-        if (this.packetReceived(pwi)) return;
+        if (this.packetReceived(pwi))
+            return;
         super.a(pwi);
     }
 
     @Override
     public void a(Packet105CraftProgressBar pcpb)
     {
-        if (this.packetReceived(pcpb)) return;
+        if (this.packetReceived(pcpb))
+            return;
         super.a(pcpb);
     }
 
     @Override
     public void a(Packet106Transaction packet106transaction)
     {
-        if (this.packetReceived(packet106transaction)) return;
+        if (this.packetReceived(packet106transaction))
+            return;
         super.a(packet106transaction);
     }
 
     @Override
     public void a(Packet107SetCreativeSlot packet107setcreativeslot)
     {
-        if (this.packetReceived(packet107setcreativeslot)) return;
+        if (this.packetReceived(packet107setcreativeslot))
+            return;
         super.a(packet107setcreativeslot);
     }
 
     @Override
     public void a(Packet108ButtonClick packet108buttonclick)
     {
-        if (this.packetReceived(packet108buttonclick)) return;
+        if (this.packetReceived(packet108buttonclick))
+            return;
         super.a(packet108buttonclick);
     }
 
     @Override
     public void a(Packet130UpdateSign packet130updatesign)
     {
-        if (this.packetReceived(packet130updatesign)) return;
+        if (this.packetReceived(packet130updatesign))
+            return;
         super.a(packet130updatesign);
     }
 
     @Override
     public void a(Packet131ItemData pid)
     {
-        if (this.packetReceived(pid)) return;
+        if (this.packetReceived(pid))
+            return;
         super.a(pid);
     }
 
     @Override
     public void a(Packet132TileEntityData pted)
     {
-        if (this.packetReceived(pted)) return;
+        if (this.packetReceived(pted))
+            return;
         super.a(pted);
     }
 
     @Override
     public void a(Packet200Statistic ps)
     {
-        if (this.packetReceived(ps)) return;
+        if (this.packetReceived(ps))
+            return;
         super.a(ps);
     }
 
     @Override
     public void a(Packet201PlayerInfo ppi)
     {
-        if (this.packetReceived(ppi)) return;
+        if (this.packetReceived(ppi))
+            return;
         super.a(ppi);
     }
 
     @Override
     public void a(Packet202Abilities packet202abilities)
     {
-        if (this.packetReceived(packet202abilities)) return;
+        if (this.packetReceived(packet202abilities))
+            return;
         super.a(packet202abilities);
     }
 
     @Override
     public void a(Packet203TabComplete packet203tabcomplete)
     {
-        if (this.packetReceived(packet203tabcomplete)) return;
+        if (this.packetReceived(packet203tabcomplete))
+            return;
         super.a(packet203tabcomplete);
     }
 
     @Override
     public void a(Packet204LocaleAndViewDistance packet204localeandviewdistance)
     {
-        if (this.packetReceived(packet204localeandviewdistance)) return;
+        if (this.packetReceived(packet204localeandviewdistance))
+            return;
         super.a(packet204localeandviewdistance);
     }
 
     @Override
     public void a(Packet205ClientCommand packet205clientcommand)
     {
-        if (this.packetReceived(packet205clientcommand)) return;
+        if (this.packetReceived(packet205clientcommand))
+            return;
         super.a(packet205clientcommand);
     }
 
     @Override
     public void a(Packet250CustomPayload packet250custompayload)
     {
-        if (this.packetReceived(packet250custompayload)) return;
+        if (this.packetReceived(packet250custompayload))
+            return;
         super.a(packet250custompayload);
     }
 
     @Override
     public void a(Packet252KeyResponse pkr)
     {
-        if (this.packetReceived(pkr)) return;
+        if (this.packetReceived(pkr))
+            return;
         super.a(pkr);
     }
 
     @Override
     public void a(Packet253KeyRequest pkr)
     {
-        if (this.packetReceived(pkr)) return;
+        if (this.packetReceived(pkr))
+            return;
         super.a(pkr);
     }
 
     @Override
     public void a(Packet254GetInfo pgi)
     {
-        if (this.packetReceived(pgi)) return;
+        if (this.packetReceived(pgi))
+            return;
         super.a(pgi);
     }
 
     @Override
     public void a(Packet255KickDisconnect packet255kickdisconnect)
     {
-        if (this.packetReceived(packet255kickdisconnect)) return;
+        if (this.packetReceived(packet255kickdisconnect))
+            return;
         super.a(packet255kickdisconnect);
     }
 }

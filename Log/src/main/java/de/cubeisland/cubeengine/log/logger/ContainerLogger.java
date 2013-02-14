@@ -26,12 +26,12 @@ import static de.cubeisland.cubeengine.core.util.InventoryUtil.checkForPlace;
 
 public class ContainerLogger extends Logger<ContainerConfig>
 {
-    public ContainerLogger(Log module) {
+    public ContainerLogger(Log module)
+    {
         super(module, ContainerConfig.class);
     }
 
     private static TIntObjectHashMap<TObjectIntHashMap<ItemData>> openedInventories = new TIntObjectHashMap<TObjectIntHashMap<ItemData>>();
-
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onInventoryClose(InventoryCloseEvent event)
@@ -67,7 +67,8 @@ public class ContainerLogger extends Logger<ContainerConfig>
         openedInventories.remove(user.key.intValue());
     }
 
-    private Location getLocationForHolder(InventoryHolder holder) {
+    private Location getLocationForHolder(InventoryHolder holder)
+    {
         if (holder instanceof Entity)
         {
             return ((Entity)holder).getLocation();
@@ -121,13 +122,13 @@ public class ContainerLogger extends Logger<ContainerConfig>
             case FURNACE:
             case BREWING:
                 return true;
-            //Cannot hold items after closing view:
+                //Cannot hold items after closing view:
             case WORKBENCH:
             case CRAFTING:
             case ENCHANTING:
             case ANVIL:
             case MERCHANT:
-            // special cases:
+                // special cases:
             case CREATIVE: //no need to log
             case PLAYER: //no need to log
             case ENDER_CHEST: //TODO could log this but should we?
@@ -237,7 +238,7 @@ public class ContainerLogger extends Logger<ContainerConfig>
                 logged = true;
             }
         }
-        if (!logged &&  this.configs.get(world).logNothing) //Player just looked into container
+        if (!logged && this.configs.get(world).logNothing) //Player just looked into container
         {
             this.module.getLogManager().logChestLog(user.key.intValue(), world, loc, new ItemData(0, (short)0), 0, type.getId());
         }
@@ -251,7 +252,6 @@ public class ContainerLogger extends Logger<ContainerConfig>
      * (amount == null) { amount = 0; } amount += item.getAmount();
      * map.put(itemData, amount); } return map; } //
      */
-
 
     public static enum ContainerType
     {

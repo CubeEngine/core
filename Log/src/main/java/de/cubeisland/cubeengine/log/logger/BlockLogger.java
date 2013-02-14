@@ -12,7 +12,7 @@ public abstract class BlockLogger<T extends LoggerConfig> extends Logger<T>
 {
     public BlockLogger(Log module, Class<T> configClass)
     {
-        super(module,configClass);
+        super(module, configClass);
     }
 
     public void logBlockChange(BlockChangeCause cause, World world, Player player, BlockState oldState, BlockState newState)
@@ -41,7 +41,7 @@ public abstract class BlockLogger<T extends LoggerConfig> extends Logger<T>
         }
         else
         {
-            this.module.getLogManager().logBlockLog(cause, cause.getId(), world,  newState, oldState);
+            this.module.getLogManager().logBlockLog(cause, cause.getId(), world, newState, oldState);
         }
     }
 

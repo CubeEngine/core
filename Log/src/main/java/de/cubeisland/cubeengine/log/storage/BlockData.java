@@ -18,7 +18,7 @@ public class BlockData
 
     public BlockData(int material, byte data)
     {
-        this(Material.getMaterial(material),data);
+        this(Material.getMaterial(material), data);
     }
 
     public static BlockData get(Integer mat, Byte data)

@@ -2,7 +2,8 @@ package de.cubeisland.cubeengine.core.util.matcher;
 
 import de.cubeisland.cubeengine.core.CubeEngine;
 
-public class Match {
+public class Match
+{
 
     private MaterialMatcher materialMatcher;
     private MaterialDataMatcher materialDataMatcher;
@@ -11,9 +12,8 @@ public class Match {
     private EntityMatcher entityMatcher;
     private StringMatcher stringMatcher;
 
-
-
-    public Match() {
+    public Match()
+    {
         this.materialDataMatcher = new MaterialDataMatcher();
         this.materialMatcher = new MaterialMatcher(materialDataMatcher);
         this.enchantMatcher = new EnchantMatcher();
@@ -48,7 +48,8 @@ public class Match {
         return CubeEngine.getCore().getMatcherManager().entityMatcher;
     }
 
-    public static StringMatcher string() {
+    public static StringMatcher string()
+    {
         return CubeEngine.getCore().getMatcherManager().stringMatcher;
     }
 }

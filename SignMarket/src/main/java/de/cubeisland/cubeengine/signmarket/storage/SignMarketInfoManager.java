@@ -3,7 +3,7 @@ package de.cubeisland.cubeengine.signmarket.storage;
 import de.cubeisland.cubeengine.core.storage.SingleKeyStorage;
 import de.cubeisland.cubeengine.signmarket.Signmarket;
 
-public class SignMarketInfoManager extends SingleKeyStorage<Long,SignMarketInfoModel>
+public class SignMarketInfoManager extends SingleKeyStorage<Long, SignMarketInfoModel>
 {
     private static final int REVISION = 1;
     private final Signmarket module;

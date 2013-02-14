@@ -113,11 +113,13 @@ public class Account
         return this.model.value;
     }
 
-    public boolean isHidden() {
+    public boolean isHidden()
+    {
         return this.model.hidden;
     }
 
-    public void setHidden(boolean hidden) {
+    public void setHidden(boolean hidden)
+    {
         this.model.hidden = hidden;
     }
 
@@ -145,11 +147,11 @@ public class Account
     {
         if (this.isUserAccount())
         {
-            return "USER:"+ this.user.getName();
+            return "USER:" + this.user.getName();
         }
         else
         {
-            return "BANK:"+ this.model.name;
+            return "BANK:" + this.model.name;
         }
 
     }

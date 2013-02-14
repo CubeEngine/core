@@ -44,7 +44,7 @@ public class ChatCommands
         User user = context.getUser(0);
         if (user == null)
         {
-            context.sendMessage("basics","&cUser %s not found!",context.getString(0));
+            context.sendMessage("basics", "&cUser %s not found!", context.getString(0));
             return;
         }
         if (this.basics.getIgnoreListManager().addIgnore(sender, user))
@@ -56,7 +56,7 @@ public class ChatCommands
             context.sendMessage("basics", "&cYou already ignored &2%s&c!", user.getName());
         }
     }
-        
+
     @Command(desc = "Ignores all messages from players", min = 1, max = 1, usage = "<player>")
     public void unignore(CommandContext context)
     {
@@ -73,7 +73,7 @@ public class ChatCommands
         User user = context.getUser(0);
         if (user == null)
         {
-            context.sendMessage("basics","&cUser %s not found!",context.getString(0));
+            context.sendMessage("basics", "&cUser %s not found!", context.getString(0));
             return;
         }
         if (this.basics.getIgnoreListManager().removeIgnore(sender, user))
@@ -90,7 +90,7 @@ public class ChatCommands
     public void me(CommandContext context)
     {
         String message = context.getStrings(0);
-        this.um.broadcastStatus(message ,context.getSender().getName());
+        this.um.broadcastStatus(message, context.getSender().getName());
     }
 
     @Command(desc = "Sends a private message to someone", names = {
@@ -272,6 +272,6 @@ public class ChatCommands
     @Command(desc = "Shows a random number from 0 to 100", max = 1)
     public void rand(CommandContext context)
     {
-        this.um.broadcastStatus("basics", "rolled a &6%d&f!" ,context.getSender().getName(),(int)(Math.random() * 100));
+        this.um.broadcastStatus("basics", "rolled a &6%d&f!", context.getSender().getName(), (int)(Math.random() * 100));
     }
 }

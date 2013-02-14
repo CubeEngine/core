@@ -19,7 +19,7 @@ public class LogConfiguration extends Configuration
     @Option("log-actions")
     public Map<String, LogActionConfig> logActionConfigs = new THashMap<String, LogActionConfig>();
 
-    public Map<Class<? extends LoggerConfig>,LoggerConfig> subConfigs = new HashMap<Class<? extends LoggerConfig>, LoggerConfig>();
+    public Map<Class<? extends LoggerConfig>, LoggerConfig> subConfigs = new HashMap<Class<? extends LoggerConfig>, LoggerConfig>();
 
     public LogConfiguration()
     {
@@ -32,7 +32,7 @@ public class LogConfiguration extends Configuration
         LogActionConfig laConfig;
         try
         {
-            laConfig = this.addLogActionConfig("BLOCKCHANGE",true);
+            laConfig = this.addLogActionConfig("BLOCKCHANGE", true);
             this.addLoggerConfig(BlockBreakConfig.class, laConfig)
                 .addLoggerConfig(BlockBurnConfig.class, laConfig)
                 .addLoggerConfig(BlockDecayConfig.class, laConfig)
@@ -44,19 +44,21 @@ public class LogConfiguration extends Configuration
                 .addLoggerConfig(BlockPlaceConfig.class, laConfig)
                 .addLoggerConfig(EndermanConfig.class, laConfig)
                 .addLoggerConfig(InteractionConfig.class, laConfig);
-            laConfig = this.addLogActionConfig("SIGNCHANGE",false);
+            laConfig = this.addLogActionConfig("SIGNCHANGE", false);
             this.addLoggerConfig(SignChangeConfig.class, laConfig);
-            laConfig = this.addLogActionConfig("CONTAINER",true);
+            laConfig = this.addLogActionConfig("CONTAINER", true);
             this.addLoggerConfig(ContainerConfig.class, laConfig);
-            laConfig = this.addLogActionConfig("CHAT",false);
+            laConfig = this.addLogActionConfig("CHAT", false);
             this.addLoggerConfig(ChatConfig.class, laConfig);
-            laConfig = this.addLogActionConfig("KILL",false);
+            laConfig = this.addLogActionConfig("KILL", false);
             this.addLoggerConfig(KillConfig.class, laConfig);
-            laConfig = this.addLogActionConfig("WORLDEDIT",false);
+            laConfig = this.addLogActionConfig("WORLDEDIT", false);
             this.addLoggerConfig(WorldEditConfig.class, laConfig);
 
-        } catch (Exception e) {
-            throw new InvalidConfigurationException("Invalid LoggerConfigs!",e);
+        }
+        catch (Exception e)
+        {
+            throw new InvalidConfigurationException("Invalid LoggerConfigs!", e);
         }
     }
 
@@ -64,9 +66,9 @@ public class LogConfiguration extends Configuration
     {
         if (this.logActionConfigs.containsKey(actionName))
         {
-            for (LoggerConfig loggerConfig: this.logActionConfigs.get(actionName).loggerConfigs.values())
+            for (LoggerConfig loggerConfig : this.logActionConfigs.get(actionName).loggerConfigs.values())
             {
-                this.subConfigs.put(loggerConfig.getClass(),loggerConfig);
+                this.subConfigs.put(loggerConfig.getClass(), loggerConfig);
             }
             return null;
         }
@@ -76,11 +78,13 @@ public class LogConfiguration extends Configuration
         return logActionConfig;
     }
 
-    private LogConfiguration addLoggerConfig(Class<? extends LoggerConfig> configClass, LogActionConfig config) throws IllegalAccessException, InstantiationException {
-        if (config == null) return this;
+    private LogConfiguration addLoggerConfig(Class<? extends LoggerConfig> configClass, LogActionConfig config) throws IllegalAccessException, InstantiationException
+    {
+        if (config == null)
+            return this;
         LoggerConfig loggerConfig = configClass.newInstance();
         config.loggerConfigs.put(loggerConfig.getName(), loggerConfig);
-        this.subConfigs.put(configClass,loggerConfig);
+        this.subConfigs.put(configClass, loggerConfig);
         return this;
     }
 
@@ -88,8 +92,6 @@ public class LogConfiguration extends Configuration
     {
         return (T)this.subConfigs.get(configClass);
     }
-
-
 
     /*
     SAND / GRAVEL Logging stuff:

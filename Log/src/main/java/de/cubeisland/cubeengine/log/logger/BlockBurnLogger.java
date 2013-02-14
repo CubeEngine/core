@@ -12,9 +12,10 @@ import org.bukkit.event.block.BlockBurnEvent;
 
 import static de.cubeisland.cubeengine.log.logger.BlockLogger.BlockChangeCause.FIRE;
 
-public class BlockBurnLogger extends    BlockLogger<BlockBurnConfig>
+public class BlockBurnLogger extends BlockLogger<BlockBurnConfig>
 {
-    public BlockBurnLogger(Log module) {
+    public BlockBurnLogger(Log module)
+    {
         super(module, BlockBurnConfig.class);
     }
 
@@ -29,7 +30,8 @@ public class BlockBurnLogger extends    BlockLogger<BlockBurnConfig>
             {
                 this.logBlockChange(FIRE, world, null, block.getState(), null);
             }
-            switch (event.getBlock().getRelative(BlockFace.UP).getType()) // blocks on top that get destroyed
+            switch (event.getBlock().getRelative(BlockFace.UP).getType())
+            // blocks on top that get destroyed
             {
                 case WOODEN_DOOR:
                 case IRON_DOOR:

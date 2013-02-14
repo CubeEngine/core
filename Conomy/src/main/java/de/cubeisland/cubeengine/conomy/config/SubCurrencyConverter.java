@@ -27,20 +27,20 @@ public class SubCurrencyConverter implements Converter<SubCurrencyConfig>
         {
             try
             {
-                Map<String, Node> map = ((MapNode) node).getMappedNodes();
+                Map<String, Node> map = ((MapNode)node).getMappedNodes();
                 String shortName = map.get("shortname").unwrap();
                 Integer value = 100;
                 if (map.get("value") != null)
                 {
                     value = Integer.valueOf(map.get("value").unwrap());
                 }
-                return new SubCurrencyConfig(shortName,value);
+                return new SubCurrencyConfig(shortName, value);
             }
             catch (Exception e)
             {
                 throw new ConversionException("Could not parse SubCurrencyConfig!", e);
             }
         }
-        throw  new ConversionException("Invalid Node!"+ node.getClass());
+        throw new ConversionException("Invalid Node!" + node.getClass());
     }
 }

@@ -7,7 +7,9 @@ import de.cubeisland.cubeengine.core.module.Module;
 
 public class VanillaCommands
 {
-    @Command(names = {"stop", "shutdown", "killserver", "quit"}, desc = "Shuts down the server", usage =  "[message]")
+    @Command(names = {
+    "stop", "shutdown", "killserver", "quit"
+    }, desc = "Shuts down the server", usage = "[message]")
     public void stop(CommandContext ctx)
     {}
 
@@ -25,8 +27,7 @@ public class VanillaCommands
 
     @Command(desc = "Revokes the operator status of a player", usage = "{player}")
     public void deop()
-    {
-    }
+    {}
 
     @Command(desc = "Lists all loaded plugins")
     public void plugins(CommandContext ctx)
@@ -41,7 +42,6 @@ public class VanillaCommands
     public void version(CommandContext ctx)
     {}
 
-
     private class WhitelistCommand extends ContainerCommand
     {
         private WhitelistCommand(Module module)
@@ -53,7 +53,9 @@ public class VanillaCommands
         public void add(CommandContext context)
         {}
 
-        @Command(names = {"remove", "rm"}, desc = "Removes a player from the whitelist.", usage = "<player>")
+        @Command(names = {
+        "remove", "rm"
+        }, desc = "Removes a player from the whitelist.", usage = "<player>")
         public void remove(CommandContext context)
         {}
 

@@ -21,8 +21,8 @@ public class EnchantmentConverter implements Converter<Enchantment>
     {
         if (node instanceof StringNode)
         {
-            return Match.enchant().enchantment(((StringNode) node).getValue());
+            return Match.enchant().enchantment(((StringNode)node).getValue());
         }
-        throw  new ConversionException("Invalid Node!"+ node.getClass());
+        throw new ConversionException("Invalid Node!" + node.getClass());
     }
 }

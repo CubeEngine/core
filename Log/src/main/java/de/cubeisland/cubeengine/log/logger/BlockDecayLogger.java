@@ -9,12 +9,12 @@ import org.bukkit.event.block.LeavesDecayEvent;
 
 import static de.cubeisland.cubeengine.log.logger.BlockLogger.BlockChangeCause.DECAY;
 
-public class BlockDecayLogger extends    BlockLogger<BlockDecayConfig>
+public class BlockDecayLogger extends BlockLogger<BlockDecayConfig>
 {
-    public BlockDecayLogger(Log module) {
+    public BlockDecayLogger(Log module)
+    {
         super(module, BlockDecayConfig.class);
     }
-
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onLeavesDecay(LeavesDecayEvent event)

@@ -1,8 +1,9 @@
 package de.cubeisland.cubeengine.core.config.node;
 
-public class NullNode extends Node {
-    private NullNode() {
-    }
+public class NullNode extends Node
+{
+    private NullNode()
+    {}
 
     public static NullNode emptyNode()
     {
@@ -10,7 +11,8 @@ public class NullNode extends Node {
     }
 
     @Override
-    public String unwrap() {
+    public String unwrap()
+    {
         return "";
     }
 }

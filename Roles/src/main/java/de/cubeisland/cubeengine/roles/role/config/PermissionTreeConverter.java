@@ -15,7 +15,8 @@ public class PermissionTreeConverter implements Converter<PermissionTree>
 {
     private final Roles module;
 
-    public PermissionTreeConverter(Roles module) {
+    public PermissionTreeConverter(Roles module)
+    {
         this.module = module;
     }
 
@@ -23,7 +24,8 @@ public class PermissionTreeConverter implements Converter<PermissionTree>
     public Node toNode(PermissionTree permTree) throws ConversionException
     {
         Map<String, Object> easyMap = new LinkedHashMap<String, Object>();
-        for (Map.Entry<String,Boolean> entry : permTree.getPermissions().entrySet()){
+        for (Map.Entry<String, Boolean> entry : permTree.getPermissions().entrySet())
+        {
             this.easyMapValue(easyMap, entry.getKey(), entry.getValue());
         }
         return this.organizeTree(easyMap);
@@ -32,11 +34,11 @@ public class PermissionTreeConverter implements Converter<PermissionTree>
     private ListNode organizeTree(Map<String, Object> baseMap)
     {
         ListNode result = ListNode.emptyList();
-        for (Map.Entry<String,Object> entry : baseMap.entrySet())
+        for (Map.Entry<String, Object> entry : baseMap.entrySet())
         {
             if (entry.getKey().startsWith(" "))
             {
-                result.addNode(StringNode.of( (((Boolean)entry.getValue() ? "" : "-") + entry.getKey().trim())));
+                result.addNode(StringNode.of((((Boolean)entry.getValue() ? "" : "-") + entry.getKey().trim())));
             }
             else
             {
@@ -119,7 +121,7 @@ public class PermissionTreeConverter implements Converter<PermissionTree>
         PermissionTree permTree = new PermissionTree();
         if (node instanceof ListNode)
         {
-            this.loadFromList(permTree, (ListNode) node, "");
+            this.loadFromList(permTree, (ListNode)node, "");
         }
         else
         {
@@ -149,7 +151,7 @@ public class PermissionTreeConverter implements Converter<PermissionTree>
             }
             else if (value instanceof MapNode)
             {
-                this.loadFromMap(permTree,(MapNode)value, path);
+                this.loadFromMap(permTree, (MapNode)value, path);
             }
             else
             {
@@ -160,11 +162,11 @@ public class PermissionTreeConverter implements Converter<PermissionTree>
 
     private void loadFromMap(PermissionTree permTree, MapNode map, String path)
     {
-        for (Map.Entry<String,Node> entry : map.getMappedNodes().entrySet())
+        for (Map.Entry<String, Node> entry : map.getMappedNodes().entrySet())
         {
             if (entry.getValue() instanceof ListNode)
             {
-                this.loadFromList(permTree,(ListNode)entry.getValue(), path.isEmpty() ? entry.getKey() : (path + "." + entry.getKey()));
+                this.loadFromList(permTree, (ListNode)entry.getValue(), path.isEmpty() ? entry.getKey() : (path + "." + entry.getKey()));
             }
             else
             {

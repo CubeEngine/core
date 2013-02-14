@@ -70,19 +70,18 @@ public class ItemCommands
                 if (found == null)
                 {
                     context.sendMessage("basics", "&cItemname unknown! Itemdata: &e%d&f:&e%d&f",
-                            item.getType().getId(),item.getDurability());
+                            item.getType().getId(), item.getDurability());
                     return;
                 }
                 context.sendMessage("basics", "&aThe Item in your hand is: &e%s &f(&e%d&f:&e%d&f)",
-                        found, item.getType().getId(),item.getDurability());
+                        found, item.getType().getId(), item.getDurability());
             }
             return;
         }
         context.sendMessage("basics", "&cYou need 1 parameter!");
     }
 
-    @Command(desc = "Changes the display name of the item in your hand.",
-            usage = "<name> [lore...]", min = 1)
+    @Command(desc = "Changes the display name of the item in your hand.", usage = "<name> [lore...]", min = 1)
     public void rename(ParameterizedContext context)
     {
         if (context.getSender() instanceof User)
@@ -90,10 +89,10 @@ public class ItemCommands
             User sender = (User)context.getSender();
             ItemStack item = sender.getItemInHand();
             ItemMeta meta = item.getItemMeta();
-            String name = ChatFormat.parseFormats( context.getString(0));
+            String name = ChatFormat.parseFormats(context.getString(0));
             meta.setDisplayName(name);
-            ArrayList<String> list =new ArrayList<String>();
-            for (int i = 1 ; i < context.getArgCount(); ++i)
+            ArrayList<String> list = new ArrayList<String>();
+            for (int i = 1; i < context.getArgCount(); ++i)
             {
                 list.add(ChatFormat.parseFormats(context.getString(i)));
             }
@@ -175,9 +174,7 @@ public class ItemCommands
         context.sendMessage("core", "&cThis command can only be used by a player!");
     }
 
-    @Command(desc = "Adds an Enchantment to the item in your hand", max = 2,
-            flags = @Flag(longName = "unsafe", name = "u"),
-            usage = "<enchantment> [level] [-unsafe]")
+    @Command(desc = "Adds an Enchantment to the item in your hand", max = 2, flags = @Flag(longName = "unsafe", name = "u"), usage = "<enchantment> [level] [-unsafe]")
     public void enchant(ParameterizedContext context)
     {
         if (!context.hasArg(0))
@@ -299,7 +296,7 @@ public class ItemCommands
             return;
         }
         if (!context.hasFlag("b") && BasicsPerm.COMMAND_GIVE_BLACKLIST.isAuthorized(context.getSender())
-          && this.basics.getConfiguration().blacklist.contains(item))
+            && this.basics.getConfiguration().blacklist.contains(item))
         {
             context.sendMessage("basics", "&cThis item is blacklisted!");
             return;
@@ -363,18 +360,18 @@ public class ItemCommands
                 int enchLvl = 0;
                 if (enchName.contains(":"))
                 {
-                    enchLvl = Integer.parseInt(enchName.substring(enchName.indexOf(":")+1,enchName.length()));
-                    enchName = enchName.substring(0,enchName.indexOf(":"));
+                    enchLvl = Integer.parseInt(enchName.substring(enchName.indexOf(":") + 1, enchName.length()));
+                    enchName = enchName.substring(0, enchName.indexOf(":"));
                 }
                 if (BasicsPerm.COMMAND_ITEM_ENCHANTMENTS.isAuthorized(sender))
                 {
                     if (BasicsPerm.COMMAND_ITEM_ENCHANTMENTS_UNSAFE.isAuthorized(sender))
                     {
-                        Match.enchant().applyMatchedEnchantment(item,enchName,enchLvl,true);
+                        Match.enchant().applyMatchedEnchantment(item, enchName, enchLvl, true);
                     }
                     else
                     {
-                        Match.enchant().applyMatchedEnchantment(item,enchName,enchLvl,false);
+                        Match.enchant().applyMatchedEnchantment(item, enchName, enchLvl, false);
                     }
                 }
                 curIndex++;
@@ -388,10 +385,7 @@ public class ItemCommands
         context.sendMessage("basics", "&eDid you try to use &6/give &eon your new I-Tem?");
     }
 
-    @Command(
-            desc = "Refills the stack in hand",
-            usage = "[amount] [-a]", max = 1,
-            flags = @Flag(longName = "all", name = "a"))
+    @Command(desc = "Refills the stack in hand", usage = "[amount] [-a]", max = 1, flags = @Flag(longName = "all", name = "a"))
     public void more(ParameterizedContext context)
     {
         User sender = null;
@@ -438,7 +432,7 @@ public class ItemCommands
                 sender.sendMessage("basics", "&aRefilled &6%s &astacks in hand!", context.getString(0));
                 return;
             }
-           sender.sendMessage("basics", "&aRefilled stack in hand!");
+            sender.sendMessage("basics", "&aRefilled stack in hand!");
         }
     }
 

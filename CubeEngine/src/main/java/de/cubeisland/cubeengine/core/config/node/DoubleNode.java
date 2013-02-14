@@ -1,18 +1,22 @@
 package de.cubeisland.cubeengine.core.config.node;
 
-public class DoubleNode  extends Node {
+public class DoubleNode extends Node
+{
     private double value;
 
-    public DoubleNode(Double value) {
+    public DoubleNode(Double value)
+    {
         this.value = value;
     }
 
-    public double getValue() {
+    public double getValue()
+    {
         return value;
     }
 
     @Override
-    public String unwrap() {
+    public String unwrap()
+    {
         return String.valueOf(value);
     }
 }

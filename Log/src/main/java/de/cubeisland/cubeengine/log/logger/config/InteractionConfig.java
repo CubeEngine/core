@@ -3,9 +3,10 @@ package de.cubeisland.cubeengine.log.logger.config;
 import de.cubeisland.cubeengine.core.config.annotations.Option;
 import de.cubeisland.cubeengine.log.LoggerConfig;
 
-public  class InteractionConfig extends LoggerConfig
+public class InteractionConfig extends LoggerConfig
 {
-    public InteractionConfig() {
+    public InteractionConfig()
+    {
         super(false);
     }
 

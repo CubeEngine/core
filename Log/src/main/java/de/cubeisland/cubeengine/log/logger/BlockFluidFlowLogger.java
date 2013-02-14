@@ -19,12 +19,12 @@ import static de.cubeisland.cubeengine.core.bukkit.BlockUtil.isNonFluidProofBloc
 import static de.cubeisland.cubeengine.log.logger.BlockLogger.BlockChangeCause.LAVA;
 import static de.cubeisland.cubeengine.log.logger.BlockLogger.BlockChangeCause.WATER;
 
-public class BlockFluidFlowLogger extends     BlockLogger<BlockFluidFlowConfig>
+public class BlockFluidFlowLogger extends BlockLogger<BlockFluidFlowConfig>
 {
-    public BlockFluidFlowLogger(Log module) {
+    public BlockFluidFlowLogger(Log module)
+    {
         super(module, BlockFluidFlowConfig.class);
     }
-
 
     //TODO do this better
     private static final BlockFace[] DIRECTIONS = new BlockFace[]
@@ -176,7 +176,7 @@ public class BlockFluidFlowLogger extends     BlockLogger<BlockFluidFlowConfig>
                     }
                 }
             }
-            this.logBlockChange(cause, world,null, oldState, newState);
+            this.logBlockChange(cause, world, null, oldState, newState);
         }
     }
 
@@ -192,6 +192,5 @@ public class BlockFluidFlowLogger extends     BlockLogger<BlockFluidFlowConfig>
         }
         return false;
     }
-
 
 }
