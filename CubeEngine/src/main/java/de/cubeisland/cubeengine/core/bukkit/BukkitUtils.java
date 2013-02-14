@@ -275,7 +275,7 @@ public class BukkitUtils
         {
             final EntityPlayer entity = ((CraftPlayer)player).getHandle();
 
-            swapPlayerNetServerHandler(entity, new CubePlayerConnection(entity));
+            swapPlayerNetServerHandler(entity, new CubePlayerConnection(player, entity));
         }
     }
 

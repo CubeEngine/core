@@ -5,7 +5,7 @@ import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 
 /**
- * The event gets called when ever a player receives the paket 204.
+ * The event gets called when ever a player receives the packet 204.
  * This is the case right after the player joins the server
  * and when the user changes his language or view distance settings
  */
