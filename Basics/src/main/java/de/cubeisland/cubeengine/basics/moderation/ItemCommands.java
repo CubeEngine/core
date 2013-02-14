@@ -3,9 +3,9 @@ package de.cubeisland.cubeengine.basics.moderation;
 import de.cubeisland.cubeengine.basics.Basics;
 import de.cubeisland.cubeengine.basics.BasicsPerm;
 import de.cubeisland.cubeengine.core.command.CommandContext;
+import de.cubeisland.cubeengine.core.command.parameterized.Flag;
 import de.cubeisland.cubeengine.core.command.parameterized.ParameterizedContext;
 import de.cubeisland.cubeengine.core.command.reflected.Command;
-import de.cubeisland.cubeengine.core.command.parameterized.Flag;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.util.ChatFormat;
 import de.cubeisland.cubeengine.core.util.matcher.Match;
@@ -19,9 +19,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import static de.cubeisland.cubeengine.core.command.exception.IllegalParameterValue.illegalParameter;
-import static de.cubeisland.cubeengine.core.command.exception.InvalidUsageException.*;
-import static de.cubeisland.cubeengine.core.command.exception.PermissionDeniedException.denyAccess;
+import static de.cubeisland.cubeengine.core.command.exception.InvalidUsageException.invalidUsage;
 
 /**
  * item-related commands /itemdb /rename /headchange /unlimited /enchant /give
@@ -51,17 +49,14 @@ public class ItemCommands
             {
                 context.sendMessage("basics", "&cCould not find any item named &e%s&c!", context.getString(0));
             }
+            return;
         }
-        else
+        if (context.getSender() instanceof User)
         {
-            User sender = null;
-            if (context.getSender() instanceof User)
-            {
-                sender = (User)context.getSender();
-            }
+            User sender = (User)context.getSender();
             if (sender == null)
             {
-                context.sendMessage("basics", "&cYou need 1 parameter!");
+
                 return;
             }
             if (sender.getItemInHand().getType().equals(Material.AIR))
@@ -70,49 +65,44 @@ public class ItemCommands
             }
             else
             {
-                String found = Match.material().getNameFor(sender.getItemInHand());
+                ItemStack item = sender.getItemInHand();
+                String found = Match.material().getNameFor(item);
                 if (found == null)
                 {
                     context.sendMessage("basics", "&cItemname unknown! Itemdata: &e%d&f:&e%d&f",
-                            sender.getItemInHand().getType().getId(),
-                            sender.getItemInHand().getDurability());
+                            item.getType().getId(),item.getDurability());
                     return;
                 }
                 context.sendMessage("basics", "&aThe Item in your hand is: &e%s &f(&e%d&f:&e%d&f)",
-                        found,
-                        sender.getItemInHand().getType().getId(),
-                        sender.getItemInHand().getDurability());
+                        found, item.getType().getId(),item.getDurability());
             }
-        }
-    }
-
-    @Command(desc = "Changes the display name of the item in your hand.", usage = "<name> [-lore]", min = 1, flags = @Flag(longName = "lore", name = "l"))
-    public void rename(ParameterizedContext context)
-    {//TODO better lore
-        User sender = null;
-        if (context.getSender() instanceof User)
-        {
-            sender = (User)context.getSender();
-        }
-        if (sender == null)
-        {
-            context.sendMessage("basics", "&cTrying to give your &etoys &ca name?");
             return;
         }
-        ItemStack item = sender.getItemInHand();
-        ItemMeta meta = item.getItemMeta();
-        String name = context.getStrings(0);
-        name = ChatFormat.parseFormats(name);
-        if (context.hasFlag("l"))
+        context.sendMessage("basics", "&cYou need 1 parameter!");
+    }
+
+    @Command(desc = "Changes the display name of the item in your hand.",
+            usage = "<name> [lore...]", min = 1)
+    public void rename(ParameterizedContext context)
+    {
+        if (context.getSender() instanceof User)
         {
-            meta.setLore(new ArrayList<String>(Arrays.asList(name)));
-        }
-        else
-        {
+            User sender = (User)context.getSender();
+            ItemStack item = sender.getItemInHand();
+            ItemMeta meta = item.getItemMeta();
+            String name = ChatFormat.parseFormats( context.getString(0));
             meta.setDisplayName(name);
+            ArrayList<String> list =new ArrayList<String>();
+            for (int i = 1 ; i < context.getArgCount(); ++i)
+            {
+                list.add(ChatFormat.parseFormats(context.getString(i)));
+            }
+            meta.setLore(list);
+            item.setItemMeta(meta);
+            context.sendMessage("basics", "&aYou now hold &6%s &ain your hands!", name);
+            return;
         }
-        item.setItemMeta(meta);
-        context.sendMessage("basics", "&aYou now hold &6%s &ain your hands!", name);
+        context.sendMessage("basics", "&cTrying to give your &6toys &ca name?");
     }
 
     @Command(names = {
@@ -121,82 +111,73 @@ public class ItemCommands
     @SuppressWarnings("deprecation")
     public void headchange(CommandContext context)
     {
-        String name = context.getString(0);
-        User sender = null;
         if (context.getSender() instanceof User)
         {
-            sender = (User)context.getSender();
-        }
-        if (sender == null)
-        {
-            context.sendMessage("basics", "&cTrying to give your &etoys &ca name?");
+            User sender = (User)context.getSender();
+            String name = context.getString(0);
+            if (sender.getItemInHand().getType().equals(Material.SKULL_ITEM))
+            {
+                sender.getItemInHand().setDurability((short)3);
+                SkullMeta meta = ((SkullMeta)sender.getItemInHand().getItemMeta());
+                meta.setOwner(name);
+                sender.getItemInHand().setItemMeta(meta);
+                context.sendMessage("basics", "&aYou now hold &6%s's &ahead in your hands!", name);
+                return;
+            }
+            context.sendMessage("basics", "&cYou are not holding a head.");
             return;
         }
-
-        if (sender.getItemInHand().getType().equals(Material.SKULL_ITEM))
-        {
-            sender.getItemInHand().setDurability((short)3);
-            SkullMeta meta = ((SkullMeta)sender.getItemInHand().getItemMeta());
-            meta.setOwner(name);
-            sender.getItemInHand().setItemMeta(meta);
-            context.sendMessage("basics", "&aYou now hold &6%s's &ahead in your hands!", name);
-        }
-        else
-        {
-            context.sendMessage("basics", "&cYou are not holding a head.");
-        }
+        context.sendMessage("basics", "&cThis will you only give headaches!");
     }
 
     @Command(desc = "The user can use unlimited items", max = 1, usage = "[on|off]")
     @SuppressWarnings("deprecation")
     public void unlimited(CommandContext context)
     {
-        User sender = null;
+
         if (context.getSender() instanceof User)
         {
-            sender = (User)context.getSender();
-        }
-        if (sender == null)
-        {
-            context.sendMessage("core", "&cThis command can only be used by a player!");
-            return;
-        }
-        boolean unlimited = false;
-        if (context.hasArg(0))
-        {
-            if (context.getString(0).equalsIgnoreCase("on"))
+            User sender = (User)context.getSender();
+            boolean unlimited = false;
+            if (context.hasArg(0))
             {
-                unlimited = true;
-            }
-            else if (context.getString(0).equalsIgnoreCase("off"))
-            {
-                unlimited = false;
+                if (context.getString(0).equalsIgnoreCase("on"))
+                {
+                    unlimited = true;
+                }
+                else if (context.getString(0).equalsIgnoreCase("off"))
+                {
+                    unlimited = false;
+                }
+                else
+                {
+                    context.sendMessage("basics", "&eInvalid parameter! Use &aon &eor %coff&e!");
+                    return;
+                }
             }
             else
             {
-                invalidUsage(context, "basics", "&eInvalid parameter! Use &aon &eor %coff&e!");
+                Object bln = sender.getAttribute(basics, "unlimitedItems");
+                unlimited = bln == null;
             }
+            if (unlimited)
+            {
+                sender.setAttribute(basics, "unlimitedItems", true);
+                context.sendMessage("basics", "&aYou now have unlimited items to build!");
+            }
+            else
+            {
+                sender.removeAttribute(basics, "unlimitedItems");
+                context.sendMessage("basics", "&eYou now no longer have unlimited items to build!");
+            }
+            return;
         }
-        else
-        {
-            Object bln = sender.getAttribute(basics, "unlimitedItems");
-            unlimited = bln == null;
-        }
-        if (unlimited)
-        {
-            sender.setAttribute(basics, "unlimitedItems", true);
-            context.sendMessage("basics", "&aYou now have unlimited items to build!");
-        }
-        else
-        {
-            sender.removeAttribute(basics, "unlimitedItems");
-            context.sendMessage("basics", "&eYou now no longer have unlimited items to build!");
-        }
+        context.sendMessage("core", "&cThis command can only be used by a player!");
     }
 
-    @Command(desc = "Adds an Enchantment to the item in your hand", max = 2, flags = {
-        @Flag(longName = "unsafe", name = "u")
-    }, usage = "<enchantment> [level] [-unsafe]")
+    @Command(desc = "Adds an Enchantment to the item in your hand", max = 2,
+            flags = @Flag(longName = "unsafe", name = "u"),
+            usage = "<enchantment> [level] [-unsafe]")
     public void enchant(ParameterizedContext context)
     {
         if (!context.hasArg(0))
@@ -204,78 +185,73 @@ public class ItemCommands
             context.sendMessage("&aFollowing Enchantments are availiable:\n%s", this.getPossibleEnchantments(null));
             return;
         }
-        User sender = null;
         if (context.getSender() instanceof User)
         {
-            sender = (User)context.getSender();
-        }
-        if (sender == null)
-        {
-            context.sendMessage("basics", "&eWant to be Harry Potter?");
-            return;
-        }
-        ItemStack item = sender.getItemInHand();
-        if (item.getType().equals(Material.AIR))
-        {
-            blockCommand(context, "basics", "&6ProTip: &eYou cannot enchant your fists!");
-        }
-        Enchantment ench = context.getArg(0, Enchantment.class, null);
-        if (ench == null)
-        {
-            String possibleEnchs = this.getPossibleEnchantments(item);
-            if (possibleEnchs != null)
+            User sender = (User)context.getSender();
+            ItemStack item = sender.getItemInHand();
+            if (item.getType().equals(Material.AIR))
             {
-                blockCommand(context, "basics", "&cEnchantment &6%s &cnot found! Try one of those instead:\n%s", context.
-                        getString(0), possibleEnchs);
-            }
-            else
-            {
-                blockCommand(context, "basics", "&cYou can not enchant this item!");
-            }
-        }
-        int level = ench.getMaxLevel();
-        if (context.hasArg(1))
-        {
-            level = context.getArg(1, Integer.class, 0);
-            if (level <= 0)
-            {
-                illegalParameter(context, "basics", "&cThe enchantment-level has to be a number greater than 0!");
-            }
-        }
-        if (context.hasFlag("u"))
-        {
-            if (BasicsPerm.COMMAND_ENCHANT_UNSAFE.isAuthorized(sender))
-            {
-                item.addUnsafeEnchantment(ench, level);
-                context.sendMessage("basics", "&aAdded unsafe enchantment: &6%s %d &ato your item!",
-                        Match.enchant().nameFor(ench), level);
+                context.sendMessage("basics", "&6ProTip: &eYou cannot enchant your fists!");
                 return;
             }
-            denyAccess(sender, "basics", "&cYou are not allowed to add unsafe enchantments!");
-        }
-        else
-        {
+            Enchantment ench = context.getArg(0, Enchantment.class, null);
+            if (ench == null)
+            {
+                String possibleEnchs = this.getPossibleEnchantments(item);
+                if (possibleEnchs != null)
+                {
+                    context.sendMessage("basics", "&cEnchantment &6%s &cnot found! Try one of those instead:\n%s", context.
+                            getString(0), possibleEnchs);
+                }
+                else
+                {
+                    context.sendMessage("basics", "&cYou can not enchant this item!");
+                }
+                return;
+            }
+            int level = ench.getMaxLevel();
+            if (context.hasArg(1))
+            {
+                level = context.getArg(1, Integer.class, 0);
+                if (level <= 0)
+                {
+                    context.sendMessage("basics", "&cThe enchantment-level has to be a number greater than 0!");
+                    return;
+                }
+            }
+            if (context.hasFlag("u"))
+            {
+                if (BasicsPerm.COMMAND_ENCHANT_UNSAFE.isAuthorized(sender))
+                {
+                    item.addUnsafeEnchantment(ench, level);
+                    context.sendMessage("basics", "&aAdded unsafe enchantment: &6%s %d &ato your item!",
+                            Match.enchant().nameFor(ench), level);
+                    return;
+                }
+                context.sendMessage("basics", "&cYou are not allowed to add unsafe enchantments!");
+                return;
+            }
             if (ench.canEnchantItem(item))
             {
-                if ((level >= ench.getStartLevel()) && (level <= ench.
-                        getMaxLevel()))
+                if (level >= ench.getStartLevel() && level <= ench.getMaxLevel())
                 {
                     item.addUnsafeEnchantment(ench, level);
                     context.sendMessage("bascics", "&aAdded enchantment: &6%s %d &ato your item!", Match.enchant().nameFor(ench), level);
                     return;
                 }
-                blockCommand(context, "basics", "&cThis enchantment-level is not allowed!");
+                context.sendMessage("basics", "&cThis enchantment-level is not allowed!");
+                return;
             }
             String possibleEnchs = this.getPossibleEnchantments(item);
             if (possibleEnchs != null)
             {
-                blockCommand(context, "basics", "&cThis enchantment is not allowed for this item!\n&eTry one of those instead:\n%s", possibleEnchs);
+                context.sendMessage("basics", "&cThis enchantment is not allowed for this item!\n&eTry one of those instead:\n%s", possibleEnchs);
+                return;
             }
-            else
-            {
-                blockCommand(context, "basics", "&cYou can not enchant this item!");
-            }
+            context.sendMessage("basics", "&cYou can not enchant this item!");
+            return;
         }
+        context.sendMessage("basics", "&eWant to be Harry Potter?");
     }
 
     private String getPossibleEnchantments(ItemStack item)
@@ -313,19 +289,20 @@ public class ItemCommands
         User user = context.getUser(0);
         if (user == null)
         {
-            paramNotFound(context, "core", "&cUser &2%s &cnot found!", context.getString(0));
+            context.sendMessage("core", "&cUser &2%s &cnot found!", context.getString(0));
+            return;
         }
         ItemStack item = context.getArg(1, ItemStack.class, null);
         if (item == null)
         {
-            paramNotFound(context, "core", "&cUnknown Item: &6%s&c!", context.getString(1));
+            context.sendMessage("core", "&cUnknown Item: &6%s&c!", context.getString(1));
+            return;
         }
-        if (!context.hasFlag("b") && BasicsPerm.COMMAND_GIVE_BLACKLIST.isAuthorized(context.getSender()))
+        if (!context.hasFlag("b") && BasicsPerm.COMMAND_GIVE_BLACKLIST.isAuthorized(context.getSender())
+          && this.basics.getConfiguration().blacklist.contains(item))
         {
-            if (this.basics.getConfiguration().blacklist.contains(item))
-            {
-                denyAccess(context, "basics", "&cThis item is blacklisted!");
-            }
+            context.sendMessage("basics", "&cThis item is blacklisted!");
+            return;
         }
         int amount = item.getMaxStackSize();
         if (context.hasArg(2))
@@ -333,7 +310,8 @@ public class ItemCommands
             amount = context.getArg(2, Integer.class, 0);
             if (amount == 0)
             {
-                illegalParameter(context, "basics", "&cThe amount has to be a number greater than 0!");
+                context.sendMessage("basics", "&cThe amount has to be a number greater than 0!");
+                return;
             }
         }
         item.setAmount(amount);
@@ -352,70 +330,68 @@ public class ItemCommands
     @SuppressWarnings("deprecation")
     public void item(ParameterizedContext context)
     {
-        User sender = null;
         if (context.getSender() instanceof User)
         {
-            sender = (User)context.getSender();
-        }
-        if (sender == null)
-        {
-            context.sendMessage("basics", "&eDid you try to use &6/give &eon your new I-Tem?");
+            User sender = (User)context.getSender();
+            ItemStack item = context.getArg(0, ItemStack.class, null);
+            if (item == null)
+            {
+                context.sendMessage("core", "&cUnknown Item: &6%s&c!", context.getString(0));
+                return;
+            }
+            if (!context.hasFlag("b") && BasicsPerm.COMMAND_ITEM_BLACKLIST.isAuthorized(sender)
+                    && this.basics.getConfiguration().blacklist.contains(item))
+            {
+                context.sendMessage("basics", "&cThis item is blacklisted!");
+                return;
+            }
+            int amount = item.getMaxStackSize();
+            int curIndex = 1;
+            while (context.hasArg(curIndex))
+            {
+                String enchName = context.getString(curIndex);
+                if (!enchName.matches("(?!^\\d+$)^.+$"))
+                {
+                    amount = context.getArg(curIndex, Integer.class, 0);
+                    if (amount == 0)
+                    {
+                        context.sendMessage("basics", "&cThe amount has to be a Number greater than 0!");
+                        return;
+                    }
+                    break;
+                }
+                int enchLvl = 0;
+                if (enchName.contains(":"))
+                {
+                    enchLvl = Integer.parseInt(enchName.substring(enchName.indexOf(":")+1,enchName.length()));
+                    enchName = enchName.substring(0,enchName.indexOf(":"));
+                }
+                if (BasicsPerm.COMMAND_ITEM_ENCHANTMENTS.isAuthorized(sender))
+                {
+                    if (BasicsPerm.COMMAND_ITEM_ENCHANTMENTS_UNSAFE.isAuthorized(sender))
+                    {
+                        Match.enchant().applyMatchedEnchantment(item,enchName,enchLvl,true);
+                    }
+                    else
+                    {
+                        Match.enchant().applyMatchedEnchantment(item,enchName,enchLvl,false);
+                    }
+                }
+                curIndex++;
+            }
+            item.setAmount(amount);
+            sender.getInventory().addItem(item);
+            sender.updateInventory();
+            sender.sendMessage("basics", "&eReceived: %d %s ", amount, Match.material().getNameFor(item));
             return;
         }
-        ItemStack item = context.getArg(0, ItemStack.class, null);
-        if (item == null)
-        {
-            paramNotFound(context, "core", "&cUnknown Item: &6%s&c!", context.getString(0));
-        }
-        if (!context.hasFlag("b") && BasicsPerm.COMMAND_ITEM_BLACKLIST.isAuthorized(sender))
-        {
-            if (this.basics.getConfiguration().blacklist.contains(item))
-            {
-                denyAccess(context, "basics", "&cThis item is blacklisted!");
-            }
-        }
-        int amount = item.getMaxStackSize();
-        int curIndex = 1;
-        while (context.hasArg(curIndex))
-        {
-            String enchName = context.getString(curIndex);
-            if (!enchName.matches("(?!^\\d+$)^.+$"))
-            {
-                amount = context.getArg(curIndex, Integer.class, 0);
-                if (amount == 0)
-                {
-                    illegalParameter(context, "basics", "&cThe amount has to be a Number greater than 0!");
-                }
-                break;
-            }
-            int enchLvl = 0;
-            if (enchName.contains(":"))
-            {
-                enchLvl = Integer.parseInt(enchName.substring(enchName.indexOf(":")+1,enchName.length()));
-                enchName = enchName.substring(0,enchName.indexOf(":"));
-            }
-            if (BasicsPerm.COMMAND_ITEM_ENCHANTMENTS.isAuthorized(sender))
-            {
-                if (BasicsPerm.COMMAND_ITEM_ENCHANTMENTS_UNSAFE.isAuthorized(sender))
-                {
-                    Match.enchant().applyMatchedEnchantment(item,enchName,enchLvl,true);
-                }
-                else
-                {
-                    Match.enchant().applyMatchedEnchantment(item,enchName,enchLvl,false);
-                }
-            }
-            curIndex++;
-        }
-        item.setAmount(amount);
-        sender.getInventory().addItem(item);
-        sender.updateInventory();
-        sender.sendMessage("basics", "&eReceived: %d %s ", amount, Match.material().getNameFor(item));
+        context.sendMessage("basics", "&eDid you try to use &6/give &eon your new I-Tem?");
     }
 
-    @Command(desc = "Refills the stack in hand", usage = "[amount] [-a]", flags = {
-        @Flag(longName = "all", name = "a")
-    }, max = 1)
+    @Command(
+            desc = "Refills the stack in hand",
+            usage = "[amount] [-a]", max = 1,
+            flags = @Flag(longName = "all", name = "a"))
     public void more(ParameterizedContext context)
     {
         User sender = null;
@@ -430,7 +406,8 @@ public class ItemCommands
         }
         if (sender.getItemInHand() == null || sender.getItemInHand().getType() == Material.AIR)
         {
-            invalidUsage(context, "basics", "&eMore nothing is still nothing!");
+            context.sendMessage("basics", "&eMore nothing is still nothing!");
+            return;
         }
         if (context.hasFlag("a"))
         {
@@ -459,12 +436,9 @@ public class ItemCommands
                     sender.getInventory().addItem(sender.getItemInHand());
                 }
                 sender.sendMessage("basics", "&aRefilled &6%s &astacks in hand!", context.getString(0));
+                return;
             }
-            else
-            {
-                sender.sendMessage("basics", "&aRefilled stack in hand!");
-            }
-
+           sender.sendMessage("basics", "&aRefilled stack in hand!");
         }
     }
 
@@ -474,41 +448,31 @@ public class ItemCommands
     // without item in hand
     public void repair(ParameterizedContext context)
     {
-        User sender = null;
         if (context.getSender() instanceof User)
         {
-            sender = (User)context.getSender();
-        }
-        if (sender == null)
-        {
-            context.sendMessage("core", "&eIf you do this you'll &cloose &eyour warranty!");
-            return;
-        }
-        if (context.hasFlag("a"))
-        {
-            List<ItemStack> list = new ArrayList<ItemStack>();
-            list.addAll(Arrays.asList(sender.getInventory().getArmorContents()));
-            list.addAll(Arrays.asList(sender.getInventory().getContents()));
-            int repaired = 0;
-            for (ItemStack item : list)
+            User sender = (User)context.getSender();
+            if (context.hasFlag("a"))
             {
-                if (Match.material().repairable(item))
+                List<ItemStack> list = new ArrayList<ItemStack>();
+                list.addAll(Arrays.asList(sender.getInventory().getArmorContents()));
+                list.addAll(Arrays.asList(sender.getInventory().getContents()));
+                int repaired = 0;
+                for (ItemStack item : list)
                 {
-                    item.setDurability((short)0);
-                    repaired++;
+                    if (Match.material().repairable(item))
+                    {
+                        item.setDurability((short)0);
+                        repaired++;
+                    }
                 }
-            }
-            if (repaired == 0)
-            {
-                sender.sendMessage("basics", "&eNo items to repair!");
-            }
-            else
-            {
+                if (repaired == 0)
+                {
+                    sender.sendMessage("basics", "&eNo items to repair!");
+                    return;
+                }
                 sender.sendMessage("basics", "&aRepaired %d items!", repaired);
+                return;
             }
-        }
-        else
-        {
             ItemStack item = sender.getItemInHand();
             if (Match.material().repairable(item))
             {
@@ -519,80 +483,73 @@ public class ItemCommands
                 }
                 item.setDurability((short)0);
                 sender.sendMessage("basics", "&aItem repaired!");
+                return;
             }
-            else
-            {
-                sender.sendMessage("basics", "&eItem cannot be repaired!");
-            }
+            sender.sendMessage("basics", "&eItem cannot be repaired!");
+            return;
         }
+        context.sendMessage("core", "&eIf you do this you'll &cloose &eyour warranty!");
     }
 
     @Command(desc = "Stacks your items up to 64")
     public void stack(CommandContext context)
     {
-        User user = null;
         if (context.getSender() instanceof User)
         {
-            user = (User)context.getSender();
-        }
-        if (user == null)
-        {
-            context.sendMessage("basics", "&eNo stacking for you.");
-            return;
-        }
-        boolean allow64 = BasicsPerm.COMMAND_STACK_FULLSTACK.isAuthorized(user);
-        ItemStack[] items = user.getInventory().getContents();
-        int size = items.length;
-        boolean changed = false;
-        for (int i = 0; i < size; i++)
-        {
-            ItemStack item = items[i];
-            // no null / infinite or unstackable items (if not allowed)
-            if (item == null || item.getAmount() <= 0 || (!allow64 && item.getMaxStackSize() == 1))
+            User user = (User)context.getSender();
+            boolean allow64 = BasicsPerm.COMMAND_STACK_FULLSTACK.isAuthorized(user);
+            ItemStack[] items = user.getInventory().getContents();
+            int size = items.length;
+            boolean changed = false;
+            for (int i = 0; i < size; i++)
             {
-                continue;
-            }
-            int max = allow64 ? 64 : item.getMaxStackSize();
-            if (item.getAmount() < max)
-            {
-                int needed = max - item.getAmount();
-                for (int j = i + 1; j < size; j++) // search for same item
+                ItemStack item = items[i];
+                // no null / infinite or unstackable items (if not allowed)
+                if (item == null || item.getAmount() <= 0 || (!allow64 && item.getMaxStackSize() == 1))
                 {
-                    ItemStack item2 = items[j];
-                    // no null / infinite or unstackable items (if not allowed)
-                    if (item2 == null || item2.getAmount() <= 0 || (!allow64 && item.getMaxStackSize() == 1))
+                    continue;
+                }
+                int max = allow64 ? 64 : item.getMaxStackSize();
+                if (item.getAmount() < max)
+                {
+                    int needed = max - item.getAmount();
+                    for (int j = i + 1; j < size; j++) // search for same item
                     {
-                        continue;
-                    }
-                    // compare
-                    if (item.isSimilar(item2))
-                    {
-                        if (item2.getAmount() > needed) // not enough place -> fill up stack
+                        ItemStack item2 = items[j];
+                        // no null / infinite or unstackable items (if not allowed)
+                        if (item2 == null || item2.getAmount() <= 0 || (!allow64 && item.getMaxStackSize() == 1))
                         {
-                            item.setAmount(max);
-                            item2.setAmount(item2.getAmount() - needed);
-                            break;
+                            continue;
                         }
-                        else
-                        // enough place -> add to stack
+                        // compare
+                        if (item.isSimilar(item2))
                         {
-                            items[j] = null;
-                            item.setAmount(item.getAmount() + item2.getAmount());
-                            needed = max - item.getAmount();
+                            if (item2.getAmount() > needed) // not enough place -> fill up stack
+                            {
+                                item.setAmount(max);
+                                item2.setAmount(item2.getAmount() - needed);
+                                break;
+                            }
+                            // enough place -> add to stack
+                            {
+                                items[j] = null;
+                                item.setAmount(item.getAmount() + item2.getAmount());
+                                needed = max - item.getAmount();
+                            }
+                            changed = true;
                         }
-                        changed = true;
                     }
                 }
             }
-        }
-        if (changed)
-        {
-            user.getInventory().setContents(items);
-            user.sendMessage("&aItems stacked together!");
-        }
-        else
-        {
+            if (changed)
+            {
+                user.getInventory().setContents(items);
+                user.sendMessage("&aItems stacked together!");
+                return;
+            }
             user.sendMessage("&eNothing to stack!");
+            return;
         }
+        context.sendMessage("basics", "&eNo stacking for you.");
     }
 }
