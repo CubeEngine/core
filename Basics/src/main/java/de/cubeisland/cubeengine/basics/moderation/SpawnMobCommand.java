@@ -43,7 +43,6 @@ public class SpawnMobCommand
     {
         // TODO fix skeleton not having a bow
         // TODO custom loot items
-        // TODO adjust MaxHealth of a mob
         User sender = null;
         if (context.getSender() instanceof User)
         {

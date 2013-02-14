@@ -3,11 +3,10 @@ package de.cubeisland.cubeengine.basics.moderation;
 import de.cubeisland.cubeengine.basics.Basics;
 import de.cubeisland.cubeengine.basics.BasicsConfiguration;
 import de.cubeisland.cubeengine.basics.BasicsPerm;
-import de.cubeisland.cubeengine.core.command.CommandContext;
-import de.cubeisland.cubeengine.core.command.parameterized.ParameterizedContext;
-import de.cubeisland.cubeengine.core.command.reflected.Command;
 import de.cubeisland.cubeengine.core.command.parameterized.Flag;
 import de.cubeisland.cubeengine.core.command.parameterized.Param;
+import de.cubeisland.cubeengine.core.command.parameterized.ParameterizedContext;
+import de.cubeisland.cubeengine.core.command.reflected.Command;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.util.StringUtils;
 import de.cubeisland.cubeengine.core.util.matcher.Match;
@@ -20,9 +19,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
-
-import static de.cubeisland.cubeengine.core.command.exception.IllegalParameterValue.illegalParameter;
-import static de.cubeisland.cubeengine.core.command.exception.InvalidUsageException.*;
 
 /**
  * Commands controlling / affecting worlds. /weather /remove /butcher
@@ -37,7 +33,9 @@ public class WorldControlCommands
         this.config = basics.getConfiguration();
     }
 
-    @Command(desc = "Changes the weather", min = 1, max = 3, usage = "<sun|rain|storm> [duration] [in <world>]", params = @Param(names = "in", type = World.class))
+    @Command(desc = "Changes the weather", min = 1, max = 3,
+            usage = "<sun|rain|storm> [duration] [in <world>]",
+            params = @Param(names = "in", type = World.class))
     public void weather(ParameterizedContext context)
     {
         User sender = null;
@@ -51,7 +49,8 @@ public class WorldControlCommands
         String weather = Match.string().matchString(context.getString(0), "sun", "rain", "storm");
         if (weather == null)
         {
-            paramNotFound(context, "basics", "&cInvalid weather!\n&eUse &6sun&e, &6rain &eor &6storm&e!");
+            context.sendMessage("basics", "&cInvalid weather!\n&eUse &6sun&e, &6rain &eor &6storm&e!");
+            return;
         }
         if (weather.equalsIgnoreCase("sun"))
         {
@@ -73,7 +72,8 @@ public class WorldControlCommands
             duration = context.getArg(1, Integer.class, 0);
             if (duration == 0)
             {
-                illegalParameter(context, "basics", "&cThe given duration is invalid!");
+                context.sendMessage("basics", "&cThe given duration is invalid!");
+                return;
             }
             duration *= 20;
         }
@@ -83,19 +83,18 @@ public class WorldControlCommands
             world = context.getParam("in", null);
             if (world == null)
             {
-                illegalParameter(context, "basics", "&cWorld &6%s &cnot found!", context.getString(1));
+                context.sendMessage("basics", "&cWorld &6%s &cnot found!", context.getString(1));
+                return;
             }
         }
         else
         {
             if (sender == null)
             {
-                invalidUsage(context, "basics", "&cIf not used ingame you have to specify a world!");
+                context.sendMessage("basics", "&cIf not used ingame you have to specify a world!");
+                return;
             }
-            else
-            {
-                world = sender.getWorld();
-            }
+            world = sender.getWorld();
         }
         world.setStorm(!sunny);
         world.setThundering(!noThunder);
@@ -129,7 +128,8 @@ public class WorldControlCommands
         {
             if (sender == null)
             {
-                invalidUsage(context, "basics", "&cThe butcher will come to YOU tonight!");
+                context.sendMessage("basics", "&cThe butcher will come to YOU tonight!");
+                return;
             }
             world = sender.getWorld();
         }
@@ -140,14 +140,16 @@ public class WorldControlCommands
         }
         else if (sender == null)
         {
-            invalidUsage(context, "basics", "&cIf not used ingame you can only remove all!");
+            context.sendMessage("basics", "&cIf not used ingame you can only remove all!");
+            return;
         }
         if (context.hasArg(1))
         {
             radius = context.getArg(1, Integer.class, 0);
             if (radius <= 0)
             {
-                illegalParameter(context, "basics", "&cThe radius has to be a number greater than 0!");
+                context.sendMessage("basics", "&cThe radius has to be a number greater than 0!");
+                return;
             }
         }
         Location loc = null;
@@ -178,24 +180,21 @@ public class WorldControlCommands
                 if (s_entityType.contains(":"))
                 {
                     EntityType type = Match.entity().any(s_entityType.substring(0, s_entityType.indexOf(":")));
-                    if (EntityType.DROPPED_ITEM.equals(type))
-                    {
-                        Material itemtype = Match.material().material(s_entityType.substring(s_entityType.indexOf(":") + 1));
-                        List<Entity> remList = new ArrayList<Entity>();
-                        for (Entity entity : list)
-                        {
-                            if (entity.getType().equals(EntityType.DROPPED_ITEM) && ((Item)entity).getItemStack().getType().equals(itemtype))
-                            {
-                                remList.add(entity);
-                            }
-                        }
-                        list.removeAll(remList);
-                    }
-                    else
+                    if (!EntityType.DROPPED_ITEM.equals(type))
                     {
                         context.sendMessage("basics", "&cYou can only specify data for removing items!");
                         return;
                     }
+                    Material itemtype = Match.material().material(s_entityType.substring(s_entityType.indexOf(":") + 1));
+                    List<Entity> remList = new ArrayList<Entity>();
+                    for (Entity entity : list)
+                    {
+                        if (entity.getType().equals(EntityType.DROPPED_ITEM) && ((Item)entity).getItemStack().getType().equals(itemtype))
+                        {
+                            remList.add(entity);
+                        }
+                    }
+                    list.removeAll(remList);
                 }
                 else
                 {
@@ -211,7 +210,8 @@ public class WorldControlCommands
                     }
                     if (type.isAlive())
                     {
-                        blockCommand(context, "basics", "&cTo kill living entities use the &e/butcher &ccommand!");
+                        context.sendMessage("basics", "&cTo kill living entities use the &e/butcher &ccommand!");
+                        return;
                     }
                     types.add(type);
                 }
@@ -238,28 +238,23 @@ public class WorldControlCommands
             if (radius == -1)
             {
                 context.sendMessage("basics", "&aRemoved all entities in &6%s&a! &f(&6%d&f)", world.getName(), entitiesRemoved);
+                return;
             }
-            else
-            {
-                context.sendMessage("basics", "&aRemoved all entities around you! &f(&6%d&f)", entitiesRemoved);
-            }
+            context.sendMessage("basics", "&aRemoved all entities around you! &f(&6%d&f)", entitiesRemoved);
         }
         else
         {
             if (radius == -1)
             {
                 context.sendMessage("basics", "&aRemoved &e%d &aentities in '&6%s&a!", entitiesRemoved, world.getName());
+                return;
             }
-            else
-            {
-                context.sendMessage("basics", "&aRemoved &e%d &aentities around you!", entitiesRemoved);
-            }
+            context.sendMessage("basics", "&aRemoved &e%d &aentities around you!", entitiesRemoved);
         }
     }
 
     private final Collection<String> BUTCHER_TARGETS = new HashSet<String>()
     {
-
         {
             this.add("pet");
             this.add("golem");
@@ -273,8 +268,7 @@ public class WorldControlCommands
 
     @Command(desc = "Gets rid of living mobs nearby you", flags = {
         @Flag(longName = "lightning", name = "l"), // die with style
-        @Flag(longName = "all", name = "a")
-    // infinite radius
+        @Flag(longName = "all", name = "a") // infinite radius
     }, params = @Param(names = "in", type = World.class), usage = "[types...] [radius] [in world] [-l] [-all]")
     public void butcher(ParameterizedContext context)
     {
@@ -298,12 +292,10 @@ public class WorldControlCommands
         if (context.hasArg(1))
         {
             radius = context.getArg(1, Integer.class, 0);
-            if (radius < 0)
+            if (radius < 0 && !(radius == -1 && BasicsPerm.COMMAND_BUTCHER_FLAG_ALL.isAuthorized(context.getSender())))
             {
-                if (!(radius == -1 && BasicsPerm.COMMAND_BUTCHER_FLAG_ALL.isAuthorized(context.getSender())))
-                {
-                    illegalParameter(context, "basics", "&cThe radius has to be a number greater than 0!");
-                }
+                context.sendMessage("basics", "&cThe radius has to be a number greater than 0!");
+                return;
             }
         }
         if (context.hasFlag("a") && BasicsPerm.COMMAND_BUTCHER_FLAG_ALL.isAuthorized(context.getSender()))
