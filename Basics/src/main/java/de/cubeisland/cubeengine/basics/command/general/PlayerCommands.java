@@ -220,15 +220,15 @@ public class PlayerCommands
         if (context.hasArg(0))
         {
             String mode = context.getString(0);
-            if (mode.equals("survival") || mode.equals("s"))
+            if (mode.equals("survival") || mode.equals("s") || mode.equals("0"))
             {
                 user.setGameMode(GameMode.SURVIVAL);
             }
-            else if (mode.equals("creative") || mode.equals("c"))
+            else if (mode.equals("creative") || mode.equals("c") || mode.equals("1"))
             {
                 user.setGameMode(GameMode.CREATIVE);
             }
-            else if (mode.equals("adventure") || mode.equals("a"))
+            else if (mode.equals("adventure") || mode.equals("a")|| mode.equals("2"))
             {
                 user.setGameMode(GameMode.ADVENTURE);
             }
@@ -254,8 +254,8 @@ public class PlayerCommands
                     _(user, "basics", user.getGameMode().toString()));
             return;
         }
-            context.sendMessage("basics", "&aYou changed your gamemode to &6%s&a!",
-                    _(user, "basics", user.getGameMode().toString()));
+        context.sendMessage("basics", "&aYou changed your gamemode to &6%s&a!",
+                _(user, "basics", user.getGameMode().toString()));
     }
 
     @Command(names = {
