@@ -122,7 +122,6 @@ public class MailManager extends SingleKeyStorage<Long, Mail>
         try
         {
             ResultSet result = this.database.preparedQuery(modelClass, "getallByUser", user.key);
-
             while (result.next())
             {
                 Mail loadedModel = this.modelClass.newInstance();
