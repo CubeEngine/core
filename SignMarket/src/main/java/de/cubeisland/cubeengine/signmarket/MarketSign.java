@@ -431,7 +431,14 @@ public class MarketSign implements InventoryHolder
         }
         if (this.getItem() == null)
         {
-            user.sendMessage("signmarket", "&5No Item");
+            if (this.isInEditMode())
+            {
+                user.sendMessage("signmarket", "&5No Item");
+            }
+            else
+            {
+                user.sendMessage("signmarket", "&4No Item");
+            }
         }
         else if (this.getItem().getItemMeta().hasDisplayName() || this.getItem().getItemMeta().hasLore() || !this.getItem().getEnchantments().isEmpty())
         {
@@ -485,7 +492,14 @@ public class MarketSign implements InventoryHolder
         Currency currency = this.getCurrency();
         if (currency == null || this.info.price == 0)
         {
-            return "&5No Price";
+            if (this.isInEditMode())
+            {
+                return "&5No Price";
+            }
+            else
+            {
+                return "&4No Price";
+            }
         }
         return this.getCurrency().formatShort(this.info.price);
     }
@@ -703,7 +717,7 @@ public class MarketSign implements InventoryHolder
         if (this.info.isBuySign == null)
         {
             if (user != null)
-                user.sendMessage("signmarket", "&cSign is still in editing mode.");
+                user.sendMessage("signmarket", "&cNo sign-type given!");
             result = false;
         }
         if (this.info.amount <= 0)
@@ -769,7 +783,14 @@ public class MarketSign implements InventoryHolder
             ItemStack item = this.getItem();
             if (item == null)
             {
-                lines[1] = "&5No Item";
+                if (this.isInEditMode())
+                {
+                    lines[1] = "&5No Item";
+                }
+                else
+                {
+                    lines[1] = "&4No Item";
+                }
             }
             else if (item.getItemMeta().hasDisplayName() || item.getItemMeta().hasLore() || !item.getEnchantments().isEmpty())
             {
@@ -779,51 +800,68 @@ public class MarketSign implements InventoryHolder
             {
                 lines[1] = Match.material().getNameFor(this.getItem());
             }
-            lines[2] = String.valueOf(this.getAmount());
-            if (!this.isAdminSign())
+            if (this.getAmount() == 0)
             {
-                if (this.isBuySign())
+                if (this.isInEditMode())
                 {
-                    if (this.getStock() < this.getAmount() || this.getStock() == 0)
-                    {
-                        lines[2] += " &4x" + this.getStock();
-                    }
-                    else
-                        lines[2] += " &1x" + this.getStock();
+                    lines[2] = "&5No amount";
                 }
                 else
                 {
-                    User user = this.module.getUserManager().getUser(this.info.owner);
-                    if (!this.canAfford(user) || (this.getDemand() != null && this.getDemand() - this.getStock() <= 0)
-                        || (this.module.getConfig().allowOverStackedInSign
-                            && this.getInventory().firstEmpty() == -1)
-                        || (!this.module.getConfig().allowOverStackedInSign
-                            && !checkForPlace(this.getInventory(), splitIntoMaxItems(this.getItem(), this.getItem().getMaxStackSize()))))
+                    lines[2] = "&4No amount";
+                }
+            }
+            else
+            {
+                lines[2] = String.valueOf(this.getAmount());
+                if (!this.isAdminSign())
+                {
+                    if (this.isBuySign() == null)
                     {
-                        if (this.getDemand() == null)
+                        lines[2] = "&4" + lines[2];
+                    }
+                    else if (this.isBuySign())
+                    {
+                        if (this.getStock() < this.getAmount() || this.getStock() == 0)
                         {
-                            lines[2] += " &4x?";
+                            lines[2] += " &4x" + this.getStock();
                         }
                         else
-                        {
-                            lines[2] += " &4x" + (this.getDemand() - this.getStock());
-                        }
+                            lines[2] += " &1x" + this.getStock();
                     }
                     else
                     {
-                        if (this.getDemand() == null)
+                        User user = this.module.getUserManager().getUser(this.info.owner);
+                        if (!this.canAfford(user) || (this.getDemand() != null && this.getDemand() - this.getStock() <= 0)
+                                || (this.module.getConfig().allowOverStackedInSign
+                                && this.getInventory().firstEmpty() == -1)
+                                || (!this.module.getConfig().allowOverStackedInSign
+                                && !checkForPlace(this.getInventory(), splitIntoMaxItems(this.getItem(), this.getItem().getMaxStackSize()))))
                         {
-                            lines[2] += " &bx?";
+                            if (this.getDemand() == null)
+                            {
+                                lines[2] += " &4x?";
+                            }
+                            else
+                            {
+                                lines[2] += " &4x" + (this.getDemand() - this.getStock());
+                            }
                         }
                         else
                         {
-                            lines[2] += " &bx" + (this.getDemand() - this.getStock());
+                            if (this.getDemand() == null)
+                            {
+                                lines[2] += " &bx?";
+                            }
+                            else
+                            {
+                                lines[2] += " &bx" + (this.getDemand() - this.getStock());
+                            }
                         }
                     }
                 }
             }
             lines[3] = this.parsePrice();
-
             if (this.info.isBuySign == null)
             {
                 if (this.editMode)

@@ -48,8 +48,8 @@ public class EditModeListener implements Listener
                 this.previousMarketSign.put(user.key, previousSign);
                 previousSign.exitEditMode(user);
             }
-            user.sendMessage("signmarket", "&aChanged active sign:");
-            marketSign.showInfo(user);
+            user.sendMessage("signmarket", "&aChanged active sign!");
+            marketSign.updateSign();
         }
         marketSign.enterEditMode();
     }
@@ -180,6 +180,7 @@ public class EditModeListener implements Listener
                         if (price == null)
                         {
                             user.sendMessage("signmarket", "&cInvalid price for currency!");
+                            marketSign.setPrice(0);
                         }
                         else
                         {
