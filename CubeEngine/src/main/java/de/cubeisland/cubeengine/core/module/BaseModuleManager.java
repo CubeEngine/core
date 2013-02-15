@@ -5,9 +5,14 @@ import de.cubeisland.cubeengine.core.CubeEngine;
 import de.cubeisland.cubeengine.core.filesystem.FileExtentionFilter;
 import de.cubeisland.cubeengine.core.module.event.ModuleDisabledEvent;
 import de.cubeisland.cubeengine.core.module.event.ModuleEnabledEvent;
-import de.cubeisland.cubeengine.core.module.exception.*;
+import de.cubeisland.cubeengine.core.module.exception.CircularDependencyException;
+import de.cubeisland.cubeengine.core.module.exception.IncompatibleCoreException;
+import de.cubeisland.cubeengine.core.module.exception.IncompatibleDependencyException;
+import de.cubeisland.cubeengine.core.module.exception.InvalidModuleException;
+import de.cubeisland.cubeengine.core.module.exception.MissingDependencyException;
+import de.cubeisland.cubeengine.core.module.exception.MissingPluginDependencyException;
+import de.cubeisland.cubeengine.core.module.exception.ModuleException;
 import de.cubeisland.cubeengine.core.util.Profiler;
-import de.cubeisland.cubeengine.core.logger.LogLevel;
 import gnu.trove.map.hash.THashMap;
 import org.apache.commons.lang.Validate;
 import org.bukkit.plugin.Plugin;
@@ -15,7 +20,13 @@ import org.bukkit.plugin.Plugin;
 import java.io.File;
 import java.io.FileFilter;
 import java.lang.reflect.Field;
-import java.util.*;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Set;
+import java.util.Stack;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
@@ -125,7 +136,7 @@ public abstract class BaseModuleManager implements ModuleManager
 
         Module module;
         ModuleInfo info;
-        LOGGER.log(LogLevel.NOTICE, "Loading modules...");
+        LOGGER.log(NOTICE, "Loading modules...");
         for (File file : directory.listFiles((FileFilter)FileExtentionFilter.JAR))
         {
             try
@@ -142,14 +153,14 @@ public abstract class BaseModuleManager implements ModuleManager
                     else
                     {
                         this.unloadModule(module);
-                        LOGGER.log(LogLevel.NOTICE, "A newer revision of '" + info.getName() + "' will replace the currently loaded version!");
+                        LOGGER.log(NOTICE, "A newer revision of '" + info.getName() + "' will replace the currently loaded version!");
                     }
                 }
                 this.moduleInfos.put(info.getId(), info);
             }
             catch (InvalidModuleException e)
             {
-                LOGGER.log(LogLevel.ERROR, e.getLocalizedMessage(), e);
+                LOGGER.log(ERROR, e.getLocalizedMessage(), e);
             }
         }
 
@@ -159,13 +170,18 @@ public abstract class BaseModuleManager implements ModuleManager
             {
                 this.loadModule(moduleName, this.moduleInfos);
             }
+            catch (InvalidModuleException e)
+            {
+                this.moduleInfos.remove(moduleName);
+                LOGGER.log(DEBUG, "Failed to load the module '" + moduleName + "'", e);
+            }
             catch (ModuleException e)
             {
                 this.moduleInfos.remove(moduleName);
-                LOGGER.log(LogLevel.ERROR, "Failed to load the module '" + moduleName + "'", e);
+                LOGGER.log(ERROR, "Failed to load the module '" + moduleName + "'", e);
             }
         }
-        LOGGER.log(LogLevel.NOTICE, "Finished loading modules!");
+        LOGGER.log(NOTICE, "Finished loading modules!");
     }
 
     private Module loadModule(String name, Map<String, ModuleInfo> moduleInfos) throws CircularDependencyException, MissingDependencyException, InvalidModuleException, IncompatibleDependencyException, IncompatibleCoreException, MissingPluginDependencyException
