@@ -1,6 +1,6 @@
 package de.cubeisland.cubeengine.basics.storage;
 
-import de.cubeisland.cubeengine.basics.mail.Mail;
+import de.cubeisland.cubeengine.basics.command.mail.Mail;
 import de.cubeisland.cubeengine.core.storage.Model;
 import de.cubeisland.cubeengine.core.storage.database.AttrType;
 import de.cubeisland.cubeengine.core.storage.database.Attribute;
