@@ -1,7 +1,6 @@
 package de.cubeisland.cubeengine.basics.command.general;
 
 import de.cubeisland.cubeengine.basics.Basics;
-import de.cubeisland.cubeengine.core.CubeEngine;
 import de.cubeisland.cubeengine.core.user.User;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -9,6 +8,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
+import org.bukkit.event.player.PlayerChatTabCompleteEvent;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
@@ -26,46 +26,53 @@ public class AfkListener implements Listener, Runnable
         this.afkCheck = afkCheck;
     }
 
-    @EventHandler(priority = EventPriority.LOW)
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onMove(PlayerMoveEvent event)
     {
         if (event.getFrom().getBlockX() == event.getTo().getBlockX() && event.getFrom().getBlockZ() == event.getTo().getBlockZ())
         {
             return;
         }
-        User user = CubeEngine.getUserManager().getExactUser(event.getPlayer());
-        user.setAttribute(basics, "lastAction", System.currentTimeMillis());
+        this.setLastAction(event.getPlayer());
     }
 
-    @EventHandler(priority = EventPriority.LOW)
+    @EventHandler(priority = EventPriority.MONITOR)
     public void onInventoryClick(InventoryClickEvent event)
     {
         if (event.getWhoClicked() instanceof Player)
         {
-            User user = CubeEngine.getUserManager().getExactUser((Player)event.getWhoClicked());
-            user.setAttribute(basics, "lastAction", System.currentTimeMillis());
+            this.setLastAction((Player)event.getWhoClicked());
         }
     }
 
-    @EventHandler(priority = EventPriority.LOW)
+    @EventHandler(priority = EventPriority.MONITOR)
     public void playerInteract(PlayerInteractEvent event)
     {
-        User user = CubeEngine.getUserManager().getExactUser(event.getPlayer());
-        user.setAttribute(basics, "lastAction", System.currentTimeMillis());
+        this.setLastAction(event.getPlayer());
     }
 
-    @EventHandler(priority = EventPriority.LOW)
+    @EventHandler(priority = EventPriority.MONITOR)
     public void onChat(AsyncPlayerChatEvent event)
     {
-        User user = CubeEngine.getUserManager().getExactUser(event.getPlayer());
-        user.setAttribute(basics, "lastAction", System.currentTimeMillis());
+        this.setLastAction(event.getPlayer());
     }
 
-    @EventHandler(priority = EventPriority.LOW)
+    @EventHandler(priority = EventPriority.MONITOR)
     public void onCommand(PlayerCommandPreprocessEvent event)
     {
-        User user = CubeEngine.getUserManager().getExactUser(event.getPlayer());
-        user.setAttribute(basics, "lastAction", System.currentTimeMillis());
+        this.setLastAction(event.getPlayer());
+    }
+
+    @EventHandler(priority = EventPriority.MONITOR)
+    public void onChatTabComplete(PlayerChatTabCompleteEvent event)
+    {
+        this.setLastAction(event.getPlayer());
+    }
+
+    private void setLastAction(Player player)
+    {
+        User user = this.basics.getUserManager().getExactUser(player);
+        user.setAttribute(this.basics, "lastAction", System.currentTimeMillis());
     }
 
     @Override
