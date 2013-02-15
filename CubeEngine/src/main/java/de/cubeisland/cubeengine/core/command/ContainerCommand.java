@@ -5,6 +5,7 @@ import de.cubeisland.cubeengine.core.command.parameterized.ParameterizedContextF
 import de.cubeisland.cubeengine.core.command.reflected.ReflectedCommand;
 import de.cubeisland.cubeengine.core.command.sender.CommandSender;
 import de.cubeisland.cubeengine.core.module.Module;
+import de.cubeisland.cubeengine.core.util.ChatFormat;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -66,7 +67,7 @@ public abstract class ContainerCommand extends ParameterizedCommand implements C
 
         for (CubeCommand command : context.getCommand().getChildren())
         {
-            context.sendMessage(command.getName() + ": " + _(sender, command.getModule(), command.getDescription()));
+            context.sendMessage(ChatFormat.YELLOW + command.getName() + ChatFormat.WHITE + ": "  + ChatFormat.GREY + _(sender, command.getModule(), command.getDescription()));
         }
     }
 
