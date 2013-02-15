@@ -16,7 +16,7 @@ import de.cubeisland.cubeengine.basics.command.moderation.InventoryCommands;
 import de.cubeisland.cubeengine.basics.command.moderation.ItemCommands;
 import de.cubeisland.cubeengine.basics.command.moderation.KickBanCommands;
 import de.cubeisland.cubeengine.basics.command.moderation.PowerToolCommand;
-import de.cubeisland.cubeengine.basics.command.moderation.SpawnMobCommand;
+import de.cubeisland.cubeengine.basics.command.moderation.spawnmob.SpawnMobCommand;
 import de.cubeisland.cubeengine.basics.command.moderation.TimeControlCommands;
 import de.cubeisland.cubeengine.basics.command.moderation.WorldControlCommands;
 import de.cubeisland.cubeengine.basics.command.moderation.kit.KitCommand;

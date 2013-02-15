@@ -25,7 +25,6 @@ import org.bukkit.entity.Player;
 import java.lang.management.ManagementFactory;
 import java.util.*;
 
-import static de.cubeisland.cubeengine.core.command.exception.IllegalParameterValue.illegalParameter;
 import static de.cubeisland.cubeengine.core.i18n.I18n._;
 
 public class InformationCommands
@@ -194,7 +193,8 @@ public class InformationCommands
         }
         if (user == null)
         {
-            illegalParameter(context, "basics", "User not found!");
+            context.sendMessage("basics", "User not found!");
+            return;
         }
         int radius = this.basics.getConfiguration().nearDefaultRadius;
         if (context.hasArg(0))
