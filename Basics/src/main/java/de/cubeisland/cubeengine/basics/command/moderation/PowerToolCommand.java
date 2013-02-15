@@ -112,25 +112,28 @@ public class PowerToolCommand extends ContainerCommand implements Listener
         if (cmd == null || cmd.isEmpty())
         {
             powertools.remove(powertools.size() - 1);
+            this.setPowerTool(item, powertools);
             context.sendMessage("basics", "&aRemoved the last command bound to this item!");
-            return;
-        }
-        if (isCommand)
-        {
-            cmd = "/" + cmd;
-        }
-        boolean removed = false;
-        while (powertools.remove(cmd)) // removes also multiple same cmds
-        {
-            removed = true;
-        }
-        if (removed)
-        {
-            context.sendMessage("basics", "&aRemoved the command: &e%s &abound to this item!", cmd);
         }
         else
         {
-            context.sendMessage("basics", "&cThe command &e%s &cwas not found on this item!", cmd);
+            if (isCommand)
+            {
+                cmd = "/" + cmd;
+            }
+            boolean removed = false;
+            while (powertools.remove(cmd)) // removes also multiple same cmds
+            {
+                removed = true;
+            }
+            if (removed)
+            {
+                context.sendMessage("basics", "&aRemoved the command: &e%s &abound to this item!", cmd);
+            }
+            else
+            {
+                context.sendMessage("basics", "&cThe command &e%s &cwas not found on this item!", cmd);
+            }
         }
         this.setPowerTool(item, powertools);
         if (powertools.isEmpty())
@@ -253,7 +256,7 @@ public class PowerToolCommand extends ContainerCommand implements Listener
                 newLore.add(line);
             }
         }
-        if (newPowerTools != null)
+        if (newPowerTools != null && !newPowerTools.isEmpty())
         {
             newLore.add(ChatFormat.parseFormats("&2PowerTool"));
             newLore.addAll(newPowerTools);
