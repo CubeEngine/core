@@ -11,8 +11,13 @@ import org.apache.commons.lang.Validate;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Server;
-import org.bukkit.command.*;
+import org.bukkit.command.Command;
+import org.bukkit.command.CommandMap;
+import org.bukkit.command.CommandSender;
+import org.bukkit.command.PluginCommand;
+import org.bukkit.command.SimpleCommandMap;
 import org.bukkit.command.defaults.BukkitCommand;
+import org.bukkit.craftbukkit.libs.jline.console.ConsoleReader;
 import org.bukkit.craftbukkit.v1_4_R1.CraftServer;
 import org.bukkit.craftbukkit.v1_4_R1.entity.CraftPlayer;
 import org.bukkit.craftbukkit.v1_4_R1.help.SimpleHelpMap;
@@ -87,6 +92,16 @@ public class BukkitUtils
             language = CubeEngine.getConfiguration().defaultLanguage;
         }
         return language;
+    }
+
+    public static ConsoleReader getConsoleReader(final Server server)
+    {
+        return ((CraftServer)server).getServer().reader;
+    }
+
+    public static CommandMap getCommandMap(final Server server)
+    {
+        return ((CraftServer)server).getCommandMap();
     }
 
     /**

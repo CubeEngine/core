@@ -1,6 +1,5 @@
 package de.cubeisland.cubeengine.core.command;
 
-import de.cubeisland.cubeengine.core.Core;
 import de.cubeisland.cubeengine.core.CubeEngine;
 import de.cubeisland.cubeengine.core.bukkit.BukkitCore;
 import de.cubeisland.cubeengine.core.bukkit.BukkitUtils;
@@ -12,7 +11,6 @@ import gnu.trove.map.hash.THashMap;
 import org.bukkit.Server;
 import org.bukkit.command.Command;
 import org.bukkit.command.SimpleCommandMap;
-import org.bukkit.craftbukkit.v1_4_R1.CraftServer;
 
 import java.util.Iterator;
 import java.util.Map;
@@ -24,19 +22,24 @@ import java.util.logging.Logger;
  */
 public class CommandManager implements Cleanable
 {
+    private final Server server;
     private static final Logger LOGGER = CubeEngine.getLogger();
     private final CubeCommandMap commandMap;
     private final Map<String, Command> knownCommands;
     private final Map<Class<? extends CubeCommand>, CommandFactory> commandFactories;
+    private final ConsoleCommandCompleter completer;
 
-    public CommandManager(Core core)
+    public CommandManager(BukkitCore core)
     {
-        Server server = ((BukkitCore)core).getServer();
-        SimpleCommandMap oldMap = ((CraftServer)server).getCommandMap();
-        this.commandMap = new CubeCommandMap(core, server, oldMap);
+        this.server = core.getServer();
+        SimpleCommandMap oldMap = (SimpleCommandMap)BukkitUtils.getCommandMap(this.server);
+        this.commandMap = new CubeCommandMap(core, this.server, oldMap);
         this.knownCommands = this.commandMap.getKnownCommands();
         this.commandFactories = new THashMap<Class<? extends CubeCommand>, CommandFactory>();
         BukkitUtils.swapCommandMap(this.commandMap);
+
+        this.completer = new ConsoleCommandCompleter(core, this.commandMap);
+        BukkitUtils.getConsoleReader(this.server).addCompleter(completer);
     }
 
     /**
@@ -136,6 +139,7 @@ public class CommandManager implements Cleanable
         this.removeCommands();
         this.commandMap.clearCommands();
         this.commandFactories.clear();
+        BukkitUtils.getConsoleReader(this.server).removeCompleter(this.completer);
     }
 
     /**
@@ -205,6 +209,7 @@ public class CommandManager implements Cleanable
      * @param commandHolder the command holder containing the commands
      * @param parents       the path under which the command should be registered
      */
+    @SuppressWarnings("unchecked")
     public void registerCommands(Module module, Object commandHolder, Class<? extends CubeCommand> commandTyoe, String... parents)
     {
         CommandFactory<? extends CubeCommand> commandFactory = this.getCommandFactory(commandTyoe);
@@ -223,7 +228,7 @@ public class CommandManager implements Cleanable
         this.commandFactories.put(factory.getCommandType(), factory);
     }
 
-    public CommandFactory<? extends CubeCommand> getCommandFactory(Class<? extends CubeCommand> type)
+    public CommandFactory getCommandFactory(Class<? extends CubeCommand> type)
     {
         return this.commandFactories.get(type);
     }
