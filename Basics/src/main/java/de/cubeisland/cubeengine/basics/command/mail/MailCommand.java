@@ -77,32 +77,28 @@ public class MailCommand extends ContainerCommand
         {
             context.sendMessage("basics", "&eYou do not have any message!");
         }
-
         List<Mail> mails;
         if (mailof == null) //get mails
         {
             mails = mailManager.getMails(sender);
         }
-        else
-        //Search for mail of that user
+        else //Search for mail of that user
         {
             mails = mailManager.getMails(sender, mailof);
         }
         if (mails.isEmpty()) // Mailbox is not empty but no message from that player
         {
             context.sendMessage("basics", "&eYou do not have any mail from &2%s&e.", nameMailOf);
+            return;
         }
-        else
+        StringBuilder sb = new StringBuilder();
+        int i = 0;
+        for (Mail mail : mails)
         {
-            StringBuilder sb = new StringBuilder();
-            int i = 0;
-            for (Mail mail : mails)
-            {
-                i++;
-                sb.append("\n&f").append(i).append(": ").append(mail.toString());
-            }
-            context.sendMessage("basics", "&aYour mails:%s", sb.toString());
+            i++;
+            sb.append("\n&f").append(i).append(": ").append(mail.toString());
         }
+        context.sendMessage("basics", "&aYour mails:%s", sb.toString());
     }
 
     @Alias(names = "spymail")
@@ -112,25 +108,23 @@ public class MailCommand extends ContainerCommand
         User user = context.getUser(0);
         if (user == null)
         {
-            paramNotFound(context, "basics", "&cUser %s not found!", context.getString(0));
+            context.sendMessage("basics", "&cUser %s not found!", context.getString(0));
+            return;
         }
-        mailManager.getMails(user);
         List<Mail> mails = mailManager.getMails(user);
         if (mails.isEmpty()) // Mailbox is not empty but no message from that player
         {
             context.sendMessage("basics", "&2%s &edo not have any mails!", user.getName());
+            return;
         }
-        else
+        StringBuilder sb = new StringBuilder();
+        int i = 0;
+        for (Mail mail : mails)
         {
-            StringBuilder sb = new StringBuilder();
-            int i = 0;
-            for (Mail mail : mails)
-            {
-                i++;
-                sb.append("\n&f").append(i).append(": ").append(mail.toString());
-            }
-            context.sendMessage("basics", "&2%s's mails:%s", user.getName(), sb.toString());
+            i++;
+            sb.append("\n&f").append(i).append(": ").append(mail.toString());
         }
+        context.sendMessage("basics", "&2%s's mails:%s", user.getName(), sb.toString());
     }
 
     @Alias(names = "sendmail")
@@ -140,7 +134,8 @@ public class MailCommand extends ContainerCommand
         User user = context.getUser(0);
         if (user == null)
         {
-            paramNotFound(context, "basics", "&cUser %s not found!", context.getString(0));
+            context.sendMessage("basics", "&cUser %s not found!", context.getString(0));
+            return;
         }
         String message = context.getStrings(1);
         this.mail(message, (User)context.getSender(), user);
@@ -200,20 +195,16 @@ public class MailCommand extends ContainerCommand
         {
             this.mailManager.removeMail(sender);
             context.sendMessage("basics", "&eCleared all mails!");
+            return;
         }
-        else
+        User from = context.getUser(0);
+        if (from == null && !context.getString(0).equalsIgnoreCase("Console"))
         {
-            User from = context.getUser(0);
-            if (from == null)
-            {
-                if (!context.getString(0).equalsIgnoreCase("Console"))
-                {
-                    paramNotFound(context, "basics", "&cUser %s not found!", context.getString(0));
-                }
-            }
-            this.mailManager.removeMail(sender, from);
-            context.sendMessage("basics", "&eCleared all mails from &2%s&e!", from.getName());
+            context.sendMessage("basics", "&cUser %s not found!", context.getString(0));
+            return;
         }
+        this.mailManager.removeMail(sender, from);
+        context.sendMessage("basics", "&eCleared all mails from &2%s&e!", from.getName());
     }
 
     private void mail(String message, User from, User... users)

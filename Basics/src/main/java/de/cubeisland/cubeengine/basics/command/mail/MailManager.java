@@ -5,14 +5,16 @@ import de.cubeisland.cubeengine.basics.storage.BasicUserManager;
 import de.cubeisland.cubeengine.core.storage.SingleKeyStorage;
 import de.cubeisland.cubeengine.core.storage.StorageException;
 import de.cubeisland.cubeengine.core.storage.database.Database;
-import static de.cubeisland.cubeengine.core.storage.database.querybuilder.ComponentBuilder.EQUAL;
 import de.cubeisland.cubeengine.core.storage.database.querybuilder.QueryBuilder;
 import de.cubeisland.cubeengine.core.user.User;
+
 import java.lang.reflect.Field;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+
+import static de.cubeisland.cubeengine.core.storage.database.querybuilder.ComponentBuilder.EQUAL;
 
 public class MailManager extends SingleKeyStorage<Long, Mail>
 {
@@ -133,11 +135,11 @@ public class MailManager extends SingleKeyStorage<Long, Mail>
         }
         catch (SQLException ex)
         {
-            throw new IllegalStateException("Error while getting Model from Database", ex);
+            throw new StorageException("Error while getting Model from Database", ex);
         }
         catch (Exception ex)
         {
-            throw new IllegalStateException("Error while creating fresh Model from Database", ex);
+            throw new StorageException("Error while creating fresh Model from Database", ex);
         }
         return loadedModels;
     }
