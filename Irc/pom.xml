@@ -16,11 +16,15 @@
             <groupId>${project.parent.groupId}</groupId>
             <artifactId>cubeengine</artifactId>
             <version>${project.parent.version}</version>
+            <type>jar</type>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.pircbotx</groupId>
             <artifactId>pircbotx</artifactId>
             <version>1.8</version>
+            <type>jar</type>
+            <scope>compile</scope>
         </dependency>
     </dependencies>
 

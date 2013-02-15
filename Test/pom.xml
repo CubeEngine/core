@@ -14,11 +14,15 @@
             <groupId>${project.parent.groupId}</groupId>
             <artifactId>cubeengine</artifactId>
             <version>${project.parent.version}</version>
+            <type>jar</type>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>${project.parent.groupId}</groupId>
             <artifactId>basics</artifactId>
             <version>${project.parent.version}</version>
+            <type>jar</type>
+            <scope>provided</scope>
         </dependency>
     </dependencies>
 </project>
