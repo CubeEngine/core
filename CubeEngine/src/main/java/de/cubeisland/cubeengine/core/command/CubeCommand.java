@@ -420,7 +420,7 @@ public abstract class CubeCommand extends Command
         }
         catch (MissingParameterException e)
         {
-            sender.sendMessage("core", "&cThe parameter &e%s&c is missing!", e.getMessage());
+            sender.sendMessage("core", "&cThe parameter &6%s&c is missing!", e.getMessage());
         }
         catch (IncorrectUsageException e)
         {

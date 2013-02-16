@@ -2,6 +2,7 @@ package de.cubeisland.cubeengine.roles.commands;
 
 import de.cubeisland.cubeengine.core.command.CommandContext;
 import de.cubeisland.cubeengine.core.command.ContainerCommand;
+import de.cubeisland.cubeengine.core.command.exception.MissingParameterException;
 import de.cubeisland.cubeengine.core.command.parameterized.ParameterizedContext;
 import de.cubeisland.cubeengine.core.command.sender.CommandSender;
 import de.cubeisland.cubeengine.core.storage.world.WorldManager;
@@ -11,8 +12,6 @@ import de.cubeisland.cubeengine.roles.role.RoleManager;
 import de.cubeisland.cubeengine.roles.role.UserSpecificRole;
 import gnu.trove.map.hash.TLongObjectHashMap;
 import org.bukkit.World;
-
-import static de.cubeisland.cubeengine.core.command.exception.IncorrectUsageException.*;
 
 public class UserCommandHelper extends ContainerCommand
 {
@@ -43,12 +42,14 @@ public class UserCommandHelper extends ContainerCommand
             }
             if (user == null)
             {
-                invalidSender(user, "roles", "&cYou have to specify a player.");
+                context.sendMessage("roles", "&cYou have to specify a player.");
+                throw new MissingParameterException("user"); //TODO this is bullshit
             }
         }
         if (user == null)
         {
-            paramNotFound(context, "roles", "&cUser %s not found!", context.getString(pos));
+            context.sendMessage("roles", "&cUser %s not found!", context.getString(pos));
+            throw new MissingParameterException("user"); //TODO this is bullshit
         }
         return user;
     }
@@ -95,7 +96,8 @@ public class UserCommandHelper extends ContainerCommand
             world = context.getParam("in");
             if (world == null)
             {
-                paramNotFound(context, "roles", "&cWorld %s not found!", context.getString("in"));
+                context.sendMessage("roles", "&cWorld %s not found!", context.getString("in"));
+                throw new MissingParameterException("world"); //TODO this is bullshit
             }
         }
         else
@@ -119,7 +121,8 @@ public class UserCommandHelper extends ContainerCommand
                 world = this.worldManager.getWorld(ModuleManagementCommands.curWorldIdOfConsole);
                 if (world == null)
                 {
-                    invalidUsage(context, "roles", "&ePlease provide a world.\n&aYou can define a world with &6/roles admin defaultworld <world>");
+                    context.sendMessage("roles", "&ePlease provide a world.\n&aYou can define a world with &6/roles admin defaultworld <world>");
+                    throw new MissingParameterException("world"); //TODO this is bullshit
                 }
                 else
                 {
