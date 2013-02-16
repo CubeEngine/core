@@ -23,6 +23,8 @@ public abstract class ArgumentReader<T>
         registerReader(new UserReader());
         registerReader(new WorldReader());
         registerReader(new EntityTypeReader());
+        registerReader(new DyeColorReader());
+        registerReader(new ProfessionReader());
     }
 
     private final Class<T> type;

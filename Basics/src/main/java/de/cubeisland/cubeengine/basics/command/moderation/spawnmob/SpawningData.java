@@ -1,5 +1,6 @@
 package de.cubeisland.cubeengine.basics.command.moderation.spawnmob;
 
+import de.cubeisland.cubeengine.core.user.User;
 import org.bukkit.Location;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
@@ -32,5 +33,11 @@ public class SpawningData
     public <E,T> void add(EntityDataChanger<E,T> changer, T value)
     {
         this.data.put(changer,value);
+    }
+
+    public void showInfo(User user)
+    {
+    //TODO
+
     }
 }

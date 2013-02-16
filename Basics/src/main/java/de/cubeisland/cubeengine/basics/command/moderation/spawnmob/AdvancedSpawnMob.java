@@ -11,6 +11,8 @@ import de.cubeisland.cubeengine.core.command.parameterized.CommandParameter;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.util.matcher.Match;
 import gnu.trove.map.hash.TLongObjectHashMap;
+import org.bukkit.DyeColor;
+import org.bukkit.Material;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Villager;
 import org.bukkit.inventory.ItemStack;
@@ -31,18 +33,23 @@ public class AdvancedSpawnMob extends ChatCommand<Basics>
                 .addFlag(new CommandFlag("saddle", "saddled"))
                 .addFlag(new CommandFlag("angry", "angry"))
                 .addFlag(new CommandFlag("sitting", "sitting"))
-                .addFlag(new CommandFlag("tame", "tame")) //TODO
-                .addFlag(new CommandFlag("villager", "villagerzombie")) //TODO
-                .addParameter(new CommandParameter("color", String.class).addAlias("sheepcolor"))//TODO
-                .addParameter(new CommandParameter("size", Integer.class).addAlias("slimesize"))//TODO
-                .addParameter(new CommandParameter("prof", Villager.Profession.class).addAlias("profession"))//TODO
-                .addParameter(new CommandParameter("endermanitem", ItemStack.class))//TODO
-                .addParameter(new CommandParameter("equip-hand", ItemStack.class))//TODO
-                .addParameter(new CommandParameter("equip-helmet", ItemStack.class))//TODO
-                .addParameter(new CommandParameter("equip-boots", ItemStack.class))//TODO
-                .addParameter(new CommandParameter("equip-chestplate", ItemStack.class))//TODO
-                .addParameter(new CommandParameter("equip-leggings", ItemStack.class))//TODO
-                .addParameter(new CommandParameter("hp", Integer.class))//TODO
+                .addFlag(new CommandFlag("tame", "tame"))
+                .addFlag(new CommandFlag("villager", "villagerzombie"))
+                .addParameter(new CommandParameter("color", new String[]{"sheepcolor"}, DyeColor.class))
+                .addParameter(new CommandParameter("size", new String[]{"slimesize"}, String.class))
+                .addParameter(new CommandParameter("prof", new String[]{"profession"}, Villager.Profession.class))
+                .addParameter(new CommandParameter("endermanitem", ItemStack.class))
+                .addParameter(new CommandParameter("equip-hand", ItemStack.class))
+                .addParameter(new CommandParameter("equip-helmet", ItemStack.class))
+                .addParameter(new CommandParameter("equip-boots", ItemStack.class))
+                .addParameter(new CommandParameter("equip-chestplate", ItemStack.class))
+                .addParameter(new CommandParameter("equip-leggings", ItemStack.class))
+                .addParameter(new CommandParameter("hp", Integer.class))
+                .addFlag(new CommandFlag("here", "here"))
+                .addParameter(new CommandParameter("nearby", User.class))
+                .addFlag(new CommandFlag("info", "info"))
+                .addFlag(new CommandFlag("clear", "clear"))//TODO
+        //TODO riding mobs
         ;
 
     }
@@ -101,6 +108,82 @@ public class AdvancedSpawnMob extends ChatCommand<Basics>
         {
             spawningData.add(EntityDataChanger.SITTING, true);
         }
+        if (context.hasFlag("tame"))
+        {
+            spawningData.add(EntityDataChanger.TAME,user);
+        }
+        if (context.hasFlag("villager"))
+        {
+            spawningData.add(EntityDataChanger.VILLAGER_ZOMBIE, true);
+        }
+        if (context.hasParam("color"))
+        {
+            spawningData.add(EntityDataChanger.SHEEP_COLOR,context.getParam("color",DyeColor.WHITE));
+        }
+        if (context.hasParam("size"))
+        {
+            String match = Match.string().matchString(context.getString("size"), "tiny", "small", "big");
+            try
+            {
+                int size = "tiny".equals(match) ? 0
+                        : "small".equals(match) ? 2
+                        : "big".equals(match) ? 4
+                        : Integer.parseInt(context.getString("size"));
+                spawningData.add(EntityDataChanger.SLIME_SIZE,size);
+            }
+            catch (NumberFormatException e)
+            {
+                context.sendMessage("basics", "&eThe slime-size has to be a number or tiny, small or big!");
+            }
+        }
+        if (context.hasParam("prof"))
+        {
+            spawningData.add(EntityDataChanger.VILLAGER_PROFESSION,context.getParam("prof", Villager.Profession.FARMER));
+        }
+        if (context.hasParam("endermanitem"))
+        {
+            spawningData.add(EntityDataChanger.ENDERMAN_ITEM,context.getParam("endermanitem",AIR));
+        }
+        if (context.hasParam("equip-hand"))
+        {
+            spawningData.add(EntityDataChanger.EQUIP_ITEMINHAND,context.getParam("equip-hand",AIR));
+        }
+        if (context.hasParam("equip-helmet"))
+        {
+            spawningData.add(EntityDataChanger.EQUIP_HELMET,context.getParam("equip-helmet",AIR));
+        }
+        if (context.hasParam("equip-boots"))
+        {
+            spawningData.add(EntityDataChanger.EQUIP_BOOTS,context.getParam("equip-boots",AIR));
+        }
+        if (context.hasParam("equip-chestplate"))
+        {
+            spawningData.add(EntityDataChanger.EQUIP_CHESTPLATE,context.getParam("equip-chestplate",AIR));
+        }
+        if (context.hasParam("equip-leggings"))
+        {
+            spawningData.add(EntityDataChanger.EQUIP_LEGGINGS,context.getParam("equip-leggings",AIR));
+        }
+        if (context.hasParam("hp"))
+        {
+            spawningData.add(EntityDataChanger.HP,(Integer)context.getParam("hp",null));
+        }
+        if (context.hasFlag("here"))
+        {
+            user.getLocation(spawningData.location);
+        }
+        if (context.hasParam("nearby"))
+        {
+            User nearby = context.getParam("nearby",null);
+            if (nearby == null || !nearby.isOnline())
+            {
+                context.sendMessage("basics","&cUser %s not found!",context.getString("nearby"));
+            }
+            else
+            {
+                nearby.getLocation(spawningData.location);
+            }
+        }
         if (context.hasParam("amount"))
         {
             Integer amount = context.getParam("amount",0);
@@ -110,6 +193,10 @@ public class AdvancedSpawnMob extends ChatCommand<Basics>
                 amount = 1;
             }
             spawningData.amount = amount;
+        }
+        if (context.hasFlag("info"))
+        {
+            spawningData.showInfo(user);
         }
         if (context.hasFlag("spawn"))
         {
@@ -122,4 +209,6 @@ public class AdvancedSpawnMob extends ChatCommand<Basics>
         }
         return null;
     }
+
+    private static final ItemStack AIR = new ItemStack(Material.AIR);
 }
