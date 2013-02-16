@@ -19,15 +19,22 @@ public class EntityDataChanger<E,T>
                         }
                     });
 
-    public static  final EntityDataChanger<Ageable,Boolean> BABY =
-            new EntityDataChanger<Ageable,Boolean>(Ageable.class,
-                    new EntityChanger<Ageable,Boolean>() {
+    public static  final EntityDataChanger<Entity,Boolean> BABY =
+            new EntityDataChanger<Entity,Boolean>(Ageable.class,Zombie.class,
+                    new EntityChanger<Entity,Boolean>() {
                         @Override
-                        public void applyEntity(Ageable entity, Boolean value) {
-                            if (value)
-                                entity.setBaby();
-                            else
-                                entity.setAdult();
+                        public void applyEntity(Entity entity, Boolean value) {
+                            if (entity instanceof Zombie)
+                            {
+                                ((Zombie) entity).setBaby(value);
+                            }
+                            else if (entity instanceof Ageable)
+                            {
+                                if (value)
+                                    ((Ageable) entity).setBaby();
+                                else
+                                    ((Ageable) entity).setAdult();
+                            }
                         }
                     });
     public static  final EntityDataChanger<Entity,Boolean> ANGRY =
@@ -134,6 +141,15 @@ public class EntityDataChanger<E,T>
                         }
                     });
 
+    public static final EntityDataChanger<Zombie,Boolean> VILLAGER_ZOMBIE =
+            new EntityDataChanger<Zombie,Boolean>(LivingEntity.class,
+                    new EntityChanger<Zombie,Boolean>() {
+                        @Override
+                        public void applyEntity(Zombie entity, Boolean value) {
+                            entity.setVillager(value);
+                        }
+                    });
+
     public static final EntityDataChanger<LivingEntity,ItemStack> EQUIP_ITEMINHAND =
             new EntityDataChanger<LivingEntity,ItemStack>(LivingEntity.class,
                     new EntityChanger<LivingEntity,ItemStack>() {
@@ -177,6 +193,11 @@ public class EntityDataChanger<E,T>
                             entity.getEquipment().setBoots(value);
                         }
                     });
+
+    //TODO wolf collarColor
+    //TODO skeleton type
+    //TODO sheared sheeps
+    //TODO catType
 
     private EntityDataChanger(Class clazz, EntityChanger<E,T> changer)
     {

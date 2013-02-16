@@ -48,6 +48,10 @@ public class CommandParameter
         this(name, NO_ALIASES,type,false);
     }
 
+    public CommandParameter(String name, String[] aliases, Class type) {
+        this(name, aliases,type,false);
+    }
+
     public static void registerCompleter(ParamCompleter completer)
     {
         for (Class type : completer.getCompatibleClasses())
