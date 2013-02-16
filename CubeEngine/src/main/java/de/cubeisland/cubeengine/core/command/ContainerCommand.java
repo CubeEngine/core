@@ -11,8 +11,10 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
+import java.util.Set;
 
 import static de.cubeisland.cubeengine.core.i18n.I18n._;
+import static de.cubeisland.cubeengine.core.util.StringUtils.startsWithIgnoreCase;
 
 /**
  *
@@ -78,9 +80,12 @@ public abstract class ContainerCommand extends ParameterizedCommand implements C
         {
             List<String> actions = new ArrayList<String>();
             String token = args[0].toLowerCase(Locale.ENGLISH);
-            for (String child : this.getChildrenNames())
+
+            Set<String> names = this.getChildrenNames();
+            names.removeAll(this.childrenAliases);
+            for (String child : names)
             {
-                if (child.startsWith(token))
+                if (startsWithIgnoreCase(child, token))
                 {
                     actions.add(child);
                 }

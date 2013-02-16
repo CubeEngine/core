@@ -1,7 +1,7 @@
 package de.cubeisland.cubeengine.core.command.parameterized.completer;
 
 import de.cubeisland.cubeengine.core.command.parameterized.ParamCompleter;
-import de.cubeisland.cubeengine.core.user.User;
+import de.cubeisland.cubeengine.core.command.sender.CommandSender;
 import de.cubeisland.cubeengine.core.util.matcher.MaterialMatcher;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
@@ -20,7 +20,7 @@ public class ItemCompleter extends ParamCompleter
     }
 
     @Override
-    public List<String> complete(User sender, String token)
+    public List<String> complete(CommandSender sender, String token)
     {
         return Arrays.asList(String.valueOf(this.matcher.material(token).getId()));
     }

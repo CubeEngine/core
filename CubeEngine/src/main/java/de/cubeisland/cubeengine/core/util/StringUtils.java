@@ -367,4 +367,24 @@ public final class StringUtils
     {
         return string.substring(0, 1) + string.substring(1);
     }
+
+    public static boolean startsWithIgnoreCase(String string, String token)
+    {
+        if (string.length() < token.length())
+        {
+            return false;
+        }
+
+        return string.substring(0, token.length()).equalsIgnoreCase(token);
+    }
+
+    public static boolean endsWithIgnoreCase(String string, String token)
+    {
+        if (string.length() < token.length())
+        {
+            return false;
+        }
+
+        return string.substring(string.length() - token.length()).equalsIgnoreCase(token);
+    }
 }

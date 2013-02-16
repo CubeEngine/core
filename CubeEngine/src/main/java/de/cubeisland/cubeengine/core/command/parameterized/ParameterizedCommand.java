@@ -3,13 +3,13 @@ package de.cubeisland.cubeengine.core.command.parameterized;
 import de.cubeisland.cubeengine.core.command.CubeCommand;
 import de.cubeisland.cubeengine.core.command.sender.CommandSender;
 import de.cubeisland.cubeengine.core.module.Module;
-import de.cubeisland.cubeengine.core.user.User;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
+
+import static de.cubeisland.cubeengine.core.util.StringUtils.startsWithIgnoreCase;
 
 public abstract class ParameterizedCommand extends CubeCommand
 {
@@ -42,10 +42,6 @@ public abstract class ParameterizedCommand extends CubeCommand
     @Override
     public List<String> tabComplete(CommandSender sender, String label, String[] args)
     {
-        if (!(sender instanceof User))
-        {
-            return null;
-        }
         if (args.length > 0)
         {
             String token = args[args.length - 1];
@@ -56,28 +52,32 @@ public abstract class ParameterizedCommand extends CubeCommand
                 if (!token.isEmpty() && token.charAt(0) == '-')
                 {
                     token = token.substring(1).toLowerCase(Locale.ENGLISH);
-                    for (String flagName : contextFactory.getFlagMap().keySet())
+                    for (CommandFlag flag : contextFactory.getFlags())
                     {
-                        // TODO filter out aliases?
-                        if (flagName.toLowerCase(Locale.ENGLISH).startsWith(token))
+                        final String name = flag.getLongName().toLowerCase(Locale.ENGLISH);
+                        if (startsWithIgnoreCase(name, token))
                         {
-                            flagNames.add("-" + flagName);
+                            flagNames.add("-" + name);
                         }
                     }
-                    Collections.sort(flagNames);
+                    Collections.sort(flagNames, String.CASE_INSENSITIVE_ORDER);
                     return flagNames;
                 }
             }
             else
             {
-                Map<String, CommandParameter> params = contextFactory.getParamMap();
-                CommandParameter param = params.get(args[args.length - 2].toLowerCase(Locale.ENGLISH));
+                CommandParameter param = contextFactory.getParameter(args[args.length - 2]);
                 if (param != null)
                 {
                     ParamCompleter completer = param.getCompleter();
                     if (completer != null)
                     {
-                        return completer.complete((User)sender, token);
+                        final List<String> result = completer.complete(sender, token);
+                        if (result != null)
+                        {
+                            Collections.sort(result, String.CASE_INSENSITIVE_ORDER);
+                        }
+                        return result;
                     }
                 }
             }

@@ -1,14 +1,15 @@
 package de.cubeisland.cubeengine.core.command.parameterized.completer;
 
 import de.cubeisland.cubeengine.core.command.parameterized.ParamCompleter;
+import de.cubeisland.cubeengine.core.command.sender.CommandSender;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.user.UserManager;
 import org.bukkit.entity.Player;
-import org.bukkit.util.StringUtil;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
+
+import static de.cubeisland.cubeengine.core.util.StringUtils.startsWithIgnoreCase;
 
 public class PlayerCompleter extends ParamCompleter
 {
@@ -20,20 +21,28 @@ public class PlayerCompleter extends ParamCompleter
         this.um = um;
     }
 
+    private boolean canSee(CommandSender sender, User user)
+    {
+        if (sender instanceof User)
+        {
+            return ((User)sender).canSee(user);
+        }
+        return true;
+    }
+
     @Override
-    public List<String> complete(User sender, String token)
+    public List<String> complete(CommandSender sender, String token)
     {
         List<String> playerNames = new ArrayList<String>();
         for (User player : this.um.getOnlineUsers())
         {
             String name = player.getName();
-            if (sender.canSee(player) && StringUtil.startsWithIgnoreCase(name, token))
+            if (this.canSee(sender,  player) && startsWithIgnoreCase(name, token))
             {
                 playerNames.add(name);
             }
         }
         playerNames.remove(sender.getName());
-        Collections.sort(playerNames, String.CASE_INSENSITIVE_ORDER);
 
         return playerNames;
     }

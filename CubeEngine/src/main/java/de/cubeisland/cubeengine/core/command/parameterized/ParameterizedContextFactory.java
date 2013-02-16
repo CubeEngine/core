@@ -23,16 +23,6 @@ public class ParameterizedContextFactory implements ContextFactory
         this.paramMap = new THashMap<String, CommandParameter>();
     }
 
-    Map<String, CommandParameter> getParamMap()
-    {
-        return this.paramMap;
-    }
-
-    Map<String, CommandFlag> getFlagMap()
-    {
-        return this.flagMap;
-    }
-
     public ParameterizedContextFactory(Collection<CommandFlag> flags, Collection<CommandParameter> params)
     {
         this();
@@ -96,9 +86,9 @@ public class ParameterizedContextFactory implements ContextFactory
         return this.paramMap.get(name.toLowerCase(Locale.ENGLISH));
     }
 
-    public Collection<CommandParameter> getParameters()
+    public Set<CommandParameter> getParameters()
     {
-        return this.paramMap.values();
+        return new THashSet<CommandParameter>(this.paramMap.values());
     }
 
     public void addFlags(Collection<CommandFlag> flags)
@@ -142,9 +132,9 @@ public class ParameterizedContextFactory implements ContextFactory
         return this.flagMap.get(name.toLowerCase(Locale.ENGLISH));
     }
 
-    public Collection<CommandFlag> getFlags()
+    public Set<CommandFlag> getFlags()
     {
-        return this.flagMap.values();
+        return new THashSet<CommandFlag>(this.flagMap.values());
     }
 
     @Override

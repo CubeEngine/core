@@ -6,7 +6,6 @@ import org.bukkit.command.Command;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.craftbukkit.libs.jline.console.completer.Completer;
 import org.bukkit.entity.Player;
-import org.bukkit.util.StringUtil;
 
 import java.util.Arrays;
 import java.util.List;
@@ -14,6 +13,7 @@ import java.util.Locale;
 
 import static de.cubeisland.cubeengine.core.logger.LogLevel.ERROR;
 import static de.cubeisland.cubeengine.core.util.StringUtils.explode;
+import static de.cubeisland.cubeengine.core.util.StringUtils.startsWithIgnoreCase;
 
 public class ConsoleCommandCompleter implements Completer
 {
@@ -78,7 +78,7 @@ public class ConsoleCommandCompleter implements Completer
                         for (Player player : sender.getServer().getOnlinePlayers())
                         {
                             String name = player.getName();
-                            if (StringUtil.startsWithIgnoreCase(name, token))
+                            if (startsWithIgnoreCase(name, token))
                             {
                                 candidates.add(name);
                             }

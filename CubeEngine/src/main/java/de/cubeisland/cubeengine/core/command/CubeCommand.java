@@ -19,7 +19,16 @@ import org.apache.commons.lang.Validate;
 import org.bukkit.command.Command;
 import org.bukkit.entity.Player;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Set;
+import java.util.Stack;
 
 import static de.cubeisland.cubeengine.core.i18n.I18n._;
 import static de.cubeisland.cubeengine.core.logger.LogLevel.ERROR;
@@ -34,6 +43,7 @@ public abstract class CubeCommand extends Command
     private CubeCommand parent;
     private final Module module;
     private final Map<String, CubeCommand> children;
+    protected final List<String> childrenAliases;
     private final ContextFactory contextFactory;
     private boolean async;
     private boolean loggable;
@@ -56,6 +66,7 @@ public abstract class CubeCommand extends Command
         this.contextFactory = contextFactory;
 
         this.children = new THashMap<String, CubeCommand>();
+        this.childrenAliases = new ArrayList<String>();
         this.loggable = true;
     }
 
@@ -210,18 +221,6 @@ public abstract class CubeCommand extends Command
      */
     public CubeCommand getChild(String name)
     {
-        return this.getChild(name, false);
-    }
-
-    /**
-     * Returns a child command and tries to correct the name of specified.
-     *
-     * @param name    the name
-     * @param correct whether to correct the name
-     * @return the child or null if not found
-     */
-    public CubeCommand getChild(String name, boolean correct)
-    {
         if (name == null)
         {
             return null;
@@ -254,7 +253,9 @@ public abstract class CubeCommand extends Command
         this.onRegister();
         for (String alias : command.getAliases())
         {
-            this.children.put(alias.toLowerCase(Locale.ENGLISH), command);
+            alias = alias.toLowerCase(Locale.ENGLISH);
+            this.children.put(alias, command);
+            this.childrenAliases.add(alias);
         }
     }
 
@@ -316,6 +317,7 @@ public abstract class CubeCommand extends Command
                 iter.remove();
             }
         }
+        this.childrenAliases.removeAll(cmd.getAliases());
         cmd.onRemove();
         cmd.parent = null;
     }
@@ -370,7 +372,7 @@ public abstract class CubeCommand extends Command
                     this.help(new HelpContext(this, sender, labels, args));
                     return true;
                 }
-                CubeCommand child = this.getChild(args[0], true);
+                CubeCommand child = this.getChild(args[0]);
                 if (child != null)
                 {
                     return child.execute(sender, Arrays.copyOfRange(args, 1, args.length), args[0], labels);
@@ -442,7 +444,7 @@ public abstract class CubeCommand extends Command
         return true;
     }
 
-    private final List<String> tabCompleteFallback(org.bukkit.command.CommandSender bukkitSender, String alias, String[] args) throws IllegalArgumentException
+    private List<String> tabCompleteFallback(org.bukkit.command.CommandSender bukkitSender, String alias, String[] args) throws IllegalArgumentException
     {
         return super.tabComplete(bukkitSender, alias, args);
     }
@@ -464,6 +466,11 @@ public abstract class CubeCommand extends Command
         if (result == null)
         {
             result = completer.tabCompleteFallback(bukkitSender, alias, args);
+        }
+        final int max = this.getModule().getCore().getConfiguration().commandTabCompleteOffers;
+        if (result.size() > max)
+        {
+            result = result.subList(0, max);
         }
         return result;
     }

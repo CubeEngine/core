@@ -1,11 +1,8 @@
 package de.cubeisland.cubeengine.core.command.parameterized;
 
-import de.cubeisland.cubeengine.core.user.User;
+import de.cubeisland.cubeengine.core.command.sender.CommandSender;
 
-import java.util.Arrays;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 public abstract class ParamCompleter
 {
@@ -33,5 +30,5 @@ public abstract class ParamCompleter
         return this.compatibleClasses;
     }
 
-    public abstract List<String> complete(User sender, String token);
+    public abstract List<String> complete(CommandSender sender, String token);
 }
