@@ -29,7 +29,7 @@ import java.util.Map;
 import java.util.Set;
 
 import static de.cubeisland.cubeengine.core.command.exception.IllegalParameterValue.illegalParameter;
-import static de.cubeisland.cubeengine.core.command.exception.InvalidUsageException.invalidUsage;
+import static de.cubeisland.cubeengine.core.command.exception.IncorrectUsageException.invalidUsage;
 import static de.cubeisland.cubeengine.core.command.exception.PermissionDeniedException.denyAccess;
 
 public class ThrowCommands

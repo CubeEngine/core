@@ -3,7 +3,7 @@ package de.cubeisland.cubeengine.basics.command.moderation.spawnmob;
 import de.cubeisland.cubeengine.basics.Basics;
 import de.cubeisland.cubeengine.basics.BasicsConfiguration;
 import de.cubeisland.cubeengine.core.command.CommandContext;
-import de.cubeisland.cubeengine.core.command.exception.InvalidUsageException;
+import de.cubeisland.cubeengine.core.command.exception.IncorrectUsageException;
 import de.cubeisland.cubeengine.core.command.reflected.Command;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.util.StringUtils;
@@ -134,7 +134,7 @@ public class SpawnMobCommand
             }
             return mobs;
         }
-        catch (InvalidUsageException e)
+        catch (IncorrectUsageException e)
         {
             context.sendMessage(e.getMessage());
             return mobs;

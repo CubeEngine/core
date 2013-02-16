@@ -16,8 +16,8 @@ import org.bukkit.inventory.ItemStack;
 import java.util.ArrayList;
 import java.util.List;
 
-import static de.cubeisland.cubeengine.core.command.exception.InvalidUsageException.blockCommand;
-import static de.cubeisland.cubeengine.core.command.exception.InvalidUsageException.paramNotFound;
+import static de.cubeisland.cubeengine.core.command.exception.IncorrectUsageException.blockCommand;
+import static de.cubeisland.cubeengine.core.command.exception.IncorrectUsageException.paramNotFound;
 
 public class KitCommand extends ContainerCommand
 {

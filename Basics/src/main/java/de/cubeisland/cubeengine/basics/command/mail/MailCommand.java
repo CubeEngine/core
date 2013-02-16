@@ -12,7 +12,7 @@ import gnu.trove.set.hash.TLongHashSet;
 
 import java.util.List;
 
-import static de.cubeisland.cubeengine.core.command.exception.InvalidUsageException.paramNotFound;
+import static de.cubeisland.cubeengine.core.command.exception.IncorrectUsageException.paramNotFound;
 
 public class MailCommand extends ContainerCommand
 {

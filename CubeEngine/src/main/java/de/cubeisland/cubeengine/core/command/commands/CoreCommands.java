@@ -13,8 +13,8 @@ import de.cubeisland.cubeengine.core.user.User;
 import org.bukkit.plugin.PluginManager;
 
 import static de.cubeisland.cubeengine.core.command.commands.CommandPermissions.COMMAND_SETPASSWORD_OTHER;
-import static de.cubeisland.cubeengine.core.command.exception.InvalidUsageException.blockCommand;
-import static de.cubeisland.cubeengine.core.command.exception.InvalidUsageException.paramNotFound;
+import static de.cubeisland.cubeengine.core.command.exception.IncorrectUsageException.blockCommand;
+import static de.cubeisland.cubeengine.core.command.exception.IncorrectUsageException.paramNotFound;
 import static de.cubeisland.cubeengine.core.command.exception.PermissionDeniedException.denyAccess;
 import static java.util.Arrays.asList;
 

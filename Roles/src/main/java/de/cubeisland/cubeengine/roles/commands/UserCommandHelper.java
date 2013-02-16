@@ -12,7 +12,7 @@ import de.cubeisland.cubeengine.roles.role.UserSpecificRole;
 import gnu.trove.map.hash.TLongObjectHashMap;
 import org.bukkit.World;
 
-import static de.cubeisland.cubeengine.core.command.exception.InvalidUsageException.*;
+import static de.cubeisland.cubeengine.core.command.exception.IncorrectUsageException.*;
 
 public class UserCommandHelper extends ContainerCommand
 {

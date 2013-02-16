@@ -3,14 +3,20 @@ package de.cubeisland.cubeengine.core.command.parameterized;
 import de.cubeisland.cubeengine.core.command.ArgumentReader;
 import de.cubeisland.cubeengine.core.command.ContextFactory;
 import de.cubeisland.cubeengine.core.command.CubeCommand;
-import de.cubeisland.cubeengine.core.command.exception.IllegalParameterValue;
+import de.cubeisland.cubeengine.core.command.exception.IncorrectUsageException;
 import de.cubeisland.cubeengine.core.command.exception.InvalidArgumentException;
 import de.cubeisland.cubeengine.core.command.exception.MissingParameterException;
 import de.cubeisland.cubeengine.core.command.sender.CommandSender;
 import gnu.trove.map.hash.THashMap;
 import gnu.trove.set.hash.THashSet;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Set;
+import java.util.Stack;
 
 public class ParameterizedContextFactory implements ContextFactory
 {
@@ -199,7 +205,7 @@ public class ParameterizedContextFactory implements ContextFactory
                         }
                         catch (InvalidArgumentException ex)
                         {
-                            IllegalParameterValue.illegalParameter(sender, "core", "", paramName);
+                            throw new IncorrectUsageException(); // TODO message.
                         }
                     }
                     else

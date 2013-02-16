@@ -19,7 +19,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import static de.cubeisland.cubeengine.core.command.exception.InvalidUsageException.invalidUsage;
+import static de.cubeisland.cubeengine.core.command.exception.IncorrectUsageException.invalidUsage;
 
 /**
  * item-related commands /itemdb /rename /headchange /unlimited /enchant /give

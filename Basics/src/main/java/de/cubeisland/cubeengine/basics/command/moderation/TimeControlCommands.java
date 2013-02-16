@@ -17,7 +17,7 @@ import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static de.cubeisland.cubeengine.core.command.exception.InvalidUsageException.invalidUsage;
+import static de.cubeisland.cubeengine.core.command.exception.IncorrectUsageException.invalidUsage;
 import static de.cubeisland.cubeengine.core.command.exception.PermissionDeniedException.denyAccess;
 
 /**

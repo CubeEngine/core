@@ -18,7 +18,7 @@ import org.bukkit.plugin.Plugin;
 
 import java.util.*;
 
-import static de.cubeisland.cubeengine.core.command.exception.InvalidUsageException.blockCommand;
+import static de.cubeisland.cubeengine.core.command.exception.IncorrectUsageException.blockCommand;
 import static de.cubeisland.cubeengine.core.command.exception.PermissionDeniedException.denyAccess;
 
 /**

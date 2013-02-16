@@ -3,7 +3,6 @@ package de.cubeisland.cubeengine.roles.commands;
 import de.cubeisland.cubeengine.core.command.CommandContext;
 import de.cubeisland.cubeengine.core.command.ContainerCommand;
 import de.cubeisland.cubeengine.core.command.parameterized.ParameterizedContext;
-import de.cubeisland.cubeengine.core.command.reflected.ReflectedCommandFactory;
 import de.cubeisland.cubeengine.core.command.sender.CommandSender;
 import de.cubeisland.cubeengine.core.storage.world.WorldManager;
 import de.cubeisland.cubeengine.core.user.User;
@@ -13,8 +12,8 @@ import de.cubeisland.cubeengine.roles.role.RoleManager;
 import de.cubeisland.cubeengine.roles.role.RoleProvider;
 import org.bukkit.World;
 
-import static de.cubeisland.cubeengine.core.command.exception.InvalidUsageException.invalidUsage;
-import static de.cubeisland.cubeengine.core.command.exception.InvalidUsageException.paramNotFound;
+import static de.cubeisland.cubeengine.core.command.exception.IncorrectUsageException.invalidUsage;
+import static de.cubeisland.cubeengine.core.command.exception.IncorrectUsageException.paramNotFound;
 
 public abstract class RoleCommandHelper extends ContainerCommand
 {

@@ -2,7 +2,7 @@ package de.cubeisland.cubeengine.core.command;
 
 import de.cubeisland.cubeengine.core.CubeEngine;
 import de.cubeisland.cubeengine.core.bukkit.TaskManager;
-import de.cubeisland.cubeengine.core.command.exception.InvalidUsageException;
+import de.cubeisland.cubeengine.core.command.exception.IncorrectUsageException;
 import de.cubeisland.cubeengine.core.command.exception.MissingParameterException;
 import de.cubeisland.cubeengine.core.command.exception.PermissionDeniedException;
 import de.cubeisland.cubeengine.core.command.result.ErrorResult;
@@ -422,7 +422,7 @@ public abstract class CubeCommand extends Command
         {
             sender.sendMessage("core", "&cThe parameter &e%s&c is missing!", e.getMessage());
         }
-        catch (InvalidUsageException e)
+        catch (IncorrectUsageException e)
         {
             sender.sendMessage(e.getMessage());
             if (e.showUsage())

@@ -2,18 +2,13 @@ package de.cubeisland.cubeengine.core.command.exception;
 
 public class MissingParameterException extends CommandException
 {
-    public MissingParameterException(String message)
+    public MissingParameterException(String paramName)
     {
-        super(message);
+        super(paramName);
     }
 
-    public MissingParameterException(Throwable cause)
+    public String getParamName()
     {
-        super(cause);
-    }
-
-    public MissingParameterException(String message, Throwable cause)
-    {
-        super(message, cause);
+        return this.getMessage();
     }
 }
