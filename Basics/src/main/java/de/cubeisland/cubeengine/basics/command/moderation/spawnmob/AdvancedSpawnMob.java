@@ -35,9 +35,9 @@ public class AdvancedSpawnMob extends ChatCommand<Basics>
                 .addFlag(new CommandFlag("sitting", "sitting"))
                 .addFlag(new CommandFlag("tame", "tame"))
                 .addFlag(new CommandFlag("villager", "villagerzombie"))
-                .addParameter(new CommandParameter("color", new String[]{"sheepcolor"}, DyeColor.class))
-                .addParameter(new CommandParameter("size", new String[]{"slimesize"}, String.class))
-                .addParameter(new CommandParameter("prof", new String[]{"profession"}, Villager.Profession.class))
+                .addParameter(new CommandParameter("color", DyeColor.class).addAlias("sheepcolor"))
+                .addParameter(new CommandParameter("size", String.class).addAlias("slimesize"))
+                .addParameter(new CommandParameter("prof", Villager.Profession.class).addAlias("profession"))
                 .addParameter(new CommandParameter("endermanitem", ItemStack.class))
                 .addParameter(new CommandParameter("equip-hand", ItemStack.class))
                 .addParameter(new CommandParameter("equip-helmet", ItemStack.class))
@@ -48,7 +48,7 @@ public class AdvancedSpawnMob extends ChatCommand<Basics>
                 .addFlag(new CommandFlag("here", "here"))
                 .addParameter(new CommandParameter("nearby", User.class))
                 .addFlag(new CommandFlag("info", "info"))
-                .addFlag(new CommandFlag("clear", "clear"))//TODO
+                .addFlag(new CommandFlag("clear", "clear"))
         //TODO riding mobs
         ;
 
@@ -76,6 +76,10 @@ public class AdvancedSpawnMob extends ChatCommand<Basics>
         ChatCommandContext context = (ChatCommandContext)runContext;
         User user = (User) context.getSender();
         SpawningData spawningData = this.spawningDatas.get(user.key);
+        if (context.hasFlag("clear"))
+        {
+            spawningData.clearData();
+        }
         if (context.hasParam("mob"))
         {
             EntityType entityType = context.getParam("mob",EntityType.ARROW);

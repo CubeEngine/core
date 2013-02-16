@@ -40,4 +40,8 @@ public class SpawningData
     //TODO
 
     }
+
+    public void clearData() {
+        this.data = new HashMap<EntityDataChanger, Object>();
+    }
 }
