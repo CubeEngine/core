@@ -7,4 +7,6 @@ public @interface Param
     Class type() default String.class;
 
     boolean required() default false;
+
+    Class<? extends Completer> completer() default Completer.class;
 }

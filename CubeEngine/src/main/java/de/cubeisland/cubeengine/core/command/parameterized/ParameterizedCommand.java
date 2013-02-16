@@ -69,7 +69,7 @@ public abstract class ParameterizedCommand extends CubeCommand
                 CommandParameter param = contextFactory.getParameter(args[args.length - 2]);
                 if (param != null)
                 {
-                    ParamCompleter completer = param.getCompleter();
+                    Completer completer = param.getCompleter();
                     if (completer != null)
                     {
                         final List<String> result = completer.complete(sender, token);

@@ -2,7 +2,6 @@ package de.cubeisland.cubeengine.core.module;
 
 import de.cubeisland.cubeengine.core.CubeEngine;
 import de.cubeisland.cubeengine.core.command.ArgumentReader;
-import de.cubeisland.cubeengine.core.command.parameterized.CommandParameter;
 import de.cubeisland.cubeengine.core.util.convert.Convert;
 
 import java.lang.reflect.Method;
@@ -97,7 +96,6 @@ public class ModuleClassLoader extends URLClassLoader
             Convert.unregisterConverter(clazz);
             ArgumentReader.unregisterReader(clazz);
             CubeEngine.getCommandManager().removeCommandFactory(clazz);
-            CommandParameter.unregisterCompleterClass(clazz);
             iter.remove();
         }
 

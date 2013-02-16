@@ -2,6 +2,7 @@ package de.cubeisland.cubeengine.core.command.commands;
 
 import de.cubeisland.cubeengine.core.command.CommandContext;
 import de.cubeisland.cubeengine.core.command.ContainerCommand;
+import de.cubeisland.cubeengine.core.command.parameterized.Param;
 import de.cubeisland.cubeengine.core.command.reflected.Command;
 import de.cubeisland.cubeengine.core.module.Module;
 
@@ -13,7 +14,7 @@ public class VanillaCommands
     public void stop(CommandContext ctx)
     {}
 
-    @Command(desc = "Reloads the server.")
+    @Command(desc = "Reloads the server.", params = @Param(names = "test"))
     public void reload(CommandContext ctx)
     {}
 

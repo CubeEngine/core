@@ -6,6 +6,7 @@ import de.cubeisland.cubeengine.core.command.CommandFactory;
 import de.cubeisland.cubeengine.core.command.CubeCommand;
 import de.cubeisland.cubeengine.core.command.parameterized.CommandFlag;
 import de.cubeisland.cubeengine.core.command.parameterized.CommandParameter;
+import de.cubeisland.cubeengine.core.command.parameterized.Completer;
 import de.cubeisland.cubeengine.core.command.parameterized.Flag;
 import de.cubeisland.cubeengine.core.command.parameterized.Param;
 import de.cubeisland.cubeengine.core.logger.LogLevel;
@@ -17,6 +18,7 @@ import java.lang.reflect.Modifier;
 import java.util.*;
 import java.util.logging.Logger;
 
+import static de.cubeisland.cubeengine.core.logger.LogLevel.ERROR;
 import static de.cubeisland.cubeengine.core.util.Misc.arr;
 
 public class ReflectedCommandFactory<T extends CubeCommand> implements CommandFactory<T>
@@ -87,7 +89,24 @@ public class ReflectedCommandFactory<T extends CubeCommand> implements CommandFa
             {
                 paramAliases = new String[0];
             }
-            params.add(new CommandParameter(names[0], paramAliases, param.type(), param.required()));
+            final CommandParameter commandParameter = new CommandParameter(names[0], param.type());
+            commandParameter.addAliases(paramAliases);
+            commandParameter.setRequired(param.required());
+
+            Class<? extends Completer> completerClass = param.completer();
+            if (completerClass != Completer.class)
+            {
+                try
+                {
+                    commandParameter.setCompleter(completerClass.newInstance());
+                }
+                catch (Exception e)
+                {
+                    LOGGER.log(ERROR, "Failed to create the completer '" + completerClass.getName() + "'", e);
+                }
+            }
+
+            params.add(commandParameter);
         }
 
         ReflectedCommand cmd = new ReflectedCommand(

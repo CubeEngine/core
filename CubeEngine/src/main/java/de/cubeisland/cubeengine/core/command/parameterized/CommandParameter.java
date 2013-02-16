@@ -1,120 +1,104 @@
 package de.cubeisland.cubeengine.core.command.parameterized;
 
-import java.util.Iterator;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 
 public class CommandParameter
 {
-    private static final ConcurrentMap<Class, ParamCompleter> completerMap = new ConcurrentHashMap<Class, ParamCompleter>();
-
     private final String name;
-    private final String[] aliases;
+    private final Set<String> aliases;
 
     private final Class type;
-    private final boolean required;
+    private boolean required;
 
-    private static final String[] NO_ALIASES = new String[]{};
+    private Completer completer;
 
-    public CommandParameter(String name, String[] aliases, Class type, boolean required)
-    {
-        this.name = name;
-        this.aliases = aliases;
-        this.type = type;
-        this.required = required;
-    }
-
-    /**
-     * No aliases
-     *
-     * @param name
-     * @param type
-     * @param required
-     */
-    public CommandParameter(String name, Class type, boolean required)
-    {
-        this(name, NO_ALIASES,type,required);
-    }
-
-    /**
-     * No aliases and not required
-     *
-     * @param name
-     * @param type
-     */
     public CommandParameter(String name, Class type)
     {
-        this(name, NO_ALIASES,type,false);
-    }
-
-    public CommandParameter(String name, String[] aliases, Class type) {
-        this(name, aliases,type,false);
-    }
-
-    public static void registerCompleter(ParamCompleter completer)
-    {
-        for (Class type : completer.getCompatibleClasses())
-        {
-            completerMap.put(type, completer);
-        }
-    }
-
-    public static void unregisterCompleterClass(Class type)
-    {
-        Iterator<Map.Entry<Class, ParamCompleter>> iter = completerMap.entrySet().iterator();
-        Map.Entry<Class, ParamCompleter> entry;
-
-        while (iter.hasNext())
-        {
-            entry = iter.next();
-            if (entry.getKey() == type || entry.getValue().getClass() == type)
-            {
-                iter.remove();
-            }
-        }
-    }
-
-    public static void unregisterCompleter(ParamCompleter completer)
-    {
-        for (Class type : completer.getCompatibleClasses())
-        {
-            completerMap.remove(type);
-        }
-    }
-
-    public static ParamCompleter getCompleter(Class type)
-    {
-        return completerMap.get(type);
-    }
-
-    public static ParamCompleter getCompleter(CommandParameter param)
-    {
-        return completerMap.get(param.getType());
-    }
-
-    public ParamCompleter getCompleter()
-    {
-        return getCompleter(this);
+        this.name = name;
+        this.aliases = new HashSet<String>(0);
+        this.type = type;
+        this.required = false;
+        this.completer = null;
     }
 
     public String getName()
     {
-        return name;
+        return this.name;
     }
 
-    public String[] getAliases()
+    public Set<String> getAliases()
     {
-        return aliases;
+        return this.aliases;
+    }
+
+    public CommandParameter addAlias(String alias)
+    {
+        this.aliases.add(alias);
+        return this;
+    }
+
+    public CommandParameter addAliases(Collection<String> aliases)
+    {
+        this.aliases.addAll(aliases);
+        return this;
+    }
+
+    public CommandParameter addAliases(String... aliases)
+    {
+        for (String alias : aliases)
+        {
+            this.addAlias(alias);
+        }
+        return this;
+    }
+
+    public CommandParameter removeAlias(String alias)
+    {
+        this.aliases.remove(alias);
+        return this;
+    }
+
+    public CommandParameter removeAliases(Collection<String> aliases)
+    {
+        this.aliases.removeAll(aliases);
+        return this;
+    }
+
+    public CommandParameter removeAliases(String... aliases)
+    {
+        for (String alias : aliases)
+        {
+            this.removeAlias(alias);
+        }
+        return this;
     }
 
     public Class getType()
     {
-        return type;
+        return this.type;
     }
 
     public boolean isRequired()
     {
-        return required;
+        return this.required;
+    }
+
+    public CommandParameter setRequired(boolean required)
+    {
+        this.required = required;
+        return this;
+    }
+
+    public Completer getCompleter()
+    {
+        return this.completer;
+    }
+
+    public CommandParameter setCompleter(Completer completer)
+    {
+        this.completer = completer;
+        return this;
     }
 }

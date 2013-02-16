@@ -33,9 +33,9 @@ public class AdvancedSpawnMob extends ChatCommand<Basics>
                 .addFlag(new CommandFlag("sitting", "sitting"))
                 .addFlag(new CommandFlag("tame", "tame")) //TODO
                 .addFlag(new CommandFlag("villager", "villagerzombie")) //TODO
-                .addParameter(new CommandParameter("color", new String[]{"sheepcolor"}, String.class))//TODO
-                .addParameter(new CommandParameter("size", new String[]{"slimesize"}, Integer.class))//TODO
-                .addParameter(new CommandParameter("prof", new String[]{"profession"}, Villager.Profession.class))//TODO
+                .addParameter(new CommandParameter("color", String.class).addAlias("sheepcolor"))//TODO
+                .addParameter(new CommandParameter("size", Integer.class).addAlias("slimesize"))//TODO
+                .addParameter(new CommandParameter("prof", Villager.Profession.class).addAlias("profession"))//TODO
                 .addParameter(new CommandParameter("endermanitem", ItemStack.class))//TODO
                 .addParameter(new CommandParameter("equip-hand", ItemStack.class))//TODO
                 .addParameter(new CommandParameter("equip-helmet", ItemStack.class))//TODO
