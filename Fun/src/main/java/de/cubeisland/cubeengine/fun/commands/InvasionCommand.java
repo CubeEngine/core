@@ -10,8 +10,6 @@ import org.bukkit.Material;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 
-import static de.cubeisland.cubeengine.core.command.exception.IllegalParameterValue.illegalParameter;
-
 public class InvasionCommand
 {
     private final Fun module;
@@ -27,7 +25,8 @@ public class InvasionCommand
         EntityType entityType = Match.entity().mob(context.getString(0, null));
         if (entityType == null)
         {
-            illegalParameter(context, "fun", "&cEntityType %s not found", context.getString(0));
+            context.sendMessage("fun", "&cEntityType %s not found", context.getString(0));
+            return;
         }
         else
         {

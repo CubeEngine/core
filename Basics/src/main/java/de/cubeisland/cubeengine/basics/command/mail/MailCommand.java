@@ -2,17 +2,15 @@ package de.cubeisland.cubeengine.basics.command.mail;
 
 import de.cubeisland.cubeengine.basics.Basics;
 import de.cubeisland.cubeengine.basics.storage.BasicUser;
-import de.cubeisland.cubeengine.core.command.reflected.Alias;
 import de.cubeisland.cubeengine.core.command.CommandContext;
 import de.cubeisland.cubeengine.core.command.ContainerCommand;
+import de.cubeisland.cubeengine.core.command.reflected.Alias;
 import de.cubeisland.cubeengine.core.command.reflected.Command;
 import de.cubeisland.cubeengine.core.user.User;
 import gnu.trove.set.TLongSet;
 import gnu.trove.set.hash.TLongHashSet;
 
 import java.util.List;
-
-import static de.cubeisland.cubeengine.core.command.exception.IncorrectUsageException.paramNotFound;
 
 public class MailCommand extends ContainerCommand
 {
@@ -50,7 +48,8 @@ public class MailCommand extends ContainerCommand
             {
                 if (!context.getString(0).equalsIgnoreCase("CONSOLE"))
                 {
-                    paramNotFound(context, "basics", "&cUser %s not found!", context.getString(0));
+                    context.sendMessage("basics", "&cUser %s not found!", context.getString(0));
+                    return;
                 }
                 nameMailOf = "CONSOLE";
             }

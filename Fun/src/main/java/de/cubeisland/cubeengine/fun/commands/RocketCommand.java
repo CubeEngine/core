@@ -19,8 +19,6 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
-import static de.cubeisland.cubeengine.core.command.exception.IllegalParameterValue.illegalParameter;
-
 public class RocketCommand
 {
     private final Fun module;
@@ -68,16 +66,19 @@ public class RocketCommand
 
         if (user == null)
         {
-            illegalParameter(context, "core", "&cUser not found!");
+            context.sendMessage("core", "&cUser not found!");
+            return;
         }
 
         if (height > this.module.getConfig().maxRocketHeight)
         {
-            illegalParameter(context, "fun", "&cDo you never wanna see %s again?", user.getName());
+            context.sendMessage("fun", "&cDo you never wanna see %s again?", user.getName());
+            return;
         }
         else if (height < 0)
         {
-            illegalParameter(context, "fun", "&cThe height has to be greater than 0");
+            context.sendMessage("fun", "&cThe height has to be greater than 0");
+            return;
         }
 
         rocketListener.addInstance(user, height);

@@ -1,12 +1,12 @@
 package de.cubeisland.cubeengine.basics.command.moderation.kit;
 
 import de.cubeisland.cubeengine.basics.BasicsPerm;
-import de.cubeisland.cubeengine.core.command.reflected.Alias;
 import de.cubeisland.cubeengine.core.command.CommandContext;
 import de.cubeisland.cubeengine.core.command.CommandResult;
 import de.cubeisland.cubeengine.core.command.ContainerCommand;
 import de.cubeisland.cubeengine.core.command.parameterized.Flag;
 import de.cubeisland.cubeengine.core.command.parameterized.ParameterizedContext;
+import de.cubeisland.cubeengine.core.command.reflected.Alias;
 import de.cubeisland.cubeengine.core.command.reflected.Command;
 import de.cubeisland.cubeengine.core.module.Module;
 import de.cubeisland.cubeengine.core.user.User;
@@ -15,9 +15,6 @@ import org.bukkit.inventory.ItemStack;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import static de.cubeisland.cubeengine.core.command.exception.IncorrectUsageException.blockCommand;
-import static de.cubeisland.cubeengine.core.command.exception.IncorrectUsageException.paramNotFound;
 
 public class KitCommand extends ContainerCommand
 {
@@ -90,7 +87,8 @@ public class KitCommand extends ContainerCommand
         Kit kit = new Kit(context.getString(0), false, 0, -1, true, "", null, itemList);
         if (!FileUtil.isValidFileName(kit.getKitName()))
         {
-            blockCommand(context, "basics", "&6%s &cis is not a valid name! Do not use characters like *, | or ?", kit.getKitName());
+            context.sendMessage("basics", "&6%s &cis is not a valid name! Do not use characters like *, | or ?", kit.getKitName());
+            return;
         }
         KitConfiguration.saveKit(kit);
         context.sendMessage("basics", "&aCreated the &6%s &akit!", kit.getKitName());
@@ -113,7 +111,8 @@ public class KitCommand extends ContainerCommand
         }
         if (kit == null)
         {
-            paramNotFound(context, "basics", "&cKit &6%s &cnot found!", kitname);
+            context.sendMessage("basics", "&cKit &6%s &cnot found!", kitname);
+            return;
         }
         if (context.hasFlag("a"))
         {
@@ -165,7 +164,8 @@ public class KitCommand extends ContainerCommand
             }
             if (user == null)
             {
-                paramNotFound(context, "basics", "&cUser %s &cnot found!", context.getString(0));
+                context.sendMessage("basics", "&cUser %s &cnot found!", context.getString(0));
+                return;
             }
             if (kit.give(context.getSender(), user, force))
             {

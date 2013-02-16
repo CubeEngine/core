@@ -1,18 +1,16 @@
 package de.cubeisland.cubeengine.fun.commands;
 
-import de.cubeisland.cubeengine.core.command.CommandContext;
+import de.cubeisland.cubeengine.core.command.parameterized.Param;
 import de.cubeisland.cubeengine.core.command.parameterized.ParameterizedContext;
 import de.cubeisland.cubeengine.core.command.reflected.Command;
-import de.cubeisland.cubeengine.core.command.parameterized.Param;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.fun.Fun;
-import org.bukkit.World;
-
-import static de.cubeisland.cubeengine.core.command.exception.IllegalParameterValue.illegalParameter;
 import gnu.trove.map.hash.THashMap;
+import org.bukkit.World;
+import org.bukkit.command.CommandSender;
+
 import java.util.Iterator;
 import java.util.Map;
-import org.bukkit.command.CommandSender;
 
 public class DiscoCommand
 {
@@ -57,7 +55,8 @@ public class DiscoCommand
         final int delay = context.getParam("delay", 10);
         if (delay < 1 || delay > this.module.getConfig().maxDiscoDelay)
         {
-            illegalParameter(context, "fun", "&cThe delay has to be a number between 0 and %d", this.module.getConfig().maxDiscoDelay);
+            context.sendMessage("fun", "&cThe delay has to be a number between 0 and %d", this.module.getConfig().maxDiscoDelay);
+            return;
         }
 
         DiscoTask task = this.activeTasks.remove(world.getName());

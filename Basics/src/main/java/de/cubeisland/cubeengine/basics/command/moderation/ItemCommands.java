@@ -19,8 +19,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import static de.cubeisland.cubeengine.core.command.exception.IncorrectUsageException.invalidUsage;
-
 /**
  * item-related commands /itemdb /rename /headchange /unlimited /enchant /give
  * /item /more /repair /stack
@@ -61,7 +59,8 @@ public class ItemCommands
             }
             if (sender.getItemInHand().getType().equals(Material.AIR))
             {
-                invalidUsage(context, "basics", "&eYou hold nothing in your hands!");
+                context.sendMessage("basics", "&eYou hold nothing in your hands!");
+                return;
             }
             else
             {

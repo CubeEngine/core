@@ -425,10 +425,7 @@ public abstract class CubeCommand extends Command
         catch (IncorrectUsageException e)
         {
             sender.sendMessage(e.getMessage());
-            if (e.showUsage())
-            {
-                sender.sendMessage("core", "&eProper usage: &f%s", this.getUsage(sender));
-            }
+            sender.sendMessage("core", "&eProper usage: &f%s", this.getUsage(sender));
         }
         catch (PermissionDeniedException e)
         {

@@ -6,8 +6,6 @@ import de.cubeisland.cubeengine.core.command.reflected.Command;
 import de.cubeisland.cubeengine.core.command.sender.CommandSender;
 import de.cubeisland.cubeengine.core.user.User;
 
-import static de.cubeisland.cubeengine.core.command.exception.IllegalParameterValue.illegalParameter;
-
 public class FlyCommand
 {
     @Command(desc = "Lets you fly away", max = 1, params = @Param(names = {
@@ -42,7 +40,8 @@ public class FlyCommand
         }
         if (!target.isOnline())
         {
-            illegalParameter(context, "core", "User %s is not online!", target.getName());
+            context.sendMessage("core", "User %s is not online!", target.getName());
+            return;
         }
         // PermissionChecks
         if (sender != target && !FlyPerm.COMMAND_FLY_OTHER.isAuthorized(context.getSender()))

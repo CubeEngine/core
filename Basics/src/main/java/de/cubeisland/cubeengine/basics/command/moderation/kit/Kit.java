@@ -2,6 +2,7 @@ package de.cubeisland.cubeengine.basics.command.moderation.kit;
 
 import de.cubeisland.cubeengine.basics.Basics;
 import de.cubeisland.cubeengine.core.CubeEngine;
+import de.cubeisland.cubeengine.core.command.exception.PermissionDeniedException;
 import de.cubeisland.cubeengine.core.command.sender.CommandSender;
 import de.cubeisland.cubeengine.core.permission.PermDefault;
 import de.cubeisland.cubeengine.core.permission.Permission;
@@ -17,9 +18,6 @@ import org.bukkit.permissions.PermissionAttachmentInfo;
 import org.bukkit.plugin.Plugin;
 
 import java.util.*;
-
-import static de.cubeisland.cubeengine.core.command.exception.IncorrectUsageException.blockCommand;
-import static de.cubeisland.cubeengine.core.command.exception.PermissionDeniedException.denyAccess;
 
 /**
  * A Kit of Items a User can receive
@@ -86,12 +84,14 @@ public class Kit
         {
             if (!this.getPermission().isAuthorized(sender))
             {
-                denyAccess(sender, "basics", "You are not allowed to give this kit.");
+                sender.sendMessage("basics", "You are not allowed to give this kit.");
+                throw new PermissionDeniedException();
             }
         }
         if (basics.getKitGivenManager().reachedUsageLimit(user, this.name, this.limitUsagePerPlayer))
         {
-            denyAccess(sender, "basics", "&cKit-limit reached.");
+            sender.sendMessage("basics", "&cKit-limit reached.");
+            throw new PermissionDeniedException();
         }
         //TODO check how many times user got his kit
         if (limitUsageDelay != 0)
@@ -99,7 +99,8 @@ public class Kit
             Long lastUsage = user.getAttribute(basics, "kitUsage_" + this.name);
             if (lastUsage != null && System.currentTimeMillis() - lastUsage < limitUsageDelay)
             {
-                blockCommand(sender, "basisc", "&eThis kit not availiable at the moment. &aTry again later!");
+                sender.sendMessage("basisc", "&eThis kit not availiable at the moment. &aTry again later!");
+                throw new PermissionDeniedException();
             }
         }
         List<ItemStack> list = this.getItems();

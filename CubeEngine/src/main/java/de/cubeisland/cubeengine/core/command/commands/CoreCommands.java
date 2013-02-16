@@ -13,9 +13,6 @@ import de.cubeisland.cubeengine.core.user.User;
 import org.bukkit.plugin.PluginManager;
 
 import static de.cubeisland.cubeengine.core.command.commands.CommandPermissions.COMMAND_SETPASSWORD_OTHER;
-import static de.cubeisland.cubeengine.core.command.exception.IncorrectUsageException.blockCommand;
-import static de.cubeisland.cubeengine.core.command.exception.IncorrectUsageException.paramNotFound;
-import static de.cubeisland.cubeengine.core.command.exception.PermissionDeniedException.denyAccess;
 import static java.util.Arrays.asList;
 
 public class CoreCommands extends ContainerCommand
@@ -72,7 +69,7 @@ public class CoreCommands extends ContainerCommand
 
         if (target == sender && !sender.isAuthorized(COMMAND_SETPASSWORD_OTHER))
         {
-            denyAccess(context, "core", "&cYou are not allowed to change the password of an other user!");
+            context.sendMessage("core", "&cYou are not allowed to change the password of an other user!");
             return;
         }
         target.setPassword(context.getString(0));
@@ -105,14 +102,16 @@ public class CoreCommands extends ContainerCommand
             }
             else
             {
-                denyAccess(context, "core", "&cYou are not allowed to clear all passwords!");
+                context.sendMessage("core", "&cYou are not allowed to clear all passwords!");
+                return;
             }
         }
         else if (context.hasArg(0))
         {
             if (!CommandPermissions.COMMAND_CLEARPASSWORD_OTHER.isAuthorized(context.getSender()))
             {
-                denyAccess(context, "core", "&cYou are not allowed to clear the password of other users!");
+                context.sendMessage("core", "&cYou are not allowed to clear the password of other users!");
+                return;
             }
             User target = context.getUser(0);
             if (target != null)
@@ -122,7 +121,8 @@ public class CoreCommands extends ContainerCommand
             }
             else
             {
-                paramNotFound(context, "core", "&cUser &c not found!");
+                context.sendMessage("core", "&cUser &c not found!");
+                return;
             }
         }
         else if (sender instanceof User)
@@ -141,7 +141,8 @@ public class CoreCommands extends ContainerCommand
             User user = (User)sender;
             if (user.isLoggedIn())
             {
-                blockCommand(context, "core", "&aYou are already logged in!");
+                context.sendMessage("core", "&aYou are already logged in!");
+                return;
             }
             boolean isLoggedIn = user.login(context.getString(0));
             if (isLoggedIn)

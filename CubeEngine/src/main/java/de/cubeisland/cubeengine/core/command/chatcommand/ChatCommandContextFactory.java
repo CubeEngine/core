@@ -2,7 +2,7 @@ package de.cubeisland.cubeengine.core.command.chatcommand;
 
 import de.cubeisland.cubeengine.core.command.ArgumentReader;
 import de.cubeisland.cubeengine.core.command.CubeCommand;
-import de.cubeisland.cubeengine.core.command.exception.IllegalParameterValue;
+import de.cubeisland.cubeengine.core.command.exception.IncorrectUsageException;
 import de.cubeisland.cubeengine.core.command.exception.InvalidArgumentException;
 import de.cubeisland.cubeengine.core.command.parameterized.CommandFlag;
 import de.cubeisland.cubeengine.core.command.parameterized.CommandParameter;
@@ -55,7 +55,7 @@ public class ChatCommandContextFactory extends ParameterizedContextFactory
                     }
                     catch (InvalidArgumentException ex)
                     {
-                        IllegalParameterValue.illegalParameter(sender, "core", "", paramName);
+                        throw new IncorrectUsageException(); // TODO message.
                     }
                     continue;
                 }

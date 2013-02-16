@@ -28,10 +28,6 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
-import static de.cubeisland.cubeengine.core.command.exception.IllegalParameterValue.illegalParameter;
-import static de.cubeisland.cubeengine.core.command.exception.IncorrectUsageException.invalidUsage;
-import static de.cubeisland.cubeengine.core.command.exception.PermissionDeniedException.denyAccess;
-
 public class ThrowCommands
 {
     private final Map<String, ThrowTask> thrownItems;
@@ -87,19 +83,22 @@ public class ThrowCommands
 
         if (context.getArgCount() == 0)
         {
-            invalidUsage(context, "fun", "&cYou have to add the material you want to throw.");
+            context.sendMessage("fun", "&cYou have to add the material you want to throw.");
+            return;
         }
 
         int amount = context.getArg(1, int.class, -1);
         if ((amount > this.fun.getConfig().maxThrowNumber || amount < 1) && amount != -1)
         {
-            illegalParameter(context, "fun", "&cThe amount has to be a number from 1 to %d", this.fun.getConfig().maxThrowNumber);
+            context.sendMessage("fun", "&cThe amount has to be a number from 1 to %d", this.fun.getConfig().maxThrowNumber);
+            return;
         }
 
         int delay = context.getParam("delay", 3);
         if (delay > this.fun.getConfig().maxThrowDelay || delay < 0)
         {
-            illegalParameter(context, "fun", "&cThe delay has to be a number from 0 to %d", this.fun.getConfig().maxThrowDelay);
+            context.sendMessage("fun", "&cThe delay has to be a number from 0 to %d", this.fun.getConfig().maxThrowDelay);
+            return;
         }
 
         String object = context.getString(0);
@@ -114,12 +113,14 @@ public class ThrowCommands
         }
         if (!type.isSpawnable())
         {
-            illegalParameter(context, "fun", "&cThe Item %s is not supported!", object);
+            context.sendMessage("fun", "&cThe Item %s is not supported!", object);
+            return;
         }
 
         if (!user.hasPermission(BASE_THROW_PERM + type.name().toLowerCase(Locale.ENGLISH).replace("_", "-")))
         {
-            denyAccess(context, "fun", "&cYou are not allowed to throw this");
+            context.sendMessage("fun", "&cYou are not allowed to throw this");
+            return;
         }
 
         if ((BUGGED_ENTITES.contains(type) || Match.entity().isMonster(type)) && !context.hasFlag("u"))

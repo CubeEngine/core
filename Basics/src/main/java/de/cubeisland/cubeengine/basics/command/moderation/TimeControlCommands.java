@@ -17,9 +17,6 @@ import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static de.cubeisland.cubeengine.core.command.exception.IncorrectUsageException.invalidUsage;
-import static de.cubeisland.cubeengine.core.command.exception.PermissionDeniedException.denyAccess;
-
 /**
  * Commands changing time. /time /ptime
  */
@@ -323,7 +320,8 @@ public class TimeControlCommands
             time = Time.matchTime(timeString);
             if (time == null)
             {
-                invalidUsage(context, "basics", "&cInvalid time-format!");
+                context.sendMessage("basics", "&cInvalid time-format!");
+                return;
             }
         }
 
@@ -337,12 +335,14 @@ public class TimeControlCommands
             user = context.getUser(1);
             if (user == null)
             {
-                invalidUsage(context, "core", "&cUser %s not found!", context.getUser(0));
+                context.sendMessage("core", "&cUser %s not found!", context.getUser(0));
+                return;
             }
             if (!BasicsPerm.COMMAND_PTIME_OTHER.
                     isAuthorized(context.getSender()))
             {
-                denyAccess(context, "basics", "&cYou are not allowed to change the time of other players!");
+                context.sendMessage("basics", "&cYou are not allowed to change the time of other players!");
+                return;
             }
             other = true;
         }
