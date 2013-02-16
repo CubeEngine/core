@@ -1,42 +1,112 @@
 package de.cubeisland.cubeengine.basics.command.moderation.spawnmob;
 
 import de.cubeisland.cubeengine.basics.Basics;
+import de.cubeisland.cubeengine.core.command.CommandContext;
+import de.cubeisland.cubeengine.core.command.CommandResult;
+import de.cubeisland.cubeengine.core.command.chatcommand.ChatCommand;
+import de.cubeisland.cubeengine.core.command.chatcommand.ChatCommandContext;
+import de.cubeisland.cubeengine.core.command.chatcommand.ChatCommandContextFactory;
+import de.cubeisland.cubeengine.core.command.parameterized.CommandFlag;
+import de.cubeisland.cubeengine.core.command.parameterized.CommandParameter;
 import de.cubeisland.cubeengine.core.user.User;
-import gnu.trove.set.hash.TLongHashSet;
-import org.bukkit.event.Listener;
-import org.bukkit.event.player.AsyncPlayerChatEvent;
+import de.cubeisland.cubeengine.core.util.matcher.Match;
+import gnu.trove.map.hash.TLongObjectHashMap;
+import org.bukkit.entity.EntityType;
+import org.bukkit.util.Vector;
 
-public class AdvancedSpawnMob implements Listener
+public class AdvancedSpawnMob extends ChatCommand<Basics>
 {
-    private TLongHashSet userInMode = new TLongHashSet();
-    private Basics module;
-
-    private void enterMode(User user)
+    public AdvancedSpawnMob(Basics module)
     {
-        this.userInMode.add(user.key);
+        super(module, new ChatCommandContextFactory());
+        this.getContextFactory()
+                .addFlag(new CommandFlag("exit", "exit"))
+                .addFlag(new CommandFlag("spawn","spawnmob"))
+                .addParameter(new CommandParameter("mob", EntityType.class))
+                .addParameter(new CommandParameter("amount", Integer.class))
+                .addFlag(new CommandFlag("charge","charged"))
+                .addFlag(new CommandFlag("baby","baby"))
+                .addFlag(new CommandFlag("saddle","saddled"))
+                .addFlag(new CommandFlag("angry","angry"))
+                .addFlag(new CommandFlag("sitting","sitting"))
+
+        ;
+
     }
 
-    private void exitMode(User user)
-    {
-        this.userInMode.remove(user.key);
+    private TLongObjectHashMap<SpawningData> spawningDatas = new TLongObjectHashMap<SpawningData>();
+
+    @Override
+    public void addUser(User user) {
+        super.addUser(user);
+        SpawningData spawningData;
+        this.spawningDatas.put(user.key,spawningData= new SpawningData());
+        spawningData.location = user.getTargetBlock(null, 200).getLocation().add(new Vector(0, 1, 0));
     }
 
-    public void onPlayerChat(AsyncPlayerChatEvent event)
+    @Override
+    public void removeUser(User user) {
+        super.removeUser(user);
+        this.spawningDatas.remove(user.key);
+    }
+
+    @Override
+    public CommandResult run(CommandContext runContext) throws Exception
     {
-        User user = this.module.getUserManager().getExactUser(event.getPlayer());
-        if (this.userInMode.contains(user.key))
+        ChatCommandContext context = (ChatCommandContext)runContext;
+        User user = (User) context.getSender();
+        SpawningData spawningData = this.spawningDatas.get(user.key);
+        if (context.hasParam("mob"))
         {
-            if (event.getMessage().equalsIgnoreCase("exit"))
+            EntityType entityType = context.getParam("mob",EntityType.ARROW);
+            if (entityType.isAlive())
             {
-                this.exitMode(user);
-                return;
+                spawningData.entityType = entityType;
+            }
+            else
+            {
+                context.sendMessage("basics","&6%s &cis not a living Entity!", Match.entity().getNameFor(entityType));
             }
         }
-        for (long userKey : this.userInMode.toArray())
+        if (context.hasFlag("baby"))
         {
-            User ignoreChatUser = this.module.getUserManager().getUser(userKey);
-            event.getRecipients().remove(ignoreChatUser.getPlayer());
-            //TODO save chat for this player (up to ~50lines)
+            spawningData.add(EntityDataChanger.BABY, true);
         }
+        if (context.hasFlag("charged"))
+        {
+            spawningData.add(EntityDataChanger.POWERED, true);
+        }
+        if (context.hasFlag("saddle"))
+        {
+            spawningData.add(EntityDataChanger.PIGSADDLE, true);
+        }
+        if (context.hasFlag("angry"))
+        {
+            spawningData.add(EntityDataChanger.ANGRY, true);
+        }
+        if (context.hasFlag("sitting"))
+        {
+            spawningData.add(EntityDataChanger.SITTING, true);
+        }
+        if (context.hasParam("amount"))
+        {
+            Integer amount = context.getParam("amount",0);
+            if (amount == 0)
+            {
+                context.sendMessage("basics","&cInvalid amount!");
+                amount = 1;
+            }
+            spawningData.amount = amount;
+        }
+        if (context.hasFlag("spawn"))
+        {
+            spawningData.doSpawn();
+        }
+        if (context.hasFlag("exit"))
+        {
+            this.removeUser(user);
+            return null;
+        }
+        return null;
     }
 }

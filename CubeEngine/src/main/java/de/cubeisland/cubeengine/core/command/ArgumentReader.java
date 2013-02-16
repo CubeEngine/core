@@ -22,6 +22,7 @@ public abstract class ArgumentReader<T>
         registerReader(new StringReader());
         registerReader(new UserReader());
         registerReader(new WorldReader());
+        registerReader(new EntityTypeReader());
     }
 
     private final Class<T> type;

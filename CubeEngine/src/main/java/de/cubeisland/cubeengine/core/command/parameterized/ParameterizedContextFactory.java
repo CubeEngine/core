@@ -156,8 +156,6 @@ public class ParameterizedContextFactory implements ContextFactory
 
         if (commandLine.length > 0)
         {
-            String[] names;
-
             for (int offset = 0; offset < commandLine.length;)
             {
                 if (commandLine[offset].isEmpty())

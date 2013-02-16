@@ -478,7 +478,7 @@ public abstract class CubeCommand extends Command
      *
      * @return a module
      */
-    public final Module getModule()
+    public Module getModule()
     {
         return this.module;
     }

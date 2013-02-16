@@ -46,7 +46,7 @@ public class EntityDataChanger<E,T>
                         }
                     });
     public static  final EntityDataChanger<Creeper,Boolean> POWERED =
-            new EntityDataChanger<Creeper,Boolean>(Ageable.class,
+            new EntityDataChanger<Creeper,Boolean>(Creeper.class,
                     new EntityChanger<Creeper,Boolean>() {
                         @Override
                         public void applyEntity(Creeper entity, Boolean value) {

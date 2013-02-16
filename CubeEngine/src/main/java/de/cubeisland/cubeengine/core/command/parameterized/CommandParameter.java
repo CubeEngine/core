@@ -15,12 +15,37 @@ public class CommandParameter
     private final Class type;
     private final boolean required;
 
+    private static final String[] NO_ALIASES = new String[]{};
+
     public CommandParameter(String name, String[] aliases, Class type, boolean required)
     {
         this.name = name;
         this.aliases = aliases;
         this.type = type;
         this.required = required;
+    }
+
+    /**
+     * No aliases
+     *
+     * @param name
+     * @param type
+     * @param required
+     */
+    public CommandParameter(String name, Class type, boolean required)
+    {
+        this(name, NO_ALIASES,type,required);
+    }
+
+    /**
+     * No aliases and not required
+     *
+     * @param name
+     * @param type
+     */
+    public CommandParameter(String name, Class type)
+    {
+        this(name, NO_ALIASES,type,false);
     }
 
     public static void registerCompleter(ParamCompleter completer)

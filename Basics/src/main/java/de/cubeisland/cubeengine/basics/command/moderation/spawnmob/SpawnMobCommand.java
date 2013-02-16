@@ -29,10 +29,12 @@ import static de.cubeisland.cubeengine.core.util.Misc.arr;
 public class SpawnMobCommand
 {
     private BasicsConfiguration config;
+    private AdvancedSpawnMob advancedSpawnMob;
 
     public SpawnMobCommand(Basics basics)
     {
         config = basics.getConfiguration();
+        this.advancedSpawnMob = new AdvancedSpawnMob(basics);
     }
 
     @Command(desc = "Spawns the specified Mob", max = 3, usage = "<mob>[:data][,<ridingmob>[:data]] [amount] [player]")
@@ -53,6 +55,11 @@ public class SpawnMobCommand
         if (!context.hasArg(0))
         {
             context.sendMessage("basics", "&cYou need to define what mob to spawn!");
+            return;
+        }
+        if (context.getString(0).equalsIgnoreCase("advanced"))
+        {
+            advancedSpawnMob.addUser(sender); //TODO
             return;
         }
         Location loc;
@@ -91,7 +98,7 @@ public class SpawnMobCommand
             return;
         }
         loc.add(0.5, 0, 0.5);
-        Entity[] entitiesSpawned = this.spawnMobs(context, context.getString(0), loc, amount);
+        Entity[] entitiesSpawned = spawnMobs(context, context.getString(0), loc, amount);
         if (entitiesSpawned == null)
         {
             return;
@@ -114,16 +121,16 @@ public class SpawnMobCommand
         }
     }
 
-    private Entity[] spawnMobs(CommandContext context, String mobString, Location loc, int amount)
+    static Entity[] spawnMobs(CommandContext context, String mobString, Location loc, int amount)
     {
         String[] mobStrings = StringUtils.explode(",", mobString);
-        Entity[] mobs = this.spawnMob(context, mobStrings[0], loc, amount, null); // base mobs
+        Entity[] mobs = spawnMob(context, mobStrings[0], loc, amount, null); // base mobs
         Entity[] ridingMobs = mobs;
         try
         {
             for (int i = 1; i < mobStrings.length; ++i)
             {
-                ridingMobs = this.spawnMob(context, mobStrings[i], loc, amount, ridingMobs);
+                ridingMobs = spawnMob(context, mobStrings[i], loc, amount, ridingMobs);
             }
             return mobs;
         }
@@ -134,7 +141,7 @@ public class SpawnMobCommand
         }
     }
 
-    private Entity[] spawnMob(CommandContext context, String mobString, Location loc, int amount, Entity[] ridingOn)
+    static Entity[] spawnMob(CommandContext context, String mobString, Location loc, int amount, Entity[] ridingOn)
     {
         String entityName = mobString;
         EntityType entityType;
@@ -162,7 +169,7 @@ public class SpawnMobCommand
         for (int i = 0; i < amount; ++i)
         {
             spawnedMobs[i] = loc.getWorld().spawnEntity(loc, entityType);
-            if (!this.applyDataToMob(context, entityType, spawnedMobs[i], entityData))
+            if (!applyDataToMob(context, entityType, spawnedMobs[i], entityData))
                 return spawnedMobs;
             if (ridingOn != null)
             {
@@ -176,7 +183,7 @@ public class SpawnMobCommand
         return spawnedMobs;
     }
 
-    private boolean applyDataToMob(CommandContext context, EntityType entityType, Entity entity, List<String> datas)
+    static boolean applyDataToMob(CommandContext context, EntityType entityType, Entity entity, List<String> datas)
     {
         for (String data : datas)
         {
