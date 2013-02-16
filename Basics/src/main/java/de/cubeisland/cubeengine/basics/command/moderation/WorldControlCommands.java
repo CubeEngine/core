@@ -6,6 +6,7 @@ import de.cubeisland.cubeengine.basics.BasicsPerm;
 import de.cubeisland.cubeengine.core.command.parameterized.Flag;
 import de.cubeisland.cubeengine.core.command.parameterized.Param;
 import de.cubeisland.cubeengine.core.command.parameterized.ParameterizedContext;
+import de.cubeisland.cubeengine.core.command.parameterized.completer.WorldCompleter;
 import de.cubeisland.cubeengine.core.command.reflected.Command;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.util.StringUtils;
@@ -268,7 +269,7 @@ public class WorldControlCommands
         @Flag(longName = "lightning", name = "l"), // die with style
         @Flag(longName = "all", name = "a")
     // infinite radius
-    }, params = @Param(names = "in", type = World.class), usage = "[types...] [radius] [in world] [-l] [-all]")
+    }, params = @Param(names = "in", type = World.class, completer = WorldCompleter.class), usage = "[types...] [radius] [in world] [-l] [-all]")
     public void butcher(ParameterizedContext context)
     {
         User sender = null;

@@ -2,30 +2,29 @@ package de.cubeisland.cubeengine.core.command.parameterized.completer;
 
 import de.cubeisland.cubeengine.core.command.parameterized.Completer;
 import de.cubeisland.cubeengine.core.command.sender.CommandSender;
+import org.bukkit.Bukkit;
+import org.bukkit.Server;
+import org.bukkit.World;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import static de.cubeisland.cubeengine.core.util.StringUtils.startsWithIgnoreCase;
 
-public abstract class SimpleCompleter implements Completer
+public class WorldCompleter implements Completer
 {
-    private final String[] strings;
-
-    protected SimpleCompleter(String... strings)
-    {
-        this.strings = strings;
-    }
+    private final Server server = Bukkit.getServer();
 
     @Override
     public List<String> complete(CommandSender sender, String token)
     {
         List<String> offers = new ArrayList<String>();
-        for (String string : this.strings)
+        for (World world : this.server.getWorlds())
         {
-            if (startsWithIgnoreCase(string, token))
+            final String name = world.getName();
+            if (startsWithIgnoreCase(name, token))
             {
-                offers.add(string);
+                offers.add(name);
             }
         }
         return offers;

@@ -42,46 +42,69 @@ public abstract class ParameterizedCommand extends CubeCommand
     @Override
     public List<String> tabComplete(CommandSender sender, String label, String[] args)
     {
-        if (args.length > 0)
+        if (args.length == 0)
         {
-            String token = args[args.length - 1];
-            ParameterizedContextFactory contextFactory = this.getContextFactory();
-            if (args.length == 1)
+            return null;
+        }
+
+        List<String> result = null;
+        String token = args[args.length - 1];
+        final ParameterizedContextFactory contextFactory = this.getContextFactory();
+        if (args.length >= 2)
+        {
+            CommandParameter param = contextFactory.getParameter(args[args.length - 2]);
+            if (param != null)
             {
-                List<String> flagNames = new ArrayList<String>();
-                if (!token.isEmpty() && token.charAt(0) == '-')
+                Completer completer = param.getCompleter();
+                if (completer != null)
                 {
-                    token = token.substring(1).toLowerCase(Locale.ENGLISH);
-                    for (CommandFlag flag : contextFactory.getFlags())
-                    {
-                        final String name = flag.getLongName().toLowerCase(Locale.ENGLISH);
-                        if (startsWithIgnoreCase(name, token))
-                        {
-                            flagNames.add("-" + name);
-                        }
-                    }
-                    Collections.sort(flagNames, String.CASE_INSENSITIVE_ORDER);
-                    return flagNames;
-                }
-            }
-            else
-            {
-                CommandParameter param = contextFactory.getParameter(args[args.length - 2]);
-                if (param != null)
-                {
-                    Completer completer = param.getCompleter();
-                    if (completer != null)
-                    {
-                        final List<String> result = completer.complete(sender, token);
-                        if (result != null)
-                        {
-                            Collections.sort(result, String.CASE_INSENSITIVE_ORDER);
-                        }
-                        return result;
-                    }
+                    result = completer.complete(sender, token);
                 }
             }
         }
-        return null;
+
+        final boolean mayBeFlag = (token.length() > 0 && token.charAt(0) == '-');
+        if (result == null && !mayBeFlag)
+        {
+            List<String> params = new ArrayList<String>(0);
+            for (CommandParameter entry : contextFactory.getParameters())
+            {
+                if (startsWithIgnoreCase(entry.getName(), token))
+                {
+                    params.add(entry.getName());
+                }
+            }
+            if (!params.isEmpty())
+            {
+                result = params;
+            }
+        }
+        if (result == null && mayBeFlag)
+        {
+            List<String> flags = new ArrayList<String>();
+            if (!token.isEmpty() && token.charAt(0) == '-')
+            {
+                token = token.substring(1).toLowerCase(Locale.ENGLISH);
+                for (CommandFlag flag : contextFactory.getFlags())
+                {
+                    final String name = flag.getLongName().toLowerCase(Locale.ENGLISH);
+                    if (startsWithIgnoreCase(name, token))
+                    {
+                        flags.add("-" + name);
+                    }
+                }
+                if (!flags.isEmpty())
+                {
+                    result = flags;
+                }
+            }
+        }
+
+        if (result != null)
+        {
+            Collections.sort(result, String.CASE_INSENSITIVE_ORDER);
+        }
+
+        return result;
     }
 }
