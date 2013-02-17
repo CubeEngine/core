@@ -29,7 +29,7 @@ public class BasicContextFactory implements ContextFactory
         {
             throw new IncorrectUsageException("You've given too few arguments.");
         }
-        if (commandLine.length > this.getArgBounds().getMax())
+        if (this.getArgBounds().getMax() > ArgBounds.NO_MAX && commandLine.length > this.getArgBounds().getMax())
         {
             throw new IncorrectUsageException("You've given too many arguments.");
         }

@@ -37,7 +37,8 @@ public class InformationCommands
     }
 
     @Command(desc = "Displays the Biome-Type you are standing in.")
-    public void biome(CommandContext context) // TODO console support by specifying coordinates
+    public void biome(CommandContext context)
+    // TODO CE-310 console support by specifying coordinates
     {
         User user = null;
         if (context.getSender() instanceof User)
@@ -56,7 +57,7 @@ public class InformationCommands
         }
     }
 
-    @Command(desc = "Displays the seed of a world.", usage = "{world}")
+    @Command(desc = "Displays the seed of a world.", usage = "{world}", max = 1)
     public void seed(CommandContext context)
     {
         World world = null;
@@ -65,7 +66,7 @@ public class InformationCommands
             world = context.getArg(0, World.class, null);
             if (world == null)
             {
-                context.sendMessage("basics", "&cThe given world is was not found!");
+                context.sendMessage("basics", "&cWorld %s not found!",context.getString(0));
                 return;
             }
         }
@@ -77,7 +78,7 @@ public class InformationCommands
             }
             else
             {
-                context.sendMessage("basics", "&cNot world specified!");
+                context.sendMessage("basics", "&cNo world specified!");
                 return;
             }
         }
@@ -178,7 +179,7 @@ public class InformationCommands
             user = context.getUser(1);
             if (user == null)
             {
-                context.sendMessage("basics", "&cThe given user was not found!");
+                context.sendMessage("basics", "&cUser %s not found!",context.getString(1));
                 return;
             }
         }
@@ -188,12 +189,7 @@ public class InformationCommands
         }
         else
         {
-            context.sendMessage("basics", "&eI'am right &cbehind &eyou!");
-            return;
-        }
-        if (user == null)
-        {
-            context.sendMessage("basics", "User not found!");
+            context.sendMessage("basics", "&eI am right &cbehind &eyou!");
             return;
         }
         int radius = this.basics.getConfiguration().nearDefaultRadius;

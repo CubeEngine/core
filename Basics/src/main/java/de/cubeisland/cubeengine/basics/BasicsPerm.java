@@ -58,6 +58,7 @@ public enum BasicsPerm implements Permission
     COMMAND_BUTCHER_FLAG_OTHER,
     COMMAND_BUTCHER_FLAG_NPC,
     COMMAND_WALKSPEED_OTHER,
+    AFK_PREVENT_AUTOUNAFK, // prevents a player from showing as back as long he wants to stay "afk"
     WALKSPEED_ISALLOWED,
     SIGN_COLORED,
     KICK_RECEIVEMESSAGE;

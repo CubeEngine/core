@@ -67,7 +67,7 @@ public class GeneralsListener implements Listener
         int amount = basics.getMailManager().countMail(user);
         if (amount > 0)
         {
-            user.sendMessage("basics", "You have %d new mails!\nUse /mail read to display them.", amount);
+            user.sendMessage("basics", "&aYou have &6%d &anew mails!\n&eUse &6/mail &eread to display them.", amount);
         }
         BasicUser bUser = this.basics.getBasicUserManager().getBasicUser(user);
         if (bUser.godMode == true)

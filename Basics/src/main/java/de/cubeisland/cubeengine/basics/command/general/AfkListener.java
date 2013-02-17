@@ -1,17 +1,14 @@
 package de.cubeisland.cubeengine.basics.command.general;
 
 import de.cubeisland.cubeengine.basics.Basics;
+import de.cubeisland.cubeengine.basics.BasicsPerm;
 import de.cubeisland.cubeengine.core.user.User;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.event.player.AsyncPlayerChatEvent;
-import org.bukkit.event.player.PlayerChatTabCompleteEvent;
-import org.bukkit.event.player.PlayerCommandPreprocessEvent;
-import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.event.player.PlayerMoveEvent;
+import org.bukkit.event.player.*;
 
 public class AfkListener implements Listener, Runnable
 {
@@ -72,6 +69,10 @@ public class AfkListener implements Listener, Runnable
     private void setLastAction(Player player)
     {
         User user = this.basics.getUserManager().getExactUser(player);
+        if (BasicsPerm.AFK_PREVENT_AUTOUNAFK.isAuthorized(player))
+        {
+            return;
+        }
         user.setAttribute(this.basics, "lastAction", System.currentTimeMillis());
     }
 

@@ -271,7 +271,7 @@ public class WorldControlCommands
         @Flag(longName = "lightning", name = "l"), // die with style
         @Flag(longName = "all", name = "a")
     // infinite radius
-    }, params = @Param(names = "in", type = World.class, completer = WorldCompleter.class), usage = "[types...] [radius] [in world] [-l] [-all]")
+    }, params = @Param(names = "in", type = World.class, completer = WorldCompleter.class), usage = "[types...] [radius] [in world] [-l] [-all]", max = 2)
     public void butcher(ParameterizedContext context)
     {
         User sender = null;

@@ -7,10 +7,14 @@ import de.cubeisland.cubeengine.core.command.reflected.Command;
 import de.cubeisland.cubeengine.core.command.sender.ConsoleCommandSender;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.user.UserManager;
+import de.cubeisland.cubeengine.core.util.StringUtils;
 import de.cubeisland.cubeengine.core.util.time.Duration;
 import org.bukkit.command.CommandSender;
 
 import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
 
 import static de.cubeisland.cubeengine.core.command.ArgBounds.NO_MAX;
 import static de.cubeisland.cubeengine.core.i18n.I18n._;
@@ -20,66 +24,83 @@ public class ChatCommands
 {
     private UserManager um;
     private String lastWhisperOfConsole = null;
-    private Basics basics;
+    private Basics module;
 
     public ChatCommands(Basics basics)
     {
-        this.basics = basics;
+        this.module = basics;
         this.um = basics.getUserManager();
     }
 
     @Command(desc = "Ignores all messages from players", min = 1, max = 1, usage = "<player>")
+    // other usages: <player>[,<player>]...
     public void ignore(CommandContext context)
     {
         if (context.getSender() instanceof User)
         {
             User sender = (User)context.getSender();
-            User user = context.getUser(0);
-            if (user == null)
+            String[] userNames = StringUtils.explode(",",context.getString(0));
+            List<String> added = new ArrayList<String>();
+            for (String name : userNames)
             {
-                context.sendMessage("basics","&cUser %s not found!",context.getString(0));
-                return;
+                User user = this.module.getUserManager().findUser(name);
+                if (user == null)
+                {
+                    context.sendMessage("basics","&cUser %s not found!",name);
+                }
+                else if (!this.module.getIgnoreListManager().addIgnore(sender, user))
+                {
+                    context.sendMessage("basics", "&2%s&c is already on your ignore list!", user.getName());
+                }
+                else
+                {
+                    added.add(name);
+                }
             }
-            if (this.basics.getIgnoreListManager().addIgnore(sender, user))
-            {
-                context.sendMessage("basics", "&aSuccesfully added &2%s &ato your ignore-list", user.getName());
-                return;
-            }
-            context.sendMessage("basics", "&cYou already ignored &2%s&c!", user.getName());
+            context.sendMessage("basics", "&aYou added &2%s&a to your ignore list!", StringUtils.implode("&f, &2",added));
             return;
         }
-        context.sendMessage("basics", "&cThis command is not availiable for console!");
+        int rand1 = new Random().nextInt(6)+1;
+        int rand2 = new Random().nextInt(6-rand1+1)+1;
+        context.sendMessage("basics", "&eIgnore (&f8+&e): %d + %d = %d -> &cfailed",rand1,rand2,rand1+rand2);
     }
 
-    @Command(desc = "Ignores all messages from players", min = 1, max = 1, usage = "<player>")
+    @Command(desc = "Stops ignoring all messages from a player", min = 1, max = 1, usage = "<player>")
+    // other usages: <player>[,<player>]...
     public void unignore(CommandContext context)
     {
         if (context.getSender() instanceof User)
         {
             User sender = (User)context.getSender();
-            User user = context.getUser(0);
-            if (user == null)
+            String[] userNames = StringUtils.explode(",",context.getString(0));
+            List<String> added = new ArrayList<String>();
+            for (String name : userNames)
             {
-                context.sendMessage("basics","&cUser %s not found!",context.getString(0));
-                return;
+                User user = this.module.getUserManager().findUser(name);
+                if (user == null)
+                {
+                    context.sendMessage("basics","&cUser %s not found!",name);
+                }
+                else if (!this.module.getIgnoreListManager().removeIgnore(sender, user))
+                {
+                    context.sendMessage("basics", "&cYou haven't ignored &2%s&c!", user.getName());
+                }
+                else
+                {
+                    added.add(name);
+                }
             }
-            if (this.basics.getIgnoreListManager().removeIgnore(sender, user))
-            {
-                context.sendMessage("basics", "&aSuccesfully removed &2%s &afrom your ignore-list", user.getName());
-                return;
-            }
-            context.sendMessage("basics", "&cYou haven't ignored &2%s&c!", user.getName());
+            context.sendMessage("basics", "&aYou removed &2%s&a from your ignore list!", StringUtils.implode("&f, &2",added));
             return;
         }
-        context.sendMessage("basics", "&cThis command is not availiable for console!");
-
+        context.sendMessage("basics", "&cCongratulations! You are now looking at this text!");
     }
 
     @Command(desc = "Allows you to emote", min = 1, max = NO_MAX, usage = "<message>")
     public void me(CommandContext context)
     {
         String message = context.getStrings(0);
-        this.um.broadcastStatus(message, context.getSender().getName());
+        this.um.broadcastStatus(message, context.getSender().getName()); //TODO rename CONSOLE when consolecommandsender
     }
 
     @Command(desc = "Sends a private message to someone", names = {
@@ -89,7 +110,7 @@ public class ChatCommands
     {
         if (!this.sendWhisperTo(context.getString(0), context.getStrings(1), context))
         {
-            context.sendMessage("basics", "&eCould not find the player &2%s &eto send the message. Is he offline?", context.getString(0));
+            context.sendMessage("basics", "&cCould not find the player &2%s &cto send the message to. &eIs he offline?", context.getString(0));
         }
     }
 
@@ -101,7 +122,7 @@ public class ChatCommands
         String lastWhisper;
         if (context.getSender() instanceof User)
         {
-            lastWhisper = ((User)context.getSender()).getAttribute(basics, "lastWhisper");
+            lastWhisper = ((User)context.getSender()).getAttribute(module, "lastWhisper");
         }
         else
         {
@@ -109,12 +130,12 @@ public class ChatCommands
         }
         if (lastWhisper == null)
         {
-            context.sendMessage("basics", "&eNobody send you a message you could reply to!");
+            context.sendMessage("basics", "&eNo one has send you a message that you could reply to!");
             return;
         }
         if (!this.sendWhisperTo(lastWhisper, context.getStrings(0), context))
         {
-            context.sendMessage("basics", "&eCould not find the player &2%s &eto reply too. Is he offline?", lastWhisper);
+            context.sendMessage("basics", "&cCould not find the player &2%s&c to reply to. &eIs he offline?", lastWhisper);
         }
     }
 
@@ -130,11 +151,16 @@ public class ChatCommands
                     context.sendMessage("basics", "&eTalking to yourself?");
                     return true;
                 }
-                CommandSender console = context.getSender().getServer().getConsoleSender();
-                console.sendMessage(_("basics", "&e%s -> You: &f%s", arr(context.getSender().getName(), message)));
-                context.sendMessage("basics", "&eYou &6-> &2%s&e: &f%s", console.getName(), message);
-                this.lastWhisperOfConsole = user.getName();
-                user.setAttribute(basics, "lastWhisper", "#console");
+                if (context.getSender() instanceof User)
+                {
+                    CommandSender console = context.getSender().getServer().getConsoleSender();
+                    console.sendMessage(_("basics", "&e%s -> You: &f%s", arr(context.getSender().getName(), message)));
+                    context.sendMessage("basics", "&eYou &6-> &2%s&e: &f%s", console.getName(), message);
+                    this.lastWhisperOfConsole = context.getSender().getName();
+                    ((User)context.getSender()).setAttribute(module, "lastWhisper", "#console");
+                    return true;
+                }
+                context.sendMessage("basics","Who are you!?");
                 return true;
             }
             context.sendMessage("core", "&cUser %s not found!", whisperTarget);
@@ -150,25 +176,25 @@ public class ChatCommands
             return true;
         }
         user.sendMessage("basics", "&2%s &6-> &eYou: &f%s", context.getSender().getName(), message);
-        Boolean afk = user.getAttribute(basics, "afk");
+        Boolean afk = user.getAttribute(module, "afk");
         if (afk != null && afk)
         {
             context.sendMessage("basics", "&2%s &7is afk!", user.getName());
         }
-        context.sendMessage(_("basics", "&eYou &6-> %&2s&e: &f%s", arr(user.getName(), message)));
+        context.sendMessage(_("basics", "&eYou &6-> &2%s&e: &f%s", arr(user.getName(), message)));
         if (context.getSender() instanceof User)
         {
-            ((User)context.getSender()).setAttribute(basics, "lastWhisper", user.getName());
+            ((User)context.getSender()).setAttribute(module, "lastWhisper", user.getName());
         }
         else
         {
             this.lastWhisperOfConsole = user.getName();
         }
-        user.setAttribute(basics, "lastWhisper", context.getSender().getName());
-        return false;
+        user.setAttribute(module, "lastWhisper", context.getSender().getName());
+        return true;
     }
 
-    @Command(desc = "Broadcasts a message", usage = "<message>")
+    @Command(desc = "Broadcasts a message", usage = "<message>", min = 1, max = NO_MAX)
     public void broadcast(CommandContext context)
     {
         StringBuilder sb = new StringBuilder();
@@ -189,12 +215,12 @@ public class ChatCommands
             context.sendMessage("basics", "&cUser %s not found!", context.getString(0));
             return;
         }
-        BasicUser bUser = this.basics.getBasicUserManager().getBasicUser(user);
+        BasicUser bUser = this.module.getBasicUserManager().getBasicUser(user);
         if (bUser.muted != null && bUser.muted.getTime() < System.currentTimeMillis())
         {
             context.sendMessage("basics", "&2%s &ewas already muted!", user.getName());
         }
-        Duration dura = basics.getConfiguration().defaultMuteTime;
+        Duration dura = module.getConfiguration().defaultMuteTime;
         if (context.hasArg(1))
         {
             try
@@ -208,7 +234,7 @@ public class ChatCommands
             }
         }
         bUser.muted = new Timestamp(System.currentTimeMillis() + (dura.toMillis() == -1 ? 500 * 24 * 3600000 : dura.toMillis()));
-        this.basics.getBasicUserManager().update(bUser);
+        this.module.getBasicUserManager().update(bUser);
         String timeString = dura.toMillis() == -1 ? "ever" : dura.format("%www %ddd %hhh %mmm %sss");
         user.sendMessage("basics", "&cYou are now muted for &6%s&c!", timeString);
         context.sendMessage("basics", "&eYou muted &2%s &eglobally for &6%s&c!", user.getName(), timeString);
@@ -222,15 +248,15 @@ public class ChatCommands
         {
             context.sendMessage("basics", "&cUser %s not found!", context.getString(0));
         }
-        BasicUser bUser = this.basics.getBasicUserManager().getBasicUser(user);
+        BasicUser bUser = this.module.getBasicUserManager().getBasicUser(user);
         bUser.muted = null;
-        this.basics.getBasicUserManager().update(bUser);
+        this.module.getBasicUserManager().update(bUser);
         context.sendMessage("basics", "&2%s &ais no longer muted!", user.getName());
     }
 
-    @Command(desc = "Shows a random number from 0 to 100", max = 1)
+    @Command(names = {"rand","roll"},desc = "Shows a random number from 0 to 100")
     public void rand(CommandContext context)
     {
-        this.um.broadcastStatus("basics", "rolled a &6%d&f!", context.getSender().getName(), (int)(Math.random() * 100));
+        this.um.broadcastStatus("basics", "rolled a &6%d&f!", context.getSender().getName(), new Random().nextInt(100));
     }
 }

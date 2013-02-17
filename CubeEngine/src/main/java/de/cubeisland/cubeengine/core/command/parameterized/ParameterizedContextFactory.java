@@ -231,7 +231,7 @@ public class ParameterizedContextFactory implements ContextFactory
         {
             throw new IncorrectUsageException("You've given too few arguments.");
         }
-        if (args.size() > this.getArgBounds().getMax())
+        if (this.getArgBounds().getMax() > ArgBounds.NO_MAX && args.size() > this.getArgBounds().getMax())
         {
             throw new IncorrectUsageException("You've given too many arguments.");
         }
