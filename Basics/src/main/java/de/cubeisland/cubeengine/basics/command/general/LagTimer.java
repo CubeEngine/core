@@ -6,22 +6,13 @@ import java.util.LinkedList;
 
 public class LagTimer implements Runnable
 {
-    private static LagTimer instance = null;
-
     private long lastTick = System.currentTimeMillis();
     private final LinkedList<Float> tpsHistory = new LinkedList<Float>();
+    private final Basics module;
 
-    private LagTimer()
-    {}
-
-    public static LagTimer getTimer()
-    {
-        if (instance == null)
-        {
-            instance = new LagTimer();
-            CubeEngine.getTaskManager().scheduleSyncRepeatingTask(Basics.getInstance(), instance, 0, 20); //start timer
-        }
-        return instance;
+    public LagTimer(Basics module) {
+        this.module = module;
+        module.getTaskManger().scheduleSyncRepeatingTask(module, this, 0, 20); //start timer
     }
 
     @Override

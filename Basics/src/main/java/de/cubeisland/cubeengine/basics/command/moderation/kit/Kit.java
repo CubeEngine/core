@@ -24,7 +24,6 @@ import java.util.*;
  */
 public class Kit
 {
-    private static Basics basics = Basics.getInstance();
     private String name;
     private List<KitItem> items;
     private boolean giveKitOnFirstJoin;
@@ -33,10 +32,11 @@ public class Kit
     private Permission permission;
     private String customMessage;
     private List<String> commands;
+    private Basics module;
 
-    public Kit(final String name, boolean giveKitOnFirstJoin, int limitUsagePerPlayer, long limitUsageDelay, boolean usePermission, String customMessage, List<String> commands, List<KitItem> items)
+    public Kit(Basics module, final String name, boolean giveKitOnFirstJoin, int limitUsagePerPlayer, long limitUsageDelay, boolean usePermission, String customMessage, List<String> commands, List<KitItem> items)
     {
-
+        this.module = module;
         this.name = name;
         this.items = items;
         this.commands = commands;
@@ -88,7 +88,7 @@ public class Kit
                 throw new PermissionDeniedException();
             }
         }
-        if (basics.getKitGivenManager().reachedUsageLimit(user, this.name, this.limitUsagePerPlayer))
+        if (module.getKitGivenManager().reachedUsageLimit(user, this.name, this.limitUsagePerPlayer))
         {
             sender.sendMessage("basics", "&cKit-limit reached.");
             throw new PermissionDeniedException();
@@ -96,7 +96,7 @@ public class Kit
         //TODO check how many times user got his kit
         if (limitUsageDelay != 0)
         {
-            Long lastUsage = user.getAttribute(basics, "kitUsage_" + this.name);
+            Long lastUsage = user.getAttribute(module, "kitUsage_" + this.name);
             if (lastUsage != null && System.currentTimeMillis() - lastUsage < limitUsageDelay)
             {
                 sender.sendMessage("basisc", "&eThis kit not availiable at the moment. &aTry again later!");
@@ -109,7 +109,7 @@ public class Kit
             this.executeCommands(user);
             if (limitUsageDelay != 0)
             {
-                user.setAttribute(basics, "kitUsage_" + this.name, System.currentTimeMillis());
+                user.setAttribute(module, "kitUsage_" + this.name, System.currentTimeMillis());
             }
             return true;
         }
@@ -293,7 +293,7 @@ public class Kit
         @Override
         public boolean isOp()
         {
-            return true; // TODO I'd set this to false
+            return false;
         }
 
         @Override

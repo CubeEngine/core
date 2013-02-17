@@ -546,7 +546,6 @@ public class UserManager extends SingleKeyStorage<Long, User> implements Cleanab
 
     public void broadcastStatus(String message, String username)
     {
-        message = "* &2" + username + " &f" + message;
         message = ChatFormat.parseFormats(message);
         for (Player player : this.server.getOnlinePlayers())
         {

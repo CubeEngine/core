@@ -1,5 +1,6 @@
 package de.cubeisland.cubeengine.basics.command.moderation.kit;
 
+import de.cubeisland.cubeengine.basics.Basics;
 import de.cubeisland.cubeengine.basics.BasicsPerm;
 import de.cubeisland.cubeengine.core.command.CommandContext;
 import de.cubeisland.cubeengine.core.command.CommandResult;
@@ -8,7 +9,6 @@ import de.cubeisland.cubeengine.core.command.parameterized.Flag;
 import de.cubeisland.cubeengine.core.command.parameterized.ParameterizedContext;
 import de.cubeisland.cubeengine.core.command.reflected.Alias;
 import de.cubeisland.cubeengine.core.command.reflected.Command;
-import de.cubeisland.cubeengine.core.module.Module;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.util.FileUtil;
 import org.bukkit.inventory.ItemStack;
@@ -18,18 +18,19 @@ import java.util.List;
 
 public class KitCommand extends ContainerCommand
 {
-    public KitCommand(Module module)
+    public KitCommand(Basics module)
     {
         super(module, "kit", "Manages item-kits");
+        this.module = module;
     }
+    private Basics module;
 
-    // TODO this is horribly broken
     @Override
     public CommandResult run(CommandContext context) throws Exception
     {
         if (context.hasArg(0))
         {
-            this.give((ParameterizedContext)context); //TODO as flags are not declared this cannot work
+            this.give((ParameterizedContext)context);//TODO this works but not used as intended!?
             return null;
         }
         else
@@ -38,7 +39,9 @@ public class KitCommand extends ContainerCommand
         }
     }
 
-    @Command(desc = "Creates a new kit with the items in your inventory.", flags = @Flag(longName = "toolbar", name = "t"), usage = "<kitName> [-toolbar]")
+    @Command(desc = "Creates a new kit with the items in your inventory.",
+            flags = @Flag(longName = "toolbar", name = "t"),
+            usage = "<kitName> [-toolbar]", min = 1)
     public void create(ParameterizedContext context)
     {
         User sender = null;
@@ -54,7 +57,6 @@ public class KitCommand extends ContainerCommand
         List<KitItem> itemList = new ArrayList<KitItem>();
         if (context.hasFlag("t"))
         {
-
             ItemStack[] items = sender.getInventory().getContents();
             for (int i = 0; i <= 8; ++i)
             {
@@ -84,13 +86,17 @@ public class KitCommand extends ContainerCommand
                             item.getItemMeta().getDisplayName()));
             }
         }
-        Kit kit = new Kit(context.getString(0), false, 0, -1, true, "", null, itemList);
+        Kit kit = new Kit(this.module,context.getString(0), false, 0, -1, true, "", new ArrayList<String>(), itemList);
         if (!FileUtil.isValidFileName(kit.getKitName()))
         {
             context.sendMessage("basics", "&6%s &cis is not a valid name! Do not use characters like *, | or ?", kit.getKitName());
             return;
         }
-        KitConfiguration.saveKit(kit);
+        module.getKitManager().saveKit(kit);
+        if (kit.getPermission() != null)
+        {
+            module.getCore().getPermissionManager().registerPermission(module,kit.getPermission());
+        }
         context.sendMessage("basics", "&aCreated the &6%s &akit!", kit.getKitName());
     }
 
@@ -103,7 +109,7 @@ public class KitCommand extends ContainerCommand
     {
         String kitname = context.getString(0);
         User user = null;
-        Kit kit = KitConfiguration.getKit(kitname);
+        Kit kit = module.getKitManager().getKit(kitname);
         boolean force = false;
         if (context.hasFlag("f") && BasicsPerm.COMMAND_KIT_GIVE_FORCE.isAuthorized(context.getSender()))
         {
@@ -118,7 +124,7 @@ public class KitCommand extends ContainerCommand
         {
             boolean gaveKit = false;
             int kitNotreceived = 0;
-            for (User receiver : this.getModule().getUserManager().getOnlineUsers())
+            for (User receiver : module.getUserManager().getOnlineUsers())
             {
                 try
                 {

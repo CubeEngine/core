@@ -342,7 +342,7 @@ public class InformationCommands
         Duration dura = new Duration(new Date(ManagementFactory.getRuntimeMXBean().getStartTime()).getTime(), System.currentTimeMillis());
         context.sendMessage("basics", "&6Uptime: &a%s", dura.format("%www %ddd %hhh %mmm %sss"));
         //TPS:
-        float tps = LagTimer.getTimer().getAverageTPS();
+        float tps = this.basics.getLagTimer().getAverageTPS();
         String color = tps == 20 ? "&a" : tps > 17 ? "&e" : tps > 10 ? "&c" : "&4";
         context.sendMessage("basics", "&6Current TPS: %s%.1f", color, tps);
         //Memory

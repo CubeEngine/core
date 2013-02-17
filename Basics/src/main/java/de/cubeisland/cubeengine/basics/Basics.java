@@ -1,36 +1,14 @@
 package de.cubeisland.cubeengine.basics;
 
-import de.cubeisland.cubeengine.basics.storage.BasicUserManager;
-import de.cubeisland.cubeengine.basics.command.general.AfkListener;
-import de.cubeisland.cubeengine.basics.command.general.ChatCommands;
-import de.cubeisland.cubeengine.basics.command.general.ColoredSigns;
-import de.cubeisland.cubeengine.basics.command.general.GeneralsListener;
-import de.cubeisland.cubeengine.basics.command.general.InformationCommands;
-import de.cubeisland.cubeengine.basics.command.general.LagTimer;
-import de.cubeisland.cubeengine.basics.command.general.ListCommand;
-import de.cubeisland.cubeengine.basics.command.general.MuteListener;
-import de.cubeisland.cubeengine.basics.command.general.PlayerCommands;
+import de.cubeisland.cubeengine.basics.command.general.*;
 import de.cubeisland.cubeengine.basics.command.mail.MailCommand;
 import de.cubeisland.cubeengine.basics.command.mail.MailManager;
-import de.cubeisland.cubeengine.basics.command.moderation.InventoryCommands;
-import de.cubeisland.cubeengine.basics.command.moderation.ItemCommands;
-import de.cubeisland.cubeengine.basics.command.moderation.KickBanCommands;
-import de.cubeisland.cubeengine.basics.command.moderation.PowerToolCommand;
+import de.cubeisland.cubeengine.basics.command.moderation.*;
+import de.cubeisland.cubeengine.basics.command.moderation.kit.*;
 import de.cubeisland.cubeengine.basics.command.moderation.spawnmob.SpawnMobCommand;
-import de.cubeisland.cubeengine.basics.command.moderation.TimeControlCommands;
-import de.cubeisland.cubeengine.basics.command.moderation.WorldControlCommands;
-import de.cubeisland.cubeengine.basics.command.moderation.kit.KitCommand;
-import de.cubeisland.cubeengine.basics.command.moderation.kit.KitConfiguration;
-import de.cubeisland.cubeengine.basics.command.moderation.kit.KitItem;
-import de.cubeisland.cubeengine.basics.command.moderation.kit.KitItemConverter;
-import de.cubeisland.cubeengine.basics.command.moderation.kit.KitsGivenManager;
+import de.cubeisland.cubeengine.basics.command.teleport.*;
+import de.cubeisland.cubeengine.basics.storage.BasicUserManager;
 import de.cubeisland.cubeengine.basics.storage.IgnoreListManager;
-import de.cubeisland.cubeengine.basics.command.teleport.MovementCommands;
-import de.cubeisland.cubeengine.basics.command.teleport.SpawnCommands;
-import de.cubeisland.cubeengine.basics.command.teleport.TeleportCommands;
-import de.cubeisland.cubeengine.basics.command.teleport.TeleportListener;
-import de.cubeisland.cubeengine.basics.command.teleport.TeleportRequestCommands;
-import de.cubeisland.cubeengine.basics.command.teleport.TpWorldPermissions;
 import de.cubeisland.cubeengine.core.command.reflected.ReflectedCommand;
 import de.cubeisland.cubeengine.core.module.Module;
 import de.cubeisland.cubeengine.core.util.StringUtils;
@@ -45,18 +23,13 @@ public class Basics extends Module
     private MailManager mailManager;
     private KitsGivenManager kitGivenManager;
     private IgnoreListManager ignoreListManager;
-    private static Basics instance;
     public int afkListenerTask;
-
-    public static Basics getInstance()
-    {
-        return instance;
-    }
+    private KitManager kitManager;
+    private LagTimer lagTimer;
 
     @Override
     public void onEnable()
     {
-        instance = this;
         this.basicUM = new BasicUserManager(this.getDatabase());
         this.mailManager = new MailManager(this.getDatabase(), this.basicUM);
         this.ignoreListManager = new IgnoreListManager(this.getDatabase());
@@ -67,7 +40,7 @@ public class Basics extends Module
         //General:
         this.registerCommands(new ChatCommands(this), ReflectedCommand.class);
         this.registerCommands(new InformationCommands(this), ReflectedCommand.class);
-        this.registerCommands(new ListCommand(), ReflectedCommand.class);
+        this.registerCommands(new ListCommand(this), ReflectedCommand.class);
         this.registerCommand(new MailCommand(this));
         this.registerCommands(new PlayerCommands(this), ReflectedCommand.class);
         this.registerListener(new GeneralsListener(this));
@@ -86,7 +59,9 @@ public class Basics extends Module
         this.registerCommand(new KitCommand(this));
 
         Convert.registerConverter(KitItem.class, new KitItemConverter());
-        KitConfiguration.loadKits();
+
+        this.kitManager = new KitManager(this);
+        kitManager.loadKits();
         this.kitGivenManager = new KitsGivenManager(this.getDatabase());
 
         //Teleport:
@@ -101,8 +76,8 @@ public class Basics extends Module
         final long afkCheck;
         try
         {
-            autoAfk = StringUtils.convertTimeToMillis(instance.config.autoAfk);
-            afkCheck = StringUtils.convertTimeToMillis(instance.config.afkCheck);
+            autoAfk = StringUtils.convertTimeToMillis(Basics.this.config.autoAfk);
+            afkCheck = StringUtils.convertTimeToMillis(Basics.this.config.afkCheck);
             if (afkCheck < 0)
             {
                 throw new IllegalStateException("afk-check-time has to be greater than 0!");
@@ -118,9 +93,7 @@ public class Basics extends Module
         {
             this.afkListenerTask = this.getTaskManger().scheduleSyncRepeatingTask(this, afkListener, 20, afkCheck / 50); // this is in ticks so /50
         }
-        LagTimer.getTimer(); // init timer
-
-        //TODO register permissions of kits in config
+        this.lagTimer = new LagTimer(this);
 
         /**
          * * //commands TODO
@@ -163,5 +136,13 @@ public class Basics extends Module
     public IgnoreListManager getIgnoreListManager()
     {
         return ignoreListManager;
+    }
+
+    public KitManager getKitManager() {
+        return kitManager;
+    }
+
+    public LagTimer getLagTimer() {
+        return lagTimer;
     }
 }

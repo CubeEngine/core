@@ -11,6 +11,12 @@ import java.util.List;
 
 public class ListCommand
 {
+    private final Basics module;
+
+    public ListCommand(Basics module) {
+        this.module = module;
+    }
+
     @Command(desc = "Displays all the online players.")
     public void list(CommandContext context)
     {
@@ -20,12 +26,12 @@ public class ListCommand
             context.sendMessage("basics", "&cThere are no players online now!");
             return;
         }
-        DisplayOnlinePlayerListEvent event = new DisplayOnlinePlayerListEvent(Basics.getInstance(), context.getSender(), players);
+        DisplayOnlinePlayerListEvent event = new DisplayOnlinePlayerListEvent(module, context.getSender(), players);
         if (event.isCancelled())
         {
             return;
         }
-        if (!(Basics.getInstance().getEventManager().fireEvent(event)).isCancelled()) // catch this event to change / show list with extra data
+        if (!(module.getEventManager().fireEvent(event)).isCancelled()) // catch this event to change / show list with extra data
         {
             context.sendMessage("basics", "&9Players online: &a%d&f/&e%d", event.getPlayers().size(), Bukkit.getMaxPlayers());
             context.sendMessage("basics", "&ePlayers:\n&2%s", this.displayPlayerList(event.getPlayers()));
