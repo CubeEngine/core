@@ -576,4 +576,9 @@ public class User extends UserBase implements LinkingModel<Long>, CommandSender
         }
         return null;
     }
+
+    public boolean equals(OfflinePlayer player)
+    {
+        return this.offlinePlayer.equals(player);
+    }
 }

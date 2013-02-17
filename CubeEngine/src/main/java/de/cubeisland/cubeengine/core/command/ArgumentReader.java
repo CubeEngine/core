@@ -25,6 +25,7 @@ public abstract class ArgumentReader<T>
         registerReader(new EntityTypeReader());
         registerReader(new DyeColorReader());
         registerReader(new ProfessionReader());
+        registerReader(new OfflinePlayerReader());
     }
 
     private final Class<T> type;

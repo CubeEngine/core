@@ -6,6 +6,7 @@ import org.bukkit.permissions.Permissible;
 
 import java.util.Locale;
 
+import static de.cubeisland.cubeengine.core.permission.PermDefault.FALSE;
 import static de.cubeisland.cubeengine.core.permission.PermDefault.OP;
 
 public enum CorePerms implements Permission
@@ -13,7 +14,10 @@ public enum CorePerms implements Permission
     SPAM,
     COMMAND_CLEARPASSWORD_ALL,
     COMMAND_CLEARPASSWORD_OTHER,
-    COMMAND_SETPASSWORD_OTHER;
+    COMMAND_SETPASSWORD_OTHER,
+    COMMAND_OP_NOTIFY,
+    COMMAND_DEOP_NOTIFY,
+    COMMAND_DEOP_OTHER(FALSE);
 
     private String permission;
     private PermDefault def;
