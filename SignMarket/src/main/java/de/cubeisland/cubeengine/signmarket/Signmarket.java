@@ -25,6 +25,8 @@ public class Signmarket extends Module
         this.registerListener(new MarketSignListener(this));
 
         this.registerPermissions(MarketSignPerm.values());
+
+        this.registerCommand(new SignMarketCommands(this));
     }
 
     public Conomy getConomy()

@@ -672,9 +672,6 @@ public class MarketSign implements InventoryHolder
             this.breakingSign.remove(user.key);
             return true;
         }
-        if (this.module.getEditModeListener().addUser(user)); //TODO testing
-            user.sendMessage("&5TESTING EDIT MODE ON!");
-
         this.breakingSign.put(user.key, System.currentTimeMillis());
         user.sendMessage("signmarket", "&eDoubleclick to break the sign!");
         return false;
