@@ -70,9 +70,11 @@ public class VanillaCommands implements CommandHolder
 
     }
 
-    @Command(desc = "Makes a player an operator", usage = "<player>")
+    @Command(desc = "Makes a player an operator", min = 1, max = 1, usage = "<player>")
     public void op(CommandContext context)
-    {}
+    {
+
+    }
 
     @Command(desc = "Revokes the operator status of a player", usage = "{player}")
     public void deop(CommandContext context)

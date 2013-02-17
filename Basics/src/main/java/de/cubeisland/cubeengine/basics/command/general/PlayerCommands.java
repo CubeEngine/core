@@ -20,6 +20,7 @@ import org.bukkit.event.entity.EntityDamageEvent;
 import java.sql.Timestamp;
 import java.util.TreeSet;
 
+import static de.cubeisland.cubeengine.core.command.ArgBounds.NO_MAX;
 import static de.cubeisland.cubeengine.core.i18n.I18n._;
 
 public class PlayerCommands
@@ -387,7 +388,7 @@ public class PlayerCommands
             new Duration(System.currentTimeMillis(), lastPlayed).format("%www %ddd %hhh %mmm %sss"));
     }
 
-    @Command(desc = "Makes a player execute a command", usage = "<player> <command>", min = 2, flags = @Flag(longName = "chat", name = "c"))
+    @Command(desc = "Makes a player execute a command", usage = "<player> <command>", min = 2, max = NO_MAX, flags = @Flag(longName = "chat", name = "c"))
     public void sudo(ParameterizedContext context)
     {
         User user = context.getUser(0);
@@ -437,7 +438,7 @@ public class PlayerCommands
         context.sendMessage("basics", "&cJust go!");
     }
 
-    @Command(desc = "Displays informations from a player!", usage = "<player>", min = 1)
+    @Command(desc = "Displays informations from a player!", usage = "<player>", min = 1, max = 1)
     public void whois(CommandContext context)
     {
         User user = context.getUser(0);
@@ -545,7 +546,7 @@ public class PlayerCommands
         context.sendMessage("basics", "&eYou are no longer invincible!");
     }
 
-    @Command(desc = "Changes your walkspeed.", usage = "<speed> [player <player>]", min = 1)
+    @Command(desc = "Changes your walkspeed.", usage = "<speed> [player <player>]", min = 1, max = 1)
     public void walkspeed(ParameterizedContext context)
     {
         User sender = null;

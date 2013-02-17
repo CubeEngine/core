@@ -23,7 +23,7 @@ public class ShoutCommand
 
     @Command(names = {
         "shout", "announce"
-    }, min = 1, desc = "Announce a message to players on the server", usage = "<announcement name>")
+    }, min = 1, max = 1, desc = "Announce a message to players on the server", usage = "<announcement name>")
     public void shout(CommandContext context)
     {
         Announcement announcement = this.module.getAnnouncementManager().getAnnouncement(context.getString(0));

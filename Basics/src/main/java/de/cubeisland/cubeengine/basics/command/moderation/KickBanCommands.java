@@ -15,6 +15,7 @@ import org.bukkit.entity.Player;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
+import static de.cubeisland.cubeengine.core.command.ArgBounds.NO_MAX;
 import static de.cubeisland.cubeengine.core.i18n.I18n._;
 
 /**
@@ -34,11 +35,11 @@ public class KickBanCommands
         this.module = module;
     }
 
-    @Command(desc = "Kicks a player from the server", usage = "<<player>|-all> [message]", flags = @Flag(longName = "all", name = "a"))
+    @Command(desc = "Kicks a player from the server", usage = "<player or *> [message]", flags = @Flag(longName = "all", name = "a"))
     public void kick(ParameterizedContext context)
     {
         String message = context.getStrings(1);
-        if (message.isEmpty())
+        if (message == null)
         {
             message = this.module.getConfiguration().defaultKickMessage;
         }
@@ -77,7 +78,7 @@ public class KickBanCommands
 
     @Command(names = {
     "ban", "kickban"
-    }, desc = "Bans a player permanently on your server.", min = 1, usage = "<player> [message] [-ipban]", flags = @Flag(longName = "ipban", name = "ip"))
+    }, desc = "Bans a player permanently on your server.", min = 1, max = NO_MAX, usage = "<player> [message] [-ipban]", flags = @Flag(longName = "ipban", name = "ip"))
     public void ban(ParameterizedContext context)
     {
         if (!Bukkit.getOnlineMode())
@@ -185,7 +186,7 @@ public class KickBanCommands
 
     @Command(names = {
     "ipunban", "unbanip", "pardonip"
-    }, desc = "Bans the IP from this server.", min = 1, usage = "<IP address>")
+    }, desc = "Bans the IP from this server.", min = 1, max = 1, usage = "<IP address>")
     public void ipunban(CommandContext context)
     {
         String ipadress = context.getString(0);

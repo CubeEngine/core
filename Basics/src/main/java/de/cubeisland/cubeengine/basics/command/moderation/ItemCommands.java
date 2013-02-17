@@ -19,6 +19,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import static de.cubeisland.cubeengine.core.command.ArgBounds.NO_MAX;
+
 /**
  * item-related commands /itemdb /rename /headchange /unlimited /enchant /give
  * /item /more /repair /stack
@@ -80,7 +82,7 @@ public class ItemCommands
         context.sendMessage("basics", "&cYou need 1 parameter!");
     }
 
-    @Command(desc = "Changes the display name of the item in your hand.", usage = "<name> [lore...]", min = 1)
+    @Command(desc = "Changes the display name of the item in your hand.", usage = "<name> [lore...]", min = 1, max = NO_MAX)
     public void rename(ParameterizedContext context)
     {
         if (context.getSender() instanceof User)
@@ -105,8 +107,7 @@ public class ItemCommands
 
     @Command(names = {
         "headchange", "skullchange"
-    }, desc = "Changes a skull to a players skin.", usage = "<name>", min = 1)
-    @SuppressWarnings("deprecation")
+    }, desc = "Changes a skull to a players skin.", usage = "<name>", min = 1, max = 1)
     public void headchange(CommandContext context)
     {
         if (context.getSender() instanceof User)
@@ -320,7 +321,7 @@ public class ItemCommands
 
     @Command(names = {
         "item", "i"
-    }, desc = "Gives the specified Item to you", min = 1, flags = {
+    }, desc = "Gives the specified Item to you", min = 1, max = NO_MAX, flags = {
         @Flag(longName = "blacklist", name = "b")
     }, usage = "<material[:data]> [enchantment[:level]] [amount] [-blacklist]")
     @SuppressWarnings("deprecation")

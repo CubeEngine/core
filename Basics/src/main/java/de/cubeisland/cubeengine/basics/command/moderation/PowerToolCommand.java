@@ -27,6 +27,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
+import static de.cubeisland.cubeengine.core.command.ArgBounds.NO_MAX;
 import static java.util.Arrays.asList;
 
 /**
@@ -148,7 +149,7 @@ public class PowerToolCommand extends ContainerCommand implements Listener
     @Command(desc = "Adds a command to your powertool", flags = {
         @Flag(longName = "chat", name = "c"),
         @Flag(longName = "replace", name = "r")
-    }, usage = "<commandstring>", min = 1)
+    }, usage = "<commandstring>", min = 1, max = NO_MAX)
     public void add(ParameterizedContext context)
     {
         CommandSender sender = context.getSender();

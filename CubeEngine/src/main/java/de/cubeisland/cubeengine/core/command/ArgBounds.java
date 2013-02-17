@@ -13,6 +13,10 @@ public class ArgBounds
 
     public ArgBounds(int min, int max)
     {
+        if (max > NO_MAX && min > max)
+        {
+            throw new IllegalArgumentException("The arg limit must not be greater than the minimum!");
+        }
         this.min = min;
         this.max = max;
     }

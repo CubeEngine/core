@@ -21,6 +21,8 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 
+import static de.cubeisland.cubeengine.core.command.ArgBounds.NO_MAX;
+
 /**
  * Commands controlling / affecting worlds. /weather /remove /butcher
  */
@@ -110,7 +112,7 @@ public class WorldControlCommands
 
     @Command(desc = "Removes entity", usage = "<entityType[:itemMaterial]> [radius]|[-all] [in <world>]", flags = @Flag(longName = "all", name = "a"), params = @Param(names = {
         "in"
-    }, type = World.class), min = 1)
+    }, type = World.class), min = 1, max = NO_MAX)
     public void remove(ParameterizedContext context)
     {
         User sender = null;

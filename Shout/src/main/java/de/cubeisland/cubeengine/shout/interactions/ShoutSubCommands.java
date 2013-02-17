@@ -46,7 +46,7 @@ public class ShoutSubCommands
         }
     }
 
-    @Command(desc = "Create the structure for a new announcement", min = 1, params = {
+    @Command(desc = "Create the structure for a new announcement", min = 1, max = 1, params = {
         @Param(names =
         {
             "delay", "d"

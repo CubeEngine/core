@@ -12,6 +12,8 @@ import gnu.trove.set.hash.TLongHashSet;
 
 import java.util.List;
 
+import static de.cubeisland.cubeengine.core.command.ArgBounds.NO_MAX;
+
 public class MailCommand extends ContainerCommand
 {
     private Basics basics;
@@ -127,7 +129,7 @@ public class MailCommand extends ContainerCommand
     }
 
     @Alias(names = "sendmail")
-    @Command(desc = "Sends mails to other players.", usage = "<player> <message>", min = 2)
+    @Command(desc = "Sends mails to other players.", usage = "<player> <message>", min = 2, max = NO_MAX)
     public void send(CommandContext context)
     {
         User user = context.getUser(0);

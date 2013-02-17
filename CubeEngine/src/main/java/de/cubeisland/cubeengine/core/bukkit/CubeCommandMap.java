@@ -61,7 +61,7 @@ public class CubeCommandMap extends SimpleCommandMap
                 public String format(LogRecord record)
                 {
                     StringBuilder sb = new StringBuilder(this.dateFormat.format(new Date(record.getMillis())));
-                    sb.append(' ').append(record.getMessage());
+                    sb.append(' ').append(record.getMessage()).append('\n');
                     return sb.toString();
                 }
             });

@@ -25,6 +25,7 @@ import java.util.Locale;
 import java.util.Set;
 import java.util.logging.Logger;
 
+import static de.cubeisland.cubeengine.core.command.ArgBounds.NO_MAX;
 import static de.cubeisland.cubeengine.core.logger.LogLevel.ERROR;
 import static de.cubeisland.cubeengine.core.util.Misc.arr;
 
@@ -116,6 +117,11 @@ public class ReflectedCommandFactory<T extends CubeCommand> implements CommandFa
             params.add(commandParameter);
         }
 
+        if (annotation.max() > NO_MAX && annotation.max() < annotation.min())
+        {
+            LOGGER.log(ERROR, "{0}.{1}: The the maximum args must not be less than the minimum", arr(holder.getClass().getSimpleName(), method.getName()));
+            return null;
+        }
         ReflectedCommand cmd = new ReflectedCommand(
             module,
             holder,
@@ -158,7 +164,11 @@ public class ReflectedCommandFactory<T extends CubeCommand> implements CommandFa
                 continue;
             }
 
-            commands.add(this.buildCommand(module, holder, method, annotation));
+            T command = this.buildCommand(module, holder, method, annotation);
+            if (command != null)
+            {
+                commands.add(command);
+            }
         }
 
         return commands;

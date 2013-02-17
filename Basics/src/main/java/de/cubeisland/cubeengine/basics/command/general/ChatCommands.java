@@ -12,6 +12,7 @@ import org.bukkit.command.CommandSender;
 
 import java.sql.Timestamp;
 
+import static de.cubeisland.cubeengine.core.command.ArgBounds.NO_MAX;
 import static de.cubeisland.cubeengine.core.i18n.I18n._;
 import static de.cubeisland.cubeengine.core.util.Misc.arr;
 
@@ -74,7 +75,7 @@ public class ChatCommands
 
     }
 
-    @Command(desc = "Allows you to emote", min = 1, usage = "<message>")
+    @Command(desc = "Allows you to emote", min = 1, max = NO_MAX, usage = "<message>")
     public void me(CommandContext context)
     {
         String message = context.getStrings(0);
@@ -83,7 +84,7 @@ public class ChatCommands
 
     @Command(desc = "Sends a private message to someone", names = {
         "message", "msg", "tell", "pm", "m", "t", "whisper"
-    }, min = 2, usage = "<player> <message>")
+    }, min = 2, max = NO_MAX, usage = "<player> <message>")
     public void msg(CommandContext context)
     {
         if (!this.sendWhisperTo(context.getString(0), context.getStrings(1), context))
@@ -94,7 +95,7 @@ public class ChatCommands
 
     @Command(names = {
         "reply", "r"
-    }, desc = "Replies to the last person that whispered to you.", usage = "<message>", min = 1, max = -1)
+    }, desc = "Replies to the last person that whispered to you.", usage = "<message>", min = 1, max = NO_MAX)
     public void reply(CommandContext context)
     {
         String lastWhisper;
@@ -179,7 +180,7 @@ public class ChatCommands
         this.um.broadcastMessage("basics", "&2[&cBroadcast&2] &e" + sb.toString());
     }
 
-    @Command(desc = "Mutes a player", usage = "<player> [duration]", min = 1)
+    @Command(desc = "Mutes a player", usage = "<player> [duration]", min = 1, max = 2)
     public void mute(CommandContext context)
     {
         User user = context.getUser(0);

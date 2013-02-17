@@ -15,9 +15,6 @@ import java.io.IOException;
 public class Shout extends Module
 {
     private AnnouncementManager announcementManager;
-    private ShoutListener listener;
-    private ShoutCommand command;
-    private ShoutSubCommands subCommands;
     private Announcer announcer;
     private ShoutConfiguration config;
     private File announcementFolder;
@@ -49,9 +46,6 @@ public class Shout extends Module
 
         this.announcer = new Announcer(config.initDelay);
         this.announcementManager = new AnnouncementManager(this, announcementFolder);
-        this.listener = new ShoutListener(this);
-        this.command = new ShoutCommand(this);
-        this.subCommands = new ShoutSubCommands(this);
 
         if (firstRun)
         {
@@ -68,9 +62,9 @@ public class Shout extends Module
             }
         }
         this.announcementManager.loadAnnouncements(this.announcementFolder);
-        this.registerListener(listener);
-        this.registerCommands(command, ReflectedCommand.class);
-        this.registerCommands(subCommands, ReflectedCommand.class, "shout");
+        this.registerListener(new ShoutListener(this));
+        this.registerCommands(new ShoutCommand(this), ReflectedCommand.class);
+        this.registerCommands(new ShoutSubCommands(this), ReflectedCommand.class, "shout");
 
         this.announcementManager.initUsers();
     }
