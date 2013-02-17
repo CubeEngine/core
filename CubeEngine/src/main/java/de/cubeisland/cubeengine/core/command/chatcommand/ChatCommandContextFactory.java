@@ -1,5 +1,6 @@
 package de.cubeisland.cubeengine.core.command.chatcommand;
 
+import de.cubeisland.cubeengine.core.command.ArgBounds;
 import de.cubeisland.cubeengine.core.command.ArgumentReader;
 import de.cubeisland.cubeengine.core.command.CubeCommand;
 import de.cubeisland.cubeengine.core.command.exception.IncorrectUsageException;
@@ -16,8 +17,15 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Stack;
 
+import static de.cubeisland.cubeengine.core.command.ArgBounds.NO_MAX;
+
 public class ChatCommandContextFactory extends ParameterizedContextFactory
 {
+    public ChatCommandContextFactory()
+    {
+        super(new ArgBounds(0, NO_MAX));
+    }
+
     @Override
     public ChatCommandContext parse(CubeCommand command, CommandSender sender, Stack<String> labels, String[] commandLine)
     {

@@ -6,5 +6,6 @@ import java.util.Stack;
 
 public interface ContextFactory
 {
+    ArgBounds getArgBounds();
     CommandContext parse(CubeCommand command, CommandSender sender, Stack<String> labels, String[] commandLine);
 }

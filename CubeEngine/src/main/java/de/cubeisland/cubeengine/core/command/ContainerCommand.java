@@ -42,7 +42,7 @@ public abstract class ContainerCommand extends ParameterizedCommand implements C
 
     public ContainerCommand(Module module, Class<? extends CubeCommand> subCommandType, String name, String description, List<String> aliases)
     {
-        super(module, name, description, "[action]", aliases, new ParameterizedContextFactory());
+        super(module, name, description, "[action]", aliases, new ParameterizedContextFactory(new ArgBounds(0)));
         this.subCommandType = subCommandType;
     }
 

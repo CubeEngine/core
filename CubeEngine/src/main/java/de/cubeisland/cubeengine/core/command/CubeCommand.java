@@ -137,27 +137,6 @@ public abstract class CubeCommand extends Command
         return StringUtils.implode(delimiter, cmds);
     }
 
-    /**
-     * Returns the minimum number of args this command requires
-     *
-     * @return minimum params
-     */
-    public int getMinimumArgs()
-    {
-        return 0;
-    }
-
-    /**
-     * Returns the maximum number of args this command allows.
-     * A value lower than 0 indicates that there is no limit
-     *
-     * @return maximum params
-     */
-    public int getMaximumArgs()
-    {
-        return -1;
-    }
-
     private static String replaceSemiOptionalArgs(CommandSender sender, String usage)
     {
         if (sender instanceof User)

@@ -1,8 +1,8 @@
 package de.cubeisland.cubeengine.core.command.reflected;
 
-import de.cubeisland.cubeengine.core.command.*;
-import de.cubeisland.cubeengine.core.command.parameterized.CommandFlag;
-import de.cubeisland.cubeengine.core.command.parameterized.CommandParameter;
+import de.cubeisland.cubeengine.core.command.CommandContext;
+import de.cubeisland.cubeengine.core.command.CommandResult;
+import de.cubeisland.cubeengine.core.command.HelpContext;
 import de.cubeisland.cubeengine.core.command.parameterized.ParameterizedCommand;
 import de.cubeisland.cubeengine.core.command.parameterized.ParameterizedContextFactory;
 import de.cubeisland.cubeengine.core.command.result.ErrorResult;
@@ -11,7 +11,6 @@ import de.cubeisland.cubeengine.core.module.Module;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.List;
-import java.util.Set;
 
 public class ReflectedCommand extends ParameterizedCommand
 {
@@ -19,9 +18,9 @@ public class ReflectedCommand extends ParameterizedCommand
     private final Method method;
     private final Class<? extends CommandContext> contextType;
 
-    public ReflectedCommand(Module module, Object holder, Method method, String name, String description, String usage, List<String> aliases, Set<CommandFlag> flags, Set<CommandParameter> params)
+    public ReflectedCommand(Module module, Object holder, Method method, String name, String description, String usage, List<String> aliases, ParameterizedContextFactory factory)
     {
-        super(module, name, description, usage, aliases, new ParameterizedContextFactory(flags, params));
+        super(module, name, description, usage, aliases, factory);
 
         this.holder = holder;
         this.method = method;

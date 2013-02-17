@@ -96,6 +96,13 @@ public interface ModuleManager extends Cleanable
     void reloadModule(Module module);
 
     /**
+     * Reloads all modules
+     *
+     * @return the number of reloaded modules
+     */
+    int reloadModules();
+
+    /**
      * This method disables all modules
      */
     void disableModules();

@@ -19,7 +19,7 @@ public @interface Command
 
     int min() default 0;
 
-    int max() default -1;
+    int max() default 0;
 
     boolean checkPerm() default true;
 

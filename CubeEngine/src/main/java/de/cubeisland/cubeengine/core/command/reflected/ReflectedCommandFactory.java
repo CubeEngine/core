@@ -1,6 +1,7 @@
 package de.cubeisland.cubeengine.core.command.reflected;
 
 import de.cubeisland.cubeengine.core.CubeEngine;
+import de.cubeisland.cubeengine.core.command.ArgBounds;
 import de.cubeisland.cubeengine.core.command.CommandContext;
 import de.cubeisland.cubeengine.core.command.CommandFactory;
 import de.cubeisland.cubeengine.core.command.CubeCommand;
@@ -9,13 +10,19 @@ import de.cubeisland.cubeengine.core.command.parameterized.CommandParameter;
 import de.cubeisland.cubeengine.core.command.parameterized.Completer;
 import de.cubeisland.cubeengine.core.command.parameterized.Flag;
 import de.cubeisland.cubeengine.core.command.parameterized.Param;
+import de.cubeisland.cubeengine.core.command.parameterized.ParameterizedContextFactory;
 import de.cubeisland.cubeengine.core.logger.LogLevel;
 import de.cubeisland.cubeengine.core.module.Module;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Locale;
+import java.util.Set;
 import java.util.logging.Logger;
 
 import static de.cubeisland.cubeengine.core.logger.LogLevel.ERROR;
@@ -117,12 +124,16 @@ public class ReflectedCommandFactory<T extends CubeCommand> implements CommandFa
             annotation.desc(),
             annotation.usage(),
             aliases,
-            flags,
-            params
-            );
+            this.createContext(new ArgBounds(annotation.min(), annotation.max()), flags, params)
+        );
         cmd.setAsync(annotation.async());
         cmd.setLoggable(annotation.loggable());
         return (T)cmd;
+    }
+
+    protected ParameterizedContextFactory createContext(ArgBounds bounds, Set<CommandFlag> flags, Set<CommandParameter> params)
+    {
+        return new ParameterizedContextFactory(bounds, flags, params);
     }
 
     @Override

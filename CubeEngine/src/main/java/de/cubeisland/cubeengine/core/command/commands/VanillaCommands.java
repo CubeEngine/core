@@ -6,14 +6,18 @@ import de.cubeisland.cubeengine.core.command.CommandContext;
 import de.cubeisland.cubeengine.core.command.CommandHolder;
 import de.cubeisland.cubeengine.core.command.ContainerCommand;
 import de.cubeisland.cubeengine.core.command.CubeCommand;
-import de.cubeisland.cubeengine.core.command.parameterized.Param;
+import de.cubeisland.cubeengine.core.command.parameterized.Flag;
+import de.cubeisland.cubeengine.core.command.parameterized.ParameterizedContext;
 import de.cubeisland.cubeengine.core.command.reflected.Command;
 import de.cubeisland.cubeengine.core.command.reflected.ReflectedCommand;
 import de.cubeisland.cubeengine.core.module.Module;
+import de.cubeisland.cubeengine.core.util.Profiler;
 import org.bukkit.plugin.Plugin;
 
 import java.util.Collection;
+import java.util.concurrent.TimeUnit;
 
+import static de.cubeisland.cubeengine.core.command.ArgBounds.NO_MAX;
 import static de.cubeisland.cubeengine.core.util.ChatFormat.*;
 
 public class VanillaCommands implements CommandHolder
@@ -36,13 +40,35 @@ public class VanillaCommands implements CommandHolder
     public void stop(CommandContext context)
     {}
 
-    @Command(desc = "Reloads the server.", params = @Param(names = "test"))
-    public void reload(CommandContext context)
-    {}
+    @Command(desc = "Reloads the server.", usage = "[-m]", max = NO_MAX, flags = @Flag(name = "m", longName = "modules"))
+    public void reload(ParameterizedContext context)
+    {
+        final String message = context.getStrings(0);
+        if (message != null)
+        {
+            context.getCore().getUserManager().broadcastStatus("core", message);
+        }
+
+        if (context.hasFlag("m"))
+        {
+            context.sendMessage("core", "&eReloading the modules...");
+            this.core.getModuleManager().reloadModules();
+            context.sendMessage("core", "&aSuccessfully reloaded %d modules!");
+        }
+        else
+        {
+            context.sendMessage("core", "&eReloading the whole server... (this may take some time)");
+            Profiler.startProfiling("reload_server");
+            this.core.getServer().reload();
+            context.sendMessage("core", "&aThe reload is completed after %d seconds", Profiler.endProfiling("reload_server", TimeUnit.SECONDS));
+        }
+    }
 
     @Command(desc = "Changes the diffivulty level of the server")
     public void difficulty(CommandContext context)
-    {}
+    {
+
+    }
 
     @Command(desc = "Makes a player an operator", usage = "<player>")
     public void op(CommandContext context)

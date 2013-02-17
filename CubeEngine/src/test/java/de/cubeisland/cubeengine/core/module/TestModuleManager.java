@@ -85,14 +85,18 @@ public class TestModuleManager implements ModuleManager
     }
 
     @Override
+    public int reloadModules()
+    {
+        return 0;
+    }
+
+    @Override
     public void disableModules()
     {}
 
     @Override
     public void unloadModules()
-    {
-    //To change body of implemented methods use File | Settings | File Templates.
-    }
+    {}
 
     @Override
     public CoreModule getCoreModule()

@@ -2,6 +2,7 @@ package de.cubeisland.cubeengine.core.command.parameterized;
 
 import de.cubeisland.cubeengine.core.Core;
 import de.cubeisland.cubeengine.core.TestCore;
+import de.cubeisland.cubeengine.core.command.ArgBounds;
 import de.cubeisland.cubeengine.core.command.CubeCommand;
 import de.cubeisland.cubeengine.core.command.TestCommand;
 import de.cubeisland.cubeengine.core.command.sender.CommandSender;
@@ -58,6 +59,7 @@ public class ParameterizedContextFactoryTest extends TestCase
     public void testContextFactory()
     {
         final ParameterizedContextFactory factory = new ParameterizedContextFactory(
+            new ArgBounds(0),
             Arrays.asList(new CommandFlag("a", "all")),
             Arrays.asList(new CommandParameter("test", String.class))
         );

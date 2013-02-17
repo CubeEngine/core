@@ -1,5 +1,6 @@
 package de.cubeisland.cubeengine.core.command.parameterized;
 
+import de.cubeisland.cubeengine.core.command.ArgBounds;
 import de.cubeisland.cubeengine.core.command.ArgumentReader;
 import de.cubeisland.cubeengine.core.command.ContextFactory;
 import de.cubeisland.cubeengine.core.command.CubeCommand;
@@ -20,18 +21,20 @@ import java.util.Stack;
 
 public class ParameterizedContextFactory implements ContextFactory
 {
+    private final ArgBounds bounds;
     private final Map<String, CommandFlag> flagMap;
     private final Map<String, CommandParameter> paramMap;
 
-    public ParameterizedContextFactory()
+    public ParameterizedContextFactory(ArgBounds bounds)
     {
+        this.bounds = bounds;
         this.flagMap = new THashMap<String, CommandFlag>();
         this.paramMap = new THashMap<String, CommandParameter>();
     }
 
-    public ParameterizedContextFactory(Collection<CommandFlag> flags, Collection<CommandParameter> params)
+    public ParameterizedContextFactory(ArgBounds bounds, Collection<CommandFlag> flags, Collection<CommandParameter> params)
     {
-        this();
+        this(bounds);
 
         if (flags != null)
         {
@@ -42,6 +45,12 @@ public class ParameterizedContextFactory implements ContextFactory
         {
             this.addParameters(params);
         }
+    }
+
+    @Override
+    public ArgBounds getArgBounds()
+    {
+        return this.bounds;
     }
 
     public ParameterizedContextFactory addParameters(Collection<CommandParameter> params)
@@ -156,7 +165,7 @@ public class ParameterizedContextFactory implements ContextFactory
             {
                 if (commandLine[offset].isEmpty())
                 {
-                    offset++; // TODO should we preserve empty args?
+                    offset++;
                     continue; // ignore empty args
                 }
                 if (commandLine[offset].length() >= 2 && commandLine[offset].charAt(0) == '-') // is flag?
@@ -208,8 +217,7 @@ public class ParameterizedContextFactory implements ContextFactory
                             throw new IncorrectUsageException(); // TODO message.
                         }
                     }
-                    else
-                    // else is indexed param
+                    else // else is indexed param
                     {
                         StringBuilder arg = new StringBuilder();
                         offset += readString(arg, commandLine, offset);
@@ -217,6 +225,15 @@ public class ParameterizedContextFactory implements ContextFactory
                     }
                 }
             }
+        }
+
+        if (args.size() < this.getArgBounds().getMin())
+        {
+            throw new IncorrectUsageException("You've given too few arguments.");
+        }
+        if (args.size() > this.getArgBounds().getMax())
+        {
+            throw new IncorrectUsageException("You've given too many arguments.");
         }
 
         for (CommandParameter param : this.paramMap.values())

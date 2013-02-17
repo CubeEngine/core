@@ -86,7 +86,7 @@ public class ChatCommands
     }, min = 2, usage = "<player> <message>")
     public void msg(CommandContext context)
     {
-        if (!this.sendWhisperTo(context.getString(0),context.getStrings(1),context))
+        if (!this.sendWhisperTo(context.getString(0), context.getStrings(1), context))
         {
             context.sendMessage("basics", "&eCould not find the player &2%s &eto send the message. Is he offline?", context.getString(0));
         }
@@ -94,7 +94,7 @@ public class ChatCommands
 
     @Command(names = {
         "reply", "r"
-    }, desc = "Replies to the last person that whispered to you.", usage = "<message>")
+    }, desc = "Replies to the last person that whispered to you.", usage = "<message>", min = 1, max = -1)
     public void reply(CommandContext context)
     {
         String lastWhisper;

@@ -1,5 +1,6 @@
 package de.cubeisland.cubeengine.core.command.reflected.readable;
 
+import de.cubeisland.cubeengine.core.command.ArgBounds;
 import de.cubeisland.cubeengine.core.command.BasicContextFactory;
 import de.cubeisland.cubeengine.core.command.BasicContext;
 import de.cubeisland.cubeengine.core.command.CubeCommand;
@@ -15,6 +16,8 @@ import java.util.Stack;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import static de.cubeisland.cubeengine.core.command.ArgBounds.NO_MAX;
+
 public class ReadableContextFactory extends BasicContextFactory
 {
     private static final Set<String> NO_FLAGS = new THashSet<String>(0);
@@ -23,6 +26,7 @@ public class ReadableContextFactory extends BasicContextFactory
 
     public ReadableContextFactory(Pattern pattern)
     {
+        super(new ArgBounds(0, NO_MAX));
         this.pattern = pattern;
     }
 

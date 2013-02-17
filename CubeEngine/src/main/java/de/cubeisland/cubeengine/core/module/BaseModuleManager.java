@@ -461,6 +461,18 @@ public abstract class BaseModuleManager implements ModuleManager
         module.reload();
     }
 
+    public int reloadModules()
+    {
+        int modules = 0;
+        Iterator<Module> iter = this.getModules().iterator();
+        while (iter.hasNext())
+        {
+            iter.next().reload();
+            ++modules;
+        }
+        return modules;
+    }
+
     /**
      * This method disables all modules
      */

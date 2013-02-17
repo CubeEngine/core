@@ -105,16 +105,8 @@ public class BasicContext implements CommandContext
         {
             return ArgumentReader.read(type, this.args.get(index));
         }
-        catch (InvalidArgumentException e)
+        catch (Exception e)
         {
-            return null;
-        }
-        catch (IndexOutOfBoundsException e)
-        {
-            if (index < this.command.getMinimumArgs() - 1 || (this.command.getMaximumArgs() > -1 && index >= this.command.getMaximumArgs()))
-            {
-                throw e;
-            }
             return null;
         }
     }
@@ -136,7 +128,7 @@ public class BasicContext implements CommandContext
     {
         if (!this.hasArg(from))
         {
-            return ""; // TODO null vs "" ?
+            return null;
         }
         StringBuilder sb = new StringBuilder(this.getString(from));
         while (this.hasArg(++from))
