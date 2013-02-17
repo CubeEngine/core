@@ -197,7 +197,7 @@ public class CommandManager implements Cleanable
         }
     }
 
-    public void registerCommands(Module module, CommandHolder commandHolder, String[] parents)
+    public void registerCommands(Module module, CommandHolder commandHolder, String... parents)
     {
         this.registerCommands(module, commandHolder, commandHolder.getCommandType(), parents);
     }
@@ -210,9 +210,9 @@ public class CommandManager implements Cleanable
      * @param parents       the path under which the command should be registered
      */
     @SuppressWarnings("unchecked")
-    public void registerCommands(Module module, Object commandHolder, Class<? extends CubeCommand> commandTyoe, String... parents)
+    public void registerCommands(Module module, Object commandHolder, Class<? extends CubeCommand> commandType, String... parents)
     {
-        CommandFactory<? extends CubeCommand> commandFactory = this.getCommandFactory(commandTyoe);
+        CommandFactory<? extends CubeCommand> commandFactory = this.getCommandFactory(commandType);
         if (commandFactory == null)
         {
             throw new IllegalArgumentException("The given command factory is not registered!");

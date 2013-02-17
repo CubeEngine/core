@@ -8,11 +8,15 @@ import de.cubeisland.cubeengine.core.CubeEngine;
 import de.cubeisland.cubeengine.core.command.CommandManager;
 import de.cubeisland.cubeengine.core.command.commands.CoreCommands;
 import de.cubeisland.cubeengine.core.command.commands.ModuleCommands;
-import de.cubeisland.cubeengine.core.command.reflected.readable.ReadableCommandFactory;
+import de.cubeisland.cubeengine.core.command.commands.VanillaCommands;
 import de.cubeisland.cubeengine.core.command.reflected.ReflectedCommandFactory;
+import de.cubeisland.cubeengine.core.command.reflected.readable.ReadableCommandFactory;
 import de.cubeisland.cubeengine.core.config.Configuration;
 import de.cubeisland.cubeengine.core.filesystem.FileManager;
 import de.cubeisland.cubeengine.core.i18n.I18n;
+import de.cubeisland.cubeengine.core.logger.CubeFileHandler;
+import de.cubeisland.cubeengine.core.logger.CubeLogger;
+import de.cubeisland.cubeengine.core.logger.LogLevel;
 import de.cubeisland.cubeengine.core.module.ModuleManager;
 import de.cubeisland.cubeengine.core.module.event.FinishedLoadModulesEvent;
 import de.cubeisland.cubeengine.core.permission.PermissionManager;
@@ -21,9 +25,6 @@ import de.cubeisland.cubeengine.core.storage.database.Database;
 import de.cubeisland.cubeengine.core.storage.database.DatabaseFactory;
 import de.cubeisland.cubeengine.core.storage.world.WorldManager;
 import de.cubeisland.cubeengine.core.user.UserManager;
-import de.cubeisland.cubeengine.core.logger.CubeFileHandler;
-import de.cubeisland.cubeengine.core.logger.CubeLogger;
-import de.cubeisland.cubeengine.core.logger.LogLevel;
 import de.cubeisland.cubeengine.core.util.InventoryGuardFactory;
 import de.cubeisland.cubeengine.core.util.matcher.Match;
 import de.cubeisland.cubeengine.core.util.worker.CubeThreadFactory;
@@ -251,6 +252,10 @@ public class BukkitCore extends JavaPlugin implements Core
         // depends on: server, module manager
         this.commandManager.registerCommand(new ModuleCommands(this.moduleManager));
         this.commandManager.registerCommand(new CoreCommands(this));
+        if (this.config.improveVanillaCommands)
+        {
+            this.commandManager.registerCommands(this.getModuleManager().getCoreModule(), new VanillaCommands(this));
+        }
 
         // depends on: server
         BukkitUtils.registerPacketHookInjector(this);

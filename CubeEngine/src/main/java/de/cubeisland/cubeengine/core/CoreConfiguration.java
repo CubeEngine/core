@@ -21,11 +21,11 @@ public class CoreConfiguration extends Configuration
     @Comment("Sets the language to choose by default.\nCurrently supported en_US de_DE fr_FR")
     public String defaultLanguage = "en_US";
 
-    @Option("command.max-correction-offers")
+    @Option("commands.max-correction-offers")
     @Comment("The maximum number of similar commands to offer when more than one command matched a mistyped command.")
     public int commandOffers = 5;
 
-    @Option("command.max-tab-completion-offers")
+    @Option("commands.max-tab-completion-offers")
     @Comment("The maximum number of offers given for a tab completion request (pressing tab).")
     public int commandTabCompleteOffers = 5;
 

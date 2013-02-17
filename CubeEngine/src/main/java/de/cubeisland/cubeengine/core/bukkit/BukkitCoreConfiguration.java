@@ -11,4 +11,8 @@ public class BukkitCoreConfiguration extends CoreConfiguration
     @Option("prevent-spam-kick")
     @Comment("Whether to prevent Bukkit from kicking players for spamming")
     public boolean preventSpamKick = false;
+
+    @Option("commands.improve-vanilla")
+    @Comment("Whether to replace the vanilla standard commands with improved ones")
+    public boolean improveVanillaCommands = true;
 }
