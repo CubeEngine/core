@@ -1,6 +1,7 @@
 package de.cubeisland.cubeengine.core.command.commands;
 
 import de.cubeisland.cubeengine.core.Core;
+import de.cubeisland.cubeengine.core.CorePerms;
 import de.cubeisland.cubeengine.core.bukkit.BukkitCore;
 import de.cubeisland.cubeengine.core.command.CommandContext;
 import de.cubeisland.cubeengine.core.command.ContainerCommand;
@@ -13,7 +14,6 @@ import de.cubeisland.cubeengine.core.permission.PermDefault;
 import de.cubeisland.cubeengine.core.user.User;
 import org.bukkit.plugin.PluginManager;
 
-import static de.cubeisland.cubeengine.core.command.commands.CommandPermissions.COMMAND_SETPASSWORD_OTHER;
 import static java.util.Arrays.asList;
 
 public class CoreCommands extends ContainerCommand
@@ -68,7 +68,7 @@ public class CoreCommands extends ContainerCommand
             return;
         }
 
-        if (target == sender && !sender.isAuthorized(COMMAND_SETPASSWORD_OTHER))
+        if (target == sender && !sender.isAuthorized(CorePerms.COMMAND_SETPASSWORD_OTHER))
         {
             context.sendMessage("core", "&cYou are not allowed to change the password of an other user!");
             return;
@@ -92,7 +92,7 @@ public class CoreCommands extends ContainerCommand
         CommandSender sender = context.getSender();
         if (context.hasFlag("a"))
         {
-            if (CommandPermissions.COMMAND_CLEARPASSWORD_ALL.isAuthorized(context.getSender()))
+            if (CorePerms.COMMAND_CLEARPASSWORD_ALL.isAuthorized(context.getSender()))
             {
                 this.getModule().getUserManager().resetAllPasswords();
                 for (User user : this.getModule().getUserManager().getLoadedUsers())
@@ -109,7 +109,7 @@ public class CoreCommands extends ContainerCommand
         }
         else if (context.hasArg(0))
         {
-            if (!CommandPermissions.COMMAND_CLEARPASSWORD_OTHER.isAuthorized(context.getSender()))
+            if (!CorePerms.COMMAND_CLEARPASSWORD_OTHER.isAuthorized(context.getSender()))
             {
                 context.sendMessage("core", "&cYou are not allowed to clear the password of other users!");
                 return;

@@ -10,7 +10,10 @@ import static de.cubeisland.cubeengine.core.permission.PermDefault.OP;
 
 public enum CorePerms implements Permission
 {
-    SPAM;
+    SPAM,
+    COMMAND_CLEARPASSWORD_ALL,
+    COMMAND_CLEARPASSWORD_OTHER,
+    COMMAND_SETPASSWORD_OTHER;
 
     private String permission;
     private PermDefault def;
