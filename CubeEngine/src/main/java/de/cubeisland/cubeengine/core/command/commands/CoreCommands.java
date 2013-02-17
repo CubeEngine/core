@@ -9,6 +9,7 @@ import de.cubeisland.cubeengine.core.command.parameterized.ParameterizedContext;
 import de.cubeisland.cubeengine.core.command.reflected.Command;
 import de.cubeisland.cubeengine.core.command.sender.CommandSender;
 import de.cubeisland.cubeengine.core.command.sender.ConsoleCommandSender;
+import de.cubeisland.cubeengine.core.permission.PermDefault;
 import de.cubeisland.cubeengine.core.user.User;
 import org.bukkit.plugin.PluginManager;
 
@@ -132,7 +133,7 @@ public class CoreCommands extends ContainerCommand
         }
     }
 
-    @Command(desc = "Loggs you in with your password!", usage = "<password>", min = 1, max = 1)
+    @Command(desc = "Loggs you in with your password!", usage = "<password>", min = 1, max = 1, permDefault = PermDefault.TRUE)
     public void login(CommandContext context)
     {
         CommandSender sender = context.getSender();
