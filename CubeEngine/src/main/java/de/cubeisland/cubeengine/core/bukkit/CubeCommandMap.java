@@ -1,6 +1,7 @@
 package de.cubeisland.cubeengine.core.bukkit;
 
 import de.cubeisland.cubeengine.core.Core;
+import de.cubeisland.cubeengine.core.CubeEngine;
 import de.cubeisland.cubeengine.core.command.AliasCommand;
 import de.cubeisland.cubeengine.core.command.CommandExecuteEvent;
 import de.cubeisland.cubeengine.core.command.CubeCommand;
@@ -114,6 +115,10 @@ public class CubeCommandMap extends SimpleCommandMap
     @Override
     public boolean dispatch(CommandSender sender, final String commandLine) throws CommandException
     {
+        if (!CubeEngine.isMainThread())
+        {
+            throw new IllegalStateException("Commands my only be called synchronously!");
+        }
         if (commandLine.isEmpty())
         {
             return true;
