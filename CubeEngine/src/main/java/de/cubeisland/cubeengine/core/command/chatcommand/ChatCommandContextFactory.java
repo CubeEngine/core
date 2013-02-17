@@ -23,8 +23,6 @@ public class ChatCommandContextFactory extends ParameterizedContextFactory
     {
         final Set<String> flags = new THashSet<String>();
         final Map<String, Object> params = new THashMap<String, Object>();
-
-
         if (commandLine.length > 0)
         {
             for (int offset = 0; offset < commandLine.length;)

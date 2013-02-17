@@ -28,6 +28,8 @@ public class MarketSignFactory
                 return null;
             }
             SignMarketInfoModel infoModel = this.module.getSminfoManager().get(marketSignId);
+            if (infoModel == null)
+                return null;
             result = new MarketSign(module, location);
             result.setInfoModel(infoModel);
             result.setBlockModel(new SignMarketBlockModel(marketSignId, location));

@@ -4,13 +4,10 @@ import com.google.common.collect.Lists;
 import de.cubeisland.cubeengine.conomy.config.CurrencyConfiguration;
 import de.cubeisland.cubeengine.conomy.config.SubCurrencyConfig;
 import gnu.trove.map.hash.TObjectDoubleHashMap;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.Locale;
-import java.util.Map;
-import java.util.regex.Pattern;
 import org.apache.commons.lang.StringUtils;
+
+import java.util.*;
+import java.util.regex.Pattern;
 
 public class Currency
 {
@@ -34,7 +31,7 @@ public class Currency
         this.formatshort = config.formatShort;
         this.defaultBalance = config.defaultBalance;
 
-        this.pattern1 = Pattern.compile("[^\\d" + numberseparator + "]");
+        this.pattern1 = Pattern.compile("^-*[\\d,]+$");
 
         SubCurrency parent = null;
         for (Map.Entry<String, SubCurrencyConfig> entry : config.subcurrencies.entrySet())
@@ -111,7 +108,7 @@ public class Currency
             tempString = tempString.substring(0, tempString.length() - this.name.length());
         }
         // Without CurrencySymbols:
-        if (!pattern1.matcher(tempString).find() && pattern2.matcher(tempString).find())
+        if (pattern1.matcher(tempString).find() && pattern2.matcher(tempString).find())
         {
             int separators = StringUtils.countMatches(tempString, numberseparator.toString());
             try
@@ -176,7 +173,7 @@ public class Currency
         for (int i = 0; i < stringLen; ++i)
         {
             current = tempString.charAt(i);
-            if (Character.isDigit(current))
+            if (Character.isDigit(current) || current == '-')
             {
                 if (isNumber)
                 {

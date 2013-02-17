@@ -214,7 +214,7 @@ public class MarketSign implements InventoryHolder
                 {
                     if (this.editMode)
                     {
-                        user.sendMessage("signmarket", "&cThis sign is beeing edited right now!");
+                        user.sendMessage("signmarket", "&cThis sign is being edited right now!");
                         return true;
                     }
                     if (!this.isAdminSign() && (this.isOwner(user) || MarketSignPerm.SIGN_INVENTORY_ACCESS_OTHER.isAuthorized(user)))
@@ -478,11 +478,74 @@ public class MarketSign implements InventoryHolder
             }
             if (this.isBuySign())
             {
-                user.sendMessage("signmarket", "&3In stock: &6%d&f/&63456", this.info.stock);
+                if (this.getItem() == null || this.getAmount() == 0)
+                {
+                    user.sendMessage("signmarket", "&3In stock: &6%d&f/&cUnkown", this.info.stock);
+                }
+                else
+                {
+                    Integer maxAmount;
+                    int maxStack = this.getItem().getMaxStackSize();
+                    if (maxStack == 64)
+                    {
+                        maxAmount = 3456; // DoubleChest of 64
+                    }
+                    else if (this.module.getConfig().allowOverStackedInSign || maxStack > this.getAmount())
+                    {
+                        if (this.getAmount() > 64)
+                        {
+                            maxAmount = 3456;
+                        }
+                        else
+                        {
+                            maxAmount = 6*9*this.getAmount();
+                        }
+                    }
+                    else
+                    {
+                        maxAmount = 6*9*maxStack;
+                    }
+                    user.sendMessage("signmarket", "&3In stock: &6%d&f/&6%d", this.info.stock, maxAmount);
+                }
             }
             else
             {
-                user.sendMessage("signmarket", "&3In stock: &6%d&f/&6%d", this.info.stock, this.info.demand);
+                if (this.info.demand == null)
+                {
+                    if (this.getItem() == null || this.getAmount() == 0)
+                    {
+                        user.sendMessage("signmarket", "&3In stock: &6%d&f/&cUnkown", this.info.stock);
+                    }
+                    else
+                    {
+                        Integer maxAmount;
+                        int maxStack = this.getItem().getMaxStackSize();
+                        if (maxStack == 64)
+                        {
+                            maxAmount = 3456; // DoubleChest of 64
+                        }
+                        else if (this.module.getConfig().allowOverStackedInSign || maxStack > this.getAmount())
+                        {
+                            if (this.getAmount() > 64)
+                            {
+                                maxAmount = 3456;
+                            }
+                            else
+                            {
+                                maxAmount = 6*9*this.getAmount();
+                            }
+                        }
+                        else
+                        {
+                            maxAmount = 6*9*maxStack;
+                        }
+                        user.sendMessage("signmarket", "&3In stock: &6%d&f/&6%d", this.info.stock, maxAmount);
+                    }
+                }
+                else
+                {
+                    user.sendMessage("signmarket", "&3In stock: &6%d&f/&6%d", this.info.stock, this.info.demand);
+                }
             }
         }
     }
@@ -609,8 +672,8 @@ public class MarketSign implements InventoryHolder
             this.breakingSign.remove(user.key);
             return true;
         }
-        this.module.getEditModeListener().enterEditMode(user); //TODO testing
-        user.sendMessage("&5TESTING EDIT MODE ON!");
+        if (this.module.getEditModeListener().addUser(user)); //TODO testing
+            user.sendMessage("&5TESTING EDIT MODE ON!");
 
         this.breakingSign.put(user.key, System.currentTimeMillis());
         user.sendMessage("signmarket", "&eDoubleclick to break the sign!");
@@ -660,7 +723,7 @@ public class MarketSign implements InventoryHolder
             }
             else
             {
-                if (this.isAdminSign() || this.getDemand() - this.getStock() > 0)
+                if (this.isAdminSign() || this.getDemand() == null || this.getDemand() - this.getStock() > 0)
                 {
                     if (this.isAdminSign() || this.canAfford(this.getOwner()))
                     {
@@ -800,6 +863,7 @@ public class MarketSign implements InventoryHolder
             {
                 lines[1] = Match.material().getNameFor(this.getItem());
             }
+
             if (this.getAmount() == 0)
             {
                 if (this.isInEditMode())
@@ -923,6 +987,10 @@ public class MarketSign implements InventoryHolder
 
     private boolean canAfford(User user)
     {
+        if (this.getCurrency() == null || this.getPrice() == 0)
+        {
+            return true;
+        }
         return this.module.getConomy().getAccountsManager().getAccount(user, this.getCurrency()).canAfford(this.getPrice());
     }
 

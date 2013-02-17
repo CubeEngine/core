@@ -7,6 +7,7 @@ import de.cubeisland.cubeengine.core.command.parameterized.CommandParameter;
 import de.cubeisland.cubeengine.core.command.sender.CommandSender;
 import de.cubeisland.cubeengine.core.module.Module;
 import de.cubeisland.cubeengine.core.user.User;
+import de.cubeisland.cubeengine.core.util.ChatFormat;
 import de.cubeisland.cubeengine.core.util.StringUtils;
 import gnu.trove.set.hash.TLongHashSet;
 import org.bukkit.event.EventHandler;
@@ -35,22 +36,29 @@ public abstract class ChatCommand<M extends Module> extends CubeCommand implemen
         return (M)super.getModule();
     }
 
+    public boolean hasUser(User user)
+    {
+        return usersInMode.contains(user.key);
+    }
+
     @EventHandler
     public void onChatHandler(AsyncPlayerChatEvent event)
     {
         User user = this.getModule().getUserManager().getExactUser(event.getPlayer());
-        if (usersInMode.contains(user.key))
+        if (this.hasUser(user))
         {
+            user.sendMessage(ChatFormat.parseFormats("&5[&fChatCommand&5]&f ") + String.format(event.getFormat(), event.getPlayer().getDisplayName(), event.getMessage()));
             this.execute(event.getPlayer(), "", StringUtils.explode(" ", event.getMessage()));
             event.setCancelled(true);
         }
+        //TODO block chat for users in mode & save missed chatlines to print when exiting
     }
 
     @EventHandler
     public void onTabComplete(PlayerChatTabCompleteEvent event)
     {
         User user = this.getModule().getUserManager().getExactUser(event.getPlayer());
-        if (usersInMode.contains(user.key))
+        if (this.hasUser(user))
         {
             event.getTabCompletions().clear();
             event.getTabCompletions().addAll(this.tabComplete(event.getPlayer(),"",StringUtils.explode(" ",event.getChatMessage())));
@@ -128,19 +136,42 @@ public abstract class ChatCommand<M extends Module> extends CubeCommand implemen
         return (ChatCommandContextFactory)super.getContextFactory();
     }
 
-    public void addUser(User user)
+    /**
+     * Adds a user to this chatcommands internal list
+     *
+     * @param user
+     */
+    public boolean addUser(User user)
     {
-        this.usersInMode.add(user.key);
+        return this.usersInMode.add(user.key);
     }
 
+    /**
+     * Removes a user from this chatcommands internal list
+     *
+     * @param user
+     */
     public void removeUser(User user)
     {
         this.usersInMode.remove(user.key);
     }
 
     @Override
-    public void help(HelpContext context) throws Exception
+    public void help(HelpContext context) throws Exception //TODO beautify this
     {
-        //TODO show flags and params available
+        context.sendMessage("core","Flags:");
+        Set<String> flags = new HashSet<String>();
+        for (CommandFlag flag : this.getContextFactory().getFlags())
+        {
+            flags.add(flag.getLongName().toLowerCase());
+        }
+        context.sendMessage("    "+StringUtils.implode("&7, &f",flags));
+        context.sendMessage("core","Parameters:");
+        Set<String> params  = new HashSet<String>();
+        for (CommandParameter param : this.getContextFactory().getParameters())
+        {
+            params.add(param.getName().toLowerCase());
+        }
+        context.sendMessage("    "+StringUtils.implode("&7, &f",params));
     }
 }

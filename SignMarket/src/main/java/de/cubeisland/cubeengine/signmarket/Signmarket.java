@@ -22,7 +22,6 @@ public class Signmarket extends Module
         this.marketSignFactory = new MarketSignFactory(this);
         this.editModeListener = new EditModeListener(this);
 
-        this.registerListener(editModeListener);
         this.registerListener(new MarketSignListener(this));
 
         this.registerPermissions(MarketSignPerm.values());

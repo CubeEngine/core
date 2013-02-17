@@ -57,11 +57,11 @@ public class AdvancedSpawnMob extends ChatCommand<Basics>
     private TLongObjectHashMap<SpawningData> spawningDatas = new TLongObjectHashMap<SpawningData>();
 
     @Override
-    public void addUser(User user) {
-        super.addUser(user);
+    public boolean addUser(User user) {
         SpawningData spawningData;
         this.spawningDatas.put(user.key,spawningData= new SpawningData());
         spawningData.location = user.getTargetBlock(null, 200).getLocation().add(new Vector(0, 1, 0));
+        return super.addUser(user);
     }
 
     @Override
