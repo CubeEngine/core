@@ -33,12 +33,14 @@ public class EditModeListener extends ChatCommand<Signmarket>
                 .addFlag(new CommandFlag("sell","sell"))
                 .addFlag(new CommandFlag("admin","admin"))
                 .addFlag(new CommandFlag("user","user"))
+                .addFlag(new CommandFlag("stock","stock"))
                 .addParameter(new CommandParameter("demand", Integer.class))
                 .addParameter(new CommandParameter("owner", User.class))
                 .addParameter(new CommandParameter("price", String.class))
                 .addParameter(new CommandParameter("amount", Integer.class))
                 .addParameter(new CommandParameter("item", ItemStack.class))
         //TODO change currency
+        //TODO setStock
         ;
     }
 
@@ -156,6 +158,17 @@ public class EditModeListener extends ChatCommand<Signmarket>
             else
             {
                 marketSign.setOwner(owner);
+            }
+        }
+        if (context.hasFlag("stock"))
+        {
+            if (marketSign.hasStock())
+            {
+                marketSign.setStock(null);
+            }
+            else
+            {
+                marketSign.setStock(0);
             }
         }
         if (context.hasParam("price"))

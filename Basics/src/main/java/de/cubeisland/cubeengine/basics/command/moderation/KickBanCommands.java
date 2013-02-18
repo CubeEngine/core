@@ -35,7 +35,7 @@ public class KickBanCommands
         this.module = module;
     }
 
-    @Command(desc = "Kicks a player from the server", usage = "<player or *> [message]", flags = @Flag(longName = "all", name = "a"))
+    @Command(desc = "Kicks a player from the server", usage = "<player or *> [message]", flags = @Flag(longName = "all", name = "a"),min = 1, max = 2)
     public void kick(ParameterizedContext context)
     {
         String message = context.getStrings(1);

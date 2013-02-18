@@ -17,7 +17,8 @@ import java.util.List;
 import java.util.Map;
 
 @SingleKeyEntity(autoIncrement = false, primaryKey = "key", tableName = "signmarketinfo", indices = {
-    @Index(value = Index.IndexType.FOREIGN_KEY, fields = "key", f_field = "key", f_table = "signmarketblocks", onDelete = "CASCADE"),
+    @Index(value = Index.IndexType.FOREIGN_KEY, fields = "key", f_field = "key", f_table = "signmarketblocks"),
+    @Index(value = Index.IndexType.FOREIGN_KEY, fields = "owner", f_field = "key", f_table = "user"),
 })
 public class SignMarketInfoModel implements Model<Long>
 {
@@ -38,7 +39,7 @@ public class SignMarketInfoModel implements Model<Long>
     @Attribute(type = AttrType.MEDIUMINT, unsigned = true, notnull = false)
     public Integer demand;
     @Attribute(type = AttrType.INT, unsigned = true, notnull = false)
-    public Long owner; //TODO foreign key to user
+    public Long owner;
 
     //ITEM-data:
     @Attribute(type = AttrType.VARCHAR, length = 32)
@@ -171,5 +172,10 @@ public class SignMarketInfoModel implements Model<Long>
         this.enchantments = info.enchantments;
 
         this.itemStack = null;
+    }
+
+    public boolean hasStock()
+    {
+        return this.stock != null;
     }
 }

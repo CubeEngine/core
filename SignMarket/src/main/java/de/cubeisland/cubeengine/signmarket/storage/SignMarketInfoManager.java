@@ -8,11 +8,11 @@ public class SignMarketInfoManager extends SingleKeyStorage<Long, SignMarketInfo
     private static final int REVISION = 1;
     private final Signmarket module;
 
+
     public SignMarketInfoManager(Signmarket module)
     {
         super(module.getDatabase(), SignMarketInfoModel.class, REVISION);
-        this.module = module;
         this.initialize();
+        this.module = module;
     }
-
 }

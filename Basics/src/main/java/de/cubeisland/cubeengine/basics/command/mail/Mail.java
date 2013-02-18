@@ -32,6 +32,8 @@ public class Mail implements Model<Long>
         this.senderId = senderId;
     }
 
+    public Mail() {}
+
     @Override
     public Long getKey()
     {

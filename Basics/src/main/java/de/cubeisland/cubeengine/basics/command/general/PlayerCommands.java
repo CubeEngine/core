@@ -115,7 +115,7 @@ public class PlayerCommands
         {
             if (!BasicsPerm.COMMAND_STARVE_ALL.isAuthorized(context.getSender()))
             {
-                context.sendMessage("basics","&cYou are not allowed to starve everyone!");
+                context.sendMessage("basics","&cYou are not allowed to let everyone starve!");
                 return;
             }
             Player[] players = context.getSender().getServer().getOnlinePlayers();
@@ -125,7 +125,7 @@ public class PlayerCommands
                 player.setSaturation(0);
                 player.setExhaustion(4);
             }
-            context.sendMessage("basics", "&eYou starve everyone to death!");
+            context.sendMessage("basics", "&eYou let everyone starve to death!");
             this.um.broadcastStatus("basics", "&etook away all food.", context.getSender().getName());
             return;
         }
@@ -138,7 +138,7 @@ public class PlayerCommands
         {
             if (!BasicsPerm.COMMAND_STARVE_OTHER.isAuthorized(context.getSender()))
             {
-                context.sendMessage("basics","&cYou are not allowed to starve other users!");
+                context.sendMessage("basics","&cYou are not allowed to let other user starve!");
                 return;
             }
             String[] userNames = StringUtils.explode(",",context.getString(0));

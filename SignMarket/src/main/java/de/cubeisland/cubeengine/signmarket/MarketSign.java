@@ -57,28 +57,29 @@ public class MarketSign implements InventoryHolder
 
     /**
      * Saves all MarketSignData into the database
-     *
-     * @return false if the sign is incomplete and cannot be saved
      */
-    public boolean saveToDatabase()
+    public void saveToDatabase()
     {
-        if (!this.isAdminSign() && this.inventory != null)
+        if (this.isValidSign(null))
         {
-            this.info.stock = getAmountOf(this.inventory, this.getItem());
+            if (!this.isAdminSign() && this.inventory != null)
+            {
+                this.info.stock = getAmountOf(this.inventory, this.getItem());
+            }
+            this.info.updateFromItem();
+            this.module.getMarketSignFactory().syncSign(this);
+            if (this.isNotSaved())
+            {
+                this.module.getSmblockManager().store(this.blockInfo);
+                this.info.setKey(this.blockInfo.getKey());
+                this.module.getSminfoManager().store(this.info);
+            }
+            else
+            {
+                this.module.getSminfoManager().update(this.info);
+            }
+            this.updateSign();
         }
-        this.info.updateFromItem();
-        if (this.blockInfo.key == 0)
-        {
-            this.module.getSmblockManager().store(this.blockInfo);
-            this.info.setKey(this.blockInfo.getKey());
-            this.module.getSminfoManager().store(this.info);
-        }
-        else
-        {
-            this.module.getSminfoManager().update(this.info);
-        }
-        this.updateSign();
-        return false;
     }
 
     public void deleteFromDatabase()
@@ -199,7 +200,7 @@ public class MarketSign implements InventoryHolder
      * @param user
      * @return true if the event shall be canceled
      */
-    public boolean executeAction(User user, Action type) //TODO return enum of possible results:
+    public boolean executeAction(User user, Action type)
     {
         boolean sneaking = user.isSneaking();
         ItemStack itemInHand = user.getItemInHand();
@@ -470,7 +471,7 @@ public class MarketSign implements InventoryHolder
         {
             user.sendMessage("&6" + Match.material().getNameFor(this.getItem()));
         }
-        if (!this.isAdminSign())
+        if (this.hasStock())
         {
             if (this.isBuySign() == null)
             {
@@ -485,6 +486,11 @@ public class MarketSign implements InventoryHolder
                 else
                 {
                     Integer maxAmount;
+                    if (this.isAdminSign())
+                    {
+                        user.sendMessage("signmarket", "&3In stock: &6%d&f/&6Infinite", this.info.stock); //TODO config infinite stock for admin?
+                        return;
+                    }
                     int maxStack = this.getItem().getMaxStackSize();
                     if (maxStack == 64)
                     {
@@ -510,7 +516,11 @@ public class MarketSign implements InventoryHolder
             }
             else
             {
-                if (this.info.demand == null)
+                if (this.hasDemand())
+                {
+                    user.sendMessage("signmarket", "&3In stock: &6%d&f/&6%d", this.info.stock, this.info.demand);
+                }
+                else
                 {
                     if (this.getItem() == null || this.getAmount() == 0)
                     {
@@ -519,35 +529,45 @@ public class MarketSign implements InventoryHolder
                     else
                     {
                         Integer maxAmount;
-                        int maxStack = this.getItem().getMaxStackSize();
-                        if (maxStack == 64)
+                        if (this.isAdminSign())
                         {
-                            maxAmount = 3456; // DoubleChest of 64
-                        }
-                        else if (this.module.getConfig().allowOverStackedInSign || maxStack > this.getAmount())
-                        {
-                            if (this.getAmount() > 64)
-                            {
-                                maxAmount = 3456;
-                            }
-                            else
-                            {
-                                maxAmount = 6*9*this.getAmount();
-                            }
+                            //TODO max stock of admin signs?
+                            user.sendMessage("signmarket", "&3In stock: &6%d&f/&6Infinite", this.info.stock);
                         }
                         else
                         {
-                            maxAmount = 6*9*maxStack;
+                            int maxStack = this.getItem().getMaxStackSize();
+                            if (maxStack == 64)
+                            {
+                                maxAmount = 3456; // DoubleChest of 64
+                            }
+                            else if (this.module.getConfig().allowOverStackedInSign || maxStack > this.getAmount())
+                            {
+                                if (this.getAmount() > 64)
+                                {
+                                    maxAmount = 3456;
+                                }
+                                else
+                                {
+                                    maxAmount = 6*9*this.getAmount();
+                                }
+                            }
+                            else
+                            {
+                                maxAmount = 6*9*maxStack;
+                            }
+                            user.sendMessage("signmarket", "&3In stock: &6%d&f/&6%d", this.info.stock, maxAmount);
                         }
-                        user.sendMessage("signmarket", "&3In stock: &6%d&f/&6%d", this.info.stock, maxAmount);
+
                     }
-                }
-                else
-                {
-                    user.sendMessage("signmarket", "&3In stock: &6%d&f/&6%d", this.info.stock, this.info.demand);
                 }
             }
         }
+    }
+
+    private boolean hasDemand()
+    {
+        return this.getDemand() != null;
     }
 
     private String parsePrice()
@@ -666,7 +686,6 @@ public class MarketSign implements InventoryHolder
             {
                 this.location.getWorld().strikeLightningEffect(location);
             }
-
             this.breakSign();
             location.getWorld().getBlockAt(location).breakNaturally();
             this.breakingSign.remove(user.key);
@@ -683,7 +702,7 @@ public class MarketSign implements InventoryHolder
         {
             if (this.isBuySign())
             {
-                if (this.isAdminSign() || this.getStock() >= this.getAmount())
+                if (!this.hasStock() || this.getStock() >= this.getAmount())
                 {
                     if (this.canAfford(user))
                     {
@@ -694,14 +713,21 @@ public class MarketSign implements InventoryHolder
                         if (checkForPlace(user.getInventory(), item.clone()))
                         {
                             this.module.getConomy().getAccountsManager().transaction(userAccount, ownerAccount, this.getPrice());
-                            if (!this.isAdminSign())
+                            if (!this.isAdminSign() || this.hasStock())
                             {
-                                this.getInventory().removeItem(item);
+                                if (this.isAdminSign())
+                                {
+                                    this.setStock(this.getStock() - this.getAmount());
+                                }
+                                else
+                                {
+                                    this.getInventory().removeItem(item);
+                                }
                                 this.saveToDatabase();
                             } // else admin sign -> no change
                             user.getInventory().addItem(item);
                             user.updateInventory();
-                            //TODO buy message
+                            user.sendMessage("BUY!");//TODO buy message
                         }
                         else
                         {
@@ -738,13 +764,20 @@ public class MarketSign implements InventoryHolder
                                 Account ownerAccount = this.module.getConomy().getAccountsManager().getAccount(this.getOwner(), this.getCurrency());
                                 this.module.getConomy().getAccountsManager().transaction(ownerAccount, userAccount, this.getPrice());
                                 user.getInventory().removeItem(item);
-                                if (!this.isAdminSign())
+                                if (!this.isAdminSign() || this.hasStock())
                                 {
-                                    this.addToInventory(item);
+                                    if (this.isAdminSign())
+                                    {
+                                        this.setStock(this.getStock()+this.getAmount());
+                                    }
+                                    else
+                                    {
+                                        this.addToInventory(item);
+                                    }
                                     this.saveToDatabase();
                                 } // else admin sign -> no change
                                 user.updateInventory();
-                                //TODO sell message
+                                user.sendMessage("SELL!");//TODO sell message
                             }
                             else
                             {
@@ -812,12 +845,6 @@ public class MarketSign implements InventoryHolder
         }
         if (this.info.owner == null)
         {
-            if (this.info.stock != null)
-            {
-                if (user != null)
-                    user.sendMessage("signmarket", "&cAdmin signs have no stock!");
-                result = false;
-            }
             if (this.info.demand != null)
             {
                 if (user != null)
@@ -840,6 +867,42 @@ public class MarketSign implements InventoryHolder
         {
             Sign blockState = (Sign)block.getState();
             String[] lines = new String[4];
+            boolean isValid = this.isValidSign(null);
+            if (this.isInEditMode())
+            {
+                if (this.isAdminSign())
+                {
+                    lines[0] = "&5&lAdmin-";
+                }
+                else
+                {
+                    lines[0] = "&5&l";
+                }
+            }
+            else if (!isValid)
+            {
+                lines[0] = "&4&l";
+            }
+            else if (this.isAdminSign())
+            {
+                lines[0] = "&9&lAdmin-";
+            }
+            else
+            {
+                lines[0] = "&1&l";
+            }
+            if (this.isBuySign() == null)
+            {
+                lines[0] += "Edit";
+            }
+            else if (this.isBuySign())
+            {
+                lines[0] += "Buy";
+            }
+            else
+            {
+                lines[0] += "Sell";
+            }
             ItemStack item = this.getItem();
             if (item == null)
             {
@@ -860,7 +923,6 @@ public class MarketSign implements InventoryHolder
             {
                 lines[1] = Match.material().getNameFor(this.getItem());
             }
-
             if (this.getAmount() == 0)
             {
                 if (this.isInEditMode())
@@ -875,40 +937,35 @@ public class MarketSign implements InventoryHolder
             else
             {
                 lines[2] = String.valueOf(this.getAmount());
-                if (!this.isAdminSign())
+                if (this.isBuySign() == null)
                 {
-                    if (this.isBuySign() == null)
-                    {
-                        lines[2] = "&4" + lines[2];
-                    }
-                    else if (this.isBuySign())
+                    lines[2] = "&4" + lines[2];
+                }
+                else if (this.isBuySign())
+                {
+                    if (this.hasStock())
                     {
                         if (this.getStock() < this.getAmount() || this.getStock() == 0)
                         {
                             lines[2] += " &4x" + this.getStock();
                         }
                         else
-                            lines[2] += " &1x" + this.getStock();
-                    }
-                    else
-                    {
-                        User user = this.module.getUserManager().getUser(this.info.owner);
-                        if (!this.canAfford(user) || (this.getDemand() != null && this.getDemand() - this.getStock() <= 0)
-                                || (this.module.getConfig().allowOverStackedInSign
-                                && this.getInventory().firstEmpty() == -1)
-                                || (!this.module.getConfig().allowOverStackedInSign
-                                && !checkForPlace(this.getInventory(), splitIntoMaxItems(this.getItem(), this.getItem().getMaxStackSize()))))
                         {
-                            if (this.getDemand() == null)
-                            {
-                                lines[2] += " &4x?";
-                            }
-                            else
-                            {
-                                lines[2] += " &4x" + (this.getDemand() - this.getStock());
-                            }
+                            lines[2] += " &1x" + this.getStock();
                         }
-                        else
+                    }
+                }
+                else
+                {
+                    if (this.hasStock())
+                    {
+                        User owner = this.module.getUserManager().getUser(this.info.owner);
+                        boolean canAfford = this.canAfford(owner);
+                        boolean demanding = this.getDemand() == null ? true : this.getRemainingDemand() > 0;
+                        boolean space = this.module.getConfig().allowOverStackedInSign
+                                ? this.getInventory().firstEmpty() != -1
+                                : checkForPlace(this.getInventory(),splitIntoMaxItems(this.getItem(),this.getItem().getMaxStackSize()));
+                        if (canAfford && demanding && space)
                         {
                             if (this.getDemand() == null)
                             {
@@ -919,53 +976,22 @@ public class MarketSign implements InventoryHolder
                                 lines[2] += " &bx" + (this.getDemand() - this.getStock());
                             }
                         }
+                        else
+                        {
+                            if (this.getDemand() == null)
+                            {
+                                lines[2] += " &4x?";
+                            }
+                            else
+                            {
+                                lines[2] += " &4x" + (this.getDemand() - this.getStock());
+                            }
+                        }
                     }
                 }
             }
             lines[3] = this.parsePrice();
-            if (this.info.isBuySign == null)
-            {
-                if (this.editMode)
-                {
-                    lines[0] = "&5&lEdit";
-                }
-                else
-                {
-                    lines[0] = "&4&lInvalid";
-                }
-            }
-            else if (this.info.isBuySign)
-            {
-                if (this.editMode)
-                {
-                    lines[0] = "&5&lBuy";
-                }
-                else if (!this.isValidSign(null))
-                {
-                    lines[0] = "&4&lBuy";
-                }
-                else if (!this.isAdminSign() && (this.getStock() < this.getAmount() || this.getStock() == 0))
-                {
-                    lines[0] = "&4&lSold Out";
-                }
-                else
-                    lines[0] = "&1&lBuy";
-            }
-            else
-            {
-                if (this.editMode)
-                {
-                    lines[0] = "&5&lSell";
-                }
-                else if (this.isAdminSign() || this.getDemand() == null || (this.getDemand() - this.getStock() > 0))
-                {
-                    lines[0] = "&1&lSell";
-                }
-                else
-                {
-                    lines[0] = "&4&lsatisfied";
-                }
-            }
+
             lines[0] = ChatFormat.parseFormats(lines[0]);
             lines[1] = ChatFormat.parseFormats(lines[1]);
             lines[2] = ChatFormat.parseFormats(lines[2]);
@@ -982,9 +1008,13 @@ public class MarketSign implements InventoryHolder
         }
     }
 
+    public boolean hasStock() {
+        return this.info.stock != null;
+    }
+
     private boolean canAfford(User user)
     {
-        if (this.getCurrency() == null || this.getPrice() == 0)
+        if (user == null || this.getCurrency() == null || this.getPrice() == 0)
         {
             return true;
         }
@@ -1126,5 +1156,18 @@ public class MarketSign implements InventoryHolder
     public Location getLocation()
     {
         return location;
+    }
+
+    public Integer getRemainingDemand()
+    {
+        if (this.getDemand() != null)
+        {
+            return this.getDemand() - this.getStock();
+        }
+        return null;
+    }
+
+    public boolean isNotSaved() {
+        return this.blockInfo.key == 0;
     }
 }

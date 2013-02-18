@@ -50,4 +50,8 @@ public class SignMarketBlockModel implements Model<Long>
 
     public SignMarketBlockModel()
     {}
+
+    public Location getLocation() {
+        return new Location(CubeEngine.getCore().getWorldManager().getWorld(world), x, y, z);
+    }
 }
