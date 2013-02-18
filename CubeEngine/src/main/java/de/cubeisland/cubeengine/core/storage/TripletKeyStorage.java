@@ -267,7 +267,7 @@ public class TripletKeyStorage<Key_f, Key_s, Key_t, M extends TripletKeyModel<Ke
         }
         catch (SQLException ex)
         {
-            throw new StorageException("An SQL related error occurred while updating the Model", ex);
+            throw new StorageException("An SQL-Error occurred while updating the Model", ex,this.database.getStoredStatement(modelClass,"update"));
         }
         catch (Exception ex)
         {
@@ -304,11 +304,11 @@ public class TripletKeyStorage<Key_f, Key_s, Key_t, M extends TripletKeyModel<Ke
         }
         catch (SQLException ex)
         {
-            throw new StorageException("An unknown error occurred while merging the Model", ex);
+            throw new StorageException("An SQL-Error occurred while merging the Model", ex,this.database.getStoredStatement(modelClass,"merge"));
         }
         catch (Exception ex)
         {
-            throw new StorageException("Error while reading Model to update", ex);
+            throw new StorageException("An unknown error occurred while reading merginga a model", ex);
         }
     }
 

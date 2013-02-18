@@ -1,5 +1,6 @@
 package de.cubeisland.cubeengine.core.storage;
 
+import java.sql.SQLException;
 import java.sql.Statement;
 
 /**
@@ -14,18 +15,19 @@ public class StorageException extends RuntimeException
         super(message);
     }
 
-    public StorageException(Throwable cause)
-    {
-        super(cause);
-    }
-
-    public StorageException(String message, Throwable cause)
-    {
+    public StorageException(String message, Throwable cause) {
         super(message, cause);
     }
 
-    public StorageException(String message, Throwable cause, Statement statement)
-    {//TODO use this exception!
+    /**
+     * Also prints the SQL-Statement that caused the exception
+     *
+     * @param message
+     * @param cause
+     * @param statement
+     */
+    public StorageException(String message, SQLException cause, Statement statement)
+    {
         //this allows seeing the complete sql that did produce the error
         super(message + "\n\n" + statement.toString(), cause);
     }

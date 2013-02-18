@@ -246,7 +246,7 @@ public class LogManager
         }
         catch (SQLException ex)
         {
-            throw new StorageException("Error while storing main Log-Entry", ex);
+            throw new StorageException("Error while storing main Log-Entry", ex, storeLog);
         }
         finally
         {
@@ -274,7 +274,7 @@ public class LogManager
         }
         catch (SQLException ex)
         {
-            throw new StorageException("Error while storing block Log-Entry", ex);
+            throw new StorageException("Error while storing block Log-Entry", ex, this.database.getStoredStatement(this.getClass(),"storeBlockLog"));
         }
     }
 
@@ -310,7 +310,7 @@ public class LogManager
         }
         catch (SQLException ex)
         {
-            throw new StorageException("Error while storing sign Log-Entry", ex);
+            throw new StorageException("Error while storing sign Log-Entry", ex, this.database.getStoredStatement(this.getClass(),"storeSignLog"));
         }
     }
 
@@ -328,7 +328,7 @@ public class LogManager
         }
         catch (SQLException ex)
         {
-            throw new StorageException("Error while storing kill Log-Entry", ex);
+            throw new StorageException("Error while storing kill Log-Entry", ex, this.database.getStoredStatement(this.getClass(),"storeKillLog"));
         }
     }
 
@@ -346,7 +346,7 @@ public class LogManager
         }
         catch (SQLException ex)
         {
-            throw new StorageException("Error while storing message Log-Entry", ex);
+            throw new StorageException("Error while storing message Log-Entry", ex, this.database.getStoredStatement(this.getClass(),"storeMessageLogs"));
         }
     }
 
@@ -369,7 +369,7 @@ public class LogManager
         }
         catch (SQLException ex)
         {
-            throw new StorageException("Error while storing message Log-Entry", ex);
+            throw new StorageException("Error while storing message Log-Entry", ex, this.database.getStoredStatement(this.getClass(),"storeChestLogs"));
         }
     }
 
@@ -682,7 +682,6 @@ public class LogManager
         try
         {
             ResultSet result = this.database.query(sql);
-
             while (result.next())
             {
                 Long key = result.getLong("key");

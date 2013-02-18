@@ -57,7 +57,7 @@ public class SignMarketBlockManager extends SingleKeyStorage<Long, SignMarketBlo
         }
         catch (SQLException ex)
         {
-            throw new IllegalStateException("Error while reading from Database", ex);
+            throw new StorageException("Error while reading from Database", ex, this.database.getStoredStatement(modelClass,"getByLocation"));
         }
     }
 }

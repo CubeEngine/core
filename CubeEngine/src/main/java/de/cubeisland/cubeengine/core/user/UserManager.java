@@ -94,7 +94,7 @@ public class UserManager extends SingleKeyStorage<Long, User> implements Cleanab
         }
         catch (SQLException e)
         {
-            throw new StorageException("Failed to initialize the user manager!", e);
+            throw new StorageException("Failed to initialize the user-manager!", e);
         }
     }
 
@@ -106,7 +106,7 @@ public class UserManager extends SingleKeyStorage<Long, User> implements Cleanab
         }
         catch (SQLException ex)
         {
-            throw new StorageException("Could not reset passwords", ex);
+            throw new StorageException("An SQL-Error occurred while clearing passwords", ex);
         }
     }
 
@@ -172,11 +172,11 @@ public class UserManager extends SingleKeyStorage<Long, User> implements Cleanab
         }
         catch (SQLException e)
         {
-            throw new StorageException("Error while getting Model from Database", e);
+            throw new StorageException("An SQL-Error occurred while creating a new Model from database", e,this.database.getStoredStatement(modelClass,"get_by_name"));
         }
         catch (Exception e)
         {
-            throw new StorageException("Error while creating fresh Model from Database", e);
+            throw new StorageException("An unknown error occurred while creating a new Model from database", e);
         }
         return loadedModel;
     }
@@ -519,9 +519,13 @@ public class UserManager extends SingleKeyStorage<Long, User> implements Cleanab
                         deleteByKey(result.getLong("key"));
                     }
                 }
+                catch (SQLException e)
+                {
+                    throw new StorageException("An SQL-Error occurred while cleaning the user-table", e, database.getStoredStatement(modelClass,"cleanup"));
+                }
                 catch (Exception e)
                 {
-                    throw new StorageException("Error while cleaning DB", e);
+                    throw new StorageException("An unknown Error occurred while cleaning the user-table", e);
                 }
             }
         });
