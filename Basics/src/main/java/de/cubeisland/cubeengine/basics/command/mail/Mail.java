@@ -5,9 +5,10 @@ import de.cubeisland.cubeengine.core.storage.Model;
 import de.cubeisland.cubeengine.core.storage.database.AttrType;
 import de.cubeisland.cubeengine.core.storage.database.Attribute;
 import de.cubeisland.cubeengine.core.storage.database.Index;
-import static de.cubeisland.cubeengine.core.storage.database.Index.IndexType.FOREIGN_KEY;
 import de.cubeisland.cubeengine.core.storage.database.SingleKeyEntity;
 import de.cubeisland.cubeengine.core.user.User;
+
+import static de.cubeisland.cubeengine.core.storage.database.Index.IndexType.FOREIGN_KEY;
 
 @SingleKeyEntity(tableName = "mail", primaryKey = "key", autoIncrement = true, indices = {
     @Index(value = FOREIGN_KEY, fields = "userId", f_table = "user", f_field = "key"),
@@ -21,10 +22,10 @@ public class Mail implements Model<Long>
     public String message;
     @Attribute(type = AttrType.INT, unsigned = true)
     public long userId;
-    @Attribute(type = AttrType.INT, unsigned = true)
-    public long senderId;
+    @Attribute(type = AttrType.INT, unsigned = true, notnull = false)
+    public Long senderId;
 
-    public Mail(long userId, long senderId, String message)
+    public Mail(long userId, Long senderId, String message)
     {
         this.message = message;
         this.userId = userId;

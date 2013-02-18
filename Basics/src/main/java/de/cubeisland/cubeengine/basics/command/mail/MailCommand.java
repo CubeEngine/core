@@ -6,7 +6,9 @@ import de.cubeisland.cubeengine.core.command.CommandContext;
 import de.cubeisland.cubeengine.core.command.ContainerCommand;
 import de.cubeisland.cubeengine.core.command.reflected.Alias;
 import de.cubeisland.cubeengine.core.command.reflected.Command;
+import de.cubeisland.cubeengine.core.command.sender.CommandSender;
 import de.cubeisland.cubeengine.core.user.User;
+import de.cubeisland.cubeengine.core.util.ChatFormat;
 import gnu.trove.set.TLongSet;
 import gnu.trove.set.hash.TLongHashSet;
 
@@ -27,7 +29,7 @@ public class MailCommand extends ContainerCommand
     }
 
     @Alias(names = "readmail")
-    @Command(desc = "Reads your mails.", usage = "[player]")
+    @Command(desc = "Reads your mails.", usage = "[player]", max = 1)
     public void read(CommandContext context)
     {
         User sender;
@@ -76,7 +78,8 @@ public class MailCommand extends ContainerCommand
         BasicUser bUser = this.basics.getBasicUserManager().getBasicUser(sender);
         if (bUser.mailbox.isEmpty())
         {
-            context.sendMessage("basics", "&eYou do not have any message!");
+            context.sendMessage("basics", "&eYou do not have any mail!");
+            return;
         }
         List<Mail> mails;
         if (mailof == null) //get mails
@@ -99,11 +102,11 @@ public class MailCommand extends ContainerCommand
             i++;
             sb.append("\n&f").append(i).append(": ").append(mail.toString());
         }
-        context.sendMessage("basics", "&aYour mails:%s", sb.toString());
+        context.sendMessage("basics", "&aYour mails:%s", ChatFormat.parseFormats(sb.toString()));
     }
 
     @Alias(names = "spymail")
-    @Command(desc = "Shows the mails of other players.", usage = "<player>", max = 1)
+    @Command(desc = "Shows the mails of other players.", usage = "<player>", min = 1, max = 1)
     public void spy(CommandContext context)
     {
         User user = context.getUser(0);
@@ -115,7 +118,7 @@ public class MailCommand extends ContainerCommand
         List<Mail> mails = mailManager.getMails(user);
         if (mails.isEmpty()) // Mailbox is not empty but no message from that player
         {
-            context.sendMessage("basics", "&2%s &edo not have any mails!", user.getName());
+            context.sendMessage("basics", "&2%s &edoes not have any mails!", user.getName());
             return;
         }
         StringBuilder sb = new StringBuilder();
@@ -125,7 +128,7 @@ public class MailCommand extends ContainerCommand
             i++;
             sb.append("\n&f").append(i).append(": ").append(mail.toString());
         }
-        context.sendMessage("basics", "&2%s's mails:%s", user.getName(), sb.toString());
+        context.sendMessage("basics", "&2%s's mails:%s", user.getName(), ChatFormat.parseFormats(sb.toString()));
     }
 
     @Alias(names = "sendmail")
@@ -139,12 +142,13 @@ public class MailCommand extends ContainerCommand
             return;
         }
         String message = context.getStrings(1);
-        this.mail(message, (User)context.getSender(), user);
+        this.mail(message, context.getSender(), user);
         context.sendMessage("basics", "&aMail send to &2%s&a!", user.getName());
     }
 
     @Alias(names = "sendallmail")
-    @Command(desc = "Sends mails to all players.", usage = "<message>")
+    @Command(desc = "Sends mails to all players.", usage = "<message>"
+    , min = 1 , max = NO_MAX)
     public void sendAll(CommandContext context)
     {
         List<User> users = this.basics.getUserManager().getOnlineUsers();
@@ -177,9 +181,8 @@ public class MailCommand extends ContainerCommand
         context.sendMessage("basics", "&aMail send to everyone!");
     }
 
-    @Command(names = {
-        "clear", "remove"
-    }, desc = "Clears your mails.", usage = "[player]")
+    @Command(names = {"clear", "remove"},
+            desc = "Clears your mails.", usage = "[player]")
     public void clear(CommandContext context)
     {
         User sender = null;
@@ -208,7 +211,7 @@ public class MailCommand extends ContainerCommand
         context.sendMessage("basics", "&eCleared all mails from &2%s&e!", from.getName());
     }
 
-    private void mail(String message, User from, User... users)
+    private void mail(String message, CommandSender from, User... users)
     {
         for (User user : users)
         {

@@ -8,7 +8,11 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.event.player.*;
+import org.bukkit.event.player.AsyncPlayerChatEvent;
+import org.bukkit.event.player.PlayerChatTabCompleteEvent;
+import org.bukkit.event.player.PlayerCommandPreprocessEvent;
+import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerMoveEvent;
 
 public class AfkListener implements Listener, Runnable
 {
@@ -51,7 +55,9 @@ public class AfkListener implements Listener, Runnable
     @EventHandler(priority = EventPriority.MONITOR)
     public void onChat(AsyncPlayerChatEvent event)
     {
-        this.setLastAction(event.getPlayer());
+        User user = this.basics.getUserManager().getExactUser(event.getPlayer());
+        user.setAttribute(this.basics, "lastAction", System.currentTimeMillis());
+        this.run();
     }
 
     @EventHandler(priority = EventPriority.MONITOR)

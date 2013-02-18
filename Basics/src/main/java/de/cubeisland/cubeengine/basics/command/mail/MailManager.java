@@ -2,6 +2,7 @@ package de.cubeisland.cubeengine.basics.command.mail;
 
 import de.cubeisland.cubeengine.basics.storage.BasicUser;
 import de.cubeisland.cubeengine.basics.storage.BasicUserManager;
+import de.cubeisland.cubeengine.core.command.sender.CommandSender;
 import de.cubeisland.cubeengine.core.storage.SingleKeyStorage;
 import de.cubeisland.cubeengine.core.storage.StorageException;
 import de.cubeisland.cubeengine.core.storage.database.Database;
@@ -62,17 +63,17 @@ public class MailManager extends SingleKeyStorage<Long, Mail>
         return mails;
     }
 
-    public void addMail(User user, User from, String message)
+    public void addMail(User user, CommandSender from, String message)
     {
         BasicUser bUser = this.getBasicUserWithMails(user);
         Mail mail;
-        if (from == null)
+        if (from instanceof User)
         {
-            mail = new Mail(user.key, 0, message);
+            mail = new Mail(user.key, ((User)from).key, message);
         }
         else
         {
-            mail = new Mail(user.key, from.key, message);
+            mail = new Mail(user.key, null, message);
         }
         bUser.mailbox.add(mail);
         this.store(mail);
