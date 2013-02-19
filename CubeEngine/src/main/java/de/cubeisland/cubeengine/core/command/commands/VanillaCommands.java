@@ -7,6 +7,7 @@ import de.cubeisland.cubeengine.core.command.CommandContext;
 import de.cubeisland.cubeengine.core.command.CommandHolder;
 import de.cubeisland.cubeengine.core.command.ContainerCommand;
 import de.cubeisland.cubeengine.core.command.CubeCommand;
+import de.cubeisland.cubeengine.core.command.exception.PermissionDeniedException;
 import de.cubeisland.cubeengine.core.command.parameterized.Flag;
 import de.cubeisland.cubeengine.core.command.parameterized.Param;
 import de.cubeisland.cubeengine.core.command.parameterized.ParameterizedContext;
@@ -16,9 +17,11 @@ import de.cubeisland.cubeengine.core.command.reflected.ReflectedCommand;
 import de.cubeisland.cubeengine.core.command.sender.CommandSender;
 import de.cubeisland.cubeengine.core.module.Module;
 import de.cubeisland.cubeengine.core.user.User;
+import de.cubeisland.cubeengine.core.util.ChatFormat;
 import de.cubeisland.cubeengine.core.util.Profiler;
 import org.bukkit.Difficulty;
 import org.bukkit.OfflinePlayer;
+import org.bukkit.Server;
 import org.bukkit.World;
 import org.bukkit.plugin.Plugin;
 
@@ -304,9 +307,54 @@ public class VanillaCommands implements CommandHolder
         }
     }
 
-//    @Command(desc = "Displays the version of the server or a given plugin", usage = "[plugin]")
+    @Command(desc = "Displays the version of the server or a given plugin", usage = "[plugin]", max = 1)
     public void version(CommandContext context)
-    {}
+    {
+        Server server = this.core.getServer();
+        if (context.hasArgs())
+        {
+            if (!CorePerms.COMMAND_VERSION_PLUGINS.isAuthorized(context.getSender()))
+            {
+                throw new PermissionDeniedException();
+            }
+            Plugin plugin = server.getPluginManager().getPlugin(context.getString(0));
+            if (plugin == null)
+            {
+                context.sendMessage("core", "&cThe given plugin doesn't seem to be loaded, have you type it correctly (casing does matter)?");
+                return;
+            }
+            else
+            {
+                context.sendMessage(" ");
+                context.sendMessage("core", "&e%s&f is currently running in version &9%s&f.", plugin.getName(), plugin.getDescription().getVersion());
+                context.sendMessage(" ");
+                context.sendMessage("core", "&nPlugin information:");
+                context.sendMessage(" ");
+                context.sendMessage("core", "Description: &6%s", plugin.getDescription().getDescription());
+                context.sendMessage("core", "Website: &6%s", plugin.getDescription().getWebsite());
+                context.sendMessage("core", "Authors:");
+                for (String author : plugin.getDescription().getAuthors())
+                {
+                    context.sendMessage("   - " + ChatFormat.AQUA + author);
+                }
+            }
+        }
+        else
+        {
+            if (server.getName().equalsIgnoreCase("craftbukkit"))
+            {
+                context.sendMessage("core", "This server is unfortunately running &c%s&r in version &9%s", server.getName(), server.getVersion());
+                context.sendMessage("core", "&kTrololol EvilSeph&r!");
+            }
+            else
+            {
+                context.sendMessage("core", "This server is running &e%s&r in version &9%s", server.getName(), server.getVersion());
+            }
+            context.sendMessage("core", "&eBukkit API&r Version: &9%s", server.getBukkitVersion());
+            context.sendMessage(" ");
+            context.sendMessage("core", "Expanded and improved by &aCubeEngine&r revision &9%s", Core.REVISION);
+        }
+    }
 
     public class WhitelistCommand extends ContainerCommand
     {

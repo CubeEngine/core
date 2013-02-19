@@ -17,7 +17,8 @@ public enum CorePerms implements Permission
     COMMAND_SETPASSWORD_OTHER,
     COMMAND_OP_NOTIFY,
     COMMAND_DEOP_NOTIFY,
-    COMMAND_DEOP_OTHER(FALSE);
+    COMMAND_DEOP_OTHER(FALSE),
+    COMMAND_VERSION_PLUGINS;
 
     private String permission;
     private PermDefault def;
@@ -37,7 +38,7 @@ public enum CorePerms implements Permission
     @Override
     public boolean isAuthorized(Permissible player)
     {
-        return player.hasPermission(permission);
+        return player.hasPermission(this.permission);
     }
 
     @Override

@@ -408,7 +408,8 @@ public abstract class CubeCommand extends Command
         }
         catch (PermissionDeniedException e)
         {
-            sender.sendMessage(e.getMessage());
+            sender.sendMessage("core", "&cYou're not allowed to do this!");
+            sender.sendMessage("core", "&cContact an administrator if you think this is a mistake!");
         }
         catch (Exception e)
         {

@@ -3,6 +3,7 @@ package de.cubeisland.cubeengine.core.bukkit;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import de.cubeisland.cubeengine.core.Core;
+import de.cubeisland.cubeengine.core.CorePerms;
 import de.cubeisland.cubeengine.core.CoreResource;
 import de.cubeisland.cubeengine.core.CubeEngine;
 import de.cubeisland.cubeengine.core.command.CommandManager;
@@ -225,9 +226,6 @@ public class BukkitCore extends JavaPlugin implements Core
         this.tableManager = new TableManager(this);
 
         // depends on: plugin manager
-        this.permissionManager = new BukkitPermissionManager(this);
-
-        // depends on: plugin manager
         this.eventRegistration = new EventManager(this);
 
         // depends on: executor, database, Server, core config and event registration
@@ -248,6 +246,10 @@ public class BukkitCore extends JavaPlugin implements Core
 
         // depends on: database
         this.moduleManager = new BukkitModuleManager(this);
+
+        // depends on: plugin manager, module manager
+        this.permissionManager = new BukkitPermissionManager(this);
+        this.permissionManager.registerPermissions(this.getModuleManager().getCoreModule(), CorePerms.values());
 
         // depends on: server, module manager
         this.commandManager.registerCommand(new ModuleCommands(this.moduleManager));
