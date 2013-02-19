@@ -20,4 +20,9 @@ public class SignMarketConfig extends Configuration
 
     @Option("sign.break.drop-in-creative")
     public boolean dropItemsInCreative = false;
+
+    @Option("sign.admin.allow-stock")
+    public boolean allowAdminStock = true;//TODO use it
+    @Option("sign.break.allow-nostock")
+    public boolean allowAdminNoStock = true;
 }

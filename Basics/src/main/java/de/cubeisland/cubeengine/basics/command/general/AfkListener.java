@@ -75,7 +75,8 @@ public class AfkListener implements Listener, Runnable
     private void setLastAction(Player player)
     {
         User user = this.basics.getUserManager().getExactUser(player);
-        if (BasicsPerm.AFK_PREVENT_AUTOUNAFK.isAuthorized(player))
+        Boolean isAfk = user.getAttribute(basics, "afk");
+        if (isAfk != null && isAfk && BasicsPerm.AFK_PREVENT_AUTOUNAFK.isAuthorized(player))
         {
             return;
         }

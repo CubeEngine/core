@@ -33,7 +33,7 @@ public class EditModeListener extends ChatCommand<Signmarket>
                 .addFlag(new CommandFlag("sell","sell"))
                 .addFlag(new CommandFlag("admin","admin"))
                 .addFlag(new CommandFlag("user","user"))
-                .addFlag(new CommandFlag("stock","stock"))
+                .addFlag(new CommandFlag("stock","stock")) //TODO sync admin stocks / prevent user having no stock
                 .addParameter(new CommandParameter("demand", Integer.class))
                 .addParameter(new CommandParameter("owner", User.class))
                 .addParameter(new CommandParameter("price", String.class))
@@ -43,7 +43,7 @@ public class EditModeListener extends ChatCommand<Signmarket>
         //TODO setStock
         ;
     }
-
+//TODO itemblacklist?
     private TLongObjectHashMap<Location> currentSignLocation = new TLongObjectHashMap<Location>();
     private TLongObjectHashMap<MarketSign> previousMarketSign = new TLongObjectHashMap<MarketSign>();
 
@@ -107,11 +107,53 @@ public class EditModeListener extends ChatCommand<Signmarket>
         }
         if (context.hasFlag("buy"))
         {
-            marketSign.setBuy();
+            if (marketSign.isAdminSign())
+            {
+                if (MarketSignPerm.SIGN_CREATE_ADMIN_BUY.isAuthorized(user))
+                {
+                    marketSign.setBuy();
+                }
+                else
+                {
+                    context.sendMessage("signmarket","&cYou are not allowed to create admin-buy signs!");
+                }
+            }
+            else
+            {
+                if (MarketSignPerm.SIGN_CREATE_USER_BUY.isAuthorized(user))
+                {
+                    marketSign.setBuy();
+                }
+                else
+                {
+                    context.sendMessage("signmarket","&cYou are not allowed to create user-buy signs!");
+                }
+            }
         }
         if (context.hasFlag("sell"))
         {
-            marketSign.setSell();
+            if (marketSign.isAdminSign())
+            {
+                if (MarketSignPerm.SIGN_CREATE_ADMIN_SELL.isAuthorized(user))
+                {
+                    marketSign.setSell();
+                }
+                else
+                {
+                    context.sendMessage("signmarket","&cYou are not allowed to create admin-sell signs!");
+                }
+            }
+            else
+            {
+                if (MarketSignPerm.SIGN_CREATE_USER_SELL.isAuthorized(user))
+                {
+                    marketSign.setSell();
+                }
+                else
+                {
+                    context.sendMessage("signmarket","&cYou are not allowed to create user-sell signs!");
+                }
+            }
         }
         if (context.hasParam("demand"))
         {
@@ -136,39 +178,82 @@ public class EditModeListener extends ChatCommand<Signmarket>
                 }
                 else
                 {
-                    context.sendMessage("signmarket","&cNo demand? So why that sign then?");
+                    context.sendMessage("signmarket","&cInvalid demand amount!");
                 }
             }
         }
         if (context.hasFlag("admin"))
         {
-            marketSign.setAdminSign();
-        }
-        if (context.hasFlag("user"))
-        {
-            marketSign.setOwner(user);
-        }
-        if (context.hasParam("owner"))
-        {
-            User owner = context.getParam("owner",null);
-            if (owner == null)
+            if (MarketSignPerm.SIGN_CREATE_ADMIN.isAuthorized(user))
             {
-                user.sendMessage("signmarket", "&cUser %s not found!",context.getString("owner"));
+                marketSign.setAdminSign();
             }
             else
             {
-                marketSign.setOwner(owner);
+                context.sendMessage("signmarket","&cYou are not allowed to create admin-signs");
+            }
+        }
+        if (context.hasFlag("user"))
+        {
+            if (MarketSignPerm.SIGN_CREATE_USER.isAuthorized(user))
+            {
+                marketSign.setOwner(user);
+            }
+            else
+            {
+                context.sendMessage("signmarket","&cYou are not allowed to create user-signs");
+            }
+        }
+        if (context.hasParam("owner"))
+        {
+            if (MarketSignPerm.SIGN_CREATE_USER_OTHER.isAuthorized(user))
+            {
+                User owner = context.getParam("owner",null);
+                if (owner == null)
+                {
+                    user.sendMessage("signmarket", "&cUser %s not found!",context.getString("owner"));
+                }
+                else
+                {
+                    marketSign.setOwner(owner);
+                }
+            }
+            else
+            {
+                context.sendMessage("signmarket","&cYou are not allowed to create user-signs for other users");
             }
         }
         if (context.hasFlag("stock"))
         {
-            if (marketSign.hasStock())
+            if (marketSign.isAdminSign())
             {
-                marketSign.setStock(null);
+                //TODO config if admin-signs are forced to have stock or nostock
+                if (marketSign.hasStock())
+                {
+                    if (MarketSignPerm.SIGN_CREATE_ADMIN_NOSTOCK.isAuthorized(user))
+                    {
+                        marketSign.setStock(null);
+                    }
+                    else
+                    {
+                        context.sendMessage("signmarket","&cYou are not allowed to create admin-signs with no stock");
+                    }
+                }
+                else
+                {
+                    if (MarketSignPerm.SIGN_CREATE_ADMIN_STOCK.isAuthorized(user))
+                    {
+                        marketSign.setStock(0);
+                    }
+                    else
+                    {
+                        context.sendMessage("signmarket","&cYou are not allowed to create admin-signs with stock");
+                    }
+                }
             }
             else
             {
-                marketSign.setStock(0);
+                context.sendMessage("signmarket","&cUser signs cannot have no stock!");
             }
         }
         if (context.hasParam("price"))
@@ -180,7 +265,6 @@ public class EditModeListener extends ChatCommand<Signmarket>
                 marketSign.setCurrency(currency);
                 context.sendMessage("signmarkte","&aCurrency set to default!");
             }
-
             Long price = currency.parse(context.getString("price"));
             if (price == null)
             {
@@ -267,7 +351,14 @@ public class EditModeListener extends ChatCommand<Signmarket>
                 MarketSign marketSign = this.getModule().getMarketSignFactory().getSignAt(newLoc);
                 if (marketSign == null)
                 {
-                    marketSign = this.getModule().getMarketSignFactory().createSignAt(newLoc);
+                    if (user.isSneaking())
+                    {
+                        event.setUseInteractedBlock(Event.Result.DEFAULT);
+                        event.setUseItemInHand(Event.Result.DEFAULT);
+                        return;
+                    }
+                    user.sendMessage("signmarket","&cThis is not a market-sign!\n&eUse shift leftclick to destroy the sign.");
+                    return;
                 }
                 if (marketSign.isInEditMode())
                 {
@@ -276,6 +367,11 @@ public class EditModeListener extends ChatCommand<Signmarket>
                         this.previousMarketSign.put(user.key, marketSign);
                         this.currentSignLocation.remove(user.key);
                     }
+                    return;
+                }
+                if (!MarketSignPerm.SIGN_EDIT.isAuthorized(user))
+                {
+                    user.sendMessage("signmarket","&cYou are not allowed to edit market-signs!");
                     return;
                 }
                 this.setEditingSign(user, newLoc, marketSign);
@@ -325,6 +421,12 @@ public class EditModeListener extends ChatCommand<Signmarket>
             User user = this.getModule().getUserManager().getExactUser(event.getPlayer());
             if (this.hasUser(user))
             {
+                if (!MarketSignPerm.SIGN_CREATE.isAuthorized(user))
+                {
+                    user.sendMessage("signmarket","&cYou are not allowed to create market-signs!");
+                    event.setCancelled(true);
+                    return;
+                }
                 Location loc = event.getBlockPlaced().getLocation();
                 MarketSign marketSign = this.getModule().getMarketSignFactory().createSignAt(loc);
                 this.setEditingSign(user, loc, marketSign);

@@ -254,7 +254,6 @@ public class MarketSign implements InventoryHolder
                         }
                         else if (this.isOwner(user) || MarketSignPerm.SIGN_INVENTORY_ACCESS_OTHER.isAuthorized(user))
                         {
-
                             if (this.isBuySign())
                             {
                                 guard.notBlockPutIn(this.getItem()).notBlockTakeOut(this.getItem());
@@ -278,6 +277,11 @@ public class MarketSign implements InventoryHolder
                 else
                 // no sneak -> empty & break signs
                 {
+                    if (this.editMode)
+                    {
+                        user.sendMessage("signmarket", "&cThis sign is being edited right now!");
+                        return true;
+                    }
                     if (this.isOwner(user) || MarketSignPerm.SIGN_INVENTORY_ACCESS_OTHER.isAuthorized(user))
                     {
                         if (!this.editMode && this.info.isBuySign != null && this.info.isBuySign && this.info.matchesItem(itemInHand))
@@ -893,7 +897,14 @@ public class MarketSign implements InventoryHolder
             }
             if (this.isBuySign() == null)
             {
-                lines[0] += "Edit";
+                if (this.isInEditMode())
+                {
+                    lines[0] += "Edit";
+                }
+                else
+                {
+                    lines[0] += "Invalid";
+                }
             }
             else if (this.isBuySign())
             {
@@ -1169,5 +1180,23 @@ public class MarketSign implements InventoryHolder
 
     public boolean isNotSaved() {
         return this.blockInfo.key == 0;
+    }
+
+    public void setDefaultFor(User user)
+    {
+        //TODO set default values.
+        if (MarketSignPerm.SIGN_CREATE_ADMIN.isAuthorized(user))
+        {
+            this.setAdminSign();
+        }
+        else if (MarketSignPerm.SIGN_CREATE_USER.isAuthorized(user))
+        {
+            this.setOwner(user);
+        }
+
+        if (this.isAdminSign())
+        {
+            //TODO set stock if forced
+        }
     }
 }
