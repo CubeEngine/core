@@ -591,6 +591,7 @@ public class MarketSign implements InventoryHolder
         return this.getCurrency().formatShort(this.info.price);
     }
 
+    @SuppressWarnings("deprecation")
     private int putItems(User user, boolean all)
     {
         int amount;
@@ -650,6 +651,7 @@ public class MarketSign implements InventoryHolder
         }
     }
 
+    @SuppressWarnings("deprecation")
     private void takeItems(User user)
     {
         ItemStack item = this.getItem().clone();
@@ -700,6 +702,7 @@ public class MarketSign implements InventoryHolder
         return false;
     }
 
+    @SuppressWarnings("deprecation")
     private boolean useSign(User user)
     {
         if (this.isValidSign(user))

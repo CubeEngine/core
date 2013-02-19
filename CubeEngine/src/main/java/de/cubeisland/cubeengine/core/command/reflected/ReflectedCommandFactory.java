@@ -54,6 +54,7 @@ public class ReflectedCommandFactory<T extends CubeCommand> implements CommandFa
         return true;
     }
 
+    @SuppressWarnings("unchecked")
     protected T buildCommand(Module module, Object holder, Method method, Annotation rawAnnotation)
     {
         Command annotation = (Command)rawAnnotation;
