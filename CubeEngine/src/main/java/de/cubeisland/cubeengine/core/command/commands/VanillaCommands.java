@@ -35,6 +35,7 @@ import static de.cubeisland.cubeengine.core.permission.PermDefault.FALSE;
 import static de.cubeisland.cubeengine.core.util.ChatFormat.*;
 import static de.cubeisland.cubeengine.core.util.Misc.arr;
 import static java.text.DateFormat.SHORT;
+import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import static java.util.concurrent.TimeUnit.SECONDS;
 
 public class VanillaCommands implements CommandHolder
@@ -299,7 +300,7 @@ public class VanillaCommands implements CommandHolder
                 world.save();
             }
             context.sendMessage("core", "&aAll worlds have been saved to disk!");
-            context.sendMessage("core", "&aThe saving took %d seconds.", Profiler.endProfiling("save-worlds", SECONDS));
+            context.sendMessage("core", "&aThe saving took %d milliseconds.", Profiler.endProfiling("save-worlds", MILLISECONDS));
         }
     }
 
