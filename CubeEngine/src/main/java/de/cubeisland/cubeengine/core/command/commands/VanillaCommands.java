@@ -86,7 +86,7 @@ public class VanillaCommands implements CommandHolder
     }
 
     @Command(
-        desc = "Changes the diffivulty level of the server",
+        desc = "Changes the difficulty level of the server",
         usage = "[difficulty] {world <world>}",
         params = @Param(names = {"world", "w"}, type = World.class, completer = WorldCompleter.class)
     )
@@ -157,7 +157,7 @@ public class VanillaCommands implements CommandHolder
             DateFormat dateFormat = SimpleDateFormat.getDateInstance(SHORT, Locale.ENGLISH); // TODO replace with sender's locale
             for (OfflinePlayer player : this.core.getServer().getOperators())
             {
-                context.sendMessage(" - " + player.getName() + " (" + _(context.getSender(), "core", "Last seen: %s", arr(dateFormat.format(new Date(player.getLastPlayed())))) + ")");
+                context.sendMessage(" - " + BRIGHT_GREEN + player.getName() + WHITE + " (" + _(context.getSender(), "core", "Last seen: %s", arr(dateFormat.format(new Date(player.getLastPlayed())))) + ")");
             }
             return;
         }
@@ -183,9 +183,9 @@ public class VanillaCommands implements CommandHolder
         user = this.core.getUserManager().getUser(offlinePlayer.getName(), false);
         if (user != null)
         {
-            user.sendMessage("core", "&aYou were opped by %s.", context.getSender().getName());
+            user.sendMessage("core", "&aYou were opped by &2%s&a.", context.getSender().getName());
         }
-        context.sendMessage("core", "&a%s is now an operator!", offlinePlayer.getPlayer());
+        context.sendMessage("core", "&2%s &ais now an operator!", offlinePlayer.getPlayer().getName());
 
         for (User onlineUser : this.core.getUserManager().getOnlineUsers())
         {
@@ -193,7 +193,7 @@ public class VanillaCommands implements CommandHolder
             {
                 continue;
             }
-            onlineUser.sendMessage("core", "&eUser %s has been opped by %s!", offlinePlayer.getName(), context.getSender().getName());
+            onlineUser.sendMessage("core", "&eUser &2%s &ehas been opped by &2%s&e!", offlinePlayer.getName(), context.getSender().getName());
         }
 
         this.core.getCoreLogger().log(NOTICE, "Player {0} has been opped by {1}", arr(offlinePlayer.getName(), context.getSender().getName()));
@@ -215,7 +215,7 @@ public class VanillaCommands implements CommandHolder
         }
         else if (sender instanceof User)
         {
-            offlinePlayer = ((User)sender).getPlayer();
+            offlinePlayer = ((User)sender).getPlayer(); // TODO /deop without any parameter would deop the user using the command is that intended???
         }
         else
         {
@@ -225,7 +225,7 @@ public class VanillaCommands implements CommandHolder
 
         if (!sender.equals(offlinePlayer) && !CorePerms.COMMAND_DEOP_OTHER.isAuthorized(sender))
         {
-            sender.sendMessage("core", "&cYou are not allowed to op others!");
+            sender.sendMessage("core", "&cYou are not allowed to deop others!"); // TODO console is not allowed to do this
             return;
         }
 
@@ -238,9 +238,9 @@ public class VanillaCommands implements CommandHolder
         User user = this.core.getUserManager().getUser(offlinePlayer.getName(), false);
         if (user != null)
         {
-            user.sendMessage("core", "&aYou were deopped by %s.", context.getSender().getName());
+            user.sendMessage("core", "&aYou were deopped by &2%s&a.", context.getSender().getName());
         }
-        context.sendMessage("core", "&a%s is no operator anymore!", offlinePlayer.getPlayer());
+        context.sendMessage("core", "&2%s &ais no operator anymore!", offlinePlayer.getPlayer().getName());
 
         for (User onlineUser : this.core.getUserManager().getOnlineUsers())
         {
@@ -248,7 +248,7 @@ public class VanillaCommands implements CommandHolder
             {
                 continue;
             }
-            onlineUser.sendMessage("core", "&eUser %s has been opped by %s!", offlinePlayer.getName(), context.getSender().getName());
+            onlineUser.sendMessage("core", "&eUser &2%s&a has been opped by &2%s&a!", offlinePlayer.getName(), context.getSender().getName());
         }
 
         this.core.getCoreLogger().log(NOTICE, "Player {0} has been deopped by {1}", arr(offlinePlayer.getName(), context.getSender().getName()));
