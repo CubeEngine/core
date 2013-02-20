@@ -9,6 +9,7 @@ import de.cubeisland.cubeengine.core.logger.CubeFileHandler;
 import de.cubeisland.cubeengine.core.logger.CubeLogger;
 import de.cubeisland.cubeengine.core.util.StringUtils;
 import de.cubeisland.cubeengine.core.util.matcher.Match;
+import org.apache.commons.lang.Validate;
 import org.bukkit.Server;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandException;
@@ -16,12 +17,17 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.command.SimpleCommandMap;
 import org.bukkit.command.defaults.BukkitCommand;
+import org.bukkit.command.defaults.VanillaCommand;
+import org.bukkit.util.StringUtil;
 
 import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
@@ -30,6 +36,7 @@ import java.util.logging.Formatter;
 import java.util.logging.Level;
 import java.util.logging.LogRecord;
 import java.util.logging.Logger;
+import java.util.regex.Pattern;
 
 import static de.cubeisland.cubeengine.core.i18n.I18n._;
 import static de.cubeisland.cubeengine.core.logger.LogLevel.INFO;
@@ -266,6 +273,78 @@ public class CubeCommandMap extends SimpleCommandMap
         knownCommands.put(label, command);
 
         return true;
+    }
+
+    private static final Pattern PATTERN_ON_SPACE = Pattern.compile(" ", Pattern.LITERAL);
+    @Override
+    public List<String> tabComplete(CommandSender sender, String cmdLine)
+    {
+        Validate.notNull(sender, "Sender cannot be null");
+        Validate.notNull(cmdLine, "Command line cannot null");
+
+        int spaceIndex = cmdLine.indexOf(' ');
+
+        if (spaceIndex == -1) {
+            ArrayList<String> completions = new ArrayList<String>();
+            Map<String, Command> knownCommands = this.knownCommands;
+
+            for (VanillaCommand command : fallbackCommands) {
+                String name = command.getName();
+
+                if (!command.testPermissionSilent(sender)) {
+                    continue;
+                }
+                if (knownCommands.containsKey(name)) {
+                    // Don't let a vanilla command override a command added below
+                    // This has to do with the way aliases work
+                    continue;
+                }
+                if (!StringUtil.startsWithIgnoreCase(name, cmdLine)) {
+                    continue;
+                }
+
+                completions.add('/' + name);
+            }
+
+            for (Map.Entry<String, Command> commandEntry : knownCommands.entrySet()) {
+                Command command = commandEntry.getValue();
+
+                if (!command.testPermissionSilent(sender)) {
+                    continue;
+                }
+
+                String name = commandEntry.getKey(); // Use the alias, not command name
+
+                if (StringUtil.startsWithIgnoreCase(name, cmdLine)) {
+                    completions.add('/' + name);
+                }
+            }
+
+            Collections.sort(completions, String.CASE_INSENSITIVE_ORDER);
+            return completions;
+        }
+
+        String commandName = cmdLine.substring(0, spaceIndex);
+        Command target = getCommand(commandName);
+
+        if (target == null) {
+            return null;
+        }
+
+        if (!target.testPermissionSilent(sender)) {
+            return null;
+        }
+
+        String argLine = cmdLine.substring(spaceIndex + 1, cmdLine.length());
+        String[] args = PATTERN_ON_SPACE.split(argLine, -1);
+
+        try {
+            return target.tabComplete(sender, commandName, args);
+        } catch (CommandException ex) {
+            throw ex;
+        } catch (Throwable ex) {
+            throw new CommandException("Unhandled exception executing tab-completer for '" + cmdLine + "' in " + target, ex);
+        }
     }
 
     @Override
