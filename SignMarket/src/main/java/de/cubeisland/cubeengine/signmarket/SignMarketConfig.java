@@ -18,9 +18,6 @@ public class SignMarketConfig extends Configuration
     @Comment("Allows items taken out of signs to be overstacked up to 64.")
     public boolean allowOverStackedOutOfSign = false;
 
-    @Option("sign.break.drop-in-creative")
-    public boolean dropItemsInCreative = false;
-
     @Option("sign.admin.allow-stock")
     public boolean allowAdminStock = true;//TODO use it
     @Option("sign.break.allow-nostock")

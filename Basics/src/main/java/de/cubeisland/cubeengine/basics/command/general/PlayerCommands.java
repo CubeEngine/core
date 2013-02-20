@@ -556,7 +556,7 @@ public class PlayerCommands
 
     }
 
-    @Command(desc = "Toggles the god-mode!", usage = "[player]")
+    @Command(desc = "Toggles the god-mode!", usage = "[player]", max = 1)
     public void god(CommandContext context)
     {
         User user = null;
@@ -607,7 +607,7 @@ public class PlayerCommands
         context.sendMessage("basics", "&eYou are no longer invincible!");
     }
 
-    @Command(desc = "Changes your walkspeed.", usage = "<speed> [player <player>]", min = 1, max = 1)
+    @Command(desc = "Changes your walkspeed.", usage = "<speed> [player]", min = 1, max = 1)
     public void walkspeed(ParameterizedContext context)
     {
         User sender = null;
@@ -617,9 +617,9 @@ public class PlayerCommands
         }
         User user = sender;
         boolean other = false;
-        if (context.hasParam("player"))
+        if (context.hasArg(1))
         {
-            user = context.getParam("player");
+            user = context.getUser(1);
             if (user != sender)
             {
                 other = true;
@@ -635,8 +635,7 @@ public class PlayerCommands
             context.sendMessage("core", "&cUser %s not found or offline!", context.getString("player"));
             return;
         }
-        // PermissionChecks
-        if (other && !BasicsPerm.COMMAND_WALKSPEED_OTHER.isAuthorized(context.getSender()))
+        if (other && !BasicsPerm.COMMAND_WALKSPEED_OTHER.isAuthorized(context.getSender())) // PermissionChecks
         {
             context.sendMessage("basics", "&cYou are not allowed to change the walk-speed of other user!");
             return;

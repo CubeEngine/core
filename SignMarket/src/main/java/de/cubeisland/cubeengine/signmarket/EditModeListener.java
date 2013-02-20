@@ -102,7 +102,7 @@ public class EditModeListener extends ChatCommand<Signmarket>
             }
             else
             {
-                marketSign.applyAllValues(prevMarketSign);
+                marketSign.applyValues(prevMarketSign);
             }
         }
         if (context.hasFlag("buy"))
@@ -404,6 +404,8 @@ public class EditModeListener extends ChatCommand<Signmarket>
                 user.sendMessage("signmarket", "&eThis sign is not a market-sign!");
                 return; // not a market-sign
             }
+            //TODO prevent changing if user-sign and items in stock! OR take out all items
+
             this.setEditingSign(user, curLoc, curSign);
             curSign.setItemStack(user.getItemInHand(), true);
             curSign.updateSign();

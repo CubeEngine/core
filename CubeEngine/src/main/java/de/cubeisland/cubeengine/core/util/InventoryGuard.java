@@ -144,16 +144,18 @@ public class InventoryGuard implements Listener
                 {// -> PutIntoTop
                     if (this.blockAllIn) // block in
                     {
-                        if (this.hasAllowIn(cursor)) // except
+                        if (clickTop && this.hasAllowIn(cursor)) // except topClick allowIn on cursor AND ...
                         {
                             if (invent == null || invent.getTypeId() == 0 || this.hasAllowOut(invent)) // no out OR allow out
                             {
-                                for (Runnable runner : this.onChange)
-                                {
-                                    runner.run();
-                                }
+                                this.runOnChange();
                                 return;
                             }
+                        }
+                        else if (!clickTop && this.hasAllowIn(invent)) // except botClick (and shift) and allow in that item
+                        {
+                            this.runOnChange();
+                            return;
                         }
                     }
                     else
@@ -162,10 +164,7 @@ public class InventoryGuard implements Listener
                         {
                             if (invent == null || invent.getTypeId() == 0 || this.hasAllowOut(invent)) // no out OR allow out
                             {
-                                for (Runnable runner : this.onChange)
-                                {
-                                    runner.run();
-                                }
+                                this.runOnChange();
                                 return;
                             }
                         }
@@ -181,10 +180,7 @@ public class InventoryGuard implements Listener
                     {
                         if (this.hasAllowOut(invent))
                         {
-                            for (Runnable runner : this.onChange)
-                            {
-                                runner.run();
-                            }
+                            this.runOnChange();
                             return;
                         }
                     }
@@ -192,10 +188,7 @@ public class InventoryGuard implements Listener
                     {
                         if (!this.hasDenyOut(invent))
                         {
-                            for (Runnable runner : this.onChange)
-                            {
-                                runner.run();
-                            }
+                            this.runOnChange();
                             return;
                         }
                     }
@@ -204,6 +197,14 @@ public class InventoryGuard implements Listener
                     return;
                 }
             }
+        }
+    }
+
+    private void runOnChange()
+    {
+        for (Runnable runner : this.onChange)
+        {
+            runner.run();
         }
     }
 

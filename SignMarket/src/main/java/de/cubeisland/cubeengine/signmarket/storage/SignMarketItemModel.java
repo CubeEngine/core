@@ -3,11 +3,14 @@ package de.cubeisland.cubeengine.signmarket.storage;
 import de.cubeisland.cubeengine.core.storage.Model;
 import de.cubeisland.cubeengine.core.storage.database.AttrType;
 import de.cubeisland.cubeengine.core.storage.database.Attribute;
-import de.cubeisland.cubeengine.core.storage.database.Index;
 import de.cubeisland.cubeengine.core.storage.database.SingleKeyEntity;
 import de.cubeisland.cubeengine.core.util.StringUtils;
+import de.cubeisland.cubeengine.signmarket.MarketSign;
+import gnu.trove.set.hash.THashSet;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
+import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
@@ -16,30 +19,16 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-@SingleKeyEntity(autoIncrement = false, primaryKey = "key", tableName = "signmarketinfo", indices = {
-    @Index(value = Index.IndexType.FOREIGN_KEY, fields = "key", f_field = "key", f_table = "signmarketblocks"),
-    @Index(value = Index.IndexType.FOREIGN_KEY, fields = "owner", f_field = "key", f_table = "user"),
+@SingleKeyEntity(autoIncrement = true, primaryKey = "key", tableName = "signmarketitem", indices = {
+
 })
-public class SignMarketInfoModel implements Model<Long>
+public class SignMarketItemModel implements Model<Long>,InventoryHolder
 {
     @Attribute(type = AttrType.INT, unsigned = true)
-    public long key;
-    @Attribute(type = AttrType.BOOLEAN)
-    public Boolean isBuySign; //else isSellSign / NULL -> Edit illegal value for database!
-
-    @Attribute(type = AttrType.SMALLINT, unsigned = true)
-    public int amount = 0;
-    @Attribute(type = AttrType.INT, unsigned = true)
-    public long price;
-    @Attribute(type = AttrType.VARCHAR, length = 64)
-    public String currency;
+    public long key = -1;
 
     @Attribute(type = AttrType.MEDIUMINT, unsigned = true, notnull = false)
-    public Integer stock;
-    @Attribute(type = AttrType.MEDIUMINT, unsigned = true, notnull = false)
-    public Integer demand;
-    @Attribute(type = AttrType.INT, unsigned = true, notnull = false)
-    public Long owner;
+    public Integer stock; // can be null if infinite stock
 
     //ITEM-data:
     @Attribute(type = AttrType.VARCHAR, length = 32)
@@ -53,21 +42,20 @@ public class SignMarketInfoModel implements Model<Long>
     @Attribute(type = AttrType.VARCHAR, length = 255, notnull = false)
     public String enchantments;
 
-    private ItemStack itemStack = null;
+    private ItemStack itemStack;
 
-    @Override
-    public Long getKey()
+    public void applyValues(SignMarketItemModel itemInfo)
     {
-        return this.key;
+        this.stock = itemInfo.stock;
+        this.item = itemInfo.item;
+        this.damageValue = itemInfo.damageValue;
+        this.customName = itemInfo.customName;
+        this.lore = itemInfo.lore;
+        this.enchantments = itemInfo.enchantments;
+        this.itemStack = null;
     }
 
-    @Override
-    public void setKey(Long key)
-    {
-        this.key = key;
-    }
-
-    public void setItem(ItemStack item, boolean setAmount)
+    public void setItem(ItemStack item)
     {
         this.item = item.getType().name();
         this.damageValue = (int)item.getDurability();
@@ -83,11 +71,8 @@ public class SignMarketInfoModel implements Model<Long>
         {
             this.lore = StringUtils.implode("\n", meta.getLore());
         }
-        if (setAmount)
-        {
-            this.amount = item.getAmount();
-        }
         this.itemStack = null;
+        this.inventory = null;
     }
 
     private String getEnchantmentsAsString(ItemStack item)
@@ -105,14 +90,16 @@ public class SignMarketInfoModel implements Model<Long>
         return null;
     }
 
-    public SignMarketInfoModel()
-    {}
-
     public boolean matchesItem(ItemStack itemInHand)
     {
         return this.getItem().isSimilar(itemInHand);
     }
 
+    /**
+     * Returns the ItemStack of the item saved in this sign with amount 0.
+     *
+     * @return
+     */
     public ItemStack getItem()
     {
         if (this.itemStack == null)
@@ -142,40 +129,82 @@ public class SignMarketInfoModel implements Model<Long>
                 }
             }
         }
-        itemStack.setAmount(this.amount);
         return itemStack;
     }
 
-    public boolean isAdminSign()
-    {
-        return this.owner == null;
-    }
-
-    public void updateFromItem()
-    {
-        this.setItem(this.itemStack, false);
-    }
-
-    public void applyAllValues(SignMarketInfoModel info)
-    {
-        this.isBuySign = info.isBuySign; //else isSellSign / NULL -> Edit illegal value for database!
-        this.amount = info.amount;
-        this.price = info.price;
-        this.currency = info.currency;
-        this.stock = info.stock;
-        this.demand = info.demand;
-        this.owner = info.owner;
-        this.item = info.item;
-        this.damageValue = info.damageValue;
-        this.customName = info.customName;
-        this.lore = info.lore;
-        this.enchantments = info.enchantments;
-
-        this.itemStack = null;
-    }
 
     public boolean hasStock()
     {
         return this.stock != null;
+    }
+
+    /**
+     * Returns true if both item-models share the same item and are not infinite item-sources
+     * <p>in addition to this the market-signs have to share their owner too!
+     *
+     * @param model the model to compare to
+     * @return
+     */
+    public boolean canSync(SignMarketItemModel model)
+    {
+        return this.hasStock() && model.hasStock() // both not infinite stocks
+            && this.getItem().isSimilar(model.getItem()); // same item
+    }
+
+    //for database:
+    @Override
+    public Long getKey()
+    {
+        return this.key;
+    }
+
+    @Override
+    public void setKey(Long key)
+    {
+        this.key = key;
+    }
+    public SignMarketItemModel()
+    {}
+
+    private THashSet<MarketSign> sharedStockSigns = new THashSet<MarketSign>();
+
+    public void removeSign(MarketSign marketSign)
+    {
+        this.sharedStockSigns.remove(marketSign);
+    }
+
+    public void addSign(MarketSign marketSign)
+    {
+        this.sharedStockSigns.add(marketSign);
+    }
+
+    public boolean isNotReferenced()
+    {
+        return this.sharedStockSigns.isEmpty();
+    }
+
+    public boolean sharesStock()
+    {
+        return this.sharedStockSigns.size() > 1;
+    }
+
+    public void updateSigns()
+    {
+        for (MarketSign sign : this.sharedStockSigns)
+        {
+            sign.updateSign();
+        }
+    }
+
+    private Inventory inventory;
+    @Override
+    public Inventory getInventory()
+    {
+        return this.inventory;
+    }
+
+    public void initInventory(Inventory inventory)
+    {
+        this.inventory = inventory;
     }
 }

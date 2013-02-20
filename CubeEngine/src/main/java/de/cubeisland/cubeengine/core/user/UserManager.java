@@ -315,6 +315,10 @@ public class UserManager extends SingleKeyStorage<Long, User> implements Cleanab
      */
     public User getUser(Long key)
     {
+        if (key == null)
+        {
+            return null;
+        }
         User user = this.get(key);
         if (user == null)
         {

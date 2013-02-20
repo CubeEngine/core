@@ -22,8 +22,17 @@ import java.util.List;
 import static de.cubeisland.cubeengine.core.command.ArgBounds.NO_MAX;
 
 /**
- * item-related commands /itemdb /rename /headchange /unlimited /enchant /give
- * /item /more /repair /stack
+ * item-related commands
+ * <p>/itemdb
+ * <p>/rename
+ * <p>/headchange
+ * <p>/unlimited
+ * <p>/enchant
+ * <p>/give
+ * <p>/item
+ * <p>/more
+ * <p>/repair
+ * <p>/stack
  */
 public class ItemCommands
 {
@@ -54,11 +63,6 @@ public class ItemCommands
         if (context.getSender() instanceof User)
         {
             User sender = (User)context.getSender();
-            if (sender == null)
-            {
-
-                return;
-            }
             if (sender.getItemInHand().getType().equals(Material.AIR))
             {
                 context.sendMessage("basics", "&eYou hold nothing in your hands!");
