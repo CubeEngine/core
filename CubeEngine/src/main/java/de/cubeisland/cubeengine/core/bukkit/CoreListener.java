@@ -49,10 +49,5 @@ public class CoreListener implements Listener
     @EventHandler
     public void onPacket(PacketReceivedEvent event)
     {
-        if (event.getPacket() instanceof Packet204LocaleAndViewDistance)
-        {
-            Packet204LocaleAndViewDistance packet = (Packet204LocaleAndViewDistance)event.getPacket();
-            this.pm.callEvent(new PlayerLanguageReceivedEvent(event.getPlayer(), packet.d()));
-        }
     }
 }

@@ -2,10 +2,8 @@ package de.cubeisland.cubeengine.core.bukkit.event;
 
 import net.minecraft.server.v1_4_R1.Packet;
 import org.bukkit.entity.Player;
-import org.bukkit.event.Cancellable;
-import org.bukkit.event.Event;
 
-public abstract class PacketEvent extends Event implements Cancellable
+public abstract class PacketEvent
 {
     private final Player player;
     private final int packetId;

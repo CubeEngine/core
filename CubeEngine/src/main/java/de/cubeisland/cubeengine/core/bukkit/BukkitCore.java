@@ -6,6 +6,10 @@ import de.cubeisland.cubeengine.core.Core;
 import de.cubeisland.cubeengine.core.CorePerms;
 import de.cubeisland.cubeengine.core.CoreResource;
 import de.cubeisland.cubeengine.core.CubeEngine;
+import de.cubeisland.cubeengine.core.bukkit.event.PacketEventManager;
+import de.cubeisland.cubeengine.core.bukkit.event.PacketReceivedEvent;
+import de.cubeisland.cubeengine.core.bukkit.event.PacketReceivedListener;
+import de.cubeisland.cubeengine.core.bukkit.event.PlayerLanguageReceivedEvent;
 import de.cubeisland.cubeengine.core.command.CommandManager;
 import de.cubeisland.cubeengine.core.command.commands.CoreCommands;
 import de.cubeisland.cubeengine.core.command.commands.ModuleCommands;
@@ -32,6 +36,7 @@ import de.cubeisland.cubeengine.core.util.worker.CubeThreadFactory;
 import de.cubeisland.cubeengine.core.webapi.ApiConfig;
 import de.cubeisland.cubeengine.core.webapi.ApiServer;
 import de.cubeisland.cubeengine.core.webapi.exception.ApiStartupException;
+import net.minecraft.server.v1_4_R1.Packet204LocaleAndViewDistance;
 import org.bukkit.Server;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -66,13 +71,13 @@ public class BukkitCore extends JavaPlugin implements Core
     private WorldManager worldManager;
     private Match matcherManager;
     private InventoryGuardFactory inventoryGuard;
+    private PacketEventManager packetEventManager;
 
     @Override
     public void onEnable()
     {
         final Server server = this.getServer();
         final PluginManager pm = server.getPluginManager();
-
         if (!BukkitUtils.isCompatible())
         {
             this.getLogger().log(ERROR, "Your Bukkit server is incompatible with this CubeEngine revision.");
@@ -86,6 +91,16 @@ public class BukkitCore extends JavaPlugin implements Core
 
         this.logger = new CubeLogger("Core", this.getLogger());
         // TODO RemoteHandler is not yet implemented this.logger.addHandler(new RemoteHandler(LogLevelERROR, this));
+
+        this.packetEventManager = new PacketEventManager(this.logger);
+        this.packetEventManager.addReceivedListener(204, new PacketReceivedListener() {
+            @Override
+            public void handle(PacketReceivedEvent event)
+            {
+                pm.callEvent(new PlayerLanguageReceivedEvent(event.getPlayer(), ((Packet204LocaleAndViewDistance)event.getPacket()).d()));
+            }
+        });
+
 
         try
         {
@@ -290,6 +305,12 @@ public class BukkitCore extends JavaPlugin implements Core
         this.getCoreLogger().log(DEBUG, "utils cleanup");
         BukkitUtils.cleanup();
 
+        if (this.packetEventManager != null)
+        {
+            this.packetEventManager.clean();
+            this.packetEventManager = null;
+        }
+
         if (this.moduleManager != null)
         {
             this.getCoreLogger().log(DEBUG, "module manager cleanup");
@@ -473,5 +494,10 @@ public class BukkitCore extends JavaPlugin implements Core
     public InventoryGuardFactory getInventoryGuard()
     {
         return this.inventoryGuard;
+    }
+
+    public PacketEventManager getPacketEventManager()
+    {
+        return this.packetEventManager;
     }
 }

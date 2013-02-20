@@ -1,8 +1,7 @@
 package de.cubeisland.cubeengine.core.bukkit;
 
 import de.cubeisland.cubeengine.core.CubeEngine;
-import de.cubeisland.cubeengine.core.bukkit.event.PacketReceivedEvent;
-import de.cubeisland.cubeengine.core.bukkit.event.PacketSentEvent;
+import de.cubeisland.cubeengine.core.bukkit.event.PacketEventManager;
 import net.minecraft.server.v1_4_R1.EntityPlayer;
 import net.minecraft.server.v1_4_R1.Packet;
 import net.minecraft.server.v1_4_R1.Packet0KeepAlive;
@@ -82,13 +81,14 @@ import org.bukkit.entity.Player;
 public class CubePlayerConnection extends PlayerConnection
 {
     private final Player player;
-    private final EventManager em;
+    private final PacketEventManager em;
 
     public CubePlayerConnection(Player bukkitPlayer, EntityPlayer player)
     {
         super(player.server, player.playerConnection.networkManager, player);
         this.player = bukkitPlayer;
-        this.em = CubeEngine.getEventManager();
+        BukkitCore core = (BukkitCore)CubeEngine.getCore();
+        this.em = core.getPacketEventManager();
     }
 
     /**
@@ -100,18 +100,14 @@ public class CubePlayerConnection extends PlayerConnection
     public boolean packetReceived(final Packet packet)
     {
         // System.out.println("Received: " + packet.k());
-        if (PacketReceivedEvent.getHandlerList().getRegisteredListeners().length == 0)
-        {
-            return true;
-        }
-        return this.em.fireEvent(new PacketReceivedEvent(this.player, packet)).isCancelled();
+        return this.em.fireReceivedEvent(this.player, packet);
     }
 
     @Override
     public void sendPacket(final Packet packet)
     {
         // System.out.println("Sent: " + packet.k());
-        if (PacketSentEvent.getHandlerList().getRegisteredListeners().length > 0 || this.em.fireEvent(new PacketSentEvent(this.player, packet)).isCancelled())
+        if (this.em.fireSentEvent(this.player, packet))
         {
             return;
         }
