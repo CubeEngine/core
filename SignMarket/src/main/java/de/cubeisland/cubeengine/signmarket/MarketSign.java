@@ -760,7 +760,7 @@ public class MarketSign
                                 Account ownerAccount = this.module.getConomy().getAccountsManager().getAccount(this.getOwner(), this.getCurrency());
                                 this.module.getConomy().getAccountsManager().transaction(ownerAccount, userAccount, this.getPrice());
                                 user.getInventory().removeItem(item);
-                                if (!this.isAdminSign() || this.hasStock())
+                                if (this.hasStock())
                                 {
                                     if (this.isAdminSign())
                                     {
@@ -769,6 +769,7 @@ public class MarketSign
                                     else
                                     {
                                         this.addToInventory(this.getInventory(),item);
+                                        this.setStock(InventoryUtil.getAmountOf(this.getInventory(),this.getItem()));
                                     }
                                     this.saveToDatabase();
                                 } // else admin sign -> no change
@@ -890,6 +891,10 @@ public class MarketSign
             else if (this.isBuySign())
             {
                 lines[0] += "Buy";
+                if (this.isSoldOut())
+                {
+                    lines[0] = "&4&lSold Out";
+                }
             }
             else
             {
@@ -935,16 +940,13 @@ public class MarketSign
                 }
                 else if (this.isBuySign())
                 {
-                    if (this.hasStock())
+                    if (this.isSoldOut())
                     {
-                        if (this.getStock() < this.getAmount() || this.getStock() == 0)
-                        {
-                            lines[2] += " &4x" + this.getStock();
-                        }
-                        else
-                        {
-                            lines[2] += " &1x" + this.getStock();
-                        }
+                        lines[2] += " &4x" + this.getStock();
+                    }
+                    else
+                    {
+                        lines[2] += " &1x" + this.getStock();
                     }
                 }
                 else
@@ -999,6 +1001,19 @@ public class MarketSign
         {
             this.module.getLogger().warning("Market-Sign is not a sign-block! " + this.getLocation());
         }
+    }
+
+    private boolean isSoldOut()
+    {
+        if (this.blockInfo.isBuyOrSell() && this.isBuySign())
+        {
+            //TODO infinite buy admin-signs with stock
+            if (this.hasStock() && (this.getStock() < this.getAmount() || this.getStock() == 0))
+            {
+                return true;
+            }
+        }
+        return false;
     }
 
     private boolean canAfford(User user)

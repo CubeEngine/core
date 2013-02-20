@@ -39,8 +39,10 @@ public class EditModeListener extends ChatCommand<Signmarket>
                 .addParameter(new CommandParameter("price", String.class))
                 .addParameter(new CommandParameter("amount", Integer.class))
                 .addParameter(new CommandParameter("item", ItemStack.class))
+                .addParameter(new CommandParameter("setstock",Integer.class))
+
+                .addParameter(new CommandParameter("currency",Integer.class))//TODO implement function
         //TODO change currency
-        //TODO setStock
         ;
     }
 //TODO itemblacklist?
@@ -256,6 +258,27 @@ public class EditModeListener extends ChatCommand<Signmarket>
                 context.sendMessage("signmarket","&cUser signs cannot have no stock!");
             }
         }
+        if (context.hasParam("setstock"))
+        {
+            if (MarketSignPerm.SIGN_SETSTOCK.isAuthorized(user))
+            {
+                if (marketSign.hasStock())
+                {
+                    marketSign.setStock(context.getParam("setstock",0));
+                }
+                else
+                {
+                    //TODO set stock to true && check if allowed
+                    context.sendMessage("signmarket","&cThis sign has no stock");
+                }
+
+            }
+            else
+            {
+                context.sendMessage("signmarket","&cYou are not allowed to set the stock!");
+            }
+        }
+
         if (context.hasParam("price"))
         {
             Currency currency = marketSign.getCurrency();
