@@ -242,7 +242,7 @@ public class CubeCommandMap extends SimpleCommandMap
             return false;
         }
 
-        if (oldCommand != null && !aliases.contains(label))
+        if (oldCommand != null && !this.aliases.contains(label))
         {
             String fallback = label;
             if (oldCommand instanceof PluginCommand)
@@ -259,28 +259,29 @@ public class CubeCommandMap extends SimpleCommandMap
                 command.setLabel(label);
             }
 
-            if (fallback != label)
+            if (fallback.equals(label))
             {
-                knownCommands.remove(label);
-                knownCommands.put(fallback, oldCommand);
+                this.knownCommands.remove(label);
+                this.knownCommands.put(fallback, oldCommand);
             }
         }
 
         if (isAlias)
         {
-            aliases.add(label);
+            this.aliases.add(label);
         }
         else
         {
             // Ensure lowerLabel isn't listed as a alias anymore and update the commands registered name
-            aliases.remove(label);
+            this.aliases.remove(label);
         }
-        knownCommands.put(label, command);
+        this.knownCommands.put(label, command);
 
         return true;
     }
 
     private static final Pattern PATTERN_ON_SPACE = Pattern.compile(" ", Pattern.LITERAL);
+
     @Override
     public List<String> tabComplete(CommandSender sender, String cmdLine)
     {
@@ -291,10 +292,16 @@ public class CubeCommandMap extends SimpleCommandMap
 
         if (spaceIndex == -1)
         {
-            List<String> lastOffer = this.lastCommandOffers.remove(sender.getName());
-            if (lastOffer != null)
-            {
 
+            List<String> lastOffer = this.lastCommandOffers.remove(sender.getName());
+            if (lastOffer != null && cmdLine.isEmpty())
+            {
+                List<String> commands = new ArrayList<String>(lastOffer.size());
+                for (String cmd : lastOffer)
+                {
+                    commands.add('/' + cmd);
+                }
+                return commands;
             }
             ArrayList<String> completions = new ArrayList<String>();
 

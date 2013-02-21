@@ -3,7 +3,6 @@ package de.cubeisland.cubeengine.core.bukkit;
 import de.cubeisland.cubeengine.core.Core;
 import de.cubeisland.cubeengine.core.CoreConfiguration;
 import de.cubeisland.cubeengine.core.CubeEngine;
-import de.cubeisland.cubeengine.core.bukkit.event.PacketReceivedEvent;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
@@ -43,6 +42,6 @@ public class CoreListener implements Listener
 
     public void onQuit(final PlayerQuitEvent event)
     {
-        this.bukkitCore.getCommandManager().commandMap.lastCommandOffers.remove(event.getPlayer());
+        this.bukkitCore.getCommandManager().commandMap.lastCommandOffers.remove(event.getPlayer().getName());
     }
 }
