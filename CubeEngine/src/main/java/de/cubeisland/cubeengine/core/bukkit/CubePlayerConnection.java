@@ -1,7 +1,7 @@
 package de.cubeisland.cubeengine.core.bukkit;
 
 import de.cubeisland.cubeengine.core.CubeEngine;
-import de.cubeisland.cubeengine.core.bukkit.event.PacketEventManager;
+import de.cubeisland.cubeengine.core.bukkit.packethook.PacketEventManager;
 import net.minecraft.server.v1_4_R1.EntityPlayer;
 import net.minecraft.server.v1_4_R1.Packet;
 import net.minecraft.server.v1_4_R1.Packet0KeepAlive;

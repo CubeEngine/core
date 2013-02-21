@@ -1,4 +1,4 @@
-package de.cubeisland.cubeengine.core.bukkit.event;
+package de.cubeisland.cubeengine.core.bukkit.packethook;
 
 public interface PacketReceivedListener
 {

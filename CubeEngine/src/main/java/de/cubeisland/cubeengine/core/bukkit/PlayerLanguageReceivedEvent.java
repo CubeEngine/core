@@ -1,4 +1,4 @@
-package de.cubeisland.cubeengine.core.bukkit.event;
+package de.cubeisland.cubeengine.core.bukkit;
 
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;

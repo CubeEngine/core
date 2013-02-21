@@ -1,4 +1,4 @@
-package de.cubeisland.cubeengine.core.bukkit.event;
+package de.cubeisland.cubeengine.core.bukkit.packethook;
 
 import de.cubeisland.cubeengine.core.util.Cleanable;
 import gnu.trove.map.hash.TIntObjectHashMap;

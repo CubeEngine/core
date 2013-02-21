@@ -1,6 +1,6 @@
 package de.cubeisland.cubeengine.rulebook;
 
-import de.cubeisland.cubeengine.core.bukkit.event.PlayerLanguageReceivedEvent;
+import de.cubeisland.cubeengine.core.bukkit.PlayerLanguageReceivedEvent;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.rulebook.bookManagement.RulebookManager;
 import org.bukkit.Bukkit;
