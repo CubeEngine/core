@@ -81,13 +81,13 @@ public abstract class ContainerCommand extends ParameterizedCommand implements C
             List<String> actions = new ArrayList<String>();
             String token = args[0].toLowerCase(Locale.ENGLISH);
 
-            Set<String> names = this.getChildrenNames();
+            Set<CubeCommand> names = this.getChildren();
             names.removeAll(this.childrenAliases);
-            for (String child : names)
+            for (CubeCommand child : names)
             {
-                if (startsWithIgnoreCase(child, token))
+                if (startsWithIgnoreCase(child.getName(), token) && child.testPermissionSilent(sender))
                 {
-                    actions.add(child);
+                    actions.add(child.getName());
                 }
             }
             Collections.sort(actions);
