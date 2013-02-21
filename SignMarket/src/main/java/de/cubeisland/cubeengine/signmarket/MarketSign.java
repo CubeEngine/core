@@ -723,7 +723,7 @@ public class MarketSign
                             } // else admin sign -> no change
                             user.getInventory().addItem(item);
                             user.updateInventory();
-                            user.sendMessage("BUY!");//TODO buy message
+                            user.sendMessage("signmarket","&aYou bought &6%dx %s &afor &6%s&a.",this.getAmount(),Match.material().getNameFor(this.getItem()),this.parsePrice());
                         }
                         else
                         {
@@ -774,7 +774,7 @@ public class MarketSign
                                     this.saveToDatabase();
                                 } // else admin sign -> no change
                                 user.updateInventory();
-                                user.sendMessage("SELL!");//TODO sell message
+                                user.sendMessage("signmarket","&aYou sold &6%dx %s &afor &6%s&a.",this.getAmount(),Match.material().getNameFor(this.getItem()),this.parsePrice());
                             }
                             else
                             {
@@ -944,7 +944,7 @@ public class MarketSign
                     {
                         lines[2] += " &4x" + this.getStock();
                     }
-                    else
+                    else if (this.hasStock())
                     {
                         lines[2] += " &1x" + this.getStock();
                     }
