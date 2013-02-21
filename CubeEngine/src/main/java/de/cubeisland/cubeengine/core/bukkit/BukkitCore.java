@@ -10,7 +10,6 @@ import de.cubeisland.cubeengine.core.bukkit.event.PacketEventManager;
 import de.cubeisland.cubeengine.core.bukkit.event.PacketReceivedEvent;
 import de.cubeisland.cubeengine.core.bukkit.event.PacketReceivedListener;
 import de.cubeisland.cubeengine.core.bukkit.event.PlayerLanguageReceivedEvent;
-import de.cubeisland.cubeengine.core.command.CommandManager;
 import de.cubeisland.cubeengine.core.command.commands.CoreCommands;
 import de.cubeisland.cubeengine.core.command.commands.ModuleCommands;
 import de.cubeisland.cubeengine.core.command.commands.VanillaCommands;
@@ -22,9 +21,7 @@ import de.cubeisland.cubeengine.core.i18n.I18n;
 import de.cubeisland.cubeengine.core.logger.CubeFileHandler;
 import de.cubeisland.cubeengine.core.logger.CubeLogger;
 import de.cubeisland.cubeengine.core.logger.LogLevel;
-import de.cubeisland.cubeengine.core.module.ModuleManager;
 import de.cubeisland.cubeengine.core.module.event.FinishedLoadModulesEvent;
-import de.cubeisland.cubeengine.core.permission.PermissionManager;
 import de.cubeisland.cubeengine.core.storage.TableManager;
 import de.cubeisland.cubeengine.core.storage.database.Database;
 import de.cubeisland.cubeengine.core.storage.database.DatabaseFactory;
@@ -55,15 +52,15 @@ import static de.cubeisland.cubeengine.core.logger.LogLevel.*;
 public class BukkitCore extends JavaPlugin implements Core
 {
     private Database database;
-    private PermissionManager permissionManager;
+    private BukkitPermissionManager permissionManager;
     private UserManager userManager;
     private FileManager fileManager;
-    private ModuleManager moduleManager;
+    private BukkitModuleManager moduleManager;
     private I18n i18n;
     private BukkitCoreConfiguration config;
     private CubeLogger logger;
     private EventManager eventRegistration;
-    private CommandManager commandManager;
+    private BukkitCommandManager commandManager;
     private TaskManager taskManager;
     private TableManager tableManager;
     private ObjectMapper jsonObjectMapper;
@@ -395,7 +392,7 @@ public class BukkitCore extends JavaPlugin implements Core
     }
 
     @Override
-    public PermissionManager getPermissionManager()
+    public BukkitPermissionManager getPermissionManager()
     {
         return this.permissionManager;
     }
@@ -413,7 +410,7 @@ public class BukkitCore extends JavaPlugin implements Core
     }
 
     @Override
-    public ModuleManager getModuleManager()
+    public BukkitModuleManager getModuleManager()
     {
         return this.moduleManager;
     }
@@ -443,7 +440,7 @@ public class BukkitCore extends JavaPlugin implements Core
     }
 
     @Override
-    public CommandManager getCommandManager()
+    public BukkitCommandManager getCommandManager()
     {
         return this.commandManager;
     }

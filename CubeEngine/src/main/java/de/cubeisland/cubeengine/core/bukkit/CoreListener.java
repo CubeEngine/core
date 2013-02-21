@@ -7,6 +7,7 @@ import de.cubeisland.cubeengine.core.bukkit.event.PacketReceivedEvent;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.scheduler.BukkitScheduler;
 
@@ -40,8 +41,8 @@ public class CoreListener implements Listener
         }, config.afterJoinEventDelay);
     }
 
-    @EventHandler
-    public void onPacket(PacketReceivedEvent event)
+    public void onQuit(final PlayerQuitEvent event)
     {
+        this.bukkitCore.getCommandManager().commandMap.lastCommandOffers.remove(event.getPlayer());
     }
 }

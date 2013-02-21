@@ -101,7 +101,7 @@ public abstract class CubeCommand extends Command
         {
             throw new IllegalArgumentException("You have to specify at least 1 name!");
         }
-        List<String> aliases = Collections.EMPTY_LIST;
+        List<String> aliases = Collections.emptyList();
         if (names.length > 1)
         {
             aliases = new ArrayList<String>(names.length - 1);

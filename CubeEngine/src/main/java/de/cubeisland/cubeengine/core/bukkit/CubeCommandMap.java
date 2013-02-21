@@ -9,6 +9,7 @@ import de.cubeisland.cubeengine.core.logger.CubeFileHandler;
 import de.cubeisland.cubeengine.core.logger.CubeLogger;
 import de.cubeisland.cubeengine.core.util.StringUtils;
 import de.cubeisland.cubeengine.core.util.matcher.Match;
+import gnu.trove.map.hash.THashMap;
 import org.apache.commons.lang.Validate;
 import org.bukkit.Server;
 import org.bukkit.command.Command;
@@ -27,10 +28,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Set;
 import java.util.logging.FileHandler;
 import java.util.logging.Formatter;
 import java.util.logging.Level;
@@ -52,12 +53,14 @@ public class CubeCommandMap extends SimpleCommandMap
 {
     private final Core core;
     private final Logger commandLogger;
+    protected final Map<String, List<String>> lastCommandOffers;
 
     public CubeCommandMap(Core core, Server server, SimpleCommandMap oldMap)
     {
         super(server);
         this.core = core;
         this.commandLogger = new CubeLogger("commands");
+        this.lastCommandOffers = new THashMap<String, List<String>>();
         try
         {
             FileHandler handler = new CubeFileHandler(Level.ALL, new File(core.getFileManager().getLogDir(), "commands").getPath());
@@ -144,9 +147,11 @@ public class CubeCommandMap extends SimpleCommandMap
         if (command == null)
         {
             final String language = BukkitUtils.getLanguage(sender);
-            Set<String> matches = Match.string().getBestMatches(label, this.knownCommands.keySet(), 1);
+            List<String> matches = new LinkedList<String>(Match.string().getBestMatches(label, this.knownCommands.keySet(), 1));
             if (matches.size() > 0 && matches.size() <= this.core.getConfiguration().commandOffers)
             {
+                Collections.sort(matches, String.CASE_INSENSITIVE_ORDER);
+                this.lastCommandOffers.put(sender.getName(), matches);
                 if (matches.size() == 1)
                 {
                     sender.sendMessage(_(language, "core", "&cCouldn't find &e/%s&c. Did you mean &a/%s&c?", arr(label, matches.iterator().next())));
@@ -204,7 +209,7 @@ public class CubeCommandMap extends SimpleCommandMap
             command.execute(sender, label, args);
             if (!(command instanceof CubeCommand) || ((CubeCommand)command).isLoggable())
             {
-                this.commandLogger.log(INFO, sender.getName() + " " + commandLine);
+                this.commandLogger.log(INFO, sender.getName() + ' ' + commandLine);
             }
         }
         catch (CommandException e)
@@ -216,7 +221,7 @@ public class CubeCommandMap extends SimpleCommandMap
             throw new CommandException("Unhandled exception executing '" + commandLine + "' in " + command, e);
         }
 
-        // return true as command was handled
+        // return true as the command was handled
         return true;
     }
 
@@ -284,38 +289,50 @@ public class CubeCommandMap extends SimpleCommandMap
 
         int spaceIndex = cmdLine.indexOf(' ');
 
-        if (spaceIndex == -1) {
-            ArrayList<String> completions = new ArrayList<String>();
-            Map<String, Command> knownCommands = this.knownCommands;
+        if (spaceIndex == -1)
+        {
+            List<String> lastOffer = this.lastCommandOffers.remove(sender.getName());
+            if (lastOffer != null)
+            {
 
-            for (VanillaCommand command : fallbackCommands) {
+            }
+            ArrayList<String> completions = new ArrayList<String>();
+
+            for (VanillaCommand command : fallbackCommands)
+            {
                 String name = command.getName();
 
-                if (!command.testPermissionSilent(sender)) {
+                if (!command.testPermissionSilent(sender))
+                {
                     continue;
                 }
-                if (knownCommands.containsKey(name)) {
+                if (this.knownCommands.containsKey(name))
+                {
                     // Don't let a vanilla command override a command added below
                     // This has to do with the way aliases work
                     continue;
                 }
-                if (!StringUtil.startsWithIgnoreCase(name, cmdLine)) {
+                if (!StringUtil.startsWithIgnoreCase(name, cmdLine))
+                {
                     continue;
                 }
 
                 completions.add('/' + name);
             }
 
-            for (Map.Entry<String, Command> commandEntry : knownCommands.entrySet()) {
+            for (Map.Entry<String, Command> commandEntry : this.knownCommands.entrySet())
+            {
                 Command command = commandEntry.getValue();
 
-                if (!command.testPermissionSilent(sender)) {
+                if (!command.testPermissionSilent(sender))
+                {
                     continue;
                 }
 
                 String name = commandEntry.getKey(); // Use the alias, not command name
 
-                if (StringUtil.startsWithIgnoreCase(name, cmdLine)) {
+                if (StringUtil.startsWithIgnoreCase(name, cmdLine))
+                {
                     completions.add('/' + name);
                 }
             }
@@ -324,8 +341,8 @@ public class CubeCommandMap extends SimpleCommandMap
             return completions;
         }
 
-        String commandName = cmdLine.substring(0, spaceIndex);
-        Command target = getCommand(commandName);
+        final String commandName = cmdLine.substring(0, spaceIndex);
+        final Command target = getCommand(commandName);
 
         if (target == null) {
             return null;
@@ -335,15 +352,19 @@ public class CubeCommandMap extends SimpleCommandMap
             return null;
         }
 
-        String argLine = cmdLine.substring(spaceIndex + 1, cmdLine.length());
-        String[] args = PATTERN_ON_SPACE.split(argLine, -1);
+        final String[] args = PATTERN_ON_SPACE.split(cmdLine.substring(spaceIndex + 1, cmdLine.length()), -1); // TODO what exactly is done here?
 
-        try {
+        try
+        {
             return target.tabComplete(sender, commandName, args);
-        } catch (CommandException ex) {
-            throw ex;
-        } catch (Throwable ex) {
-            throw new CommandException("Unhandled exception executing tab-completer for '" + cmdLine + "' in " + target, ex);
+        }
+        catch (CommandException e)
+        {
+            throw e;
+        }
+        catch (Exception e)
+        {
+            throw new CommandException("Unhandled exception executing tab-completer for '" + cmdLine + "' in " + target, e);
         }
     }
 
