@@ -232,24 +232,38 @@ public class EditModeListener extends ChatCommand<Signmarket>
                 //TODO config if admin-signs are forced to have stock or nostock
                 if (marketSign.hasStock())
                 {
-                    if (MarketSignPerm.SIGN_CREATE_ADMIN_NOSTOCK.isAuthorized(user))
+                    if (this.getModule().getConfig().allowAdminNoStock)
                     {
-                        marketSign.setStock(null);
+                        if (MarketSignPerm.SIGN_CREATE_ADMIN_NOSTOCK.isAuthorized(user))
+                        {
+                            marketSign.setStock(null);
+                        }
+                        else
+                        {
+                            context.sendMessage("signmarket","&cYou are not allowed to create admin-signs with no stock");
+                        }
                     }
                     else
                     {
-                        context.sendMessage("signmarket","&cYou are not allowed to create admin-signs with no stock");
+                        context.sendMessage("signmarket","&cAdmin-signs without stock are not allowed!");
                     }
                 }
                 else
                 {
-                    if (MarketSignPerm.SIGN_CREATE_ADMIN_STOCK.isAuthorized(user))
+                    if (this.getModule().getConfig().allowAdminStock)
                     {
-                        marketSign.setStock(0);
+                        if (MarketSignPerm.SIGN_CREATE_ADMIN_STOCK.isAuthorized(user))
+                        {
+                            marketSign.setStock(0);
+                        }
+                        else
+                        {
+                            context.sendMessage("signmarket","&cYou are not allowed to create admin-signs with stock");
+                        }
                     }
                     else
                     {
-                        context.sendMessage("signmarket","&cYou are not allowed to create admin-signs with stock");
+                        context.sendMessage("signmarket","&cAdmin-signs with stock are not allowed!");
                     }
                 }
             }
@@ -453,7 +467,7 @@ public class EditModeListener extends ChatCommand<Signmarket>
                     return;
                 }
                 Location loc = event.getBlockPlaced().getLocation();
-                MarketSign marketSign = this.getModule().getMarketSignFactory().createSignAt(loc);
+                MarketSign marketSign = this.getModule().getMarketSignFactory().createSignAt(user, loc);
                 this.setEditingSign(user, loc, marketSign);
                 marketSign.updateSign();
             }

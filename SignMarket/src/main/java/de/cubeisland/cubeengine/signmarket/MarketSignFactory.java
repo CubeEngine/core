@@ -1,5 +1,6 @@
 package de.cubeisland.cubeengine.signmarket;
 
+import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.signmarket.storage.SignMarketBlockManager;
 import de.cubeisland.cubeengine.signmarket.storage.SignMarketBlockModel;
 import de.cubeisland.cubeengine.signmarket.storage.SignMarketItemManager;
@@ -52,7 +53,7 @@ public class MarketSignFactory
         return result;
     }
 
-    public MarketSign createSignAt(Location location)
+    public MarketSign createSignAt(User user, Location location)
     {
         MarketSign marketSign = this.getSignAt(location);
         if (marketSign != null)
@@ -61,6 +62,21 @@ public class MarketSignFactory
             return marketSign;
         }
         marketSign = new MarketSign(this.module, location);
+        if (this.module.getConfig().allowAdminNoStock)
+        {
+            marketSign.setAdminSign();
+            marketSign.setStock(null);
+        }
+        else if (this.module.getConfig().allowAdminStock)
+        {
+            marketSign.setAdminSign();
+            marketSign.setStock(null);
+        }
+        else
+        {
+            marketSign.setOwner(user);
+            marketSign.setStock(0);
+        }
         this.marketSigns.put(marketSign.getLocation(), marketSign);
         return marketSign;
     }
@@ -75,7 +91,6 @@ public class MarketSignFactory
         {
             this.signMarketItemManager.deleteModel(itemInfo);
         }
-
     }
 
     public void syncAndSaveSign(MarketSign marketSign)

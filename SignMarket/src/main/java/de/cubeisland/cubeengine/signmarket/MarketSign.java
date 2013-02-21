@@ -914,7 +914,14 @@ public class MarketSign
             }
             else if (item.getItemMeta().hasDisplayName() || item.getItemMeta().hasLore() || !item.getEnchantments().isEmpty())
             {
-                lines[1] = "&e" + Match.material().getNameFor(this.getItem());
+                if (item.getItemMeta().hasDisplayName())
+                {
+                    lines[1] = "&e" + item.getItemMeta().getDisplayName();
+                }
+                else
+                {
+                    lines[1] = "&e" + Match.material().getNameFor(this.getItem());
+                }
             }
             else
             {
