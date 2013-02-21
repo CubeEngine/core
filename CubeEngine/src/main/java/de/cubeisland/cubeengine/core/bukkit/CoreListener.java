@@ -7,21 +7,17 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
-import org.bukkit.plugin.PluginManager;
 import org.bukkit.scheduler.BukkitScheduler;
 
 public class CoreListener implements Listener
 {
     private final BukkitCore bukkitCore;
-    private final PluginManager pm;
     private final BukkitScheduler scheduler;
     private final CoreConfiguration config;
 
     CoreListener(Core core)
     {
         this.bukkitCore = (BukkitCore)core;
-
-        this.pm = this.bukkitCore.getServer().getPluginManager();
         this.scheduler = this.bukkitCore.getServer().getScheduler();
         this.config = core.getConfiguration();
     }
@@ -42,6 +38,6 @@ public class CoreListener implements Listener
 
     public void onQuit(final PlayerQuitEvent event)
     {
-        this.bukkitCore.getCommandManager().commandMap.lastCommandOffers.remove(event.getPlayer().getName());
+        this.bukkitCore.getCommandManager().commandMap.getLastOfferFor(event.getPlayer().getName());
     }
 }

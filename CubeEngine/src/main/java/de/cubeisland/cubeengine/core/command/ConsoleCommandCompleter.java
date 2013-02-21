@@ -33,6 +33,11 @@ public class ConsoleCommandCompleter implements Completer
         {
             if (buffer.isEmpty())
             {
+                List<String> offer = this.commandMap.getLastOfferFor(":console");
+                if (offer != null)
+                {
+                    candidates.addAll(offer);
+                }
                 return cursor;
             }
 

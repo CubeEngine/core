@@ -15,6 +15,7 @@ import org.bukkit.Server;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandException;
 import org.bukkit.command.CommandSender;
+import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.command.SimpleCommandMap;
 import org.bukkit.command.defaults.BukkitCommand;
@@ -53,7 +54,7 @@ public class CubeCommandMap extends SimpleCommandMap
 {
     private final Core core;
     private final Logger commandLogger;
-    protected final Map<String, List<String>> lastCommandOffers;
+    private final Map<String, List<String>> lastCommandOffers;
 
     public CubeCommandMap(Core core, Server server, SimpleCommandMap oldMap)
     {
@@ -86,6 +87,11 @@ public class CubeCommandMap extends SimpleCommandMap
             command.unregister(oldMap);
             this.register(command);
         }
+    }
+
+    public List<String> getLastOfferFor(String sender)
+    {
+        return this.lastCommandOffers.remove(sender);
     }
 
     /**
@@ -151,7 +157,6 @@ public class CubeCommandMap extends SimpleCommandMap
             if (matches.size() > 0 && matches.size() <= this.core.getConfiguration().commandOffers)
             {
                 Collections.sort(matches, String.CASE_INSENSITIVE_ORDER);
-                this.lastCommandOffers.put(sender.getName(), matches);
                 if (matches.size() == 1)
                 {
                     sender.sendMessage(_(language, "core", "&cCouldn't find &e/%s&c. Did you mean &a/%s&c?", arr(label, matches.iterator().next())));
@@ -159,6 +164,18 @@ public class CubeCommandMap extends SimpleCommandMap
                 else
                 {
                     sender.sendMessage(_(language, "core", "&eDid you mean one of these: &a%s &e?", arr("/" + StringUtils.implode(", /", matches))));
+                }
+                if (matches.size() > this.core.getConfiguration().commandTabCompleteOffers)
+                {
+                    matches = matches.subList(0, this.core.getConfiguration().commandTabCompleteOffers);
+                }
+                if (sender instanceof ConsoleCommandSender)
+                {
+                    this.lastCommandOffers.put(":console", matches);
+                }
+                else
+                {
+                    this.lastCommandOffers.put(sender.getName(), matches);
                 }
             }
             else
@@ -303,10 +320,14 @@ public class CubeCommandMap extends SimpleCommandMap
                 }
                 return commands;
             }
-            ArrayList<String> completions = new ArrayList<String>();
+            List<String> completions = new ArrayList<String>();
 
             for (VanillaCommand command : fallbackCommands)
             {
+                if (completions.size() == this.core.getConfiguration().commandTabCompleteOffers)
+                {
+                    break;
+                }
                 String name = command.getName();
 
                 if (!command.testPermissionSilent(sender))
@@ -329,6 +350,10 @@ public class CubeCommandMap extends SimpleCommandMap
 
             for (Map.Entry<String, Command> commandEntry : this.knownCommands.entrySet())
             {
+                if (completions.size() == this.core.getConfiguration().commandTabCompleteOffers)
+                {
+                    break;
+                }
                 Command command = commandEntry.getValue();
 
                 if (!command.testPermissionSilent(sender))
@@ -351,11 +376,13 @@ public class CubeCommandMap extends SimpleCommandMap
         final String commandName = cmdLine.substring(0, spaceIndex);
         final Command target = getCommand(commandName);
 
-        if (target == null) {
+        if (target == null)
+        {
             return null;
         }
 
-        if (!target.testPermissionSilent(sender)) {
+        if (!target.testPermissionSilent(sender))
+        {
             return null;
         }
 

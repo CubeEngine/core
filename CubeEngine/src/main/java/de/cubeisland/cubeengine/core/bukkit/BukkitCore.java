@@ -9,6 +9,8 @@ import de.cubeisland.cubeengine.core.CubeEngine;
 import de.cubeisland.cubeengine.core.bukkit.event.PacketEventManager;
 import de.cubeisland.cubeengine.core.bukkit.event.PacketReceivedEvent;
 import de.cubeisland.cubeengine.core.bukkit.event.PacketReceivedListener;
+import de.cubeisland.cubeengine.core.bukkit.event.PacketSentEvent;
+import de.cubeisland.cubeengine.core.bukkit.event.PacketSentListener;
 import de.cubeisland.cubeengine.core.bukkit.event.PlayerLanguageReceivedEvent;
 import de.cubeisland.cubeengine.core.command.commands.CoreCommands;
 import de.cubeisland.cubeengine.core.command.commands.ModuleCommands;
@@ -33,6 +35,7 @@ import de.cubeisland.cubeengine.core.util.worker.CubeThreadFactory;
 import de.cubeisland.cubeengine.core.webapi.ApiConfig;
 import de.cubeisland.cubeengine.core.webapi.ApiServer;
 import de.cubeisland.cubeengine.core.webapi.exception.ApiStartupException;
+import net.minecraft.server.v1_4_R1.Packet203TabComplete;
 import net.minecraft.server.v1_4_R1.Packet204LocaleAndViewDistance;
 import org.bukkit.Server;
 import org.bukkit.plugin.PluginManager;
@@ -97,7 +100,24 @@ public class BukkitCore extends JavaPlugin implements Core
                 pm.callEvent(new PlayerLanguageReceivedEvent(event.getPlayer(), ((Packet204LocaleAndViewDistance)event.getPacket()).d()));
             }
         });
-
+        this.packetEventManager.addReceivedListener(203, new PacketReceivedListener() {
+            @Override
+            public void handle(PacketReceivedEvent event)
+            {
+                logger.log(DEBUG, "Tab complete request received!");
+                Packet203TabComplete packet = (Packet203TabComplete)event.getPacket();
+                logger.log(DEBUG, "Request: '" + packet.d() + "'");
+            }
+        });
+        this.packetEventManager.addSentListener(203, new PacketSentListener() {
+            @Override
+            public void handle(PacketSentEvent event)
+            {
+                logger.log(DEBUG, "Tab complete response sent!");
+                Packet203TabComplete packet = (Packet203TabComplete)event.getPacket();
+                logger.log(DEBUG, "Response: '" + packet.d() + "'");
+            }
+        });
 
         try
         {
@@ -191,7 +211,7 @@ public class BukkitCore extends JavaPlugin implements Core
                 }
             });
         }
-        catch (ClassNotFoundException e)
+        catch (ClassNotFoundException ignored)
         {}
 
         // depends on: file manager
