@@ -52,7 +52,7 @@ public abstract class PacketEvent
         {
             throw new IllegalArgumentException("The packet must not be null!");
         }
-        if (this.getPacket().getClass().isAssignableFrom(newPacket.getClass()))
+        if (!this.getPacket().getClass().isAssignableFrom(newPacket.getClass()))
         {
             throw new IllegalArgumentException("Must be of the same type!");
         }
