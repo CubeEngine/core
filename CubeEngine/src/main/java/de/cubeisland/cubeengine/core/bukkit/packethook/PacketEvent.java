@@ -6,14 +6,12 @@ import org.bukkit.entity.Player;
 public abstract class PacketEvent
 {
     private final Player player;
-    private final int packetId;
-    private final Packet packet;
+    private Packet packet;
     private boolean cancelled;
 
     public PacketEvent(Player player, Packet packet)
     {
         this.player = player;
-        this.packetId = packet.k();
         this.packet = packet;
         this.cancelled = false;
     }
@@ -48,6 +46,19 @@ public abstract class PacketEvent
         return this.packet;
     }
 
+    public void setPacket(Packet newPacket)
+    {
+        if (newPacket == null)
+        {
+            throw new IllegalArgumentException("The packet must not be null!");
+        }
+        if (this.getPacket().getClass().isAssignableFrom(newPacket.getClass()))
+        {
+            throw new IllegalArgumentException("Must be of the same type!");
+        }
+        this.packet = newPacket;
+    }
+
     /**
      * Returns the ID of the packet
      *
@@ -55,6 +66,6 @@ public abstract class PacketEvent
      */
     public int getPacketId()
     {
-        return this.packetId;
+        return this.getPacket().k();
     }
 }
