@@ -64,7 +64,7 @@ public class CubeCommandMap extends SimpleCommandMap
         this.lastCommandOffers = new THashMap<String, List<String>>();
         try
         {
-            FileHandler handler = new CubeFileHandler(Level.ALL, new File(core.getFileManager().getLogDir(), "commands").getPath());
+            FileHandler handler = new CubeFileHandler(Level.ALL, new File(core.getFileManager().getLogDir(), this.commandLogger.getName()).getPath());
             handler.setFormatter(new Formatter() {
                 private final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
