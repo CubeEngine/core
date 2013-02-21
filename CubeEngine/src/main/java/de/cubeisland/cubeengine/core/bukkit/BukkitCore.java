@@ -255,7 +255,7 @@ public class BukkitCore extends JavaPlugin implements Core
         this.i18n = new I18n(this);
 
         // depends on: server
-        this.commandManager = new CommandManager(this);
+        this.commandManager = new BukkitCommandManager(this);
         this.commandManager.registerCommandFactory(new ReflectedCommandFactory());
         this.commandManager.registerCommandFactory(new ReadableCommandFactory());
 

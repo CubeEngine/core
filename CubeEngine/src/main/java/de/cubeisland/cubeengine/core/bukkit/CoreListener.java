@@ -4,15 +4,9 @@ import de.cubeisland.cubeengine.core.Core;
 import de.cubeisland.cubeengine.core.CoreConfiguration;
 import de.cubeisland.cubeengine.core.CubeEngine;
 import de.cubeisland.cubeengine.core.bukkit.event.PacketReceivedEvent;
-import de.cubeisland.cubeengine.core.bukkit.event.PlayerLanguageReceivedEvent;
-import net.minecraft.server.v1_4_R1.Packet204LocaleAndViewDistance;
 import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.player.AsyncPlayerChatEvent;
-import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.event.player.PlayerKickEvent;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.scheduler.BukkitScheduler;
 
