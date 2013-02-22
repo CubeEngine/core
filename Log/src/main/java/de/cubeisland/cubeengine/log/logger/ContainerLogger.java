@@ -1,6 +1,7 @@
 package de.cubeisland.cubeengine.log.logger;
 
 import de.cubeisland.cubeengine.core.CubeEngine;
+import de.cubeisland.cubeengine.core.logger.LogLevel;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.log.Log;
 import de.cubeisland.cubeengine.log.Logger;
@@ -83,11 +84,11 @@ public class ContainerLogger extends Logger<ContainerConfig>
         }
         if (holder == null)
         {
-            this.module.getLogger().warning("Inventory Holder is null! Logging is impossible.");
+            this.module.getLogger().log(LogLevel.DEBUG,"Inventory Holder is null! Logging is impossible.");
         }
         else
         {
-            this.module.getLogger().warning("Unknown InventoryHolder:" + holder.toString());
+            this.module.getLogger().log(LogLevel.DEBUG,"Unknown InventoryHolder:" + holder.toString());
         }
         return null;
     }

@@ -119,7 +119,6 @@ public class MarketSignFactory
                             this.signMarketItemManager.delete(itemModel); // delete if no more referenced
                         }
                         marketSign.getItemInfo().updateSigns(); // update all signs that use the same itemInfo
-                        return;
                     }
                 }
             }
@@ -142,5 +141,9 @@ public class MarketSignFactory
             this.signMarketBlockManager.update(marketSign.getBlockInfo());
         }
         marketSign.getItemInfo().updateSigns(); // update all signs that use the same itemInfo
+    }
+
+    public SignMarketItemManager getSignMarketItemManager() {
+        return signMarketItemManager;
     }
 }

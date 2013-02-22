@@ -33,34 +33,36 @@ public class MarketSignListener implements Listener
         {
             MarketSign marketSign = this.module.getMarketSignFactory().getSignAt(event.getClickedBlock().getLocation());
             if (marketSign == null)
-                return;
-            marketSign.updateSign();
-            User user = this.module.getUserManager().getExactUser(event.getPlayer());
-            if (marketSign.executeAction(user, event.getAction()))
             {
-                event.setUseInteractedBlock(Event.Result.DENY);
-                event.setUseItemInHand(Event.Result.DENY);
-                event.setCancelled(true);
+                return;
             }
+            User user = this.module.getUserManager().getExactUser(event.getPlayer());
+            marketSign.executeAction(user, event.getAction());
+            event.setUseInteractedBlock(Event.Result.DENY);
+            event.setUseItemInHand(Event.Result.DENY);
+            event.setCancelled(true);
+            marketSign.updateSign();
         }
-        else if (event.getAction().equals(Action.RIGHT_CLICK_AIR))
+        else if (event.getAction().equals(Action.RIGHT_CLICK_AIR)) // when placing a block is not possible -> RIGHT_CLICK_AIR instead of RIGHT_CLICK_BLOCK
         {
             if (event.getPlayer().getItemInHand() != null && event.getPlayer().getItemInHand().getTypeId() != 0)
             {
                 BlockState lastSignFound = getTargettedSign(event.getPlayer());
                 if (lastSignFound == null)
+                {
                     return;
+                }
                 MarketSign marketSign = this.module.getMarketSignFactory().getSignAt(lastSignFound.getLocation());
                 if (marketSign == null)
-                    return;
-                marketSign.updateSign();
-                User user = this.module.getUserManager().getExactUser(event.getPlayer());
-                if (marketSign.executeAction(user, Action.RIGHT_CLICK_BLOCK))
                 {
-                    event.setUseInteractedBlock(Event.Result.DENY);
-                    event.setUseItemInHand(Event.Result.DENY);
-                    event.setCancelled(true);
+                    return;
                 }
+                User user = this.module.getUserManager().getExactUser(event.getPlayer());
+                marketSign.executeAction(user, Action.RIGHT_CLICK_BLOCK);
+                event.setUseInteractedBlock(Event.Result.DENY);
+                event.setUseItemInHand(Event.Result.DENY);
+                event.setCancelled(true);
+                marketSign.updateSign();
             }
         }
     }

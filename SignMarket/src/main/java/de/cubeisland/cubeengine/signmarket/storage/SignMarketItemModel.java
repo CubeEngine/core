@@ -41,6 +41,8 @@ public class SignMarketItemModel implements Model<Long>,InventoryHolder
     public String lore;
     @Attribute(type = AttrType.VARCHAR, length = 255, notnull = false)
     public String enchantments;
+    @Attribute(type = AttrType.TINYINT)
+    public int size = 6;
 
     private ItemStack itemStack;
 
@@ -196,7 +198,8 @@ public class SignMarketItemModel implements Model<Long>,InventoryHolder
         }
     }
 
-    private Inventory inventory;
+    public Inventory inventory;
+
     @Override
     public Inventory getInventory()
     {
@@ -206,5 +209,13 @@ public class SignMarketItemModel implements Model<Long>,InventoryHolder
     public void initInventory(Inventory inventory)
     {
         this.inventory = inventory;
+    }
+
+    public int getSize() {
+        if (this.size == -1)
+        {
+            return 54;
+        }
+        return this.size * 9;
     }
 }

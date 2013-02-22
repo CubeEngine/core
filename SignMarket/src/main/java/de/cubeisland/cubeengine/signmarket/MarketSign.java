@@ -5,7 +5,6 @@ import de.cubeisland.cubeengine.conomy.currency.Currency;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.util.ChatFormat;
 import de.cubeisland.cubeengine.core.util.InventoryGuardFactory;
-import de.cubeisland.cubeengine.core.util.InventoryUtil;
 import de.cubeisland.cubeengine.core.util.RomanNumbers;
 import de.cubeisland.cubeengine.core.util.matcher.Match;
 import de.cubeisland.cubeengine.signmarket.storage.SignMarketBlockModel;
@@ -19,6 +18,7 @@ import org.bukkit.block.Block;
 import org.bukkit.block.Sign;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.event.block.Action;
+import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
@@ -128,7 +128,7 @@ public class MarketSign
         {
             throw new IllegalArgumentException("Use setAdminSign() instead!");
         }
-        this.blockInfo.owner = user.key;
+        this.blockInfo.setOwner(user);
         if (this.getStock() == null)
         {
             this.setStock(0);
@@ -142,8 +142,7 @@ public class MarketSign
      */
     public void setAdminSign()
     {
-        this.blockInfo.owner = null;
-        this.blockInfo.demand = null;
+       this.blockInfo.setOwner(null);
     }
 
     /**
@@ -167,6 +166,79 @@ public class MarketSign
     {
         this.blockInfo.price = price;
     }
+    private int inventoryStock;
+    private Inventory displayInventory;
+
+    public boolean openInventory(User user)
+    {
+        if (this.isOwner(user) || (!this.isAdminSign() && MarketSignPerm.SIGN_INVENTORY_ACCESS_OTHER.isAuthorized(user)))
+        {
+            if (this.itemInfo.inventory == null || this.getInventory().getViewers().isEmpty())
+            {
+                this.itemInfo.inventory = null;
+                this.inventoryStock = getAmountOf(this.getInventory(),this.getItem());
+            }
+            final Inventory inventory = this.getInventory();
+            Runnable onClose = new Runnable() {
+                @Override
+                public void run()
+                {
+                    if (!MarketSign.this.isAdminSign())
+                    {
+                        int newStock = getAmountOf(inventory, MarketSign.this.itemInfo.getItem());
+                        if (newStock != MarketSign.this.inventoryStock)
+                        {
+                            MarketSign.this.setStock(MarketSign.this.getStock() - MarketSign.this.inventoryStock + newStock);
+                            MarketSign.this.inventoryStock = newStock;
+                        }
+                    }
+                    MarketSign.this.saveToDatabase();
+                }
+            };
+            Runnable onChange = new Runnable() {
+                @Override
+                public void run()
+                {
+                    if (!MarketSign.this.isAdminSign())
+                    {
+                        int newStock = getAmountOf(inventory, MarketSign.this.itemInfo.getItem());
+                        if (newStock != MarketSign.this.inventoryStock)
+                        {
+                            MarketSign.this.setStock(MarketSign.this.getStock() - MarketSign.this.inventoryStock + newStock);
+                            MarketSign.this.inventoryStock = newStock;
+                            MarketSign.this.updateSign();
+                        }
+                    }
+                }
+            };
+            InventoryGuardFactory guard = InventoryGuardFactory.prepareInventory(inventory, user)
+                    .blockPutInAll().blockTakeOutAll()
+                    .onClose(onClose).onChange(onChange);
+            ItemStack itemInSign = this.itemInfo.getItem();
+            if (this.isBuySign())
+            {
+                guard.notBlockPutIn(itemInSign).notBlockTakeOut(itemInSign);
+            }
+            else
+            {
+                guard.notBlockTakeOut(itemInSign);
+            }
+            guard.submitInventory(this.module, true);
+            return true;
+        }
+        if (MarketSignPerm.SIGN_INVENTORY_SHOW.isAuthorized(user))
+        {
+            if (this.displayInventory == null)
+            {
+                this.displayInventory = Bukkit.createInventory(null,InventoryType.DISPENSER);
+                this.displayInventory.setItem(4,this.getItem());
+            }
+            InventoryGuardFactory.prepareInventory(this.displayInventory, user)
+                    .blockPutInAll().blockTakeOutAll().submitInventory(this.module, true);
+            return true;
+        }
+        return false;
+    }
 
     /**
      * Tries to execute the appropriate action
@@ -178,7 +250,7 @@ public class MarketSign
      * @param user
      * @return true if the event shall be canceled
      */
-    public boolean executeAction(User user, Action type)
+    public void executeAction(User user, Action type)
     {
         boolean sneaking = user.isSneaking();
         ItemStack itemInHand = user.getItemInHand();
@@ -189,96 +261,61 @@ public class MarketSign
         switch (type)
         {
             case LEFT_CLICK_BLOCK:
+                if (this.editMode)
+                {
+                    user.sendMessage("signmarket", "&cThis sign is being edited right now!");
+                    return;
+                }
                 if (sneaking)
                 {
-                    if (this.editMode)
-                    {
-                        user.sendMessage("signmarket", "&cThis sign is being edited right now!");
-                        return true;
-                    }
+
                     if (!this.isAdminSign() && (this.isOwner(user) || MarketSignPerm.SIGN_INVENTORY_ACCESS_OTHER.isAuthorized(user)))
                     {
                         if (this.isBuySign() && this.itemInfo.matchesItem(itemInHand))
                         {
+                            if (!this.getInventory().getViewers().isEmpty())
+                            {
+                                user.sendMessage("signmarket","&cThis signs inventory is being edited right now!");
+                                return;
+                            }
                             int amount = this.putItems(user, true);
                             if (amount != 0)
                                 user.sendMessage("signmarket", "&aAdded all (&6%d&a) &6%s &ato the stock!", amount, Match.material().getNameFor(this.itemInfo.getItem()));
-                            return true;
+                            return;
                         }
                     }
-                    if (MarketSignPerm.SIGN_INVENTORY_SHOW.isAuthorized(user))
-                    {
-                        final Inventory inventory = this.getInventory();
-                        Runnable onClose = new Runnable() {
-                            @Override
-                            public void run()
-                            {
-                                if (!MarketSign.this.isAdminSign())
-                                {
-                                    MarketSign.this.setStock(InventoryUtil.getAmountOf(inventory, MarketSign.this.itemInfo.getItem()));
-                                }
-                                MarketSign.this.saveToDatabase();
-                            }
-                        };
-                        Runnable onChange = new Runnable() {
-                            @Override
-                            public void run()
-                            {
-                                MarketSign.this.setStock(InventoryUtil.getAmountOf(inventory, MarketSign.this.itemInfo.getItem()));
-                                MarketSign.this.updateSign();
-                            }
-                        };
-                        InventoryGuardFactory guard = InventoryGuardFactory.prepareInventory(inventory, user)
-                                .blockPutInAll().blockTakeOutAll()
-                                .onClose(onClose).onChange(onChange);
-                        if (this.isAdminSign())
-                        {
-                            guard.submitInventory(this.module, true);
-                        }
-                        else if (this.isOwner(user) || MarketSignPerm.SIGN_INVENTORY_ACCESS_OTHER.isAuthorized(user))
-                        {
-                            ItemStack itemInSign = this.itemInfo.getItem();
-                            if (this.isBuySign())
-                            {
-                                guard.notBlockPutIn(itemInSign).notBlockTakeOut(itemInSign);
-                            }
-                            else
-                            {
-                                guard.notBlockTakeOut(itemInSign);
-                            }
-                            guard.submitInventory(this.module, true);
-                        }
-                        else
-                        {
-                            guard.submitInventory(this.module, true);
-                        }
-                    }
-                    else
+                    if (!this.openInventory(user))
                     {
                         user.sendMessage("signmarket", "&cYou are not allowed to see the market-signs inventories");
                     }
+                    return;
                 }
                 else
                 // no sneak -> empty & break signs
                 {
-                    if (this.editMode)
+                    if (!this.getInventory().getViewers().isEmpty())
                     {
-                        user.sendMessage("signmarket", "&cThis sign is being edited right now!");
-                        return true;
+                        user.sendMessage("signmarket","&cThis signs inventory is being edited right now!");
+                        return;
                     }
                     if (this.isOwner(user) || MarketSignPerm.SIGN_INVENTORY_ACCESS_OTHER.isAuthorized(user))
                     {
                         if (!this.editMode && this.blockInfo.isBuyOrSell() && this.isBuySign() && this.itemInfo.matchesItem(itemInHand))
                         {
+                            if (!this.getInventory().getViewers().isEmpty())
+                            {
+                                user.sendMessage("signmarket","&cThis signs inventory is being edited right now!");
+                                return;
+                            }
                             int amount = this.putItems(user, false);
                             if (amount != 0)
                                 user.sendMessage("signmarket", "&aAdded &6%d&ax &6%s &ato the stock!", amount, Match.material().getNameFor(this.itemInfo.getItem()));
-                            return true;
+                            return;
                         }
                         else if (itemInHand != null && itemInHand.getTypeId() != 0)
                         {
                             user.sendMessage("signmarket", "&cUse bare hands to break the sign!");
-                            return true;
+                            return;
                         }
                     }
                     if (user.getGameMode().equals(GameMode.CREATIVE)) // instabreak items
@@ -356,27 +393,34 @@ public class MarketSign
                         }
                     }
                 }
-                return true;
+                return;
             case RIGHT_CLICK_BLOCK:
                 if (sneaking)
                 {
                     this.showInfo(user);
-                    return true;
+                    return;
                 }
                 else
                 {
+                    if (this.editMode)
+                    {
+                        user.sendMessage("signmarket", "&cThis sign is being edited right now!");
+                        return;
+                    }
+                    if (!this.getInventory().getViewers().isEmpty())
+                    {
+                        user.sendMessage("signmarket","&cThis signs inventory is being edited right now!");
+                        return;
+                    }
                     if (this.isOwner(user))
                     {
                         this.takeItems(user);
-                        return true;
+                        return;
                     }
-                    if (!this.editMode)
-                        return this.useSign(user);
-                    user.sendMessage("signmarket", "&cThis sign is beeing edited right now!");
-                    return true;
+                    this.useSign(user);
                 }
         }
-        return false;
+        return;
     }
 
     public void showInfo(User user)
@@ -461,94 +505,17 @@ public class MarketSign
         }
         if (this.hasStock())
         {
-            if (this.isBuySign() == null)
+            if (!this.hasDemand() && this.hasInfiniteSize())
             {
-                user.sendMessage("signmarket", "&5New Sign");
+                user.sendMessage("signmarket", "&3In stock: &6%d&f/&6Infinite", this.itemInfo.stock);
             }
-            if (this.isBuySign())
+            else if (this.getItem() == null || this.getAmount() == 0)
             {
-                if (this.getItem() == null || this.getAmount() == 0)
-                {
-                    user.sendMessage("signmarket", "&3In stock: &6%d&f/&cUnkown", this.itemInfo.stock);
-                }
-                else
-                {
-                    Integer maxAmount;
-                    if (this.isAdminSign())
-                    {
-                        user.sendMessage("signmarket", "&3In stock: &6%d&f/&6Infinite", this.itemInfo.stock); //TODO config infinite stock for admin?
-                        return;
-                    }
-                    int maxStack = this.getItem().getMaxStackSize();
-                    if (maxStack == 64)
-                    {
-                        maxAmount = 3456; // DoubleChest of 64
-                    }
-                    else if (this.module.getConfig().allowOverStackedInSign || maxStack > this.getAmount())
-                    {
-                        if (this.getAmount() > 64)
-                        {
-                            maxAmount = 3456;
-                        }
-                        else
-                        {
-                            maxAmount = 6*9*this.getAmount();
-                        }
-                    }
-                    else
-                    {
-                        maxAmount = 6*9*maxStack;
-                    }
-                    user.sendMessage("signmarket", "&3In stock: &6%d&f/&6%d", this.itemInfo.stock, maxAmount);
-                }
+                user.sendMessage("signmarket", "&3In stock: &6%d&f/&cUnkown", this.itemInfo.stock);
             }
             else
             {
-                if (this.hasDemand())
-                {
-                    user.sendMessage("signmarket", "&3In stock: &6%d&f/&6%d", this.itemInfo.stock, this.blockInfo.demand);
-                }
-                else
-                {
-                    if (this.getItem() == null || this.getAmount() == 0)
-                    {
-                        user.sendMessage("signmarket", "&3In stock: &6%d&f/&cUnkown", this.itemInfo.stock);
-                    }
-                    else
-                    {
-                        Integer maxAmount;
-                        if (this.isAdminSign())
-                        {
-                            //TODO max stock of admin signs?
-                            user.sendMessage("signmarket", "&3In stock: &6%d&f/&6Infinite", this.itemInfo.stock);
-                        }
-                        else
-                        {
-                            int maxStack = this.getItem().getMaxStackSize();
-                            if (maxStack == 64)
-                            {
-                                maxAmount = 3456; // DoubleChest of 64
-                            }
-                            else if (this.module.getConfig().allowOverStackedInSign || maxStack > this.getAmount())
-                            {
-                                if (this.getAmount() > 64)
-                                {
-                                    maxAmount = 3456;
-                                }
-                                else
-                                {
-                                    maxAmount = 6*9*this.getAmount();
-                                }
-                            }
-                            else
-                            {
-                                maxAmount = 6*9*maxStack;
-                            }
-                            user.sendMessage("signmarket", "&3In stock: &6%d&f/&6%d", this.itemInfo.stock, maxAmount);
-                        }
-
-                    }
-                }
+                user.sendMessage("signmarket", "&3In stock: &6%d&f/&6%d", this.itemInfo.stock, this.getMaxItemAmount());
             }
         }
     }
@@ -668,7 +635,7 @@ public class MarketSign
             user.sendMessage("&cYour inventory is full!");
         }
         user.updateInventory();
-        MarketSign.this.setStock(InventoryUtil.getAmountOf(this.getInventory(), MarketSign.this.itemInfo.getItem()));
+        MarketSign.this.setStock(getAmountOf(this.getInventory(), MarketSign.this.itemInfo.getItem()));
         this.saveToDatabase();
     }
 
@@ -691,114 +658,142 @@ public class MarketSign
         return false;
     }
 
+    public boolean isFull()
+    {
+        if (!this.hasInfiniteSize() && this.hasStock())
+        {
+            if (this.getMaxItemAmount() >= this.getStock()+ this.getAmount())
+            {
+                return false;
+            }
+            return true;
+        }
+        return false;
+    }
+
+    public boolean isSatisfied()
+    {
+        if (this.hasDemand())
+        {
+            return this.getStock() >= this.getDemand();
+        }
+        return false;
+    }
+
+    public Integer getMaxItemAmount()
+    {
+        if (this.hasDemand())
+        {
+            return this.getDemand();
+        }
+        if (this.hasInfiniteSize())
+        {
+            return -1;
+        }
+        Integer maxAmount;
+        int maxSizeInStacks = this.itemInfo.size * 9;
+        if (this.module.getConfig().allowOverStackedInSign)
+        {
+            maxAmount = maxSizeInStacks * 64;
+        }
+        else
+        {
+            maxAmount = maxSizeInStacks*this.getItem().getMaxStackSize();
+        }
+        return maxAmount;
+    }
+
+    public boolean hasInfiniteSize() {
+        return this.itemInfo.size == -1;
+    }
+
     @SuppressWarnings("deprecation")
-    private boolean useSign(User user)
+    private void useSign(User user)
     {
         if (this.isValidSign(user))
         {
             if (this.isBuySign())
             {
-                if (!this.hasStock() || this.getStock() >= this.getAmount())
-                {
-                    if (this.canAfford(user))
-                    {
-                        Account userAccount = this.module.getConomy().getAccountsManager().getAccount(user, this.getCurrency());
-                        Account ownerAccount = this.module.getConomy().getAccountsManager().getAccount(this.getOwner(), this.getCurrency());
-                        ItemStack item = this.getItem().clone();
-                        item.setAmount(this.getAmount());
-                        if (checkForPlace(user.getInventory(), item.clone()))
-                        {
-                            this.module.getConomy().getAccountsManager().transaction(userAccount, ownerAccount, this.getPrice());
-                            if (!this.isAdminSign() || this.hasStock())
-                            {
-                                if (this.isAdminSign())
-                                {
-                                    this.setStock(this.getStock() - this.getAmount());
-                                }
-                                else
-                                {
-                                    this.getInventory().removeItem(item);
-                                }
-                                this.saveToDatabase();
-                            } // else admin sign -> no change
-                            user.getInventory().addItem(item);
-                            user.updateInventory();
-                            user.sendMessage("signmarket","&aYou bought &6%dx %s &afor &6%s&a.",this.getAmount(),Match.material().getNameFor(this.getItem()),this.parsePrice());
-                        }
-                        else
-                        {
-                            user.sendMessage("signmarket", "&cYou do not have enough space for these items!");
-                        }
-                    }
-                    else
-                    {
-                        user.sendMessage("signmarket", "&cYou cannot afford the price of these items!");
-                    }
-                }
-                else
+                if (this.isSoldOut())
                 {
                     user.sendMessage("signmarket", "&cThis market-sign is &4&lSold Out&c!");
+                    return;
                 }
-            }
-            else
-            {
-                if (this.isAdminSign() || this.getDemand() == null || this.getDemand() - this.getStock() > 0)
+                if (!this.canAfford(user))
                 {
-                    if (this.isAdminSign() || this.canAfford(this.getOwner()))
+                    user.sendMessage("signmarket", "&cYou cannot afford the price of these items!");
+                    return;
+                }
+                Account userAccount = this.module.getConomy().getAccountsManager().getAccount(user, this.getCurrency());
+                Account ownerAccount = this.module.getConomy().getAccountsManager().getAccount(this.getOwner(), this.getCurrency());
+                ItemStack item = this.getItem().clone();
+                item.setAmount(this.getAmount());
+                if (checkForPlace(user.getInventory(), item.clone()))
+                {
+                    this.module.getConomy().getAccountsManager().transaction(userAccount, ownerAccount, this.getPrice());
+                    if (this.hasStock())
                     {
-                        if (getAmountOf(user.getInventory(), this.getItem()) >= this.getAmount())
+                        if (this.isAdminSign())
                         {
-                            ItemStack item = this.getItem().clone();
-                            item.setAmount(this.getAmount());
-                            if (this.isAdminSign()
-                                || (this.module.getConfig().allowOverStackedInSign
-                                    && checkForPlace(this.getInventory(), splitIntoMaxItems(item, 64)))
-                                || (!this.module.getConfig().allowOverStackedInSign
-                                    && checkForPlace(this.getInventory(), splitIntoMaxItems(item, item.getMaxStackSize()))))
-                            {
-                                Account userAccount = this.module.getConomy().getAccountsManager().getAccount(user, this.getCurrency());
-                                Account ownerAccount = this.module.getConomy().getAccountsManager().getAccount(this.getOwner(), this.getCurrency());
-                                this.module.getConomy().getAccountsManager().transaction(ownerAccount, userAccount, this.getPrice());
-                                user.getInventory().removeItem(item);
-                                if (this.hasStock())
-                                {
-                                    if (this.isAdminSign())
-                                    {
-                                        this.setStock(this.getStock()+this.getAmount());
-                                    }
-                                    else
-                                    {
-                                        this.addToInventory(this.getInventory(),item);
-                                        this.setStock(InventoryUtil.getAmountOf(this.getInventory(),this.getItem()));
-                                    }
-                                    this.saveToDatabase();
-                                } // else admin sign -> no change
-                                user.updateInventory();
-                                user.sendMessage("signmarket","&aYou sold &6%dx %s &afor &6%s&a.",this.getAmount(),Match.material().getNameFor(this.getItem()),this.parsePrice());
-                            }
-                            else
-                            {
-                                user.sendMessage("signmarket", "&cThis market-sign is full and cannot accept more items!");
-                            }
+                            this.setStock(this.getStock() - this.getAmount());
                         }
                         else
                         {
-                            user.sendMessage("signmarket", "&cYou do not have enough items to sell!");
+                            this.getInventory().removeItem(item);
                         }
+                        this.saveToDatabase();
                     }
-                    else
-                    {
-                        user.sendMessage("signmarket", "&cThe owner cannot afford the money to aquire your items!");
-                    }
+                    user.getInventory().addItem(item);
+                    user.updateInventory();
+                    user.sendMessage("signmarket","&aYou bought &6%dx %s &afor &6%s&a.",this.getAmount(),Match.material().getNameFor(this.getItem()),this.parsePrice());
+                    return;
+                }
+                user.sendMessage("signmarket", "&cYou do not have enough space for these items!");
+                return;
+            } // else Sell
+            if (this.isSatisfied())
+            {
+                user.sendMessage("signmarket", "&cThis market-sign is &4&lsatisfied&c! You can no longer sell items to it.");
+                return;
+            }
+            if (this.isFull())
+            {
+                user.sendMessage("signmarket", "&cThis market-sign is &4&lfull&c! You can no longer sell items to it.");
+                return;
+            }
+            if (!this.canAfford(this.getOwner()))
+            {
+                user.sendMessage("signmarket", "&cThe owner cannot afford the money to aquire your items!");
+                return;
+            }
+            if (getAmountOf(user.getInventory(), this.getItem()) < this.getAmount())
+            {
+                user.sendMessage("signmarket", "&cYou do not have enough items to sell!");
+                return;
+            }
+            ItemStack item = this.getItem().clone();
+            item.setAmount(this.getAmount());
+
+            Account userAccount = this.module.getConomy().getAccountsManager().getAccount(user, this.getCurrency());
+            Account ownerAccount = this.module.getConomy().getAccountsManager().getAccount(this.getOwner(), this.getCurrency());
+            this.module.getConomy().getAccountsManager().transaction(ownerAccount, userAccount, this.getPrice());
+            user.getInventory().removeItem(item);
+            if (this.hasStock())
+            {
+                if (this.isAdminSign())
+                {
+                    this.setStock(this.getStock()+this.getAmount());
                 }
                 else
                 {
-                    user.sendMessage("signmarket", "&cThis market-sign is &4&lsatisfied&c! You can no longer sell items to it.");
+                    this.addToInventory(this.getInventory(),item);
+                    this.setStock(getAmountOf(this.getInventory(),this.getItem()));
                 }
-            }
-            return true;
+                this.saveToDatabase();
+            } // else admin sign -> no change
+            user.updateInventory();
+            user.sendMessage("signmarket","&aYou sold &6%dx %s &afor &6%s&a.",this.getAmount(),Match.material().getNameFor(this.getItem()),this.parsePrice());
         }
-        return false;
     }
 
     public User getOwner() {
@@ -865,7 +860,7 @@ public class MarketSign
                     lines[0] = "&5&l";
                 }
             }
-            else if (!isValid)
+            else if (!isValid ||(this.isBuySign() && this.isSoldOut()) || (!this.isBuySign() && this.isSatisfied()))
             {
                 lines[0] = "&4&l";
             }
@@ -877,7 +872,32 @@ public class MarketSign
             {
                 lines[0] = "&1&l";
             }
-            if (this.isBuySign() == null)
+            if (this.blockInfo.isBuyOrSell())
+            {
+                if (this.isBuySign())
+                {
+                    if (!this.isInEditMode() && this.isSoldOut())
+                    {
+                        lines[0] += "Sold Out";
+                    }
+                    else
+                    {
+                        lines[0] += "Buy";
+                    }
+                }
+                else
+                {
+                    if (!this.isInEditMode() && this.isSatisfied())
+                    {
+                        lines[0] += "satisfied";
+                    }
+                    else
+                    {
+                        lines[0] += "Sell";
+                    }
+                }
+            }
+            else
             {
                 if (this.isInEditMode())
                 {
@@ -887,18 +907,6 @@ public class MarketSign
                 {
                     lines[0] += "Invalid";
                 }
-            }
-            else if (this.isBuySign())
-            {
-                lines[0] += "Buy";
-                if (this.isSoldOut())
-                {
-                    lines[0] = "&4&lSold Out";
-                }
-            }
-            else
-            {
-                lines[0] += "Sell";
             }
             ItemStack item = this.getItem();
             if (item == null)
@@ -956,39 +964,26 @@ public class MarketSign
                         lines[2] += " &1x" + this.getStock();
                     }
                 }
-                else
+                else if (this.hasStock())
                 {
-                    if (this.hasStock())
+                    if (this.canAfford(this.getOwner()) && !this.isSatisfied() && !this.isFull())
                     {
-                        User owner = this.blockInfo.getOwner();
-                        boolean canAfford = this.isAdminSign() || this.canAfford(owner);
-                        boolean demanding = !this.hasDemand() ? true : this.getRemainingDemand() > 0;
-                        //TODO config to limit space of admin-signs
-                        boolean space = this.module.getConfig().allowOverStackedInSign
-                                ? this.getInventory().firstEmpty() != -1
-                                : checkForPlace(this.getInventory(),splitIntoMaxItems(this.getItem(),this.getItem().getMaxStackSize()));
-                        if (canAfford && demanding && space)
+                        if (this.hasDemand())
                         {
-                            if (this.hasDemand())
-                            {
-                                lines[2] += " &bx" + (this.getDemand() - this.getStock());
-                            }
-                            else
-                            {
-                                lines[2] += " &bx?";
-                            }
+                            lines[2] += " &bx" + (this.getDemand() - this.getStock());
                         }
                         else
                         {
-                            if (this.hasDemand())
-                            {
-                                lines[2] += " &4x" + (this.getDemand() - this.getStock());
-                            }
-                            else
-                            {
-                                lines[2] += " &4x?";
-                            }
+                            lines[2] += " &bx?";
                         }
+                    }
+                    else if (this.hasDemand())
+                    {
+                        lines[2] += " &4x" + (this.getDemand() - this.getStock());
+                    }
+                    else
+                    {
+                        lines[2] += " &4x?";
                     }
                 }
             }
@@ -1039,11 +1034,11 @@ public class MarketSign
         {
             if (this.isAdminSign())
             {
-                inventory = Bukkit.getServer().createInventory(this.itemInfo, 9, "Market-Sign"); // Dispenser would be nice BUT cannot rename
+                inventory = Bukkit.getServer().createInventory(this.itemInfo, InventoryType.DISPENSER); // TODO rename if its becomes possible
             }
             else
             {
-                inventory = Bukkit.getServer().createInventory(this.itemInfo, 54, "Market-Sign"); // DOUBLE-CHEST
+                inventory = Bukkit.getServer().createInventory(this.itemInfo, this.itemInfo.getSize(), "Market-Sign"); // DOUBLE-CHEST
                 ItemStack item = this.getItem().clone();
                 item.setAmount(this.itemInfo.stock);
                 if (this.itemInfo.stock > 0)
@@ -1124,6 +1119,13 @@ public class MarketSign
 
     public void enterEditMode()
     {
+        SignMarketItemModel newItemInfo = new SignMarketItemModel();
+        newItemInfo.applyValues(this.itemInfo);
+        SignMarketItemModel oldItemModel = this.setItemInfo(newItemInfo); // de-sync item-info to prevent changing other signs
+        if (oldItemModel.isNotReferenced())
+        {
+            this.module.getMarketSignFactory().getSignMarketItemManager().deleteModel(oldItemModel);
+        }
         this.editMode = true;
         this.updateSign();
     }
@@ -1134,7 +1136,7 @@ public class MarketSign
         this.updateSign();
         if (this.isValidSign(user))
         {
-            this.saveToDatabase();
+            this.saveToDatabase(); // re-sync item-info in here
         }
     }
 
