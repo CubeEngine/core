@@ -4,7 +4,13 @@ import de.cubeisland.cubeengine.core.util.convert.ConversionException;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.StringTokenizer;
+import java.util.regex.MatchResult;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -386,5 +392,23 @@ public final class StringUtils
         }
 
         return string.substring(string.length() - token.length()).equalsIgnoreCase(token);
+    }
+
+    public static String replaceWithCallback(Pattern pattern, String string, ReplaceCallback callback)
+    {
+        final Matcher matcher = pattern.matcher(string);
+        while(matcher.find())
+        {
+            final MatchResult matchResult = matcher.toMatchResult();
+            final String replacement = callback.replace(matchResult);
+            string = string.substring(0, matchResult.start()) + replacement + string.substring(matchResult.end());
+            matcher.reset(string);
+        }
+        return string;
+    }
+
+    public static interface ReplaceCallback
+    {
+        String replace(MatchResult result);
     }
 }
