@@ -11,8 +11,6 @@ import de.cubeisland.cubeengine.basics.storage.BasicUserManager;
 import de.cubeisland.cubeengine.basics.storage.IgnoreListManager;
 import de.cubeisland.cubeengine.core.command.reflected.ReflectedCommand;
 import de.cubeisland.cubeengine.core.module.Module;
-import de.cubeisland.cubeengine.core.util.StringUtils;
-import de.cubeisland.cubeengine.core.util.convert.ConversionException;
 import de.cubeisland.cubeengine.core.util.convert.Convert;
 
 public class Basics extends Module
@@ -23,7 +21,6 @@ public class Basics extends Module
     private MailManager mailManager;
     private KitsGivenManager kitGivenManager;
     private IgnoreListManager ignoreListManager;
-    public int afkListenerTask;
     private KitManager kitManager;
     private LagTimer lagTimer;
 
@@ -72,27 +69,8 @@ public class Basics extends Module
         this.registerListener(new TeleportListener(this));
 
         this.registerPermissions(new TpWorldPermissions(this).getPermissions()); // per world permissions
-        final long autoAfk;
-        final long afkCheck;
-        try
-        {
-            autoAfk = StringUtils.convertTimeToMillis(Basics.this.config.autoAfk);
-            afkCheck = StringUtils.convertTimeToMillis(Basics.this.config.afkCheck);
-            if (afkCheck < 0)
-            {
-                throw new IllegalStateException("afk-check-time has to be greater than 0!");
-            }
-        }
-        catch (ConversionException ex)
-        {
-            throw new IllegalStateException("illegal time format in configuration!");
-        }
-        AfkListener afkListener = new AfkListener(this, autoAfk, afkCheck);
-        this.registerListener(afkListener);
-        if (autoAfk > 0)
-        {
-            this.afkListenerTask = this.getTaskManger().scheduleSyncRepeatingTask(this, afkListener, 20, afkCheck / 50); // this is in ticks so /50
-        }
+
+
         this.lagTimer = new LagTimer(this);
 
         /**
@@ -110,7 +88,7 @@ public class Basics extends Module
     @Override
     public void onDisable()
     {
-        this.getTaskManger().cancelTask(this, this.afkListenerTask);
+        this.getTaskManger().cancelTasks(this); // afk task
     }
 
     public BasicsConfiguration getConfiguration()

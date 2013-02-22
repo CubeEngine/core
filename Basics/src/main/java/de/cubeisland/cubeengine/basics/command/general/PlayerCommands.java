@@ -11,6 +11,7 @@ import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.user.UserManager;
 import de.cubeisland.cubeengine.core.util.ChatFormat;
 import de.cubeisland.cubeengine.core.util.StringUtils;
+import de.cubeisland.cubeengine.core.util.convert.ConversionException;
 import de.cubeisland.cubeengine.core.util.time.Duration;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
@@ -30,11 +31,33 @@ public class PlayerCommands
 {
     private UserManager um;
     private Basics basics;
+    private AfkListener afkListener;
 
     public PlayerCommands(Basics basics)
     {
         this.basics = basics;
         this.um = basics.getUserManager();
+        final long autoAfk;
+        final long afkCheck;
+        try
+        {
+            autoAfk = StringUtils.convertTimeToMillis(basics.getConfiguration().autoAfk);
+            afkCheck = StringUtils.convertTimeToMillis(basics.getConfiguration().afkCheck);
+            if (afkCheck < 0)
+            {
+                throw new IllegalStateException("afk-check-time has to be greater than 0!");
+            }
+        }
+        catch (ConversionException ex)
+        {
+            throw new IllegalStateException("illegal time format in configuration!");
+        }
+        this.afkListener = new AfkListener(basics, autoAfk, afkCheck);
+        basics.registerListener(afkListener);
+        if (autoAfk > 0)
+        {
+            basics.getTaskManger().scheduleSyncRepeatingTask(basics, afkListener, 20, afkCheck / 50); // this is in ticks so /50
+        }
     }
 
     @Command(desc = "Refills your hunger bar", max = 1,
@@ -494,8 +517,18 @@ public class PlayerCommands
         if (context.getSender() instanceof User)
         {
             User sender = (User)context.getSender();
-            sender.setAttribute(basics, "afk", true);
-            this.um.broadcastStatus("basics", "is now afk.", context.getSender().getName());
+            Boolean isAfk = sender.getAttribute(basics,"afk");
+            if (isAfk == null || !isAfk)
+            {
+                sender.setAttribute(basics, "afk", true);
+                sender.removeAttribute(basics,"lastAction");
+                this.um.broadcastStatus("basics", "is now afk.", context.getSender().getName());
+            }
+            else
+            {
+                sender.setAttribute(basics,"lastAction",System.currentTimeMillis());
+                this.afkListener.run();
+            }
             return;
         }
         context.sendMessage("basics", "&cJust go!");
@@ -504,7 +537,7 @@ public class PlayerCommands
     @Command(desc = "Displays informations from a player!", usage = "<player>", min = 1, max = 1)
     public void whois(CommandContext context)
     {
-        //TODO CE-311 addidtional informations
+        //TODO CE-311 additional informations
         User user = context.getUser(0);
         if (user == null)
         {
