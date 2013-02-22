@@ -290,12 +290,12 @@ public class TimeControlCommands
                     if (this.lockTask.worlds.containsKey(world.getName()))
                     {
                         this.lockTask.remove(world);
-                        context.sendMessage("basics", "&aTime locked for &6%s&a!", world.getName());
+                        context.sendMessage("basics", "&aTime unlocked for &6%s&a!", world.getName());
                     }
                     else
                     {
                         this.lockTask.add(world);
-                        context.sendMessage("basics", "&aTime unlocked for &6%s&a!", world.getName());
+                        context.sendMessage("basics", "&aTime locked for &6%s&a!", world.getName());
                     }
                 }
             }
