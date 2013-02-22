@@ -6,6 +6,7 @@ import de.cubeisland.cubeengine.core.command.CommandContext;
 import de.cubeisland.cubeengine.core.command.parameterized.Flag;
 import de.cubeisland.cubeengine.core.command.parameterized.ParameterizedContext;
 import de.cubeisland.cubeengine.core.command.reflected.Command;
+import de.cubeisland.cubeengine.core.command.sender.CommandSender;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.util.InventoryGuardFactory;
 import org.bukkit.inventory.ItemStack;
@@ -110,48 +111,51 @@ public class InventoryCommands
     @SuppressWarnings("deprecation")
     public void clearinventory(ParameterizedContext context)
     {
-        User sender = null;
-        if (context.getSender() instanceof User)
+        CommandSender sender = context.getSender();
+        final User target;
+        if (context.hasArgs())
         {
-            sender = (User)context.getSender();
-        }
-        User user = sender;
-        boolean other = false;
-        if (context.hasArg(0))
-        {
-            if (!BasicsPerm.COMMAND_CLEARINVENTORY_OTHER.isAuthorized(sender))
+            target = context.getArg(0, User.class);
+            if (target == null)
             {
-                context.sendMessage("basics", "&cYou are not allowed to clear the inventory of other users!");
+                sender.sendMessage("basics", "&cThe specified user was not found!");
                 return;
             }
-            user = context.getUser(0);
-            if (user == null)
-            {
-                context.sendMessage("core", "&cUser &2%s &cnot found!", context.getString(0));
-                return;
-            }
-            other = true;
         }
-        user.getInventory().clear();
-        if (context.hasFlag("ra"))
+        else if (sender instanceof User)
         {
-            user.getInventory().setBoots(null);
-            user.getInventory().setLeggings(null);
-            user.getInventory().setChestplate(null);
-            user.getInventory().setHelmet(null);
-        }
-        user.updateInventory();
-        if (other)
-        {
-            sender.sendMessage("basics", "&aCleared Inventory of &2%s&a!", user.getName());
-            if (BasicsPerm.COMMAND_CLEARINVENTORY_NOTIFY.isAuthorized(user))
-            {
-                user.sendMessage("basics", "&eInventory cleared by &2%s&e!", sender.getName());
-            }
+            target = (User)sender;
         }
         else
         {
-            sender.sendMessage("basics", "&aCleared inventory!");
+            sender.sendMessage("basics", "&cThere is no inventory to clear in the console...");
+            return;
+        }
+
+        if (sender != target && !BasicsPerm.COMMAND_CLEARINVENTORY_OTHER.isAuthorized(sender))
+        {
+            context.sendMessage("basics", "&cYou are not allowed to clear the inventory of other users!");
+            return;
+        }
+
+        target.getInventory().clear();
+        if (context.hasFlag("ra"))
+        {
+            target.getInventory().setBoots(null);
+            target.getInventory().setLeggings(null);
+            target.getInventory().setChestplate(null);
+            target.getInventory().setHelmet(null);
+        }
+        target.updateInventory();
+
+        if (sender == target)
+        {
+            sender.sendMessage("basics", "&aYour inventory has been cleared! :)");
+        }
+        else
+        {
+            target.sendMessage("basics", "&eYour inventory has been cleared by &6%s&e!", sender.getName());
+            sender.sendMessage("basics", "&aThe inventory of &6%s&a has been cleared!", target.getName());
         }
     }
 }
