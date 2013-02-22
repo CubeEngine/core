@@ -21,7 +21,7 @@ import java.util.Stack;
 
 public class ParameterizedContextFactory implements ContextFactory
 {
-    private final ArgBounds bounds;
+    private ArgBounds bounds;
     private final Map<String, CommandFlag> flagMap;
     private final Map<String, CommandParameter> paramMap;
 
@@ -51,6 +51,11 @@ public class ParameterizedContextFactory implements ContextFactory
     public ArgBounds getArgBounds()
     {
         return this.bounds;
+    }
+
+    public void setArgBounds(ArgBounds newBounds)
+    {
+        this.bounds = newBounds;
     }
 
     public ParameterizedContextFactory addParameters(Collection<CommandParameter> params)

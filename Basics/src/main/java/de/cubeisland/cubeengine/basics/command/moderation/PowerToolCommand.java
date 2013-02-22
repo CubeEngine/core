@@ -1,6 +1,7 @@
 package de.cubeisland.cubeengine.basics.command.moderation;
 
 import de.cubeisland.cubeengine.basics.BasicsPerm;
+import de.cubeisland.cubeengine.core.command.ArgBounds;
 import de.cubeisland.cubeengine.core.command.CommandContext;
 import de.cubeisland.cubeengine.core.command.CommandResult;
 import de.cubeisland.cubeengine.core.command.ContainerCommand;
@@ -40,6 +41,7 @@ public class PowerToolCommand extends ContainerCommand implements Listener
     public PowerToolCommand(Module module)
     {
         super(module, "powertool", "Binding shortcuts to an item.", asList("pt"));
+        this.getContextFactory().setArgBounds(new ArgBounds(0, NO_MAX));
     }
 
     @Override

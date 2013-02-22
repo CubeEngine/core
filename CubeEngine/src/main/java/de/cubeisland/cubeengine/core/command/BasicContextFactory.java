@@ -9,7 +9,7 @@ import java.util.Stack;
 
 public class BasicContextFactory implements ContextFactory
 {
-    private final ArgBounds bounds;
+    private ArgBounds bounds;
 
     public BasicContextFactory(ArgBounds bounds)
     {
@@ -20,6 +20,11 @@ public class BasicContextFactory implements ContextFactory
     public ArgBounds getArgBounds()
     {
         return this.bounds;
+    }
+
+    public void setArgBounds(ArgBounds newBounds)
+    {
+        this.bounds = newBounds;
     }
 
     @Override
