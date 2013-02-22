@@ -26,7 +26,9 @@ public enum MarketSignPerm implements Permission
     SIGN_CREATE_ADMIN_NOSTOCK,
     SIGN_CREATE,
     SIGN_EDIT,
-    SIGN_SETSTOCK;
+    SIGN_SETSTOCK,
+    SIGN_SIZE_CHANGE,
+    SIGN_SIZE_CHANGE_INFINITE;
     private String permission;
     private PermDefault def;
 

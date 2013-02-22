@@ -787,7 +787,7 @@ public class MarketSign
                 else
                 {
                     this.addToInventory(this.getInventory(),item);
-                    this.setStock(getAmountOf(this.getInventory(),this.getItem()));
+                    this.setStock(getAmountOf(this.getInventory(), this.getItem()));
                 }
                 this.saveToDatabase();
             } // else admin sign -> no change
@@ -1034,7 +1034,7 @@ public class MarketSign
         {
             if (this.isAdminSign())
             {
-                inventory = Bukkit.getServer().createInventory(this.itemInfo, InventoryType.DISPENSER); // TODO rename if its becomes possible
+                inventory = Bukkit.getServer().createInventory(this.itemInfo, InventoryType.DISPENSER);
             }
             else
             {
@@ -1170,24 +1170,6 @@ public class MarketSign
         return null;
     }
 
-    public void setDefaultFor(User user)
-    {
-        //TODO set default values.
-        if (MarketSignPerm.SIGN_CREATE_ADMIN.isAuthorized(user))
-        {
-            this.setAdminSign();
-        }
-        else if (MarketSignPerm.SIGN_CREATE_USER.isAuthorized(user))
-        {
-            this.setOwner(user);
-        }
-
-        if (this.isAdminSign())
-        {
-            //TODO set stock if forced
-        }
-    }
-
     public SignMarketBlockModel getBlockInfo()
     {
         return this.blockInfo;
@@ -1207,5 +1189,14 @@ public class MarketSign
     {
         this.blockInfo.applyValues(prevMarketSign.blockInfo);
         this.itemInfo.applyValues(prevMarketSign.itemInfo);
+    }
+
+    public void setSize(Integer size)
+    {
+        if (size == 0 || size < -1 || size > 6)
+        {
+            throw new IllegalArgumentException("Invalid inventory-size!");
+        }
+        this.itemInfo.size = size;
     }
 }

@@ -33,17 +33,15 @@ public class EditModeListener extends ChatCommand<Signmarket>
                 .addFlag(new CommandFlag("sell","sell"))
                 .addFlag(new CommandFlag("admin","admin"))
                 .addFlag(new CommandFlag("user","user"))
-                .addFlag(new CommandFlag("stock","stock")) //TODO sync admin stocks / prevent user having no stock
+                .addFlag(new CommandFlag("stock","stock"))
                 .addParameter(new CommandParameter("demand", Integer.class))
                 .addParameter(new CommandParameter("owner", User.class))
                 .addParameter(new CommandParameter("price", String.class))
                 .addParameter(new CommandParameter("amount", Integer.class))
                 .addParameter(new CommandParameter("item", ItemStack.class))
                 .addParameter(new CommandParameter("setstock",Integer.class))
-
-                .addParameter(new CommandParameter("size",Integer.class)) //TODO -1 OR 1-6
-                .addParameter(new CommandParameter("currency",Integer.class))//TODO implement function
-        //TODO change currency
+                .addParameter(new CommandParameter("size",Integer.class))
+                .addParameter(new CommandParameter("currency",Integer.class))
         ;
     }
 //TODO itemblacklist?
@@ -71,6 +69,11 @@ public class EditModeListener extends ChatCommand<Signmarket>
     public void removeUser(User user)
     {
         super.removeUser(user);
+        MarketSign marketSign = this.getModule().getMarketSignFactory().getSignAt(this.currentSignLocation.remove(user.key));
+        if (marketSign != null)
+        {
+            marketSign.exitEditMode(user);
+        }
         user.sendMessage("signmarket", "&aEdit mode quit!");
     }
 
@@ -230,7 +233,6 @@ public class EditModeListener extends ChatCommand<Signmarket>
         {
             if (marketSign.isAdminSign())
             {
-                //TODO config if admin-signs are forced to have stock or nostock
                 if (marketSign.hasStock())
                 {
                     if (this.getModule().getConfig().allowAdminNoStock)
@@ -283,14 +285,24 @@ public class EditModeListener extends ChatCommand<Signmarket>
                 }
                 else
                 {
-                    //TODO set stock to true && check if allowed
-                    context.sendMessage("signmarket","&cThis sign has no stock");
+                    context.sendMessage("signmarket","&cThis sign has no stock! Use \"stock\" first to enable it!");
                 }
-
             }
             else
             {
                 context.sendMessage("signmarket","&cYou are not allowed to set the stock!");
+            }
+        }
+        if (context.hasParam("currency"))
+        {
+            Currency currency = this.getModule().getConomy().getCurrencyManager().getCurrencyByName(context.getString("currency"));
+            if (currency == null)
+            {
+                context.sendMessage("signmarket","&cInvalid currency: %s!",context.getString("currency"));
+            }
+            else
+            {
+                marketSign.setCurrency(currency);
             }
         }
 
@@ -301,7 +313,7 @@ public class EditModeListener extends ChatCommand<Signmarket>
             {
                 currency = this.getModule().getConomy().getCurrencyManager().getMainCurrency();
                 marketSign.setCurrency(currency);
-                context.sendMessage("signmarkte","&aCurrency set to default!");
+                context.sendMessage("signmarket","&aCurrency set to default!");
             }
             Long price = currency.parse(context.getString("price"));
             if (price == null)
@@ -344,6 +356,32 @@ public class EditModeListener extends ChatCommand<Signmarket>
             else
             {
                 marketSign.setItemStack(item, false);
+            }
+        }
+        if (context.hasParam("size"))
+        {
+            if (MarketSignPerm.SIGN_SIZE_CHANGE.isAuthorized(user))
+            {
+                Integer size = context.getParam("size",null);
+                if (size == null || size == 0 || size > 6 || size < -1)
+                {
+                    context.sendMessage("signmarket","&cInvalid size! Use -1 for infinite OR 1-6 inventory-lines!");
+                }
+                else
+                {
+                    if (size == -1 && !MarketSignPerm.SIGN_SIZE_CHANGE_INFINITE.isAuthorized(user))
+                    {
+                        context.sendMessage("marketsign","&cYou are not allowed to set infinite inventories!");
+                    }
+                    else
+                    {
+                        marketSign.setSize(size);
+                    }
+                }
+            }
+            else
+            {
+                context.sendMessage("signmarket","&cYou are not allowed to change the sign-inventory-size.");
             }
         }
         if (context.hasFlag("exit"))

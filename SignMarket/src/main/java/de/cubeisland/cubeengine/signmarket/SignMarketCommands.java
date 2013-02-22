@@ -23,7 +23,6 @@ public class SignMarketCommands extends ContainerCommand
             desc = "Enters the editmode allowing to change market-signs easily")
     public void editMode(ParameterizedContext context)
     {
-        //TODO exitMode of currentSign when exiting too!!!!
         if (context.getSender() instanceof User)
         {
             if (this.module.getEditModeListener().hasUser((User)context.getSender()))
