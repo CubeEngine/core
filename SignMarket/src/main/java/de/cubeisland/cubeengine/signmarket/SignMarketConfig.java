@@ -27,6 +27,11 @@ public class SignMarketConfig extends Configuration
             "Use -1 for infinite stock-size OR values from 1-6!")
     @Option("sign.admin.stock.max")
     public int maxAdminStock = -1;
+
+    @Comment("Prices of admin signs will me multiplied by this factor if their stock is empty.")
+    @Option("sign.admin.stock.fee-if-empty")
+    public int factorIfAdminSignIsEmpty = -1;
+
     @Comment("The maximum amount of inventory-lines a user-sign can have.\n" +
             "Use -1 for infinite stock-size OR values from 1-6!")
     @Option("sign.user.stock.max")

@@ -18,7 +18,7 @@ public class Currency
     private CurrencyManager manager;
     private long defaultBalance;
     private long minMoney = 0;
-    private Character numberseparator = ',';//TODO config
+    private String decimalSeperator;
     private Pattern pattern2 = Pattern.compile("[^a-zA-Z]+");
     private Pattern pattern1;
     private TObjectDoubleHashMap<Currency> conversionRates = new TObjectDoubleHashMap<Currency>();
@@ -30,6 +30,7 @@ public class Currency
         this.formatlong = config.formatLong;
         this.formatshort = config.formatShort;
         this.defaultBalance = config.defaultBalance;
+        this.decimalSeperator = config.decimalSeparator;
 
         this.pattern1 = Pattern.compile("^-*[\\d,]+$");
 
@@ -110,7 +111,7 @@ public class Currency
         // Without CurrencySymbols:
         if (pattern1.matcher(tempString).find() && pattern2.matcher(tempString).find())
         {
-            int separators = StringUtils.countMatches(tempString, numberseparator.toString());
+            int separators = StringUtils.countMatches(tempString, decimalSeperator);
             try
             {
                 if (separators == 0) // No separator try if its long
@@ -132,7 +133,7 @@ public class Currency
                             break;
                         }
                         int subCurLen = String.valueOf(subCur.getValueForParent() - 1).length();
-                        int nextSeparator = tempString.indexOf(numberseparator);
+                        int nextSeparator = tempString.indexOf(decimalSeperator);
                         String read;
                         if (nextSeparator == -1)
                         {
@@ -166,7 +167,7 @@ public class Currency
         //TODO parse known patterns formatLong/short
         //e.g.: 1,4Euro
         final int stringLen = tempString.length();
-        char current;
+        Character current;
         StringBuilder token = new StringBuilder();
         ArrayList<String> tokens = new ArrayList<String>();
         boolean isNumber = false;
@@ -202,7 +203,7 @@ public class Currency
                     if (!Character.isWhitespace(current))
                     {
                         token.append(current);
-                        if (numberseparator == current)
+                        if (!this.decimalSeperator.equals("") && current.toString().equalsIgnoreCase(this.decimalSeperator))
                         {
                             tokens.add(token.toString());
                             token = new StringBuilder();

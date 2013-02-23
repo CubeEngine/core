@@ -7,16 +7,18 @@ import de.cubeisland.cubeengine.core.util.convert.Convert;
 import de.cubeisland.cubeengine.core.util.convert.Converter;
 
 import java.util.HashMap;
-import java.util.Map;
+import java.util.LinkedHashMap;
 
 public class SubCurrencyConverter implements Converter<SubCurrencyConfig>
 {
     @Override
     public Node toNode(SubCurrencyConfig object) throws ConversionException
     {
-        HashMap<String, Object> map = new HashMap<String, Object>();
-        map.put("value", object.value);
+        HashMap<String, Object> map = new LinkedHashMap<String, Object>();
+        map.put("longname-plural", object.longNamePlural);
         map.put("shortname", object.shortName);
+        map.put("shortname-plural", object.shortNamePlural);
+        map.put("value", object.value);
         return Convert.wrapIntoNode(map);
     }
 
@@ -25,16 +27,20 @@ public class SubCurrencyConverter implements Converter<SubCurrencyConfig>
     {
         if (node instanceof MapNode)
         {
+            MapNode mapNode = (MapNode) node;
             try
             {
-                Map<String, Node> map = ((MapNode)node).getMappedNodes();
-                String shortName = map.get("shortname").unwrap();
+                String longNamePlural = mapNode.getExactNode("longname-plural").unwrap();
+                String shortName = mapNode.getExactNode("shortname").unwrap();
+                String shortNamePlural = mapNode.getExactNode("shortname-plural").unwrap();
                 Integer value = 100;
-                if (map.get("value") != null)
+                try
                 {
-                    value = Integer.valueOf(map.get("value").unwrap());
+                    value = Integer.valueOf(mapNode.getExactNode("value").unwrap());
                 }
-                return new SubCurrencyConfig(shortName, value);
+                catch (NumberFormatException ignored)
+                {}
+                return new SubCurrencyConfig(longNamePlural,shortName,shortNamePlural, value);
             }
             catch (Exception e)
             {

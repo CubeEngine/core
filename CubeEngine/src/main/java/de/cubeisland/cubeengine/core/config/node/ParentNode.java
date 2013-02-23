@@ -78,6 +78,11 @@ public abstract class ParentNode extends Node
                 node.setParentNode(this);
                 this.setExactNode(path, node);
             }
+            else if (node instanceof NullNode)
+            {
+                node.setParentNode(this);
+                this.setExactNode(path, node);
+            }
             return node;
         }
     }

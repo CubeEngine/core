@@ -41,7 +41,7 @@ public class EditModeListener extends ChatCommand<Signmarket>
                 .addParameter(new CommandParameter("item", ItemStack.class))
                 .addParameter(new CommandParameter("setstock",Integer.class))
                 .addParameter(new CommandParameter("size",Integer.class))
-                .addParameter(new CommandParameter("currency",Integer.class))
+                .addParameter(new CommandParameter("currency",String.class))
         ;
     }
 //TODO itemblacklist?

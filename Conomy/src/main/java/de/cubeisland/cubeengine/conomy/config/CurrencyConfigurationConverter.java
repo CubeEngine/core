@@ -30,6 +30,9 @@ public class CurrencyConfigurationConverter implements Converter<CurrencyConfigu
         format.setNode(new StringNode("long"), new StringNode(object.formatLong));
         format.setNode(new StringNode("short"), new StringNode(object.formatShort));
         currency.setNode(new StringNode("default-balance"), new LongNode(object.defaultBalance));
+        currency.setNode(new StringNode("minimum-balance"), new LongNode(object.minimumBalance));
+        currency.setNode(new StringNode("decimal-separator"), new StringNode(object.decimalSeparator));
+        currency.setNode(new StringNode("thousand-separator"), new StringNode(object.thousandSeparator));
         return currency;
     }
 
@@ -44,14 +47,29 @@ public class CurrencyConfigurationConverter implements Converter<CurrencyConfigu
             LinkedHashMap<String, SubCurrencyConfig> subConfigs = new LinkedHashMap<String, SubCurrencyConfig>();
             for (Map.Entry<String, Node> entry : subCurrencies.getMappedNodes().entrySet())
             {
-                subConfigs.put(entry.getKey(), (SubCurrencyConfig)Convert.fromNode(entry.getValue(), SubCurrencyConfig.class));
+                subConfigs.put(subCurrencies.getOriginalKey(entry.getKey()), (SubCurrencyConfig)Convert.fromNode(entry.getValue(), SubCurrencyConfig.class));
             }
-            Long defaultBalance = Long.parseLong(currency.getMappedNodes().get("default-balance").unwrap());
+            Long defaultBalance = 0L;
+            try
+            {
+                defaultBalance = Long.parseLong(currency.getExactNode("default-balance").unwrap());
+            }
+            catch (NumberFormatException ignored)
+            {}
+            Long minimumBalance = 0L;
+            try
+            {
+                minimumBalance = Long.parseLong(currency.getExactNode("minimum-balance").unwrap());
+            }
+            catch (NumberFormatException ignored)
+            {}
             CurrencyConfiguration currencyConfig =
                     new CurrencyConfiguration(subConfigs,
                             format.getMappedNodes().get("long").unwrap(),
                             format.getMappedNodes().get("short").unwrap(),
-                            defaultBalance);
+                            defaultBalance, minimumBalance,
+                            currency.getExactNode("decimal-separator").unwrap(),
+                            currency.getExactNode("thousand-separator").unwrap());
             return currencyConfig;
         }
         catch (Exception e)

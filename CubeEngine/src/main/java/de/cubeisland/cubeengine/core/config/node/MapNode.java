@@ -51,7 +51,12 @@ public class MapNode extends ParentNode
     @Override
     public Node getExactNode(String key)
     {
-        return this.mappedNodes.get(key.trim().toLowerCase());
+        Node node = this.mappedNodes.get(key.trim().toLowerCase());
+        if (node == null)
+        {
+            node = NullNode.emptyNode();
+        }
+        return node;
     }
 
     @Override
@@ -71,7 +76,7 @@ public class MapNode extends ParentNode
     @Override
     protected Node removeExactNode(String key)
     {
-        Node node = this.mappedNodes.get(key);
+        Node node = this.mappedNodes.remove(key);
         if (node instanceof NullNode)
         {
             this.reverseMappedNodes.remove(node);

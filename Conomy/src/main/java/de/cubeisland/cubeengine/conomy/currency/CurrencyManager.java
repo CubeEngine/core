@@ -12,7 +12,6 @@ import java.util.Map.Entry;
 
 public class CurrencyManager
 {
-
     private THashMap<String, Currency> currencies = new THashMap<String, Currency>();
     private Conomy module;
     private ConomyConfiguration config;

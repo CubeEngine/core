@@ -28,9 +28,9 @@ public class ConomyConfiguration extends Configuration
         {
             this.currencies = new LinkedHashMap<String, CurrencyConfiguration>();
             LinkedHashMap<String, SubCurrencyConfig> subcurrencies = new LinkedHashMap<String, SubCurrencyConfig>();
-            subcurrencies.put("Euro", new SubCurrencyConfig("€", 1));
-            subcurrencies.put("Cent", new SubCurrencyConfig("c", 100));
-            CurrencyConfiguration subConfig = new CurrencyConfiguration(subcurrencies, "%-%€ Euro %c Cent", "%-%€,%c€", 133742);
+            subcurrencies.put("Euro", new SubCurrencyConfig("Euros","€","€", 1));
+            subcurrencies.put("Cent", new SubCurrencyConfig("Cents","c","c", 100));
+            CurrencyConfiguration subConfig = new CurrencyConfiguration(subcurrencies, "%-%€ Euro %c Cent", "%-%€,%c€", 10000,0,",",".");
             this.currencies.put("Euro", subConfig);
         }
     }
