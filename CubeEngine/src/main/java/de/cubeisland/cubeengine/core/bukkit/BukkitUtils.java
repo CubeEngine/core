@@ -391,4 +391,10 @@ public class BukkitUtils
         }
         return null;
     }
+
+    public static void setOnlineMode(boolean mode)
+    {
+        ((CraftServer)Bukkit.getServer()).getServer().setOnlineMode(mode);
+        ((CraftServer)Bukkit.getServer()).getServer().getPropertyManager().savePropertiesFile();
+    }
 }

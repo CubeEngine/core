@@ -3,6 +3,7 @@ package de.cubeisland.cubeengine.core.command.commands;
 import de.cubeisland.cubeengine.core.Core;
 import de.cubeisland.cubeengine.core.CorePerms;
 import de.cubeisland.cubeengine.core.bukkit.BukkitCore;
+import de.cubeisland.cubeengine.core.bukkit.BukkitUtils;
 import de.cubeisland.cubeengine.core.command.CommandContext;
 import de.cubeisland.cubeengine.core.command.ContainerCommand;
 import de.cubeisland.cubeengine.core.command.parameterized.Flag;
@@ -181,6 +182,22 @@ public class CoreCommands extends ContainerCommand
         else if (sender instanceof ConsoleCommandSender)
         {
             sender.sendMessage("core", "&eYou might use /stop for this.");
+        }
+    }
+
+    @Command(desc = "Toggles the online mode")
+    public void onlinemode(CommandContext context)
+    {
+        final boolean newState = !this.core.getServer().getOnlineMode();
+        BukkitUtils.setOnlineMode(newState);
+
+        if (newState)
+        {
+            context.sendMessage("core", "&aThe server is now in online-mode.");
+        }
+        else
+        {
+            context.sendMessage("core", "&aThe server is not in offline-mode.");
         }
     }
 }
