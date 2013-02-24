@@ -102,14 +102,16 @@ public class KickBanCommands
         if (player.hasPlayedBefore() == false)
         {
             context.sendMessage("basics", "&2%s &6has never played on this server before!", player.getName());
+            return;
         }
         else if (context.hasFlag("ip"))
         {
-            if (player.isOnline())
+            User user = this.module.getUserManager().getExactUser(player);
+            if (user.getAddress() != null)
             {
-                String ipadress = player.getPlayer().getAddress().getAddress().getHostAddress();
+                String ipadress = user.getAddress().getAddress().getHostAddress();
                 Bukkit.banIP(ipadress);
-                for (User ipPlayer : context.getCore().getUserManager().getOnlineUsers())
+                for (User ipPlayer : this.module.getUserManager().getOnlineUsers())
                 {
                     if (!ipPlayer.getName().equals(player.getName())
                         && ipPlayer.getAddress() != null
@@ -122,8 +124,7 @@ public class KickBanCommands
             }
             else
             {
-                //TODO ip-ban when user is still loaded
-                context.sendMessage("basics", "&eYou cannot IP-ban this player because he is offline!");
+                context.sendMessage("basics", "&eYou cannot IP-ban this player because he was offline for too long!");
             }
         }
         if (player.isOnline())

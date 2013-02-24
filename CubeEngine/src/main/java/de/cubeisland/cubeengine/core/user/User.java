@@ -30,6 +30,7 @@ import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.util.BlockIterator;
 
+import java.net.InetSocketAddress;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.sql.Timestamp;
@@ -580,5 +581,21 @@ public class User extends UserBase implements LinkingModel<Long>, CommandSender
     public boolean equals(OfflinePlayer player)
     {
         return this.offlinePlayer.equals(player);
+    }
+
+    private InetSocketAddress address = null;
+    public void refreshIP()
+    {
+        address = this.getPlayer().getAddress();
+    }
+
+    @Override
+    public InetSocketAddress getAddress()
+    {
+        if (this.isOnline())
+        {
+            return super.getAddress();
+        }
+        return this.address;
     }
 }

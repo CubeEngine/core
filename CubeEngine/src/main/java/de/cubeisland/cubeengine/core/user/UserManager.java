@@ -495,6 +495,7 @@ public class UserManager extends SingleKeyStorage<Long, User> implements Cleanab
         if (user != null)
         {
             user.offlinePlayer = player;
+            user.refreshIP();
             if (user.removalTaskId == null)
             {
                 return; // No task to cancel
