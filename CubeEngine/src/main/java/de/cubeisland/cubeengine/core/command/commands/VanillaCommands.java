@@ -56,11 +56,23 @@ public class VanillaCommands implements CommandHolder
         return ReflectedCommand.class;
     }
 
-//    @Command(names = {
-//    "stop", "shutdown", "killserver", "quit"
-//    }, desc = "Shuts down the server", usage = "[message]")
+    @Command(
+        names = {"stop", "shutdown", "killserver", "quit"},
+        desc = "Shuts down the server",
+        usage = "[message]"
+    )
     public void stop(CommandContext context)
-    {}
+    {
+        String message = context.getStrings(0);
+        if (message == null || message.isEmpty())
+        {
+            message = this.core.getServer().getShutdownMessage();
+        }
+        message = ChatFormat.parseFormats(message);
+
+        this.core.getUserManager().kickAll(message);
+        this.core.getServer().shutdown();
+    }
 
     @Command(desc = "Reloads the server.", usage = "[-m]", max = NO_MAX, flags = @Flag(name = "m", longName = "modules"))
     public void reload(ParameterizedContext context)

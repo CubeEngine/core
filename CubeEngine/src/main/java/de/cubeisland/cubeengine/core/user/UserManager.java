@@ -637,4 +637,20 @@ public class UserManager extends SingleKeyStorage<Long, User> implements Cleanab
     {
         this.failedLogins.remove(user.key);
     }
+
+    public void kickAll(String message)
+    {
+        for (User user : this.users.values())
+        {
+            user.kickPlayer(message);
+        }
+    }
+
+    public void kickAll(String category, String message, Object... args)
+    {
+        for (User user : this.users.values())
+        {
+            user.kickPlayer(_(user, category, message, args));
+        }
+    }
 }
