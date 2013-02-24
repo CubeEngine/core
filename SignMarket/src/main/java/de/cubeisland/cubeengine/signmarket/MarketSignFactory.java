@@ -77,6 +77,14 @@ public class MarketSignFactory
             marketSign.setOwner(user);
             marketSign.setStock(0);
         }
+        if (marketSign.isAdminSign())
+        {
+            marketSign.setSize(this.module.getConfig().maxAdminStock);
+        }
+        else
+        {
+            marketSign.setSize(this.module.getConfig().maxUserStock);
+        }
         this.marketSigns.put(marketSign.getLocation(), marketSign);
         return marketSign;
     }

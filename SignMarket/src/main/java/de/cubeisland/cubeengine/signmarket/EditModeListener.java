@@ -375,7 +375,30 @@ public class EditModeListener extends ChatCommand<Signmarket>
                     }
                     else
                     {
-                        marketSign.setSize(size);
+                        if (marketSign.isAdminSign())
+                        {
+                            int maxAdmin = this.getModule().getConfig().maxAdminStock;
+                            if (maxAdmin != -1 && (size > maxAdmin || size == -1))
+                            {
+                                context.sendMessage("marketsign","&cThe maximum size of admin-signs is set to &6%d&c!",maxAdmin);
+                            }
+                            else
+                            {
+                                marketSign.setSize(size);
+                            }
+                        }
+                        else // user-sign
+                        {
+                            int maxUser = this.getModule().getConfig().maxUserStock;
+                            if (maxUser != -1 && (size > maxUser || size == -1))
+                            {
+                                context.sendMessage("marketsign","&cThe maximum size of user-signs is set to &6%d&c!",maxUser);
+                            }
+                            else
+                            {
+                                marketSign.setSize(size);
+                            }
+                        }
                     }
                 }
             }
