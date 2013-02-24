@@ -562,35 +562,33 @@ public class MarketSign
         {
             amount = user.getItemInHand().getAmount();
         }
-        this.itemInfo.stock = this.itemInfo.stock + amount;
+        if (this.getStock() + amount > this.getMaxItemAmount())
+        {
+            amount = this.getMaxItemAmount() - this.getStock();
+            if (amount <= 0)
+            {
+                user.sendMessage("&cThe market-sign inventory is full!");
+                return 0;
+            }
+            else
+            {
+                user.sendMessage("&cThe market-sign cannot hold all your items!");
+            }
+        }
+        this.setStock(this.getStock() + amount);
         ItemStack item = this.getItem().clone();
         item.setAmount(amount);
         user.getInventory().removeItem(item);
-        Map<Integer, ItemStack> additional = this.addToInventory(this.getInventory(),item);
-        int amountGivenBack = 0;
-        for (ItemStack itemStack : additional.values())
-        {
-            amountGivenBack += itemStack.getAmount();
-            user.getInventory().addItem(itemStack);
-        }
-        if (amountGivenBack != 0)
-        {
-            user.sendMessage("&cThe market-sign inventory is full!");
-        }
         user.updateInventory();
         this.saveToDatabase();
-        return amount - amountGivenBack;
+        return amount;
     }
 
     private Map<Integer, ItemStack> addToInventory(Inventory inventory, ItemStack item)
     {
         if (this.module.getConfig().allowOverStackedInSign)
         {
-            if (this.getAmount() > 64)
-            {
-                return inventory.addItem(splitIntoMaxItems(item, 64));
-            }
-            return inventory.addItem(splitIntoMaxItems(item, this.getAmount()));
+            return inventory.addItem(splitIntoMaxItems(item, 64));
         }
         else
         {
@@ -625,21 +623,18 @@ public class MarketSign
         }
         ItemStack item = this.getItem().clone();
         item.setAmount(amountToTake);
-
-        this.getInventory().removeItem(item);
         Map<Integer, ItemStack> additional = this.addToUserInventory(user, item);
         int amountGivenBack = 0;
         for (ItemStack itemStack : additional.values())
         {
             amountGivenBack += itemStack.getAmount();
-            this.addToInventory(this.getInventory(),itemStack);
         }
+        this.setStock(this.getStock() - amountToTake + amountGivenBack);
         if (amountGivenBack != 0 && (amountGivenBack == this.getAmount() || amountGivenBack == this.getStock()))
         {
             user.sendMessage("&cYour inventory is full!");
         }
         user.updateInventory();
-        MarketSign.this.setStock(getAmountOf(this.getInventory(), MarketSign.this.itemInfo.getItem()));
         this.saveToDatabase();
     }
 
@@ -740,17 +735,10 @@ public class MarketSign
                     this.module.getConomy().getAccountsManager().transaction(userAccount, ownerAccount, this.getPrice());
                     if (this.hasStock())
                     {
-                        if (this.isAdminSign())
+                        this.setStock(this.getStock() - this.getAmount());
+                        if (this.getStock() < 0)
                         {
-                            this.setStock(this.getStock() - this.getAmount());
-                            if (this.getStock() < 0)
-                            {
-                                this.setStock(0);
-                            }
-                        }
-                        else
-                        {
-                            this.getInventory().removeItem(item);
+                            this.setStock(0);
                         }
                         this.saveToDatabase();
                     }
@@ -791,15 +779,7 @@ public class MarketSign
             user.getInventory().removeItem(item);
             if (this.hasStock())
             {
-                if (this.isAdminSign())
-                {
-                    this.setStock(this.getStock()+this.getAmount());
-                }
-                else
-                {
-                    this.addToInventory(this.getInventory(),item);
-                    this.setStock(getAmountOf(this.getInventory(), this.getItem()));
-                }
+                this.setStock(this.getStock()+this.getAmount());
                 this.saveToDatabase();
             } // else admin sign -> no change
             user.updateInventory();
