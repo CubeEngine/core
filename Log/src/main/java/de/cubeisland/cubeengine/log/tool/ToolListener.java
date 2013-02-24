@@ -2,6 +2,7 @@ package de.cubeisland.cubeengine.log.tool;
 
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.log.Log;
+import de.cubeisland.cubeengine.log.commands.LogCommands;
 import de.cubeisland.cubeengine.log.lookup.BlockLog;
 import de.cubeisland.cubeengine.log.lookup.BlockLookup;
 import de.cubeisland.cubeengine.log.storage.BlockData;
@@ -11,6 +12,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.inventory.ItemStack;
 
 import java.sql.Timestamp;
 
@@ -28,6 +30,11 @@ public class ToolListener implements Listener
     {
         if (event.getClickedBlock() != null && event.getPlayer().getItemInHand().getTypeId() == 7)
         {
+            ItemStack item = event.getPlayer().getItemInHand();
+            if (!item.hasItemMeta() || !item.getItemMeta().hasDisplayName() || !item.getItemMeta().getDisplayName().equals(LogCommands.toolName))
+            {
+                return;
+            }
             Location loc = event.getAction().equals(Action.LEFT_CLICK_BLOCK)
                     ? event.getClickedBlock().getLocation()
                     : event.getClickedBlock().getRelative(event.getBlockFace()).getLocation();
