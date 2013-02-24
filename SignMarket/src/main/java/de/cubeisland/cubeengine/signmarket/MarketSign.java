@@ -543,7 +543,11 @@ public class MarketSign
                 return "&4No Price";
             }
         }
-        return this.getCurrency().formatShort(this.blockInfo.price);
+        if (this.allowBuyIfEmpty())
+        {
+            return "&o"+this.getCurrency().formatShort(this.getPrice());
+        }
+        return this.getCurrency().formatShort(this.getPrice());
     }
 
     @SuppressWarnings("deprecation")
@@ -716,8 +720,11 @@ public class MarketSign
             {
                 if (this.isSoldOut())
                 {
-                    user.sendMessage("signmarket", "&cThis market-sign is &4&lSold Out&c!");
-                    return;
+                    if (!this.allowBuyIfEmpty())
+                    {
+                        user.sendMessage("signmarket", "&cThis market-sign is &4&lSold Out&c!");
+                        return;
+                    }
                 }
                 if (!this.canAfford(user))
                 {
@@ -736,6 +743,10 @@ public class MarketSign
                         if (this.isAdminSign())
                         {
                             this.setStock(this.getStock() - this.getAmount());
+                            if (this.getStock() < 0)
+                            {
+                                this.setStock(0);
+                            }
                         }
                         else
                         {
@@ -794,6 +805,11 @@ public class MarketSign
             user.updateInventory();
             user.sendMessage("signmarket","&aYou sold &6%dx %s &afor &6%s&a.",this.getAmount(),Match.material().getNameFor(this.getItem()),this.parsePrice());
         }
+    }
+
+    private boolean allowBuyIfEmpty()
+    {
+        return this.isSoldOut() && this.isAdminSign() && this.module.getConfig().allowBuyIfAdminSignIsEmpty;
     }
 
     public User getOwner() {
@@ -878,7 +894,14 @@ public class MarketSign
                 {
                     if (!this.isInEditMode() && this.isSoldOut())
                     {
-                        lines[0] += "Sold Out";
+                        if (this.allowBuyIfEmpty())
+                        {
+                            lines[0] = "&9&l&oAdmin-Buy";
+                        }
+                        else
+                        {
+                            lines[0] += "Sold Out";
+                        }
                     }
                     else
                     {
@@ -957,7 +980,14 @@ public class MarketSign
                 {
                     if (this.isSoldOut())
                     {
-                        lines[2] += " &4x" + this.getStock();
+                        if (this.allowBuyIfEmpty())
+                        {
+                            lines[2] += " &1&ox" + this.getStock();
+                        }
+                        else
+                        {
+                            lines[2] += " &4x" + this.getStock();
+                        }
                     }
                     else if (this.hasStock())
                     {
@@ -1110,6 +1140,10 @@ public class MarketSign
 
     public long getPrice()
     {
+        if (this.allowBuyIfEmpty())
+        {
+            return (long) (this.module.getConfig().factorIfAdminSignIsEmpty * this.blockInfo.price);
+        }
         return this.blockInfo.price;
     }
 
