@@ -282,6 +282,7 @@ public class EditModeListener extends ChatCommand<Signmarket>
                 if (marketSign.hasStock())
                 {
                     marketSign.setStock(context.getParam("setstock",0));
+                    marketSign.syncOnMe = true;
                 }
                 else
                 {
@@ -385,6 +386,7 @@ public class EditModeListener extends ChatCommand<Signmarket>
                             else
                             {
                                 marketSign.setSize(size);
+                                marketSign.syncOnMe = true;
                             }
                         }
                         else // user-sign
@@ -397,6 +399,7 @@ public class EditModeListener extends ChatCommand<Signmarket>
                             else
                             {
                                 marketSign.setSize(size);
+                                marketSign.syncOnMe = true;
                             }
                         }
                     }

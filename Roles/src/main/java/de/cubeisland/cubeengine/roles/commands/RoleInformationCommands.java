@@ -99,12 +99,12 @@ public class RoleInformationCommands extends RoleCommandHelper
         {
             if (global)
             {
-                context.sendMessage("roles", "&eThe permission &6%s &eis not assinged in the global role &6%s&e.",
+                context.sendMessage("roles", "&eThe permission &6%s &eis not assigned in the global role &6%s&e.",
                         context.getString(1), role.getName());
             }
             else
             {
-                context.sendMessage("roles", "&eThe permission &6%s &eis not assinged in the role &6%s &ein &6%s&e.",
+                context.sendMessage("roles", "&eThe permission &6%s &eis not assigned in the role &6%s &ein &6%s&e.",
                         context.getString(1), role.getName(), world.getName());
             }
         }

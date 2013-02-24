@@ -114,6 +114,12 @@ public class MarketSignFactory
                     if (marketSign.getItemInfo().canSync(sign.getItemInfo())) // both have stock AND same item
                     {
                         SignMarketItemModel itemModel = marketSign.setItemInfo(sign.getItemInfo()); // change itemInfo (registers the sign in the itemInfo automaticly)
+                        if (marketSign.syncOnMe)
+                        {
+                            marketSign.setStock(itemModel.stock);
+                            marketSign.setSize(itemModel.size);
+                            marketSign.syncOnMe = false;
+                        }
                         if (marketSign.getBlockInfo().key == -1) // blockInfo not saved in database
                         {
                             this.signMarketBlockManager.storeModel(marketSign.getBlockInfo());

@@ -36,6 +36,7 @@ public class MarketSign
 
     private Currency currency;
     private boolean editMode;
+    public boolean syncOnMe = false;
 
     public MarketSign(Signmarket module, Location location)
     {
@@ -779,7 +780,7 @@ public class MarketSign
             user.getInventory().removeItem(item);
             if (this.hasStock())
             {
-                this.setStock(this.getStock()+this.getAmount());
+                this.setStock(this.getStock() + this.getAmount());
                 this.saveToDatabase();
             } // else admin sign -> no change
             user.updateInventory();

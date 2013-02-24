@@ -57,49 +57,52 @@ public class UserInformationCommands extends UserCommandHelper
         // Search for permission
         String permission = context.getString(0);
         RolePermission myPerm = role.getPerms().get(permission);
-        if (myPerm == null)
-        {
-            context.sendMessage("roles", "&cCould not find the specified permission!");
-            return;
-        }
-        context.sendMessage("roles", (myPerm.isSet()
-                ? "&aThe player &2%s &adoes have access to &f\"&6%s&f\"&a"
-                : "&cThe player &2%s &cdoes not have access to &f\"&6%s&f\"&c")
-                + " in &6%s", user.getName(), permission, world.getName());
         if (user.isOnline() && !permission.endsWith("*")) // Can have superperm
         {
             boolean superPerm = user.hasPermission(permission);
             context.sendMessage("roles", "&eSuperPerm Node: %s", superPerm);
         }
-        // Display origin
-        Role originRole = myPerm.getOrigin();
-        if (!originRole.getLitaralPerms().containsKey(permission))
+        if (myPerm == null)
         {
-            while (!permission.equals("*"))
-            {
-                if (permission.endsWith("*"))
-                {
-                    permission = permission.substring(0, permission.lastIndexOf("."));
-                }
-                permission = permission.substring(0, permission.lastIndexOf(".") + 1) + "*";
-
-                if (originRole.getLitaralPerms().containsKey(permission))
-                {
-                    if (originRole.getLitaralPerms().get(permission) == myPerm.isSet())
-                    {
-                        break;
-                    }
-                }
-            }
-        }
-        context.sendMessage("roles", "&ePermission inherited from:");
-        if (user.getName().equals(originRole.getName()))
-        {
-            context.sendMessage("roles", "&6%s &ein the users role!", permission);
+            context.sendMessage("roles", "&cPermission not declared!");
         }
         else
         {
-            context.sendMessage("roles", "&6%s &ein the role &6%s&e!", permission, originRole.getName());
+            context.sendMessage("roles", (myPerm.isSet()
+                    ? "&aThe player &2%s &adoes have access to &f\"&6%s&f\"&a"
+                    : "&cThe player &2%s &cdoes not have access to &f\"&6%s&f\"&c")
+                    + " in &6%s", user.getName(), permission, world.getName());
+
+            // Display origin
+            Role originRole = myPerm.getOrigin();
+            if (!originRole.getLitaralPerms().containsKey(permission))
+            {
+                while (!permission.equals("*"))
+                {
+                    if (permission.endsWith("*"))
+                    {
+                        permission = permission.substring(0, permission.lastIndexOf("."));
+                    }
+                    permission = permission.substring(0, permission.lastIndexOf(".") + 1) + "*";
+
+                    if (originRole.getLitaralPerms().containsKey(permission))
+                    {
+                        if (originRole.getLitaralPerms().get(permission) == myPerm.isSet())
+                        {
+                            break;
+                        }
+                    }
+                }
+            }
+            context.sendMessage("roles", "&ePermission inherited from:");
+            if (user.getName().equals(originRole.getName()))
+            {
+                context.sendMessage("roles", "&6%s &ein the users role!", permission);
+            }
+            else
+            {
+                context.sendMessage("roles", "&6%s &ein the role &6%s&e!", permission, originRole.getName());
+            }
         }
     }
 
