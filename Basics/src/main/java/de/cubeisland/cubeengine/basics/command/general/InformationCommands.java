@@ -37,25 +37,43 @@ public class InformationCommands
         this.basics = basics;
     }
 
-    @Command(desc = "Displays the Biome-Type you are standing in.")
+    @Command(desc = "Displays the Biome-Type you are standing in.", usage = "{world} {block-x} {block-z]", max = 3)
     public void biome(CommandContext context)
-    // TODO CE-310 console support by specifying coordinates
     {
-        User user = null;
-        if (context.getSender() instanceof User)
+        World world;
+        Integer x;
+        Integer z;
+        if (context.hasArg(2))
         {
-            user = (User)context.getSender();
+            world = context.getArg(0,World.class,null);
+            if (world == null)
+            {
+                context.sendMessage("basics","&cUnkown world %s!",context.getString(0));
+                return;
+            }
+            x = context.getArg(1,Integer.class,null);
+            z = context.getArg(2,Integer.class,null);
+            if (x == null || z == null)
+            {
+                context.sendMessage("basics","&cPlease provide valid integer x and/or z coordinates!");
+                return;
+            }
         }
-        if (user != null)
+        else if (context.getSender() instanceof User)
         {
-            final Location loc = user.getLocation();
-            Biome biome = user.getWorld().getBiome(loc.getBlockX(), loc.getBlockZ());
-            user.sendMessage("basics", "&eCurrent Biome: &6%s", biome.name());
+            User user = (User)context.getSender();
+            Location loc = user.getLocation();
+            world = loc.getWorld();
+            x = loc.getBlockX();
+            z = loc.getBlockZ();
         }
         else
         {
-            context.sendMessage("basics", "I want console support!");
+            context.sendMessage("basics","&cPlease provide a world and x and z coordinates!");
+            return;
         }
+        Biome biome = world.getBiome(x, z);
+        context.sendMessage("basics", "&eBiome at x=&6%d &ez=&6%d&e: &9%s", x,z,biome.name());
     }
 
     @Command(desc = "Displays the seed of a world.", usage = "{world}", max = 1)
