@@ -40,4 +40,10 @@ public class BasicContextFactory implements ContextFactory
         }
         return new BasicContext(command, sender, labels, new LinkedList<String>(Arrays.asList(commandLine)));
     }
+
+    @Override
+    public CommandContext parse(CubeCommand command, CommandContext context)
+    {
+        return new BasicContext(command, context.getSender(), context.getLabels(), context.getArgs());
+    }
 }

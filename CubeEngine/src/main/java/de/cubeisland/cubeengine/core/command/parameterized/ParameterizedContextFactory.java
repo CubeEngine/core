@@ -2,6 +2,7 @@ package de.cubeisland.cubeengine.core.command.parameterized;
 
 import de.cubeisland.cubeengine.core.command.ArgBounds;
 import de.cubeisland.cubeengine.core.command.ArgumentReader;
+import de.cubeisland.cubeengine.core.command.CommandContext;
 import de.cubeisland.cubeengine.core.command.ContextFactory;
 import de.cubeisland.cubeengine.core.command.CubeCommand;
 import de.cubeisland.cubeengine.core.command.exception.IncorrectUsageException;
@@ -12,6 +13,7 @@ import gnu.trove.map.hash.THashMap;
 import gnu.trove.set.hash.THashSet;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Locale;
@@ -200,8 +202,7 @@ public class ParameterizedContextFactory implements ContextFactory
                     }
                     offset++;
                 }
-                else
-                //else named param or indexed param
+                else //else named param or indexed param
                 {
                     String paramName = commandLine[offset].toLowerCase(Locale.ENGLISH);
                     // has alias named Param ?
@@ -295,5 +296,24 @@ public class ParameterizedContextFactory implements ContextFactory
         }
 
         return argCounter;
+    }
+
+    @Override
+    public CommandContext parse(CubeCommand command, CommandContext context)
+    {
+        Set<String> flags;
+        Map<String, Object> params;
+        if (context instanceof ParameterizedContext)
+        {
+            flags = ((ParameterizedContext)context).getFlags();
+            params = ((ParameterizedContext)context).getParams();
+        }
+        else
+        {
+            flags = Collections.emptySet();
+            params = Collections.emptyMap();
+        }
+
+        return new ParameterizedContext(command, context.getSender(), context.getLabels(), context.getArgs(), flags, params);
     }
 }

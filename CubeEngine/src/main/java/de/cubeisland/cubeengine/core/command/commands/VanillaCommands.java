@@ -381,9 +381,8 @@ public class VanillaCommands implements CommandHolder
         {
             super(core.getModuleManager().getCoreModule(), "whitelist", "Allows you to manage your whitelist");
             this.core = core;
+            this.delegateChild("list");
         }
-
-        // TODO delegate /whitelist to /whitelist list, needs automated delegation
 
         @Command(desc = "Adds a player to the whitelist.", usage = "<player>")
         public void add(CommandContext context)
@@ -429,6 +428,11 @@ public class VanillaCommands implements CommandHolder
         public void list(CommandContext context)
         {
             Set<OfflinePlayer> whitelist = this.core.getServer ().getWhitelistedPlayers();
+            if (!this.core.getServer().hasWhitelist())
+            {
+                context.sendMessage("core", "&eThe whitelist is currently disabled.");
+                context.sendMessage(" ");
+            }
             if (whitelist.isEmpty())
             {
                 context.sendMessage("core", "&eThere are currently no whitelisted players!");

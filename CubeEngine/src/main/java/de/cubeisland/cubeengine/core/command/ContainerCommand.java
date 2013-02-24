@@ -14,6 +14,7 @@ import java.util.Locale;
 import java.util.Set;
 
 import static de.cubeisland.cubeengine.core.i18n.I18n._;
+import static de.cubeisland.cubeengine.core.logger.LogLevel.WARNING;
 import static de.cubeisland.cubeengine.core.util.StringUtils.startsWithIgnoreCase;
 
 /**
@@ -24,6 +25,7 @@ public abstract class ContainerCommand extends ParameterizedCommand implements C
 {
     private static final List<String> NO_ALIASES = Collections.emptyList();
     private final Class<? extends CubeCommand> subCommandType;
+    private ChildDelegation delegation;
 
     public ContainerCommand(Module module, String name, String description)
     {
@@ -44,6 +46,17 @@ public abstract class ContainerCommand extends ParameterizedCommand implements C
     {
         super(module, name, description, "[action]", aliases, new ParameterizedContextFactory(new ArgBounds(0)));
         this.subCommandType = subCommandType;
+        this.delegation = null;
+    }
+
+    public void delegateChild(String name)
+    {
+        this.delegation = new ChildDelegation(name);
+    }
+    
+    public void delegateChild(String name, ContextFilter filter)
+    {
+        this.delegation = new ChildDelegation(name, filter);
     }
 
     public Class<? extends CubeCommand> getCommandType()
@@ -54,6 +67,19 @@ public abstract class ContainerCommand extends ParameterizedCommand implements C
     @Override
     public CommandResult run(CommandContext context) throws Exception
     {
+        if (this.delegation != null)
+        {
+            CubeCommand command = this.getChild(this.delegation.getChildName());
+            if (command != null)
+            {
+                CommandContext childContext = command.getContextFactory().parse(command, context);
+                childContext = this.delegation.getContextFilter().filterContext(childContext);
+                return command.run(childContext);
+            }
+
+            this.getModule().getLogger().log(WARNING, "Child delegation failed: child ''{0}'' not found!", this.delegation.getChildName());
+        }
+
         this.help(new HelpContext(context));
         return null;
     }
@@ -95,5 +121,43 @@ public abstract class ContainerCommand extends ParameterizedCommand implements C
             return actions;
         }
         return super.tabComplete(sender, label, args);
+    }
+
+    private class ChildDelegation
+    {
+        private final String childName;
+        private final ContextFilter contextFilter;
+
+        private ChildDelegation(String childName)
+        {
+            this(childName, new ContextFilter() {
+                @Override
+                public CommandContext filterContext(CommandContext context)
+                {
+                    return context;
+                }
+            });
+        }
+
+        private ChildDelegation(String childName, ContextFilter contextFilter)
+        {
+            this.childName = childName;
+            this.contextFilter = contextFilter;
+        }
+
+        public String getChildName()
+        {
+            return childName;
+        }
+
+        public ContextFilter getContextFilter()
+        {
+            return contextFilter;
+        }
+    }
+
+    protected static interface ContextFilter
+    {
+        CommandContext filterContext(CommandContext context);
     }
 }

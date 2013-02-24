@@ -1,7 +1,6 @@
 package de.cubeisland.cubeengine.core.command;
 
 import de.cubeisland.cubeengine.core.Core;
-import de.cubeisland.cubeengine.core.command.exception.InvalidArgumentException;
 import de.cubeisland.cubeengine.core.command.sender.CommandSender;
 import de.cubeisland.cubeengine.core.user.User;
 
@@ -60,7 +59,9 @@ public class BasicContext implements CommandContext
     @Override
     public Stack<String> getLabels()
     {
-        return this.labels;
+        Stack<String> newStack = new Stack<String>();
+        newStack.addAll(this.labels);
+        return newStack;
     }
 
     @Override

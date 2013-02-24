@@ -3,7 +3,6 @@ package de.cubeisland.cubeengine.basics.command.moderation;
 import de.cubeisland.cubeengine.basics.BasicsPerm;
 import de.cubeisland.cubeengine.core.command.ArgBounds;
 import de.cubeisland.cubeengine.core.command.CommandContext;
-import de.cubeisland.cubeengine.core.command.CommandResult;
 import de.cubeisland.cubeengine.core.command.ContainerCommand;
 import de.cubeisland.cubeengine.core.command.parameterized.Flag;
 import de.cubeisland.cubeengine.core.command.parameterized.ParameterizedContext;
@@ -42,20 +41,17 @@ public class PowerToolCommand extends ContainerCommand implements Listener
     {
         super(module, "powertool", "Binding shortcuts to an item.", asList("pt"));
         this.getContextFactory().setArgBounds(new ArgBounds(0, NO_MAX));
-    }
 
-    @Override
-    public CommandResult run(CommandContext context) throws Exception
-    {
-        if (context.hasArg(0))
-        {
-            Set<String> flagSet = ((ParameterizedContext)context).getFlags();
-            flagSet.add("r");
-            this.add(new ParameterizedContext(this.getChild("add"), context.getSender(), context.getLabels(), context.getArgs(),
-                    flagSet, ((ParameterizedContext)context).getParams()));
-            return null;
-        }
-        return super.run(context);
+        this.delegateChild("add", new ContextFilter() {
+            @Override
+            public CommandContext filterContext(CommandContext context)
+            {
+                ParameterizedContext pContext = (ParameterizedContext)context;
+                Set<String> flagSet = pContext.getFlags();
+                flagSet.add("r");
+                return new ParameterizedContext(context.getCommand(), context.getSender(), context.getLabels(), context.getArgs(), flagSet, pContext.getParams());
+            }
+        });
     }
 
     @Alias(names = "ptc")
