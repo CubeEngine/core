@@ -8,6 +8,7 @@ import de.cubeisland.cubeengine.core.command.parameterized.Flag;
 import de.cubeisland.cubeengine.core.command.sender.CommandSender;
 import de.cubeisland.cubeengine.core.command.sender.ConsoleCommandSender;
 import de.cubeisland.cubeengine.core.user.User;
+import de.cubeisland.cubeengine.core.util.ChatFormat;
 import de.cubeisland.cubeengine.core.util.Pair;
 import de.cubeisland.cubeengine.core.util.StringUtils;
 import de.cubeisland.cubeengine.core.util.matcher.Match;
@@ -378,6 +379,17 @@ public class InformationCommands
             int entities = world.getEntities().size();
             context.sendMessage("basics", "&6%s &e(&2%s&e)&6: &e%d &6chunks &e%d &6entities", world.getName(), type, loadedChunks, entities);
 
+        }
+    }
+
+
+    @Command(desc = "Displays all loaded worlds", names = {"listWorlds","worldlist"})
+    public void listWorlds(CommandContext context)
+    {
+        context.sendMessage("basics","&aLoaded worlds:");
+        for (World world : Bukkit.getServer().getWorlds())
+        {
+            context.sendMessage(String.format(ChatFormat.parseFormats(" &f- &6%s&f: &9%s"),world.getName(),world.getEnvironment().name()));
         }
     }
 }
