@@ -21,7 +21,7 @@ public class UserCommandHelper extends ContainerCommand
 
     public UserCommandHelper(Roles module)
     {
-        super(module, "user", "Manage users.");//TODO alias manuser
+        super(module, "user", "Manage users.");
         this.manager = module.getManager();
         this.worldManager = module.getCore().getWorldManager();
         this.module = module;

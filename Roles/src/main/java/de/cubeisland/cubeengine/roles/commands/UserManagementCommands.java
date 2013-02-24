@@ -18,6 +18,7 @@ public class UserManagementCommands extends UserCommandHelper
     public UserManagementCommands(Roles module)
     {
         super(module);
+        this.registerAlias(new String[]{"manuser"},new String[]{});
     }
 
     @Alias(names = {

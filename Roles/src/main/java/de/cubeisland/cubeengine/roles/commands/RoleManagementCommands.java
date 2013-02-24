@@ -1,10 +1,9 @@
 package de.cubeisland.cubeengine.roles.commands;
 
-import de.cubeisland.cubeengine.core.command.CommandContext;
-import de.cubeisland.cubeengine.core.command.parameterized.ParameterizedContext;
-import de.cubeisland.cubeengine.core.command.reflected.Command;
 import de.cubeisland.cubeengine.core.command.parameterized.Flag;
 import de.cubeisland.cubeengine.core.command.parameterized.Param;
+import de.cubeisland.cubeengine.core.command.parameterized.ParameterizedContext;
+import de.cubeisland.cubeengine.core.command.reflected.Command;
 import de.cubeisland.cubeengine.core.config.node.StringNode;
 import de.cubeisland.cubeengine.core.util.convert.ConversionException;
 import de.cubeisland.cubeengine.core.util.convert.Convert;
@@ -22,6 +21,7 @@ public class RoleManagementCommands extends RoleCommandHelper
     public RoleManagementCommands(Roles module)
     {
         super(module);
+        this.registerAlias(new String[]{"manrole"},new String[]{});
     }
 
     @Command(names = {
@@ -85,11 +85,6 @@ public class RoleManagementCommands extends RoleCommandHelper
             return;
         }
         provider.setRolePermission(role, permission, set);
-    }
-
-    public void resetpermission(CommandContext context)
-    {
-    //TODO same as setpermission with reset as 3rd param
     }
 
     @Command(names = {
@@ -431,7 +426,7 @@ public class RoleManagementCommands extends RoleCommandHelper
 
     @Command(names = {
         "toggledefault", "toggledef", "toggledefaultrole"
-    }, desc = "Toggles weather given role is a default-role [in world]", usage = "<rolename> [in <world>]", params = @Param(names = "in", type = World.class), max = 2, min = 1)
+    }, desc = "Toggles whether given role is a default-role [in world]", usage = "<rolename> [in <world>]", params = @Param(names = "in", type = World.class), max = 2, min = 1)
     public void toggleDefaultRole(ParameterizedContext context)
     {
         String roleName = context.getString(0);
