@@ -30,6 +30,7 @@ import java.text.SimpleDateFormat;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Locale;
+import java.util.Set;
 
 import static de.cubeisland.cubeengine.core.command.ArgBounds.NO_MAX;
 import static de.cubeisland.cubeengine.core.i18n.I18n._;
@@ -152,12 +153,20 @@ public class VanillaCommands implements CommandHolder
     {
         if (!context.hasArgs())
         {
-            context.sendMessage("core", "The following users are operators:");
-            context.sendMessage(" ");
-            DateFormat dateFormat = SimpleDateFormat.getDateInstance(SHORT, Locale.ENGLISH); // TODO replace with sender's locale
-            for (OfflinePlayer player : this.core.getServer().getOperators())
+            Set<OfflinePlayer> ops = this.core.getServer().getOperators();
+            if (ops.isEmpty())
             {
-                context.sendMessage(" - " + BRIGHT_GREEN + player.getName() + WHITE + " (" + _(context.getSender(), "core", "Last seen: %s", arr(dateFormat.format(new Date(player.getLastPlayed())))) + ")");
+                context.sendMessage("core", "&eThere are currently no operators!");
+            }
+            else
+            {
+                context.sendMessage("core", "The following users are operators:");
+                context.sendMessage(" ");
+                DateFormat dateFormat = SimpleDateFormat.getDateInstance(SHORT, Locale.ENGLISH); // TODO replace with sender's locale
+                for (OfflinePlayer player : ops)
+                {
+                    context.sendMessage(" - " + BRIGHT_GREEN + player.getName() + WHITE + " (" + _(context.getSender(), "core", "Last seen: %s", arr(dateFormat.format(new Date(player.getLastPlayed())))) + ")");
+                }
             }
             return;
         }
@@ -213,10 +222,6 @@ public class VanillaCommands implements CommandHolder
         {
             offlinePlayer = context.getArg(0, OfflinePlayer.class);
         }
-        else if (sender instanceof User)
-        {
-            offlinePlayer = ((User)sender).getPlayer(); // TODO /deop without any parameter would deop the user using the command is that intended???
-        }
         else
         {
             context.sendMessage("core", "&cYou have to specify an operator!");
@@ -225,7 +230,7 @@ public class VanillaCommands implements CommandHolder
 
         if (!sender.equals(offlinePlayer) && !CorePerms.COMMAND_DEOP_OTHER.isAuthorized(sender))
         {
-            sender.sendMessage("core", "&cYou are not allowed to deop others!"); // TODO console is not allowed to do this
+            sender.sendMessage("core", "&cYou are not allowed to deop others!");
             return;
         }
 
@@ -356,33 +361,99 @@ public class VanillaCommands implements CommandHolder
         }
     }
 
-    public class WhitelistCommand extends ContainerCommand
+    public static class WhitelistCommand extends ContainerCommand
     {
-        private WhitelistCommand(Module module)
+        private final BukkitCore core;
+
+        public WhitelistCommand(BukkitCore core)
         {
-            super(module, "whitelist", "Allows you to manage your whitelist");
+            super(core.getModuleManager().getCoreModule(), "whitelist", "Allows you to manage your whitelist");
+            this.core = core;
         }
+
+        // TODO delegate /whitelist to /whitelist list, needs automated delegation
 
         @Command(desc = "Adds a player to the whitelist.", usage = "<player>")
         public void add(CommandContext context)
-        {}
+        {
+            if (!context.hasArgs())
+            {
+                context.sendMessage("core", "&cYou have to specify the player to add to the whitelist!");
+                return;
+            }
+            final OfflinePlayer player = context.getArg(0, OfflinePlayer.class);
+            if (player.isWhitelisted())
+            {
+                context.sendMessage("core", "&eThe given player is already whitelisted.");
+                return;
+            }
+
+            player.setWhitelisted(false);
+            context.sendMessage("core", "&6%s&a is now whitelisted.");
+        }
 
         @Command(names = {
         "remove", "rm"
         }, desc = "Removes a player from the whitelist.", usage = "<player>")
         public void remove(CommandContext context)
-        {}
+        {
+            if (!context.hasArgs())
+            {
+                context.sendMessage("core", "&cYou have to specify the player to remove from the whitelist!");
+                return;
+            }
+            final OfflinePlayer player = context.getArg(0, OfflinePlayer.class);
+            if (!player.isWhitelisted())
+            {
+                context.sendMessage("core", "&eThe given player is not whitelisted.");
+                return;
+            }
+
+            player.setWhitelisted(false);
+            context.sendMessage("core", "&6%s&a is not whitelisted anymore.");
+        }
 
         @Command(desc = "Lists all the whitelisted players")
         public void list(CommandContext context)
-        {}
+        {
+            Set<OfflinePlayer> whitelist = this.core.getServer ().getWhitelistedPlayers();
+            if (whitelist.isEmpty())
+            {
+                context.sendMessage("core", "&eThere are currently no whitelisted players!");
+            }
+            else
+            {
+                context.sendMessage("core", "The following players are whitelisted:");
+                context.sendMessage(" ");
+                for (OfflinePlayer player : whitelist)
+                {
+                    context.sendMessage(" - " + player.getName());
+                }
+            }
+        }
 
         @Command(desc = "Enables the whiltelisting")
         public void on(CommandContext context)
-        {}
+        {
+            if (this.core.getServer().hasWhitelist())
+            {
+                context.sendMessage("core", "&cThe whitelist is already enabled!");
+                return;
+            }
+            this.core.getServer().setWhitelist(true);
+            context.sendMessage("core", "&aThe whitelist is now enabled.");
+        }
 
         @Command(desc = "Disables the whiltelisting")
         public void off(CommandContext context)
-        {}
+        {
+            if (!this.core.getServer().hasWhitelist())
+            {
+                context.sendMessage("core", "&cThe whitelist is already disabled!");
+                return;
+            }
+            this.core.getServer().setWhitelist(false);
+            context.sendMessage("core", "&aThe whitelist is now disabled.");
+        }
     }
 }

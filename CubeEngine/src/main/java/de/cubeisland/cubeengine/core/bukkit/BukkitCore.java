@@ -12,6 +12,7 @@ import de.cubeisland.cubeengine.core.bukkit.packethook.PacketReceivedListener;
 import de.cubeisland.cubeengine.core.command.commands.CoreCommands;
 import de.cubeisland.cubeengine.core.command.commands.ModuleCommands;
 import de.cubeisland.cubeengine.core.command.commands.VanillaCommands;
+import de.cubeisland.cubeengine.core.command.commands.VanillaCommands.WhitelistCommand;
 import de.cubeisland.cubeengine.core.command.reflected.ReflectedCommandFactory;
 import de.cubeisland.cubeengine.core.command.reflected.readable.ReadableCommandFactory;
 import de.cubeisland.cubeengine.core.config.Configuration;
@@ -267,6 +268,7 @@ public class BukkitCore extends JavaPlugin implements Core
         if (this.config.improveVanillaCommands)
         {
             this.commandManager.registerCommands(this.getModuleManager().getCoreModule(), new VanillaCommands(this));
+            this.commandManager.registerCommand(new WhitelistCommand(this));
         }
 
         // depends on: server

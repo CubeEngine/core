@@ -2,6 +2,7 @@ package de.cubeisland.cubeengine.core.command.sender;
 
 import org.bukkit.conversations.Conversation;
 import org.bukkit.conversations.ConversationAbandonedEvent;
+import org.bukkit.permissions.Permission;
 
 public class ConsoleCommandSender extends WrappedCommandSender implements org.bukkit.command.ConsoleCommandSender
 {
@@ -14,6 +15,18 @@ public class ConsoleCommandSender extends WrappedCommandSender implements org.bu
     public org.bukkit.command.ConsoleCommandSender getWrappedSender()
     {
         return (org.bukkit.command.ConsoleCommandSender)super.getWrappedSender();
+    }
+
+    @Override
+    public boolean hasPermission(String name)
+    {
+        return true;
+    }
+
+    @Override
+    public boolean hasPermission(Permission perm)
+    {
+        return true;
     }
 
     @Override
