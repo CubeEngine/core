@@ -5,11 +5,14 @@ import de.cubeisland.cubeengine.basics.BasicsPerm;
 import de.cubeisland.cubeengine.basics.storage.BasicUser;
 import de.cubeisland.cubeengine.core.bukkit.AfterJoinEvent;
 import de.cubeisland.cubeengine.core.user.User;
+import de.cubeisland.cubeengine.core.util.matcher.Match;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.Tameable;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.ItemStack;
 
@@ -73,6 +76,20 @@ public class GeneralsListener implements Listener
         if (bUser.godMode == true)
         {
             user.setInvulnerable(true);
+        }
+    }
+
+    @EventHandler
+    public void onInteractWithTamed(PlayerInteractEntityEvent event)
+    {
+        if (event.getRightClicked() != null && event.getRightClicked() instanceof Tameable)
+        {
+            Tameable tamed = (Tameable) event.getRightClicked();
+            if (tamed.getOwner() != null && !event.getPlayer().equals(tamed.getOwner()))
+            {
+                User clicker = this.basics.getUserManager().getExactUser(event.getPlayer());
+                clicker.sendMessage("basics","&aThis &6%s &abelongs to &2%s&a!", Match.entity().getNameFor(event.getRightClicked().getType()),tamed.getOwner().getName());
+            }
         }
     }
 }
