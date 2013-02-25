@@ -61,7 +61,7 @@ public enum BasicsPerm implements Permission
     AFK_PREVENT_AUTOUNAFK, // prevents a player from showing as back as long he wants to stay "afk"
     WALKSPEED_ISALLOWED,
     SIGN_COLORED,
-    KICK_RECEIVEMESSAGE, COMMAND_FEED_ALL, COMMAND_FEED_OTHER, COMMAND_STARVE_ALL, COMMAND_STARVE_OTHER, COMMAND_HEAL_ALL;
+    KICK_RECEIVEMESSAGE, COMMAND_FEED_ALL, COMMAND_FEED_OTHER, COMMAND_STARVE_ALL, COMMAND_STARVE_OTHER, COMMAND_HEAL_ALL, COMMAND_FLY_OTHER, FLY_CANFLY;
 
     private String permission;
     private PermDefault def;

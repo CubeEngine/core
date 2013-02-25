@@ -9,8 +9,6 @@ import de.cubeisland.cubeengine.core.config.annotations.Option;
 @DefaultConfig
 public class FlyConfig extends Configuration
 {
-    @Option("enablemode.flycommand")
-    public boolean flycommand = true; //if false fly command does not work
     @Option("enablemode.flyfeather")
     public boolean flyfeather = true; //if false feather fly does not work
 }

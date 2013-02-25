@@ -5,8 +5,10 @@ import de.cubeisland.cubeengine.basics.BasicsPerm;
 import de.cubeisland.cubeengine.basics.storage.BasicUser;
 import de.cubeisland.cubeengine.core.command.CommandContext;
 import de.cubeisland.cubeengine.core.command.parameterized.Flag;
+import de.cubeisland.cubeengine.core.command.parameterized.Param;
 import de.cubeisland.cubeengine.core.command.parameterized.ParameterizedContext;
 import de.cubeisland.cubeengine.core.command.reflected.Command;
+import de.cubeisland.cubeengine.core.command.sender.CommandSender;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.user.UserManager;
 import de.cubeisland.cubeengine.core.util.ChatFormat;
@@ -693,5 +695,69 @@ public class PlayerCommands
         user.sendMessage("basics", "&eWalkspeed has to be a Number between &60 &eand &610&e!");
     }
 
-    //TODO CE-312 move fly to here ?
+    @Command(desc = "Lets you fly away", max = 1,
+            params = @Param(names = { "player", "p"}, type = User.class),
+            usage = "[flyspeed] [player]")
+    public void fly(ParameterizedContext context)
+    {
+        final CommandSender sender = context.getSender();
+        User target;
+        if (context.hasArg(1))
+        {
+            target = context.getUser(1);
+        }
+        else
+        {
+            if (context.getSender() instanceof User)
+            {
+                target = (User) context.getSender();
+            }
+            else
+            {
+                context.sendMessage("basics", "&6ProTip: &eIf your server flies away it will go offline.");
+                context.sendMessage("basics", "&eSo... Stopping the Server in &c3..");
+                return;
+            }
+        }
+        if (target == null)
+        {
+            context.sendMessage("basics", "&cUser %s not found!");
+            return;
+        }
+        // PermissionChecks
+        if (sender != target && !BasicsPerm.COMMAND_FLY_OTHER.isAuthorized(context.getSender()))
+        {
+            context.sendMessage("basics", "&cYou are not allowed to change the fly-mode of other user!");
+            return;
+        }
+        //I Believe I Can Fly ...
+        if (context.hasArg(0))
+        {
+            Float speed = context.getArg(0, Float.class);
+            if (speed != null && speed >= 0 && speed <= 10)
+            {
+                target.setFlySpeed(speed / 10f);
+                context.sendMessage("basics", "&aYou can now fly at &6%.2f&a!", speed);
+            }
+            else
+            {
+                if (speed != null && speed > 9000)
+                {
+                    context.sendMessage("basics", "&6It's over 9000!");
+                }
+                context.sendMessage("basics", "&cFlySpeed has to be a Number between &60 &cand &610&c!");
+            }
+            target.setAllowFlight(true);
+            target.setFlying(true);
+            return;
+        }
+        target.setAllowFlight(!target.getAllowFlight());
+        if (target.getAllowFlight())
+        {
+            target.setFlySpeed(0.1f);
+            context.sendMessage("basics", "&aYou can now fly!");
+            return;
+        }
+        context.sendMessage("basics", "&eYou cannot fly anymore!");
+    }
 }

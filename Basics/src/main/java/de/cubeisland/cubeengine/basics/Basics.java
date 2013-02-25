@@ -67,10 +67,8 @@ public class Basics extends Module
         this.registerCommands(new TeleportCommands(this), ReflectedCommand.class);
         this.registerCommands(new TeleportRequestCommands(this), ReflectedCommand.class);
         this.registerListener(new TeleportListener(this));
-
+        this.registerListener(new FlyListener());
         this.registerPermissions(new TpWorldPermissions(this).getPermissions()); // per world permissions
-
-
         this.lagTimer = new LagTimer(this);
 
         /**
