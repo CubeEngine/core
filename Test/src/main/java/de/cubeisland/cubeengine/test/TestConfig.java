@@ -48,7 +48,6 @@ public class TestConfig extends Configuration
     @Comment("This is a random Comment with more than one line\n2nd line incoming\n3rd line has more nuts than snickers")
     public HashMap<String, Integer> max_region_count_per_player = new HashMap<String, Integer>()
     {
-
         {
             put("default", 7);
         }

@@ -133,7 +133,6 @@ public class ReflectedCommandFactory<T extends CubeCommand> implements CommandFa
             aliases,
             this.createContext(new ArgBounds(annotation.min(), annotation.max()), flags, params)
         );
-        cmd.setAsync(annotation.async());
         cmd.setLoggable(annotation.loggable());
         return (T)cmd;
     }

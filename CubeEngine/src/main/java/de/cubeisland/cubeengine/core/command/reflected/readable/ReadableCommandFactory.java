@@ -1,15 +1,12 @@
 package de.cubeisland.cubeengine.core.command.reflected.readable;
 
 import de.cubeisland.cubeengine.core.CubeEngine;
-import de.cubeisland.cubeengine.core.command.CommandContext;
-import de.cubeisland.cubeengine.core.command.CommandFactory;
 import de.cubeisland.cubeengine.core.command.reflected.ReflectedCommandFactory;
 import de.cubeisland.cubeengine.core.logger.LogLevel;
 import de.cubeisland.cubeengine.core.module.Module;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -71,7 +68,6 @@ public class ReadableCommandFactory extends ReflectedCommandFactory<ReadableComm
             aliases,
             pattern
             );
-        cmd.setAsync(annotation.async());
         cmd.setLoggable(annotation.loggable());
         return cmd;
     }

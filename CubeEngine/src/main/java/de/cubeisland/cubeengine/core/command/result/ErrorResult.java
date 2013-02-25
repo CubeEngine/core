@@ -1,7 +1,7 @@
 package de.cubeisland.cubeengine.core.command.result;
 
+import de.cubeisland.cubeengine.core.command.CommandContext;
 import de.cubeisland.cubeengine.core.command.CommandResult;
-import de.cubeisland.cubeengine.core.command.sender.CommandSender;
 
 public class ErrorResult implements CommandResult
 {
@@ -13,8 +13,8 @@ public class ErrorResult implements CommandResult
     }
 
     @Override
-    public void show(CommandSender sender)
+    public void show(CommandContext context)
     {
-
+        context.sendMessage("core", "&cAn error occurred while running this command!");
     }
 }

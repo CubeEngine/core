@@ -1,7 +1,7 @@
 package de.cubeisland.cubeengine.core.command.result;
 
+import de.cubeisland.cubeengine.core.command.CommandContext;
 import de.cubeisland.cubeengine.core.command.CommandResult;
-import de.cubeisland.cubeengine.core.command.sender.CommandSender;
 import de.cubeisland.cubeengine.core.util.chatlayout.ChatLayout;
 
 public class FormattedResult implements CommandResult
@@ -14,11 +14,11 @@ public class FormattedResult implements CommandResult
     }
 
     @Override
-    public void show(CommandSender sender)
+    public void show(CommandContext context)
     {
         for (String line : this.layout.compile())
         {
-            sender.sendMessage(line);
+            context.sendMessage(line);
         }
     }
 }

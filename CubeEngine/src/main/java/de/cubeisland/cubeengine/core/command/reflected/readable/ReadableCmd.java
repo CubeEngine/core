@@ -24,8 +24,6 @@ public @interface ReadableCmd
 
     int patternFlags() default Pattern.CASE_INSENSITIVE;
 
-    boolean async() default false;
-
     boolean loggable() default true;
 
     boolean checkPerm() default true;

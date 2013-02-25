@@ -1,11 +1,9 @@
 package de.cubeisland.cubeengine.core.command;
 
 import de.cubeisland.cubeengine.core.CubeEngine;
-import de.cubeisland.cubeengine.core.bukkit.TaskManager;
 import de.cubeisland.cubeengine.core.command.exception.IncorrectUsageException;
 import de.cubeisland.cubeengine.core.command.exception.MissingParameterException;
 import de.cubeisland.cubeengine.core.command.exception.PermissionDeniedException;
-import de.cubeisland.cubeengine.core.command.result.ErrorResult;
 import de.cubeisland.cubeengine.core.command.sender.BlockCommandSender;
 import de.cubeisland.cubeengine.core.command.sender.CommandSender;
 import de.cubeisland.cubeengine.core.command.sender.ConsoleCommandSender;
@@ -68,11 +66,6 @@ public abstract class CubeCommand extends Command
         this.children = new THashMap<String, CubeCommand>();
         this.childrenAliases = new ArrayList<String>();
         this.loggable = true;
-    }
-
-    public void setAsync(boolean state)
-    {
-        this.async = state;
     }
 
     public boolean isAsync()
@@ -358,43 +351,10 @@ public abstract class CubeCommand extends Command
                 }
             }
             final CommandContext ctx = this.getContextFactory().parse(this, sender, labels, args);
-            if (this.isAsync())
+            CommandResult result = this.run(ctx);
+            if (result != null)
             {
-                final TaskManager taskmgr = CubeEngine.getTaskManager();
-                this.module.getCore().getTaskManager().getThreadFactory().newThread(new Runnable() {
-                    @Override
-                    public void run()
-                    {
-                        CommandResult commandResult;
-                        try
-                        {
-                            commandResult = CubeCommand.this.run(ctx);
-                        }
-                        catch (Exception e)
-                        {
-                            commandResult = new ErrorResult(e);
-                        }
-                        if (commandResult != null)
-                        {
-                            final CommandResult result = commandResult;
-                            taskmgr.scheduleSyncDelayedTask(ctx.getCommand().getModule(), new Runnable() {
-                                @Override
-                                public void run()
-                                {
-                                    result.show(ctx.getSender());
-                                }
-                            }, 0L);
-                        }
-                    }
-                }).start();
-            }
-            else
-            {
-                CommandResult result = this.run(ctx);
-                if (result != null)
-                {
-                    result.show(ctx.getSender());
-                }
+                result.show(ctx);
             }
         }
         catch (MissingParameterException e)

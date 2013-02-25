@@ -31,7 +31,5 @@ public @interface Command
 
     Param[] params() default {};
 
-    boolean async() default false;
-
     boolean loggable() default true;
 }

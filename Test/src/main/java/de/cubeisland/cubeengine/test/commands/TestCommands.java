@@ -6,7 +6,7 @@ import de.cubeisland.cubeengine.core.command.parameterized.Flag;
 import de.cubeisland.cubeengine.core.command.parameterized.Param;
 import de.cubeisland.cubeengine.core.command.parameterized.ParameterizedContext;
 import de.cubeisland.cubeengine.core.command.reflected.Command;
-import de.cubeisland.cubeengine.core.command.sender.CommandSender;
+import de.cubeisland.cubeengine.core.command.result.AsyncResult;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.util.time.Duration;
 
@@ -42,20 +42,33 @@ public class TestCommands
         context.sendMessage(dura.format());
     }
 
-    @Command(desc = "A command that tests async execution.", async = true)
+    @Command(desc = "A command that tests async execution.")
     public CommandResult asyncCommand(CommandContext context)
     {
-        try
-        {
-            Thread.sleep(1000 * 5L);
-        }
-        catch (InterruptedException e)
-        {}
-        return new CommandResult() {
+        context.sendMessage("Async GO!");
+        return new AsyncResult() {
             @Override
-            public void show(CommandSender sender)
+            public void asyncMain(CommandContext sender)
             {
+                try
+                {
+                    Thread.sleep(1000 * 5L);
+                }
+                catch (InterruptedException e)
+                {}
                 sender.sendMessage("Delayed!");
+                try
+                {
+                    Thread.sleep(1000 * 5L);
+                }
+                catch (InterruptedException e)
+                {}
+            }
+
+            @Override
+            public void onFinish(CommandContext context)
+            {
+                context.sendMessage("Finished!");
             }
         };
     }
@@ -85,8 +98,8 @@ public class TestCommands
     private static final int MAX_CHAT_LINES = 100;
 
     @Command(names = {
-    "cls", "clearscreen"
-    }, desc = "Clears the chat", async = true)
+        "cls", "clearscreen"
+    }, desc = "Clears the chat")
     public void clearscreen(CommandContext context)
     {
         if (context.getSender() instanceof User)
