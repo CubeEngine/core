@@ -567,11 +567,11 @@ public class UserManager extends SingleKeyStorage<Long, User> implements Cleanab
         this.broadcastMessage(category, message, args);
     }
 
-    public void clearAttributes(Module module)
+    public void clearAttachments(Module module)
     {
         for (User user : this.users.values())
         {
-            user.clearAttributes(module);
+            user.clearAttachments(module);
         }
     }
 

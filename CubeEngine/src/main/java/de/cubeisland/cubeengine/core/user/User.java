@@ -6,12 +6,17 @@ import de.cubeisland.cubeengine.core.bukkit.BukkitUtils;
 import de.cubeisland.cubeengine.core.command.sender.CommandSender;
 import de.cubeisland.cubeengine.core.i18n.Language;
 import de.cubeisland.cubeengine.core.module.Module;
-import de.cubeisland.cubeengine.core.storage.LinkingModel;
 import de.cubeisland.cubeengine.core.storage.Model;
-import de.cubeisland.cubeengine.core.storage.database.*;
+import de.cubeisland.cubeengine.core.storage.database.AttrType;
+import de.cubeisland.cubeengine.core.storage.database.Attribute;
+import de.cubeisland.cubeengine.core.storage.database.DatabaseConstructor;
+import de.cubeisland.cubeengine.core.storage.database.Index;
+import de.cubeisland.cubeengine.core.storage.database.SingleKeyEntity;
+import de.cubeisland.cubeengine.core.attachment.AttachmentHolder;
+import de.cubeisland.cubeengine.core.attachment.UserAttachment;
 import de.cubeisland.cubeengine.core.util.ChatFormat;
 import de.cubeisland.cubeengine.core.util.convert.ConversionException;
-import org.apache.commons.lang.Validate;
+import gnu.trove.map.hash.THashMap;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -34,12 +39,19 @@ import java.net.InetSocketAddress;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.sql.Timestamp;
-import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.TreeSet;
 
 import static de.cubeisland.cubeengine.core.i18n.I18n._;
-import static de.cubeisland.cubeengine.core.storage.database.Index.IndexType.UNIQUE;
 import static de.cubeisland.cubeengine.core.logger.LogLevel.DEBUG;
+import static de.cubeisland.cubeengine.core.storage.database.Index.IndexType.UNIQUE;
 
 /**
  * A CubeEngine User (can exist offline too).
@@ -47,7 +59,7 @@ import static de.cubeisland.cubeengine.core.logger.LogLevel.DEBUG;
 @SingleKeyEntity(tableName = "user", primaryKey = "key", autoIncrement = true, indices = {
     @Index(value = UNIQUE, fields = "player")
 })
-public class User extends UserBase implements LinkingModel<Long>, CommandSender
+public class User extends UserBase implements Model<Long>, CommandSender, AttachmentHolder<UserAttachment>
 {
     public static Long NO_ID = -1L;
     @Attribute(type = AttrType.INT, unsigned = true)
@@ -65,8 +77,9 @@ public class User extends UserBase implements LinkingModel<Long>, CommandSender
     @Attribute(type = AttrType.VARCHAR, length = 5, notnull = false)
     public String language = null;
     private boolean isLoggedIn = false;
-    private ConcurrentHashMap<Class<? extends Model>, Model> attachments;
-    private ConcurrentHashMap<Module, ConcurrentHashMap<String, Object>> attributes = new ConcurrentHashMap<Module, ConcurrentHashMap<String, Object>>();
+    private final Map<Class<? extends UserAttachment>, UserAttachment> attachments;
+
+    // TODO we might move this to the UserManager
     Integer removalTaskId; // only used in UserManager no AccessModifier is intended
     private final static MessageDigest hasher;
 
@@ -92,6 +105,7 @@ public class User extends UserBase implements LinkingModel<Long>, CommandSender
         this.lastseen = (Timestamp)args.get(3);
         this.firstseen = (Timestamp)args.get(3);
         this.passwd = (byte[])args.get(4);
+        this.attachments = new THashMap<Class<? extends UserAttachment>, UserAttachment>();
     }
 
     User(Long key, OfflinePlayer player)
@@ -102,6 +116,7 @@ public class User extends UserBase implements LinkingModel<Long>, CommandSender
         this.lastseen = new Timestamp(System.currentTimeMillis());
         this.firstseen = this.lastseen;
         this.passwd = new byte[0];
+        this.attachments = new THashMap<Class<? extends UserAttachment>, UserAttachment>();
     }
 
     User(OfflinePlayer player)
@@ -112,6 +127,81 @@ public class User extends UserBase implements LinkingModel<Long>, CommandSender
     User(String playername)
     {
         this(NO_ID, Bukkit.getOfflinePlayer(playername));
+    }
+
+    @Override
+    public synchronized UserAttachment addAttachment(Class<UserAttachment> type)
+    {
+        try
+        {
+            UserAttachment attachment = type.newInstance();
+            attachment.onAttach(this);
+            this.attachments.put(type, attachment);
+            return attachment;
+        }
+        catch (Exception e)
+        {
+            throw new IllegalArgumentException("The given attachment could not be created!", e);
+        }
+    }
+
+    @Override
+    public synchronized UserAttachment addOrGetAttachment(Class<UserAttachment> type)
+    {
+        UserAttachment attachment = this.getAttachment(type);
+        if (attachment == null)
+        {
+            attachment = this.addAttachment(type);
+        }
+        return attachment;
+    }
+
+    @Override
+    public synchronized UserAttachment getAttachment(Class<UserAttachment> type)
+    {
+        return this.attachments.get(type);
+    }
+
+    @Override
+    public synchronized boolean hasAttachment(Class<UserAttachment> type)
+    {
+        return this.attachments.containsKey(type);
+    }
+
+    @Override
+    public synchronized UserAttachment removeAttachment(Class<UserAttachment> type)
+    {
+        UserAttachment attachment = this.attachments.remove(type);
+        if (attachment != null)
+        {
+            attachment.onDetach();
+        }
+        return attachment;
+    }
+
+    public synchronized void clearAttachments(Module module)
+    {
+        final Iterator<Entry<Class<? extends UserAttachment>, UserAttachment>> attachmentIt = this.attachments.entrySet().iterator();
+        UserAttachment attachment;
+        while (attachmentIt.hasNext())
+        {
+            attachment = attachmentIt.next().getValue();
+            if (attachment.getModule() == module)
+            {
+                attachment.onDetach();
+                attachmentIt.remove();
+            }
+        }
+    }
+
+    public synchronized void clearAttachments()
+    {
+        final Iterator<Entry<Class<? extends UserAttachment>, UserAttachment>> attachmentIt = this.attachments.entrySet().iterator();
+        while (attachmentIt.hasNext())
+        {
+            attachmentIt.next().getValue().onDetach();
+            attachmentIt.remove();
+        }
     }
 
     /**
@@ -157,27 +247,6 @@ public class User extends UserBase implements LinkingModel<Long>, CommandSender
     public void sendMessage(String category, String string, Object... params)
     {
         this.sendMessage(_(this, category, string, params));
-    }
-
-    @Override
-    public <T extends Model> void attach(T model)
-    {
-        if (this.attachments == null)
-        {
-            this.attachments = new ConcurrentHashMap<Class<? extends Model>, Model>();
-        }
-        this.attachments.put(model.getClass(), model);
-    }
-
-    @Override
-    @SuppressWarnings("unchecked")
-    public <T extends Model> T getAttachment(Class<T> modelClass)
-    {
-        if (this.attachments == null)
-        {
-            return null;
-        }
-        return (T)this.attachments.get(modelClass);
     }
 
     @Override
@@ -238,92 +307,6 @@ public class User extends UserBase implements LinkingModel<Long>, CommandSender
         return this.lastseen.getTime();
     }
 
-    /**
-     * Adds an attribute to this user
-     *
-     * @param name the name/key
-     * @param value the value
-     */
-    public void setAttribute(Module module, String name, Object value)
-    {
-        Validate.notNull(module, "The module must not be null!");
-        Validate.notNull(name, "The attribute name must not be null!");
-        Validate.notNull(value, "Null-values are not allowed!");
-        ConcurrentHashMap<String, Object> attributMap = this.attributes.get(module);
-        if (attributMap == null)
-        {
-            attributMap = new ConcurrentHashMap<String, Object>();
-        }
-        attributMap.put(name, value);
-        this.attributes.put(module, attributMap);
-    }
-
-    /**
-     * Returns an attribute value
-     *
-     * @param <T> the type of the value
-     * @param name the name/key
-     * @return the value or null
-     */
-    public <T> T getAttribute(Module module, String name)
-    {
-        return this.getAttribute(module, name, null);
-    }
-
-    /**
-     * Gets an attribute value or the given default value
-     *
-     * @param <T> the value type
-     * @param name the name/key
-     * @param def the default value
-     * @return the attribute value or the default value
-     */
-    @SuppressWarnings("unchecked")
-    public <T> T getAttribute(Module module, String name, T def)
-    {
-        try
-        {
-            Map<String, Object> attributeMap = this.attributes.get(module);
-            if (attributeMap == null)
-            {
-                return null;
-            }
-            T value = (T)attributeMap.get(name);
-            if (value != null)
-            {
-                return value;
-            }
-        }
-        catch (ClassCastException ignored)
-        {}
-        return def;
-    }
-
-    public Collection<Object> getAttributes(Module module)
-    {
-        Map<String, Object> attributeMap = this.attributes.get(module);
-        if (attributeMap == null)
-        {
-            return null;
-        }
-        return attributeMap.values();
-    }
-
-    /**
-     * Removes an attribute
-     *
-     * @param name the name/key
-     */
-    public void removeAttribute(Module module, String name)
-    {
-        Map<String, Object> attributeMap = this.attributes.get(module);
-        if (attributeMap == null)
-        {
-            return;
-        }
-        attributeMap.remove(name);
-    }
-
     public void safeTeleport(Location location, TeleportCause cause, boolean keepDirection)
     {
         Location checkLocation = location.clone().add(0, 1, 0);
@@ -358,11 +341,6 @@ public class User extends UserBase implements LinkingModel<Long>, CommandSender
             location.setYaw(loc.getYaw());
         }
         this.teleport(location, cause);
-    }
-
-    public void clearAttributes(Module module)
-    {
-        this.attributes.remove(module);
     }
 
     public void setPassword(String password)
