@@ -270,8 +270,12 @@ public class I18n implements Cleanable
             }
         }
 
-        // Gets Formatted with this: http://docs.oracle.com/javase/6/docs/api/java/util/Formatter.html
-        return String.format(locale, translation, params);
+        if (params.length > 0)
+        {
+            // Gets Formatted with this: http://docs.oracle.com/javase/6/docs/api/java/util/Formatter.html
+            return String.format(locale, translation, params);
+        }
+        return translation;
     }
 
     @Override
