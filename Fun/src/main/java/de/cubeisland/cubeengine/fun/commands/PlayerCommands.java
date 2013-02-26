@@ -125,12 +125,12 @@ public class PlayerCommands
 
         if (damage != -1 && !FunPerm.LIGHTNING_PLAYER_DAMAGE.isAuthorized(context.getSender()))
         {
-            context.sendMessage("fun", "You are not allowed the use the damage parameter");
+            context.sendMessage("fun", "&cYou are not allowed the use the damage parameter");
             return;
         }
         if (context.hasFlag("u") && !FunPerm.LIGHTNING_UNSAFE.isAuthorized(context.getSender()))
         {
-            context.sendMessage("fun", "You are not allowed to use the unsafe flag");
+            context.sendMessage("fun", "&cYou are not allowed to use the unsafe flag");
             return;
         }
 
@@ -185,7 +185,7 @@ public class PlayerCommands
             return;
         }
 
-        int damage = context.getArg(1, int.class, 3);
+        int damage = context.getArg(1, Integer.class, 3);
 
         if (damage < 1 || damage > 20)
         {
@@ -210,7 +210,7 @@ public class PlayerCommands
             return;
         }
 
-        int seconds = context.getArg(1, int.class, 5);
+        int seconds = context.getArg(1, Integer.class, 5);
 
         if (context.hasFlag("u"))
         {

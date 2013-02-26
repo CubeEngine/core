@@ -55,7 +55,7 @@ public class NukeCommand
 
         int numberOfBlocks = 0;
 
-        int radius = context.getArg(0, int.class, 0);
+        int radius = context.getArg(0, Integer.class, 0);
         int height = context.getParam("height", 5);
         int concentration = 1;
         int concentrationOfBlocksPerCircle = 1;

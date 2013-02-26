@@ -23,7 +23,7 @@ public class DiscoCommand
         this.activeTasks = new THashMap<String, DiscoTask>();
     }
 
-    @Command(desc = "Changes from day to night and vice verca", usage = "[world] [delay <value>]", max = 0, params = @Param(names = {
+    @Command(desc = "Changes from day to night and vice verca", usage = "[world] [delay <value>]", max = 1, params = @Param(names = {
     "delay", "d"
     }, type = Integer.class))
     public void disco(ParameterizedContext context)

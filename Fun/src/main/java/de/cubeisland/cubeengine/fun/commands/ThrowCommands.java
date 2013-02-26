@@ -87,7 +87,7 @@ public class ThrowCommands
             return;
         }
 
-        int amount = context.getArg(1, int.class, -1);
+        int amount = context.getArg(1, Integer.class, -1);
         if ((amount > this.fun.getConfig().maxThrowNumber || amount < 1) && amount != -1)
         {
             context.sendMessage("fun", "&cThe amount has to be a number from 1 to %d", this.fun.getConfig().maxThrowNumber);
