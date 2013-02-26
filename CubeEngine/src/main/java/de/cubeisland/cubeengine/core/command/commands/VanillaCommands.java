@@ -400,7 +400,7 @@ public class VanillaCommands implements CommandHolder
             }
 
             player.setWhitelisted(false);
-            context.sendMessage("core", "&6%s&a is now whitelisted.");
+            context.sendMessage("core", "&2%s&a is now whitelisted.",player.getName());
         }
 
         @Command(names = {
@@ -421,7 +421,7 @@ public class VanillaCommands implements CommandHolder
             }
 
             player.setWhitelisted(false);
-            context.sendMessage("core", "&6%s&a is not whitelisted anymore.");
+            context.sendMessage("core", "&2%s&a is not whitelisted anymore.",player.getName());
         }
 
         @Command(desc = "Lists all the whitelisted players")
