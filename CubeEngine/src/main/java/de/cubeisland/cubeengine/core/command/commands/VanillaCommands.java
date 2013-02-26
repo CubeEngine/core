@@ -92,9 +92,12 @@ public class VanillaCommands implements CommandHolder
         else
         {
             context.sendMessage("core", "&eReloading the whole server... (this may take some time)");
+            // pre-translate to avoid a NPE
+            final String preTranslated = this.core.getI18n().translate(context.getSender().getLanguage(), "core", "&aThe reload is completed after %d seconds");
+
             Profiler.startProfiling("reload_server");
             this.core.getServer().reload();
-            context.sendMessage("core", "&aThe reload is completed after %d seconds", Profiler.endProfiling("reload_server", SECONDS));
+            context.sendMessage(String.format(preTranslated, Profiler.endProfiling("reload_server", SECONDS)));
         }
     }
 

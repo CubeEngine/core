@@ -1,6 +1,9 @@
-package de.cubeisland.cubeengine.core.logger;
+package de.cubeisland.cubeengine.core.module;
 
 import de.cubeisland.cubeengine.core.Core;
+import de.cubeisland.cubeengine.core.logger.CubeFileHandler;
+import de.cubeisland.cubeengine.core.logger.CubeLogger;
+import de.cubeisland.cubeengine.core.logger.LogLevel;
 import de.cubeisland.cubeengine.core.module.ModuleInfo;
 import java.io.File;
 import java.util.Locale;

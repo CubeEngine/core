@@ -1,7 +1,6 @@
 package de.cubeisland.cubeengine.core.module;
 
 import de.cubeisland.cubeengine.core.Core;
-import de.cubeisland.cubeengine.core.logger.ModuleLogger;
 import de.cubeisland.cubeengine.core.module.exception.CircularDependencyException;
 import de.cubeisland.cubeengine.core.module.exception.IncompatibleCoreException;
 import de.cubeisland.cubeengine.core.module.exception.IncompatibleDependencyException;

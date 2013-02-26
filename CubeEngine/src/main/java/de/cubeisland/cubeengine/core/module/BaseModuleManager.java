@@ -1,7 +1,6 @@
 package de.cubeisland.cubeengine.core.module;
 
 import de.cubeisland.cubeengine.core.Core;
-import de.cubeisland.cubeengine.core.CubeEngine;
 import de.cubeisland.cubeengine.core.filesystem.FileExtentionFilter;
 import de.cubeisland.cubeengine.core.module.event.ModuleDisabledEvent;
 import de.cubeisland.cubeengine.core.module.event.ModuleEnabledEvent;
@@ -35,7 +34,7 @@ import static de.cubeisland.cubeengine.core.logger.LogLevel.*;
 
 public abstract class BaseModuleManager implements ModuleManager
 {
-    private static final Logger LOGGER = CubeEngine.getLogger();
+    private final Logger logger;
     private final Core core;
     private final ModuleLoader loader;
     private final Map<String, Module> modules;
@@ -46,12 +45,13 @@ public abstract class BaseModuleManager implements ModuleManager
     public BaseModuleManager(Core core)
     {
         this.core = core;
+        this.logger = core.getCoreLogger();
         this.loader = new ModuleLoader(core);
         this.modules = new ConcurrentHashMap<String, Module>();
         this.moduleInfos = new ConcurrentHashMap<String, ModuleInfo>();
         this.classMap = new THashMap<Class<? extends Module>, Module>();
         this.coreModule = new CoreModule();
-        this.coreModule.initialize(core, new ModuleInfo(), core.getFileManager().getDataFolder(), null, null, null);
+        this.coreModule.initialize(core, new ModuleInfo(), core.getFileManager().getDataFolder(), core.getCoreLogger(), null, null);
     }
 
     public Module getModule(String name)
@@ -136,7 +136,7 @@ public abstract class BaseModuleManager implements ModuleManager
 
         Module module;
         ModuleInfo info;
-        LOGGER.log(NOTICE, "Loading modules...");
+        this.logger.log(NOTICE, "Loading modules...");
         for (File file : directory.listFiles((FileFilter)FileExtentionFilter.JAR))
         {
             try
@@ -147,20 +147,20 @@ public abstract class BaseModuleManager implements ModuleManager
                 {
                     if (module.getInfo().getRevision() >= info.getRevision())
                     {
-                        LOGGER.log(WARNING, "A newer or equal revision of the module '" + info.getName() + "' is already loaded!");
+                        this.logger.log(WARNING, "A newer or equal revision of the module '" + info.getName() + "' is already loaded!");
                         continue;
                     }
                     else
                     {
                         this.unloadModule(module);
-                        LOGGER.log(NOTICE, "A newer revision of '" + info.getName() + "' will replace the currently loaded version!");
+                        this.logger.log(NOTICE, "A newer revision of '" + info.getName() + "' will replace the currently loaded version!");
                     }
                 }
                 this.moduleInfos.put(info.getId(), info);
             }
             catch (InvalidModuleException e)
             {
-                LOGGER.log(ERROR, e.getLocalizedMessage(), e);
+                this.logger.log(ERROR, e.getLocalizedMessage(), e);
             }
         }
 
@@ -173,15 +173,15 @@ public abstract class BaseModuleManager implements ModuleManager
             catch (InvalidModuleException e)
             {
                 this.moduleInfos.remove(moduleName);
-                LOGGER.log(DEBUG, "Failed to load the module '" + moduleName + "'", e);
+                this.logger.log(DEBUG, "Failed to load the module '" + moduleName + "'", e);
             }
             catch (ModuleException e)
             {
                 this.moduleInfos.remove(moduleName);
-                LOGGER.log(ERROR, "Failed to load the module '" + moduleName + "'", e);
+                this.logger.log(ERROR, "Failed to load the module '" + moduleName + "'", e);
             }
         }
-        LOGGER.log(NOTICE, "Finished loading modules!");
+        this.logger.log(NOTICE, "Finished loading modules!");
     }
 
     private Module loadModule(String name, Map<String, ModuleInfo> moduleInfos) throws CircularDependencyException, MissingDependencyException, InvalidModuleException, IncompatibleDependencyException, IncompatibleCoreException, MissingPluginDependencyException
@@ -232,7 +232,7 @@ public abstract class BaseModuleManager implements ModuleManager
             depModule = this.loadModule(depName, moduleInfos, loadStack);
             if (dep.getValue() > -1 && depModule.getInfo().getRevision() < dep.getValue())
             {
-                LOGGER.log(WARNING, "The module " + name + " requested a newer revision of " + depName + "!");
+                this.logger.log(WARNING, "The module " + name + " requested a newer revision of " + depName + "!");
             }
         }
         for (Map.Entry<String, Integer> dep : info.getDependencies().entrySet())
@@ -453,7 +453,7 @@ public abstract class BaseModuleManager implements ModuleManager
 
         System.gc();
         System.gc();
-        LOGGER.log(DEBUG, "Unloading '" + module.getName() + "' took {0} milliseconds!", Profiler.endProfiling("unload-" + module.getId(), TimeUnit.MILLISECONDS));
+        this.logger.log(DEBUG, "Unloading '" + module.getName() + "' took {0} milliseconds!", Profiler.endProfiling("unload-" + module.getId(), TimeUnit.MILLISECONDS));
     }
 
     public void reloadModule(Module module)
@@ -501,13 +501,13 @@ public abstract class BaseModuleManager implements ModuleManager
     @Override
     public void clean()
     {
-        LOGGER.log(DEBUG, "unload modules");
+        this.logger.log(DEBUG, "unload modules");
         Profiler.startProfiling("unload-modules");
         this.unloadModules();
-        LOGGER.log(DEBUG, "Unloading the module took {0} milliseconds!", Profiler.endProfiling("unload-modules", TimeUnit.MILLISECONDS));
+        this.logger.log(DEBUG, "Unloading the module took {0} milliseconds!", Profiler.endProfiling("unload-modules", TimeUnit.MILLISECONDS));
         this.modules.clear();
         this.moduleInfos.clear();
-        LOGGER.log(DEBUG, "shutting down the loader");
+        this.logger.log(DEBUG, "shutting down the loader");
         this.loader.shutdown();
     }
 

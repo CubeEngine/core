@@ -7,7 +7,6 @@ import de.cubeisland.cubeengine.core.command.CommandHolder;
 import de.cubeisland.cubeengine.core.command.CommandManager;
 import de.cubeisland.cubeengine.core.command.CubeCommand;
 import de.cubeisland.cubeengine.core.filesystem.FileManager;
-import de.cubeisland.cubeengine.core.logger.ModuleLogger;
 import de.cubeisland.cubeengine.core.permission.Permission;
 import de.cubeisland.cubeengine.core.storage.ModuleRegistry;
 import de.cubeisland.cubeengine.core.storage.SimpleModuleRegistry;
@@ -18,6 +17,7 @@ import org.bukkit.event.Listener;
 
 import java.io.File;
 import java.io.InputStream;
+import java.util.logging.Logger;
 
 import static de.cubeisland.cubeengine.core.logger.LogLevel.ERROR;
 import static de.cubeisland.cubeengine.core.logger.LogLevel.WARNING;
@@ -30,14 +30,14 @@ public abstract class Module
     private boolean initialized = false;
     private Core core;
     private ModuleInfo info;
-    private ModuleLogger logger;
+    private Logger logger;
     private ModuleLoader loader;
     private ModuleRegistry registry = null;
     private ModuleClassLoader classLoader;
     private File folder;
     private boolean enabled;
 
-    final void initialize(Core core, ModuleInfo info, File folder, ModuleLogger logger, ModuleLoader loader, ModuleClassLoader classLoader)
+    final void initialize(Core core, ModuleInfo info, File folder, Logger logger, ModuleLoader loader, ModuleClassLoader classLoader)
     {
         if (!this.initialized)
         {
@@ -98,7 +98,7 @@ public abstract class Module
      *
      * @return the module logger
      */
-    public ModuleLogger getLogger()
+    public Logger getLogger()
     {
         return this.logger;
     }
