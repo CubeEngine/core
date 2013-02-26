@@ -32,7 +32,6 @@ import static io.netty.handler.codec.http.HttpHeaders.Names.*;
  */
 public class ApiRequestHandler extends ChannelInboundMessageHandlerAdapter<Object>
 {
-    private final List<Map.Entry<String, String>> NO_HEADERS = new ArrayList<Map.Entry<String, String>>();
     private final Charset UTF8 = Charset.forName("UTF-8");
     private final String WEBSOCKET_ROUTE = "websocket";
     private final Logger logger;
@@ -72,10 +71,10 @@ public class ApiRequestHandler extends ChannelInboundMessageHandlerAdapter<Objec
             context.channel().close();
         }
 
-        if (message instanceof HttpRequest)
+        if (message instanceof FullHttpRequest)
         {
             this.logger.log(INFO, "this is a HTTP request...");
-            this.handleHttpRequest(context, (HttpRequest)message);
+            this.handleHttpRequest(context, (FullHttpRequest)message);
         }
         else if (message instanceof WebSocketFrame)
         {
@@ -89,7 +88,7 @@ public class ApiRequestHandler extends ChannelInboundMessageHandlerAdapter<Objec
         }
     }
 
-    private void handleHttpRequest(ChannelHandlerContext context, HttpRequest request)
+    private void handleHttpRequest(ChannelHandlerContext context, FullHttpRequest request)
     {
         if (request.getDecoderResult().isFailure())
         {
@@ -100,7 +99,7 @@ public class ApiRequestHandler extends ChannelInboundMessageHandlerAdapter<Objec
 
         QueryStringDecoder qsDecoder = new QueryStringDecoder(request.getUri(), this.UTF8, true, 100);
 
-        String path = qsDecoder.getPath().trim();
+        String path = qsDecoder.path().trim();
 
         if (path.length() == 0 || "/".equals(path))
         {
@@ -121,7 +120,7 @@ public class ApiRequestHandler extends ChannelInboundMessageHandlerAdapter<Objec
         if ("websocket".equals(path))
         {
             this.logger.log(INFO, "received a websocket request...");
-            WebSocketServerHandshakerFactory handshakerFactory = new WebSocketServerHandshakerFactory("ws://" + request.getHeader(HOST) + "/" + this.WEBSOCKET_ROUTE, null, false);
+            WebSocketServerHandshakerFactory handshakerFactory = new WebSocketServerHandshakerFactory("ws://" + request.headers().get(HOST) + "/" + this.WEBSOCKET_ROUTE, null, false);
             this.handshaker = handshakerFactory.newHandshaker(request);
             if (this.handshaker == null)
             {
@@ -158,7 +157,7 @@ public class ApiRequestHandler extends ChannelInboundMessageHandlerAdapter<Objec
         }
 
         JsonNode data = null;
-        ByteBuf requestContent = request.getContent();
+        ByteBuf requestContent = request.data();
         if (requestContent != Unpooled.EMPTY_BUFFER)
         {
             try
@@ -172,10 +171,10 @@ public class ApiRequestHandler extends ChannelInboundMessageHandlerAdapter<Objec
                 return;
             }
         }
-        final RequestMethod method = RequestMethod.getByName(request.getMethod().getName());
-        final Parameters params = new Parameters(qsDecoder.getParameters());
+        final RequestMethod method = RequestMethod.getByName(request.getMethod().name());
+        final Parameters params = new Parameters(qsDecoder.parameters());
 
-        ApiRequest apiRequest = new ApiRequest((InetSocketAddress)context.channel().remoteAddress(), method, params, request.getHeaders(), data);
+        ApiRequest apiRequest = new ApiRequest((InetSocketAddress)context.channel().remoteAddress(), method, params, request.headers(), data);
         ApiResponse apiResponse = new ApiResponse();
 
         try
@@ -204,7 +203,7 @@ public class ApiRequestHandler extends ChannelInboundMessageHandlerAdapter<Objec
         else if (frame instanceof PingWebSocketFrame)
         {
             this.logger.log(INFO, "recevied ping frame");
-            context.write(new PongWebSocketFrame(frame.getBinaryData()));
+            context.write(new PongWebSocketFrame(frame.data()));
         }
         else if (frame instanceof TextWebSocketFrame)
         {
@@ -220,7 +219,7 @@ public class ApiRequestHandler extends ChannelInboundMessageHandlerAdapter<Objec
 
     private void handleTextWebSocketFrame(ChannelHandlerContext context, TextWebSocketFrame frame)
     {
-        String content = frame.getText();
+        String content = frame.text();
 
         int newLinePos = content.indexOf('\n');
         if (newLinePos == -1)
@@ -274,7 +273,7 @@ public class ApiRequestHandler extends ChannelInboundMessageHandlerAdapter<Objec
 
             ApiHandler handler = this.server.getApiHandler(route);
             Parameters params = null;
-            ApiRequest request = new ApiRequest((InetSocketAddress)context.channel().remoteAddress(), method, params, this.NO_HEADERS, data);
+            ApiRequest request = new ApiRequest((InetSocketAddress)context.channel().remoteAddress(), method, params, HttpHeaders.EMPTY_HEADERS, data);
             ApiResponse response = new ApiResponse();
             try
             {
@@ -321,9 +320,8 @@ public class ApiRequestHandler extends ChannelInboundMessageHandlerAdapter<Objec
             data.put("reason", reason);
         }
 
-        HttpResponse response = new DefaultHttpResponse(HttpVersion.HTTP_1_1, error.getRepsonseStatus());
-        response.setContent(Unpooled.copiedBuffer(this.serialize(data), this.UTF8));
-        response.setHeader(CONTENT_TYPE, MimeType.JSON.toString());
+        FullHttpResponse response = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, error.getRepsonseStatus(), Unpooled.copiedBuffer(this.serialize(data), this.UTF8));
+        response.headers().set(CONTENT_TYPE, MimeType.JSON.toString());
 
         context.write(response).addListener(ChannelFutureListener.CLOSE).addListener(ChannelFutureListener.CLOSE_ON_FAILURE);
     }

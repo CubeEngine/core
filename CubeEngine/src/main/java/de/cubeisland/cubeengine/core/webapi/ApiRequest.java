@@ -2,6 +2,7 @@ package de.cubeisland.cubeengine.core.webapi;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import gnu.trove.map.hash.THashMap;
+import io.netty.handler.codec.http.HttpHeaders;
 
 import java.net.InetSocketAddress;
 import java.util.ArrayList;
@@ -23,7 +24,7 @@ public final class ApiRequest
     /**
      * Initializes the ApiRequest with an Server instance
      */
-    public ApiRequest(final InetSocketAddress remoteAddress, RequestMethod method, Parameters params, List<Map.Entry<String, String>> headers, JsonNode data)
+    public ApiRequest(final InetSocketAddress remoteAddress, RequestMethod method, Parameters params, HttpHeaders headers, JsonNode data)
     {
         this.remoteAddress = remoteAddress;
         this.method = method;

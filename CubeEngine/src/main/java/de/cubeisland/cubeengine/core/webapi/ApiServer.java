@@ -5,7 +5,7 @@ import de.cubeisland.cubeengine.core.module.Module;
 import de.cubeisland.cubeengine.core.webapi.exception.ApiStartupException;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.Channel;
-import io.netty.channel.socket.nio.NioEventLoopGroup;
+import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import org.apache.commons.lang.Validate;
 
@@ -131,7 +131,7 @@ public class ApiServer
             {
                 serverBootstrap.group(new NioEventLoopGroup(this.maxThreads.get()))
                     .channel(NioServerSocketChannel.class)
-                    .childHandler(new ApiServerIntializer(this.core, this))
+                    .childHandler(new ApiServerInitializer(this.core, this))
                     .localAddress(this.bindAddress.get(), this.port.get());
 
                 this.bootstrap.set(serverBootstrap);
