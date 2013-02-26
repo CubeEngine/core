@@ -296,7 +296,7 @@ public class VanillaCommands implements CommandHolder
     }
 
     // integrate /saveoff and /saveon and provide aliases
-    @Command(names = {"save-all", "saveall"}, min = 0, max = 1, desc = "Saves all or a specific world to disk.", usage = "[world]")
+    @Command(names = {"save-all", "saveall"}, max = 1, desc = "Saves all or a specific world to disk.", usage = "[world]")
     public void saveall(CommandContext context)
     {
         if (context.hasArg(0))
@@ -384,7 +384,7 @@ public class VanillaCommands implements CommandHolder
             this.delegateChild("list");
         }
 
-        @Command(desc = "Adds a player to the whitelist.", usage = "<player>")
+        @Command(desc = "Adds a player to the whitelist.", usage = "<player>", max = 1)
         public void add(CommandContext context)
         {
             if (!context.hasArgs())
@@ -405,7 +405,7 @@ public class VanillaCommands implements CommandHolder
 
         @Command(names = {
         "remove", "rm"
-        }, desc = "Removes a player from the whitelist.", usage = "<player>")
+        }, desc = "Removes a player from the whitelist.", usage = "<player>", max = 1)
         public void remove(CommandContext context)
         {
             if (!context.hasArgs())
