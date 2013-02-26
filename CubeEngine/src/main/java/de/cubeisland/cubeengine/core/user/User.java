@@ -94,7 +94,7 @@ public class User extends UserBase implements LinkingModel<Long>, CommandSender
         this.passwd = (byte[])args.get(4);
     }
 
-    public User(Long key, OfflinePlayer player)
+    User(Long key, OfflinePlayer player)
     {
         super(player);
         this.key = key;
@@ -104,12 +104,12 @@ public class User extends UserBase implements LinkingModel<Long>, CommandSender
         this.passwd = new byte[0];
     }
 
-    public User(OfflinePlayer player)
+    User(OfflinePlayer player)
     {
         this(NO_ID, player);
     }
 
-    public User(String playername)
+    User(String playername)
     {
         this(NO_ID, Bukkit.getOfflinePlayer(playername));
     }

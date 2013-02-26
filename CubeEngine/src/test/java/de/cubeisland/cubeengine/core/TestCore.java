@@ -35,6 +35,10 @@ public class TestCore implements Core
     private FileManager fileManager = null;
     private ModuleManager moduleManager = null;
 
+    {
+        CubeEngine.initialize(this);
+    }
+
     @Override
     public ApiServer getApiServer()
     {
