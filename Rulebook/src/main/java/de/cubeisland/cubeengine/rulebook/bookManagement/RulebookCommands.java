@@ -30,255 +30,285 @@ public class RulebookCommands extends ContainerCommand
 {
     private final RulebookManager rulebookManager;
 
-    public RulebookCommands(Rulebook module)
+    public RulebookCommands( Rulebook module )
     {
-        super(module, "rulebook", "shows all commands of the rulebook module");
+        super( module, "rulebook", "shows all commands of the rulebook module" );
         this.rulebookManager = module.getRuleBookManager();
     }
 
-    @Alias(names = {
+    @Alias( names =
+    {
         "getrules", "rules"
-    })
-    @Command(desc = "gets the player the rulebook in the inventory", usage = "[language] [Player <name>]", params = @Param(names = {
+    } )
+    @Command( desc = "gets the player the rulebook in the inventory",
+              usage = "[language] [Player <name>]",
+              params =
+    @Param( names =
+    {
         "player", "p"
-    }, type = User.class), permDefault = TRUE, max = 1)
-    public void getRulesBook(ParameterizedContext context)
+    },
+            type = User.class ),
+              permDefault = TRUE,
+              max = 1 )
+    public void getRuleBook( ParameterizedContext context )
     {
         CommandSender sender = context.getSender();
         User target = null;
-        if (context.hasParam("player"))
+        if( context.hasParam( "player" ) )
         {
-            target = context.getUser("player");
-            if (target == null)
+            target = context.getUser( "player" );
+            if( target == null )
             {
-                context.sendMessage("rulebook", "&cThe given user was not found!");
+                context.sendMessage( "rulebook", "&cThe given user was not found!" );
             }
         }
-        if (target == null)
+        if( target == null )
         {
-            if (sender instanceof User)
+            if( sender instanceof User )
             {
-                target = (User)sender;
+                target = ( User ) sender;
             }
             else
             {
-                context.sendMessage("rulebook", "&cYou have to specify a user!");
+                context.sendMessage( "rulebook", "&cYou have to specify a user!" );
                 return;
             }
         }
 
-        if (sender != target && !RulebookPermissions.COMMAND_GET_OTHER.isAuthorized(context.getSender()))
+        if( sender != target && !RulebookPermissions.COMMAND_GET_OTHER.isAuthorized( context.getSender() ) )
         {
-            context.sendMessage("rulebook", "&c You have not the permissions to add the rulebook to the inventory of an other player");
+            context.sendMessage( "rulebook", "&c You have not the permissions to add the rulebook to the inventory of an other player" );
             return;
         }
 
-        if (this.rulebookManager.getLanguages().isEmpty())
+        if( this.rulebookManager.getLanguages().isEmpty() )
         {
-            context.sendMessage("rulebook", "&eIt does not exist a rulebook yet");
+            context.sendMessage( "rulebook", "&eIt does not exist a rulebook yet" );
             return;
         }
 
-        String language = context.getString(0, target.getLanguage());
+        String language = context.getString( 0, target.getLanguage() );
 
-        if (!this.rulebookManager.contains(language) && context.hasArg(0))
+        if( !this.rulebookManager.contains( language ) && context.hasArg( 0 ) )
         {
-            context.sendMessage("rulebook", "&eThe language %s is not supported yet.", language);
+            context.sendMessage( "rulebook", "&eThe language %s is not supported yet.", language );
             return;
         }
-        if (!this.rulebookManager.contains(language))
+        if( !this.rulebookManager.contains( language ) )
         {
             language = this.getModule().getCore().getI18n().getDefaultLanguage();
-            if (!this.rulebookManager.contains(language))
+            if( !this.rulebookManager.contains( language ) )
             {
                 language = this.rulebookManager.getLanguages().iterator().next();
             }
         }
 
-        TIntSet books = this.inventoryRulebookSearching(target.getInventory(), language);
+        TIntSet books = this.inventoryRulebookSearching( target.getInventory(), language );
 
+        context.sendMessage( books.size() + " Buecher" );
         TIntIterator iter = books.iterator();
-        while (iter.hasNext())
+        while( iter.hasNext() )
         {
-            target.getInventory().clear(iter.next());
+            target.getInventory().clear( iter.next() );
         }
 
-        target.getInventory().addItem(this.rulebookManager.getBook(language));
-        target.sendMessage("rulebook", "&aLot's of fun with your rulebook.");
-        if (!books.isEmpty())
+        target.getInventory().addItem( this.rulebookManager.getBook( language ) );
+        target.sendMessage( "rulebook", "&aLot's of fun with your rulebook." );
+        if( !books.isEmpty() )
         {
-            target.sendMessage("rulebook", "&aYour old was removed");
+            target.sendMessage( "rulebook", "&aYour old was removed" );
         }
     }
 
-    @Alias(names = "listrules")
-    @Command(desc = "list all available languages of the rulebooks.", flags = {
-        @Flag(longName = "supported", name = "s")
-    }, permDefault = TRUE, usage = "[-supported]", max = 0)
-    public void list(ParameterizedContext context)
+    @Alias( names = "listrules" )
+    @Command( desc = "list all available languages of the rulebooks.",
+              flags =
     {
-        if (!context.hasFlag("s"))
+        @Flag( longName = "supported",
+               name = "s" )
+    },
+              permDefault = TRUE,
+              usage = "[-supported]",
+              max = 0 )
+    public void list( ParameterizedContext context )
+    {
+        if( !context.hasFlag( "s" ) )
         {
-            if (this.rulebookManager.getLanguages().isEmpty())
+            if( this.rulebookManager.getLanguages().isEmpty() )
             {
-                context.sendMessage("&eNo rulebook available at the moment");
+                context.sendMessage( "&eNo rulebook available at the moment" );
             }
             else
             {
-                context.sendMessage("rulebook", "&6available languages:");
-                for (String languageName : this.rulebookManager.getLanguages())
+                context.sendMessage( "rulebook", "&6available languages:" );
+                for( String languageName : this.rulebookManager.getLanguages() )
                 {
-                    context.sendMessage("&e* " + languageName);
+                    context.sendMessage( "&e* " + languageName );
                 }
             }
         }
         else
         {
-            context.sendMessage("rulebook", "&6supported languages:");
-            for (Language language : this.getModule().getCore().getI18n().getLanguages())
+            context.sendMessage( "rulebook", "&6supported languages:" );
+            for( Language language :
+                    this.getModule().getCore().getI18n().getLanguages() )
             {
-                context.sendMessage("&e* " + language.getName());
+                context.sendMessage( "&e* " + language.getName() );
             }
         }
 
     }
 
-    @Alias(names = "removerules")
-    @Command(desc = "removes the declared language and languagefiles!", min = 1, max = 1, usage = "<language>")
-    public void remove(CommandContext context)
+    @Alias( names = "removerules" )
+    @Command( desc = "removes the declared language and languagefiles!",
+              min = 1,
+              max = 1,
+              usage = "<language>" )
+    public void remove( CommandContext context )
     {
-        String language = context.getString(0);
+        String language = context.getString( 0 );
 
-        Set<Language> languages = this.getModule().getCore().getI18n().searchLanguages(language);
+        Set<Language> languages = this.getModule().getCore().getI18n().searchLanguages( language );
 
-        if (languages.size() == 1)
+        if( languages.size() == 1 )
         {
             try
             {
-                this.rulebookManager.removeBook(languages.iterator().next().getName());
-                context.sendMessage("rulebook", "&aThe languagefiles of %s was deleted", language);
+                this.rulebookManager.removeBook( languages.iterator().next().getName() );
+                context.sendMessage( "rulebook", "&aThe languagefiles of %s was deleted", language );
             }
-            catch (IOException ex)
+            catch ( IOException ex )
             {
-                this.getModule().getLogger().log(LogLevel.ERROR, "Error by deleting the files.", ex);
+                this.getModule().getLogger().log( LogLevel.ERROR, "Error by deleting the files.", ex );
             }
         }
         else
         {
-            context.sendMessage("rulebook", "&cMore than one or no language is matched with %s", language);
+            context.sendMessage( "rulebook", "&cMore than one or no language is matched with %s", language );
         }
     }
 
-    @Alias(names = "modifyrules")
-    @Command(desc = "modified the rulebook of the declared language with the book in hand", usage = "<language>", min = 1, max = 1)
-    public void modify(CommandContext context)
+    @Alias( names = "modifyrules" )
+    @Command(
+    desc = "modified the rulebook of the declared language with the book in hand",
+              usage = "<language>",
+              min = 1,
+              max = 1 )
+    public void modify( CommandContext context )
     {
-        if (!(context.getSender() instanceof User))
+        if( !(context.getSender() instanceof User) )
         {
-            context.sendMessage("rulebook", "&eYou are not able to write, aren't you?");
+            context.sendMessage( "rulebook", "&eYou are not able to write, aren't you?" );
         }
-        User user = (User)context.getSender();
+        User user = ( User ) context.getSender();
 
         ItemStack item = user.getItemInHand();
 
-        if (!item.getType().equals(Material.WRITTEN_BOOK) && !item.getType().equals(Material.BOOK_AND_QUILL))
+        if( !item.getType().equals( Material.WRITTEN_BOOK ) && !item.getType().equals( Material.BOOK_AND_QUILL ) )
         {
-            context.sendMessage("rulebook", "&cI would try it with a book as item in hand");
+            context.sendMessage( "rulebook", "&cI would try it with a book as item in hand" );
             return;
         }
 
-        final String langArg = context.getString(0);
-        Set<Language> languages = this.getModule().getCore().getI18n().searchLanguages(langArg);
-        if (languages.size() != 1)
+        final String langArg = context.getString( 0 );
+        Set<Language> languages = this.getModule().getCore().getI18n().searchLanguages( langArg );
+        if( languages.size() != 1 )
         {
-            context.sendMessage("rulebook", "&cMore than one or no language is matched with %s", langArg);
+            context.sendMessage( "rulebook", "&cMore than one or no language is matched with %s", langArg );
             return;
         }
         String language = languages.iterator().next().getName();
 
-        if (this.rulebookManager.contains(language))
+        if( this.rulebookManager.contains( language ) )
         {
             try
             {
-                if (this.rulebookManager.removeBook(language))
+                if( this.rulebookManager.removeBook( language ) )
                 {
-                    this.rulebookManager.addBook(item, language);
-                    context.sendMessage("rulebook", "&aThe rulebook %s was succesful modified.", language);
+                    this.rulebookManager.addBook( item, language );
+                    context.sendMessage( "rulebook", "&aThe rulebook %s was succesful modified.", language );
                 }
                 else
                 {
-                    context.sendMessage("rulebook", "&eAn error ocurred by deleting the old rulebook");
+                    context.sendMessage( "rulebook", "&eAn error ocurred by deleting the old rulebook" );
                 }
             }
-            catch (IOException ex)
+            catch ( IOException ex )
             {
-                this.getModule().getLogger().log(LogLevel.ERROR, "Error by deleting the files.", ex);
+                this.getModule().getLogger().log( LogLevel.ERROR, "Error by deleting the files.", ex );
             }
         }
         else
         {
-            context.sendMessage("rulebook", "&cYou can't modify a book which does not exist.");
+            context.sendMessage( "rulebook", "&cYou can't modify a book which does not exist." );
         }
     }
 
-    @Alias(names = "addrules")
-    @Command(desc = "adds the book in hand as rulebook of the declared language", min = 1, max = 1, usage = "<language>")
-    public void add(CommandContext context)
+    @Alias( names = "addrules" )
+    @Command(
+    desc = "adds the book in hand as rulebook of the declared language",
+              min = 1,
+              max = 1,
+              usage = "<language>" )
+    public void add( CommandContext context )
     {
-        if (!(context.getSender() instanceof User))
+        if( !(context.getSender() instanceof User) )
         {
-            context.sendMessage("rulebook", "&eI thought you are an analphabet?");
+            context.sendMessage( "rulebook", "&eI thought you are an analphabet?" );
         }
-        User user = (User)context.getSender();
+        User user = ( User ) context.getSender();
 
         ItemStack item = user.getItemInHand();
 
-        if (!item.getType().equals(Material.WRITTEN_BOOK) && !item.getType().equals(Material.BOOK_AND_QUILL))
+        if( !item.getType().equals( Material.WRITTEN_BOOK ) && !item.getType().equals( Material.BOOK_AND_QUILL ) )
         {
-            context.sendMessage("rulebook", "&cI would try it with a book as item in hand");
+            context.sendMessage( "rulebook", "&cI would try it with a book as item in hand" );
             return;
         }
 
-        Set<Language> languages = this.getModule().getCore().getI18n().searchLanguages(context.getString(0));
-        if (languages.size() != 1)
+        Set<Language> languages = this.getModule().getCore().getI18n().searchLanguages( context.getString( 0 ) );
+        if( languages.size() != 1 )
         {
-            context.sendMessage("rulebook", "&cMore than one or no language is matched with %s", context.getString(0));
+            context.sendMessage( "rulebook", "&cMore than one or no language is matched with %s", context.getString( 0 ) );
             return;
         }
         String language = languages.iterator().next().getName();
 
-        if (!this.rulebookManager.contains(language))
+        if( !this.rulebookManager.contains( language ) )
         {
-            this.rulebookManager.addBook(item, language);
-            context.sendMessage("rulebook", "&aRulebook for the language %s was added succesfully", language);
+            this.rulebookManager.addBook( item, language );
+            context.sendMessage( "rulebook", "&aRulebook for the language %s was added succesfully", language );
         }
         else
         {
-            context.sendMessage("&eThere is already a book with that language.");
+            context.sendMessage( "&eThere is already a book with that language." );
         }
     }
 
-    private TIntSet inventoryRulebookSearching(PlayerInventory inventory, String language)
+    private TIntSet inventoryRulebookSearching( PlayerInventory inventory, String language )
     {
         TIntSet books = new TIntHashSet();
 
-        Set<Language> languages = this.getModule().getCore().getI18n().searchLanguages(language);
-        if (languages.size() != 1)
+        Set<Language> languages = this.getModule().getCore().getI18n().searchLanguages( language );
+        if( languages.size() != 1 )
         {
             return books;
         }
         language = languages.iterator().next().getName();
 
-        for (int i = 0; i < inventory.getSize(); i++)
+        for( int i = 0; i < inventory.getSize(); i++ )
         {
-            ItemStack item = inventory.getItem(i);
+            ItemStack item = inventory.getItem( i );
 
-            if (item != null && item.getType().equals(Material.WRITTEN_BOOK))
+            if( item != null && item.getType().equals( Material.WRITTEN_BOOK ) )
             {
                 List<String> lore = item.getItemMeta().getLore();
-                if (lore.size() > 0 && language.equalsIgnoreCase(lore.get(0)))
+                if( lore != null )
                 {
-                    books.add(i);
+                    if( lore.size() > 0 && language.equalsIgnoreCase( lore.get( 0 ) ) )
+                    {
+                        books.add( i );
+                    }
                 }
             }
         }
