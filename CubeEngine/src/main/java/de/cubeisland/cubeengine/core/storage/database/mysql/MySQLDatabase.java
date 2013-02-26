@@ -124,7 +124,7 @@ public class MySQLDatabase extends AbstractDatabase
             }
             catch (SQLException e)
             {
-                LOGGER.log(ERROR, e.getLocalizedMessage(), e);
+                CubeEngine.getLogger().log(ERROR, e.getLocalizedMessage(), e);
             }
         }
     }

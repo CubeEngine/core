@@ -7,7 +7,7 @@ import java.util.regex.Pattern;
 
 public class CommandLogFilter implements Filter
 {
-    private static final Pattern DETECTION_PATTERN = Pattern.compile("[\\w\\d\\-\\.]{3,16} issued server command: /.+", Pattern.CASE_INSENSITIVE);
+    private final Pattern DETECTION_PATTERN = Pattern.compile("[\\w\\d\\-\\.]{3,16} issued server command: /.+", Pattern.CASE_INSENSITIVE);
 
     @Override
     public boolean isLoggable(LogRecord record)

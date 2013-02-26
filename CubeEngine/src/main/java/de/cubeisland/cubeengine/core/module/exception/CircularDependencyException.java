@@ -5,8 +5,6 @@ package de.cubeisland.cubeengine.core.module.exception;
  */
 public class CircularDependencyException extends ModuleException
 {
-    private static final long serialVersionUID = -8766228903352920035L;
-
     public CircularDependencyException(String dependingModule, String dependency)
     {
         super("The module '" + dependingModule

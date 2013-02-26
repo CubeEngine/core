@@ -24,7 +24,7 @@ import java.util.Map;
 public abstract class AbstractStorage<K, M extends Model<K>, T> implements Storage<K, M>
 {
     protected final Database database;
-    protected static TableManager tableManager = null; //Init in TableManager.class
+    protected static TableManager tableManager = null; //Init in TableManager.class TODO holy cow!!
     // ModelInfo:
     protected T storageType = null;
     protected String tableName = null; // Has to be initialized in the implementation!

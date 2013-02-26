@@ -3,8 +3,8 @@ package de.cubeisland.cubeengine.core.config;
 import de.cubeisland.cubeengine.core.CubeEngine;
 import de.cubeisland.cubeengine.core.config.annotations.Codec;
 import de.cubeisland.cubeengine.core.config.codec.YamlCodec;
-import de.cubeisland.cubeengine.core.module.Module;
 import de.cubeisland.cubeengine.core.logger.LogLevel;
+import de.cubeisland.cubeengine.core.module.Module;
 import org.apache.commons.lang.Validate;
 import org.yaml.snakeyaml.reader.ReaderException;
 
@@ -16,7 +16,6 @@ import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
-import java.util.logging.Logger;
 
 import static java.util.logging.Level.SEVERE;
 
@@ -27,7 +26,6 @@ public abstract class Configuration
 {
     private static final Map<String, ConfigurationCodec> codecs = new HashMap<String, ConfigurationCodec>();
     protected Class<? extends Configuration> configurationClass;
-    protected static final Logger logger = CubeEngine.getLogger();
     protected ConfigurationCodec codec = null;
     protected File file;
     protected Configuration parent = null;
@@ -218,7 +216,7 @@ public abstract class Configuration
         }
         catch (FileNotFoundException e)
         {
-            logger.log(LogLevel.NOTICE, "{0} not found! Creating new config...", file.getName());
+            CubeEngine.getLogger().log(LogLevel.NOTICE, "{0} not found! Creating new config...", file.getName());
         }
         T config = load(clazz, inputStream, file); //loading config from InputSream or Default
 

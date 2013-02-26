@@ -1,6 +1,5 @@
 package de.cubeisland.cubeengine.core.command.reflected.readable;
 
-import de.cubeisland.cubeengine.core.CubeEngine;
 import de.cubeisland.cubeengine.core.command.reflected.ReflectedCommandFactory;
 import de.cubeisland.cubeengine.core.logger.LogLevel;
 import de.cubeisland.cubeengine.core.module.Module;
@@ -10,7 +9,6 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
-import java.util.logging.Logger;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
@@ -18,8 +16,6 @@ import static de.cubeisland.cubeengine.core.util.Misc.arr;
 
 public class ReadableCommandFactory extends ReflectedCommandFactory<ReadableCommand>
 {
-    private static final Logger LOGGER = CubeEngine.getLogger();
-
     public Class<ReadableCommand> getCommandType()
     {
         return ReadableCommand.class;
@@ -54,7 +50,7 @@ public class ReadableCommandFactory extends ReflectedCommandFactory<ReadableComm
         }
         catch (PatternSyntaxException e)
         {
-            LOGGER.log(LogLevel.WARNING, "The pattern of a readable command failed to compile! ''{0}.{1}''", arr(holder.getClass().getSimpleName(), method.getName()));
+            module.getLogger().log(LogLevel.WARNING, "The pattern of a readable command failed to compile! ''{0}.{1}''", arr(holder.getClass().getSimpleName(), method.getName()));
             return null;
         }
 

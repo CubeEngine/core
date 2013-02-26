@@ -28,6 +28,7 @@ import de.cubeisland.cubeengine.core.storage.database.DatabaseFactory;
 import de.cubeisland.cubeengine.core.storage.world.WorldManager;
 import de.cubeisland.cubeengine.core.user.UserManager;
 import de.cubeisland.cubeengine.core.util.InventoryGuardFactory;
+import de.cubeisland.cubeengine.core.util.Profiler;
 import de.cubeisland.cubeengine.core.util.matcher.Match;
 import de.cubeisland.cubeengine.core.util.worker.CubeThreadFactory;
 import de.cubeisland.cubeengine.core.webapi.ApiConfig;
@@ -49,7 +50,7 @@ import static de.cubeisland.cubeengine.core.logger.LogLevel.*;
 /**
  * This represents the Bukkit-JavaPlugin that gets loaded and implements the Core
  */
-public class BukkitCore extends JavaPlugin implements Core
+public final class BukkitCore extends JavaPlugin implements Core
 {
     private Database database;
     private BukkitPermissionManager permissionManager;
@@ -100,7 +101,7 @@ public class BukkitCore extends JavaPlugin implements Core
 
         try
         {
-            this.fileManager = new FileManager(this.getDataFolder().getAbsoluteFile());
+            this.fileManager = new FileManager(this, this.getDataFolder().getAbsoluteFile());
         }
         catch (IOException e)
         {
@@ -172,7 +173,7 @@ public class BukkitCore extends JavaPlugin implements Core
             }
             catch (IllegalArgumentException e)
             {
-                this.getCoreLogger().log(NOTICE, "You're OS does not support the HUP signal! This can be ignored.");
+                this.logger.log(NOTICE, "You're OS does not support the HUP signal! This can be ignored.");
             }
 
             Signal.handle(new Signal("TERM"), new SignalHandler() {
@@ -299,7 +300,7 @@ public class BukkitCore extends JavaPlugin implements Core
     @Override
     public void onDisable()
     {
-        this.getCoreLogger().log(DEBUG, "utils cleanup");
+        this.logger.log(DEBUG, "utils cleanup");
         BukkitUtils.cleanup();
 
         if (this.packetEventManager != null)
@@ -310,21 +311,21 @@ public class BukkitCore extends JavaPlugin implements Core
 
         if (this.moduleManager != null)
         {
-            this.getCoreLogger().log(DEBUG, "module manager cleanup");
+            this.logger.log(DEBUG, "module manager cleanup");
             this.moduleManager.clean();
             this.moduleManager = null;
         }
 
         if (this.commandManager != null)
         {
-            this.getCoreLogger().log(DEBUG, "command manager cleanup");
+            this.logger.log(DEBUG, "command manager cleanup");
             this.commandManager.clean();
             this.commandManager = null;
         }
 
         if (this.apiServer != null)
         {
-            this.getCoreLogger().log(DEBUG, "api server shutdown and cleanup");
+            this.logger.log(DEBUG, "api server shutdown and cleanup");
             this.apiServer.stop();
             this.apiServer.unregisterApiHandlers();
             this.apiServer = null;
@@ -332,21 +333,21 @@ public class BukkitCore extends JavaPlugin implements Core
 
         if (this.fileManager != null)
         {
-            this.getCoreLogger().log(DEBUG, "file manager cleanup");
+            this.logger.log(DEBUG, "file manager cleanup");
             this.fileManager.clean();
             this.fileManager = null;
         }
 
         if (this.userManager != null)
         {
-            this.getCoreLogger().log(DEBUG, "user manager cleanup");
+            this.logger.log(DEBUG, "user manager cleanup");
             this.userManager.clean();
             this.userManager = null;
         }
 
         if (this.permissionManager != null)
         {
-            this.getCoreLogger().log(DEBUG, "permission manager cleanup");
+            this.logger.log(DEBUG, "permission manager cleanup");
             this.permissionManager.clean();
             this.permissionManager = null;
         }
@@ -358,7 +359,7 @@ public class BukkitCore extends JavaPlugin implements Core
         }
         if (this.taskManager != null)
         {
-            this.getCoreLogger().log(DEBUG, "task manager cleanup");
+            this.logger.log(DEBUG, "task manager cleanup");
             try
             {
                 this.taskManager.getExecutorService().shutdown();
@@ -377,12 +378,13 @@ public class BukkitCore extends JavaPlugin implements Core
 
         if (this.database != null)
         {
-            this.getCoreLogger().log(DEBUG, "database shutdown");
+            this.logger.log(DEBUG, "database shutdown");
             this.database.shutdown();
             this.database = null;
         }
 
         CubeEngine.clean();
+        Profiler.clean();
     }
 
     @Override

@@ -30,25 +30,12 @@ import static io.netty.handler.codec.http.HttpHeaders.Names.*;
  *
  * @author Phillip Schichtel
  */
-public class ApiRequestHandler extends
-    ChannelInboundMessageHandlerAdapter<Object>
+public class ApiRequestHandler extends ChannelInboundMessageHandlerAdapter<Object>
 {
-    private static final Logger LOGGER = new CubeLogger("webapi");
-    private static final List<Map.Entry<String, String>> NO_HEADERS = new ArrayList<Map.Entry<String, String>>();
-
-    static
-    {
-        try
-        {
-            LOGGER.addHandler(new FileHandler("webapi.log"));
-        }
-        catch (IOException e)
-        {
-            CubeEngine.getLogger().log(ERROR, "Failed to initialize the file handler for the web api log!", e);
-        }
-    }
-    private static final Charset UTF8 = Charset.forName("UTF-8");
-    private static final String WEBSOCKET_ROUTE = "websocket";
+    private final List<Map.Entry<String, String>> NO_HEADERS = new ArrayList<Map.Entry<String, String>>();
+    private final Charset UTF8 = Charset.forName("UTF-8");
+    private final String WEBSOCKET_ROUTE = "websocket";
+    private final Logger logger;
     private final ApiServer server;
     private WebSocketServerHandshaker handshaker = null;
     private ObjectMapper objectMapper;
@@ -57,38 +44,47 @@ public class ApiRequestHandler extends
     {
         this.server = server;
         this.objectMapper = mapper;
+        this.logger = new CubeLogger("webapi");
+        try
+        {
+            this.logger.addHandler(new FileHandler("webapi.log"));
+        }
+        catch (IOException e)
+        {
+            CubeEngine.getLogger().log(ERROR, "Failed to initialize the file handler for the web api log!", e);
+        }
     }
 
     @Override
     public void exceptionCaught(ChannelHandlerContext context, Throwable t)
     {
         this.error(context, UNKNOWN_ERROR);
-        LOGGER.log(ERROR, "An error occurred while processing an API request: " + t.getMessage(), t);
+        this.logger.log(ERROR, "An error occurred while processing an API request: " + t.getMessage(), t);
     }
 
     @Override
     public void messageReceived(ChannelHandlerContext context, Object message) throws Exception
     {
-        LOGGER.log(INFO, "{0} connected...", ((InetSocketAddress)context.channel().remoteAddress()).getAddress().getHostAddress());
+        this.logger.log(INFO, "{0} connected...", ((InetSocketAddress)context.channel().remoteAddress()).getAddress().getHostAddress());
         if (!this.server.isAddressAccepted((InetSocketAddress)context.channel().remoteAddress()))
         {
-            LOGGER.log(INFO, "Access denied!");
+            this.logger.log(INFO, "Access denied!");
             context.channel().close();
         }
 
         if (message instanceof HttpRequest)
         {
-            LOGGER.log(INFO, "this is a HTTP request...");
+            this.logger.log(INFO, "this is a HTTP request...");
             this.handleHttpRequest(context, (HttpRequest)message);
         }
         else if (message instanceof WebSocketFrame)
         {
-            LOGGER.log(INFO, "oh a websocket frame!");
+            this.logger.log(INFO, "oh a websocket frame!");
             this.handleWebSocketFrame(context, (WebSocketFrame)message);
         }
         else
         {
-            LOGGER.log(INFO, "dafuq!?");
+            this.logger.log(INFO, "dafuq!?");
             context.close();
         }
     }
@@ -98,11 +94,11 @@ public class ApiRequestHandler extends
         if (request.getDecoderResult().isFailure())
         {
             this.error(context, UNKNOWN_ERROR);
-            LOGGER.log(INFO, "the decoder failed on this request...", request.getDecoderResult().cause());
+            this.logger.log(INFO, "the decoder failed on this request...", request.getDecoderResult().cause());
             return;
         }
 
-        QueryStringDecoder qsDecoder = new QueryStringDecoder(request.getUri(), UTF8, true, 100);
+        QueryStringDecoder qsDecoder = new QueryStringDecoder(request.getUri(), this.UTF8, true, 100);
 
         String path = qsDecoder.getPath().trim();
 
@@ -124,17 +120,17 @@ public class ApiRequestHandler extends
         // is this request intended to initialize a websockets connection?
         if ("websocket".equals(path))
         {
-            LOGGER.log(INFO, "received a websocket request...");
-            WebSocketServerHandshakerFactory handshakerFactory = new WebSocketServerHandshakerFactory("ws://" + request.getHeader(HOST) + "/" + WEBSOCKET_ROUTE, null, false);
+            this.logger.log(INFO, "received a websocket request...");
+            WebSocketServerHandshakerFactory handshakerFactory = new WebSocketServerHandshakerFactory("ws://" + request.getHeader(HOST) + "/" + this.WEBSOCKET_ROUTE, null, false);
             this.handshaker = handshakerFactory.newHandshaker(request);
             if (this.handshaker == null)
             {
-                LOGGER.log(INFO, "client is incompatible!");
+                this.logger.log(INFO, "client is incompatible!");
                 handshakerFactory.sendUnsupportedWebSocketVersionResponse(context.channel());
             }
             else
             {
-                LOGGER.log(INFO, "handshaking now...");
+                this.logger.log(INFO, "handshaking now...");
                 this.handshaker.handshake(context.channel(), request).addListener(new ChannelFutureListener()
                 {
                     @Override
@@ -142,11 +138,11 @@ public class ApiRequestHandler extends
                     {
                         if (future.isSuccess())
                         {
-                            LOGGER.log(INFO, "Success!");
+                            logger.log(INFO, "Success!");
                         }
                         else
                         {
-                            LOGGER.log(INFO, "Failed!");
+                            logger.log(INFO, "Failed!");
                         }
                     }
                 });
@@ -171,7 +167,7 @@ public class ApiRequestHandler extends
             }
             catch (Exception e)
             {
-                LOGGER.log(DEBUG, "Failed to parse the request body!", e);
+                this.logger.log(DEBUG, "Failed to parse the request body!", e);
                 this.error(context, MALFORMED_DATA);
                 return;
             }
@@ -201,23 +197,23 @@ public class ApiRequestHandler extends
     {
         if (frame instanceof CloseWebSocketFrame)
         {
-            LOGGER.log(INFO, "recevied close frame");
+            this.logger.log(INFO, "recevied close frame");
             this.server.unsubscribe(this);
             this.handshaker.close(context.channel(), (CloseWebSocketFrame)frame);
         }
         else if (frame instanceof PingWebSocketFrame)
         {
-            LOGGER.log(INFO, "recevied ping frame");
+            this.logger.log(INFO, "recevied ping frame");
             context.write(new PongWebSocketFrame(frame.getBinaryData()));
         }
         else if (frame instanceof TextWebSocketFrame)
         {
-            LOGGER.log(INFO, "recevied text frame");
+            this.logger.log(INFO, "recevied text frame");
             this.handleTextWebSocketFrame(context, (TextWebSocketFrame)frame);
         }
         else
         {
-            LOGGER.log(INFO, "recevied unknown incompatible frame");
+            this.logger.log(INFO, "recevied unknown incompatible frame");
             context.close();
         }
     }
@@ -229,7 +225,7 @@ public class ApiRequestHandler extends
         int newLinePos = content.indexOf('\n');
         if (newLinePos == -1)
         {
-            LOGGER.log(INFO, "the frame data didn't contain a newline !");
+            this.logger.log(INFO, "the frame data didn't contain a newline !");
             // TODO error response
             return;
         }
@@ -278,7 +274,7 @@ public class ApiRequestHandler extends
 
             ApiHandler handler = this.server.getApiHandler(route);
             Parameters params = null;
-            ApiRequest request = new ApiRequest((InetSocketAddress)context.channel().remoteAddress(), method, params, NO_HEADERS, data);
+            ApiRequest request = new ApiRequest((InetSocketAddress)context.channel().remoteAddress(), method, params, this.NO_HEADERS, data);
             ApiResponse response = new ApiResponse();
             try
             {
@@ -326,7 +322,7 @@ public class ApiRequestHandler extends
         }
 
         HttpResponse response = new DefaultHttpResponse(HttpVersion.HTTP_1_1, error.getRepsonseStatus());
-        response.setContent(Unpooled.copiedBuffer(this.serialize(data), UTF8));
+        response.setContent(Unpooled.copiedBuffer(this.serialize(data), this.UTF8));
         response.setHeader(CONTENT_TYPE, MimeType.JSON.toString());
 
         context.write(response).addListener(ChannelFutureListener.CLOSE).addListener(ChannelFutureListener.CLOSE_ON_FAILURE);
@@ -360,7 +356,7 @@ public class ApiRequestHandler extends
             }
             catch (JsonProcessingException e)
             {
-                LOGGER.log(ERROR, "Failed to generate the JSON code for a response!", e);
+                this.logger.log(ERROR, "Failed to generate the JSON code for a response!", e);
                 return "null";
             }
         }

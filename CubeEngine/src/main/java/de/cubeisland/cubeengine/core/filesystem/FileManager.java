@@ -1,26 +1,31 @@
 package de.cubeisland.cubeengine.core.filesystem;
 
+import de.cubeisland.cubeengine.core.Core;
 import de.cubeisland.cubeengine.core.CubeEngine;
-import de.cubeisland.cubeengine.core.util.Cleanable;
 import de.cubeisland.cubeengine.core.logger.LogLevel;
+import de.cubeisland.cubeengine.core.util.Cleanable;
 import org.apache.commons.lang.Validate;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.logging.Logger;
 
 import static de.cubeisland.cubeengine.core.CubeEngine.runsOnWindows;
-import static de.cubeisland.cubeengine.core.logger.LogLevel.INFO;
-import static de.cubeisland.cubeengine.core.logger.LogLevel.NOTICE;
-import static de.cubeisland.cubeengine.core.logger.LogLevel.WARNING;
+import static de.cubeisland.cubeengine.core.logger.LogLevel.*;
 
 /**
  * Manages all the configurations of the CubeEngine.
  */
 public class FileManager implements Cleanable
 {
-    private static final Logger LOGGER = CubeEngine.getLogger();
+    private final Logger logger;
     private final File dataFolder;
     private final File languageDir;
     private final File logDir;
@@ -28,8 +33,9 @@ public class FileManager implements Cleanable
     private final File tempDir;
     private ConcurrentMap<File, Resource> fileSources;
 
-    public FileManager(File dataFolder) throws IOException
+    public FileManager(Core core, File dataFolder) throws IOException
     {
+        this.logger = core.getCoreLogger();
         Validate.notNull(dataFolder, "The CubeEngine plugin folder must not be null!");
         if (!dataFolder.exists())
         {
@@ -82,7 +88,7 @@ public class FileManager implements Cleanable
         final File linkSource = new File(System.getProperty("user.dir", "."), "modules");
         if (!isSymLink(linkSource) && !createSymLink(linkSource, this.modulesDir))
         {
-            LOGGER.log(NOTICE, "Linking to the modules directory failed! This can be ignored.");
+            logger.log(NOTICE, "Linking to the modules directory failed! This can be ignored.");
         }
 
         this.tempDir = new File(this.dataFolder, "temp");
@@ -96,7 +102,7 @@ public class FileManager implements Cleanable
         }
         if (!hideFile(this.tempDir))
         {
-            LOGGER.log(NOTICE, "Hiding the temp folder failed! This can be ignored!");
+            logger.log(NOTICE, "Hiding the temp folder failed! This can be ignored!");
         }
 
         this.fileSources = new ConcurrentHashMap<File, Resource>();
@@ -217,7 +223,7 @@ public class FileManager implements Cleanable
 
     public void clearTempDir()
     {
-        LOGGER.log(INFO, "Clearing the temporary folder ''{0}''...", this.tempDir.getAbsolutePath());
+        logger.log(INFO, "Clearing the temporary folder ''{0}''...", this.tempDir.getAbsolutePath());
         for (File file : this.tempDir.listFiles())
         {
             try
@@ -226,10 +232,10 @@ public class FileManager implements Cleanable
             }
             catch (IOException e)
             {
-                LOGGER.log(NOTICE, "Failed to remove the file ''{0}''", file.getAbsolutePath());
+                logger.log(NOTICE, "Failed to remove the file ''{0}''", file.getAbsolutePath());
             }
         }
-        LOGGER.log(INFO, "Temporary folder cleared!");
+        logger.log(INFO, "Temporary folder cleared!");
     }
 
     public static void deleteRecursive(File file) throws IOException
@@ -276,7 +282,7 @@ public class FileManager implements Cleanable
             }
             catch (IOException e)
             {
-                LOGGER.log(WARNING, "Failed to close a file stream!", e);
+                CubeEngine.getLogger().log(WARNING, "Failed to close a file stream!", e);
             }
 
             try
@@ -285,7 +291,7 @@ public class FileManager implements Cleanable
             }
             catch (IOException e)
             {
-                LOGGER.log(WARNING, "Failed to close a file stream!", e);
+                CubeEngine.getLogger().log(WARNING, "Failed to close a file stream!", e);
             }
         }
         return false;
@@ -419,7 +425,7 @@ public class FileManager implements Cleanable
             }
             catch (IOException e)
             {
-                LOGGER.log(LogLevel.ERROR, e.getMessage(), e);
+                logger.log(LogLevel.ERROR, e.getMessage(), e);
             }
             finally
             {
