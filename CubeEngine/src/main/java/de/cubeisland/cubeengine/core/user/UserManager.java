@@ -184,20 +184,20 @@ public class UserManager extends SingleKeyStorage<Long, User> implements Cleanab
     /**
      * Adds a new User
      *
-     * @param user the User
-     * @return fluent interface
+     * @return the created User
      */
-    public UserManager addUser(final User user)
+    private User createUser(String name)
     {
-        User inUse = this.users.get(user.getName());
+        User inUse = this.users.get(name);
         if (inUse != null)
         {
             //User was already added
-            return this;
+            return inUse;
         }
+        User user = new User(name);
         this.users.put(user.getName(), user);
         this.store(user, false);
-        return this;
+        return user;
     }
 
     /**
@@ -236,8 +236,7 @@ public class UserManager extends SingleKeyStorage<Long, User> implements Cleanab
         }
         if (user == null && createIfMissing)
         {
-            user = new User(name);
-            this.addUser(user);
+            user = this.createUser(name);
         }
         return user;
     }
