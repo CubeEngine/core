@@ -100,7 +100,7 @@
 
     <build>
         <finalName>${project.name}</finalName>
-        <defaultGoal>clean package</defaultGoal>
+        <defaultGoal>clean install</defaultGoal>
 
         <resources>
             <resource>
