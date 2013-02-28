@@ -6,6 +6,7 @@ import de.cubeisland.cubeengine.core.command.parameterized.Param;
 import de.cubeisland.cubeengine.core.command.parameterized.ParameterizedContext;
 import de.cubeisland.cubeengine.core.command.reflected.Command;
 import de.cubeisland.cubeengine.core.user.User;
+import de.cubeisland.cubeengine.core.util.matcher.Match;
 import de.cubeisland.cubeengine.fun.Fun;
 import de.cubeisland.cubeengine.fun.FunPerm;
 import org.bukkit.Location;
@@ -13,6 +14,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByBlockEvent;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Vector;
 
 public class PlayerCommands
@@ -25,6 +27,66 @@ public class PlayerCommands
         this.module = module;
         this.explosionListener = new ExplosionListener();
         this.module.registerListener(explosionListener);
+    }
+    
+    @Command(
+            desc = "sets the hat of the player", 
+            max = 2,
+            usage = "[player] [item]"
+    )
+    public void hat(CommandContext context)
+    {
+        User user;
+        ItemStack head;
+        boolean console = false;
+        
+        if(!(context.getSender() instanceof User))
+        {
+            console = true;
+        }
+        if(context.hasArg( 0 ) )
+        {
+            user = context.getUser( 0 );
+            if(user == null)
+            {
+                context.sendMessage("core", "&cUser not found!");
+                return;
+            }
+        }
+        else if(!console)
+        {
+            user = (User)context.getSender();
+        }
+        else
+        {
+            context.sendMessage( "fun", "&cYou has to specify a user!" );
+            return;
+        }
+        
+        
+        if(context.hasArg( 1 ) )
+        {
+            head = Match.material().itemStack( context.getArg( 1, String.class ) );
+            if(head == null)
+            {
+                context.sendMessage( "fun", "&cItem not found!" );
+                return;
+            }
+        }
+        else if(console)
+        {
+            context.sendMessage( "fun", "&cYou has to specify an item!" );
+            return;
+        }
+        else
+        {
+            head = ((User)context.getSender()).getItemInHand().clone();
+        }
+        
+        head.setAmount( 1 );
+        user.getInventory().setHelmet( head );
+        
+        user.sendMessage( "fun", "&aYour hat was changed" );        
     }
 
     @Command(desc = "Creates an explosion", params = {
