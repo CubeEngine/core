@@ -402,7 +402,7 @@ public class VanillaCommands implements CommandHolder
                 return;
             }
 
-            player.setWhitelisted(false);
+            player.setWhitelisted(true);
             context.sendMessage("core", "&2%s&a is now whitelisted.",player.getName());
         }
 
