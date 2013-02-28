@@ -38,6 +38,10 @@ public class PlayerCommands
             {
                 @Param(names = {"player", "p"}, type = User.class)
             },
+            flags =
+            {
+                @Flag(longName = "quiet", name = "q")
+            },
             usage = "[item] [player <player>]"
     )
     public void hat(ParameterizedContext context)
@@ -53,7 +57,7 @@ public class PlayerCommands
         }
         if(context.hasParam( "player" ) )
         {
-            if(!FunPerm.HAT_OTHER.isAuthorized( context.getSender() ) )
+            if(!FunPerm.COMMAND_HAT_OTHER.isAuthorized( context.getSender() ) )
             {
                 context.sendMessage( "fun", "&cYou can't set the had of an other player." );
                 return;
@@ -79,7 +83,7 @@ public class PlayerCommands
         
         if(context.hasArg( 0 ) )
         {
-            if(!FunPerm.HAT_ITEM.isAuthorized( context.getSender() ))
+            if(!FunPerm.COMMAND_HAT_ITEM.isAuthorized( context.getSender() ))
             {
                 context.sendMessage("fun", "&cYou can only use your item in hand!");
                 return;
@@ -113,16 +117,19 @@ public class PlayerCommands
                 item.setAmount( amount - 1);
                 
                 inventory.setItemInHand( item );
-                if(inventory.getHelmet() != null)
+                if(user.getInventory().getHelmet() != null)
                 {
-                    inventory.addItem( inventory.getHelmet() );
+                    inventory.addItem( user.getInventory().getHelmet() );
                 }
             }
         }
         
         user.getInventory().setHelmet( head );
         
-        user.sendMessage( "fun", "&aYour hat was changed" );        
+        if( !(context.hasFlag("q") && FunPerm.COMMAND_HAT_QUIET.isAuthorized(context.getSender()) ) && FunPerm.COMMAND_HAT_NOTIFY.isAuthorized( user ) )
+        {
+            user.sendMessage( "fun", "&aYour hat was changed" );
+        }        
     }
 
     @Command(desc = "Creates an explosion", params = {
@@ -146,7 +153,7 @@ public class PlayerCommands
 
         if (context.hasParam("player"))
         {
-            if (!FunPerm.EXPLOSION_OTHER.isAuthorized(context.getSender()))
+            if (!FunPerm.COMMAND_EXPLOSION_OTHER.isAuthorized(context.getSender()))
             {
                 context.sendMessage("rulebook", "&cYou are not allowed to use the player parameter.");
                 return;
@@ -176,17 +183,17 @@ public class PlayerCommands
             return;
         }
 
-        if (!FunPerm.EXPLOSION_BLOCK_DAMAGE.isAuthorized(context.getSender()) && (context.hasFlag("b") || context.hasFlag("u")))
+        if (!FunPerm.COMMAND_EXPLOSION_BLOCK_DAMAGE.isAuthorized(context.getSender()) && (context.hasFlag("b") || context.hasFlag("u")))
         {
             context.sendMessage("rulebook", "&cYou are not allowed to break blocks");
             return;
         }
-        if (!FunPerm.EXPLOSION_FIRE.isAuthorized(context.getSender()) && (context.hasFlag("f") || context.hasFlag("u")))
+        if (!FunPerm.COMMAND_EXPLOSION_FIRE.isAuthorized(context.getSender()) && (context.hasFlag("f") || context.hasFlag("u")))
         {
             context.sendMessage("rulebook", "&cYou are not allowed to set fireticks");
             return;
         }
-        if (!FunPerm.EXPLOSION_PLAYER_DAMAGE.isAuthorized(context.getSender()) && (context.hasFlag("p") || context.hasFlag("u")))
+        if (!FunPerm.COMMAND_EXPLOSION_PLAYER_DAMAGE.isAuthorized(context.getSender()) && (context.hasFlag("p") || context.hasFlag("u")))
         {
             context.sendMessage("rulebook", "&cYou are not allowed to damage an other player");
             return;
@@ -221,12 +228,12 @@ public class PlayerCommands
         Location location;
         int damage = context.getParam("damage", -1);
 
-        if (damage != -1 && !FunPerm.LIGHTNING_PLAYER_DAMAGE.isAuthorized(context.getSender()))
+        if (damage != -1 && !FunPerm.COMMAND_LIGHTNING_PLAYER_DAMAGE.isAuthorized(context.getSender()))
         {
             context.sendMessage("fun", "&cYou are not allowed the use the damage parameter");
             return;
         }
-        if (context.hasFlag("u") && !FunPerm.LIGHTNING_UNSAFE.isAuthorized(context.getSender()))
+        if (context.hasFlag("u") && !FunPerm.COMMAND_LIGHTNING_UNSAFE.isAuthorized(context.getSender()))
         {
             context.sendMessage("fun", "&cYou are not allowed to use the unsafe flag");
             return;
