@@ -642,7 +642,7 @@ public class PlayerCommands
         context.sendMessage("basics", "&eYou are no longer invincible!");
     }
 
-    @Command(desc = "Changes your walkspeed.", usage = "<speed> [player]", min = 1, max = 1)
+    @Command(desc = "Changes your walkspeed.", usage = "<speed> [player]", min = 1, max = 2)
     public void walkspeed(ParameterizedContext context)
     {
         User sender = null;
