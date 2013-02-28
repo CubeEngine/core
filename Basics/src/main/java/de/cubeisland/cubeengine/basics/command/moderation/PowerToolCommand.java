@@ -283,7 +283,7 @@ public class PowerToolCommand extends ContainerCommand implements Listener
                 {
                     ptStart = true;
                 }
-                else
+                else if (ptStart)
                 {
                     powerTool.add(line);
                 }
