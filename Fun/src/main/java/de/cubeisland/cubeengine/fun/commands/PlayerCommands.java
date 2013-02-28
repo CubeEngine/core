@@ -10,11 +10,13 @@ import de.cubeisland.cubeengine.core.util.matcher.Match;
 import de.cubeisland.cubeengine.fun.Fun;
 import de.cubeisland.cubeengine.fun.FunPerm;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByBlockEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.util.Vector;
 
 public class PlayerCommands
@@ -30,23 +32,35 @@ public class PlayerCommands
     }
     
     @Command(
-            desc = "sets the hat of the player", 
-            max = 2,
-            usage = "[player] [item]"
+            desc = "sets the hat of the player",
+            max = 1,
+            params =
+            {
+                @Param(names = {"player", "p"}, type = User.class)
+            },
+            usage = "[item] [player <player>]"
     )
-    public void hat(CommandContext context)
+    public void hat(ParameterizedContext context)
     {
         User user;
         ItemStack head;
         boolean console = false;
+        PlayerInventory inventory = null;
         
         if(!(context.getSender() instanceof User))
         {
             console = true;
         }
-        if(context.hasArg( 0 ) )
+        if(context.hasParam( "player" ) )
         {
-            user = context.getUser( 0 );
+            if(!FunPerm.HAT_OTHER.isAuthorized( context.getSender() ) )
+            {
+                context.sendMessage( "fun", "&cYou can't set the had of an other player." );
+                return;
+            }
+            
+            user = context.getUser( "player" );
+            
             if(user == null)
             {
                 context.sendMessage("core", "&cUser not found!");
@@ -63,10 +77,14 @@ public class PlayerCommands
             return;
         }
         
-        
-        if(context.hasArg( 1 ) )
+        if(context.hasArg( 0 ) )
         {
-            head = Match.material().itemStack( context.getArg( 1, String.class ) );
+            if(!FunPerm.HAT_ITEM.isAuthorized( context.getSender() ))
+            {
+                context.sendMessage("fun", "&cYou can only use your item in hand!");
+                return;
+            }
+            head = Match.material().itemStack( context.getArg( 0, String.class ) );
             if(head == null)
             {
                 context.sendMessage( "fun", "&cItem not found!" );
@@ -80,10 +98,28 @@ public class PlayerCommands
         }
         else
         {
-            head = ((User)context.getSender()).getItemInHand().clone();
+            inventory = ((User)context.getSender()).getInventory();
+            head = inventory.getItemInHand().clone();
         }
         
+        int amount = head.getAmount();
         head.setAmount( 1 );
+        
+        if( !context.hasArg( 0 ) )
+        {
+            if(inventory != null)
+            {
+                ItemStack item = head.clone();
+                item.setAmount( amount - 1);
+                
+                inventory.setItemInHand( item );
+                if(inventory.getHelmet() != null)
+                {
+                    inventory.addItem( inventory.getHelmet() );
+                }
+            }
+        }
+        
         user.getInventory().setHelmet( head );
         
         user.sendMessage( "fun", "&aYour hat was changed" );        
