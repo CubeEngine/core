@@ -92,9 +92,12 @@ public class VanillaCommands implements CommandHolder
         else
         {
             context.sendMessage("core", "&eReloading the whole server... (this may take some time)");
+            // pre-translate to avoid a NPE
+            final String preTranslated = this.core.getI18n().translate(context.getSender().getLanguage(), "core", "&aThe reload is completed after %d seconds");
+
             Profiler.startProfiling("reload_server");
             this.core.getServer().reload();
-            context.sendMessage("core", "&aThe reload is completed after %d seconds", Profiler.endProfiling("reload_server", SECONDS));
+            context.sendMessage(String.format(preTranslated, Profiler.endProfiling("reload_server", SECONDS)));
         }
     }
 
@@ -296,7 +299,7 @@ public class VanillaCommands implements CommandHolder
     }
 
     // integrate /saveoff and /saveon and provide aliases
-    @Command(names = {"save-all", "saveall"}, min = 0, max = 1, desc = "Saves all or a specific world to disk.", usage = "[world]")
+    @Command(names = {"save-all", "saveall"}, max = 1, desc = "Saves all or a specific world to disk.", usage = "[world]")
     public void saveall(CommandContext context)
     {
         if (context.hasArg(0))
@@ -384,7 +387,7 @@ public class VanillaCommands implements CommandHolder
             this.delegateChild("list");
         }
 
-        @Command(desc = "Adds a player to the whitelist.", usage = "<player>")
+        @Command(desc = "Adds a player to the whitelist.", usage = "<player>", max = 1)
         public void add(CommandContext context)
         {
             if (!context.hasArgs())
@@ -400,12 +403,12 @@ public class VanillaCommands implements CommandHolder
             }
 
             player.setWhitelisted(false);
-            context.sendMessage("core", "&6%s&a is now whitelisted.");
+            context.sendMessage("core", "&2%s&a is now whitelisted.",player.getName());
         }
 
         @Command(names = {
         "remove", "rm"
-        }, desc = "Removes a player from the whitelist.", usage = "<player>")
+        }, desc = "Removes a player from the whitelist.", usage = "<player>", max = 1)
         public void remove(CommandContext context)
         {
             if (!context.hasArgs())
@@ -421,7 +424,7 @@ public class VanillaCommands implements CommandHolder
             }
 
             player.setWhitelisted(false);
-            context.sendMessage("core", "&6%s&a is not whitelisted anymore.");
+            context.sendMessage("core", "&2%s&a is not whitelisted anymore.",player.getName());
         }
 
         @Command(desc = "Lists all the whitelisted players")

@@ -11,7 +11,6 @@ public class CubeThreadFactory implements ThreadFactory
 {
     private final AtomicInteger counter;
     private final ThreadGroup group;
-    private static final AtomicInteger factoryCounter = new AtomicInteger(0);
 
     public CubeThreadFactory(String name)
     {
@@ -22,13 +21,12 @@ public class CubeThreadFactory implements ThreadFactory
     {
         this.group = group;
         this.counter = new AtomicInteger(0);
-        factoryCounter.incrementAndGet();
     }
 
     @Override
     public Thread newThread(Runnable r)
     {
-        final String name = "CubeEngine #" + factoryCounter.get() + " - Thread #" + this.counter.incrementAndGet();
+        final String name = "CubeEngine - Thread #" + this.counter.incrementAndGet();
         CubeEngine.getLogger().log(DEBUG, "Creating thread: {0}", name);
         return new Thread(this.group, r, name);
     }

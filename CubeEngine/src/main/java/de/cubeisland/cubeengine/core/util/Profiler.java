@@ -59,4 +59,12 @@ public class Profiler
     {
         return unit.convert(endProfiling(id), TimeUnit.NANOSECONDS);
     }
+
+    public static void clean()
+    {
+        synchronized (startTimes)
+        {
+            startTimes.clear();
+        }
+    }
 }

@@ -1863,7 +1863,7 @@ public class UserBase implements Player
      * // TODO implement if Bukkit pulled https://github.com/Bukkit/Bukkit/pull/683
      * // return this.offlinePlayer.getLanguage();
      * }
-     * return I18n.SOURCE_LANGUAGE;
+     * return I18n.sourceLanguage;
      * } */
 
     @Override

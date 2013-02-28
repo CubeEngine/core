@@ -29,7 +29,7 @@ import java.util.logging.Logger;
  */
 public class TestCore implements Core
 {
-    private static final Logger LOGGER = Logger.getAnonymousLogger();
+    private final Logger logger = Logger.getAnonymousLogger();
     private ObjectMapper jsonObjectMapper = null;
     private CoreConfiguration config = null;
     private FileManager fileManager = null;
@@ -64,7 +64,7 @@ public class TestCore implements Core
     @Override
     public Logger getCoreLogger()
     {
-        return LOGGER;
+        return this.logger;
     }
 
     @Override
@@ -92,7 +92,7 @@ public class TestCore implements Core
         {
             try
             {
-                this.fileManager = new TestFileManager();
+                this.fileManager = new TestFileManager(this);
             }
             catch (IOException e)
             {

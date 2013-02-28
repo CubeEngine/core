@@ -11,7 +11,6 @@ import java.sql.SQLException;
 import java.util.Locale;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
-import java.util.logging.Logger;
 
 import static de.cubeisland.cubeengine.core.logger.LogLevel.ERROR;
 
@@ -21,7 +20,6 @@ import static de.cubeisland.cubeengine.core.logger.LogLevel.ERROR;
  */
 public abstract class AbstractDatabase implements Database
 {
-    protected static final Logger LOGGER = CubeEngine.getLogger();
     private final ConcurrentMap<String, String> statements = new ConcurrentHashMap<String, String>();
     private final ConcurrentMap<String, PreparedStatement> preparedStatements = new ConcurrentHashMap<String, PreparedStatement>();
     private final AsyncTaskQueue taskQueue = new AsyncTaskQueue(CubeEngine.getTaskManager().getExecutorService());
@@ -73,7 +71,7 @@ public abstract class AbstractDatabase implements Database
                 }
                 catch (SQLException e)
                 {
-                    LOGGER.log(ERROR, "An asynchronous query failed!", e);
+                    CubeEngine.getLogger().log(ERROR, "An asynchronous query failed!", e);
                 }
             }
         });
@@ -100,7 +98,7 @@ public abstract class AbstractDatabase implements Database
                 }
                 catch (SQLException e)
                 {
-                    LOGGER.log(ERROR, "An asynchronous query failed!", e);
+                    CubeEngine.getLogger().log(ERROR, "An asynchronous query failed!", e);
                 }
             }
         });
@@ -133,7 +131,7 @@ public abstract class AbstractDatabase implements Database
                 }
                 catch (SQLException e)
                 {
-                    LOGGER.log(ERROR, "An asynchronous query failed!", e);
+                    CubeEngine.getLogger().log(ERROR, "An asynchronous query failed!", e);
                 }
             }
         });
@@ -161,7 +159,7 @@ public abstract class AbstractDatabase implements Database
                 }
                 catch (SQLException e)
                 {
-                    LOGGER.log(ERROR, "An asynchronous query failed!", e);
+                    CubeEngine.getLogger().log(ERROR, "An asynchronous query failed!", e);
                 }
             }
         });
@@ -224,7 +222,7 @@ public abstract class AbstractDatabase implements Database
                 }
                 catch (SQLException e)
                 {
-                    LOGGER.log(ERROR, "A statement could not be prepared!", e);
+                    CubeEngine.getLogger().log(ERROR, "A statement could not be prepared!", e);
                 }
             }
         }

@@ -297,7 +297,7 @@ public class CubeCommandMap extends SimpleCommandMap
         return true;
     }
 
-    private static final Pattern PATTERN_ON_SPACE = Pattern.compile(" ", Pattern.LITERAL);
+    private final Pattern PATTERN_ON_SPACE = Pattern.compile(" ", Pattern.LITERAL);
 
     @Override
     public List<String> tabComplete(CommandSender sender, String cmdLine)

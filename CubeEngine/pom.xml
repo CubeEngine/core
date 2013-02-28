@@ -19,10 +19,8 @@
         </dependency>
         <dependency>
             <groupId>io.netty</groupId>
-            <!-- new artifact: netty-all -->
-            <artifactId>netty</artifactId>
-            <!-- new version: 4.0.0.Beta1 -->
-            <version>4.0.0.Alpha8</version>
+            <artifactId>netty-all</artifactId>
+            <version>4.0.0.Beta1</version>
             <type>jar</type>
             <scope>compile</scope>
         </dependency>

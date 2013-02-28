@@ -43,7 +43,6 @@ public abstract class CubeCommand extends Command
     private final Map<String, CubeCommand> children;
     protected final List<String> childrenAliases;
     private final ContextFactory contextFactory;
-    private boolean async;
     private boolean loggable;
 
     public CubeCommand(Module module, String name, String description, ContextFactory contextFactory)
@@ -54,7 +53,6 @@ public abstract class CubeCommand extends Command
     public CubeCommand(Module module, String name, String description, String usage, List<String> aliases, ContextFactory contextFactory)
     {
         super(name, description, usage.trim(), aliases);
-        this.async = false;
         if ("?".equals(name))
         {
             throw new IllegalArgumentException("Invalid command name: " + name);
@@ -66,11 +64,6 @@ public abstract class CubeCommand extends Command
         this.children = new THashMap<String, CubeCommand>();
         this.childrenAliases = new ArrayList<String>();
         this.loggable = true;
-    }
-
-    public boolean isAsync()
-    {
-        return this.async;
     }
 
     public void setLoggable(boolean state)

@@ -14,7 +14,6 @@ import java.io.Reader;
 import java.nio.charset.Charset;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.logging.Logger;
 
 import static de.cubeisland.cubeengine.core.logger.LogLevel.ERROR;
 
@@ -24,8 +23,6 @@ import static de.cubeisland.cubeengine.core.logger.LogLevel.ERROR;
  */
 public class FileUtil
 {
-    private static final Logger LOGGER = CubeEngine.getLogger();
-
     /**
      * Reads the file line by line and returns a list of Strings containing all lines
      *
@@ -87,7 +84,7 @@ public class FileUtil
         }
         catch (IOException e)
         {
-            LOGGER.log(ERROR, e.getMessage(), e);
+            CubeEngine.getLogger().log(ERROR, e.getMessage(), e);
         }
         finally
         {

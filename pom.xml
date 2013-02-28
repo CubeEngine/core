@@ -42,7 +42,7 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <minecraftVersion>1.4.7</minecraftVersion>
-        <bukkitVersion>${minecraftVersion}-R0.2-SNAPSHOT</bukkitVersion>
+        <bukkitVersion>${minecraftVersion}-R1.1-SNAPSHOT</bukkitVersion>
         <jdkVersion>1.6</jdkVersion>
     </properties>
   

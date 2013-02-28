@@ -1,6 +1,5 @@
 package de.cubeisland.cubeengine.core.command.reflected;
 
-import de.cubeisland.cubeengine.core.CubeEngine;
 import de.cubeisland.cubeengine.core.command.ArgBounds;
 import de.cubeisland.cubeengine.core.command.CommandContext;
 import de.cubeisland.cubeengine.core.command.CommandFactory;
@@ -23,7 +22,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
-import java.util.logging.Logger;
 
 import static de.cubeisland.cubeengine.core.command.ArgBounds.NO_MAX;
 import static de.cubeisland.cubeengine.core.logger.LogLevel.ERROR;
@@ -31,8 +29,6 @@ import static de.cubeisland.cubeengine.core.util.Misc.arr;
 
 public class ReflectedCommandFactory<T extends CubeCommand> implements CommandFactory<T>
 {
-    private static final Logger LOGGER = CubeEngine.getLogger();
-
     public Class<T> getCommandType()
     {
         return (Class<T>)ReflectedCommand.class;
@@ -43,12 +39,12 @@ public class ReflectedCommandFactory<T extends CubeCommand> implements CommandFa
         return Command.class;
     }
 
-    protected boolean validateSignature(Object holder, Method method)
+    protected boolean validateSignature(Module module, Object holder, Method method)
     {
         Class<?>[] methodParams = method.getParameterTypes();
         if (methodParams.length != 1 || !CommandContext.class.isAssignableFrom(methodParams[0]))
         {
-            LOGGER.log(LogLevel.WARNING, "The method ''{0}.{1}'' does not match the required method signature: public void {2}(CommandContext context)", arr(holder.getClass().getSimpleName(), method.getName(), method.getName()));
+            module.getLogger().log(LogLevel.WARNING, "The method ''{0}.{1}'' does not match the required method signature: public void {2}(CommandContext context)", arr(holder.getClass().getSimpleName(), method.getName(), method.getName()));
             return false;
         }
         return true;
@@ -111,7 +107,7 @@ public class ReflectedCommandFactory<T extends CubeCommand> implements CommandFa
                 }
                 catch (Exception e)
                 {
-                    LOGGER.log(ERROR, "Failed to create the completer '" + completerClass.getName() + "'", e);
+                    module.getLogger().log(ERROR, "Failed to create the completer '" + completerClass.getName() + "'", e);
                 }
             }
 
@@ -120,7 +116,7 @@ public class ReflectedCommandFactory<T extends CubeCommand> implements CommandFa
 
         if (annotation.max() > NO_MAX && annotation.max() < annotation.min())
         {
-            LOGGER.log(ERROR, "{0}.{1}: The the maximum args must not be less than the minimum", arr(holder.getClass().getSimpleName(), method.getName()));
+            module.getLogger().log(ERROR, "{0}.{1}: The the maximum args must not be less than the minimum", arr(holder.getClass().getSimpleName(), method.getName()));
             return null;
         }
         ReflectedCommand cmd = new ReflectedCommand(
@@ -159,7 +155,7 @@ public class ReflectedCommandFactory<T extends CubeCommand> implements CommandFa
             {
                 continue;
             }
-            if (!this.validateSignature(holder, method))
+            if (!this.validateSignature(module, holder, method))
             {
                 continue;
             }

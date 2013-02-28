@@ -1,12 +1,11 @@
 package de.cubeisland.cubeengine.core.webapi;
 
 import de.cubeisland.cubeengine.core.Core;
-import de.cubeisland.cubeengine.core.CubeEngine;
 import de.cubeisland.cubeengine.core.module.Module;
 import de.cubeisland.cubeengine.core.webapi.exception.ApiStartupException;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.Channel;
-import io.netty.channel.socket.nio.NioEventLoopGroup;
+import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import org.apache.commons.lang.Validate;
 
@@ -36,8 +35,8 @@ import static java.util.logging.Level.WARNING;
  */
 public class ApiServer
 {
-    private static final Logger LOGGER = CubeEngine.getLogger();
     private final Core core;
+    private final Logger logger;
     private final AtomicInteger maxContentLength;
     private final AtomicBoolean compress;
     private final AtomicInteger compressionLevel;
@@ -59,6 +58,7 @@ public class ApiServer
     public ApiServer(Core core)
     {
         this.core = core;
+        this.logger = core.getCoreLogger();
         this.bootstrap = new AtomicReference<ServerBootstrap>(null);
         this.channel = new AtomicReference<Channel>(null);
         this.bindAddress = new AtomicReference<InetAddress>(null);
@@ -69,7 +69,7 @@ public class ApiServer
         }
         catch (UnknownHostException ignored)
         {
-            LOGGER.log(WARNING, "Failed to get the localhost!");
+            this.logger.log(WARNING, "Failed to get the localhost!");
         }
         this.port = new AtomicInteger(6561);
         this.maxContentLength = new AtomicInteger(1048576);
@@ -99,7 +99,7 @@ public class ApiServer
         }
         catch (UnknownHostException ignored)
         {
-            LOGGER.log(WARNING, "Failed to resolve the host {0}, ignoring the value...");
+            this.logger.log(WARNING, "Failed to resolve the host {0}, ignoring the value...");
         }
         this.setPort(config.port);
         this.setMaxThreads(config.maxThreads);
@@ -131,7 +131,7 @@ public class ApiServer
             {
                 serverBootstrap.group(new NioEventLoopGroup(this.maxThreads.get()))
                     .channel(NioServerSocketChannel.class)
-                    .childHandler(new ApiServerIntializer(this.core, this))
+                    .childHandler(new ApiServerInitializer(this.core, this))
                     .localAddress(this.bindAddress.get(), this.port.get());
 
                 this.bootstrap.set(serverBootstrap);

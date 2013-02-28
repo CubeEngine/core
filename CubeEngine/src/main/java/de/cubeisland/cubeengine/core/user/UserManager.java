@@ -61,7 +61,7 @@ public class UserManager extends SingleKeyStorage<Long, User> implements Cleanab
     private final Server server;
     private final ScheduledExecutorService executor;
     private static final int REVISION = 3;
-    public static String salt;
+    public static String salt; // TODO not acceptable!
 
     public UserManager(final Core core)
     {
@@ -459,8 +459,8 @@ public class UserManager extends SingleKeyStorage<Long, User> implements Cleanab
     private void onQuit(final PlayerQuitEvent event)
     {
         Player player = event.getPlayer();
-        final User user = getExactUser(player);
-        user.removalTaskId = event.getPlayer().getServer().getScheduler().scheduleSyncDelayedTask((Plugin)core, new Runnable()
+        final User user = this.getExactUser(player);
+        user.removalTaskId = event.getPlayer().getServer().getScheduler().scheduleSyncDelayedTask((Plugin)this.core, new Runnable()
         {
             @Override
             public void run()

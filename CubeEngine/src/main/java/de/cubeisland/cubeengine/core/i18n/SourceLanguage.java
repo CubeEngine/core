@@ -11,29 +11,14 @@ import java.util.Map;
  */
 public final class SourceLanguage implements Language
 {
-    private static SourceLanguage INSTANCE = null;
     private final String code = "en_US";
     private final Locale locale = Locale.US;
     private final String name = "English";
     private final String localName = "English";
     private final Map<String, Map<String, String>> messages = new THashMap<String, Map<String, String>>();
 
-    private SourceLanguage()
-    {
-        if (INSTANCE != null)
-        {
-            throw new IllegalStateException("The source language was already created!");
-        }
-    }
-
-    public static SourceLanguage getInstance()
-    {
-        if (INSTANCE == null)
-        {
-            INSTANCE = new SourceLanguage();
-        }
-        return INSTANCE;
-    }
+    SourceLanguage()
+    {}
 
     @Override
     public String getCode()

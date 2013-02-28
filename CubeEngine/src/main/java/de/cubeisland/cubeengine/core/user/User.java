@@ -367,6 +367,7 @@ public class User extends UserBase implements LinkingModel<Long>, CommandSender
 
     public void setPassword(String password)
     {
+        // TODO all the password logic should be moved to the user manager I'd say
         synchronized (hasher)
         {
             hasher.reset();

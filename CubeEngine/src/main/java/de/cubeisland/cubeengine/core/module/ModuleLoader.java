@@ -11,7 +11,6 @@ import de.cubeisland.cubeengine.core.module.exception.IncompatibleDependencyExce
 import de.cubeisland.cubeengine.core.module.exception.InvalidModuleException;
 import de.cubeisland.cubeengine.core.module.exception.MissingDependencyException;
 import de.cubeisland.cubeengine.core.storage.Registry;
-import de.cubeisland.cubeengine.core.logger.ModuleLogger;
 import gnu.trove.set.hash.THashSet;
 import org.apache.commons.lang.Validate;
 
