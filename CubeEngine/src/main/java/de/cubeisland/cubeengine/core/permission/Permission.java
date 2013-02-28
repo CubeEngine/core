@@ -7,6 +7,8 @@ import org.bukkit.permissions.Permissible;
  */
 public interface Permission
 {
+    public static final String BASE = "cubeengine.";
+
     /**
      * Checks whether the given Permissible is authorized with this permission
      *

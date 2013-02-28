@@ -579,9 +579,33 @@ public class User extends UserBase implements LinkingModel<Long>, CommandSender
         return null;
     }
 
-    public boolean equals(OfflinePlayer player)
+    @Override
+    public boolean equals(Object o)
     {
-        return this.offlinePlayer.equals(player);
+        if (this == o)
+        {
+            return true;
+        }
+        else if (o instanceof OfflinePlayer)
+        {
+            return this.offlinePlayer.equals(o);
+        }
+        else if (o instanceof CommandSender)
+        {
+            return ((CommandSender)o).getName().equals(this.getName());
+        }
+        else if (o instanceof org.bukkit.command.CommandSender)
+        {
+            return ((org.bukkit.command.CommandSender)o).getName().equals(this.getName());
+        }
+
+        return false;
+    }
+
+    @Override
+    public int hashCode()
+    {
+        return this.offlinePlayer.hashCode();
     }
 
     private InetSocketAddress address = null;

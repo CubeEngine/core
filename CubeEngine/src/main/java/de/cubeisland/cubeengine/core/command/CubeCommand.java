@@ -343,6 +343,10 @@ public abstract class CubeCommand extends Command
                     return child.execute(sender, Arrays.copyOfRange(args, 1, args.length), args[0], labels);
                 }
             }
+            if (!this.testPermissionSilent(sender))
+            {
+                throw new PermissionDeniedException();
+            }
             final CommandContext ctx = this.getContextFactory().parse(this, sender, labels, args);
             CommandResult result = this.run(ctx);
             if (result != null)

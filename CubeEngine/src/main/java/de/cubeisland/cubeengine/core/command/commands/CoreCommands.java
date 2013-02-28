@@ -134,7 +134,7 @@ public class CoreCommands extends ContainerCommand
         }
     }
 
-    @Command(desc = "Loggs you in with your password!", usage = "<password>", min = 1, max = 1, permDefault = PermDefault.TRUE)
+    @Command(desc = "Logs you in with your password!", usage = "<password>", min = 1, max = 1, permDefault = PermDefault.TRUE)
     public void login(CommandContext context)
     {
         CommandSender sender = context.getSender();

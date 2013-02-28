@@ -17,6 +17,12 @@ public class TestConsoleSender implements CommandSender
     }
 
     @Override
+    public String getDisplayName()
+    {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
     public boolean isAuthorized(Permission perm)
     {
         return false; //To change body of implemented methods use File | Settings | File Templates.

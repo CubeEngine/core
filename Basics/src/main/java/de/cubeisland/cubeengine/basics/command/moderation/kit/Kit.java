@@ -174,6 +174,7 @@ public class Kit
 
     private static class KitCommandSender implements CommandSender
     {
+        private static final String NAME_PREFIX = "Kit:";
         private final User user;
 
         public KitCommandSender(User user)
@@ -225,7 +226,13 @@ public class Kit
         @Override
         public String getName()
         {
-            return "Kit:" + this.user.getName();
+            return NAME_PREFIX + this.user.getName();
+        }
+
+        @Override
+        public String getDisplayName()
+        {
+            return NAME_PREFIX + this.user.getDisplayName();
         }
 
         @Override

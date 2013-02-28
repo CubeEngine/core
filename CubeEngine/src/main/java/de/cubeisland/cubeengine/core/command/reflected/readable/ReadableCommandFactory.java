@@ -63,8 +63,18 @@ public class ReadableCommandFactory extends ReflectedCommandFactory<ReadableComm
             annotation.usage(),
             aliases,
             pattern
-            );
+        );
         cmd.setLoggable(annotation.loggable());
+        if (annotation.checkPerm())
+        {
+            String node = annotation.permNode();
+            if (node == null || node.isEmpty())
+            {
+                node = this.generatePermission(module, cmd);
+            }
+            module.getCore().getPermissionManager().registerPermission(module, node, annotation.permDefault());
+            cmd.setPermission(node);
+        }
         return cmd;
     }
 }

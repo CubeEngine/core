@@ -6,6 +6,8 @@ public interface CommandSender extends org.bukkit.command.CommandSender
 {
     String getName();
 
+    String getDisplayName();
+
     boolean isAuthorized(Permission perm);
 
     String getLanguage();

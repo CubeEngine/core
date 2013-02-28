@@ -27,6 +27,12 @@ public class WrappedCommandSender implements CommandSender
     }
 
     @Override
+    public String getDisplayName()
+    {
+        return this.getName();
+    }
+
+    @Override
     public boolean isAuthorized(Permission perm)
     {
         return this.wrapped.hasPermission(perm.getPermission());
@@ -143,5 +149,30 @@ public class WrappedCommandSender implements CommandSender
     public org.bukkit.command.CommandSender getWrappedSender()
     {
         return this.wrapped;
+    }
+
+    @Override
+    public boolean equals(Object o)
+    {
+        if (this == o)
+        {
+            return true;
+        }
+        if (o instanceof WrappedCommandSender)
+        {
+            return ((WrappedCommandSender)o).getName().equals(this.wrapped.getName());
+        }
+        else if (o instanceof org.bukkit.command.CommandSender)
+        {
+            return ((org.bukkit.command.CommandSender)o).getName().equals(this.wrapped.getName());
+        }
+
+        return false;
+    }
+
+    @Override
+    public int hashCode()
+    {
+        return this.wrapped.hashCode();
     }
 }

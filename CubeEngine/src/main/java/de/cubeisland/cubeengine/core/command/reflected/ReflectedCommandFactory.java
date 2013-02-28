@@ -12,6 +12,7 @@ import de.cubeisland.cubeengine.core.command.parameterized.Param;
 import de.cubeisland.cubeengine.core.command.parameterized.ParameterizedContextFactory;
 import de.cubeisland.cubeengine.core.logger.LogLevel;
 import de.cubeisland.cubeengine.core.module.Module;
+import de.cubeisland.cubeengine.core.permission.Permission;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
@@ -48,6 +49,11 @@ public class ReflectedCommandFactory<T extends CubeCommand> implements CommandFa
             return false;
         }
         return true;
+    }
+
+    protected String generatePermission(Module module, CubeCommand command)
+    {
+        return Permission.BASE + module.getId() + ".command." + command.getName();
     }
 
     @SuppressWarnings("unchecked")
@@ -130,6 +136,16 @@ public class ReflectedCommandFactory<T extends CubeCommand> implements CommandFa
             this.createContext(new ArgBounds(annotation.min(), annotation.max()), flags, params)
         );
         cmd.setLoggable(annotation.loggable());
+        if (annotation.checkPerm())
+        {
+            String node = annotation.permNode();
+            if (node == null || node.isEmpty())
+            {
+                node = this.generatePermission(module, cmd);
+            }
+            module.getCore().getPermissionManager().registerPermission(module, node, annotation.permDefault());
+            cmd.setPermission(node);
+        }
         return (T)cmd;
     }
 

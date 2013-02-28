@@ -243,7 +243,7 @@ public class VanillaCommands implements CommandHolder
             return;
         }
 
-        if (!sender.equals(offlinePlayer) && !CorePerms.COMMAND_DEOP_OTHER.isAuthorized(sender))
+        if (!sender.getName().equals(offlinePlayer.getName()) && !CorePerms.COMMAND_DEOP_OTHER.isAuthorized(sender))
         {
             sender.sendMessage("core", "&cYou are not allowed to deop others!");
             return;
@@ -260,7 +260,7 @@ public class VanillaCommands implements CommandHolder
         {
             user.sendMessage("core", "&aYou were deopped by &2%s&a.", context.getSender().getName());
         }
-        context.sendMessage("core", "&2%s &ais no operator anymore!", offlinePlayer.getName());
+        context.sendMessage("core", "&2%s&a is no operator anymore!", offlinePlayer.getName());
 
         for (User onlineUser : this.core.getUserManager().getOnlineUsers())
         {
