@@ -134,17 +134,25 @@ public class RocketCommand
 
         public void removeInstance(User user)
         {
+            RocketCMDInstance trash = null;
+            
             for (RocketCMDInstance instance : instances)
             {
                 if (instance.getName().equals(user.getName()))
                 {
-                    this.instances.remove(instance);
+                    trash = instance;
+                    break;
+                }
+            }
+            
+            if(trash != null)
+            {
+                this.instances.remove(trash);
 
-                    if (instances.isEmpty())
-                    {
-                        module.getTaskManger().cancelTask(module, taskId);
-                        taskId = -1;
-                    }
+                if (instances.isEmpty())
+                {
+                    module.getTaskManger().cancelTask(module, taskId);
+                    taskId = -1;
                 }
             }
         }
