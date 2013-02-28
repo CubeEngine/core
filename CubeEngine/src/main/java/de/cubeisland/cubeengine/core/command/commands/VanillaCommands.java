@@ -209,7 +209,7 @@ public class VanillaCommands implements CommandHolder
         {
             user.sendMessage("core", "&aYou were opped by &2%s&a.", context.getSender().getName());
         }
-        context.sendMessage("core", "&2%s &ais now an operator!", offlinePlayer.getPlayer().getName());
+        context.sendMessage("core", "&2%s &ais now an operator!", offlinePlayer.getName());
 
         for (User onlineUser : this.core.getUserManager().getOnlineUsers())
         {
@@ -260,7 +260,7 @@ public class VanillaCommands implements CommandHolder
         {
             user.sendMessage("core", "&aYou were deopped by &2%s&a.", context.getSender().getName());
         }
-        context.sendMessage("core", "&2%s &ais no operator anymore!", offlinePlayer.getPlayer().getName());
+        context.sendMessage("core", "&2%s &ais no operator anymore!", offlinePlayer.getName());
 
         for (User onlineUser : this.core.getUserManager().getOnlineUsers())
         {
