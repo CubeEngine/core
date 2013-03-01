@@ -359,14 +359,13 @@ public class InformationCommands
         //TPS:
         float tps = this.basics.getLagTimer().getAverageTPS();
         String color = tps == 20 ? "&a" : tps > 17 ? "&e" : tps > 10 ? "&c" : "&4";
-        context.sendMessage("basics", "&6Current TPS: %s%.1f", color, tps);
+        color = ChatFormat.parseFormats(color);
+        context.sendMessage("basics", "&6Current TPS: %.1f", color, tps);
         //Memory
         long memUse = ManagementFactory.getMemoryMXBean().getHeapMemoryUsage().getUsed() / 1048576;
         long memCom = ManagementFactory.getMemoryMXBean().getHeapMemoryUsage().getCommitted() / 1048576;
         long memMax = ManagementFactory.getMemoryMXBean().getHeapMemoryUsage().getMax() / 1048576;
         String memused;
-        String memcommited = "&e" + memCom;
-        String memmax = "&e" + memMax;
         long memUsePercent = 100 * memUse / memMax;
         if (memUsePercent > 90)
         {
@@ -388,7 +387,8 @@ public class InformationCommands
             memused = "&a";
         }
         memused += memUse;
-        context.sendMessage("basics", "&6Memory Usage: %s&f/%s&f/%s MB", memused, memcommited, memmax);
+        memused = ChatFormat.parseFormats(memused);
+        context.sendMessage("basics", "&6Memory Usage: %s&f/&e%d&f/&e%d MB", memused, memCom, memMax);
         //Worlds with loaded Chunks / Entities
         for (World world : Bukkit.getServer().getWorlds())
         {
@@ -396,7 +396,6 @@ public class InformationCommands
             int loadedChunks = world.getLoadedChunks().length;
             int entities = world.getEntities().size();
             context.sendMessage("basics", "&6%s &e(&2%s&e)&6: &e%d &6chunks &e%d &6entities", world.getName(), type, loadedChunks, entities);
-
         }
     }
 
