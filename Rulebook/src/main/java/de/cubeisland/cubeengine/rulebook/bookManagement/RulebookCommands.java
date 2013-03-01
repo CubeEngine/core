@@ -105,7 +105,6 @@ public class RulebookCommands extends ContainerCommand
 
         TIntSet books = this.inventoryRulebookSearching( target.getInventory(), language );
 
-        context.sendMessage( books.size() + " Buecher" );
         TIntIterator iter = books.iterator();
         while( iter.hasNext() )
         {
