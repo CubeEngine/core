@@ -180,7 +180,6 @@ public class RoleManager
         {
             return; // Roles are calculated!
         }
-        user.removeAttribute(module, "roleContainer");
         TLongObjectHashMap<List<Role>> userRolesPerWorld = new TLongObjectHashMap<List<Role>>();
         for (WorldRoleProvider provider : this.getProviders())
         {

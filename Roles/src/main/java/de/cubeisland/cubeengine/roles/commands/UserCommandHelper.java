@@ -64,15 +64,8 @@ public class UserCommandHelper extends ContainerCommand
         TLongObjectHashMap<UserSpecificRole> roleContainer = user.getAttribute(this.getModule(), "roleContainer");
         if (roleContainer == null)
         {
-            if (user.isOnline())
-            {
-                throw new IllegalStateException("User has no rolecontainer!");
-            }
-            else
-            {
-                this.manager.preCalculateRoles(user.getName(), true);
-                roleContainer = user.getAttribute(this.getModule(), "roleContainer");
-            }
+            this.manager.preCalculateRoles(user, true);
+            roleContainer = user.getAttribute(this.getModule(), "roleContainer");
         }
         return roleContainer.get(worldId);
     }
