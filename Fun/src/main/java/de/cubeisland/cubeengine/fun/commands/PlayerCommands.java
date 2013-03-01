@@ -10,7 +10,6 @@ import de.cubeisland.cubeengine.core.util.matcher.Match;
 import de.cubeisland.cubeengine.fun.Fun;
 import de.cubeisland.cubeengine.fun.FunPerm;
 import org.bukkit.Location;
-import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -49,7 +48,8 @@ public class PlayerCommands
         User user;
         ItemStack head;
         boolean console = false;
-        PlayerInventory inventory = null;
+        PlayerInventory senderInventory = null;
+        PlayerInventory userInventory = null;
         
         if(!(context.getSender() instanceof User))
         {
@@ -102,29 +102,28 @@ public class PlayerCommands
         }
         else
         {
-            inventory = ((User)context.getSender()).getInventory();
-            head = inventory.getItemInHand().clone();
+            senderInventory = ((User)context.getSender()).getInventory();
+            head = senderInventory.getItemInHand().clone();
         }
+        
+        userInventory = user.getInventory();
         
         int amount = head.getAmount();
         head.setAmount( 1 );
         
-        if( !context.hasArg( 0 ) )
+        if( !context.hasArg( 0 ) && senderInventory != null)
         {
-            if(inventory != null)
-            {
-                ItemStack item = head.clone();
-                item.setAmount( amount - 1);
-                
-                inventory.setItemInHand( item );
-                if(user.getInventory().getHelmet() != null)
-                {
-                    inventory.addItem( user.getInventory().getHelmet() );
-                }
-            }
+            ItemStack item = head.clone();
+            item.setAmount( amount - 1);
+
+            senderInventory.setItemInHand( item );
+        }
+        if(userInventory.getHelmet() != null)
+        {
+            userInventory.addItem( userInventory.getHelmet() );
         }
         
-        user.getInventory().setHelmet( head );
+        userInventory.setHelmet( head );
         
         if( !(context.hasFlag("q") && FunPerm.COMMAND_HAT_QUIET.isAuthorized(context.getSender()) ) && FunPerm.COMMAND_HAT_NOTIFY.isAuthorized( user ) )
         {
