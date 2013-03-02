@@ -7,6 +7,9 @@ import de.cubeisland.cubeengine.core.user.User;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class InventoryGuardFactory
 {
     public InventoryGuardFactory(Core core)
@@ -52,27 +55,40 @@ public class InventoryGuardFactory
     }
 
     /**
-     * Blocks every action that puts any of given items into the top inventory
+     * Blocks every action that puts any of given items into the top inventory.
+     * <p>To only block an item over a certain amount use notBlockPutIn(...)
      *
      * @param items
      * @return fluent interface
      */
     public InventoryGuardFactory blockPutIn(ItemStack... items)
     {
-        this.currentGuardConfig.get().filter(true, true, items);
+        List<GuardedItemStack> list = new ArrayList<GuardedItemStack>();
+        for (ItemStack item : items)
+        {
+            list.add(new GuardedItemStack(item,item.getAmount()));
+        }
+        this.currentGuardConfig.get().filter(true, true, list);
         return this;
 
     }
 
     /**
-     * Does not block an action that puts any of given items into the top inventory
+     * Does not block an action that puts any of given items into the top inventory.
+     * <p>The amount of the ItemStack is the maximum amount that will be allowed in the inventory.
+     * <p>Use 0 as amount to always allow to put in given item.
      *
      * @param items
      * @return fluent interface
      */
     public InventoryGuardFactory notBlockPutIn(ItemStack... items)
     {
-        this.currentGuardConfig.get().filter(true, false, items);
+        List<GuardedItemStack> list = new ArrayList<GuardedItemStack>();
+        for (ItemStack item : items)
+        {
+            list.add(new GuardedItemStack(item,item.getAmount()));
+        }
+        this.currentGuardConfig.get().filter(true, false, list);
         return this;
     }
 
@@ -88,26 +104,37 @@ public class InventoryGuardFactory
     }
 
     /**
-     * Blocks every action that takes any of given items out of the top inventory
+     * Blocks every action that takes any of given items out of the top inventory.
      *
      * @param items
      * @return fluent interface
      */
     public InventoryGuardFactory blockTakeOut(ItemStack... items)
     {
-        this.currentGuardConfig.get().filter(false, true, items);
+        List<GuardedItemStack> list = new ArrayList<GuardedItemStack>();
+        for (ItemStack item : items)
+        {
+            list.add(new GuardedItemStack(item,item.getAmount()));
+        }
+        this.currentGuardConfig.get().filter(false, true, list);
         return this;
     }
 
     /**
-     * Does not block an action that puts any of given items into the top inventory
+     * Does not block an action that puts any of given items into the top inventory.
+     * <p>The amount of the ItemStack is the minimum amount of that item that has to remain in the inventory.
      *
      * @param items
      * @return fluent interface
      */
     public InventoryGuardFactory notBlockTakeOut(ItemStack... items)
     {
-        this.currentGuardConfig.get().filter(false, false, items);
+        List<GuardedItemStack> list = new ArrayList<GuardedItemStack>();
+        for (ItemStack item : items)
+        {
+            list.add(new GuardedItemStack(item,item.getAmount()));
+        }
+        this.currentGuardConfig.get().filter(false, false, list);
         return this;
     }
 

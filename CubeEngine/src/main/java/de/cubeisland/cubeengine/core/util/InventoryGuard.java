@@ -25,10 +25,10 @@ public class InventoryGuard implements Listener
     private boolean blockAllIn = false;
     private boolean blockAllOut = false;
 
-    private HashSet<ItemStack> blockIn = new HashSet<ItemStack>();
-    private HashSet<ItemStack> blockOut = new HashSet<ItemStack>();
-    private HashSet<ItemStack> noBlockIn = new HashSet<ItemStack>();
-    private HashSet<ItemStack> noBlockOut = new HashSet<ItemStack>();
+    private HashSet<GuardedItemStack> blockIn = new HashSet<GuardedItemStack>();
+    private HashSet<GuardedItemStack> blockOut = new HashSet<GuardedItemStack>();
+    private HashSet<GuardedItemStack> noBlockIn = new HashSet<GuardedItemStack>();
+    private HashSet<GuardedItemStack> noBlockOut = new HashSet<GuardedItemStack>();
     private HashSet<Runnable> onClose = new HashSet<Runnable>();
     private HashSet<Runnable> onChange = new HashSet<Runnable>();
 
@@ -64,9 +64,8 @@ public class InventoryGuard implements Listener
         }
     }
 
-    public void filter(boolean in, boolean block, ItemStack[] items)
+    public void filter(boolean in, boolean block, List<GuardedItemStack> list)
     {
-        List<ItemStack> list = Arrays.asList(items);
         if (in)
         {
             if (block)
@@ -140,19 +139,19 @@ public class InventoryGuard implements Listener
                 boolean clickTop = event.getRawSlot() < event.getInventory().getSize();
 
                 if ((!clickTop && event.isShiftClick()) // shift-click bot
-                    || (clickTop && (cursor != null && cursor.getTypeId() != 0))) // click top with item on cursor
+                    || (clickTop && !event.isShiftClick() && (cursor != null && cursor.getTypeId() != 0))) // click top with item on cursor (but not shift->out)
                 {// -> PutIntoTop
                     if (this.blockAllIn) // block in
                     {
-                        if (clickTop && this.hasAllowIn(cursor)) // except topClick allowIn on cursor AND ...
+                        if (clickTop && this.hasAllowIn(cursor,clickTop,event.isRightClick())) // except topClick allowIn on cursor AND ...
                         {
-                            if (invent == null || invent.getTypeId() == 0 || this.hasAllowOut(invent)) // no out OR allow out
+                            if (invent == null || invent.getTypeId() == 0 || this.hasAllowOut(invent, cursor, event.isShiftClick(), event.isLeftClick())) // no out OR allow out
                             {
                                 this.runOnChange();
                                 return;
                             }
                         }
-                        else if (!clickTop && this.hasAllowIn(invent)) // except botClick (and shift) and allow in that item
+                        else if (!clickTop && this.hasAllowIn(invent,clickTop,event.isRightClick())) // except botClick (and shift) and allow in that item
                         {
                             this.runOnChange();
                             return;
@@ -162,7 +161,7 @@ public class InventoryGuard implements Listener
                     {
                         if (!this.hasDenyIn(cursor))
                         {
-                            if (invent == null || invent.getTypeId() == 0 || this.hasAllowOut(invent)) // no out OR allow out
+                            if (invent == null || invent.getTypeId() == 0 || this.hasAllowOut(invent, cursor, event.isShiftClick(), event.isLeftClick())) // no out OR allow out
                             {
                                 this.runOnChange();
                                 return;
@@ -178,7 +177,7 @@ public class InventoryGuard implements Listener
                     // exchange is already handled above
                     if (this.blockAllOut)
                     {
-                        if (this.hasAllowOut(invent))
+                        if (this.hasAllowOut(invent, cursor, event.isShiftClick(), event.isLeftClick()))
                         {
                             this.runOnChange();
                             return;
@@ -210,9 +209,9 @@ public class InventoryGuard implements Listener
 
     private boolean hasDenyOut(ItemStack itemStack)
     {
-        for (ItemStack item : this.blockOut)
+        for (GuardedItemStack guardedItem : this.blockOut)
         {
-            if (item.isSimilar(itemStack))
+            if (guardedItem.item.isSimilar(itemStack))
                 return true;
         }
         return false;
@@ -220,30 +219,72 @@ public class InventoryGuard implements Listener
 
     private boolean hasDenyIn(ItemStack itemStack)
     {
-        for (ItemStack item : this.blockIn)
+        for (GuardedItemStack guardedItem : this.blockIn)
         {
-            if (item.isSimilar(itemStack))
+            if (guardedItem.item.isSimilar(itemStack))
+            {
                 return true;
+            }
         }
         return false;
     }
 
-    private boolean hasAllowIn(ItemStack itemStack)
+    private boolean hasAllowIn(ItemStack itemStack, boolean clickTop, boolean rightClick)
     {
-        for (ItemStack item : this.noBlockIn)
+        for (GuardedItemStack guardedItem : this.noBlockIn)
         {
-            if (item.isSimilar(itemStack))
-                return true;
+            if (guardedItem.item.isSimilar(itemStack))
+            {
+                if (guardedItem.amount == 0)
+                {
+                    return true;
+                }
+                int amountIn = InventoryUtil.getAmountOf(this.inventory,itemStack);
+                if (clickTop)
+                {
+                    if (rightClick)
+                    {
+                        return amountIn + 1 <= guardedItem.amount;
+                    }
+                    else
+                    {
+                        return amountIn + itemStack.getAmount() <= guardedItem.amount;
+                        //TODO handle if filling up stack in inventory would not go over the limited amount
+                    }
+                }
+                else
+                {
+                    return amountIn + itemStack.getAmount() <= guardedItem.amount;
+                }
+            }
         }
         return false;
     }
 
-    private boolean hasAllowOut(ItemStack itemStack)
+    private boolean hasAllowOut(ItemStack itemStack, ItemStack cursor, boolean shift, boolean leftClick)
     {
-        for (ItemStack item : this.noBlockOut)
+        for (GuardedItemStack guardedItem : this.noBlockOut)
         {
-            if (item.isSimilar(itemStack))
+            if (guardedItem.item.isSimilar(itemStack))
+            {
                 return true;
+            }
+            int amountIn = InventoryUtil.getAmountOf(this.inventory,itemStack);
+            if (cursor == null || cursor.getTypeId() == 0)
+            {
+                if (shift || leftClick)
+                {
+                    return amountIn - itemStack.getAmount() >= guardedItem.amount;
+                }
+                else if (!leftClick)
+                {
+                    return amountIn - ((itemStack.getAmount()+1)/2) >= guardedItem.amount; //TODO check if this is the right amount
+                }
+            }
+            else
+            {
+                return amountIn - itemStack.getAmount() >= guardedItem.amount;
+            }
         }
         return false;
     }
