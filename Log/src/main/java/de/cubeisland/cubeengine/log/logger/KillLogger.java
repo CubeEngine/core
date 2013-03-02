@@ -55,36 +55,31 @@ public class KillLogger extends Logger<KillConfig>
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onEntityDeath(EntityDeathEvent event)
     {
-        if (event.getEntity() instanceof LivingEntity)
+        LivingEntity entity = event.getEntity();
+        EntityDamageEvent dmgEvent = entity.getLastDamageCause();
+        if (dmgEvent == null)
         {
-            LivingEntity entity = (LivingEntity)event.getEntity();
-            EntityDamageEvent dmgEvent = entity.getLastDamageCause();
-
-            if (dmgEvent == null)
+            return; // squids dying in air, lazy bukkit :S
+        }
+        if (dmgEvent instanceof EntityDamageByEntityEvent)
+        {
+            Entity damager = ((EntityDamageByEntityEvent)dmgEvent).getDamager();
+            if (dmgEvent.getCause().equals(DamageCause.PROJECTILE) && damager instanceof Projectile)
             {
-                System.out.println("No Damage but dead!?");
-                return;
-            }
-            if (dmgEvent instanceof EntityDamageByEntityEvent)
-            {
-                Entity damager = ((EntityDamageByEntityEvent)dmgEvent).getDamager();
-                if (dmgEvent.getCause().equals(DamageCause.PROJECTILE) && damager instanceof Projectile)
+                if (((Projectile)damager).getShooter() != null)
                 {
-                    if (((Projectile)damager).getShooter() != null)
-                    {
-                        this.logKill(dmgEvent.getCause(), ((Projectile)damager).getShooter(), event.getEntity(), event.getEntity().getLocation());
-                    }
-                    // else Projectile shot by Dispenser ?
+                    this.logKill(dmgEvent.getCause(), ((Projectile)damager).getShooter(), event.getEntity(), event.getEntity().getLocation());
                 }
-                else
-                {
-                    this.logKill(dmgEvent.getCause(), damager, event.getEntity(), event.getEntity().getLocation());
-                }
+                // else Projectile shot by Dispenser ?
             }
             else
             {
-                this.logKill(dmgEvent.getCause(), null, event.getEntity(), event.getEntity().getLocation());
+                this.logKill(dmgEvent.getCause(), damager, event.getEntity(), event.getEntity().getLocation());
             }
+        }
+        else
+        {
+            this.logKill(dmgEvent.getCause(), null, event.getEntity(), event.getEntity().getLocation());
         }
     }
 
