@@ -394,9 +394,13 @@ public class PlayerCommands
                     }
                 }
             }
+
             if (killed.isEmpty())
             {
-                context.sendMessage("basics", "&eCould not find any of those users to kill!");
+                if (names.length != 1)
+                {
+                    context.sendMessage("basics", "&eCould not kill any of given users!");
+                }
                 return;
             }
             context.sendMessage("basics", "&aYou killed &2%s&a!", StringUtils.implode(",",killed));
