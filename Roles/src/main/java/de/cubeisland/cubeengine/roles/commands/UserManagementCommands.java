@@ -5,6 +5,7 @@ import de.cubeisland.cubeengine.core.command.reflected.Alias;
 import de.cubeisland.cubeengine.core.command.parameterized.ParameterizedContext;
 import de.cubeisland.cubeengine.core.command.reflected.Command;
 import de.cubeisland.cubeengine.core.command.parameterized.Param;
+import de.cubeisland.cubeengine.core.logger.LogLevel;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.roles.Roles;
 import de.cubeisland.cubeengine.roles.role.Role;
@@ -33,12 +34,13 @@ public class UserManagementCommands extends UserCommandHelper
         World world = this.getWorld(context);
         long worldId = this.getModule().getCore().getWorldManager().getWorldId(world);
         String roleName = context.getString(0);
-        Role role = this.manager.getProvider(worldId).getRole(roleName);
+        Role role = this.manager.getRoleInWorld(worldId,roleName);
         if (role == null)
         {
             context.sendMessage("roles", "&eCould not find the role &6%s &ein &6%s&e.", roleName, world.getName());
             return;
         }
+        this.module.getLogger().log(LogLevel.DEBUG,"Role added: "+ role.getName() + " -> " + user.getName());
         if (this.manager.addRoles(user, user.getPlayer(), worldId, role))
         {
             context.sendMessage("roles", "&aAdded the role &6%s&a to &2%s&a in &6%s&a.", roleName, user.getName(), world.getName());

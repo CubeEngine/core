@@ -4,12 +4,13 @@ import de.cubeisland.cubeengine.core.storage.SingleKeyStorage;
 import de.cubeisland.cubeengine.core.storage.database.Database;
 import gnu.trove.map.hash.THashMap;
 import gnu.trove.map.hash.TLongObjectHashMap;
+import org.bukkit.Bukkit;
+import org.bukkit.World;
+
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-import org.bukkit.Bukkit;
-import org.bukkit.World;
 
 public class WorldManager extends SingleKeyStorage<Long, WorldModel>
 {
@@ -50,10 +51,17 @@ public class WorldManager extends SingleKeyStorage<Long, WorldModel>
         }
     }
 
-    public Long getWorldId(World world)
+    public long getWorldId(World world)
     {
         WorldModel model = this.worlds.get(world);
-        return model == null ? null : model.key;
+        if (model == null)
+        {
+            model = new WorldModel(world);
+            this.store(model);
+            this.worlds.put(world,model);
+            this.worldIds.put(model.key,world);
+        }
+        return model.key;
     }
 
     public Long getWorldId(String worldName)

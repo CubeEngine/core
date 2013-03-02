@@ -1,10 +1,10 @@
 package de.cubeisland.cubeengine.roles.role;
 
 import de.cubeisland.cubeengine.core.config.Configuration;
+import de.cubeisland.cubeengine.core.logger.LogLevel;
 import de.cubeisland.cubeengine.core.storage.world.WorldManager;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.util.Pair;
-import de.cubeisland.cubeengine.core.logger.LogLevel;
 import de.cubeisland.cubeengine.roles.Roles;
 import de.cubeisland.cubeengine.roles.role.config.RoleMirror;
 import de.cubeisland.cubeengine.roles.storage.AssignedRole;
@@ -112,6 +112,7 @@ public class RoleManager
                 if (worlds.get(worldId).getLeft()) // Roles are mirrored add to provider...
                 {
                     this.providers.put(worldId, provider);
+                    this.module.getLogger().log(LogLevel.DEBUG,"loading role-provider for "+worldManager.getWorld(worldId).getName());
                 }
             }
         }
@@ -120,6 +121,7 @@ public class RoleManager
             if (this.getProvider(worldId) == null)
             {
                 this.providers.put(worldId, new WorldRoleProvider(module, worldId));
+                this.module.getLogger().log(LogLevel.DEBUG,"loading missing role-provider for "+worldManager.getWorld(worldId).getName());
             }
         }
     }
@@ -221,12 +223,13 @@ public class RoleManager
         User user = this.module.getUserManager().getExactUser(player);
         if (!Bukkit.getServer().getOnlineMode() && this.module.getConfiguration().doNotAssignPermIfOffline && !user.isLoggedIn())
         {
-            user.sendMessage("roles", "&cPermissions not applied! Contact an Admin if you think this is an error.");
+            user.sendMessage("roles", "&cThe server is currently running in offline-mode. Permissions will not be applied until logging in! Contact an Admin if you think this is an error.");
             this.module.getLogger().warning("Role-permissions not applied! Server is running in unsecured offline-mode!");
             return;
         }
-        TLongObjectHashMap<MergedRole> roleContainer = user.getAttribute(module, "roleContainer");
-        MergedRole role = roleContainer.get(worldId);
+        this.module.getLogger().log(LogLevel.DEBUG,"User-role set: "+ user.getName());
+        TLongObjectHashMap<UserSpecificRole> roleContainer = user.getAttribute(module, "roleContainer");
+        UserSpecificRole role = roleContainer.get(worldId);
         if (role.getParentRoles().isEmpty())
         {
             Set<Role> roles = this.getProvider(worldId).getDefaultRoles();
@@ -247,6 +250,11 @@ public class RoleManager
     public boolean addRoles(User user, Player player, long worldId, Role... roles)
     {
         TLongObjectHashMap<UserSpecificRole> roleContainer = user.getAttribute(module, "roleContainer");
+        if (roleContainer == null)
+        {
+            this.preCalculateRoles(user, true);
+            roleContainer = user.getAttribute(module, "roleContainer");
+        }
         boolean added = false;
         for (Role role : roles)
         {
@@ -311,5 +319,18 @@ public class RoleManager
         {
             return this.getProvider(world).createRole(roleName);
         }
+    }
+
+    /**
+     * Gets the role for the specified worldId
+     *
+     * @param worldId the id of the world to lookup the role in
+     * @param roleName the role to lookup
+     * @return the role OR null if not found
+     */
+    public Role getRoleInWorld(long worldId, String roleName)
+    {
+        RoleProvider provider = this.getProvider(worldId);
+        return provider.getRole(roleName);
     }
 }
