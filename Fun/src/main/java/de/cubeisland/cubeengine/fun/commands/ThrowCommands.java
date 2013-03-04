@@ -56,12 +56,18 @@ public class ThrowCommands
         }
     }
 
-    @Command(names = "throw", desc = "Throw something!", max = 2, params = @Param(names = {
-    "delay", "d"
-    }, type = Integer.class), flags = @Flag(longName = "unsafe", name = "u"), usage = "<material> [amount] [delay <value>] [-unsafe]")
+    @Command
+    (
+        names = "throw", 
+        desc = "Throw something!", 
+        max = 2, 
+        params = @Param(names = { "delay", "d" }, type = Integer.class), 
+        flags = @Flag(longName = "unsafe", name = "u"), 
+        usage = "<material> [amount] [delay <value>] [-unsafe]"
+    )
     public void throwCommand(ParameterizedContext context)
     {
-        if (!(context.getSender() instanceof CommandSender))
+        if (!(context.getSender() instanceof User))
         {
             context.sendMessage("fun", "&cThis command can only be used by a player!");
             return;
@@ -257,13 +263,6 @@ public class ThrowCommands
             if (this.preventDamage && !this.save)
             {
                 throwListener.add(entity);
-                if (entity instanceof Explosive)
-                {
-                    Explosive explosive = (Explosive)entity;
-                    explosive.setIsIncendiary(false);
-                    explosive.isIncendiary();
-                    // explosive.setYield(0); TODO disabling the explosion vs catching it
-                }
             }
         }
 
