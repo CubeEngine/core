@@ -1,0 +1,630 @@
+package de.cubeisland.cubeengine.travel.command.subcommand;
+
+import de.cubeisland.cubeengine.core.CubeEngine;
+import de.cubeisland.cubeengine.core.command.CommandContext;
+import de.cubeisland.cubeengine.core.command.parameterized.Flag;
+import de.cubeisland.cubeengine.core.command.parameterized.Param;
+import de.cubeisland.cubeengine.core.command.parameterized.ParameterizedContext;
+import de.cubeisland.cubeengine.core.command.reflected.Alias;
+import de.cubeisland.cubeengine.core.command.reflected.Command;
+import de.cubeisland.cubeengine.core.logger.LogLevel;
+import de.cubeisland.cubeengine.core.permission.PermDefault;
+import de.cubeisland.cubeengine.core.storage.StorageException;
+import de.cubeisland.cubeengine.core.user.User;
+import de.cubeisland.cubeengine.core.util.Pair;
+import de.cubeisland.cubeengine.travel.Travel;
+import de.cubeisland.cubeengine.travel.storage.Home;
+import de.cubeisland.cubeengine.travel.storage.TelePointManager;
+import de.cubeisland.cubeengine.travel.storage.TeleportPoint;
+import org.bukkit.Location;
+
+import java.util.Set;
+
+public class HomeSubCommands
+{
+    private final TelePointManager tpManager;
+    private final Travel module;
+
+    public HomeSubCommands(Travel module, TelePointManager tpManager)
+    {
+        this.tpManager = tpManager;
+        this.module = module;
+    }
+
+    @Alias(names = {
+        "sethome"
+    })
+    @Command(names = "set", desc = "Set your home", usage = "[HomeName]", min = 1, max = 1, flags = {
+        @Flag(longName = "public", name = "p")
+    }, permDefault  = PermDefault.TRUE)
+    public void setHome(ParameterizedContext context)
+    {
+        if (context.getSender() instanceof User)
+        {
+            User sender = (User) context.getSender();
+            Location location = sender.getLocation();
+            if (context.getArgCount() == 0)
+            {
+                if (tpManager.hasHome("home", sender))
+                {
+                    sender.sendMessage("travel", "&4You already have a home! Maybe you need /home move?");
+                    return;
+                }
+                Home home = tpManager.createHome(location, "home", sender, TeleportPoint.Visibility.PRIVATE);
+                sender.sendMessage("travel", "&6Your home have been created!");
+            }
+            else
+            {
+                String name = context.getString(0).toLowerCase();
+                TeleportPoint.Visibility visibility = TeleportPoint.Visibility.PRIVATE;
+                if (context.hasFlag("p"))
+                {
+                    visibility = TeleportPoint.Visibility.PUBLIC;
+                    if (tpManager.findPublicHome(name) != null)
+                    {
+                        sender.sendMessage("travel", "&4A public home by that name already exist. Please choose another name");
+                        return;
+                    }
+                }
+                if (name.contains(":") || name.length() >= 32)
+                {
+                    sender.sendMessage("travel", "&4Homes may not have names that are longer then 32 characters, and they may not contain colon(:)'s!");
+                    return;
+                }
+                if (tpManager.hasHome(context.getString(0).toLowerCase(), sender))
+                {
+                    sender.sendMessage("travel", "&4You already have a home by that name! Maybe you need /home move?");
+                    return;
+                }
+                Home home = tpManager.createHome(location, name, sender, visibility);
+                sender.sendMessage("travel", "&6Your home &9%s &6have been created!", context.getString(0));
+            }
+        }
+        else
+        {
+            context.sendMessage("travel", "&4This command can only be used by users!");
+        }
+
+
+    }
+
+    @Command(desc = "Set the welcome message of homes", names = {"setgreeting", "greeting", "setwelcome", "setwelcomemsg"},
+    min = 1, max = -1, permDefault = PermDefault.TRUE, params = {
+            @Param(names = {"home", "h"})
+    }, usage = "[Welcome message goes here] <home: [home name]>")
+    public void setWelcomeMessage(ParameterizedContext context)
+    {
+        if (context.getSender() instanceof User)
+        {
+            User sender = (User) context.getSender(); //TODO console
+            Home home;
+            if (context.hasParam("home"))
+            {
+                home = tpManager.getHome(sender, context.getString("home"));
+                if (home == null || !home.isOwner(sender))
+                {
+                    sender.sendMessage("travel", "%s is not a home your owning!");
+                    return;
+                }
+            }
+            else
+            {
+                home = tpManager.getHome(sender, "home");
+                if (home == null || !home.isOwner(sender))
+                {
+                    sender.sendMessage("travel", "You don't have a homes!");
+                    return;
+                }
+            }
+
+            StringBuilder message = new StringBuilder();
+            for (int x = 0; x < context.getArgCount(); x++)
+            {
+                message.append(context.getString(x)).append(' ');
+            }
+
+            home.setWelcomeMsg(message.toString());
+            home.update();
+            sender.sendMessage("travel", "The welcome message for the home is now set to: ");
+            sender.sendMessage("travel", home.getWelcomeMsg());
+        }
+    }
+
+    @Command(names = {"move", "replace"}, desc = "Move a home", usage = "[HomeName]", min = 1, max = 1, permDefault = PermDefault.TRUE)
+    public void moveHome(CommandContext context)
+    {
+        if (context.getSender() instanceof User)
+        {
+            User sender = (User) context.getSender();
+            if (context.getArgCount() == 0)
+            {
+                Home home = this.tpManager.getHome(sender, "home");
+                if (!home.isOwner(sender))
+                {
+                    sender.sendMessage("travel", "&4You can't move another users home");
+                    return;
+                }
+                home.setLocation(sender.getLocation());
+                home.update();
+                sender.sendMessage("travel", "&6Your home have been moved");
+            }
+            else if (module.getConfig().multipleHomes)
+            {
+                Home home = this.tpManager.getHome(sender, context.getString(0));
+                if (!home.isOwner(sender))
+                {
+                    sender.sendMessage("travel", "&4You can't move another users home");
+                    return;
+                }
+                home.setLocation(sender.getLocation());
+                home.update();
+                sender.sendMessage("travel", "&9%s &6have been moved", home.getName());
+            }
+        }
+        else
+        {
+            context.sendMessage("travel", "&4This command can only be used by users!");
+        }
+    }
+
+    @Alias(names = {
+    "remhome", "removehome", "delhome", "deletehome"
+    })
+    @Command(names = {
+    "remove", "delete", "rem", "del"
+    }, desc = "Remove a home", usage = "[HomeName]",min = 1, max = 1, permDefault = PermDefault.TRUE)
+    public void removeHome(CommandContext context)
+    {
+        if (context.getSender()  instanceof  User)
+        {
+            User sender = (User) context.getSender();
+            if (context.getArgCount() == 0)
+            {
+                Home home = this.tpManager.getHome(sender, "home");
+                if (!home.isOwner(sender))
+                {
+                    sender.sendMessage("travel", "&4You can't remove another users home");
+                    return;
+                }
+                tpManager.deleteHome(home);
+                sender.sendMessage("travel", "&6Your home have been removed");
+            }
+            else if (module.getConfig().multipleHomes)
+            {
+                Home home = this.tpManager.getHome(sender, context.getString(0));
+                if (!home.isOwner(sender))
+                {
+                    sender.sendMessage("travel", "&4You can't remove another players home");
+                    return;
+                }
+                tpManager.deleteHome(home);
+                sender.sendMessage("travel", "&9%s &6have been removed", context.getString(0));
+            }
+        }
+        else
+        {
+            context.sendMessage("travel", "&4This command can only be used by users!");
+        }
+    }
+
+    // TODO Unload if multihomes isn't enabled
+    @Alias(names = {
+    "listhomes", "homes"
+    })
+    @Command(names = {
+        "list"
+    }, desc = "List your homes", permDefault = PermDefault.TRUE, min = 0, max = 0)
+    public void listHomes(CommandContext context)
+    {
+        if (context.getSender()  instanceof  User)
+        {
+            User sender = (User) context.getSender();
+            try
+            {
+                Set<String> homes = tpManager.listAvailableHomes(sender);
+                if (homes.isEmpty())
+                {
+                    sender.sendMessage("travel", "&4You don't have any homes!");
+                }
+                else
+                {
+                    sender.sendMessage("travel", "&6Here is a list of your homes:");
+                    for (String home : homes)
+                    {
+                        if (home.contains(":"))
+                        {
+                            sender.sendMessage("travel", " &6- &3%s", home.replaceAll(":", "&6:&9"));
+                        }
+                        else
+                        {
+                            sender.sendMessage("travel", " &6- &9%s", home);
+                        }
+
+                    }
+                }
+            }
+            catch (StorageException ex)
+            {
+                sender.sendMessage("travel", "&4A database error occurred while executing the command, please notify an administrator");
+                module.getLogger().log(LogLevel.NOTICE, "An error occurred while executing a command, please look in the debug log");
+                module.getLogger().log(LogLevel.DEBUG, "This error occurred while executing a command", ex);
+            }
+        }
+        else
+        {
+            context.sendMessage("travel", "&4This command can only be used by users!");
+        }
+
+
+    }
+
+    @Command(names = {
+    "ilist", "invited"
+    }, desc = "List all players invited to your homes", min = 1, max = 1, permDefault = PermDefault.TRUE)
+    public void invitedList(CommandContext context)
+    {
+        if (context.getSender()  instanceof  User)
+        {
+            User sender = (User) context.getSender();
+
+
+            Set<String> homes = tpManager.listOwnedHomes(sender);
+            if (homes.isEmpty())
+            {
+                sender.sendMessage("travel", "&4You don't have any homes!");
+                return;
+            }
+
+            if (context.getArgCount() == 0)
+            {
+                Set<Pair<String, Set<String>>> homesInvited = null;
+                try
+                {
+                    homesInvited = tpManager.listHomesAndInvited(sender);
+                }
+                catch (StorageException ex)
+                {
+                    sender.sendMessage("travel", "&4A database error occurred while executing the command, please notify an administrator");
+                    module.getLogger().log(LogLevel.NOTICE, "An error occurred while executing a command, please look in the debug log");
+                    module.getLogger().log(LogLevel.DEBUG, "This error occurred while executing a command", ex);
+                    module.getLogger().log(LogLevel.DEBUG,"", ex);
+                    return;
+                }
+
+                StringBuilder builder = new StringBuilder();
+
+                for (Pair<String, Set<String>> homeInvited : homesInvited)
+                {
+                    if (!homeInvited.getRight().isEmpty())
+                    {
+                        builder.append("&9").append(homeInvited.getLeft()).append("&6: ");
+                        for (String invited : homeInvited.getRight())
+                        {
+                            builder.append("&3").append(invited).append("&6, ");
+                        }
+                        builder.delete(builder.length()-2, builder.length()-1);
+                        builder.append("\n");
+                    }
+                }
+                if (builder.length() != 0)
+                {
+                    sender.sendMessage("travel", "&6Here is a list of your homes with who's invited to them:");
+                    sender.sendMessage(builder.toString());
+                }
+                else
+                {
+                    sender.sendMessage("travel", "&4You have no homes with users invited.");
+                }
+            }
+            else if (module.getConfig().multipleHomes)
+            {
+                Home home = tpManager.getHome(sender, context.getString(0));
+                sender.sendMessage("travel", "&6Here is a list of users invited to: &9%s", home.getName());
+                for (String user : home.getInvited())
+                {
+                    sender.sendMessage("travel", " &6- &3%s", user);
+                }
+            }
+        }
+        else
+        {
+            context.sendMessage("travel", "&4This command can only be used by users!");
+        }
+    }
+
+    @Command(desc = "Invite a user to one of your homes", min = 1, max = 2, usage = "[home] <user>", permDefault = PermDefault.TRUE)
+    public void invite(CommandContext context)
+    {
+        if (context.getSender() instanceof User)
+        {
+            User sender = (User) context.getSender();
+            if (context.getArgCount() == 1)
+            {
+                Home home = tpManager.getHome(sender, "home");
+                if (home == null)
+                {
+                    sender.sendMessage("travel", "&4You don't have a home!");
+                    return;
+                }
+                if (!home.isOwner(sender))
+                {
+                    sender.sendMessage("travel", "&4You can't edit another players home");
+                    return;
+                }
+                if (home.isPublic())
+                {
+                    sender.sendMessage("travel", "&4You can't invite a person to a public home >:(");
+                }
+                User invited = CubeEngine.getUserManager().getUser(context.getString(0), false);
+                if (invited == null)
+                {
+                    sender.sendMessage("travel", "&4You have to invite a user that have played on this server!");
+                    return;
+                }
+                if (invited.equals(sender))
+                {
+                    sender.sendMessage("travel", "&4You cannot invite yourself to your own home!");
+                    return;
+                }
+                if (home.isInvited(invited))
+                {
+                    sender.sendMessage("travel", "&6%s is already invited to your home!", invited.getDisplayName());
+                    return;
+                }
+                home.invite(invited);
+                if (invited.isOnline())
+                {
+                    invited.sendMessage("travel", "&3%s &6has invited you to his home. To access it do: /home &9%s:home",
+                            sender.getDisplayName(), sender.getName());
+                }
+                sender.sendMessage("travel", "&3%s &6Is now invited to home", context.getString(0));
+            }
+            else if (module.getConfig().multipleHomes)
+            {
+                Home home = tpManager.getHome(sender, context.getString(0));
+                if (home == null)
+                {
+                    sender.sendMessage("travel", "&9%s &4is not a home!", context.getString(0));
+                    return;
+                }
+                if (!home.isOwner(sender))
+                {
+                    sender.sendMessage("travel", "&4You can't edit another players home");
+                    return;
+                }
+                if (home.isPublic())
+                {
+                    sender.sendMessage("travel", "&4You can't invite a person to a public home >:(");
+                }
+                User invited = CubeEngine.getUserManager().getUser(context.getString(1), false);
+                if (invited == null)
+                {
+                    sender.sendMessage("travel", "&4You have to invite a user that have played on this server!");
+                    return;
+                }
+                if (home.isInvited(invited))
+                {
+                    sender.sendMessage("travel", "&9%s is already invited to &6%s!", invited.getDisplayName(), home.getName());
+                    return;
+                }
+                home.invite(invited);
+                if (invited.isOnline())
+                {
+                    invited.sendMessage("travel", "&6%s has invited you to his home &9%s&6. To access it do: /home &9%s:%2$s",
+                            sender.getDisplayName(), context.getString(0), sender.getName());
+                }
+                sender.sendMessage("travel", "&3%s &6Is now invited to &9%s", context.getString(1), context.getString(0));
+            }
+        }
+        else {
+            context.sendMessage("travel", "&4This command can only be used by users!");
+        }
+
+
+    }
+
+    @Command(desc = "Uninvite a user from one of your homes", min = 1, max = 2, usage = "[home] <user>", permDefault = PermDefault.TRUE)
+    public void unInvite(CommandContext context)
+    {
+        if (context.getSender() instanceof User)
+        {
+            User sender = (User) context.getSender();
+            if (context.getArgCount() == 1)
+            {
+                Home home = tpManager.getHome(sender, "home");
+                if (home == null)
+                {
+                    sender.sendMessage("travel", "&4You don't have a home!");
+                    return;
+                }
+                if (!home.isOwner(sender))
+                {
+                    sender.sendMessage("travel", "&4You can't edit another players home");
+                    return;
+                }
+                if (home.isPublic())
+                {
+                    sender.sendMessage("travel", "&4You can't uninvite a person to a public home >:(");
+                    return;
+                }
+                User invited = CubeEngine.getUserManager().getUser(context.getString(0), false);
+                if (invited == null)
+                {
+                    sender.sendMessage("travel", "&4You can't univite a user that never have played on this server!!");
+                    return;
+                }
+                if (!home.isInvited(invited))
+                {
+                    sender.sendMessage("travel", "&6%s &4Is not invited to your home!", invited.getDisplayName());
+                    return;
+                }
+                home.unInvite(invited);
+                if (invited.isOnline())
+                {
+                    invited.sendMessage("travel", "You are no longer invited to %s' home", sender.getDisplayName());
+                }
+                sender.sendMessage("travel", "&3%s &6Is no longer invited to home", context.getString(0));
+            }
+            else if (module.getConfig().multipleHomes)
+            {
+                Home home = tpManager.getHome(sender, context.getString(0));
+                if (home == null)
+                {
+                    sender.sendMessage("travel", "&9%s &4is not a home!", context.getString(0));
+                    return;
+                }
+                if (!home.getOwner().equals(sender))
+                {
+                    sender.sendMessage("travel", "&4You can't edit another players home");
+                    return;
+                }
+                if (home.isPublic())
+                {
+                    sender.sendMessage("travel", "&4You can't uninvite a person from a public home >:(");
+                    return;
+                }
+                User invited = CubeEngine.getUserManager().getUser(context.getString(1), false);
+                if (invited == null)
+                {
+                    sender.sendMessage("travel", "&4You can't univite a user that never have played on this server!!");
+                    return;
+                }
+                if (!home.isInvited(invited))
+                {
+                    sender.sendMessage("travel", "&9%s &4Is not invited to &6%s&6!", invited.getDisplayName(), home.getName());
+                    return;
+                }
+                home.unInvite(invited);
+                if (invited.isOnline())
+                {
+                    invited.sendMessage("travel", "You are no longer invited to %s' home &9%s", sender.getDisplayName(), context.getString(0));
+                }
+                sender.sendMessage("travel", "&3%s &6Is no longer invited to &9%s", context.getString(1), context.getString(0));
+            }
+        }
+        else {
+            context.sendMessage("travel", "&4This command can only be used by users!");
+        }
+
+
+    }
+
+    @Command(names = {
+    "makeprivate"
+    }, desc = "Make one of your homes private", min = 1, max = 1, permDefault = PermDefault.TRUE)
+    public void makePrivate(CommandContext context)
+    {
+        if (context.getSender() instanceof User)
+        {
+            User sender = (User) context.getSender();
+            Home home;
+            if (context.getArgCount() == 0)
+            {
+                home = tpManager.getHome(sender, "home");
+            }
+            else if (module.getConfig().multipleHomes)
+            {
+                home = tpManager.getHome(sender, context.getString(0));
+            }
+            else
+            {
+                return;
+            }
+
+            if (!home.isPublic())
+            {
+                context.sendMessage("travel", "&6Your home is already private!");
+                return;
+            }
+            home.setVisibility(TeleportPoint.Visibility.PRIVATE);
+            context.sendMessage("travel", "&6Your home is now private");
+            return;
+        }
+        context.sendMessage("travel", "&4This command can only be used by users!");
+
+    }
+
+    @Command(names = {
+    "makepublic"
+    }, desc = "Make one of your homes public", min = 1, max = 1, permDefault = PermDefault.TRUE)
+    public void makePublic(CommandContext context)
+    {
+        if (context.getSender() instanceof User)
+        {
+            User sender = (User) context.getSender();
+            Home home;
+            if (context.getArgCount() == 0)
+            {
+                home = tpManager.getHome(sender, "home");
+            }
+            else if (module.getConfig().multipleHomes)
+            {
+                home = tpManager.getHome(sender, context.getString(0));
+            }
+            else
+            {
+                return;
+            }
+
+            if (home.isPublic())
+            {
+                context.sendMessage("travel", "&6Your home is already public!");
+                return;
+            }
+            home.setVisibility(TeleportPoint.Visibility.PUBLIC);
+            context.sendMessage("travel", "&6Your home is now public");
+            return;
+        }
+        context.sendMessage("travel", "&4This command can only be used by users!");
+
+    }
+
+    @Command(names = {
+    "admin"
+    }, desc = "Teleport to another users home", usage = "[User] [Home]", min = 1, max = 2, permDefault = PermDefault.OP)
+    public void admin(CommandContext context)
+    {
+        if (context.getSender() instanceof User)
+        {
+            User sender = (User) context.getSender(); //TODO console
+            User user = context.getUser(0);
+            Home home;
+            if (user == null)
+            {
+                sender.sendMessage("travel", "%s is not an user on this server!", context.getString(0));
+                return;
+            }
+
+            if (context.getArgCount() == 2)
+            {
+                home = tpManager.getHome(user, context.getString(1));
+                if (home == null)
+                {
+                    sender.sendMessage("travel", "%s does not have a home named %s", user.getName(), context.getString(1));
+                    return;
+                }
+            }
+            else
+            {
+                home = tpManager.getHome(user, "home");
+                if (home == null)
+                {
+                    sender.sendMessage("travel", "%s does not have a home ", user.getName());
+                    return;
+                }
+            }
+
+            sender.teleport(home.getLocation());
+            if (home.getWelcomeMsg() != null)
+            {
+                sender.sendMessage(home.getWelcomeMsg());
+            }
+            else
+            {
+                sender.sendMessage("travel", "You have been teleported to %s's home", user.getName());
+            }
+            return;
+        }
+
+    }
+}

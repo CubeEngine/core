@@ -29,6 +29,7 @@
         <module>Chat</module>
         <module>Border</module>
         <module>SignMarket</module>
+        <module>Travel</module>
 
         <!--
         <module>CubeWar</module>
