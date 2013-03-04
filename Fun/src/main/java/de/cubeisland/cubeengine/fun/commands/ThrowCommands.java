@@ -13,7 +13,6 @@ import de.cubeisland.cubeengine.fun.FunPerm;
 import gnu.trove.map.hash.THashMap;
 import gnu.trove.set.hash.THashSet;
 import org.bukkit.Location;
-import org.bukkit.command.CommandSender;
 import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -105,6 +104,11 @@ public class ThrowCommands
         {
             context.sendMessage("fun", "&cThe delay has to be a number from 0 to %d", this.fun.getConfig().maxThrowDelay);
             return;
+        }
+        
+        if(context.hasFlag( "u") && !FunPerm.COMMAND_THROW_UNSAFE.isAuthorized( context.getSender() ))
+        {
+            context.sendMessage( "fun", "&cYou has not the required permissions to execute this command in unsafe-mode." );
         }
 
         String object = context.getString(0);

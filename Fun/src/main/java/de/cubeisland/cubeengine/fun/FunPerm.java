@@ -16,7 +16,8 @@ public enum FunPerm implements Permission
     COMMAND_HAT_QUIET,
     COMMAND_HAT_NOTIFY(PermDefault.TRUE),
     COMMAND_LIGHTNING_PLAYER_DAMAGE,
-    COMMAND_LIGHTNING_UNSAFE;
+    COMMAND_LIGHTNING_UNSAFE,
+    COMMAND_THROW_UNSAFE;
 
     private String permission;
     private PermDefault def;
