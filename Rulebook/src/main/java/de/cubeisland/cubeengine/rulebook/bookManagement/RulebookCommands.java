@@ -36,20 +36,18 @@ public class RulebookCommands extends ContainerCommand
         this.rulebookManager = module.getRuleBookManager();
     }
 
-    @Alias( names =
-    {
-        "getrules", "rules"
-    } )
-    @Command( desc = "gets the player the rulebook in the inventory",
-              usage = "[language] [Player <name>]",
-              params =
-    @Param( names =
-    {
-        "player", "p"
-    },
-            type = User.class ),
-              permDefault = TRUE,
-              max = 1 )
+    @Alias
+    ( 
+        names = { "getrules", "rules" } 
+    )
+    @Command
+    ( 
+        desc = "gets the player the rulebook in the inventory",
+        usage = "[language] [Player <name>]",
+        params = @Param( names = { "player", "p" }, type = User.class ),
+        permDefault = TRUE,
+        max = 1 
+    )
     public void getRuleBook( ParameterizedContext context )
     {
         CommandSender sender = context.getSender();
@@ -75,7 +73,7 @@ public class RulebookCommands extends ContainerCommand
             }
         }
 
-        if( sender != target && !context.getSender().hasPermission( Permission.BASE + "rulebook.command.get.other" ) )
+        if( sender != target && !context.getSender().hasPermission( Permission.BASE + context.getCommand().getModule().getId() + ".command.get.other" ) )
         {
             context.sendMessage( "rulebook", "&c You have not the permissions to add the rulebook to the inventory of an other player" );
             return;
