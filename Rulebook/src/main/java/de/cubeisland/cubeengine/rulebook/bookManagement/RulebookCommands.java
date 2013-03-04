@@ -12,7 +12,6 @@ import de.cubeisland.cubeengine.core.i18n.Language;
 import de.cubeisland.cubeengine.core.logger.LogLevel;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.rulebook.Rulebook;
-import de.cubeisland.cubeengine.rulebook.RulebookPermissions;
 import gnu.trove.iterator.TIntIterator;
 import gnu.trove.set.TIntSet;
 import gnu.trove.set.hash.TIntHashSet;
@@ -75,7 +74,7 @@ public class RulebookCommands extends ContainerCommand
             }
         }
 
-        if( sender != target && !RulebookPermissions.COMMAND_GET_OTHER.isAuthorized( context.getSender() ) )
+        if( sender != target && !context.getSender().hasPermission( "cubeengine.rulebook.command.get.other" ) )
         {
             context.sendMessage( "rulebook", "&c You have not the permissions to add the rulebook to the inventory of an other player" );
             return;

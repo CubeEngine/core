@@ -1,6 +1,7 @@
 package de.cubeisland.cubeengine.rulebook;
 
 import de.cubeisland.cubeengine.core.module.Module;
+import de.cubeisland.cubeengine.core.permission.PermDefault;
 import de.cubeisland.cubeengine.rulebook.bookManagement.RulebookCommands;
 import de.cubeisland.cubeengine.rulebook.bookManagement.RulebookManager;
 
@@ -12,7 +13,7 @@ public class Rulebook extends Module
     public void onEnable()
     {
         this.getFileManager().dropResources(RulebookResource.values());
-        this.registerPermissions(RulebookPermissions.values());
+        this.getCore().getPermissionManager().registerPermission( this, "cubeengine.rulebook.command.get.other", PermDefault.OP );
 
         this.rulebookManager = new RulebookManager(this);
 
