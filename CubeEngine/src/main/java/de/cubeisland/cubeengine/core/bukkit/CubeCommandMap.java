@@ -129,15 +129,16 @@ public class CubeCommandMap extends SimpleCommandMap
      * {@inheritDoc}
      */
     @Override
-    public boolean dispatch(CommandSender sender, final String commandLine) throws CommandException
+    public boolean dispatch(CommandSender sender, String commandLine) throws CommandException
     {
         if (!CubeEngine.isMainThread())
         {
             throw new IllegalStateException("Commands my only be called synchronously!");
         }
+        commandLine = StringUtils.trimLeft(commandLine);
         if (commandLine.isEmpty())
         {
-            return true;
+            return false;
         }
 
         String[] parts = commandLine.split(" ");
@@ -182,7 +183,7 @@ public class CubeCommandMap extends SimpleCommandMap
             {
                 sender.sendMessage(_(language, "core", "&cI couldn't find any command for &e/%s &c...", arr(label)));
             }
-            return true;
+            return false;
         }
 
         String[] args = null;
