@@ -71,9 +71,11 @@ public class ThrowCommands
             context.sendMessage("fun", "&cThis command can only be used by a player!");
             return;
         }
+        
         User user = (User)context.getSender();
         EntityType type = null;
         boolean showNotification = true;
+        boolean unsafe = false;
 
         ThrowTask task = this.thrownItems.remove(user.getName());
         if (task != null)
@@ -106,9 +108,14 @@ public class ThrowCommands
             return;
         }
         
-        if(context.hasFlag( "u") && !FunPerm.COMMAND_THROW_UNSAFE.isAuthorized( context.getSender() ))
+        if(context.hasFlag( "u"))
         {
-            context.sendMessage( "fun", "&cYou has not the required permissions to execute this command in unsafe-mode." );
+            unsafe = true;
+        }
+        if(unsafe && !FunPerm.COMMAND_THROW_UNSAFE.isAuthorized( context.getSender() ) )
+        {
+            context.sendMessage( "fun", "&cYou are not allowed to execute this command in unsafe-mode." );
+            return;
         }
 
         String object = context.getString(0);
@@ -133,13 +140,13 @@ public class ThrowCommands
             return;
         }
 
-        if ((BUGGED_ENTITES.contains(type) || Match.entity().isMonster(type)) && !context.hasFlag("u"))
+        if ((BUGGED_ENTITES.contains(type) || Match.entity().isMonster(type)) && !unsafe)
         {
             context.sendMessage("fun", "&eThis object can only be thrown in unsafe mode. Add -u to enable the unsafe mode.");
             return;
         }
 
-        task = new ThrowTask(user, type, amount, delay, !context.hasFlag("u"));
+        task = new ThrowTask(user, type, amount, delay, !unsafe);
         if (task.start(showNotification))
         {
             this.thrownItems.put(user.getName(), task);
