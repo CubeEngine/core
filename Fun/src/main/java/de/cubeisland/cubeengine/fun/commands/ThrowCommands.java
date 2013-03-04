@@ -75,12 +75,12 @@ public class ThrowCommands
         User user = (User)context.getSender();
         EntityType type = null;
         boolean showNotification = true;
-        boolean unsafe = false;
+        boolean unsafe = context.hasFlag("u");
 
         ThrowTask task = this.thrownItems.remove(user.getName());
         if (task != null)
         {
-            if (!context.hasArg(0) || (type = Match.entity().any(context.getString(0))) == task.getType() && task.getInterval() == context.getParam("d", task.getInterval()) && task.getPreventDamage() != context.hasFlag("u"))
+            if (!context.hasArg(0) || (type = Match.entity().any(context.getString(0))) == task.getType() && task.getInterval() == context.getParam("d", task.getInterval()) && task.getPreventDamage() != unsafe)
             {
                 task.stop(true);
                 return;
@@ -108,10 +108,6 @@ public class ThrowCommands
             return;
         }
         
-        if(context.hasFlag( "u"))
-        {
-            unsafe = true;
-        }
         if(unsafe && !FunPerm.COMMAND_THROW_UNSAFE.isAuthorized( context.getSender() ) )
         {
             context.sendMessage( "fun", "&cYou are not allowed to execute this command in unsafe-mode." );
