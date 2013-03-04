@@ -31,7 +31,7 @@ public class ThrowCommands
 {
     private final Map<String, ThrowTask> thrownItems;
     // entities that can't be safe due to bukkit flaws
-    private final EnumSet<EntityType> BUGGED_ENTITES = EnumSet.of(EntityType.SMALL_FIREBALL, EntityType.FIREBALL);
+    private final EnumSet<EntityType> BUGGED_ENTITIES = EnumSet.of(EntityType.SMALL_FIREBALL, EntityType.FIREBALL);
 
     private static final String BASE_THROW_PERM = FunPerm.BASE + "throw.";
 
@@ -136,7 +136,7 @@ public class ThrowCommands
             return;
         }
 
-        if ((BUGGED_ENTITES.contains(type) || Match.entity().isMonster(type)) && !unsafe)
+        if ((BUGGED_ENTITIES.contains(type) || Match.entity().isMonster(type)) && !unsafe)
         {
             context.sendMessage("fun", "&eThis object can only be thrown in unsafe mode. Add -u to enable the unsafe mode.");
             return;
@@ -247,6 +247,7 @@ public class ThrowCommands
             }
         }
 
+        @SuppressWarnings("unchecked")
         private void throwItem()
         {
             final Location location = this.user.getEyeLocation();
