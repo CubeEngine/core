@@ -130,12 +130,12 @@ public class User extends UserBase implements Model<Long>, CommandSender, Attach
     }
 
     @Override
-    public synchronized UserAttachment addAttachment(Class<UserAttachment> type)
+    public synchronized UserAttachment attach(Class<UserAttachment> type, Module module)
     {
         try
         {
             UserAttachment attachment = type.newInstance();
-            attachment.onAttach(this);
+            attachment.attachTo(this, module);
             this.attachments.put(type, attachment);
             return attachment;
         }
@@ -146,30 +146,30 @@ public class User extends UserBase implements Model<Long>, CommandSender, Attach
     }
 
     @Override
-    public synchronized UserAttachment addOrGetAttachment(Class<UserAttachment> type)
+    public synchronized UserAttachment attachOrGet(Class<UserAttachment> type, Module module)
     {
-        UserAttachment attachment = this.getAttachment(type);
+        UserAttachment attachment = this.get(type);
         if (attachment == null)
         {
-            attachment = this.addAttachment(type);
+            attachment = this.attach(type, module);
         }
         return attachment;
     }
 
     @Override
-    public synchronized UserAttachment getAttachment(Class<UserAttachment> type)
+    public synchronized UserAttachment get(Class<UserAttachment> type)
     {
         return this.attachments.get(type);
     }
 
     @Override
-    public synchronized boolean hasAttachment(Class<UserAttachment> type)
+    public synchronized boolean has(Class<UserAttachment> type)
     {
         return this.attachments.containsKey(type);
     }
 
     @Override
-    public synchronized UserAttachment removeAttachment(Class<UserAttachment> type)
+    public synchronized UserAttachment detach(Class<UserAttachment> type)
     {
         UserAttachment attachment = this.attachments.remove(type);
         if (attachment != null)
@@ -179,7 +179,7 @@ public class User extends UserBase implements Model<Long>, CommandSender, Attach
         return attachment;
     }
 
-    public synchronized void clearAttachments(Module module)
+    public synchronized void detach(Module module)
     {
         final Iterator<Entry<Class<? extends UserAttachment>, UserAttachment>> attachmentIt = this.attachments.entrySet().iterator();
         UserAttachment attachment;
@@ -194,7 +194,7 @@ public class User extends UserBase implements Model<Long>, CommandSender, Attach
         }
     }
 
-    public synchronized void clearAttachments()
+    public synchronized void detach()
     {
         final Iterator<Entry<Class<? extends UserAttachment>, UserAttachment>> attachmentIt = this.attachments.entrySet().iterator();
         while (attachmentIt.hasNext())

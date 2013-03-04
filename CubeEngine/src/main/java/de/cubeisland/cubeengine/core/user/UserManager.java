@@ -571,7 +571,7 @@ public class UserManager extends SingleKeyStorage<Long, User> implements Cleanab
     {
         for (User user : this.users.values())
         {
-            user.clearAttachments(module);
+            user.detach(module);
         }
     }
 

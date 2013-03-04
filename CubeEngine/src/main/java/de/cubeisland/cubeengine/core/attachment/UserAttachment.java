@@ -2,11 +2,20 @@ package de.cubeisland.cubeengine.core.attachment;
 
 import de.cubeisland.cubeengine.core.user.User;
 
-public interface UserAttachment extends Attachment<User>
+public abstract class UserAttachment extends Attachment<User>
 {
-    void onJoin(String joinMessage);
-    void onQuit(String quitMessage);
-    void onKick(String kickMessage);
-    void onChat(String message);
-    void onCommand(String commandline);
+    public void onJoin(String joinMessage)
+    {}
+
+    public void onQuit(String quitMessage)
+    {}
+
+    public void onKick(String kickMessage)
+    {}
+
+    public void onChat(String message)
+    {}
+
+    public void onCommand(String commandline)
+    {}
 }

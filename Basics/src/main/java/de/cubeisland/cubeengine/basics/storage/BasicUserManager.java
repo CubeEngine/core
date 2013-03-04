@@ -23,7 +23,7 @@ public class BasicUserManager extends SingleKeyStorage<Long, BasicUser>
 
     public BasicUser getBasicUser(User user)
     {
-        BasicUser model = user.getAttachment(BasicUser.class);
+        BasicUser model = user.get(BasicUser.class);
         if (model == null)
         {
             model = this.get(user.getKey());
