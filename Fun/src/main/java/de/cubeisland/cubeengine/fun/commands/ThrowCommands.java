@@ -80,7 +80,7 @@ public class ThrowCommands
         ThrowTask task = this.thrownItems.remove(user.getName());
         if (task != null)
         {
-            if (!context.hasArg(0) || (type = Match.entity().any(context.getString(0))) == task.getType() && task.getInterval() == context.getParam("d", task.getInterval()) && task.getPreventDamage() != unsafe)
+            if (!context.hasArg(0) || (type = Match.entity().any(context.getString(0))) == task.getType() && task.getInterval() == context.getParam("delay", task.getInterval()) && task.getPreventDamage() != unsafe && !context.hasArg(1))
             {
                 task.stop(true);
                 return;
