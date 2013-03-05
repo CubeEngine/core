@@ -434,8 +434,12 @@ public class VanillaCommands implements CommandHolder
             if (!this.core.getServer().hasWhitelist())
             {
                 context.sendMessage("core", "&eThe whitelist is currently disabled.");
-                context.sendMessage(" ");
             }
+            else
+            {
+                context.sendMessage("core", "&2The whitelist is enabled!.");
+            }
+            context.sendMessage(" ");
             if (whitelist.isEmpty())
             {
                 context.sendMessage("core", "&eThere are currently no whitelisted players!");
@@ -451,7 +455,7 @@ public class VanillaCommands implements CommandHolder
             }
         }
 
-        @Command(desc = "Enables the whiltelisting")
+        @Command(desc = "Enables the whitelisting")
         public void on(CommandContext context)
         {
             if (this.core.getServer().hasWhitelist())
@@ -463,7 +467,7 @@ public class VanillaCommands implements CommandHolder
             context.sendMessage("core", "&aThe whitelist is now enabled.");
         }
 
-        @Command(desc = "Disables the whiltelisting")
+        @Command(desc = "Disables the whitelisting")
         public void off(CommandContext context)
         {
             if (!this.core.getServer().hasWhitelist())
