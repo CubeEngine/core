@@ -54,6 +54,8 @@ public class Basics extends Module
         this.registerCommand(ptCommands);
         this.registerListener(ptCommands);
         this.registerCommand(new KitCommand(this));
+        
+        this.registerListener(new PaintingListener(this));
 
         Convert.registerConverter(KitItem.class, new KitItemConverter());
 
