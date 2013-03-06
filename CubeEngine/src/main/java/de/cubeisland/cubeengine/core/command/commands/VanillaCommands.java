@@ -31,6 +31,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.Locale;
 import java.util.Set;
+import org.bukkit.entity.Player;
 
 import static de.cubeisland.cubeengine.core.command.ArgBounds.NO_MAX;
 import static de.cubeisland.cubeengine.core.i18n.I18n._;
@@ -310,8 +311,13 @@ public class VanillaCommands implements CommandHolder
                 context.sendMessage("core", "&cThe given world was not found!");
                 return;
             }
+            
             context.sendMessage("core", "&eSaving...");
             world.save();
+            for(Player player : world.getPlayers())
+            {
+                player.saveData();
+            }
             context.sendMessage("core", "&aWorld '%s' has been saved to disk!", world.getName());
         }
         else
@@ -322,6 +328,7 @@ public class VanillaCommands implements CommandHolder
             {
                 world.save();
             }
+            this.core.getServer().savePlayers();
             context.sendMessage("core", "&aAll worlds have been saved to disk!");
             context.sendMessage("core", "&aThe saving took %d milliseconds.", Profiler.endProfiling("save-worlds", MILLISECONDS));
         }
