@@ -1,12 +1,14 @@
 package de.cubeisland.cubeengine.travel.storage;
 
 import de.cubeisland.cubeengine.core.CubeEngine;
+import de.cubeisland.cubeengine.core.command.sender.CommandSender;
 import de.cubeisland.cubeengine.core.logger.LogLevel;
 import de.cubeisland.cubeengine.core.storage.SingleKeyStorage;
 import de.cubeisland.cubeengine.core.storage.StorageException;
 import de.cubeisland.cubeengine.core.storage.database.Database;
 import de.cubeisland.cubeengine.core.storage.database.querybuilder.QueryBuilder;
 import de.cubeisland.cubeengine.core.user.User;
+import de.cubeisland.cubeengine.core.user.UserManager;
 import de.cubeisland.cubeengine.core.util.Pair;
 import de.cubeisland.cubeengine.core.util.matcher.Match;
 import de.cubeisland.cubeengine.travel.Travel;
@@ -14,10 +16,7 @@ import org.bukkit.Location;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 import static de.cubeisland.cubeengine.core.storage.database.querybuilder.ComponentBuilder.EQUAL;
 
@@ -749,5 +748,30 @@ public class TelePointManager extends SingleKeyStorage<Long, TeleportPoint>
         warp.setName(name);
         this.warps.put(warp.getStorageName(), warp);
 
+    }
+
+    public TreeMap<String, Integer> searchWarp(String search, CommandSender sender)
+    {
+        Set<String> warps = new HashSet<String>();
+        if (sender instanceof User)
+        {
+            User user = (User)sender;
+            for (Warp iterate : this.warps.values())
+            {
+                if (iterate.canAccess(user))
+                {
+                    warps.add(iterate.getName());
+                }
+            }
+        }
+        else
+        {
+            for (Warp iterate : this.warps.values())
+            {
+                warps.add(iterate.getName());
+            }
+        }
+
+        return Match.string().getMatches(search, warps, 5, true);
     }
 }

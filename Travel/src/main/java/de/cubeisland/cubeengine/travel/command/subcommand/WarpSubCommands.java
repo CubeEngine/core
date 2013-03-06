@@ -1,16 +1,24 @@
 package de.cubeisland.cubeengine.travel.command.subcommand;
 
+import com.sun.org.apache.bcel.internal.classfile.StackMapEntry;
 import de.cubeisland.cubeengine.core.command.CommandContext;
+import de.cubeisland.cubeengine.core.command.CommandResult;
 import de.cubeisland.cubeengine.core.command.parameterized.Flag;
 import de.cubeisland.cubeengine.core.command.parameterized.ParameterizedContext;
 import de.cubeisland.cubeengine.core.command.reflected.Alias;
 import de.cubeisland.cubeengine.core.command.reflected.Command;
+import de.cubeisland.cubeengine.core.command.result.AsyncResult;
 import de.cubeisland.cubeengine.core.command.sender.CommandSender;
 import de.cubeisland.cubeengine.core.user.User;
+import de.cubeisland.cubeengine.core.util.StringUtils;
+import de.cubeisland.cubeengine.core.util.matcher.Match;
 import de.cubeisland.cubeengine.travel.storage.TelePointManager;
 import de.cubeisland.cubeengine.travel.storage.TeleportPoint;
 import de.cubeisland.cubeengine.travel.storage.Warp;
 import org.bukkit.Location;
+
+import java.util.Map;
+import java.util.TreeMap;
 
 public class WarpSubCommands
 {
@@ -131,6 +139,48 @@ public class WarpSubCommands
         warp.setLocation(user.getLocation());
         warp.update();
         user.sendMessage("travel", "The warp is now moved to your current location");
+    }
+
+    public CommandResult search(CommandContext context)
+    {
+        String search = context.getString(0);
+        int resultLimit = context.getArg(1, Integer.class);
+        Warp first;
+        if (context.getSender() instanceof User)
+        {
+            first = telePointManager.getWarp((User)context.getSender(), search);
+        }
+        else
+        {
+            first = telePointManager.getWarp(search);
+        }
+        if (first != null)
+        {
+            context.sendMessage("travel", "Found a direct match: %s owned by %s", first.getName(), first.getOwner().getDisplayName());
+            return null;
+        }
+
+        return new AsyncResult()
+        {
+            TreeMap<String, Integer> results;
+
+            @Override
+            public void asyncMain(CommandContext context)
+            {
+                results = telePointManager.searchWarp(context.getString(0), context.getSender());
+            }
+
+            @Override
+            public void onFinish(CommandContext context)
+            {
+                context.sendMessage("travel", "Here is the top %d results:", context.getArg(1, Integer.class));
+                int position = 1;
+                for (String warp : results.keySet())
+                {
+                    context.sendMessage(position++ + ". " + warp);
+                }
+            }
+        };
     }
 
     @Command(desc = "List all available warps")
