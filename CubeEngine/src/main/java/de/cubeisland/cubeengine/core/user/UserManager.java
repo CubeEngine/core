@@ -1,15 +1,11 @@
 package de.cubeisland.cubeengine.core.user;
 
-import de.cubeisland.cubeengine.core.Core;
+import de.cubeisland.cubeengine.core.attachment.UserAttachment;
 import de.cubeisland.cubeengine.core.bukkit.BukkitCore;
 import de.cubeisland.cubeengine.core.filesystem.FileManager;
-import de.cubeisland.cubeengine.core.module.Module;
 import de.cubeisland.cubeengine.core.permission.Permission;
 import de.cubeisland.cubeengine.core.storage.SingleKeyStorage;
 import de.cubeisland.cubeengine.core.storage.StorageException;
-import de.cubeisland.cubeengine.core.storage.database.AttrType;
-import de.cubeisland.cubeengine.core.storage.database.Database;
-import de.cubeisland.cubeengine.core.storage.database.DatabaseUpdater;
 import de.cubeisland.cubeengine.core.storage.database.querybuilder.ComponentBuilder;
 import de.cubeisland.cubeengine.core.util.ChatFormat;
 import de.cubeisland.cubeengine.core.util.Cleanable;
@@ -17,10 +13,10 @@ import de.cubeisland.cubeengine.core.util.StringUtils;
 import de.cubeisland.cubeengine.core.util.Triplet;
 import de.cubeisland.cubeengine.core.util.matcher.Match;
 import gnu.trove.map.hash.TLongObjectHashMap;
+import gnu.trove.set.hash.THashSet;
 import org.apache.commons.lang.RandomStringUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
-import org.bukkit.Server;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -29,9 +25,12 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
-import org.bukkit.plugin.Plugin;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.FileWriter;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
@@ -39,6 +38,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ScheduledExecutorService;
@@ -52,30 +52,30 @@ import static de.cubeisland.cubeengine.core.storage.database.querybuilder.Compon
  * This Manager provides methods to access the Users and saving/loading from
  * database.
  */
-public class UserManager extends SingleKeyStorage<Long, User> implements Cleanable, Runnable, Listener
+public class UserManager extends SingleKeyStorage<Long, User> implements Cleanable, Runnable
 {
-
-    private final Core core;
+    private final BukkitCore core;
     private final List<Player> onlinePlayers;
     private final ConcurrentHashMap<String, User> users;
-    private final Server server;
     private final ScheduledExecutorService executor;
     private static final int REVISION = 3;
+    private final Set<Class<? extends UserAttachment>> defaultAttachments;
     public static String salt; // TODO not acceptable!
 
-    public UserManager(final Core core)
+    public UserManager(final BukkitCore core)
     {
         super(core.getDB(), User.class, REVISION);
         this.core = core;
-        this.registerUpdaters();
         this.executor = core.getTaskManager().getExecutorService();
 
-        this.server = ((BukkitCore)core).getServer();
         this.users = new ConcurrentHashMap<String, User>();
-        this.onlinePlayers = new CopyOnWriteArrayList<Player>(((BukkitCore)core).getServer().getOnlinePlayers());
+        this.onlinePlayers = new CopyOnWriteArrayList<Player>(core.getServer().getOnlinePlayers());
 
         final long delay = (long)core.getConfiguration().userManagerCleanup;
         this.executor.scheduleAtFixedRate(this, delay, delay, TimeUnit.MINUTES);
+        core.getServer().getPluginManager().registerEvents(new UserListener(), core);
+
+        this.defaultAttachments = new THashSet<Class<? extends UserAttachment>>();
         this.initialize();
         this.loadSalt();
     }
@@ -110,56 +110,38 @@ public class UserManager extends SingleKeyStorage<Long, User> implements Cleanab
         }
     }
 
-    private void registerUpdaters()
+    /**
+     * Adds a new User
+     *
+     * @return the created User
+     */
+    private User createUser(String name)
     {
-        this.registerUpdater(new DatabaseUpdater()
+        User inUse = this.users.get(name);
+        if (inUse != null)
         {
-            @Override
-            public void update(Database database) throws SQLException
-            {
-                database.execute(
-                        database.getQueryBuilder().
-                            alterTable(tableName).
-                            add("nogc", AttrType.BOOLEAN).
-                            defaultValue("false").
-                            end().
-                            end());
-                database.execute(
-                        database.getQueryBuilder().
-                            alterTable(tableName).
-                            add("lastseen", AttrType.TIMESTAMP).
-                            defaultValue().value().
-                            end().
-                            end(), new Timestamp(System.currentTimeMillis()));
-            }
-        }, 1);
-        this.registerUpdater(new DatabaseUpdater()
-        {
-            @Override
-            public void update(Database database) throws SQLException
-            {
-                database.execute(
-                        database.getQueryBuilder().
-                            alterTable(tableName).
-                            addUniques("player").
-                            end().
-                            end());
-            }
-        }, 2);
+            //User was already added
+            return inUse;
+        }
+        User user = new User(name);
+        this.users.put(user.getName(), user);
+        this.store(user, false);
+        this.attachDefaults(user);
+        return user;
     }
 
     /**
      * Custom Getter for getting User from DB by Name
      *
-     * @param playername the name
+     * @param playerName the name
      * @return the User OR null if not found
      */
-    protected User getFromStorage(String playername)
+    protected User getFromStorage(String playerName)
     {
         User loadedModel = null;
         try
         {
-            ResultSet resulsSet = this.database.preparedQuery(modelClass, "get_by_name", playername);
+            ResultSet resulsSet = this.database.preparedQuery(modelClass, "get_by_name", playerName);
             ArrayList<Object> values = new ArrayList<Object>();
             if (resulsSet.next())
             {
@@ -178,26 +160,16 @@ public class UserManager extends SingleKeyStorage<Long, User> implements Cleanab
         {
             throw new StorageException("An unknown error occurred while creating a new Model from database", e);
         }
+        this.attachDefaults(loadedModel);
         return loadedModel;
     }
 
-    /**
-     * Adds a new User
-     *
-     * @return the created User
-     */
-    private User createUser(String name)
+    private synchronized void attachDefaults(User user)
     {
-        User inUse = this.users.get(name);
-        if (inUse != null)
+        for (Class<? extends UserAttachment> attachmentClass : this.defaultAttachments)
         {
-            //User was already added
-            return inUse;
+            user.attach(attachmentClass);
         }
-        User user = new User(name);
-        this.users.put(user.getName(), user);
-        this.store(user, false);
-        return user;
     }
 
     /**
@@ -370,6 +342,7 @@ public class UserManager extends SingleKeyStorage<Long, User> implements Cleanab
     public void clean()
     {
         this.users.clear();
+        this.removeDefaultAttachments();
         this.executor.shutdown();
         try
         {
@@ -423,7 +396,7 @@ public class UserManager extends SingleKeyStorage<Long, User> implements Cleanab
             {
                 //Get all online Player and searching for similar names
                 ArrayList<String> onlinePlayerList = new ArrayList<String>();
-                for (Player player : this.server.getOnlinePlayers())
+                for (Player player : this.core.getServer().getOnlinePlayers())
                 {
                     onlinePlayerList.add(player.getName());
                 }
@@ -450,60 +423,6 @@ public class UserManager extends SingleKeyStorage<Long, User> implements Cleanab
     }
 
     /**
-     * Removes the user from loaded UserList when quitting the server and
-     * updates lastseen in database
-     *
-     * @param event the PlayerQuitEvent
-     */
-    @EventHandler(priority = EventPriority.MONITOR)
-    private void onQuit(final PlayerQuitEvent event)
-    {
-        Player player = event.getPlayer();
-        final User user = this.getExactUser(player);
-        user.removalTaskId = event.getPlayer().getServer().getScheduler().scheduleSyncDelayedTask((Plugin)this.core, new Runnable()
-        {
-            @Override
-            public void run()
-            {
-                user.lastseen = new Timestamp(System.currentTimeMillis());
-                update(user); // is async
-                if (user.isOnline())
-                {
-                    return;
-                }
-                users.remove(event.getPlayer().getName());
-            }
-        }, this.core.getConfiguration().userManagerKeepUserLoaded);
-        this.onlinePlayers.remove(player);
-    }
-
-    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
-    private void onLogin(final PlayerLoginEvent event)
-    {
-        if (event.getResult() == PlayerLoginEvent.Result.ALLOWED)
-        {
-            this.onlinePlayers.add(event.getPlayer());
-        }
-    }
-
-    @EventHandler(priority = EventPriority.LOWEST)
-    private void onJoin(final PlayerJoinEvent event)
-    {
-        Player player = event.getPlayer();
-        final User user = this.users.get(player.getName());
-        if (user != null)
-        {
-            user.offlinePlayer = player;
-            user.refreshIP();
-            if (user.removalTaskId == null)
-            {
-                return; // No task to cancel
-            }
-            user.getServer().getScheduler().cancelTask(user.removalTaskId);
-        }
-    }
-
-    /**
      * Searches for too old UserData and remove it.
      */
     public void cleanup()
@@ -516,7 +435,7 @@ public class UserManager extends SingleKeyStorage<Long, User> implements Cleanab
                 try
                 {
                     ResultSet result = database.preparedQuery(User.class, "cleanup",
-                            new Timestamp(System.currentTimeMillis() - StringUtils.convertTimeToMillis(core.getConfiguration().userManagerCleanupDatabase)));
+                                                              new Timestamp(System.currentTimeMillis() - StringUtils.convertTimeToMillis(core.getConfiguration().userManagerCleanupDatabase)));
 
                     while (result.next())
                     {
@@ -525,10 +444,12 @@ public class UserManager extends SingleKeyStorage<Long, User> implements Cleanab
                 }
                 catch (SQLException e)
                 {
-                    throw new StorageException("An SQL-Error occurred while cleaning the user-table", e, database.getStoredStatement(modelClass,"cleanup"));
+                    // TODO this exception will be uncaught
+                    throw new StorageException("An SQL-Error occurred while cleaning the user-table", e, database.getStoredStatement(modelClass, "cleanup"));
                 }
                 catch (Exception e)
                 {
+                    // TODO this exception will be uncaught
                     throw new StorageException("An unknown Error occurred while cleaning the user-table", e);
                 }
             }
@@ -537,7 +458,7 @@ public class UserManager extends SingleKeyStorage<Long, User> implements Cleanab
 
     public void broadcastMessage(String category, String message, Permission perm, Object... args)
     {
-        for (Player player : this.server.getOnlinePlayers())
+        for (Player player : this.core.getServer().getOnlinePlayers())
         {
             if (perm == null || perm.isAuthorized(player))
             {
@@ -555,9 +476,9 @@ public class UserManager extends SingleKeyStorage<Long, User> implements Cleanab
     public void broadcastStatus(String message, String username)
     {
         message = ChatFormat.parseFormats(message);
-        for (Player player : this.server.getOnlinePlayers())
+        for (Player player : this.core.getServer().getOnlinePlayers())
         {
-            this.getExactUser(player).sendMessage("* &2" + username + " &f" + message);
+            this.getExactUser(player).sendMessage("* &2" + username + " &f" + message); // not yet configurable
         }
     }
 
@@ -565,14 +486,6 @@ public class UserManager extends SingleKeyStorage<Long, User> implements Cleanab
     {
         message = "* &2" + username + " &f" + message;
         this.broadcastMessage(category, message, args);
-    }
-
-    public void clearAttachments(Module module)
-    {
-        for (User user : this.users.values())
-        {
-            user.detach(module);
-        }
     }
 
     private void loadSalt()
@@ -650,6 +563,93 @@ public class UserManager extends SingleKeyStorage<Long, User> implements Cleanab
         for (User user : this.users.values())
         {
             user.kickPlayer(_(user, category, message, args));
+        }
+    }
+
+    public void attachToAll(Class<? extends UserAttachment> attachmentClass)
+    {
+        for (Player player : this.core.getServer().getOnlinePlayers())
+        {
+            this.getExactUser(player).attach(attachmentClass);
+        }
+    }
+
+    public void detachFromAll(Class<? extends UserAttachment> attachmentClass)
+    {
+        for (Player player : this.core.getServer().getOnlinePlayers())
+        {
+            this.getExactUser(player).detach(attachmentClass);
+        }
+    }
+
+    public synchronized void addDefaultAttachment(Class<? extends UserAttachment> attachmentClass)
+    {
+        this.defaultAttachments.add(attachmentClass);
+    }
+
+    public synchronized void removeDefaultAttachment(Class<? extends UserAttachment> attachmentClass)
+    {
+        this.defaultAttachments.remove(attachmentClass);
+    }
+
+    public synchronized void removeDefaultAttachments()
+    {
+        this.defaultAttachments.clear();
+    }
+
+    private class UserListener implements Listener
+    {
+        /**
+         * Removes the user from loaded UserList when quitting the server and
+         * updates lastseen in database
+         *
+         * @param event the PlayerQuitEvent
+         */
+        @EventHandler(priority = EventPriority.MONITOR)
+        private void onQuit(final PlayerQuitEvent event)
+        {
+            Player player = event.getPlayer();
+            final User user = getExactUser(player);
+            user.removalTaskId = event.getPlayer().getServer().getScheduler().scheduleSyncDelayedTask(core, new Runnable() {
+                @Override
+                public void run()
+                {
+                    user.lastseen = new Timestamp(System.currentTimeMillis());
+                    update(user); // is async
+                    if (user.isOnline())
+                    {
+                        return;
+                    }
+                    users.remove(event.getPlayer().getName());
+                }
+            }, core.getConfiguration().userManagerKeepUserLoaded);
+            onlinePlayers.remove(player);
+        }
+
+        @EventHandler(priority = EventPriority.MONITOR)
+        private void onLogin(final PlayerLoginEvent event)
+        {
+            if (event.getResult() == PlayerLoginEvent.Result.ALLOWED)
+            {
+                onlinePlayers.add(event.getPlayer());
+            }
+        }
+
+        @EventHandler(priority = EventPriority.LOWEST)
+        private void onJoin(final PlayerJoinEvent event)
+        {
+            Player player = event.getPlayer();
+            final User user = users.get(player.getName());
+            if (user != null)
+            {
+                user.offlinePlayer = player;
+                user.refreshIP();
+                if (user.removalTaskId == null)
+                {
+                    return; // No task to cancel
+                }
+                user.getServer().getScheduler().cancelTask(user.removalTaskId);
+            }
         }
     }
 }

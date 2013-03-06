@@ -1,19 +1,18 @@
 package de.cubeisland.cubeengine.core.user;
 
 import de.cubeisland.cubeengine.core.CubeEngine;
+import de.cubeisland.cubeengine.core.attachment.AttachmentHolder;
+import de.cubeisland.cubeengine.core.attachment.UserAttachment;
 import de.cubeisland.cubeengine.core.bukkit.BukkitCore;
 import de.cubeisland.cubeengine.core.bukkit.BukkitUtils;
 import de.cubeisland.cubeengine.core.command.sender.CommandSender;
 import de.cubeisland.cubeengine.core.i18n.Language;
-import de.cubeisland.cubeengine.core.module.Module;
 import de.cubeisland.cubeengine.core.storage.Model;
 import de.cubeisland.cubeengine.core.storage.database.AttrType;
 import de.cubeisland.cubeengine.core.storage.database.Attribute;
 import de.cubeisland.cubeengine.core.storage.database.DatabaseConstructor;
 import de.cubeisland.cubeengine.core.storage.database.Index;
 import de.cubeisland.cubeengine.core.storage.database.SingleKeyEntity;
-import de.cubeisland.cubeengine.core.attachment.AttachmentHolder;
-import de.cubeisland.cubeengine.core.attachment.UserAttachment;
 import de.cubeisland.cubeengine.core.util.ChatFormat;
 import de.cubeisland.cubeengine.core.util.convert.ConversionException;
 import gnu.trove.map.hash.THashMap;
@@ -130,12 +129,12 @@ public class User extends UserBase implements Model<Long>, CommandSender, Attach
     }
 
     @Override
-    public synchronized UserAttachment attach(Class<UserAttachment> type, Module module)
+    public synchronized <A extends UserAttachment> A attach(Class<A> type)
     {
         try
         {
-            UserAttachment attachment = type.newInstance();
-            attachment.attachTo(this, module);
+            A attachment = type.newInstance();
+            attachment.attachTo(this);
             this.attachments.put(type, attachment);
             return attachment;
         }
@@ -146,32 +145,34 @@ public class User extends UserBase implements Model<Long>, CommandSender, Attach
     }
 
     @Override
-    public synchronized UserAttachment attachOrGet(Class<UserAttachment> type, Module module)
+    public synchronized <A extends UserAttachment> A attachOrGet(Class<A> type)
     {
-        UserAttachment attachment = this.get(type);
+        A attachment = this.get(type);
         if (attachment == null)
         {
-            attachment = this.attach(type, module);
+            attachment = this.attach(type);
         }
         return attachment;
     }
 
     @Override
-    public synchronized UserAttachment get(Class<UserAttachment> type)
+    @SuppressWarnings("unchecked")
+    public synchronized <A extends UserAttachment> A get(Class<A> type)
     {
-        return this.attachments.get(type);
+        return (A)this.attachments.get(type);
     }
 
     @Override
-    public synchronized boolean has(Class<UserAttachment> type)
+    public synchronized <A extends UserAttachment> boolean has(Class<A> type)
     {
         return this.attachments.containsKey(type);
     }
 
     @Override
-    public synchronized UserAttachment detach(Class<UserAttachment> type)
+    @SuppressWarnings("unchecked")
+    public synchronized <A extends UserAttachment> A detach(Class<A> type)
     {
-        UserAttachment attachment = this.attachments.remove(type);
+        A attachment = (A)this.attachments.remove(type);
         if (attachment != null)
         {
             attachment.onDetach();
@@ -179,22 +180,7 @@ public class User extends UserBase implements Model<Long>, CommandSender, Attach
         return attachment;
     }
 
-    public synchronized void detach(Module module)
-    {
-        final Iterator<Entry<Class<? extends UserAttachment>, UserAttachment>> attachmentIt = this.attachments.entrySet().iterator();
-        UserAttachment attachment;
-        while (attachmentIt.hasNext())
-        {
-            attachment = attachmentIt.next().getValue();
-            if (attachment.getModule() == module)
-            {
-                attachment.onDetach();
-                attachmentIt.remove();
-            }
-        }
-    }
-
-    public synchronized void detach()
+    public synchronized void detachAll()
     {
         final Iterator<Entry<Class<? extends UserAttachment>, UserAttachment>> attachmentIt = this.attachments.entrySet().iterator();
         while (attachmentIt.hasNext())

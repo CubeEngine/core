@@ -243,9 +243,6 @@ public final class BukkitCore extends JavaPlugin implements Core
         // depends on: executor, database, Server, core config and event registration
         this.userManager = new UserManager(this);
 
-        // register listeners for UserManger
-        pm.registerEvents(this.userManager, this);
-
         pm.registerEvents(new CoreListener(this), this);
 
         // depends on: file manager, core config
