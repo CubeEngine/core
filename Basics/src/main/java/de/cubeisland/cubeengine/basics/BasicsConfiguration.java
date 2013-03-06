@@ -92,4 +92,6 @@ public class BasicsConfiguration extends Configuration
     public boolean disallowBanIfOfflineMode;
     @Option("commands.kick.default-message")
     public String defaultKickMessage = "&4Kicked!";
+    @Option("changepainting.max.distance")
+    public int maxChangePaintingDistance = 10;
 }

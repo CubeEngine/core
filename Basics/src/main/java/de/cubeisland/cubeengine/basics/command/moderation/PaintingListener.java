@@ -3,9 +3,12 @@ package de.cubeisland.cubeengine.basics.command.moderation;
 import de.cubeisland.cubeengine.basics.Basics;
 import de.cubeisland.cubeengine.basics.BasicsPerm;
 import de.cubeisland.cubeengine.core.user.User;
+import de.cubeisland.cubeengine.core.util.math.Vector3;
 import java.util.HashMap;
 import java.util.Map;
 import org.bukkit.Art;
+import org.bukkit.Location;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Painting;
 import org.bukkit.event.EventHandler;
@@ -59,11 +62,27 @@ public class PaintingListener implements Listener
         if(!this.paintingChange.isEmpty())
         {
             Painting painting = this.paintingChange.get( event.getPlayer().getName() );
-        
+            
             if(painting != null)
             {
+                User user = this.module.getUserManager().getExactUser( event.getPlayer());
+                
+                if( this.squaredDistance( painting, user ) > this.module.getConfiguration().maxChangePaintingDistance * this.module.getConfiguration().maxChangePaintingDistance )
+                {
+                    this.paintingChange.remove( user.getName() );
+                    user.sendMessage( "basics", "&aPainting is locked now" );
+                    return;
+                }
                 while(!painting.setArt( Art.values()[ (int) (Math.random() * Art.values().length)] ));
             }
-        }
+        }       
+    }
+    
+    public double squaredDistance(Entity entity, Entity entity2)
+    {
+        Location loc = entity.getLocation();
+        Location loc2 = entity2.getLocation();
+        
+        return Math.pow( loc2.getX() - loc.getX(), 2 ) + Math.pow( loc2.getY() - loc.getY() , 2 ) + Math.pow( loc2.getZ() - loc.getZ(), 2);
     }
 }
