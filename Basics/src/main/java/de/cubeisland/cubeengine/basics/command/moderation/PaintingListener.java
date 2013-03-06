@@ -43,7 +43,7 @@ public class PaintingListener implements Listener
             if(playerPainting == null)
             {
                 this.paintingChange.put( user.getName(), painting );
-                user.sendMessage( "basics", "&aYou can change the painting now by rotating mousewheel." );
+                user.sendMessage( "basics", "&aYou can now cycle through the paintings using your mousewheel." );
             }
             else
             {
