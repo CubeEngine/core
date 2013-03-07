@@ -67,7 +67,7 @@ public class PaintingListener implements Listener
             {
                 User user = this.module.getUserManager().getExactUser( event.getPlayer());
                 
-                if( this.squaredDistance( painting, user ) > this.module.getConfiguration().maxChangePaintingDistance * this.module.getConfiguration().maxChangePaintingDistance )
+                if( painting.getLocation().toVector().distanceSquared( user.getLocation().toVector()) > this.module.getConfiguration().maxChangePaintingDistance * this.module.getConfiguration().maxChangePaintingDistance )
                 {
                     this.paintingChange.remove( user.getName() );
                     user.sendMessage( "basics", "&aPainting is locked now" );
@@ -76,13 +76,5 @@ public class PaintingListener implements Listener
                 while(!painting.setArt( Art.values()[ (int) (Math.random() * Art.values().length)] ));
             }
         }       
-    }
-    
-    public double squaredDistance(Entity entity, Entity entity2)
-    {
-        Location loc = entity.getLocation();
-        Location loc2 = entity2.getLocation();
-        
-        return Math.pow( loc2.getX() - loc.getX(), 2 ) + Math.pow( loc2.getY() - loc.getY() , 2 ) + Math.pow( loc2.getZ() - loc.getZ(), 2);
     }
 }
