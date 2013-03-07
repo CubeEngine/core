@@ -3,12 +3,7 @@ package de.cubeisland.cubeengine.basics.command.moderation;
 import de.cubeisland.cubeengine.basics.Basics;
 import de.cubeisland.cubeengine.basics.BasicsPerm;
 import de.cubeisland.cubeengine.core.user.User;
-import de.cubeisland.cubeengine.core.util.math.Vector3;
-import java.util.HashMap;
-import java.util.Map;
 import org.bukkit.Art;
-import org.bukkit.Location;
-import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Painting;
 import org.bukkit.event.EventHandler;
@@ -16,6 +11,9 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerItemHeldEvent;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class PaintingListener implements Listener
 {
@@ -66,14 +64,15 @@ public class PaintingListener implements Listener
             if(painting != null)
             {
                 User user = this.module.getUserManager().getExactUser( event.getPlayer());
+                final int maxDistanceSquared = this.module.getConfiguration().maxChangePaintingDistance * this.module.getConfiguration().maxChangePaintingDistance;
                 
-                if( painting.getLocation().toVector().distanceSquared( user.getLocation().toVector()) > this.module.getConfiguration().maxChangePaintingDistance * this.module.getConfiguration().maxChangePaintingDistance )
+                if( painting.getLocation().toVector().distanceSquared( user.getLocation().toVector()) >  maxDistanceSquared)
                 {
                     this.paintingChange.remove( user.getName() );
                     user.sendMessage( "basics", "&aPainting is locked now" );
                     return;
                 }
-                while(!painting.setArt( Art.values()[ (int) (Math.random() * Art.values().length)] ));
+                while(!painting.setArt( Art.values()[ (int) (Math.random() * Art.values().length)] )); // TODO why random art instead of cycling through it?
             }
         }       
     }
