@@ -60,10 +60,13 @@ public class HomeSubCommands
                 if (context.hasFlag("p"))
                 {
                     visibility = TeleportPoint.Visibility.PUBLIC;
-                    if (tpManager.findPublicHome(name) != null)
+                    if (tpManager.getHome(name) != null)
                     {
-                        sender.sendMessage("travel", "&4A public home by that name already exist. Please choose another name");
-                        return;
+                        if (tpManager.getHome(name).isPublic())
+                        {
+                            sender.sendMessage("travel", "&4A public home by that name already exist. Please choose another name");
+                            return;
+                        }
                     }
                 }
                 if (name.contains(":") || name.length() >= 32)
@@ -216,46 +219,7 @@ public class HomeSubCommands
     }, desc = "List your homes", permDefault = PermDefault.TRUE, min = 0, max = 0)
     public void listHomes(CommandContext context)
     {
-        if (context.getSender()  instanceof  User)
-        {
-            User sender = (User) context.getSender();
-            try
-            {
-                Set<String> homes = tpManager.listAvailableHomes(sender);
-                if (homes.isEmpty())
-                {
-                    sender.sendMessage("travel", "&4You don't have any homes!");
-                }
-                else
-                {
-                    sender.sendMessage("travel", "&6Here is a list of your homes:");
-                    for (String home : homes)
-                    {
-                        if (home.contains(":"))
-                        {
-                            sender.sendMessage("travel", " &6- &3%s", home.replaceAll(":", "&6:&9"));
-                        }
-                        else
-                        {
-                            sender.sendMessage("travel", " &6- &9%s", home);
-                        }
-
-                    }
-                }
-            }
-            catch (StorageException ex)
-            {
-                sender.sendMessage("travel", "&4A database error occurred while executing the command, please notify an administrator");
-                module.getLogger().log(LogLevel.NOTICE, "An error occurred while executing a command, please look in the debug log");
-                module.getLogger().log(LogLevel.DEBUG, "This error occurred while executing a command", ex);
-            }
-        }
-        else
-        {
-            context.sendMessage("travel", "&4This command can only be used by users!");
-        }
-
-
+        //TODO
     }
 
     @Command(names = {
@@ -263,73 +227,7 @@ public class HomeSubCommands
     }, desc = "List all players invited to your homes", min = 1, max = 1, permDefault = PermDefault.TRUE)
     public void invitedList(CommandContext context)
     {
-        if (context.getSender()  instanceof  User)
-        {
-            User sender = (User) context.getSender();
-
-
-            Set<String> homes = tpManager.listOwnedHomes(sender);
-            if (homes.isEmpty())
-            {
-                sender.sendMessage("travel", "&4You don't have any homes!");
-                return;
-            }
-
-            if (context.getArgCount() == 0)
-            {
-                Set<Pair<String, Set<String>>> homesInvited = null;
-                try
-                {
-                    homesInvited = tpManager.listHomesAndInvited(sender);
-                }
-                catch (StorageException ex)
-                {
-                    sender.sendMessage("travel", "&4A database error occurred while executing the command, please notify an administrator");
-                    module.getLogger().log(LogLevel.NOTICE, "An error occurred while executing a command, please look in the debug log");
-                    module.getLogger().log(LogLevel.DEBUG, "This error occurred while executing a command", ex);
-                    module.getLogger().log(LogLevel.DEBUG,"", ex);
-                    return;
-                }
-
-                StringBuilder builder = new StringBuilder();
-
-                for (Pair<String, Set<String>> homeInvited : homesInvited)
-                {
-                    if (!homeInvited.getRight().isEmpty())
-                    {
-                        builder.append("&9").append(homeInvited.getLeft()).append("&6: ");
-                        for (String invited : homeInvited.getRight())
-                        {
-                            builder.append("&3").append(invited).append("&6, ");
-                        }
-                        builder.delete(builder.length()-2, builder.length()-1);
-                        builder.append("\n");
-                    }
-                }
-                if (builder.length() != 0)
-                {
-                    sender.sendMessage("travel", "&6Here is a list of your homes with who's invited to them:");
-                    sender.sendMessage(builder.toString());
-                }
-                else
-                {
-                    sender.sendMessage("travel", "&4You have no homes with users invited.");
-                }
-            }
-            else if (module.getConfig().multipleHomes)
-            {
-                Home home = tpManager.getHome(sender, context.getString(0));
-                sender.sendMessage("travel", "&6Here is a list of users invited to: &9%s", home.getName());
-                for (String user : home.getInvited())
-                {
-                    sender.sendMessage("travel", " &6- &3%s", user);
-                }
-            }
-        }
-        else
-        {
-            context.sendMessage("travel", "&4This command can only be used by users!");
-        }
+        //TODO
     }
 
     @Command(desc = "Invite a user to one of your homes", min = 1, max = 2, usage = "[home] <user>", permDefault = PermDefault.TRUE)

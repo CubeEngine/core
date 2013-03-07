@@ -90,22 +90,7 @@ public class HomeAdminSub
                 ParameterizedContext usedContext = this.acceptEntries.get(context.getSender()).getRight();
                 if (usedContext.getCommand().getName().equals("clear"))
                 {
-                    if (usedContext.getArgCount() == 0)
-                    {
-                        tpManager.deleteAllHomes();
-                    }
-                    else
-                    {
-                        if (usedContext.hasFlag("p"))
-                        {
-                            tpManager.deletePublicHomes(CubeEngine.getUserManager().getUser(usedContext.getString(0), false));
-                        }
-                        else
-                        {
-                            tpManager.deleteAllHomes(CubeEngine.getUserManager().getUser(usedContext.getString(0), false));
-                        }
-                    }
-                    context.sendMessage("travel", "&6The homes are now deleted");
+                   //  TODO delete homes
                 }
                 return;
             }
@@ -118,81 +103,7 @@ public class HomeAdminSub
     }, min = 0, max = 1, usage = " <user> <-public>")
     public void list(ParameterizedContext context)
     {
-        if (context.getArgCount() == 0)
-        {
-            if (context.hasFlag("p"))
-            {
-                context.sendMessage("travel", "&6Here is a list of all public homes on this server:");
-                try
-                {
-                    for (String home : this.tpManager.listAllPublicHomes())
-                    {
-                        context.sendMessage("travel", " &6- &9%s", home);
-                    }
-                }
-                catch (StorageException ex)
-                {
-                    context.sendMessage("travel", "An error occurred while the command was executed, please notify and administrator");
-                    module.getLogger().log(LogLevel.NOTICE, "An error occurred while executing a command, please look in the debug log");
-                    module.getLogger().log(LogLevel.DEBUG, "This is the stack:", ex);
-                }
-            }
-            else
-            {
-                context.sendMessage("travel", "&6Here is a list of all homes on this server");
-                try
-                {
-                    for (String home : this.tpManager.listAllHomes())
-                    {
-                        context.sendMessage("travel", " &6- &9%s", home);
-                    }
-                }
-                catch (StorageException ex)
-                {
-                    context.sendMessage("travel", "An error occurred while the command was executed, please notify and administrator");
-                    module.getLogger().log(LogLevel.NOTICE, "An error occurred while executing a command, please look in the debug log");
-                    module.getLogger().log(LogLevel.DEBUG, "This is the stack:", ex);
-                }
-            }
-        }
-        else
-        {
-            User user = CubeEngine.getUserManager().getUser(context.getString(0), false);
-            if (context.hasFlag("p"))
-            {
-                context.sendMessage("travel", "&6Here is a list of all public homes owned by &3%s:", user.getDisplayName());
-                try
-                {
-                    for (String home : this.tpManager.listPublicOwnedHomes(user))
-                    {
-                        context.sendMessage("travel", " &6- &9%s", home);
-                    }
-                }
-                catch (StorageException ex)
-                {
-                    user.sendMessage("travel", "An error occurred while the command was executed, please notify and administrator");
-                    module.getLogger().log(LogLevel.NOTICE, "An error occurred while executing a command, please look in the debug log");
-                    module.getLogger().log(LogLevel.DEBUG, "This is the stack:", ex);
-                }
-            }
-            else
-            {
-                context.sendMessage("travel", "&6Here is a list of all homes &3%s &6is the owner of", user.getDisplayName());
-                try
-                {
-                    for (String home : this.tpManager.listOwnedHomes(user))
-                    {
-                        context.sendMessage("travel", " &6- &9%s", home);
-                    }
-                }
-                catch (StorageException ex)
-                {
-                    user.sendMessage("travel", "An error occurred while the command was executed, please notify and administrator");
-                    module.getLogger().log(LogLevel.NOTICE, "An error occurred while executing a command, please look in the debug log");
-                    module.getLogger().log(LogLevel.DEBUG, "This is the stack:", ex);
-                }
-            }
-        }
+        //TODO
     }
 
     @Command(names = {

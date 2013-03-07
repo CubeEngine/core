@@ -141,10 +141,10 @@ public class WarpSubCommands
         user.sendMessage("travel", "The warp is now moved to your current location");
     }
 
+    @Command(desc = "Search for a warp", min = 1, max = 2)
     public CommandResult search(CommandContext context)
     {
         String search = context.getString(0);
-        int resultLimit = context.getArg(1, Integer.class);
         Warp first;
         if (context.getSender() instanceof User)
         {
@@ -173,11 +173,15 @@ public class WarpSubCommands
             @Override
             public void onFinish(CommandContext context)
             {
-                context.sendMessage("travel", "Here is the top %d results:", context.getArg(1, Integer.class));
+                context.sendMessage("travel", "Here is the top %d results:", context.getArg(1, Integer.class, 5));
                 int position = 1;
                 for (String warp : results.keySet())
                 {
                     context.sendMessage(position++ + ". " + warp);
+                    if (position == context.getArg(1, Integer.class, 5))
+                    {
+                        break;
+                    }
                 }
             }
         };

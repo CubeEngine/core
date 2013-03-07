@@ -81,6 +81,11 @@ public class TelePointManager extends SingleKeyStorage<Long, TeleportPoint>
         }
     }
 
+    /**
+     * Load all warps and homes
+     *
+     * @param inviteManager
+     */
     public void load(InviteManager inviteManager)
     {
         this.inviteManager = inviteManager;
@@ -103,6 +108,16 @@ public class TelePointManager extends SingleKeyStorage<Long, TeleportPoint>
         }
     }
 
+    /**
+     * Get a home by name relative to an user
+     * The name can be edit distance <= 2 away from a home name
+     *
+     * the name can be just the name of the home, or owner:name
+     *
+     * @param user  the user
+     * @param name  the name of the home relative to the user
+     * @return The home if found, else null
+     */
     public Home getHome(User user, String name)
     {
         if (name == null || user == null)
@@ -197,6 +212,190 @@ public class TelePointManager extends SingleKeyStorage<Long, TeleportPoint>
         return null;
     }
 
+    /**
+     * Get a home by its name.
+     * this have to be in the format owner:home if the home is not public
+     *
+     * @param name
+     * @return the home if found
+     */
+    public Home getHome(String name)
+    {
+        Home home = homes.get(name);
+        if (home == null)
+        {
+            home = publicHomes.get(name);
+        }
+        return home;
+    }
+
+    /**
+     * If a home by that name relative to the user exist
+     * @param name the name relative to the user
+     * @param user the user
+     * @return
+     */
+    public boolean hasHome(String name, User user)
+    {
+        Home home = this.getHome(user, name);
+        return home != null && home.getName().equals(name);
+    }
+
+    /**
+     * Put a home in an users home storage
+     * @param home the home
+     * @param user the user
+     */
+    public void putHomeToUser(Home home, User user)
+    {
+        if (user.getAttribute(module, "homes") == null)
+        {
+            user.setAttribute(module, "homes", new HashMap<String, Home>());
+        }
+        Map<String, Home> homes = user.getAttribute(module, "homes");
+
+        if (homes.containsKey(home.getName()))
+        {
+            Home rename = homes.get(home.getName());
+            if (!rename.isOwner(user) && home.isOwner(user))
+            {
+                homes.put(home.getName(), home);
+            }
+            else
+            {
+                homes.put(home.getStorageName(), home);
+            }
+            homes.put(rename.getStorageName(), rename);
+        }
+        else
+        {
+            if (home.isOwner(user))
+            {
+                homes.put(home.getName(), home);
+            }
+            else
+            {
+                homes.put(home.getStorageName(), home);
+            }
+        }
+    }
+
+    /**
+     * Unload a home from an users home storage
+     *
+     * @param home the home
+     * @param user the user
+     */
+    public void removeHomeFromUser(Home home, User user)
+    {
+        if (user.getAttribute(module, "homes") == null)
+        {
+            user.setAttribute(module, "homes", new HashMap<String, Home>());
+        }
+        Map<String, Home> homes = user.getAttribute(module, "homes");
+
+        // Remove the home from the users list
+        if (homes.get(home.getName()).equals(home))
+        {
+            homes.remove(home.getName());
+        }
+        else if (homes.get(home.getStorageName()).equals(home))
+        {
+            homes.remove(home.getStorageName());
+        }
+
+        // If another home the player has can be taken away it's prefix, do it
+        Set<Home> prefixed = new HashSet<Home>();
+        for (String name : homes.keySet())
+        {
+            String[] parts = name.split(":");
+            if (parts.length == 2)
+            {
+                if (parts[1].equals(home.getName()))
+                {
+                    prefixed.add(homes.get(name));
+                }
+            }
+        }
+        if (prefixed.size() == 1)
+        {
+            for (Home h : prefixed)
+            {
+                homes.put(home.getName(), h);
+            }
+        }
+    }
+
+    /**
+     * Create a home
+     *
+     * Obs: This does not add it to the home storage, nor the database
+     * @param location
+     * @param name
+     * @param owner
+     * @param visibility
+     * @return the newly generated home
+     */
+    public Home createHome(Location location, String name, User owner, TeleportPoint.Visibility visibility)
+    {
+        Home home = new Home(new TeleportPoint(location, name, owner, null, TeleportPoint.Type.HOME, visibility), this, inviteManager);
+        this.store(home.getModel());
+        this.putHomeToUser(home, home.getOwner());
+        this.homes.put(home.getStorageName(), home);
+        for (User user : home.getInvitedUsers())
+        {
+            this.putHomeToUser(home, user);
+        }
+        return home;
+    }
+
+    /**
+     * Delete and unload a home
+     * this will also remove it from the database
+     *
+     * @param home
+     */
+    public void deleteHome(Home home)
+    {
+        if (home.getVisibility() == TeleportPoint.Visibility.PRIVATE)
+        {
+            this.removeHomeFromUser(home, home.getOwner());
+            for (User user : home.getInvitedUsers())
+            {
+                this.removeHomeFromUser(home, user);
+            }
+        }
+        else
+        {
+            for (User user : CubeEngine.getUserManager().getOnlineUsers())
+            {
+                for (Object object : user.getAttributes(module))
+                {
+                    if (object instanceof String)
+                    {
+                        String string = (String)object;
+                        if (string.equalsIgnoreCase(home.getName()) || string.equalsIgnoreCase(home.getStorageName()))
+                        {
+                            user.removeAttribute(module, string);
+                        }
+                    }
+                }
+            }
+        }
+        this.delete(home.getModel());
+        this.homes.remove(home.getStorageName());
+        if (home.isPublic())
+        {
+            this.publicHomes.remove(home.getName());
+        }
+    }
+
+    /**
+     * Get a warp by name relative to an user
+     * @param user  the user
+     * @param name  the name relative to the user
+     * @return the warp if found, or null
+     */
     public Warp getWarp(User user, String name)
     {
         if (user == null || name == null)
@@ -270,86 +469,69 @@ public class TelePointManager extends SingleKeyStorage<Long, TeleportPoint>
         return null;
     }
 
-    public boolean hasHome(String name, User user)
+    /**
+     * Return the public warp with that name
+     * @param name
+     * @return
+     */
+    public Warp getWarp(String name)
     {
-        Home home = this.getHome(user, name);
-        return home != null && home.getName().equals(name);
+        if (name.contains(":"))
+        {
+            return this.warps.get(name);
+        } else
+        {
+            return this.warps.get("public:" + name);
+        }
     }
 
-    public void removeHomeFromUser(Home home, User user)
+    /**
+     * If a warp by that name exist or not.
+     * @param name the name in this format: ["public",owner]:home
+     * @return
+     */
+    public boolean hasWarp(String name)
     {
-        if (user.getAttribute(module, "homes") == null)
-        {
-            user.setAttribute(module, "homes", new HashMap<String, Home>());
-        }
-        Map<String, Home> homes = user.getAttribute(module, "homes");
+        return getWarp(name) != null;
+    }
 
-        // Remove the home from the users list
-        if (homes.get(home.getName()).equals(home))
+    /**
+     * Get a ranked list of how well warps matches the search
+     *
+     * @param search search word
+     * @param sender the sender that sent the command
+     * @return
+     */
+    public TreeMap<String, Integer> searchWarp(String search, CommandSender sender)
+    {
+        Set<String> warps = new HashSet<String>();
+        if (sender instanceof User)
         {
-            homes.remove(home.getName());
-        }
-        else if (homes.get(home.getStorageName()).equals(home))
-        {
-            homes.remove(home.getStorageName());
-        }
-
-        // If another home the player has can be taken away it's prefix, do it
-        Set<Home> prefixed = new HashSet<Home>();
-        for (String name : homes.keySet())
-        {
-            String[] parts = name.split(":");
-            if (parts.length == 2)
+            User user = (User)sender;
+            for (Warp iterate : this.warps.values())
             {
-                if (parts[1].equals(home.getName()))
+                if (iterate.canAccess(user))
                 {
-                    prefixed.add(homes.get(name));
+                    warps.add(iterate.getName());
                 }
             }
         }
-        if (prefixed.size() == 1)
-        {
-            for (Home h : prefixed)
-            {
-                homes.put(home.getName(), h);
-            }
-        }
-    }
-
-    public void putHomeToUser(Home home, User user)
-    {
-        if (user.getAttribute(module, "homes") == null)
-        {
-            user.setAttribute(module, "homes", new HashMap<String, Home>());
-        }
-        Map<String, Home> homes = user.getAttribute(module, "homes");
-
-        if (homes.containsKey(home.getName()))
-        {
-            Home rename = homes.get(home.getName());
-            if (!rename.isOwner(user) && home.isOwner(user))
-            {
-                homes.put(home.getName(), home);
-            }
-            else
-            {
-                homes.put(home.getStorageName(), home);
-            }
-            homes.put(rename.getStorageName(), rename);
-        }
         else
         {
-            if (home.isOwner(user))
+            for (Warp iterate : this.warps.values())
             {
-                homes.put(home.getName(), home);
-            }
-            else
-            {
-                homes.put(home.getStorageName(), home);
+                warps.add(iterate.getName());
             }
         }
+
+        return Match.string().getMatches(search, warps, 5, true);
     }
 
+    /**
+     * Put a warp in an user warp storage
+     * @param warp the warp
+     * @param user the user
+     */
     public void putWarpToUser(Warp warp, User user)
     {
         if (user.getAttribute(module, "warps") == null)
@@ -377,6 +559,11 @@ public class TelePointManager extends SingleKeyStorage<Long, TeleportPoint>
         }
     }
 
+    /**
+     * Remove a warp from an users warp storage
+     * @param warp the warp
+     * @param user the user
+     */
     public void removeWarpFromUser(Warp warp, User user)
     {
         if (user.getAttribute(module, "warps") == null)
@@ -401,19 +588,17 @@ public class TelePointManager extends SingleKeyStorage<Long, TeleportPoint>
         }
     }
 
-    public Home createHome(Location location, String name, User owner, TeleportPoint.Visibility visibility)
-    {
-        Home home = new Home(new TeleportPoint(location, name, owner, null, TeleportPoint.Type.HOME, visibility), this, inviteManager);
-        this.store(home.getModel());
-        this.putHomeToUser(home, home.getOwner());
-        this.homes.put(home.getStorageName(), home);
-        for (User user : home.getInvitedUsers())
-        {
-            this.putHomeToUser(home, user);
-        }
-        return home;
-    }
-
+    /**
+     * Create a warp
+     *
+     * Obs: This does not add it to the warp storage, nor the database
+     *
+     * @param location
+     * @param name
+     * @param owner
+     * @param visibility
+     * @return the newly generated warp
+     */
     public Warp createWarp(Location location, String name, User owner, TeleportPoint.Visibility visibility)
     {
         Warp warp = new Warp(new TeleportPoint(location, name, owner, null, TeleportPoint.Type.WARP, visibility), this, inviteManager);
@@ -427,307 +612,11 @@ public class TelePointManager extends SingleKeyStorage<Long, TeleportPoint>
         return warp;
     }
 
-    public void deleteHome(Home home)
-    {
-        if (home.getVisibility() == TeleportPoint.Visibility.PRIVATE)
-        {
-            this.removeHomeFromUser(home, home.getOwner());
-            for (User user : home.getInvitedUsers())
-            {
-                this.removeHomeFromUser(home, user);
-            }
-        }
-        else
-        {
-            for (User user : CubeEngine.getUserManager().getOnlineUsers())
-            {
-                for (Object object : user.getAttributes(module))
-                {
-                    if (object instanceof String)
-                    {
-                        String string = (String)object;
-                        if (string.equalsIgnoreCase(home.getName()) || string.equalsIgnoreCase(home.getStorageName()))
-                        {
-                            user.removeAttribute(module, string);
-                        }
-                    }
-                }
-            }
-        }
-        this.delete(home.getModel());
-        this.homes.remove(home.getStorageName());
-        if (home.isPublic())
-        {
-            this.publicHomes.remove(home.getName());
-        }
-    }
-
-    public void deleteAllHomes()
-    {
-        try
-        {
-            if (!this.database.preparedExecute(this.modelClass, "deleteAllHomes"))
-            {
-                throw new StorageException("Deletion of all homes returned false");
-            }
-        }
-        catch (SQLException ex)
-        {
-            throw new StorageException("could not delete the homes on the server", ex);
-        }
-    }
-
-    public void deleteAllHomes(User user)
-    {
-        try
-        {
-            if (!this.database.preparedExecute(this.modelClass, "deleteAllUserHomes", user.getKey()))
-            {
-                throw new StorageException("Deletion of all homes of user returned false");
-            }
-        }
-        catch (SQLException ex)
-        {
-            throw new StorageException("could not delete the homes that belongs to an user on the server", ex);
-        }
-    }
-
-    public void deletePublicHomes(User user)
-    {
-        try
-        {
-            if (!this.database.preparedExecute(this.modelClass, "deletePublicHomes"))
-            {
-                throw new StorageException("Deletion of all public homes returned false");
-            }
-        }
-        catch (SQLException ex)
-        {
-            throw new StorageException("could not delete the public homes on the server", ex);
-        }
-    }
-
-    public Home getHome(String name)
-    {
-        return homes.get(name);
-    }
-
-    public Set<String> listOwnedHomes(User user)
-    {
-        Set<String> homes = new HashSet<String>();
-        try
-        {
-            ResultSet ownedHomes = this.database.preparedQuery(this.modelClass, "listHomesOfUser", user.getKey());
-            while (ownedHomes.next())
-            {
-                String name = ownedHomes.getString("name");
-                if (name != null)
-                {
-                    homes.add(name);
-                }
-            }
-
-        }
-        catch (SQLException ex)
-        {
-            throw new StorageException("Could not get a list of the homes of an user", ex);
-        }
-        return homes;
-    }
-
-    public Set<String> listInvitedHomes(User user)
-    {
-        Set<String> homes = new HashSet<String>();
-        try
-        {
-            Set<Long> invitedHomes = this.inviteManager.getInvitedTo(user);
-            for (Long home : invitedHomes)
-            {
-                StringBuilder longName = new StringBuilder();
-                ResultSet ownerIds = this.database.preparedQuery(User.class, "getOwner", home);
-                if (!ownerIds.next())
-                {
-                    continue;
-                }
-                long ownerId = ownerIds.getLong("owner");
-                User owner = CubeEngine.getUserManager().get(ownerId);
-                if (owner != null)
-                {
-                    longName.append(owner.getName()).append(':');
-
-                    ResultSet names = this.database.preparedQuery(this.modelClass, "getName", home);
-                    if (names.next())
-                    {
-                        String name = names.getString("name");
-                        if (name != null)
-                        {
-                            homes.add(longName.append(name).toString());
-                        }
-                    }
-                }
-            }
-        }
-        catch (SQLException ex)
-        {
-            throw new StorageException("Could not get a list of the homes of an user", ex);
-        }
-        return homes;
-    }
-
-    public Set<String> listAvailableHomes(User user)
-    {
-        Set<String> homes = new HashSet<String>();
-        homes.addAll(listOwnedHomes(user));
-        homes.addAll(listInvitedHomes(user));
-        homes.addAll(listAllPublicHomes(true));
-        return homes;
-    }
-
-    public Set<String> listAllHomes()
-    {
-        Set<String> homes = new HashSet<String>();
-        try
-        {
-            ResultSet allHomes = this.database.preparedQuery(this.modelClass, "listAllHomes");
-            while (allHomes.next())
-            {
-                String name = allHomes.getString("name");
-                if (name != null)
-                {
-                    homes.add(name);
-                }
-            }
-        }
-        catch (SQLException ex)
-        {
-            throw new StorageException("Could not get a list of the homes of an user", ex);
-        }
-        return homes;
-    }
-
-    public Set<String> listAllPublicHomes()
-    {
-        return this.listAllPublicHomes(false);
-    }
-
-    public Set<String> listAllPublicHomes(boolean prefixed)
-    {
-        Set<String> homes = new HashSet<String>();
-        try
-        {
-            ResultSet allHomes = this.database.preparedQuery(this.modelClass, "listAllPublicHomes");
-            while (allHomes.next())
-            {
-                String name = allHomes.getString("name");
-                if (name != null)
-                {
-                    if (prefixed)
-                    {
-                        homes.add("public:" + name);
-                    }
-                    else
-                    {
-                        homes.add(name);
-                    }
-                }
-            }
-        }
-        catch (SQLException ex)
-        {
-            throw new StorageException("Could not get a list of the homes of an user", ex);
-        }
-        return homes;
-    }
-
-    public Set<String> listPublicOwnedHomes(User user)
-    {
-        Set<String> homes = new HashSet<String>();
-        try
-        {
-            ResultSet ownedHomes = this.database.preparedQuery(this.modelClass, "listPublicHomesOfUser", user.getKey());
-            while (ownedHomes.next())
-            {
-                String name = ownedHomes.getString("name");
-                if (name != null)
-                {
-                    homes.add(name);
-                }
-            }
-        }
-        catch (SQLException ex)
-        {
-            throw new StorageException("Could not get a list of the homes of an user", ex);
-        }
-        return homes;
-    }
-
-    public Set<Pair<String, Set<String>>> listHomesAndInvited(User user)
-    {
-        Set<Pair<String, Set<String>>> homesInvites = new HashSet<Pair<String, Set<String>>>();
-        try
-        {
-            ResultSet homes = database.preparedQuery(this.modelClass, "listHomesOfUser", user.getKey());
-            while (homes.next())
-            {
-                String name = homes.getString("name");
-                Long home =  homes.getLong("key");
-                Set<String> invites = inviteManager.getInvited(this.get(home));
-                homesInvites.add(new Pair<String, Set<String>>(name, invites));
-            }
-        }
-        catch (SQLException ex)
-        {
-            throw new StorageException("could not fetch the homes owned by " + user.getName(), ex);     
-        }
-        return homesInvites;
-    }
-
-    public Home findPublicHome(String name)
-    {
-        return this.publicHomes.get(name);
-    }
-
-    public boolean hasWarp(String name)
-    {
-        return getWarp(name) != null;
-    }
-
     /**
-     * Return the public warp with that name
+     * Rename a warp
+     * @param warp
      * @param name
-     * @return
      */
-    public Warp getWarp(String name)
-    {
-        if (name.contains(":"))
-        {
-            return this.warps.get(name);
-        } else
-        {
-            return this.warps.get("public:" + name);
-        }
-    }
-
-    public void deleteWarp(Warp warp)
-    {
-        for (User user : CubeEngine.getUserManager().getOnlineUsers())
-        {
-            for (Object object : user.getAttributes(module))
-            {
-                if (object instanceof String)
-                {
-                    String string = (String)object;
-                    if (string.equalsIgnoreCase(warp.getName()) || string.equalsIgnoreCase(warp.getStorageName()))
-                    {
-                        user.removeAttribute(module, string);
-                    }
-                }
-            }
-        }
-        this.warps.remove(warp.getStorageName());
-        this.delete(warp.getModel());
-    }
-
     public void renameWarp(Warp warp, String name)
     {
         this.warps.remove(warp.getStorageName());
@@ -750,28 +639,28 @@ public class TelePointManager extends SingleKeyStorage<Long, TeleportPoint>
 
     }
 
-    public TreeMap<String, Integer> searchWarp(String search, CommandSender sender)
+    /**
+     * Delete and unload a warp
+     * This will also delete the warp from the database
+     * @param warp
+     */
+    public void deleteWarp(Warp warp)
     {
-        Set<String> warps = new HashSet<String>();
-        if (sender instanceof User)
+        for (User user : CubeEngine.getUserManager().getOnlineUsers())
         {
-            User user = (User)sender;
-            for (Warp iterate : this.warps.values())
+            for (Object object : user.getAttributes(module))
             {
-                if (iterate.canAccess(user))
+                if (object instanceof String)
                 {
-                    warps.add(iterate.getName());
+                    String string = (String)object;
+                    if (string.equalsIgnoreCase(warp.getName()) || string.equalsIgnoreCase(warp.getStorageName()))
+                    {
+                        user.removeAttribute(module, string);
+                    }
                 }
             }
         }
-        else
-        {
-            for (Warp iterate : this.warps.values())
-            {
-                warps.add(iterate.getName());
-            }
-        }
-
-        return Match.string().getMatches(search, warps, 5, true);
+        this.warps.remove(warp.getStorageName());
+        this.delete(warp.getModel());
     }
 }
