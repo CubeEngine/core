@@ -1,5 +1,6 @@
 package de.cubeisland.cubeengine.core.user;
 
+import de.cubeisland.cubeengine.core.Core;
 import de.cubeisland.cubeengine.core.CubeEngine;
 import de.cubeisland.cubeengine.core.attachment.AttachmentHolder;
 import de.cubeisland.cubeengine.core.attachment.UserAttachment;
@@ -35,10 +36,7 @@ import org.bukkit.plugin.PluginManager;
 import org.bukkit.util.BlockIterator;
 
 import java.net.InetSocketAddress;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.sql.Timestamp;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -75,27 +73,12 @@ public class User extends UserBase implements Model<Long>, CommandSender, Attach
     public final Timestamp firstseen;
     @Attribute(type = AttrType.VARCHAR, length = 5, notnull = false)
     public String language = null;
-    private boolean isLoggedIn = false;
+    boolean loggedInState = false;
     private final Map<Class<? extends UserAttachment>, UserAttachment> attachments;
-
-    // TODO we might move this to the UserManager
-    Integer removalTaskId; // only used in UserManager no AccessModifier is intended
-    private final static MessageDigest hasher;
-
-    static
-    {
-        try
-        {
-            hasher = MessageDigest.getInstance("SHA-512");
-        }
-        catch (NoSuchAlgorithmException e)
-        {
-            throw new RuntimeException("SHA-512 hash algorithm not available!");
-        }
-    }
+    private final Core core;
 
     @DatabaseConstructor
-    public User(List<Object> args) throws ConversionException
+    User(List<Object> args) throws ConversionException
     {
         super(Bukkit.getOfflinePlayer((String)args.get(1)));
         this.key = (Long)args.get(0);
@@ -105,9 +88,10 @@ public class User extends UserBase implements Model<Long>, CommandSender, Attach
         this.firstseen = (Timestamp)args.get(3);
         this.passwd = (byte[])args.get(4);
         this.attachments = new THashMap<Class<? extends UserAttachment>, UserAttachment>();
+        this.core = CubeEngine.getCore();
     }
 
-    User(Long key, OfflinePlayer player)
+    User(Core core, Long key, OfflinePlayer player)
     {
         super(player);
         this.key = key;
@@ -116,16 +100,22 @@ public class User extends UserBase implements Model<Long>, CommandSender, Attach
         this.firstseen = this.lastseen;
         this.passwd = new byte[0];
         this.attachments = new THashMap<Class<? extends UserAttachment>, UserAttachment>();
+        this.core = core;
     }
 
-    User(OfflinePlayer player)
+    User(Core core, OfflinePlayer player)
     {
-        this(NO_ID, player);
+        this(core, NO_ID, player);
     }
 
-    User(String playername)
+    User(BukkitCore core, String name)
     {
-        this(NO_ID, Bukkit.getOfflinePlayer(playername));
+        this(core, NO_ID, core.getServer().getOfflinePlayer(name));
+    }
+
+    public Core getCore()
+    {
+        return this.core;
     }
 
     @Override
@@ -329,59 +319,19 @@ public class User extends UserBase implements Model<Long>, CommandSender, Attach
         this.teleport(location, cause);
     }
 
-    public void setPassword(String password)
-    {
-        // TODO all the password logic should be moved to the user manager I'd say
-        synchronized (hasher)
-        {
-            hasher.reset();
-            password += UserManager.salt;
-            password += this.firstseen.toString();
-            this.passwd = hasher.digest(password.getBytes());
-            CubeEngine.getUserManager().update(this);
-        }
-    }
-
-    public void resetPassword()
-    {
-        this.passwd = null;
-        CubeEngine.getUserManager().update(this);
-    }
-
     public boolean isPasswordSet()
     {
         return this.passwd.length > 0;
     }
 
-    public boolean checkPassword(String password)
-    {
-        synchronized (hasher)
-        {
-            hasher.reset();
-            password += UserManager.salt;
-            password += this.firstseen.toString();
-            return Arrays.equals(this.passwd, hasher.digest(password.getBytes()));
-        }
-    }
-
-    public boolean login(String password)
-    {
-        if (!this.isLoggedIn)
-        {
-            this.isLoggedIn = this.checkPassword(password);
-        }
-        CubeEngine.getEventManager().fireEvent(new UserAuthorizedEvent(CubeEngine.getCore(), this));
-        return this.isLoggedIn;
-    }
-
     public void logout()
     {
-        this.isLoggedIn = false;
+        this.loggedInState = false;
     }
 
     public boolean isLoggedIn()
     {
-        return this.isLoggedIn;
+        return this.loggedInState;
     }
 
     public void setPermission(String permission, boolean b)

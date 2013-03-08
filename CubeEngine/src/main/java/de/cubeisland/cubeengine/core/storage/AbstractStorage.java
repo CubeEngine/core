@@ -70,6 +70,7 @@ public abstract class AbstractStorage<K, M extends Model<K>, T> implements Stora
             if (c.isAnnotationPresent(DatabaseConstructor.class))
             {
                 this.modelConstructor = c;
+                c.setAccessible(true);
                 break;
             }
         }

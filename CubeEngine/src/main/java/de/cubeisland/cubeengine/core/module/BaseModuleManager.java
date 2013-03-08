@@ -391,7 +391,6 @@ public abstract class BaseModuleManager implements ModuleManager
         this.core.getTaskManager().cancelTasks(module);
         this.core.getCommandManager().removeCommands(module);
         this.core.getApiServer().unregisterApiHandlers(module);
-        this.core.getUserManager().clearAttachments(module);
 
         this.core.getEventManager().fireEvent(new ModuleDisabledEvent(this.core, module));
         module.getLogger().log(INFO, "Module disabled within {0} microseconds", Profiler.endProfiling("disable-module", TimeUnit.MICROSECONDS));

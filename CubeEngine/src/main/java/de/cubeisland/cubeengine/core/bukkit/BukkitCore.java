@@ -289,7 +289,7 @@ public final class BukkitCore extends JavaPlugin implements Core
                 pm.callEvent(new FinishedLoadModulesEvent(BukkitCore.this));
 
                 // depends on: finished loading modules
-                userManager.cleanup();
+                userManager.clean();
             }
         });
     }
@@ -338,7 +338,7 @@ public final class BukkitCore extends JavaPlugin implements Core
         if (this.userManager != null)
         {
             this.logger.log(DEBUG, "user manager cleanup");
-            this.userManager.clean();
+            this.userManager.shutdown();
             this.userManager = null;
         }
 
@@ -354,6 +354,14 @@ public final class BukkitCore extends JavaPlugin implements Core
             this.i18n.clean();
             this.i18n = null;
         }
+
+        if (this.database != null)
+        {
+            this.logger.log(DEBUG, "database shutdown");
+            this.database.shutdown();
+            this.database = null;
+        }
+
         if (this.taskManager != null)
         {
             this.logger.log(DEBUG, "task manager cleanup");
@@ -371,13 +379,6 @@ public final class BukkitCore extends JavaPlugin implements Core
             {
                 this.taskManager = null;
             }
-        }
-
-        if (this.database != null)
-        {
-            this.logger.log(DEBUG, "database shutdown");
-            this.database.shutdown();
-            this.database = null;
         }
 
         CubeEngine.clean();

@@ -4,15 +4,15 @@ import de.cubeisland.cubeengine.core.attachment.UserAttachment;
 import de.cubeisland.cubeengine.core.bukkit.BukkitCore;
 import de.cubeisland.cubeengine.core.filesystem.FileManager;
 import de.cubeisland.cubeengine.core.permission.Permission;
-import de.cubeisland.cubeengine.core.storage.SingleKeyStorage;
-import de.cubeisland.cubeengine.core.storage.StorageException;
-import de.cubeisland.cubeengine.core.storage.database.querybuilder.ComponentBuilder;
 import de.cubeisland.cubeengine.core.util.ChatFormat;
 import de.cubeisland.cubeengine.core.util.Cleanable;
-import de.cubeisland.cubeengine.core.util.StringUtils;
 import de.cubeisland.cubeengine.core.util.Triplet;
 import de.cubeisland.cubeengine.core.util.matcher.Match;
+import gnu.trove.impl.Constants;
+import gnu.trove.map.TObjectIntMap;
 import gnu.trove.map.hash.TLongObjectHashMap;
+import gnu.trove.map.hash.TObjectIntHashMap;
+import gnu.trove.procedure.TObjectIntProcedure;
 import gnu.trove.set.hash.THashSet;
 import org.apache.commons.lang.RandomStringUtils;
 import org.bukkit.Bukkit;
@@ -31,83 +31,109 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 import static de.cubeisland.cubeengine.core.i18n.I18n._;
-import static de.cubeisland.cubeengine.core.storage.database.querybuilder.ComponentBuilder.EQUAL;
-import static de.cubeisland.cubeengine.core.storage.database.querybuilder.ComponentBuilder.LESS;
+import static de.cubeisland.cubeengine.core.logger.LogLevel.WARNING;
 
 /**
  * This Manager provides methods to access the Users and saving/loading from
  * database.
  */
-public class UserManager extends SingleKeyStorage<Long, User> implements Cleanable, Runnable
+public class UserManager implements Cleanable
 {
     private final BukkitCore core;
-    private final List<Player> onlinePlayers;
-    private final ConcurrentHashMap<String, User> users;
-    private final ScheduledExecutorService executor;
-    private static final int REVISION = 3;
+    private final UserStorage storage;
+    private final List<User> onlineUsers;
+    private final ConcurrentHashMap<String, User> cachedUsers;
     private final Set<Class<? extends UserAttachment>> defaultAttachments;
-    public static String salt; // TODO not acceptable!
+    private final TObjectIntMap<String> scheduledForRemoval;
+    public String salt;
+    private final MessageDigest messageDigest;
+    private final ScheduledExecutorService nativeScheduler;
 
     public UserManager(final BukkitCore core)
     {
-        super(core.getDB(), User.class, REVISION);
+        this.storage = new UserStorage(core);
         this.core = core;
-        this.executor = core.getTaskManager().getExecutorService();
 
-        this.users = new ConcurrentHashMap<String, User>();
-        this.onlinePlayers = new CopyOnWriteArrayList<Player>(core.getServer().getOnlinePlayers());
+        this.cachedUsers = new ConcurrentHashMap<String, User>();
+        this.onlineUsers = new CopyOnWriteArrayList<User>();
 
         final long delay = (long)core.getConfiguration().userManagerCleanup;
-        this.executor.scheduleAtFixedRate(this, delay, delay, TimeUnit.MINUTES);
+        this.nativeScheduler = Executors.newSingleThreadScheduledExecutor(core.getTaskManager().getThreadFactory());
+        this.nativeScheduler.scheduleAtFixedRate(new UserCleanupTask(), delay, delay, TimeUnit.MINUTES);
         core.getServer().getPluginManager().registerEvents(new UserListener(), core);
 
         this.defaultAttachments = new THashSet<Class<? extends UserAttachment>>();
-        this.initialize();
+        this.scheduledForRemoval = new TObjectIntHashMap<String>(Constants.DEFAULT_CAPACITY, Constants.DEFAULT_LOAD_FACTOR, -1);
         this.loadSalt();
-    }
 
-    @Override
-    public void initialize()
-    {
-        super.initialize();
         try
         {
-            this.database.storeStatement(User.class, "get_by_name", this.database.getQueryBuilder().select().wildcard().from(this.tableName).where().field("player").is(ComponentBuilder.EQUAL).value().end().end());
-
-            this.database.storeStatement(User.class, "cleanup", database.getQueryBuilder().select(dbKey).from(tableName).where().field("lastseen").is(LESS).value().and().field("nogc").is(EQUAL).value(false).end().end());
-
-            this.database.storeStatement(User.class, "clearpw", database.getQueryBuilder().update(tableName).set("passwd").end().end());
+            messageDigest = MessageDigest.getInstance("SHA-512");
         }
-        catch (SQLException e)
+        catch (NoSuchAlgorithmException e)
         {
-            throw new StorageException("Failed to initialize the user-manager!", e);
+            throw new RuntimeException("SHA-512 hash algorithm not available!");
         }
+    }
+
+    public boolean login(User user, String password)
+    {
+        if (!user.isLoggedIn())
+        {
+            user.loggedInState = this.checkPassword(user, password);
+        }
+        core.getEventManager().fireEvent(new UserAuthorizedEvent(this.core, user));
+        return user.isLoggedIn();
+    }
+
+    public boolean checkPassword(User user, String password)
+    {
+        synchronized (this.messageDigest)
+        {
+            messageDigest.reset();
+            password += this.salt;
+            password += user.firstseen.toString();
+            return Arrays.equals(user.passwd, messageDigest.digest(password.getBytes()));
+        }
+    }
+
+    public void setPassword(User user, String password)
+    {
+        synchronized (this.messageDigest)
+        {
+            this.messageDigest.reset();
+            password += this.salt;
+            password += user.firstseen.toString();
+            user.passwd = this.messageDigest.digest(password.getBytes());
+            this.storage.update(user);
+        }
+    }
+
+    public void resetPassword(User user)
+    {
+        user.passwd = null;
+        this.storage.update(user);
     }
 
     public void resetAllPasswords()
     {
-        try
-        {
-            this.database.preparedUpdate(modelClass, "clearpw", (Object)null);
-        }
-        catch (SQLException ex)
-        {
-            throw new StorageException("An SQL-Error occurred while clearing passwords", ex);
-        }
+        this.storage.resetAllPasswords();
     }
 
     /**
@@ -117,51 +143,17 @@ public class UserManager extends SingleKeyStorage<Long, User> implements Cleanab
      */
     private User createUser(String name)
     {
-        User inUse = this.users.get(name);
+        User inUse = this.cachedUsers.get(name);
         if (inUse != null)
         {
             //User was already added
             return inUse;
         }
-        User user = new User(name);
-        this.users.put(user.getName(), user);
-        this.store(user, false);
+        User user = new User(this.core, name);
+        this.cachedUsers.put(user.getName(), user);
+        this.storage.store(user, false);
         this.attachDefaults(user);
         return user;
-    }
-
-    /**
-     * Custom Getter for getting User from DB by Name
-     *
-     * @param playerName the name
-     * @return the User OR null if not found
-     */
-    protected User getFromStorage(String playerName)
-    {
-        User loadedModel = null;
-        try
-        {
-            ResultSet resulsSet = this.database.preparedQuery(modelClass, "get_by_name", playerName);
-            ArrayList<Object> values = new ArrayList<Object>();
-            if (resulsSet.next())
-            {
-                for (String name : this.allFields)
-                {
-                    values.add(resulsSet.getObject(name));
-                }
-                loadedModel = this.modelConstructor.newInstance(values);
-            }
-        }
-        catch (SQLException e)
-        {
-            throw new StorageException("An SQL-Error occurred while creating a new Model from database", e,this.database.getStoredStatement(modelClass,"get_by_name"));
-        }
-        catch (Exception e)
-        {
-            throw new StorageException("An unknown error occurred while creating a new Model from database", e);
-        }
-        this.attachDefaults(loadedModel);
-        return loadedModel;
     }
 
     private synchronized void attachDefaults(User user)
@@ -173,15 +165,15 @@ public class UserManager extends SingleKeyStorage<Long, User> implements Cleanab
     }
 
     /**
-     * Removes the user permanently. Data cannot be retrieved later
+     * Removes the user permanently. Data cannot be restored later on
      *
      * @param user the User
      * @return fluent interface
      */
     public UserManager removeUser(final User user)
     {
-        this.delete(user); //this is async
-        this.users.remove(user.getName());
+        this.storage.delete(user); //this is async
+        this.cachedUsers.remove(user.getName());
         return this;
     }
 
@@ -197,13 +189,13 @@ public class UserManager extends SingleKeyStorage<Long, User> implements Cleanab
         {
             return null;
         }
-        User user = this.users.get(name);
+        User user = this.cachedUsers.get(name);
         if (user == null)
         {
-            user = this.getFromStorage(name);
+            user = this.storage.loadUser(name);
             if (user != null)
             {
-                this.users.put(name, user);
+                this.cachedUsers.put(name, user);
             }
         }
         if (user == null && createIfMissing)
@@ -290,64 +282,61 @@ public class UserManager extends SingleKeyStorage<Long, User> implements Cleanab
         {
             return null;
         }
-        User user = this.get(key);
+        User user = this.storage.get(key);
         if (user == null)
         {
             return null;
         }
-        User savedUser = this.users.get(user.getName());
+        User savedUser = this.cachedUsers.get(user.getName());
         if (savedUser == null)
         {
-            this.users.put(user.getName(), user);
+            this.cachedUsers.put(user.getName(), user);
             return user;
         }
         return savedUser;
     }
 
     /**
-     * This is a thread safe version of Bukkit's Server.getOnlinePlayers()
+     * Returns all the users that are currently online
      *
      * @return a unmodifiable List of players
      */
-    public List<Player> getOnlinePlayers()
-    {
-        return Collections.unmodifiableList(this.onlinePlayers);
-    }
-
-    /**
-     * This method returns all users that are online at that moment. The method
-     * IS thread-safe as it does not rely on Bukkit's code but instead of our on
-     * internal player list.
-     *
-     * @return an array of users
-     */
     public List<User> getOnlineUsers()
     {
-        final List<User> onlineUsers = new ArrayList<User>();
-
-        for (Player player : this.onlinePlayers)
-        {
-            onlineUsers.add(this.getExactUser(player));
-        }
-
-        return onlineUsers;
+        return Collections.unmodifiableList(this.onlineUsers);
     }
 
     public Collection<User> getLoadedUsers()
     {
-        return this.users.values();
+        return this.cachedUsers.values();
     }
 
     @Override
     public void clean()
     {
-        this.users.clear();
+        this.storage.cleanup();
+    }
+
+    public void shutdown()
+    {
+        this.clean();
+
+        this.scheduledForRemoval.forEachEntry(new TObjectIntProcedure<String>() {
+            @Override
+            public boolean execute(String a, int b)
+            {
+                core.getServer().getScheduler().cancelTask(b);
+                return true;
+            }
+        });
+
+        this.cachedUsers.clear();
         this.removeDefaultAttachments();
-        this.executor.shutdown();
+        this.nativeScheduler.shutdown();
         try
         {
-            this.executor.awaitTermination(2, TimeUnit.SECONDS);
-            this.executor.shutdownNow();
+            this.nativeScheduler.awaitTermination(2, TimeUnit.SECONDS);
+            this.nativeScheduler.shutdownNow();
         }
         catch (InterruptedException ignore)
         {}
@@ -383,14 +372,14 @@ public class UserManager extends SingleKeyStorage<Long, User> implements Cleanab
         {
             return null;
         }
-        User user = this.users.get(name);
+        User user = this.cachedUsers.get(name);
         if (user == null)
         {
             //Looking up saved users
-            user = this.getFromStorage(name);
+            user = this.storage.loadUser(name);
             if (user != null)
             {
-                this.users.put(name, user);
+                this.cachedUsers.put(name, user);
             }
             if (user == null) //then NO user with exact name
             {
@@ -404,56 +393,10 @@ public class UserManager extends SingleKeyStorage<Long, User> implements Cleanab
             }
             if (user != null)
             {
-                this.users.put(user.getName(), user);//Adds User to loaded users
+                this.cachedUsers.put(user.getName(), user);//Adds User to loaded users
             }
         }
         return user;
-    }
-
-    @Override
-    public void run()
-    {
-        for (User user : this.users.values())
-        {
-            if (!user.isOnline() && user.removalTaskId != null) // Do not delete users that will be deleted anyway
-            {
-                this.users.remove(user.getName());
-            }
-        }
-    }
-
-    /**
-     * Searches for too old UserData and remove it.
-     */
-    public void cleanup()
-    {
-        this.database.queueOperation(new Runnable()
-        {
-            @Override
-            public void run()
-            {
-                try
-                {
-                    ResultSet result = database.preparedQuery(User.class, "cleanup",
-                                                              new Timestamp(System.currentTimeMillis() - StringUtils.convertTimeToMillis(core.getConfiguration().userManagerCleanupDatabase)));
-
-                    while (result.next())
-                    {
-                        deleteByKey(result.getLong("key"));
-                    }
-                }
-                catch (SQLException e)
-                {
-                    // TODO this exception will be uncaught
-                    throw new StorageException("An SQL-Error occurred while cleaning the user-table", e, database.getStoredStatement(modelClass, "cleanup"));
-                }
-                catch (Exception e)
-                {
-                    // TODO this exception will be uncaught
-                    throw new StorageException("An unknown Error occurred while cleaning the user-table", e);
-                }
-            }
-        });
     }
 
     public void broadcastMessage(String category, String message, Permission perm, Object... args)
@@ -494,18 +437,18 @@ public class UserManager extends SingleKeyStorage<Long, User> implements Cleanab
         try
         {
             BufferedReader reader = new BufferedReader(new FileReader(file));
-            salt = reader.readLine();
+            this.salt = reader.readLine();
             reader.close();
         }
         catch (FileNotFoundException e)
         {
-            if (salt == null)
+            if (this.salt == null)
             {
                 try
                 {
-                    salt = RandomStringUtils.randomAscii(32);
+                    this.salt = RandomStringUtils.randomAscii(32);
                     FileWriter fileWriter = new FileWriter(file);
-                    fileWriter.write(salt);
+                    fileWriter.write(this.salt);
                     fileWriter.close();
                 }
                 catch (Exception inner)
@@ -552,7 +495,7 @@ public class UserManager extends SingleKeyStorage<Long, User> implements Cleanab
 
     public void kickAll(String message)
     {
-        for (User user : this.users.values())
+        for (User user : this.cachedUsers.values())
         {
             user.kickPlayer(message);
         }
@@ -560,7 +503,7 @@ public class UserManager extends SingleKeyStorage<Long, User> implements Cleanab
 
     public void kickAll(String category, String message, Object... args)
     {
-        for (User user : this.users.values())
+        for (User user : this.cachedUsers.values())
         {
             user.kickPlayer(_(user, category, message, args));
         }
@@ -606,50 +549,75 @@ public class UserManager extends SingleKeyStorage<Long, User> implements Cleanab
          * @param event the PlayerQuitEvent
          */
         @EventHandler(priority = EventPriority.MONITOR)
-        private void onQuit(final PlayerQuitEvent event)
+        public void onQuit(final PlayerQuitEvent event)
         {
             Player player = event.getPlayer();
             final User user = getExactUser(player);
-            user.removalTaskId = event.getPlayer().getServer().getScheduler().scheduleSyncDelayedTask(core, new Runnable() {
+            onlineUsers.remove(user);
+            final int taskId = event.getPlayer().getServer().getScheduler().scheduleSyncDelayedTask(core, new Runnable() {
                 @Override
                 public void run()
                 {
+                    scheduledForRemoval.remove(user.getName());
                     user.lastseen = new Timestamp(System.currentTimeMillis());
-                    update(user); // is async
-                    if (user.isOnline())
+                    storage.update(user); // is async
+                    if (!user.isOnline())
                     {
                         return;
                     }
-                    users.remove(event.getPlayer().getName());
+                    cachedUsers.remove(user.getName());
                 }
             }, core.getConfiguration().userManagerKeepUserLoaded);
-            onlinePlayers.remove(player);
+
+            if (taskId == -1)
+            {
+                core.getLogger().log(WARNING, "The delayed removed of user ''{0}'' could not be scheduled... removing him now.");
+                cachedUsers.remove(user.getName());
+            }
+
+            scheduledForRemoval.put(user.getName(), taskId);
         }
 
         @EventHandler(priority = EventPriority.MONITOR)
-        private void onLogin(final PlayerLoginEvent event)
+        public void onLogin(final PlayerLoginEvent event)
         {
             if (event.getResult() == PlayerLoginEvent.Result.ALLOWED)
             {
-                onlinePlayers.add(event.getPlayer());
+                //onlineUsers.add();
             }
         }
 
         @EventHandler(priority = EventPriority.LOWEST)
-        private void onJoin(final PlayerJoinEvent event)
+        public void onJoin(final PlayerJoinEvent event)
         {
-            Player player = event.getPlayer();
-            final User user = users.get(player.getName());
+            final Player player = event.getPlayer();
+            final User user = cachedUsers.get(player.getName());
             if (user != null)
             {
                 user.offlinePlayer = player;
                 user.refreshIP();
-                if (user.removalTaskId == null)
-                {
-                    return; // No task to cancel
-                }
-                user.getServer().getScheduler().cancelTask(user.removalTaskId);
+            }
+            final int removalTask = scheduledForRemoval.get(player.getName());
+            if (removalTask > -1)
+            {
+                player.getServer().getScheduler().cancelTask(removalTask);
             }
         }
+    }
+
+    private class UserCleanupTask implements Runnable
+    {
+        @Override
+        public void run()
+        {
+            for (User user : cachedUsers.values())
+            {
+                if (!user.isOnline() && scheduledForRemoval.get(user.getName()) > -1) // Do not delete users that will be deleted anyway
+                {
+                    cachedUsers.remove(user.getName());
+                }
+            }
+        }
+
     }
 }

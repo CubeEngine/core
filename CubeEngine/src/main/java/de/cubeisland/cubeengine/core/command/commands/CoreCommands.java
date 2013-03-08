@@ -74,7 +74,7 @@ public class CoreCommands extends ContainerCommand
             context.sendMessage("core", "&cYou are not allowed to change the password of an other user!");
             return;
         }
-        target.setPassword(context.getString(0));
+        core.getUserManager().setPassword(target, context.getString(0));
         if (sender == target)
         {
             sender.sendMessage("core", "&aThe user's password has been set!");
@@ -105,7 +105,6 @@ public class CoreCommands extends ContainerCommand
             else
             {
                 context.sendMessage("core", "&cYou are not allowed to clear all passwords!");
-                return;
             }
         }
         else if (context.hasArg(0))
@@ -118,18 +117,17 @@ public class CoreCommands extends ContainerCommand
             User target = context.getUser(0);
             if (target != null)
             {
-                target.resetPassword();
+                this.core.getUserManager().resetPassword(target);
                 sender.sendMessage("core", "&aThe user's password has been reset!");
             }
             else
             {
                 context.sendMessage("core", "&cUser &c not found!");
-                return;
             }
         }
         else if (sender instanceof User)
         {
-            ((User)sender).resetPassword();
+            this.core.getUserManager().resetPassword((User)sender);
             sender.sendMessage("core", "Your password has been reset!");
         }
     }
@@ -146,7 +144,7 @@ public class CoreCommands extends ContainerCommand
                 context.sendMessage("core", "&aYou are already logged in!");
                 return;
             }
-            boolean isLoggedIn = user.login(context.getString(0));
+            boolean isLoggedIn = core.getUserManager().login(user, context.getString(0));
             if (isLoggedIn)
             {
                 user.sendMessage("core", "&aYou logged in successfully!");
