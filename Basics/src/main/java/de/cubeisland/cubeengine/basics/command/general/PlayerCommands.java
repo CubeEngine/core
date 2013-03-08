@@ -520,6 +520,7 @@ public class PlayerCommands
     }
 
     @Command(desc = "Displays that you are afk", max = 0)
+    //TODO for console {player}
     public void afk(CommandContext context)
     {
         if (context.getSender() instanceof User)
