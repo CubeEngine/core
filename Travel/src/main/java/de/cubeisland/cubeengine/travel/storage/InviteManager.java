@@ -44,7 +44,7 @@ public class InviteManager extends TwoKeyStorage<Long, Long, TeleportInvite>
         }
     }
 
-    public Set<User> getInvitedUsers(TeleportPoint tPP)
+    Set<User> getInvitedUsers(TeleportPoint tPP)
     {
         Set<User> invitedUsers = new HashSet<User>();
         for (String name : getInvited(tPP))
@@ -58,7 +58,7 @@ public class InviteManager extends TwoKeyStorage<Long, Long, TeleportInvite>
         return invitedUsers;
     }
 
-    public Set<String> getInvited(TeleportPoint tPP)
+    Set<String> getInvited(TeleportPoint tPP)
     {
         Set<String> invitedUsers = new HashSet<String>();
         for (TeleportInvite tpI : getInvites(tPP))
@@ -72,7 +72,20 @@ public class InviteManager extends TwoKeyStorage<Long, Long, TeleportInvite>
         return invitedUsers;
     }
 
-    public Set<TeleportInvite> getInvites(TeleportPoint tPP)
+    Set<TeleportInvite> getInvites(User user)
+    {
+        Set<TeleportInvite> invites = new HashSet<TeleportInvite>();
+        for (TeleportInvite invite : this.invites)
+        {
+            if (invite.userKey == user.getKey())
+            {
+                invites.add(invite);
+            }
+        }
+        return invites;
+    }
+
+    Set<TeleportInvite> getInvites(TeleportPoint tPP)
     {
         Set<TeleportInvite> invites = new HashSet<TeleportInvite>();
         for (TeleportInvite invite : this.invites)
@@ -83,33 +96,6 @@ public class InviteManager extends TwoKeyStorage<Long, Long, TeleportInvite>
             }
         }
         return invites;
-    }
-
-    /**
-     * Get what homes this user is invited to
-     * @param user
-     * @return A Set of the ids to the homes the user is invited to
-     */
-    public Set<Long> getInvitedTo(User user)
-    {
-        Set<Long> homes = new HashSet<Long>();
-        try
-        {
-            ResultSet resultSet = database.preparedQuery(this.modelClass, "getInvitedTo", user.getKey());
-            while (resultSet.next())
-            {
-                Long home = resultSet.getLong("teleportpoint");
-                if (home != null)
-                {
-                    homes.add(home);
-                }
-            }
-        }
-        catch (SQLException ex)
-        {
-            throw new StorageException("Could not get the homes an user was invited to", ex);
-        }
-        return homes;
     }
 
     public void updateInvited(TeleportPoint tPP, Set<String> newInvited)

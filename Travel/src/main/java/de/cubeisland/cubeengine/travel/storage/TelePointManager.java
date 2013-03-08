@@ -47,30 +47,55 @@ public class TelePointManager extends SingleKeyStorage<Long, TeleportPoint>
         {
             super.initialize();
             QueryBuilder builder = this.database.getQueryBuilder();
-            this.database.storeStatement(this.modelClass, "listHomesOfUser",
-                    builder.select().cols("key", "name").from(this.tableName).where().field("owner").is(EQUAL).value().end().end());
-            this.database.storeStatement(this.modelClass, "listAllHomes",
-                    builder.select().cols("name").from(this.tableName).end().end());
-            this.database.storeStatement(this.modelClass, "listAllPublicHomes",
-                    builder.select().cols("name").from(this.tableName).where().field("visibility").is(EQUAL).value("PUBLIC").end().end());
-            this.database.storeStatement(this.modelClass, "listPublicHomesOfUser",
-                    builder.select().cols("name").from(this.tableName).where().field("owner").is(EQUAL).value()
-                            .and().field("visibility").is(EQUAL).value("PUBLIC").end().end());
-            this.database.storeStatement(this.modelClass, "getName",
-                    builder.select().cols("name").from(this.tableName).where().field("key").is(EQUAL).value().end().end());
-            this.database.storeStatement(User.class, "getOwner",
-                    builder.select().cols("owner").from(this.tableName).where().field("key").is(EQUAL).value()
-                            .end().end());
-            this.database.storeStatement(this.modelClass, "deleteAllHomes",
+
+            // List statements
+            this.database.storeStatement(this.modelClass, "homes_all_public", builder.select().cols("key", "name", "owner").from(this.tableName)
+                    .where().field("visibility").is(EQUAL)
+                    .value(TeleportPoint.Visibility.PUBLIC.ordinal()).and().field("type").is(EQUAL).value(TeleportPoint.Type.HOME.ordinal()).end().end());
+            this.database.storeStatement(this.modelClass, "homes_all_private", builder.select().cols("key", "name", "owner").from(this.tableName)
+                    .where().field("visibility").is(EQUAL).value(TeleportPoint.Visibility.PRIVATE.ordinal())
+                    .and().field("type").is(EQUAL).value(TeleportPoint.Type.HOME.ordinal()).end().end());
+            this.database.storeStatement(this.modelClass, "homes_owned_private", builder.select().cols("key", "name", "owner").from(this.tableName)
+                    .where().field("owner").is(EQUAL).value().and().field("visibility").is(EQUAL)
+                    .value(TeleportPoint.Visibility.PRIVATE.ordinal()).and().field("type").is(EQUAL)
+                    .value(TeleportPoint.Type.HOME.ordinal()).end().end());
+            this.database.storeStatement(this.modelClass, "homes_owned_public",builder.select().cols("key", "name", "owner").from(this.tableName)
+                    .where().field("owner").is(EQUAL).value().and().field("visibility").is(EQUAL)
+                    .value(TeleportPoint.Visibility.PUBLIC.ordinal()).and().field("type").is(EQUAL)
+                    .value(TeleportPoint.Type.HOME.ordinal()).end().end());
+            this.database.storeStatement(this.modelClass, "warps_all_public", builder.select().cols("key", "name", "owner").from(this.tableName)
+                    .where().field("visibility").is(EQUAL)
+                    .value(TeleportPoint.Visibility.PUBLIC.ordinal()).and().field("type").is(EQUAL).value(TeleportPoint.Type.WARP.ordinal()).end().end());
+            this.database.storeStatement(this.modelClass, "warps_all_private", builder.select().cols("key", "name").from(this.tableName)
+                    .where().field("visibility").is(EQUAL).value(TeleportPoint.Visibility.PRIVATE.ordinal())
+                    .and().field("type").is(EQUAL).value(TeleportPoint.Type.WARP.ordinal()).end().end());
+            this.database.storeStatement(this.modelClass, "warps_owned_private", builder.select().cols("key", "name", "owner").from(this.tableName)
+                    .where().field("owner").is(EQUAL).value().and().field("visibility").is(EQUAL)
+                    .value(TeleportPoint.Visibility.PRIVATE.ordinal()).and().field("type").is(EQUAL)
+                    .value(TeleportPoint.Type.WARP.ordinal()).end().end());
+            this.database.storeStatement(this.modelClass, "warps_owned_public",builder.select().cols("key", "name", "owner").from(this.tableName)
+                    .where().field("owner").is(EQUAL).value().and().field("visibility").is(EQUAL)
+                    .value(TeleportPoint.Visibility.PUBLIC.ordinal()).and().field("type").is(EQUAL)
+                    .value(TeleportPoint.Type.WARP.ordinal()).end().end());
+
+            // Delete statements
+            this.database.storeStatement(this.modelClass, "delete_homes_all",
                     builder.deleteFrom(this.tableName).end().end());
-            this.database.storeStatement(this.modelClass, "deletePublicHomes",
+            this.database.storeStatement(this.modelClass, "delete_homes_public",
                     builder.deleteFrom(this.tableName).where().field("visibility").is(EQUAL)
                             .value(TeleportPoint.Visibility.PUBLIC.toString()).end().end());
-            this.database.storeStatement(this.modelClass, "deleteAllUserHomes",
+            this.database.storeStatement(this.modelClass, "delete_homes_owned",
                     builder.deleteFrom(this.tableName).where().field("owner").is(EQUAL).value().end().end());
-            this.database.storeStatement(this.modelClass, "deletePublicUserHomes",
+            this.database.storeStatement(this.modelClass, "delete_homes_owned_public",
                     builder.deleteFrom(this.tableName).where().field("owner").is(EQUAL).value()
                             .and().field("visibility").is(EQUAL).value(TeleportPoint.Visibility.PUBLIC.toString()).end().end());
+
+            // Other statements
+            this.database.storeStatement(this.modelClass, "get_name",
+                    builder.select().cols("name").from(this.tableName).where().field("key").is(EQUAL).value().end().end());
+            this.database.storeStatement(User.class, "get_owner",
+                    builder.select().cols("owner").from(this.tableName).where().field("key").is(EQUAL).value()
+                            .end().end());
 
         }
         catch (SQLException ex)
@@ -662,5 +687,117 @@ public class TelePointManager extends SingleKeyStorage<Long, TeleportPoint>
         }
         this.warps.remove(warp.getStorageName());
         this.delete(warp.getModel());
+    }
+
+    public final int ALL = -1;
+    public final int PUBLIC = 1 << 0;
+    public final int PRIVATE = 1 << 1;
+    public final int OWNED = 1 << 2;
+    public final int INVITED = 1 << 3;
+
+    public Set<Home> listHomes(int mask)
+    {
+        Set<Home> homes = new HashSet<Home>();
+        if ((mask & PUBLIC) == PUBLIC || mask == ALL)
+        {
+            try
+            {
+                ResultSet resultSet = database.preparedQuery(this.modelClass, "homes_all_public");
+                while(resultSet.next())
+                {
+                    String name = resultSet.getString("name");
+                    long ownerId = resultSet.getLong("owner");
+                    User owner = CubeEngine.getUserManager().get(ownerId);
+                    Home home = this.homes.get(owner.getName() + ":" + name);
+                    homes.add(home);
+                }
+            }
+            catch (SQLException e)
+            {
+                // TODO
+            }
+        }
+
+        if ((mask & PRIVATE) == PRIVATE || mask == ALL)
+        {
+            try
+            {
+                ResultSet resultSet = database.preparedQuery(this.modelClass, "homes_all_private");
+                homes.addAll(this.getHomes(resultSet));
+            }
+            catch (SQLException e)
+            {
+                // TODO
+            }
+        }
+        return homes;
+    }
+
+    public Set<Home> listHomes(User user, int mask)
+    {
+        Set<Home> homes = new HashSet<Home>();
+        if (mask == -1)
+        {
+            homes.addAll(this.listHomes(PUBLIC));
+            homes.addAll(this.listHomes(user, PUBLIC | PRIVATE | OWNED | INVITED));
+            return homes;
+        }
+
+        // If mask contains neither PUBLIC nor PRIVATE turn both on
+        if (!((mask & PUBLIC) == PUBLIC && (mask & PRIVATE) == PRIVATE))
+        {
+            mask |= PUBLIC | PRIVATE;
+        }
+
+        if ((mask & (PUBLIC | OWNED)) == (PUBLIC | OWNED))
+        {
+            try {
+                ResultSet resultSet = database.preparedQuery(this.modelClass, "homes_owned_public", user.getKey());
+                homes.addAll(this.getHomes(resultSet));
+            } catch (SQLException e) {
+                // TODO
+            }
+        }
+        if ((mask & (PRIVATE | OWNED)) == (PRIVATE | OWNED))
+        {
+            try {
+                ResultSet resultSet = database.preparedQuery(this.modelClass, "homes_owned_private", user.getKey());
+                homes.addAll(this.getHomes(resultSet));
+            } catch (SQLException e) {
+                // TODO
+            }
+        }
+        if ((mask & INVITED) == INVITED)
+        {
+            for (TeleportInvite invite : this.inviteManager.getInvites(user))
+            {
+                TeleportPoint point = this.get(invite.teleportPoint);
+                if (point.type == TeleportPoint.Type.HOME)
+                {
+                    Home home = this.homes.get(point.owner.getName() + ":" + point.name);
+                    if (home != null)
+                    {
+                        if ((home.isPublic() && (mask & PUBLIC) == PUBLIC) || (!home.isPublic() && (mask & PRIVATE) == PRIVATE))
+                        {
+                            homes.add(home);
+                        }
+                    }
+                }
+            }
+        }
+        return homes;
+    }
+
+    private Set<Home> getHomes(ResultSet resultSet) throws SQLException {
+        Set<Home> homes = new HashSet<Home>();
+        while(resultSet.next())
+        {
+            String name = resultSet.getString("name");
+            long ownerId = resultSet.getLong("owner");
+            User owner = CubeEngine.getUserManager().get(ownerId);
+            Home home = this.homes.get(owner.getName() + ":" + name);
+            homes.add(home);
+        }
+        return homes;
     }
 }
