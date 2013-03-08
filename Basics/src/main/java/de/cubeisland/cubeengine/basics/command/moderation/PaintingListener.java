@@ -3,6 +3,8 @@ package de.cubeisland.cubeengine.basics.command.moderation;
 import de.cubeisland.cubeengine.basics.Basics;
 import de.cubeisland.cubeengine.basics.BasicsPerm;
 import de.cubeisland.cubeengine.core.user.User;
+import java.util.Arrays;
+import java.util.List;
 import org.bukkit.Art;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Painting;
@@ -19,11 +21,13 @@ public class PaintingListener implements Listener
 {
     private final Basics module;
     private Map<String, Painting> paintingChange;
+    private List<Art> paintings;
     
     public PaintingListener(Basics module)
     {
         this.module = module;
         this.paintingChange = new HashMap<String, Painting>();
+        this.paintings = Arrays.asList( Art.values() );
     }
     
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
@@ -72,7 +76,16 @@ public class PaintingListener implements Listener
                     user.sendMessage( "basics", "&aPainting is locked now" );
                     return;
                 }
-                while(!painting.setArt( Art.values()[ (int) (Math.random() * Art.values().length)] )); // TODO why random art instead of cycling through it?
+                
+                int artNumber = this.paintings.indexOf( painting.getArt() );
+                do
+                {
+                    artNumber++;
+                    if(artNumber >= this.paintings.size())
+                    {
+                        artNumber = 0;
+                    }
+                }while(!painting.setArt( this.paintings.get( artNumber )));
             }
         }       
     }
