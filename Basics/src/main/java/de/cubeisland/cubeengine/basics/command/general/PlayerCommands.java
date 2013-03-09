@@ -22,12 +22,13 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageEvent;
 
 import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.TreeSet;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 import static de.cubeisland.cubeengine.core.command.ArgBounds.NO_MAX;
 import static de.cubeisland.cubeengine.core.i18n.I18n._;
+import static java.text.DateFormat.SHORT;
 
 public class PlayerCommands
 {
@@ -474,6 +475,7 @@ public class PlayerCommands
         if (System.currentTimeMillis() - lastPlayed > 7 * 24 * 60 * 60 * 1000) // If greater than 7 days show distance not date
         {
             context.sendMessage("basics", "&2%s &eis offline since %2$td.%2$tm.%2$tY %2$tk:%2$tM", user.getName(), lastPlayed); //dd.MM.yyyy HH:mm
+            //TODO USE JAVA  DATETIME FORMATTER
             return;
         }
         context.sendMessage("basics", "&2%s&e was last seen &6%s &eago.", user.getName(),
@@ -518,6 +520,7 @@ public class PlayerCommands
     }
 
     @Command(desc = "Displays that you are afk", max = 0)
+    //TODO for console {player}
     public void afk(CommandContext context)
     {
         if (context.getSender() instanceof User)
@@ -544,6 +547,7 @@ public class PlayerCommands
     public void whois(CommandContext context)
     {
         //TODO CE-311 additional informations
+        //offline-player-location (will probably need nbt)
         User user = context.getUser(0);
         if (user == null)
         {
@@ -592,7 +596,8 @@ public class PlayerCommands
         {
             context.sendMessage("basics", "&eAFK: &atrue");
         }
-
+        DateFormat dateFormat = SimpleDateFormat.getDateTimeInstance(SHORT, SHORT, Locale.ENGLISH);
+        context.sendMessage("basics","&eFirst played: &6%s",  dateFormat.format(new Date(user.getFirstPlayed()))); //TODO locale
     }
 
     @Command(desc = "Toggles the god-mode!", usage = "[player]", max = 1)

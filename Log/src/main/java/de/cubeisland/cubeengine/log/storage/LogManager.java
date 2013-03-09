@@ -1,6 +1,7 @@
 package de.cubeisland.cubeengine.log.storage;
 
 import de.cubeisland.cubeengine.core.CubeEngine;
+import de.cubeisland.cubeengine.core.logger.LogLevel;
 import de.cubeisland.cubeengine.core.storage.StorageException;
 import de.cubeisland.cubeengine.core.storage.database.AttrType;
 import de.cubeisland.cubeengine.core.storage.database.Database;
@@ -211,7 +212,7 @@ public class LogManager
         }
         if (running)
         {
-            System.out.print("Already running!" + queuedLogs.size());
+            this.module.getLogger().warning("LogQueue already running! Size: " + queuedLogs.size());
             return;
         }
         running = true;
@@ -225,6 +226,7 @@ public class LogManager
             }
             logs.offer(toLog);
         }
+        this.module.getLogger().log(LogLevel.DEBUG,"Logging {0} logs",logs.size());
         long a = System.currentTimeMillis();
         int logSize = logs.size();
         try
@@ -397,7 +399,8 @@ public class LogManager
         }
         else
         {
-            throw new IllegalArgumentException("Both states cannot be null!");
+            this.module.getLogger().log(LogLevel.DEBUG,"Both states are null! WHY?!");
+            return;
         }
         if (cause.equals(BlockLogger.BlockChangeCause.WORLDEDIT))
         {
