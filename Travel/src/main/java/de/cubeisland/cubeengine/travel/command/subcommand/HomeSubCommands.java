@@ -216,10 +216,38 @@ public class HomeSubCommands
     })
     @Command(names = {
         "list"
-    }, desc = "List your homes", permDefault = PermDefault.TRUE, min = 0, max = 0)
-    public void listHomes(CommandContext context)
+    }, desc = "List homes you can access", permDefault = PermDefault.TRUE, min = 0, max = 0, flags = {
+            @Flag(name = "p", longName = "public"),
+            @Flag(name = "P", longName = "private"),
+            @Flag(name = "o", longName = "owned"),
+            @Flag(name = "i", longName = "invited")
+    })
+    public void listHomes(ParameterizedContext context)
     {
-        //TODO
+        if (!(context.getSender() instanceof User))
+        {
+            context.sendMessage("travel", "&cOnly users can do that");
+            return;
+        }
+
+        User user = (User)context.getSender();
+        int mask = context.getFlagCount() == 0 ? tpManager.ALL : 0;
+        if (context.hasFlag("p")) mask |= tpManager.PUBLIC;
+        if (context.hasFlag("P")) mask |= tpManager.PRIVATE;
+        if (context.hasFlag("o")) mask |= tpManager.OWNED;
+        if (context.hasFlag("i")) mask |= tpManager.INVITED;
+        user.sendMessage("travel", "&eHere is a list of the homes: ");
+        for (Home home : tpManager.listHomes(user, mask))
+        {
+            if (home.isOwner(user))
+            {
+                user.sendMessage("  &6" + home.getName());
+            }
+            else
+            {
+                user.sendMessage("travel", "  &2%s:&6%s", home.getOwner().getName(), home.getName());
+            }
+        }
     }
 
     @Command(names = {
