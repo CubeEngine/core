@@ -30,7 +30,7 @@ public class Travel extends Module
         this.tpManager.load(inviteManager);
 
         this.homeCommands = new HomeCommands(this, tpManager);
-        this.homeSubCommands = new HomeSubCommands(this, this.tpManager);
+        this.homeSubCommands = new HomeSubCommands(this, this.tpManager, inviteManager);
         this.homeAdminSub = new HomeAdminSub(this, this.tpManager);
         this.warpCommands = new WarpCommands(tpManager);
         this.warpSubCommands = new WarpSubCommands(tpManager);

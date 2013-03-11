@@ -18,6 +18,7 @@ import org.bukkit.command.CommandSender;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 public class HomeAdminSub
 {
@@ -38,8 +39,9 @@ public class HomeAdminSub
         "clearhomes"
     })
     @Command(desc = "Clear all homes (of an user)", flags = {
-        @Flag(name = "p", longName = "public")
-    }, min = 1, max = 1, usage = " <user> <-public>")
+        @Flag(name = "p", longName = "public"),
+        @Flag(name = "P", longName = "Private")
+    }, min = 1, max = 1, usage = " <user> <-public> <-Private>")
     public void clear(ParameterizedContext context)
     {
         if (context.getArgCount() > 0)
@@ -56,6 +58,11 @@ public class HomeAdminSub
                     context.sendMessage("travel", "&5Are you sure you want to delete all public homes ever created by &3%s", context.getString(0));
                     context.sendMessage("travel", "&5To delete all the public homes, do: &9\"/home admin accept\" &5before 20 secunds");
                 }
+                else if (context.hasFlag("P"))
+                {
+                    context.sendMessage("travel", "&5Are you sure you want to delete all private homes ever created by &3%s", context.getString(0));
+                    context.sendMessage("travel", "&5To delete all the private homes, do: &9\"/home admin accept\" &5before 20 secunds");
+                }
                 else
                 {
                     context.sendMessage("travel", "&5Are you sure you want to delete all homes ever created by &3%s", context.getString(0));
@@ -69,6 +76,11 @@ public class HomeAdminSub
             {
                 context.sendMessage("travel", "&5Are you sure you want to delete all public homes ever created on this server!?");
                 context.sendMessage("travel", "&5To delete all the public homes of every user, do: &9\"/home admin accept\" &5before 20 secunds");
+            }
+            else if (context.hasFlag("P"))
+            {
+                context.sendMessage("travel", "&5Are you sure you want to delete all private homes ever created on this server!?");
+                context.sendMessage("travel", "&5To delete all the private homes of every user, do: &9\"/home admin accept\" &5before 20 secunds");
             }
             else
             {
@@ -90,7 +102,37 @@ public class HomeAdminSub
                 ParameterizedContext usedContext = this.acceptEntries.get(context.getSender()).getRight();
                 if (usedContext.getCommand().getName().equals("clear"))
                 {
-                   //  TODO delete homes
+                    if (usedContext.getArgCount() == 0)
+                    { // No user
+                        if (usedContext.hasFlag("p"))
+                        { // Public
+                            //TODO
+                        }
+                        else if (usedContext.hasFlag("P"))
+                        { // Private
+                            //TODO
+                        }
+                        else
+                        { //Both
+                            //TODO
+                        }
+                    }
+                    else
+                    {
+                        User user = usedContext.getUser(0);
+                        if (usedContext.hasFlag("p"))
+                        { // Public
+                            //TODO
+                        }
+                        else if (usedContext.hasFlag("P"))
+                        { // Private
+                            // TODO
+                        }
+                        else
+                        { // Both
+                            //TODO
+                        }
+                    }
                 }
                 return;
             }
@@ -99,11 +141,40 @@ public class HomeAdminSub
     }
 
     @Command(desc = "List all (public) homes", flags = {
-        @Flag(name = "p", longName = "public")
-    }, min = 0, max = 1, usage = " <user> <-public>")
+            @Flag(name = "p", longName = "public"),
+            @Flag(name = "P", longName = "private"),
+            @Flag(name = "o", longName = "owned"),
+            @Flag(name = "i", longName = "invited")
+    }, min = 0, max = 1, usage = " <<user>  <-owned> <-invited>> <-public> <-Private>")
     public void list(ParameterizedContext context)
     {
-        //TODO
+        int mask = context.getFlagCount() == 0 ? tpManager.ALL : 0;
+        if (context.hasFlag("p")) mask |= tpManager.PUBLIC;
+        if (context.hasFlag("P")) mask |= tpManager.PRIVATE;
+        if (context.hasFlag("o")) mask |= tpManager.OWNED;
+        if (context.hasFlag("i")) mask |= tpManager.INVITED;
+
+        Set<Home> homes;
+        if (context.getArgCount() == 0)
+        {
+            homes = tpManager.listHomes(mask);
+        }
+        else
+        {
+            User user = context.getUser(0);
+            homes = tpManager.listHomes(user, mask);
+        }
+        for (Home home : homes)
+        {
+            if (home.isPublic())
+            {
+                context.sendMessage("travel", "  &2public&e:&6%s", home.getName());
+            }
+            else
+            {
+                context.sendMessage("travel", "  &2%s&e:&6%s", home.getOwner().getName(), home.getName());
+            }
+        }
     }
 
     @Command(names = {

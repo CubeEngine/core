@@ -698,7 +698,7 @@ public class TelePointManager extends SingleKeyStorage<Long, TeleportPoint>
     public Set<Home> listHomes(int mask)
     {
         Set<Home> homes = new HashSet<Home>();
-        if ((mask & PUBLIC) == PUBLIC || mask == ALL)
+        if ((mask & PUBLIC) == PUBLIC)
         {
             try
             {
@@ -708,11 +708,11 @@ public class TelePointManager extends SingleKeyStorage<Long, TeleportPoint>
             }
             catch (SQLException e)
             {
-                // TODO
+                throw new StorageException("Failed getting all public homes", e);
             }
         }
 
-        if ((mask & PRIVATE) == PRIVATE || mask == ALL)
+        if ((mask & PRIVATE) == PRIVATE)
         {
             try
             {
@@ -722,7 +722,7 @@ public class TelePointManager extends SingleKeyStorage<Long, TeleportPoint>
             }
             catch (SQLException e)
             {
-                // TODO
+                throw new StorageException("Failed getting all private homes", e);
             }
         }
         return homes;
@@ -739,13 +739,13 @@ public class TelePointManager extends SingleKeyStorage<Long, TeleportPoint>
         }
 
         // If mask contains neither PUBLIC nor PRIVATE turn both on
-        if (!((mask & PUBLIC) == PUBLIC && (mask & PRIVATE) == PRIVATE))
+        if ((mask & (PUBLIC | PRIVATE)) == 0)
         {
             mask |= PUBLIC | PRIVATE;
         }
 
         // If mask contains neither OWNED nor INVITED turn both on
-        if (!((mask & OWNED) == OWNED && (mask & INVITED) == INVITED))
+        if ((mask & (OWNED | INVITED)) == 0)
         {
             mask |= OWNED | INVITED;
         }
@@ -757,7 +757,7 @@ public class TelePointManager extends SingleKeyStorage<Long, TeleportPoint>
                 homes.addAll(this.getHomes(resultSet));
                 resultSet.close();
             } catch (SQLException e) {
-                // TODO
+                throw new StorageException("Failed getting public homes owned by " + user.getName(), e);
             }
         }
         if ((mask & (PRIVATE | OWNED)) == (PRIVATE | OWNED))
@@ -767,7 +767,7 @@ public class TelePointManager extends SingleKeyStorage<Long, TeleportPoint>
                 homes.addAll(this.getHomes(resultSet));
                 resultSet.close();
             } catch (SQLException e) {
-                // TODO
+                throw new StorageException("Failed getting private homes owned by " + user.getName(), e);
             }
         }
         if ((mask & INVITED) == INVITED)
@@ -794,7 +794,7 @@ public class TelePointManager extends SingleKeyStorage<Long, TeleportPoint>
     public Set<Warp> listWarps(int mask)
     {
         Set<Warp> warps = new HashSet<Warp>();
-        if ((mask & PUBLIC) == PUBLIC || mask == ALL)
+        if ((mask & PUBLIC) == PUBLIC)
         {
             try
             {
@@ -804,11 +804,11 @@ public class TelePointManager extends SingleKeyStorage<Long, TeleportPoint>
             }
             catch (SQLException e)
             {
-                // TODO
+                throw new StorageException("Failed getting all public warps", e);
             }
         }
 
-        if ((mask & PRIVATE) == PRIVATE || mask == ALL)
+        if ((mask & PRIVATE) == PRIVATE)
         {
             try
             {
@@ -818,7 +818,7 @@ public class TelePointManager extends SingleKeyStorage<Long, TeleportPoint>
             }
             catch (SQLException e)
             {
-                // TODO
+                throw new StorageException("Failed getting all private warps", e);
             }
         }
         return warps;
@@ -835,13 +835,13 @@ public class TelePointManager extends SingleKeyStorage<Long, TeleportPoint>
         }
 
         // If mask contains neither PUBLIC nor PRIVATE turn both on
-        if (!((mask & PUBLIC) == PUBLIC && (mask & PRIVATE) == PRIVATE))
+        if ((mask & (PUBLIC | PRIVATE)) == 0)
         {
             mask |= PUBLIC | PRIVATE;
         }
 
         // If mask contains neither OWNED nor INVITED turn both on
-        if (!((mask & OWNED) == OWNED && (mask & INVITED) == INVITED))
+        if ((mask & (OWNED | INVITED)) == 0)
         {
             mask |= OWNED | INVITED;
         }
@@ -853,7 +853,7 @@ public class TelePointManager extends SingleKeyStorage<Long, TeleportPoint>
                 warps.addAll(this.getWarps(resultSet));
                 resultSet.close();
             } catch (SQLException e) {
-                // TODO
+                throw new StorageException("Failed getting public warps owned by " + user.getName(), e);
             }
         }
         if ((mask & (PRIVATE | OWNED)) == (PRIVATE | OWNED))
@@ -863,7 +863,7 @@ public class TelePointManager extends SingleKeyStorage<Long, TeleportPoint>
                 warps.addAll(this.getWarps(resultSet));
                 resultSet.close();
             } catch (SQLException e) {
-                // TODO
+                throw new StorageException("Failed getting private warps owned by " + user.getName(), e);
             }
         }
         if ((mask & INVITED) == INVITED)

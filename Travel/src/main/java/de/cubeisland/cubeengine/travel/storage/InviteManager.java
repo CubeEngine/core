@@ -44,7 +44,14 @@ public class InviteManager extends TwoKeyStorage<Long, Long, TeleportInvite>
         }
     }
 
-    Set<User> getInvitedUsers(TeleportPoint tPP)
+    public void invite(TeleportPoint tPP, User user)
+    {
+        TeleportInvite invite = new TeleportInvite(tPP.key, user.getKey());
+        this.invites.add(invite);
+        this.store(invite);
+    }
+
+    public Set<User> getInvitedUsers(TeleportPoint tPP)
     {
         Set<User> invitedUsers = new HashSet<User>();
         for (String name : getInvited(tPP))
@@ -58,7 +65,7 @@ public class InviteManager extends TwoKeyStorage<Long, Long, TeleportInvite>
         return invitedUsers;
     }
 
-    Set<String> getInvited(TeleportPoint tPP)
+    public Set<String> getInvited(TeleportPoint tPP)
     {
         Set<String> invitedUsers = new HashSet<String>();
         for (TeleportInvite tpI : getInvites(tPP))
@@ -72,7 +79,7 @@ public class InviteManager extends TwoKeyStorage<Long, Long, TeleportInvite>
         return invitedUsers;
     }
 
-    Set<TeleportInvite> getInvites(User user)
+    public Set<TeleportInvite> getInvites(User user)
     {
         Set<TeleportInvite> invites = new HashSet<TeleportInvite>();
         for (TeleportInvite invite : this.invites)
@@ -85,7 +92,7 @@ public class InviteManager extends TwoKeyStorage<Long, Long, TeleportInvite>
         return invites;
     }
 
-    Set<TeleportInvite> getInvites(TeleportPoint tPP)
+    public Set<TeleportInvite> getInvites(TeleportPoint tPP)
     {
         Set<TeleportInvite> invites = new HashSet<TeleportInvite>();
         for (TeleportInvite invite : this.invites)

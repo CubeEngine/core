@@ -70,7 +70,7 @@ public class Home
     {
         this.invited.add(user.getName());
         telePointManager.putHomeToUser(this, user);
-        inviteManager.store(new TeleportInvite(this.getKey(), user.getKey()));
+        inviteManager.invite(this.getModel(), user);
     }
 
     public void unInvite(User user)
@@ -154,7 +154,7 @@ public class Home
         return inviteManager.getInvitedUsers(parent);
     }
 
-    protected TeleportPoint getModel()
+    public TeleportPoint getModel()
     {
         return parent;
     }

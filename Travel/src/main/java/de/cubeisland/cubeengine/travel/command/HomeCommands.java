@@ -21,7 +21,7 @@ public class HomeCommands
         this.tpManager = tpManager;
     }
 
-    @Command(desc = "Teleport to a home", usage = "<[OwnerName]:>[HomeName]", permDefault = PermDefault.TRUE, min = 1, max = 2)
+    @Command(desc = "Teleport to a home", usage = "<[OwnerName]:>[HomeName]", permDefault = PermDefault.TRUE, min = 0, max = 1)
     public void home(CommandContext context)
     {
         if (context.getSender()instanceof User)

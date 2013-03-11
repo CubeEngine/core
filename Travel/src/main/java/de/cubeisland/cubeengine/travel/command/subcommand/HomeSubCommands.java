@@ -13,9 +13,7 @@ import de.cubeisland.cubeengine.core.storage.StorageException;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.util.Pair;
 import de.cubeisland.cubeengine.travel.Travel;
-import de.cubeisland.cubeengine.travel.storage.Home;
-import de.cubeisland.cubeengine.travel.storage.TelePointManager;
-import de.cubeisland.cubeengine.travel.storage.TeleportPoint;
+import de.cubeisland.cubeengine.travel.storage.*;
 import org.bukkit.Location;
 
 import java.util.Set;
@@ -23,11 +21,13 @@ import java.util.Set;
 public class HomeSubCommands
 {
     private final TelePointManager tpManager;
+    private final InviteManager inviteManager;
     private final Travel module;
 
-    public HomeSubCommands(Travel module, TelePointManager tpManager)
+    public HomeSubCommands(Travel module, TelePointManager tpManager, InviteManager inviteManager)
     {
         this.tpManager = tpManager;
+        this.inviteManager = inviteManager;
         this.module = module;
     }
 
@@ -224,9 +224,17 @@ public class HomeSubCommands
     })
     public void listHomes(ParameterizedContext context)
     {
-        if (!(context.getSender() instanceof User))
+        if (!context.isSender(User.class))
         {
-            context.sendMessage("travel", "&cOnly users can do that");
+            int mask = context.getFlagCount() == 0 ? tpManager.ALL : 0;
+            if (context.hasFlag("p")) mask |= tpManager.PUBLIC;
+            if (context.hasFlag("P")) mask |= tpManager.PRIVATE;
+
+            context.sendMessage("travel", "&eHere is a list of the homes: ");
+            for (Home home : tpManager.listHomes(mask))
+            {
+                context.sendMessage("travel", "  &2%s&e:&6%s", home.getOwner().getName(), home.getName());
+            }
             return;
         }
 
@@ -245,17 +253,49 @@ public class HomeSubCommands
             }
             else
             {
-                user.sendMessage("travel", "  &2%s:&6%s", home.getOwner().getName(), home.getName());
+                if (home.isPublic())
+                {
+                    user.sendMessage("travel", "  &2public&e:&6%s", home.getName());
+                }
+                else
+                {
+                    user.sendMessage("travel", "  &2%s&e:&6%s", home.getOwner().getName(), home.getName());
+                }
             }
         }
     }
 
     @Command(names = {
     "ilist", "invited"
-    }, desc = "List all players invited to your homes", min = 1, max = 1, permDefault = PermDefault.TRUE)
+    }, desc = "List all players invited to your homes", min = 0, max = 0, permDefault = PermDefault.TRUE)
     public void invitedList(CommandContext context)
     {
-        //TODO
+        if (!context.isSender(User.class))
+        {
+
+            return;
+        }
+
+        User user = (User)context.getSender();
+        Set<Home> homes = tpManager.listHomes(user, tpManager.OWNED);
+        if (homes.size() != 0)
+        {
+            user.sendMessage("travel", "&eHere is a list of all your homes with the users invited to them:");
+            for (Home home : homes)
+            {
+                Set<TeleportInvite> invites = inviteManager.getInvites(home.getModel());
+                if (invites.size() != 0)
+                {
+                    context.sendMessage("travel", "  &6%s&e:", home.getName());
+                    for (TeleportInvite invite : invites)
+                    {
+                        context.sendMessage("    &2" + CubeEngine.getUserManager().getUser(invite.userKey).getName());
+                    }
+                }
+            }
+            return;
+        }
+        context.sendMessage("travel", "&cYou don't have any homes with users invited to them!");
     }
 
     @Command(desc = "Invite a user to one of your homes", min = 1, max = 2, usage = "[home] <user>", permDefault = PermDefault.TRUE)

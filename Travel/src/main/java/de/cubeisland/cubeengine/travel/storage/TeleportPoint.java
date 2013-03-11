@@ -16,7 +16,7 @@ import java.util.Set;
        indices = {
                @Index(value = Index.IndexType.FOREIGN_KEY, fields = "owner", f_table = "user", f_field = "key"),
                @Index(value = Index.IndexType.FOREIGN_KEY, fields = "world", f_table = "worlds", f_field = "key"),
-               @Index(value = Index.IndexType.UNIQUE, fields = {"owner", "name"})
+               @Index(value = Index.IndexType.UNIQUE, fields = {"owner", "name", "type"})
        })
 public class TeleportPoint implements Model<Long>
 {
