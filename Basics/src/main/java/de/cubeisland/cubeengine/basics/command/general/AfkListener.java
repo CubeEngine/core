@@ -1,24 +1,33 @@
 package de.cubeisland.cubeengine.basics.command.general;
 
 import de.cubeisland.cubeengine.basics.Basics;
+import de.cubeisland.cubeengine.basics.BasicsAttachment;
 import de.cubeisland.cubeengine.basics.BasicsPerm;
 import de.cubeisland.cubeengine.core.user.User;
+import de.cubeisland.cubeengine.core.user.UserManager;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.event.player.*;
+import org.bukkit.event.player.AsyncPlayerChatEvent;
+import org.bukkit.event.player.PlayerChatTabCompleteEvent;
+import org.bukkit.event.player.PlayerCommandPreprocessEvent;
+import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerMoveEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 
 public class AfkListener implements Listener, Runnable
 {
-    private Basics basics;
-    private long autoAfk;
-    private long afkCheck;
+    private final Basics basics;
+    private final UserManager um;
+    private final long autoAfk;
+    private final long afkCheck;
 
     public AfkListener(Basics basics, long autoAfk, long afkCheck)
     {
         this.basics = basics;
+        this.um = basics.getUserManager();
         this.autoAfk = autoAfk;
         this.afkCheck = afkCheck;
     }
@@ -30,7 +39,7 @@ public class AfkListener implements Listener, Runnable
         {
             return;
         }
-        this.setLastAction(event.getPlayer());
+        this.updateLastAction(event.getPlayer());
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
@@ -38,77 +47,87 @@ public class AfkListener implements Listener, Runnable
     {
         if (event.getWhoClicked() instanceof Player)
         {
-            this.setLastAction((Player)event.getWhoClicked());
+            this.updateLastAction((Player)event.getWhoClicked());
         }
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
     public void playerInteract(PlayerInteractEvent event)
     {
-        this.setLastAction(event.getPlayer());
+        this.updateLastAction(event.getPlayer());
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
     public void onChat(AsyncPlayerChatEvent event)
     {
-        User user = this.basics.getUserManager().getExactUser(event.getPlayer());
-        user.setAttribute(this.basics, "lastAction", System.currentTimeMillis());
+        this.updateLastAction(event.getPlayer());
         this.run();
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
     public void onCommand(PlayerCommandPreprocessEvent event)
     {
-        this.setLastAction(event.getPlayer());
+        this.updateLastAction(event.getPlayer());
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
     public void onChatTabComplete(PlayerChatTabCompleteEvent event)
     {
-        this.setLastAction(event.getPlayer());
+        this.updateLastAction(event.getPlayer());
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
     public void onLeave(PlayerQuitEvent event)
     {
-        User user = this.basics.getUserManager().getExactUser(event.getPlayer());
-        user.removeAttribute(basics,"afk");
+        BasicsAttachment basicUser = this.um.getExactUser(event.getPlayer()).get(BasicsAttachment.class);
+        if (basicUser != null)
+        {
+            basicUser.setAfk(false);
+        }
     }
 
-    private void setLastAction(Player player)
+    private void updateLastAction(Player player)
     {
-        User user = this.basics.getUserManager().getExactUser(player);
-        Boolean isAfk = user.getAttribute(basics, "afk");
-        if (isAfk != null && isAfk && BasicsPerm.AFK_PREVENT_AUTOUNAFK.isAuthorized(player))
+        BasicsAttachment basicUser = this.um.getExactUser(player).get(BasicsAttachment.class);
+        if (basicUser != null)
         {
-            return;
+            if (basicUser.isAfk() && BasicsPerm.AFK_PREVENT_AUTOUNAFK.isAuthorized(player))
+            {
+                return;
+            }
+            basicUser.updateLastAction();
         }
-        user.setAttribute(this.basics, "lastAction", System.currentTimeMillis());
     }
 
     @Override
     public void run()
     {
+        BasicsAttachment basicUser;
         for (User user : basics.getUserManager().getLoadedUsers())
         {
-            Boolean isAfk = user.getAttribute(basics, "afk");
-            Long lastAction = user.getAttribute(basics, "lastAction");
-            if (lastAction == null)
+            basicUser = user.get(BasicsAttachment.class);
+            if (basicUser == null)
             {
                 continue;
             }
-            if (isAfk != null && isAfk)
+
+            long lastAction = basicUser.getLastAction();
+            if (lastAction == 0)
+            {
+                continue;
+            }
+            if (basicUser.isAfk())
             {
                 if (System.currentTimeMillis() - lastAction < afkCheck)
                 {
-                    user.removeAttribute(basics, "afk");
-                    basics.getUserManager().broadcastStatus("basics", "is no longer afk!", user.getName());
+                    basicUser.setAfk(false);
+                    this.um.broadcastStatus("basics", "is no longer afk!", user.getName());
                 }
             }
             else if (System.currentTimeMillis() - lastAction > autoAfk)
             {
-                user.setAttribute(basics, "afk", true);
-                basics.getUserManager().broadcastStatus("basics", "is now afk!" ,user.getName());
+                basicUser.setAfk(true);
+                this.um.broadcastStatus("basics", "is now afk!" ,user.getName());
             }
         }
     }

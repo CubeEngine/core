@@ -548,6 +548,10 @@ public class UserManager implements Cleanable
     public synchronized void addDefaultAttachment(Class<? extends UserAttachment> attachmentClass)
     {
         this.defaultAttachments.add(attachmentClass);
+        for (User user : new THashSet<User>(this.cachedUsers.values()))
+        {
+            user.attach(attachmentClass);
+        }
     }
 
     public synchronized void removeDefaultAttachment(Class<? extends UserAttachment> attachmentClass)

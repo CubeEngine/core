@@ -31,6 +31,7 @@ public class Basics extends Module
         this.mailManager = new MailManager(this.getDatabase(), this.basicUM);
         this.ignoreListManager = new IgnoreListManager(this.getDatabase());
         this.registerPermissions(BasicsPerm.values());
+        this.getUserManager().addDefaultAttachment(BasicsAttachment.class);
 
         this.registerListener(new ColoredSigns());
 
@@ -91,6 +92,8 @@ public class Basics extends Module
     public void onDisable()
     {
         this.getTaskManger().cancelTasks(this); // afk task
+        this.getUserManager().removeDefaultAttachment(BasicsAttachment.class);
+        this.getUserManager().detachFromAll(BasicsAttachment.class);
     }
 
     public BasicsConfiguration getConfiguration()
