@@ -16,6 +16,7 @@ import de.cubeisland.cubeengine.core.storage.database.SingleKeyEntity;
 import de.cubeisland.cubeengine.core.util.ChatFormat;
 import de.cubeisland.cubeengine.core.util.convert.ConversionException;
 import gnu.trove.map.hash.THashMap;
+import gnu.trove.set.hash.THashSet;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -43,6 +44,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.TreeSet;
 
 import static de.cubeisland.cubeengine.core.i18n.I18n._;
@@ -149,6 +151,11 @@ public class User extends UserBase implements Model<Long>, CommandSender, Attach
     public synchronized <A extends UserAttachment> A get(Class<A> type)
     {
         return (A)this.attachments.get(type);
+    }
+
+    public synchronized Set<UserAttachment> getAll()
+    {
+        return new THashSet<UserAttachment>(this.attachments.values());
     }
 
     @Override

@@ -13,7 +13,7 @@ public abstract class UserAttachment extends Attachment<User>
     public void onKick(String kickMessage)
     {}
 
-    public void onChat(String message)
+    public void onChat(String format, String message)
     {}
 
     public void onCommand(String commandline)

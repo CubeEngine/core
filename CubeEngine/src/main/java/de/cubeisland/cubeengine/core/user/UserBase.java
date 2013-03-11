@@ -1,13 +1,7 @@
 package de.cubeisland.cubeengine.core.user;
 
-import java.net.InetSocketAddress;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.UUID;
 import org.bukkit.Achievement;
+import org.bukkit.Bukkit;
 import org.bukkit.Effect;
 import org.bukkit.EntityEffect;
 import org.bukkit.GameMode;
@@ -47,6 +41,14 @@ import org.bukkit.plugin.Plugin;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.util.Vector;
+
+import java.net.InetSocketAddress;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
 
 /**
  * Wrapper around the BukkitPlayer/OfflinePlayer
@@ -1308,7 +1310,7 @@ public class UserBase implements Player
         {
             return player.getServer();
         }
-        return null;
+        return Bukkit.getServer();
     }
 
     @Override

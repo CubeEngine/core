@@ -1,6 +1,7 @@
 package de.cubeisland.cubeengine.core.user;
 
 import de.cubeisland.cubeengine.core.bukkit.BukkitCore;
+import de.cubeisland.cubeengine.core.command.sender.CommandSender;
 import de.cubeisland.cubeengine.core.filesystem.FileManager;
 import de.cubeisland.cubeengine.core.permission.Permission;
 import de.cubeisland.cubeengine.core.util.ChatFormat;
@@ -14,16 +15,18 @@ import gnu.trove.map.hash.TObjectIntHashMap;
 import gnu.trove.procedure.TObjectIntProcedure;
 import gnu.trove.set.hash.THashSet;
 import org.apache.commons.lang.RandomStringUtils;
-import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
-import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.player.AsyncPlayerChatEvent;
+import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerKickEvent;
 import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.scheduler.BukkitScheduler;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -57,7 +60,7 @@ public class UserManager implements Cleanable
     private final BukkitCore core;
     private final UserStorage storage;
     private final List<User> onlineUsers;
-    private final ConcurrentHashMap<String, User> cachedUsers;
+    private final ConcurrentHashMap<Object, User> cachedUsers;
     private final Set<Class<? extends UserAttachment>> defaultAttachments;
     private final TObjectIntMap<String> scheduledForRemoval;
     public String salt;
@@ -69,13 +72,14 @@ public class UserManager implements Cleanable
         this.storage = new UserStorage(core);
         this.core = core;
 
-        this.cachedUsers = new ConcurrentHashMap<String, User>();
+        this.cachedUsers = new ConcurrentHashMap<Object, User>();
         this.onlineUsers = new CopyOnWriteArrayList<User>();
 
         final long delay = (long)core.getConfiguration().userManagerCleanup;
         this.nativeScheduler = Executors.newSingleThreadScheduledExecutor(core.getTaskManager().getThreadFactory());
         this.nativeScheduler.scheduleAtFixedRate(new UserCleanupTask(), delay, delay, TimeUnit.MINUTES);
         core.getServer().getPluginManager().registerEvents(new UserListener(), core);
+        core.getServer().getPluginManager().registerEvents(new AttachmentHookListener(), core);
 
         this.defaultAttachments = new THashSet<Class<? extends UserAttachment>>();
         this.scheduledForRemoval = new TObjectIntHashMap<String>(Constants.DEFAULT_CAPACITY, Constants.DEFAULT_LOAD_FACTOR, -1);
@@ -136,34 +140,6 @@ public class UserManager implements Cleanable
     }
 
     /**
-     * Adds a new User
-     *
-     * @return the created User
-     */
-    private User createUser(String name)
-    {
-        User inUse = this.cachedUsers.get(name);
-        if (inUse != null)
-        {
-            //User was already added
-            return inUse;
-        }
-        User user = new User(this.core, name);
-        this.cachedUsers.put(user.getName(), user);
-        this.storage.store(user, false);
-        this.attachDefaults(user);
-        return user;
-    }
-
-    private synchronized void attachDefaults(User user)
-    {
-        for (Class<? extends UserAttachment> attachmentClass : this.defaultAttachments)
-        {
-            user.attach(attachmentClass);
-        }
-    }
-
-    /**
      * Removes the user permanently. Data cannot be restored later on
      *
      * @param user the User
@@ -176,32 +152,9 @@ public class UserManager implements Cleanable
         return this;
     }
 
-    /**
-     * Gets a User by name
-     *
-     * @param name the name
-     * @return the User
-     */
-    public User getUser(String name, boolean createIfMissing)
+    public User getExactUser(String name)
     {
-        if (name == null)
-        {
-            return null;
-        }
-        User user = this.cachedUsers.get(name);
-        if (user == null)
-        {
-            user = this.storage.loadUser(name);
-            if (user != null)
-            {
-                this.cachedUsers.put(name, user);
-            }
-        }
-        if (user == null && createIfMissing)
-        {
-            user = this.createUser(name);
-        }
-        return user;
+        return this.getUser(name, true);
     }
 
     /**
@@ -224,26 +177,7 @@ public class UserManager implements Cleanable
         {
             return null;
         }
-        return this.getUser(player.getName(), true);
-    }
-
-    /**
-     * Gets a User by Player (creates new User if not found)
-     *
-     * @param player the player
-     * @return the User
-     */
-    public User getExactUser(Player player)
-    {
-        if (player == null)
-        {
-            return null;
-        }
-        if (player instanceof User)
-        {
-            return (User)player;
-        }
-        return this.getUser(player.getName(), true);
+        return this.getExactUser(player.getName());
     }
 
     /**
@@ -260,11 +194,7 @@ public class UserManager implements Cleanable
         }
         if (sender instanceof User)
         {
-            return (User)sender;
-        }
-        if (sender instanceof Player)
-        {
-            return this.getUser(sender.getName(), true);
+            return this.getExactUser((OfflinePlayer)sender);
         }
         return null;
     }
@@ -279,20 +209,110 @@ public class UserManager implements Cleanable
     {
         if (key == null)
         {
-            return null;
+            throw new NullPointerException();
         }
-        User user = this.storage.get(key);
+        User user = this.cachedUsers.get(key);
+        if (user == null)
+        {
+            user = this.storage.get(key);
+        }
         if (user == null)
         {
             return null;
         }
-        User savedUser = this.cachedUsers.get(user.getName());
-        if (savedUser == null)
+        this.cacheUser(user);
+        return user;
+    }
+
+    public User getUser(OfflinePlayer player)
+    {
+        return this.getUser(player, false);
+    }
+
+    public User getUser(OfflinePlayer player, boolean create)
+    {
+        return this.getUser(player.getName(), create);
+    }
+
+    public User getUser(String playerName)
+    {
+        return this.getUser(playerName, false);
+    }
+
+    public User getUser(String name, boolean create)
+    {
+        if (name == null)
         {
-            this.cachedUsers.put(user.getName(), user);
+            throw new NullPointerException();
+        }
+        User user = this.cachedUsers.get(name);
+        if (user == null)
+        {
+            user = this.loadUser(name);
+        }
+        if (user == null && create)
+        {
+            user = this.createUser(name);
+        }
+        return user;
+    }
+
+    private synchronized User loadUser(String playerName)
+    {
+        User user = this.storage.loadUser(playerName);
+        if (user != null)
+        {
+            this.cacheUser(user);
+        }
+        return user;
+    }
+
+    /**
+     * Adds a new User
+     *
+     * @return the created User
+     */
+    private synchronized User createUser(String name)
+    {
+        User user = this.cachedUsers.get(name);
+        if (user != null)
+        {
+            //User was already added
             return user;
         }
-        return savedUser;
+        user = new User(this.core, name);
+        this.storage.store(user, false);
+        this.cacheUser(user);
+
+        return user;
+    }
+
+    private synchronized void attachDefaults(User user)
+    {
+        for (Class<? extends UserAttachment> attachmentClass : this.defaultAttachments)
+        {
+            user.attach(attachmentClass);
+        }
+    }
+
+    private synchronized void cacheUser(User user)
+    {
+        synchronized (this.cachedUsers)
+        {
+            this.cachedUsers.put(user.getName(), user);
+            this.cachedUsers.put(user.getKey(), user);
+            this.attachDefaults(user);
+        }
+    }
+
+    private synchronized void removeCachedUser(User user)
+    {
+        synchronized (this.cachedUsers)
+        {
+            this.cachedUsers.remove(user.getName());
+            this.cachedUsers.remove(user.getKey());
+            user.detachAll();
+        }
     }
 
     /**
@@ -400,14 +420,14 @@ public class UserManager implements Cleanable
 
     public void broadcastMessage(String category, String message, Permission perm, Object... args)
     {
-        for (Player player : this.core.getServer().getOnlinePlayers())
+        for (User user : this.onlineUsers)
         {
-            if (perm == null || perm.isAuthorized(player))
+            if (perm == null || perm.isAuthorized(user))
             {
-                this.getExactUser(player).sendMessage(category, message, args);
+                user.sendMessage(category, message, args);
             }
         }
-        Bukkit.getServer().getConsoleSender().sendMessage(_(category, message, args));
+        this.core.getServer().getConsoleSender().sendMessage(_(category, message, args));
     }
 
     public void broadcastMessage(String category, String message, Object... args)
@@ -418,9 +438,9 @@ public class UserManager implements Cleanable
     public void broadcastStatus(String message, String username)
     {
         message = ChatFormat.parseFormats(message);
-        for (Player player : this.core.getServer().getOnlinePlayers())
+        for (User user : this.onlineUsers)
         {
-            this.getExactUser(player).sendMessage("* &2" + username + " &f" + message); // not yet configurable
+            user.sendMessage("* &2" + username + " &f" + message); // not yet configurable
         }
     }
 
@@ -510,17 +530,18 @@ public class UserManager implements Cleanable
 
     public void attachToAll(Class<? extends UserAttachment> attachmentClass)
     {
-        for (Player player : this.core.getServer().getOnlinePlayers())
+        for (User user : this.getLoadedUsers())
         {
-            this.getExactUser(player).attach(attachmentClass);
+            user.attach(attachmentClass);
         }
     }
 
     public void detachFromAll(Class<? extends UserAttachment> attachmentClass)
     {
-        for (Player player : this.core.getServer().getOnlinePlayers())
+        Set<User> users = new THashSet<User>(this.cachedUsers.values());
+        for (User user : users)
         {
-            this.getExactUser(player).detach(attachmentClass);
+            user.detach(attachmentClass);
         }
     }
 
@@ -550,10 +571,19 @@ public class UserManager implements Cleanable
         @EventHandler(priority = EventPriority.MONITOR)
         public void onQuit(final PlayerQuitEvent event)
         {
-            Player player = event.getPlayer();
-            final User user = getExactUser(player);
-            onlineUsers.remove(user);
-            final int taskId = event.getPlayer().getServer().getScheduler().scheduleSyncDelayedTask(core, new Runnable() {
+            final User user = getUser(event.getPlayer());
+            final BukkitScheduler scheduler = user.getServer().getScheduler();
+
+            scheduler.scheduleSyncDelayedTask(core, new Runnable()
+            {
+                @Override
+                public void run()
+                {
+                    onlineUsers.remove(user);
+                }
+            }, 1);
+
+            final int taskId = scheduler.scheduleSyncDelayedTask(core, new Runnable() {
                 @Override
                 public void run()
                 {
@@ -564,14 +594,14 @@ public class UserManager implements Cleanable
                     {
                         return;
                     }
-                    cachedUsers.remove(user.getName());
+                    removeCachedUser(user);
                 }
             }, core.getConfiguration().userManagerKeepUserLoaded);
 
             if (taskId == -1)
             {
                 core.getLogger().log(WARNING, "The delayed removed of user ''{0}'' could not be scheduled... removing him now.");
-                cachedUsers.remove(user.getName());
+                removeCachedUser(user);
             }
 
             scheduledForRemoval.put(user.getName(), taskId);
@@ -582,24 +612,72 @@ public class UserManager implements Cleanable
         {
             if (event.getResult() == PlayerLoginEvent.Result.ALLOWED)
             {
-                //onlineUsers.add();
+                User user = getUser(event.getPlayer(), true);
+                onlineUsers.add(user);
             }
         }
 
         @EventHandler(priority = EventPriority.LOWEST)
         public void onJoin(final PlayerJoinEvent event)
         {
-            final Player player = event.getPlayer();
-            final User user = cachedUsers.get(player.getName());
+            final User user = getUser(event.getPlayer());
             if (user != null)
             {
-                user.offlinePlayer = player;
+                // user.offlinePlayer = player; TODO might cause problems to not have this
                 user.refreshIP();
+                final int removalTask = scheduledForRemoval.get(user.getName());
+                if (removalTask > -1)
+                {
+                    user.getServer().getScheduler().cancelTask(removalTask);
+                }
             }
-            final int removalTask = scheduledForRemoval.get(player.getName());
-            if (removalTask > -1)
+        }
+    }
+
+    private class AttachmentHookListener implements Listener
+    {
+        @EventHandler(priority = EventPriority.MONITOR)
+        public void onJoin(PlayerJoinEvent event)
+        {
+            for (UserAttachment attachment : getUser(event.getPlayer()).getAll())
             {
-                player.getServer().getScheduler().cancelTask(removalTask);
+                attachment.onJoin(event.getJoinMessage());
+            }
+        }
+
+        @EventHandler(priority = EventPriority.MONITOR)
+        public void onQuit(PlayerQuitEvent event)
+        {
+            for (UserAttachment attachment : getUser(event.getPlayer()).getAll())
+            {
+                attachment.onQuit(event.getQuitMessage());
+            }
+        }
+
+        @EventHandler(priority = EventPriority.MONITOR)
+        public void onKick(PlayerKickEvent event)
+        {
+            for (UserAttachment attachment : getUser(event.getPlayer()).getAll())
+            {
+                attachment.onKick(event.getLeaveMessage());
+            }
+        }
+
+        @EventHandler(priority = EventPriority.MONITOR)
+        public void onChat(AsyncPlayerChatEvent event)
+        {
+            for (UserAttachment attachment : getUser(event.getPlayer()).getAll())
+            {
+                attachment.onChat(event.getFormat(), event.getMessage());
+            }
+        }
+
+        @EventHandler(priority = EventPriority.MONITOR)
+        public void onCommand(PlayerCommandPreprocessEvent event)
+        {
+            for (UserAttachment attachment : getUser(event.getPlayer()).getAll())
+            {
+                attachment.onCommand(event.getMessage());
             }
         }
     }
@@ -617,6 +695,5 @@ public class UserManager implements Cleanable
                 }
             }
         }
-
     }
 }
