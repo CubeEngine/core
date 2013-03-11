@@ -1,6 +1,6 @@
-package de.cubeisland.cubeengine.core.attachment;
+package de.cubeisland.cubeengine.core.user;
 
-import de.cubeisland.cubeengine.core.user.User;
+import de.cubeisland.cubeengine.core.attachment.Attachment;
 
 public abstract class UserAttachment extends Attachment<User>
 {

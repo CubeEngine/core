@@ -3,7 +3,6 @@ package de.cubeisland.cubeengine.core.user;
 import de.cubeisland.cubeengine.core.Core;
 import de.cubeisland.cubeengine.core.CubeEngine;
 import de.cubeisland.cubeengine.core.attachment.AttachmentHolder;
-import de.cubeisland.cubeengine.core.attachment.UserAttachment;
 import de.cubeisland.cubeengine.core.bukkit.BukkitCore;
 import de.cubeisland.cubeengine.core.bukkit.BukkitUtils;
 import de.cubeisland.cubeengine.core.command.sender.CommandSender;

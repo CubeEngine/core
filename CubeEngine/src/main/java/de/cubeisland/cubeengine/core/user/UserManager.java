@@ -1,6 +1,5 @@
 package de.cubeisland.cubeengine.core.user;
 
-import de.cubeisland.cubeengine.core.attachment.UserAttachment;
 import de.cubeisland.cubeengine.core.bukkit.BukkitCore;
 import de.cubeisland.cubeengine.core.filesystem.FileManager;
 import de.cubeisland.cubeengine.core.permission.Permission;
