@@ -232,7 +232,8 @@ public class LogManager
             }
             logs.offer(toLog);
         }
-        this.module.getLogger().log(LogLevel.DEBUG,"Logging {0} logs",logs.size());
+        if (logs.size() > 4)
+            this.module.getLogger().log(LogLevel.DEBUG,"Logging {0} logs",logs.size());
         long a = System.currentTimeMillis();
         int logSize = logs.size();
         PreparedStatement stmt = this.database.getStoredStatement(this.getClass(),"storeLog");
