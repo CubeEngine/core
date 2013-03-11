@@ -43,7 +43,6 @@ public class LogManager
     private final AsyncTaskQueue taskQueue = new AsyncTaskQueue(CubeEngine.getTaskManager().getExecutorService());
     private final Database database;
     private final Log module;
-    private final PreparedStatement storeLog;
     private int logBuffer = 2000; // TODO config
     private final int repeatingTaskId;
 
@@ -77,7 +76,7 @@ public class LogManager
             sql = builder.insert().into("log_logs")
                     .cols("date", "world_id", "x", "y", "z", "action", "causer")
                     .end().end();
-            this.storeLog = this.database.prepareStatement(sql);
+            this.database.storeStatement(this.getClass(), "storeLog", sql);
             //Block logging:
             sql = builder.createTable("log_block", true).beginFields()
                     .field("key", AttrType.INT, true)
@@ -173,7 +172,14 @@ public class LogManager
                     @Override
                     public void run()
                     {
-                        doEmptyLogs(logBuffer);
+                        try
+                        {
+                            doEmptyLogs(logBuffer);
+                        }
+                        catch (Exception ex)
+                        {
+                            LogManager.this.module.getLogger().log(LogLevel.ERROR,"Error while logging!",ex);
+                        }
                     }
                 });
             }
@@ -217,7 +223,7 @@ public class LogManager
         }
         running = true;
         final Queue<QueuedLog> logs = new LinkedList<QueuedLog>();
-        for (int i = 0; i < amount; i++) // log <smount> next logs...
+        for (int i = 0; i < amount; i++) // log <amount> next logs...
         {
             QueuedLog toLog = this.queuedLogs.poll();
             if (toLog == null)
@@ -226,18 +232,21 @@ public class LogManager
             }
             logs.offer(toLog);
         }
-        this.module.getLogger().log(LogLevel.DEBUG,"Logging {0} logs",logs.size());
+        if (logs.size() > 4)
+            this.module.getLogger().log(LogLevel.DEBUG,"Logging {0} logs",logs.size());
         long a = System.currentTimeMillis();
         int logSize = logs.size();
+        PreparedStatement stmt = this.database.getStoredStatement(this.getClass(),"storeLog");
         try
         {
             for (QueuedLog log : logs)
             {
-                log.addMainDataToBatch(this.storeLog);
+                log.addMainDataToBatch(stmt);
             }
             this.database.getConnection().setAutoCommit(false);
-            this.storeLog.executeBatch();
-            ResultSet genKeys = storeLog.getGeneratedKeys();
+            stmt.executeBatch();
+            ResultSet genKeys = stmt.getGeneratedKeys();
+
             while (genKeys.next())
             {
                 long key = genKeys.getLong("GENERATED_KEY");
@@ -248,7 +257,7 @@ public class LogManager
         }
         catch (SQLException ex)
         {
-            throw new StorageException("Error while storing main Log-Entry", ex, storeLog);
+            throw new StorageException("Error while storing main Log-Entry", ex, stmt);
         }
         finally
         {

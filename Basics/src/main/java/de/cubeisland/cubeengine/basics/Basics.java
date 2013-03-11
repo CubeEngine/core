@@ -73,6 +73,8 @@ public class Basics extends Module
         this.registerPermissions(new TpWorldPermissions(this).getPermissions()); // per world permissions
         this.lagTimer = new LagTimer(this);
 
+        this.registerCommands( new DoorCommand(this), ReflectedCommand.class );
+        
         /**
          * * //commands TODO
          *
