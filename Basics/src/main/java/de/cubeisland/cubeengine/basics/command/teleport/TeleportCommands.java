@@ -32,7 +32,7 @@ public class TeleportCommands
 
     public static boolean teleport(User user, Location loc, boolean safe, boolean force, boolean keepDirection)
     {
-        if (!force && !user.getWorld().equals(loc.getWorld())
+        if (!force && !user.getWorld().equals(loc.getWorld()) // TODO NPE!
                 && !TpWorldPermissions.getPermission(loc.getWorld().getName()).isAuthorized(user))
         {
             user.sendMessage("basics", "You are not allowed to teleport to this world!");

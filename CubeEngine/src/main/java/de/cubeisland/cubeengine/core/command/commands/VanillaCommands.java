@@ -23,6 +23,7 @@ import org.bukkit.Difficulty;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.Server;
 import org.bukkit.World;
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 
 import java.text.DateFormat;
@@ -31,7 +32,6 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.Locale;
 import java.util.Set;
-import org.bukkit.entity.Player;
 
 import static de.cubeisland.cubeengine.core.command.ArgBounds.NO_MAX;
 import static de.cubeisland.cubeengine.core.i18n.I18n._;
@@ -105,6 +105,7 @@ public class VanillaCommands implements CommandHolder
     @Command(
         desc = "Changes the difficulty level of the server",
         usage = "[difficulty] {world <world>}",
+        max = 1,
         params = @Param(names = {"world", "w"}, type = World.class, completer = WorldCompleter.class)
     )
     public void difficulty(ParameterizedContext context)
