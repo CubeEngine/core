@@ -108,7 +108,7 @@ public class InventoryGuard implements Listener
                 this.users.remove(user);
                 if (this.users.isEmpty())
                 {
-                    this.module.unregisterListener(this); // no user left to check
+                    this.module.removeListener(this); // no user left to check
                 }
                 for (Runnable runner : this.onClose)
                 {

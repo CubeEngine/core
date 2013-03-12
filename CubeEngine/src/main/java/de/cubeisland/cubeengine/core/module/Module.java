@@ -355,9 +355,9 @@ public abstract class Module
         this.core.getEventManager().registerListener(this, listener);
     }
 
-    public void unregisterListener(Listener listener)
+    public void removeListener(Listener listener)
     {
-        this.core.getEventManager().unregisterListener(this, listener);
+        this.core.getEventManager().removeListener(this, listener);
     }
 
     public TaskManager getTaskManger()

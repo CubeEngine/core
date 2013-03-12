@@ -3,14 +3,17 @@ package de.cubeisland.cubeengine.core.bukkit;
 import de.cubeisland.cubeengine.core.Core;
 import de.cubeisland.cubeengine.core.module.Module;
 import gnu.trove.set.hash.THashSet;
-import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
 import org.apache.commons.lang.Validate;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.PluginManager;
+
+import java.util.Iterator;
+import java.util.Map.Entry;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
 /**
  * This class manages all Event-(Un-)Registration and fires Events.
@@ -19,7 +22,7 @@ public class EventManager
 {
     private final BukkitCore corePlugin;
     private final PluginManager pm;
-    private final Map<Module, Set<Listener>> listenerMap;
+    private final ConcurrentMap<Module, Set<Listener>> listenerMap;
 
     public EventManager(Core core)
     {
@@ -49,13 +52,13 @@ public class EventManager
     }
 
     /**
-     * Unregisters an event listener from a module
+     * Removes an event listener from a module
      *
      * @param module   the module
      * @param listener the listener
      * @return fluent interface
      */
-    public EventManager unregisterListener(Module module, Listener listener)
+    public EventManager removeListener(Module module, Listener listener)
     {
         Validate.notNull(module, "The module must not be null!");
         Validate.notNull(listener, "The listener must not be null!");
@@ -69,40 +72,41 @@ public class EventManager
     }
 
     /**
-     * Unregisters all listeners of the given module
+     * Removes all listeners of the given module
      *
      * @param module te module
      * @return fluent interface
      */
-    public EventManager unregisterListener(Module module)
+    public EventManager removeListeners(Module module)
     {
         Validate.notNull(module, "The module must not be null!");
 
-        Set<Listener> listeners = this.listenerMap.get(module);
+        Set<Listener> listeners = this.listenerMap.remove(module);
         if (listeners != null)
         {
             for (Listener listener : listeners)
             {
                 HandlerList.unregisterAll(listener);
             }
-            this.listenerMap.clear();
         }
         return this;
     }
 
     /**
-     * Unregisteres all listeners registered by the CubeEngine
+     * Removes all listeners registered by the CubeEngine
      *
      * @return fluent interface
      */
-    public EventManager unregisterListener()
+    public EventManager removeListeners()
     {
-        for (Set<Listener> listeners : this.listenerMap.values())
+        Iterator<Entry<Module, Set<Listener>>> it = this.listenerMap.entrySet().iterator();
+        while (it.hasNext())
         {
-            for (Listener listener : listeners)
+            for (Listener listener : it.next().getValue())
             {
                 HandlerList.unregisterAll(listener);
             }
+            it.remove();
         }
         HandlerList.unregisterAll(this.corePlugin);
         return this;

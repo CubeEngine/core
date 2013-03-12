@@ -172,7 +172,7 @@ public class PreventionManager
         if (prevention != null && prevention.isEnabled())
         {
             prevention.setEnabled(false);
-            this.em.unregisterListener(this.guests, prevention);
+            this.em.removeListener(this.guests, prevention);
             try
             {
                 prevention.disable();

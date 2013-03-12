@@ -45,7 +45,7 @@ public abstract class Logger<T extends LoggerConfig> implements Listener
         }
         else
         {
-            this.module.unregisterListener(this);
+            this.module.removeListener(this);
         }
     }
 
