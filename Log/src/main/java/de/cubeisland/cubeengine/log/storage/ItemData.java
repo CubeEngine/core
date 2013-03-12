@@ -26,7 +26,7 @@ public class ItemData
     {
         this.mat = mat;
         this.data = data;
-        this.name = null;
+        this.name = "";
     }
 
     public ItemData(int mat, Short data, String name)

@@ -28,6 +28,10 @@ public class BlockBreakLogger extends BlockLogger<BlockBreakConfig>
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onBlockBreak(BlockBreakEvent event)
     {
+        if (event.getBlock().getState().getTypeId() == 0)
+        {
+            return;
+        }
         if (event.getBlock().getState() instanceof Sign)
         {
             this.module.getLoggerManager().getLogger(SignChangeLogger.class).logSignBreak(event.getPlayer(), (Sign)event.getBlock().getState());

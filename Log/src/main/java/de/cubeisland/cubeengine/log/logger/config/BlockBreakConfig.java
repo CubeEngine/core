@@ -14,6 +14,8 @@ public class BlockBreakConfig extends LoggerConfig
         super(true);
     }
 
+    //TODO config for not logging creative
+
     @Option("no-logging")
     public Collection<Material> noLogging = new LinkedList<Material>();
 
