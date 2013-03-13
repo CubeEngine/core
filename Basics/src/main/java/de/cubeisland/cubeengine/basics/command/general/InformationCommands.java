@@ -360,7 +360,7 @@ public class InformationCommands
         float tps = this.basics.getLagTimer().getAverageTPS();
         String color = tps == 20 ? "&a" : tps > 17 ? "&e" : tps > 10 ? "&c" : "&4";
         color = ChatFormat.parseFormats(color);
-        context.sendMessage("basics", "&6Current TPS: %.1f", color, tps);
+        context.sendMessage("basics", "&6Current TPS: %s%.1f", color, tps);
         //Memory
         long memUse = ManagementFactory.getMemoryMXBean().getHeapMemoryUsage().getUsed() / 1048576;
         long memCom = ManagementFactory.getMemoryMXBean().getHeapMemoryUsage().getCommitted() / 1048576;

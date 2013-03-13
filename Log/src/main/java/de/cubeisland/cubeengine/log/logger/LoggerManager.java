@@ -20,13 +20,13 @@ public class LoggerManager
 
         // registering loggers:
         this.createLogger(BlockBreakLogger.class);
-        this.createLogger(BlockBurnLogger.class);
+        this.createLogger(FireLogger.class);
         this.createLogger(BlockDecayLogger.class);
         this.createLogger(BlockExplosionLogger.class);
         this.createLogger(BlockFadeLogger.class);
         this.createLogger(BlockFluidFlowLogger.class);
         this.createLogger(BlockFormLogger.class);
-        this.createLogger(BlockGrowLogger.class);
+        this.createLogger(GrowthLogger.class);
         this.createLogger(BlockPlaceLogger.class);
         this.createLogger(ChatLogger.class);
         this.createLogger(ContainerLogger.class);

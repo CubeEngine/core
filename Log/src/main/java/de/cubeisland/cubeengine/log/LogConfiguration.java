@@ -34,13 +34,13 @@ public class LogConfiguration extends Configuration
         {
             laConfig = this.addLogActionConfig("BLOCKCHANGE", true);
             this.addLoggerConfig(BlockBreakConfig.class, laConfig)
-                .addLoggerConfig(BlockBurnConfig.class, laConfig)
+                .addLoggerConfig(FireConfig.class, laConfig)
                 .addLoggerConfig(BlockDecayConfig.class, laConfig)
                 .addLoggerConfig(BlockExplosionConfig.class, laConfig)
                 .addLoggerConfig(BlockFadeConfig.class, laConfig)
                 .addLoggerConfig(BlockFluidFlowConfig.class, laConfig)
                 .addLoggerConfig(BlockFormConfig.class, laConfig)
-                .addLoggerConfig(BlockGrowConfig.class, laConfig)
+                .addLoggerConfig(GrowthConfig.class, laConfig)
                 .addLoggerConfig(BlockPlaceConfig.class, laConfig)
                 .addLoggerConfig(EndermanConfig.class, laConfig)
                 .addLoggerConfig(InteractionConfig.class, laConfig);

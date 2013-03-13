@@ -28,6 +28,8 @@ public class InteractionLogger extends Logger<InteractionConfig>
     @SuppressWarnings("deprecation")
     public void onPlayerInteract(PlayerInteractEvent event)
     {
+        //TODO crops trampling
+
         World world = event.getClickedBlock().getWorld();
         InteractionConfig config = this.configs.get(world);
         if (config.enabled)

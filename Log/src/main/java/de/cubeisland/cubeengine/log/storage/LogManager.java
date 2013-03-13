@@ -25,6 +25,34 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class LogManager
 {
+    //CraftItemEvent
+    //enchant item
+    //entity break
+    //entity dye
+    //entity shear
+    //entity follow
+    //entity spawn
+    //fireball
+
+    //hangingitem break
+    //hangingitem place
+
+    //item drop
+    //item insert
+    //item pickup
+    //item remove
+    //xp pickup
+
+    //EntityChangeBlockEvent / Sheep eat
+
+    //player join
+    //player quit
+
+    //splash potion
+
+    //spawnegg use
+    //tnt prime
+
     public static final int BLOCK_PLACE = 0x00;
     public static final int BLOCK_BREAK = 0x01;
     public static final int BLOCK_CHANGE = 0x02; //changing blockdata / interactlog
@@ -32,10 +60,16 @@ public class LogManager
     public static final int BLOCK_GROW_BP = 0x04; //growth induced by a player
     public static final int BLOCK_CHANGE_WE = 0x05;
     public static final int BLOCK_EXPLODE = 0x06; // Creeper attacking a player
+    public static final int BLOCK_TNT_PRIME = 0x07; // TODO
+    public static final int HANGING_ENTITY_PLACE = 0x08; // TODO
+    public static final int HANGING_ENTITY_BREAK = 0x09; // TODO
+
     public static final int KILL_PVP = 0x10; //player killed by player
     public static final int KILL_PVE = 0x11; //player killed by environement
     public static final int KILL_EVE = 0x12; //mob killed by environement
     public static final int KILL_EVP = 0x13; //mob killed by player
+    public static final int NATURAL_SPAWN = 0x14; // TODO
+    public static final int EGG_SPAWN = 0x15; // TODO
     public static final int CHAT = 0x20;
     public static final int COMMAND = 0x21;
     public static final int CHEST_PUT = 0x30;
@@ -52,6 +86,7 @@ public class LogManager
         this.module = module;
         try
         {
+
             // Main table:
             QueryBuilder builder = database.getQueryBuilder();
             String sql = builder.createTable("log_logs", true).beginFields()

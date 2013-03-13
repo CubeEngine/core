@@ -3,9 +3,9 @@ package de.cubeisland.cubeengine.log.logger.config;
 import de.cubeisland.cubeengine.core.config.annotations.Option;
 import de.cubeisland.cubeengine.log.LoggerConfig;
 
-public class BlockGrowConfig extends LoggerConfig
+public class GrowthConfig extends LoggerConfig
 {
-    public BlockGrowConfig()
+    public GrowthConfig()
     {
         super(false);
     }
@@ -14,6 +14,11 @@ public class BlockGrowConfig extends LoggerConfig
     public boolean logNatural = false;
     @Option("log-player-grow")
     public boolean logPlayer = true;
+
+    @Option("log-fire-spread")
+    public boolean logFireSpread = true;
+    @Option("log-other-spread")
+    public boolean logOtherSpread = true;
 
     @Override
     public String getName()
