@@ -150,14 +150,12 @@ public class TelePointManager extends SingleKeyStorage<Long, TeleportPoint>
             return null;
         }
 
-        if (user.getAttribute(module, "homes") == null)
+        HomeAttachment attachment = user.attachOrGet(HomeAttachment.class, this.module);
+        if (attachment.hasHome(name))
         {
-            user.setAttribute(module, "homes", new HashMap<String, Home>());
+            return attachment.getHome(name);
         }
-        HashMap<String, Home> userHomes = user.getAttribute(module, "homes");
-
-
-        if (name.startsWith("public:"))
+        else if (name.startsWith("public:"))
         {
             name.replaceFirst("public:", "");
             if (publicHomes.containsKey(name))
@@ -174,10 +172,6 @@ public class TelePointManager extends SingleKeyStorage<Long, TeleportPoint>
             }
 
         }
-        else if (userHomes.containsKey(name))
-        {
-            return userHomes.get(name);
-        }
         else if (name.contains(":"))
         {
             if (homes.containsKey(name))
@@ -191,10 +185,10 @@ public class TelePointManager extends SingleKeyStorage<Long, TeleportPoint>
             }
             else
             {
-                Set<String> matches = Match.string().getBestMatches(name, userHomes.keySet(), 2);
+                Set<String> matches = Match.string().getBestMatches(name, attachment.allHomes().keySet(), 2);
                 if (!matches.isEmpty())
                 {
-                    return userHomes.get(matches.iterator().next());
+                    return attachment.getHome(matches.iterator().next());
                 }
             }
         }
@@ -212,10 +206,10 @@ public class TelePointManager extends SingleKeyStorage<Long, TeleportPoint>
             }
             else
             {
-                Set<String> matches = Match.string().getBestMatches(name, userHomes.keySet(), 2);
+                Set<String> matches = Match.string().getBestMatches(name, attachment.allHomes().keySet(), 2);
                 if (!matches.isEmpty())
                 {
-                    return userHomes.get(matches.iterator().next());
+                    return attachment.getHome(matches.iterator().next());
                 }
 
                 Set<String> publicMatches = Match.string().getBestMatches(name, publicHomes.keySet(), 2);
@@ -273,34 +267,30 @@ public class TelePointManager extends SingleKeyStorage<Long, TeleportPoint>
      */
     public void putHomeToUser(Home home, User user)
     {
-        if (user.getAttribute(module, "homes") == null)
-        {
-            user.setAttribute(module, "homes", new HashMap<String, Home>());
-        }
-        Map<String, Home> homes = user.getAttribute(module, "homes");
+        HomeAttachment attachment = user.attachOrGet(HomeAttachment.class, this.module);
 
-        if (homes.containsKey(home.getName()))
+        if (attachment.containsHome(home.getName()))
         {
-            Home rename = homes.get(home.getName());
+            Home rename = attachment.getHome(home.getName());
             if (!rename.isOwner(user) && home.isOwner(user))
             {
-                homes.put(home.getName(), home);
+                attachment.addHome(home.getName(), home);
             }
             else
             {
-                homes.put(home.getStorageName(), home);
+                attachment.addHome(home.getStorageName(), home);
             }
-            homes.put(rename.getStorageName(), rename);
+            attachment.addHome(rename.getStorageName(), rename);
         }
         else
         {
             if (home.isOwner(user))
             {
-                homes.put(home.getName(), home);
+                attachment.addHome(home.getName(), home);
             }
             else
             {
-                homes.put(home.getStorageName(), home);
+                attachment.addHome(home.getStorageName(), home);
             }
         }
     }
@@ -313,32 +303,28 @@ public class TelePointManager extends SingleKeyStorage<Long, TeleportPoint>
      */
     public void removeHomeFromUser(Home home, User user)
     {
-        if (user.getAttribute(module, "homes") == null)
-        {
-            user.setAttribute(module, "homes", new HashMap<String, Home>());
-        }
-        Map<String, Home> homes = user.getAttribute(module, "homes");
+        HomeAttachment attachment = user.attachOrGet(HomeAttachment.class, this.module);
 
         // Remove the home from the users list
-        if (homes.get(home.getName()).equals(home))
+        if (attachment.getHome(home.getName()).equals(home))
         {
-            homes.remove(home.getName());
+            attachment.removeHome(home.getName());
         }
-        else if (homes.get(home.getStorageName()).equals(home))
+        else if (attachment.getHome(home.getStorageName()).equals(home))
         {
-            homes.remove(home.getStorageName());
+            attachment.removeHome(home.getStorageName());
         }
 
         // If another home the player has can be taken away it's prefix, do it
         Set<Home> prefixed = new HashSet<Home>();
-        for (String name : homes.keySet())
+        for (String name : attachment.allHomes().keySet())
         {
             String[] parts = name.split(":");
             if (parts.length == 2)
             {
                 if (parts[1].equals(home.getName()))
                 {
-                    prefixed.add(homes.get(name));
+                    prefixed.add(attachment.getHome(name));
                 }
             }
         }
@@ -346,7 +332,7 @@ public class TelePointManager extends SingleKeyStorage<Long, TeleportPoint>
         {
             for (Home h : prefixed)
             {
-                homes.put(home.getName(), h);
+                attachment.addHome(home.getName(), h);
             }
         }
     }
@@ -394,17 +380,7 @@ public class TelePointManager extends SingleKeyStorage<Long, TeleportPoint>
         {
             for (User user : CubeEngine.getUserManager().getOnlineUsers())
             {
-                for (Object object : user.getAttributes(module))
-                {
-                    if (object instanceof String)
-                    {
-                        String string = (String)object;
-                        if (string.equalsIgnoreCase(home.getName()) || string.equalsIgnoreCase(home.getStorageName()))
-                        {
-                            user.removeAttribute(module, string);
-                        }
-                    }
-                }
+                removeHomeFromUser(home,  user);
             }
         }
         this.delete(home.getModel());
@@ -428,19 +404,15 @@ public class TelePointManager extends SingleKeyStorage<Long, TeleportPoint>
             return null;
         }
 
-        if (user.getAttribute(module, "warps") == null)
-        {
-            user.setAttribute(module, "warps", new HashMap<String, Warp>());
-        }
-        HashMap<String, Warp> userWarps = user.getAttribute(module, "warps");
+        WarpAttachment attachment = user.attachOrGet(WarpAttachment.class, this.module);
 
-        if (userWarps.containsKey(name))
+        if (attachment.hasWarp(name))
         {
-            return userWarps.get(name);
+            return attachment.getWarp(name);
         }
-        else if (userWarps.containsKey("public:" + name))
+        else if (attachment.hasWarp("public:" + name))
         {
-            return userWarps.get("public:" + name);
+            return attachment.getWarp("public:" + name);
         }
         else if (name.contains(":"))
         {
@@ -452,10 +424,10 @@ public class TelePointManager extends SingleKeyStorage<Long, TeleportPoint>
             }
             else
             {
-                Set<String> matches = Match.string().getBestMatches(name, userWarps.keySet(), 2);
+                Set<String> matches = Match.string().getBestMatches(name, attachment.allWarps().keySet(), 2);
                 if (!matches.isEmpty())
                 {
-                    return userWarps.get(matches.iterator().next());
+                    return attachment.getWarp(matches.iterator().next());
                 }
             }
         }
@@ -475,10 +447,10 @@ public class TelePointManager extends SingleKeyStorage<Long, TeleportPoint>
             }
             else
             {
-                Set<String> matches = Match.string().getBestMatches(name, userWarps.keySet(), 2);
+                Set<String> matches = Match.string().getBestMatches(name, attachment.allWarps().keySet(), 2);
                 if (!matches.isEmpty())
                 {
-                    return userWarps.get(matches.iterator().next());
+                    return attachment.getWarp(matches.iterator().next());
                 }
 
                 for (Warp warp : warps.values())
@@ -559,28 +531,23 @@ public class TelePointManager extends SingleKeyStorage<Long, TeleportPoint>
      */
     public void putWarpToUser(Warp warp, User user)
     {
-        if (user.getAttribute(module, "warps") == null)
-        {
-            user.setAttribute(module, "warps", new HashMap<String, Warp>());
-        }
-        HashMap<String, Warp> userWarps = user.getAttribute(module, "warps");
-
-        if (userWarps.containsKey(warp.getName()))
+        WarpAttachment attachment = user.attachOrGet(WarpAttachment.class, this.module);
+        if (attachment.containsWarp(warp.getName()))
         {
             if (warp.isPublic() || warp.isOwner(user))
             {
-                Warp rename = userWarps.get(warp.getName());
-                userWarps.put(warp.getName(), warp);
-                userWarps.put(rename.getStorageName(), warp);
+                Warp rename = attachment.getWarp(warp.getName());
+                attachment.addWarp(warp.getName(), warp);
+                attachment.addWarp(rename.getStorageName(), warp);
             }
             else
             {
-                userWarps.put(warp.getStorageName(), warp);
+                attachment.addWarp(warp.getStorageName(), warp);
             }
         }
         else
         {
-            userWarps.put(warp.getName(), warp);
+            attachment.addWarp(warp.getName(), warp);
         }
     }
 
@@ -591,24 +558,20 @@ public class TelePointManager extends SingleKeyStorage<Long, TeleportPoint>
      */
     public void removeWarpFromUser(Warp warp, User user)
     {
-        if (user.getAttribute(module, "warps") == null)
-        {
-            user.setAttribute(module, "warps", new HashMap<String, Warp>());
-        }
-        HashMap<String, Warp> userWarps = user.getAttribute(module, "warps");
+        WarpAttachment attachment = user.attachOrGet(WarpAttachment.class, this.module);
 
-        if (userWarps.containsKey(warp.getName()))
+        if (attachment.containsWarp(warp.getName()))
         {
-            if (userWarps.get(warp.getName()).equals(warp))
+            if (attachment.getWarp(warp.getName()).equals(warp))
             {
-                userWarps.remove(warp.getName());
+                attachment.removeWarp(warp.getName());
             }
         }
-        else if (userWarps.containsKey(warp.getStorageName()))
+        else if (attachment.containsWarp(warp.getStorageName()))
         {
-            if (userWarps.get(warp.getStorageName()).equals(warp))
+            if (attachment.getWarp(warp.getStorageName()).equals(warp))
             {
-                warps.remove(warp.getStorageName());
+                attachment.removeWarp(warp.getStorageName());
             }
         }
     }
@@ -647,14 +610,14 @@ public class TelePointManager extends SingleKeyStorage<Long, TeleportPoint>
         this.warps.remove(warp.getStorageName());
         for (User user : CubeEngine.getUserManager().getOnlineUsers())
         {
-            for (Object object : user.getAttributes(module))
+            for (Object object : user.attachOrGet(WarpAttachment.class, this.module).allWarps().keySet())
             {
                 if (object instanceof String)
                 {
                     String string = (String)object;
                     if (string.equalsIgnoreCase(warp.getName()) || string.equalsIgnoreCase(warp.getStorageName()))
                     {
-                        user.removeAttribute(module, string);
+                        user.attachOrGet(WarpAttachment.class, this.module).removeWarp(string);
                     }
                 }
             }
@@ -673,14 +636,14 @@ public class TelePointManager extends SingleKeyStorage<Long, TeleportPoint>
     {
         for (User user : CubeEngine.getUserManager().getOnlineUsers())
         {
-            for (Object object : user.getAttributes(module))
+            for (Object object : user.attachOrGet(WarpAttachment.class, this.module).allWarps().keySet())
             {
                 if (object instanceof String)
                 {
                     String string = (String)object;
                     if (string.equalsIgnoreCase(warp.getName()) || string.equalsIgnoreCase(warp.getStorageName()))
                     {
-                        user.removeAttribute(module, string);
+                        user.attachOrGet(WarpAttachment.class, this.module).removeWarp(string);
                     }
                 }
             }
@@ -893,7 +856,7 @@ public class TelePointManager extends SingleKeyStorage<Long, TeleportPoint>
         {
             String name = resultSet.getString("name");
             long ownerId = resultSet.getLong("owner");
-            User owner = CubeEngine.getUserManager().get(ownerId);
+            User owner = CubeEngine.getUserManager().getUser(ownerId);
             Home home = this.homes.get(owner.getName() + ":" + name);
             homes.add(home);
         }
@@ -908,7 +871,7 @@ public class TelePointManager extends SingleKeyStorage<Long, TeleportPoint>
             long ownerId = resultSet.getLong("owner");
             int visibility = resultSet.getInt("visibility");
 
-            User owner = CubeEngine.getUserManager().get(ownerId);
+            User owner = CubeEngine.getUserManager().getUser(ownerId);
             Warp warp;
             if (visibility == TeleportPoint.Visibility.PRIVATE.ordinal())
             {
