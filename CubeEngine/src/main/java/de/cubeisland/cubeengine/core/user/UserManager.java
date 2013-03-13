@@ -175,10 +175,6 @@ public class UserManager implements Cleanable
         {
             return (User)player;
         }
-        if (!player.hasPlayedBefore())
-        {
-            return null;
-        }
         return this.getExactUser(player.getName());
     }
 

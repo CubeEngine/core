@@ -65,7 +65,7 @@ public abstract class AbstractStorage<K, M extends Model<K>, T> implements Stora
             throw new IllegalArgumentException("Every model needs an Entity annotation! Expected annotation: " + storageType.getName());
         }
         // Search DatabaseConstructor
-        for (Constructor c : this.modelClass.getConstructors())
+        for (Constructor c : this.modelClass.getDeclaredConstructors())
         {
             if (c.isAnnotationPresent(DatabaseConstructor.class))
             {

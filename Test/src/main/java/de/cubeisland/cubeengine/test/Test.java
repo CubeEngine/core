@@ -70,7 +70,6 @@ public class Test extends Module
         }
         this.registerListener(new TestListener(this));
 
-        this.testUserManager();
         this.testl18n();
         this.testMatchers();
         this.testsomeUtils();
@@ -110,30 +109,6 @@ public class Test extends Module
     {
         this.timer.cancel();
         this.timer = null;
-    }
-
-    public void testUserManager()
-    {
-        //Testing get
-        User userToDel = uM.getUser("userGetsDel", true);
-        User user = uM.getUser("UserU", true);
-        user.setPassword("myPass");
-        uM.getUser("User1", true);
-        uM.getUser("User2", true);
-        //Testing getall
-        uM.getAll();
-        //Testing delete
-        uM.removeUser(userToDel);
-        //Test update
-        user.nogc = true;
-        user.lastseen = new Timestamp(50000);
-        uM.update(user);
-        user = uM.getUser("User1", true);
-        user.lastseen = new Timestamp(50000);
-        uM.update(user);
-        user = uM.getUser("UserU", false);
-        Validate.isTrue(user.checkPassword("myPass"));
-        uM.run(); //removes offline users from loadedlist.
     }
 
     private Date getDate(int year, int month, int day)
