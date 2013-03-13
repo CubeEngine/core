@@ -4,6 +4,7 @@ import de.cubeisland.cubeengine.core.module.event.FinishedLoadModulesEvent;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.user.UserAuthorizedEvent;
 import de.cubeisland.cubeengine.roles.Roles;
+import de.cubeisland.cubeengine.roles.RolesAttachment;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -59,7 +60,7 @@ public class RolesEventHandler implements Listener
         manager.init();
         for (User user : module.getUserManager().getOnlineUsers()) // reapply roles on reload
         {
-            user.removeAttribute(module, "roleContainer"); // remove potential old calculated roles
+            user.get(RolesAttachment.class).removeRoleContainer(); // remove potential old calculated roles
             manager.preCalculateRoles(user.getName(), false);
             manager.applyRole(user.getPlayer());
         }

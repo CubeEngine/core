@@ -27,7 +27,7 @@ public class RolesAPI
         {
             return null;
         }
-        TLongObjectHashMap<UserSpecificRole> roleContainer = user.getAttribute(this.module, "roleContainer");
+        TLongObjectHashMap<UserSpecificRole> roleContainer = user.get(RolesAttachment.class).getRoleContainer();
         if (roleContainer == null)
         {
             if (user.isOnline())
@@ -37,7 +37,7 @@ public class RolesAPI
             else
             {
                 this.manager.preCalculateRoles(user.getName(), true);
-                roleContainer = user.getAttribute(this.module, "roleContainer");
+                roleContainer = user.get(RolesAttachment.class).getRoleContainer();
             }
         }
         UserSpecificRole role = roleContainer.get(this.worldManager.getWorldId(world));

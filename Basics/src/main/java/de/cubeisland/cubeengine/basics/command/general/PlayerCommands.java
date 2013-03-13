@@ -531,7 +531,9 @@ public class PlayerCommands
             if (isAfk == null || !isAfk)
             {
                 sender.get(BasicsAttachment.class).setAfk(true);
+                sender.get(BasicsAttachment.class).resetLastAction();
                 this.um.broadcastStatus("basics", "is now afk.", context.getSender().getName());
+
             }
             else
             {

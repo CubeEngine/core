@@ -21,13 +21,6 @@ public class BasicsAttachment extends UserAttachment
     private ItemStack[] stashedInventory;
     private String lastWhisper;
 
-    @Override
-    public void onAttach()
-    {
-        super.onAttach();
-        this.lastAction = System.currentTimeMillis();
-    }
-
     public long getLastAction()
     {
         return this.lastAction;
@@ -144,5 +137,9 @@ public class BasicsAttachment extends UserAttachment
 
     public String getLastWhisper() {
         return lastWhisper;
+    }
+
+    public void resetLastAction() {
+        this.lastAction = 0;
     }
 }

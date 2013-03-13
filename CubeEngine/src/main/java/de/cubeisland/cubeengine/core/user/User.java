@@ -127,7 +127,11 @@ public class User extends UserBase implements Model<Long>, CommandSender, Attach
         {
             A attachment = type.newInstance();
             attachment.attachTo(module, this);
-            this.attachments.put(type, attachment);
+            A oldAttachment = (A) this.attachments.put(type, attachment);
+            if (oldAttachment != null)
+            {
+                oldAttachment.onDetach();
+            }
             return attachment;
         }
         catch (Exception e)

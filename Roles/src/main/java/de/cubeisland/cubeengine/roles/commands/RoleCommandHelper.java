@@ -9,6 +9,7 @@ import de.cubeisland.cubeengine.core.command.sender.CommandSender;
 import de.cubeisland.cubeengine.core.storage.world.WorldManager;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.roles.Roles;
+import de.cubeisland.cubeengine.roles.RolesAttachment;
 import de.cubeisland.cubeengine.roles.role.Role;
 import de.cubeisland.cubeengine.roles.role.RoleManager;
 import de.cubeisland.cubeengine.roles.role.RoleProvider;
@@ -38,7 +39,8 @@ public abstract class RoleCommandHelper extends ContainerCommand
             if (sender instanceof User)
             {
                 User user = (User)sender;
-                world = this.worldManager.getWorld((Long)user.getAttribute(this.module, "curWorldId"));
+                user.get(RolesAttachment.class).getRoleContainer();
+                world = this.worldManager.getWorld(user.get(RolesAttachment.class).getCurrentWorldId());
                 if (world == null)
                 {
                     world = user.getWorld();

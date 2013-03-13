@@ -8,6 +8,7 @@ import de.cubeisland.cubeengine.core.command.sender.CommandSender;
 import de.cubeisland.cubeengine.core.storage.world.WorldManager;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.roles.Roles;
+import de.cubeisland.cubeengine.roles.RolesAttachment;
 import de.cubeisland.cubeengine.roles.role.RoleManager;
 import de.cubeisland.cubeengine.roles.role.UserSpecificRole;
 import gnu.trove.map.hash.TLongObjectHashMap;
@@ -61,11 +62,11 @@ public class UserCommandHelper extends ContainerCommand
         {
             return null;
         }
-        TLongObjectHashMap<UserSpecificRole> roleContainer = user.getAttribute(this.getModule(), "roleContainer");
+        TLongObjectHashMap<UserSpecificRole> roleContainer = user.get(RolesAttachment.class).getRoleContainer();
         if (roleContainer == null)
         {
             this.manager.preCalculateRoles(user, true);
-            roleContainer = user.getAttribute(this.getModule(), "roleContainer");
+            roleContainer = user.get(RolesAttachment.class).getRoleContainer();;
         }
         return roleContainer.get(worldId);
     }
@@ -99,7 +100,7 @@ public class UserCommandHelper extends ContainerCommand
             if (sender instanceof User)
             {
                 User user = (User)sender;
-                world = this.worldManager.getWorld((Long)user.getAttribute(this.module, "curWorldId"));
+                world = this.worldManager.getWorld(user.get(RolesAttachment.class).getCurrentWorldId());
                 if (world == null)
                 {
                     world = user.getWorld();

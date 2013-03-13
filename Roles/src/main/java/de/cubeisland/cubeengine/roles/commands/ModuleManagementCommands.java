@@ -1,12 +1,13 @@
 package de.cubeisland.cubeengine.roles.commands;
 
-import de.cubeisland.cubeengine.core.command.reflected.Alias;
 import de.cubeisland.cubeengine.core.command.CommandContext;
 import de.cubeisland.cubeengine.core.command.ContainerCommand;
+import de.cubeisland.cubeengine.core.command.reflected.Alias;
 import de.cubeisland.cubeengine.core.command.reflected.Command;
 import de.cubeisland.cubeengine.core.command.sender.CommandSender;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.roles.Roles;
+import de.cubeisland.cubeengine.roles.RolesAttachment;
 
 // TODO rename!
 public class ModuleManagementCommands extends ContainerCommand
@@ -25,7 +26,7 @@ public class ModuleManagementCommands extends ContainerCommand
         module.getManager().init(); // reloads all roleconfigs
         for (User user : module.getUserManager().getOnlineUsers())
         {
-            user.clearAttributes(this.getModule()); // clear old attributes
+            user.attach(RolesAttachment.class,this.getModule());
             module.getManager().preCalculateRoles(user.getName(), true);
             module.getManager().applyRole(user.getPlayer());
         }
@@ -68,11 +69,11 @@ public class ModuleManagementCommands extends ContainerCommand
         {
             if (worldId == null)
             {
-                ((User)sender).removeAttribute(this.getModule(), "curWorldId");
+                ((User)sender).get(RolesAttachment.class).setCurrentWorldId(null);
             }
             else
             {
-                ((User)sender).setAttribute(this.getModule(), "curWorldId", worldId);
+                ((User)sender).get(RolesAttachment.class).setCurrentWorldId(worldId);
             }
         }
         else

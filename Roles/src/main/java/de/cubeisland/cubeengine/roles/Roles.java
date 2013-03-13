@@ -39,6 +39,8 @@ public class Roles extends Module
     @Override
     public void onEnable()
     {
+        this.getUserManager().addDefaultAttachment(RolesAttachment.class, this);
+
         this.dbManager = new AssignedRoleManager(this.getDatabase());
         this.dbUserMeta = new UserMetaDataManager(this.getDatabase());
         this.dbUserPerm = new UserPermissionsManager(this.getDatabase());

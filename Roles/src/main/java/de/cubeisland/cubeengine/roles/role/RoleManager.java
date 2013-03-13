@@ -6,6 +6,7 @@ import de.cubeisland.cubeengine.core.storage.world.WorldManager;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.util.Pair;
 import de.cubeisland.cubeengine.roles.Roles;
+import de.cubeisland.cubeengine.roles.RolesAttachment;
 import de.cubeisland.cubeengine.roles.role.config.RoleMirror;
 import de.cubeisland.cubeengine.roles.storage.AssignedRole;
 import gnu.trove.map.hash.THashMap;
@@ -178,7 +179,7 @@ public class RoleManager
 
     public void preCalculateRoles(User user, boolean reload)
     {
-        if (!reload && user.getAttribute(this.module, "roleContainer") != null)
+        if (!reload && user.get(RolesAttachment.class).hasRoleContainer())
         {
             return; // Roles are calculated!
         }
@@ -196,7 +197,7 @@ public class RoleManager
         {
             this.preCalculateRole(user, roleContainer, userRolesPerWorld.get(worldId), worldId, userSpecificPerms.get(worldId), userSpecificMeta.get(worldId));
         }
-        user.setAttribute(this.module, "roleContainer", roleContainer);
+        user.get(RolesAttachment.class).setRoleContainer(roleContainer);
     }
 
     private void preCalculateRole(User user, TLongObjectHashMap<UserSpecificRole> roleContainer, List<Role> roles, long worldId, THashMap<String, Boolean> userPerms, THashMap<String, String> userMeta)
@@ -228,7 +229,7 @@ public class RoleManager
             return;
         }
         this.module.getLogger().log(LogLevel.DEBUG,"User-role set: "+ user.getName());
-        TLongObjectHashMap<UserSpecificRole> roleContainer = user.getAttribute(module, "roleContainer");
+        TLongObjectHashMap<UserSpecificRole> roleContainer = user.get(RolesAttachment.class).getRoleContainer();
         UserSpecificRole role = roleContainer.get(worldId);
         if (role.getParentRoles().isEmpty())
         {
@@ -237,23 +238,23 @@ public class RoleManager
             return;
         }
         user.setPermission(role.resolvePermissions(), player);
-        user.setAttribute(this.module, "metadata", role.getMetaData());
+        user.get(RolesAttachment.class).setMetaData(role.getMetaData());
     }
 
     public void reloadAllRolesAndApply(User user, Player player)
     {
-        user.removeAttribute(this.module, "roleContainer");
+        user.get(RolesAttachment.class).removeRoleContainer();
         this.preCalculateRoles(user.getName(), true);
         this.applyRole(player);
     }
 
     public boolean addRoles(User user, Player player, long worldId, Role... roles)
     {
-        TLongObjectHashMap<UserSpecificRole> roleContainer = user.getAttribute(module, "roleContainer");
+        TLongObjectHashMap<UserSpecificRole> roleContainer = user.get(RolesAttachment.class).getRoleContainer();
         if (roleContainer == null)
         {
             this.preCalculateRoles(user, true);
-            roleContainer = user.getAttribute(module, "roleContainer");
+            roleContainer = user.get(RolesAttachment.class).getRoleContainer();
         }
         boolean added = false;
         for (Role role : roles)
@@ -269,14 +270,14 @@ public class RoleManager
         {
             return false;
         }
-        user.removeAttribute(this.module, "roleContainer");
+        user.get(RolesAttachment.class).removeRoleContainer();
         this.reloadAllRolesAndApply(user, player);
         return true;
     }
 
     public boolean removeRole(User user, Role role, long worldId)
     {
-        TLongObjectHashMap<UserSpecificRole> roleContainer = user.getAttribute(module, "roleContainer");
+        TLongObjectHashMap<UserSpecificRole> roleContainer = user.get(RolesAttachment.class).getRoleContainer();
         if (!roleContainer.get(worldId).getParentRoles().contains(role))
         {
             return false;
@@ -292,7 +293,7 @@ public class RoleManager
         Set<Role> result = this.providers.get(worldId).getDefaultRoles();
 
         this.addRoles(user, user.getPlayer(), worldId, result.toArray(new Role[result.size()]));
-        user.removeAttribute(this.module, "roleContainer");
+        user.get(RolesAttachment.class).removeRoleContainer();
         this.reloadAllRolesAndApply(user, user.getPlayer());
         return result;
     }

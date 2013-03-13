@@ -79,54 +79,50 @@ public class AfkListener implements Listener, Runnable
     @EventHandler(priority = EventPriority.MONITOR)
     public void onLeave(PlayerQuitEvent event)
     {
-        BasicsAttachment basicUser = this.um.getExactUser(event.getPlayer()).get(BasicsAttachment.class);
-        if (basicUser != null)
+        BasicsAttachment basicsAttachment = this.um.getExactUser(event.getPlayer()).get(BasicsAttachment.class);
+        if (basicsAttachment != null)
         {
-            basicUser.setAfk(false);
+            basicsAttachment.setAfk(false);
+            basicsAttachment.resetLastAction();
         }
     }
 
     private void updateLastAction(Player player)
     {
-        BasicsAttachment basicUser = this.um.getExactUser(player).get(BasicsAttachment.class);
-        if (basicUser != null)
+        BasicsAttachment basicsAttachment = this.um.getExactUser(player).get(BasicsAttachment.class);
+        if (basicsAttachment != null)
         {
-            if (basicUser.isAfk() && BasicsPerm.AFK_PREVENT_AUTOUNAFK.isAuthorized(player))
+            if (basicsAttachment.isAfk() && BasicsPerm.AFK_PREVENT_AUTOUNAFK.isAuthorized(player))
             {
                 return;
             }
-            basicUser.updateLastAction();
+            basicsAttachment.updateLastAction();
         }
     }
 
     @Override
     public void run()
     {
-        BasicsAttachment basicUser;
+        BasicsAttachment basicsAttachment;
         for (User user : basics.getUserManager().getLoadedUsers())
         {
-            basicUser = user.get(BasicsAttachment.class);
-            if (basicUser == null)
-            {
-                continue;
-            }
-
-            long lastAction = basicUser.getLastAction();
+            basicsAttachment = user.get(BasicsAttachment.class);
+            long lastAction = basicsAttachment.getLastAction();
             if (lastAction == 0)
             {
                 continue;
             }
-            if (basicUser.isAfk())
+            if (basicsAttachment.isAfk())
             {
                 if (System.currentTimeMillis() - lastAction < afkCheck)
                 {
-                    basicUser.setAfk(false);
+                    basicsAttachment.setAfk(false);
                     this.um.broadcastStatus("basics", "is no longer afk!", user.getName());
                 }
             }
             else if (System.currentTimeMillis() - lastAction > autoAfk)
             {
-                basicUser.setAfk(true);
+                basicsAttachment.setAfk(true);
                 this.um.broadcastStatus("basics", "is now afk!" ,user.getName());
             }
         }
