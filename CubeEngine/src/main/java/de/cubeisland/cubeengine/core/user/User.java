@@ -7,6 +7,7 @@ import de.cubeisland.cubeengine.core.bukkit.BukkitCore;
 import de.cubeisland.cubeengine.core.bukkit.BukkitUtils;
 import de.cubeisland.cubeengine.core.command.sender.CommandSender;
 import de.cubeisland.cubeengine.core.i18n.Language;
+import de.cubeisland.cubeengine.core.module.Module;
 import de.cubeisland.cubeengine.core.storage.Model;
 import de.cubeisland.cubeengine.core.storage.database.AttrType;
 import de.cubeisland.cubeengine.core.storage.database.Attribute;
@@ -120,12 +121,12 @@ public class User extends UserBase implements Model<Long>, CommandSender, Attach
     }
 
     @Override
-    public synchronized <A extends UserAttachment> A attach(Class<A> type)
+    public synchronized <A extends UserAttachment> A attach(Class<A> type, Module module)
     {
         try
         {
             A attachment = type.newInstance();
-            attachment.attachTo(this);
+            attachment.attachTo(module, this);
             this.attachments.put(type, attachment);
             return attachment;
         }
@@ -136,12 +137,12 @@ public class User extends UserBase implements Model<Long>, CommandSender, Attach
     }
 
     @Override
-    public synchronized <A extends UserAttachment> A attachOrGet(Class<A> type)
+    public synchronized <A extends UserAttachment> A attachOrGet(Class<A> type, Module module)
     {
         A attachment = this.get(type);
         if (attachment == null)
         {
-            attachment = this.attach(type);
+            attachment = this.attach(type, module);
         }
         return attachment;
     }
@@ -176,18 +177,35 @@ public class User extends UserBase implements Model<Long>, CommandSender, Attach
         return attachment;
     }
 
+    @Override
+    public synchronized void detachAll(Module module)
+    {
+        final Iterator<Entry<Class<? extends UserAttachment>, UserAttachment>> it = this.attachments.entrySet().iterator();
+        UserAttachment attachment;
+        while (it.hasNext())
+        {
+            attachment = it.next().getValue();
+            if (attachment.getModule() == module)
+            {
+                attachment.onDetach();
+                it.remove();
+            }
+        }
+    }
+
+    @Override
     public synchronized void detachAll()
     {
-        final Iterator<Entry<Class<? extends UserAttachment>, UserAttachment>> attachmentIt = this.attachments.entrySet().iterator();
-        while (attachmentIt.hasNext())
+        final Iterator<Entry<Class<? extends UserAttachment>, UserAttachment>> it = this.attachments.entrySet().iterator();
+        while (it.hasNext())
         {
-            attachmentIt.next().getValue().onDetach();
-            attachmentIt.remove();
+            it.next().getValue().onDetach();
+            it.remove();
         }
     }
 
     /**
-     * @return the offlineplayer
+     * @return the OfflinePlayer
      */
     public OfflinePlayer getOfflinePlayer()
     {

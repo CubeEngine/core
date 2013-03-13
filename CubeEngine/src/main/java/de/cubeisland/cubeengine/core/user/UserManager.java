@@ -3,6 +3,7 @@ package de.cubeisland.cubeengine.core.user;
 import de.cubeisland.cubeengine.core.bukkit.BukkitCore;
 import de.cubeisland.cubeengine.core.command.sender.CommandSender;
 import de.cubeisland.cubeengine.core.filesystem.FileManager;
+import de.cubeisland.cubeengine.core.module.Module;
 import de.cubeisland.cubeengine.core.permission.Permission;
 import de.cubeisland.cubeengine.core.util.ChatFormat;
 import de.cubeisland.cubeengine.core.util.Cleanable;
@@ -61,7 +62,7 @@ public class UserManager implements Cleanable
     private final UserStorage storage;
     private final List<User> onlineUsers;
     private final ConcurrentHashMap<Object, User> cachedUsers;
-    private final Set<Class<? extends UserAttachment>> defaultAttachments;
+    private final Set<DefaultAttachment> defaultAttachments;
     private final TObjectIntMap<String> scheduledForRemoval;
     public String salt;
     private final MessageDigest messageDigest;
@@ -81,7 +82,7 @@ public class UserManager implements Cleanable
         core.getServer().getPluginManager().registerEvents(new UserListener(), core);
         core.getServer().getPluginManager().registerEvents(new AttachmentHookListener(), core);
 
-        this.defaultAttachments = new THashSet<Class<? extends UserAttachment>>();
+        this.defaultAttachments = new THashSet<DefaultAttachment>();
         this.scheduledForRemoval = new TObjectIntHashMap<String>(Constants.DEFAULT_CAPACITY, Constants.DEFAULT_LOAD_FACTOR, -1);
         this.loadSalt();
 
@@ -289,9 +290,9 @@ public class UserManager implements Cleanable
 
     private synchronized void attachDefaults(User user)
     {
-        for (Class<? extends UserAttachment> attachmentClass : this.defaultAttachments)
+        for (DefaultAttachment defaultAttachment : this.defaultAttachments)
         {
-            user.attach(attachmentClass);
+            defaultAttachment.attachTo(user);
         }
     }
 
@@ -528,11 +529,11 @@ public class UserManager implements Cleanable
         }
     }
 
-    public void attachToAll(Class<? extends UserAttachment> attachmentClass)
+    public void attachToAll(Class<? extends UserAttachment> attachmentClass, Module module)
     {
         for (User user : this.getLoadedUsers())
         {
-            user.attach(attachmentClass);
+            user.attach(attachmentClass, module);
         }
     }
 
@@ -545,12 +546,22 @@ public class UserManager implements Cleanable
         }
     }
 
-    public synchronized void addDefaultAttachment(Class<? extends UserAttachment> attachmentClass)
+    public void detachAllOf(Module module)
     {
-        this.defaultAttachments.add(attachmentClass);
+        Set<User> users = new THashSet<User>(this.cachedUsers.values());
+        for (User user : users)
+        {
+            user.detachAll(module);
+        }
+    }
+
+    public synchronized void addDefaultAttachment(Class<? extends UserAttachment> attachmentClass, Module module)
+    {
+        DefaultAttachment attachment = new DefaultAttachment(attachmentClass, module);
+        this.defaultAttachments.add(attachment);
         for (User user : new THashSet<User>(this.cachedUsers.values()))
         {
-            user.attach(attachmentClass);
+            attachment.attachTo(user);
         }
     }
 
@@ -698,6 +709,23 @@ public class UserManager implements Cleanable
                     cachedUsers.remove(user.getName());
                 }
             }
+        }
+    }
+
+    private final class DefaultAttachment
+    {
+        private final Class<? extends UserAttachment> type;
+        private final Module module;
+
+        private DefaultAttachment(Class<? extends UserAttachment> type, Module module)
+        {
+            this.type = type;
+            this.module = module;
+        }
+
+        public void attachTo(User user)
+        {
+            user.attach(this.type, this.module);
         }
     }
 }

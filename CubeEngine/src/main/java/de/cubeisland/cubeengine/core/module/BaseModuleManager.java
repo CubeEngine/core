@@ -386,6 +386,7 @@ public abstract class BaseModuleManager implements ModuleManager
     {
         Profiler.startProfiling("disable-module");
         module.disable();
+        this.core.getUserManager().detachAllOf(module);
         this.core.getEventManager().removeListeners(module);
         this.core.getPermissionManager().unregisterPermissions(module);
         this.core.getTaskManager().cancelTasks(module);
