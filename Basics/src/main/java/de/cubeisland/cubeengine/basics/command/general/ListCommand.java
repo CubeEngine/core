@@ -3,9 +3,9 @@ package de.cubeisland.cubeengine.basics.command.general;
 import de.cubeisland.cubeengine.basics.Basics;
 import de.cubeisland.cubeengine.core.command.CommandContext;
 import de.cubeisland.cubeengine.core.command.reflected.Command;
+import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.util.StringUtils;
 import org.bukkit.Bukkit;
-import org.bukkit.entity.Player;
 
 import java.util.List;
 
@@ -22,25 +22,25 @@ public class ListCommand
     {
         // TODO CE-90 beautify list
         // TODO CE-64 list sorting by roles
-        List<Player> players = context.getCore().getUserManager().getOnlinePlayers();
-        if (players.isEmpty())
+        List<User> users = context.getCore().getUserManager().getOnlineUsers();
+        if (users.isEmpty())
         {
             context.sendMessage("basics", "&cThere are no players online now!");
             return;
         }
-        DisplayOnlinePlayerListEvent event = new DisplayOnlinePlayerListEvent(module, context.getSender(), players);
+        DisplayOnlinePlayerListEvent event = new DisplayOnlinePlayerListEvent(module, context.getSender(), users);
         if (event.isCancelled())
         {
             return;
         }
         if (!(module.getEventManager().fireEvent(event)).isCancelled()) // catch this event to change / show list with extra data
         {
-            context.sendMessage("basics", "&9Players online: &a%d&f/&e%d", event.getPlayers().size(), Bukkit.getMaxPlayers());
-            context.sendMessage("basics", "&ePlayers:\n&2%s", this.displayPlayerList(event.getPlayers()));
+            context.sendMessage("basics", "&9Players online: &a%d&f/&e%d", event.getUsers().size(), Bukkit.getMaxPlayers());
+            context.sendMessage("basics", "&ePlayers:\n&2%s", this.displayPlayerList(event.getUsers()));
         }
     }
 
-    public String displayPlayerList(List<Player> players)
+    public String displayPlayerList(List<User> users)
     {
         //TODO test if it looks good for more players
         //1 line ~ 70 characters
@@ -49,11 +49,11 @@ public class ListCommand
         StringBuilder partBuilder = new StringBuilder();
         int pos = 0;
         boolean first = true;
-        for (Player player : players)
+        for (User user : users)
         {
             partBuilder.setLength(0);
 
-            String name = player.getName();
+            String name = user.getName();
             if (name.length() < 6)
             {
                 int k = 6 - name.length();

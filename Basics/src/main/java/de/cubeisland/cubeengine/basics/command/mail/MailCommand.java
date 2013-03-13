@@ -169,11 +169,11 @@ public class MailCommand extends ContainerCommand
         {
             public void run() // Async sending to all Users ever
             {
-                for (User user : basics.getUserManager().getAll())
+                for (Long userKey : basics.getUserManager().getAllKeys())
                 {
-                    if (!alreadySend.contains(user.key))
+                    if (!alreadySend.contains(userKey))
                     {
-                        mailManager.addMail(user, sendingUser, message);
+                        mailManager.addFastMail(userKey, sendingUser, message);
                     }
                 }
             }

@@ -1,6 +1,7 @@
 package de.cubeisland.cubeengine.basics.command.moderation;
 
 import de.cubeisland.cubeengine.basics.Basics;
+import de.cubeisland.cubeengine.basics.BasicsAttachment;
 import de.cubeisland.cubeengine.basics.BasicsPerm;
 import de.cubeisland.cubeengine.core.command.CommandContext;
 import de.cubeisland.cubeengine.core.command.parameterized.Flag;
@@ -160,17 +161,16 @@ public class ItemCommands
             }
             else
             {
-                Object bln = sender.getAttribute(basics, "unlimitedItems");
-                unlimited = bln == null;
+                unlimited = sender.get(BasicsAttachment.class).hasUnlimitedItems();
             }
             if (unlimited)
             {
-                sender.setAttribute(basics, "unlimitedItems", true);
+                sender.get(BasicsAttachment.class).setUnlimitedItems(unlimited);
                 context.sendMessage("basics", "&aYou now have unlimited items to build!");
             }
             else
             {
-                sender.removeAttribute(basics, "unlimitedItems");
+                sender.get(BasicsAttachment.class).setUnlimitedItems(unlimited);
                 context.sendMessage("basics", "&eYou now no longer have unlimited items to build!");
             }
             return;

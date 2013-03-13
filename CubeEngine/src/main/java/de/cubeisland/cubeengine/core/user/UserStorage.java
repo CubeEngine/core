@@ -10,6 +10,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
 
 import static de.cubeisland.cubeengine.core.storage.database.querybuilder.ComponentBuilder.EQUAL;
 import static de.cubeisland.cubeengine.core.storage.database.querybuilder.ComponentBuilder.LESS;
@@ -18,6 +20,7 @@ class UserStorage extends SingleKeyStorage<Long, User>
 {
     private static final int REVISION = 1;
     private final Core core;
+    private Set<Long> allKeys;
 
     UserStorage(Core core)
     {
@@ -38,6 +41,8 @@ class UserStorage extends SingleKeyStorage<Long, User>
             this.database.storeStatement(User.class, "cleanup", database.getQueryBuilder().select(dbKey).from(tableName).where().field("lastseen").is(LESS).value().and().field("nogc").is(EQUAL).value(false).end().end());
 
             this.database.storeStatement(User.class, "clearpw", database.getQueryBuilder().update(tableName).set("passwd").end().end());
+
+            this.database.storeStatement(User.class, "getAllKeys", database.getQueryBuilder().select(dbKey).from(tableName).end().end());
         }
         catch (SQLException e)
         {
@@ -122,5 +127,23 @@ class UserStorage extends SingleKeyStorage<Long, User>
                 }
             }
         });
+    }
+
+    public Set<Long> getAllKeys()
+    {
+        try
+        {
+            ResultSet resultSet = database.preparedQuery(User.class,"getAllKeys");
+            Set<Long> result = new HashSet<Long>();
+            while (resultSet.next())
+            {
+                result.add(resultSet.getLong(dbKey));
+            }
+            return result;
+        }
+        catch (SQLException ex)
+        {
+            throw new StorageException("An SQL-Error occured while getting all user-keys!", ex, database.getStoredStatement(User.class,"gettAllKeys"));
+        }
     }
 }

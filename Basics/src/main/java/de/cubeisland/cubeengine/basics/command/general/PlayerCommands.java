@@ -1,6 +1,7 @@
 package de.cubeisland.cubeengine.basics.command.general;
 
 import de.cubeisland.cubeengine.basics.Basics;
+import de.cubeisland.cubeengine.basics.BasicsAttachment;
 import de.cubeisland.cubeengine.basics.BasicsPerm;
 import de.cubeisland.cubeengine.basics.storage.BasicUser;
 import de.cubeisland.cubeengine.core.command.CommandContext;
@@ -365,13 +366,13 @@ public class PlayerCommands
                     context.sendMessage("basics", "&cYou are not allowed to kill everyone!");
                     return;
                 }
-                for (Player player : context.getCore().getUserManager().getOnlinePlayers())
+                for (User user : context.getCore().getUserManager().getOnlineUsers())
                 {
-                    if (!player.getName().equals(context.getSender().getName()))
+                    if (!user.getName().equals(context.getSender().getName()))
                     {
-                        if (this.kill(player, lightning, context, false, force))
+                        if (this.kill(user, lightning, context, false, force))
                         {
-                            killed.add(player.getName());
+                            killed.add(user.getName());
                         }
                     }
                 }
@@ -526,16 +527,15 @@ public class PlayerCommands
         if (context.getSender() instanceof User)
         {
             User sender = (User)context.getSender();
-            Boolean isAfk = sender.getAttribute(basics,"afk");
+            Boolean isAfk = sender.get(BasicsAttachment.class).isAfk();
             if (isAfk == null || !isAfk)
             {
-                sender.setAttribute(basics, "afk", true);
-                sender.removeAttribute(basics,"lastAction");
+                sender.get(BasicsAttachment.class).setAfk(true);
                 this.um.broadcastStatus("basics", "is now afk.", context.getSender().getName());
             }
             else
             {
-                sender.setAttribute(basics,"lastAction",System.currentTimeMillis());
+                sender.get(BasicsAttachment.class).updateLastAction();
                 this.afkListener.run();
             }
             return;
@@ -592,7 +592,7 @@ public class PlayerCommands
         {
             context.sendMessage("basics", "&eGodMode: &2%s", user.isInvulnerable() ? ChatFormat.BRIGHT_GREEN+"true" : ChatFormat.RED+"false");
         }
-        if (user.getAttribute(basics, "afk") != null)
+        if (user.get(BasicsAttachment.class).isAfk())
         {
             context.sendMessage("basics", "&eAFK: &atrue");
         }

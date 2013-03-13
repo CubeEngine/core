@@ -67,6 +67,7 @@ public class UserManager implements Cleanable
     public String salt;
     private final MessageDigest messageDigest;
     private final ScheduledExecutorService nativeScheduler;
+    private Set<Long> allKeys;
 
     public UserManager(final BukkitCore core)
     {
@@ -573,6 +574,11 @@ public class UserManager implements Cleanable
     public synchronized void removeDefaultAttachments()
     {
         this.defaultAttachments.clear();
+    }
+
+    public Set<Long> getAllKeys()
+    {
+        return this.storage.getAllKeys();
     }
 
     private class UserListener implements Listener

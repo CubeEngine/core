@@ -1,6 +1,7 @@
 package de.cubeisland.cubeengine.basics.command.teleport;
 
 import de.cubeisland.cubeengine.basics.Basics;
+import de.cubeisland.cubeengine.basics.BasicsAttachment;
 import de.cubeisland.cubeengine.basics.BasicsPerm;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.util.LocationUtil;
@@ -32,7 +33,7 @@ public class TeleportListener implements Listener
             case COMMAND:
             case PLUGIN:
             case UNKNOWN:
-                user.setAttribute(basics, "lastLocation", event.getFrom());
+                user.get(BasicsAttachment.class).setLastLocation(event.getFrom());
         }
     }
 
@@ -42,7 +43,7 @@ public class TeleportListener implements Listener
         User user = this.basics.getUserManager().getExactUser(event.getEntity());
         if (BasicsPerm.COMMAND_BACK_ONDEATH.isAuthorized(user))
         {
-            user.setAttribute(basics, "lastLocation", user.getLocation());
+            user.get(BasicsAttachment.class).setLastLocation(user.getLocation());
         }
     }
 

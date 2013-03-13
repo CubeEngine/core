@@ -1,5 +1,6 @@
 package de.cubeisland.cubeengine.basics.storage;
 
+import de.cubeisland.cubeengine.basics.BasicsAttachment;
 import de.cubeisland.cubeengine.core.CubeEngine;
 import de.cubeisland.cubeengine.core.storage.SingleKeyStorage;
 import de.cubeisland.cubeengine.core.storage.database.Database;
@@ -23,7 +24,7 @@ public class BasicUserManager extends SingleKeyStorage<Long, BasicUser>
 
     public BasicUser getBasicUser(User user)
     {
-        BasicUser model = user.get(BasicUser.class);
+        BasicUser model = user.get(BasicsAttachment.class).getBasicUser();
         if (model == null)
         {
             model = this.get(user.getKey());
@@ -32,7 +33,7 @@ public class BasicUserManager extends SingleKeyStorage<Long, BasicUser>
                 model = new BasicUser(user);
                 this.store(model);
             }
-            user.attach(model);
+            user.get(BasicsAttachment.class).setBasicUser(model);
         }
         return model;
     }

@@ -79,6 +79,20 @@ public class MailManager extends SingleKeyStorage<Long, Mail>
         this.store(mail);
     }
 
+    public void addFastMail(Long userKey, CommandSender from, String message)
+    {
+        Mail mail;
+        if (from instanceof User)
+        {
+            mail = new Mail(userKey, ((User)from).key, message);
+        }
+        else
+        {
+            mail = new Mail(userKey, null, message);
+        }
+        this.store(mail);
+    }
+
     private BasicUser getBasicUserWithMails(User user)
     {
         BasicUser bUser = bUserManager.getBasicUser(user);

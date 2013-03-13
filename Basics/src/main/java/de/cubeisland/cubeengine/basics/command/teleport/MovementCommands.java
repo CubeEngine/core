@@ -1,6 +1,7 @@
 package de.cubeisland.cubeengine.basics.command.teleport;
 
 import de.cubeisland.cubeengine.basics.Basics;
+import de.cubeisland.cubeengine.basics.BasicsAttachment;
 import de.cubeisland.cubeengine.core.command.CommandContext;
 import de.cubeisland.cubeengine.core.command.parameterized.Flag;
 import de.cubeisland.cubeengine.core.command.parameterized.ParameterizedContext;
@@ -189,7 +190,7 @@ public class MovementCommands
         if (context.getSender() instanceof User)
         {
             User sender = (User)context.getSender();
-            Location loc = sender.getAttribute(basics, "lastLocation");
+            Location loc = sender.get(BasicsAttachment.class).getLastLocation();
             if (loc == null)
             {
                 context.sendMessage("basics", "&cYou never teleported!");

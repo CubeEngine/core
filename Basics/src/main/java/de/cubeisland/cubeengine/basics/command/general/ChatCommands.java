@@ -1,6 +1,7 @@
 package de.cubeisland.cubeengine.basics.command.general;
 
 import de.cubeisland.cubeengine.basics.Basics;
+import de.cubeisland.cubeengine.basics.BasicsAttachment;
 import de.cubeisland.cubeengine.basics.storage.BasicUser;
 import de.cubeisland.cubeengine.core.command.CommandContext;
 import de.cubeisland.cubeengine.core.command.reflected.Command;
@@ -122,7 +123,7 @@ public class ChatCommands
         String lastWhisper;
         if (context.getSender() instanceof User)
         {
-            lastWhisper = ((User)context.getSender()).getAttribute(module, "lastWhisper");
+            lastWhisper = ((User)context.getSender()).get(BasicsAttachment.class).getLastWhisper();
         }
         else
         {
@@ -157,7 +158,7 @@ public class ChatCommands
                     console.sendMessage(_("basics", "&e%s -> You: &f%s", arr(context.getSender().getName(), message)));
                     context.sendMessage("basics", "&eYou &6-> &2%s&e: &f%s", console.getName(), message);
                     this.lastWhisperOfConsole = context.getSender().getName();
-                    ((User)context.getSender()).setAttribute(module, "lastWhisper", "#console");
+                    ((User)context.getSender()).get(BasicsAttachment.class).setLastWhisper("#console");
                     return true;
                 }
                 context.sendMessage("basics","Who are you!?");
@@ -176,7 +177,7 @@ public class ChatCommands
             return true;
         }
         user.sendMessage("basics", "&2%s &6-> &eYou: &f%s", context.getSender().getName(), message);
-        Boolean afk = user.getAttribute(module, "afk");
+        Boolean afk = user.get(BasicsAttachment.class).isAfk();
         if (afk != null && afk)
         {
             context.sendMessage("basics", "&2%s &7is afk!", user.getName());
@@ -184,13 +185,13 @@ public class ChatCommands
         context.sendMessage(_("basics", "&eYou &6-> &2%s&e: &f%s", arr(user.getName(), message)));
         if (context.getSender() instanceof User)
         {
-            ((User)context.getSender()).setAttribute(module, "lastWhisper", user.getName());
+            ((User)context.getSender()).get(BasicsAttachment.class).setLastWhisper(user.getName());
         }
         else
         {
             this.lastWhisperOfConsole = user.getName();
         }
-        user.setAttribute(module, "lastWhisper", context.getSender().getName());
+        user.get(BasicsAttachment.class).setLastWhisper(context.getSender().getName());
         return true;
     }
 

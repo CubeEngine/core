@@ -1,6 +1,7 @@
 package de.cubeisland.cubeengine.basics.command.moderation.kit;
 
 import de.cubeisland.cubeengine.basics.Basics;
+import de.cubeisland.cubeengine.basics.BasicsAttachment;
 import de.cubeisland.cubeengine.core.CubeEngine;
 import de.cubeisland.cubeengine.core.command.exception.PermissionDeniedException;
 import de.cubeisland.cubeengine.core.command.sender.CommandSender;
@@ -96,7 +97,7 @@ public class Kit
         //TODO check how many times user got his kit
         if (limitUsageDelay != 0)
         {
-            Long lastUsage = user.getAttribute(module, "kitUsage_" + this.name);
+            Long lastUsage = user.get(BasicsAttachment.class).getKitUsage(this.name);
             if (lastUsage != null && System.currentTimeMillis() - lastUsage < limitUsageDelay)
             {
                 sender.sendMessage("basisc", "&eThis kit not availiable at the moment. &aTry again later!");
@@ -109,7 +110,7 @@ public class Kit
             this.executeCommands(user);
             if (limitUsageDelay != 0)
             {
-                user.setAttribute(module, "kitUsage_" + this.name, System.currentTimeMillis());
+                user.get(BasicsAttachment.class).setKitUsage(this.name);
             }
             return true;
         }

@@ -31,7 +31,7 @@ public class Basics extends Module
         this.mailManager = new MailManager(this.getDatabase(), this.basicUM);
         this.ignoreListManager = new IgnoreListManager(this.getDatabase());
         this.registerPermissions(BasicsPerm.values());
-        this.getUserManager().addDefaultAttachment(BasicsAttachment.class);
+        this.getUserManager().addDefaultAttachment(BasicsAttachment.class, this);
 
         this.registerListener(new ColoredSigns());
 

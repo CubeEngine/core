@@ -1,6 +1,7 @@
 package de.cubeisland.cubeengine.basics.command.moderation;
 
 import de.cubeisland.cubeengine.basics.Basics;
+import de.cubeisland.cubeengine.basics.BasicsAttachment;
 import de.cubeisland.cubeengine.basics.BasicsPerm;
 import de.cubeisland.cubeengine.core.command.CommandContext;
 import de.cubeisland.cubeengine.core.command.parameterized.Flag;
@@ -71,10 +72,10 @@ public class InventoryCommands
         if (context.getSender() instanceof User)
         {
             User sender = (User)context.getSender();
-            ItemStack[] stashedInv = sender.getAttribute(basics, "stash_Inventory");
-            ItemStack[] stashedArmor = sender.getAttribute(basics, "stash_Armor");
-            ItemStack[] InvToStash = sender.getInventory().getContents().clone();
-            ItemStack[] ArmorToStash = sender.getInventory().getArmorContents().clone();
+            ItemStack[] stashedInv = sender.get(BasicsAttachment.class).getStashedInventory();
+            ItemStack[] stashedArmor = sender.get(BasicsAttachment.class).getStashedArmor();
+            ItemStack[] invToStash = sender.getInventory().getContents().clone();
+            ItemStack[] armorToStash = sender.getInventory().getArmorContents().clone();
             if (stashedInv != null)
             {
                 sender.getInventory().setContents(stashedInv);
@@ -83,7 +84,8 @@ public class InventoryCommands
             {
                 sender.getInventory().clear();
             }
-            sender.setAttribute(basics, "stash_Inventory", InvToStash);
+
+            sender.get(BasicsAttachment.class).setStashedInventory(invToStash);
             if (stashedArmor != null)
             {
                 sender.getInventory().setBoots(stashedArmor[0]);
@@ -98,7 +100,7 @@ public class InventoryCommands
                 sender.getInventory().setChestplate(null);
                 sender.getInventory().setHelmet(null);
             }
-            sender.setAttribute(basics, "stash_Armor", ArmorToStash);
+            sender.get(BasicsAttachment.class).setStashedArmor(armorToStash);
             sender.sendMessage("basics", "&aSwapped stashed Inventory!");
             return;
         }

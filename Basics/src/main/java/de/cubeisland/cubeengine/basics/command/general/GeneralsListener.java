@@ -1,6 +1,7 @@
 package de.cubeisland.cubeengine.basics.command.general;
 
 import de.cubeisland.cubeengine.basics.Basics;
+import de.cubeisland.cubeengine.basics.BasicsAttachment;
 import de.cubeisland.cubeengine.basics.BasicsPerm;
 import de.cubeisland.cubeengine.basics.storage.BasicUser;
 import de.cubeisland.cubeengine.core.bukkit.AfterJoinEvent;
@@ -42,13 +43,10 @@ public class GeneralsListener implements Listener
     public void blockplace(final BlockPlaceEvent event)
     {
         User user = basics.getUserManager().getExactUser(event.getPlayer());
-        if (user.getAttribute(basics, "unlimitedItems") != null)
+        if (user.get(BasicsAttachment.class).hasUnlimitedItems())
         {
-            if ((Boolean)user.getAttribute(basics, "unlimitedItems"))
-            {
-                ItemStack itemInHand = event.getPlayer().getItemInHand();
-                itemInHand.setAmount(itemInHand.getAmount() + 1);
-            }
+            ItemStack itemInHand = event.getPlayer().getItemInHand();
+            itemInHand.setAmount(itemInHand.getAmount() + 1);
         }
     }
 

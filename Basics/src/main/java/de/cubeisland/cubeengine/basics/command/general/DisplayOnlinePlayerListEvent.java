@@ -1,17 +1,18 @@
 package de.cubeisland.cubeengine.basics.command.general;
 
 import de.cubeisland.cubeengine.basics.Basics;
-import java.util.List;
+import de.cubeisland.cubeengine.core.user.User;
 import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 
+import java.util.List;
+
 public class DisplayOnlinePlayerListEvent extends Event implements Cancellable
 {
     private final Basics basics;
-    private List<Player> players;
+    private List<User> users;
     private static final HandlerList handlers = new HandlerList();
     private final CommandSender sender;
     private boolean cancelled = false;
@@ -27,12 +28,12 @@ public class DisplayOnlinePlayerListEvent extends Event implements Cancellable
         return handlers;
     }
 
-    public DisplayOnlinePlayerListEvent(Basics basics, CommandSender sender, List<Player> players)
+    public DisplayOnlinePlayerListEvent(Basics basics, CommandSender sender, List<User> users)
     {
 
         this.basics = basics;
         this.sender = sender;
-        this.players = players;
+        this.users = users;
     }
 
     @Override
@@ -58,17 +59,17 @@ public class DisplayOnlinePlayerListEvent extends Event implements Cancellable
     /**
      * @return the players
      */
-    public List<Player> getPlayers()
+    public List<User> getUsers()
     {
-        return players;
+        return users;
     }
 
     /**
-     * @param players the players to set
+     * @param users the players to set
      */
-    public void setPlayers(List<Player> players)
+    public void setUsers(List<User> users)
     {
-        this.players = players;
+        this.users = users;
     }
 
     /**
