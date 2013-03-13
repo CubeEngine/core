@@ -9,6 +9,7 @@ public abstract class Attachment<T extends AttachmentHolder>
 
     public final void attachTo(Module module, T holder)
     {
+        this.module = module;
         if (this.holder != null)
         {
             throw new IllegalStateException("This attachment has already been attached!");
