@@ -1,58 +1,134 @@
 package de.cubeisland.cubeengine.core.util.math.shape;
 
 import de.cubeisland.cubeengine.core.util.math.Vector3;
-import java.util.HashSet;
+import de.cubeisland.cubeengine.core.util.math.shape.iterator.CuboidIterator;
+import java.util.Iterator;
 
-public class Cuboid extends Shape
+public class Cuboid implements Shape
 {
+    private Vector3 point;
+    
     private double width;
     private double height;
-    private double length;
+    private double depth;
+    
+    private float rotationAngle;
+    private Vector3 rotationVector;
+    private Vector3 centerOfRotation;
+    
+    private Vector3 scaleVector;
 
-    public Cuboid( double width, double height, double length, Vector3 center )
+    public Cuboid( Vector3 point, double width, double height, double depth )
     {
+        this.point = point;
         this.width = width;
         this.height = height;
-        this.length = length;
-        this.center = center;
+        this.depth = depth;
         
-        this.createPoints();
+        this.rotationAngle = 0;
+        this.rotationVector = new Vector3(0,0,0);
+        
+        this.scaleVector = new Vector3(1,1,1);
     }
 
-    public Cuboid( double width, double height, double length )
+    public void setPoint( Vector3 point )
     {
-        this( width, height, length, new Vector3( 0, 0, 0 ) );
+        this.point = point;
     }
-
-    @Override
-    protected void createPoints()
+    
+    public Vector3 getPoint()
     {
-        this.points = new HashSet<Vector3>();
-
-        for(double x = this.width - 3 * this.width / 2d; x <= this.width - this.width / 2; x++)
-        {
-            for(double y = this.height - 3 * this.height / 2d; y <= this.height - this.height / 2; y++)
-            {
-                for(double z = this.length - 3 * this.length / 2d; z <= this.length - this.length / 2; z++)
-                {
-                    this.points.add( new Vector3( x + this.center.x, y + this.center.y, z + this.center.z));
-                }
-            }
-        }
-   }
-
+        return this.point;
+    }
+    
+    public void setWidth(double width)
+    {
+        this.width = width;
+    }
+    
     public double getWidth()
     {
         return this.width;
     }
-
+    
+    public void setHeight(double height)
+    {
+        this.height = height;
+    }
+    
     public double getHeight()
     {
         return this.height;
     }
-
-    public double getLength()
+    
+    public void setDepth(double depth)
     {
-        return this.length;
+        this.depth = depth;
+    }
+    
+    public double getDepth()
+    {
+        return this.depth;
+    }
+
+    @Override
+    public void rotate( float angle, Vector3 vector )
+    {
+        this.rotationAngle = angle;
+        this.rotationVector = vector;
+    }
+
+    @Override
+    public void setCenterOfRotation( Vector3 center )
+    {
+        this.centerOfRotation = center;
+    }
+
+    @Override
+    public float getRotationAngle()
+    {
+        return this.rotationAngle;
+    }
+
+    @Override
+    public Vector3 getRotationVector()
+    {
+        return this.rotationVector;
+    }
+
+    @Override
+    public Vector3 getCenterOfRotation()
+    {
+        return this.centerOfRotation;
+    }
+
+    @Override
+    public void scale( Vector3 vector )
+    {
+        this.scaleVector = vector;
+    }
+
+    @Override
+    public Vector3 getScaleVector()
+    {
+        return this.scaleVector;
+    }
+
+    @Override
+    public boolean intersects( Shape other )
+    {
+        throw new UnsupportedOperationException( "Not supported yet." ); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public boolean contains( Shape other )
+    {
+        throw new UnsupportedOperationException( "Not supported yet." ); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public Iterator<Vector3> iterator()
+    {
+        return new CuboidIterator( this );
     }
 }
