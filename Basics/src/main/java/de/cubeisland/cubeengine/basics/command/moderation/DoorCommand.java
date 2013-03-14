@@ -3,6 +3,10 @@ package de.cubeisland.cubeengine.basics.command.moderation;
 import de.cubeisland.cubeengine.basics.Basics;
 import de.cubeisland.cubeengine.core.command.CommandContext;
 import de.cubeisland.cubeengine.core.command.reflected.Command;
+import de.cubeisland.cubeengine.core.user.User;
+import de.cubeisland.cubeengine.core.util.math.Vector3;
+import de.cubeisland.cubeengine.core.util.math.shape.Cube;
+import de.cubeisland.cubeengine.core.util.math.shape.Shape;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
@@ -15,6 +19,29 @@ public class DoorCommand
     public DoorCommand( Basics basics )
     {
         this.basics = basics;
+    }
+    
+    @Command
+    (
+        desc = "",
+        min = 1,
+        max = 1
+    )
+    public void shape(CommandContext context)
+    {
+        User user = ( User ) context.getSender();
+        int width = context.getArg( 0, Integer.class);
+        
+        Block block = user.getTargetBlock( null, 20);
+        
+        Shape cube = new Cube(new Vector3(block.getX(), block.getY(), block.getZ()), width);
+        cube.scale( new Vector3(2,2,2) );
+        
+        for(Vector3 p : cube)
+        {
+            user.getWorld().getBlockAt( (int) p.x,(int) p.y,(int) p.z ).setType( Material.DIRT );
+        }
+        context.sendMessage( "funished");
     }
 
     @Command
