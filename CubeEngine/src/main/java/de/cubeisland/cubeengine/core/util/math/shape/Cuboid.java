@@ -107,17 +107,51 @@ public class Cuboid implements Shape
     {
         return this.scaleVector;
     }
+    
+    private boolean intersects(Cuboid other)
+    { 
+        return !(                                                           // invert it
+            this.getPoint().y + this.getHeight() < other.getPoint().y ||    // this.top < other.bottom
+            this.getPoint().y > other.getPoint().y + other.getHeight()  ||  // this.bottom > other.top
+            this.getPoint().x > other.getPoint().x + other.getWidth() ||    // this.left > other.right
+            this.getPoint().x + this.getWidth() < other.getPoint().x ||     // this.right < other.left
+            this.getPoint().z > other.getPoint().z + other.getDepth() ||    // this.front > other.back
+            this.getPoint().z + this.getDepth() < other.getPoint().z ||     // this.back < other.front
+            this.contains( other )
+        );
+    }
 
     @Override
     public boolean intersects( Shape other )
     {
-        throw new UnsupportedOperationException( "Not supported yet." ); //To change body of generated methods, choose Tools | Templates.
+        if(other instanceof Cuboid)
+        {
+            return this.intersects((Cuboid) other);
+        }
+        return false;  
     }
 
+    private boolean contains(Cuboid other)
+    {
+        return 
+        (
+            this.getPoint().y + this.getHeight() > other.getPoint().y + other.getHeight() &&    // this.top > other.top
+            this.getPoint().y < other.getPoint().y &&                                           // this.bottom < other.bottom
+            this.getPoint().x < other.getPoint().x &&                                           // this.left < other.left
+            this.getPoint().x + this.getWidth() > other.getPoint().x + other.getWidth() &&      // this.right > other.right
+            this.getPoint().z < other.getPoint().z &&                                           // this.front < other.front
+            this.getPoint().z + this.getDepth() > other.getPoint().z + other.getDepth()         // this.back > other.back
+        );
+    }
+    
     @Override
     public boolean contains( Shape other )
     {
-        throw new UnsupportedOperationException( "Not supported yet." ); //To change body of generated methods, choose Tools | Templates.
+        if(other instanceof Cuboid)
+        {
+            return this.contains((Cuboid) other);
+        }
+        return false; 
     }
 
     @Override
