@@ -8,8 +8,6 @@ public class CuboidIterator implements Iterator<Vector3>
 {
     private final Cuboid cuboid;
     
-    private final Vector3 point;
-    
     private double x;
     private double y;
     private double z;
@@ -17,16 +15,16 @@ public class CuboidIterator implements Iterator<Vector3>
     public CuboidIterator(Cuboid cuboid)
     {
         this.cuboid = cuboid;
-        this.point = this.cuboid.getPoint();
-        this.x = this.cuboid.getPoint().x;
-        this.y = this.cuboid.getPoint().y;
-        this.z = this.cuboid.getPoint().z - 1;
+        
+        this.x = 0;
+        this.y = 0;
+        this.z = -1;
     }
     
     @Override
     public boolean hasNext()
     {
-        if(this.x >= this.point.x + this.cuboid.getWidth() - 1 && this.y >= this.point.y + this.cuboid.getHeight() - 1 && this.z >= this.point.z + this.cuboid.getDepth() - 1) // fehlt was ;)
+        if(this.x >= this.cuboid.getWidth() - 1 && this.y >= this.cuboid.getHeight() - 1 && this.z >= this.cuboid.getDepth() - 1)
         {
             return false;
         }
@@ -36,29 +34,29 @@ public class CuboidIterator implements Iterator<Vector3>
     @Override
     public Vector3 next()
     {
-        if(this.z < this.point.z + this.cuboid.getDepth() - 1)
+        if(this.z < this.cuboid.getDepth() - 1)
         {
             this.z++;
         }
-        else if(this.y < this.point.y + this.cuboid.getHeight() - 1)
+        else if(this.y < this.cuboid.getHeight() - 1)
         {
             this.y++;
-            this.z = this.point.z;
+            this.z = 0;
         }
         else
         {
             this.x++;
-            this.y = this.point.y;
-            this.z = this.point.z;
+            this.y = 0;
+            this.z = 0;
         }
         
         Vector3 scale = this.cuboid.getScaleVector();
-        return new Vector3( (x - this.point.x) * scale.x + this.point.x, (y - this.point.y) * scale.y + this.point.y, (z - this.point.z) * scale.z + this.point.z);
+        return new Vector3( x * scale.x + this.cuboid.getPoint().x, y * scale.y + this.cuboid.getPoint().y, z * scale.z + this.cuboid.getPoint().z);
     }
 
     @Override
     public void remove()
     {
-    
+        throw new UnsupportedOperationException( "You can't remove any point!" );
     }
 }
