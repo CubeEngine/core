@@ -12,8 +12,7 @@ public class Cuboid implements Shape
     private double height;
     private double depth;
     
-    private float rotationAngle;
-    private Vector3 rotationVector;
+    private Vector3 rotationAngle;
     private Vector3 centerOfRotation;
     
     private Vector3 scaleVector;
@@ -25,17 +24,19 @@ public class Cuboid implements Shape
         this.height = height;
         this.depth = depth;
         
-        this.rotationAngle = 0;
-        this.rotationVector = new Vector3(0,0,0);
+        this.rotationAngle = new Vector3(0,0,0);
+        this.centerOfRotation = new Vector3(this.point.x + width / 2, this.point.y + height / 2, this.point.z + depth / 2);
         
         this.scaleVector = new Vector3(1,1,1);
     }
 
+    @Override
     public void setPoint( Vector3 point )
     {
         this.point = point;
     }
     
+    @Override
     public Vector3 getPoint()
     {
         return this.point;
@@ -72,10 +73,9 @@ public class Cuboid implements Shape
     }
 
     @Override
-    public void rotate( float angle, Vector3 vector )
+    public void rotate( Vector3 angle )
     {
         this.rotationAngle = angle;
-        this.rotationVector = vector;
     }
 
     @Override
@@ -85,15 +85,9 @@ public class Cuboid implements Shape
     }
 
     @Override
-    public float getRotationAngle()
+    public Vector3 getRotationAngle()
     {
         return this.rotationAngle;
-    }
-
-    @Override
-    public Vector3 getRotationVector()
-    {
-        return this.rotationVector;
     }
 
     @Override

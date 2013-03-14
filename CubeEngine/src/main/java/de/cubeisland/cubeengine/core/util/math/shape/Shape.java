@@ -4,10 +4,12 @@ import de.cubeisland.cubeengine.core.util.math.Vector3;
 
 public interface Shape extends Iterable<Vector3>
 {  
-    public void rotate(float angle, Vector3 vector);
+    public void setPoint(Vector3 point);
+    public Vector3 getPoint();
+    
+    public void rotate(Vector3 angle);
     public void setCenterOfRotation( Vector3 center );
-    public float getRotationAngle();
-    public Vector3 getRotationVector();
+    public Vector3 getRotationAngle();
     public Vector3 getCenterOfRotation();
     
     public void scale(Vector3 vector);

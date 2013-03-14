@@ -7,6 +7,9 @@ import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.util.math.Vector3;
 import de.cubeisland.cubeengine.core.util.math.shape.Cube;
 import de.cubeisland.cubeengine.core.util.math.shape.Shape;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Set;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
@@ -15,6 +18,7 @@ import org.bukkit.material.Openable;
 public class DoorCommand
 {
     private Basics basics;
+    private Set<Block> block = new HashSet<Block>();
     
     public DoorCommand( Basics basics )
     {
@@ -24,22 +28,46 @@ public class DoorCommand
     @Command
     (
         desc = "",
+        max = 0
+    )
+    public void shaperollback(CommandContext context)
+    {
+        Iterator<Block> iter = this.block.iterator();
+        while(iter.hasNext())
+        {
+            Block block = iter.next();
+            block.setType( Material.AIR );
+            iter.remove();
+        }
+    }
+    
+    @Command
+    (
+        desc = "",
         min = 1,
-        max = 1
+        max = 7
     )
     public void shape(CommandContext context)
     {
         User user = ( User ) context.getSender();
         int width = context.getArg( 0, Integer.class);
+        int rotx = context.getArg(1, Integer.class, 0);
+        int roty = context.getArg(2, Integer.class, 0);
+        int rotz = context.getArg(3, Integer.class, 0);
+        int scalex = context.getArg(4, Integer.class, 1);
+        int scaley = context.getArg(5, Integer.class, 1);
+        int scalez = context.getArg(6, Integer.class, 1);
         
         Block block = user.getTargetBlock( null, 20);
         
         Shape cube = new Cube(new Vector3(block.getX(), block.getY(), block.getZ()), width);
-        cube.scale( new Vector3(2,2,2) );
-        
+        cube.scale( new Vector3(scalex,scaley,scalez) );
+        cube.rotate( new Vector3(rotx, roty, rotz));
         for(Vector3 p : cube)
         {
-            user.getWorld().getBlockAt( (int) p.x,(int) p.y,(int) p.z ).setType( Material.DIRT );
+            Block block2 = user.getWorld().getBlockAt( (int) p.x,(int) p.y,(int) p.z );
+            block2.setType( Material.DIRT );
+            this.block.add( block2 );
         }
         context.sendMessage( "funished");
     }
