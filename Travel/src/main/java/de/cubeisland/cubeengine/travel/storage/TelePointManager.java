@@ -78,18 +78,6 @@ public class TelePointManager extends SingleKeyStorage<Long, TeleportPoint>
                     .value(TeleportPoint.Visibility.PUBLIC.ordinal()).and().field("type").is(EQUAL)
                     .value(TeleportPoint.Type.WARP.ordinal()).end().end());
 
-            // Delete statements
-            this.database.storeStatement(this.modelClass, "delete_homes_all",
-                    builder.deleteFrom(this.tableName).end().end());
-            this.database.storeStatement(this.modelClass, "delete_homes_public",
-                    builder.deleteFrom(this.tableName).where().field("visibility").is(EQUAL)
-                            .value(TeleportPoint.Visibility.PUBLIC.toString()).end().end());
-            this.database.storeStatement(this.modelClass, "delete_homes_owned",
-                    builder.deleteFrom(this.tableName).where().field("owner").is(EQUAL).value().end().end());
-            this.database.storeStatement(this.modelClass, "delete_homes_owned_public",
-                    builder.deleteFrom(this.tableName).where().field("owner").is(EQUAL).value()
-                            .and().field("visibility").is(EQUAL).value(TeleportPoint.Visibility.PUBLIC.toString()).end().end());
-
             // Other statements
             this.database.storeStatement(this.modelClass, "get_name",
                     builder.select().cols("name").from(this.tableName).where().field("key").is(EQUAL).value().end().end());
@@ -378,7 +366,7 @@ public class TelePointManager extends SingleKeyStorage<Long, TeleportPoint>
         }
         else
         {
-            for (User user : CubeEngine.getUserManager().getOnlineUsers())
+            for (User user : CubeEngine.getUserManager().getLoadedUsers())
             {
                 removeHomeFromUser(home,  user);
             }
@@ -848,6 +836,42 @@ public class TelePointManager extends SingleKeyStorage<Long, TeleportPoint>
             }
         }
         return warps;
+    }
+
+    public void deleteHomes(int mask)
+    {
+        Set<Home> homes = this.listHomes(mask);
+        for (Home home : homes)
+        {
+            this.deleteHome(home);
+        }
+    }
+
+    public void deleteHomes(User user, int mask)
+    {
+        Set<Home> homes = this.listHomes(user, mask);
+        for (Home home : homes)
+        {
+            this.deleteHome(home);
+        }
+    }
+
+    public void deleteWarps(int mask)
+    {
+        Set<Warp> warps = this.listWarps(mask);
+        for (Warp warp : warps)
+        {
+            this.deleteWarp(warp);
+        }
+    }
+
+    public void deleteWarps(User user, int mask)
+    {
+        Set<Warp> warps = this.listWarps(mask);
+        for (Warp warp : warps)
+        {
+            this.deleteWarp(warp);
+        }
     }
 
     private Set<Home> getHomes(ResultSet resultSet) throws SQLException {

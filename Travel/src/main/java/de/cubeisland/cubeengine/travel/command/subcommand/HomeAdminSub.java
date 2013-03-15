@@ -41,7 +41,7 @@ public class HomeAdminSub
     @Command(desc = "Clear all homes (of an user)", flags = {
         @Flag(name = "p", longName = "public"),
         @Flag(name = "P", longName = "Private")
-    }, min = 1, max = 1, usage = " <user> <-public> <-Private>")
+    }, max = 1, usage = " <user> <-public> <-Private>")
     public void clear(ParameterizedContext context)
     {
         if (context.getArgCount() > 0)
@@ -104,34 +104,20 @@ public class HomeAdminSub
                 {
                     if (usedContext.getArgCount() == 0)
                     { // No user
-                        if (usedContext.hasFlag("p"))
-                        { // Public
-                            //TODO
-                        }
-                        else if (usedContext.hasFlag("P"))
-                        { // Private
-                            //TODO
-                        }
-                        else
-                        { //Both
-                            //TODO
-                        }
+                        int mask = usedContext.getFlagCount() == 0 ? tpManager.ALL : 0;
+                        if (context.hasFlag("p")) mask |= tpManager.PUBLIC;
+                        if (context.hasFlag("P")) mask |= tpManager.PRIVATE;
+                        tpManager.deleteHomes(mask);
+                        context.sendMessage("travel", "The homes are now deleted");
                     }
                     else
                     {
                         User user = usedContext.getUser(0);
-                        if (usedContext.hasFlag("p"))
-                        { // Public
-                            //TODO
-                        }
-                        else if (usedContext.hasFlag("P"))
-                        { // Private
-                            // TODO
-                        }
-                        else
-                        { // Both
-                            //TODO
-                        }
+                        int mask = usedContext.getFlagCount() == 0 ? tpManager.ALL : 0;
+                        if (context.hasFlag("p")) mask |= tpManager.PUBLIC;
+                        if (context.hasFlag("P")) mask |= tpManager.PRIVATE;
+                        tpManager.deleteHomes(user, mask);
+                        context.sendMessage("travel", "The homes are now deleted");
                     }
                 }
                 return;
