@@ -6,15 +6,12 @@ import de.cubeisland.cubeengine.core.command.parameterized.Flag;
 import de.cubeisland.cubeengine.core.command.parameterized.ParameterizedContext;
 import de.cubeisland.cubeengine.core.command.reflected.Alias;
 import de.cubeisland.cubeengine.core.command.reflected.Command;
-import de.cubeisland.cubeengine.core.logger.LogLevel;
-import de.cubeisland.cubeengine.core.storage.StorageException;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.util.Pair;
 import de.cubeisland.cubeengine.travel.Travel;
 import de.cubeisland.cubeengine.travel.storage.Home;
 import de.cubeisland.cubeengine.travel.storage.TelePointManager;
 import de.cubeisland.cubeengine.travel.storage.TeleportPoint;
-import org.bukkit.command.CommandSender;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -24,14 +21,14 @@ public class HomeAdminSub
 {
     private static final Long ACCEPT_TIMEOUT = 20000l;
 
-    private final Map<CommandSender, Pair<Long, ParameterizedContext>> acceptEntries;
+    private final Map<String, Pair<Long, ParameterizedContext>> acceptEntries;
     private final TelePointManager tpManager;
     private final Travel module;
 
     public HomeAdminSub(Travel module, TelePointManager tpManager)
     {
         this.tpManager = tpManager;
-        this.acceptEntries = new HashMap<CommandSender, Pair<Long, ParameterizedContext>>();
+        this.acceptEntries = new HashMap<String, Pair<Long, ParameterizedContext>>();
         this.module = module;
     }
 
@@ -88,18 +85,18 @@ public class HomeAdminSub
                 context.sendMessage("travel", "&5To delete all the homes of every user, do: &9\"/home admin accept\" &5before 20 secunds");
             }
         }
-        acceptEntries.put(context.getSender(), new Pair<Long, ParameterizedContext>(System.currentTimeMillis(), context));
+        acceptEntries.put(context.getSender().getName(), new Pair<Long, ParameterizedContext>(System.currentTimeMillis(), context));
 
     }
 
     @Command(desc = "accept your previous command", min = 0, max = 0)
     public void accept(ParameterizedContext context)
     {
-        if (this.acceptEntries.containsKey(context.getSender()))
+        if (this.acceptEntries.containsKey(context.getSender().getName()))
         {
-            if (this.acceptEntries.get(context.getSender()).getLeft() + ACCEPT_TIMEOUT > System.currentTimeMillis())
+            if (this.acceptEntries.get(context.getSender().getName()).getLeft() + ACCEPT_TIMEOUT > System.currentTimeMillis())
             {
-                ParameterizedContext usedContext = this.acceptEntries.get(context.getSender()).getRight();
+                ParameterizedContext usedContext = this.acceptEntries.get(context.getSender().getName()).getRight();
                 if (usedContext.getCommand().getName().equals("clear"))
                 {
                     if (usedContext.getArgCount() == 0)

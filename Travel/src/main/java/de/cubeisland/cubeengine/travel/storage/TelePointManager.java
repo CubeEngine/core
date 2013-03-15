@@ -291,7 +291,16 @@ public class TelePointManager extends SingleKeyStorage<Long, TeleportPoint>
      */
     public void removeHomeFromUser(Home home, User user)
     {
+        if (home == null || user == null)
+        {
+            return;
+        }
         HomeAttachment attachment = user.attachOrGet(HomeAttachment.class, this.module);
+
+        if (!attachment.hasHome(home.getName()))
+        {
+            return;
+        }
 
         // Remove the home from the users list
         if (attachment.getHome(home.getName()).equals(home))
