@@ -2,7 +2,7 @@ package de.cubeisland.cubeengine.core.bukkit.packethook;
 
 import de.cubeisland.cubeengine.core.util.Cleanable;
 import gnu.trove.map.hash.TIntObjectHashMap;
-import net.minecraft.server.v1_4_R1.Packet;
+import net.minecraft.server.v1_5_R1.Packet;
 import org.bukkit.entity.Player;
 
 import java.util.LinkedList;
@@ -100,7 +100,7 @@ public class PacketEventManager implements Cleanable
             this.logger.log(DEBUG, "The packet was null!");
             return false;
         }
-        List<PacketReceivedListener> listeners = this.receivedListeners.get(packet.k());
+        List<PacketReceivedListener> listeners = this.receivedListeners.get(packet.n());
         if (listeners == null)
         {
             return false;
@@ -125,7 +125,7 @@ public class PacketEventManager implements Cleanable
             this.logger.log(DEBUG, "The packet was null!");
             return false;
         }
-        List<PacketSentListener> listeners = this.sentListeners.get(packet.k());
+        List<PacketSentListener> listeners = this.sentListeners.get(packet.n());
         if (listeners == null)
         {
             return false;

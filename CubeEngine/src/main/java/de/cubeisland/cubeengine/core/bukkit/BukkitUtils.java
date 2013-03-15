@@ -3,10 +3,10 @@ package de.cubeisland.cubeengine.core.bukkit;
 import de.cubeisland.cubeengine.core.CubeEngine;
 import de.cubeisland.cubeengine.core.command.CubeCommand;
 import de.cubeisland.cubeengine.core.user.User;
-import net.minecraft.server.v1_4_R1.EntityPlayer;
-import net.minecraft.server.v1_4_R1.LocaleLanguage;
-import net.minecraft.server.v1_4_R1.PlayerConnection;
-import net.minecraft.server.v1_4_R1.ServerConnection;
+import net.minecraft.server.v1_5_R1.EntityPlayer;
+import net.minecraft.server.v1_5_R1.LocaleLanguage;
+import net.minecraft.server.v1_5_R1.PlayerConnection;
+import net.minecraft.server.v1_5_R1.ServerConnection;
 import org.apache.commons.lang.Validate;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -18,10 +18,10 @@ import org.bukkit.command.PluginCommand;
 import org.bukkit.command.SimpleCommandMap;
 import org.bukkit.command.defaults.BukkitCommand;
 import org.bukkit.craftbukkit.libs.jline.console.ConsoleReader;
-import org.bukkit.craftbukkit.v1_4_R1.CraftServer;
-import org.bukkit.craftbukkit.v1_4_R1.entity.CraftPlayer;
-import org.bukkit.craftbukkit.v1_4_R1.help.SimpleHelpMap;
-import org.bukkit.craftbukkit.v1_4_R1.inventory.CraftItemStack;
+import org.bukkit.craftbukkit.v1_5_R1.CraftServer;
+import org.bukkit.craftbukkit.v1_5_R1.entity.CraftPlayer;
+import org.bukkit.craftbukkit.v1_5_R1.help.SimpleHelpMap;
+import org.bukkit.craftbukkit.v1_5_R1.inventory.CraftItemStack;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -378,13 +378,13 @@ public class BukkitUtils
         resetCommandLogging();
     }
 
-    public static net.minecraft.server.v1_4_R1.ItemStack getNmsItemStack(ItemStack item)
+    public static net.minecraft.server.v1_5_R1.ItemStack getNmsItemStack(ItemStack item)
     {
         if (item instanceof CraftItemStack)
         {
             try
             {
-                return (net.minecraft.server.v1_4_R1.ItemStack)handle.get(item);
+                return (net.minecraft.server.v1_5_R1.ItemStack)handle.get(item);
             }
             catch (Exception ignored)
             {}

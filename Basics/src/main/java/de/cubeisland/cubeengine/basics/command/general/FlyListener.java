@@ -2,7 +2,7 @@ package de.cubeisland.cubeengine.basics.command.general;
 
 import de.cubeisland.cubeengine.basics.BasicsPerm;
 import org.bukkit.GameMode;
-import org.bukkit.craftbukkit.v1_4_R1.entity.CraftPlayer;
+import org.bukkit.craftbukkit.v1_5_R1.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -64,7 +64,7 @@ public class FlyListener implements Listener
     @EventHandler(priority = EventPriority.LOWEST)
     public void quit(final PlayerQuitEvent event)
     {
-        final Player player = (CraftPlayer)event.getPlayer();
+        final Player player = event.getPlayer();
         if (player.getGameMode() != GameMode.CREATIVE && player.isFlying() && BasicsPerm.FLY_CANFLY.isAuthorized(player))
         {
             markFlySpeed(player);

@@ -1,6 +1,6 @@
 package de.cubeisland.cubeengine.core.bukkit.packethook;
 
-import net.minecraft.server.v1_4_R1.Packet;
+import net.minecraft.server.v1_5_R1.Packet;
 import org.bukkit.entity.Player;
 
 public abstract class PacketEvent
@@ -66,6 +66,6 @@ public abstract class PacketEvent
      */
     public int getPacketId()
     {
-        return this.getPacket().k();
+        return this.getPacket().n();
     }
 }

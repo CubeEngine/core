@@ -1962,4 +1962,46 @@ public class UserBase implements Player
             player.resetMaxHealth();
         }
     }
+
+    @Override
+    public void setCustomName(String name)
+    {
+        final Player player = this.offlinePlayer.getPlayer();
+        if (player != null)
+        {
+            player.setCustomName(name);
+        }
+    }
+
+    @Override
+    public String getCustomName()
+    {
+        final Player player = this.offlinePlayer.getPlayer();
+        if (player != null)
+        {
+            return player.getCustomName();
+        }
+        return null;
+    }
+
+    @Override
+    public void setCustomNameVisible(boolean flag)
+    {
+        final Player player = this.offlinePlayer.getPlayer();
+        if (player != null)
+        {
+            player.setCustomNameVisible(flag);
+        }
+    }
+
+    @Override
+    public boolean isCustomNameVisible()
+    {
+        final Player player = this.offlinePlayer.getPlayer();
+        if (player != null)
+        {
+            return player.isCustomNameVisible();
+        }
+        return false;
+    }
 }
