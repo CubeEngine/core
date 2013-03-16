@@ -2,7 +2,6 @@ package de.cubeisland.cubeengine.log.logger.worldedit;
 
 import de.cubeisland.cubeengine.log.Log;
 import de.cubeisland.cubeengine.log.logger.BlockLogger;
-import de.cubeisland.cubeengine.log.logger.SignChangeLogger;
 import de.cubeisland.cubeengine.log.logger.config.WorldEditConfig;
 import org.bukkit.block.BlockState;
 import org.bukkit.block.Sign;
@@ -18,9 +17,7 @@ public class WorldEditLogger extends BlockLogger<WorldEditConfig>
     public void logWorldEditChange(Player player, BlockState oldState, BlockState newState)
     {
         this.logBlockChange(BlockChangeCause.WORLDEDIT, oldState.getWorld(), player, oldState, newState);
-        if (newState instanceof Sign)
-        {
-            module.getLoggerManager().getLogger(SignChangeLogger.class).logSignPlaceWithData(player, (Sign)newState);
-        }
+        //TODO sign data
+            //module.getLoggerManager().getLogger(SignChangeLogger.class).logSignPlaceWithData(player, (Sign)newState);
     }
 }

@@ -28,9 +28,9 @@ public class BlockFluidFlowLogger extends BlockLogger<BlockFluidFlowConfig>
 
     //TODO do this better
     private static final BlockFace[] DIRECTIONS = new BlockFace[]
-    {
-        BlockFace.DOWN, BlockFace.NORTH, BlockFace.WEST, BlockFace.EAST, BlockFace.SOUTH
-    };
+            {
+                    BlockFace.DOWN, BlockFace.NORTH, BlockFace.WEST, BlockFace.EAST, BlockFace.SOUTH
+            };
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onBlockFromTo(BlockFromToEvent event)

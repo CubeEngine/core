@@ -19,21 +19,10 @@ public class LoggerManager
         this.module = module;
 
         // registering loggers:
-        this.createLogger(BlockBreakLogger.class);
-        this.createLogger(FireLogger.class);
-        this.createLogger(BlockDecayLogger.class);
-        this.createLogger(BlockExplosionLogger.class);
-        this.createLogger(BlockFadeLogger.class);
         this.createLogger(BlockFluidFlowLogger.class);
-        this.createLogger(BlockFormLogger.class);
-        this.createLogger(GrowthLogger.class);
-        this.createLogger(BlockPlaceLogger.class);
         this.createLogger(ChatLogger.class);
         this.createLogger(ContainerLogger.class);
-        this.createLogger(EndermanLogger.class);
-        this.createLogger(InteractionLogger.class);
         this.createLogger(KillLogger.class);
-        this.createLogger(SignChangeLogger.class);
         this.createLogger(WorldEditLogger.class);
     }
 

@@ -183,12 +183,12 @@ public class LogManager
                     .field("x", AttrType.INT, false, false)
                     .field("y", AttrType.INT, false, false)
                     .field("z", AttrType.INT, false, false)
-                    .field("causer", AttrType.BIGINT)
+                    .field("causer", AttrType.BIGINT, false, false)
                     .field("block",AttrType.VARCHAR, 255, false)
-                    .field("data",AttrType.TINYINT,false)
+                    .field("data",AttrType.TINYINT,false,false)
                     .field("newBlock",AttrType.VARCHAR, 255, false)
-                    .field("newData",AttrType.TINYINT, false)
-                    .field("addtionalData",AttrType.VARCHAR,255, false)
+                    .field("newData",AttrType.TINYINT, false,false)
+                    .field("additionalData",AttrType.VARCHAR,255, false)
                     .foreignKey("world").references("worlds", "key")
                     .index("x")
                     .index("y")
@@ -333,7 +333,7 @@ public class LogManager
         return false;
     }
 
-    private void queueLog(Timestamp timestamp, long worldID, int x, int y, int z, int action, long causer, String block, Short data, String newBlock, Short newData, String additionalData)
+    private void queueLog(Timestamp timestamp, long worldID, int x, int y, int z, int action, Long causer, String block, Byte data, String newBlock, Byte newData, String additionalData)
     {
         this.queuedLogs.offer(new QueuedLog(timestamp,worldID,x,y,z,action,causer,block,data,newBlock,newData,additionalData));
     }
@@ -350,7 +350,7 @@ public class LogManager
      * @param newData
      * @param additionalData
      */
-    public void queueLog(Location location, int action, long causer, String block, Short data, String newBlock, Short newData, String additionalData)
+    public void queueLog(Location location, int action, Long causer, String block, Byte data, String newBlock, Byte newData, String additionalData)
     {
         Timestamp timestamp = new Timestamp(System.currentTimeMillis());
         Long worldID = this.module.getCore().getWorldManager().getWorldId(location.getWorld());

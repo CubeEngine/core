@@ -13,9 +13,14 @@ import java.util.HashSet;
  */
 public class BlockUtil
 {
-    private static final BlockFace[] blockFaces =
+    public static final BlockFace[] BLOCK_FACES =
     {
         BlockFace.DOWN, BlockFace.UP, BlockFace.EAST, BlockFace.NORTH, BlockFace.WEST, BlockFace.SOUTH
+    };
+
+    public static final BlockFace[] DIRECTIONS = new BlockFace[]
+    {
+            BlockFace.DOWN, BlockFace.NORTH, BlockFace.WEST, BlockFace.EAST, BlockFace.SOUTH
     };
 
     /**
@@ -27,7 +32,7 @@ public class BlockUtil
     public static Collection<Block> getAttachedBlocks(Block block)
     {
         Collection<Block> blocks = new HashSet<Block>();
-        for (BlockFace bf : blockFaces)
+        for (BlockFace bf : BLOCK_FACES)
         {
             if (block.getRelative(bf).getState().getData() instanceof Attachable)
             {
@@ -103,5 +108,18 @@ public class BlockUtil
             default:
                 return blocks;
         }
+    }
+
+    public static boolean isSurroundedByWater(Block block)
+    {
+        for (final BlockFace face : DIRECTIONS)
+        {
+            final int type = block.getRelative(face).getTypeId();
+            if (type == 8 || type == 9)
+            {
+                return true;
+            }
+        }
+        return false;
     }
 }
