@@ -30,6 +30,10 @@ import net.minecraft.server.v1_5_R1.Packet202Abilities;
 import net.minecraft.server.v1_5_R1.Packet203TabComplete;
 import net.minecraft.server.v1_5_R1.Packet204LocaleAndViewDistance;
 import net.minecraft.server.v1_5_R1.Packet205ClientCommand;
+import net.minecraft.server.v1_5_R1.Packet206SetScoreboardObjective;
+import net.minecraft.server.v1_5_R1.Packet207SetScoreboardScore;
+import net.minecraft.server.v1_5_R1.Packet208SetScoreboardDisplayObjective;
+import net.minecraft.server.v1_5_R1.Packet209SetScoreboardTeam;
 import net.minecraft.server.v1_5_R1.Packet20NamedEntitySpawn;
 import net.minecraft.server.v1_5_R1.Packet22Collect;
 import net.minecraft.server.v1_5_R1.Packet23VehicleSpawn;
@@ -65,6 +69,7 @@ import net.minecraft.server.v1_5_R1.Packet5EntityEquipment;
 import net.minecraft.server.v1_5_R1.Packet60Explosion;
 import net.minecraft.server.v1_5_R1.Packet61WorldEvent;
 import net.minecraft.server.v1_5_R1.Packet62NamedSoundEffect;
+import net.minecraft.server.v1_5_R1.Packet63WorldParticles;
 import net.minecraft.server.v1_5_R1.Packet6SpawnPosition;
 import net.minecraft.server.v1_5_R1.Packet70Bed;
 import net.minecraft.server.v1_5_R1.Packet71Weather;
@@ -648,5 +653,45 @@ public class CubePlayerConnection extends PlayerConnection
         if (this.packetReceived(packet255kickdisconnect))
             return;
         super.a(packet255kickdisconnect);
+    }
+
+    @Override
+    public void a(Packet206SetScoreboardObjective packet206SetScoreboardObjective)
+    {
+        if (this.packetReceived(packet206SetScoreboardObjective))
+            return;
+        super.a(packet206SetScoreboardObjective);
+    }
+
+    @Override
+    public void a(Packet207SetScoreboardScore packet207SetScoreboardScore)
+    {
+        if (this.packetReceived(packet207SetScoreboardScore))
+            return;
+        super.a(packet207SetScoreboardScore);
+    }
+
+    @Override
+    public void a(Packet208SetScoreboardDisplayObjective packet208SetScoreboardDisplayObjective)
+    {
+        if (this.packetReceived(packet208SetScoreboardDisplayObjective))
+            return;
+        super.a(packet208SetScoreboardDisplayObjective);
+    }
+
+    @Override
+    public void a(Packet209SetScoreboardTeam packet209SetScoreboardTeam)
+    {
+        if (this.packetReceived(packet209SetScoreboardTeam))
+            return;
+        super.a(packet209SetScoreboardTeam);
+    }
+
+    @Override
+    public void a(Packet63WorldParticles packet63WorldParticles)
+    {
+        if (this.packetReceived(packet63WorldParticles))
+            return;
+        super.a(packet63WorldParticles);
     }
 }
