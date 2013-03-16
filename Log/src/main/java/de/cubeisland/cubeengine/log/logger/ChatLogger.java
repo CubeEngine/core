@@ -40,7 +40,7 @@ public class ChatLogger extends Logger<ChatConfig>
                     }
                 }
                 User user = this.module.getUserManager().getExactUser(event.getPlayer());
-                this.module.getLogManager().logChatLog(user.key.intValue(), world, user.getLocation(), event.getMessage(), false);
+         //       this.module.getLogManager().logChatLog(user.key.intValue(), world, user.getLocation(), event.getMessage(), false);
             }
         }
     }
@@ -58,7 +58,7 @@ public class ChatLogger extends Logger<ChatConfig>
             {
                 User user = this.module.getUserManager().getExactUser(event.getPlayer());
                 // creating a new Location instance to ensure thread safety
-                this.module.getLogManager().logChatLog(user.key.intValue(), world, user.getLocation(), event.getMessage(), true);
+           //    this.module.getLogManager().logChatLog(user.key.intValue(), world, user.getLocation(), event.getMessage(), true);
             }
         }
     }
@@ -71,7 +71,7 @@ public class ChatLogger extends Logger<ChatConfig>
         ChatConfig config = this.module.getGlobalConfiguration().getSubLogConfig(this.getConfigClass());
         if (config.logConsoleCommand)
         {
-            this.module.getLogManager().logChatLog(0, null, null, event.getCommand(), false);
+         //   this.module.getLogManager().logChatLog(0, null, null, event.getCommand(), false);
         }
     }
 

@@ -235,13 +235,13 @@ public class ContainerLogger extends Logger<ContainerConfig>
         {
             if (loggedChanges.get(data) != 0)
             {
-                this.module.getLogManager().logChestLog(user.key.intValue(), world, loc, data, loggedChanges.get(data), type.getId());
+          //      this.module.getLogManager().logChestLog(user.key.intValue(), world, loc, data, loggedChanges.get(data), type.getId());
                 logged = true;
             }
         }
         if (!logged && this.configs.get(world).logNothing) //Player just looked into container
         {
-            this.module.getLogManager().logChestLog(user.key.intValue(), world, loc, new ItemData(0, (short)0), 0, type.getId());
+            //this.module.getLogManager().logChestLog(user.key.intValue(), world, loc, new ItemData(0, (short)0), 0, type.getId());
         }
     }
 

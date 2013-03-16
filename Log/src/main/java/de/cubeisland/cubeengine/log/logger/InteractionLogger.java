@@ -125,7 +125,7 @@ public class InteractionLogger extends Logger<InteractionConfig>
                         //TODO add new blocks in 1.5
                         //TODO anvil
                 }
-                this.module.getLogManager().logBlockChange(user.key, world, block.getState(), newData);
+           //     this.module.getLogManager().logBlockChange(user.key, world, block.getState(), newData);
             }
             else if (event.getAction().equals(Action.PHYSICAL) && config.logPressurePlate)
             {
@@ -134,7 +134,7 @@ public class InteractionLogger extends Logger<InteractionConfig>
                 {
                     case WOOD_PLATE:
                     case STONE_PLATE:
-                        this.module.getLogManager().logBlockChange(user.key, world, block.getState(), (byte)1);
+             //           this.module.getLogManager().logBlockChange(user.key, world, block.getState(), (byte)1);
                 }
             }
         }

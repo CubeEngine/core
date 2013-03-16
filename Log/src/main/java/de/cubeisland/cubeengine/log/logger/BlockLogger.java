@@ -37,11 +37,11 @@ public abstract class BlockLogger<T extends LoggerConfig> extends Logger<T>
         if (cause == BlockChangeCause.PLAYER || player != null)
         {
             User user = this.module.getUserManager().getExactUser(player);
-            this.module.getLogManager().logBlockLog(cause, user.getKey().intValue(), world, newState, oldState);
+     //       this.module.getLogManager().logBlockLog(cause, user.getKey().intValue(), world, newState, oldState);
         }
         else
         {
-            this.module.getLogManager().logBlockLog(cause, cause.getId(), world, newState, oldState);
+       //     this.module.getLogManager().logBlockLog(cause, cause.getId(), world, newState, oldState);
         }
     }
 

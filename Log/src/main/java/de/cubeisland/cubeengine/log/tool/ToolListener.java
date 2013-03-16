@@ -1,20 +1,9 @@
 package de.cubeisland.cubeengine.log.tool;
 
-import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.log.Log;
-import de.cubeisland.cubeengine.log.commands.LogCommands;
-import de.cubeisland.cubeengine.log.lookup.BlockLog;
-import de.cubeisland.cubeengine.log.lookup.BlockLookup;
-import de.cubeisland.cubeengine.log.storage.BlockData;
-import de.cubeisland.cubeengine.log.storage.LogManager;
-import org.bukkit.Location;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.inventory.ItemStack;
-
-import java.sql.Timestamp;
 
 public class ToolListener implements Listener
 {
@@ -27,7 +16,7 @@ public class ToolListener implements Listener
 
     @EventHandler
     public void onClick(PlayerInteractEvent event)
-    {
+    {/*
         if (event.getClickedBlock() != null && event.getPlayer().getItemInHand().getTypeId() == 7)
         {
             ItemStack item = event.getPlayer().getItemInHand();
@@ -69,6 +58,6 @@ public class ToolListener implements Listener
             {
                 user.sendMessage("log", "&cNo logs found at &6%d:%d:%d &cin &6%s&c!", loc.getBlockX(), loc.getBlockY(), loc.getBlockZ(), loc.getWorld().getName());
             }
-        }
+        }*/
     }
 }

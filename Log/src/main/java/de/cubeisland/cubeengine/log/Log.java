@@ -6,6 +6,7 @@ import de.cubeisland.cubeengine.core.module.Module;
 import de.cubeisland.cubeengine.core.util.convert.Convert;
 import de.cubeisland.cubeengine.log.commands.LogCommands;
 import de.cubeisland.cubeengine.log.commands.LookupCommands;
+import de.cubeisland.cubeengine.log.listeners.BlockChangeListener;
 import de.cubeisland.cubeengine.log.logger.LoggerManager;
 import de.cubeisland.cubeengine.log.logger.worldedit.LogEditSessionFactory;
 import de.cubeisland.cubeengine.log.storage.*;
@@ -47,6 +48,7 @@ public class Log extends Module
         //flag to ignore what block
         //possibility to select the region containing the last search results
         this.logManager = new LogManager(this);
+        this.registerListener(new BlockChangeListener(this,logManager));
         this.registerCommand(new LookupCommands(this));
         this.registerCommand(new LogCommands(this));
         File file = new File(this.getFolder(), "worlds");

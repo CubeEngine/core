@@ -2,44 +2,27 @@ package de.cubeisland.cubeengine.log.storage;
 
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 
-/**
- *
- * @author Anselm Brehme
- */
-public abstract class QueuedLog
+public class QueuedLog
 {
-    private long insertId = -1;
-    private Object[] mainData;
+    private Object[] logdata;
 
-    public void setInsertId(long insertId)
+    private QueuedLog(Object... logdata)
     {
-        this.insertId = insertId;
+        this.logdata = logdata;
     }
 
-    public long getInsertId()
+    public QueuedLog(Timestamp timestamp, long worldID, int x, int y, int z, int action, long causer, String block, Short data, String newBlock, Short newData, String additionalData)
     {
-        return this.insertId;
+        this(timestamp, action, worldID, x, y, z, causer, block, data, newBlock, newData, additionalData);
     }
 
-    public abstract void run();
-
-    void run(long key)
+    public void addDataToBatch(PreparedStatement stmt) throws SQLException
     {
-        this.insertId = key;
-        this.run();
-    }
-
-    public void addMainLogData(Object... mainData)
-    {
-        this.mainData = mainData;
-    }
-
-    public void addMainDataToBatch(PreparedStatement stmt) throws SQLException
-    {
-        for (int i = 0; i < this.mainData.length; ++i)
+        for (int i = 0; i < this.logdata.length; ++i)
         {
-            stmt.setObject(i + 1, this.mainData[i]);
+            stmt.setObject(i + 1, this.logdata[i]);
         }
         stmt.addBatch();
     }
