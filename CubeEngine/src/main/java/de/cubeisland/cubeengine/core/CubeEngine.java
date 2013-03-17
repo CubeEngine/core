@@ -1,6 +1,5 @@
 package de.cubeisland.cubeengine.core;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import de.cubeisland.cubeengine.core.bukkit.EventManager;
 import de.cubeisland.cubeengine.core.bukkit.TaskManager;
 import de.cubeisland.cubeengine.core.command.CommandManager;
@@ -216,16 +215,6 @@ public final class CubeEngine
     public static boolean isDebug()
     {
         return core.isDebug();
-    }
-
-    /**
-     * Returns the global instance of the jackson object mapper.
-     *
-     * @return the global instance of the jackson object mapper.
-     */
-    public static ObjectMapper getJsonObjectMapper()
-    {
-        return core.getJsonObjectMapper();
     }
 
     public static ApiServer getApiServer()

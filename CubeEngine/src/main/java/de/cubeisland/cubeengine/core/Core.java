@@ -1,6 +1,5 @@
 package de.cubeisland.cubeengine.core;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import de.cubeisland.cubeengine.core.bukkit.EventManager;
 import de.cubeisland.cubeengine.core.bukkit.TaskManager;
 import de.cubeisland.cubeengine.core.command.CommandManager;
@@ -117,13 +116,6 @@ public interface Core
      * @return the TableManager
      */
     public TableManager getTableManger();
-
-    /**
-     * This method returns the global json object mapper
-     *
-     * @return the global ObjectMapper of Jackson
-     */
-    public ObjectMapper getJsonObjectMapper();
 
     /**
      * This method returns the web API server

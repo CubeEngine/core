@@ -2,13 +2,42 @@ package de.cubeisland.cubeengine.core.util.convert;
 
 import de.cubeisland.cubeengine.core.Core;
 import de.cubeisland.cubeengine.core.CubeEngine;
-import de.cubeisland.cubeengine.core.config.node.*;
+import de.cubeisland.cubeengine.core.config.node.BooleanNode;
+import de.cubeisland.cubeengine.core.config.node.ByteNode;
+import de.cubeisland.cubeengine.core.config.node.CharNode;
+import de.cubeisland.cubeengine.core.config.node.DoubleNode;
+import de.cubeisland.cubeengine.core.config.node.FloatNode;
+import de.cubeisland.cubeengine.core.config.node.IntNode;
+import de.cubeisland.cubeengine.core.config.node.ListNode;
+import de.cubeisland.cubeengine.core.config.node.LongNode;
+import de.cubeisland.cubeengine.core.config.node.MapNode;
+import de.cubeisland.cubeengine.core.config.node.Node;
+import de.cubeisland.cubeengine.core.config.node.NullNode;
+import de.cubeisland.cubeengine.core.config.node.ShortNode;
+import de.cubeisland.cubeengine.core.config.node.StringNode;
+import de.cubeisland.cubeengine.core.logger.CubeLevel;
 import de.cubeisland.cubeengine.core.user.User;
-import de.cubeisland.cubeengine.core.util.convert.converter.*;
+import de.cubeisland.cubeengine.core.util.convert.converter.BooleanConverter;
+import de.cubeisland.cubeengine.core.util.convert.converter.ByteConverter;
+import de.cubeisland.cubeengine.core.util.convert.converter.CubeLevelConverter;
+import de.cubeisland.cubeengine.core.util.convert.converter.DateConverter;
+import de.cubeisland.cubeengine.core.util.convert.converter.DoubleConverter;
+import de.cubeisland.cubeengine.core.util.convert.converter.DurationConverter;
+import de.cubeisland.cubeengine.core.util.convert.converter.EnchantmentConverter;
+import de.cubeisland.cubeengine.core.util.convert.converter.FloatConverter;
+import de.cubeisland.cubeengine.core.util.convert.converter.IntegerConverter;
+import de.cubeisland.cubeengine.core.util.convert.converter.ItemStackConverter;
+import de.cubeisland.cubeengine.core.util.convert.converter.LocaleConverter;
+import de.cubeisland.cubeengine.core.util.convert.converter.LocationConverter;
+import de.cubeisland.cubeengine.core.util.convert.converter.LongConverter;
+import de.cubeisland.cubeengine.core.util.convert.converter.PlayerConverter;
+import de.cubeisland.cubeengine.core.util.convert.converter.ShortConverter;
+import de.cubeisland.cubeengine.core.util.convert.converter.StringConverter;
+import de.cubeisland.cubeengine.core.util.convert.converter.UserConverter;
+import de.cubeisland.cubeengine.core.util.convert.converter.WorldConverter;
 import de.cubeisland.cubeengine.core.util.converter.generic.ArrayConverter;
 import de.cubeisland.cubeengine.core.util.converter.generic.CollectionConverter;
 import de.cubeisland.cubeengine.core.util.converter.generic.MapConverter;
-import de.cubeisland.cubeengine.core.logger.CubeLevel;
 import de.cubeisland.cubeengine.core.util.time.Duration;
 import org.bukkit.Location;
 import org.bukkit.OfflinePlayer;
@@ -22,6 +51,7 @@ import java.sql.Date;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -64,6 +94,7 @@ public class Convert
         registerConverter(Boolean.class, converter);
         registerConverter(String.class, new StringConverter());
         registerConverter(Duration.class, new DurationConverter());
+        registerConverter(Locale.class, new LocaleConverter());
     }
 
     /**

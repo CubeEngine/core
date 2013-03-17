@@ -1,18 +1,11 @@
 package de.cubeisland.cubeengine.core.i18n;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import de.cubeisland.cubeengine.core.Core;
-import de.cubeisland.cubeengine.core.CubeEngine;
-import de.cubeisland.cubeengine.core.logger.LogLevel;
-import de.cubeisland.cubeengine.core.util.ChatFormat;
 import de.cubeisland.cubeengine.core.util.Cleanable;
 import gnu.trove.map.hash.THashMap;
 import org.apache.commons.lang.Validate;
 
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.Locale;
 import java.util.Map;
 
@@ -29,7 +22,6 @@ public class NormalLanguage implements Cleanable, Language
     private final Map<String, String> messages;
     private final File messageDir;
     private final Locale locale;
-    private final ObjectMapper objectMapper = CubeEngine.getJsonObjectMapper();
 
     public NormalLanguage(Core core, LocaleConfig config, File languageDir, Language parent)
     {
@@ -113,6 +105,7 @@ public class NormalLanguage implements Cleanable, Language
     @SuppressWarnings("unchecked")
     private synchronized Map<String, String> loadMessages(String cat)
     {
+        /*
         try
         {
             final File messagesFile = new File(this.messageDir, cat + ".json");
@@ -135,13 +128,14 @@ public class NormalLanguage implements Cleanable, Language
         catch (IOException e)
         {
             this.core.getCoreLogger().log(LogLevel.ERROR, String.valueOf(e), e);
-        }
+        }*/
         return null;
     }
 
     @SuppressWarnings("unchecked")
     private Map<String, String> updateMessages(File messageFile, Map<String, String> catMessages)
     {
+        /*
         InputStream resource = CubeEngine.getFileManager().getSourceOf(messageFile);
         if (resource == null)
         {
@@ -168,7 +162,7 @@ public class NormalLanguage implements Cleanable, Language
             }
             catch (IOException ignored)
             {}
-        }
+        } */
         return catMessages;
     }
 

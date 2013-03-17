@@ -1,7 +1,5 @@
 package de.cubeisland.cubeengine.core.bukkit;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
 import de.cubeisland.cubeengine.core.Core;
 import de.cubeisland.cubeengine.core.CorePerms;
 import de.cubeisland.cubeengine.core.CoreResource;
@@ -64,7 +62,6 @@ public final class BukkitCore extends JavaPlugin implements Core
     private BukkitCommandManager commandManager;
     private TaskManager taskManager;
     private TableManager tableManager;
-    private ObjectMapper jsonObjectMapper;
     private ApiServer apiServer;
     private WorldManager worldManager;
     private Match matcherManager;
@@ -83,9 +80,6 @@ public final class BukkitCore extends JavaPlugin implements Core
             return;
         }
         CubeEngine.initialize(this);
-
-        this.jsonObjectMapper = new ObjectMapper();
-        this.jsonObjectMapper.configure(SerializationFeature.INDENT_OUTPUT, true);
 
         this.logger = new CubeLogger("Core", this.getLogger());
         // TODO RemoteHandler is not yet implemented this.logger.addHandler(new RemoteHandler(LogLevelERROR, this));
@@ -461,12 +455,6 @@ public final class BukkitCore extends JavaPlugin implements Core
     public boolean isDebug()
     {
         return this.logger.getLevel().intValue() <= LogLevel.DEBUG.intValue();
-    }
-
-    @Override
-    public ObjectMapper getJsonObjectMapper()
-    {
-        return this.jsonObjectMapper;
     }
 
     @Override

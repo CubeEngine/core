@@ -103,16 +103,6 @@ public class TestCore implements Core
     }
 
     @Override
-    public ObjectMapper getJsonObjectMapper()
-    {
-        if (this.jsonObjectMapper == null)
-        {
-            this.jsonObjectMapper = new ObjectMapper();
-        }
-        return this.jsonObjectMapper;
-    }
-
-    @Override
     public ModuleManager getModuleManager()
     {
         if (this.moduleManager == null)
