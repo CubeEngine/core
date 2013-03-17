@@ -54,7 +54,6 @@ public class BlockListener implements Listener
         this.manager = manager;
     }
 
-    // BlockBreakEvent
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onBlockBreak(BlockBreakEvent event)
     {
@@ -186,8 +185,6 @@ public class BlockListener implements Listener
                     this.logBlockChange(loc, BLOCK_FALL, cause, state, state.getType().name(), state.getRawData());
                     this.plannedFallingBlocks.remove(loc);
                 }
-                else
-                    System.out.print("Unexpected Phiysics event");
             }
         }
         else // attached block missing
@@ -215,8 +212,6 @@ public class BlockListener implements Listener
                                 this.logBlockChange(loc, BLOCK_BREAK, cause, state, "Indirect");
                                 this.plannedFallingBlocks.remove(loc);
                             }
-                            else
-                                System.out.print("Unexpected Phiysics event");
                         default:
                             return;
                     }
@@ -241,8 +236,6 @@ public class BlockListener implements Listener
                             this.logBlockChange(loc, BLOCK_BREAK, cause, state, "Indirect");
                             this.plannedFallingBlocks.remove(loc);
                         }
-                        else
-                            System.out.print("Unexpected Phiysics event");
                     default:
                         return;
                 }
@@ -664,7 +657,7 @@ public class BlockListener implements Listener
                     || itemInHand.getType().equals(Material.STORAGE_MINECART)
                     || itemInHand.getType().equals(Material.POWERED_MINECART)
                     || itemInHand.getType().equals(Material.HOPPER_MINECART)
-                    || itemInHand.getType().equals(Material.TNT_MINECART)
+                    || itemInHand.getType().equals(Material.EXPLOSIVE_MINECART)
                     ) // BOAT is done down below
                     {
                         if (this.manager.isIgnored(VEHICLE_PLACE)) return;
