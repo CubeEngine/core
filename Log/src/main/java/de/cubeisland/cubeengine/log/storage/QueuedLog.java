@@ -13,7 +13,7 @@ public class QueuedLog
         this.logdata = logdata;
     }
 
-    public QueuedLog(Timestamp timestamp, long worldID, int x, int y, int z, int action, Long causer, String block, Byte data, String newBlock, Byte newData, String additionalData)
+    public QueuedLog(Timestamp timestamp, Long worldID, Integer x, Integer y, Integer z, int action, Long causer, String block, Long data, String newBlock, Byte newData, String additionalData)
     {
         this(timestamp, action, worldID, x, y, z, causer, block, data, newBlock, newData, additionalData);
     }

@@ -8,9 +8,12 @@ import com.sk89q.worldedit.bags.BlockBag;
 import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.bukkit.BukkitPlayer;
 import com.sk89q.worldedit.bukkit.BukkitWorld;
+import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.log.Log;
 import org.bukkit.World;
 import org.bukkit.block.BlockState;
+
+import static de.cubeisland.cubeengine.log.storage.LogManager.WORLDEDIT;
 
 public class LogEditSession extends EditSession
 {
@@ -54,14 +57,17 @@ public class LogEditSession extends EditSession
             if (player.getWorld() instanceof BukkitWorld)
             {
                 World world = ((BukkitWorld)player.getWorld()).getWorld();
-                WorldEditLogger logger = module.getLoggerManager().getLogger(WorldEditLogger.class);
-                if (logger.getConfig(world).enabled)
+                if (!module.getLogManager().isIgnored(WORLDEDIT))
                 {
                     BlockState oldState = world.getBlockAt(pt.getBlockX(), pt.getBlockY(), pt.getBlockZ()).getState();
                     boolean success = super.rawSetBlock(pt, block);
                     if (success)
                     {
-                        logger.logWorldEditChange(((BukkitPlayer)player).getPlayer(), oldState, world.getBlockAt(pt.getBlockX(), pt.getBlockY(), pt.getBlockZ()).getState());
+                        User user = module.getUserManager().getExactUser(((BukkitPlayer) player).getPlayer());
+                        BlockState newState =  world.getBlockAt(pt.getBlockX(), pt.getBlockY(), pt.getBlockZ()).getState();
+                        module.getLogManager().queueLog(oldState.getLocation(), WORLDEDIT, user.key,
+                                oldState.getType().name(), oldState.getRawData(),
+                                newState.getType().name(),newState.getRawData(),null);
                     }
                     return success;
                 }

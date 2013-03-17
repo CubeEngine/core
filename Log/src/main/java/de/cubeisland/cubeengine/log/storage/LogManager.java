@@ -10,6 +10,10 @@ import de.cubeisland.cubeengine.core.storage.database.querybuilder.SelectBuilder
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.util.worker.AsyncTaskQueue;
 import de.cubeisland.cubeengine.log.Log;
+import de.cubeisland.cubeengine.log.listeners.BlockListener;
+import de.cubeisland.cubeengine.log.listeners.ChatListener;
+import de.cubeisland.cubeengine.log.listeners.ContainerListener;
+import de.cubeisland.cubeengine.log.listeners.EntityListener;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
@@ -118,9 +122,11 @@ public class LogManager
     public static final int VEHICLE_BREAK = 0x62;
     public static final int HANGING_BREAK = 0x63;
     //KILLING
-    public static final int PLAYER_KILL = 0x70;
-    public static final int ENTITY_KILL = 0x71;
-    public static final int PLAYER_DEATH = 0x72;
+    public static final int PLAYER_KILL = 0x70; // determined by causer ID not saved in DB
+    public static final int ENTITY_KILL = 0x71; // determined by causer ID not saved in DB
+    public static final int ENVIRONEMENT_KILL = 0x71; // determined by causer ID not saved in DB
+    public static final int PLAYER_DEATH = 0x73;
+    public static final int ENTITY_DEATH = 0x74;
     //other entity
     public static final int MONSTER_EGG_USE = 0x80;
     public static final int ENTITY_SPAWN = 0x81;
@@ -144,32 +150,29 @@ public class LogManager
 
 //OLD remains:
 
-    public static final int BLOCK_CHANGE = 0x02; //changing blockdata / interactlog
-    public static final int BLOCK_SIGN = 0x03; //sign change
-    public static final int BLOCK_GROW_BP = 0x04; //growth induced by a player
-    public static final int BLOCK_CHANGE_WE = 0x05;
-    public static final int BLOCK_EXPLODE = 0x06; // Creeper attacking a player
-    public static final int HANGING_ENTITY_PLACE = 0x07; // TODO
-    public static final int HANGING_ENTITY_BREAK = 0x08; // TODO
 
-    public static final int KILL_PVP = 0x10; //player killed by player
-    public static final int KILL_PVE = 0x11; //player killed by environement
-    public static final int KILL_EVE = 0x12; //mob killed by environement
-    public static final int KILL_EVP = 0x13; //mob killed by player
-    public static final int NATURAL_SPAWN = 0x14; // TODO
-    public static final int EGG_SPAWN = 0x15; // TODO
-    public static final int CHAT = 0x20;
-    public static final int COMMAND = 0x21;
-    public static final int CHEST_PUT = 0x30;
-    public static final int CHEST_TAKE = 0x31;
     private final AsyncTaskQueue taskQueue = new AsyncTaskQueue(CubeEngine.getTaskManager().getExecutorService());
     private final Database database;
     private final Log module;
     private int logBuffer = 2000; // TODO config
     private final int repeatingTaskId;
 
+    private final BlockListener blockListener;
+    private final ChatListener chatListener;
+    private final ContainerListener containerListener;
+    private final EntityListener entityListener;
+
     public LogManager(Log module)
     {
+        this.blockListener = new BlockListener(module,this);
+        this.chatListener = new ChatListener(module,this);
+        this.containerListener = new ContainerListener(module,this);
+        this.entityListener = new EntityListener(module,this);
+        module.registerListener(blockListener);
+        module.registerListener(chatListener);
+        module.registerListener(containerListener);
+        module.registerListener(entityListener);
+
         this.database = module.getDatabase();
         this.module = module;
         try
@@ -178,15 +181,15 @@ public class LogManager
             String sql = builder.createTable("log_entries", true).beginFields()
                     .field("key", AttrType.INT, true).autoIncrement()
                     .field("date", AttrType.TIMESTAMP)
-                    .field("action", AttrType.TINYINT)
+                    .field("action", AttrType.TINYINT, false)
                     .field("world", AttrType.INT, true, false)
                     .field("x", AttrType.INT, false, false)
                     .field("y", AttrType.INT, false, false)
                     .field("z", AttrType.INT, false, false)
                     .field("causer", AttrType.BIGINT, false, false)
                     .field("block",AttrType.VARCHAR, 255, false)
-                    .field("data",AttrType.TINYINT,false,false)
-                    .field("newBlock",AttrType.VARCHAR, 255, false)
+                    .field("data",AttrType.BIGINT,false,false) // in kill logs this is the killed entity
+                    .field("newBlock", AttrType.VARCHAR, 255, false)
                     .field("newData",AttrType.TINYINT, false,false)
                     .field("additionalData",AttrType.VARCHAR,255, false)
                     .foreignKey("world").references("worlds", "key")
@@ -268,11 +271,14 @@ public class LogManager
         PreparedStatement stmt = this.database.getStoredStatement(this.getClass(),"storeLog");
         try
         {
+            this.database.getConnection().setAutoCommit(false);
             for (QueuedLog log : logs)
             {
                 log.addDataToBatch(stmt);
             }
             stmt.executeBatch();
+            this.database.getConnection().commit();
+            this.database.getConnection().setAutoCommit(true);
         }
         catch (SQLException ex)
         {
@@ -333,7 +339,7 @@ public class LogManager
         return false;
     }
 
-    private void queueLog(Timestamp timestamp, long worldID, int x, int y, int z, int action, Long causer, String block, Byte data, String newBlock, Byte newData, String additionalData)
+    private void queueLog(Timestamp timestamp, Long worldID, Integer x, Integer y, Integer z, Integer action, Long causer, String block, Long data, String newBlock, Byte newData, String additionalData)
     {
         this.queuedLogs.offer(new QueuedLog(timestamp,worldID,x,y,z,action,causer,block,data,newBlock,newData,additionalData));
     }
@@ -354,7 +360,8 @@ public class LogManager
     {
         Timestamp timestamp = new Timestamp(System.currentTimeMillis());
         Long worldID = this.module.getCore().getWorldManager().getWorldId(location.getWorld());
-        this.queueLog(timestamp,worldID,location.getBlockX(),location.getBlockY(),location.getBlockZ(),action, causer, block, data, newBlock, newData,additionalData);
+        Long longData = data == null ? null : data.longValue();
+        this.queueLog(timestamp,worldID,location.getBlockX(),location.getBlockY(),location.getBlockZ(),action, causer, block, longData, newBlock, newData,additionalData);
     }
 
     /**
@@ -372,6 +379,43 @@ public class LogManager
         User user = this.module.getUserManager().getExactUser(player);
         this.queueLog(timestamp,worldID,location.getBlockX(),location.getBlockY(),location.getBlockZ(),action,user.key,null,null,null,null,additionalData);
     }
+
+    public void queueLog(int action, String addionalData)
+    {
+        Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+        this.queueLog(timestamp,null,null,null,null,action, null, null,null,null,null,addionalData);
+    }
+
+    public void queueLog(Location location, int action, Long causer, Long killed, String additionalData)
+    {
+        Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+        Long worldID = this.module.getCore().getWorldManager().getWorldId(location.getWorld());
+        this.queueLog(timestamp,worldID,location.getBlockX(),location.getBlockY(),location.getBlockZ(),
+                action,causer,null,killed,null,null,additionalData);
+    }
+
+    public void queueLog(Location location, int action, long causer)
+    {
+        this.queueLog(location,action,causer,null,null);
+    }
+
+    public BlockListener getBlockListener() {
+        return blockListener;
+    }
+
+    public ChatListener getChatListener() {
+        return chatListener;
+    }
+
+    public ContainerListener getContainerListener() {
+        return containerListener;
+    }
+
+    public EntityListener getEntityListener() {
+        return entityListener;
+    }
+
+
 
 }
 

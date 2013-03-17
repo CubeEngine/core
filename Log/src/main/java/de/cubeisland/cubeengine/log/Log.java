@@ -6,8 +6,6 @@ import de.cubeisland.cubeengine.core.module.Module;
 import de.cubeisland.cubeengine.core.util.convert.Convert;
 import de.cubeisland.cubeengine.log.commands.LogCommands;
 import de.cubeisland.cubeengine.log.commands.LookupCommands;
-import de.cubeisland.cubeengine.log.listeners.BlockListener;
-import de.cubeisland.cubeengine.log.logger.LoggerManager;
 import de.cubeisland.cubeengine.log.logger.worldedit.LogEditSessionFactory;
 import de.cubeisland.cubeengine.log.storage.*;
 import de.cubeisland.cubeengine.log.tool.ToolListener;
@@ -24,7 +22,6 @@ public class Log extends Module
     private LogConfiguration globalConfig;
     private Map<World, LogConfiguration> worldConfigs = new HashMap<World, LogConfiguration>();
     private LogManager logManager;
-    private LoggerManager loggerManager;
 
     static
     {
@@ -48,7 +45,6 @@ public class Log extends Module
         //flag to ignore what block
         //possibility to select the region containing the last search results
         this.logManager = new LogManager(this);
-        this.registerListener(new BlockListener(this,logManager));
         this.registerCommand(new LookupCommands(this));
         this.registerCommand(new LogCommands(this));
         File file = new File(this.getFolder(), "worlds");
@@ -72,8 +68,6 @@ public class Log extends Module
         {
             System.out.print("No WorldEdit found!");
         }
-
-        this.loggerManager = new LoggerManager(this);
 
         this.registerListener(new ToolListener(this));
 
@@ -99,10 +93,5 @@ public class Log extends Module
     public LogConfiguration getGlobalConfiguration()
     {
         return this.globalConfig;
-    }
-
-    public LoggerManager getLoggerManager()
-    {
-        return loggerManager;
     }
 }
