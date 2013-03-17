@@ -4,11 +4,7 @@ import de.cubeisland.cubeengine.core.CubeEngine;
 import de.cubeisland.cubeengine.core.logger.LogLevel;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.log.Log;
-import de.cubeisland.cubeengine.log.Logger;
-import de.cubeisland.cubeengine.log.logger.config.ContainerConfig;
-import de.cubeisland.cubeengine.log.storage.ItemData;
 import gnu.trove.map.hash.TIntObjectHashMap;
-import gnu.trove.map.hash.TObjectIntHashMap;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.block.*;
@@ -25,23 +21,22 @@ import org.bukkit.inventory.*;
 
 import static de.cubeisland.cubeengine.core.util.InventoryUtil.checkForPlace;
 
-public class ContainerLogger extends Logger<ContainerConfig>
-{
+public class ContainerLogger
+{private Log module;
     public ContainerLogger(Log module)
-    {
-        super(module, ContainerConfig.class);
+    {this.module = module;
     }
 
-    private static TIntObjectHashMap<TObjectIntHashMap<ItemData>> openedInventories = new TIntObjectHashMap<TObjectIntHashMap<ItemData>>();
+//    private static TIntObjectHashMap<TObjectIntHashMap<ItemData>> openedInventories = new TIntObjectHashMap<TObjectIntHashMap<ItemData>>();
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onInventoryClose(InventoryCloseEvent event)
     {
         User user = CubeEngine.getUserManager().getExactUser((Player)event.getPlayer());
-        TObjectIntHashMap<ItemData> loggedItems = openedInventories.get(user.getKey().intValue());
-        if (loggedItems == null)
+        //TObjectIntHashMap<ItemData> loggedItems = openedInventories.get(user.getKey().intValue());
+        //if (loggedItems == null)
         {
-            return;
+          //  return;
         }
         ContainerType type = ContainerType.getContainerType(event.getView().getTopInventory());
         World world = this.getLocationForHolder(event.getView().getTopInventory().getHolder()).getWorld();
@@ -63,9 +58,9 @@ public class ContainerLogger extends Logger<ContainerConfig>
             {
                 return;
             }
-            this.logContainerChanges(user, type, loggedItems, world, loc);
+        //    this.logContainerChanges(user, type, loggedItems, world, loc);
         }
-        openedInventories.remove(user.key.intValue());
+   //     openedInventories.remove(user.key.intValue());
     }
 
     private Location getLocationForHolder(InventoryHolder holder)
@@ -108,7 +103,7 @@ public class ContainerLogger extends Logger<ContainerConfig>
                 if (event.getPlayer() instanceof Player)
                 {
                     User user = CubeEngine.getUserManager().getExactUser((Player)event.getPlayer());
-                    openedInventories.put(user.getKey().intValue(), new TObjectIntHashMap<ItemData>());
+               //     openedInventories.put(user.getKey().intValue(), new TObjectIntHashMap<ItemData>());
                 }
             }
         }
@@ -144,10 +139,10 @@ public class ContainerLogger extends Logger<ContainerConfig>
     public void onInventoryClick(InventoryClickEvent event)
     {
         User user = CubeEngine.getUserManager().getExactUser((Player)event.getWhoClicked());
-        TObjectIntHashMap<ItemData> log = openedInventories.get(user.key.intValue());
-        if (log == null)
+       // TObjectIntHashMap<ItemData> log = openedInventories.get(user.key.intValue());
+    //    if (log == null)
         {
-            return;
+      //      return;
         }
         ItemStack onCursor = event.getCursor();
         ItemStack inInvent = event.getCurrentItem();
@@ -159,19 +154,19 @@ public class ContainerLogger extends Logger<ContainerConfig>
         {
             return; //Nothing to log both empty
         }
-        ItemData dataOnCursor = new ItemData(onCursor);
-        ItemData datainInvent = new ItemData(inInvent);
+  //      ItemData dataOnCursor = new ItemData(onCursor);
+    //    ItemData datainInvent = new ItemData(inInvent);
         if (!event.isShiftClick() && event.getRawSlot() < event.getView().getTopInventory().getSize()) // No shift-click AND click on top inventory
         {
             if (onCursor == null || onCursor.getTypeId() == 0) // take items
             {
                 int take = event.isLeftClick() ? inInvent.getAmount() : (inInvent.getAmount() + 1) / 2;
-                log.put(datainInvent, log.get(datainInvent) - take);
+      //          log.put(datainInvent, log.get(datainInvent) - take);
             }
             else if (inInvent == null || inInvent.getTypeId() == 0) // add items
             {
                 int put = event.isLeftClick() ? onCursor.getAmount() : 1;
-                log.put(dataOnCursor, log.get(dataOnCursor) + put);
+      //          log.put(dataOnCursor, log.get(dataOnCursor) + put);
             }
             else
             // both filled
@@ -183,13 +178,13 @@ public class ContainerLogger extends Logger<ContainerConfig>
                     {
                         toput = inInvent.getMaxStackSize() - inInvent.getAmount(); //set to missing to fill
                     }
-                    log.put(datainInvent, log.get(datainInvent) + toput);
+        //            log.put(datainInvent, log.get(datainInvent) + toput);
                 }
                 else
                 // no stacking -> exchange
                 {
-                    log.put(datainInvent, log.get(datainInvent) - inInvent.getAmount());
-                    log.put(dataOnCursor, log.get(dataOnCursor) + onCursor.getAmount());
+          //          log.put(datainInvent, log.get(datainInvent) - inInvent.getAmount());
+            //        log.put(dataOnCursor, log.get(dataOnCursor) + onCursor.getAmount());
                 }
             }
         }
@@ -198,14 +193,14 @@ public class ContainerLogger extends Logger<ContainerConfig>
             int giveOrTake = event.getRawSlot() < event.getView().getTopInventory().getSize() ? -1 : 1; //top or bot inv ?
             if (checkForPlace(giveOrTake == 1 ? event.getView().getTopInventory() : event.getView().getBottomInventory(), inInvent)) //check for enough space
             {
-                log.put(datainInvent, log.get(datainInvent) + giveOrTake * inInvent.getAmount());
+              //  log.put(datainInvent, log.get(datainInvent) + giveOrTake * inInvent.getAmount());
             }
         }
     }
 
     private boolean checkLog(ContainerType type, World world)
-    {
-        ContainerConfig config = this.configs.get(world);
+    {/*
+       ContainerConfig config = this.configs.get(world);
         if (config.enabled)
         {
             switch (type)
@@ -224,10 +219,10 @@ public class ContainerLogger extends Logger<ContainerConfig>
                     return false;
                     //TODO storage minecart
             }
-        }
+        }*/
         return false;
     }
-
+/*
     private void logContainerChanges(User user, ContainerType type, TObjectIntHashMap<ItemData> loggedChanges, World world, Location loc)
     {
         boolean logged = false;
@@ -239,13 +234,13 @@ public class ContainerLogger extends Logger<ContainerConfig>
                 logged = true;
             }
         }
-        if (!logged && this.configs.get(world).logNothing) //Player just looked into container
+      //  if (!logged && this.configs.get(world).logNothing) //Player just looked into container
         {
             //this.module.getLogManager().logChestLog(user.key.intValue(), world, loc, new ItemData(0, (short)0), 0, type.getId());
         }
-    }
+    }*/
 
-    /**
+    /*
      * private TObjectIntHashMap<ItemData> compressInventory(ItemStack[] items)
      * { TObjectIntHashMap<ItemData> map = new TObjectIntHashMap<ItemData>();
      * for (ItemStack item : items) { if (item == null) { continue; } ItemData

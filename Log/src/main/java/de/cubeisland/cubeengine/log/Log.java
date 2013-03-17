@@ -6,7 +6,7 @@ import de.cubeisland.cubeengine.core.module.Module;
 import de.cubeisland.cubeengine.core.util.convert.Convert;
 import de.cubeisland.cubeengine.log.commands.LogCommands;
 import de.cubeisland.cubeengine.log.commands.LookupCommands;
-import de.cubeisland.cubeengine.log.logger.worldedit.LogEditSessionFactory;
+import de.cubeisland.cubeengine.log.listeners.worldedit.LogEditSessionFactory;
 import de.cubeisland.cubeengine.log.storage.*;
 import de.cubeisland.cubeengine.log.tool.ToolListener;
 import org.bukkit.Bukkit;
@@ -22,12 +22,6 @@ public class Log extends Module
     private LogConfiguration globalConfig;
     private Map<World, LogConfiguration> worldConfigs = new HashMap<World, LogConfiguration>();
     private LogManager logManager;
-
-    static
-    {
-        Convert.registerConverter(BlockData.class, new BlockDataConverter());
-        Convert.registerConverter(ItemData.class, new ItemDataConverter());
-    }
 
     public Log()
     {

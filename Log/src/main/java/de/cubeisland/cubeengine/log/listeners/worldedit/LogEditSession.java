@@ -1,4 +1,4 @@
-package de.cubeisland.cubeengine.log.logger.worldedit;
+package de.cubeisland.cubeengine.log.listeners.worldedit;
 
 import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.LocalPlayer;

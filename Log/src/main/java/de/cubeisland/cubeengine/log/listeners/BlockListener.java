@@ -4,11 +4,14 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import de.cubeisland.cubeengine.core.CubeEngine;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.util.BlockUtil;
+import de.cubeisland.cubeengine.core.util.Pair;
 import de.cubeisland.cubeengine.log.Log;
 import de.cubeisland.cubeengine.log.storage.LogManager;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.*;
+import org.bukkit.block.Chest;
+import org.bukkit.block.Sign;
 import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -24,10 +27,7 @@ import org.bukkit.event.world.StructureGrowEvent;
 import org.bukkit.inventory.DoubleChestInventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.material.Attachable;
-import org.bukkit.material.Bed;
-import org.bukkit.material.Diode;
-import org.bukkit.material.Lever;
+import org.bukkit.material.*;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -37,16 +37,21 @@ import static de.cubeisland.cubeengine.core.bukkit.BlockUtil.isNonFluidProofBloc
 import static de.cubeisland.cubeengine.core.util.BlockUtil.BLOCK_FACES;
 import static de.cubeisland.cubeengine.core.util.BlockUtil.DIRECTIONS;
 import static de.cubeisland.cubeengine.log.storage.LogManager.*;
-import static org.bukkit.Material.AIR;
-import static org.bukkit.Material.COBBLESTONE;
-import static org.bukkit.Material.OBSIDIAN;
+import static de.cubeisland.cubeengine.log.storage.LogManager.FIREBALL;
+import static de.cubeisland.cubeengine.log.storage.LogManager.LAVA_BUCKET;
+import static de.cubeisland.cubeengine.log.storage.LogManager.WATER_BUCKET;
+import static org.bukkit.Material.*;
 
 public class BlockListener implements Listener
 {
+
+    //TODO when removing source of falling lava "AIR" is falling down no more lava but blocks get formed //any idea if possible how to log this?
+    //check if this is fixed
+
     private LogManager manager;
     private Log module;
 
-    private Map<Location,Long> plannedFallingBlocks = new HashMap<Location, Long>();
+    private Map<Location,Pair<Player,Integer>> plannedFallingBlocks = new HashMap<Location, Pair<Player,Integer>>();
 
     public BlockListener(Log module, LogManager manager)
     {
@@ -80,7 +85,6 @@ public class BlockListener implements Listener
         }
         else if (blockState instanceof Jukebox)
         {
-            //TODO jukebox drop
             this.logBlockChange(blockState.getLocation(), BLOCK_BREAK, event.getPlayer(), blockState, ((Jukebox) blockState).getPlaying().name());
         }
         else if (blockState instanceof InventoryHolder)
@@ -179,10 +183,10 @@ public class BlockListener implements Listener
             if (event.getBlock().getRelative(BlockFace.DOWN).getType().equals(AIR))
             {
                 Location loc = state.getLocation();
-                Long cause = this.plannedFallingBlocks.get(loc);
+                Pair<Player,Integer> cause = this.plannedFallingBlocks.get(loc);
                 if (cause != null)
                 {
-                    this.logBlockChange(loc, BLOCK_FALL, cause, state, state.getType().name(), state.getRawData());
+                    this.logBlockChange(loc, BLOCK_FALL, cause.getLeft(), state, "cause:"+cause.getRight());
                     this.plannedFallingBlocks.remove(loc);
                 }
             }
@@ -206,10 +210,10 @@ public class BlockListener implements Listener
                         case LAVA:
                         case STATIONARY_LAVA:
                             Location loc = state.getLocation();
-                            Long cause = this.plannedFallingBlocks.get(loc);
+                            Pair<Player,Integer> cause = this.plannedFallingBlocks.get(loc);
                             if (cause != null)
                             {
-                                this.logBlockChange(loc, BLOCK_BREAK, cause, state, "Indirect");
+                                this.logBlockChange(loc, BLOCK_BREAK, cause.getLeft(), state, "cause:"+cause.getRight());
                                 this.plannedFallingBlocks.remove(loc);
                             }
                         default:
@@ -230,10 +234,10 @@ public class BlockListener implements Listener
                     case LAVA:
                     case STATIONARY_LAVA:
                         Location loc = state.getLocation();
-                        Long cause = this.plannedFallingBlocks.get(loc);
+                        Pair<Player,Integer> cause = this.plannedFallingBlocks.get(loc);
                         if (cause != null)
                         {
-                            this.logBlockChange(loc, BLOCK_BREAK, cause, state, "Indirect");
+                            this.logBlockChange(loc, BLOCK_BREAK, cause.getLeft(), state, "cause:"+cause.getRight());
                             this.plannedFallingBlocks.remove(loc);
                         }
                     default:
@@ -657,11 +661,11 @@ public class BlockListener implements Listener
                     || itemInHand.getType().equals(Material.STORAGE_MINECART)
                     || itemInHand.getType().equals(Material.POWERED_MINECART)
                     || itemInHand.getType().equals(Material.HOPPER_MINECART)
-                    || itemInHand.getType().equals(Material.EXPLOSIVE_MINECART)
-                    ) // BOAT is done down below
+                    || itemInHand.getType().equals(Material.EXPLOSIVE_MINECART)) // BOAT is done down below
                     {
                         if (this.manager.isIgnored(VEHICLE_PLACE)) return;
-                        //TODO preplan vehicle placement (tracking player)
+                        Block block = event.getClickedBlock().getRelative(BlockFace.UP);
+                        this.manager.getEntityListener().preplanVehiclePlacement(block.getLocation(),event.getPlayer());
                     }
                     break;
                 case TNT:
@@ -714,15 +718,19 @@ public class BlockListener implements Listener
             if (itemInHand.getType().equals(Material.MONSTER_EGG))
             {
                 if (this.manager.isIgnored(MONSTER_EGG_USE)) return;
+                this.manager.queueLog(event.getClickedBlock().getRelative(event.getBlockFace()).getLocation(),MONSTER_EGG_USE,event.getPlayer(),
+                        this.manager.getEntityListener().serializeItemStack(itemInHand));
             }
             else if (itemInHand.getType().equals(Material.FIREWORK))
             {
                 if (this.manager.isIgnored(FIREWORK_USE)) return;
+                this.manager.queueLog(event.getClickedBlock().getRelative(event.getBlockFace()).getLocation(),FIREWORK_USE,event.getPlayer(),null);
             }
             else if (itemInHand.getType().equals(Material.BOAT))
             {
                 if (this.manager.isIgnored(VEHICLE_PLACE)) return;
-                //TODO preplan boatplacement
+                Block block = event.getClickedBlock().getRelative(BlockFace.UP);
+                this.manager.getEntityListener().preplanVehiclePlacement(block.getLocation(),event.getPlayer());
             }
         }
         else if (event.getAction().equals(Action.PHYSICAL))
@@ -763,41 +771,59 @@ public class BlockListener implements Listener
 
     private void logRelatedBlocks(BlockState blockState, Player player, int reason)
     {
-        //TODO log portalblocks broken by obsidian
-
-        User user = this.module.getUserManager().getExactUser(player);
+        if (blockState.getType().equals(OBSIDIAN))
+        {
+            Block block = blockState.getBlock();
+            for (BlockFace face : BLOCK_FACES)
+            {
+                if (block.getRelative(face).getType().equals(PORTAL))
+                {
+                    this.logBlockChange(BLOCK_BREAK,block.getRelative(face).getState(),AIR,player); // logging one is enough
+                    break;
+                }
+            }
+        }
         Block onTop = blockState.getBlock().getRelative(BlockFace.UP);
         while (onTop.getType().equals(Material.SAND)||onTop.getType().equals(Material.GRAVEL)||onTop.getType().equals(Material.ANVIL))
         {
-            this.plannedFallingBlocks.put(onTop.getLocation(),user.key);
-            onTop = onTop.getRelative(BlockFace.UP);
+            if (!this.manager.isIgnored(BLOCK_FALL))
+            {
+                this.plannedFallingBlocks.put(onTop.getLocation(),new Pair<Player, Integer>(player,reason));
+                onTop = onTop.getRelative(BlockFace.UP);
+            }
         }
         if (!blockState.getType().isSolid() && !blockState.getType().equals(Material.SUGAR_CANE_BLOCK))
         {
             return; // cannot have attached
         }
-        for (Block block :  BlockUtil.getAttachedBlocks(blockState.getBlock()))
+        if (!this.manager.isIgnored(BLOCK_BREAK))
         {
-            this.plannedFallingBlocks.put(block.getLocation(),user.key);
+            for (Block block : BlockUtil.getAttachedBlocks(blockState.getBlock()))
+            {
+
+                this.plannedFallingBlocks.put(block.getLocation(),new Pair<Player, Integer>(player,reason));
+            }
+            for (Block block : BlockUtil.getDetachableBlocksOnTop(blockState.getBlock()))
+            {
+                this.plannedFallingBlocks.put(block.getLocation(),new Pair<Player, Integer>(player,reason));
+            }
         }
-        for (Block block : BlockUtil.getDetachableBlocksOnTop(blockState.getBlock()))
-        {
-            this.plannedFallingBlocks.put(block.getLocation(),user.key);
-        }
+        if (this.manager.isIgnored(HANGING_BREAK)) return;
         Location location = blockState.getLocation();
         Location entityLocation = blockState.getLocation();
+        User user = this.module.getUserManager().getExactUser(player);
         for (Entity entity : blockState.getBlock().getChunk().getEntities())
         {
             if (entity instanceof Hanging && location.distanceSquared(entity.getLocation(entityLocation)) < 4)
             {
-                //TODO preplan hanging entity
+                this.manager.getEntityListener().preplanBreakedHanging(entity.getLocation(),user == null ? -reason : user.key);
             }
         }
     }
 
     private void logItemDropsFromDestroyedContainer(InventoryHolder containerBlock, Location location, Player player)
     {
-        if (this.manager.isIgnored(ITEM_REMOVE)) return;
+        if (this.manager.isIgnored(ITEM_DROP)) return;
         ItemStack[] contents;
         if (containerBlock.getInventory() instanceof DoubleChestInventory)
         {
@@ -817,7 +843,8 @@ public class BlockListener implements Listener
         }
         for (ItemStack itemStack : contents)
         {
-           // TODO log it!
+            String itemData = this.manager.getEntityListener().serializeItemStack(itemStack);
+            this.manager.queueLog(location,ITEM_DROP,player,itemData);
         }
     }
 
@@ -851,11 +878,6 @@ public class BlockListener implements Listener
         this.manager.queueLog(location,action,this.getUserKey(player),
                 oldState.getType().name(),oldState.getRawData(),
                 newState.getType().name(),newState.getRawData(),additional);
-    }
-
-    public void logBlockChange(Location location, int action, Long causer, BlockState oldState, String additionalData)
-    {
-        this.manager.queueLog(location, action, causer, oldState.getType().name(), oldState.getRawData(), null, null, additionalData);
     }
 
     public void logBlockChange(Location location, int action, Long causer, BlockState oldState, String newBlock, Byte newData)
