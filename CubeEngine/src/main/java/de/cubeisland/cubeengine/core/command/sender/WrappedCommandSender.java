@@ -1,23 +1,30 @@
 package de.cubeisland.cubeengine.core.command.sender;
 
-import de.cubeisland.cubeengine.core.CubeEngine;
+import de.cubeisland.cubeengine.core.Core;
+import de.cubeisland.cubeengine.core.command.CommandSender;
 import de.cubeisland.cubeengine.core.permission.Permission;
 import org.bukkit.Server;
 import org.bukkit.permissions.PermissionAttachment;
 import org.bukkit.permissions.PermissionAttachmentInfo;
 import org.bukkit.plugin.Plugin;
 
+import java.util.Locale;
 import java.util.Set;
-
-import static de.cubeisland.cubeengine.core.i18n.I18n._;
 
 public class WrappedCommandSender implements CommandSender
 {
+    private final Core core;
     private final org.bukkit.command.CommandSender wrapped;
 
-    public WrappedCommandSender(org.bukkit.command.CommandSender sender)
+    public WrappedCommandSender(Core core, org.bukkit.command.CommandSender sender)
     {
+        this.core = core;
         this.wrapped = sender;
+    }
+
+    public Core getCore()
+    {
+        return this.core;
     }
 
     @Override
@@ -39,9 +46,9 @@ public class WrappedCommandSender implements CommandSender
     }
 
     @Override
-    public String getLanguage()
+    public Locale getLocale()
     {
-        return CubeEngine.getI18n().getDefaultLanguage();
+        return Locale.getDefault();
     }
 
     @Override
@@ -62,10 +69,15 @@ public class WrappedCommandSender implements CommandSender
         return this.wrapped.getServer();
     }
 
-    @Override
-    public void sendMessage(String category, String message, Object... params)
+    public String translate(String message, Object... params)
     {
-        this.sendMessage(_(this, category, message, params));
+        return this.getCore().getI18n().translate(this.getLocale(), message, params);
+    }
+
+    @Override
+    public void sendTranslated(String message, Object... params)
+    {
+        this.sendMessage(this.translate(message, params));
     }
 
     @Override

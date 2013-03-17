@@ -4,7 +4,7 @@ import de.cubeisland.cubeengine.core.command.CommandContext;
 import de.cubeisland.cubeengine.core.command.ContainerCommand;
 import de.cubeisland.cubeengine.core.command.exception.MissingParameterException;
 import de.cubeisland.cubeengine.core.command.parameterized.ParameterizedContext;
-import de.cubeisland.cubeengine.core.command.sender.CommandSender;
+import de.cubeisland.cubeengine.core.command.CommandSender;
 import de.cubeisland.cubeengine.core.storage.world.WorldManager;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.roles.Roles;
@@ -43,13 +43,13 @@ public class UserCommandHelper extends ContainerCommand
             }
             if (user == null)
             {
-                context.sendMessage("roles", "&cYou have to specify a player.");
+                context.sendTranslated("&cYou have to specify a player.");
                 throw new MissingParameterException("user"); //TODO this is bullshit
             }
         }
         if (user == null)
         {
-            context.sendMessage("roles", "&cUser %s not found!", context.getString(pos));
+            context.sendTranslated("&cUser %s not found!", context.getString(pos));
             throw new MissingParameterException("user"); //TODO this is bullshit
         }
         return user;
@@ -90,7 +90,7 @@ public class UserCommandHelper extends ContainerCommand
             world = context.getParam("in");
             if (world == null)
             {
-                context.sendMessage("roles", "&cWorld %s not found!", context.getString("in"));
+                context.sendTranslated("&cWorld %s not found!", context.getString("in"));
                 throw new MissingParameterException("world"); //TODO this is bullshit
             }
         }
@@ -107,7 +107,7 @@ public class UserCommandHelper extends ContainerCommand
                 }
                 else
                 {
-                    context.sendMessage("roles", "&eYou are using &6%s &eas current world.", world.getName());
+                    context.sendTranslated("&eYou are using &6%s &eas current world.", world.getName());
                 }
             }
             else
@@ -115,12 +115,12 @@ public class UserCommandHelper extends ContainerCommand
                 world = this.worldManager.getWorld(ModuleManagementCommands.curWorldIdOfConsole);
                 if (world == null)
                 {
-                    context.sendMessage("roles", "&ePlease provide a world.\n&aYou can define a world with &6/roles admin defaultworld <world>");
+                    context.sendTranslated("&ePlease provide a world.\n&aYou can define a world with &6/roles admin defaultworld <world>");
                     throw new MissingParameterException("world"); //TODO this is bullshit
                 }
                 else
                 {
-                    context.sendMessage("roles", "&eYou are using &6%s &eas current world.", world.getName());
+                    context.sendTranslated("&eYou are using &6%s &eas current world.", world.getName());
                 }
             }
         }

@@ -35,7 +35,7 @@ public class PaintingListener implements Listener
 
             if(!BasicsPerm.CHANGEPAINTING.isAuthorized( user ))
             {
-                user.sendMessage( "basics", "&cYou are not allowed to change the painting." );
+                user.sendTranslated("&cYou are not allowed to change the painting.");
                 return;
             }
             Painting painting = ( Painting ) event.getRightClicked();
@@ -44,12 +44,12 @@ public class PaintingListener implements Listener
             if(playerPainting == null)
             {
                 this.paintingChange.put( user.getName(), painting );
-                user.sendMessage( "basics", "&aYou can now cycle through the paintings using your mousewheel." );
+                user.sendTranslated("&aYou can now cycle through the paintings using your mousewheel.");
             }
             else
             {
                 this.paintingChange.remove( user.getName() );
-                user.sendMessage( "basics", "&aPainting is locked now" );
+                user.sendTranslated("&aPainting is locked now");
             }
         }
     }
@@ -69,7 +69,7 @@ public class PaintingListener implements Listener
                 if( painting.getLocation().toVector().distanceSquared( user.getLocation().toVector()) >  maxDistanceSquared)
                 {
                     this.paintingChange.remove( user.getName() );
-                    user.sendMessage( "basics", "&aPainting is locked now" );
+                    user.sendTranslated("&aPainting is locked now");
                     return;
                 }
                 

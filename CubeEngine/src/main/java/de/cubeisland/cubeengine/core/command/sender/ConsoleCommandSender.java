@@ -1,29 +1,33 @@
 package de.cubeisland.cubeengine.core.command.sender;
 
-import de.cubeisland.cubeengine.core.CubeEngine;
+import de.cubeisland.cubeengine.core.Core;
 import de.cubeisland.cubeengine.core.i18n.I18n;
 import org.bukkit.conversations.Conversation;
 import org.bukkit.conversations.ConversationAbandonedEvent;
 import org.bukkit.permissions.Permission;
 
+import java.util.Locale;
+
 public class ConsoleCommandSender extends WrappedCommandSender implements org.bukkit.command.ConsoleCommandSender
 {
-    public ConsoleCommandSender(org.bukkit.command.ConsoleCommandSender sender)
+    public static final String NAME = ":console";
+
+    public ConsoleCommandSender(Core core, org.bukkit.command.ConsoleCommandSender sender)
     {
-        super(sender);
+        super(core, sender);
     }
 
     @Override
     public String getName()
     {
-        return ":console";
+        return NAME;
     }
 
     @Override
     public String getDisplayName()
     {
-        final I18n i18n = CubeEngine.getI18n();
-        return i18n.translate(i18n.getDefaultLanguage(), "core", "Console");
+        final I18n i18n = this.getCore().getI18n();
+        return i18n.translate(Locale.getDefault(), "Console");
     }
 
     @Override

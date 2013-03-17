@@ -42,13 +42,13 @@ public class RoleManagementCommands extends RoleCommandHelper
             set = true;
             if (global)
             {
-                context.sendMessage("roles", "&6%s &ais now set to &2true &afor the global role &6%s&a!",
-                        permission, role.getName());
+                context.sendTranslated("&6%s &ais now set to &2true &afor the global role &6%s&a!",
+                                       permission, role.getName());
             }
             else
             {
-                context.sendMessage("roles", "&6%s &ais now set to &2true &afor the role &6%s &ain &6%s&a!",
-                        permission, role.getName(), world.getName());
+                context.sendTranslated("&6%s &ais now set to &2true &afor the role &6%s &ain &6%s&a!",
+                                       permission, role.getName(), world.getName());
             }
         }
         else if (setTo.equalsIgnoreCase("false"))
@@ -56,13 +56,13 @@ public class RoleManagementCommands extends RoleCommandHelper
             set = false;
             if (global)
             {
-                context.sendMessage("roles", "&6%s &cis now set to &4false &cfor the global role &6%s&c!",
-                        permission, role.getName());
+                context.sendTranslated("&6%s &cis now set to &4false &cfor the global role &6%s&c!",
+                                       permission, role.getName());
             }
             else
             {
-                context.sendMessage("roles", "&6%s &cis now set to &4false &cfor the role &6%s &cin &6%s&c!",
-                        permission, role.getName(), world.getName());
+                context.sendTranslated("&6%s &cis now set to &4false &cfor the role &6%s &cin &6%s&c!",
+                                       permission, role.getName(), world.getName());
             }
         }
         else if (setTo.equalsIgnoreCase("reset"))
@@ -70,18 +70,18 @@ public class RoleManagementCommands extends RoleCommandHelper
             set = null;
             if (global)
             {
-                context.sendMessage("roles", "&6%s &eis now resetted for the global role &6%s&e!",
-                        permission, role.getName());
+                context.sendTranslated("&6%s &eis now resetted for the global role &6%s&e!",
+                                       permission, role.getName());
             }
             else
             {
-                context.sendMessage("roles", "&6%s &eis now resetted for the role &6%s &ein &6%s&e!",
-                        permission, role.getName(), world.getName());
+                context.sendTranslated("&6%s &eis now resetted for the role &6%s &ein &6%s&e!",
+                                       permission, role.getName(), world.getName());
             }
         }
         else
         {
-            context.sendMessage("roles", "&cUnkown setting: &6%s &cUse &6true&c,&6false&c or &6reset&c!", setTo);
+            context.sendTranslated("&cUnkown setting: &6%s &cUse &6true&c,&6false&c or &6reset&c!", setTo);
             return;
         }
         provider.setRolePermission(role, permission, set);
@@ -104,25 +104,25 @@ public class RoleManagementCommands extends RoleCommandHelper
         {
             if (global)
             {
-                context.sendMessage("roles", "&eMetadata &6%s &eresetted for the global role &6%s&e!", key, role.getName());
+                context.sendTranslated("&eMetadata &6%s &eresetted for the global role &6%s&e!", key, role.getName());
             }
             else
             {
-                context.sendMessage("roles", "&eMetadata &6%s &eresetted for the role &6%s &ein &6%s&e!",
-                        key, role.getName(), world.getName());
+                context.sendTranslated("&eMetadata &6%s &eresetted for the role &6%s &ein &6%s&e!",
+                                       key, role.getName(), world.getName());
             }
         }
         else
         {
             if (global)
             {
-                context.sendMessage("roles", "&aMetadata &6%s &aset to &6%s &afor the global role &6%s&a!",
-                        key, value, role.getName());
+                context.sendTranslated("&aMetadata &6%s &aset to &6%s &afor the global role &6%s&a!",
+                                       key, value, role.getName());
             }
             else
             {
-                context.sendMessage("roles", "&aMetadata &6%s &aset to &6%s &afor the role &6%s &ain &6%s&a!",
-                        key, value, role.getName(), world.getName());
+                context.sendTranslated("&aMetadata &6%s &aset to &6%s &afor the role &6%s &ain &6%s&a!",
+                                       key, value, role.getName(), world.getName());
             }
         }
     }
@@ -141,13 +141,13 @@ public class RoleManagementCommands extends RoleCommandHelper
         provider.resetRoleMetaData(role, key);
         if (global)
         {
-            context.sendMessage("roles", "&eMetadata &6%s &eresetted for the global role &6%s&e!",
-                    key, role.getName());
+            context.sendTranslated("&eMetadata &6%s &eresetted for the global role &6%s&e!",
+                                   key, role.getName());
         }
         else
         {
-            context.sendMessage("roles", "&eMetadata &6%s &eresetted for the role &6%s &ein &6%s&e!",
-                    key, role.getName(), world.getName());
+            context.sendTranslated("&eMetadata &6%s &eresetted for the role &6%s &ein &6%s&e!",
+                                   key, role.getName(), world.getName());
         }
     }
 
@@ -164,12 +164,12 @@ public class RoleManagementCommands extends RoleCommandHelper
         provider.clearRoleMetaData(role);
         if (global)
         {
-            context.sendMessage("roles", "&eMetadata cleared for the global role &6%s&e!", role.getName());
+            context.sendTranslated("&eMetadata cleared for the global role &6%s&e!", role.getName());
         }
         else
         {
-            context.sendMessage("roles", "&eMetadata cleared for the role &6%s &ein &6%s&e!",
-                    role.getName(), world.getName());
+            context.sendTranslated("&eMetadata cleared for the role &6%s &ein &6%s&e!",
+                                   role.getName(), world.getName());
         }
     }
 
@@ -188,12 +188,12 @@ public class RoleManagementCommands extends RoleCommandHelper
             {
                 if (global)
                 {
-                    context.sendMessage("roles", "&eCould not find the global parent-role &6%s&e.", context.getString(1));
+                    context.sendTranslated("&eCould not find the global parent-role &6%s&e.", context.getString(1));
                 }
                 else
                 {
-                    context.sendMessage("roles", "&eCould not find the parent-role &6%s &ein &6%s&e.",
-                            context.getString(1), world.getName());
+                    context.sendTranslated("&eCould not find the parent-role &6%s &ein &6%s&e.",
+                                           context.getString(1), world.getName());
                 }
             }
             else if (provider.setParentRole(role, pRole))
@@ -202,34 +202,34 @@ public class RoleManagementCommands extends RoleCommandHelper
                 {
                     if (pRole.isGlobal())
                     {
-                        context.sendMessage("roles", "&&%s &cis a global role and cannot inherit from a non-global role!", role.getName());
+                        context.sendTranslated("&&%s &cis a global role and cannot inherit from a non-global role!", role.getName());
                         return;
                     }
-                    context.sendMessage("roles", "&aAdded &6%s &aas parent-role for the global role &6%s&a!", pRole.getName(), role.getName());
+                    context.sendTranslated("&aAdded &6%s &aas parent-role for the global role &6%s&a!", pRole.getName(), role.getName());
                 }
                 else
                 {
-                    context.sendMessage("roles", "&aAdded &6%s &aas parent-role for the role &6%s &ain &6%s&a!",
-                            pRole.getName(), role.getName(), world.getName());
+                    context.sendTranslated("&aAdded &6%s &aas parent-role for the role &6%s &ain &6%s&a!",
+                                           pRole.getName(), role.getName(), world.getName());
                 }
             }
             else
             {
                 if (global)
                 {
-                    context.sendMessage("roles", "&6%s &eis already parent-role of the global role &6%s&e!",
-                            pRole.getName(), role.getName());
+                    context.sendTranslated("&6%s &eis already parent-role of the global role &6%s&e!",
+                                           pRole.getName(), role.getName());
                 }
                 else
                 {
-                    context.sendMessage("roles", "&6%s &eis already parent-role of the role &6%s &ain &6%s&e!",
-                            pRole.getName(), role.getName(), world.getName());
+                    context.sendTranslated("&6%s &eis already parent-role of the role &6%s &ain &6%s&e!",
+                                           pRole.getName(), role.getName(), world.getName());
                 }
             }
         }
         catch (CircularRoleDepedencyException ex)
         {
-            context.sendMessage("roles", "&cCircular Dependency! &6%s &cdepends on &6%s&c!", pRole.getName(), role.getName());
+            context.sendTranslated("&cCircular Dependency! &6%s &cdepends on &6%s&c!", pRole.getName(), role.getName());
         }
     }
 
@@ -246,37 +246,37 @@ public class RoleManagementCommands extends RoleCommandHelper
         {
             if (global)
             {
-                context.sendMessage("roles", "&eCould not find the global parent-role &6%s&e.", context.getString(1));
+                context.sendTranslated("&eCould not find the global parent-role &6%s&e.", context.getString(1));
             }
             else
             {
-                context.sendMessage("roles", "&eCould not find the parent-role &6%s &ein &6%s&e.", context.getString(1), world.getName());
+                context.sendTranslated("&eCould not find the parent-role &6%s &ein &6%s&e.", context.getString(1), world.getName());
             }
         }
         else if (provider.removeParentRole(role, pRole))
         {
             if (global)
             {
-                context.sendMessage("roles", "&aRemoved the parent-role &6%s &afrom the global role &6%s&a!",
-                        pRole.getName(), role.getName());
+                context.sendTranslated("&aRemoved the parent-role &6%s &afrom the global role &6%s&a!",
+                                       pRole.getName(), role.getName());
             }
             else
             {
-                context.sendMessage("roles", "&aRemoved the parent-role &6%s &afrom tje role &6%s &ain &6%s&a!",
-                        pRole.getName(), role.getName(), world.getName());
+                context.sendTranslated("&aRemoved the parent-role &6%s &afrom tje role &6%s &ain &6%s&a!",
+                                       pRole.getName(), role.getName(), world.getName());
             }
         }
         else
         {
             if (global)
             {
-                context.sendMessage("roles", "&6%s &eis not a parent-role of the global role &6%s&e!",
-                        pRole.getName(), role.getName());
+                context.sendTranslated("&6%s &eis not a parent-role of the global role &6%s&e!",
+                                       pRole.getName(), role.getName());
             }
             else
             {
-                context.sendMessage("roles", "&6%s &eis not a parent-role of the role &6%s &ein &6%s&e!",
-                        pRole.getName(), role.getName(), world.getName());
+                context.sendTranslated("&6%s &eis not a parent-role of the role &6%s &ein &6%s&e!",
+                                       pRole.getName(), role.getName(), world.getName());
             }
         }
     }
@@ -292,13 +292,13 @@ public class RoleManagementCommands extends RoleCommandHelper
         provider.clearParentRoles(role);
         if (global)
         {
-            context.sendMessage("roles", "&eAll parent-roles of the global role &6%s &ecleared!",
-                    role.getName());
+            context.sendTranslated("&eAll parent-roles of the global role &6%s &ecleared!",
+                                   role.getName());
         }
         else
         {
-            context.sendMessage("roles", "&eAll parent-roles of the role &6%s &ein &6%s cleared!",
-                    role.getName(), world.getName());
+            context.sendTranslated("&eAll parent-roles of the role &6%s &ein &6%s cleared!",
+                                   role.getName(), world.getName());
         }
     }
 
@@ -320,18 +320,18 @@ public class RoleManagementCommands extends RoleCommandHelper
             provider.setRolePriority(role, priority);
             if (global)
             {
-                context.sendMessage("roles", "&aPriority of the global role &6%s &aset to &6%s&a!",
-                        role.getName(), context.getString(1));
+                context.sendTranslated("&aPriority of the global role &6%s &aset to &6%s&a!",
+                                       role.getName(), context.getString(1));
             }
             else
             {
-                context.sendMessage("roles", "&aPriority of the role &6%s &aset to &6%s &ain &6%s&a!",
-                        role.getName(), context.getString(1), world.getName());
+                context.sendTranslated("&aPriority of the role &6%s &aset to &6%s &ain &6%s&a!",
+                                       role.getName(), context.getString(1), world.getName());
             }
         }
         catch (ConversionException ex)
         {
-            context.sendMessage("roles", "&6%s &cis not a valid priority!", context.getString(1));
+            context.sendTranslated("&6%s &cis not a valid priority!", context.getString(1));
         }
 
     }
@@ -347,31 +347,31 @@ public class RoleManagementCommands extends RoleCommandHelper
         String newName = context.getString(1);
         if (role.getName().equalsIgnoreCase(newName))
         {
-            context.sendMessage("roles", "&cThese are the same names!");
+            context.sendTranslated("&cThese are the same names!");
         }
         else if (provider.renameRole(role, newName))
         {
             if (global)
             {
-                context.sendMessage("roles", "&aGlobal role &6%s &arenamed to &6%s&a!",
-                        role.getName(), newName);
+                context.sendTranslated("&aGlobal role &6%s &arenamed to &6%s&a!",
+                                       role.getName(), newName);
             }
             else
             {
-                context.sendMessage("roles", "&6%s &arenamed to &6%s &ain &6%s&a!",
-                        role.getName(), newName, world.getName());
+                context.sendTranslated("&6%s &arenamed to &6%s &ain &6%s&a!",
+                                       role.getName(), newName, world.getName());
             }
         }
         else
         {
             if (global)
             {
-                context.sendMessage("roles", "&cRenaming failed! The role global &6%s &calready exists!", newName);
+                context.sendTranslated("&cRenaming failed! The role global &6%s &calready exists!", newName);
             }
             else
             {
-                context.sendMessage("roles", "&cRenaming failed! The role &6%s &calready exists in &6%s&c!",
-                        newName, world.getName());
+                context.sendTranslated("&cRenaming failed! The role &6%s &calready exists in &6%s&c!",
+                                       newName, world.getName());
             }
         }
     }
@@ -385,22 +385,22 @@ public class RoleManagementCommands extends RoleCommandHelper
         {
             if (world == null)
             {
-                context.sendMessage("roles", "&aGlobal role created!");
+                context.sendTranslated("&aGlobal role created!");
             }
             else
             {
-                context.sendMessage("roles", "&aRole created!");
+                context.sendTranslated("&aRole created!");
             }
         }
         else
         {
             if (world == null)
             {
-                context.sendMessage("roles", "&eThere is already a global role named &6%s&e.", roleName, world);
+                context.sendTranslated("&eThere is already a global role named &6%s&e.", roleName, world);
             }
             else
             {
-                context.sendMessage("roles", "&eThere is already a role named &6%s &ein &6%s&e.", roleName, world.getName());
+                context.sendTranslated("&eThere is already a role named &6%s &ein &6%s&e.", roleName, world.getName());
             }
         }
     }
@@ -416,11 +416,11 @@ public class RoleManagementCommands extends RoleCommandHelper
         provider.deleteRole(role);
         if (global)
         {
-            context.sendMessage("roles", "&aGlobal role &6%s &adeleted!", role.getName());
+            context.sendTranslated("&aGlobal role &6%s &adeleted!", role.getName());
         }
         else
         {
-            context.sendMessage("roles", "&aDeleted the role &6%s &ain &6%s&a!", role.getName(), world.getName());
+            context.sendTranslated("&aDeleted the role &6%s &ain &6%s&a!", role.getName(), world.getName());
         }
     }
 
@@ -435,11 +435,11 @@ public class RoleManagementCommands extends RoleCommandHelper
         Role role = this.getRole(context, provider, roleName, world);
         if (provider.toggleDefaultRole(role))
         {
-            context.sendMessage("roles", "&6%s &ais now a default-role in &6%s&a!", role.getName(), world.getName());
+            context.sendTranslated("&6%s &ais now a default-role in &6%s&a!", role.getName(), world.getName());
         }
         else
         {
-            context.sendMessage("roles", "&6%s &ais no longer a default-role in &6%s&a!", role.getName(), world.getName());
+            context.sendTranslated("&6%s &ais no longer a default-role in &6%s&a!", role.getName(), world.getName());
         }
     }
 }

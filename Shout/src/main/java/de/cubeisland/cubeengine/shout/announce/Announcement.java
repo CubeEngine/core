@@ -10,6 +10,7 @@ import org.apache.commons.lang.Validate;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 /**
@@ -20,17 +21,20 @@ public class Announcement
     private final String name;
     private final String permNode;
     private final List<String> worlds;
-    private final Map<String, String[]> messages;
+    private final Map<Locale, String[]> messages;
     private final long delay;
 
     public Announcement(Announcement acm)
     {
-        Validate.notNull(acm);
+        if (acm == null)
+        {
+            throw new NullPointerException("The announcement must not be null!");
+        }
 
         this.name = acm.name;
         this.permNode = acm.permNode;
         this.worlds = new ArrayList<String>(acm.getWorlds());
-        this.messages = new THashMap<String, String[]>(acm.messages);
+        this.messages = new THashMap<Locale, String[]>(acm.messages);
         this.delay = acm.delay;
     }
 
@@ -43,7 +47,7 @@ public class Announcement
      * @param messages      This announcements messages
      * @param delay         This announcements delay
      */
-    public Announcement(String name, String permNode, List<String> worlds, Map<String, String[]> messages, long delay)
+    public Announcement(String name, String permNode, List<String> worlds, Map<Locale, String[]> messages, long delay)
     {
         Validate.notEmpty(name, "The announcement must have a name");
         Validate.notEmpty(permNode, "The announcement must have a permission");
@@ -64,16 +68,15 @@ public class Announcement
      * @param locale	The language to get the message in
      * @return	The message in that language if exist.
      */
-    public String[] getMessage(String locale)
+    public String[] getMessage(Locale locale)
     {
-        locale = I18n.normalizeLanguage(locale);
         if (this.messages.containsKey(locale))
         {
             return messages.get(locale);
         }
 
         final I18n i18n = CubeEngine.getI18n();
-        Language lang = i18n.getLanguage(locale);
+        Language lang = i18n.getLanguage(locale.toString());
         if (lang != null)
         {
             if (lang instanceof NormalLanguage)
@@ -81,17 +84,17 @@ public class Announcement
                 lang = ((NormalLanguage)lang).getParent();
                 if (lang != null)
                 {
-                    return this.messages.get(lang.getCode());
+                    return this.messages.get(lang.getLocale());
                 }
             }
 
             if (lang instanceof ClonedLanguage)
             {
-                return this.messages.get(((ClonedLanguage)lang).getOriginal().getCode());
+                return this.messages.get(((ClonedLanguage)lang).getOriginal().getLocale());
             }
         }
 
-        return this.messages.get(i18n.getDefaultLanguage());
+        return this.messages.get(Locale.getDefault());
     }
 
     /**

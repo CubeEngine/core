@@ -32,8 +32,8 @@ public class ModuleCommands extends ContainerCommand
 
         if (!modules.isEmpty())
         {
-            context.sendMessage("core", "These are the loaded modules.");
-            context.sendMessage("core", "&aGreen (+)&r stands for enabled, &cred (-)&r for disabled.");
+            context.sendTranslated("These are the loaded modules.");
+            context.sendTranslated("&aGreen (+)&r stands for enabled, &cred (-)&r for disabled.");
             context.sendMessage(" ");
 
             for (Module module : modules)
@@ -50,7 +50,7 @@ public class ModuleCommands extends ContainerCommand
         }
         else
         {
-            context.sendMessage("core", "&eThere are no modules loaded!");
+            context.sendTranslated("&eThere are no modules loaded!");
         }
     }
 
@@ -60,15 +60,15 @@ public class ModuleCommands extends ContainerCommand
         Module module = this.mm.getModule(context.getString(0));
         if (module == null)
         {
-            context.sendMessage("core", "The given module could not be found!");
+            context.sendTranslated("The given module could not be found!");
         }
         else if (this.mm.enableModule(module))
         {
-            context.sendMessage("core", "The given module was successfully enabled!");
+            context.sendTranslated("The given module was successfully enabled!");
         }
         else
         {
-            context.sendMessage("core", "An error occurred while enabling the module!");
+            context.sendTranslated("An error occurred while enabling the module!");
         }
     }
 
@@ -78,12 +78,12 @@ public class ModuleCommands extends ContainerCommand
         Module module = this.mm.getModule(context.getString(0));
         if (module == null)
         {
-            context.sendMessage("core", "The given module could not be found!");
+            context.sendTranslated("The given module could not be found!");
         }
         else
         {
             this.mm.disableModule(module);
-            context.sendMessage("core", "The given module was successfully disabled!");
+            context.sendTranslated("The given module was successfully disabled!");
         }
     }
 
@@ -93,12 +93,12 @@ public class ModuleCommands extends ContainerCommand
         Module module = this.mm.getModule(context.getString(0));
         if (module == null)
         {
-            context.sendMessage("core", "The given module could not be found!");
+            context.sendTranslated("The given module could not be found!");
         }
         else
         {
             this.mm.unloadModule(module);
-            context.sendMessage("core", "The given module was successfully unloaded!");
+            context.sendTranslated("The given module was successfully unloaded!");
         }
     }
 
@@ -108,7 +108,7 @@ public class ModuleCommands extends ContainerCommand
         Module module = this.mm.getModule(context.getString(0));
         if (module == null)
         {
-            context.sendMessage("core", "The given module could not be found!");
+            context.sendTranslated("The given module could not be found!");
         }
         else
         {

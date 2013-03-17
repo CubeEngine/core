@@ -41,21 +41,21 @@ public class DiscoCommand
             world = context.getArg(0, World.class);
             if (world == null)
             {
-                context.sendMessage("fun", "&cThe given world was not found!");
+                context.sendTranslated("&cThe given world was not found!");
                 return;
             }
         }
 
         if (world == null)
         {
-            context.sendMessage("fun", "&cNo world has been specified!");
+            context.sendTranslated("&cNo world has been specified!");
             return;
         }
 
         final int delay = context.getParam("delay", 10);
         if (delay < 1 || delay > this.module.getConfig().maxDiscoDelay)
         {
-            context.sendMessage("fun", "&cThe delay has to be a number between 0 and %d", this.module.getConfig().maxDiscoDelay);
+            context.sendTranslated("&cThe delay has to be a number between 0 and %d", this.module.getConfig().maxDiscoDelay);
             return;
         }
 
@@ -71,7 +71,7 @@ public class DiscoCommand
                     iter.remove();
                 }
             }
-            context.sendMessage("fun", "&aThe disco has been stopped!");
+            context.sendTranslated("&aThe disco has been stopped!");
         }
         else
         {
@@ -79,11 +79,11 @@ public class DiscoCommand
             if (task.start())
             {
                 this.activeTasks.put(world.getName(), task);
-                context.sendMessage("fun", "&aThe disco started!");
+                context.sendTranslated("&aThe disco started!");
             }
             else
             {
-                context.sendMessage("fun", "&cThe disco couldn not be started!");
+                context.sendTranslated("&cThe disco couldn not be started!");
             }
         }
     }

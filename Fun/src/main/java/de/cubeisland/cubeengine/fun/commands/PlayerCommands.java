@@ -59,7 +59,7 @@ public class PlayerCommands
         {
             if(!FunPerm.COMMAND_HAT_OTHER.isAuthorized( context.getSender() ) )
             {
-                context.sendMessage( "fun", "&cYou can't set the had of an other player." );
+                context.sendTranslated("&cYou can't set the had of an other player.");
                 return;
             }
             
@@ -67,7 +67,7 @@ public class PlayerCommands
             
             if(user == null)
             {
-                context.sendMessage("core", "&cUser not found!");
+                context.sendTranslated("&cUser not found!");
                 return;
             }
         }
@@ -77,7 +77,7 @@ public class PlayerCommands
         }
         else
         {
-            context.sendMessage( "fun", "&cYou has to specify a user!" );
+            context.sendTranslated("&cYou has to specify a user!");
             return;
         }
         
@@ -85,19 +85,19 @@ public class PlayerCommands
         {
             if(!FunPerm.COMMAND_HAT_ITEM.isAuthorized( context.getSender() ))
             {
-                context.sendMessage("fun", "&cYou can only use your item in hand!");
+                context.sendTranslated("&cYou can only use your item in hand!");
                 return;
             }
             head = Match.material().itemStack( context.getArg( 0, String.class ) );
             if(head == null)
             {
-                context.sendMessage( "fun", "&cItem not found!" );
+                context.sendTranslated("&cItem not found!");
                 return;
             }
         }
         else if(console)
         {
-            context.sendMessage( "fun", "&cYou has to specify an item!" );
+            context.sendTranslated("&cYou has to specify an item!");
             return;
         }
         else
@@ -127,7 +127,7 @@ public class PlayerCommands
         
         if( !(context.hasFlag("q") && FunPerm.COMMAND_HAT_QUIET.isAuthorized(context.getSender()) ) && FunPerm.COMMAND_HAT_NOTIFY.isAuthorized( user ) )
         {
-            user.sendMessage( "fun", "&aYour hat was changed" );
+            user.sendTranslated("&aYour hat was changed");
         }        
     }
 
@@ -154,13 +154,13 @@ public class PlayerCommands
         {
             if (!FunPerm.COMMAND_EXPLOSION_OTHER.isAuthorized(context.getSender()))
             {
-                context.sendMessage("rulebook", "&cYou are not allowed to use the player parameter.");
+                context.sendTranslated("&cYou are not allowed to use the player parameter.");
                 return;
             }
             user = context.getUser("player");
             if (user == null)
             {
-                context.sendMessage("core", "&cUser not found!");
+                context.sendTranslated("&cUser not found!");
                 return;
             }
             location = user.getLocation();
@@ -169,7 +169,7 @@ public class PlayerCommands
         {
             if (!(context.getSender() instanceof User))
             {
-                context.sendMessage("fun", "&cThis command can only be used by a player!");
+                context.sendTranslated("&cThis command can only be used by a player!");
                 return;
             }
             user = (User)context.getSender();
@@ -178,23 +178,23 @@ public class PlayerCommands
 
         if (power > this.module.getConfig().explosionPower)
         {
-            context.sendMessage("fun", "&cThe power of the explosion shouldn't be greater than %d", this.module.getConfig().explosionPower);
+            context.sendTranslated("&cThe power of the explosion shouldn't be greater than %d", this.module.getConfig().explosionPower);
             return;
         }
 
         if (!FunPerm.COMMAND_EXPLOSION_BLOCK_DAMAGE.isAuthorized(context.getSender()) && (context.hasFlag("b") || context.hasFlag("u")))
         {
-            context.sendMessage("rulebook", "&cYou are not allowed to break blocks");
+            context.sendTranslated("&cYou are not allowed to break blocks");
             return;
         }
         if (!FunPerm.COMMAND_EXPLOSION_FIRE.isAuthorized(context.getSender()) && (context.hasFlag("f") || context.hasFlag("u")))
         {
-            context.sendMessage("rulebook", "&cYou are not allowed to set fireticks");
+            context.sendTranslated("&cYou are not allowed to set fireticks");
             return;
         }
         if (!FunPerm.COMMAND_EXPLOSION_PLAYER_DAMAGE.isAuthorized(context.getSender()) && (context.hasFlag("p") || context.hasFlag("u")))
         {
-            context.sendMessage("rulebook", "&cYou are not allowed to damage an other player");
+            context.sendTranslated("&cYou are not allowed to damage an other player");
             return;
         }
 
@@ -229,12 +229,12 @@ public class PlayerCommands
 
         if (damage != -1 && !FunPerm.COMMAND_LIGHTNING_PLAYER_DAMAGE.isAuthorized(context.getSender()))
         {
-            context.sendMessage("fun", "&cYou are not allowed the use the damage parameter");
+            context.sendTranslated("&cYou are not allowed the use the damage parameter");
             return;
         }
         if (context.hasFlag("u") && !FunPerm.COMMAND_LIGHTNING_UNSAFE.isAuthorized(context.getSender()))
         {
-            context.sendMessage("fun", "&cYou are not allowed to use the unsafe flag");
+            context.sendTranslated("&cYou are not allowed to use the unsafe flag");
             return;
         }
 
@@ -243,13 +243,13 @@ public class PlayerCommands
             user = context.getUser("player");
             if (user == null)
             {
-                context.sendMessage("core", "&cUser not found!");
+                context.sendTranslated("&cUser not found!");
                 return;
             }
             location = user.getLocation();
             if ((damage != -1 && damage < 0) || damage > 20)
             {
-                context.sendMessage("fun", "&cThe damage value has to be a number from 1 to 20");
+                context.sendTranslated("&cThe damage value has to be a number from 1 to 20");
                 return;
             }
             user.setFireTicks(20 * context.getParam("fireticks", Integer.valueOf(0)));
@@ -258,7 +258,7 @@ public class PlayerCommands
         {
             if (!(context.getSender() instanceof User))
             {
-                context.sendMessage("fun", "&cThis command can only be used by a player!");
+                context.sendTranslated("&cThis command can only be used by a player!");
                 return;
             }
             user = (User)context.getSender();
@@ -285,7 +285,7 @@ public class PlayerCommands
         User user = context.getUser(0);
         if (user == null)
         {
-            context.sendMessage("core", "&cUser not found!");
+            context.sendTranslated("&cUser not found!");
             return;
         }
 
@@ -293,7 +293,7 @@ public class PlayerCommands
 
         if (damage < 1 || damage > 20)
         {
-            context.sendMessage("fun", "&cOnly damage values from 1 to 20 are allowed!");
+            context.sendTranslated("&cOnly damage values from 1 to 20 are allowed!");
             return;
         }
 
@@ -310,7 +310,7 @@ public class PlayerCommands
         User user = context.getUser(0);
         if (user == null)
         {
-            context.sendMessage("core", "&cUser not found!");
+            context.sendTranslated("&cUser not found!");
             return;
         }
 
@@ -322,7 +322,7 @@ public class PlayerCommands
         }
         else if (seconds < 1 || seconds > 26)
         {
-            context.sendMessage("fun", "&cOnly 1 to 26 seconds are permitted!");
+            context.sendTranslated("&cOnly 1 to 26 seconds are permitted!");
             return;
         }
 

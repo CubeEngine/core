@@ -1,7 +1,6 @@
 package de.cubeisland.cubeengine.rulebook.bookManagement;
 
 import de.cubeisland.cubeengine.core.CubeEngine;
-import static de.cubeisland.cubeengine.core.i18n.I18n._;
 import de.cubeisland.cubeengine.core.i18n.Language;
 import de.cubeisland.cubeengine.core.util.StringUtils;
 import java.io.BufferedReader;

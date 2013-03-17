@@ -14,7 +14,7 @@ import de.cubeisland.cubeengine.core.command.parameterized.ParameterizedContext;
 import de.cubeisland.cubeengine.core.command.parameterized.completer.WorldCompleter;
 import de.cubeisland.cubeengine.core.command.reflected.Command;
 import de.cubeisland.cubeengine.core.command.reflected.ReflectedCommand;
-import de.cubeisland.cubeengine.core.command.sender.CommandSender;
+import de.cubeisland.cubeengine.core.command.CommandSender;
 import de.cubeisland.cubeengine.core.module.Module;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.util.ChatFormat;
@@ -34,7 +34,6 @@ import java.util.Locale;
 import java.util.Set;
 
 import static de.cubeisland.cubeengine.core.command.ArgBounds.NO_MAX;
-import static de.cubeisland.cubeengine.core.i18n.I18n._;
 import static de.cubeisland.cubeengine.core.logger.LogLevel.NOTICE;
 import static de.cubeisland.cubeengine.core.permission.PermDefault.FALSE;
 import static de.cubeisland.cubeengine.core.util.ChatFormat.*;
@@ -86,15 +85,15 @@ public class VanillaCommands implements CommandHolder
 
         if (context.hasFlag("m"))
         {
-            context.sendMessage("core", "&eReloading the modules...");
+            context.sendTranslated("&eReloading the modules...");
             this.core.getModuleManager().reloadModules();
-            context.sendMessage("core", "&aSuccessfully reloaded %d modules!");
+            context.sendTranslated("&aSuccessfully reloaded %d modules!");
         }
         else
         {
-            context.sendMessage("core", "&eReloading the whole server... (this may take some time)");
+            context.sendTranslated("&eReloading the whole server... (this may take some time)");
             // pre-translate to avoid a NPE
-            final String preTranslated = this.core.getI18n().translate(context.getSender().getLanguage(), "core", "&aThe reload is completed after %d seconds");
+            final String preTranslated = this.core.getI18n().translate(context.getSender().getLocale(), "core", "&aThe reload is completed after %d seconds");
 
             Profiler.startProfiling("reload_server");
             this.core.getServer().reload();
@@ -120,7 +119,7 @@ public class VanillaCommands implements CommandHolder
             }
             else
             {
-                context.sendMessage("core", "&cYou have to specify a world!");
+                context.sendTranslated("&cYou have to specify a world!");
                 return;
             }
         }
@@ -133,16 +132,16 @@ public class VanillaCommands implements CommandHolder
                 difficulty = Difficulty.getByValue(difficultyLevel);
                 if (difficulty == null)
                 {
-                    sender.sendMessage("core", "&cThe given difficulty level is unknown!");
+                    sender.sendTranslated("&cThe given difficulty level is unknown!");
                     return;
                 }
             }
             if (difficulty == null)
             {
-                difficulty = Difficulty.valueOf(context.getString(0).toUpperCase(Locale.ENGLISH));
+                difficulty = Difficulty.valueOf(context.getString(0).toUpperCase(Locale.US));
                 if (difficulty == null)
                 {
-                    sender.sendMessage("core", "&c'%s' is not a known difficulty!", context.getString(0));
+                    sender.sendTranslated("&c'%s' is not a known difficulty!", context.getString(0));
                     return;
                 }
             }
@@ -151,10 +150,10 @@ public class VanillaCommands implements CommandHolder
         }
         else
         {
-            context.sendMessage("core", "The current difficulty level: %s", _("core", world.getDifficulty().toString().toLowerCase(Locale.ENGLISH)));
+            context.sendTranslated("The current difficulty level: %s", sender.translate(world.getDifficulty().toString().toLowerCase(Locale.US)));
             if (this.core.getServer().isHardcore())
             {
-                context.sendMessage("core", "Your server has the hardcore mode enabled.");
+                context.sendTranslated("Your server has the hardcore mode enabled.");
             }
         }
     }
@@ -173,16 +172,17 @@ public class VanillaCommands implements CommandHolder
             Set<OfflinePlayer> ops = this.core.getServer().getOperators();
             if (ops.isEmpty())
             {
-                context.sendMessage("core", "&eThere are currently no operators!");
+                context.sendTranslated("&eThere are currently no operators!");
             }
             else
             {
-                context.sendMessage("core", "The following users are operators:");
+                context.sendTranslated("The following users are operators:");
                 context.sendMessage(" ");
-                DateFormat dateFormat = SimpleDateFormat.getDateInstance(SHORT, Locale.ENGLISH); // TODO replace with sender's locale
+                final CommandSender sender = context.getSender();
+                final DateFormat dateFormat = SimpleDateFormat.getDateInstance(SHORT, sender.getLocale());
                 for (OfflinePlayer player : ops)
                 {
-                    context.sendMessage(" - " + BRIGHT_GREEN + player.getName() + WHITE + " (" + _(context.getSender(), "core", "Last seen: %s", arr(dateFormat.format(new Date(player.getLastPlayed())))) + ")");
+                    context.sendMessage(" - " + BRIGHT_GREEN + player.getName() + WHITE + " (" + sender.translate("Last seen: %s", dateFormat.format(new Date(player.getLastPlayed()))) + ")");
                 }
             }
             return;
@@ -190,8 +190,8 @@ public class VanillaCommands implements CommandHolder
         User user = this.core.getUserManager().getUser(context.getString(0), false);
         if (user == null && !context.hasFlag("f"))
         {
-            context.sendMessage("core", "&cThe given player has never played on this server!");
-            context.sendMessage("core", "&cIf you still want to op him, use the -force flag.");
+            context.sendTranslated("&cThe given player has never played on this server!");
+            context.sendTranslated("&cIf you still want to op him, use the -force flag.");
             return;
         }
 
@@ -202,16 +202,16 @@ public class VanillaCommands implements CommandHolder
         }
         if (offlinePlayer.isOp())
         {
-            context.sendMessage("core", "&eThe given player is already an operator.");
+            context.sendTranslated("&eThe given player is already an operator.");
             return;
         }
         offlinePlayer.setOp(true);
         user = this.core.getUserManager().getUser(offlinePlayer.getName(), false);
         if (user != null)
         {
-            user.sendMessage("core", "&aYou were opped by &2%s&a.", context.getSender().getName());
+            user.sendTranslated("&aYou were opped by &2%s&a.", context.getSender().getName());
         }
-        context.sendMessage("core", "&2%s &ais now an operator!", offlinePlayer.getName());
+        context.sendTranslated("&2%s &ais now an operator!", offlinePlayer.getName());
 
         for (User onlineUser : this.core.getUserManager().getOnlineUsers())
         {
@@ -219,7 +219,7 @@ public class VanillaCommands implements CommandHolder
             {
                 continue;
             }
-            onlineUser.sendMessage("core", "&eUser &2%s &ehas been opped by &2%s&e!", offlinePlayer.getName(), context.getSender().getName());
+            onlineUser.sendTranslated("&eUser &2%s &ehas been opped by &2%s&e!", offlinePlayer.getName(), context.getSender().getName());
         }
 
         this.core.getCoreLogger().log(NOTICE, "Player {0} has been opped by {1}", arr(offlinePlayer.getName(), context.getSender().getName()));
@@ -241,28 +241,28 @@ public class VanillaCommands implements CommandHolder
         }
         else
         {
-            context.sendMessage("core", "&cYou have to specify an operator!");
+            context.sendTranslated("&cYou have to specify an operator!");
             return;
         }
 
         if (!sender.getName().equals(offlinePlayer.getName()) && !CorePerms.COMMAND_DEOP_OTHER.isAuthorized(sender))
         {
-            sender.sendMessage("core", "&cYou are not allowed to deop others!");
+            sender.sendTranslated("&cYou are not allowed to deop others!");
             return;
         }
 
         if (!offlinePlayer.isOp())
         {
-            sender.sendMessage("core", "&cThe player you tried to deop is not an operator.");
+            sender.sendTranslated("&cThe player you tried to deop is not an operator.");
             return;
         }
         offlinePlayer.setOp(false);
         User user = this.core.getUserManager().getUser(offlinePlayer.getName(), false);
         if (user != null)
         {
-            user.sendMessage("core", "&aYou were deopped by &2%s&a.", context.getSender().getName());
+            user.sendTranslated("&aYou were deopped by &2%s&a.", context.getSender().getName());
         }
-        context.sendMessage("core", "&2%s&a is no operator anymore!", offlinePlayer.getName());
+        context.sendTranslated("&2%s&a is no operator anymore!", offlinePlayer.getName());
 
         for (User onlineUser : this.core.getUserManager().getOnlineUsers())
         {
@@ -270,7 +270,7 @@ public class VanillaCommands implements CommandHolder
             {
                 continue;
             }
-            onlineUser.sendMessage("core", "&eUser &2%s&a has been opped by &2%s&a!", offlinePlayer.getName(), context.getSender().getName());
+            onlineUser.sendTranslated("&eUser &2%s&a has been opped by &2%s&a!", offlinePlayer.getName(), context.getSender().getName());
         }
 
         this.core.getCoreLogger().log(NOTICE, "Player {0} has been deopped by {1}", arr(offlinePlayer.getName(), context.getSender().getName()));
@@ -282,7 +282,7 @@ public class VanillaCommands implements CommandHolder
         Plugin[] plugins = this.core.getServer().getPluginManager().getPlugins();
         Collection<Module> modules = this.core.getModuleManager().getModules();
 
-        context.sendMessage("core", "There are %d plugins and %d CubeEngine modules loaded:", plugins.length, modules.size());
+        context.sendTranslated("There are %d plugins and %d CubeEngine modules loaded:", plugins.length, modules.size());
         context.sendMessage(" ");
         context.sendMessage(" - " + BRIGHT_GREEN + core.getName() + RESET + " (r" + Core.REVISION + ")");
 
@@ -309,29 +309,29 @@ public class VanillaCommands implements CommandHolder
             World world = context.getArg(0, World.class);
             if (world == null)
             {
-                context.sendMessage("core", "&cThe given world was not found!");
+                context.sendTranslated("&cThe given world was not found!");
                 return;
             }
             
-            context.sendMessage("core", "&eSaving...");
+            context.sendTranslated("&eSaving...");
             world.save();
             for(Player player : world.getPlayers())
             {
                 player.saveData();
             }
-            context.sendMessage("core", "&aWorld '%s' has been saved to disk!", world.getName());
+            context.sendTranslated("&aWorld '%s' has been saved to disk!", world.getName());
         }
         else
         {
-            context.sendMessage("core", "&eSaving...");
+            context.sendTranslated("&eSaving...");
             Profiler.startProfiling("save-worlds");
             for (World world : this.core.getServer().getWorlds())
             {
                 world.save();
             }
             this.core.getServer().savePlayers();
-            context.sendMessage("core", "&aAll worlds have been saved to disk!");
-            context.sendMessage("core", "&aThe saving took %d milliseconds.", Profiler.endProfiling("save-worlds", MILLISECONDS));
+            context.sendTranslated("&aAll worlds have been saved to disk!");
+            context.sendTranslated("&aThe saving took %d milliseconds.", Profiler.endProfiling("save-worlds", MILLISECONDS));
         }
     }
 
@@ -348,19 +348,19 @@ public class VanillaCommands implements CommandHolder
             Plugin plugin = server.getPluginManager().getPlugin(context.getString(0));
             if (plugin == null)
             {
-                context.sendMessage("core", "&cThe given plugin doesn't seem to be loaded, have you type it correctly (casing does matter)?");
+                context.sendTranslated("&cThe given plugin doesn't seem to be loaded, have you type it correctly (casing does matter)?");
                 return;
             }
             else
             {
                 context.sendMessage(" ");
-                context.sendMessage("core", "&e%s&f is currently running in version &9%s&f.", plugin.getName(), plugin.getDescription().getVersion());
+                context.sendTranslated("&e%s&f is currently running in version &9%s&f.", plugin.getName(), plugin.getDescription().getVersion());
                 context.sendMessage(" ");
-                context.sendMessage("core", "&nPlugin information:");
+                context.sendTranslated("&nPlugin information:");
                 context.sendMessage(" ");
-                context.sendMessage("core", "Description: &6%s", plugin.getDescription().getDescription());
-                context.sendMessage("core", "Website: &6%s", plugin.getDescription().getWebsite());
-                context.sendMessage("core", "Authors:");
+                context.sendTranslated("Description: &6%s", plugin.getDescription().getDescription());
+                context.sendTranslated("Website: &6%s", plugin.getDescription().getWebsite());
+                context.sendTranslated("Authors:");
                 for (String author : plugin.getDescription().getAuthors())
                 {
                     context.sendMessage("   - " + ChatFormat.AQUA + author);
@@ -371,16 +371,16 @@ public class VanillaCommands implements CommandHolder
         {
             if (server.getName().equalsIgnoreCase("craftbukkit"))
             {
-                context.sendMessage("core", "This server is unfortunately running &c%s&r in version &9%s", server.getName(), server.getVersion());
-                context.sendMessage("core", "&kTrololol EvilSeph&r!");
+                context.sendTranslated("This server is unfortunately running &c%s&r in version &9%s", server.getName(), server.getVersion());
+                context.sendTranslated("&kTrololol EvilSeph&r!");
             }
             else
             {
-                context.sendMessage("core", "This server is running &e%s&r in version &9%s", server.getName(), server.getVersion());
+                context.sendTranslated("This server is running &e%s&r in version &9%s", server.getName(), server.getVersion());
             }
-            context.sendMessage("core", "&eBukkit API&r Version: &9%s", server.getBukkitVersion());
+            context.sendTranslated("&eBukkit API&r Version: &9%s", server.getBukkitVersion());
             context.sendMessage(" ");
-            context.sendMessage("core", "Expanded and improved by &aCubeEngine&r revision &9%s", Core.REVISION);
+            context.sendTranslated("Expanded and improved by &aCubeEngine&r revision &9%s", Core.REVISION);
         }
     }
 
@@ -400,18 +400,18 @@ public class VanillaCommands implements CommandHolder
         {
             if (!context.hasArgs())
             {
-                context.sendMessage("core", "&cYou have to specify the player to add to the whitelist!");
+                context.sendTranslated("&cYou have to specify the player to add to the whitelist!");
                 return;
             }
             final OfflinePlayer player = context.getArg(0, OfflinePlayer.class);
             if (player.isWhitelisted())
             {
-                context.sendMessage("core", "&eThe given player is already whitelisted.");
+                context.sendTranslated("&eThe given player is already whitelisted.");
                 return;
             }
 
             player.setWhitelisted(true);
-            context.sendMessage("core", "&2%s&a is now whitelisted.",player.getName());
+            context.sendTranslated("&2%s&a is now whitelisted.", player.getName());
         }
 
         @Command(names = {
@@ -421,18 +421,18 @@ public class VanillaCommands implements CommandHolder
         {
             if (!context.hasArgs())
             {
-                context.sendMessage("core", "&cYou have to specify the player to remove from the whitelist!");
+                context.sendTranslated("&cYou have to specify the player to remove from the whitelist!");
                 return;
             }
             final OfflinePlayer player = context.getArg(0, OfflinePlayer.class);
             if (!player.isWhitelisted())
             {
-                context.sendMessage("core", "&eThe given player is not whitelisted.");
+                context.sendTranslated("&eThe given player is not whitelisted.");
                 return;
             }
 
             player.setWhitelisted(false);
-            context.sendMessage("core", "&2%s&a is not whitelisted anymore.",player.getName());
+            context.sendTranslated("&2%s&a is not whitelisted anymore.", player.getName());
         }
 
         @Command(desc = "Lists all the whitelisted players")
@@ -441,20 +441,20 @@ public class VanillaCommands implements CommandHolder
             Set<OfflinePlayer> whitelist = this.core.getServer ().getWhitelistedPlayers();
             if (!this.core.getServer().hasWhitelist())
             {
-                context.sendMessage("core", "&eThe whitelist is currently disabled.");
+                context.sendTranslated("&eThe whitelist is currently disabled.");
             }
             else
             {
-                context.sendMessage("core", "&2The whitelist is enabled!.");
+                context.sendTranslated("&2The whitelist is enabled!.");
             }
             context.sendMessage(" ");
             if (whitelist.isEmpty())
             {
-                context.sendMessage("core", "&eThere are currently no whitelisted players!");
+                context.sendTranslated("&eThere are currently no whitelisted players!");
             }
             else
             {
-                context.sendMessage("core", "The following players are whitelisted:");
+                context.sendTranslated("The following players are whitelisted:");
                 context.sendMessage(" ");
                 for (OfflinePlayer player : whitelist)
                 {
@@ -468,11 +468,11 @@ public class VanillaCommands implements CommandHolder
         {
             if (this.core.getServer().hasWhitelist())
             {
-                context.sendMessage("core", "&cThe whitelist is already enabled!");
+                context.sendTranslated("&cThe whitelist is already enabled!");
                 return;
             }
             this.core.getServer().setWhitelist(true);
-            context.sendMessage("core", "&aThe whitelist is now enabled.");
+            context.sendTranslated("&aThe whitelist is now enabled.");
         }
 
         @Command(desc = "Disables the whitelisting")
@@ -480,11 +480,11 @@ public class VanillaCommands implements CommandHolder
         {
             if (!this.core.getServer().hasWhitelist())
             {
-                context.sendMessage("core", "&cThe whitelist is already disabled!");
+                context.sendTranslated("&cThe whitelist is already disabled!");
                 return;
             }
             this.core.getServer().setWhitelist(false);
-            context.sendMessage("core", "&aThe whitelist is now disabled.");
+            context.sendTranslated("&aThe whitelist is now disabled.");
         }
     }
 }

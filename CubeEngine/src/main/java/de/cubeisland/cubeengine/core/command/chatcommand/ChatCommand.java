@@ -4,7 +4,7 @@ import de.cubeisland.cubeengine.core.command.CubeCommand;
 import de.cubeisland.cubeengine.core.command.HelpContext;
 import de.cubeisland.cubeengine.core.command.parameterized.CommandFlag;
 import de.cubeisland.cubeengine.core.command.parameterized.CommandParameter;
-import de.cubeisland.cubeengine.core.command.sender.CommandSender;
+import de.cubeisland.cubeengine.core.command.CommandSender;
 import de.cubeisland.cubeengine.core.module.Module;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.util.ChatFormat;
@@ -159,14 +159,14 @@ public abstract class ChatCommand<M extends Module> extends CubeCommand implemen
     @Override
     public void help(HelpContext context) throws Exception //TODO beautify this
     {
-        context.sendMessage("core","Flags:");
+        context.sendTranslated("Flags:");
         Set<String> flags = new HashSet<String>();
         for (CommandFlag flag : this.getContextFactory().getFlags())
         {
             flags.add(flag.getLongName().toLowerCase());
         }
         context.sendMessage("    "+StringUtils.implode("&7, &f",flags));
-        context.sendMessage("core","Parameters:");
+        context.sendTranslated("Parameters:");
         Set<String> params  = new HashSet<String>();
         for (CommandParameter param : this.getContextFactory().getParameters())
         {

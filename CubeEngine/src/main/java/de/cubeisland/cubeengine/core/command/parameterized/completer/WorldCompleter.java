@@ -1,7 +1,7 @@
 package de.cubeisland.cubeengine.core.command.parameterized.completer;
 
 import de.cubeisland.cubeengine.core.command.parameterized.Completer;
-import de.cubeisland.cubeengine.core.command.sender.CommandSender;
+import de.cubeisland.cubeengine.core.command.CommandSender;
 import org.bukkit.Bukkit;
 import org.bukkit.Server;
 import org.bukkit.World;

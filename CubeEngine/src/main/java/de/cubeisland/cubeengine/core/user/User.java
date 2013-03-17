@@ -5,7 +5,7 @@ import de.cubeisland.cubeengine.core.CubeEngine;
 import de.cubeisland.cubeengine.core.attachment.AttachmentHolder;
 import de.cubeisland.cubeengine.core.bukkit.BukkitCore;
 import de.cubeisland.cubeengine.core.bukkit.BukkitUtils;
-import de.cubeisland.cubeengine.core.command.sender.CommandSender;
+import de.cubeisland.cubeengine.core.command.CommandSender;
 import de.cubeisland.cubeengine.core.i18n.Language;
 import de.cubeisland.cubeengine.core.module.Module;
 import de.cubeisland.cubeengine.core.storage.Model;
@@ -43,12 +43,12 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TreeSet;
 
-import static de.cubeisland.cubeengine.core.i18n.I18n._;
 import static de.cubeisland.cubeengine.core.logger.LogLevel.DEBUG;
 import static de.cubeisland.cubeengine.core.storage.database.Index.IndexType.UNIQUE;
 
@@ -73,8 +73,8 @@ public class User extends UserBase implements Model<Long>, CommandSender, Attach
     public byte[] passwd;
     @Attribute(type = AttrType.DATETIME)
     public final Timestamp firstseen;
-    @Attribute(type = AttrType.VARCHAR, length = 5, notnull = false)
-    public String language = null;
+    @Attribute(name = "language", type = AttrType.VARCHAR, length = 5, notnull = false)
+    public Locale locale = null;
     boolean loggedInState = false;
     private final Map<Class<? extends UserAttachment>, UserAttachment> attachments;
     private final Core core;
@@ -242,15 +242,20 @@ public class User extends UserBase implements Model<Long>, CommandSender, Attach
         super.sendMessage(ChatFormat.parseFormats(string));
     }
 
+    public String translate(String message, Object... params)
+    {
+        return this.core.getI18n().translate(this.locale, message, params);
+    }
+
     /**
      * Sends a translated Message to this User
      *
-     * @param string the message to translate
+     * @param message the message to translate
      * @param params optional parameter
      */
-    public void sendMessage(String category, String string, Object... params)
+    public void sendTranslated(String message, Object... params)
     {
-        this.sendMessage(_(this, category, string, params));
+        this.sendMessage(this.translate(message, params));
     }
 
     @Override
@@ -264,28 +269,32 @@ public class User extends UserBase implements Model<Long>, CommandSender, Attach
      *
      * @return a locale string
      */
-    public String getLanguage()
+    public Locale getLocale()
     {
-        if (this.language != null)
+        if (this.locale != null)
         {
-            return this.language;
+            return this.locale;
         }
-        String lang = null;
+        Language language = null;
         Player onlinePlayer = this.offlinePlayer.getPlayer();
         if (onlinePlayer != null)
         {
-            lang = BukkitUtils.getLanguage(onlinePlayer);
+            language = this.core.getI18n().getLanguage(BukkitUtils.getLanguage(this.core.getI18n(), onlinePlayer).toString());
         }
-        if (lang == null)
+        if (language == null)
         {
-            lang = CubeEngine.getCore().getConfiguration().defaultLanguage;
+            language = this.core.getI18n().getDefaultLanguage();
         }
-        return lang;
+        return language.getLocale();
     }
 
-    public void setLanguage(Language lang)
+    public void setLocale(Locale locale)
     {
-        this.language = lang.getCode();
+        if (locale == null)
+        {
+            throw new NullPointerException();
+        }
+        this.locale = locale;
     }
 
     public int getPing()
@@ -447,7 +456,7 @@ public class User extends UserBase implements Model<Long>, CommandSender, Attach
         }
         if (attachment == null)
         {
-            attachment = player.addAttachment((Plugin)CubeEngine.getCore());
+            attachment = player.addAttachment((Plugin)this.core);
             attachment.setPermission(posPerm, true);
             attachment.setPermission(negPerm, true);
         }
@@ -466,7 +475,7 @@ public class User extends UserBase implements Model<Long>, CommandSender, Attach
 
     public long getWorldId()
     {
-        return CubeEngine.getCore().getWorldManager().getWorldId(this.getWorld());
+        return this.getCore().getWorldManager().getWorldId(this.getWorld());
     }
 
     /**

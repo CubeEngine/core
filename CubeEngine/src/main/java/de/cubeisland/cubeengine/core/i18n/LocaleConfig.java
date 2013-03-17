@@ -8,7 +8,7 @@ import de.cubeisland.cubeengine.core.config.annotations.Option;
  * This cofniguration is used to parse the language configurations.
  */
 @Codec("yaml")
-public class LanguageConfiguration extends Configuration
+public class LocaleConfig extends Configuration
 {
     @Option("code")
     public String code;

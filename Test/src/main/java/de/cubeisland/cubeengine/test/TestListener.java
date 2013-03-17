@@ -27,10 +27,10 @@ public class TestListener implements Listener
     private void testI18n(AsyncPlayerChatEvent event)
     {
         User user = CubeEngine.getUserManager().getExactUser(event.getPlayer());
-        user.sendMessage("test", "Your language is: %s", user.getLanguage());
-        user.sendMessage("test", "english TEST");
-        user.sendMessage("test", "&1color &2Test");
+        user.sendTranslated("Your language is: %s", user.getLocale());
+        user.sendTranslated("english TEST");
+        user.sendTranslated("&1color &2Test");
         user.sendMessage(CubeEngine.getCore().getI18n().translate("fr_FR", "test", "&1color &2Test"));
-        user.sendMessage("test", "NotTranslatedMessageIsNotTranslated");
+        user.sendTranslated("NotTranslatedMessageIsNotTranslated");
     }
 }

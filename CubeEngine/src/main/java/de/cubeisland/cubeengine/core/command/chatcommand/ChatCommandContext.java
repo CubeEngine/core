@@ -2,7 +2,7 @@ package de.cubeisland.cubeengine.core.command.chatcommand;
 
 import de.cubeisland.cubeengine.core.command.CubeCommand;
 import de.cubeisland.cubeengine.core.command.parameterized.ParameterizedContext;
-import de.cubeisland.cubeengine.core.command.sender.CommandSender;
+import de.cubeisland.cubeengine.core.command.CommandSender;
 
 import java.util.LinkedList;
 import java.util.Map;

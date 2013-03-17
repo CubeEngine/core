@@ -1,8 +1,9 @@
 package de.cubeisland.cubeengine.core.i18n;
 
+import org.apache.commons.lang.Validate;
+
 import java.util.Locale;
 import java.util.Map;
-import org.apache.commons.lang.Validate;
 
 /**
  * This class represents a clone of another language.
@@ -37,12 +38,6 @@ public class ClonedLanguage implements Language
     }
 
     @Override
-    public String getCode()
-    {
-        return this.code;
-    }
-
-    @Override
     public String getName()
     {
         return this.original.getName();
@@ -61,21 +56,21 @@ public class ClonedLanguage implements Language
     }
 
     @Override
-    public String getTranslation(String cat, String message)
+    public String getTranslation(String message)
     {
-        return this.original.getTranslation(cat, message);
+        return this.original.getTranslation(message);
     }
 
     @Override
-    public Map<String, String> getMessages(String cat)
+    public Map<String, String> getMessages()
     {
-        return this.original.getMessages(cat);
+        return this.original.getMessages();
     }
 
     @Override
-    public boolean equals(String code)
+    public boolean equals(Locale locale)
     {
-        return this.code.equalsIgnoreCase(code);
+        return this.locale.equals(locale);
     }
 
     @Override

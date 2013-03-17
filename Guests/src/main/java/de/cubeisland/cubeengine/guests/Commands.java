@@ -1,6 +1,7 @@
 package de.cubeisland.cubeengine.guests;
 
 import de.cubeisland.cubeengine.core.command.CommandContext;
+import de.cubeisland.cubeengine.core.command.CommandSender;
 import de.cubeisland.cubeengine.core.command.ContainerCommand;
 import de.cubeisland.cubeengine.core.command.parameterized.ParameterizedContext;
 import de.cubeisland.cubeengine.core.command.reflected.Command;
@@ -10,11 +11,8 @@ import de.cubeisland.cubeengine.core.util.ChatFormat;
 import de.cubeisland.cubeengine.guests.prevention.Prevention;
 import de.cubeisland.cubeengine.guests.prevention.PreventionManager;
 import gnu.trove.set.hash.THashSet;
-import org.bukkit.command.CommandSender;
 
 import java.util.Set;
-
-import static de.cubeisland.cubeengine.core.i18n.I18n._;
 
 public class Commands extends ContainerCommand
 {
@@ -41,11 +39,11 @@ public class Commands extends ContainerCommand
                 this.pm.disablePrevention(prevention);
                 prevention.reloadConfig();
                 this.pm.enablePrevention(prevention);
-                context.sendMessage("guests", "preventionReloaded", prevention.getName());
+                context.sendTranslated("preventionReloaded", prevention.getName());
             }
             else
             {
-                context.sendMessage("guests", "preventionNotFound");
+                context.sendTranslated("preventionNotFound");
             }
         }
         else
@@ -53,7 +51,7 @@ public class Commands extends ContainerCommand
             // TODO reload module
             // this.guests.getModuleManager().reloadModule(this.guests);
 
-            context.sendMessage("guests", "reloaded", guests.getName());
+            context.sendTranslated("reloaded", guests.getName());
         }
     }
 
@@ -69,19 +67,19 @@ public class Commands extends ContainerCommand
                 prevention.resetConfig();
             }
 
-            context.sendMessage("guests", "configsResetted");
+            context.sendTranslated("configsResetted");
         }
         else
         {
             resetRequest.add(sender);
-            context.sendMessage("guests", "resetRequested");
+            context.sendTranslated("resetRequested");
             if (sender instanceof User)
             {
-                this.broadcastResetNotice(_("guests", "playerRequestedReset", sender.getName()), context);
+                this.broadcastResetNotice(sender.translate("playerRequestedReset", sender.getDisplayName()), context);
             }
             else
             {
-                this.broadcastResetNotice(_("guests", "consoleRequestedReset"), context);
+                this.broadcastResetNotice(sender.translate("consoleRequestedReset"), context);
             }
         }
     }
@@ -104,7 +102,7 @@ public class Commands extends ContainerCommand
                     }
                 }
 
-                context.sendMessage("guests", "preventionsEnabled");
+                context.sendTranslated("preventionsEnabled");
             }
             else
             {
@@ -115,7 +113,7 @@ public class Commands extends ContainerCommand
                     {
                         if (this.pm.enablePrevention(prevention))
                         {
-                            context.sendMessage("guests", "preventionEnabled");
+                            context.sendTranslated("preventionEnabled");
                             if (!temporary)
                             {
                                 prevention.getConfig().set("enable", true);
@@ -124,23 +122,23 @@ public class Commands extends ContainerCommand
                         }
                         else
                         {
-                            context.sendMessage("guests", "somethingFailed");
+                            context.sendTranslated("somethingFailed");
                         }
                     }
                     else
                     {
-                        context.sendMessage("guests", "alreadyEnabled");
+                        context.sendTranslated("alreadyEnabled");
                     }
                 }
                 else
                 {
-                    context.sendMessage("guests", "preventionNotFound");
+                    context.sendTranslated("preventionNotFound");
                 }
             }
         }
         else
         {
-            context.sendMessage("guests", "noPrevention");
+            context.sendTranslated("noPrevention");
         }
     }
 
@@ -162,7 +160,7 @@ public class Commands extends ContainerCommand
                     }
                 }
 
-                context.sendMessage("guests", "preventionsDisabled");
+                context.sendTranslated("preventionsDisabled");
             }
             else
             {
@@ -172,7 +170,7 @@ public class Commands extends ContainerCommand
                     if (prevention.isEnabled())
                     {
                         this.pm.disablePrevention(prevention);
-                        context.sendMessage("guests", "preventionDisabled");
+                        context.sendTranslated("preventionDisabled");
                         if (!temporary)
                         {
                             prevention.getConfig().set("enable", false);
@@ -181,18 +179,18 @@ public class Commands extends ContainerCommand
                     }
                     else
                     {
-                        context.sendMessage("guests", "alreadyDisabled");
+                        context.sendTranslated("alreadyDisabled");
                     }
                 }
                 else
                 {
-                    context.sendMessage("guests", "preventionNotFound");
+                    context.sendTranslated("preventionNotFound");
                 }
             }
         }
         else
         {
-            context.sendMessage("guests", "noPrevention");
+            context.sendTranslated("noPrevention");
         }
     }
 
@@ -206,21 +204,21 @@ public class Commands extends ContainerCommand
             {
                 if (prevention.isEnabled())
                 {
-                    context.sendMessage("guests", "enabled");
+                    context.sendTranslated("enabled");
                 }
                 else
                 {
-                    context.sendMessage("guests", "disabled");
+                    context.sendTranslated("disabled");
                 }
             }
             else
             {
-                context.sendMessage("guests", "preventionNotFound");
+                context.sendTranslated("preventionNotFound");
             }
         }
         else
         {
-            context.sendMessage("guests", "noPrevention");
+            context.sendTranslated("noPrevention");
         }
     }
 
@@ -229,7 +227,7 @@ public class Commands extends ContainerCommand
     {
         if (context.hasFlag("a"))
         {
-            context.sendMessage("guests", "registeredPreventions");
+            context.sendTranslated("registeredPreventions");
             context.sendMessage("");
             for (Prevention prevention : this.pm.getPreventions())
             {
@@ -239,7 +237,7 @@ public class Commands extends ContainerCommand
         }
         else
         {
-            context.sendMessage("guests", "activePreventions");
+            context.sendTranslated("activePreventions");
             context.sendMessage("");
             int i = 0;
             for (Prevention prevention : this.pm.getPreventions())
@@ -274,8 +272,8 @@ public class Commands extends ContainerCommand
         }
         else
         {
-            context.sendMessage("guests", "tooFewArguments");
-            context.sendMessage("guests", "see " + context.getLabels() + " help");
+            context.sendTranslated("tooFewArguments");
+            context.sendTranslated("see " + context.getLabels() + " help");
             return;
         }
 
@@ -287,33 +285,33 @@ public class Commands extends ContainerCommand
                 {
                     if (context.getSender() == target)
                     {
-                        context.sendMessage("guests", "you_ableToPass");
+                        context.sendTranslated("you_ableToPass");
                     }
                     else
                     {
-                        context.sendMessage("guests", "other_ableToPass");
+                        context.sendTranslated("other_ableToPass");
                     }
                 }
                 else
                 {
                     if (context.getSender() == target)
                     {
-                        context.sendMessage("guests", "you_unableToPass");
+                        context.sendTranslated("you_unableToPass");
                     }
                     else
                     {
-                        context.sendMessage("guests", "other_unableToPass");
+                        context.sendTranslated("other_unableToPass");
                     }
                 }
             }
             else
             {
-                context.sendMessage("guests", "preventionNotFound");
+                context.sendTranslated("preventionNotFound");
             }
         }
         else
         {
-            context.sendMessage("guests", "playerNotFound");
+            context.sendTranslated("playerNotFound");
         }
     }
 
@@ -330,16 +328,16 @@ public class Commands extends ContainerCommand
                 prevention.getConfig().set("message", message);
                 prevention.saveConfig();
 
-                context.sendMessage("guests", "messageSet");
+                context.sendTranslated("messageSet");
             }
             else
             {
-                context.sendMessage("guests", "preventionNotFound");
+                context.sendTranslated("preventionNotFound");
             }
         }
         else
         {
-            context.sendMessage("guests", "tooFewArguments");
+            context.sendTranslated("tooFewArguments");
         }
     }
 

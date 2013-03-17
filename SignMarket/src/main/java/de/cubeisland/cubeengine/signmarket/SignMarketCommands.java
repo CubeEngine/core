@@ -32,14 +32,14 @@ public class SignMarketCommands extends ContainerCommand
             else
             {
                 this.module.getEditModeListener().addUser((User)context.getSender());
-                context.sendMessage("signmarket","&aYou are now in edit mode!\n" +
-                        "Chat will now work as commands.\n" +
-                        "&eType exit or use this command again to leave the editmode.");
+                context.sendTranslated("&aYou are now in edit mode!\n" +
+                                           "Chat will now work as commands.\n" +
+                                           "&eType exit or use this command again to leave the editmode.");
             }
         }
         else
         {
-            context.sendMessage("signmarket","&cOnly players can edit marketsigns!");
+            context.sendTranslated("&cOnly players can edit marketsigns!");
         }
     }
 }

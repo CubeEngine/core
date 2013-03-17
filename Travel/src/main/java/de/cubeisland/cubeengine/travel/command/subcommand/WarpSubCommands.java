@@ -1,6 +1,5 @@
 package de.cubeisland.cubeengine.travel.command.subcommand;
 
-import com.sun.org.apache.bcel.internal.classfile.StackMapEntry;
 import de.cubeisland.cubeengine.core.command.CommandContext;
 import de.cubeisland.cubeengine.core.command.CommandResult;
 import de.cubeisland.cubeengine.core.command.parameterized.Flag;
@@ -8,16 +7,13 @@ import de.cubeisland.cubeengine.core.command.parameterized.ParameterizedContext;
 import de.cubeisland.cubeengine.core.command.reflected.Alias;
 import de.cubeisland.cubeengine.core.command.reflected.Command;
 import de.cubeisland.cubeengine.core.command.result.AsyncResult;
-import de.cubeisland.cubeengine.core.command.sender.CommandSender;
+import de.cubeisland.cubeengine.core.command.CommandSender;
 import de.cubeisland.cubeengine.core.user.User;
-import de.cubeisland.cubeengine.core.util.StringUtils;
-import de.cubeisland.cubeengine.core.util.matcher.Match;
 import de.cubeisland.cubeengine.travel.storage.TelePointManager;
 import de.cubeisland.cubeengine.travel.storage.TeleportPoint;
 import de.cubeisland.cubeengine.travel.storage.Warp;
 import org.bukkit.Location;
 
-import java.util.Map;
 import java.util.TreeMap;
 
 public class WarpSubCommands
@@ -45,20 +41,20 @@ public class WarpSubCommands
             String name = context.getString(0);
             if (telePointManager.hasWarp(name) && !context.hasFlag("p"))
             {
-                context.sendMessage("travel", "A public warp by that name already exist! maybe you want to include the -private flag?");
+                context.sendTranslated("A public warp by that name already exist! maybe you want to include the -private flag?");
                 return;
             }
             if (name.contains(":") || name.length() >= 32)
             {
-                context.sendMessage("travel", "&4Warps may not have names that are longer then 32 characters, and they may not contain colon(:)'s!");
+                context.sendTranslated("&4Warps may not have names that are longer then 32 characters, and they may not contain colon(:)'s!");
                 return;
             }
             Location loc = sender.getLocation();
             Warp warp = telePointManager.createWarp(loc, name, sender, (context.hasFlag("p") ? TeleportPoint.Visibility.PRIVATE : TeleportPoint.Visibility.PUBLIC));
-            context.sendMessage("travel", "Your warp have been created");
+            context.sendTranslated("Your warp have been created");
             return;
         }
-        context.sendMessage("travel", "You have to be in the world to set a warp");
+        context.sendTranslated("You have to be in the world to set a warp");
 
 
     }
@@ -82,11 +78,11 @@ public class WarpSubCommands
         }
         if (warp == null)
         {
-            context.sendMessage("travel", "The warp could not be found");
+            context.sendTranslated("The warp could not be found");
             return;
         }
         telePointManager.deleteWarp(warp);
-        context.sendMessage("travel", "The warp is now deleted");
+        context.sendTranslated("The warp is now deleted");
     }
 
     @Command(desc = "Rename a warp", min = 2, max = 2)
@@ -104,18 +100,18 @@ public class WarpSubCommands
         }
         if (warp == null)
         {
-            context.sendMessage("travel", "The warp could not be found");
+            context.sendTranslated("The warp could not be found");
             return;
         }
 
         if (name.contains(":") || name.length() >= 32)
         {
-            context.sendMessage("travel", "&4Warps may not have names that are longer then 32 characters, and they may not contain colon(:)'s!");
+            context.sendTranslated("&4Warps may not have names that are longer then 32 characters, and they may not contain colon(:)'s!");
             return;
         }
 
         telePointManager.renameWarp(warp, name);
-        context.sendMessage("travel", "The warps name is now changed");
+        context.sendTranslated("The warps name is now changed");
     }
 
     @Command(desc = "Move a warp", min = 1, max = 2)
@@ -128,17 +124,17 @@ public class WarpSubCommands
         Warp warp = telePointManager.getWarp(user, context.getString(0));
         if (warp == null)
         {
-            user.sendMessage("travel", "That warp could not be found!");
+            user.sendTranslated("That warp could not be found!");
             return;
         }
         if (!warp.isOwner(user))
         {
-            user.sendMessage("travel", "You are not allowed to edit that warp!");
+            user.sendTranslated("You are not allowed to edit that warp!");
             return;
         }
         warp.setLocation(user.getLocation());
         warp.update();
-        user.sendMessage("travel", "The warp is now moved to your current location");
+        user.sendTranslated("The warp is now moved to your current location");
     }
 
     @Command(desc = "Search for a warp", min = 1, max = 2)
@@ -156,7 +152,7 @@ public class WarpSubCommands
         }
         if (first != null)
         {
-            context.sendMessage("travel", "Found a direct match: %s owned by %s", first.getName(), first.getOwner().getDisplayName());
+            context.sendTranslated("Found a direct match: %s owned by %s", first.getName(), first.getOwner().getDisplayName());
             return null;
         }
 
@@ -173,7 +169,7 @@ public class WarpSubCommands
             @Override
             public void onFinish(CommandContext context)
             {
-                context.sendMessage("travel", "Here is the top %d results:", context.getArg(1, Integer.class, 5));
+                context.sendTranslated("Here is the top %d results:", context.getArg(1, Integer.class, 5));
                 int position = 1;
                 for (String warp : results.keySet())
                 {

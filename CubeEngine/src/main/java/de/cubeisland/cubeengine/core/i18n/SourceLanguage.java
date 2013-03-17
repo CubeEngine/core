@@ -2,7 +2,7 @@ package de.cubeisland.cubeengine.core.i18n;
 
 import de.cubeisland.cubeengine.core.util.ChatFormat;
 import gnu.trove.map.hash.THashMap;
-import java.util.Collections;
+
 import java.util.Locale;
 import java.util.Map;
 
@@ -15,16 +15,10 @@ public final class SourceLanguage implements Language
     private final Locale locale = Locale.US;
     private final String name = "English";
     private final String localName = "English";
-    private final Map<String, Map<String, String>> messages = new THashMap<String, Map<String, String>>();
+    private final Map<String, String> messages = new THashMap<String, String>();
 
     SourceLanguage()
     {}
-
-    @Override
-    public String getCode()
-    {
-        return this.code;
-    }
 
     @Override
     public Locale getLocale()
@@ -45,37 +39,27 @@ public final class SourceLanguage implements Language
     }
 
     @Override
-    public String getTranslation(String cat, String message)
+    public String getTranslation(String message)
     {
-        Map<String, String> catMessages = this.messages.get(cat);
-        if (catMessages == null)
-        {
-            this.messages.put(cat, catMessages = new THashMap<String, String>());
-        }
-
-        String translation = catMessages.get(message);
+        String translation = this.messages.get(message);
         if (translation == null)
         {
-            catMessages.put(message, translation = ChatFormat.parseFormats(message));
+            this.messages.put(message, translation = ChatFormat.parseFormats(message));
         }
 
         return translation;
     }
 
     @Override
-    public Map<String, String> getMessages(String cat)
+    public Map<String, String> getMessages()
     {
-        if (this.messages.containsKey(cat))
-        {
-            return Collections.unmodifiableMap(this.messages.get(cat));
-        }
-        return null;
+        return new THashMap<String, String>(this.messages);
     }
 
     @Override
-    public boolean equals(String code)
+    public boolean equals(Locale locale)
     {
-        return this.code.equalsIgnoreCase(code);
+        return this.locale.equals(locale);
     }
 
     @Override

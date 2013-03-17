@@ -1,7 +1,6 @@
 package de.cubeisland.cubeengine.core.command;
 
 import de.cubeisland.cubeengine.core.Core;
-import de.cubeisland.cubeengine.core.command.sender.CommandSender;
 import de.cubeisland.cubeengine.core.user.User;
 
 import java.util.LinkedList;
@@ -71,9 +70,9 @@ public class BasicContext implements CommandContext
     }
 
     @Override
-    public void sendMessage(String category, String message, Object... args)
+    public void sendTranslated(String message, Object... args)
     {
-        this.sender.sendMessage(category, message, args);
+        this.sender.sendTranslated(message, args);
     }
 
     @Override

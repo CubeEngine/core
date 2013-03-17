@@ -2,6 +2,8 @@ package de.cubeisland.cubeengine.core.bukkit;
 
 import de.cubeisland.cubeengine.core.CubeEngine;
 import de.cubeisland.cubeengine.core.command.CubeCommand;
+import de.cubeisland.cubeengine.core.i18n.I18n;
+import de.cubeisland.cubeengine.core.i18n.Language;
 import de.cubeisland.cubeengine.core.user.User;
 import net.minecraft.server.v1_5_R1.EntityPlayer;
 import net.minecraft.server.v1_5_R1.LocaleLanguage;
@@ -36,6 +38,7 @@ import org.bukkit.plugin.SimplePluginManager;
 import java.lang.reflect.Field;
 import java.util.Collection;
 import java.util.List;
+import java.util.Locale;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.logging.Filter;
@@ -76,20 +79,20 @@ public class BukkitUtils
         return (hackSucceeded && CraftServer.class == Bukkit.getServer().getClass() && SimplePluginManager.class == Bukkit.getPluginManager().getClass() && SimpleHelpMap.class == Bukkit.getHelpMap().getClass());
     }
 
-    public static String getLanguage(CommandSender sender)
+    public static Locale getLanguage(I18n i18n, CommandSender sender)
     {
-        if (sender instanceof de.cubeisland.cubeengine.core.command.sender.CommandSender)
+        if (sender instanceof de.cubeisland.cubeengine.core.command.CommandSender)
         {
-            return ((de.cubeisland.cubeengine.core.command.sender.CommandSender)sender).getLanguage();
+            return ((de.cubeisland.cubeengine.core.command.CommandSender)sender).getLocale();
         }
-        String language = null;
+        Locale language = null;
         if (sender instanceof Player)
         {
-            language = getLanguage((Player)sender);
+            language = getLanguage(i18n, (Player)sender);
         }
         if (language == null)
         {
-            language = CubeEngine.getConfiguration().defaultLanguage;
+            language = Locale.getDefault();
         }
         return language;
     }
@@ -110,13 +113,18 @@ public class BukkitUtils
      * @param player the Player instance
      * @return the locale string of the player
      */
-    private static String getLanguage(Player player)
+    private static Locale getLanguage(I18n i18n, Player player)
     {
         if (player.getClass() == CraftPlayer.class)
         {
             try
             {
-                return (String)LOCALE_STRING_FIELD.get(((CraftPlayer)player).getHandle().getLocale());
+                final String langCode = (String)LOCALE_STRING_FIELD.get(((CraftPlayer)player).getHandle().getLocale());
+                final Language lang = i18n.getLanguage(langCode);
+                if (lang != null)
+                {
+                    return lang.getLocale();
+                }
             }
             catch (Exception ignored)
             {}

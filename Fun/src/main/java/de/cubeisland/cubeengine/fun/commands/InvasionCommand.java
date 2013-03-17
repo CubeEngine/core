@@ -25,7 +25,7 @@ public class InvasionCommand
         EntityType entityType = Match.entity().mob(context.getString(0, null));
         if (entityType == null)
         {
-            context.sendMessage("fun", "&cEntityType %s not found", context.getString(0));
+            context.sendTranslated("&cEntityType %s not found", context.getString(0));
             return;
         }
         else

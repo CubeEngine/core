@@ -25,7 +25,7 @@ public class ListCommand
         List<User> users = context.getCore().getUserManager().getOnlineUsers();
         if (users.isEmpty())
         {
-            context.sendMessage("basics", "&cThere are no players online now!");
+            context.sendTranslated("&cThere are no players online now!");
             return;
         }
         DisplayOnlinePlayerListEvent event = new DisplayOnlinePlayerListEvent(module, context.getSender(), users);
@@ -35,8 +35,8 @@ public class ListCommand
         }
         if (!(module.getEventManager().fireEvent(event)).isCancelled()) // catch this event to change / show list with extra data
         {
-            context.sendMessage("basics", "&9Players online: &a%d&f/&e%d", event.getUsers().size(), Bukkit.getMaxPlayers());
-            context.sendMessage("basics", "&ePlayers:\n&2%s", this.displayPlayerList(event.getUsers()));
+            context.sendTranslated("&9Players online: &a%d&f/&e%d", event.getUsers().size(), Bukkit.getMaxPlayers());
+            context.sendTranslated("&ePlayers:\n&2%s", this.displayPlayerList(event.getUsers()));
         }
     }
 

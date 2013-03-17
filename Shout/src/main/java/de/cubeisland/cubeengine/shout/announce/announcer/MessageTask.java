@@ -30,7 +30,7 @@ public class MessageTask implements Runnable
             Pair<Announcement, Integer> pair = receiver.getNextDelayAndAnnouncement();
             if (pair != null && pair.getLeft() != null && pair.getRight() != null)
             {
-                this.tm.callSyncMethod(new SenderTask(pair.getLeft().getMessage(receiver.getLanguage())));
+                this.tm.callSyncMethod(new SenderTask(pair.getLeft().getMessage(receiver.getLocale())));
                 this.nextExecution = this.runs + pair.getRight();
             }
             else

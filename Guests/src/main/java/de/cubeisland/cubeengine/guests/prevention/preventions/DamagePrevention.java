@@ -2,10 +2,6 @@ package de.cubeisland.cubeengine.guests.prevention.preventions;
 
 import de.cubeisland.cubeengine.guests.Guests;
 import de.cubeisland.cubeengine.guests.prevention.FilteredPrevention;
-import java.util.Collection;
-import java.util.EnumSet;
-import java.util.List;
-import java.util.Set;
 import org.bukkit.configuration.Configuration;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
@@ -17,7 +13,10 @@ import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.event.entity.PotionSplashEvent;
 
-import static de.cubeisland.cubeengine.core.i18n.I18n._;
+import java.util.Collection;
+import java.util.EnumSet;
+import java.util.List;
+import java.util.Set;
 
 /**
  * Prevents damage.
@@ -52,9 +51,9 @@ public class DamagePrevention extends FilteredPrevention<DamageCause>
     {
         Configuration config = super.getDefaultConfig();
 
-        config.set("damagerMessage", _("guests", "damagerMessage"));
+        config.set("damagerMessage", getModule().getCore().getI18n().translate("damagerMessage"));
         config.set("preventPotions", true);
-        config.set("potionMessage", _("guests", "potionMessage"));
+        config.set("potionMessage", getModule().getCore().getI18n().translate("potionMessage"));
 
         return config;
     }

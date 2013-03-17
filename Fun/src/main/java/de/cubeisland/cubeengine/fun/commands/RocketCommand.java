@@ -50,7 +50,7 @@ public class RocketCommand
             user = context.getParam("player");
             if (user == null)
             {
-                context.sendMessage("fun", "&cThe given user was not found!");
+                context.sendTranslated("&cThe given user was not found!");
                 return;
             }
         }
@@ -58,7 +58,7 @@ public class RocketCommand
         {
             if (!(context.getSender() instanceof User))
             {
-                context.sendMessage("fun", "&cYou have to specify a user!");
+                context.sendTranslated("&cYou have to specify a user!");
                 return;
             }
             user = (User)context.getSender();
@@ -66,18 +66,18 @@ public class RocketCommand
 
         if (user == null)
         {
-            context.sendMessage("core", "&cUser not found!");
+            context.sendTranslated("&cUser not found!");
             return;
         }
 
         if (height > this.module.getConfig().maxRocketHeight)
         {
-            context.sendMessage("fun", "&cDo you never wanna see %s again?", user.getName());
+            context.sendTranslated("&cDo you never wanna see %s again?", user.getName());
             return;
         }
         else if (height < 0)
         {
-            context.sendMessage("fun", "&cThe height has to be greater than 0");
+            context.sendTranslated("&cThe height has to be greater than 0");
             return;
         }
 

@@ -83,39 +83,39 @@ public class NukeCommand
                 }
                 catch (NumberFormatException e)
                 {
-                    context.sendMessage("fun", "&cThe named Paramter concentration has a wrong usage. \"&a1.1&c\" is the right way. You used %s", concNamed);
+                    context.sendTranslated("&cThe named Paramter concentration has a wrong usage. \"&a1.1&c\" is the right way. You used %s", concNamed);
                     return;
                 }
             }
             if (concentration > this.config.nukeConcentrationLimit || concentrationOfBlocksPerCircle > this.config.nukeConcentrationLimit)
             {
-                context.sendMessage("fun", "&cThe concentration should not be greater than %d", this.config.nukeConcentrationLimit);
+                context.sendTranslated("&cThe concentration should not be greater than %d", this.config.nukeConcentrationLimit);
                 return;
             }
         }
         if (radius > this.config.nukeRadiusLimit)
         {
-            context.sendMessage("fun", "&cThe radius should not be greater than %d", this.config.nukeRadiusLimit);
+            context.sendTranslated("&cThe radius should not be greater than %d", this.config.nukeRadiusLimit);
             return;
         }
         if (concentration < 1)
         {
-            context.sendMessage("fun", "&cThe concentration should not be smaller than 1");
+            context.sendTranslated("&cThe concentration should not be smaller than 1");
             return;
         }
         if (concentrationOfBlocksPerCircle < 1)
         {
-            context.sendMessage("fun", "&cThe concentration of Blocks per Circle should not be smaller than 1");
+            context.sendTranslated("&cThe concentration of Blocks per Circle should not be smaller than 1");
             return;
         }
         if (height < 1)
         {
-            context.sendMessage("fun", "&cThe height can't be less than 1");
+            context.sendTranslated("&cThe height can't be less than 1");
             return;
         }
         if (range < 0 || range > this.config.nukeMaxExplosionRange)
         {
-            context.sendMessage("fun", "&cThe explosion range can't be less than 0 or over %d", this.config.nukeMaxExplosionRange);
+            context.sendTranslated("&cThe explosion range can't be less than 0 or over %d", this.config.nukeMaxExplosionRange);
             return;
         }
 
@@ -124,7 +124,7 @@ public class NukeCommand
             user = context.getUser("player");
             if (user == null)
             {
-                context.sendMessage("fun", "&cUser not found");
+                context.sendTranslated("&cUser not found");
                 return;
             }
             centerOfTheCircle = user.getLocation();
@@ -137,7 +137,7 @@ public class NukeCommand
             }
             if (user == null)
             {
-                context.sendMessage("core", "&cThis command can only be used by a player!");
+                context.sendTranslated("&cThis command can only be used by a player!");
                 return;
             }
             centerOfTheCircle = user.getTargetBlock(null, 40).getLocation();
@@ -191,7 +191,7 @@ public class NukeCommand
             }
         }
 
-        context.sendMessage("fun", "&aYou spawnt %d blocks of TNT", numberOfBlocks);
+        context.sendTranslated("&aYou spawnt %d blocks of TNT", numberOfBlocks);
     }
 
     private class NukeListener implements Listener

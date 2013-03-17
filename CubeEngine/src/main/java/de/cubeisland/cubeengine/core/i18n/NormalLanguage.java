@@ -1,6 +1,7 @@
 package de.cubeisland.cubeengine.core.i18n;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import de.cubeisland.cubeengine.core.Core;
 import de.cubeisland.cubeengine.core.CubeEngine;
 import de.cubeisland.cubeengine.core.logger.LogLevel;
 import de.cubeisland.cubeengine.core.util.ChatFormat;
@@ -12,7 +13,6 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Collections;
 import java.util.Locale;
 import java.util.Map;
 
@@ -21,21 +21,23 @@ import java.util.Map;
  */
 public class NormalLanguage implements Cleanable, Language
 {
+    private final Core core;
     private final String code;
     private final String name;
     private final String localName;
     private final Language parent;
-    private final Map<String, Map<String, String>> messages;
+    private final Map<String, String> messages;
     private final File messageDir;
     private final Locale locale;
     private final ObjectMapper objectMapper = CubeEngine.getJsonObjectMapper();
 
-    public NormalLanguage(LanguageConfiguration config, File languageDir, Language parent)
+    public NormalLanguage(Core core, LocaleConfig config, File languageDir, Language parent)
     {
         Validate.notNull(config.code, "The code must not be null!");
         Validate.notNull(config.name, "The name must not be null!");
         Validate.notNull(config.localName, "The local name must not be null!");
 
+        this.core = core;
         this.code = I18n.normalizeLanguage(config.code);
         Validate.notNull(this.code, "The configured language code is invalid!");
 
@@ -43,15 +45,9 @@ public class NormalLanguage implements Cleanable, Language
         this.localName = config.localName;
         this.parent = parent;
         this.messageDir = new File(languageDir, this.code);
-        this.messages = new THashMap<String, Map<String, String>>();
+        this.messages = new THashMap<String, String>();
 
         this.locale = new Locale(this.code.substring(0, 2), this.code.substring(3, 5));
-    }
-
-    @Override
-    public String getCode()
-    {
-        return this.code;
     }
 
     @Override
@@ -75,45 +71,33 @@ public class NormalLanguage implements Cleanable, Language
     /**
      * This method adds a map of translations to a category
      *
-     * @param cat      the category
      * @param messages the translations
      */
-    public void addMessages(String cat, Map<String, String> messages)
+    public void addMessages(Map<String, String> messages)
     {
-        Validate.notNull(cat, "The category must not be null!");
-        Validate.notNull(messages, "The messages must not be null!");
+        if (messages == null)
+        {
+            throw new NullPointerException("The messages must not be null!");
+        }
 
-        this.messages.put(cat, messages);
+        this.messages.putAll(messages);
     }
 
     @Override
-    public String getTranslation(String cat, String message)
+    public String getTranslation(String message)
     {
-        String translation = null;
-        Map<String, String> catMessages = this.messages.get(cat);
-        if (catMessages == null)
-        {
-            catMessages = this.loadMessages(cat);
-        }
-        if (catMessages != null)
-        {
-            translation = catMessages.get(message);
-        }
+        String translation = this.messages.get(message);
         if (translation == null && parent != null)
         {
-            translation = this.parent.getTranslation(cat, message);
+            translation = this.parent.getTranslation(message);
         }
         return translation;
     }
 
     @Override
-    public Map<String, String> getMessages(String cat)
+    public Map<String, String> getMessages()
     {
-        if (this.messages.containsKey(cat))
-        {
-            return Collections.unmodifiableMap(this.messages.get(cat));
-        }
-        return null;
+        return new THashMap<String, String>(this.messages);
     }
 
     /**
@@ -127,32 +111,30 @@ public class NormalLanguage implements Cleanable, Language
     }
 
     @SuppressWarnings("unchecked")
-    private Map<String, String> loadMessages(String cat)
+    private synchronized Map<String, String> loadMessages(String cat)
     {
         try
         {
             final File messagesFile = new File(this.messageDir, cat + ".json");
-            Map<String, String> catMessages = this.objectMapper.readValue(messagesFile, Map.class);
-            catMessages = this.updateMessages(messagesFile, catMessages);
+            Map<String, String> moduleMessages = this.objectMapper.readValue(messagesFile, Map.class);
+            moduleMessages = this.updateMessages(messagesFile, moduleMessages);
 
-            for (Map.Entry<String, String> translation : catMessages.entrySet())
+            for (Map.Entry<String, String> translation : moduleMessages.entrySet())
             {
-                translation.setValue(ChatFormat.parseFormats(translation.getValue()));
+                if (!this.messages.containsKey(translation.getKey()))
+                {
+                    this.messages.put(translation.getKey(), ChatFormat.parseFormats(translation.getValue()));
+                }
             }
-
-            if (!catMessages.isEmpty())
-            {
-                this.messages.put(cat, catMessages);
-                return catMessages;
-            }
+            return moduleMessages;
         }
         catch (FileNotFoundException ignored)
         {
-            CubeEngine.getLogger().log(LogLevel.WARNING, "The translation category " + cat + " was not found for the language ''" + this.code + "'' !");
+            this.core.getCoreLogger().log(LogLevel.WARNING, "The translation category " + cat + " was not found for the language ''" + this.code + "'' !");
         }
         catch (IOException e)
         {
-            CubeEngine.getLogger().log(LogLevel.ERROR, String.valueOf(e), e);
+            this.core.getCoreLogger().log(LogLevel.ERROR, String.valueOf(e), e);
         }
         return null;
     }
@@ -197,9 +179,9 @@ public class NormalLanguage implements Cleanable, Language
     }
 
     @Override
-    public boolean equals(String code)
+    public boolean equals(Locale locale)
     {
-        return this.code.equalsIgnoreCase(code);
+        return this.locale.equals(locale);
     }
 
     @Override

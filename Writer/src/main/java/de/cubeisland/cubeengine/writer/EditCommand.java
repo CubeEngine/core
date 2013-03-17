@@ -41,7 +41,7 @@ public class EditCommand
     {
         if (!(context.getSender() instanceof User))
         {
-            context.sendMessage("writer", "This command can only be used by players");
+            context.sendTranslated("This command can only be used by players");
         }
         User user = (User)context.getSender();
 
@@ -54,7 +54,7 @@ public class EditCommand
             item.setItemMeta(meta);
             item.setType(Material.BOOK_AND_QUILL);
 
-            user.sendMessage("writer", "Your book is now unsigned and ready to be edited");
+            user.sendTranslated("Your book is now unsigned and ready to be edited");
         }
         else
         {
@@ -65,7 +65,7 @@ public class EditCommand
                 Map<String, Object> params = context.getParams();
                 if (params.size() < 1)
                 {
-                    context.sendMessage("writer", "&cYou need to specify at least one parameter");
+                    context.sendTranslated("&cYou need to specify at least one parameter");
                     return;
                 }
                 Sign sign = (Sign)target.getState();
@@ -78,7 +78,7 @@ public class EditCommand
                 CubeEngine.getEventManager().fireEvent(event);
                 if (event.isCancelled())
                 {
-                    context.sendMessage("basics", "&cCould not change the sign!");
+                    context.sendTranslated("&cCould not change the sign!");
                     return;
                 }
                 for (int i = 0; i < 4; ++i)
@@ -87,14 +87,14 @@ public class EditCommand
                 }
                 sign.update();
 
-                user.sendMessage("writer", "The sign has been changed");
+                user.sendTranslated("The sign has been changed");
             }
             else
             {
-                user.sendMessage("writer", "&cYou need to have a signed book in hand or be looking at a sign less than 10 blocks away");
+                user.sendTranslated("&cYou need to have a signed book in hand or be looking at a sign less than 10 blocks away");
                 if (context.getCore().isDebug())
                 {
-                    user.sendMessage("writer", "You where looking at: %s", target.getType().name());
+                    user.sendTranslated("You where looking at: %s", target.getType().name());
                 }
             }
         }

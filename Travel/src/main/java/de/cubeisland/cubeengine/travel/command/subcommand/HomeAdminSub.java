@@ -45,25 +45,25 @@ public class HomeAdminSub
         {
             if (CubeEngine.getUserManager().getUser(context.getString(0), false) == null)
             {
-                context.sendMessage("travel", "&3%s &4Isn't an user on this server", context.getString(0));
+                context.sendTranslated("&3%s &4Isn't an user on this server", context.getString(0));
                 return;
             }
             else
             {
                 if (context.hasFlag("p"))
                 {
-                    context.sendMessage("travel", "&5Are you sure you want to delete all public homes ever created by &3%s", context.getString(0));
-                    context.sendMessage("travel", "&5To delete all the public homes, do: &9\"/home admin accept\" &5before 20 secunds");
+                    context.sendTranslated("&5Are you sure you want to delete all public homes ever created by &3%s", context.getString(0));
+                    context.sendTranslated("&5To delete all the public homes, do: &9\"/home admin accept\" &5before 20 secunds");
                 }
                 else if (context.hasFlag("P"))
                 {
-                    context.sendMessage("travel", "&5Are you sure you want to delete all private homes ever created by &3%s", context.getString(0));
-                    context.sendMessage("travel", "&5To delete all the private homes, do: &9\"/home admin accept\" &5before 20 secunds");
+                    context.sendTranslated("&5Are you sure you want to delete all private homes ever created by &3%s", context.getString(0));
+                    context.sendTranslated("&5To delete all the private homes, do: &9\"/home admin accept\" &5before 20 secunds");
                 }
                 else
                 {
-                    context.sendMessage("travel", "&5Are you sure you want to delete all homes ever created by &3%s", context.getString(0));
-                    context.sendMessage("travel", "&5To delete all the homes, do: &9\"/home admin accept\" &5before 20 secunds");
+                    context.sendTranslated("&5Are you sure you want to delete all homes ever created by &3%s", context.getString(0));
+                    context.sendTranslated("&5To delete all the homes, do: &9\"/home admin accept\" &5before 20 secunds");
                 }
             }
         }
@@ -71,18 +71,18 @@ public class HomeAdminSub
         {
             if (context.hasFlag("p"))
             {
-                context.sendMessage("travel", "&5Are you sure you want to delete all public homes ever created on this server!?");
-                context.sendMessage("travel", "&5To delete all the public homes of every user, do: &9\"/home admin accept\" &5before 20 secunds");
+                context.sendTranslated("&5Are you sure you want to delete all public homes ever created on this server!?");
+                context.sendTranslated("&5To delete all the public homes of every user, do: &9\"/home admin accept\" &5before 20 secunds");
             }
             else if (context.hasFlag("P"))
             {
-                context.sendMessage("travel", "&5Are you sure you want to delete all private homes ever created on this server!?");
-                context.sendMessage("travel", "&5To delete all the private homes of every user, do: &9\"/home admin accept\" &5before 20 secunds");
+                context.sendTranslated("&5Are you sure you want to delete all private homes ever created on this server!?");
+                context.sendTranslated("&5To delete all the private homes of every user, do: &9\"/home admin accept\" &5before 20 secunds");
             }
             else
             {
-                context.sendMessage("travel", "&5Are you sure you want to delete all homes ever created on this server!?");
-                context.sendMessage("travel", "&5To delete all the homes of every user, do: &9\"/home admin accept\" &5before 20 secunds");
+                context.sendTranslated("&5Are you sure you want to delete all homes ever created on this server!?");
+                context.sendTranslated("&5To delete all the homes of every user, do: &9\"/home admin accept\" &5before 20 secunds");
             }
         }
         acceptEntries.put(context.getSender().getName(), new Pair<Long, ParameterizedContext>(System.currentTimeMillis(), context));
@@ -105,7 +105,7 @@ public class HomeAdminSub
                         if (context.hasFlag("p")) mask |= tpManager.PUBLIC;
                         if (context.hasFlag("P")) mask |= tpManager.PRIVATE;
                         tpManager.deleteHomes(mask);
-                        context.sendMessage("travel", "The homes are now deleted");
+                        context.sendTranslated("The homes are now deleted");
                     }
                     else
                     {
@@ -114,13 +114,13 @@ public class HomeAdminSub
                         if (context.hasFlag("p")) mask |= tpManager.PUBLIC;
                         if (context.hasFlag("P")) mask |= tpManager.PRIVATE;
                         tpManager.deleteHomes(user, mask);
-                        context.sendMessage("travel", "The homes are now deleted");
+                        context.sendTranslated("The homes are now deleted");
                     }
                 }
                 return;
             }
         }
-        context.sendMessage("travel", "&4You have nothing to accept");
+        context.sendTranslated("&4You have nothing to accept");
     }
 
     @Command(desc = "List all (public) homes", flags = {
@@ -151,11 +151,11 @@ public class HomeAdminSub
         {
             if (home.isPublic())
             {
-                context.sendMessage("travel", "  &2public&e:&6%s", home.getName());
+                context.sendTranslated("  &2public&e:&6%s", home.getName());
             }
             else
             {
-                context.sendMessage("travel", "  &2%s&e:&6%s", home.getOwner().getName(), home.getName());
+                context.sendTranslated("  &2%s&e:&6%s", home.getOwner().getName(), home.getName());
             }
         }
     }
@@ -170,16 +170,16 @@ public class HomeAdminSub
         home = tpManager.getHome(context.getString(0));
         if (home == null)
         {
-            context.sendMessage("travel", "&4Couldn't find &9%s", context.getString(0));
+            context.sendTranslated("&4Couldn't find &9%s", context.getString(0));
             return;
         }
         if (!home.isPublic())
         {
-            context.sendMessage("travel", "&9%s &6is already private!", context.getString(0));
+            context.sendTranslated("&9%s &6is already private!", context.getString(0));
             return;
         }
         home.setVisibility(TeleportPoint.Visibility.PRIVATE);
-        context.sendMessage("travel", "&9%s &6is now private", context.getString(0));
+        context.sendTranslated("&9%s &6is now private", context.getString(0));
     }
 
     @Command(names = {
@@ -192,16 +192,16 @@ public class HomeAdminSub
         home = tpManager.getHome(context.getString(0));
         if (home == null)
         {
-            context.sendMessage("travel", "&4Couldn't find &9%s", context.getString(0));
+            context.sendTranslated("&4Couldn't find &9%s", context.getString(0));
             return;
         }
         if (home.isPublic())
         {
-            context.sendMessage("travel", "&9%s &6is already public!", context.getString(0));
+            context.sendTranslated("&9%s &6is already public!", context.getString(0));
             return;
         }
         home.setVisibility(TeleportPoint.Visibility.PUBLIC);
-        context.sendMessage("travel", "&9%s &6is now public", context.getString(0));
+        context.sendTranslated("&9%s &6is now public", context.getString(0));
     }
 
     private class AcceptEntry

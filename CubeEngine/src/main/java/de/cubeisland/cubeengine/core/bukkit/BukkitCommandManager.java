@@ -5,7 +5,8 @@ import de.cubeisland.cubeengine.core.command.CommandHolder;
 import de.cubeisland.cubeengine.core.command.CommandManager;
 import de.cubeisland.cubeengine.core.command.ConsoleCommandCompleter;
 import de.cubeisland.cubeengine.core.command.CubeCommand;
-import de.cubeisland.cubeengine.core.command.sender.CommandSender;
+import de.cubeisland.cubeengine.core.command.CommandSender;
+import de.cubeisland.cubeengine.core.command.sender.ConsoleCommandSender;
 import de.cubeisland.cubeengine.core.module.Module;
 import gnu.trove.map.hash.THashMap;
 import org.bukkit.Server;
@@ -23,6 +24,7 @@ public class BukkitCommandManager implements CommandManager
     private final Map<String, Command> knownCommands;
     private final Map<Class<? extends CubeCommand>, CommandFactory> commandFactories;
     private final ConsoleCommandCompleter completer;
+    private final ConsoleCommandSender consoleSender;
 
     public BukkitCommandManager(BukkitCore core)
     {
@@ -32,6 +34,7 @@ public class BukkitCommandManager implements CommandManager
         this.knownCommands = this.commandMap.getKnownCommands();
         this.commandFactories = new THashMap<Class<? extends CubeCommand>, CommandFactory>();
         BukkitUtils.swapCommandMap(this.commandMap);
+        this.consoleSender = new ConsoleCommandSender(core, this.server.getConsoleSender());
 
         this.completer = new ConsoleCommandCompleter(core, this.commandMap);
         BukkitUtils.getConsoleReader(this.server).addCompleter(completer);
@@ -261,5 +264,11 @@ public class BukkitCommandManager implements CommandManager
     public boolean runCommand(CommandSender sender, String commandLine)
     {
         return this.commandMap.dispatch(sender, commandLine);
+    }
+
+    @Override
+    public ConsoleCommandSender getConsoleSender()
+    {
+        return this.consoleSender;
     }
 }

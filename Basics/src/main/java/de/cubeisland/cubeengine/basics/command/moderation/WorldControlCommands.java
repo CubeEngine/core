@@ -50,7 +50,7 @@ public class WorldControlCommands
         String weather = Match.string().matchString(context.getString(0), "sun", "rain", "storm");
         if (weather == null)
         {
-            context.sendMessage("basics", "&cInvalid weather!\n&eUse &6sun&e, &6rain &eor &6storm&e!");
+            context.sendTranslated("&cInvalid weather!\n&eUse &6sun&e, &6rain &eor &6storm&e!");
             return;
         }
         if (weather.equalsIgnoreCase("sun"))
@@ -73,7 +73,7 @@ public class WorldControlCommands
             duration = context.getArg(1, Integer.class, 0);
             if (duration == 0)
             {
-                context.sendMessage("basics", "&cThe given duration is invalid!");
+                context.sendTranslated("&cThe given duration is invalid!");
                 return;
             }
             duration *= 20;
@@ -84,7 +84,7 @@ public class WorldControlCommands
             world = context.getParam("in", null);
             if (world == null)
             {
-                context.sendMessage("basics", "&cWorld &6%s &cnot found!", context.getString(1));
+                context.sendTranslated("&cWorld &6%s &cnot found!", context.getString(1));
                 return;
             }
         }
@@ -92,7 +92,7 @@ public class WorldControlCommands
         {
             if (sender == null)
             {
-                context.sendMessage("basics", "&cIf not used ingame you have to specify a world!");
+                context.sendTranslated("&cIf not used ingame you have to specify a world!");
                 return;
             }
             world = sender.getWorld();
@@ -102,11 +102,11 @@ public class WorldControlCommands
         world.setWeatherDuration(duration);
         if (world.isThundering() != noThunder && world.hasStorm() != sunny) // weather is not changing
         {
-            context.sendMessage("basics", "&aWeather in &6%s &awas already set to &e%s&a!", world.getName(), weather);
+            context.sendTranslated("&aWeather in &6%s &awas already set to &e%s&a!", world.getName(), weather);
         }
         else
         {
-            context.sendMessage("basics", "&aChanged weather in &6%s &ato &e%s&a!", world.getName(), weather);
+            context.sendTranslated("&aChanged weather in &6%s &ato &e%s&a!", world.getName(), weather);
         }
     }
 
@@ -129,7 +129,7 @@ public class WorldControlCommands
         {
             if (sender == null)
             {
-                context.sendMessage("basics", "&cThe butcher will come to YOU tonight!");
+                context.sendTranslated("&cThe butcher will come to YOU tonight!");
                 return;
             }
             world = sender.getWorld();
@@ -141,7 +141,7 @@ public class WorldControlCommands
         }
         else if (sender == null)
         {
-            context.sendMessage("basics", "&cIf not used ingame you can only remove all!");
+            context.sendTranslated("&cIf not used ingame you can only remove all!");
             return;
         }
         if (context.hasArg(1))
@@ -149,7 +149,7 @@ public class WorldControlCommands
             radius = context.getArg(1, Integer.class, 0);
             if (radius <= 0)
             {
-                context.sendMessage("basics", "&cThe radius has to be a number greater than 0!");
+                context.sendTranslated("&cThe radius has to be a number greater than 0!");
                 return;
             }
         }
@@ -183,7 +183,7 @@ public class WorldControlCommands
                     EntityType type = Match.entity().any(s_entityType.substring(0, s_entityType.indexOf(":")));
                     if (!EntityType.DROPPED_ITEM.equals(type))
                     {
-                        context.sendMessage("basics", "&cYou can only specify data for removing items!");
+                        context.sendTranslated("&cYou can only specify data for removing items!");
                         return;
                     }
                     Material itemtype = Match.material().material(s_entityType.substring(s_entityType.indexOf(":") + 1));
@@ -202,16 +202,16 @@ public class WorldControlCommands
                     EntityType type = Match.entity().any(s_entityType);
                     if (type == null)
                     {
-                        context.sendMessage("basics", "&cInvalid entity-type!\n&eUse &6"
-                                + EntityType.DROPPED_ITEM + "&e, &6" + EntityType.ARROW + "&e, &6"
-                                + EntityType.BOAT + "&e, &6" + EntityType.MINECART + "&e, &6"
-                                + EntityType.PAINTING + "&e, &6" + EntityType.ITEM_FRAME + " &eor &6"
-                                + EntityType.EXPERIENCE_ORB);
+                        context.sendTranslated("&cInvalid entity-type!\n&eUse &6"
+                                                   + EntityType.DROPPED_ITEM + "&e, &6" + EntityType.ARROW + "&e, &6"
+                                                   + EntityType.BOAT + "&e, &6" + EntityType.MINECART + "&e, &6"
+                                                   + EntityType.PAINTING + "&e, &6" + EntityType.ITEM_FRAME + " &eor &6"
+                                                   + EntityType.EXPERIENCE_ORB);
                         return;
                     }
                     if (type.isAlive())
                     {
-                        context.sendMessage("basics", "&cTo kill living entities use the &e/butcher &ccommand!");
+                        context.sendTranslated("&cTo kill living entities use the &e/butcher &ccommand!");
                         return;
                     }
                     types.add(type);
@@ -232,25 +232,25 @@ public class WorldControlCommands
         }
         if (entitiesRemoved == 0)
         {
-            context.sendMessage("basics", "&eNo entities to remove!");
+            context.sendTranslated("&eNo entities to remove!");
         }
         else if (context.getString(0).equalsIgnoreCase("*"))
         {
             if (radius == -1)
             {
-                context.sendMessage("basics", "&aRemoved all entities in &6%s&a! &f(&6%d&f)", world.getName(), entitiesRemoved);
+                context.sendTranslated("&aRemoved all entities in &6%s&a! &f(&6%d&f)", world.getName(), entitiesRemoved);
                 return;
             }
-            context.sendMessage("basics", "&aRemoved all entities around you! &f(&6%d&f)", entitiesRemoved);
+            context.sendTranslated("&aRemoved all entities around you! &f(&6%d&f)", entitiesRemoved);
         }
         else
         {
             if (radius == -1)
             {
-                context.sendMessage("basics", "&aRemoved &e%d &aentities in '&6%s&a!", entitiesRemoved, world.getName());
+                context.sendTranslated("&aRemoved &e%d &aentities in '&6%s&a!", entitiesRemoved, world.getName());
                 return;
             }
-            context.sendMessage("basics", "&aRemoved &e%d &aentities around you!", entitiesRemoved);
+            context.sendTranslated("&aRemoved &e%d &aentities around you!", entitiesRemoved);
         }
     }
 
@@ -296,7 +296,7 @@ public class WorldControlCommands
             radius = context.getArg(1, Integer.class, 0);
             if (radius < 0 && !(radius == -1 && BasicsPerm.COMMAND_BUTCHER_FLAG_ALL.isAuthorized(context.getSender())))
             {
-                context.sendMessage("basics", "&cThe radius has to be a number greater than 0!");
+                context.sendTranslated("&cThe radius has to be a number greater than 0!");
                 return;
             }
         }
@@ -378,7 +378,7 @@ public class WorldControlCommands
         }
         remList.retainAll(list);
         removed = this.removeEntities(remList, loc, radius, lightning);
-        context.sendMessage("basics", removed == 0 ? "&eNothing to butcher!" : "&aYou just slaughtered &e%d &aliving entities!", removed);
+        context.sendTranslated(removed == 0 ? "&eNothing to butcher!" : "&aYou just slaughtered &e%d &aliving entities!", removed);
     }
 
     private int removeEntities(List<Entity> remList, Location loc, int radius, boolean lightning)

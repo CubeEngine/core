@@ -4,6 +4,7 @@ import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.shout.announce.Announcement;
 import de.cubeisland.cubeengine.shout.announce.AnnouncementManager;
 
+import java.util.Locale;
 import java.util.Queue;
 
 public class UserReceiver extends AbstractReceiver
@@ -20,35 +21,35 @@ public class UserReceiver extends AbstractReceiver
     @Override
     public String getName()
     {
-        return user.getName();
+        return this.user.getName();
     }
 
     @Override
     public void sendMessage(String[] message)
     {
-        user.sendMessage(" ");
+        this.user.sendMessage(" ");
         for (String line : message)
         {
-            user.sendMessage(line);
+            this.user.sendMessage(line);
         }
-        user.sendMessage(" ");
+        this.user.sendMessage(" ");
     }
 
     @Override
-    public String getLanguage()
+    public Locale getLocale()
     {
-        return user.getLanguage();
+        return this.user.getLocale();
     }
 
     @Override
     public boolean canReceiver(Announcement announcement)
     {
-        return announcement.hasWorld(user.getWorld().getName());
+        return announcement.hasWorld(this.user.getWorld().getName());
     }
 
     @Override
     public boolean couldReceive(Announcement announcement)
     {
-        return announcement.getPermNode().equals("*") || user.hasPermission(announcement.getPermNode());
+        return announcement.getPermNode().equals("*") || this.user.hasPermission(announcement.getPermNode());
     }
 }

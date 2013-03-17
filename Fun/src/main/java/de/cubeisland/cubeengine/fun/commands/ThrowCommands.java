@@ -68,7 +68,7 @@ public class ThrowCommands
     {
         if (!(context.getSender() instanceof User))
         {
-            context.sendMessage("fun", "&cThis command can only be used by a player!");
+            context.sendTranslated("&cThis command can only be used by a player!");
             return;
         }
         
@@ -90,27 +90,27 @@ public class ThrowCommands
 
         if (context.getArgCount() == 0)
         {
-            context.sendMessage("fun", "&cYou have to add the material you want to throw.");
+            context.sendTranslated("&cYou have to add the material you want to throw.");
             return;
         }
 
         int amount = context.getArg(1, Integer.class, -1);
         if ((amount > this.fun.getConfig().maxThrowNumber || amount < 1) && amount != -1)
         {
-            context.sendMessage("fun", "&cThe amount has to be a number from 1 to %d", this.fun.getConfig().maxThrowNumber);
+            context.sendTranslated("&cThe amount has to be a number from 1 to %d", this.fun.getConfig().maxThrowNumber);
             return;
         }
 
         int delay = context.getParam("delay", 3);
         if (delay > this.fun.getConfig().maxThrowDelay || delay < 0)
         {
-            context.sendMessage("fun", "&cThe delay has to be a number from 0 to %d", this.fun.getConfig().maxThrowDelay);
+            context.sendTranslated("&cThe delay has to be a number from 0 to %d", this.fun.getConfig().maxThrowDelay);
             return;
         }
         
         if(unsafe && !FunPerm.COMMAND_THROW_UNSAFE.isAuthorized( context.getSender() ) )
         {
-            context.sendMessage( "fun", "&cYou are not allowed to execute this command in unsafe-mode." );
+            context.sendTranslated("&cYou are not allowed to execute this command in unsafe-mode.");
             return;
         }
 
@@ -121,24 +121,24 @@ public class ThrowCommands
         }
         if (type == null)
         {
-            context.sendMessage("fun", "&cThe given object was not found!");
+            context.sendTranslated("&cThe given object was not found!");
             return;
         }
         if (!type.isSpawnable())
         {
-            context.sendMessage("fun", "&cThe Item %s is not supported!", object);
+            context.sendTranslated("&cThe Item %s is not supported!", object);
             return;
         }
 
         if (!user.hasPermission(BASE_THROW_PERM + type.name().toLowerCase(Locale.ENGLISH).replace("_", "-")))
         {
-            context.sendMessage("fun", "&cYou are not allowed to throw this");
+            context.sendTranslated("&cYou are not allowed to throw this");
             return;
         }
 
         if ((BUGGED_ENTITIES.contains(type) || Match.entity().isMonster(type)) && !unsafe)
         {
-            context.sendMessage("fun", "&eThis object can only be thrown in unsafe mode. Add -u to enable the unsafe mode.");
+            context.sendTranslated("&eThis object can only be thrown in unsafe mode. Add -u to enable the unsafe mode.");
             return;
         }
 
@@ -149,7 +149,7 @@ public class ThrowCommands
         }
         else
         {
-            context.sendMessage("fun", "&cFailed to throw this!");
+            context.sendTranslated("&cFailed to throw this!");
         }
     }
 
@@ -215,8 +215,8 @@ public class ThrowCommands
         {
             if (this.amount == -1 && notify)
             {
-                this.user.sendMessage("fun", "&aStarted throwing!");
-                this.user.sendMessage("fun", "&aYou will keep throwing until you run this command again.");
+                this.user.sendTranslated("&aStarted throwing!");
+                this.user.sendTranslated("&aYou will keep throwing until you run this command again.");
             }
             this.taskId = fun.getCore().getTaskManager().scheduleSyncRepeatingTask(fun, this, 0, this.interval);
             return this.taskId != -1;
@@ -235,11 +235,11 @@ public class ThrowCommands
                 {
                     if (this.amount == -1)
                     {
-                        this.user.sendMessage("fun", "&aYou are no longer throwing.");
+                        this.user.sendTranslated("&aYou are no longer throwing.");
                     }
                     else
                     {
-                        this.user.sendMessage("fun", "&aAll objects thrown.");
+                        this.user.sendTranslated("&aAll objects thrown.");
                     }
                 }
                 fun.getCore().getTaskManager().cancelTask(fun, this.taskId);

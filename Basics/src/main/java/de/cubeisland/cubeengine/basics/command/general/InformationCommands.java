@@ -2,10 +2,10 @@ package de.cubeisland.cubeengine.basics.command.general;
 
 import de.cubeisland.cubeengine.basics.Basics;
 import de.cubeisland.cubeengine.core.command.CommandContext;
+import de.cubeisland.cubeengine.core.command.CommandSender;
+import de.cubeisland.cubeengine.core.command.parameterized.Flag;
 import de.cubeisland.cubeengine.core.command.parameterized.ParameterizedContext;
 import de.cubeisland.cubeengine.core.command.reflected.Command;
-import de.cubeisland.cubeengine.core.command.parameterized.Flag;
-import de.cubeisland.cubeengine.core.command.sender.CommandSender;
 import de.cubeisland.cubeengine.core.command.sender.ConsoleCommandSender;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.util.ChatFormat;
@@ -24,9 +24,13 @@ import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 
 import java.lang.management.ManagementFactory;
-import java.util.*;
-
-import static de.cubeisland.cubeengine.core.i18n.I18n._;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Locale;
+import java.util.TreeMap;
 
 public class InformationCommands
 {
@@ -48,14 +52,14 @@ public class InformationCommands
             world = context.getArg(0,World.class,null);
             if (world == null)
             {
-                context.sendMessage("basics","&cUnkown world %s!",context.getString(0));
+                context.sendTranslated("&cUnkown world %s!", context.getString(0));
                 return;
             }
             x = context.getArg(1,Integer.class,null);
             z = context.getArg(2,Integer.class,null);
             if (x == null || z == null)
             {
-                context.sendMessage("basics","&cPlease provide valid integer x and/or z coordinates!");
+                context.sendTranslated("&cPlease provide valid integer x and/or z coordinates!");
                 return;
             }
         }
@@ -69,11 +73,11 @@ public class InformationCommands
         }
         else
         {
-            context.sendMessage("basics","&cPlease provide a world and x and z coordinates!");
+            context.sendTranslated("&cPlease provide a world and x and z coordinates!");
             return;
         }
         Biome biome = world.getBiome(x, z);
-        context.sendMessage("basics", "&eBiome at x=&6%d &ez=&6%d&e: &9%s", x,z,biome.name());
+        context.sendTranslated("&eBiome at x=&6%d &ez=&6%d&e: &9%s", x, z, biome.name());
     }
 
     @Command(desc = "Displays the seed of a world.", usage = "{world}", max = 1)
@@ -85,7 +89,7 @@ public class InformationCommands
             world = context.getArg(0, World.class, null);
             if (world == null)
             {
-                context.sendMessage("basics", "&cWorld %s not found!",context.getString(0));
+                context.sendTranslated("&cWorld %s not found!", context.getString(0));
                 return;
             }
         }
@@ -97,11 +101,11 @@ public class InformationCommands
             }
             else
             {
-                context.sendMessage("basics", "&cNo world specified!");
+                context.sendTranslated("&cNo world specified!");
                 return;
             }
         }
-        context.sendMessage("basics", "&eSeed of &6%s&e is &6%d", world.getName(), world.getSeed());
+        context.sendTranslated("&eSeed of &6%s&e is &6%d", world.getName(), world.getSeed());
     }
 
     public enum Direction // TODO move me to core!
@@ -143,11 +147,11 @@ public class InformationCommands
             int direction = Math.round(((User)sender).getLocation().getYaw() + 180f + 360f) % 360;
             String dir;
             dir = Direction.matchDirection(direction).name();
-            sender.sendMessage("basics", "&eYou are looking to &6%s&e!", _(sender, "basics", dir));
+            sender.sendTranslated("&eYou are looking to &6%s&e!", sender.translate(dir));
         }
         else
         {
-            context.sendMessage("basics", "&6ProTip: &eI assume you are looking right at your screen. Right?");
+            context.sendTranslated("&6ProTip: &eI assume you are looking right at your screen. Right?");
         }
     }
 
@@ -159,16 +163,16 @@ public class InformationCommands
             final int height = ((User)context.getSender()).getLocation().getBlockY();
             if (height > 62)
             {
-                context.sendMessage("basics", "You are on heightlevel %d (%d above sealevel)", height, height - 62);
+                context.sendTranslated("You are on heightlevel %d (%d above sealevel)", height, height - 62);
             }
             else
             {
-                context.sendMessage("basics", "You are on heightlevel %d (%d below sealevel)", height, 62 - height);
+                context.sendTranslated("You are on heightlevel %d (%d below sealevel)", height, 62 - height);
             }
         }
         else
         {
-            context.sendMessage("basics", "&cYou dug too deep!");
+            context.sendTranslated("&cYou dug too deep!");
         }
     }
 
@@ -178,11 +182,11 @@ public class InformationCommands
         if (context.getSender() instanceof User)
         {
             final Location loc = ((User)context.getSender()).getLocation();
-            context.sendMessage("basics", "&eYour position is &6X:&f%d &6Y:&f%d &6Z:&f%d", loc.getBlockX(), loc.getBlockY(), loc.getBlockZ());
+            context.sendTranslated("&eYour position is &6X:&f%d &6Y:&f%d &6Z:&f%d", loc.getBlockX(), loc.getBlockY(), loc.getBlockZ());
         }
         else
         {
-            context.sendMessage("basics", "&eYour position: &cRight in front of your screen!");
+            context.sendTranslated("&eYour position: &cRight in front of your screen!");
         }
     }
 
@@ -198,7 +202,7 @@ public class InformationCommands
             user = context.getUser(1);
             if (user == null)
             {
-                context.sendMessage("basics", "&cUser %s not found!",context.getString(1));
+                context.sendTranslated("&cUser %s not found!", context.getString(1));
                 return;
             }
         }
@@ -208,7 +212,7 @@ public class InformationCommands
         }
         else
         {
-            context.sendMessage("basics", "&eI am right &cbehind &eyou!");
+            context.sendTranslated("&eI am right &cbehind &eyou!");
             return;
         }
         int radius = this.basics.getConfiguration().nearDefaultRadius;
@@ -302,11 +306,11 @@ public class InformationCommands
             result += groupedOutput.toString();
             if (context.getSender().getName().equals(user.getName()))
             {
-                context.sendMessage("basics", "&eFound those nearby you:\n%s", result);
+                context.sendTranslated("&eFound those nearby you:\n%s", result);
             }
             else
             {
-                context.sendMessage("basics", "&eFound those nearby %s:\n%s", user.getName(), StringUtils.implode("&f, ", outputlist));
+                context.sendTranslated("&eFound those nearby %s:\n%s", user.getName(), StringUtils.implode("&f, ", outputlist));
             }
         }
     }
@@ -342,11 +346,11 @@ public class InformationCommands
         final String label = context.getLabel().toLowerCase(Locale.ENGLISH);
         if (context.getSender() instanceof ConsoleCommandSender)
         {
-            context.sendMessage("basics", "&e" + label + " in the console?");
+            context.sendTranslated("&e" + label + " in the console?");
         }
         else
         {
-            context.sendMessage("basics", ("ping".equals(label) ? "pong" : "ping") + "! Your latency: %s", ((User)context.getSender()).getPing());
+            context.sendTranslated(("ping".equals(label) ? "pong" : "ping") + "! Your latency: %s", ((User)context.getSender()).getPing());
         }
     }
 
@@ -355,12 +359,12 @@ public class InformationCommands
     {
         //Uptime:
         Duration dura = new Duration(new Date(ManagementFactory.getRuntimeMXBean().getStartTime()).getTime(), System.currentTimeMillis());
-        context.sendMessage("basics", "&6Uptime: &a%s", dura.format("%www %ddd %hhh %mmm %sss"));
+        context.sendTranslated("&6Uptime: &a%s", dura.format("%www %ddd %hhh %mmm %sss"));
         //TPS:
         float tps = this.basics.getLagTimer().getAverageTPS();
         String color = tps == 20 ? "&a" : tps > 17 ? "&e" : tps > 10 ? "&c" : "&4";
         color = ChatFormat.parseFormats(color);
-        context.sendMessage("basics", "&6Current TPS: %s%.1f", color, tps);
+        context.sendTranslated("&6Current TPS: %s%.1f", color, tps);
         //Memory
         long memUse = ManagementFactory.getMemoryMXBean().getHeapMemoryUsage().getUsed() / 1048576;
         long memCom = ManagementFactory.getMemoryMXBean().getHeapMemoryUsage().getCommitted() / 1048576;
@@ -388,14 +392,14 @@ public class InformationCommands
         }
         memused += memUse;
         memused = ChatFormat.parseFormats(memused);
-        context.sendMessage("basics", "&6Memory Usage: %s&f/&e%d&f/&e%d MB", memused, memCom, memMax);
+        context.sendTranslated("&6Memory Usage: %s&f/&e%d&f/&e%d MB", memused, memCom, memMax);
         //Worlds with loaded Chunks / Entities
         for (World world : Bukkit.getServer().getWorlds())
         {
             String type = world.getEnvironment().name();
             int loadedChunks = world.getLoadedChunks().length;
             int entities = world.getEntities().size();
-            context.sendMessage("basics", "&6%s &e(&2%s&e)&6: &e%d &6chunks &e%d &6entities", world.getName(), type, loadedChunks, entities);
+            context.sendTranslated("&6%s &e(&2%s&e)&6: &e%d &6chunks &e%d &6entities", world.getName(), type, loadedChunks, entities);
         }
     }
 
@@ -403,7 +407,7 @@ public class InformationCommands
     @Command(desc = "Displays all loaded worlds", names = {"listWorlds","worldlist"})
     public void listWorlds(CommandContext context)
     {
-        context.sendMessage("basics","&aLoaded worlds:");
+        context.sendTranslated("&aLoaded worlds:");
         for (World world : Bukkit.getServer().getWorlds())
         {
             context.sendMessage(String.format(ChatFormat.parseFormats(" &f- &6%s&f: &9%s"),world.getName(),world.getEnvironment().name()));

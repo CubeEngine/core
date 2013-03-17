@@ -214,8 +214,8 @@ public class TimeControlCommands
 
         if (!context.hasArg(0))
         {
-            context.sendMessage("basics", "&aIt's currently &e%s&a in &6%s&a.",
-                    Time.format(sender.getWorld().getTime()), sender.getWorld().getName());
+            context.sendTranslated("&aIt's currently &e%s&a in &6%s&a.",
+                                   Time.format(sender.getWorld().getTime()), sender.getWorld().getName());
         }
         else
         {
@@ -227,11 +227,11 @@ public class TimeControlCommands
                 World world = Bukkit.getWorld(context.getString(0));
                 if (world != null)
                 {
-                    context.sendMessage("basics", "&aIt's currently &e%s&a in this world.", Time.format(world.getTime()));
+                    context.sendTranslated("&aIt's currently &e%s&a in this world.", Time.format(world.getTime()));
                 }
                 else
                 {
-                    context.sendMessage("basics", "&cThe time you entered is not valid!");
+                    context.sendTranslated("&cThe time you entered is not valid!");
                 }
                 return;
             }
@@ -256,13 +256,13 @@ public class TimeControlCommands
                 }
                 if (worlds.isEmpty())
                 {
-                    context.sendMessage("basics", "&cNone of the specified worlds were found!");
+                    context.sendTranslated("&cNone of the specified worlds were found!");
                     return;
                 }
             }
             else if (sender == null)
             {
-                context.sendMessage("basics", "&cYou have to specify a world when using this command from the console!");
+                context.sendTranslated("&cYou have to specify a world when using this command from the console!");
                 return;
             }
             else
@@ -272,15 +272,15 @@ public class TimeControlCommands
             }
             if (worlds.size() == 1)
             {
-                context.sendMessage("basics", "&aThe time of &e%s&a has been set to &6%s&a!", worlds.iterator().next().getName(), Time.format(time));
+                context.sendTranslated("&aThe time of &e%s&a has been set to &6%s&a!", worlds.iterator().next().getName(), Time.format(time));
             }
             else if (context.getString(1).equals("*"))
             {
-                context.sendMessage("basics", "&aThe time of all worlds have been set to &6%s&a!", Time.format(time));
+                context.sendTranslated("&aThe time of all worlds have been set to &6%s&a!", Time.format(time));
             }
             else
             {
-                context.sendMessage("basics", "&aThe time of &6%s &aworlds have been set to &6%s&a!", worlds.size(), Time.format(time));
+                context.sendTranslated("&aThe time of &6%s &aworlds have been set to &6%s&a!", worlds.size(), Time.format(time));
             }
             for (World world : worlds)
             {
@@ -290,12 +290,12 @@ public class TimeControlCommands
                     if (this.lockTask.worlds.containsKey(world.getName()))
                     {
                         this.lockTask.remove(world);
-                        context.sendMessage("basics", "&aTime unlocked for &6%s&a!", world.getName());
+                        context.sendTranslated("&aTime unlocked for &6%s&a!", world.getName());
                     }
                     else
                     {
                         this.lockTask.add(world);
-                        context.sendMessage("basics", "&aTime locked for &6%s&a!", world.getName());
+                        context.sendTranslated("&aTime locked for &6%s&a!", world.getName());
                     }
                 }
             }
@@ -320,7 +320,7 @@ public class TimeControlCommands
             time = Time.matchTime(timeString);
             if (time == null)
             {
-                context.sendMessage("basics", "&cInvalid time-format!");
+                context.sendTranslated("&cInvalid time-format!");
                 return;
             }
         }
@@ -335,13 +335,13 @@ public class TimeControlCommands
             user = context.getUser(1);
             if (user == null)
             {
-                context.sendMessage("core", "&cUser %s not found!", context.getUser(0));
+                context.sendTranslated("&cUser %s not found!", context.getUser(0));
                 return;
             }
             if (!BasicsPerm.COMMAND_PTIME_OTHER.
                     isAuthorized(context.getSender()))
             {
-                context.sendMessage("basics", "&cYou are not allowed to change the time of other players!");
+                context.sendTranslated("&cYou are not allowed to change the time of other players!");
                 return;
             }
             other = true;
@@ -349,10 +349,10 @@ public class TimeControlCommands
         if (reset)
         {
             user.resetPlayerTime();
-            context.sendMessage("basics", "&aReseted the time for &2%s&a!", user.getName());
+            context.sendTranslated("&aReseted the time for &2%s&a!", user.getName());
             if (other)
             {
-                user.sendMessage("basics", "&eYour time was reseted!");
+                user.sendTranslated("&eYour time was reseted!");
             }
         }
         else
@@ -370,21 +370,21 @@ public class TimeControlCommands
             String timeName = Time.getTimeName(time);
             if (timeName == null)
             {
-                context.sendMessage("basics", "&aTime set to &e%d &afor &2%s&a!", time, user.getName());
+                context.sendTranslated("&aTime set to &e%d &afor &2%s&a!", time, user.getName());
             }
             else
             {
-                context.sendMessage("basics", "&aTime set to &e%s &afor &2%s&a!", timeName, user.getName());
+                context.sendTranslated("&aTime set to &e%s &afor &2%s&a!", timeName, user.getName());
             }
             if (other)
             {
                 if (timeName == null)
                 {
-                    user.sendMessage("basics", "&aYour time was set to &e%d!", time);
+                    user.sendTranslated("&aYour time was set to &e%d!", time);
                 }
                 else
                 {
-                    user.sendMessage("basics", "&aYour time was set to &e%s!", timeName);
+                    user.sendTranslated("&aYour time was set to &e%s!", timeName);
                 }
             }
         }

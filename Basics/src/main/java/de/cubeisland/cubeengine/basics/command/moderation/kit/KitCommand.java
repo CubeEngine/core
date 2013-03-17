@@ -51,7 +51,7 @@ public class KitCommand extends ContainerCommand
         }
         if (sender == null)
         {
-            context.sendMessage("basics", "&cJust log in or use the config!");
+            context.sendTranslated("&cJust log in or use the config!");
             return;
         }
         List<KitItem> itemList = new ArrayList<KitItem>();
@@ -89,7 +89,7 @@ public class KitCommand extends ContainerCommand
         Kit kit = new Kit(this.module,context.getString(0), false, 0, -1, true, "", new ArrayList<String>(), itemList);
         if (!FileUtil.isValidFileName(kit.getKitName()))
         {
-            context.sendMessage("basics", "&6%s &cis is not a valid name! Do not use characters like *, | or ?", kit.getKitName());
+            context.sendTranslated("&6%s &cis is not a valid name! Do not use characters like *, | or ?", kit.getKitName());
             return;
         }
         module.getKitManager().saveKit(kit);
@@ -97,7 +97,7 @@ public class KitCommand extends ContainerCommand
         {
             module.getCore().getPermissionManager().registerPermission(module,kit.getPermission());
         }
-        context.sendMessage("basics", "&aCreated the &6%s &akit!", kit.getKitName());
+        context.sendTranslated("&aCreated the &6%s &akit!", kit.getKitName());
     }
 
     @Alias(names = "kit")
@@ -117,7 +117,7 @@ public class KitCommand extends ContainerCommand
         }
         if (kit == null)
         {
-            context.sendMessage("basics", "&cKit &6%s &cnot found!", kitname);
+            context.sendTranslated("&cKit &6%s &cnot found!", kitname);
             return;
         }
         if (context.hasFlag("a"))
@@ -132,12 +132,12 @@ public class KitCommand extends ContainerCommand
                     {
                         if (receiver.getName().equals(context.getSender().getName()))
                         {
-                            context.sendMessage("basics", "&aReceived the &6%s &akit!", kit.getKitName());
+                            context.sendTranslated("&aReceived the &6%s &akit!", kit.getKitName());
                         }
                         else
                         {
-                            context.sendMessage("basics", "&aYou gave &2%s &athe &6%s &akit!", receiver.getName(), kit.getKitName());
-                            receiver.sendMessage("basics", "&aReceived the &6%s &akit. Enjoy it!", kit.getKitName());
+                            context.sendTranslated("&aYou gave &2%s &athe &6%s &akit!", receiver.getName(), kit.getKitName());
+                            receiver.sendTranslated("&aReceived the &6%s &akit. Enjoy it!", kit.getKitName());
                         }
                         gaveKit = true;
                     }
@@ -149,11 +149,11 @@ public class KitCommand extends ContainerCommand
             }
             if (!gaveKit)
             {
-                context.sendMessage("basics", "&cNo one received the kit!");
+                context.sendTranslated("&cNo one received the kit!");
             }
             else if (kitNotreceived > 0)
             {
-                context.sendMessage("basics", "&c%d players did not receive a kit!");
+                context.sendTranslated("&c%d players did not receive a kit!");
             }
         }
         else
@@ -170,7 +170,7 @@ public class KitCommand extends ContainerCommand
             }
             if (user == null)
             {
-                context.sendMessage("basics", "&cUser %s &cnot found!", context.getString(0));
+                context.sendTranslated("&cUser %s &cnot found!", context.getString(0));
                 return;
             }
             if (kit.give(context.getSender(), user, force))
@@ -179,7 +179,7 @@ public class KitCommand extends ContainerCommand
                 {
                     if (kit.getCustomMessage().equals(""))
                     {
-                        context.sendMessage("basics", "&aReceived the &6%s &akit. Enjoy it!", kit.getKitName());
+                        context.sendTranslated("&aReceived the &6%s &akit. Enjoy it!", kit.getKitName());
                     }
                     else
                     {
@@ -188,10 +188,10 @@ public class KitCommand extends ContainerCommand
                 }
                 else
                 {
-                    context.sendMessage("basics", "&aYou gave &2%s &athe &6%s &akit!", user.getName(), kit.getKitName());
+                    context.sendTranslated("&aYou gave &2%s &athe &6%s &akit!", user.getName(), kit.getKitName());
                     if (kit.getCustomMessage().equals(""))
                     {
-                        user.sendMessage("basics", "&aReceived the &6%s &akit. Enjoy it!", kit.getKitName());
+                        user.sendTranslated("&aReceived the &6%s &akit. Enjoy it!", kit.getKitName());
                     }
                     else
                     {
@@ -203,11 +203,11 @@ public class KitCommand extends ContainerCommand
             {
                 if (other)
                 {
-                    context.sendMessage("basics", "&2%s &ehas not enough inventory-space for this kit!", user.getName());
+                    context.sendTranslated("&2%s &ehas not enough inventory-space for this kit!", user.getName());
                 }
                 else
                 {
-                    context.sendMessage("basics", "&eYou don't have enough inventory-space for this kit!");
+                    context.sendTranslated("&eYou don't have enough inventory-space for this kit!");
                 }
             }
         }

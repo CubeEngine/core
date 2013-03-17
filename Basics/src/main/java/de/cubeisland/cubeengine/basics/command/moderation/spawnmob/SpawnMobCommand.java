@@ -11,7 +11,11 @@ import de.cubeisland.cubeengine.core.util.matcher.Match;
 import org.bukkit.DyeColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.entity.*;
+import org.bukkit.entity.AnimalTamer;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.EntityType;
+import org.bukkit.entity.Skeleton;
+import org.bukkit.entity.Villager;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Vector;
 
@@ -19,9 +23,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
-
-import static de.cubeisland.cubeengine.core.i18n.I18n._;
-import static de.cubeisland.cubeengine.core.util.Misc.arr;
 
 /**
  * The /spawnmob command.
@@ -49,12 +50,12 @@ public class SpawnMobCommand
         }
         if (!context.hasArg(2) && sender == null)
         {
-            context.sendMessage("basics", "&eSuccesfully spawned some &cbugs &einside your server!");
+            context.sendTranslated("&eSuccesfully spawned some &cbugs &einside your server!");
             return;
         }
         if (!context.hasArg(0))
         {
-            context.sendMessage("basics", "&cYou need to define what mob to spawn!");
+            context.sendTranslated("&cYou need to define what mob to spawn!");
             return;
         }
         if (context.getString(0).equalsIgnoreCase("advanced"))
@@ -68,7 +69,7 @@ public class SpawnMobCommand
             User user = context.getUser(2);
             if (user == null)
             {
-                context.sendMessage("core", "&cUser %s not found!", context.getString(2));
+                context.sendTranslated("&cUser %s not found!", context.getString(2));
                 return;
             }
             loc = user.getLocation();
@@ -83,18 +84,18 @@ public class SpawnMobCommand
             amount = context.getArg(1, Integer.class, null);
             if (amount == null)
             {
-                context.sendMessage("basics", "&e%s is not a number! Really!", context.getString(1));
+                context.sendTranslated("&e%s is not a number! Really!", context.getString(1));
                 return;
             }
             if (amount <= 0)
             {
-                context.sendMessage("basics", "&eAnd how am i supposed to know which mobs to despawn?");
+                context.sendTranslated("&eAnd how am i supposed to know which mobs to despawn?");
                 return;
             }
         }
         if (amount > config.spawnmobLimit)
         {
-            context.sendMessage("basics", "&cThe serverlimit is set to &e%d&c, you cannot spawn more mobs at once!", config.spawnmobLimit);
+            context.sendTranslated("&cThe serverlimit is set to &e%d&c, you cannot spawn more mobs at once!", config.spawnmobLimit);
             return;
         }
         loc.add(0.5, 0, 0.5);
@@ -106,7 +107,7 @@ public class SpawnMobCommand
         Entity entitySpawned = entitiesSpawned[0];
         if (entitySpawned.getPassenger() == null)
         {
-            context.sendMessage("basics", "&aSpawned %d &e%s&a!", amount, Match.entity().getNameFor(entitySpawned.getType()));
+            context.sendTranslated("&aSpawned %d &e%s&a!", amount, Match.entity().getNameFor(entitySpawned.getType()));
         }
         else
         {
@@ -114,9 +115,9 @@ public class SpawnMobCommand
             while (entitySpawned.getPassenger() != null)
             {
                 entitySpawned = entitySpawned.getPassenger();
-                message = _(context.getSender(), "basics", "%s &ariding &e%s", arr(Match.entity().getNameFor(entitySpawned.getType()), message));
+                message = sender.translate("%s &ariding &e%s", Match.entity().getNameFor(entitySpawned.getType()), message);
             }
-            message = _(context.getSender(), "basics", "&aSpawned %d &e%s!", arr(amount, message));
+            message = sender.translate("basics", "&aSpawned %d &e%s!", amount, message);
             context.sendMessage(message);
         }
     }
@@ -162,7 +163,7 @@ public class SpawnMobCommand
         }
         if (entityType == null)
         {
-            context.sendMessage("basics", "&cUnknown mob-type: &6%s &cnot found!", entityName);
+            context.sendTranslated("&cUnknown mob-type: &6%s &cnot found!", entityName);
             return null;
         }
         Entity[] spawnedMobs = new Entity[amount];
@@ -200,7 +201,7 @@ public class SpawnMobCommand
                     }
                     catch (NumberFormatException e)
                     {
-                        context.sendMessage("basics", "&cInvalid HP amount!");
+                        context.sendTranslated("&cInvalid HP amount!");
                     }
                 }
             }
@@ -208,21 +209,21 @@ public class SpawnMobCommand
             {
                 if (!EntityDataChanger.BABY.applyTo(entity,true))
                 {
-                    context.sendMessage("basics", "&eThis entity can not be a baby! Can you?");
+                    context.sendTranslated("&eThis entity can not be a baby! Can you?");
                 }
             }
             else if ("saddled".equals(match))
             {
                 if (!EntityDataChanger.PIGSADDLE.applyTo(entity,true))
                 {
-                    context.sendMessage("basics", "&eOnly Pigs can be saddled!");
+                    context.sendTranslated("&eOnly Pigs can be saddled!");
                 }
             }
             else if ("angry".equals(match))
             {
                 if (!EntityDataChanger.ANGRY.applyTo(entity,true))
                 {
-                    context.sendMessage("basics", "&eOnly Wolfs or PigZombies can be aggro!");
+                    context.sendTranslated("&eOnly Wolfs or PigZombies can be aggro!");
                 }
             }
             else if ("tamed".equals(match))
@@ -234,21 +235,21 @@ public class SpawnMobCommand
                 }
                 if (!EntityDataChanger.TAME.applyTo(entity,tamer))
                 {
-                    context.sendMessage("basics", "&eOnly Wolfs or Ocelots can be tamed!");
+                    context.sendTranslated("&eOnly Wolfs or Ocelots can be tamed!");
                 }
             }
             else if ("sitting".equals(match))
             {
                 if (!EntityDataChanger.SITTING.applyTo(entity,true))
                 {
-                    context.sendMessage("basics", "&eOnly a wolfs and ocelots can sit!");
+                    context.sendTranslated("&eOnly a wolfs and ocelots can sit!");
                 }
             }
             else if ("charged".equals(match) || data.equalsIgnoreCase("power"))
             {
                 if (!EntityDataChanger.POWERED.applyTo(entity,true))
                 {
-                    context.sendMessage("basics", "&eYou can only charge creepers!");
+                    context.sendTranslated("&eYou can only charge creepers!");
                 }
             }
             if (entityType.equals(EntityType.SHEEP))
@@ -256,7 +257,7 @@ public class SpawnMobCommand
                 DyeColor color = Match.materialData().colorData(data);
                 if (color == null)
                 {
-                    context.sendMessage("basics", "&cInvalid SheepColor: " + data);
+                    context.sendTranslated("&cInvalid SheepColor: " + data);
                 }
                 else
                 {
@@ -276,7 +277,7 @@ public class SpawnMobCommand
                 }
                 catch (NumberFormatException e)
                 {
-                    context.sendMessage("basics", "&eThe slime-size has to be a number or tiny, small or big!");
+                    context.sendTranslated("&eThe slime-size has to be a number or tiny, small or big!");
                     return false;
                 }
             }
@@ -285,7 +286,7 @@ public class SpawnMobCommand
                 Villager.Profession profession = Match.profession().profession(data);
                 if (profession == null)
                 {
-                    context.sendMessage("basics", "Unknown villager-profession!");
+                    context.sendTranslated("Unknown villager-profession!");
                     return false;
                 }
                 EntityDataChanger.VILLAGER_PROFESSION.applyTo(entity,profession);
@@ -295,7 +296,7 @@ public class SpawnMobCommand
                 ItemStack item = Match.material().itemStack(data);
                 if (item == null)
                 {
-                    context.sendMessage("basics", "Material not found!");
+                    context.sendTranslated("Material not found!");
                     return false;
                 }
                 EntityDataChanger.ENDERMAN_ITEM.applyTo(entity,item);

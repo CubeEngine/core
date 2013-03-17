@@ -35,7 +35,7 @@ public class TeleportCommands
         if (!force && !user.getWorld().equals(loc.getWorld()) // TODO NPE!
                 && !TpWorldPermissions.getPermission(loc.getWorld().getName()).isAuthorized(user))
         {
-            user.sendMessage("basics", "You are not allowed to teleport to this world!");
+            user.sendTranslated("You are not allowed to teleport to this world!");
             return false;
         }
         if (safe)
@@ -67,7 +67,7 @@ public class TeleportCommands
         User target = context.getUser(0);
         if (target == null)
         {
-            context.sendMessage("basics", "&cUser &2%s &cnot found!", context.getString(0));
+            context.sendTranslated("&cUser &2%s &cnot found!", context.getString(0));
             return;
         }
         boolean force = false;
@@ -81,24 +81,24 @@ public class TeleportCommands
             target = context.getUser(1);
             if (target == null)
             {
-                context.sendMessage("basics", "&cUser &2%s &cnot found!", context.getString(1));
+                context.sendTranslated("&cUser &2%s &cnot found!", context.getString(1));
                 return;
             }
             if (!force) // if force no need to check
             {
                 if (!BasicsPerm.COMMAND_TP_OTHER.isAuthorized(context.getSender())) // teleport other persons
                 {
-                    context.sendMessage("basics", "&cYou are not allowed to teleport other persons!");
+                    context.sendTranslated("&cYou are not allowed to teleport other persons!");
                     return;
                 }
                 if (BasicsPerm.COMMAND_TP_PREVENT_TP.isAuthorized(user)) // teleport the user
                 {
-                    context.sendMessage("basics", "&cYou are not allowed to teleport %s!", user.getName());
+                    context.sendTranslated("&cYou are not allowed to teleport %s!", user.getName());
                     return;
                 }
                 if (BasicsPerm.COMMAND_TP_PREVENT_TPTO.isAuthorized(target)) // teleport to the target
                 {
-                    context.sendMessage("basics", "&cYou are not allowed to teleport to %s!", target.getName());
+                    context.sendTranslated("&cYou are not allowed to teleport to %s!", target.getName());
                     return;
                 }
             }
@@ -107,7 +107,7 @@ public class TeleportCommands
         {
             if (user == null) // if not tp other persons console cannot use this
             {
-                context.sendMessage("basics", "&cYou are now teleporting yourself into hell!");
+                context.sendTranslated("&cYou are now teleporting yourself into hell!");
                 return;
             }
         }
@@ -115,9 +115,9 @@ public class TeleportCommands
         {
             if (BasicsPerm.COMMAND_TP_FORCE.isAuthorized(context.getSender()))
             {
-                context.sendMessage("basics", "&aUse the &e-force (-f) &aflag to teleport to this player."); //Show force flag if has permission
+                context.sendTranslated("&aUse the &e-force (-f) &aflag to teleport to this player."); //Show force flag if has permission
             }
-            context.sendMessage("basics", "&cYou are not allowed to teleport to %s!", target.getName());
+            context.sendTranslated("&cYou are not allowed to teleport to %s!", target.getName());
             return;
         }
         boolean safe = !context.hasFlag("u");
@@ -125,14 +125,14 @@ public class TeleportCommands
         {
             if (context.getSender().getName().equals(user.getName()))
             {
-                context.sendMessage("basics", "&6You found yourself!");
+                context.sendTranslated("&6You found yourself!");
                 return;
             }
-            context.sendMessage("basics", "&6%s is now with himself!", user.getName());
+            context.sendTranslated("&6%s is now with himself!", user.getName());
             return;
         }
         if (TeleportCommands.teleport(user, target.getLocation(), safe, force, true))
-            context.sendMessage("basics", "&aYou teleported to &2%s&a!", target.getName());
+            context.sendTranslated("&aYou teleported to &2%s&a!", target.getName());
     }
 
     @Command(desc = "Teleport everyone directly to a player.", usage = "<player> [-unsafe]", min = 1, max = 1, flags = {
@@ -144,7 +144,7 @@ public class TeleportCommands
         User user = context.getUser(0);
         if (user == null)
         {
-            context.sendMessage("basics", "&cUser &2%s &cnot found!", context.getString(0));
+            context.sendTranslated("&cUser &2%s &cnot found!", context.getString(0));
             return;
         }
         boolean force = false;
@@ -154,7 +154,7 @@ public class TeleportCommands
         }
         if (!force && BasicsPerm.COMMAND_TP_PREVENT_TPTO.isAuthorized(user))
         {
-            context.sendMessage("basics", "&cYou are not allowed to teleport to %s!", user.getName());
+            context.sendTranslated("&cYou are not allowed to teleport to %s!", user.getName());
             return;
         }
         for (Player player : context.getSender().getServer().getOnlinePlayers())
@@ -182,13 +182,13 @@ public class TeleportCommands
         }
         if (sender == null)
         {
-            context.sendMessage("basics", "&6ProTip: &cTeleport does not work IRL!");
+            context.sendTranslated("&6ProTip: &cTeleport does not work IRL!");
             return;
         }
         User target = context.getUser(0);
         if (target == null)
         {
-            context.sendMessage("basics", "&cUser &2%s &cnot found!", context.getString(0));
+            context.sendTranslated("&cUser &2%s &cnot found!", context.getString(0));
             return;
         }
         boolean force = false;
@@ -198,19 +198,19 @@ public class TeleportCommands
         }
         if (!force && BasicsPerm.COMMAND_TPHERE_PREVENT.isAuthorized(target))
         {
-            context.sendMessage("bascics", "&cYou are not allowed to teleport %s!", target.getName());
+            context.sendTranslated("&cYou are not allowed to teleport %s!", target.getName());
             return;
         }
         boolean safe = !context.hasFlag("u");
         if (sender.equals(target))
         {
-            context.sendMessage("basics", "&6You found yourself!");
+            context.sendTranslated("&6You found yourself!");
             return;
         }
         if (TeleportCommands.teleport(target, sender.getLocation(), safe, force, true))
         {
-            context.sendMessage("basics", "&aYou teleported %s to you!", target.getName());
-            target.sendMessage("basics", "&aYou were teleported to %s", sender.getName());
+            context.sendTranslated("&aYou teleported %s to you!", target.getName());
+            target.sendTranslated("&aYou were teleported to %s", sender.getName());
         }
     }
 
@@ -227,7 +227,7 @@ public class TeleportCommands
         }
         if (sender == null)
         {
-            context.sendMessage("basics", "&6ProTip: &cTeleport does not work IRL!");
+            context.sendTranslated("&6ProTip: &cTeleport does not work IRL!");
             return;
         }
         boolean force = false;
@@ -244,7 +244,7 @@ public class TeleportCommands
             boolean safe = !context.hasFlag("u");
             TeleportCommands.teleport(CubeEngine.getUserManager().getExactUser(player), sender.getLocation(), safe, force, true);
         }
-        context.sendMessage("basics", "&aYou teleported everyone to you!");
+        context.sendTranslated("&aYou teleported everyone to you!");
         context.getCore().getUserManager().broadcastMessage("basics", "&aTeleporting everyone to %s", sender.getName());
     }
 
@@ -270,7 +270,7 @@ public class TeleportCommands
                 z = context.getArg(1, Integer.class);
                 if (x == null || z == null)
                 {
-                    context.sendMessage("basics", "&cCoordinates have to be numbers!");
+                    context.sendTranslated("&cCoordinates have to be numbers!");
                     return;
                 }
                 y = sender.getWorld().getHighestBlockAt(x, z).getY() + 1;
@@ -280,16 +280,16 @@ public class TeleportCommands
                 world = context.getParam("world");
                 if (world == null)
                 {
-                    context.sendMessage("basics", "&cWorld not found!");
+                    context.sendTranslated("&cWorld not found!");
                     return;
                 }
             }
             boolean safe = !context.hasFlag("u");
             Location loc = new Location(world, x, y, z).add(0.5, 0, 0.5);
             if (TeleportCommands.teleport(sender, loc, safe, false, true))
-                context.sendMessage("basics", "&aTeleported to &eX:&6%d &eY:&6%d &eZ:&6%d &ain %s!", x, y, z, world.getName());
+                context.sendTranslated("&aTeleported to &eX:&6%d &eY:&6%d &eZ:&6%d &ain %s!", x, y, z, world.getName());
             return;
         }
-        context.sendMessage("basics", "&6ProTip: &cTeleport does not work IRL!");
+        context.sendTranslated("&6ProTip: &cTeleport does not work IRL!");
     }
 }

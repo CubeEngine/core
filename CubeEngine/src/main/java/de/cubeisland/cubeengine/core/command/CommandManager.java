@@ -1,6 +1,6 @@
 package de.cubeisland.cubeengine.core.command;
 
-import de.cubeisland.cubeengine.core.command.sender.CommandSender;
+import de.cubeisland.cubeengine.core.command.sender.ConsoleCommandSender;
 import de.cubeisland.cubeengine.core.module.Module;
 import de.cubeisland.cubeengine.core.util.Cleanable;
 
@@ -20,4 +20,5 @@ public interface CommandManager extends Cleanable
     void removeCommands(Module module);
     boolean runCommand(CommandSender sender, String commandLine);
     void removeCommands();
+    ConsoleCommandSender getConsoleSender();
 }

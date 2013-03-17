@@ -25,16 +25,16 @@ public class WarpCommands
             Warp warp = tpManager.getWarp(sender, context.getString(0).toLowerCase());
             if (warp == null)
             {
-                context.sendMessage("travel", "&4You don't have access to any warp with that name");
+                context.sendTranslated("&4You don't have access to any warp with that name");
                 return;
             }
 
             sender.teleport(warp.getLocation(), PlayerTeleportEvent.TeleportCause.COMMAND);
-            context.sendMessage("travel", "&6You have been teleported to the warp &9%s", context.getString(0));
+            context.sendTranslated("&6You have been teleported to the warp &9%s", context.getString(0));
         }
         else
         {
-            context.sendMessage("travel", "&4This command can only be used by users!");
+            context.sendTranslated("&4This command can only be used by users!");
         }
 
     }

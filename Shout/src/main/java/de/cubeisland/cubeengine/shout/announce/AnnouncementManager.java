@@ -374,7 +374,7 @@ public class AnnouncementManager
             throw new ShoutException("The delay was not valid", e);
         }
 
-        Map<String, String[]> messages = new HashMap<String, String[]>();
+        Map<Locale, String[]> messages = new HashMap<Locale, String[]>();
 
         File[] messageFiles = announcementFolder.listFiles((FilenameFilter)TXT);
         if (messageFiles != null)
@@ -400,7 +400,7 @@ public class AnnouncementManager
                     if (content != null)
                     {
                         content = content.replace("\r\n", "\n").replace('\r', '\n');
-                        messages.put(language.getCode(), StringUtils.explode("\n", content));
+                        messages.put(language.getLocale(), StringUtils.explode("\n", content));
                     }
                 }
                 catch (FileNotFoundException ignore)
@@ -417,7 +417,7 @@ public class AnnouncementManager
         try
         {
             return new Announcement(
-                announcementFolder.getName().toLowerCase(Locale.ENGLISH),
+                announcementFolder.getName().toLowerCase(Locale.US),
                 config.permNode,
                 config.worlds,
                 messages,
@@ -472,7 +472,7 @@ public class AnnouncementManager
      * This will not load the announcement into the plugin
      *
      */
-    public void createAnnouncement(String name, String locale, String message, String delay, String world, String group, String permNode) throws IOException, IllegalArgumentException
+    public void createAnnouncement(String name, Locale locale, String message, String delay, String world, String group, String permNode) throws IOException, IllegalArgumentException
     {
 
         File folder = new File(this.announcementFolder, name);
@@ -489,8 +489,7 @@ public class AnnouncementManager
         config.group = group;
         config.save();
 
-        locale = I18n.normalizeLanguage(locale);
-        BufferedWriter bw = new BufferedWriter(new FileWriter(new File(folder, locale + ".txt")));
+        BufferedWriter bw = new BufferedWriter(new FileWriter(new File(folder, locale.toString() + ".txt")));
         try
         {
             bw.write(message);

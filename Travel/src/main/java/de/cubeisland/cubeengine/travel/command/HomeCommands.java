@@ -32,13 +32,13 @@ public class HomeCommands
                 Home home = tpManager.getHome(sender, "home");
                 if (home == null)
                 {
-                    context.sendMessage("travel", "&4You don't have a home! do /setHome");
+                    context.sendTranslated("&4You don't have a home! do /setHome");
                     return;
                 }
 
                 if (!home.isOwner(sender))
                 {
-                    sender.sendMessage("travel", "&4You don't have a default home!");
+                    sender.sendTranslated("&4You don't have a default home!");
                     return;
                 }
 
@@ -49,7 +49,7 @@ public class HomeCommands
                 }
                 else
                 {
-                    context.sendMessage("travel", "&6You have been teleported to your home!");
+                    context.sendTranslated("&6You have been teleported to your home!");
                 }
             }
             else if (module.getConfig().multipleHomes)
@@ -67,7 +67,7 @@ public class HomeCommands
                         }
                         else
                         {
-                            sender.sendMessage("travel", "&6You have been teleported to &9%s's &6default home",  home.getOwner().getDisplayName());
+                            sender.sendTranslated("&6You have been teleported to &9%s's &6default home", home.getOwner().getDisplayName());
                         }
                         return;
                     }
@@ -75,7 +75,7 @@ public class HomeCommands
                 Home home = tpManager.getHome(sender, context.getString(0).toLowerCase());
                 if (home == null)
                 {
-                    context.sendMessage("travel", "&9" + context.getString(0).toLowerCase() + " &4 is not a home");
+                    context.sendTranslated("&9" + context.getString(0).toLowerCase() + " &4 is not a home");
                     return;
                 }
 
@@ -88,15 +88,15 @@ public class HomeCommands
                 {
                     if (home.isOwner(sender))
                     {
-                        context.sendMessage("travel", "&6You have been teleported to your home: &9%s", home.getName());
+                        context.sendTranslated("&6You have been teleported to your home: &9%s", home.getName());
                     }
                     else if (home.isPublic())
                     {
-                        context.sendMessage("travel", "&6You have been teleported to the public home &9%s", home.getName());
+                        context.sendTranslated("&6You have been teleported to the public home &9%s", home.getName());
                     }
                     else
                     {
-                        context.sendMessage("travel", "&6You have been teleported to &3%s&6's home: &9%s", home.getOwner().getDisplayName(), home.getName());
+                        context.sendTranslated("&6You have been teleported to &3%s&6's home: &9%s", home.getOwner().getDisplayName(), home.getName());
                     }
                 }
             }
@@ -107,7 +107,7 @@ public class HomeCommands
         }
         else
         {
-            context.sendMessage("travel", "&4This command can only be used by users!");
+            context.sendTranslated("&4This command can only be used by users!");
         }
     }
 

@@ -62,7 +62,7 @@ public class ReflectedCommand extends ParameterizedCommand
     @Override
     public void help(HelpContext context) throws Exception
     {
-        context.sendMessage("core", "Description: &f%s", this.getDescription());
-        context.sendMessage("core", "Usage: &f%s", this.getUsage(context));
+        context.sendTranslated("Description: &f%s", this.getDescription());
+        context.sendTranslated("Usage: &f%s", this.getUsage(context));
     }
 }

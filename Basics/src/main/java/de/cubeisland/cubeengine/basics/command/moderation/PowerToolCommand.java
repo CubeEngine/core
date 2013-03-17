@@ -8,7 +8,7 @@ import de.cubeisland.cubeengine.core.command.parameterized.Flag;
 import de.cubeisland.cubeengine.core.command.parameterized.ParameterizedContext;
 import de.cubeisland.cubeengine.core.command.reflected.Alias;
 import de.cubeisland.cubeengine.core.command.reflected.Command;
-import de.cubeisland.cubeengine.core.command.sender.CommandSender;
+import de.cubeisland.cubeengine.core.command.CommandSender;
 import de.cubeisland.cubeengine.core.module.Module;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.util.ChatFormat;
@@ -68,20 +68,20 @@ public class PowerToolCommand extends ContainerCommand implements Listener
                 {
                     this.setPowerTool(item, null);
                 }
-                context.sendMessage("basics", "&aRemoved all commands bound to items in your inventory!");
+                context.sendTranslated("&aRemoved all commands bound to items in your inventory!");
             }
             else
             {
                 if (user.getItemInHand().getTypeId() == 0)
                 {
-                    context.sendMessage("basics", "&eYou are not holding any item in your hand.");
+                    context.sendTranslated("&eYou are not holding any item in your hand.");
                     return;
                 }
                 this.setPowerTool(user.getItemInHand(), null);
             }
             return;
         }
-        context.sendMessage("basics", "&eNo more power for you!");
+        context.sendTranslated("&eNo more power for you!");
     }
 
     @Alias(names = "ptr")
@@ -95,14 +95,14 @@ public class PowerToolCommand extends ContainerCommand implements Listener
             User sender = (User)context.getSender();
             if (sender.getItemInHand().getTypeId() == 0)
             {
-                context.sendMessage("basics", "&eYou are not holding any item in your hand.");
+                context.sendTranslated("&eYou are not holding any item in your hand.");
                 return;
             }
             String cmd = context.getStrings(0);
             this.remove(context, sender.getItemInHand(), cmd, !context.hasFlag("c"));
             return;
         }
-        context.sendMessage("basics", "&eNo more power for you!");
+        context.sendTranslated("&eNo more power for you!");
     }
 
     private void remove(CommandContext context, ItemStack item, String cmd, boolean isCommand)
@@ -112,7 +112,7 @@ public class PowerToolCommand extends ContainerCommand implements Listener
         {
             powertools.remove(powertools.size() - 1);
             this.setPowerTool(item, powertools);
-            context.sendMessage("basics", "&aRemoved the last command bound to this item!");
+            context.sendTranslated("&aRemoved the last command bound to this item!");
         }
         else
         {
@@ -127,17 +127,17 @@ public class PowerToolCommand extends ContainerCommand implements Listener
             }
             if (removed)
             {
-                context.sendMessage("basics", "&aRemoved the command: &e%s &abound to this item!", cmd);
+                context.sendTranslated("&aRemoved the command: &e%s &abound to this item!", cmd);
             }
             else
             {
-                context.sendMessage("basics", "&cThe command &e%s &cwas not found on this item!", cmd);
+                context.sendTranslated("&cThe command &e%s &cwas not found on this item!", cmd);
             }
         }
         this.setPowerTool(item, powertools);
         if (powertools.isEmpty())
         {
-            context.sendMessage("basics", "&eNo more commands saved on this item!");
+            context.sendTranslated("&eNo more commands saved on this item!");
             return;
         }
         this.showPowerToolList(context, powertools, false, false);
@@ -157,7 +157,7 @@ public class PowerToolCommand extends ContainerCommand implements Listener
             String cmd = context.getStrings(0);
             if (user.getItemInHand().getType().equals(Material.AIR))
             {
-                user.sendMessage("basics", "&eYou do not have an item in your hand to bind the command to!");
+                user.sendTranslated("&eYou do not have an item in your hand to bind the command to!");
                 return;
             }
             if (!context.hasFlag("c"))
@@ -177,7 +177,7 @@ public class PowerToolCommand extends ContainerCommand implements Listener
             this.setPowerTool(user.getItemInHand(), powerTools);
             return;
         }
-        context.sendMessage("basics", "&eYou already have enough power!");
+        context.sendTranslated("&eYou already have enough power!");
     }
 
     @Alias(names = "ptl")
@@ -206,7 +206,7 @@ public class PowerToolCommand extends ContainerCommand implements Listener
             }
             if (sender.getItemInHand().getType().equals(Material.AIR))
             {
-                context.sendMessage("basics", "&eYou do not have an item in your hand.");
+                context.sendTranslated("&eYou do not have an item in your hand.");
             }
             else
             {
@@ -214,14 +214,14 @@ public class PowerToolCommand extends ContainerCommand implements Listener
             }
             return;
         }
-        context.sendMessage("basics", "&eYou already have enough power!");
+        context.sendTranslated("&eYou already have enough power!");
     }
 
     private void showPowerToolList(CommandContext context, List<String> powertools, boolean lastAsNew, boolean showIfEmpty)
     {
         if ((powertools == null || powertools.isEmpty()) && showIfEmpty)
         {
-            context.sendMessage("basics", "&cNo commands saved on this item!");
+            context.sendTranslated("&cNo commands saved on this item!");
             return;
         }
         StringBuilder sb = new StringBuilder();
@@ -232,11 +232,11 @@ public class PowerToolCommand extends ContainerCommand implements Listener
         }
         if (lastAsNew)
         {
-            context.sendMessage("basics", "&6%d &ecommand(s) bound to this item:%s\n&e%s &6(&aNEW&6)", i + 1, sb.toString(), powertools.get(i));
+            context.sendTranslated("&6%d &ecommand(s) bound to this item:%s\n&e%s &6(&aNEW&6)", i + 1, sb.toString(), powertools.get(i));
         }
         else
         {
-            context.sendMessage("basics", "&6%d &ecommand(s) bound to this item:%s\n&f%s", i + 1, sb.toString(), powertools.get(i));
+            context.sendTranslated("&6%d &ecommand(s) bound to this item:%s\n&f%s", i + 1, sb.toString(), powertools.get(i));
         }
     }
 

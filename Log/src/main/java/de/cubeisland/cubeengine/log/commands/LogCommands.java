@@ -54,7 +54,7 @@ public class LogCommands extends ContainerCommand
                     user.getWorld().dropItemNaturally(user.getLocation(),item);
                 }
                 user.updateInventory();
-                context.sendMessage("log","&aReveived a Log-Block!");
+                context.sendTranslated("&aReveived a Log-Block!");
                 return;
             }
             user.getInventory().removeItem(found);
@@ -62,11 +62,11 @@ public class LogCommands extends ContainerCommand
             user.setItemInHand(found);
             user.getInventory().addItem(oldItemInHand);
             user.updateInventory();
-            context.sendMessage("log","&aFound your Log-Block in your inventory!");
+            context.sendTranslated("&aFound your Log-Block in your inventory!");
         }
         else
         {
-            context.sendMessage("log","&cWhy don't you check in your log-file? You won't need a block there!");
+            context.sendTranslated("&cWhy don't you check in your log-file? You won't need a block there!");
         }
 
     }

@@ -8,7 +8,7 @@ import de.cubeisland.cubeengine.core.command.CubeCommand;
 import de.cubeisland.cubeengine.core.command.exception.IncorrectUsageException;
 import de.cubeisland.cubeengine.core.command.exception.InvalidArgumentException;
 import de.cubeisland.cubeengine.core.command.exception.MissingParameterException;
-import de.cubeisland.cubeengine.core.command.sender.CommandSender;
+import de.cubeisland.cubeengine.core.command.CommandSender;
 import gnu.trove.map.hash.THashMap;
 import gnu.trove.set.hash.THashSet;
 

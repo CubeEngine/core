@@ -3,7 +3,6 @@ package de.cubeisland.cubeengine.core.command;
 import de.cubeisland.cubeengine.core.command.parameterized.ParameterizedCommand;
 import de.cubeisland.cubeengine.core.command.parameterized.ParameterizedContextFactory;
 import de.cubeisland.cubeengine.core.command.reflected.ReflectedCommand;
-import de.cubeisland.cubeengine.core.command.sender.CommandSender;
 import de.cubeisland.cubeengine.core.module.Module;
 import de.cubeisland.cubeengine.core.util.ChatFormat;
 
@@ -13,7 +12,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 
-import static de.cubeisland.cubeengine.core.i18n.I18n._;
 import static de.cubeisland.cubeengine.core.logger.LogLevel.WARNING;
 import static de.cubeisland.cubeengine.core.util.StringUtils.startsWithIgnoreCase;
 
@@ -88,14 +86,14 @@ public abstract class ContainerCommand extends ParameterizedCommand implements C
     public void help(HelpContext context) throws Exception
     {
         CommandSender sender = context.getSender();
-        context.sendMessage("core", "Usage: " + this.getUsage(context));
+        context.sendTranslated("Usage: " + this.getUsage(context));
         context.sendMessage(" ");
-        context.sendMessage("core", "The following actions are available:");
+        context.sendTranslated("The following actions are available:");
         context.sendMessage(" ");
 
         for (CubeCommand command : context.getCommand().getChildren())
         {
-            context.sendMessage(ChatFormat.YELLOW + command.getName() + ChatFormat.WHITE + ": "  + ChatFormat.GREY + _(sender, command.getModule(), command.getDescription()));
+            context.sendMessage(ChatFormat.YELLOW + command.getName() + ChatFormat.WHITE + ": "  + ChatFormat.GREY + sender.getCore().getI18n().translate(sender.getLocale(), command.getDescription()));
         }
     }
 

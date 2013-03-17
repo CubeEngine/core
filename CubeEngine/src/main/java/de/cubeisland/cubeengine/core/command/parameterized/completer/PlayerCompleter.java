@@ -2,7 +2,7 @@ package de.cubeisland.cubeengine.core.command.parameterized.completer;
 
 import de.cubeisland.cubeengine.core.CubeEngine;
 import de.cubeisland.cubeengine.core.command.parameterized.Completer;
-import de.cubeisland.cubeengine.core.command.sender.CommandSender;
+import de.cubeisland.cubeengine.core.command.CommandSender;
 import de.cubeisland.cubeengine.core.user.User;
 
 import java.util.ArrayList;

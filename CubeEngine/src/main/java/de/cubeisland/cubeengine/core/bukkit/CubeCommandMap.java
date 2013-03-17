@@ -40,10 +40,8 @@ import java.util.logging.LogRecord;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
 
-import static de.cubeisland.cubeengine.core.i18n.I18n._;
 import static de.cubeisland.cubeengine.core.logger.LogLevel.INFO;
 import static de.cubeisland.cubeengine.core.logger.LogLevel.WARNING;
-import static de.cubeisland.cubeengine.core.util.Misc.arr;
 
 /**
  * This CommandMap extends the SimpleCommandMap to add some functionality:
@@ -153,18 +151,18 @@ public class CubeCommandMap extends SimpleCommandMap
 
         if (command == null)
         {
-            final String language = BukkitUtils.getLanguage(sender);
+            final Locale language = BukkitUtils.getLanguage(this.core.getI18n(), sender);
             List<String> matches = new LinkedList<String>(Match.string().getBestMatches(label, this.knownCommands.keySet(), 1));
             if (matches.size() > 0 && matches.size() <= this.core.getConfiguration().commandOffers)
             {
                 Collections.sort(matches, String.CASE_INSENSITIVE_ORDER);
                 if (matches.size() == 1)
                 {
-                    sender.sendMessage(_(language, "core", "&cCouldn't find &e/%s&c. Did you mean &a/%s&c?", arr(label, matches.iterator().next())));
+                    sender.sendMessage(this.core.getI18n().translate(language, "core", "&cCouldn't find &e/%s&c. Did you mean &a/%s&c?", label, matches.iterator().next()));
                 }
                 else
                 {
-                    sender.sendMessage(_(language, "core", "&eDid you mean one of these: &a%s &e?", arr("/" + StringUtils.implode(", /", matches))));
+                    sender.sendMessage(this.core.getI18n().translate(language, "core", "&eDid you mean one of these: &a%s &e?", "/" + StringUtils.implode(", /", matches)));
                 }
                 if (matches.size() > this.core.getConfiguration().commandTabCompleteOffers)
                 {
@@ -181,7 +179,7 @@ public class CubeCommandMap extends SimpleCommandMap
             }
             else
             {
-                sender.sendMessage(_(language, "core", "&cI couldn't find any command for &e/%s &c...", arr(label)));
+                sender.sendMessage(this.core.getI18n().translate(language, "core", "&cI couldn't find any command for &e/%s &c...", label));
             }
             return false;
         }

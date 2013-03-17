@@ -37,7 +37,7 @@ public class MovementCommands
             int height = context.getArg(0, Integer.class, -1);
             if ((height < 0))
             {
-                context.sendMessage("basics", "&cInvalid height. The height has to be a number greater than 0!");
+                context.sendTranslated("&cInvalid height. The height has to be a number greater than 0!");
                 return;
             }
             Location loc = sender.getLocation();
@@ -49,7 +49,7 @@ public class MovementCommands
             Block block = loc.getWorld().getBlockAt(loc);
             if (!(block.getRelative(BlockFace.UP, 1).getType().equals(Material.AIR) && block.getRelative(BlockFace.UP, 2).getType().equals(Material.AIR)))
             {
-                context.sendMessage("basics", "&cYour destination seems to be obstructed!");
+                context.sendTranslated("&cYour destination seems to be obstructed!");
                 return;
             }
             loc = loc.getBlock().getLocation();
@@ -59,10 +59,10 @@ public class MovementCommands
                 block.setType(Material.GLASS);
             }
             if (TeleportCommands.teleport(sender, loc, true, false, true)) // is save anyway so we do not need to check again
-                context.sendMessage("basics", "&aYou just lifted!");
+                context.sendTranslated("&aYou just lifted!");
             return;
         }
-        context.sendMessage("basics", "&eProTip: Teleport does not work IRL!");
+        context.sendTranslated("&eProTip: Teleport does not work IRL!");
     }
 
     @Command(desc = "Teleports you to the next safe spot upwards.", max = 0)
@@ -91,15 +91,15 @@ public class MovementCommands
             }
             if (currentLocation.getY() <= userLocation.getY())
             {
-                context.sendMessage("bascics", "&cYou cannot ascend here"); // TODO check why this comes sometimes but shouldn't
+                context.sendTranslated("&cYou cannot ascend here"); // TODO check why this comes sometimes but shouldn't
                 return;
             }
             //reached new location
-            context.sendMessage("basics", "&aAscended a level!");
+            context.sendTranslated("&aAscended a level!");
             TeleportCommands.teleport(sender, currentLocation, true, false, true);
             return;
         }
-        context.sendMessage("basics", "&eProTip: Teleport does not work IRL!");
+        context.sendTranslated("&eProTip: Teleport does not work IRL!");
     }
 
     @Command(desc = "Teleports you to the next safe spot downwards.", max = 0)
@@ -125,15 +125,15 @@ public class MovementCommands
             }
             if ((currentLocation.getY() <= 0) || (currentLocation.getY() >= userLocation.getY()))
             {
-                context.sendMessage("bascics", "&cYou cannot descend here");
+                context.sendTranslated("&cYou cannot descend here");
                 return;
             }
             //reached new location
-            context.sendMessage("basics", "&aDescended a level!");
+            context.sendTranslated("&aDescended a level!");
             TeleportCommands.teleport(sender, currentLocation, true, false, true);
             return;
         }
-        context.sendMessage("basics", "&eProTip: Teleport does not work IRL!");
+        context.sendTranslated("&eProTip: Teleport does not work IRL!");
     }
 
     @Command(names = {
@@ -147,15 +147,15 @@ public class MovementCommands
             Location loc = sender.getTargetBlock(null, this.basics.getConfiguration().jumpToMaxRange).getLocation();
             if (loc.getBlock().getType().equals(Material.AIR))
             {
-                context.sendMessage("basics", "&cNo block in sight!");
+                context.sendTranslated("&cNo block in sight!");
                 return;
             }
             loc.add(0.5, 1, 0.5);
             if (TeleportCommands.teleport(sender, loc, true, false, true))
-                context.sendMessage("basics", "&aYou just jumped!");
+                context.sendTranslated("&aYou just jumped!");
             return;
         }
-        context.sendMessage("basics", "&eJumping in the console is not allowed! Go play outside!");
+        context.sendTranslated("&eJumping in the console is not allowed! Go play outside!");
     }
 
     @Command(names = {
@@ -171,14 +171,14 @@ public class MovementCommands
                     this.basics.getConfiguration().jumpThruMaxWallThickness);
             if (loc == null)
             {
-                sender.sendMessage("basics", "&cNothing to pass through!");
+                sender.sendTranslated("&cNothing to pass through!");
                 return;
             }
             if (TeleportCommands.teleport(sender, loc, true, false, true))
-                context.sendMessage("basics", "&aYou just passed the wall!");
+                context.sendTranslated("&aYou just passed the wall!");
             return;
         }
-        context.sendMessage("basics", "&ePassing through firewalls in the console is not allowed! Go play outside!");
+        context.sendTranslated("&ePassing through firewalls in the console is not allowed! Go play outside!");
 
     }
 
@@ -193,15 +193,15 @@ public class MovementCommands
             Location loc = sender.get(BasicsAttachment.class).getLastLocation();
             if (loc == null)
             {
-                context.sendMessage("basics", "&cYou never teleported!");
+                context.sendTranslated("&cYou never teleported!");
                 return;
             }
             boolean safe = !context.hasFlag("u");
             if (TeleportCommands.teleport(sender, loc, safe, true, true))
-                sender.sendMessage("basics", "&aTeleported to your last location!");
+                sender.sendTranslated("&aTeleported to your last location!");
             return;
         }
-        context.sendMessage("basics", "&cYou never teleported!");
+        context.sendTranslated("&cYou never teleported!");
 
     }
 
@@ -216,24 +216,24 @@ public class MovementCommands
             User user = context.getUser(0);
             if (user == null)
             {
-                context.sendMessage("basics", "&cUser %s not found!", context.getString(0));
+                context.sendTranslated("&cUser %s not found!", context.getString(0));
                 return;
             }
             Location loc = sender.getTargetBlock(null, 350).getLocation();
             if (loc.getBlock().getType().equals(Material.AIR))
             {
-                context.sendMessage("basics", "&cNo block in sight!");
+                context.sendTranslated("&cNo block in sight!");
                 return;
             }
             loc.add(0.5, 1, 0.5);
             if (TeleportCommands.teleport(user, loc, true, false, true))
             {
-                context.sendMessage("basics", "&aYou just placed &2%s &awhere you were looking!", user.getName());
-                user.sendMessage("basics", "&aYou were placed somewhere!");
+                context.sendTranslated("&aYou just placed &2%s &awhere you were looking!", user.getName());
+                user.sendTranslated("&aYou were placed somewhere!");
             }
             return;
         }
-        context.sendMessage("basics", "&eJumping in the console is not allowed! Go play outside!");
+        context.sendTranslated("&eJumping in the console is not allowed! Go play outside!");
 
     }
 
@@ -246,7 +246,7 @@ public class MovementCommands
             sender = context.getUser(1);
             if (sender == null)
             {
-                context.sendMessage("basics", "&cUser %s not found!", context.getString(0));
+                context.sendTranslated("&cUser %s not found!", context.getString(0));
                 return;
             }
         }
@@ -259,25 +259,25 @@ public class MovementCommands
             }
             if (sender == null)
             {
-                context.sendMessage("basics", "&cSuccesfully swapped your socks!\n"
-                        + "&eAs console you have to provide both players!");
+                context.sendTranslated("&cSuccesfully swapped your socks!\n"
+                                           + "&eAs console you have to provide both players!");
                 return;
             }
         }
         User user = context.getUser(0);
         if (user == null)
         {
-            context.sendMessage("basics", "&cUser %s not found!", context.getString(0));
+            context.sendTranslated("&cUser %s not found!", context.getString(0));
             return;
         }
         if (user == sender)
         {
             if (context.getSender() instanceof Player)
             {
-                context.sendMessage("basics", "&aSwapped position with &cyourself!? &eAre you kidding me?");
+                context.sendTranslated("&aSwapped position with &cyourself!? &eAre you kidding me?");
                 return;
             }
-            context.sendMessage("basics", "&aTruely a hero! &eTrying to swap a users position with himself...");
+            context.sendTranslated("&aTruely a hero! &eTrying to swap a users position with himself...");
             return;
         }
         Location userLoc = user.getLocation();
@@ -286,9 +286,9 @@ public class MovementCommands
         //TODO handle if tp fails
         if (context.hasArg(1))
         {
-            context.sendMessage("basics", "&aSwapped position of &2%s &aand &2%s&a!", user.getName(), sender.getName());
+            context.sendTranslated("&aSwapped position of &2%s &aand &2%s&a!", user.getName(), sender.getName());
             return;
         }
-        context.sendMessage("basics", "&aSwapped position with &2%s&a!", user.getName());
+        context.sendTranslated("&aSwapped position with &2%s&a!", user.getName());
     }
 }

@@ -16,7 +16,6 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 
 import static de.cubeisland.cubeengine.core.command.ArgBounds.NO_MAX;
-import static de.cubeisland.cubeengine.core.i18n.I18n._;
 
 /**
  * Contains commands to manage kicks/bans.
@@ -48,7 +47,7 @@ public class KickBanCommands
         {
             if (!BasicsPerm.COMMAND_KICK_ALL.isAuthorized(context.getSender()))
             {
-                context.sendMessage("basics", "&cYou are not allowed to kick everyone!");
+                context.sendTranslated("&cYou are not allowed to kick everyone!");
                 return;
             }
             String sendername = context.getSender().getName();
@@ -63,13 +62,13 @@ public class KickBanCommands
         }
         if (!context.hasArg(0))
         {
-            context.sendMessage("basics", "&cYou need to specify a player!");
+            context.sendTranslated("&cYou need to specify a player!");
             return;
         }
         User user = context.getUser(0);
         if (user == null && !context.hasFlag("a"))
         {
-            context.sendMessage("basics", "&cUser &2%s &cnot found!", context.getString(0));
+            context.sendTranslated("&cUser &2%s &cnot found!", context.getString(0));
             return;
         }
         user.kickPlayer(message);
@@ -85,23 +84,23 @@ public class KickBanCommands
         {
             if (this.module.getConfiguration().disallowBanIfOfflineMode)
             {
-                context.sendMessage("basics", "&cBanning players by name is not allowed in offline-mode!"
-                        + "\n&eYou can change this in your Basics-Configuration.");
+                context.sendTranslated("&cBanning players by name is not allowed in offline-mode!"
+                                           + "\n&eYou can change this in your Basics-Configuration.");
                 return;
             }
-            context.sendMessage("basics", "&eThe server is running in &4OFFLINE-mode&e. "
-                    + "\nPlayers could change their username with a cracked client!\n"
-                    + "&aYou can IP-ban to prevent banning a real player in that case.");
+            context.sendTranslated("&eThe server is running in &4OFFLINE-mode&e. "
+                                       + "\nPlayers could change their username with a cracked client!\n"
+                                       + "&aYou can IP-ban to prevent banning a real player in that case.");
         }
         OfflinePlayer player = context.getSender().getServer().getOfflinePlayer(context.getString(0));
         if (player.isBanned())
         {
-            context.sendMessage("basics", "&2%s &cis already banned!", player.getName());
+            context.sendTranslated("&2%s &cis already banned!", player.getName());
             return;
         }
         if (player.hasPlayedBefore() == false)
         {
-            context.sendMessage("basics", "&2%s &6has never played on this server before!", player.getName());
+            context.sendTranslated("&2%s &6has never played on this server before!", player.getName());
             return;
         }
         else if (context.hasFlag("ip"))
@@ -117,14 +116,14 @@ public class KickBanCommands
                         && ipPlayer.getAddress() != null
                         && ipPlayer.getAddress().getAddress().getHostAddress().equals(ipadress))
                     {
-                        ipPlayer.kickPlayer(_(ipPlayer, "basics", "&cYou were ip-banned from this server!"));
+                        ipPlayer.kickPlayer(ipPlayer.translate("&cYou were ip-banned from this server!"));
                     }
                 }
-                context.sendMessage("basics", "&cYou banned the IP: &e%s&c!", ipadress);
+                context.sendTranslated("&cYou banned the IP: &e%s&c!", ipadress);
             }
             else
             {
-                context.sendMessage("basics", "&eYou cannot IP-ban this player because he was offline for too long!");
+                context.sendTranslated("&eYou cannot IP-ban this player because he was offline for too long!");
             }
         }
         if (player.isOnline())
@@ -133,7 +132,7 @@ public class KickBanCommands
             String message = context.getStrings(1);
             if (message.isEmpty())
             {
-                message = _(user, "basics", "&cYou got banned from this server!");
+                message = user.translate("&cYou got banned from this server!");
             }
             else
             {
@@ -142,7 +141,7 @@ public class KickBanCommands
             user.kickPlayer(message);
         }
         player.setBanned(true);
-        context.sendMessage("basics", "&cYou banned &2%s&c!", player.getName());
+        context.sendTranslated("&cYou banned &2%s&c!", player.getName());
     }
 
     @Command(names = {
@@ -153,11 +152,11 @@ public class KickBanCommands
         OfflinePlayer offlinePlayer = context.getSender().getServer().getOfflinePlayer(context.getString(0));
         if (!offlinePlayer.isBanned())
         {
-            context.sendMessage("basics", "&2%s &cis not banned!", offlinePlayer.getName());
+            context.sendTranslated("&2%s &cis not banned!", offlinePlayer.getName());
             return;
         }
         offlinePlayer.setBanned(false);
-        context.sendMessage("basics", "&aYou unbanned &2%s&a!", offlinePlayer.getName());
+        context.sendTranslated("&aYou unbanned &2%s&a!", offlinePlayer.getName());
     }
 
     @Command(names = {
@@ -170,18 +169,18 @@ public class KickBanCommands
         {
             InetAddress adress = InetAddress.getByName(ipadress);
             Bukkit.banIP(adress.getHostAddress());
-            context.sendMessage("basics", "&cYou banned the IP &6%s &cfrom your server!", adress.getHostAddress());
-            for (User player : context.getCore().getUserManager().getOnlineUsers())
+            context.sendTranslated("&cYou banned the IP &6%s &cfrom your server!", adress.getHostAddress());
+            for (User user : context.getCore().getUserManager().getOnlineUsers())
             {
-                if (player.getAddress() != null && player.getAddress().getAddress().getHostAddress().equals(ipadress))
+                if (user.getAddress() != null && user.getAddress().getAddress().getHostAddress().equals(ipadress))
                 {
-                    player.kickPlayer(_(player, "basics", "&cYou were banned from this server!"));
+                    user.kickPlayer(user.translate("&cYou were banned from this server!"));
                 }
             }
         }
         catch (UnknownHostException e)
         {
-            context.sendMessage("basics", "&6%s &cis not a valid IP-address!", ipadress);
+            context.sendTranslated("&6%s &cis not a valid IP-address!", ipadress);
         }
     }
 
@@ -195,11 +194,11 @@ public class KickBanCommands
         {
             InetAddress adress = InetAddress.getByName(ipadress);
             Bukkit.unbanIP(adress.getHostAddress());
-            context.sendMessage("basics", "&aYou unbanned the IP &6%s&a!", adress.getHostAddress());
+            context.sendTranslated("&aYou unbanned the IP &6%s&a!", adress.getHostAddress());
         }
         catch (UnknownHostException e)
         {
-            context.sendMessage("basics", "&6%s &cis not a valid IP-address!", ipadress);
+            context.sendTranslated("&6%s &cis not a valid IP-address!", ipadress);
         }
     }
 }

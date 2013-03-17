@@ -37,17 +37,17 @@ public class UserManagementCommands extends UserCommandHelper
         Role role = this.manager.getRoleInWorld(worldId,roleName);
         if (role == null)
         {
-            context.sendMessage("roles", "&eCould not find the role &6%s &ein &6%s&e.", roleName, world.getName());
+            context.sendTranslated("&eCould not find the role &6%s &ein &6%s&e.", roleName, world.getName());
             return;
         }
         this.module.getLogger().log(LogLevel.DEBUG,"Role added: "+ role.getName() + " -> " + user.getName());
         if (this.manager.addRoles(user, user.getPlayer(), worldId, role))
         {
-            context.sendMessage("roles", "&aAdded the role &6%s&a to &2%s&a in &6%s&a.", roleName, user.getName(), world.getName());
+            context.sendTranslated("&aAdded the role &6%s&a to &2%s&a in &6%s&a.", roleName, user.getName(), world.getName());
         }
         else
         {
-            context.sendMessage("roles", "&2%s&e already had the role &6%s&e in &6%s&e.", user.getName(), roleName, world.getName());
+            context.sendTranslated("&2%s&e already had the role &6%s&e in &6%s&e.", user.getName(), roleName, world.getName());
         }
     }
 
@@ -63,16 +63,16 @@ public class UserManagementCommands extends UserCommandHelper
         Role role = this.manager.getProvider(worldId).getRole(context.getString(0));
         if (role == null)
         {
-            context.sendMessage("roles", "&eCould not find the role &6%s &ein &6%s&e.", context.getString(0), world.getName());
+            context.sendTranslated("&eCould not find the role &6%s &ein &6%s&e.", context.getString(0), world.getName());
             return;
         }
         if (this.manager.removeRole(user, role, worldId))
         {
-            context.sendMessage("roles", "&aRemoved the role &6%s&a from &2%s&a in &6%s&a.", role.getName(), user.getName(), world.getName());
+            context.sendTranslated("&aRemoved the role &6%s&a from &2%s&a in &6%s&a.", role.getName(), user.getName(), world.getName());
         }
         else
         {
-            context.sendMessage("roles", "&2%s&e did not have the role &6%s&e in &6%s&e.", user.getName(), role.getName(), world.getName());
+            context.sendTranslated("&2%s&e did not have the role &6%s&e in &6%s&e.", user.getName(), role.getName(), world.getName());
         }
     }
 
@@ -84,10 +84,10 @@ public class UserManagementCommands extends UserCommandHelper
         World world = this.getWorld(context);
         long worldId = this.getModule().getCore().getWorldManager().getWorldId(world);
         Set<Role> newRoles = this.manager.clearRoles(user, worldId);
-        context.sendMessage("roles", "&eCleared the roles of &2%s &ein &6%s&e.", user.getName(), world.getName());
+        context.sendTranslated("&eCleared the roles of &2%s &ein &6%s&e.", user.getName(), world.getName());
         if (!newRoles.isEmpty())
         {
-            context.sendMessage("roles", "&eDefault roles assigned:");
+            context.sendTranslated("&eDefault roles assigned:");
             for (Role role : newRoles)
             {
                 context.sendMessage("- &6" + role.getName());
@@ -118,7 +118,7 @@ public class UserManagementCommands extends UserCommandHelper
         }
         else
         {
-            context.sendMessage("roles", "&cUnkown setting: &6%s &cUse &6true&c,&6false&c or &6reset&c!", setTo);
+            context.sendTranslated("&cUnkown setting: &6%s &cUse &6true&c,&6false&c or &6reset&c!", setTo);
             return;
         }
         World world = this.getWorld(context);
@@ -126,17 +126,17 @@ public class UserManagementCommands extends UserCommandHelper
         role.setPermission(perm, set);
         if (set == null)
         {
-            context.sendMessage("roles", "&ePermission &6%s &eof &2%s&e resetted!", perm, user.getName());
+            context.sendTranslated("&ePermission &6%s &eof &2%s&e resetted!", perm, user.getName());
         }
         else
         {
             if (set)
             {
-                context.sendMessage("roles", "&aPermission &6%s &aof &2%s&a set to true!", perm, user.getName());
+                context.sendTranslated("&aPermission &6%s &aof &2%s&a set to true!", perm, user.getName());
             }
             else
             {
-                context.sendMessage("roles", "&cPermission &6%s &cof &2%s&c set to false!", perm, user.getName());
+                context.sendTranslated("&cPermission &6%s &cof &2%s&c set to false!", perm, user.getName());
             }
         }
     }
@@ -158,7 +158,7 @@ public class UserManagementCommands extends UserCommandHelper
         World world = this.getWorld(context);
         UserSpecificRole role = this.getUserRole(user, world);
         role.setMetaData(metaKey, metaVal);
-        context.sendMessage("roles", "&aMetadata &6%s &aof &2%s&a set to &6%s &ain &6%s&a!", metaKey, user.getName(), metaVal, world.getName());
+        context.sendTranslated("&aMetadata &6%s &aof &2%s&a set to &6%s &ain &6%s&a!", metaKey, user.getName(), metaVal, world.getName());
     }
 
     @Command(names = {
@@ -171,7 +171,7 @@ public class UserManagementCommands extends UserCommandHelper
         World world = this.getWorld(context);
         UserSpecificRole role = this.getUserRole(user, world);
         role.setMetaData(metaKey, null);
-        context.sendMessage("roles", "&eMetadata &6%s &eof &2%s &eremoved in &6%s&e!", metaKey, user.getName(), world.getName());
+        context.sendTranslated("&eMetadata &6%s &eof &2%s &eremoved in &6%s&e!", metaKey, user.getName(), world.getName());
     }
 
     @Command(names = {
@@ -183,6 +183,6 @@ public class UserManagementCommands extends UserCommandHelper
         World world = this.getWorld(context);
         UserSpecificRole role = this.getUserRole(user, world);
         role.clearMetaData();
-        context.sendMessage("roles", "&eMetadata of &2%s &ecleared in &6%s&e!", user.getName(), world.getName());
+        context.sendTranslated("&eMetadata of &2%s &ecleared in &6%s&e!", user.getName(), world.getName());
     }
 }

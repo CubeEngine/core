@@ -1,7 +1,7 @@
 package de.cubeisland.cubeengine.core.user;
 
 import de.cubeisland.cubeengine.core.bukkit.BukkitCore;
-import de.cubeisland.cubeengine.core.command.sender.CommandSender;
+import de.cubeisland.cubeengine.core.command.CommandSender;
 import de.cubeisland.cubeengine.core.filesystem.FileManager;
 import de.cubeisland.cubeengine.core.module.Module;
 import de.cubeisland.cubeengine.core.permission.Permission;
@@ -49,7 +49,6 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
-import static de.cubeisland.cubeengine.core.i18n.I18n._;
 import static de.cubeisland.cubeengine.core.logger.LogLevel.WARNING;
 
 /**
@@ -416,16 +415,16 @@ public class UserManager implements Cleanable
         return user;
     }
 
-    public void broadcastMessage(String category, String message, Permission perm, Object... args)
+    public void broadcastMessage(String category, String message, Permission perm, Object... params)
     {
         for (User user : this.onlineUsers)
         {
             if (perm == null || perm.isAuthorized(user))
             {
-                user.sendMessage(category, message, args);
+                user.sendTranslated(message, params);
             }
         }
-        this.core.getServer().getConsoleSender().sendMessage(_(category, message, args));
+        this.core.getCommandManager().getConsoleSender().sendTranslated(message, params);
     }
 
     public void broadcastMessage(String category, String message, Object... args)
@@ -518,11 +517,11 @@ public class UserManager implements Cleanable
         }
     }
 
-    public void kickAll(String category, String message, Object... args)
+    public void kickAll(String category, String message, Object... params)
     {
         for (User user : this.cachedUsers.values())
         {
-            user.kickPlayer(_(user, category, message, args));
+            user.kickPlayer(user.translate(message, params));
         }
     }
 

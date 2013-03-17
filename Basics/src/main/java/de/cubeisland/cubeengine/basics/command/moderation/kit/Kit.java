@@ -2,9 +2,10 @@ package de.cubeisland.cubeengine.basics.command.moderation.kit;
 
 import de.cubeisland.cubeengine.basics.Basics;
 import de.cubeisland.cubeengine.basics.BasicsAttachment;
+import de.cubeisland.cubeengine.core.Core;
 import de.cubeisland.cubeengine.core.CubeEngine;
 import de.cubeisland.cubeengine.core.command.exception.PermissionDeniedException;
-import de.cubeisland.cubeengine.core.command.sender.CommandSender;
+import de.cubeisland.cubeengine.core.command.CommandSender;
 import de.cubeisland.cubeengine.core.permission.PermDefault;
 import de.cubeisland.cubeengine.core.permission.Permission;
 import de.cubeisland.cubeengine.core.user.User;
@@ -85,13 +86,13 @@ public class Kit
         {
             if (!this.getPermission().isAuthorized(sender))
             {
-                sender.sendMessage("basics", "You are not allowed to give this kit.");
+                sender.sendTranslated("You are not allowed to give this kit.");
                 throw new PermissionDeniedException();
             }
         }
         if (module.getKitGivenManager().reachedUsageLimit(user, this.name, this.limitUsagePerPlayer))
         {
-            sender.sendMessage("basics", "&cKit-limit reached.");
+            sender.sendTranslated("&cKit-limit reached.");
             throw new PermissionDeniedException();
         }
         //TODO check how many times user got his kit
@@ -100,7 +101,7 @@ public class Kit
             Long lastUsage = user.get(BasicsAttachment.class).getKitUsage(this.name);
             if (lastUsage != null && System.currentTimeMillis() - lastUsage < limitUsageDelay)
             {
-                sender.sendMessage("basisc", "&eThis kit not availiable at the moment. &aTry again later!");
+                sender.sendTranslated("&eThis kit not availiable at the moment. &aTry again later!");
                 throw new PermissionDeniedException();
             }
         }
@@ -189,21 +190,33 @@ public class Kit
         }
 
         @Override
+        public Core getCore()
+        {
+            return this.user.getCore();
+        }
+
+        @Override
         public boolean isAuthorized(Permission perm)
         {
             return this.hasPermission(perm.getPermission());
         }
 
         @Override
-        public String getLanguage()
+        public Locale getLocale()
         {
-            return this.user.getLanguage();
+            return this.user.getLocale();
         }
 
         @Override
-        public void sendMessage(String category, String message, Object... params)
+        public String translate(String message, Object... params)
         {
-            this.user.sendMessage(category, message, params);
+            return this.user.translate(message, params);
+        }
+
+        @Override
+        public void sendTranslated(String message, Object... params)
+        {
+            this.user.sendTranslated(message, params);
         }
 
         @Override

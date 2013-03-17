@@ -1,25 +1,41 @@
 package de.cubeisland.cubeengine.core.command.sender;
 
+import de.cubeisland.cubeengine.core.Core;
+import de.cubeisland.cubeengine.core.command.CommandSender;
 import de.cubeisland.cubeengine.core.permission.Permission;
 import org.bukkit.Server;
 import org.bukkit.permissions.PermissionAttachment;
 import org.bukkit.permissions.PermissionAttachmentInfo;
 import org.bukkit.plugin.Plugin;
 
+import java.util.Locale;
 import java.util.Set;
 
 public class TestConsoleSender implements CommandSender
 {
+    private final Core core;
+
+    public TestConsoleSender(Core core)
+    {
+        this.core = core;
+    }
+
+    @Override
+    public Core getCore()
+    {
+        return this.core;
+    }
+
     @Override
     public String getName()
     {
-        return null; //To change body of implemented methods use File | Settings | File Templates.
+        return "TestConsoleSender";
     }
 
     @Override
     public String getDisplayName()
     {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        return this.getName();
     }
 
     @Override
@@ -29,7 +45,7 @@ public class TestConsoleSender implements CommandSender
     }
 
     @Override
-    public String getLanguage()
+    public Locale getLocale()
     {
         return null; //To change body of implemented methods use File | Settings | File Templates.
     }
@@ -41,15 +57,24 @@ public class TestConsoleSender implements CommandSender
     }
 
     @Override
-    public void sendMessage(String category, String message, Object... params)
+    public String translate(String message, Object... params)
     {
-    //To change body of implemented methods use File | Settings | File Templates.
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    public void sendTranslated(String message, Object... params)
+    {
+        this.sendMessage(this.translate(message, params));
     }
 
     @Override
     public void sendMessage(String[] messages)
     {
-    //To change body of implemented methods use File | Settings | File Templates.
+        for (String message : messages)
+        {
+            this.sendMessage(message);
+        }
     }
 
     @Override

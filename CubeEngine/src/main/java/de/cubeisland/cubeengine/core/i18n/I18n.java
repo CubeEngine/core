@@ -1,25 +1,25 @@
 package de.cubeisland.cubeengine.core.i18n;
 
 import de.cubeisland.cubeengine.core.Core;
-import de.cubeisland.cubeengine.core.CubeEngine;
-import de.cubeisland.cubeengine.core.command.sender.CommandSender;
 import de.cubeisland.cubeengine.core.config.Configuration;
 import de.cubeisland.cubeengine.core.filesystem.FileExtentionFilter;
 import de.cubeisland.cubeengine.core.filesystem.FileManager;
 import de.cubeisland.cubeengine.core.logger.CubeFileHandler;
 import de.cubeisland.cubeengine.core.logger.CubeLogger;
 import de.cubeisland.cubeengine.core.logger.LogLevel;
-import de.cubeisland.cubeengine.core.module.Module;
 import de.cubeisland.cubeengine.core.util.Cleanable;
 import de.cubeisland.cubeengine.core.util.matcher.Match;
 import gnu.trove.map.hash.THashMap;
 import gnu.trove.set.hash.THashSet;
-import org.apache.commons.lang.Validate;
 
 import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
-import java.util.*;
+import java.util.HashMap;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Set;
+import java.util.Stack;
 import java.util.logging.Logger;
 
 import static de.cubeisland.cubeengine.core.logger.LogLevel.ERROR;
@@ -30,19 +30,22 @@ import static de.cubeisland.cubeengine.core.logger.LogLevel.WARNING;
  */
 public class I18n implements Cleanable
 {
+    private final Core core;
+    private static final Object[] NO_PARAMS = {};
     private final Logger logger;
     private final SourceLanguage sourceLanguage;
     private final Map<String, Language> languageMap;
-    private String defaultLanguage;
+    private Locale defaultLocale;
 
     public I18n(Core core)
     {
+        this.core = core;
         this.logger = new CubeLogger("language");
         this.languageMap = new THashMap<String, Language>();
         this.sourceLanguage = new SourceLanguage();
         this.registerLanguage(this.sourceLanguage);
 
-        this.defaultLanguage = core.getConfiguration().defaultLanguage;
+        this.defaultLocale = core.getConfiguration().defaultLanguage;
         FileManager fm = core.getFileManager();
         this.loadLanguages(fm.getLanguageDir());
         try
@@ -70,24 +73,32 @@ public class I18n implements Cleanable
      *
      * @return the locale string of the default language
      */
-    public String getDefaultLanguage()
+    public Language getDefaultLanguage()
     {
-        return this.defaultLanguage;
+        Language language = this.languageMap.get(Locale.getDefault().toString());
+        if (language == null)
+        {
+            language = this.sourceLanguage;
+        }
+        return language;
     }
 
     /**
      * Sets the default language
      *
-     * @param language the new default language
+     * @param locale the new default language
      */
-    public void setDefaultLanguage(String language)
+    public void setDefaultLocale(Locale locale)
     {
-        Validate.notNull(language, "The language must not be null!");
-
-        language = normalizeLanguage(language);
-        if (this.sourceLanguage.equals(language) || this.languageMap.containsKey(language))
+        if (locale == null)
         {
-            this.defaultLanguage = language;
+            throw new NullPointerException("The language must not be null!");
+        }
+
+        if (this.sourceLanguage.equals(locale) || this.languageMap.containsKey(locale))
+        {
+            Locale.setDefault(locale);
+            this.defaultLocale = locale;
         }
     }
 
@@ -98,11 +109,11 @@ public class I18n implements Cleanable
      */
     private void loadLanguages(File languageDir)
     {
-        Map<String, LanguageConfiguration> languages = new HashMap<String, LanguageConfiguration>();
-        LanguageConfiguration config;
+        Map<String, LocaleConfig> languages = new HashMap<String, LocaleConfig>();
+        LocaleConfig config;
         for (File file : languageDir.listFiles((FileFilter)FileExtentionFilter.YAML))
         {
-            config = Configuration.load(LanguageConfiguration.class, file, false);
+            config = Configuration.load(LocaleConfig.class, file, false);
             config.code = normalizeLanguage(config.code);
             if (config.code != null)
             {
@@ -115,13 +126,13 @@ public class I18n implements Cleanable
         }
 
         Stack<String> loadStack = new Stack<String>();
-        for (LanguageConfiguration entry : languages.values())
+        for (LocaleConfig entry : languages.values())
         {
             this.loadLanguage(languageDir, entry, languages, loadStack);
         }
     }
 
-    private Language loadLanguage(File languageDir, LanguageConfiguration config, Map<String, LanguageConfiguration> languages, Stack<String> loadStack)
+    private Language loadLanguage(File languageDir, LocaleConfig config, Map<String, LocaleConfig> languages, Stack<String> loadStack)
     {
         if (this.languageMap.containsKey(config.code))
         {
@@ -140,7 +151,7 @@ public class I18n implements Cleanable
         }
         else
         {
-            LanguageConfiguration parent = languages.get(config.parent);
+            LocaleConfig parent = languages.get(config.parent);
             if (parent != null)
             {
                 loadStack.add(config.code);
@@ -150,7 +161,7 @@ public class I18n implements Cleanable
         }
         try
         {
-            language = new NormalLanguage(config, languageDir, language);
+            language = new NormalLanguage(this.core, config, languageDir, language);
             this.registerLanguage(language);
             if (config.clones != null)
             {
@@ -158,7 +169,7 @@ public class I18n implements Cleanable
                 for (String clone : config.clones)
                 {
                     clonedLanguage = ClonedLanguage.clone(language, clone);
-                    if (clonedLanguage != null && !this.sourceLanguage.equals(clonedLanguage.getCode()))
+                    if (clonedLanguage != null && !this.sourceLanguage.equals(clonedLanguage.getLocale()))
                     {
                         this.registerLanguage(clonedLanguage);
                     }
@@ -178,8 +189,8 @@ public class I18n implements Cleanable
 
     private void registerLanguage(Language language)
     {
-        this.languageMap.put(language.getCode().toLowerCase(this.sourceLanguage.getLocale()), language);
-        this.languageMap.put(language.getName().toLowerCase(this.sourceLanguage.getLocale()), language);
+        this.languageMap.put(language.getLocale().toString(), language);
+        this.languageMap.put(language.getName().toLowerCase(language.getLocale()), language);
         this.languageMap.put(language.getLocalName().toLowerCase(language.getLocale()), language);
     }
 
@@ -228,52 +239,62 @@ public class I18n implements Cleanable
     /**
      * This method translates a messages
      *
-     * @param language the language to translate to
-     * @param category the category to load the messages from
      * @param message  the message to translate
      * @param params   the parameters to insert into the language after translation
      * @return the translated language
      */
-    public String translate(String language, String category, String message, Object... params)
+    public String translate(String message, Object... params)
     {
-        Validate.notNull(language, "The language must not be null!");
-        Validate.notNull(category, "The category must not be null!");
+        return this.translate(Locale.getDefault(), message, params);
+    }
 
-        if (category.isEmpty())
+    /**
+     * This method translates a messages
+     *
+     * @param locale the language to translate to
+     * @param message  the message to translate
+     * @param params   the parameters to insert into the language after translation
+     * @return the translated language
+     */
+    public String translate(Locale locale, String message, Object... params)
+    {
+        if (locale == null)
         {
-            return message;
+            throw new NullPointerException("The language must not be null!");
         }
-        Validate.notNull(params, "The params must not be null!");
-        Locale locale = this.sourceLanguage.getLocale();
+        if (params == null)
+        {
+            params = NO_PARAMS;
+        }
         if (message == null)
         {
             return null;
         }
 
         String translation = null;
-        Language lang = this.languageMap.get(language);
+        Language lang = this.languageMap.get(locale);
         if (lang != null)
         {
             locale = lang.getLocale();
-            translation = lang.getTranslation(category, message);
+            translation = lang.getTranslation(message);
         }
 
         if (translation == null)
         {
-            this.logMissingTranslation(language, category, message);
-            Language defLang = this.getLanguage(this.defaultLanguage);
+            this.logMissingTranslation(locale, message);
+            Language defLang = this.getLanguage(this.defaultLocale.getISO3Language());
             if (defLang != null)
             {
-                translation = defLang.getTranslation(category, message);
+                translation = defLang.getTranslation(message);
             }
             else
             {
-                this.logger.log(WARNING, "The configured default language {0} was not found! Switching back to the source language...", this.defaultLanguage);
-                this.defaultLanguage = this.sourceLanguage.getCode();
+                this.logger.log(WARNING, "The configured default language {0} was not found! Falling back to the source language...", this.defaultLocale.getDisplayName());
+                this.defaultLocale = this.sourceLanguage.getLocale();
             }
             if (translation == null)
             {
-                translation = this.sourceLanguage.getTranslation(category, message);
+                translation = this.sourceLanguage.getTranslation( message);
             }
         }
 
@@ -327,60 +348,8 @@ public class I18n implements Cleanable
         return null;
     }
 
-    private void logMissingTranslation(String language, String category, String message)
+    private void logMissingTranslation(Locale locale, String message)
     {
-        this.logger.log(LogLevel.INFO, String.format("\"%s\" - \"%s\" - \"%s\"", language, category, message));
-    }
-
-    private static final Object[] NO_PARAMS = {};
-
-    public static String _(CommandSender sender, Module module, String message, Object[] params)
-    {
-        return _(sender, module.getId(), message, params);
-    }
-
-    public static String _(CommandSender sender, Module module, String message)
-    {
-        return _(sender, module, message, NO_PARAMS);
-    }
-
-    public static String _(CommandSender sender, String category, String message, Object[] params)
-    {
-        return _(sender.getLanguage(), category, message, params);
-    }
-
-    public static String _(CommandSender sender, String category, String message)
-    {
-        return _(sender, category, message, NO_PARAMS);
-    }
-
-    public static String _(Module module, String message, Object[] params)
-    {
-        return _(module.getId(), message, params);
-    }
-
-    public static String _(Module module, String message)
-    {
-        return _(module, message, NO_PARAMS);
-    }
-
-    public static String _(String category, String message, Object[] params)
-    {
-        return _(CubeEngine.getI18n().getDefaultLanguage(), category, message, params);
-    }
-
-    public static String _(String category, String message)
-    {
-        return _(category, message, NO_PARAMS);
-    }
-
-    public static String _(String language, String category, String message, Object[] params)
-    {
-        return CubeEngine.getI18n().translate(language, category, message, params);
-    }
-
-    public static String _(String language, String category, String message)
-    {
-        return _(language, category, message, NO_PARAMS);
+        this.logger.log(LogLevel.INFO, String.format("\"%s\" \"%s\"", locale.getISO3Country(), message));
     }
 }

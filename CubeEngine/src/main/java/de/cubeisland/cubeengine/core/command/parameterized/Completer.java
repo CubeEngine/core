@@ -1,6 +1,6 @@
 package de.cubeisland.cubeengine.core.command.parameterized;
 
-import de.cubeisland.cubeengine.core.command.sender.CommandSender;
+import de.cubeisland.cubeengine.core.command.CommandSender;
 
 import java.util.List;
 

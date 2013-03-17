@@ -43,7 +43,7 @@ public class SpawnCommands
             world = context.getSender().getServer().getWorld(context.getString(0));
             if (world == null)
             {
-                context.sendMessage("basics", "&cWorld: %s not found", context.getString(0));
+                context.sendTranslated("&cWorld: %s not found", context.getString(0));
                 return;
             }
         }
@@ -51,7 +51,7 @@ public class SpawnCommands
         {
             if (sender == null)
             {
-                context.sendMessage("basics", "&cIf not used ingame you have to specify a world and coordinates!");
+                context.sendTranslated("&cIf not used ingame you have to specify a world and coordinates!");
                 return;
             }
             world = sender.getWorld();
@@ -64,7 +64,7 @@ public class SpawnCommands
             z = context.getArg(3, Integer.class, null);
             if (x == null || y == null || z == null)
             {
-                context.sendMessage("basics", "&cCoordinates are invalid!");
+                context.sendTranslated("&cCoordinates are invalid!");
                 return;
             }
         }
@@ -72,7 +72,7 @@ public class SpawnCommands
         {
             if (sender == null)
             {
-                context.sendMessage("basics", "&cIf not used ingame you have to specify a world and coordinates!");
+                context.sendTranslated("&cIf not used ingame you have to specify a world and coordinates!");
                 return;
             }
             final Location loc = sender.getLocation();
@@ -81,7 +81,7 @@ public class SpawnCommands
             z = loc.getBlockZ();
         }
         world.setSpawnLocation(x, y, z);
-        context.sendMessage("bascics", "&aSpawn was in world %s set to &eX:&6%d &eY:&6%d &eZ:&6%d", world.getName(), x, y, z);
+        context.sendTranslated("&aSpawn was in world %s set to &eX:&6%d &eY:&6%d &eZ:&6%d", world.getName(), x, y, z);
     }
 
     @Command(desc = "Teleport directly to the worlds spawn.", usage = "[player] [world <world>]", max = 2, params = @Param(names = {
@@ -112,7 +112,7 @@ public class SpawnCommands
             world = context.getParam("world", null);
             if (world == null)
             {
-                context.sendMessage("basics", "&cWorld not found!");
+                context.sendTranslated("&cWorld not found!");
                 return;
             }
         }
@@ -120,7 +120,7 @@ public class SpawnCommands
         {
             if (!BasicsPerm.COMMAND_SPAWN_ALL.isAuthorized(context.getSender()))
             {
-                context.sendMessage("basics", "&cYou are not allowed to spawn everyone!");
+                context.sendTranslated("&cYou are not allowed to spawn everyone!");
                 return;
             }
             Location loc = world.getSpawnLocation().add(0.5, 0, 0.5);
@@ -141,7 +141,7 @@ public class SpawnCommands
         }
         if (user == null && !context.hasArg(0))
         {
-            context.sendMessage("basics", "&6ProTip: &cTeleport does not work IRL!");
+            context.sendTranslated("&6ProTip: &cTeleport does not work IRL!");
             return;
         }
         if (context.hasArg(0))
@@ -149,12 +149,12 @@ public class SpawnCommands
             user = context.getUser(0);
             if (user == null)
             {
-                context.sendMessage("basics", "&cUser &2%s &cnot found!", context.getString(0));
+                context.sendTranslated("&cUser &2%s &cnot found!", context.getString(0));
                 return;
             }
             if (!force && BasicsPerm.COMMAND_SPAWN_PREVENT.isAuthorized(user))
             {
-                context.sendMessage("basics", "&cYou are not allowed to spawn %s!", user.getName());
+                context.sendTranslated("&cYou are not allowed to spawn %s!", user.getName());
                 return;
             }
         }
@@ -176,7 +176,7 @@ public class SpawnCommands
             World world = context.getArg(0, World.class, null);
             if (world == null)
             {
-                context.sendMessage("basics", "&cWorld not found!");
+                context.sendTranslated("&cWorld not found!");
                 return;
             }
             final Location spawnLocation = world.getSpawnLocation().add(0.5, 0, 0.5);
@@ -184,9 +184,9 @@ public class SpawnCommands
             spawnLocation.setPitch(userLocation.getPitch());
             spawnLocation.setYaw(userLocation.getYaw());
             if (TeleportCommands.teleport(sender, spawnLocation, true, false, true))
-                context.sendMessage("basics", "&aTeleported to the spawn of world &6%s&a!", world.getName());
+                context.sendTranslated("&aTeleported to the spawn of world &6%s&a!", world.getName());
             return;
         }
-        context.sendMessage("basics", "&eProTip: Teleport does not work IRL!");
+        context.sendTranslated("&eProTip: Teleport does not work IRL!");
     }
 }

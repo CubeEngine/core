@@ -89,7 +89,7 @@ public class AdvancedSpawnMob extends ChatCommand<Basics>
             }
             else
             {
-                context.sendMessage("basics","&6%s &cis not a living Entity!", Match.entity().getNameFor(entityType));
+                context.sendTranslated("&6%s &cis not a living Entity!", Match.entity().getNameFor(entityType));
             }
         }
         if (context.hasFlag("baby"))
@@ -137,7 +137,7 @@ public class AdvancedSpawnMob extends ChatCommand<Basics>
             }
             catch (NumberFormatException e)
             {
-                context.sendMessage("basics", "&eThe slime-size has to be a number or tiny, small or big!");
+                context.sendTranslated("&eThe slime-size has to be a number or tiny, small or big!");
             }
         }
         if (context.hasParam("prof"))
@@ -181,7 +181,7 @@ public class AdvancedSpawnMob extends ChatCommand<Basics>
             User nearby = context.getParam("nearby",null);
             if (nearby == null || !nearby.isOnline())
             {
-                context.sendMessage("basics","&cUser %s not found!",context.getString("nearby"));
+                context.sendTranslated("&cUser %s not found!", context.getString("nearby"));
             }
             else
             {
@@ -193,7 +193,7 @@ public class AdvancedSpawnMob extends ChatCommand<Basics>
             Integer amount = context.getParam("amount",0);
             if (amount == 0)
             {
-                context.sendMessage("basics","&cInvalid amount!");
+                context.sendTranslated("&cInvalid amount!");
                 amount = 1;
             }
             spawningData.amount = amount;

@@ -4,6 +4,7 @@ import de.cubeisland.cubeengine.core.util.Pair;
 import de.cubeisland.cubeengine.shout.announce.Announcement;
 import de.cubeisland.cubeengine.shout.announce.MessageOfTheDay;
 
+import java.util.Locale;
 import java.util.Queue;
 
 public interface Receiver
@@ -43,7 +44,7 @@ public interface Receiver
      *
      * @return this receivers local code
      */
-    public String getLanguage();
+    public Locale getLocale();
 
     /**
      * Override and set all this users announcements.

@@ -59,7 +59,7 @@ public class EditModeListener extends ChatCommand<Signmarket>
                 this.previousMarketSign.put(user.key, previousSign);
                 previousSign.exitEditMode(user);
             }
-            user.sendMessage("signmarket", "&aChanged active sign!");
+            user.sendTranslated("&aChanged active sign!");
             marketSign.updateSign();
         }
         marketSign.enterEditMode();
@@ -74,7 +74,7 @@ public class EditModeListener extends ChatCommand<Signmarket>
         {
             marketSign.exitEditMode(user);
         }
-        user.sendMessage("signmarket", "&aEdit mode quit!");
+        user.sendTranslated("&aEdit mode quit!");
     }
 
     public CommandResult run(CommandContext runContext) throws Exception
@@ -89,13 +89,13 @@ public class EditModeListener extends ChatCommand<Signmarket>
                 this.removeUser(user);
                 return null;
             }
-            user.sendMessage("signmarket", "&cPlease do select a sign to edit.");
+            user.sendTranslated("&cPlease do select a sign to edit.");
             return null;
         }
         MarketSign marketSign = this.getModule().getMarketSignFactory().getSignAt(loc);
         if (marketSign == null)
         {
-            user.sendMessage("signmarket", "&4No market-sign at position! This should not happen!");
+            user.sendTranslated("&4No market-sign at position! This should not happen!");
             return null;
         }
         this.setEditingSign(user, loc, marketSign);
@@ -104,7 +104,7 @@ public class EditModeListener extends ChatCommand<Signmarket>
             MarketSign prevMarketSign = this.previousMarketSign.get(user.key);
             if (prevMarketSign == null)
             {
-                user.sendMessage("signmarket", "&cNo market-sign at previous position.");
+                user.sendTranslated("&cNo market-sign at previous position.");
             }
             else
             {
@@ -121,7 +121,7 @@ public class EditModeListener extends ChatCommand<Signmarket>
                 }
                 else
                 {
-                    context.sendMessage("signmarket","&cYou are not allowed to create admin-buy signs!");
+                    context.sendTranslated("&cYou are not allowed to create admin-buy signs!");
                 }
             }
             else
@@ -132,7 +132,7 @@ public class EditModeListener extends ChatCommand<Signmarket>
                 }
                 else
                 {
-                    context.sendMessage("signmarket","&cYou are not allowed to create user-buy signs!");
+                    context.sendTranslated("&cYou are not allowed to create user-buy signs!");
                 }
             }
         }
@@ -146,7 +146,7 @@ public class EditModeListener extends ChatCommand<Signmarket>
                 }
                 else
                 {
-                    context.sendMessage("signmarket","&cYou are not allowed to create admin-sell signs!");
+                    context.sendTranslated("&cYou are not allowed to create admin-sell signs!");
                 }
             }
             else
@@ -157,7 +157,7 @@ public class EditModeListener extends ChatCommand<Signmarket>
                 }
                 else
                 {
-                    context.sendMessage("signmarket","&cYou are not allowed to create user-sell signs!");
+                    context.sendTranslated("&cYou are not allowed to create user-sell signs!");
                 }
             }
         }
@@ -169,11 +169,11 @@ public class EditModeListener extends ChatCommand<Signmarket>
             }
             if (marketSign.isBuySign())
             {
-                user.sendMessage("signmarket", "&cBuy signs cannot have a demand!");
+                user.sendTranslated("&cBuy signs cannot have a demand!");
             }
             else if (marketSign.isAdminSign())
             {
-                user.sendMessage("signmarket", "&cAdmin signs cannot have a demand!");
+                user.sendTranslated("&cAdmin signs cannot have a demand!");
             }
             else
             {
@@ -184,7 +184,7 @@ public class EditModeListener extends ChatCommand<Signmarket>
                 }
                 else
                 {
-                    context.sendMessage("signmarket","&cInvalid demand amount!");
+                    context.sendTranslated("&cInvalid demand amount!");
                 }
             }
         }
@@ -196,7 +196,7 @@ public class EditModeListener extends ChatCommand<Signmarket>
             }
             else
             {
-                context.sendMessage("signmarket","&cYou are not allowed to create admin-signs");
+                context.sendTranslated("&cYou are not allowed to create admin-signs");
             }
         }
         if (context.hasFlag("user"))
@@ -207,7 +207,7 @@ public class EditModeListener extends ChatCommand<Signmarket>
             }
             else
             {
-                context.sendMessage("signmarket","&cYou are not allowed to create user-signs");
+                context.sendTranslated("&cYou are not allowed to create user-signs");
             }
         }
         if (context.hasParam("owner"))
@@ -217,7 +217,7 @@ public class EditModeListener extends ChatCommand<Signmarket>
                 User owner = context.getParam("owner",null);
                 if (owner == null)
                 {
-                    user.sendMessage("signmarket", "&cUser %s not found!",context.getString("owner"));
+                    user.sendTranslated("&cUser %s not found!", context.getString("owner"));
                 }
                 else
                 {
@@ -226,7 +226,7 @@ public class EditModeListener extends ChatCommand<Signmarket>
             }
             else
             {
-                context.sendMessage("signmarket","&cYou are not allowed to create user-signs for other users");
+                context.sendTranslated("&cYou are not allowed to create user-signs for other users");
             }
         }
         if (context.hasFlag("stock"))
@@ -243,12 +243,12 @@ public class EditModeListener extends ChatCommand<Signmarket>
                         }
                         else
                         {
-                            context.sendMessage("signmarket","&cYou are not allowed to create admin-signs with no stock");
+                            context.sendTranslated("&cYou are not allowed to create admin-signs with no stock");
                         }
                     }
                     else
                     {
-                        context.sendMessage("signmarket","&cAdmin-signs without stock are not allowed!");
+                        context.sendTranslated("&cAdmin-signs without stock are not allowed!");
                     }
                 }
                 else
@@ -261,18 +261,18 @@ public class EditModeListener extends ChatCommand<Signmarket>
                         }
                         else
                         {
-                            context.sendMessage("signmarket","&cYou are not allowed to create admin-signs with stock");
+                            context.sendTranslated("&cYou are not allowed to create admin-signs with stock");
                         }
                     }
                     else
                     {
-                        context.sendMessage("signmarket","&cAdmin-signs with stock are not allowed!");
+                        context.sendTranslated("&cAdmin-signs with stock are not allowed!");
                     }
                 }
             }
             else
             {
-                context.sendMessage("signmarket","&cUser signs cannot have no stock!");
+                context.sendTranslated("&cUser signs cannot have no stock!");
             }
         }
         if (context.hasParam("setstock"))
@@ -286,12 +286,12 @@ public class EditModeListener extends ChatCommand<Signmarket>
                 }
                 else
                 {
-                    context.sendMessage("signmarket","&cThis sign has no stock! Use \"stock\" first to enable it!");
+                    context.sendTranslated("&cThis sign has no stock! Use \"stock\" first to enable it!");
                 }
             }
             else
             {
-                context.sendMessage("signmarket","&cYou are not allowed to set the stock!");
+                context.sendTranslated("&cYou are not allowed to set the stock!");
             }
         }
         if (context.hasParam("currency"))
@@ -299,7 +299,7 @@ public class EditModeListener extends ChatCommand<Signmarket>
             Currency currency = this.getModule().getConomy().getCurrencyManager().getCurrencyByName(context.getString("currency"));
             if (currency == null)
             {
-                context.sendMessage("signmarket","&cInvalid currency: %s!",context.getString("currency"));
+                context.sendTranslated("&cInvalid currency: %s!", context.getString("currency"));
             }
             else
             {
@@ -314,17 +314,17 @@ public class EditModeListener extends ChatCommand<Signmarket>
             {
                 currency = this.getModule().getConomy().getCurrencyManager().getMainCurrency();
                 marketSign.setCurrency(currency);
-                context.sendMessage("signmarket","&aCurrency set to default!");
+                context.sendTranslated("&aCurrency set to default!");
             }
             Long price = currency.parse(context.getString("price"));
             if (price == null)
             {
-                user.sendMessage("signmarket", "&cInvalid price for currency!");
+                user.sendTranslated("&cInvalid price for currency!");
                 marketSign.setPrice(0);
             }
             else if (price < 0)
             {
-                user.sendMessage("signmarket", "&cA negative price!? Are you serious?");
+                user.sendTranslated("&cA negative price!? Are you serious?");
             }
             else
             {
@@ -336,11 +336,11 @@ public class EditModeListener extends ChatCommand<Signmarket>
             Integer amount = context.getParam("amount",null);
             if (amount == null)
             {
-                user.sendMessage("signmarket", "&cInvalid amount %s!",context.getString("amount"));
+                user.sendTranslated("&cInvalid amount %s!", context.getString("amount"));
             }
             else if (amount < 0)
             {
-                user.sendMessage("signmarket", "&cNegative amounts could be unfair!");
+                user.sendTranslated("&cNegative amounts could be unfair!");
             }
             else
             {
@@ -352,7 +352,7 @@ public class EditModeListener extends ChatCommand<Signmarket>
             ItemStack item = context.getParam("item", null);
             if (item == null)
             {
-                user.sendMessage("signmarket", "&cItem not found!");
+                user.sendTranslated("&cItem not found!");
             }
             else
             {
@@ -366,13 +366,13 @@ public class EditModeListener extends ChatCommand<Signmarket>
                 Integer size = context.getParam("size",null);
                 if (size == null || size == 0 || size > 6 || size < -1)
                 {
-                    context.sendMessage("signmarket","&cInvalid size! Use -1 for infinite OR 1-6 inventory-lines!");
+                    context.sendTranslated("&cInvalid size! Use -1 for infinite OR 1-6 inventory-lines!");
                 }
                 else
                 {
                     if (size == -1 && !MarketSignPerm.SIGN_SIZE_CHANGE_INFINITE.isAuthorized(user))
                     {
-                        context.sendMessage("marketsign","&cYou are not allowed to set infinite inventories!");
+                        context.sendTranslated("&cYou are not allowed to set infinite inventories!");
                     }
                     else
                     {
@@ -381,7 +381,7 @@ public class EditModeListener extends ChatCommand<Signmarket>
                             int maxAdmin = this.getModule().getConfig().maxAdminStock;
                             if (maxAdmin != -1 && (size > maxAdmin || size == -1))
                             {
-                                context.sendMessage("marketsign","&cThe maximum size of admin-signs is set to &6%d&c!",maxAdmin);
+                                context.sendTranslated("&cThe maximum size of admin-signs is set to &6%d&c!", maxAdmin);
                             }
                             else
                             {
@@ -394,7 +394,7 @@ public class EditModeListener extends ChatCommand<Signmarket>
                             int maxUser = this.getModule().getConfig().maxUserStock;
                             if (maxUser != -1 && (size > maxUser || size == -1))
                             {
-                                context.sendMessage("marketsign","&cThe maximum size of user-signs is set to &6%d&c!",maxUser);
+                                context.sendTranslated("&cThe maximum size of user-signs is set to &6%d&c!", maxUser);
                             }
                             else
                             {
@@ -407,7 +407,7 @@ public class EditModeListener extends ChatCommand<Signmarket>
             }
             else
             {
-                context.sendMessage("signmarket","&cYou are not allowed to change the sign-inventory-size.");
+                context.sendTranslated("&cYou are not allowed to change the sign-inventory-size.");
             }
         }
         if (context.hasFlag("exit"))
@@ -446,7 +446,7 @@ public class EditModeListener extends ChatCommand<Signmarket>
                 {
                     if (this.currentSignLocation.valueCollection().contains(newLoc))
                     {
-                        user.sendMessage("signmarket", "&cSomeone else is editing this sign!");
+                        user.sendTranslated("&cSomeone else is editing this sign!");
                         return;
                     }
                 }
@@ -459,7 +459,7 @@ public class EditModeListener extends ChatCommand<Signmarket>
                         event.setUseItemInHand(Event.Result.DEFAULT);
                         return;
                     }
-                    user.sendMessage("signmarket","&cThis is not a market-sign!\n&eUse shift leftclick to destroy the sign.");
+                    user.sendTranslated("&cThis is not a market-sign!\n&eUse shift leftclick to destroy the sign.");
                     return;
                 }
                 if (marketSign.isInEditMode())
@@ -473,7 +473,7 @@ public class EditModeListener extends ChatCommand<Signmarket>
                 }
                 if (!MarketSignPerm.SIGN_EDIT.isAuthorized(user))
                 {
-                    user.sendMessage("signmarket","&cYou are not allowed to edit market-signs!");
+                    user.sendTranslated("&cYou are not allowed to edit market-signs!");
                     return;
                 }
                 this.setEditingSign(user, newLoc, marketSign);
@@ -503,7 +503,7 @@ public class EditModeListener extends ChatCommand<Signmarket>
             MarketSign curSign = this.getModule().getMarketSignFactory().getSignAt(curLoc);
             if (curSign == null)
             {
-                user.sendMessage("signmarket", "&eThis sign is not a market-sign!");
+                user.sendTranslated("&eThis sign is not a market-sign!");
                 return; // not a market-sign
             }
             //TODO prevent changing if user-sign and items in stock! OR take out all items
@@ -511,7 +511,7 @@ public class EditModeListener extends ChatCommand<Signmarket>
             this.setEditingSign(user, curLoc, curSign);
             curSign.setItemStack(user.getItemInHand(), true);
             curSign.updateSign();
-            user.sendMessage("signmarket", "&aItem in sign updated!");
+            user.sendTranslated("&aItem in sign updated!");
             event.setCancelled(true);
             event.setUseItemInHand(Event.Result.DENY);
         }
@@ -527,7 +527,7 @@ public class EditModeListener extends ChatCommand<Signmarket>
             {
                 if (!MarketSignPerm.SIGN_CREATE.isAuthorized(user))
                 {
-                    user.sendMessage("signmarket","&cYou are not allowed to create market-signs!");
+                    user.sendTranslated("&cYou are not allowed to create market-signs!");
                     event.setCancelled(true);
                     return;
                 }

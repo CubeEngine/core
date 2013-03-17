@@ -237,6 +237,6 @@ public class BlockLog implements Comparable<BlockLog>
             list.add(this.loc.getBlockZ());
             list.add(this.loc.getWorld().getName());
         }
-        user.sendMessage("log", message, list.toArray());
+        user.sendTranslated(message, list.toArray());
     }
 }

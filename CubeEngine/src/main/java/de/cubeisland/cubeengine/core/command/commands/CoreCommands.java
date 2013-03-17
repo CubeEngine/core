@@ -9,7 +9,7 @@ import de.cubeisland.cubeengine.core.command.ContainerCommand;
 import de.cubeisland.cubeengine.core.command.parameterized.Flag;
 import de.cubeisland.cubeengine.core.command.parameterized.ParameterizedContext;
 import de.cubeisland.cubeengine.core.command.reflected.Command;
-import de.cubeisland.cubeengine.core.command.sender.CommandSender;
+import de.cubeisland.cubeengine.core.command.CommandSender;
 import de.cubeisland.cubeengine.core.command.sender.ConsoleCommandSender;
 import de.cubeisland.cubeengine.core.permission.PermDefault;
 import de.cubeisland.cubeengine.core.user.User;
@@ -55,7 +55,7 @@ public class CoreCommands extends ContainerCommand
             target = context.getUser(1);
             if (target == null)
             {
-                sender.sendMessage("core", "&cUser %s not found!");
+                sender.sendTranslated("&cUser %s not found!");
                 return;
             }
         }
@@ -65,23 +65,23 @@ public class CoreCommands extends ContainerCommand
         }
         else
         {
-            sender.sendMessage("core", "&cNo user given!");
+            sender.sendTranslated("&cNo user given!");
             return;
         }
 
         if (target == sender && !sender.isAuthorized(CorePerms.COMMAND_SETPASSWORD_OTHER))
         {
-            context.sendMessage("core", "&cYou are not allowed to change the password of an other user!");
+            context.sendTranslated("&cYou are not allowed to change the password of an other user!");
             return;
         }
         core.getUserManager().setPassword(target, context.getString(0));
         if (sender == target)
         {
-            sender.sendMessage("core", "&aThe user's password has been set!");
+            sender.sendTranslated("&aThe user's password has been set!");
         }
         else
         {
-            sender.sendMessage("core", "&aYour password has been set!");
+            sender.sendTranslated("&aYour password has been set!");
         }
     }
 
@@ -100,35 +100,35 @@ public class CoreCommands extends ContainerCommand
                 {
                     user.passwd = null; //update loaded users
                 }
-                sender.sendMessage("core", "&All passwords reset!");
+                sender.sendTranslated("&All passwords reset!");
             }
             else
             {
-                context.sendMessage("core", "&cYou are not allowed to clear all passwords!");
+                context.sendTranslated("&cYou are not allowed to clear all passwords!");
             }
         }
         else if (context.hasArg(0))
         {
             if (!CorePerms.COMMAND_CLEARPASSWORD_OTHER.isAuthorized(context.getSender()))
             {
-                context.sendMessage("core", "&cYou are not allowed to clear the password of other users!");
+                context.sendTranslated("&cYou are not allowed to clear the password of other users!");
                 return;
             }
             User target = context.getUser(0);
             if (target != null)
             {
                 this.core.getUserManager().resetPassword(target);
-                sender.sendMessage("core", "&aThe user's password has been reset!");
+                sender.sendTranslated("&aThe user's password has been reset!");
             }
             else
             {
-                context.sendMessage("core", "&cUser &c not found!");
+                context.sendTranslated("&cUser &c not found!");
             }
         }
         else if (sender instanceof User)
         {
             this.core.getUserManager().resetPassword((User)sender);
-            sender.sendMessage("core", "Your password has been reset!");
+            sender.sendTranslated("Your password has been reset!");
         }
     }
 
@@ -141,22 +141,22 @@ public class CoreCommands extends ContainerCommand
             User user = (User)sender;
             if (user.isLoggedIn())
             {
-                context.sendMessage("core", "&aYou are already logged in!");
+                context.sendTranslated("&aYou are already logged in!");
                 return;
             }
             boolean isLoggedIn = core.getUserManager().login(user, context.getString(0));
             if (isLoggedIn)
             {
-                user.sendMessage("core", "&aYou logged in successfully!");
+                user.sendTranslated("&aYou logged in successfully!");
             }
             else
             {
-                user.sendMessage("core", "&cWrong password!");
+                user.sendTranslated("&cWrong password!");
             }
         }
         else
         {
-            sender.sendMessage("core", "&cOnly players can log in!");
+            sender.sendTranslated("&cOnly players can log in!");
         }
     }
 
@@ -169,17 +169,17 @@ public class CoreCommands extends ContainerCommand
             User user = (User)sender;
             if (!user.isLoggedIn())
             {
-                sender.sendMessage("core", "&eYou're not logged in!");
+                sender.sendTranslated("&eYou're not logged in!");
             }
             else
             {
                 user.logout();
-                sender.sendMessage("core", "&aYou're now logged out.");
+                sender.sendTranslated("&aYou're now logged out.");
             }
         }
         else if (sender instanceof ConsoleCommandSender)
         {
-            sender.sendMessage("core", "&eYou might use /stop for this.");
+            sender.sendTranslated("&eYou might use /stop for this.");
         }
     }
 
@@ -191,11 +191,11 @@ public class CoreCommands extends ContainerCommand
 
         if (newState)
         {
-            context.sendMessage("core", "&aThe server is now in online-mode.");
+            context.sendTranslated("&aThe server is now in online-mode.");
         }
         else
         {
-            context.sendMessage("core", "&aThe server is not in offline-mode.");
+            context.sendTranslated("&aThe server is not in offline-mode.");
         }
     }
 }

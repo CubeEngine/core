@@ -52,12 +52,12 @@ public class ItemCommands
             ItemStack item = Match.material().itemStack(context.getString(0));
             if (item != null)
             {
-                context.sendMessage("basics", "&aMatched &e%s &f(&e%d&f:&e%d&f) &afor &f%s",
-                        Match.material().getNameFor(item), item.getType().getId(), item.getDurability(), context.getString(0));
+                context.sendTranslated("&aMatched &e%s &f(&e%d&f:&e%d&f) &afor &f%s",
+                                       Match.material().getNameFor(item), item.getType().getId(), item.getDurability(), context.getString(0));
             }
             else
             {
-                context.sendMessage("basics", "&cCould not find any item named &e%s&c!", context.getString(0));
+                context.sendTranslated("&cCould not find any item named &e%s&c!", context.getString(0));
             }
             return;
         }
@@ -66,7 +66,7 @@ public class ItemCommands
             User sender = (User)context.getSender();
             if (sender.getItemInHand().getType().equals(Material.AIR))
             {
-                context.sendMessage("basics", "&eYou hold nothing in your hands!");
+                context.sendTranslated("&eYou hold nothing in your hands!");
                 return;
             }
             else
@@ -75,16 +75,16 @@ public class ItemCommands
                 String found = Match.material().getNameFor(item);
                 if (found == null)
                 {
-                    context.sendMessage("basics", "&cItemname unknown! Itemdata: &e%d&f:&e%d&f",
-                            item.getType().getId(), item.getDurability());
+                    context.sendTranslated("&cItemname unknown! Itemdata: &e%d&f:&e%d&f",
+                                           item.getType().getId(), item.getDurability());
                     return;
                 }
-                context.sendMessage("basics", "&aThe Item in your hand is: &e%s &f(&e%d&f:&e%d&f)",
-                        found, item.getType().getId(), item.getDurability());
+                context.sendTranslated("&aThe Item in your hand is: &e%s &f(&e%d&f:&e%d&f)",
+                                       found, item.getType().getId(), item.getDurability());
             }
             return;
         }
-        context.sendMessage("basics", "&cYou need 1 parameter!");
+        context.sendTranslated("&cYou need 1 parameter!");
     }
 
     @Command(desc = "Changes the display name of the item in your hand.", usage = "<name> [lore...]", min = 1, max = NO_MAX)
@@ -104,10 +104,10 @@ public class ItemCommands
             }
             meta.setLore(list);
             item.setItemMeta(meta);
-            context.sendMessage("basics", "&aYou now hold &6%s &ain your hands!", name);
+            context.sendTranslated("&aYou now hold &6%s &ain your hands!", name);
             return;
         }
-        context.sendMessage("basics", "&cTrying to give your &6toys &ca name?");
+        context.sendTranslated("&cTrying to give your &6toys &ca name?");
     }
 
     @Command(names = {
@@ -125,13 +125,13 @@ public class ItemCommands
                 SkullMeta meta = ((SkullMeta)sender.getItemInHand().getItemMeta());
                 meta.setOwner(name);
                 sender.getItemInHand().setItemMeta(meta);
-                context.sendMessage("basics", "&aYou now hold &6%s's &ahead in your hands!", name);
+                context.sendTranslated("&aYou now hold &6%s's &ahead in your hands!", name);
                 return;
             }
-            context.sendMessage("basics", "&cYou are not holding a head.");
+            context.sendTranslated("&cYou are not holding a head.");
             return;
         }
-        context.sendMessage("basics", "&cThis will you only give headaches!");
+        context.sendTranslated("&cThis will you only give headaches!");
     }
 
     @Command(desc = "The user can use unlimited items", max = 1, usage = "[on|off]")
@@ -155,7 +155,7 @@ public class ItemCommands
                 }
                 else
                 {
-                    context.sendMessage("basics", "&eInvalid parameter! Use &aon &eor %coff&e!");
+                    context.sendTranslated("&eInvalid parameter! Use &aon &eor %coff&e!");
                     return;
                 }
             }
@@ -166,16 +166,16 @@ public class ItemCommands
             if (unlimited)
             {
                 sender.get(BasicsAttachment.class).setUnlimitedItems(unlimited);
-                context.sendMessage("basics", "&aYou now have unlimited items to build!");
+                context.sendTranslated("&aYou now have unlimited items to build!");
             }
             else
             {
                 sender.get(BasicsAttachment.class).setUnlimitedItems(unlimited);
-                context.sendMessage("basics", "&eYou now no longer have unlimited items to build!");
+                context.sendTranslated("&eYou now no longer have unlimited items to build!");
             }
             return;
         }
-        context.sendMessage("core", "&cThis command can only be used by a player!");
+        context.sendTranslated("&cThis command can only be used by a player!");
     }
 
     @Command(desc = "Adds an Enchantment to the item in your hand", max = 2, flags = @Flag(longName = "unsafe", name = "u"), usage = "<enchantment> [level] [-unsafe]")
@@ -183,7 +183,7 @@ public class ItemCommands
     {
         if (!context.hasArg(0))
         {
-            context.sendMessage("&aFollowing Enchantments are availiable:\n%s", this.getPossibleEnchantments(null));
+            context.sendTranslated(this.getPossibleEnchantments(null));
             return;
         }
         if (context.getSender() instanceof User)
@@ -192,7 +192,7 @@ public class ItemCommands
             ItemStack item = sender.getItemInHand();
             if (item.getType().equals(Material.AIR))
             {
-                context.sendMessage("basics", "&6ProTip: &eYou cannot enchant your fists!");
+                context.sendTranslated("&6ProTip: &eYou cannot enchant your fists!");
                 return;
             }
             Enchantment ench = context.getArg(0, Enchantment.class, null);
@@ -201,12 +201,12 @@ public class ItemCommands
                 String possibleEnchs = this.getPossibleEnchantments(item);
                 if (possibleEnchs != null)
                 {
-                    context.sendMessage("basics", "&cEnchantment &6%s &cnot found! Try one of those instead:\n%s", context.
-                            getString(0), possibleEnchs);
+                    context.sendTranslated("&cEnchantment &6%s &cnot found! Try one of those instead:\n%s", context.
+                                                                                                                       getString(0), possibleEnchs);
                 }
                 else
                 {
-                    context.sendMessage("basics", "&cYou can not enchant this item!");
+                    context.sendTranslated("&cYou can not enchant this item!");
                 }
                 return;
             }
@@ -216,7 +216,7 @@ public class ItemCommands
                 level = context.getArg(1, Integer.class, 0);
                 if (level <= 0)
                 {
-                    context.sendMessage("basics", "&cThe enchantment-level has to be a number greater than 0!");
+                    context.sendTranslated("&cThe enchantment-level has to be a number greater than 0!");
                     return;
                 }
             }
@@ -225,11 +225,11 @@ public class ItemCommands
                 if (BasicsPerm.COMMAND_ENCHANT_UNSAFE.isAuthorized(sender))
                 {
                     item.addUnsafeEnchantment(ench, level);
-                    context.sendMessage("basics", "&aAdded unsafe enchantment: &6%s %d &ato your item!",
-                            Match.enchant().nameFor(ench), level);
+                    context.sendTranslated("&aAdded unsafe enchantment: &6%s %d &ato your item!",
+                                           Match.enchant().nameFor(ench), level);
                     return;
                 }
-                context.sendMessage("basics", "&cYou are not allowed to add unsafe enchantments!");
+                context.sendTranslated("&cYou are not allowed to add unsafe enchantments!");
                 return;
             }
             if (ench.canEnchantItem(item))
@@ -237,22 +237,22 @@ public class ItemCommands
                 if (level >= ench.getStartLevel() && level <= ench.getMaxLevel())
                 {
                     item.addUnsafeEnchantment(ench, level);
-                    context.sendMessage("bascics", "&aAdded enchantment: &6%s %d &ato your item!", Match.enchant().nameFor(ench), level);
+                    context.sendTranslated("&aAdded enchantment: &6%s %d &ato your item!", Match.enchant().nameFor(ench), level);
                     return;
                 }
-                context.sendMessage("basics", "&cThis enchantment-level is not allowed!");
+                context.sendTranslated("&cThis enchantment-level is not allowed!");
                 return;
             }
             String possibleEnchs = this.getPossibleEnchantments(item);
             if (possibleEnchs != null)
             {
-                context.sendMessage("basics", "&cThis enchantment is not allowed for this item!\n&eTry one of those instead:\n%s", possibleEnchs);
+                context.sendTranslated("&cThis enchantment is not allowed for this item!\n&eTry one of those instead:\n%s", possibleEnchs);
                 return;
             }
-            context.sendMessage("basics", "&cYou can not enchant this item!");
+            context.sendTranslated("&cYou can not enchant this item!");
             return;
         }
-        context.sendMessage("basics", "&eWant to be Harry Potter?");
+        context.sendTranslated("&eWant to be Harry Potter?");
     }
 
     private String getPossibleEnchantments(ItemStack item)
@@ -290,19 +290,19 @@ public class ItemCommands
         User user = context.getUser(0);
         if (user == null)
         {
-            context.sendMessage("core", "&cUser &2%s &cnot found!", context.getString(0));
+            context.sendTranslated("&cUser &2%s &cnot found!", context.getString(0));
             return;
         }
         ItemStack item = context.getArg(1, ItemStack.class, null);
         if (item == null)
         {
-            context.sendMessage("core", "&cUnknown Item: &6%s&c!", context.getString(1));
+            context.sendTranslated("&cUnknown Item: &6%s&c!", context.getString(1));
             return;
         }
         if (!context.hasFlag("b") && BasicsPerm.COMMAND_GIVE_BLACKLIST.isAuthorized(context.getSender())
             && this.basics.getConfiguration().blacklist.contains(item))
         {
-            context.sendMessage("basics", "&cThis item is blacklisted!");
+            context.sendTranslated("&cThis item is blacklisted!");
             return;
         }
         int amount = item.getMaxStackSize();
@@ -311,7 +311,7 @@ public class ItemCommands
             amount = context.getArg(2, Integer.class, 0);
             if (amount == 0)
             {
-                context.sendMessage("basics", "&cThe amount has to be a number greater than 0!");
+                context.sendTranslated("&cThe amount has to be a number greater than 0!");
                 return;
             }
         }
@@ -319,8 +319,8 @@ public class ItemCommands
         user.getInventory().addItem(item);
         user.updateInventory();
         String matname = Match.material().getNameFor(item);
-        context.sendMessage("basics", "&aYou gave &2%s &e%d %s&a!", user.getName(), amount, matname);
-        user.sendMessage("basics", "&2%s &ajust gave you &e%d %s&a!", context.getSender().getName(), amount, matname);
+        context.sendTranslated("&aYou gave &2%s &e%d %s&a!", user.getName(), amount, matname);
+        user.sendTranslated("&2%s &ajust gave you &e%d %s&a!", context.getSender().getName(), amount, matname);
     }
 
     @Command(names = {
@@ -337,13 +337,13 @@ public class ItemCommands
             ItemStack item = context.getArg(0, ItemStack.class, null);
             if (item == null)
             {
-                context.sendMessage("core", "&cUnknown Item: &6%s&c!", context.getString(0));
+                context.sendTranslated("&cUnknown Item: &6%s&c!", context.getString(0));
                 return;
             }
             if (!context.hasFlag("b") && BasicsPerm.COMMAND_ITEM_BLACKLIST.isAuthorized(sender)
                     && this.basics.getConfiguration().blacklist.contains(item))
             {
-                context.sendMessage("basics", "&cThis item is blacklisted!");
+                context.sendTranslated("&cThis item is blacklisted!");
                 return;
             }
             int amount = item.getMaxStackSize();
@@ -356,7 +356,7 @@ public class ItemCommands
                     amount = context.getArg(curIndex, Integer.class, 0);
                     if (amount == 0)
                     {
-                        context.sendMessage("basics", "&cThe amount has to be a Number greater than 0!");
+                        context.sendTranslated("&cThe amount has to be a Number greater than 0!");
                         return;
                     }
                     break;
@@ -383,10 +383,10 @@ public class ItemCommands
             item.setAmount(amount);
             sender.getInventory().addItem(item);
             sender.updateInventory();
-            sender.sendMessage("basics", "&eReceived: %d %s ", amount, Match.material().getNameFor(item));
+            sender.sendTranslated("&eReceived: %d %s ", amount, Match.material().getNameFor(item));
             return;
         }
-        context.sendMessage("basics", "&eDid you try to use &6/give &eon your new I-Tem?");
+        context.sendTranslated("&eDid you try to use &6/give &eon your new I-Tem?");
     }
 
     @Command(desc = "Refills the stack in hand", usage = "[amount] [-a]", max = 1, flags = @Flag(longName = "all", name = "a"))
@@ -399,12 +399,12 @@ public class ItemCommands
         }
         if (sender == null)
         {
-            context.sendMessage("basics", "&cYou can't get enough of it. Don't you?");
+            context.sendTranslated("&cYou can't get enough of it. Don't you?");
             return;
         }
         if (sender.getItemInHand() == null || sender.getItemInHand().getType() == Material.AIR)
         {
-            context.sendMessage("basics", "&eMore nothing is still nothing!");
+            context.sendTranslated("&eMore nothing is still nothing!");
             return;
         }
         if (context.hasFlag("a"))
@@ -416,7 +416,7 @@ public class ItemCommands
                     item.setAmount(64);
                 }
             }
-            sender.sendMessage("basics", "&aRefilled all stacks!");
+            sender.sendTranslated("&aRefilled all stacks!");
         }
         else
         {
@@ -426,17 +426,17 @@ public class ItemCommands
                 Integer amount = context.getArg(0, Integer.class);
                 if (amount == null || amount <= 1)
                 {
-                    context.sendMessage("basics", "&cInvalid amount! (%s)", context.getString(0));
+                    context.sendTranslated("&cInvalid amount! (%s)", context.getString(0));
                     return;
                 }
                 for (int i = 1; i < amount; ++i)
                 {
                     sender.getInventory().addItem(sender.getItemInHand());
                 }
-                sender.sendMessage("basics", "&aRefilled &6%s &astacks in hand!", context.getString(0));
+                sender.sendTranslated("&aRefilled &6%s &astacks in hand!", context.getString(0));
                 return;
             }
-            sender.sendMessage("basics", "&aRefilled stack in hand!");
+            sender.sendTranslated("&aRefilled stack in hand!");
         }
     }
 
@@ -465,10 +465,10 @@ public class ItemCommands
                 }
                 if (repaired == 0)
                 {
-                    sender.sendMessage("basics", "&eNo items to repair!");
+                    sender.sendTranslated("&eNo items to repair!");
                     return;
                 }
-                sender.sendMessage("basics", "&aRepaired %d items!", repaired);
+                sender.sendTranslated("&aRepaired %d items!", repaired);
                 return;
             }
             ItemStack item = sender.getItemInHand();
@@ -476,17 +476,17 @@ public class ItemCommands
             {
                 if (item.getDurability() == 0)
                 {
-                    sender.sendMessage("basics", "&eNo need to repair this!");
+                    sender.sendTranslated("&eNo need to repair this!");
                     return;
                 }
                 item.setDurability((short)0);
-                sender.sendMessage("basics", "&aItem repaired!");
+                sender.sendTranslated("&aItem repaired!");
                 return;
             }
-            sender.sendMessage("basics", "&eItem cannot be repaired!");
+            sender.sendTranslated("&eItem cannot be repaired!");
             return;
         }
-        context.sendMessage("core", "&eIf you do this you'll &cloose &eyour warranty!");
+        context.sendTranslated("&eIf you do this you'll &cloose &eyour warranty!");
     }
 
     @Command(desc = "Stacks your items up to 64")
@@ -548,6 +548,6 @@ public class ItemCommands
             user.sendMessage("&eNothing to stack!");
             return;
         }
-        context.sendMessage("basics", "&eNo stacking for you.");
+        context.sendTranslated("&eNo stacking for you.");
     }
 }

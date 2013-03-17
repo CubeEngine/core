@@ -1,7 +1,6 @@
 package de.cubeisland.cubeengine.core.command;
 
 import de.cubeisland.cubeengine.core.Core;
-import de.cubeisland.cubeengine.core.command.sender.CommandSender;
 import de.cubeisland.cubeengine.core.user.User;
 
 import java.util.LinkedList;
@@ -23,7 +22,7 @@ public interface CommandContext
 
     void sendMessage(String message);
 
-    void sendMessage(String category, String message, Object... args);
+    void sendTranslated(String message, Object... args);
 
     int getArgCount();
 

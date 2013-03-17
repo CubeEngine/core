@@ -31,7 +31,7 @@ public class UserInformationCommands extends UserCommandHelper
         Role role = this.getUserRole(user, world);
         // List all assigned roles
         Collection<Role> roles = role.getParentRoles();
-        context.sendMessage("roles", "&eRoles of &2%s&e in &6%s&e:", user.getName(), world.getName());
+        context.sendTranslated("&eRoles of &2%s&e in &6%s&e:", user.getName(), world.getName());
         for (Role pRole : roles)
         {
             if (pRole.isGlobal())
@@ -60,18 +60,18 @@ public class UserInformationCommands extends UserCommandHelper
         if (user.isOnline() && !permission.endsWith("*")) // Can have superperm
         {
             boolean superPerm = user.hasPermission(permission);
-            context.sendMessage("roles", "&eSuperPerm Node: %s", superPerm);
+            context.sendTranslated("&eSuperPerm Node: %s", superPerm);
         }
         if (myPerm == null)
         {
-            context.sendMessage("roles", "&cPermission not declared!");
+            context.sendTranslated("&cPermission not declared!");
         }
         else
         {
-            context.sendMessage("roles", (myPerm.isSet()
-                    ? "&aThe player &2%s &adoes have access to &f\"&6%s&f\"&a"
-                    : "&cThe player &2%s &cdoes not have access to &f\"&6%s&f\"&c")
-                    + " in &6%s", user.getName(), permission, world.getName());
+            context.sendTranslated((myPerm.isSet()
+                ? "&aThe player &2%s &adoes have access to &f\"&6%s&f\"&a"
+                : "&cThe player &2%s &cdoes not have access to &f\"&6%s&f\"&c")
+                                       + " in &6%s", user.getName(), permission, world.getName());
 
             // Display origin
             Role originRole = myPerm.getOrigin();
@@ -94,14 +94,14 @@ public class UserInformationCommands extends UserCommandHelper
                     }
                 }
             }
-            context.sendMessage("roles", "&ePermission inherited from:");
+            context.sendTranslated("&ePermission inherited from:");
             if (user.getName().equals(originRole.getName()))
             {
-                context.sendMessage("roles", "&6%s &ein the users role!", permission);
+                context.sendTranslated("&6%s &ein the users role!", permission);
             }
             else
             {
-                context.sendMessage("roles", "&6%s &ein the role &6%s&e!", permission, originRole.getName());
+                context.sendTranslated("&6%s &ein the role &6%s&e!", permission, originRole.getName());
             }
         }
     }
@@ -118,11 +118,11 @@ public class UserInformationCommands extends UserCommandHelper
         // List permissions
         if (role.getAllLiteralPerms().isEmpty())
         {
-            context.sendMessage("roles", "&2%s &ehas no permissions set in &6%s&e.", user.getName(), world.getName());
+            context.sendTranslated("&2%s &ehas no permissions set in &6%s&e.", user.getName(), world.getName());
         }
         else
         {
-            context.sendMessage("roles", "&ePermissions of &2%s&e in &6%s&e.", user.getName(), world.getName());
+            context.sendTranslated("&ePermissions of &2%s&e in &6%s&e.", user.getName(), world.getName());
             for (Map.Entry<String, Boolean> entry : role.getAllLiteralPerms().entrySet())
             {
                 context.sendMessage("- &e" + entry.getKey() + ": &6" + entry.getValue());
@@ -143,14 +143,14 @@ public class UserInformationCommands extends UserCommandHelper
         String metaKey = context.getString(0);
         if (!role.getMetaData().containsKey(metaKey))
         {
-            context.sendMessage("roles", "&6%s &is not set for &2%s &ein &6%s&e.", metaKey, user.getName(), world.getName());
+            context.sendTranslated("&6%s &is not set for &2%s &ein &6%s&e.", metaKey, user.getName(), world.getName());
             return;
         }
         RoleMetaData value = role.getMetaData().get(metaKey);
-        context.sendMessage("roles", "&6%s&e: &6%s&e is set for &2%s &ein &6%s&e.", metaKey, value.getValue(), user.getName(), world.getName());
+        context.sendTranslated("&6%s&e: &6%s&e is set for &2%s &ein &6%s&e.", metaKey, value.getValue(), user.getName(), world.getName());
         if (value.getOrigin() != role)
         {
-            context.sendMessage("roles", "&eOrigin: &&%s&e.", value.getOrigin().getName());
+            context.sendTranslated("&eOrigin: &&%s&e.", value.getOrigin().getName());
         }
     }
 
@@ -164,7 +164,7 @@ public class UserInformationCommands extends UserCommandHelper
         World world = this.getWorld(context);
         UserSpecificRole role = this.getUserRole(user, world);
         // List all metadata
-        context.sendMessage("roles", "&eMetadata of &2%s&e in &6%s&e.:", user.getName(), world.getName());
+        context.sendTranslated("&eMetadata of &2%s&e in &6%s&e.:", user.getName(), world.getName());
         for (Map.Entry<String, RoleMetaData> entry : role.getMetaData().entrySet())
         {
             context.sendMessage("- &e" + entry.getKey() + ": &6" + entry.getValue().getValue());

@@ -4,7 +4,7 @@ import de.cubeisland.cubeengine.core.command.CommandContext;
 import de.cubeisland.cubeengine.core.command.ContainerCommand;
 import de.cubeisland.cubeengine.core.command.reflected.Alias;
 import de.cubeisland.cubeengine.core.command.reflected.Command;
-import de.cubeisland.cubeengine.core.command.sender.CommandSender;
+import de.cubeisland.cubeengine.core.command.CommandSender;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.roles.Roles;
 import de.cubeisland.cubeengine.roles.RolesAttachment;
@@ -30,7 +30,7 @@ public class ModuleManagementCommands extends ContainerCommand
             module.getManager().preCalculateRoles(user.getName(), true);
             module.getManager().applyRole(user.getPlayer());
         }
-        context.sendMessage("roles", "&f[&6Roles&f] &areload complete!");
+        context.sendTranslated("&f[&6Roles&f] &areload complete!");
     }
 
     @Alias(names = "mansave")
@@ -41,7 +41,7 @@ public class ModuleManagementCommands extends ContainerCommand
         Roles module = (Roles)this.getModule();
         module.getConfiguration().save();
         module.getManager().saveAllConfigs();
-        context.sendMessage("roles", "&f[&6Roles&f] &aall configurations saved!");
+        context.sendTranslated("&f[&6Roles&f] &aall configurations saved!");
     }
 
     public static Long curWorldIdOfConsole = null;
@@ -55,14 +55,14 @@ public class ModuleManagementCommands extends ContainerCommand
             worldId = this.getModule().getCore().getWorldManager().getWorldId(context.getString(0));
             if (worldId == null)
             {
-                context.sendMessage("roles", "&cInvalid world! No world &6%s &cfound", context.getString(0));
+                context.sendTranslated("&cInvalid world! No world &6%s &cfound", context.getString(0));
                 return;
             }
-            context.sendMessage("roles", "&aAll your roles commands will now have &6%s &aas default world!", context.getString(0));
+            context.sendTranslated("&aAll your roles commands will now have &6%s &aas default world!", context.getString(0));
         }
         else
         {
-            context.sendMessage("roles", "&eCurrent world for roles resetted!");
+            context.sendTranslated("&eCurrent world for roles resetted!");
         }
         CommandSender sender = context.getSender();
         if (sender instanceof User)

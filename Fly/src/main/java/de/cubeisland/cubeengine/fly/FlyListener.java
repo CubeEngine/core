@@ -49,7 +49,7 @@ public class FlyListener implements Listener
 
         if (!FlyPerm.FLY_FEATHER.isAuthorized(player))
         {
-            user.sendMessage("core", "You dont have permission to use this!");
+            user.sendTranslated("You dont have permission to use this!");
             player.setAllowFlight(false); //Disable when player is flying
             return;
         }
@@ -57,7 +57,7 @@ public class FlyListener implements Listener
         FlyStartEvent flyStartEvent = new FlyStartEvent(CubeEngine.getCore(), user);
         if (flyStartEvent.isCancelled())
         {
-            user.sendMessage("fly", "You are not allowed to fly now!");
+            user.sendTranslated("You are not allowed to fly now!");
             player.setAllowFlight(false); //Disable when player is flying
             return;
         }
@@ -70,7 +70,7 @@ public class FlyListener implements Listener
             player.setVelocity(player.getVelocity().setY(player.getVelocity().getY() + 1));
             player.teleport(player.getLocation(this.helperLocation).add(new Vector(0, 0.05, 0))); //make sure the player stays flying
             player.setFlying(true);
-            user.sendMessage("fly", "You can now fly!");
+            user.sendTranslated("You can now fly!");
             Task flymore = new Task(fly)
             {
                 public void run()//2 feather/min
@@ -106,7 +106,7 @@ public class FlyListener implements Listener
         else
         {//or not
             player.setFallDistance(0);
-            user.sendMessage("fly", "You cannot fly anymore!");
+            user.sendTranslated("You cannot fly anymore!");
         }
     }
 }

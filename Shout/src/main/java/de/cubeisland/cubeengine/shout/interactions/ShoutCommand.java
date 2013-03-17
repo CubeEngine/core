@@ -29,7 +29,7 @@ public class ShoutCommand
         Announcement announcement = this.module.getAnnouncementManager().getAnnouncement(context.getString(0));
         if (announcement == null)
         {
-            context.sendMessage("shout", "&c%s was not found!", context.getString(0));
+            context.sendTranslated("&c%s was not found!", context.getString(0));
             return;
         }
         List<Player> players;
@@ -46,7 +46,7 @@ public class ShoutCommand
         for (Player player : players)
         {
             User u = this.module.getUserManager().getExactUser(player);
-            String[] message = announcement.getMessage(u.getLanguage());
+            String[] message = announcement.getMessage(u.getLocale());
             if (message != null)
             {
                 for (String line : message)
@@ -55,6 +55,6 @@ public class ShoutCommand
                 }
             }
         }
-        context.sendMessage("shout", "&aThe announcement &e%s&a has been announced!", announcement.getName());
+        context.sendTranslated("&aThe announcement &e%s&a has been announced!", announcement.getName());
     }
 }

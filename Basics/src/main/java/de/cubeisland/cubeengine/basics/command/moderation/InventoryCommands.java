@@ -7,7 +7,7 @@ import de.cubeisland.cubeengine.core.command.CommandContext;
 import de.cubeisland.cubeengine.core.command.parameterized.Flag;
 import de.cubeisland.cubeengine.core.command.parameterized.ParameterizedContext;
 import de.cubeisland.cubeengine.core.command.reflected.Command;
-import de.cubeisland.cubeengine.core.command.sender.CommandSender;
+import de.cubeisland.cubeengine.core.command.CommandSender;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.util.InventoryGuardFactory;
 import org.bukkit.inventory.ItemStack;
@@ -38,7 +38,7 @@ public class InventoryCommands
             User user = context.getUser(0);
             if (user == null)
             {
-                context.sendMessage("basics", "&cUser &2%s &cnot found!", context.getString(0));
+                context.sendTranslated("&cUser &2%s &cnot found!", context.getString(0));
                 return;
             }
             boolean allowModify = false;
@@ -53,7 +53,7 @@ public class InventoryCommands
             }
             if (BasicsPerm.COMMAND_INVSEE_NOTIFY.isAuthorized(user))
             {
-                user.sendMessage("basics", "&2%s &eis looking into your inventory.", sender.getName());
+                user.sendTranslated("&2%s &eis looking into your inventory.", sender.getName());
             }
             InventoryGuardFactory guard = InventoryGuardFactory.prepareInventory(user.getInventory(), sender);
             if (!allowModify)
@@ -63,7 +63,7 @@ public class InventoryCommands
             guard.submitInventory(this.basics, true);
             return;
         }
-        context.sendMessage("basics", "&cThis command can only be used by a player!");
+        context.sendTranslated("&cThis command can only be used by a player!");
     }
 
     @Command(desc = "Stashes or unstashes your inventory to reuse later")
@@ -101,10 +101,10 @@ public class InventoryCommands
                 sender.getInventory().setHelmet(null);
             }
             sender.get(BasicsAttachment.class).setStashedArmor(armorToStash);
-            sender.sendMessage("basics", "&aSwapped stashed Inventory!");
+            sender.sendTranslated("&aSwapped stashed Inventory!");
             return;
         }
-        context.sendMessage("core", "&cYeah you better put it away!");
+        context.sendTranslated("&cYeah you better put it away!");
     }
 
     @Command(names = {"clearinventory", "ci", "clear"},
@@ -120,7 +120,7 @@ public class InventoryCommands
             target = context.getArg(0, User.class);
             if (target == null)
             {
-                sender.sendMessage("basics", "&cThe specified user was not found!");
+                sender.sendTranslated("&cThe specified user was not found!");
                 return;
             }
         }
@@ -130,13 +130,13 @@ public class InventoryCommands
         }
         else
         {
-            sender.sendMessage("basics", "&cThere is no inventory to clear in the console...");
+            sender.sendTranslated("&cThere is no inventory to clear in the console...");
             return;
         }
 
         if (sender != target && !BasicsPerm.COMMAND_CLEARINVENTORY_OTHER.isAuthorized(sender))
         {
-            context.sendMessage("basics", "&cYou are not allowed to clear the inventory of other users!");
+            context.sendTranslated("&cYou are not allowed to clear the inventory of other users!");
             return;
         }
 
@@ -152,12 +152,12 @@ public class InventoryCommands
 
         if (sender == target)
         {
-            sender.sendMessage("basics", "&aYour inventory has been cleared! :)");
+            sender.sendTranslated("&aYour inventory has been cleared! :)");
         }
         else
         {
-            target.sendMessage("basics", "&eYour inventory has been cleared by &6%s&e!", sender.getName());
-            sender.sendMessage("basics", "&aThe inventory of &6%s&a has been cleared!", target.getName());
+            target.sendTranslated("&eYour inventory has been cleared by &6%s&e!", sender.getName());
+            sender.sendTranslated("&aThe inventory of &6%s&a has been cleared!", target.getName());
         }
     }
 }

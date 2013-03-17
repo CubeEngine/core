@@ -212,11 +212,11 @@ public class SwearPrevention extends Prevention
                     this.swearPatterns.add(this.compile(word));
                 }
 
-                context.sendMessage("guests", "wordAdded");
+                context.sendTranslated("wordAdded");
             }
             else
             {
-                context.sendMessage("guests", "noWord");
+                context.sendTranslated("noWord");
             }
         }
     }

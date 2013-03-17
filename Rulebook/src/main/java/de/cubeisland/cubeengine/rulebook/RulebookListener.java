@@ -24,7 +24,7 @@ class RulebookListener implements Listener
     public void onPlayerLanguageReceived(PlayerLanguageReceivedEvent event)
     {
         User user = this.module.getUserManager().getExactUser(event.getPlayer());
-        if (!user.hasPlayedBefore() && !this.rulebookManager.getLanguages().isEmpty())
+        if (!user.hasPlayedBefore() && !this.rulebookManager.getLocales().isEmpty())
         {
             ItemStack hand = user.getItemInHand();
             user.setItemInHand(this.rulebookManager.getBook( event.getLanguage() ) );

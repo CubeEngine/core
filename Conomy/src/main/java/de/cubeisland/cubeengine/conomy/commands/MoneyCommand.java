@@ -61,7 +61,7 @@ public class MoneyCommand extends ContainerCommand
             user = context.getUser(0);
             if (user == null)
             {
-                context.sendMessage("conomy", "&cUser %s not found!", context.getString(0));
+                context.sendTranslated("&cUser %s not found!", context.getString(0));
                 return;
             }
         }
@@ -69,7 +69,7 @@ public class MoneyCommand extends ContainerCommand
         {
             if (!(context.getSender() instanceof User))
             {
-                context.sendMessage("conomy", "&cYou are out of money! Better go work than typing silly commands in the console.");
+                context.sendTranslated("&cYou are out of money! Better go work than typing silly commands in the console.");
                 return;
             }
             user = (User)context.getSender();
@@ -80,7 +80,7 @@ public class MoneyCommand extends ContainerCommand
             for (Account acc : accs)
             {
                 if (!acc.isHidden() || showHidden)
-                    context.sendMessage("conomey", "&2%s's &a%s-Balance: &6%s", user.getName(), acc.getCurrency().getName(), acc.getCurrency().formatLong(acc.getBalance()));
+                    context.sendTranslated("&2%s's &a%s-Balance: &6%s", user.getName(), acc.getCurrency().getName(), acc.getCurrency().formatLong(acc.getBalance()));
             }
         }
         else
@@ -91,7 +91,7 @@ public class MoneyCommand extends ContainerCommand
                 Currency currency = this.module.getCurrencyManager().getCurrencyByName(context.getString("in"));
                 if (currency == null)
                 {
-                    context.sendMessage("conomy", "&cCurrency %s not found!", context.getString("in"));
+                    context.sendTranslated("&cCurrency %s not found!", context.getString("in"));
                     return;
                 }
                 acc = this.module.getAccountsManager().getAccount(user, currency);
@@ -101,9 +101,9 @@ public class MoneyCommand extends ContainerCommand
                 acc = this.module.getAccountsManager().getAccount(user);
             }
             if (!acc.isHidden() || showHidden)
-                context.sendMessage("conomy", "&2%s's &aBalance: &6%s", user.getName(), acc.getCurrency().formatLong(acc.getBalance()));
+                context.sendTranslated("&2%s's &aBalance: &6%s", user.getName(), acc.getCurrency().formatLong(acc.getBalance()));
             else
-                context.sendMessage("conomy", "&cNo account found for &2%s&c!", user.getName());
+                context.sendTranslated("&cNo account found for &2%s&c!", user.getName());
         }
     }
 
@@ -135,7 +135,7 @@ public class MoneyCommand extends ContainerCommand
             }
             catch (NumberFormatException e)
             {
-                context.sendMessage("conomy", "&cInvalid rank!");
+                context.sendTranslated("&cInvalid rank!");
                 return;
             }
         }
@@ -146,7 +146,7 @@ public class MoneyCommand extends ContainerCommand
             currency = this.module.getCurrencyManager().getCurrencyByName(context.getString("in"));
             if (currency == null)
             {
-                context.sendMessage("conomy", "&cCurrency %s not found!", context.getString("in"));
+                context.sendTranslated("&cCurrency %s not found!", context.getString("in"));
                 return;
             }
         }
@@ -154,16 +154,16 @@ public class MoneyCommand extends ContainerCommand
         int i = fromRank;
         if (fromRank == 1)
         {
-            context.sendMessage("conomy", "&aTop Balance &f(&6%d&f)", models.size());
+            context.sendTranslated("&aTop Balance &f(&6%d&f)", models.size());
         }
         else
         {
-            context.sendMessage("conomy", "&aTop Balance from &6%d &ato &6%d", fromRank, fromRank + models.size());
+            context.sendTranslated("&aTop Balance from &6%d &ato &6%d", fromRank, fromRank + models.size());
         }
         for (AccountModel account : models)
         {
-            context.sendMessage("conomy", "&a%d &f- &2%s&f: &6%s", i++,
-                    this.module.getUserManager().getUser(account.user_id).getName(), currency.formatLong(account.value));
+            context.sendTranslated("&a%d &f- &2%s&f: &6%s", i++,
+                                   this.module.getUserManager().getUser(account.user_id).getName(), currency.formatLong(account.value));
         }
     }
 
@@ -185,7 +185,7 @@ public class MoneyCommand extends ContainerCommand
             currency = this.module.getCurrencyManager().getCurrencyByName(context.getString("in"));
             if (currency == null)
             {
-                context.sendMessage("conomy", "&cCurrency %s not found!", context.getString("in"));
+                context.sendTranslated("&cCurrency %s not found!", context.getString("in"));
                 return;
             }
         }
@@ -196,7 +196,7 @@ public class MoneyCommand extends ContainerCommand
         Long amount = currency.parse(amountString);
         if (amount == null)
         {
-            context.sendMessage("conomy", "&cCould not parse amount!");
+            context.sendTranslated("&cCould not parse amount!");
             return;
         }
         String formattedAmount = currency.formatLong(amount);
@@ -207,7 +207,7 @@ public class MoneyCommand extends ContainerCommand
             sender = context.getUser("as");
             if (sender == null)
             {
-                context.sendMessage("conomy", "&cUser %s not found!", context.getString("as"));
+                context.sendTranslated("&cUser %s not found!", context.getString("as"));
                 return;
             }
             asSomeOneElse = true;
@@ -216,7 +216,7 @@ public class MoneyCommand extends ContainerCommand
         {
             if (!(context.getSender() instanceof User))
             {
-                context.sendMessage("conomy", "&cPlease specify a user to use his account.");
+                context.sendTranslated("&cPlease specify a user to use his account.");
                 return;
             }
             sender = (User)context.getSender();
@@ -224,8 +224,8 @@ public class MoneyCommand extends ContainerCommand
         Account source = this.module.getAccountsManager().getAccount(sender, currency);
         if (source == null)
         {
-            context.sendMessage("conomy", "&2%s &cdoes not have an account for &6%s&c!",
-                    sender.getName(), currency.getName());
+            context.sendTranslated("&2%s &cdoes not have an account for &6%s&c!",
+                                   sender.getName(), currency.getName());
             return;
         }
         String[] users = StringUtils.explode(",", context.getString(0));
@@ -234,14 +234,14 @@ public class MoneyCommand extends ContainerCommand
             User user = this.module.getUserManager().findUser(userString);
             if (user == null)
             {
-                context.sendMessage("conomy", "&cUser %s not found!", context.getString(0));
+                context.sendTranslated("&cUser %s not found!", context.getString(0));
                 continue;
             }
             Account target = this.module.getAccountsManager().getAccount(user, currency);
             if (target == null)
             {
-                context.sendMessage("conomy", "&2%s &cdoes not have an account for &6%s&c!",
-                        sender.getName(), currency.getName());
+                context.sendTranslated("&2%s &cdoes not have an account for &6%s&c!",
+                                       sender.getName(), currency.getName());
                 continue;
             }
             if (!(context.hasFlag("f") && ConomyPermissions.COMMAND_PAY_FORCE.isAuthorized(context.getSender()))) //force allowed
@@ -250,11 +250,11 @@ public class MoneyCommand extends ContainerCommand
                 {
                     if (asSomeOneElse)
                     {
-                        context.sendMessage("conomy", "&2%s &ccannot afford &6%s&c!", sender.getName(), currency.formatLong(amount));
+                        context.sendTranslated("&2%s &ccannot afford &6%s&c!", sender.getName(), currency.formatLong(amount));
                     }
                     else
                     {
-                        context.sendMessage("conomy", "&cYou cannot afford &6%s&c!", currency.formatLong(amount));
+                        context.sendTranslated("&cYou cannot afford &6%s&c!", currency.formatLong(amount));
                     }
                     return;
                 }
@@ -263,13 +263,13 @@ public class MoneyCommand extends ContainerCommand
             {
                 if (asSomeOneElse)
                 {
-                    context.sendMessage("conomy", "&6%s &atransfered from &2%s's &ato &2%s's &aaccount!", formattedAmount, sender.getName(), user.getName());
+                    context.sendTranslated("&6%s &atransfered from &2%s's &ato &2%s's &aaccount!", formattedAmount, sender.getName(), user.getName());
                 }
                 else
                 {
-                    context.sendMessage("conomy", "&6%s &atransfered to &2%s's &aaccount!", formattedAmount, user.getName());
+                    context.sendTranslated("&6%s &atransfered to &2%s's &aaccount!", formattedAmount, user.getName());
                 }
-                user.sendMessage("conomy", "&2%s &ajust send you &6%s!", sender.getName(), formattedAmount);
+                user.sendTranslated("&2%s &ajust send you &6%s!", sender.getName(), formattedAmount);
             }
         }
     }

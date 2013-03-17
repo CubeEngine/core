@@ -1,12 +1,11 @@
 package de.cubeisland.cubeengine.core.command;
 
+import de.cubeisland.cubeengine.core.Core;
 import de.cubeisland.cubeengine.core.CubeEngine;
 import de.cubeisland.cubeengine.core.command.exception.IncorrectUsageException;
 import de.cubeisland.cubeengine.core.command.exception.MissingParameterException;
 import de.cubeisland.cubeengine.core.command.exception.PermissionDeniedException;
 import de.cubeisland.cubeengine.core.command.sender.BlockCommandSender;
-import de.cubeisland.cubeengine.core.command.sender.CommandSender;
-import de.cubeisland.cubeengine.core.command.sender.ConsoleCommandSender;
 import de.cubeisland.cubeengine.core.command.sender.WrappedCommandSender;
 import de.cubeisland.cubeengine.core.module.Module;
 import de.cubeisland.cubeengine.core.user.User;
@@ -28,7 +27,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Stack;
 
-import static de.cubeisland.cubeengine.core.i18n.I18n._;
 import static de.cubeisland.cubeengine.core.logger.LogLevel.ERROR;
 
 /**
@@ -138,7 +136,7 @@ public abstract class CubeCommand extends Command
     @Override
     public String getUsage()
     {
-        return "/" + this.implodeCommandParentNames(" ") + " " + _(this.module, this.usageMessage);
+        return "/" + this.implodeCommandParentNames(" ") + " " + this.getModule().getCore().getI18n().translate(this.usageMessage);
     }
 
     /**
@@ -149,7 +147,7 @@ public abstract class CubeCommand extends Command
      */
     public String getUsage(CommandSender sender)
     {
-        return "/" + this.implodeCommandParentNames(" ") + " " + replaceSemiOptionalArgs(sender, _(sender, this.module, super.getUsage()));
+        return "/" + this.implodeCommandParentNames(" ") + " " + replaceSemiOptionalArgs(sender, sender.translate(super.getUsage()));
     }
 
     /**
@@ -162,7 +160,7 @@ public abstract class CubeCommand extends Command
     public String getUsage(CommandContext context)
     {
         final CommandSender sender = context.getSender();
-        return "/" + StringUtils.implode(" ", context.getLabels()) + " " + replaceSemiOptionalArgs(sender, _(sender, this.module, super.getUsage()));
+        return "/" + StringUtils.implode(" ", context.getLabels()) + " " + replaceSemiOptionalArgs(sender, sender.translate(super.getUsage()));
     }
 
     /**
@@ -175,7 +173,7 @@ public abstract class CubeCommand extends Command
      */
     public String getUsage(CommandSender sender, List<String> parentLabels)
     {
-        return "/" + StringUtils.implode(" ", parentLabels) + " " + this.getName() + " " + _(sender, this.module, super.getUsage());
+        return "/" + StringUtils.implode(" ", parentLabels) + " " + this.getName() + " " + sender.translate(super.getUsage());
     }
 
     /**
@@ -287,7 +285,7 @@ public abstract class CubeCommand extends Command
         cmd.parent = null;
     }
 
-    public static CommandSender wrapSender(org.bukkit.command.CommandSender bukkitSender)
+    public static CommandSender wrapSender(Core core, org.bukkit.command.CommandSender bukkitSender)
     {
         if (bukkitSender instanceof CommandSender)
         {
@@ -299,15 +297,15 @@ public abstract class CubeCommand extends Command
         }
         else if (bukkitSender instanceof org.bukkit.command.ConsoleCommandSender)
         {
-            return new ConsoleCommandSender((org.bukkit.command.ConsoleCommandSender)bukkitSender);
+            return core.getCommandManager().getConsoleSender();
         }
         else if (bukkitSender instanceof org.bukkit.command.BlockCommandSender)
         {
-            return new BlockCommandSender((org.bukkit.command.BlockCommandSender)bukkitSender);
+            return new BlockCommandSender(core, (org.bukkit.command.BlockCommandSender)bukkitSender);
         }
         else
         {
-            return new WrappedCommandSender(bukkitSender);
+            return new WrappedCommandSender(core, bukkitSender);
         }
     }
 
@@ -322,7 +320,7 @@ public abstract class CubeCommand extends Command
     @Override
     public final boolean execute(org.bukkit.command.CommandSender bukkitSender, String label, String[] args)
     {
-        return this.execute(wrapSender(bukkitSender), args, label, new Stack<String>());
+        return this.execute(wrapSender(this.getModule().getCore(), bukkitSender), args, label, new Stack<String>());
     }
 
     private boolean execute(CommandSender sender, String[] args, String label, Stack<String> labels)
@@ -356,22 +354,22 @@ public abstract class CubeCommand extends Command
         }
         catch (MissingParameterException e)
         {
-            sender.sendMessage("core", "&cThe parameter &6%s&c is missing!", e.getMessage());
+            sender.sendTranslated("&cThe parameter &6%s&c is missing!", e.getMessage());
         }
         catch (IncorrectUsageException e)
         {
             sender.sendMessage(e.getMessage());
-            sender.sendMessage("core", "&eProper usage: &f%s", this.getUsage(sender));
+            sender.sendTranslated("&eProper usage: &f%s", this.getUsage(sender));
         }
         catch (PermissionDeniedException e)
         {
-            sender.sendMessage("core", "&cYou're not allowed to do this!");
-            sender.sendMessage("core", "&cContact an administrator if you think this is a mistake!");
+            sender.sendTranslated("&cYou're not allowed to do this!");
+            sender.sendTranslated("&cContact an administrator if you think this is a mistake!");
         }
         catch (Exception e)
         {
-            sender.sendMessage("core", "&4An unknown error occurred while executing this command!");
-            sender.sendMessage("core", "&4Please report this error to an administrator.");
+            sender.sendTranslated("&4An unknown error occurred while executing this command!");
+            sender.sendTranslated("&4Please report this error to an administrator.");
             this.module.getLogger().log(ERROR, e.getLocalizedMessage(), e);
         }
 
@@ -396,7 +394,7 @@ public abstract class CubeCommand extends Command
                 completer = child;
             }
         }
-        List<String> result = completer.tabComplete(wrapSender(bukkitSender), alias, args);
+        List<String> result = completer.tabComplete(wrapSender(this.getModule().getCore(), bukkitSender), alias, args);
         if (result == null)
         {
             result = completer.tabCompleteFallback(bukkitSender, alias, args);

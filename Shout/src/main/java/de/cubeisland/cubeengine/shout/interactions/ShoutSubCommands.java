@@ -1,9 +1,9 @@
 package de.cubeisland.cubeengine.shout.interactions;
 
-import de.cubeisland.cubeengine.core.command.reflected.Alias;
 import de.cubeisland.cubeengine.core.command.CommandContext;
 import de.cubeisland.cubeengine.core.command.parameterized.Param;
 import de.cubeisland.cubeengine.core.command.parameterized.ParameterizedContext;
+import de.cubeisland.cubeengine.core.command.reflected.Alias;
 import de.cubeisland.cubeengine.core.command.reflected.Command;
 import de.cubeisland.cubeengine.core.i18n.I18n;
 import de.cubeisland.cubeengine.core.permission.Permission;
@@ -13,6 +13,7 @@ import de.cubeisland.cubeengine.shout.announce.MessageOfTheDay;
 
 import java.io.IOException;
 import java.util.Iterator;
+import java.util.Locale;
 
 public class ShoutSubCommands
 {
@@ -34,7 +35,7 @@ public class ShoutSubCommands
         Iterator<Announcement> iter = this.module.getAnnouncementManager().getAnnouncements().iterator();
         if (iter.hasNext())
         {
-            context.sendMessage("shout", "Here is the list of announcements:");
+            context.sendTranslated("Here is the list of announcements:");
             while (iter.hasNext())
             {
                 context.sendMessage(" - " + iter.next().getName());
@@ -42,7 +43,7 @@ public class ShoutSubCommands
         }
         else
         {
-            context.sendMessage("shout", "There are no announcements loaded!");
+            context.sendTranslated("There are no announcements loaded!");
         }
     }
 
@@ -76,15 +77,15 @@ public class ShoutSubCommands
     {
         if (!context.hasParam("message"))
         {
-            context.sendMessage("shout", "You have to include a message!");
+            context.sendTranslated("You have to include a message!");
             return;
         }
 
         String message = context.getString("message");
-        String locale = context.getSender().getLanguage();
+        Locale locale = context.getSender().getLocale();
         if (context.hasParam("locale"))
         {
-            locale = I18n.normalizeLanguage(context.getString("locale"));
+            locale = Locale.forLanguageTag(I18n.normalizeLanguage(context.getString("locale")));
         }
 
         try
@@ -100,25 +101,25 @@ public class ShoutSubCommands
         }
         catch (IllegalArgumentException ex)
         {
-            context.sendMessage("shout", "Some of your arguments are not valid.");
-            context.sendMessage("shout", "The error message was: %s", ex.getLocalizedMessage());
+            context.sendTranslated("Some of your arguments are not valid.");
+            context.sendTranslated("The error message was: %s", ex.getLocalizedMessage());
         }
         catch (IOException ex)
         {
-            context.sendMessage("shout", "There was an error creating some of the files.");
-            context.sendMessage("shout", "The error message was: %s", ex.getLocalizedMessage());
+            context.sendTranslated("There was an error creating some of the files.");
+            context.sendTranslated("The error message was: %s", ex.getLocalizedMessage());
         }
 
         module.getAnnouncementManager().reload();
 
-        context.sendMessage("shout", "Your announcement have been created and loaded into the plugin");
+        context.sendTranslated("Your announcement have been created and loaded into the plugin");
     }
 
     @Command(desc = "clean all loaded announcements form memory and load from disk")
     public void reload(CommandContext context)
     {
         module.getAnnouncementManager().reload();
-        context.sendMessage("shout", "All players and announcements have now been reloaded");
+        context.sendTranslated("All players and announcements have now been reloaded");
     }
 
     @Alias(names = "motd")
@@ -129,14 +130,14 @@ public class ShoutSubCommands
         if (motd != null)
         {
             context.sendMessage(" ");
-            for (String line : motd.getMessage(context.getSender().getLanguage()))
+            for (String line : motd.getMessage(context.getSender().getLocale()))
             {
                 context.sendMessage(line);
             }
         }
         else
         {
-            context.sendMessage("shout", "&eThere is no message of the day.");
+            context.sendTranslated("&eThere is no message of the day.");
         }
     }
 }

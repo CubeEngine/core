@@ -5,7 +5,7 @@ import de.cubeisland.cubeengine.core.TestCore;
 import de.cubeisland.cubeengine.core.command.ArgBounds;
 import de.cubeisland.cubeengine.core.command.CubeCommand;
 import de.cubeisland.cubeengine.core.command.TestCommand;
-import de.cubeisland.cubeengine.core.command.sender.CommandSender;
+import de.cubeisland.cubeengine.core.command.CommandSender;
 import de.cubeisland.cubeengine.core.command.sender.TestConsoleSender;
 import de.cubeisland.cubeengine.core.module.Module;
 import de.cubeisland.cubeengine.core.module.ModuleManager;
@@ -66,7 +66,7 @@ public class ParameterizedContextFactoryTest extends TestCase
 
         Stack<String> labels = new Stack<String>();
         labels.add("testCommand");
-        CommandSender sender = new TestConsoleSender();
+        CommandSender sender = new TestConsoleSender(this.core);
         Module module = this.mm.getModule("test");
         CubeCommand testCommand = new TestCommand(module, labels.get(0), "desscription", factory);
         ParameterizedContext ctx = factory.parse(testCommand, sender, labels, new String[] {
