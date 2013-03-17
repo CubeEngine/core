@@ -183,7 +183,7 @@ public class ItemCommands
     {
         if (!context.hasArg(0))
         {
-            context.sendTranslated(this.getPossibleEnchantments(null));
+            context.sendTranslated("&aFollowing Enchantments are availiable:\n%s", this.getPossibleEnchantments(null));
             return;
         }
         if (context.getSender() instanceof User)
@@ -201,8 +201,7 @@ public class ItemCommands
                 String possibleEnchs = this.getPossibleEnchantments(item);
                 if (possibleEnchs != null)
                 {
-                    context.sendTranslated("&cEnchantment &6%s &cnot found! Try one of those instead:\n%s", context.
-                                                                                                                       getString(0), possibleEnchs);
+                    context.sendTranslated("&cEnchantment &6%s &cnot found! Try one of those instead:\n%s", context.getString(0), possibleEnchs);
                 }
                 else
                 {
