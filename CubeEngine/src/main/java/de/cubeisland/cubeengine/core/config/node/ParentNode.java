@@ -132,4 +132,6 @@ public abstract class ParentNode extends Node
         CubeEngine.getLogger().log(Level.WARNING,"Unexpected parent-node data! Is the config up to date?");
         return null;
     }
+
+    public abstract void cleanUpEmptyNodes();
 }

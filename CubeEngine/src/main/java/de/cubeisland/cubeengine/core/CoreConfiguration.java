@@ -9,6 +9,8 @@ import de.cubeisland.cubeengine.core.i18n.I18n;
 import de.cubeisland.cubeengine.core.logger.CubeLevel;
 import de.cubeisland.cubeengine.core.logger.LogLevel;
 
+import java.io.File;
+
 /**
  * This Configuration holds all basic settings for CubeEngine.
  * Changes in this configuration can/will affect all modules.
@@ -79,7 +81,7 @@ public class CoreConfiguration extends Configuration
     }
 
     @Override
-    public void onLoaded()
+    public void onLoaded(File loadFrom)
     {
         this.defaultLanguage = I18n.normalizeLanguage(this.defaultLanguage);
     }

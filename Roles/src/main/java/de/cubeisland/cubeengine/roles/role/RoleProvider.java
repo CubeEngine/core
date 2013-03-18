@@ -346,10 +346,9 @@ public abstract class RoleProvider
             return false;
         }
         RoleConfig config = new RoleConfig();
-        config.setCodec("yml");
         config.roleName = roleName;
         this.configs.put(roleName.toLowerCase(Locale.ENGLISH), config);
-        config.onLoaded();
+        config.onLoaded(null);
         config.setFile(new File(this.folder, roleName + ".yml"));
         config.save();
         this.roles.put(roleName, this.calculateRole(config, this.module.getManager().getGlobalRoles()));

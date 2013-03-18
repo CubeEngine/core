@@ -1,7 +1,7 @@
 package de.cubeisland.cubeengine.test;
 
 import de.cubeisland.cubeengine.core.CubeEngine;
-import de.cubeisland.cubeengine.core.config.Configuration;
+import de.cubeisland.cubeengine.core.config.YamlConfiguration;
 import de.cubeisland.cubeengine.core.config.annotations.*;
 import org.bukkit.Location;
 import org.bukkit.OfflinePlayer;
@@ -22,9 +22,8 @@ import java.util.LinkedList;
     @MapComment(path = "list.listinmaps.list2", text = "comment in submap"),
     @MapComment(path = "list.stringlist", text = "comment for my list :)")
 })
-@Codec("yml")
 @DefaultConfig()
-public class TestConfig extends Configuration
+public class TestConfig extends YamlConfiguration
 {
     private final Server server = ((Plugin)CubeEngine.getCore()).getServer();
     @Option("location")

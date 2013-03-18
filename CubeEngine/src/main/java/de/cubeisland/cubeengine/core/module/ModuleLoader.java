@@ -117,21 +117,23 @@ public class ModuleLoader
 
             for (Field field : moduleClass.getDeclaredFields())
             {
-                if (Configuration.class.isAssignableFrom(field.getType()) && field.getType().isAnnotationPresent(Codec.class))
+                if (Configuration.class.isAssignableFrom(field.getType()))
                 {
-                    Class<? extends Configuration> configClass = (Class<? extends Configuration>)field.getType();
 
-                    String filename = null;
+                    Class<? extends Configuration> configClass = (Class<? extends Configuration>)field.getType();
                     if (configClass.isAnnotationPresent(DefaultConfig.class))
                     {
-                        filename = "config";
+                        String filename = configClass.getAnnotation(DefaultConfig.class).name();
+                        Codec codecAnnotation = Configuration.findCodec((Class<? extends Configuration>) field.getType());
+                        filename += "."+codecAnnotation.value();
+                        field.setAccessible(true);
+                        field.set(module, Configuration.load(configClass, new File(module.getFolder(), filename)));
                     }
                     else
                     {
                         continue;
                     }
-                    field.setAccessible(true);
-                    field.set(module, Configuration.load(configClass, new File(module.getFolder(), filename + "." + configClass.getAnnotation(Codec.class).value())));
+
                 }
             }
 

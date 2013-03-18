@@ -2,17 +2,14 @@ package de.cubeisland.cubeengine.core.config;
 
 import de.cubeisland.cubeengine.core.CubeEngine;
 import de.cubeisland.cubeengine.core.config.annotations.Codec;
+import de.cubeisland.cubeengine.core.config.codec.ConfigurationCodec;
 import de.cubeisland.cubeengine.core.config.codec.YamlCodec;
 import de.cubeisland.cubeengine.core.logger.LogLevel;
 import de.cubeisland.cubeengine.core.module.Module;
 import org.apache.commons.lang.Validate;
 import org.yaml.snakeyaml.reader.ReaderException;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
@@ -22,17 +19,28 @@ import static java.util.logging.Level.SEVERE;
 /**
  * This abstract class represents a configuration.
  */
-public abstract class Configuration
+public abstract class Configuration<ConfigCodec extends ConfigurationCodec>
 {
     private static final Map<String, ConfigurationCodec> codecs = new HashMap<String, ConfigurationCodec>();
-    protected Class<? extends Configuration> configurationClass;
-    protected ConfigurationCodec codec = null;
+    protected final Class<? extends Configuration> configurationClass;
+    public final ConfigCodec codec;
     protected File file;
-    protected Configuration parent = null;
 
     static
     {
         registerCodec(new YamlCodec(), "yml", "yaml");
+    }
+
+    public Configuration()
+    {
+        this.codec = initCodec();
+        this.configurationClass = this.getClass();
+    }
+
+    private ConfigCodec initCodec()
+    {
+        return resolveCodec(findCodec(this.getClass()).value());
+
     }
 
     /**
@@ -56,37 +64,19 @@ public abstract class Configuration
      */
     public final void save(File targetFile)
     {
-        if (this.codec == null)
-        {
-            throw new IllegalStateException("A configuration cannot be saved without a valid codec!");
-        }
         if (targetFile == null)
         {
-            throw new IllegalStateException("A configuration cannot be saved without a valid file!");
+            throw new IllegalArgumentException("A configuration cannot be saved without a valid file!");
         }
         this.codec.save(this, targetFile);
         this.onSaved(targetFile);
-    }
-
-    public final void saveChild()
-    {
-        if (this.codec == null)
-        {
-            throw new IllegalStateException("A configuration cannot be saved without a valid codec!");
-        }
-        if (this.file == null)
-        {
-            throw new IllegalStateException("A configuration cannot be saved without a valid file!");
-        }
-        this.codec.saveChildConfig(this.parent, this, this.file);
-        this.onSaved(this.file);
     }
 
     public void load()
     {
         if (this.file == null)
         {
-            throw new IllegalStateException("The file must not be null in order to load the configuration!");
+            throw new IllegalArgumentException("The file must not be null in order to load the configuration!");
         }
         try
         {
@@ -99,42 +89,75 @@ public abstract class Configuration
         }
     }
 
-    @SuppressWarnings("unchecked")
-    public <T extends Configuration> T loadChild(File sourceFile) //and save
-    {
-        Configuration childConfig;
-        try
-        {
-            childConfig = this.configurationClass.newInstance();
-            childConfig.codec = this.codec;
-            childConfig.file = sourceFile;
-            childConfig.parent = this;
-            try
-            {
-                FileInputStream is = new FileInputStream(sourceFile);
-                childConfig.codec.load(childConfig, is);
-            }
-            catch (FileNotFoundException ignored) // not found load from parent / save child
-            {
-                childConfig.codec.load(childConfig, null);
-            }
-            childConfig.onLoaded();
-            childConfig.configurationClass = this.configurationClass;
-            childConfig.saveChild();
-            return (T)childConfig;
-        }
-        catch (Exception ex)
-        {
-            throw new IllegalStateException("Could not load ChildConfig!", ex);
-        }
-    }
-
     /**
-     * Saves the Configuration.
+     * Saves the configuration to the set file.
      */
     public final void save()
     {
         this.save(this.file);
+    }
+
+    /**
+     * Returns the current Codec
+     *
+     * @return the ConfigurationCodec
+     */
+    public final ConfigCodec getCodec()
+    {
+        return this.codec;
+    }
+
+    /**
+     * Sets the file to load from
+     *
+     * @param file the file
+     */
+    public final void setFile(File file)
+    {
+        Validate.notNull(file, "The file must not be null!");
+        this.file = file;
+    }
+
+    /**
+     * Returns the file this config will be saved to and loaded from by default
+     *
+     * @return the file of this config
+     */
+    public final File getFile()
+    {
+        return this.file;
+    }
+
+    /**
+     * This method is called right after the configuration got loaded.
+     */
+    public void onLoaded(File loadFrom)
+    {}
+
+    /**
+     * This method gets called right after the configuration get saved.
+     */
+    public void onSaved(File savedIn)
+    {}
+
+    /**
+     * Returns the lines to be added in front of the Configuration.
+     *
+     * @return the head
+     */
+    public String[] head()
+    {
+        return null;
+    }
+
+    /**
+     * Returns the lines to be added at the end of the Configuration.
+     *
+     * @return the head
+     */
+    public String[] tail()
+    {
+        return null;
     }
 
     /**
@@ -144,7 +167,7 @@ public abstract class Configuration
      * @return the Codec
      * @throws IllegalStateException if no Codec is found for given FileExtension
      */
-    public static ConfigurationCodec resolveCodec(String fileExtension)
+    public static <Codec extends ConfigurationCodec> Codec resolveCodec(String fileExtension)
     {
         if (fileExtension == null)
         {
@@ -153,28 +176,24 @@ public abstract class Configuration
         ConfigurationCodec codec = codecs.get(fileExtension);
         if (codec == null)
         {
-            throw new IllegalStateException("FileExtension ." + fileExtension + " cannot be used for Configurations!");
+            throw new InvalidConfigurationException("No Codec known for the file-extension ." + fileExtension);
         }
-        return codec;
+        return (Codec) codec;
     }
 
-    public static <T extends Configuration> T createInstance(Class<T> clazz)
+    /**
+     * Creates an instance of this given configuration-class.
+     * The configuration has to have the default Constructor for this to work!
+     *
+     * @param clazz the configurations class
+     * @param <T>
+     * @return the created configuration
+     */
+    public static <T extends Configuration> T createInstance(Class<T> clazz) //TODO constructor with params?
     {
-        String codec = null;
-        Codec codecAnnotation = clazz.getAnnotation(Codec.class);
-        Class<? extends Configuration> tmpClass = clazz;
-        while (codecAnnotation == null && (tmpClass = (Class<? extends Configuration>)tmpClass.getSuperclass()) != Configuration.class)
-        {
-            codecAnnotation = tmpClass.getAnnotation(Codec.class);
-        }
-        if (codecAnnotation != null)
-        {
-            codec = codecAnnotation.value();
-        }
         try
         {
             T instance = clazz.newInstance();
-            instance.setCodec(codec);
             return instance;
         }
         catch (Exception e)
@@ -184,23 +203,76 @@ public abstract class Configuration
     }
 
     /**
-     * Loads and returns the loaded Configuration from File
+     * Returns the loaded Configuration
      *
-     * @param file  the configurationfile
-     * @param clazz the configuration
+     * @param clazz the configurations class
+     * @param module the module to load the configuration from
+     * @param <T>
      * @return the loaded configuration
      */
-    public static <T extends Configuration> T load(Class<T> clazz, File file)
+    public static <T extends Configuration> T load(Class<T> clazz, Module module)
     {
-        return load(clazz, file, true);
+        Codec codecAnnotation = clazz.getAnnotation(Codec.class);
+        if (codecAnnotation == null)
+        {
+            throw new InvalidConfigurationException("No codec specified for " + clazz.getName());
+        }
+        return load(clazz, new File(module.getFolder(), module.getName().toLowerCase(Locale.ENGLISH) + "." + codecAnnotation.value()));
     }
 
     /**
-     * Loads and returns the loaded Configuration from File
+     * Returns the loaded Configuration
      *
-     * @param file  the configurationfile
-     * @param clazz the configuration
-     * @param save  whether to instantly save the config after it was loaded
+     * @param clazz the configurations class
+     * @param is the input-stream to load from
+     * @param file the corresponding file
+     * @param <T>
+     * @return the loaded Configuration
+     */
+    public static <T extends Configuration> T load(Class<T> clazz, InputStream is, File file)
+    {
+        T config = createInstance(clazz);
+
+        config.file = file;
+        try
+        {
+            if (is != null)
+            {
+                config.codec.load(config, is); //load config in maps -> updates -> sets fields
+            }
+            config.onLoaded(file);
+            return config;
+        }
+        catch (Exception e)
+        {
+            if (e instanceof ReaderException)
+            {//TODO abstract...
+                throw new InvalidConfigurationException("Failed to parse the YAML configuration. Try encoding it as UTF-8 or validate on yamllint.com", e);
+            }
+            throw new InvalidConfigurationException("Error while loading a Configuration!", e);
+        }
+    }
+
+    /**
+     * Returns the loaded Configuration
+     *
+     * @param clazz the configurations class
+     * @param is the input-stream to load from
+     * @param <T>
+     * @return the loaded Configuration
+     */
+    public static <T extends Configuration> T load(Class<T> clazz, InputStream is)
+    {
+        return load(clazz, is, null);
+    }
+
+    /**
+     * Returns the loaded Configuration
+     *
+     * @param clazz the configurations class
+     * @param file the file to load from
+     * @param save whether to save after loading
+     * @param <T>
      * @return the loaded configuration
      */
     public static <T extends Configuration> T load(Class<T> clazz, File file, boolean save)
@@ -216,7 +288,7 @@ public abstract class Configuration
         }
         catch (FileNotFoundException e)
         {
-            CubeEngine.getLogger().log(LogLevel.NOTICE, "{0} not found! Creating new config...", file.getName());
+            CubeEngine.getLogger().log(LogLevel.NOTICE, "{0} not found! Creating new config from default...", file.getName());
         }
         T config = load(clazz, inputStream, file); //loading config from InputSream or Default
 
@@ -238,150 +310,29 @@ public abstract class Configuration
     }
 
     /**
-     * Loads and returns the loaded Configuration from InputStream
      *
-     * @param is    the Inputstream to load the codec from
-     * @param clazz the Configuration to use
-     * @return the loaded Configuration
-     */
-    public static <T extends Configuration> T load(Class<T> clazz, InputStream is)
-    {
-        return load(clazz, is, null);
-    }
-
-    /**
-     * Loads and returns the loaded Configuration from InputStream
-     *
-     * @param is    the Inputstream to load the codec from
-     * @param clazz the Configuration to use
-     * @param file  the file this configration should belong to
-     * @return the loaded Configuration
-     */
-    public static <T extends Configuration> T load(Class<T> clazz, InputStream is, File file)
-    {
-        T config = createInstance(clazz);
-        config.file = file;
-        if (config.codec == null)
-        {
-            throw new InvalidConfigurationException("No codec specified for " + clazz.getName());
-        }
-        try
-        {
-            if (is != null)
-            {
-                config.codec.load(config, is); //load config in maps -> updates -> sets fields
-            }
-            config.onLoaded();
-            config.configurationClass = clazz;
-            return config;
-        }
-        catch (Exception e)
-        {
-            if (e instanceof ReaderException)
-            {
-                throw new InvalidConfigurationException("Failed to parse the YAML configuration. Try encoding it as UTF-8 or validate on yamllint.com", e);
-            }
-            throw new InvalidConfigurationException("Error while loading a Configuration!", e);
-        }
-    }
-
-    /**
-     * Returns the loaded Configuration
-     *
-     * @param module the module to load the configuration from
-     * @param clazz  the configuration
+     * @param clazz the configurations class
+     * @param file the file to load from
+     * @param <T>
      * @return the loaded configuration
      */
-    public static <T extends Configuration> T load(Class<T> clazz, Module module)
+    public static <T extends Configuration> T load(Class<T> clazz, File file)
     {
-        Codec codecAnnotation = clazz.getAnnotation(Codec.class);
+        return load(clazz, file, true);
+    }
+
+    public static Codec findCodec(Class<? extends Configuration> clazz)
+    {
+        Class<? extends Configuration> tmpClass = clazz;
+        Codec codecAnnotation = tmpClass.getAnnotation(Codec.class);
+        while (codecAnnotation == null && (tmpClass = (Class<? extends Configuration>)tmpClass.getSuperclass()) != Configuration.class)
+        {
+            codecAnnotation = tmpClass.getAnnotation(Codec.class);
+        }
         if (codecAnnotation == null)
         {
-            throw new InvalidConfigurationException("No codec specified for " + clazz.getName());
+            throw new InvalidConfigurationException("Missing codec-annotation for configuration: "+ clazz);
         }
-        return load(clazz, new File(module.getFolder(), module.getName().toLowerCase(Locale.ENGLISH) + "." + codecAnnotation.value()));
-    }
-
-    /**
-     * Sets the Codec for this Confguration
-     *
-     * @param fileExtension *
-     */
-    public void setCodec(String fileExtension)
-    {
-        this.setCodec(resolveCodec(fileExtension));
-    }
-
-    /**
-     * Sets the Codec for this Configuration
-     *
-     * @param codec the Codec to set
-     */
-    public void setCodec(ConfigurationCodec codec)
-    {
-        this.codec = codec;
-    }
-
-    /**
-     * Returns the current Codec
-     *
-     * @return the ConfigurationCodec
-     */
-    public ConfigurationCodec getCodec()
-    {
-        return this.codec;
-    }
-
-    /**
-     * Sets the file to load from
-     *
-     * @param file the file
-     */
-    public void setFile(File file)
-    {
-        Validate.notNull(file, "The file must not be null!");
-        this.file = file;
-    }
-
-    /**
-     * Returns the file this config will be saved to
-     *
-     * @return the file this config will be saved to
-     */
-    public File getFile()
-    {
-        return this.file;
-    }
-
-    /**
-     * This method is called right after the configuration got loaded.
-     */
-    public void onLoaded()
-    {}
-
-    /**
-     * This method gets called right after the configuration get saved.
-     */
-    public void onSaved(File file)
-    {}
-
-    /**
-     * Returns the lines to be added in front of the Configuration.
-     *
-     * @return the head
-     */
-    public String[] head()
-    {
-        return null;
-    }
-
-    /**
-     * Returns the lines to be added at the end of the Configuration.
-     *
-     * @return the head
-     */
-    public String[] tail()
-    {
-        return null;
+        return codecAnnotation;
     }
 }

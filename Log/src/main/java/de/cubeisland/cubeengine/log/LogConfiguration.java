@@ -1,6 +1,6 @@
 package de.cubeisland.cubeengine.log;
 
-import de.cubeisland.cubeengine.core.config.Configuration;
+import de.cubeisland.cubeengine.core.config.YamlConfiguration;
 import de.cubeisland.cubeengine.core.config.annotations.*;
 import org.bukkit.Material;
 
@@ -9,7 +9,6 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
-@Codec("yml")
 @MapComments(
         {@MapComment(path = "logging.break.block.fade",text = "Ice and snow fading away"),
         @MapComment(path = "logging.block.break.flow",text = "Lava or water destroying blocks"),
@@ -26,7 +25,7 @@ import java.util.List;
         }
 )
 
-public class LogConfiguration extends Configuration
+public class LogConfiguration extends YamlConfiguration
 {
     @Comment("Completly enables or disabled logging")
     @Option("logging.enable")
