@@ -1,6 +1,7 @@
 package de.cubeisland.cubeengine.log.storage;
 
 import de.cubeisland.cubeengine.core.CubeEngine;
+import de.cubeisland.cubeengine.core.config.Configuration;
 import de.cubeisland.cubeengine.core.logger.LogLevel;
 import de.cubeisland.cubeengine.core.storage.StorageException;
 import de.cubeisland.cubeengine.core.storage.database.AttrType;
@@ -8,22 +9,28 @@ import de.cubeisland.cubeengine.core.storage.database.Database;
 import de.cubeisland.cubeengine.core.storage.database.querybuilder.QueryBuilder;
 import de.cubeisland.cubeengine.core.storage.database.querybuilder.SelectBuilder;
 import de.cubeisland.cubeengine.core.user.User;
+import de.cubeisland.cubeengine.core.util.Profiler;
 import de.cubeisland.cubeengine.core.util.worker.AsyncTaskQueue;
 import de.cubeisland.cubeengine.log.Log;
+import de.cubeisland.cubeengine.log.LogConfiguration;
 import de.cubeisland.cubeengine.log.listeners.BlockListener;
 import de.cubeisland.cubeengine.log.listeners.ChatListener;
 import de.cubeisland.cubeengine.log.listeners.ContainerListener;
 import de.cubeisland.cubeengine.log.listeners.EntityListener;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
 
+import java.io.File;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Timestamp;
+import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.Map;
 import java.util.Queue;
-import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.*;
 
 public class LogManager
 {
@@ -120,21 +127,30 @@ public class LogManager
     public static final int VEHICLE_PLACE = 0x60;
     public static final int HANGING_PLACE = 0x61;
     public static final int VEHICLE_BREAK = 0x62;
-    public static final int HANGING_BREAK = 0x63;
+    public static final int HANGING_BREAK = 0x63; // negative causer -> action-type e.g. BLOCK_BURN -1
     //KILLING
     public static final int PLAYER_KILL = 0x70; // determined by causer ID not saved in DB
     public static final int ENTITY_KILL = 0x71; // determined by causer ID not saved in DB
-    public static final int ENVIRONEMENT_KILL = 0x71; // determined by causer ID not saved in DB
-    public static final int PLAYER_DEATH = 0x73;
-    public static final int ENTITY_DEATH = 0x74;
+    public static final int BOSS_KILL = 0x72;//TODO
+    public static final int ENVIRONMENT_KILL = 0x73; // determined by causer ID not saved in DB
+    public static final int PLAYER_DEATH = 0x74;
+    public static final int MONSTER_DEATH = 0x75;//TODO
+    public static final int ANIMAL_DEATH = 0x76;//TODO chicken cow pig sheep
+    public static final int PET_DEATH = 0x77;//TODO tamed wold / ocelot
+    public static final int NPC_DEATH = 0x78;//TODO villager
+    public static final int BOSS_DEATH = 0x79;//TODO wither / dragon
+    public static final int OTHER_DEATH = 0x80;//TODO bats squids golem
+
+
     //other entity
     public static final int MONSTER_EGG_USE = 0x80;
-    public static final int ENTITY_SPAWN = 0x81;
-    public static final int ITEM_DROP = 0x82;
-    public static final int ITEM_PICKUP = 0x83;
-    public static final int XP_PICKUP = 0x84;
-    public static final int ENTITY_SHEAR = 0x85;
-    public static final int ENTITY_DYE = 0x86;
+    public static final int NATURAL_SPAWN = 0x81;
+    public static final int SPAWNER_SPAWN = 0x82; //TODO
+    public static final int ITEM_DROP = 0x83;
+    public static final int ITEM_PICKUP = 0x84;
+    public static final int XP_PICKUP = 0x85;
+    public static final int ENTITY_SHEAR = 0x86;
+    public static final int ENTITY_DYE = 0x87;
     //chest-transactions
     public static final int ITEM_INSERT = 0x90;
     public static final int ITEM_REMOVE = 0x91;
@@ -148,22 +164,36 @@ public class LogManager
     public static final int ENCHANT_ITEM = 0xA6;
     public static final int CRAFT_ITEM = 0xA7;
 
-//OLD remains:
-
-
     private final AsyncTaskQueue taskQueue = new AsyncTaskQueue(CubeEngine.getTaskManager().getExecutorService());
     private final Database database;
     private final Log module;
     private int logBuffer = 2000; // TODO config
-    private final int repeatingTaskId;
 
     private final BlockListener blockListener;
     private final ChatListener chatListener;
     private final ContainerListener containerListener;
     private final EntityListener entityListener;
 
+    private final ExecutorService executor;
+    private final Runnable runner;
+    private Future<?> future = null;
+
+    private LogConfiguration globalConfig;
+    private Map<World, LogConfiguration> worldConfigs = new HashMap<World, LogConfiguration>();
+
     public LogManager(Log module)
     {
+        File file = new File(module.getFolder(), "worlds");
+        file.mkdir();
+        this.globalConfig = Configuration.load(LogConfiguration.class, new File(module.getFolder(), "globalconfig.yml"));
+        for (World world : Bukkit.getServer().getWorlds())
+        {
+            //TODO config to disable logging in the entire world
+            file = new File(module.getFolder(), "worlds" + File.separator + world.getName());
+            file.mkdir();
+            this.worldConfigs.put(world, (LogConfiguration)globalConfig.loadChild(new File(file, "config.yml")));
+        }
+
         this.blockListener = new BlockListener(module,this);
         this.chatListener = new ChatListener(module,this);
         this.containerListener = new ContainerListener(module,this);
@@ -214,29 +244,22 @@ public class LogManager
         {
             throw new StorageException("Error during initialization of log-tables", ex);
         }
-        //TODO make this async every second!!!!!!0
-        this.repeatingTaskId = CubeEngine.getTaskManager().scheduleSyncRepeatingTask(module, new Runnable()
-        {
+        runner = new Runnable() {
             @Override
-            public void run()
-            {
-                taskQueue.addTask(new Runnable()
-                {
+            public void run() {
+                taskQueue.addTask(new Runnable() {
                     @Override
-                    public void run()
-                    {
-                        try
-                        {
+                    public void run() {
+                        try {
                             doEmptyLogs(logBuffer);
-                        }
-                        catch (Exception ex)
-                        {
-                            LogManager.this.module.getLogger().log(LogLevel.ERROR,"Error while logging!",ex);
+                        } catch (Exception ex) {
+                            LogManager.this.module.getLogger().log(LogLevel.ERROR, "Error while logging!", ex);
                         }
                     }
                 });
             }
-        }, 20, 20);
+        };
+        executor = Executors.newSingleThreadExecutor(this.module.getTaskManger().getThreadFactory());
     }
 
     private Queue<QueuedLog> queuedLogs = new ConcurrentLinkedQueue<QueuedLog>();
@@ -250,7 +273,6 @@ public class LogManager
         }
         if (running)
         {
-            this.module.getLogger().warning("LogQueue already running! Size: " + queuedLogs.size());
             return;
         }
         running = true;
@@ -264,9 +286,7 @@ public class LogManager
             }
             logs.offer(toLog);
         }
-        if (logs.size() > 4)
-            this.module.getLogger().log(LogLevel.DEBUG,"Logging {0} logs",logs.size());
-        long a = System.currentTimeMillis();
+        Profiler.startProfiling("logging");
         int logSize = logs.size();
         PreparedStatement stmt = this.database.getStoredStatement(this.getClass(),"storeLog");
         try
@@ -288,10 +308,39 @@ public class LogManager
         {
             running = false;
         }
-        a = System.currentTimeMillis() - a;
+        long nanos = Profiler.endProfiling("logging");
+        timeSpend += nanos;
+        logsLogged += logSize;
         if (logSize == logBuffer)
-            System.out.println("Logged " + logSize + " logs in: " + a / 1000 + "." + a % 1000 + "s | remaining logs: " + queuedLogs.size());
+        {
+            timeSpendFullLoad += nanos;
+            logsLoggedFullLoad += logSize;
+        }
+        if (logSize > 20)
+        {
+            this.module.getLogger().log(LogLevel.DEBUG,
+                    logSize + " logged in: " + TimeUnit.NANOSECONDS.toMillis(nanos) +
+                            "ms | remaining logs: " + queuedLogs.size());
+            this.module.getLogger().log(LogLevel.DEBUG,
+                    "Average logtime per log: " + TimeUnit.NANOSECONDS.toMicros(timeSpend / logsLogged)+ " micros");
+            this.module.getLogger().log(LogLevel.DEBUG,
+                    "Average logtime per log in full load: " + TimeUnit.NANOSECONDS.toMicros(timeSpendFullLoad / logsLoggedFullLoad)+" micros");
+        }
+        if (!queuedLogs.isEmpty())
+        {
+            this.future = this.executor.submit(this.runner);
+        }
+        else if (this.latch != null)
+        {
+            this.latch.countDown();
+        }
     }
+
+    private long timeSpend = 0;
+    private long logsLogged = 1;
+
+    private long timeSpendFullLoad = 0;
+    private long logsLoggedFullLoad = 1;
 
     private void buildWorldAndLocation(SelectBuilder builder, World world, Location loc1, Location loc2)
     {
@@ -323,12 +372,18 @@ public class LogManager
         builder.beginSub().field("date").between(fromDate, toDate).endSub();
     }
 
+    private CountDownLatch latch = null;
+
     public void disable()
     {
-        CubeEngine.getTaskManager().cancelTask(module, this.repeatingTaskId);
-        while (!this.queuedLogs.isEmpty())
+        if (!queuedLogs.isEmpty())
         {
-            this.doEmptyLogs(logBuffer * 10);
+            latch = new CountDownLatch(1);
+            try {
+                latch.await();
+            } catch (InterruptedException e) {
+                this.module.getLogger().log(LogLevel.WARNING,"Error while waiting!",e);
+            }
         }
     }
 
@@ -342,6 +397,10 @@ public class LogManager
     private void queueLog(Timestamp timestamp, Long worldID, Integer x, Integer y, Integer z, Integer action, Long causer, String block, Long data, String newBlock, Byte newData, String additionalData)
     {
         this.queuedLogs.offer(new QueuedLog(timestamp,worldID,x,y,z,action,causer,block,data,newBlock,newData,additionalData));
+        if (this.future == null || this.future.isDone())
+        {
+            this.future = executor.submit(runner);
+        }
     }
 
     /**
@@ -399,6 +458,14 @@ public class LogManager
         this.queueLog(location,action,causer,null,null);
     }
 
+    public void queueLog(Location location, int action, Long causer, String material, Short data, String additionalData)
+    {
+        Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+        Long worldID = this.module.getCore().getWorldManager().getWorldId(location.getWorld());
+        this.queueLog(timestamp,worldID,location.getBlockX(),location.getBlockY(),location.getBlockZ(),
+                action,causer,material,data.longValue(),null,null,additionalData);
+    }
+
     public BlockListener getBlockListener() {
         return blockListener;
     }
@@ -414,8 +481,5 @@ public class LogManager
     public EntityListener getEntityListener() {
         return entityListener;
     }
-
-
-
 }
 

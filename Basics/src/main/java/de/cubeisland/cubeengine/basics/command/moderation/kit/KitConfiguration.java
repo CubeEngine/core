@@ -2,16 +2,17 @@ package de.cubeisland.cubeengine.basics.command.moderation.kit;
 
 import de.cubeisland.cubeengine.basics.Basics;
 import de.cubeisland.cubeengine.core.config.Configuration;
+import de.cubeisland.cubeengine.core.config.YamlConfiguration;
 import de.cubeisland.cubeengine.core.config.annotations.Codec;
 import de.cubeisland.cubeengine.core.config.annotations.Comment;
 import de.cubeisland.cubeengine.core.config.annotations.Option;
 import de.cubeisland.cubeengine.core.util.time.Duration;
 
+import java.io.File;
 import java.util.LinkedList;
 import java.util.List;
 
-@Codec("yml")
-public class KitConfiguration extends Configuration
+public class KitConfiguration extends YamlConfiguration
 {
     public String kitName;
     @Comment("Players that join your server the first time will receive this kit if set on true.")
@@ -37,7 +38,7 @@ public class KitConfiguration extends Configuration
     public int limitUsage = 0;
 
     @Override
-    public void onLoaded()
+    public void onLoaded(File loadFrom)
     {
         String fileName = this.getFile().getName();
         this.kitName = fileName.substring(0, fileName.indexOf(".yml"));

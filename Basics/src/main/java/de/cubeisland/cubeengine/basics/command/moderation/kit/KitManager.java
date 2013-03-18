@@ -43,7 +43,6 @@ public class KitManager
             kitConfigMap.put(kit, config);
             kitMap.put(kit.getKitName(), kit);
         }
-        config.setCodec("yml");
         kit.applyToConfig(config);
         config.save(new File(module.getFolder(), File.separator + "kits" + File.separator + config.kitName + ".yml"));
     }

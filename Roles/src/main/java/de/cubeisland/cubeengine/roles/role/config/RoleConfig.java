@@ -5,6 +5,8 @@ import de.cubeisland.cubeengine.core.config.annotations.Codec;
 import de.cubeisland.cubeengine.core.config.annotations.Comment;
 import de.cubeisland.cubeengine.core.config.annotations.DefaultConfig;
 import de.cubeisland.cubeengine.core.config.annotations.Option;
+
+import java.io.File;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.Locale;
@@ -34,8 +36,7 @@ public class RoleConfig extends Configuration
     public Map<String, String> metadata = new LinkedHashMap<String, String>();
 
     @Override
-    public void onLoaded()
-    {
+    public void onLoaded(File loadFrom) {
         if (this.priority == null)
         {
             this.priority = Priority.ABSULTEZERO;

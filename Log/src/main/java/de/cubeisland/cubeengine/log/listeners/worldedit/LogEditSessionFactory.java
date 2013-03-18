@@ -1,4 +1,4 @@
-package de.cubeisland.cubeengine.log.logger.worldedit;
+package de.cubeisland.cubeengine.log.listeners.worldedit;
 
 import com.sk89q.worldedit.*;
 import com.sk89q.worldedit.bags.BlockBag;

@@ -1,10 +1,9 @@
 package de.cubeisland.cubeengine.core.config.codec;
 
 import de.cubeisland.cubeengine.core.CubeEngine;
-import de.cubeisland.cubeengine.core.config.ConfigurationCodec;
 import de.cubeisland.cubeengine.core.config.node.*;
-import de.cubeisland.cubeengine.core.util.convert.Convert;
 import de.cubeisland.cubeengine.core.logger.LogLevel;
+import de.cubeisland.cubeengine.core.util.convert.Convert;
 import org.yaml.snakeyaml.Yaml;
 
 import java.io.InputStream;
@@ -14,7 +13,7 @@ import java.util.Map.Entry;
 /**
  * This class acts as a codec for yaml-configurations.
  */
-public class YamlCodec extends ConfigurationCodec
+public class YamlCodec extends MultiConfigurationCodec
 {
     private final Yaml yaml;
 
@@ -29,7 +28,6 @@ public class YamlCodec extends ConfigurationCodec
         QUOTE = "'";
     }
 
-    //TODO \n in Strings do get lost when restarting
     @Override
     @SuppressWarnings("unchecked")
     public void loadFromInputStream(CodecContainer container, InputStream is)

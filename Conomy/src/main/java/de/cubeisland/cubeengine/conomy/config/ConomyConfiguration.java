@@ -5,6 +5,8 @@ import de.cubeisland.cubeengine.core.config.annotations.Codec;
 import de.cubeisland.cubeengine.core.config.annotations.Comment;
 import de.cubeisland.cubeengine.core.config.annotations.DefaultConfig;
 import de.cubeisland.cubeengine.core.config.annotations.Option;
+
+import java.io.File;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -21,7 +23,7 @@ public class ConomyConfiguration extends Configuration
     public boolean enableLogging = true;
 
     @Override
-    public void onLoaded()
+    public void onLoaded(File loadFrom)
     {
         // Create a default currency when none given
         if (currencies == null || currencies.isEmpty())

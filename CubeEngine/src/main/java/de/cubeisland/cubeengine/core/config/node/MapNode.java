@@ -4,8 +4,10 @@ import de.cubeisland.cubeengine.core.CubeEngine;
 import de.cubeisland.cubeengine.core.util.convert.Convert;
 import gnu.trove.map.hash.THashMap;
 
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Set;
 
 public class MapNode extends ParentNode
 {
@@ -128,5 +130,27 @@ public class MapNode extends ParentNode
             return this.getParentNode().getPath(this, path, pathSeparator);
         }
         return path;
+    }
+
+
+    @Override
+    public void cleanUpEmptyNodes()
+    {
+        Set<String> nodesToRemove = new HashSet<String>();
+        for (String key : this.mappedNodes.keySet())
+        {
+            if (this.mappedNodes.get(key) instanceof ParentNode)
+            {
+                ((ParentNode) this.mappedNodes.get(key)).cleanUpEmptyNodes();
+                if (((ParentNode) this.mappedNodes.get(key)).isEmpty())
+                {
+                    nodesToRemove.add(key);
+                }
+            }
+        }
+        for (String key : nodesToRemove)
+        {
+            this.mappedNodes.remove(key);
+        }
     }
 }

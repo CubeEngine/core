@@ -7,11 +7,13 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * A Configuration with this annotation will be named "config" and automaticly loaded into the fiels in the module
+ * A Configuration with this annotation will be named "config" by default and automatically loaded into the fields in the module
  * before calling onEnable
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
 @Documented
 public @interface DefaultConfig
-{}
+{
+    public String name() default "config";
+}

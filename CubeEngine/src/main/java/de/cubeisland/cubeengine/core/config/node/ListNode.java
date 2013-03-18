@@ -3,6 +3,8 @@ package de.cubeisland.cubeengine.core.config.node;
 import de.cubeisland.cubeengine.core.util.convert.Convert;
 
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
 
 public class ListNode extends ParentNode
 {
@@ -139,6 +141,24 @@ public class ListNode extends ParentNode
     public boolean isEmpty()
     {
         return this.listedNodes.isEmpty();
+    }
+
+    @Override
+    public void cleanUpEmptyNodes()
+    {
+        Set<Node> nodesToRemove = new HashSet<Node>();
+        for (Node node : this.getListedNodes())
+        {
+            if (node instanceof ParentNode)
+            {
+                ((ParentNode) node).cleanUpEmptyNodes();
+                if (((ParentNode) node).isEmpty())
+                {
+                    nodesToRemove.add(node);
+                }
+            }
+        }
+        this.listedNodes.removeAll(nodesToRemove);
     }
 
     @Override
