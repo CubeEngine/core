@@ -628,6 +628,14 @@ public class UserBase implements Player
     }
 
     @Override
+    @Deprecated
+    public boolean isOnGround()
+    {
+        final Player player = this.offlinePlayer.getPlayer();
+        return player != null && player.isOnGround();
+    }
+
+    @Override
     public boolean isFlying()
     {
         final Player player = this.offlinePlayer.getPlayer();

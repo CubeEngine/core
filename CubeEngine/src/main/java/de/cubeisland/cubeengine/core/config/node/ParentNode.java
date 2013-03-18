@@ -1,5 +1,9 @@
 package de.cubeisland.cubeengine.core.config.node;
 
+import de.cubeisland.cubeengine.core.CubeEngine;
+
+import java.util.logging.Level;
+
 /**
  * A Node that can be a parent of another Node
  */
@@ -125,6 +129,7 @@ public abstract class ParentNode extends Node
     @Override
     public String unwrap()
     {
-        throw new UnsupportedOperationException("Unwrapping is not allowed for ParentNodes");
+        CubeEngine.getLogger().log(Level.WARNING,"Unexpected parent-node data! Is the config up to date?");
+        return null;
     }
 }

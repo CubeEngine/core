@@ -17,18 +17,19 @@ public class BooleanConverter extends BasicConverter<Boolean>
         String s = node.unwrap();
         try
         {
+            if (s == null)
+            {
+                return null;
+            }
             if (s.equalsIgnoreCase("true") || s.equalsIgnoreCase("on") || s.equalsIgnoreCase("yes") || s.equalsIgnoreCase("1"))
             {
                 return true;
             }
-            else if (s.equalsIgnoreCase("false") || s.equalsIgnoreCase("off") || s.equalsIgnoreCase("no") || s.equalsIgnoreCase("0"))
+            if (s.equalsIgnoreCase("false") || s.equalsIgnoreCase("off") || s.equalsIgnoreCase("no") || s.equalsIgnoreCase("0"))
             {
                 return false;
             }
-            else
-            {
-                return null;
-            }
+            return null;
         }
         catch (NumberFormatException e)
         {

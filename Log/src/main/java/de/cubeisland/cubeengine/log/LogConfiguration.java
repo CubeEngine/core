@@ -10,7 +10,6 @@ import java.util.LinkedList;
 import java.util.List;
 
 @Codec("yml")
-@DefaultConfig
 @MapComments(
         {@MapComment(path = "logging.break.block.fade",text = "Ice and snow fading away"),
         @MapComment(path = "logging.block.break.flow",text = "Lava or water destroying blocks"),
@@ -29,6 +28,10 @@ import java.util.List;
 
 public class LogConfiguration extends Configuration
 {
+    @Comment("Completly enables or disabled logging")
+    @Option("logging.enable")
+    public boolean enable = true;
+
     @Comment("Blocks destroyed by a player")
     @Option("logging.block.break.player")
     public boolean BLOCK_BREAK_enable = true;

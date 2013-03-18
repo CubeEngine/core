@@ -1,6 +1,7 @@
 package de.cubeisland.cubeengine.log.storage;
 
 import de.cubeisland.cubeengine.core.CubeEngine;
+import de.cubeisland.cubeengine.core.config.Configuration;
 import de.cubeisland.cubeengine.core.logger.LogLevel;
 import de.cubeisland.cubeengine.core.storage.StorageException;
 import de.cubeisland.cubeengine.core.storage.database.AttrType;
@@ -11,18 +12,23 @@ import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.util.Profiler;
 import de.cubeisland.cubeengine.core.util.worker.AsyncTaskQueue;
 import de.cubeisland.cubeengine.log.Log;
+import de.cubeisland.cubeengine.log.LogConfiguration;
 import de.cubeisland.cubeengine.log.listeners.BlockListener;
 import de.cubeisland.cubeengine.log.listeners.ChatListener;
 import de.cubeisland.cubeengine.log.listeners.ContainerListener;
 import de.cubeisland.cubeengine.log.listeners.EntityListener;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
 
+import java.io.File;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Timestamp;
+import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.Map;
 import java.util.Queue;
 import java.util.concurrent.*;
 
@@ -172,8 +178,22 @@ public class LogManager
     private final Runnable runner;
     private Future<?> future = null;
 
+    private LogConfiguration globalConfig;
+    private Map<World, LogConfiguration> worldConfigs = new HashMap<World, LogConfiguration>();
+
     public LogManager(Log module)
     {
+        File file = new File(module.getFolder(), "worlds");
+        file.mkdir();
+        this.globalConfig = Configuration.load(LogConfiguration.class, new File(module.getFolder(), "globalconfig.yml"));
+        for (World world : Bukkit.getServer().getWorlds())
+        {
+            //TODO config to disable logging in the entire world
+            file = new File(module.getFolder(), "worlds" + File.separator + world.getName());
+            file.mkdir();
+            this.worldConfigs.put(world, (LogConfiguration)globalConfig.loadChild(new File(file, "config.yml")));
+        }
+
         this.blockListener = new BlockListener(module,this);
         this.chatListener = new ChatListener(module,this);
         this.containerListener = new ContainerListener(module,this);
