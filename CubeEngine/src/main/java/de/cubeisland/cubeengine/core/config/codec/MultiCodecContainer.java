@@ -1,6 +1,5 @@
 package de.cubeisland.cubeengine.core.config.codec;
 
-import de.cubeisland.cubeengine.core.config.Configuration;
 import de.cubeisland.cubeengine.core.config.InvalidConfigurationException;
 import de.cubeisland.cubeengine.core.config.MultiConfiguration;
 import de.cubeisland.cubeengine.core.config.annotations.Comment;
@@ -51,31 +50,7 @@ public class MultiCodecContainer<ConfigCodec extends MultiConfigurationCodec> ex
                     String path = field.getAnnotation(Option.class).value().replace(".", codec.PATH_SEPARATOR);
                     Node fieldNode = currentNode.getNodeAt(path, codec.PATH_SEPARATOR);
                     Type type = field.getGenericType();
-                    int fieldType = NORMAL_FIELD;
-                    if (MultiConfiguration.class.isAssignableFrom(field.getType()))
-                    {
-                        fieldType = CONFIG_FIELD;
-                    }
-                    else if (type instanceof ParameterizedType)
-                    {
-                        ParameterizedType pType = (ParameterizedType)type;
-                        if (Collection.class.isAssignableFrom((Class)pType.getRawType()))
-                        {
-                            Type subType1 = pType.getActualTypeArguments()[0];
-                            if (subType1 instanceof Class && MultiConfiguration.class.isAssignableFrom((Class)subType1))
-                            {
-                                fieldType = COLLECTION_CONFIG_FIELD;
-                            }
-                        }
-                        else if (Map.class.isAssignableFrom((Class)pType.getRawType()))
-                        {
-                            Type subType2 = pType.getActualTypeArguments()[1];
-                            if (subType2 instanceof Class && MultiConfiguration.class.isAssignableFrom((Class)subType2))
-                            {
-                                fieldType = MAP_CONFIG_FIELD;
-                            }
-                        }
-                    }
+                    int fieldType = this.getFieldType(field);
                     switch (fieldType)
                     {
                         case NORMAL_FIELD:
@@ -83,17 +58,19 @@ public class MultiCodecContainer<ConfigCodec extends MultiConfigurationCodec> ex
                             {
                                 field.set(config, field.get(parentConfig));
                                 config.addinheritedField(field);
-                                continue;
                             }
-                            Object object = Convert.fromNode(fieldNode, type); // Convert the value
-                            if (object != null)
+                            else
                             {
-                                field.set(config, object);//Set loaded Value into Field
-                            }
-                            else // If not loaded but is child-config get from parent-config
-                            {
-                                field.set(config, field.get(parentConfig));
-                                config.addinheritedField(field);
+                                Object object = Convert.fromNode(fieldNode, type); // Convert the value
+                                if (object != null)
+                                {
+                                    field.set(config, object);//Set loaded Value into Field
+                                }
+                                else // If not loaded but is child-config get from parent-config
+                                {
+                                    field.set(config, field.get(parentConfig));
+                                    config.addinheritedField(field);
+                                }
                             }
                             continue;
                         case CONFIG_FIELD:
@@ -301,58 +278,45 @@ public class MultiCodecContainer<ConfigCodec extends MultiConfigurationCodec> ex
                         Comment comment = field.getAnnotation(Comment.class);
                         this.addComment(path, comment.value());
                     }
-                    // First check for possible SubConfigurations...
-                    if (MultiConfiguration.class.isAssignableFrom(field.getType())) // SingleSubConfig
+                    int fieldType = this.getFieldType(field);
+                    switch (fieldType)
                     {
-                        MultiCodecContainer subContainer = new MultiCodecContainer(this, path); // Create new container
-                        subContainer.fillFromFields((MultiConfiguration)field.get(parentConfig),
-                                (MultiConfiguration)fieldValue,
-                                (MapNode)baseNode.getNodeAt(path, codec.PATH_SEPARATOR));
-                    }
-                    else if (field.getGenericType() instanceof ParameterizedType) // Next check for possible SubConfiguration in Maps/Collections...
-                    {
-                        ParameterizedType pType = (ParameterizedType)field.getGenericType();
-                        if (Collection.class.isAssignableFrom((Class)pType.getRawType()))
-                        {
-                            Type subType1 = pType.getActualTypeArguments()[0];
-                            if (subType1 instanceof Class && Configuration.class.isAssignableFrom((Class)subType1)) // is Collection of Configuration
+                        case NORMAL_FIELD:
+                            Node fieldValueNode = Convert.toNode(fieldValue);
+                            baseNode.setNodeAt(path, codec.PATH_SEPARATOR, fieldValueNode);
+                            continue;
+                        case CONFIG_FIELD:
+                            MultiCodecContainer subContainer = new MultiCodecContainer(this, path); // Create new container
+                            subContainer.fillFromFields((MultiConfiguration)field.get(parentConfig),
+                                    (MultiConfiguration)fieldValue,
+                                    (MapNode)baseNode.getNodeAt(path, codec.PATH_SEPARATOR));
+                            continue;
+                        case COLLECTION_CONFIG_FIELD:
+                            throw new InvalidConfigurationException("ChildConfigs are not allowed for Configurations in Collections" +
+                                    "\nConfig:" + config.getClass());
+                        case MAP_CONFIG_FIELD:
+                            MapNode mapNode = MapNode.emptyMap();
+                            baseNode.setNodeAt(path, codec.PATH_SEPARATOR, mapNode);
+                            Map<Object, MultiConfiguration> parentFieldMap = (Map<Object, MultiConfiguration>)field.get(parentConfig);
+                            Map<Object, MultiConfiguration> childFieldMap = MapConverter.getMapFor((ParameterizedType)field.getGenericType());
+                            for (Map.Entry<Object, MultiConfiguration> parentEntry : parentFieldMap.entrySet())
                             {
-                                throw new InvalidConfigurationException("ChildConfigs are not allowed for Configurations in Collections" +
-                                        "\nConfig:" + config.getClass());
-                            }
-                        }
-                        else if (Map.class.isAssignableFrom((Class)pType.getRawType()))
-                        {
-                            Type subType2 = pType.getActualTypeArguments()[1];
-                            if (subType2 instanceof Class && MultiConfiguration.class.isAssignableFrom((Class)subType2)) // is Map of Configuration
-                            {
-                                MapNode mapNode = MapNode.emptyMap();
-                                baseNode.setNodeAt(path, codec.PATH_SEPARATOR, mapNode);
-                                Map<Object, MultiConfiguration> parentFieldMap = (Map<Object, MultiConfiguration>)field.get(parentConfig);
-                                Map<Object, MultiConfiguration> childFieldMap = MapConverter.getMapFor(pType);
-                                for (Map.Entry<Object, MultiConfiguration> parentEntry : parentFieldMap.entrySet())
+                                Node keyNode = Convert.toNode(parentEntry.getKey());
+                                if (keyNode instanceof StringNode)
                                 {
-                                    Node keyNode = Convert.toNode(parentEntry.getKey());
-                                    if (keyNode instanceof StringNode)
-                                    {
-                                        MapNode configNode = MapNode.emptyMap();
-                                        mapNode.setNode((StringNode)keyNode, configNode);
-                                        new MultiCodecContainer(this, path + codec.PATH_SEPARATOR + ((StringNode)keyNode).getValue())
-                                                .fillFromFields(parentEntry.getValue(), childFieldMap.get(parentEntry.getKey()), configNode);
-                                    }
-                                    else
-                                    {
-                                        throw new InvalidConfigurationException("Invalid Key-Node for Map of Configuration at " + path +
-                                                "\nConfig:" + config.getClass());
-                                    }
+                                    MapNode configNode = MapNode.emptyMap();
+                                    mapNode.setNode((StringNode)keyNode, configNode);
+                                    new MultiCodecContainer(this, path + codec.PATH_SEPARATOR + ((StringNode)keyNode).getValue())
+                                            .fillFromFields(parentEntry.getValue(), childFieldMap.get(parentEntry.getKey()), configNode);
                                 }
-                                continue;
+                                else
+                                {
+                                    throw new InvalidConfigurationException("Invalid Key-Node for Map of Configuration at " + path +
+                                            "\nConfig:" + config.getClass());
+                                }
                             }
-                        }
+                            continue;
                     }
-                    // else not Collection or Map (Arrays of Configurations are not allowed)
-                    Node fieldValueNode = Convert.toNode(fieldValue);
-                    baseNode.setNodeAt(path, codec.PATH_SEPARATOR, fieldValueNode);
                 }
             }
             catch (Exception e)

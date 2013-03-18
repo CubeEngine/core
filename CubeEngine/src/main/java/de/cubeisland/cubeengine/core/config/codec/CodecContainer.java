@@ -84,6 +84,38 @@ public class CodecContainer<ConfigCodec extends ConfigurationCodec>
         return false;
     }
 
+    protected int getFieldType(Field field)
+    {
+        int fieldType = NORMAL_FIELD;
+        if (Configuration.class.isAssignableFrom(field.getType()))
+        {
+            return CONFIG_FIELD;
+        }
+        Type type = field.getGenericType();
+        if (type instanceof ParameterizedType)
+        {
+            ParameterizedType pType = (ParameterizedType)type;
+            if (Collection.class.isAssignableFrom((Class)pType.getRawType()))
+            {
+                Type subType1 = pType.getActualTypeArguments()[0];
+                if (subType1 instanceof Class && Configuration.class.isAssignableFrom((Class)subType1))
+                {
+                    return COLLECTION_CONFIG_FIELD;
+                }
+            }
+
+            if (Map.class.isAssignableFrom((Class)pType.getRawType()))
+            {
+                Type subType2 = pType.getActualTypeArguments()[1];
+                if (subType2 instanceof Class && Configuration.class.isAssignableFrom((Class)subType2))
+                {
+                    return MAP_CONFIG_FIELD;
+                }
+            }
+        }
+        return fieldType;
+    }
+
     protected void dumpIntoFields(Configuration config, MapNode currentNode)
     {
         for (Field field : config.getClass().getFields()) // ONLY public fields are allowed
@@ -95,31 +127,7 @@ public class CodecContainer<ConfigCodec extends ConfigurationCodec>
                     String path = field.getAnnotation(Option.class).value().replace(".", codec.PATH_SEPARATOR);
                     Node fieldNode = currentNode.getNodeAt(path, codec.PATH_SEPARATOR);
                     Type type = field.getGenericType();
-                    int fieldType = NORMAL_FIELD;
-                    if (Configuration.class.isAssignableFrom(field.getType()))
-                    {
-                        fieldType = CONFIG_FIELD;
-                    }
-                    else if (type instanceof ParameterizedType)
-                    {
-                        ParameterizedType pType = (ParameterizedType)type;
-                        if (Collection.class.isAssignableFrom((Class)pType.getRawType()))
-                        {
-                            Type subType1 = pType.getActualTypeArguments()[0];
-                            if (subType1 instanceof Class && Configuration.class.isAssignableFrom((Class)subType1))
-                            {
-                                fieldType = COLLECTION_CONFIG_FIELD;
-                            }
-                        }
-                        else if (Map.class.isAssignableFrom((Class)pType.getRawType()))
-                        {
-                            Type subType2 = pType.getActualTypeArguments()[1];
-                            if (subType2 instanceof Class && Configuration.class.isAssignableFrom((Class)subType2))
-                            {
-                                fieldType = MAP_CONFIG_FIELD;
-                            }
-                        }
-                    }
+                    int fieldType = this.getFieldType(field);
                     switch (fieldType)
                     {
                         case NORMAL_FIELD:
@@ -265,9 +273,6 @@ public class CodecContainer<ConfigCodec extends ConfigurationCodec>
         }
     }
 
-
-
-
     /**
      * Saves the values into a file
      *
@@ -375,64 +380,51 @@ public class CodecContainer<ConfigCodec extends ConfigurationCodec>
                         Comment comment = field.getAnnotation(Comment.class);
                         this.addComment(path, comment.value());
                     }
-                    // First check for possible SubConfigurations...
-                    if (Configuration.class.isAssignableFrom(field.getType())) // SingleSubConfig
+                    int fieldType = this.getFieldType(field);
+                    switch (fieldType)
                     {
-                        CodecContainer subContainer = new CodecContainer(this, path); // Create new container
-                        subContainer.fillFromFields((Configuration)fieldValue,
-                                (MapNode)baseNode.getNodeAt(path, codec.PATH_SEPARATOR));
-                    }
-                    else if (field.getGenericType() instanceof ParameterizedType) // Next check for possible SubConfiguration in Maps/Collections...
-                    {
-                        ParameterizedType pType = (ParameterizedType)field.getGenericType();
-                        if (Collection.class.isAssignableFrom((Class)pType.getRawType()))
-                        {
-                            Type subType1 = pType.getActualTypeArguments()[0];
-                            if (subType1 instanceof Class && Configuration.class.isAssignableFrom((Class)subType1)) // is Collection of Configuration
+                        case NORMAL_FIELD:
+                            Node fieldValueNode = Convert.toNode(fieldValue);
+                            baseNode.setNodeAt(path, codec.PATH_SEPARATOR, fieldValueNode);
+                            continue;
+                        case CONFIG_FIELD:
+                            CodecContainer subContainer = new CodecContainer(this, path); // Create new container
+                            subContainer.fillFromFields((Configuration)fieldValue,
+                                    (MapNode)baseNode.getNodeAt(path, codec.PATH_SEPARATOR));
+                            continue;
+                        case COLLECTION_CONFIG_FIELD:
+                            ListNode listNode = ListNode.emptyList();
+                            baseNode.setNodeAt(path, codec.PATH_SEPARATOR, listNode);
+                            int pos = 0;
+                            for (Configuration subConfig : (Collection<Configuration>)fieldValue)
                             {
-                                ListNode listNode = ListNode.emptyList();
-                                baseNode.setNodeAt(path, codec.PATH_SEPARATOR, listNode);
-                                int pos = 0;
-                                for (Configuration subConfig : (Collection<Configuration>)fieldValue)
+                                MapNode configNode = MapNode.emptyMap();
+                                listNode.addNode(configNode);
+                                new CodecContainer(this, path + codec.PATH_SEPARATOR + "[" + pos++).fillFromFields(subConfig, configNode);
+                            }
+                            continue;
+                        case MAP_CONFIG_FIELD:
+                            MapNode mapNode = MapNode.emptyMap();
+                            baseNode.setNodeAt(path, codec.PATH_SEPARATOR, mapNode);
+                            Map<Object, Configuration> fieldMap = (Map<Object, Configuration>)fieldValue;
+                            for (Map.Entry<Object, Configuration> entry : fieldMap.entrySet())
+                            {
+                                Node keyNode = Convert.toNode(entry.getKey());
+                                if (keyNode instanceof StringNode)
                                 {
                                     MapNode configNode = MapNode.emptyMap();
-                                    listNode.addNode(configNode);
-                                    new CodecContainer(this, path + codec.PATH_SEPARATOR + "[" + pos++).fillFromFields(subConfig, configNode);
+                                    mapNode.setNode((StringNode)keyNode, configNode);
+                                    new CodecContainer(this, path + codec.PATH_SEPARATOR + ((StringNode)keyNode).getValue())
+                                            .fillFromFields(entry.getValue(), configNode);
                                 }
-                                continue;
-                            }
-                        }
-                        else if (Map.class.isAssignableFrom((Class)pType.getRawType()))
-                        {
-                            Type subType2 = pType.getActualTypeArguments()[1];
-                            if (subType2 instanceof Class && Configuration.class.isAssignableFrom((Class)subType2)) // is Map of Configuration
-                            {
-                                MapNode mapNode = MapNode.emptyMap();
-                                baseNode.setNodeAt(path, codec.PATH_SEPARATOR, mapNode);
-                                Map<Object, Configuration> fieldMap = (Map<Object, Configuration>)fieldValue;
-                                for (Map.Entry<Object, Configuration> entry : fieldMap.entrySet())
+                                else
                                 {
-                                    Node keyNode = Convert.toNode(entry.getKey());
-                                    if (keyNode instanceof StringNode)
-                                    {
-                                        MapNode configNode = MapNode.emptyMap();
-                                        mapNode.setNode((StringNode)keyNode, configNode);
-                                        new CodecContainer(this, path + codec.PATH_SEPARATOR + ((StringNode)keyNode).getValue())
-                                                .fillFromFields(entry.getValue(), configNode);
-                                    }
-                                    else
-                                    {
-                                        throw new InvalidConfigurationException("Invalid Key-Node for Map of Configuration at " + path +
-                                                "\nConfig:" + config.getClass());
-                                    }
+                                    throw new InvalidConfigurationException("Invalid Key-Node for Map of Configuration at " + path +
+                                            "\nConfig:" + config.getClass());
                                 }
-                                continue;
                             }
-                        }
+                            continue;
                     }
-                    // else not Collection or Map (Arrays of Configurations are not allowed)
-                    Node fieldValueNode = Convert.toNode(fieldValue);
-                    baseNode.setNodeAt(path, codec.PATH_SEPARATOR, fieldValueNode);
                 }
             }
             catch (Exception e)
