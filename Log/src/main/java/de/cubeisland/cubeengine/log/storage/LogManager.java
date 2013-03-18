@@ -131,26 +131,25 @@ public class LogManager
     //KILLING
     public static final int PLAYER_KILL = 0x70; // determined by causer ID not saved in DB
     public static final int ENTITY_KILL = 0x71; // determined by causer ID not saved in DB
-    public static final int BOSS_KILL = 0x72;//TODO
+    public static final int BOSS_KILL = 0x72;
     public static final int ENVIRONMENT_KILL = 0x73; // determined by causer ID not saved in DB
     public static final int PLAYER_DEATH = 0x74;
-    public static final int MONSTER_DEATH = 0x75;//TODO
-    public static final int ANIMAL_DEATH = 0x76;//TODO chicken cow pig sheep
-    public static final int PET_DEATH = 0x77;//TODO tamed wold / ocelot
-    public static final int NPC_DEATH = 0x78;//TODO villager
-    public static final int BOSS_DEATH = 0x79;//TODO wither / dragon
-    public static final int OTHER_DEATH = 0x80;//TODO bats squids golem
-
-
+    public static final int MONSTER_DEATH = 0x75;
+    public static final int ANIMAL_DEATH = 0x76;
+    public static final int PET_DEATH = 0x77;
+    public static final int NPC_DEATH = 0x78;
+    public static final int BOSS_DEATH = 0x79;
+    public static final int OTHER_DEATH = 0x7A;
     //other entity
     public static final int MONSTER_EGG_USE = 0x80;
     public static final int NATURAL_SPAWN = 0x81;
-    public static final int SPAWNER_SPAWN = 0x82; //TODO
-    public static final int ITEM_DROP = 0x83;
-    public static final int ITEM_PICKUP = 0x84;
-    public static final int XP_PICKUP = 0x85;
-    public static final int ENTITY_SHEAR = 0x86;
-    public static final int ENTITY_DYE = 0x87;
+    public static final int SPAWNER_SPAWN = 0x82;
+    public static final int OTHER_SPAWN = 0x82;
+    public static final int ITEM_DROP = 0x84;
+    public static final int ITEM_PICKUP = 0x85;
+    public static final int XP_PICKUP = 0x86;
+    public static final int ENTITY_SHEAR = 0x87;
+    public static final int ENTITY_DYE = 0x88;
     //chest-transactions
     public static final int ITEM_INSERT = 0x90;
     public static final int ITEM_REMOVE = 0x91;

@@ -239,6 +239,9 @@ public class LogConfiguration extends YamlConfiguration
     @Comment("Entity spawned by a spawner")
     @Option("logging.spawn.spawner")
     public boolean SPAWNER_SPAWN_enable = false;
+    @Comment("Entity spawned indirectly by a player")
+    @Option("logging.spawn.other")
+    public boolean OTHER_SPAWN_enable = false;
 
     @Comment("Items dropped by a player OR on death")
     @Option("logging.item.drop")
