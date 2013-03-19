@@ -45,7 +45,7 @@ public class DoorCommand
     (
         desc = "",
         min = 1,
-        max = 7
+        max = 4
     )
     public void shape(CommandContext context)
     {
@@ -54,22 +54,18 @@ public class DoorCommand
         int rotx = context.getArg(1, Integer.class, 0);
         int roty = context.getArg(2, Integer.class, 0);
         int rotz = context.getArg(3, Integer.class, 0);
-        int scalex = context.getArg(4, Integer.class, 1);
-        int scaley = context.getArg(5, Integer.class, 1);
-        int scalez = context.getArg(6, Integer.class, 1);
         
         Block block = user.getTargetBlock( null, 20);
         
         Shape cube = new Cube(new Vector3(block.getX(), block.getY(), block.getZ()), width);
-        cube.scale( new Vector3(scalex,scaley,scalez) );
-        cube.rotate( new Vector3(rotx, roty, rotz));
+        cube = cube.rotate( new Vector3(rotx, roty, rotz));
         for(Vector3 p : cube)
         {
             Block block2 = user.getWorld().getBlockAt( (int) p.x,(int) p.y,(int) p.z );
             block2.setType( Material.DIRT );
             this.block.add( block2 );
         }
-        context.sendMessage( "funished");
+        context.sendMessage( "finished");
     }
 
     @Command

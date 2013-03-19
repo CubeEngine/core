@@ -7,6 +7,7 @@ import de.cubeisland.cubeengine.core.util.BlockUtil;
 import de.cubeisland.cubeengine.core.util.Pair;
 import de.cubeisland.cubeengine.log.Log;
 import de.cubeisland.cubeengine.log.storage.LogManager;
+import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.*;
@@ -193,6 +194,7 @@ public class BlockListener implements Listener
         }
         else // attached block missing
         {
+            //TODO if sign save sign data
             if (this.manager.isIgnored(BLOCK_BREAK)) return;
             if (state.getData() instanceof Attachable)
             {
@@ -608,8 +610,12 @@ public class BlockListener implements Listener
                 case DISPENSER:
                 case CHEST:
                 case ENDER_CHEST:
+                case ENCHANTMENT_TABLE:
                 case ANVIL:
                 case BREWING_STAND:
+                case TRAPPED_CHEST:
+                case HOPPER:
+                case DROPPER:
                     if (this.manager.isIgnored(CONTAINER_ACCESS)) return;
                     this.manager.queueLog(location,CONTAINER_ACCESS,event.getPlayer(),state.getType().name());
                     break;
@@ -625,6 +631,13 @@ public class BlockListener implements Listener
                     Lever leverData = (Lever) state.getData();
                     leverData.setPowered(!leverData.isPowered());
                     this.logBlockChange(location, LEVER_USE, event.getPlayer(), state, state.getType().name(), leverData.getData());
+                    break;
+                case REDSTONE_COMPARATOR_ON:
+                case REDSTONE_COMPARATOR_OFF:
+                    if (this.manager.isIgnored(COMPARATOR_CHANGE)) return;
+                    BlockState newState = event.getClickedBlock().getState();
+                    newState.setType(newState.getType().equals(REDSTONE_COMPARATOR_ON) ? REDSTONE_COMPARATOR_OFF : REDSTONE_COMPARATOR_ON);
+                    this.logBlockChange(location, COMPARATOR_CHANGE, event.getPlayer(), state, newState, null);
                     break;
                 case STONE_BUTTON:
                 case WOOD_BUTTON:
@@ -677,14 +690,17 @@ public class BlockListener implements Listener
                     break;
                 case CAKE_BLOCK:
                     if (this.manager.isIgnored(CAKE_EAT)) return;
-                    byte cakeData = (byte) (event.getClickedBlock().getData() +1);
-                    if (cakeData == 6)
+                    if (event.getPlayer().getFoodLevel() < 20 && !event.getPlayer().getGameMode().equals(GameMode.CREATIVE))
                     {
-                        this.logBlockChange(CAKE_EAT,event.getClickedBlock().getState(), AIR,event.getPlayer());
-                    }
-                    else
-                    {
-                        this.logBlockChange(location,CAKE_EAT,event.getPlayer(),state,state.getType().name(),cakeData);
+                        byte cakeData = (byte) (event.getClickedBlock().getData() +1);
+                        if (cakeData == 6)
+                        {
+                            this.logBlockChange(CAKE_EAT,event.getClickedBlock().getState(), AIR,event.getPlayer());
+                        }
+                        else
+                        {
+                            this.logBlockChange(location,CAKE_EAT,event.getPlayer(),state,state.getType().name(),cakeData);
+                        }
                     }
                     break;
                 case NOTE_BLOCK:

@@ -187,12 +187,46 @@ public class EntityListener implements Listener
             action = PLAYER_DEATH;
             killed = this.module.getUserManager().getExactUser((Player)entity).key;
         }
-        else
+        else if (entity instanceof Wither || entity instanceof EnderDragon)
+        {
+            if (this.manager.isIgnored(BOSS_DEATH)) return;
+            action = BOSS_DEATH;
+            killed = -entity.getType().getTypeId();
+        }
+        else if (entity instanceof Animals)
+        {
+            if (entity instanceof Tameable && ((Tameable) entity).isTamed())
+            {
+                if (this.manager.isIgnored(PET_DEATH)) return;
+                action = PET_DEATH;
+                killed = -entity.getType().getTypeId();
+            }
+            else
+            {
+                if (this.manager.isIgnored(ANIMAL_DEATH)) return;
+                action = ANIMAL_DEATH;
+                killed = -entity.getType().getTypeId();
+            }
+        }
+        else if (entity instanceof Villager)
+        {
+            if (this.manager.isIgnored(NPC_DEATH)) return;
+            action = NPC_DEATH;
+            killed = -entity.getType().getTypeId();
+        }
+        else if (entity instanceof Monster)
         {
             if (this.manager.isIgnored(MONSTER_DEATH)) return;
             action = MONSTER_DEATH;
             killed = -entity.getType().getTypeId();
         }
+        else
+        {
+            if (this.manager.isIgnored(OTHER_DEATH)) return;
+            action = OTHER_DEATH;
+            killed = -entity.getType().getTypeId();
+        }
+
         EntityDamageEvent dmgEvent = entity.getLastDamageCause();
         if (dmgEvent == null)
         {
@@ -211,14 +245,19 @@ public class EntityListener implements Listener
                     if (this.manager.isIgnored(PLAYER_KILL)) return;
                     causer = this.module.getUserManager().getExactUser((Player) shooter).key;
                 }
-                else if (shooter instanceof Skeleton || shooter instanceof Ghast || shooter instanceof Wither)
+                else if (shooter instanceof Skeleton || shooter instanceof Ghast)
                 {
                     if (this.manager.isIgnored(ENTITY_KILL)) return;
                     causer = -shooter.getType().getTypeId();
                 }
+                else if (shooter instanceof Wither)
+                {
+                    if (this.manager.isIgnored(BOSS_KILL)) return;
+                    causer = -shooter.getType().getTypeId();
+                }
                 else // Projectile shot by Dispenser
                 {
-                    System.out.print("Unkown Shooter: "+ ((Projectile) damager).getShooter());
+                    System.out.print("Unknown Shooter: "+ ((Projectile) damager).getShooter());
                     return;
                 }
             }
@@ -226,6 +265,11 @@ public class EntityListener implements Listener
             {
                 if (this.manager.isIgnored(PLAYER_KILL)) return;
                 causer = this.module.getUserManager().getExactUser((Player) damager).key;
+            }
+            else if (damager instanceof Wither || damager instanceof Wither)
+            {
+                if (this.manager.isIgnored(BOSS_KILL)) return;
+                causer = -damager.getType().getTypeId();
             }
             else
             {
@@ -283,7 +327,8 @@ public class EntityListener implements Listener
         {
             causer = this.module.getUserManager().getExactUser((Player) event.getVehicle().getPassenger()).key;
         }
-        this.manager.queueLog(event.getVehicle().getLocation(),VEHICLE_BREAK,causer);
+        Long vehicleType = -1L * event.getVehicle().getType().getTypeId();
+        this.manager.queueLog(event.getVehicle().getLocation(),VEHICLE_BREAK,causer,vehicleType,null);
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
@@ -317,8 +362,30 @@ public class EntityListener implements Listener
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onCreatureSpawn(CreatureSpawnEvent event)
     {
-        if (this.manager.isIgnored(NATURAL_SPAWN)) return;
-        this.manager.queueLog(event.getLocation(), NATURAL_SPAWN,-event.getEntityType().getTypeId());
+        switch (event.getSpawnReason())
+        {
+            case NATURAL:
+            case JOCKEY:
+            case CHUNK_GEN:
+            case VILLAGE_DEFENSE:
+            case VILLAGE_INVASION:
+                if (this.manager.isIgnored(NATURAL_SPAWN)) return;
+                this.manager.queueLog(event.getLocation(), NATURAL_SPAWN,-event.getEntityType().getTypeId());
+                return;
+            case SPAWNER:
+                if (this.manager.isIgnored(SPAWNER_SPAWN)) return;
+                this.manager.queueLog(event.getLocation(), SPAWNER_SPAWN,-event.getEntityType().getTypeId());
+                return;
+            case EGG:
+            case BUILD_SNOWMAN:
+            case BUILD_IRONGOLEM:
+            case BUILD_WITHER:
+            case BREEDING:
+                if (this.manager.isIgnored(OTHER_SPAWN)) return;
+                this.manager.queueLog(event.getLocation(), OTHER_SPAWN,-event.getEntityType().getTypeId());
+                return;
+            //case SPAWNER_EGG: //is already done
+        }
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)

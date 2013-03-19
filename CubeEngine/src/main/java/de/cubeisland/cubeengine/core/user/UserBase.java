@@ -49,6 +49,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
+import org.bukkit.WeatherType;
 
 /**
  * Wrapper around the BukkitPlayer/OfflinePlayer
@@ -2011,5 +2012,36 @@ public class UserBase implements Player
             return player.isCustomNameVisible();
         }
         return false;
+    }
+
+    @Override
+    public void setPlayerWeather( WeatherType wt )
+    {
+        final Player player = this.offlinePlayer.getPlayer();
+        if(player != null)
+        {
+            player.setPlayerWeather( wt );
+        }
+    }
+
+    @Override
+    public WeatherType getPlayerWeather()
+    {
+        final Player player = this.offlinePlayer.getPlayer();
+        if(player != null)
+        {
+            return player.getPlayerWeather();
+        }
+        return null;
+    }
+
+    @Override
+    public void resetPlayerWeather()
+    {
+        final Player player = this.offlinePlayer.getPlayer();
+        if(player != null)
+        {
+            player.resetPlayerWeather();
+        }
     }
 }
