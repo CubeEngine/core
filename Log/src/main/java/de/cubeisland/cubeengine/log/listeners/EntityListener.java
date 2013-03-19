@@ -327,7 +327,8 @@ public class EntityListener implements Listener
         {
             causer = this.module.getUserManager().getExactUser((Player) event.getVehicle().getPassenger()).key;
         }
-        this.manager.queueLog(event.getVehicle().getLocation(),VEHICLE_BREAK,causer);
+        Long vehicleType = -1L * event.getVehicle().getType().getTypeId();
+        this.manager.queueLog(event.getVehicle().getLocation(),VEHICLE_BREAK,causer,vehicleType,null);
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)

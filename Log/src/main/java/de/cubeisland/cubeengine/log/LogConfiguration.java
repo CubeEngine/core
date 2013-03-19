@@ -152,13 +152,16 @@ public class LogConfiguration extends YamlConfiguration
     @Comment("Changing Repeater settings")
     @Option("logging.block.change.repeater")
     public boolean REPEATER_CHANGE_enable = true;
+    @Comment("Changing Comparator state")
+    @Option("logging.block.change.comparator")
+    public boolean COMPARATPR_CHANGE_enable = true;
     @Comment("Changing Noteblock settings")
     @Option("logging.block.change.note-block")
     public boolean NOTEBLOCK_CHANGE_enable = true;
     @Comment("Opening or closing doors")
     @Option("logging.block.change.door")
     public boolean DOOR_USE_enable = false;
-    @Comment("Eating cake") //TODO what if not hungry
+    @Comment("Eating cake")
     @Option("logging.block.change.cake")
     public boolean CAKE_EAT_enable = true;
     @Comment("Log every worldedit change. WARNING! Big Worldedit-actions could crash your server!")

@@ -114,7 +114,8 @@ public class LogManager
     public static final int NOTEBLOCK_CHANGE = 0x47;
     public static final int DOOR_USE = 0x48;
     public static final int CAKE_EAT = 0x49;
-    public static final int WORLDEDIT = 0x4A;
+    public static final int COMPARATOR_CHANGE = 0x4A;
+    public static final int WORLDEDIT = 0x4B;
     //INTERACTION (stuff that cannot be rolled back)
     public static final int CONTAINER_ACCESS = 0x50;
     public static final int BUTTON_USE = 0x51;
