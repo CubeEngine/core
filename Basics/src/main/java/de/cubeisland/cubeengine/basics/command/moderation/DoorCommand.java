@@ -5,7 +5,9 @@ import de.cubeisland.cubeengine.core.command.CommandContext;
 import de.cubeisland.cubeengine.core.command.reflected.Command;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.util.math.Vector3;
+import de.cubeisland.cubeengine.core.util.math.shape.CircularCylinder;
 import de.cubeisland.cubeengine.core.util.math.shape.Cube;
+import de.cubeisland.cubeengine.core.util.math.shape.Cylinder;
 import de.cubeisland.cubeengine.core.util.math.shape.Shape;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -44,22 +46,24 @@ public class DoorCommand
     @Command
     (
         desc = "",
-        min = 1,
-        max = 4
+        min = 2,
+        max = 5
     )
     public void shape(CommandContext context)
     {
         User user = ( User ) context.getSender();
-        int width = context.getArg( 0, Integer.class);
-        int rotx = context.getArg(1, Integer.class, 0);
-        int roty = context.getArg(2, Integer.class, 0);
-        int rotz = context.getArg(3, Integer.class, 0);
+        int radius = context.getArg( 0, Integer.class);
+        int radius2 = context.getArg( 1, Integer.class);
+        int height = context.getArg( 2, Integer.class);
+        int rotx = context.getArg(3, Integer.class, 0);
+        int roty = context.getArg(4, Integer.class, 0);
+        int rotz = context.getArg(5, Integer.class, 0);
         
         Block block = user.getTargetBlock( null, 20);
         
-        Shape cube = new Cube(new Vector3(block.getX(), block.getY(), block.getZ()), width);
-        cube = cube.rotate( new Vector3(rotx, roty, rotz));
-        for(Vector3 p : cube)
+        Shape shape = new Cylinder(new Vector3(block.getX(), block.getY(), block.getZ()), radius, radius2, height);
+        shape = shape.rotate( new Vector3(rotx, roty, rotz));
+        for(Vector3 p : shape)
         {
             Block block2 = user.getWorld().getBlockAt( (int) p.x,(int) p.y,(int) p.z );
             block2.setType( Material.DIRT );

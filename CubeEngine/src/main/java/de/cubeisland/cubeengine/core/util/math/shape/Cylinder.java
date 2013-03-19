@@ -1,0 +1,123 @@
+package de.cubeisland.cubeengine.core.util.math.shape;
+
+import de.cubeisland.cubeengine.core.util.math.Vector3;
+import de.cubeisland.cubeengine.core.util.math.shape.iterator.CylinderIterator;
+import java.util.Iterator;
+
+public class Cylinder implements Shape
+{
+    private final Vector3 point;
+    
+    private final double radiusX;
+    private final double radiusZ;
+    private final double height;
+    
+    private final Vector3 rotationAngle;
+    private final Vector3 centerOfRotation;
+
+    public Cylinder( Vector3 point, double radiusX, double radiusZ, double height, Vector3 centerOfRotation, Vector3 rotationAngle )
+    {
+        this.point = point;
+        this.radiusX = radiusX;
+        this.radiusZ = radiusZ;
+        this.height = height;
+
+        this.centerOfRotation = centerOfRotation;
+        this.rotationAngle = rotationAngle;
+    }
+
+    public Cylinder( Vector3 point, double radiusX, double radiusZ, double height )
+    {
+        this( point, radiusX, radiusZ, height, new Vector3( point.x, point.y + height / 2d, point.z ), new Vector3( 0, 0, 0 ) );
+    }
+
+    public Cylinder setRadiusX( double radiusX )
+    {
+        return new Cylinder( this.point, radiusX, this.radiusZ, this.height, this.centerOfRotation, this.rotationAngle );
+    }
+
+    public double getRadiusX()
+    {
+        return this.radiusX;
+    }
+
+    public Cylinder setRadiusZ( double radiusZ )
+    {
+        return new Cylinder( this.point, this.radiusX, radiusZ, this.height, this.centerOfRotation, this.rotationAngle );
+    }
+
+    public double getRadiusZ()
+    {
+        return this.radiusZ;
+    }
+
+    public Cylinder setHeight( double height )
+    {
+        return new Cylinder( this.point, this.radiusX, this.radiusZ, height, this.centerOfRotation, this.rotationAngle );
+    }
+
+    public double getHeight()
+    {
+        return this.height;
+    }
+
+    @Override
+    public Shape setPoint( Vector3 point )
+    {
+        return new Cylinder( point, this.radiusX, this.radiusZ, this.height, this.centerOfRotation, this.rotationAngle );
+    }
+
+    @Override
+    public Vector3 getPoint()
+    {
+        return this.point;
+    }
+
+    @Override
+    public Shape rotate( Vector3 angle )
+    {
+        return new Cylinder( this.point, this.radiusX, this.radiusZ, this.height, this.centerOfRotation, angle );
+    }
+
+    @Override
+    public Shape setCenterOfRotation( Vector3 center )
+    {
+        return new Cylinder( this.point, this.radiusX, this.radiusZ, this.height, center, this.rotationAngle );
+    }
+
+    @Override
+    public Vector3 getRotationAngle()
+    {
+        return this.rotationAngle;
+    }
+
+    @Override
+    public Vector3 getCenterOfRotation()
+    {
+        return this.centerOfRotation;
+    }
+
+    @Override
+    public Shape scale( Vector3 vector )
+    {
+        return new Cylinder( this.point, this.radiusX * vector.x, this.radiusZ * vector.z, this.height * vector.y, this.centerOfRotation, this.rotationAngle );
+    }
+
+    @Override
+    public boolean intersects( Shape other )
+    {
+        throw new UnsupportedOperationException( "Not supported yet." ); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public boolean contains( Shape other )
+    {
+        throw new UnsupportedOperationException( "Not supported yet." ); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public Iterator<Vector3> iterator()
+    {
+        return new CylinderIterator( this );
+    }
+}
