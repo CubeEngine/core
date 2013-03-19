@@ -124,6 +124,8 @@ public class LogConfiguration extends YamlConfiguration
     public boolean LAVA_IGNITE_enable = false;
     @Option("logging.block.ignite.lightning")
     public boolean LIGHTNING_enable = false;
+    @Option("logging.block.ignite.other")
+    public boolean OTHER_IGNITE_enable = false;
     @Option("logging.block.spread.other")
     public boolean BLOCK_SPREAD_enable = false;
     @Option("logging.block.flow.lava")

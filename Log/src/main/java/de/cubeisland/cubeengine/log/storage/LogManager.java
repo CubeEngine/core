@@ -1,5 +1,6 @@
 package de.cubeisland.cubeengine.log.storage;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import de.cubeisland.cubeengine.core.CubeEngine;
 import de.cubeisland.cubeengine.core.config.Configuration;
 import de.cubeisland.cubeengine.core.logger.LogLevel;
@@ -103,6 +104,7 @@ public class LogManager
     public static final int BLOCK_SPREAD = 0x35;
     public static final int WATER_FLOW = 0x36;
     public static final int LAVA_FLOW = 0x37;
+    public static final int OTHER_IGNITE = 0x38;
     //BLOCKCHANGES
     public static final int BLOCK_SHIFT = 0x40; // moved by piston
     public static final int BLOCK_FALL = 0x41;
@@ -145,7 +147,7 @@ public class LogManager
     public static final int MONSTER_EGG_USE = 0x80;
     public static final int NATURAL_SPAWN = 0x81;
     public static final int SPAWNER_SPAWN = 0x82;
-    public static final int OTHER_SPAWN = 0x82;
+    public static final int OTHER_SPAWN = 0x83;
     public static final int ITEM_DROP = 0x84;
     public static final int ITEM_PICKUP = 0x85;
     public static final int XP_PICKUP = 0x86;
@@ -181,8 +183,11 @@ public class LogManager
     private LogConfiguration globalConfig;
     private Map<World, LogConfiguration> worldConfigs = new HashMap<World, LogConfiguration>();
 
+    public final ObjectMapper mapper;
+
     public LogManager(Log module)
     {
+        this.mapper = new ObjectMapper();
         File file = new File(module.getFolder(), "worlds");
         file.mkdir();
         this.globalConfig = Configuration.load(LogConfiguration.class, new File(module.getFolder(), "globalconfig.yml"));
@@ -388,9 +393,110 @@ public class LogManager
     }
 
 
-    public boolean isIgnored(int blockBreak)
+    public boolean isIgnored(World world, int blockBreak)
     {
-        //TODO config lookup
+        LogConfiguration config = this.getConfig(world);
+        switch (blockBreak)
+        {
+            //TODO link to config
+            case BLOCK_BREAK :
+            case BLOCK_BURN :
+            case BLOCK_FADE :
+            case LEAF_DECAY :
+            case WATER_BREAK :
+            case LAVA_BREAK :
+            case ENTITY_BREAK :
+            case ENDERMAN_PICKUP :
+            case BUCKET_FILL :
+            case CROP_TRAMPLE :
+            //EXPLOSIONS
+            case ENTITY_EXPLODE :
+            case CREEPER_EXPLODE :
+            case TNT_EXPLODE :
+            case FIREBALL_EXPLODE :
+            case ENDERDRAGON_EXPLODE :
+            case WITHER_EXPLODE :
+            case TNT_PRIME :
+            //PLACE etc.
+            case BLOCK_PLACE :
+            case LAVA_BUCKET :
+            case WATER_BUCKET :
+            case NATURAL_GROW :
+            case PLAYER_GROW :
+            case BLOCK_FORM : //ice/snow/lava-water
+            case ENDERMAN_PLACE :
+            case ENTITY_FORM ://snow-golem snow
+            // SPREAD/ IGNITION
+            case FIRE_SPREAD :
+            case FIREBALL :
+            case LIGHTER :
+            case LAVA_IGNITE :
+            case LIGHTNING :
+            case BLOCK_SPREAD :
+            case WATER_FLOW :
+            case LAVA_FLOW :
+            case OTHER_IGNITE :
+            //BLOCKCHANGES
+            case BLOCK_SHIFT : // moved by piston
+            case BLOCK_FALL :
+            case SIGN_CHANGE :
+            case SHEEP_EAT :
+            case BONEMEAL_USE :
+            case LEVER_USE :
+            case REPEATER_CHANGE :
+            case NOTEBLOCK_CHANGE :
+            case DOOR_USE :
+            case CAKE_EAT :
+            case COMPARATOR_CHANGE :
+            case WORLDEDIT :
+            //INTERACTION (stuff that cannot be rolled back)
+            case CONTAINER_ACCESS :
+            case BUTTON_USE :
+            case FIREWORK_USE :
+            case VEHICLE_ENTER :
+            case VEHICLE_EXIT :
+            case POTION_SPLASH :
+            case PLATE_STEP :
+            //ENTITY-PLACE/BREAK
+            case VEHICLE_PLACE :
+            case HANGING_PLACE :
+            case VEHICLE_BREAK :
+            case HANGING_BREAK : // negative causer -> action-type e.g. BLOCK_BURN -1
+            //KILLING
+            case PLAYER_KILL : // determined by causer ID not saved in DB
+            case ENTITY_KILL : // determined by causer ID not saved in DB
+            case BOSS_KILL :
+            case ENVIRONMENT_KILL : // determined by causer ID not saved in DB
+            case PLAYER_DEATH :
+            case MONSTER_DEATH :
+            case ANIMAL_DEATH :
+            case PET_DEATH :
+            case NPC_DEATH :
+            case BOSS_DEATH :
+            case OTHER_DEATH :
+            //other entity
+            case MONSTER_EGG_USE :
+            case NATURAL_SPAWN :
+            case SPAWNER_SPAWN :
+            case OTHER_SPAWN :
+            case ITEM_DROP :
+            case ITEM_PICKUP :
+            case XP_PICKUP :
+            case ENTITY_SHEAR :
+            case ENTITY_DYE :
+            //chest-transactions
+            case ITEM_INSERT :
+            case ITEM_REMOVE :
+            //misc
+            case PLAYER_COMMAND :
+            case CONSOLE_COMMAND :
+            case PLAYER_CHAT :
+            case PLAYER_JOIN :
+            case PLAYER_QUIT :
+            case PLAYER_TELEPORT :
+            case ENCHANT_ITEM :
+            case CRAFT_ITEM :
+        }
         return false;
     }
 
@@ -480,6 +586,11 @@ public class LogManager
 
     public EntityListener getEntityListener() {
         return entityListener;
+    }
+
+    public LogConfiguration getConfig(World world) {
+        if (world == null) return globalConfig;
+        return this.worldConfigs.get(world);
     }
 }
 

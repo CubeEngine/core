@@ -1,12 +1,12 @@
 package de.cubeisland.cubeengine.log.listeners;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.log.Log;
 import de.cubeisland.cubeengine.log.storage.LogManager;
 import org.bukkit.DyeColor;
 import org.bukkit.Location;
+import org.bukkit.World;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.*;
 import org.bukkit.entity.minecart.PoweredMinecart;
@@ -37,7 +37,7 @@ import static org.bukkit.event.entity.EntityDamageEvent.DamageCause.PROJECTILE;
 
 public class EntityListener implements Listener
 {
-    private ObjectMapper mapper;
+
     private LogManager manager;
     private Log module;
 
@@ -45,7 +45,6 @@ public class EntityListener implements Listener
     {
         this.module = module;
         this.manager = manager;
-        this.mapper = new ObjectMapper();
     }
 
     private HashMap<Location,Long> plannedBreakHanging = new HashMap<Location, Long>();
@@ -66,7 +65,7 @@ public class EntityListener implements Listener
     {
         if (event.getCause().equals(HangingBreakEvent.RemoveCause.PHYSICS))
         {
-            if (this.manager.isIgnored(HANGING_BREAK)) return;
+            if (this.manager.isIgnored(event.getEntity().getWorld(),HANGING_BREAK)) return;
             Location location = event.getEntity().getLocation();
             Long causer = this.plannedBreakHanging.get(location);
             if (causer != null)
@@ -93,7 +92,7 @@ public class EntityListener implements Listener
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onHangingBreakByEntity(HangingBreakByEntityEvent event)
     {
-        if (this.manager.isIgnored(HANGING_BREAK)) return;
+        if (this.manager.isIgnored(event.getEntity().getWorld(),HANGING_BREAK)) return;
         Location location = event.getEntity().getLocation();
         if (event.getRemover() instanceof Player || event.getRemover() instanceof Arrow)
         {
@@ -140,7 +139,7 @@ public class EntityListener implements Listener
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onHangingPlace(HangingPlaceEvent event)
     {
-        if (this.manager.isIgnored(LogManager.HANGING_PLACE)) return;
+        if (this.manager.isIgnored(event.getEntity().getWorld(),LogManager.HANGING_PLACE)) return;
         User user = this.module.getUserManager().getExactUser(event.getPlayer());
         if (event.getEntity() instanceof ItemFrame)
         {
@@ -161,7 +160,7 @@ public class EntityListener implements Listener
     public void onEntityDeath(EntityDeathEvent event)
     {
         Location location = event.getEntity().getLocation();
-        if (!this.manager.isIgnored(ITEM_DROP))
+        if (!this.manager.isIgnored(event.getEntity().getWorld(),ITEM_DROP))
         {
             for (ItemStack itemStack : event.getDrops())
             {
@@ -183,13 +182,13 @@ public class EntityListener implements Listener
         long killed;
         if (entity instanceof Player)
         {
-            if (this.manager.isIgnored(PLAYER_DEATH)) return;
+            if (this.manager.isIgnored(entity.getWorld(),PLAYER_DEATH)) return;
             action = PLAYER_DEATH;
             killed = this.module.getUserManager().getExactUser((Player)entity).key;
         }
         else if (entity instanceof Wither || entity instanceof EnderDragon)
         {
-            if (this.manager.isIgnored(BOSS_DEATH)) return;
+            if (this.manager.isIgnored(entity.getWorld(),BOSS_DEATH)) return;
             action = BOSS_DEATH;
             killed = -entity.getType().getTypeId();
         }
@@ -197,32 +196,32 @@ public class EntityListener implements Listener
         {
             if (entity instanceof Tameable && ((Tameable) entity).isTamed())
             {
-                if (this.manager.isIgnored(PET_DEATH)) return;
+                if (this.manager.isIgnored(entity.getWorld(),PET_DEATH)) return;
                 action = PET_DEATH;
                 killed = -entity.getType().getTypeId();
             }
             else
             {
-                if (this.manager.isIgnored(ANIMAL_DEATH)) return;
+                if (this.manager.isIgnored(entity.getWorld(),ANIMAL_DEATH)) return;
                 action = ANIMAL_DEATH;
                 killed = -entity.getType().getTypeId();
             }
         }
         else if (entity instanceof Villager)
         {
-            if (this.manager.isIgnored(NPC_DEATH)) return;
+            if (this.manager.isIgnored(entity.getWorld(),NPC_DEATH)) return;
             action = NPC_DEATH;
             killed = -entity.getType().getTypeId();
         }
         else if (entity instanceof Monster)
         {
-            if (this.manager.isIgnored(MONSTER_DEATH)) return;
+            if (this.manager.isIgnored(entity.getWorld(),MONSTER_DEATH)) return;
             action = MONSTER_DEATH;
             killed = -entity.getType().getTypeId();
         }
         else
         {
-            if (this.manager.isIgnored(OTHER_DEATH)) return;
+            if (this.manager.isIgnored(entity.getWorld(),OTHER_DEATH)) return;
             action = OTHER_DEATH;
             killed = -entity.getType().getTypeId();
         }
@@ -242,17 +241,17 @@ public class EntityListener implements Listener
                 LivingEntity shooter = ((Projectile) damager).getShooter();
                 if (shooter instanceof Player)
                 {
-                    if (this.manager.isIgnored(PLAYER_KILL)) return;
+                    if (this.manager.isIgnored(entity.getWorld(),PLAYER_KILL)) return;
                     causer = this.module.getUserManager().getExactUser((Player) shooter).key;
                 }
                 else if (shooter instanceof Skeleton || shooter instanceof Ghast)
                 {
-                    if (this.manager.isIgnored(ENTITY_KILL)) return;
+                    if (this.manager.isIgnored(entity.getWorld(),ENTITY_KILL)) return;
                     causer = -shooter.getType().getTypeId();
                 }
                 else if (shooter instanceof Wither)
                 {
-                    if (this.manager.isIgnored(BOSS_KILL)) return;
+                    if (this.manager.isIgnored(entity.getWorld(),BOSS_KILL)) return;
                     causer = -shooter.getType().getTypeId();
                 }
                 else // Projectile shot by Dispenser
@@ -263,23 +262,23 @@ public class EntityListener implements Listener
             }
             else if (damager instanceof Player)
             {
-                if (this.manager.isIgnored(PLAYER_KILL)) return;
+                if (this.manager.isIgnored(entity.getWorld(),PLAYER_KILL)) return;
                 causer = this.module.getUserManager().getExactUser((Player) damager).key;
             }
             else if (damager instanceof Wither || damager instanceof Wither)
             {
-                if (this.manager.isIgnored(BOSS_KILL)) return;
+                if (this.manager.isIgnored(entity.getWorld(),BOSS_KILL)) return;
                 causer = -damager.getType().getTypeId();
             }
             else
             {
-                if (this.manager.isIgnored(ENTITY_KILL)) return;
+                if (this.manager.isIgnored(entity.getWorld(),ENTITY_KILL)) return;
                 causer = -damager.getType().getTypeId();
             }
         }
         else
         {
-            if (this.manager.isIgnored(ENVIRONMENT_KILL)) return;
+            if (this.manager.isIgnored(entity.getWorld(),ENVIRONMENT_KILL)) return;
             causer = 0;
         }
         this.manager.queueLog(location,action,causer,killed,additionalData);
@@ -288,7 +287,7 @@ public class EntityListener implements Listener
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onVehicleCreate(final VehicleCreateEvent event)
     {
-        if (this.manager.isIgnored(VEHICLE_PLACE)) return;
+        if (this.manager.isIgnored(event.getVehicle().getWorld(), VEHICLE_PLACE)) return;
         Location location = event.getVehicle().getLocation();
         Player player = this.plannedVehiclePlace.get(location);
         if (player != null)
@@ -302,7 +301,7 @@ public class EntityListener implements Listener
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onVehicleDestroy(final VehicleDestroyEvent event)
     {
-        if (this.manager.isIgnored(VEHICLE_BREAK)) return;
+        if (this.manager.isIgnored(event.getVehicle().getWorld(),VEHICLE_BREAK)) return;
         Long causer = null;
         if (event.getAttacker() != null)
         {
@@ -334,7 +333,7 @@ public class EntityListener implements Listener
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onVehicleEnter(final VehicleEnterEvent event)
     {
-        if (this.manager.isIgnored(VEHICLE_ENTER)) return;
+        if (this.manager.isIgnored(event.getVehicle().getWorld(),VEHICLE_ENTER)) return;
         if (event.getEntered() instanceof Player)
         {
             this.manager.queueLog(event.getVehicle().getLocation(),VEHICLE_ENTER, (Player)event.getEntered(),null);
@@ -348,7 +347,7 @@ public class EntityListener implements Listener
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onVehicleExit(final VehicleExitEvent event)
     {
-        if (this.manager.isIgnored(VEHICLE_EXIT)) return;
+        if (this.manager.isIgnored(event.getVehicle().getWorld(),VEHICLE_EXIT)) return;
         if (event.getExited() instanceof Player)
         {
             this.manager.queueLog(event.getVehicle().getLocation(),VEHICLE_ENTER, (Player)event.getExited(),null);
@@ -362,6 +361,7 @@ public class EntityListener implements Listener
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onCreatureSpawn(CreatureSpawnEvent event)
     {
+        World world = event.getEntity().getWorld();
         switch (event.getSpawnReason())
         {
             case NATURAL:
@@ -369,11 +369,11 @@ public class EntityListener implements Listener
             case CHUNK_GEN:
             case VILLAGE_DEFENSE:
             case VILLAGE_INVASION:
-                if (this.manager.isIgnored(NATURAL_SPAWN)) return;
+                if (this.manager.isIgnored(world, NATURAL_SPAWN)) return;
                 this.manager.queueLog(event.getLocation(), NATURAL_SPAWN,-event.getEntityType().getTypeId());
                 return;
             case SPAWNER:
-                if (this.manager.isIgnored(SPAWNER_SPAWN)) return;
+                if (this.manager.isIgnored(world, SPAWNER_SPAWN)) return;
                 this.manager.queueLog(event.getLocation(), SPAWNER_SPAWN,-event.getEntityType().getTypeId());
                 return;
             case EGG:
@@ -381,7 +381,7 @@ public class EntityListener implements Listener
             case BUILD_IRONGOLEM:
             case BUILD_WITHER:
             case BREEDING:
-                if (this.manager.isIgnored(OTHER_SPAWN)) return;
+                if (this.manager.isIgnored(world, OTHER_SPAWN)) return;
                 this.manager.queueLog(event.getLocation(), OTHER_SPAWN,-event.getEntityType().getTypeId());
                 return;
             //case SPAWNER_EGG: //is already done
@@ -391,7 +391,7 @@ public class EntityListener implements Listener
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onEntityShear(PlayerShearEntityEvent event)
     {
-        if (this.manager.isIgnored(ENTITY_SHEAR)) return;
+        if (this.manager.isIgnored(event.getEntity().getWorld(),ENTITY_SHEAR)) return;
         long spawnedEntity = -event.getEntity().getType().getTypeId();
         if (event.getEntity() instanceof LivingEntity)
         {
@@ -411,12 +411,12 @@ public class EntityListener implements Listener
         LivingEntity entity = (LivingEntity) event.getRightClicked();
         if (player.getItemInHand().getType().equals(COAL) && entity instanceof PoweredMinecart)
         {
-            if (this.manager.isIgnored(ITEM_INSERT)) return;
+            if (this.manager.isIgnored(player.getWorld(),ITEM_INSERT)) return;
             this.manager.queueLog(entity.getLocation(),ITEM_INSERT,player,null);
         }
         else if(player.getItemInHand().getType().equals(INK_SACK) && entity instanceof Sheep || entity instanceof Wolf)
         {
-            if (this.manager.isIgnored(ENTITY_DYE)) return;
+            if (this.manager.isIgnored(player.getWorld(),ENTITY_DYE)) return;
             Dye dye = (Dye) player.getItemInHand().getData();
             this.manager.queueLog(entity.getLocation(),ENTITY_DYE,player,this.serializeData(null,entity,dye.getColor()));
         }
@@ -425,6 +425,7 @@ public class EntityListener implements Listener
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onPotionSplash(PotionSplashEvent event)
     {
+        if (this.manager.isIgnored(event.getPotion().getWorld(),POTION_SPLASH)) return;
         LivingEntity livingEntity = event.getPotion().getShooter();
         Long causer = null;
         if (livingEntity instanceof Player)
@@ -468,7 +469,7 @@ public class EntityListener implements Listener
             }
         }
         try {
-            return this.mapper.writeValueAsString(dataMap);
+            return this.manager.mapper.writeValueAsString(dataMap);
         } catch (JsonProcessingException e) {
             throw new IllegalStateException("Could not parse locationmap!",e);
         }
@@ -477,22 +478,26 @@ public class EntityListener implements Listener
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onPlayerJoin(PlayerJoinEvent event)
     {
-        if (this.manager.isIgnored(PLAYER_JOIN)) return;
-        //TODO config log ip on login
-        this.manager.queueLog(event.getPlayer().getLocation(),PLAYER_JOIN,event.getPlayer(),null);
+        if (this.manager.isIgnored(event.getPlayer().getWorld(),PLAYER_JOIN)) return;
+        String data = null;
+        if (this.manager.getConfig(event.getPlayer().getWorld()).PLAYER_JOIN_ip)
+        {
+            data = event.getPlayer().getAddress().getAddress().getHostName();
+        }
+        this.manager.queueLog(event.getPlayer().getLocation(),PLAYER_JOIN,event.getPlayer(),data);
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onPlayerQuit(PlayerQuitEvent event)
     {
-        if (this.manager.isIgnored(PLAYER_QUIT)) return;
+        if (this.manager.isIgnored(event.getPlayer().getWorld(),PLAYER_QUIT)) return;
         this.manager.queueLog(event.getPlayer().getLocation(),PLAYER_JOIN,event.getPlayer(),null);
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onItemDrop(PlayerDropItemEvent event)
     {
-        if (this.manager.isIgnored(ITEM_DROP)) return;
+        if (this.manager.isIgnored(event.getPlayer().getWorld(),ITEM_DROP)) return;
         String itemData = this.serializeItemStack(event.getItemDrop().getItemStack());
         this.manager.queueLog(event.getPlayer().getLocation(),ITEM_DROP,event.getPlayer(),itemData);
     }
@@ -500,7 +505,7 @@ public class EntityListener implements Listener
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onItemPickup(PlayerPickupItemEvent  event)
     {
-        if (this.manager.isIgnored(ITEM_PICKUP)) return;
+        if (this.manager.isIgnored(event.getPlayer().getWorld(),ITEM_PICKUP)) return;
         String itemData = this.serializeItemStack(event.getItem().getItemStack());
         this.manager.queueLog(event.getPlayer().getLocation(),ITEM_PICKUP,event.getPlayer(),itemData);
     }
@@ -508,14 +513,14 @@ public class EntityListener implements Listener
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onExpPickup(PlayerExpChangeEvent event)
     {
-        if (this.manager.isIgnored(XP_PICKUP)) return;
+        if (this.manager.isIgnored(event.getPlayer().getWorld(),XP_PICKUP)) return;
         this.manager.queueLog(event.getPlayer().getLocation(),XP_PICKUP,event.getPlayer(),String.valueOf(event.getAmount()));
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onTeleport(PlayerTeleportEvent event)
     {
-        if (this.manager.isIgnored(PLAYER_TELEPORT)) return;
+        if (this.manager.isIgnored(event.getPlayer().getWorld(),PLAYER_TELEPORT)) return;
         if (event.getFrom().equals(event.getTo())) return;
         String targetLocation = this.serializeLocation(false,event.getTo());
         String sourceLocation = this.serializeLocation(true, event.getFrom());
@@ -526,7 +531,7 @@ public class EntityListener implements Listener
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onEnchant(EnchantItemEvent event)
     {
-        if (this.manager.isIgnored(ENCHANT_ITEM)) return;
+        if (this.manager.isIgnored(event.getEnchanter().getWorld(),ENCHANT_ITEM)) return;
         String applied = this.serializeEnchantments(event.getEnchantsToAdd());
         User user = this.module.getUserManager().getExactUser(event.getEnchanter());
         this.manager.queueLog(event.getEnchanter().getLocation(),ENCHANT_ITEM,user.key,
@@ -536,7 +541,7 @@ public class EntityListener implements Listener
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onCraft(CraftItemEvent event)
     {
-        if (this.manager.isIgnored(CRAFT_ITEM)) return;
+        if (this.manager.isIgnored(event.getWhoClicked().getWorld(),CRAFT_ITEM)) return;
         if (!(event.getWhoClicked() instanceof Player)) return;
         User user = this.module.getUserManager().getExactUser((Player) event.getWhoClicked());
         this.manager.queueLog(event.getWhoClicked().getLocation(),CRAFT_ITEM,user.key,
@@ -589,7 +594,7 @@ public class EntityListener implements Listener
         }
         try
         {
-            return mapper.writeValueAsString(dataMap);
+            return this.manager.mapper.writeValueAsString(dataMap);
         }
         catch (JsonProcessingException e)
         {
@@ -625,7 +630,7 @@ public class EntityListener implements Listener
             }
         }
         try {
-            return this.mapper.writeValueAsString(dataMap);
+            return this.manager.mapper.writeValueAsString(dataMap);
         } catch (JsonProcessingException e) {
             throw new IllegalStateException("Could not parse itemmap!",e);
         }
@@ -640,7 +645,7 @@ public class EntityListener implements Listener
         dataMap.put("y",location.getBlockY());
         dataMap.put("z",location.getBlockZ());
         try {
-            return this.mapper.writeValueAsString(dataMap);
+            return this.manager.mapper.writeValueAsString(dataMap);
         } catch (JsonProcessingException e) {
             throw new IllegalStateException("Could not parse locationmap!",e);
         }
@@ -658,7 +663,7 @@ public class EntityListener implements Listener
             enchantments.put(entry.getKey().getName(),entry.getValue());
         }
         try {
-            return this.mapper.writeValueAsString(enchantments);
+            return this.manager.mapper.writeValueAsString(enchantments);
         } catch (JsonProcessingException e) {
             throw new IllegalStateException("Could not parse locationmap!",e);
         }
