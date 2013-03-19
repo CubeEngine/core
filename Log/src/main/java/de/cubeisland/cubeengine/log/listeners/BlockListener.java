@@ -7,6 +7,7 @@ import de.cubeisland.cubeengine.core.util.BlockUtil;
 import de.cubeisland.cubeengine.core.util.Pair;
 import de.cubeisland.cubeengine.log.Log;
 import de.cubeisland.cubeengine.log.storage.LogManager;
+import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.*;
@@ -689,14 +690,17 @@ public class BlockListener implements Listener
                     break;
                 case CAKE_BLOCK:
                     if (this.manager.isIgnored(CAKE_EAT)) return;
-                    byte cakeData = (byte) (event.getClickedBlock().getData() +1);
-                    if (cakeData == 6)
+                    if (event.getPlayer().getFoodLevel() < 20 && !event.getPlayer().getGameMode().equals(GameMode.CREATIVE))
                     {
-                        this.logBlockChange(CAKE_EAT,event.getClickedBlock().getState(), AIR,event.getPlayer());
-                    }
-                    else
-                    {
-                        this.logBlockChange(location,CAKE_EAT,event.getPlayer(),state,state.getType().name(),cakeData);
+                        byte cakeData = (byte) (event.getClickedBlock().getData() +1);
+                        if (cakeData == 6)
+                        {
+                            this.logBlockChange(CAKE_EAT,event.getClickedBlock().getState(), AIR,event.getPlayer());
+                        }
+                        else
+                        {
+                            this.logBlockChange(location,CAKE_EAT,event.getPlayer(),state,state.getType().name(),cakeData);
+                        }
                     }
                     break;
                 case NOTE_BLOCK:
