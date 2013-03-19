@@ -30,8 +30,7 @@ public final class RulebookManager
 
         this.rulebooks = new HashMap<Locale, String[]>();
 
-        for( File book :
-                RuleBookFile.getLanguageFiles( this.module.getFolder() ) )
+        for( File book : RuleBookFile.getLanguageFiles( this.module.getFolder() ) )
         {
             Language language = this.module.getCore().getI18n().searchLanguages( StringUtils.stripFileExtension( book.getName() ) ).iterator().next();
             try
@@ -58,7 +57,7 @@ public final class RulebookManager
     public boolean contains( Locale locale, int editDistance )
     {
         Set<Language> languages = this.module.getCore().getI18n().searchLanguages( locale.toString(), editDistance );
-        return languages.size() == 1 && this.rulebooks.containsKey( languages.iterator().next().getName() );
+        return languages.size() == 1 && this.rulebooks.containsKey( languages.iterator().next().getLocale() );
     }
 
     public String[] getPages( String language )
@@ -71,7 +70,7 @@ public final class RulebookManager
         Set<Language> languages = this.module.getCore().getI18n().searchLanguages( language, editDistance );
         if( languages.size() == 1 )
         {
-            return this.rulebooks.get( languages.iterator().next().getName() );
+            return this.rulebooks.get( languages.iterator().next().getLocale() );
         }
         return null;
     }
@@ -94,7 +93,7 @@ public final class RulebookManager
             meta.setPages( this.getPages( language ) );
 
             List<String> lore = new ArrayList<String>();
-            lore.add( language );
+            lore.add( locale.getLanguage() );
 
             meta.setLore( lore );
             ruleBook.setItemMeta( meta );
@@ -104,21 +103,20 @@ public final class RulebookManager
         return null;
     }
 
-    public boolean removeBook( Locale locale ) throws IOException
+    public boolean removeBook( String language ) throws IOException
     {
-        Set<Language> languages = this.module.getCore().getI18n().searchLanguages( locale );
+        Set<Language> languages = this.module.getCore().getI18n().searchLanguages( language );
         boolean value = false;
 
         if( languages.size() == 1 )
         {
-            locale = languages.iterator().next().getName();
+            Locale locale = languages.iterator().next().getLocale();
 
-            for( File file :
-                    RuleBookFile.getLanguageFiles( this.module.getFolder() ) )
+            for( File file : RuleBookFile.getLanguageFiles( this.module.getFolder() ) )
             {
-                Language fileLanguage = this.module.getCore().getI18n().searchLanguages( StringUtils.stripFileExtension( file.getName() ) ).iterator().next();
+                Locale fileLocale = this.module.getCore().getI18n().searchLanguages( StringUtils.stripFileExtension( file.getName() ) ).iterator().next().getLocale();
 
-                if( fileLanguage.equals( locale ) )
+                if( fileLocale.equals( locale ) )
                 {
                     value = file.delete();
                     if( !value )

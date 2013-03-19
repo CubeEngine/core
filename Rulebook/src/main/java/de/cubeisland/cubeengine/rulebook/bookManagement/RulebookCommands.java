@@ -110,7 +110,7 @@ public class RulebookCommands extends ContainerCommand
             target.getInventory().clear( iter.next() );
         }
 
-        target.getInventory().addItem( this.rulebookManager.getBook( locale ) );
+        target.getInventory().addItem( this.rulebookManager.getBook( locale.getLanguage() ) );
         target.sendTranslated("&aLot's of fun with your rulebook.");
         if( !books.isEmpty() )
         {
@@ -221,7 +221,7 @@ public class RulebookCommands extends ContainerCommand
         {
             try
             {
-                if( this.rulebookManager.removeBook( locale ) )
+                if( this.rulebookManager.removeBook( locale.getLanguage() ) )
                 {
                     this.rulebookManager.addBook( item, locale );
                     context.sendTranslated("&aThe rulebook %s was succesful modified.", locale);
@@ -270,7 +270,7 @@ public class RulebookCommands extends ContainerCommand
             context.sendTranslated("&cMore than one or no language is matched with %s", context.getString(0));
             return;
         }
-        String language = languages.iterator().next().getName();
+        Locale language = languages.iterator().next().getLocale();
 
         if( !this.rulebookManager.contains( language ) )
         {
@@ -283,16 +283,9 @@ public class RulebookCommands extends ContainerCommand
         }
     }
 
-    private TIntSet inventoryRulebookSearching( PlayerInventory inventory, String language )
+    private TIntSet inventoryRulebookSearching( PlayerInventory inventory, Locale locale )
     {
         TIntSet books = new TIntHashSet();
-
-        Set<Language> languages = this.getModule().getCore().getI18n().searchLanguages( language );
-        if( languages.size() != 1 )
-        {
-            return books;
-        }
-        language = languages.iterator().next().getName();
 
         for( int i = 0; i < inventory.getSize(); i++ )
         {
@@ -303,7 +296,7 @@ public class RulebookCommands extends ContainerCommand
                 List<String> lore = item.getItemMeta().getLore();
                 if( lore != null )
                 {
-                    if( lore.size() > 0 && language.equalsIgnoreCase( lore.get( 0 ) ) )
+                    if( lore.size() > 0 && locale.getLanguage().equalsIgnoreCase( lore.get( 0 ) ) )
                     {
                         books.add( i );
                     }
