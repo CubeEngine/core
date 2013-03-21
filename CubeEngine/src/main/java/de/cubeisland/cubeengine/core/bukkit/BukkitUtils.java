@@ -402,4 +402,17 @@ public class BukkitUtils
     {
         return Item.byId[material.getId()].w();
     }
+
+    public static boolean isFuel(ItemStack item) {
+        // Create an NMS item stack
+        net.minecraft.server.v1_5_R2.ItemStack nmss = CraftItemStack.asNMSCopy(item);
+        // Use the NMS TileEntityFurnace to check if the item being clicked is a fuel
+        return TileEntityFurnace.isFuel(nmss);
+    }
+
+    public static boolean isSmeltable(ItemStack item) {
+        net.minecraft.server.v1_5_R2.ItemStack nmss = CraftItemStack.asNMSCopy(item);
+        // If the result of that item being cooked is null, it is not cookable
+        return RecipesFurnace.getInstance().getResult(nmss.getItem().id) != null;
+    }
 }

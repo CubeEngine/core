@@ -24,10 +24,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryOpenEvent;
-import org.bukkit.inventory.BrewerInventory;
-import org.bukkit.inventory.Inventory;
-import org.bukkit.inventory.InventoryHolder;
-import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.*;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.HashMap;
@@ -345,8 +342,48 @@ public class ContainerListener implements Listener
                 }
                 else if (holder instanceof Furnace)
                 {
-                    //TODO this is not working as intended if multiple user do click at the same time in the same inventory
+                    FurnaceInventory furnaceInventory= (FurnaceInventory) event.getView().getTopInventory();
+                    int putInto = 0;
+                    if (BukkitUtils.isSmeltable(inventoryItem))
+                    {
+                        ItemStack item = furnaceInventory.getSmelting();
+                        if (item == null)
+                        {
+                            putInto = inventoryItem.getAmount();
+                        }
+                        else if (inventoryItem.isSimilar(item))
+                        {
+                            int space = inventoryItem.getMaxStackSize() - item.getAmount();
+                            if (space <= 0) return;
+                            putInto = inventoryItem.getAmount();
+                            if (putInto > space)
+                            {
+                                putInto = space;
+                            }
+                        }
+                    }
+                    else if (BukkitUtils.isFuel(inventoryItem))
+                    {
+                        ItemStack item = furnaceInventory.getFuel();
+                        if (item == null)
+                        {
+                            putInto = inventoryItem.getAmount();
+                        }
+                        else if (inventoryItem.isSimilar(item))
+                        {
+                            int space = inventoryItem.getMaxStackSize() - item.getAmount();
+                            if (space <= 0) return;
+                            putInto = inventoryItem.getAmount();
+                            if (putInto > space)
+                            {
+                                putInto = space;
+                            }
+                        }
+                    }
+                    if (putInto == 0) return;
+                    this.prepareForLogging(user,new ItemData(inventoryItem), putInto);
                 }
+                else
                 {
                     event.getView().getTopInventory().getContents();
 

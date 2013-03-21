@@ -627,6 +627,8 @@ public class LogManager
                     if (additional instanceof HumanEntity){
                         return false; // no need to log these
                     }
+                    this.module.getLogger().log(LogLevel.DEBUG,"Unknown InventoryHolder: "+ additional);
+                    return false;
                 }
                 if (additional == null)
                 {
@@ -634,7 +636,7 @@ public class LogManager
                     System.out.print("This happens currently with Droppers!!!");
                     return false;
                 }
-                System.out.print("Unknown Holder:"+ additional); //TODO remove debug
+
                 throw new IllegalStateException("Invalid ITEM_CHANGE_IN_CONTAINER: "+additional);
             case PLAYER_COMMAND :
                 if (additional instanceof String)
