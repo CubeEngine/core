@@ -1,7 +1,7 @@
 package de.cubeisland.cubeengine.core.util.math.shape;
 
+import de.cubeisland.cubeengine.core.util.math.MathHelper;
 import de.cubeisland.cubeengine.core.util.math.Vector3;
-import de.cubeisland.cubeengine.core.util.math.shape.iterator.CylinderIterator;
 import java.util.Iterator;
 
 public class Cylinder implements Shape
@@ -96,7 +96,7 @@ public class Cylinder implements Shape
     {
         return this.centerOfRotation;
     }
-
+    
     @Override
     public Shape scale( Vector3 vector )
     {
@@ -104,20 +104,50 @@ public class Cylinder implements Shape
     }
 
     @Override
-    public boolean intersects( Shape other )
+    public Cuboid getEncircledCuboid()
     {
-        throw new UnsupportedOperationException( "Not supported yet." ); //To change body of generated methods, choose Tools | Templates.
+        return new Cuboid
+        (
+                new Vector3( this.getPoint().x - this.getRadiusX(), this.getPoint().y, this.getPoint().z - this.getRadiusZ() ),
+                this.getRadiusX() * 2d,
+                this.getHeight(),
+                this.getRadiusZ() * 2d,
+                this.centerOfRotation,
+                this.rotationAngle 
+        );
     }
-
+    
+    @Override
+    public boolean contains( Vector3 point )
+    {
+        return this.contains( point.x, point.y, point.z );
+    }
+    
+    @Override
+    public boolean contains( double x, double y, double z )
+    {
+        return !(
+            y < this.getPoint().y
+            || y > this.getPoint().y + this.getHeight()
+            || MathHelper.pow( (x - this.getPoint().x) / this.getRadiusX(), 2 ) + MathHelper.pow( (z - this.getPoint().z) / this.getRadiusZ(), 2 ) > 1
+        );
+    }
+    
     @Override
     public boolean contains( Shape other )
     {
-        throw new UnsupportedOperationException( "Not supported yet." ); //To change body of generated methods, choose Tools | Templates.
+        throw new UnsupportedOperationException( "Not supported yet." );
+    }
+    
+    @Override
+    public boolean intersects( Shape other )
+    {
+        throw new UnsupportedOperationException( "Not supported yet." );
     }
 
     @Override
     public Iterator<Vector3> iterator()
     {
-        return new CylinderIterator( this );
+        return new ShapeIterator( this );
     }
 }

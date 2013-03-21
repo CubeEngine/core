@@ -1,7 +1,6 @@
 package de.cubeisland.cubeengine.core.util.math.shape;
 
 import de.cubeisland.cubeengine.core.util.math.Vector3;
-import de.cubeisland.cubeengine.core.util.math.shape.iterator.CuboidIterator;
 import java.util.Iterator;
 
 public class Cuboid implements Shape
@@ -109,30 +108,42 @@ public class Cuboid implements Shape
     {
         return new Cuboid(this.point, this.width * vector.x, this.height * vector.y, this.depth * vector.z, this.centerOfRotation, this.rotationAngle);
     }
+
+    @Override
+    public Cuboid getEncircledCuboid()
+    {
+        return this;
+    }
     
-    private boolean intersects(Cuboid other)
-    { 
-        return !(                                                           // invert it
-            this.getPoint().y + this.getHeight() < other.getPoint().y ||    // this.top < other.bottom
-            this.getPoint().y > other.getPoint().y + other.getHeight()  ||  // this.bottom > other.top
-            this.getPoint().x > other.getPoint().x + other.getWidth() ||    // this.left > other.right
-            this.getPoint().x + this.getWidth() < other.getPoint().x ||     // this.right < other.left
-            this.getPoint().z > other.getPoint().z + other.getDepth() ||    // this.front > other.back
-            this.getPoint().z + this.getDepth() < other.getPoint().z ||     // this.back < other.front
-            this.contains( other )
-        );
+    @Override
+    public boolean contains( Vector3 point )
+    {
+        return this.contains( point.x, point.y, point.z );
     }
 
     @Override
-    public boolean intersects( Shape other )
+    public boolean contains( double x, double y, double z )
+    {
+        return !(   
+            x < this.getPoint().x || 
+            x > this.getPoint().x + this.getWidth() ||
+            y < this.getPoint().y ||
+            y > this.getPoint().y + this.getHeight() ||
+            z < this.getPoint().z ||
+            z > this.getPoint().z + this.getDepth()
+        );
+    }
+    
+    @Override
+    public boolean contains( Shape other )
     {
         if(other instanceof Cuboid)
         {
-            return this.intersects((Cuboid) other);
+            return this.contains((Cuboid) other);
         }
-        return false;  
+        return false; 
     }
-
+    
     private boolean contains(Cuboid other)
     {
         return 
@@ -147,18 +158,31 @@ public class Cuboid implements Shape
     }
     
     @Override
-    public boolean contains( Shape other )
+    public boolean intersects( Shape other )
     {
         if(other instanceof Cuboid)
         {
-            return this.contains((Cuboid) other);
+            return this.intersects((Cuboid) other);
         }
-        return false; 
+        return false;  
     }
-
+    
+    private boolean intersects(Cuboid other)
+    { 
+        return !(                                                           // invert it
+            this.getPoint().y + this.getHeight() < other.getPoint().y ||    // this.top < other.bottom
+            this.getPoint().y > other.getPoint().y + other.getHeight()  ||  // this.bottom > other.top
+            this.getPoint().x > other.getPoint().x + other.getWidth() ||    // this.left > other.right
+            this.getPoint().x + this.getWidth() < other.getPoint().x ||     // this.right < other.left
+            this.getPoint().z > other.getPoint().z + other.getDepth() ||    // this.front > other.back
+            this.getPoint().z + this.getDepth() < other.getPoint().z ||     // this.back < other.front
+            this.contains( other )
+        );
+    }
+    
     @Override
     public Iterator<Vector3> iterator()
     {
-        return new CuboidIterator( this );
+        return new ShapeIterator( this );
     }
 }
