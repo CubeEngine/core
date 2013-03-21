@@ -112,6 +112,7 @@ public class ContainerListener implements Listener
         else if (holder instanceof DoubleChest)
         {
             return ((DoubleChest)holder).getLocation();//TODO get a blocklocation
+            //TODO get the right chest
         }
         else if (holder instanceof BlockState)
         {

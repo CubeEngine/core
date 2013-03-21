@@ -277,7 +277,7 @@ public class LoggingConfiguration extends YamlConfiguration
     public boolean ITEM_REMOVE_enable = true;
 
     @Option("logging.container.type.chest")
-    public boolean containerChest = true; //TODO
+    public boolean containerChest = true;
     @Option("logging.container.type.furnace")
     public boolean containerFurnace = true;
     @Option("logging.container.type.brewingstand")
