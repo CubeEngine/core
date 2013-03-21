@@ -17,10 +17,10 @@ import de.cubeisland.cubeengine.test.commands.TestCommands;
 import de.cubeisland.cubeengine.test.database.TestManager;
 import de.cubeisland.cubeengine.test.database.TestModel;
 import de.cubeisland.cubeengine.test.l18n.TestRecource;
-import net.minecraft.server.v1_5_R1.DedicatedPlayerList;
-import net.minecraft.server.v1_5_R1.EntityPlayer;
-import net.minecraft.server.v1_5_R1.Packet0KeepAlive;
-import org.bukkit.craftbukkit.v1_5_R1.CraftServer;
+import net.minecraft.server.v1_5_R2.DedicatedPlayerList;
+import net.minecraft.server.v1_5_R2.EntityPlayer;
+import net.minecraft.server.v1_5_R2.Packet0KeepAlive;
+import org.bukkit.craftbukkit.v1_5_R2.CraftServer;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 
