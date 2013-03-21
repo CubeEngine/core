@@ -28,7 +28,10 @@ public class ManagementCommands extends ContainerCommand
         {
             user.attach(RolesAttachment.class,this.getModule());
             module.getManager().preCalculateRoles(user.getName(), true);
-            module.getManager().applyRole(user.getPlayer());
+            if (user.isOnline())
+            {
+                module.getManager().applyRole(user.getPlayer());
+            }
         }
         context.sendMessage("roles", "&f[&6Roles&f] &areload complete!");
     }

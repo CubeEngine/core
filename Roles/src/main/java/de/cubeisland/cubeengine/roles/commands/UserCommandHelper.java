@@ -62,11 +62,11 @@ public class UserCommandHelper extends ContainerCommand
         {
             return null;
         }
-        TLongObjectHashMap<UserSpecificRole> roleContainer = user.get(RolesAttachment.class).getRoleContainer();
+        TLongObjectHashMap<UserSpecificRole> roleContainer = this.manager.getRoleContainer(user);
         if (roleContainer == null)
         {
             this.manager.preCalculateRoles(user, true);
-            roleContainer = user.get(RolesAttachment.class).getRoleContainer();;
+            roleContainer = this.manager.getRoleContainer(user);
         }
         return roleContainer.get(worldId);
     }

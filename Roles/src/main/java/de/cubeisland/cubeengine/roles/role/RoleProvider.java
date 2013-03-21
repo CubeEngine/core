@@ -112,7 +112,10 @@ public abstract class RoleProvider
         for (User user : module.getUserManager().getOnlineUsers())
         {
             module.getManager().preCalculateRoles(user, true);
-            module.getManager().applyRole(user.getPlayer());
+            if (user.isOnline())
+            {
+                module.getManager().applyRole(user.getPlayer());
+            }
         }
     }
 
