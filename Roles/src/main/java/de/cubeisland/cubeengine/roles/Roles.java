@@ -2,12 +2,8 @@ package de.cubeisland.cubeengine.roles;
 
 import de.cubeisland.cubeengine.core.module.Module;
 import de.cubeisland.cubeengine.core.util.convert.Convert;
-import de.cubeisland.cubeengine.roles.commands.ModuleManagementCommands;
-import de.cubeisland.cubeengine.roles.commands.RoleCommands;
-import de.cubeisland.cubeengine.roles.commands.RoleInformationCommands;
-import de.cubeisland.cubeengine.roles.commands.RoleManagementCommands;
-import de.cubeisland.cubeengine.roles.commands.UserInformationCommands;
-import de.cubeisland.cubeengine.roles.commands.UserManagementCommands;
+import de.cubeisland.cubeengine.roles.commands.*;
+import de.cubeisland.cubeengine.roles.commands.ManagementCommands;
 import de.cubeisland.cubeengine.roles.role.RoleManager;
 import de.cubeisland.cubeengine.roles.role.RolesEventHandler;
 import de.cubeisland.cubeengine.roles.role.config.PermissionTree;
@@ -51,7 +47,7 @@ public class Roles extends Module
         this.registerCommands(new RoleInformationCommands(this), "roles", "role");
         this.registerCommand(new UserManagementCommands(this), "roles");
         this.registerCommands(new UserInformationCommands(this), "roles", "user");
-        this.registerCommand(new ModuleManagementCommands(this), "roles");
+        this.registerCommand(new ManagementCommands(this), "roles");
 
         this.getEventManager().registerListener(this, new RolesEventHandler(this));
         //init on FinishedLoadModulesEvent

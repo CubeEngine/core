@@ -112,7 +112,7 @@ public class UserCommandHelper extends ContainerCommand
             }
             else
             {
-                world = this.worldManager.getWorld(ModuleManagementCommands.curWorldIdOfConsole);
+                world = this.worldManager.getWorld(ManagementCommands.curWorldIdOfConsole);
                 if (world == null)
                 {
                     context.sendMessage("roles", "&ePlease provide a world.\n&aYou can define a world with &6/roles admin defaultworld <world>");

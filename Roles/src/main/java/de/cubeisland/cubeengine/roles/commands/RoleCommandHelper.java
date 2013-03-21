@@ -52,12 +52,12 @@ public abstract class RoleCommandHelper extends ContainerCommand
             }
             else
             {
-                if (ModuleManagementCommands.curWorldIdOfConsole == null)
+                if (ManagementCommands.curWorldIdOfConsole == null)
                 {
                     context.sendMessage("roles", "&ePlease provide a world.\n&aYou can define a world with &6/roles admin defaultworld <world>");
                     throw new IncorrectUsageException(); //TODO this is bullshit
                 }
-                world = this.worldManager.getWorld(ModuleManagementCommands.curWorldIdOfConsole);
+                world = this.worldManager.getWorld(ManagementCommands.curWorldIdOfConsole);
                 context.sendMessage("roles", "&eYou are using &6%s &eas current world.", world.getName());
             }
         }

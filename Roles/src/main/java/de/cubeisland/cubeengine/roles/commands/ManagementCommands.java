@@ -9,12 +9,12 @@ import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.roles.Roles;
 import de.cubeisland.cubeengine.roles.RolesAttachment;
 
-// TODO rename!
-public class ModuleManagementCommands extends ContainerCommand
+public class ManagementCommands extends ContainerCommand
 {
-    public ModuleManagementCommands(Roles module)
+    public ManagementCommands(Roles module)
     {
-        super(module, "admin", "Manages the module.");//TODO alias manadmin
+        super(module, "admin", "Manages the module.");
+        this.registerAlias(new String[]{"manadmin"},new String[]{});
     }
 
     @Alias(names = "manload")

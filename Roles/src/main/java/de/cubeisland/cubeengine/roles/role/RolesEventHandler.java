@@ -43,7 +43,7 @@ public class RolesEventHandler implements Listener
 
     @EventHandler(priority = EventPriority.LOWEST)
     public void onPreLogin(AsyncPlayerPreLoginEvent event)
-    {//TODO SYNC this!!!
+    {
         this.manager.preCalculateRoles(event.getName(), false);
     }
 
