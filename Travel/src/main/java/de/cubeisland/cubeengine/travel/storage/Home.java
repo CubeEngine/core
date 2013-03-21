@@ -1,9 +1,14 @@
 package de.cubeisland.cubeengine.travel.storage;
 
 import de.cubeisland.cubeengine.core.CubeEngine;
+import de.cubeisland.cubeengine.core.permission.PermDefault;
+import de.cubeisland.cubeengine.core.permission.Permission;
 import de.cubeisland.cubeengine.core.user.User;
+import de.cubeisland.cubeengine.travel.Travel;
 import org.bukkit.Location;
+import org.bukkit.permissions.Permissible;
 
+import java.util.Locale;
 import java.util.Set;
 
 public class Home
@@ -11,14 +16,18 @@ public class Home
     private final TeleportPoint parent;
     private final TelePointManager telePointManager;
     private final InviteManager inviteManager;
+    private final String permission;
     private Set<String> invited;
 
-    public Home(TeleportPoint teleportPoint, TelePointManager telePointManager, InviteManager inviteManager)
+    public Home(TeleportPoint teleportPoint, TelePointManager telePointManager, InviteManager inviteManager, Travel module)
     {
         this.parent = teleportPoint;
         this.telePointManager = telePointManager;
         this.inviteManager = inviteManager;
         this.invited = inviteManager.getInvited(parent);
+        this.permission = "cubeengine.travel.homes.access."+parent.name.toLowerCase(Locale.ENGLISH);
+        module.getCore().getPermissionManager().registerPermission(module,  this.permission, this.parent.visibility.equals(TeleportPoint.Visibility.PRIVATE) ?
+                PermDefault.OP : PermDefault.TRUE);
     }
 
     public void update()
@@ -136,7 +145,7 @@ public class Home
 
     public boolean canAccess(User user)
     {
-        return this.isInvited(user) || this.isOwner(user);
+        return this.isInvited(user) || this.isOwner(user) ;
     }
 
     public String getStorageName()

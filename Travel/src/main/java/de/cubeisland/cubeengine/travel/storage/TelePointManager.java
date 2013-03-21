@@ -106,7 +106,7 @@ public class TelePointManager extends SingleKeyStorage<Long, TeleportPoint>
         {
             if (teleportPoint.type.equals(TeleportPoint.Type.HOME))
             {
-                Home home = new Home(teleportPoint, this, inviteManager);
+                Home home = new Home(teleportPoint, this, inviteManager, this.module);
                 if (home.isPublic())
                 {
                     this.publicHomes.put(home.getName(), home);
@@ -148,14 +148,16 @@ public class TelePointManager extends SingleKeyStorage<Long, TeleportPoint>
             name.replaceFirst("public:", "");
             if (publicHomes.containsKey(name))
             {
-                return this.publicHomes.get(name);
+                Home home =  this.publicHomes.get(name);
+                if (home.canAccess(user)) return home;
             }
             else
             {
                 Set<String> matches = Match.string().getBestMatches(name, publicHomes.keySet(), 2);
                 if (!matches.isEmpty())
                 {
-                    return publicHomes.get(matches.iterator().next());
+                    Home home =  publicHomes.get(matches.iterator().next());
+                    if (home.canAccess(user)) return home;
                 }
             }
 
@@ -190,7 +192,8 @@ public class TelePointManager extends SingleKeyStorage<Long, TeleportPoint>
             }
             else if (publicHomes.containsKey(name))
             {
-                return this.publicHomes.get(name);
+                Home home = this.publicHomes.get(name);
+                if (home.canAccess(user)) return home;
             }
             else
             {
@@ -203,7 +206,8 @@ public class TelePointManager extends SingleKeyStorage<Long, TeleportPoint>
                 Set<String> publicMatches = Match.string().getBestMatches(name, publicHomes.keySet(), 2);
                 if (!publicMatches.isEmpty())
                 {
-                    return publicHomes.get(matches.iterator().next());
+                    Home home = publicHomes.get(matches.iterator().next());
+                    if (home.canAccess(user)) return home;
                 }
 
                 for (Home home : homes.values())
@@ -346,7 +350,7 @@ public class TelePointManager extends SingleKeyStorage<Long, TeleportPoint>
      */
     public Home createHome(Location location, String name, User owner, TeleportPoint.Visibility visibility)
     {
-        Home home = new Home(new TeleportPoint(location, name, owner, null, TeleportPoint.Type.HOME, visibility), this, inviteManager);
+        Home home = new Home(new TeleportPoint(location, name, owner, null, TeleportPoint.Type.HOME, visibility), this, inviteManager, this.module);
         this.store(home.getModel());
         this.putHomeToUser(home, home.getOwner());
         this.homes.put(home.getStorageName(), home);

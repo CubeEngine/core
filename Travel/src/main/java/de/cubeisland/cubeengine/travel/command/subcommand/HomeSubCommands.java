@@ -244,8 +244,14 @@ public class HomeSubCommands
         if (context.hasFlag("P")) mask |= tpManager.PRIVATE;
         if (context.hasFlag("o")) mask |= tpManager.OWNED;
         if (context.hasFlag("i")) mask |= tpManager.INVITED;
+        Set<Home> homes = tpManager.listHomes(user, mask);
+        if (homes.isEmpty())
+        {
+            user.sendMessage("travel", "The query returned null homes!");
+            return;
+        }
         user.sendMessage("travel", "&eHere is a list of the homes: ");
-        for (Home home : tpManager.listHomes(user, mask))
+        for (Home home : homes)
         {
             if (home.isOwner(user))
             {
@@ -278,7 +284,7 @@ public class HomeSubCommands
 
         User user = (User)context.getSender();
         Set<Home> homes = tpManager.listHomes(user, tpManager.OWNED);
-        if (homes.size() != 0)
+        if (!homes.isEmpty())
         {
             user.sendMessage("travel", "&eHere is a list of all your homes with the users invited to them:");
             for (Home home : homes)
