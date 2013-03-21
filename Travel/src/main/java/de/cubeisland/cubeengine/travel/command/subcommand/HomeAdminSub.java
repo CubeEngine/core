@@ -147,6 +147,11 @@ public class HomeAdminSub
             User user = context.getUser(0);
             homes = tpManager.listHomes(user, mask);
         }
+        if (homes.isEmpty())
+        {
+            context.sendMessage("travel", "The query returned no homes!");
+            return;
+        }
         for (Home home : homes)
         {
             if (home.isPublic())
