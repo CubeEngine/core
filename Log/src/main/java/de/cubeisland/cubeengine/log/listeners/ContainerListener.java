@@ -1,6 +1,7 @@
 package de.cubeisland.cubeengine.log.listeners;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import de.cubeisland.cubeengine.core.bukkit.BukkitUtils;
 import de.cubeisland.cubeengine.core.logger.LogLevel;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.log.Log;
@@ -23,6 +24,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryOpenEvent;
+import org.bukkit.inventory.BrewerInventory;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
@@ -112,7 +114,7 @@ public class ContainerListener implements Listener
         else if (holder instanceof DoubleChest)
         {
             return ((DoubleChest)holder).getLocation();//TODO get a blocklocation
-            //TODO get the right chest
+            //TODO get the correct chest
         }
         else if (holder instanceof BlockState)
         {
@@ -199,6 +201,24 @@ public class ContainerListener implements Listener
                     {
                         if (this.manager.isIgnored(world, ITEM_INSERT)) return;
                         int put = event.isLeftClick() ? cursorItem.getAmount() : 1;
+                        if (holder instanceof BrewingStand) // handle BrewingStands separatly
+                        {
+                            if (event.getRawSlot() == 3)
+                            {
+                                if (!BukkitUtils.canBePlacedInBrewingstand(cursorItem.getType())) // can be put
+                                {
+                                    return;
+                                }
+                            }
+                            else if (cursorItem.getType().equals(Material.POTION) || cursorItem.getType().equals(Material.GLASS_BOTTLE)) // bottle slot
+                            {
+                                put = 1;
+                            }
+                            else
+                            {
+                                return;
+                            }
+                        }
                         this.prepareForLogging(user, new ItemData(cursorItem),put);
                     }
                     else
@@ -224,6 +244,25 @@ public class ContainerListener implements Listener
                         }
                         else
                         {
+                            if (holder instanceof BrewingStand) // handle BrewingStands separatly
+                            {
+                                if (event.getRawSlot() == 3)
+                                {
+                                    if (!BukkitUtils.canBePlacedInBrewingstand(cursorItem.getType())) // can be put
+                                    {
+                                        return;
+                                    }
+                                }
+                                else if (cursorItem.getType().equals(Material.POTION) || cursorItem.getType().equals(Material.GLASS_BOTTLE)) // bottle slot
+                                {
+                                    if (cursorItem.getAmount() > 1) return; // nothing happens when more than 1
+                                    // else swap items
+                                }
+                                else
+                                {
+                                    return;
+                                }
+                            }
                             if (!this.manager.isIgnored(world, ITEM_INSERT))
                             {
                                 this.prepareForLogging(user, new ItemData(cursorItem),cursorItem.getAmount());
@@ -243,21 +282,71 @@ public class ContainerListener implements Listener
                 {
                     return;
                 }
-                if (holder instanceof Furnace || holder instanceof BrewingStand)
+                if (holder instanceof BrewingStand)
+                {
+                    BrewerInventory brewerInventory = (BrewerInventory) event.getView().getTopInventory();
+                    if (BukkitUtils.canBePlacedInBrewingstand(inventoryItem.getType()))
+                    {
+                        if (inventoryItem.isSimilar(brewerInventory.getIngredient())) // could fit into inventory
+                        {
+                            ItemStack brewerItem = brewerInventory.getIngredient();
+                            int amountPutIn = inventoryItem.getAmount();
+                            if (brewerItem.getAmount() + inventoryItem.getAmount() > inventoryItem.getMaxStackSize())
+                            {
+                                amountPutIn = inventoryItem.getMaxStackSize() - brewerItem.getAmount();
+                                if (amountPutIn <= 0) return;
+                            }
+                            this.prepareForLogging(user,new ItemData(inventoryItem), amountPutIn);
+                        }
+                    }
+                    else if (inventoryItem.getType().equals(Material.POTION))
+                    {
+                        for (int i = 0 ; i <= 2; ++i)
+                        {
+                            ItemStack item = brewerInventory.getItem(i);
+                            if (item == null) // space for a potion?
+                            {
+                                this.prepareForLogging(user,new ItemData(inventoryItem), inventoryItem.getAmount());
+                                return;
+                            }
+                            // else no space found
+                        }
+                    }
+                    else if (inventoryItem.getType().equals(Material.GLASS_BOTTLE))
+                    {
+                        int bottlesFound = 0;
+                        int bottleSlots = 0;
+                        for (int i = 0 ; i <= 2; ++i)
+                        {
+                            ItemStack item = brewerInventory.getItem(i);
+                            if (item == null) // space for the stack ?
+                            {
+                                this.prepareForLogging(user,new ItemData(inventoryItem), inventoryItem.getAmount());
+                                return;
+                            }
+                            else if (item.getType().equals(Material.GLASS_BOTTLE))
+                            {
+                                bottleSlots++;
+                                bottlesFound += item.getAmount();
+                            }
+                        }
+                        if (bottleSlots > 0)
+                        {
+                            int space = Material.GLASS_BOTTLE.getMaxStackSize() * bottleSlots - bottlesFound;
+                            if (space <= 0) return;
+                            int putInto = inventoryItem.getAmount();
+                            if (putInto > space)
+                            {
+                                putInto = space;
+                            }
+                            this.prepareForLogging(user,new ItemData(inventoryItem), putInto);
+                        }
+                    }
+                }
+                else if (holder instanceof Furnace)
                 {
                     //TODO this is not working as intended if multiple user do click at the same time in the same inventory
-                    //TODO brewing stand does not allow a lot of items in it i have to handle that
-                    final Inventory toCheckInventory = event.getView().getTopInventory();
-                    final ItemStack[] contentsBefore = toCheckInventory.getContents();
-                    this.module.getTaskManger().scheduleSyncDelayedTask(this.module,new Runnable() {
-                        @Override
-                        public void run()
-                        {
-                            ContainerListener.this.findAndLogChanges(world, user, toCheckInventory, contentsBefore);
-                        }
-                    });
                 }
-                else
                 {
                     event.getView().getTopInventory().getContents();
 
@@ -270,44 +359,6 @@ public class ContainerListener implements Listener
                 }
             }
         }
-    }
-
-    private void findAndLogChanges(World world, User user, Inventory toCheckInventory, ItemStack[] contentsBefore)
-    {
-        TObjectIntHashMap<ItemData> before = this.squashContentsData(contentsBefore);
-        TObjectIntHashMap<ItemData> after = this.squashContentsData(toCheckInventory.getContents());
-        for (ItemData data : before.keySet())
-        {
-            after.put(data, after.get(data) - before.get(data));
-        }
-        for (ItemData data : after.keySet())
-        {
-            int amount = after.get(data);
-            if (amount > 0)
-            {
-                if (this.manager.isIgnored(world, ITEM_INSERT)) return;
-                this.prepareForLogging(user, data,amount);
-            }
-            else if (amount < 0)
-            {
-                if (this.manager.isIgnored(world, ITEM_REMOVE)) return;
-                this.prepareForLogging(user, data,amount);
-            }
-        }
-    }
-
-    private TObjectIntHashMap<ItemData> squashContentsData(ItemStack[] contentsBefore)
-    {
-        TObjectIntHashMap map = new TObjectIntHashMap();
-        for (ItemStack itemStack : contentsBefore)
-        {
-            if (itemStack == null) continue;
-            ItemData itemData = new ItemData(itemStack);
-            int amount = map.get(itemData);
-            amount += itemStack.getAmount();
-            map.put(itemData,amount);
-        }
-        return map;
     }
 
     private void prepareForLogging(User user, ItemData itemData, int amount)
