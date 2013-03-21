@@ -420,6 +420,11 @@ public class EntityListener implements Listener
             Dye dye = (Dye) player.getItemInHand().getData();
             this.manager.queueLog(entity.getLocation(),ENTITY_DYE,player,this.serializeData(null,entity,dye.getColor()));
         }
+        else if (player.getItemInHand().getType().equals(BOWL) && entity instanceof MushroomCow)
+        {
+            if (this.manager.isIgnored(player.getWorld(),SOUP_FILL)) return;
+            this.manager.queueLog(entity.getLocation(),SOUP_FILL,player,null);
+        }
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)

@@ -137,7 +137,7 @@ public class BlockListener implements Listener
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onBlockFade(BlockFadeEvent event)
     {
-        if (this.manager.isIgnored(event.getBlock().getWorld(),BLOCK_FADE)) return;
+        if (this.manager.isIgnored(event.getBlock().getWorld(),BLOCK_FADE,event.getBlock().getType())) return;
         this.logBlockChange(LogManager.BLOCK_FADE,event.getBlock().getState(),event.getNewState(),null);
     }
 
@@ -194,7 +194,6 @@ public class BlockListener implements Listener
         }
         else // attached block missing
         {
-            //TODO if sign save sign data
             if (this.manager.isIgnored(state.getWorld(),BLOCK_BREAK)) return;
             if (state.getData() instanceof Attachable)
             {
@@ -545,7 +544,7 @@ public class BlockListener implements Listener
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onEntityBlockForm(final EntityBlockFormEvent event)
     {
-        if (this.manager.isIgnored(event.getBlock().getWorld(),ENTITY_FORM)) return;
+        if (this.manager.isIgnored(event.getBlock().getWorld(),ENTITY_FORM,event.getNewState().getType())) return;
         this.logBlockChange(ENTITY_FORM,event.getBlock().getState(),event.getNewState(),null,event.getEntity().getType().name());
     }
 
@@ -618,19 +617,21 @@ public class BlockListener implements Listener
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onPlayerBucketFill(final PlayerBucketFillEvent event)
     {
-        if (this.manager.isIgnored(event.getBlockClicked().getWorld(),BUCKET_FILL)) return;
         BlockState blockState = event.getBlockClicked().getRelative(event.getBlockFace()).getState();
         if (blockState.getType().equals(Material.WATER) || blockState.getType().equals(Material.STATIONARY_WATER))
         {
+            if (this.manager.isIgnored(event.getBlockClicked().getWorld(),BUCKET_FILL)) return;
             this.logBlockChange(BUCKET_FILL,blockState, AIR,event.getPlayer());
         }
         else if (blockState.getType().equals(Material.LAVA) || blockState.getType().equals(Material.STATIONARY_LAVA))
         {
+            if (this.manager.isIgnored(event.getBlockClicked().getWorld(),BUCKET_FILL)) return;
             this.logBlockChange(BUCKET_FILL,blockState, AIR,event.getPlayer());
         }
         else // milk
         {
-            this.manager.queueLog(blockState.getLocation(),BUCKET_FILL,event.getPlayer(),"milk");
+            if (this.manager.isIgnored(event.getBlockClicked().getWorld(),MILK_FILL)) return;
+            this.manager.queueLog(blockState.getLocation(),MILK_FILL,event.getPlayer(),"milk");
         }
     }
 
@@ -897,6 +898,10 @@ public class BlockListener implements Listener
         }
         for (ItemStack itemStack : contents)
         {
+            if (itemStack == null || itemStack.getType().equals(AIR))
+            {
+                continue;
+            }
             String itemData = this.manager.getEntityListener().serializeItemStack(itemStack);
             this.manager.queueLog(location,ITEM_DROP,player,itemData);
         }

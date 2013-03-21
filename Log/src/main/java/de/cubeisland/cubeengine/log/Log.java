@@ -7,22 +7,11 @@ import de.cubeisland.cubeengine.log.commands.LookupCommands;
 import de.cubeisland.cubeengine.log.listeners.worldedit.LogEditSessionFactory;
 import de.cubeisland.cubeengine.log.storage.LogManager;
 import de.cubeisland.cubeengine.log.tool.ToolListener;
-import org.bukkit.World;
-
-import java.io.File;
-import java.util.HashMap;
-import java.util.Map;
 
 public class Log extends Module
 {
-    private static Log instance;
-
     private LogManager logManager;
-
-    public Log()
-    {
-        instance = this;
-    }
+    private LogConfiguration config;
 
     @Override
     public void onEnable()
@@ -65,5 +54,9 @@ public class Log extends Module
     public LogManager getLogManager()
     {
         return this.logManager;
+    }
+
+    public LogConfiguration getConfiguration() {
+        return this.config;
     }
 }
