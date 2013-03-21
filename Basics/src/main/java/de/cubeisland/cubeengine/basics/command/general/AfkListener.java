@@ -108,7 +108,7 @@ public class AfkListener implements Listener, Runnable
         {
             if (user.isOnline())
             {
-                basicsAttachment = user.get(BasicsAttachment.class);
+                basicsAttachment = user.attachOrGet(BasicsAttachment.class,this.basics);
                 long lastAction = basicsAttachment.getLastAction();
                 if (lastAction == 0)
                 {

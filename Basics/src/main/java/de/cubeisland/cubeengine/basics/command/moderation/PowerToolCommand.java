@@ -87,7 +87,7 @@ public class PowerToolCommand extends ContainerCommand implements Listener
     @Alias(names = "ptr")
     @Command(names = {
         "remove", "del", "delete", "rm"
-    }, desc = "Removes a command from your powertool", flags = @Flag(longName = "chat", name = "c"), usage = "[command] [-chat]")
+    }, desc = "Removes a command from your powertool", flags = @Flag(longName = "chat", name = "c"), usage = "[command] [-chat]", max = NO_MAX)
     public void remove(ParameterizedContext context)
     {
         if (context.getSender() instanceof User)
