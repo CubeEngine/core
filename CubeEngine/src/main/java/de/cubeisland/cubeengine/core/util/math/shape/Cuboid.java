@@ -14,8 +14,6 @@ public class Cuboid implements Shape
     
     private Vector3 rotationAngle;
     private Vector3 centerOfRotation;
-    
-    private Vector3 scaleVector;
 
     public Cuboid( Vector3 point, double width, double height, double depth )
     {
@@ -24,16 +22,26 @@ public class Cuboid implements Shape
         this.height = height;
         this.depth = depth;
         
-        this.rotationAngle = new Vector3(0,0,0);
         this.centerOfRotation = new Vector3(this.point.x + width / 2, this.point.y + height / 2, this.point.z + depth / 2);
+        this.rotationAngle = new Vector3(0, 0, 0);
+    }
+
+    
+    public Cuboid( Vector3 point, double width, double height, double depth, Vector3 centerOfRotation, Vector3 rotationAngle)
+    {
+        this.point = point;
+        this.width = width;
+        this.height = height;
+        this.depth = depth;
         
-        this.scaleVector = new Vector3(1,1,1);
+        this.centerOfRotation = centerOfRotation;
+        this.rotationAngle = rotationAngle;
     }
 
     @Override
-    public void setPoint( Vector3 point )
+    public Shape setPoint( Vector3 point )
     {
-        this.point = point;
+        return new Cuboid(point, this.width, this.height, this.depth, this.centerOfRotation, this.rotationAngle);
     }
     
     @Override
@@ -42,9 +50,9 @@ public class Cuboid implements Shape
         return this.point;
     }
     
-    public void setWidth(double width)
+    public Cuboid setWidth(double width)
     {
-        this.width = width;
+        return new Cuboid(this.point, width, this.height, this.depth, this.centerOfRotation, this.rotationAngle);
     }
     
     public double getWidth()
@@ -52,9 +60,9 @@ public class Cuboid implements Shape
         return this.width;
     }
     
-    public void setHeight(double height)
+    public Cuboid setHeight(double height)
     {
-        this.height = height;
+        return new Cuboid(this.point, this.width, height, this.depth, this.centerOfRotation, this.rotationAngle);
     }
     
     public double getHeight()
@@ -62,9 +70,9 @@ public class Cuboid implements Shape
         return this.height;
     }
     
-    public void setDepth(double depth)
+    public Cuboid setDepth(double depth)
     {
-        this.depth = depth;
+        return new Cuboid(this.point, this.width, this.height, depth, this.centerOfRotation, this.rotationAngle);
     }
     
     public double getDepth()
@@ -73,15 +81,15 @@ public class Cuboid implements Shape
     }
 
     @Override
-    public void rotate( Vector3 angle )
+    public Shape rotate( Vector3 angle )
     {
-        this.rotationAngle = angle;
+        return new Cuboid(this.point, this.width, this.height, this.depth, this.centerOfRotation, angle);
     }
 
     @Override
-    public void setCenterOfRotation( Vector3 center )
+    public Shape setCenterOfRotation( Vector3 center )
     {
-        this.centerOfRotation = center;
+        return new Cuboid(this.point, this.width, this.height, this.depth, center, this.rotationAngle);
     }
 
     @Override
@@ -97,15 +105,9 @@ public class Cuboid implements Shape
     }
 
     @Override
-    public void scale( Vector3 vector )
+    public Shape scale( Vector3 vector )
     {
-        this.scaleVector = vector;
-    }
-
-    @Override
-    public Vector3 getScaleVector()
-    {
-        return this.scaleVector;
+        return new Cuboid(this.point, this.width * vector.x, this.height * vector.y, this.depth * vector.z, this.centerOfRotation, this.rotationAngle);
     }
     
     private boolean intersects(Cuboid other)
