@@ -69,7 +69,7 @@ public class BlockListener implements Listener
             String[] lines = ((Sign)blockState).getLines();
             try
             {
-                this.logBlockChange(blockState.getLocation(), BLOCK_BREAK, event.getPlayer(), blockState, CubeEngine.getCore().getJsonObjectMapper().writeValueAsString(lines));
+                this.logBlockChange(blockState.getLocation(), BLOCK_BREAK, event.getPlayer(), blockState, this.module.getObjectMapper().writeValueAsString(lines));
             }
             catch (JsonProcessingException e)
             {
