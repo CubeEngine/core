@@ -19,8 +19,8 @@ public class Log extends Module
     public void onEnable()
     {
         //        TODO when sending logs to player
-        //        if same player and blocktype do not use 1 line for each block
-        //        but instead smth like this:
+        //        if same player and block type do not use 1 line for each block
+        //        but instead something like this:
         //        <Player> BlockBreak <BlockType> x<times> at <cuboid> 
         // perhaps make possible to select this cuboid to rollback later
         //flag to ignore what block
