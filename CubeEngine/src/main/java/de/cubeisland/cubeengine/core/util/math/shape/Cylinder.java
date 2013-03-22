@@ -126,11 +126,7 @@ public class Cylinder implements Shape
     @Override
     public boolean contains( double x, double y, double z )
     {
-        return !(
-            y < this.getPoint().y
-            || y > this.getPoint().y + this.getHeight()
-            || MathHelper.pow( (x - this.getPoint().x) / this.getRadiusX(), 2 ) + MathHelper.pow( (z - this.getPoint().z) / this.getRadiusZ(), 2 ) > 1
-        );
+        return !(y < this.getPoint().y || y > this.getPoint().y + this.getHeight()) && MathHelper.pow( (x - this.getPoint().x) / this.getRadiusX(), 2 ) + MathHelper.pow( (z - this.getPoint().z) / this.getRadiusZ(), 2 ) < 1;
     }
     
     @Override

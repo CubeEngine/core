@@ -10,6 +10,7 @@ import de.cubeisland.cubeengine.core.util.math.shape.Cube;
 import de.cubeisland.cubeengine.core.util.math.shape.Cuboid;
 import de.cubeisland.cubeengine.core.util.math.shape.Cylinder;
 import de.cubeisland.cubeengine.core.util.math.shape.Shape;
+import de.cubeisland.cubeengine.core.util.math.shape.Sphere;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
@@ -48,7 +49,7 @@ public class DoorCommand
     (
         desc = "",
         min = 3,
-        max = 5
+        max = 6
     )
     public void shape(CommandContext context)
     {
@@ -63,7 +64,7 @@ public class DoorCommand
         
         Block block = user.getTargetBlock( null, 20);
         
-        Shape shape = new Cylinder(new Vector3(block.getX(), block.getY(), block.getZ()), width, height, depth).getEncircledCuboid();
+        Shape shape = new Cylinder(new Vector3(block.getX(), block.getY(), block.getZ()), width, height, depth);
         shape = shape.rotate( new Vector3(rotx, roty, rotz));
         for(Vector3 p : shape)
         {

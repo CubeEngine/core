@@ -18,13 +18,13 @@ public interface Shape extends Iterable<Vector3>
 
     public Shape scale( Vector3 vector );
 
-    public boolean intersects( Shape other );
-
-    public boolean contains( Shape other );
-
     public boolean contains( Vector3 point );
 
     public boolean contains( double x, double y, double z );
+
+    public boolean intersects( Shape other );
+
+    public boolean contains( Shape other );
 
     public Cuboid getEncircledCuboid();
 }
