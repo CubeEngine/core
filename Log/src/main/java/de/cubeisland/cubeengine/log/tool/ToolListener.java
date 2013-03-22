@@ -21,7 +21,7 @@ public class ToolListener implements Listener
     @EventHandler
     public void onClick(PlayerInteractEvent event)
     {
-        if (event.getClickedBlock() != null && event.getPlayer().getItemInHand().getTypeId() == 7)
+        if (event.getClickedBlock() != null)
         {
             ItemStack item = event.getPlayer().getItemInHand();
             if (!item.hasItemMeta() || !item.getItemMeta().hasDisplayName() ||

@@ -598,7 +598,7 @@ public class LogManager
                 }
                 if (additional == null)
                 {
-                    this.module.getLogger().log(LogLevel.DEBUG,"Inventory has no InventoryHolder!");
+                    this.module.getLogger().log(LogLevel.DEBUG, "Inventory has no InventoryHolder!");
                     return false;
                 }
                 throw new IllegalStateException("Invalid ITEM_CHANGE_IN_CONTAINER: "+additional);
@@ -748,6 +748,8 @@ public class LogManager
     }
 
 
-
+    public int getQueueSize() {
+        return this.queuedLogs.size();
+    }
 }
 
