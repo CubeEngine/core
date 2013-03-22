@@ -165,7 +165,7 @@ public class LogManager
     public LogManager(Log module)
     {
         this.batchSize = module.getConfiguration().loggingBatchSize;
-        this.mapper = new ObjectMapper();
+        this.mapper = module.getObjectMapper();
         File file = new File(module.getFolder(), "worlds");
         file.mkdir();
         this.globalConfig = Configuration.load(LoggingConfiguration.class, new File(module.getFolder(), "globalconfig.yml"));
