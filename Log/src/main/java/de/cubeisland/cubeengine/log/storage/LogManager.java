@@ -40,39 +40,7 @@ import java.util.concurrent.*;
 
 public class LogManager
 {
-    //CraftItemEvent
-    //enchant item
-    //entity break
-    //entity dye
-    //entity shear
-    //entity follow
-    //entity spawn
-    //fireball
-
-    //hangingitem break
-    //hangingitem place
-
-    //item drop
-    //item insert
-    //item pickup
-    //item remove
-    //xp pickup
-
-    //EntityChangeBlockEvent / Sheep eat
-
-    //player join
-    //player quit
-
-    //splash potion
-
-    //spawnegg use
-
-
-    //tnt prime / there is no such event yet! https://bukkit.atlassian.net/browse/BUKKIT-45
-
-    //new shiny ones:
-
-    //BREAK etc.
+    //BREAK
     public static final int BLOCK_BREAK = 0x00;
     public static final int BLOCK_BURN = 0x01;
     public static final int BLOCK_FADE = 0x02;
@@ -133,7 +101,6 @@ public class LogManager
     public static final int PLATE_STEP = 0x56;
     public static final int MILK_FILL = 0x57;
     public static final int SOUP_FILL = 0x58;
-
     //ENTITY-PLACE/BREAK
     public static final int VEHICLE_PLACE = 0x60;
     public static final int HANGING_PLACE = 0x61;
@@ -782,5 +749,8 @@ public class LogManager
         this.queueLog(timestamp,worldID,location.getBlockX(),location.getBlockY(),location.getBlockZ(),
                 action,causer,material.name(),dura.longValue(),containerType,null,additional);
     }
+
+
+
 }
 

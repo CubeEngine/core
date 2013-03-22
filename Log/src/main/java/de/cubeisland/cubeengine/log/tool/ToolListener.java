@@ -1,9 +1,13 @@
 package de.cubeisland.cubeengine.log.tool;
 
 import de.cubeisland.cubeengine.log.Log;
+import de.cubeisland.cubeengine.log.commands.LogCommands;
+import org.bukkit.Location;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.inventory.ItemStack;
 
 public class ToolListener implements Listener
 {
@@ -16,17 +20,21 @@ public class ToolListener implements Listener
 
     @EventHandler
     public void onClick(PlayerInteractEvent event)
-    {/*
+    {
         if (event.getClickedBlock() != null && event.getPlayer().getItemInHand().getTypeId() == 7)
         {
             ItemStack item = event.getPlayer().getItemInHand();
-            if (!item.hasItemMeta() || !item.getItemMeta().hasDisplayName() || !item.getItemMeta().getDisplayName().equals(LogCommands.toolName))
+            if (!item.hasItemMeta() || !item.getItemMeta().hasDisplayName() ||
+                    !item.getItemMeta().getDisplayName().equals(LogCommands.toolName))
             {
                 return;
             }
+            event.getPlayer().sendMessage("Used LoggingTool-Block but not implemented yet :/");
             Location loc = event.getAction().equals(Action.LEFT_CLICK_BLOCK)
                     ? event.getClickedBlock().getLocation()
                     : event.getClickedBlock().getRelative(event.getBlockFace()).getLocation();
+            /*
+
             BlockLookup lookup = this.module.getLogManager().getBlockLogs(
                     loc.getWorld(), loc, null,
                     new Integer[]
@@ -58,6 +66,7 @@ public class ToolListener implements Listener
             {
                 user.sendMessage("log", "&cNo logs found at &6%d:%d:%d &cin &6%s&c!", loc.getBlockX(), loc.getBlockY(), loc.getBlockZ(), loc.getWorld().getName());
             }
-        }*/
+            */
+        }
     }
 }

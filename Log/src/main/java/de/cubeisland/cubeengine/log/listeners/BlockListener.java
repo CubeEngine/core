@@ -45,10 +45,6 @@ import static org.bukkit.Material.*;
 
 public class BlockListener implements Listener
 {
-
-    //TODO when removing source of falling lava "AIR" is falling down no more lava but blocks get formed //any idea if possible how to log this?
-    //check if this is fixed
-
     private LogManager manager;
     private Log module;
 
@@ -353,6 +349,7 @@ public class BlockListener implements Listener
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onBlockFromTo(final BlockFromToEvent event)
     {
+        // TODO CE-344 Lava currently impossible to log sometimes
         BlockState toBlock = event.getToBlock().getState();
         final boolean canFlow = toBlock.getType().equals(AIR) || isNonFluidProofBlock(toBlock.getType());
         if (!canFlow)
