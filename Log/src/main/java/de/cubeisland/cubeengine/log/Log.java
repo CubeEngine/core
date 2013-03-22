@@ -1,5 +1,6 @@
 package de.cubeisland.cubeengine.log;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sk89q.worldedit.WorldEdit;
 import de.cubeisland.cubeengine.core.module.Module;
 import de.cubeisland.cubeengine.log.commands.LogCommands;
@@ -12,13 +13,14 @@ public class Log extends Module
 {
     private LogManager logManager;
     private LogConfiguration config;
+    private ObjectMapper objectMapper = null;
 
     @Override
     public void onEnable()
     {
         //        TODO when sending logs to player
-        //        if same player and blocktype do not use 1 line for each block
-        //        but instead smth like this:
+        //        if same player and block type do not use 1 line for each block
+        //        but instead something like this:
         //        <Player> BlockBreak <BlockType> x<times> at <cuboid> 
         // perhaps make possible to select this cuboid to rollback later
         //flag to ignore what block
@@ -58,5 +60,14 @@ public class Log extends Module
 
     public LogConfiguration getConfiguration() {
         return this.config;
+    }
+
+    public ObjectMapper getObjectMapper()
+    {
+        if (this.objectMapper == null)
+        {
+            this.objectMapper = new ObjectMapper();
+        }
+        return objectMapper;
     }
 }

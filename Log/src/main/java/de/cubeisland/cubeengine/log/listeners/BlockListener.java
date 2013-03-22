@@ -1,7 +1,6 @@
 package de.cubeisland.cubeengine.log.listeners;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import de.cubeisland.cubeengine.core.CubeEngine;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.util.BlockUtil;
 import de.cubeisland.cubeengine.core.util.Pair;
@@ -10,14 +9,41 @@ import de.cubeisland.cubeengine.log.storage.LogManager;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.block.*;
+import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
+import org.bukkit.block.BlockState;
 import org.bukkit.block.Chest;
+import org.bukkit.block.Jukebox;
+import org.bukkit.block.NoteBlock;
 import org.bukkit.block.Sign;
-import org.bukkit.entity.*;
+import org.bukkit.entity.Creeper;
+import org.bukkit.entity.EnderDragon;
+import org.bukkit.entity.Enderman;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.EntityType;
+import org.bukkit.entity.Fireball;
+import org.bukkit.entity.Hanging;
+import org.bukkit.entity.Player;
+import org.bukkit.entity.TNTPrimed;
+import org.bukkit.entity.WitherSkull;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.block.*;
+import org.bukkit.event.block.Action;
+import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.event.block.BlockBurnEvent;
+import org.bukkit.event.block.BlockFadeEvent;
+import org.bukkit.event.block.BlockFormEvent;
+import org.bukkit.event.block.BlockFromToEvent;
+import org.bukkit.event.block.BlockIgniteEvent;
+import org.bukkit.event.block.BlockPhysicsEvent;
+import org.bukkit.event.block.BlockPistonExtendEvent;
+import org.bukkit.event.block.BlockPistonRetractEvent;
+import org.bukkit.event.block.BlockPlaceEvent;
+import org.bukkit.event.block.BlockSpreadEvent;
+import org.bukkit.event.block.EntityBlockFormEvent;
+import org.bukkit.event.block.LeavesDecayEvent;
+import org.bukkit.event.block.SignChangeEvent;
 import org.bukkit.event.entity.EntityBreakDoorEvent;
 import org.bukkit.event.entity.EntityChangeBlockEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
@@ -28,7 +54,10 @@ import org.bukkit.event.world.StructureGrowEvent;
 import org.bukkit.inventory.DoubleChestInventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.material.*;
+import org.bukkit.material.Attachable;
+import org.bukkit.material.Bed;
+import org.bukkit.material.Diode;
+import org.bukkit.material.Lever;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -69,7 +98,7 @@ public class BlockListener implements Listener
             String[] lines = ((Sign)blockState).getLines();
             try
             {
-                this.logBlockChange(blockState.getLocation(), BLOCK_BREAK, event.getPlayer(), blockState, CubeEngine.getCore().getJsonObjectMapper().writeValueAsString(lines));
+                this.logBlockChange(blockState.getLocation(), BLOCK_BREAK, event.getPlayer(), blockState, this.module.getObjectMapper().writeValueAsString(lines));
             }
             catch (JsonProcessingException e)
             {
@@ -492,12 +521,12 @@ public class BlockListener implements Listener
                     return; // nothing to log empty sign
                 }
                 this.manager.queueLog(event.getBlock().getLocation(), SIGN_CHANGE, event.getPlayer(),
-                        CubeEngine.getCore().getJsonObjectMapper().writeValueAsString(event.getLines()));
+                        this.module.getObjectMapper().writeValueAsString(event.getLines()));
             }
             else //log both
             {
                 this.manager.queueLog(event.getBlock().getLocation(), SIGN_CHANGE, event.getPlayer(),
-                        CubeEngine.getCore().getJsonObjectMapper().writeValueAsString(Arrays.asList(oldLines, event.getLines())));
+                                      this.module.getObjectMapper().writeValueAsString(Arrays.asList(oldLines, event.getLines())));
             }
         }
         catch (JsonProcessingException e)
