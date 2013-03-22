@@ -5,8 +5,12 @@ import de.cubeisland.cubeengine.core.command.CommandContext;
 import de.cubeisland.cubeengine.core.command.reflected.Command;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.util.math.Vector3;
+import de.cubeisland.cubeengine.core.util.math.shape.CircularCylinder;
 import de.cubeisland.cubeengine.core.util.math.shape.Cube;
+import de.cubeisland.cubeengine.core.util.math.shape.Cuboid;
+import de.cubeisland.cubeengine.core.util.math.shape.Cylinder;
 import de.cubeisland.cubeengine.core.util.math.shape.Shape;
+import de.cubeisland.cubeengine.core.util.math.shape.Sphere;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
@@ -44,32 +48,32 @@ public class DoorCommand
     @Command
     (
         desc = "",
-        min = 1,
-        max = 7
+        min = 3,
+        max = 6
     )
     public void shape(CommandContext context)
     {
         User user = ( User ) context.getSender();
+        int size = 0;
         int width = context.getArg( 0, Integer.class);
-        int rotx = context.getArg(1, Integer.class, 0);
-        int roty = context.getArg(2, Integer.class, 0);
-        int rotz = context.getArg(3, Integer.class, 0);
-        int scalex = context.getArg(4, Integer.class, 1);
-        int scaley = context.getArg(5, Integer.class, 1);
-        int scalez = context.getArg(6, Integer.class, 1);
+        int height = context.getArg( 1, Integer.class);
+        int depth = context.getArg( 2, Integer.class);
+        int rotx = context.getArg(3, Integer.class, 0);
+        int roty = context.getArg(4, Integer.class, 0);
+        int rotz = context.getArg(5, Integer.class, 0);
         
         Block block = user.getTargetBlock( null, 20);
         
-        Shape cube = new Cube(new Vector3(block.getX(), block.getY(), block.getZ()), width);
-        cube.scale( new Vector3(scalex,scaley,scalez) );
-        cube.rotate( new Vector3(rotx, roty, rotz));
-        for(Vector3 p : cube)
+        Shape shape = new Cylinder(new Vector3(block.getX(), block.getY(), block.getZ()), width, height, depth);
+        shape = shape.rotate( new Vector3(rotx, roty, rotz));
+        for(Vector3 p : shape)
         {
             Block block2 = user.getWorld().getBlockAt( (int) p.x,(int) p.y,(int) p.z );
             block2.setType( Material.DIRT );
             this.block.add( block2 );
+            size++;
         }
-        context.sendMessage( "funished");
+        context.sendMessage( "finished " + size);
     }
 
     @Command

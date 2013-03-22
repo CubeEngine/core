@@ -7,6 +7,7 @@ import de.cubeisland.cubeengine.core.util.BlockUtil;
 import de.cubeisland.cubeengine.core.util.Pair;
 import de.cubeisland.cubeengine.log.Log;
 import de.cubeisland.cubeengine.log.storage.LogManager;
+import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.*;
@@ -44,10 +45,6 @@ import static org.bukkit.Material.*;
 
 public class BlockListener implements Listener
 {
-
-    //TODO when removing source of falling lava "AIR" is falling down no more lava but blocks get formed //any idea if possible how to log this?
-    //check if this is fixed
-
     private LogManager manager;
     private Log module;
 
@@ -105,7 +102,7 @@ public class BlockListener implements Listener
         if (event.getBlock().getRelative(BlockFace.UP).getType().equals(Material.WATER_LILY)
         && !event.getBlockPlaced().getType().equals(Material.STATIONARY_WATER))
         {
-            if (this.manager.isIgnored(BLOCK_BREAK)) return;
+            if (this.manager.isIgnored(event.getPlayer().getWorld(),BLOCK_BREAK)) return;
             this.logBlockChange(BLOCK_BREAK,event.getBlock().getRelative(BlockFace.UP).getState(), AIR,event.getPlayer());
         }
         this.logBlockChange(LogManager.BLOCK_PLACE,event.getBlockReplacedState(),event.getBlockPlaced().getState(),event.getPlayer());
@@ -116,12 +113,12 @@ public class BlockListener implements Listener
     {
         if (event.getNewState().getType().equals(Material.FIRE))
         {
-            if (this.manager.isIgnored(FIRE_SPREAD)) return;
+            if (this.manager.isIgnored(event.getBlock().getWorld(),FIRE_SPREAD)) return;
             this.logBlockChange(LogManager.FIRE_SPREAD,event.getBlock().getState(),event.getNewState(),null);
         }
         else
         {
-            if (this.manager.isIgnored(BLOCK_SPREAD)) return;
+            if (this.manager.isIgnored(event.getBlock().getWorld(),BLOCK_SPREAD)) return;
             this.logBlockChange(LogManager.BLOCK_SPREAD,event.getBlock().getState(),event.getNewState(),null);
         }
     }
@@ -129,34 +126,34 @@ public class BlockListener implements Listener
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onBlockForm(BlockFormEvent event)
     {
-        if (this.manager.isIgnored(BLOCK_FORM)) return;
+        if (this.manager.isIgnored(event.getBlock().getWorld(),BLOCK_FORM)) return;
         this.logBlockChange(LogManager.BLOCK_FORM,event.getBlock().getState(),event.getNewState(),null);
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onBlockFade(BlockFadeEvent event)
     {
-        if (this.manager.isIgnored(BLOCK_FADE)) return;
+        if (this.manager.isIgnored(event.getBlock().getWorld(),BLOCK_FADE,event.getBlock().getType())) return;
         this.logBlockChange(LogManager.BLOCK_FADE,event.getBlock().getState(),event.getNewState(),null);
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onLeavesDecay(LeavesDecayEvent event)
     {
-        if (this.manager.isIgnored(LEAF_DECAY)) return;
+        if (this.manager.isIgnored(event.getBlock().getWorld(),LEAF_DECAY)) return;
         this.logBlockChange(LogManager.LEAF_DECAY,event.getBlock().getState(), AIR,null);
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onBlockBurn(BlockBurnEvent event)
     {
-        if (!this.manager.isIgnored(BLOCK_BURN))
+        if (!this.manager.isIgnored(event.getBlock().getWorld(),BLOCK_BURN))
         {
             BlockState blockState = event.getBlock().getState();
             blockState = this.adjustBlockForDoubleBlocks(blockState); // WOOD_DOOR IRON_DOOR OR BED_BLOCK
             this.logBlockChange(LogManager.BLOCK_BURN,blockState, AIR,null);
         }
-        if (this.manager.isIgnored(BLOCK_BREAK)) return;
+        if (this.manager.isIgnored(event.getBlock().getWorld(),BLOCK_BREAK)) return;
         this.logRelatedBlocks(event.getBlock().getState(),null,BLOCK_BURN);
     }
 
@@ -179,7 +176,7 @@ public class BlockListener implements Listener
         }
         if (state.getType().equals(Material.SAND)||state.getType().equals(Material.GRAVEL)||state.getType().equals(Material.ANVIL))
         { // falling blocks
-            if (this.manager.isIgnored(BLOCK_FALL)) return;
+            if (this.manager.isIgnored(state.getWorld(),BLOCK_FALL)) return;
             if (event.getBlock().getRelative(BlockFace.DOWN).getType().equals(AIR))
             {
                 Location loc = state.getLocation();
@@ -193,7 +190,7 @@ public class BlockListener implements Listener
         }
         else // attached block missing
         {
-            if (this.manager.isIgnored(BLOCK_BREAK)) return;
+            if (this.manager.isIgnored(state.getWorld(),BLOCK_BREAK)) return;
             if (state.getData() instanceof Attachable)
             {
                 Attachable attachable = (Attachable) state.getData();
@@ -213,8 +210,24 @@ public class BlockListener implements Listener
                             Pair<Player,Integer> cause = this.plannedFallingBlocks.get(loc);
                             if (cause != null)
                             {
-                                this.logBlockChange(loc, BLOCK_BREAK, cause.getLeft(), state, "cause:"+cause.getRight());
-                                this.plannedFallingBlocks.remove(loc);
+                                try
+                                {
+                                    String data;
+                                    if (state instanceof Sign)
+                                    {
+                                        data = this.manager.mapper.writeValueAsString(Arrays.asList(cause.getRight(),((Sign) state).getLines()));
+                                    }
+                                    else
+                                    {
+                                        data = this.manager.mapper.writeValueAsString(cause.getRight());
+                                    }
+                                    this.logBlockChange(loc, BLOCK_BREAK, cause.getLeft(), state, data);
+                                    this.plannedFallingBlocks.remove(loc);
+                                }
+                                catch (JsonProcessingException e)
+                                {
+                                    throw new IllegalStateException("Could not parse data on BlockPhysicsEvent");
+                                }
                             }
                         default:
                             return;
@@ -237,8 +250,24 @@ public class BlockListener implements Listener
                         Pair<Player,Integer> cause = this.plannedFallingBlocks.get(loc);
                         if (cause != null)
                         {
-                            this.logBlockChange(loc, BLOCK_BREAK, cause.getLeft(), state, "cause:"+cause.getRight());
-                            this.plannedFallingBlocks.remove(loc);
+                            try
+                            {
+                                String data;
+                                if (state instanceof Sign)
+                                {
+                                    data = this.manager.mapper.writeValueAsString(Arrays.asList(cause.getRight(),((Sign) state).getLines()));
+                                }
+                                else
+                                {
+                                    data = this.manager.mapper.writeValueAsString(cause.getRight());
+                                }
+                                this.logBlockChange(loc, BLOCK_BREAK, cause.getLeft(), state, data);
+                                this.plannedFallingBlocks.remove(loc);
+                            }
+                            catch (JsonProcessingException e)
+                            {
+                                throw new IllegalStateException("Could not parse data on BlockPhysicsEvent");
+                            }
                         }
                     default:
                         return;
@@ -255,21 +284,27 @@ public class BlockListener implements Listener
         switch (event.getCause())
         {
             case FIREBALL:
-                if (this.manager.isIgnored(FIREBALL)) return;
+                if (this.manager.isIgnored(blockState.getWorld(),FIREBALL)) return;
                 this.logBlockChange(FIREBALL,event.getBlock().getState(),blockState,null);
                 break;
             case LAVA:
-                if (this.manager.isIgnored(LAVA_IGNITE)) return;
+                if (this.manager.isIgnored(blockState.getWorld(),LAVA_IGNITE)) return;
                 this.logBlockChange(LAVA_IGNITE,event.getBlock().getState(),blockState,null);
                 break;
             case LIGHTNING:
-                if (this.manager.isIgnored(LIGHTNING)) return;
+                if (this.manager.isIgnored(blockState.getWorld(),LIGHTNING)) return;
                 this.logBlockChange(LIGHTNING,event.getBlock().getState(),blockState,null);
                 break;
             case FLINT_AND_STEEL:
-                if (this.manager.isIgnored(LIGHTER)) return;
+                if (this.manager.isIgnored(blockState.getWorld(),LIGHTER)) return;
                 this.logBlockChange(LIGHTER,event.getBlock().getState(),blockState,event.getPlayer());
                 break;
+            case ENDER_CRYSTAL:
+            case EXPLOSION:
+                if (this.manager.isIgnored(blockState.getWorld(),OTHER_IGNITE)) return;
+                this.logBlockChange(OTHER_IGNITE,event.getBlock().getState(),blockState,null);
+                break;
+            // SPREAD is done is BlockSpreadEvent
         }
     }
 
@@ -277,7 +312,7 @@ public class BlockListener implements Listener
     public void onPistonExtend(final BlockPistonExtendEvent event)
     {
         //TODO check if this is working correctly
-        if (this.manager.isIgnored(BLOCK_SHIFT)) return;
+        if (this.manager.isIgnored(event.getBlock().getWorld(),BLOCK_SHIFT)) return;
         boolean first = true;
         for (Block block : event.getBlocks())
         {
@@ -300,7 +335,7 @@ public class BlockListener implements Listener
     public void onPistonRetract(final BlockPistonRetractEvent event)
     {
         //TODO check if this is working correctly
-        if (!event.isSticky() || this.manager.isIgnored(BLOCK_SHIFT)) return;
+        if (!event.isSticky() || this.manager.isIgnored(event.getBlock().getWorld(),BLOCK_SHIFT)) return;
         BlockState retractingBlock = event.getRetractLocation().getBlock().getState();
         if (retractingBlock.getType().equals(AIR)) return;
         BlockState retractedBlock = event.getBlock().getRelative(event.getDirection()).getState();
@@ -314,6 +349,7 @@ public class BlockListener implements Listener
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onBlockFromTo(final BlockFromToEvent event)
     {
+        // TODO CE-344 Lava currently impossible to log sometimes
         BlockState toBlock = event.getToBlock().getState();
         final boolean canFlow = toBlock.getType().equals(AIR) || isNonFluidProofBlock(toBlock.getType());
         if (!canFlow)
@@ -368,7 +404,7 @@ public class BlockListener implements Listener
                 newToBlock.setType(Material.LAVA);
                 newToBlock.setRawData((byte)(fromBlock.getRawData() + 1));
             }
-            if (this.manager.isIgnored(action)) return;
+            if (this.manager.isIgnored(event.getBlock().getWorld(),action)) return;
             this.logBlockChange(action,toBlock,newToBlock,null);
         }
         else if (fromMat.equals(Material.WATER) || fromMat.equals(Material.STATIONARY_WATER))
@@ -386,7 +422,7 @@ public class BlockListener implements Listener
                 }
                 if (sources >= 2) // created new source block
                 {
-                    if (this.manager.isIgnored(BLOCK_FORM)) return;
+                    if (this.manager.isIgnored(event.getBlock().getWorld(),BLOCK_FORM)) return;
                     newToBlock.setType(Material.STATIONARY_WATER);
                     newToBlock.setRawData((byte)0);
                     this.logBlockChange(BLOCK_FORM,toBlock,newToBlock,null);
@@ -426,11 +462,11 @@ public class BlockListener implements Listener
         Player player = event.getPlayer();
         if (player == null)
         {
-            if (this.manager.isIgnored(NATURAL_GROW)) return;
+            if (this.manager.isIgnored(event.getWorld(),NATURAL_GROW)) return;
         }
         else
         {
-            if (this.manager.isIgnored(PLAYER_GROW)) return;
+            if (this.manager.isIgnored(event.getWorld(),PLAYER_GROW)) return;
         }
         for (BlockState newBlock : event.getBlocks())
         {
@@ -445,7 +481,7 @@ public class BlockListener implements Listener
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onSignChange(final SignChangeEvent event)
     {
-        if (this.manager.isIgnored(SIGN_CHANGE)) return;
+        if (this.manager.isIgnored(event.getBlock().getWorld(),SIGN_CHANGE)) return;
         String[] oldLines = ((Sign)event.getBlock().getState()).getLines();
         try
         {
@@ -473,7 +509,7 @@ public class BlockListener implements Listener
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onEntityBreakDoor(final EntityBreakDoorEvent event)
     {
-        if (this.manager.isIgnored(ENTITY_BREAK)) return;
+        if (this.manager.isIgnored(event.getBlock().getWorld(),ENTITY_BREAK)) return;
         BlockState state = event.getBlock().getState();
         state = this.adjustBlockForDoubleBlocks(state);
         this.logBlockChange(ENTITY_BREAK,state,null,null,event.getEntityType().name());
@@ -484,19 +520,19 @@ public class BlockListener implements Listener
     {
         if(event.getEntityType().equals(EntityType.SHEEP))
         {
-            if (this.manager.isIgnored(SHEEP_EAT))return;
+            if (this.manager.isIgnored(event.getBlock().getWorld(),SHEEP_EAT))return;
             this.logBlockChange(SHEEP_EAT, event.getBlock().getState(), event.getTo());
         }
         else if(event.getEntity() instanceof Enderman)
         {
             if (event.getTo().equals(AIR))
             {
-                if (this.manager.isIgnored(ENDERMAN_PICKUP)) return;
+                if (this.manager.isIgnored(event.getBlock().getWorld(),ENDERMAN_PICKUP)) return;
                 this.logBlockChange(ENDERMAN_PICKUP, event.getBlock().getState(), event.getTo());
             }
             else
             {
-                if (this.manager.isIgnored(ENDERMAN_PLACE)) return;
+                if (this.manager.isIgnored(event.getBlock().getWorld(),ENDERMAN_PLACE)) return;
                 this.logBlockChange(ENDERMAN_PLACE, event.getBlock().getState(), event.getTo());
             }
         }
@@ -505,7 +541,7 @@ public class BlockListener implements Listener
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onEntityBlockForm(final EntityBlockFormEvent event)
     {
-        if (this.manager.isIgnored(ENTITY_FORM)) return;
+        if (this.manager.isIgnored(event.getBlock().getWorld(),ENTITY_FORM,event.getNewState().getType())) return;
         this.logBlockChange(ENTITY_FORM,event.getBlock().getState(),event.getNewState(),null,event.getEntity().getType().name());
     }
 
@@ -516,34 +552,34 @@ public class BlockListener implements Listener
         Player player = null;
         if (event.getEntity() instanceof TNTPrimed)
         {
-            if (this.manager.isIgnored(TNT_EXPLODE)) return;
+            if (this.manager.isIgnored(event.getEntity().getWorld(),TNT_EXPLODE)) return;
             action = TNT_EXPLODE;
         }
         else if (event.getEntity() instanceof Creeper)
         {
-            if (this.manager.isIgnored(CREEPER_EXPLODE)) return;
+            if (this.manager.isIgnored(event.getEntity().getWorld(),CREEPER_EXPLODE)) return;
             final Entity target = ((Creeper)event.getEntity()).getTarget();
             player = target instanceof Player ? ((Player)target) : null;
             action = CREEPER_EXPLODE;
         }
         else if (event.getEntity() instanceof Fireball)
         {
-            if (this.manager.isIgnored(FIREBALL_EXPLODE)) return;
+            if (this.manager.isIgnored(event.getEntity().getWorld(),FIREBALL_EXPLODE)) return;
             action = FIREBALL_EXPLODE;
         }
         else if (event.getEntity() instanceof EnderDragon)
         {
-            if (this.manager.isIgnored(ENDERDRAGON_EXPLODE)) return;
+            if (this.manager.isIgnored(event.getEntity().getWorld(),ENDERDRAGON_EXPLODE)) return;
             action = ENDERDRAGON_EXPLODE;
         }
         else if (event.getEntity() instanceof WitherSkull)
         {
-            if (this.manager.isIgnored(WITHER_EXPLODE)) return;
+            if (this.manager.isIgnored(event.getEntity().getWorld(),WITHER_EXPLODE)) return;
             action = WITHER_EXPLODE;
         }
         else
         {
-            if (this.manager.isIgnored(ENTITY_EXPLODE)) return;
+            if (this.manager.isIgnored(event.getEntity().getWorld(),ENTITY_EXPLODE)) return;
             action = ENTITY_EXPLODE;
         }
 
@@ -565,12 +601,12 @@ public class BlockListener implements Listener
         BlockState state = event.getBlockClicked().getRelative(event.getBlockFace()).getState();
         if (event.getBucket().equals(Material.WATER_BUCKET))
         {
-            if (this.manager.isIgnored(WATER_BUCKET)) return;
+            if (this.manager.isIgnored(state.getWorld(),WATER_BUCKET)) return;
             this.logBlockChange(WATER_BUCKET,state,Material.STATIONARY_WATER, event.getPlayer());
         }
         else if (event.getBucket().equals(Material.LAVA_BUCKET))
         {
-            if (this.manager.isIgnored(LAVA_BUCKET)) return;
+            if (this.manager.isIgnored(state.getWorld(),LAVA_BUCKET)) return;
             this.logBlockChange(WATER_BUCKET, state, Material.STATIONARY_LAVA, event.getPlayer());
         }
     }
@@ -578,19 +614,21 @@ public class BlockListener implements Listener
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onPlayerBucketFill(final PlayerBucketFillEvent event)
     {
-        if (this.manager.isIgnored(BUCKET_FILL)) return;
         BlockState blockState = event.getBlockClicked().getRelative(event.getBlockFace()).getState();
         if (blockState.getType().equals(Material.WATER) || blockState.getType().equals(Material.STATIONARY_WATER))
         {
+            if (this.manager.isIgnored(event.getBlockClicked().getWorld(),BUCKET_FILL)) return;
             this.logBlockChange(BUCKET_FILL,blockState, AIR,event.getPlayer());
         }
         else if (blockState.getType().equals(Material.LAVA) || blockState.getType().equals(Material.STATIONARY_LAVA))
         {
+            if (this.manager.isIgnored(event.getBlockClicked().getWorld(),BUCKET_FILL)) return;
             this.logBlockChange(BUCKET_FILL,blockState, AIR,event.getPlayer());
         }
         else // milk
         {
-            this.manager.queueLog(blockState.getLocation(),BUCKET_FILL,event.getPlayer(),"milk");
+            if (this.manager.isIgnored(event.getBlockClicked().getWorld(),MILK_FILL)) return;
+            this.manager.queueLog(blockState.getLocation(),MILK_FILL,event.getPlayer(),"milk");
         }
     }
 
@@ -602,39 +640,50 @@ public class BlockListener implements Listener
             ItemStack itemInHand = event.getPlayer().getItemInHand();
             Location location = event.getClickedBlock().getLocation();
             BlockState state = event.getClickedBlock().getState();
-            switch (event.getClickedBlock().getType())
+            switch (state.getType())
             {
                 case FURNACE:
                 case DISPENSER:
                 case CHEST:
                 case ENDER_CHEST:
+                case ENCHANTMENT_TABLE:
                 case ANVIL:
                 case BREWING_STAND:
-                    if (this.manager.isIgnored(CONTAINER_ACCESS)) return;
+                case TRAPPED_CHEST:
+                case HOPPER:
+                case DROPPER:
+                    if (this.manager.isIgnored(state.getWorld(),CONTAINER_ACCESS)) return;
                     this.manager.queueLog(location,CONTAINER_ACCESS,event.getPlayer(),state.getType().name());
                     break;
                 case WOODEN_DOOR:
                 case TRAP_DOOR:
                 case FENCE_GATE:
-                    if (this.manager.isIgnored(DOOR_USE)) return;
+                    if (this.manager.isIgnored(state.getWorld(),DOOR_USE)) return;
                     state = this.adjustBlockForDoubleBlocks(state);
                     this.manager.queueLog(state.getLocation(),DOOR_USE,event.getPlayer(),state.getType().name());
                     break;
                 case LEVER:
-                    if (this.manager.isIgnored(LEVER_USE)) return;
+                    if (this.manager.isIgnored(state.getWorld(),LEVER_USE)) return;
                     Lever leverData = (Lever) state.getData();
                     leverData.setPowered(!leverData.isPowered());
                     this.logBlockChange(location, LEVER_USE, event.getPlayer(), state, state.getType().name(), leverData.getData());
                     break;
+                case REDSTONE_COMPARATOR_ON:
+                case REDSTONE_COMPARATOR_OFF:
+                    if (this.manager.isIgnored(state.getWorld(),COMPARATOR_CHANGE)) return;
+                    BlockState newState = event.getClickedBlock().getState();
+                    newState.setType(newState.getType().equals(REDSTONE_COMPARATOR_ON) ? REDSTONE_COMPARATOR_OFF : REDSTONE_COMPARATOR_ON);
+                    this.logBlockChange(location, COMPARATOR_CHANGE, event.getPlayer(), state, newState, null);
+                    break;
                 case STONE_BUTTON:
                 case WOOD_BUTTON:
-                    if (this.manager.isIgnored(BUTTON_USE)) return;
+                    if (this.manager.isIgnored(state.getWorld(),BUTTON_USE)) return;
                     this.manager.queueLog(location,BUTTON_USE,event.getPlayer(),state.getType().name());
                     break;
                 case LOG: // placing cocoa-pods
                     if (itemInHand.getType().equals(Material.INK_SACK) && itemInHand.getDurability() == 3) // COCOA-Beans
                     {
-                        if (this.manager.isIgnored(BLOCK_PLACE)) return;
+                        if (this.manager.isIgnored(state.getWorld(),BLOCK_PLACE)) return;
                         BlockState blockPlaced = event.getClickedBlock().getRelative(event.getBlockFace()).getState();
                         blockPlaced.setType(Material.COCOA);
                         blockPlaced.setRawData((byte) 1);
@@ -650,7 +699,7 @@ public class BlockListener implements Listener
                 case POTATO:
                     if (itemInHand.getType().equals(Material.INK_SACK) && itemInHand.getDurability() == 15)
                     {
-                        if (this.manager.isIgnored(BONEMEAL_USE)) return;
+                        if (this.manager.isIgnored(state.getWorld(),BONEMEAL_USE)) return;
                         this.manager.queueLog(location,BONEMEAL_USE,event.getPlayer(),state.getType().name());
                     }
                     break;
@@ -663,7 +712,7 @@ public class BlockListener implements Listener
                     || itemInHand.getType().equals(Material.HOPPER_MINECART)
                     || itemInHand.getType().equals(Material.EXPLOSIVE_MINECART)) // BOAT is done down below
                     {
-                        if (this.manager.isIgnored(VEHICLE_PLACE)) return;
+                        if (this.manager.isIgnored(state.getWorld(),VEHICLE_PLACE)) return;
                         Block block = event.getClickedBlock().getRelative(BlockFace.UP);
                         this.manager.getEntityListener().preplanVehiclePlacement(block.getLocation(),event.getPlayer());
                     }
@@ -671,24 +720,27 @@ public class BlockListener implements Listener
                 case TNT:
                     if(itemInHand.getType().equals(Material.FLINT_AND_STEEL))
                     {
-                        if (this.manager.isIgnored(TNT_PRIME)) return;
+                        if (this.manager.isIgnored(state.getWorld(),TNT_PRIME)) return;
                         this.logBlockChange(TNT_PRIME,event.getClickedBlock().getState(), AIR,event.getPlayer());
                     }
                     break;
                 case CAKE_BLOCK:
-                    if (this.manager.isIgnored(CAKE_EAT)) return;
-                    byte cakeData = (byte) (event.getClickedBlock().getData() +1);
-                    if (cakeData == 6)
+                    if (this.manager.isIgnored(state.getWorld(),CAKE_EAT)) return;
+                    if (event.getPlayer().getFoodLevel() < 20 && !event.getPlayer().getGameMode().equals(GameMode.CREATIVE))
                     {
-                        this.logBlockChange(CAKE_EAT,event.getClickedBlock().getState(), AIR,event.getPlayer());
-                    }
-                    else
-                    {
-                        this.logBlockChange(location,CAKE_EAT,event.getPlayer(),state,state.getType().name(),cakeData);
+                        byte cakeData = (byte) (event.getClickedBlock().getData() +1);
+                        if (cakeData == 6)
+                        {
+                            this.logBlockChange(CAKE_EAT,event.getClickedBlock().getState(), AIR,event.getPlayer());
+                        }
+                        else
+                        {
+                            this.logBlockChange(location,CAKE_EAT,event.getPlayer(),state,state.getType().name(),cakeData);
+                        }
                     }
                     break;
                 case NOTE_BLOCK:
-                    if (this.manager.isIgnored(NOTEBLOCK_CHANGE)) return;
+                    if (this.manager.isIgnored(state.getWorld(),NOTEBLOCK_CHANGE)) return;
                     NoteBlock noteBlock = (NoteBlock) event.getClickedBlock().getState();
                     byte clicks = (byte) (noteBlock.getRawNote() + 1);
                     if (clicks == 25)
@@ -701,7 +753,7 @@ public class BlockListener implements Listener
                     break;
                 case DIODE_BLOCK_ON:
                 case DIODE_BLOCK_OFF:
-                    if (this.manager.isIgnored(REPEATER_CHANGE)) return;
+                    if (this.manager.isIgnored(state.getWorld(),REPEATER_CHANGE)) return;
                     Diode diode = (Diode) event.getClickedBlock().getState().getData();
                     int delay = diode.getDelay() + 1;
                     if (delay == 5)
@@ -717,18 +769,18 @@ public class BlockListener implements Listener
 
             if (itemInHand.getType().equals(Material.MONSTER_EGG))
             {
-                if (this.manager.isIgnored(MONSTER_EGG_USE)) return;
+                if (this.manager.isIgnored(state.getWorld(),MONSTER_EGG_USE)) return;
                 this.manager.queueLog(event.getClickedBlock().getRelative(event.getBlockFace()).getLocation(),MONSTER_EGG_USE,event.getPlayer(),
                         this.manager.getEntityListener().serializeItemStack(itemInHand));
             }
             else if (itemInHand.getType().equals(Material.FIREWORK))
             {
-                if (this.manager.isIgnored(FIREWORK_USE)) return;
+                if (this.manager.isIgnored(state.getWorld(),FIREWORK_USE)) return;
                 this.manager.queueLog(event.getClickedBlock().getRelative(event.getBlockFace()).getLocation(),FIREWORK_USE,event.getPlayer(),null);
             }
             else if (itemInHand.getType().equals(Material.BOAT))
             {
-                if (this.manager.isIgnored(VEHICLE_PLACE)) return;
+                if (this.manager.isIgnored(state.getWorld(),VEHICLE_PLACE)) return;
                 Block block = event.getClickedBlock().getRelative(BlockFace.UP);
                 this.manager.getEntityListener().preplanVehiclePlacement(block.getLocation(),event.getPlayer());
             }
@@ -738,12 +790,12 @@ public class BlockListener implements Listener
             switch (event.getClickedBlock().getType())
             {
                 case SOIL:
-                    if (this.manager.isIgnored(CROP_TRAMPLE)) return;
+                    if (this.manager.isIgnored(event.getClickedBlock().getWorld(),CROP_TRAMPLE)) return;
                     this.logBlockChange(CROP_TRAMPLE,event.getClickedBlock().getRelative(BlockFace.UP).getState(), AIR,event.getPlayer());
                     break;
                 case WOOD_PLATE:
                 case STONE_PLATE:
-                    if (this.manager.isIgnored(PLATE_STEP)) return;
+                    if (this.manager.isIgnored(event.getClickedBlock().getWorld(),PLATE_STEP)) return;
                     this.manager.queueLog(event.getClickedBlock().getLocation(),PLATE_STEP,event.getPlayer(),event.getClickedBlock().getType().name());
                     break;
             }
@@ -786,7 +838,7 @@ public class BlockListener implements Listener
         Block onTop = blockState.getBlock().getRelative(BlockFace.UP);
         while (onTop.getType().equals(Material.SAND)||onTop.getType().equals(Material.GRAVEL)||onTop.getType().equals(Material.ANVIL))
         {
-            if (!this.manager.isIgnored(BLOCK_FALL))
+            if (!this.manager.isIgnored(blockState.getWorld(),BLOCK_FALL))
             {
                 this.plannedFallingBlocks.put(onTop.getLocation(),new Pair<Player, Integer>(player,reason));
                 onTop = onTop.getRelative(BlockFace.UP);
@@ -796,7 +848,7 @@ public class BlockListener implements Listener
         {
             return; // cannot have attached
         }
-        if (!this.manager.isIgnored(BLOCK_BREAK))
+        if (!this.manager.isIgnored(blockState.getWorld(),BLOCK_BREAK))
         {
             for (Block block : BlockUtil.getAttachedBlocks(blockState.getBlock()))
             {
@@ -808,7 +860,7 @@ public class BlockListener implements Listener
                 this.plannedFallingBlocks.put(block.getLocation(),new Pair<Player, Integer>(player,reason));
             }
         }
-        if (this.manager.isIgnored(HANGING_BREAK)) return;
+        if (this.manager.isIgnored(blockState.getWorld(),HANGING_BREAK)) return;
         Location location = blockState.getLocation();
         Location entityLocation = blockState.getLocation();
         User user = this.module.getUserManager().getExactUser(player);
@@ -823,7 +875,7 @@ public class BlockListener implements Listener
 
     private void logItemDropsFromDestroyedContainer(InventoryHolder containerBlock, Location location, Player player)
     {
-        if (this.manager.isIgnored(ITEM_DROP)) return;
+        if (this.manager.isIgnored(location.getWorld(),ITEM_DROP)) return;
         ItemStack[] contents;
         if (containerBlock.getInventory() instanceof DoubleChestInventory)
         {
@@ -843,6 +895,10 @@ public class BlockListener implements Listener
         }
         for (ItemStack itemStack : contents)
         {
+            if (itemStack == null || itemStack.getType().equals(AIR))
+            {
+                continue;
+            }
             String itemData = this.manager.getEntityListener().serializeItemStack(itemStack);
             this.manager.queueLog(location,ITEM_DROP,player,itemData);
         }

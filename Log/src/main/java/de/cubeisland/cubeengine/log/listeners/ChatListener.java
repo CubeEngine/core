@@ -28,15 +28,14 @@ public class ChatListener implements Listener
     public void onPlayerCommandPreprocess(PlayerCommandPreprocessEvent event)
     {
         if (event.getMessage().trim().isEmpty()) return;
-        if (this.manager.isIgnored(PLAYER_COMMAND)) return;
-        //TODO ignore regexes
+        if (this.manager.isIgnored(event.getPlayer().getWorld(),PLAYER_COMMAND,event.getMessage())) return;
         this.manager.queueLog(event.getPlayer().getLocation(),PLAYER_COMMAND,event.getPlayer(),event.getMessage());
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onPlayerChat(AsyncPlayerChatEvent event)
     {
-        if (this.manager.isIgnored(PLAYER_CHAT)) return;
+        if (this.manager.isIgnored(event.getPlayer().getWorld(),PLAYER_CHAT)) return;
         if (event.getMessage().trim().isEmpty()) return;
         this.manager.queueLog(event.getPlayer().getLocation(),PLAYER_CHAT,event.getPlayer(),event.getMessage());
     }
@@ -44,8 +43,7 @@ public class ChatListener implements Listener
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onServerCommand(ServerCommandEvent event)
     {
-        if (this.manager.isIgnored(CONSOLE_COMMAND)) return;
-        //TODO ignore regexes
+        if (this.manager.isIgnored(null,CONSOLE_COMMAND)) return;
         this.manager.queueLog(CONSOLE_COMMAND,event.getCommand());
     }
 }

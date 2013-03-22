@@ -17,6 +17,7 @@ import java.util.HashMap;
 public class LogCommands extends ContainerCommand
 {
     public static final String toolName = ChatFormat.parseFormats("&9Logging-ToolBlock");
+    //TODO additional lore lines for changing logging mode
 
     public LogCommands(Module module)
     {

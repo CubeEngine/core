@@ -9,12 +9,12 @@ import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.roles.Roles;
 import de.cubeisland.cubeengine.roles.RolesAttachment;
 
-// TODO rename!
-public class ModuleManagementCommands extends ContainerCommand
+public class ManagementCommands extends ContainerCommand
 {
-    public ModuleManagementCommands(Roles module)
+    public ManagementCommands(Roles module)
     {
-        super(module, "admin", "Manages the module.");//TODO alias manadmin
+        super(module, "admin", "Manages the module.");
+        this.registerAlias(new String[]{"manadmin"},new String[]{});
     }
 
     @Alias(names = "manload")
@@ -28,7 +28,10 @@ public class ModuleManagementCommands extends ContainerCommand
         {
             user.attach(RolesAttachment.class,this.getModule());
             module.getManager().preCalculateRoles(user.getName(), true);
-            module.getManager().applyRole(user.getPlayer());
+            if (user.isOnline())
+            {
+                module.getManager().applyRole(user.getPlayer());
+            }
         }
         context.sendTranslated("&f[&6Roles&f] &areload complete!");
     }

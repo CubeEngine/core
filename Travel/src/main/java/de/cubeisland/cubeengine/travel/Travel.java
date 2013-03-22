@@ -1,5 +1,6 @@
 package de.cubeisland.cubeengine.travel;
 
+import de.cubeisland.cubeengine.core.CubeEngine;
 import de.cubeisland.cubeengine.core.command.reflected.ReflectedCommand;
 import de.cubeisland.cubeengine.core.module.Module;
 import de.cubeisland.cubeengine.travel.storage.InviteManager;

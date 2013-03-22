@@ -70,6 +70,11 @@ public class BlockUtil
             case NETHER_WARTS:
             case PORTAL:
             case POWERED_RAIL:
+            case ACTIVATOR_RAIL:
+            case REDSTONE_COMPARATOR_OFF:
+            case REDSTONE_COMPARATOR_ON:
+            case GOLD_PLATE:
+            case IRON_PLATE:
             case PUMPKIN_STEM:
             case RAILS:
             case RED_MUSHROOM:

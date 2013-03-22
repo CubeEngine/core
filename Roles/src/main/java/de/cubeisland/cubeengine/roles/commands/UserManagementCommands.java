@@ -27,13 +27,13 @@ public class UserManagementCommands extends UserCommandHelper
     })
     @Command(names = {
         "assign", "add", "give"
-    }, desc = "Assign a role to the player [in world]", usage = "<role> <player> [in <world>]", params = @Param(names = "in", type = World.class), max = 3, min = 2)
+    }, desc = "Assign a role to the player [in world]", usage = "<player> <role> [in <world>]", params = @Param(names = "in", type = World.class), max = 3, min = 2)
     public void assign(ParameterizedContext context)
     {
-        User user = this.getUser(context, 1);
+        User user = this.getUser(context, 0);
         World world = this.getWorld(context);
         long worldId = this.getModule().getCore().getWorldManager().getWorldId(world);
-        String roleName = context.getString(0);
+        String roleName = context.getString(1);
         Role role = this.manager.getRoleInWorld(worldId,roleName);
         if (role == null)
         {
@@ -54,13 +54,13 @@ public class UserManagementCommands extends UserCommandHelper
     @Alias(names = {
         "remurole", "manudel"
     })
-    @Command(desc = "Removes a role from the player [in world]", usage = "<role> <player> [in <world>]", params = @Param(names = "in", type = World.class), max = 3, min = 2)
+    @Command(desc = "Removes a role from the player [in world]", usage = "<player> <role> [in <world>]", params = @Param(names = "in", type = World.class), max = 3, min = 2)
     public void remove(ParameterizedContext context)
     {
-        User user = this.getUser(context, 1);
+        User user = this.getUser(context, 0);
         World world = this.getWorld(context);
         long worldId = this.getModule().getCore().getWorldManager().getWorldId(world);
-        Role role = this.manager.getProvider(worldId).getRole(context.getString(0));
+        Role role = this.manager.getProvider(worldId).getRole(context.getString(1));
         if (role == null)
         {
             context.sendTranslated("&eCould not find the role &6%s &ein &6%s&e.", context.getString(0), world.getName());
@@ -97,13 +97,13 @@ public class UserManagementCommands extends UserCommandHelper
 
     @Command(names = {
         "setperm", "setpermission"
-    }, desc = "Sets a permission for this user [in world]", usage = "<permission> <true|false|reset> <player> [in <world>]", params = @Param(names = "in", type = World.class), max = 5, min = 3)
+    }, desc = "Sets a permission for this user [in world]", usage = " <player> <permission> <true|false|reset>[in <world>]", params = @Param(names = "in", type = World.class), max = 5, min = 3)
     public void setpermission(ParameterizedContext context)
     {
-        User user = this.getUser(context, 2);
-        String perm = context.getString(0);
+        User user = this.getUser(context, 0);
+        String perm = context.getString(1);
         Boolean set;
-        String setTo = context.getString(1);
+        String setTo = context.getString(2);
         if (setTo.equalsIgnoreCase("true"))
         {
             set = true;
@@ -149,12 +149,17 @@ public class UserManagementCommands extends UserCommandHelper
 
     @Command(names = {
         "setdata", "setmeta", "setmetadata"
-    }, desc = "Sets metadata for this user [in world]", usage = "<metaKey> <metaValue> <player> [in <world>]", params = @Param(names = "in", type = World.class), max = 4, min = 3)
+    }, desc = "Sets metadata for this user [in world]", usage = "<player> <metaKey> <metaValue> [in <world>]", params = @Param(names = "in", type = World.class), max = 4, min = 3)
     public void setmetadata(ParameterizedContext context)
     {
-        String metaKey = context.getString(0);
-        String metaVal = context.getString(1);
-        User user = this.getUser(context, 2);
+        String metaKey = context.getString(1);
+        String metaVal = context.getString(2);
+        User user = context.getUser(0);
+        if (user == null)
+        {
+            context.sendTranslated("&cUser %s not found!", context.getString(0));
+            return;
+        }
         World world = this.getWorld(context);
         UserSpecificRole role = this.getUserRole(user, world);
         role.setMetaData(metaKey, metaVal);
@@ -163,11 +168,16 @@ public class UserManagementCommands extends UserCommandHelper
 
     @Command(names = {
         "resetdata", "resetmeta", "resetmetadata", "deletedata", "deletemetadata", "deletemeta"
-    }, desc = "Resets metadata for this user [in world]", usage = "<metaKey> <player> [in <world>]", params = @Param(names = "in", type = World.class), max = 3, min = 2)
+    }, desc = "Resets metadata for this user [in world]", usage = "<player> <metaKey> [in <world>]", params = @Param(names = "in", type = World.class), max = 3, min = 2)
     public void resetmetadata(ParameterizedContext context)
     {
-        String metaKey = context.getString(0);
-        User user = this.getUser(context, 1);
+        String metaKey = context.getString(1);
+        User user = context.getUser(0);
+        if (user == null)
+        {
+            context.sendTranslated("&cUser %s not found!", context.getString(0));
+            return;
+        }
         World world = this.getWorld(context);
         UserSpecificRole role = this.getUserRole(user, world);
         role.setMetaData(metaKey, null);

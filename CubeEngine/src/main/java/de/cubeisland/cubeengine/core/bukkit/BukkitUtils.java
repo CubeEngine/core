@@ -5,25 +5,19 @@ import de.cubeisland.cubeengine.core.command.CubeCommand;
 import de.cubeisland.cubeengine.core.i18n.I18n;
 import de.cubeisland.cubeengine.core.i18n.Language;
 import de.cubeisland.cubeengine.core.user.User;
-import net.minecraft.server.v1_5_R1.EntityPlayer;
-import net.minecraft.server.v1_5_R1.LocaleLanguage;
-import net.minecraft.server.v1_5_R1.PlayerConnection;
-import net.minecraft.server.v1_5_R1.ServerConnection;
+import net.minecraft.server.v1_5_R2.*;
 import org.apache.commons.lang.Validate;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.Server;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandMap;
-import org.bukkit.command.CommandSender;
-import org.bukkit.command.PluginCommand;
-import org.bukkit.command.SimpleCommandMap;
+import org.bukkit.command.*;
 import org.bukkit.command.defaults.BukkitCommand;
 import org.bukkit.craftbukkit.libs.jline.console.ConsoleReader;
-import org.bukkit.craftbukkit.v1_5_R1.CraftServer;
-import org.bukkit.craftbukkit.v1_5_R1.entity.CraftPlayer;
-import org.bukkit.craftbukkit.v1_5_R1.help.SimpleHelpMap;
-import org.bukkit.craftbukkit.v1_5_R1.inventory.CraftItemStack;
+import org.bukkit.craftbukkit.v1_5_R2.CraftServer;
+import org.bukkit.craftbukkit.v1_5_R2.entity.CraftPlayer;
+import org.bukkit.craftbukkit.v1_5_R2.help.SimpleHelpMap;
+import org.bukkit.craftbukkit.v1_5_R2.inventory.CraftItemStack;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -386,13 +380,13 @@ public class BukkitUtils
         resetCommandLogging();
     }
 
-    public static net.minecraft.server.v1_5_R1.ItemStack getNmsItemStack(ItemStack item)
+    public static net.minecraft.server.v1_5_R2.ItemStack getNmsItemStack(ItemStack item)
     {
         if (item instanceof CraftItemStack)
         {
             try
             {
-                return (net.minecraft.server.v1_5_R1.ItemStack)handle.get(item);
+                return (net.minecraft.server.v1_5_R2.ItemStack)handle.get(item);
             }
             catch (Exception ignored)
             {}
@@ -404,5 +398,29 @@ public class BukkitUtils
     {
         ((CraftServer)Bukkit.getServer()).getServer().setOnlineMode(mode);
         ((CraftServer)Bukkit.getServer()).getServer().getPropertyManager().savePropertiesFile();
+    }
+
+    /**
+     * Returns true if given material is allowed to be placed in the top brewingstand slot
+     *
+     * @param material
+     * @return
+     */
+    public static boolean canBePlacedInBrewingstand(Material material)
+    {
+        return Item.byId[material.getId()].w();
+    }
+
+    public static boolean isFuel(ItemStack item) {
+        // Create an NMS item stack
+        net.minecraft.server.v1_5_R2.ItemStack nmss = CraftItemStack.asNMSCopy(item);
+        // Use the NMS TileEntityFurnace to check if the item being clicked is a fuel
+        return TileEntityFurnace.isFuel(nmss);
+    }
+
+    public static boolean isSmeltable(ItemStack item) {
+        net.minecraft.server.v1_5_R2.ItemStack nmss = CraftItemStack.asNMSCopy(item);
+        // If the result of that item being cooked is null, it is not cookable
+        return RecipesFurnace.getInstance().getResult(nmss.getItem().id) != null;
     }
 }

@@ -2,7 +2,7 @@ package de.cubeisland.cubeengine.core.bukkit.packethook;
 
 import de.cubeisland.cubeengine.core.util.Cleanable;
 import gnu.trove.map.hash.TIntObjectHashMap;
-import net.minecraft.server.v1_5_R1.Packet;
+import net.minecraft.server.v1_5_R2.Packet;
 import org.bukkit.entity.Player;
 
 import java.util.LinkedList;

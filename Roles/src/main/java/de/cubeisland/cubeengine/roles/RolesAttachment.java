@@ -9,8 +9,6 @@ import java.util.Map;
 
 public class RolesAttachment extends UserAttachment
 {
-
-
     private TLongObjectHashMap<UserSpecificRole> roleContainer;
     private Map<String, RoleMetaData> metaData;
     private Long currentWorldId;

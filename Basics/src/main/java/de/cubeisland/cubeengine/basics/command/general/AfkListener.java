@@ -106,24 +106,27 @@ public class AfkListener implements Listener, Runnable
         BasicsAttachment basicsAttachment;
         for (User user : basics.getUserManager().getLoadedUsers())
         {
-            basicsAttachment = user.get(BasicsAttachment.class);
-            long lastAction = basicsAttachment.getLastAction();
-            if (lastAction == 0)
+            if (user.isOnline())
             {
-                continue;
-            }
-            if (basicsAttachment.isAfk())
-            {
-                if (System.currentTimeMillis() - lastAction < afkCheck)
+                basicsAttachment = user.attachOrGet(BasicsAttachment.class,this.basics);
+                long lastAction = basicsAttachment.getLastAction();
+                if (lastAction == 0)
                 {
-                    basicsAttachment.setAfk(false);
-                    this.um.broadcastStatus("basics", "is no longer afk!", user.getName());
+                    continue;
                 }
-            }
-            else if (System.currentTimeMillis() - lastAction > autoAfk)
-            {
-                basicsAttachment.setAfk(true);
-                this.um.broadcastStatus("basics", "is now afk!" ,user.getName());
+                if (basicsAttachment.isAfk())
+                {
+                    if (System.currentTimeMillis() - lastAction < afkCheck)
+                    {
+                        basicsAttachment.setAfk(false);
+                        this.um.broadcastStatus("basics", "is no longer afk!", user.getName());
+                    }
+                }
+                else if (System.currentTimeMillis() - lastAction > autoAfk)
+                {
+                    basicsAttachment.setAfk(true);
+                    this.um.broadcastStatus("basics", "is now afk!" ,user.getName());
+                }
             }
         }
     }

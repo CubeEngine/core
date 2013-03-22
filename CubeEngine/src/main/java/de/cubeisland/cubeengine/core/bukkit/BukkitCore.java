@@ -32,7 +32,7 @@ import de.cubeisland.cubeengine.core.util.worker.CubeThreadFactory;
 import de.cubeisland.cubeengine.core.webapi.ApiConfig;
 import de.cubeisland.cubeengine.core.webapi.ApiServer;
 import de.cubeisland.cubeengine.core.webapi.exception.ApiStartupException;
-import net.minecraft.server.v1_5_R1.Packet204LocaleAndViewDistance;
+import net.minecraft.server.v1_5_R2.Packet204LocaleAndViewDistance;
 import org.bukkit.Server;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;

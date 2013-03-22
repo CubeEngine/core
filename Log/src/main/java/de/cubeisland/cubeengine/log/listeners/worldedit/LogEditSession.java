@@ -57,7 +57,7 @@ public class LogEditSession extends EditSession
             if (player.getWorld() instanceof BukkitWorld)
             {
                 World world = ((BukkitWorld)player.getWorld()).getWorld();
-                if (!module.getLogManager().isIgnored(WORLDEDIT))
+                if (!module.getLogManager().isIgnored(world, WORLDEDIT))
                 {
                     BlockState oldState = world.getBlockAt(pt.getBlockX(), pt.getBlockY(), pt.getBlockZ()).getState();
                     boolean success = super.rawSetBlock(pt, block);

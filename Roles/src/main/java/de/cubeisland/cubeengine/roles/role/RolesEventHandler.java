@@ -43,7 +43,7 @@ public class RolesEventHandler implements Listener
 
     @EventHandler(priority = EventPriority.LOWEST)
     public void onPreLogin(AsyncPlayerPreLoginEvent event)
-    {//TODO SYNC this!!!
+    {
         this.manager.preCalculateRoles(event.getName(), false);
     }
 
@@ -62,7 +62,10 @@ public class RolesEventHandler implements Listener
         {
             user.get(RolesAttachment.class).removeRoleContainer(); // remove potential old calculated roles
             manager.preCalculateRoles(user.getName(), false);
-            manager.applyRole(user.getPlayer());
+            if (user.isOnline())
+            {
+                manager.applyRole(user.getPlayer());
+            }
         }
     }
 

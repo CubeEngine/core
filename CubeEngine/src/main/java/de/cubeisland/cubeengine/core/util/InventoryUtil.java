@@ -70,6 +70,26 @@ public class InventoryUtil
         return true;
     }
 
+    public static int getMissingSpace(Inventory inventory, ItemStack... items)
+    {
+        Inventory inv =
+                inventory.getSize() <= 27
+                        ? Bukkit.createInventory(null, inventory.getType())
+                        : Bukkit.createInventory(null, inventory.getSize());
+        inv.setContents(inventory.getContents().clone());
+        Map<Integer,ItemStack> map;
+        int missingPlace = 0;
+        for (ItemStack item : items)
+        {
+            map = inv.addItem(new ItemStack(item));
+            for (ItemStack itemNotAdded : map.values())
+            {
+                missingPlace += itemNotAdded.getAmount();
+            }
+        }
+        return missingPlace;
+    }
+
     /**
      * Returns the amount of this itemstack in the given inventory
      *

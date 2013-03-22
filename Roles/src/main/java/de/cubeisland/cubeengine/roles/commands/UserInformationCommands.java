@@ -48,15 +48,24 @@ public class UserInformationCommands extends UserCommandHelper
     @Alias(names = "checkuperm")
     @Command(names = {
         "checkperm", "checkpermission"
-    }, desc = "Checks for permissions of a user [in world]", usage = "<permission> [player] [in <world>]", params = @Param(names = "in", type = World.class), max = 3, min = 1)
+    }, desc = "Checks for permissions of a user [in world]", usage = "<player> <permission> [in <world>]", params = @Param(names = "in", type = World.class), max = 3, min = 1)
     public void checkpermission(ParameterizedContext context)
     {
-        User user = this.getUser(context, 1);
+        User user = context.getUser(0);
+        if (user == null)
+        {
+            context.sendTranslated("&cUser %s not found!", context.getString(0));
+            return;
+        }
         World world = this.getWorld(context);
         UserSpecificRole role = this.getUserRole(user, world);
         // Search for permission
-        String permission = context.getString(0);
+        String permission = context.getString(1);
         RolePermission myPerm = role.getPerms().get(permission);
+        if (user.isOp())
+        {
+            context.sendTranslated("&2%s &ais Op!", user.getName());
+        }
         if (user.isOnline() && !permission.endsWith("*")) // Can have superperm
         {
             boolean superPerm = user.hasPermission(permission);
@@ -133,14 +142,19 @@ public class UserInformationCommands extends UserCommandHelper
     @Alias(names = "checkumeta")
     @Command(names = {
         "checkdata", "checkmeta", "checkmetadata"
-    }, desc = "Checks for metadata of a user [in world]", usage = "<metadatakey> [player] [in <world>]", params = @Param(names = "in", type = World.class), max = 3, min = 1)
+    }, desc = "Checks for metadata of a user [in world]", usage = "<player> <metadatakey> [in <world>]", params = @Param(names = "in", type = World.class), max = 3, min = 1)
     public void checkmetadata(ParameterizedContext context)
     {
-        User user = this.getUser(context, 1);
+        User user = context.getUser(0);
+        if (user == null)
+        {
+            context.sendTranslated("&cUser %s not found!", context.getString(0));
+            return;
+        }
         World world = this.getWorld(context);
         UserSpecificRole role = this.getUserRole(user, world);
         // Check metadata
-        String metaKey = context.getString(0);
+        String metaKey = context.getString(1);
         if (!role.getMetaData().containsKey(metaKey))
         {
             context.sendTranslated("&6%s &is not set for &2%s &ein &6%s&e.", metaKey, user.getName(), world.getName());
