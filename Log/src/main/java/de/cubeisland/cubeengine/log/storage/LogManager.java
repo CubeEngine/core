@@ -588,9 +588,8 @@ public class LogManager
                         return config.containerMinecart;
                     if (additional instanceof Hopper)
                         return config.containerHopper;
-                    //TODO wait for Dropper Interface
-                    //if (additional instanceof Dropper)
-                    //    return config.containerDropper;
+                    if (additional instanceof Dropper)
+                        return config.containerDropper;
                     if (additional instanceof HumanEntity){
                         return false; // no need to log these
                     }
@@ -600,10 +599,8 @@ public class LogManager
                 if (additional == null)
                 {
                     this.module.getLogger().log(LogLevel.DEBUG,"Inventory has no InventoryHolder!");
-                    System.out.print("This happens currently with Droppers!!!");
                     return false;
                 }
-
                 throw new IllegalStateException("Invalid ITEM_CHANGE_IN_CONTAINER: "+additional);
             case PLAYER_COMMAND :
                 if (additional instanceof String)
