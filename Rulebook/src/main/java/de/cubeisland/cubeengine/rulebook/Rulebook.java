@@ -14,7 +14,7 @@ public class Rulebook extends Module
     public void onEnable()
     {
         this.getFileManager().dropResources(RulebookResource.values());
-        this.getCore().getPermissionManager().registerPermission( this, Permission.BASE + this.getId() + ".command.get.other", PermDefault.OP );
+        this.getCore().getPermissionManager().registerPermission( this, Permission.BASE + '.' + this.getId() + ".command.get.other", PermDefault.OP );
 
         this.rulebookManager = new RulebookManager(this);
 

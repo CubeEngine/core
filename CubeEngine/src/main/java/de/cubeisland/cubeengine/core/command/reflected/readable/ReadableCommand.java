@@ -1,5 +1,10 @@
 package de.cubeisland.cubeengine.core.command.reflected.readable;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.List;
+import java.util.regex.Pattern;
+
 import de.cubeisland.cubeengine.core.command.CommandContext;
 import de.cubeisland.cubeengine.core.command.CommandResult;
 import de.cubeisland.cubeengine.core.command.CubeCommand;
@@ -7,11 +12,6 @@ import de.cubeisland.cubeengine.core.command.HelpContext;
 import de.cubeisland.cubeengine.core.command.reflected.Alias;
 import de.cubeisland.cubeengine.core.command.result.ErrorResult;
 import de.cubeisland.cubeengine.core.module.Module;
-
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.util.List;
-import java.util.regex.Pattern;
 
 public class ReadableCommand extends CubeCommand
 {
@@ -29,6 +29,7 @@ public class ReadableCommand extends CubeCommand
         this.method.setAccessible(true);
         this.contextType = (Class<? extends CommandContext>)method.getParameterTypes()[0];
         this.pattern = pattern;
+        this.setGeneratePermission(true);
 
         Alias annotation = method.getAnnotation(Alias.class);
         if (annotation != null)

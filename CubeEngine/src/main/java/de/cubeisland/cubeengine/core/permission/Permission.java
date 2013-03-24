@@ -1,13 +1,17 @@
 package de.cubeisland.cubeengine.core.permission;
 
+import java.util.Locale;
+
 import org.bukkit.permissions.Permissible;
+
+import de.cubeisland.cubeengine.core.CubeEngine;
 
 /**
  * Represents a permission.
  */
 public interface Permission
 {
-    public static final String BASE = "cubeengine.";
+    public static final String BASE = CubeEngine.class.getSimpleName().toLowerCase(Locale.US);
 
     /**
      * Checks whether the given Permissible is authorized with this permission

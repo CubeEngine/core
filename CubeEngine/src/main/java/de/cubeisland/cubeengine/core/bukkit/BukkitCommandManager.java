@@ -1,5 +1,14 @@
 package de.cubeisland.cubeengine.core.bukkit;
 
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Map.Entry;
+
+import org.bukkit.Server;
+import org.bukkit.command.Command;
+import org.bukkit.command.SimpleCommandMap;
+
+import de.cubeisland.cubeengine.core.command.AliasCommand;
 import de.cubeisland.cubeengine.core.command.CommandFactory;
 import de.cubeisland.cubeengine.core.command.CommandHolder;
 import de.cubeisland.cubeengine.core.command.CommandManager;
@@ -7,14 +16,8 @@ import de.cubeisland.cubeengine.core.command.ConsoleCommandCompleter;
 import de.cubeisland.cubeengine.core.command.CubeCommand;
 import de.cubeisland.cubeengine.core.command.sender.CommandSender;
 import de.cubeisland.cubeengine.core.module.Module;
-import gnu.trove.map.hash.THashMap;
-import org.bukkit.Server;
-import org.bukkit.command.Command;
-import org.bukkit.command.SimpleCommandMap;
 
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Map.Entry;
+import gnu.trove.map.hash.THashMap;
 
 public class BukkitCommandManager implements CommandManager
 {
@@ -175,6 +178,10 @@ public class BukkitCommandManager implements CommandManager
             parentCommand.addChild(command);
         }
         command.onRegister();
+        if (!(command instanceof AliasCommand))
+        {
+            command.updateGeneratedPermission();
+        }
 
         if (command instanceof CommandHolder)
         {

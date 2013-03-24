@@ -1,9 +1,5 @@
 package de.cubeisland.cubeengine.core.command.reflected.readable;
 
-import de.cubeisland.cubeengine.core.command.reflected.ReflectedCommandFactory;
-import de.cubeisland.cubeengine.core.logger.LogLevel;
-import de.cubeisland.cubeengine.core.module.Module;
-
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -11,6 +7,10 @@ import java.util.List;
 import java.util.Locale;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
+
+import de.cubeisland.cubeengine.core.command.reflected.ReflectedCommandFactory;
+import de.cubeisland.cubeengine.core.logger.LogLevel;
+import de.cubeisland.cubeengine.core.module.Module;
 
 import static de.cubeisland.cubeengine.core.util.Misc.arr;
 
@@ -70,10 +70,13 @@ public class ReadableCommandFactory extends ReflectedCommandFactory<ReadableComm
             String node = annotation.permNode();
             if (node == null || node.isEmpty())
             {
-                node = this.generatePermission(module, cmd);
+                cmd.setGeneratedPermissionDefault(annotation.permDefault());
             }
-            module.getCore().getPermissionManager().registerPermission(module, node, annotation.permDefault());
-            cmd.setPermission(node);
+            else
+            {
+                module.getCore().getPermissionManager().registerPermission(module, node, annotation.permDefault());
+                cmd.setPermission(node);
+            }
         }
         return cmd;
     }

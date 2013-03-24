@@ -1,5 +1,25 @@
 package de.cubeisland.cubeengine.fun.commands;
 
+import java.util.EnumSet;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Set;
+
+import org.bukkit.Location;
+import org.bukkit.entity.Arrow;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.EntityType;
+import org.bukkit.entity.ExperienceOrb;
+import org.bukkit.entity.Explosive;
+import org.bukkit.entity.Projectile;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
+import org.bukkit.event.Listener;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.EntityExplodeEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.util.Vector;
+
 import de.cubeisland.cubeengine.core.command.parameterized.Flag;
 import de.cubeisland.cubeengine.core.command.parameterized.Param;
 import de.cubeisland.cubeengine.core.command.parameterized.ParameterizedContext;
@@ -10,22 +30,9 @@ import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.util.matcher.Match;
 import de.cubeisland.cubeengine.fun.Fun;
 import de.cubeisland.cubeengine.fun.FunPerm;
+
 import gnu.trove.map.hash.THashMap;
 import gnu.trove.set.hash.THashSet;
-import org.bukkit.Location;
-import org.bukkit.entity.*;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
-import org.bukkit.event.Listener;
-import org.bukkit.event.entity.EntityDamageByEntityEvent;
-import org.bukkit.event.entity.EntityExplodeEvent;
-import org.bukkit.event.player.PlayerQuitEvent;
-import org.bukkit.util.Vector;
-
-import java.util.EnumSet;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Set;
 
 public class ThrowCommands
 {
@@ -33,7 +40,7 @@ public class ThrowCommands
     // entities that can't be safe due to bukkit flaws
     private final EnumSet<EntityType> BUGGED_ENTITIES = EnumSet.of(EntityType.SMALL_FIREBALL, EntityType.FIREBALL);
 
-    private static final String BASE_THROW_PERM = FunPerm.BASE + "throw.";
+    private static final String BASE_THROW_PERM = FunPerm.BASE + "command.throw.";
 
     private final Fun fun;
     private final ThrowListener throwListener;

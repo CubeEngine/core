@@ -388,7 +388,7 @@ public abstract class BaseModuleManager implements ModuleManager
         module.disable();
         this.core.getUserManager().detachAllOf(module);
         this.core.getEventManager().removeListeners(module);
-        this.core.getPermissionManager().unregisterPermissions(module);
+        this.core.getPermissionManager().removePermissions(module);
         this.core.getTaskManager().cancelTasks(module);
         this.core.getCommandManager().removeCommands(module);
         this.core.getApiServer().unregisterApiHandlers(module);

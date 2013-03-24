@@ -1,17 +1,17 @@
 package de.cubeisland.cubeengine.core.command;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Locale;
+import java.util.Set;
+
 import de.cubeisland.cubeengine.core.command.parameterized.ParameterizedCommand;
 import de.cubeisland.cubeengine.core.command.parameterized.ParameterizedContextFactory;
 import de.cubeisland.cubeengine.core.command.reflected.ReflectedCommand;
 import de.cubeisland.cubeengine.core.command.sender.CommandSender;
 import de.cubeisland.cubeengine.core.module.Module;
 import de.cubeisland.cubeengine.core.util.ChatFormat;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Locale;
-import java.util.Set;
 
 import static de.cubeisland.cubeengine.core.i18n.I18n._;
 import static de.cubeisland.cubeengine.core.logger.LogLevel.WARNING;
@@ -95,7 +95,10 @@ public abstract class ContainerCommand extends ParameterizedCommand implements C
 
         for (CubeCommand command : context.getCommand().getChildren())
         {
-            context.sendMessage(ChatFormat.YELLOW + command.getName() + ChatFormat.WHITE + ": "  + ChatFormat.GREY + _(sender, command.getModule(), command.getDescription()));
+            if (command.testPermissionSilent(sender))
+            {
+                context.sendMessage(ChatFormat.YELLOW + command.getName() + ChatFormat.WHITE + ": "  + ChatFormat.GREY + _(sender, command.getModule(), command.getDescription()));
+            }
         }
     }
 

@@ -1,5 +1,15 @@
 package de.cubeisland.cubeengine.core.command.reflected;
 
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Locale;
+import java.util.Set;
+
 import de.cubeisland.cubeengine.core.command.ArgBounds;
 import de.cubeisland.cubeengine.core.command.CommandContext;
 import de.cubeisland.cubeengine.core.command.CommandFactory;
@@ -12,17 +22,6 @@ import de.cubeisland.cubeengine.core.command.parameterized.Param;
 import de.cubeisland.cubeengine.core.command.parameterized.ParameterizedContextFactory;
 import de.cubeisland.cubeengine.core.logger.LogLevel;
 import de.cubeisland.cubeengine.core.module.Module;
-import de.cubeisland.cubeengine.core.permission.Permission;
-
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Locale;
-import java.util.Set;
 
 import static de.cubeisland.cubeengine.core.command.ArgBounds.NO_MAX;
 import static de.cubeisland.cubeengine.core.logger.LogLevel.ERROR;
@@ -51,11 +50,6 @@ public class ReflectedCommandFactory<T extends CubeCommand> implements CommandFa
         return true;
     }
 
-    protected String generatePermission(Module module, CubeCommand command)
-    {
-        return Permission.BASE + module.getId() + ".command." + command.getName();
-    }
-
     @SuppressWarnings("unchecked")
     protected T buildCommand(Module module, Object holder, Method method, Annotation rawAnnotation)
     {
@@ -64,10 +58,9 @@ public class ReflectedCommandFactory<T extends CubeCommand> implements CommandFa
         String[] commandNames = annotation.names();
         if (commandNames.length == 0)
         {
-            commandNames = new String[]
-                {
-                    method.getName()
-                };
+            commandNames = new String[] {
+                method.getName()
+            };
         }
 
         String name = commandNames[0].trim().toLowerCase(Locale.ENGLISH);
@@ -133,7 +126,7 @@ public class ReflectedCommandFactory<T extends CubeCommand> implements CommandFa
             annotation.desc(),
             annotation.usage(),
             aliases,
-            this.createContext(new ArgBounds(annotation.min(), annotation.max()), flags, params)
+            this.createContextFactory(new ArgBounds(annotation.min(), annotation.max()), flags, params)
         );
         cmd.setLoggable(annotation.loggable());
         if (annotation.checkPerm())
@@ -141,15 +134,18 @@ public class ReflectedCommandFactory<T extends CubeCommand> implements CommandFa
             String node = annotation.permNode();
             if (node == null || node.isEmpty())
             {
-                node = this.generatePermission(module, cmd);
+                cmd.setGeneratedPermissionDefault(annotation.permDefault());
             }
-            module.getCore().getPermissionManager().registerPermission(module, node, annotation.permDefault());
-            cmd.setPermission(node);
+            else
+            {
+                module.getCore().getPermissionManager().registerPermission(module, node, annotation.permDefault());
+                cmd.setPermission(node);
+            }
         }
         return (T)cmd;
     }
 
-    protected ParameterizedContextFactory createContext(ArgBounds bounds, Set<CommandFlag> flags, Set<CommandParameter> params)
+    protected ParameterizedContextFactory createContextFactory(ArgBounds bounds, Set<CommandFlag> flags, Set<CommandParameter> params)
     {
         return new ParameterizedContextFactory(bounds, flags, params);
     }

@@ -1,5 +1,11 @@
 package de.cubeisland.cubeengine.core.command;
 
+
+import java.util.*;
+
+import org.bukkit.command.Command;
+import org.bukkit.entity.Player;
+
 import de.cubeisland.cubeengine.core.CubeEngine;
 import de.cubeisland.cubeengine.core.command.exception.IncorrectUsageException;
 import de.cubeisland.cubeengine.core.command.exception.MissingParameterException;
@@ -9,24 +15,14 @@ import de.cubeisland.cubeengine.core.command.sender.CommandSender;
 import de.cubeisland.cubeengine.core.command.sender.ConsoleCommandSender;
 import de.cubeisland.cubeengine.core.command.sender.WrappedCommandSender;
 import de.cubeisland.cubeengine.core.module.Module;
+import de.cubeisland.cubeengine.core.permission.PermDefault;
+import de.cubeisland.cubeengine.core.permission.Permission;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.util.StringUtils;
+
 import gnu.trove.map.hash.THashMap;
 import gnu.trove.set.hash.THashSet;
 import org.apache.commons.lang.Validate;
-import org.bukkit.command.Command;
-import org.bukkit.entity.Player;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Set;
-import java.util.Stack;
 
 import static de.cubeisland.cubeengine.core.i18n.I18n._;
 import static de.cubeisland.cubeengine.core.logger.LogLevel.ERROR;
@@ -44,6 +40,8 @@ public abstract class CubeCommand extends Command
     protected final List<String> childrenAliases;
     private final ContextFactory contextFactory;
     private boolean loggable;
+    private boolean generatePermission;
+    private PermDefault generatedPermissionDefault;
 
     public CubeCommand(Module module, String name, String description, ContextFactory contextFactory)
     {
@@ -64,6 +62,8 @@ public abstract class CubeCommand extends Command
         this.children = new THashMap<String, CubeCommand>();
         this.childrenAliases = new ArrayList<String>();
         this.loggable = true;
+        this.generatePermission = false;
+        this.generatedPermissionDefault = PermDefault.DEFAULT;
     }
 
     public void setLoggable(boolean state)
@@ -76,9 +76,69 @@ public abstract class CubeCommand extends Command
         return this.loggable;
     }
 
+    public boolean isGeneratePermission()
+    {
+        return generatePermission;
+    }
+
+    public void setGeneratePermission(boolean generatePermission)
+    {
+        this.generatePermission = generatePermission;
+    }
+
+    public PermDefault getGeneratedPermissionDefault()
+    {
+        return generatedPermissionDefault;
+    }
+
+    public void setGeneratedPermissionDefault(PermDefault generatedPermissionDefault)
+    {
+        this.generatedPermissionDefault = generatedPermissionDefault;
+    }
+
     protected void registerAlias(String[] names, String[] parents)
     {
         this.registerAlias(names, parents, "", "");
+    }
+
+    @Override
+    public void setPermission(String permission)
+    {
+        this.generatePermission = false;
+        super.setPermission(permission);
+    }
+
+    protected String generatePermissionNode()
+    {
+        return Permission.BASE + '.' + this.getModule().getId() + ".command." + this.implodeCommandParentNames(".");
+    }
+
+    public void updateGeneratedPermission()
+    {
+        if (this.generatePermission)
+        {
+
+            PermDefault def = null;
+            String node = this.getPermission();
+            if (node != null)
+            {
+                def = this.getModule().getCore().getPermissionManager().getDefaultFor(node);
+            }
+            if (def == null)
+            {
+                def = this.getGeneratedPermissionDefault();
+            }
+            this.setGeneratedPermission(def);
+        }
+    }
+
+    public void setGeneratedPermission(PermDefault def)
+    {
+        this.generatePermission = true;
+        this.setGeneratedPermissionDefault(def);
+        String permNode = this.generatePermissionNode();
+        super.setPermission(permNode);
+        this.getModule().getCore().getPermissionManager().registerPermission(this.getModule(), permNode, def);
     }
 
     protected void registerAlias(String[] names, String[] parents, String prefix, String suffix)
@@ -287,7 +347,7 @@ public abstract class CubeCommand extends Command
         cmd.parent = null;
     }
 
-    public static CommandSender wrapSender(org.bukkit.command.CommandSender bukkitSender)
+    private static CommandSender wrapSender(org.bukkit.command.CommandSender bukkitSender)
     {
         if (bukkitSender instanceof CommandSender)
         {

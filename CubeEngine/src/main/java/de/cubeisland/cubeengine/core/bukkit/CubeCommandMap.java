@@ -1,27 +1,5 @@
 package de.cubeisland.cubeengine.core.bukkit;
 
-import de.cubeisland.cubeengine.core.Core;
-import de.cubeisland.cubeengine.core.CubeEngine;
-import de.cubeisland.cubeengine.core.command.AliasCommand;
-import de.cubeisland.cubeengine.core.command.CommandExecuteEvent;
-import de.cubeisland.cubeengine.core.command.CubeCommand;
-import de.cubeisland.cubeengine.core.logger.CubeFileHandler;
-import de.cubeisland.cubeengine.core.logger.CubeLogger;
-import de.cubeisland.cubeengine.core.util.StringUtils;
-import de.cubeisland.cubeengine.core.util.matcher.Match;
-import gnu.trove.map.hash.THashMap;
-import org.apache.commons.lang.Validate;
-import org.bukkit.Server;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandException;
-import org.bukkit.command.CommandSender;
-import org.bukkit.command.ConsoleCommandSender;
-import org.bukkit.command.PluginCommand;
-import org.bukkit.command.SimpleCommandMap;
-import org.bukkit.command.defaults.BukkitCommand;
-import org.bukkit.command.defaults.VanillaCommand;
-import org.bukkit.util.StringUtil;
-
 import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
@@ -39,6 +17,30 @@ import java.util.logging.Level;
 import java.util.logging.LogRecord;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
+
+import org.bukkit.Server;
+import org.bukkit.command.Command;
+import org.bukkit.command.CommandException;
+import org.bukkit.command.CommandSender;
+import org.bukkit.command.ConsoleCommandSender;
+import org.bukkit.command.PluginCommand;
+import org.bukkit.command.SimpleCommandMap;
+import org.bukkit.command.defaults.BukkitCommand;
+import org.bukkit.command.defaults.VanillaCommand;
+import org.bukkit.util.StringUtil;
+
+import de.cubeisland.cubeengine.core.Core;
+import de.cubeisland.cubeengine.core.CubeEngine;
+import de.cubeisland.cubeengine.core.command.AliasCommand;
+import de.cubeisland.cubeengine.core.command.CommandExecuteEvent;
+import de.cubeisland.cubeengine.core.command.CubeCommand;
+import de.cubeisland.cubeengine.core.logger.CubeFileHandler;
+import de.cubeisland.cubeengine.core.logger.CubeLogger;
+import de.cubeisland.cubeengine.core.util.StringUtils;
+import de.cubeisland.cubeengine.core.util.matcher.Match;
+
+import gnu.trove.map.hash.THashMap;
+import org.apache.commons.lang.Validate;
 
 import static de.cubeisland.cubeengine.core.i18n.I18n._;
 import static de.cubeisland.cubeengine.core.logger.LogLevel.INFO;
@@ -227,7 +229,7 @@ public class CubeCommandMap extends SimpleCommandMap
             command.execute(sender, label, args);
             if (!(command instanceof CubeCommand) || ((CubeCommand)command).isLoggable())
             {
-                this.commandLogger.log(INFO, sender.getName() + ' ' + commandLine);
+                this.commandLogger.log(INFO, "execute " + sender.getName() + ' ' + commandLine);
             }
         }
         catch (CommandException e)
@@ -391,6 +393,10 @@ public class CubeCommandMap extends SimpleCommandMap
 
         try
         {
+            if (!(target instanceof CubeCommand) || ((CubeCommand)target).isLoggable())
+            {
+                this.commandLogger.log(INFO, "complete " + sender.getName() + ' ' + commandName + ' ' + args);
+            }
             return target.tabComplete(sender, commandName, args);
         }
         catch (CommandException e)

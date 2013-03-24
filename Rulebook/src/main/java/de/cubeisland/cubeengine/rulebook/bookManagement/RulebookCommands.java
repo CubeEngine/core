@@ -1,11 +1,19 @@
 package de.cubeisland.cubeengine.rulebook.bookManagement;
 
-import de.cubeisland.cubeengine.core.command.reflected.Alias;
+import java.io.IOException;
+import java.util.List;
+import java.util.Set;
+
+import org.bukkit.Material;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.PlayerInventory;
+
 import de.cubeisland.cubeengine.core.command.CommandContext;
 import de.cubeisland.cubeengine.core.command.ContainerCommand;
 import de.cubeisland.cubeengine.core.command.parameterized.Flag;
 import de.cubeisland.cubeengine.core.command.parameterized.Param;
 import de.cubeisland.cubeengine.core.command.parameterized.ParameterizedContext;
+import de.cubeisland.cubeengine.core.command.reflected.Alias;
 import de.cubeisland.cubeengine.core.command.reflected.Command;
 import de.cubeisland.cubeengine.core.command.sender.CommandSender;
 import de.cubeisland.cubeengine.core.i18n.Language;
@@ -13,16 +21,10 @@ import de.cubeisland.cubeengine.core.logger.LogLevel;
 import de.cubeisland.cubeengine.core.permission.Permission;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.rulebook.Rulebook;
+
 import gnu.trove.iterator.TIntIterator;
 import gnu.trove.set.TIntSet;
 import gnu.trove.set.hash.TIntHashSet;
-import org.bukkit.Material;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.PlayerInventory;
-
-import java.io.IOException;
-import java.util.List;
-import java.util.Set;
 
 import static de.cubeisland.cubeengine.core.permission.PermDefault.TRUE;
 
@@ -73,7 +75,7 @@ public class RulebookCommands extends ContainerCommand
             }
         }
 
-        if( sender != target && !context.getSender().hasPermission( Permission.BASE + context.getCommand().getModule().getId() + ".command.get.other" ) )
+        if( sender != target && !context.getSender().hasPermission( Permission.BASE + '.' + context.getCommand().getModule().getId() + ".command.get.other" ) )
         {
             context.sendMessage( "rulebook", "&c You have not the permissions to add the rulebook to the inventory of an other player" );
             return;
