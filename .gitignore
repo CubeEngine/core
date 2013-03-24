@@ -1,18 +1,25 @@
+# Maven
 build/
 dist/
 nbproject/
 target/
 dependency-reduced-pom.xml
+
+# Netbeans
 nb-configuration.xml
 nb-actions.xml
-*/.classpath
-*/.project
-*/.settings**
-*/.externalToolBuilders**
-*/maven-eclipse.xml
-.idea/
-*.iml
+
+# Eclipse
 .settings/
-.project
+.project/
+.classpath
+.externalToolBuilders/
+maven-eclipse.xml
+
+# IntelliJ IDEA
+.idea/*
+!.idea/codeStyleSettings.xml
+*.iml
+
+# Unit Tests
 test-data/
-/gravatar.perl
