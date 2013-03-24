@@ -5,7 +5,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Map;
 
-public interface GettextCatalog
+public interface MessageCatalog
 {
     Map<String, String> read() throws IOException;
     Map<String, String> read(InputStream inputStream) throws IOException;

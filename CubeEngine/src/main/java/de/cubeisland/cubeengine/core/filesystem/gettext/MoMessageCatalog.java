@@ -5,7 +5,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Map;
 
-public class MoGettextCatalog implements GettextCatalog
+public class MoMessageCatalog implements MessageCatalog
 {
     @Override
     public Map<String, String> read() throws IOException

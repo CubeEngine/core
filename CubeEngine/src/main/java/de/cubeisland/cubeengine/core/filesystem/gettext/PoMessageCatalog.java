@@ -11,11 +11,11 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.util.Map;
 
-public class PoGettextCatalog implements GettextCatalog
+public class PoMessageCatalog implements MessageCatalog
 {
     private final File file;
 
-    public PoGettextCatalog(File file)
+    public PoMessageCatalog(File file)
     {
         this.file = file;
     }
