@@ -38,6 +38,7 @@
 
         <!-- The test module should always be the last! -->
         <module>Test</module>
+        <module>Vault-Compat</module>
     </modules>
 
     <properties>
