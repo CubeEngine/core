@@ -244,32 +244,6 @@
             <build>
                 <plugins>
                     <!--
-                        Enforce proper formatting of all source files
-                    -->
-                    <plugin>
-                        <groupId>com.googlecode.maven-java-formatter-plugin</groupId>
-                        <artifactId>maven-java-formatter-plugin</artifactId>
-                        <version>0.3.1</version>
-                        <configuration>
-                            <configFile>${basedir}/../style.xml</configFile>
-                            <overrideConfigCompilerVersion>true</overrideConfigCompilerVersion>
-                            <compilerSource>${jdkVersion}</compilerSource>
-                            <compilerCompliance>${jdkVersion}</compilerCompliance>
-                            <compilerTargetPlatform>${jdkVersion}</compilerTargetPlatform>
-                            <lineEnding>LF</lineEnding>
-                            <encoding>${project.build.sourceEncoding}</encoding>
-                        </configuration>
-                        <executions>
-                            <execution>
-                                <phase>compile</phase>
-                                <goals>
-                                    <goal>format</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                    </plugin>
-
-                    <!--
                         Checks style
                     -->
                     <plugin>
