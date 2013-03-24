@@ -1,6 +1,9 @@
 package de.cubeisland.cubeengine.core.filesystem.gettext;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.InputStream;
 
 public class MessageCatalogFactory
 {
@@ -15,13 +18,13 @@ public class MessageCatalogFactory
             {
                 if (this.isBinaryCatalog(new FileInputStream(file)))
                 {
-                    return new MoMessageCatalog(file);
+                    return new BinaryMessageCatalog(file);
                 }
             }
             catch (FileNotFoundException ignored)
             {}
         }
-        return new PoMessageCatalog(file);
+        return new PlaintextMessageCatalog(file);
     }
 
     private boolean isBinaryCatalog(InputStream is)

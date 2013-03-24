@@ -7,12 +7,12 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Map;
 
-public class MoMessageCatalog implements MessageCatalog
+public class BinaryMessageCatalog implements MessageCatalog
 {
     private final File file;
     private static final int[] MAGIC_NUMBER = {0xde, 0x12, 0x04, 0x95};
 
-    public MoMessageCatalog(File file)
+    public BinaryMessageCatalog(File file)
     {
         this.file = file;
     }
