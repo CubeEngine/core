@@ -1,0 +1,7 @@
+name: ${project.name}
+revision: 1
+description: ${project.description}
+plugin-dependencies:
+- Votifier
+dependencies:
+- Conomy
