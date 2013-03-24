@@ -34,15 +34,17 @@ import org.apache.commons.lang.Validate;
 public class ModuleLoader
 {
     private final Core core;
+    private final ClassLoader parentClassLoader;
     private final LibraryClassLoader libClassLoader;
     private final Map<String, ModuleClassLoader> classLoaders;
     protected final String infoFileName;
     private final File tempFolder;
     private Registry registry;
 
-    ModuleLoader(Core core)
+    ModuleLoader(Core core, ClassLoader parentClassLoader)
     {
         this.core = core;
+        this.parentClassLoader = parentClassLoader;
         this.libClassLoader = new LibraryClassLoader(this.getClass().getClassLoader());
         this.classLoaders = new HashMap<String, ModuleClassLoader>();
         this.infoFileName = "module.yml";
@@ -104,17 +106,11 @@ public class ModuleLoader
             tempFile.createNewFile();
             FileManager.copyFile(info.getFile(), tempFile);
 
-            ModuleClassLoader classLoader = new ModuleClassLoader(this, tempFile.toURI().toURL(), info, getClass().getClassLoader());
+            ModuleClassLoader classLoader = new ModuleClassLoader(this, tempFile.toURI().toURL(), info, this.parentClassLoader);
             Class<? extends Module> moduleClass = Class.forName(info.getMain(), true, classLoader).asSubclass(Module.class);
             Module module = moduleClass.getConstructor().newInstance();
 
-            module.initialize(
-                    this.core,
-                    info,
-                    new File(info.getFile().getParentFile(), name),
-                    new ModuleLogger(this.core, info),
-                    this,
-                    classLoader);
+            module.initialize(this.core, info, new File(info.getFile().getParentFile(), name), new ModuleLogger(this.core, info), this, classLoader);
 
             for (Field field : moduleClass.getDeclaredFields())
             {

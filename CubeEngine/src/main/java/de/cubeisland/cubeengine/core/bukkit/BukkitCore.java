@@ -1,7 +1,15 @@
 package de.cubeisland.cubeengine.core.bukkit;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
+import java.io.File;
+import java.io.IOException;
+import java.util.concurrent.TimeUnit;
+
+import net.minecraft.server.v1_5_R2.Packet204LocaleAndViewDistance;
+
+import org.bukkit.Server;
+import org.bukkit.plugin.PluginManager;
+import org.bukkit.plugin.java.JavaPlugin;
+
 import de.cubeisland.cubeengine.core.Core;
 import de.cubeisland.cubeengine.core.CorePerms;
 import de.cubeisland.cubeengine.core.CoreResource;
@@ -34,16 +42,11 @@ import de.cubeisland.cubeengine.core.util.worker.CubeThreadFactory;
 import de.cubeisland.cubeengine.core.webapi.ApiConfig;
 import de.cubeisland.cubeengine.core.webapi.ApiServer;
 import de.cubeisland.cubeengine.core.webapi.exception.ApiStartupException;
-import net.minecraft.server.v1_5_R2.Packet204LocaleAndViewDistance;
-import org.bukkit.Server;
-import org.bukkit.plugin.PluginManager;
-import org.bukkit.plugin.java.JavaPlugin;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import sun.misc.Signal;
 import sun.misc.SignalHandler;
-
-import java.io.File;
-import java.io.IOException;
-import java.util.concurrent.TimeUnit;
 
 import static de.cubeisland.cubeengine.core.logger.LogLevel.*;
 
@@ -254,7 +257,7 @@ public final class BukkitCore extends JavaPlugin implements Core
         this.commandManager.registerCommandFactory(new ReadableCommandFactory());
 
         // depends on: database
-        this.moduleManager = new BukkitModuleManager(this);
+        this.moduleManager = new BukkitModuleManager(this, this.getClassLoader());
 
         // depends on: plugin manager, module manager
         this.permissionManager = new BukkitPermissionManager(this);

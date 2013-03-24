@@ -44,11 +44,11 @@ public abstract class BaseModuleManager implements ModuleManager
     private final Map<Class<? extends Module>, Module> classMap;
     private final CoreModule coreModule;
 
-    public BaseModuleManager(Core core)
+    public BaseModuleManager(Core core, ClassLoader parentClassLoader)
     {
         this.core = core;
         this.logger = core.getCoreLogger();
-        this.loader = new ModuleLoader(core);
+        this.loader = new ModuleLoader(core, parentClassLoader);
         this.modules = new ConcurrentHashMap<String, Module>();
         this.moduleInfos = new ConcurrentHashMap<String, ModuleInfo>();
         this.classMap = new THashMap<Class<? extends Module>, Module>();
