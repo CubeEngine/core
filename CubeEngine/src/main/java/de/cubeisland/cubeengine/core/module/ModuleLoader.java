@@ -116,8 +116,6 @@ public class ModuleLoader
                     this,
                     classLoader);
 
-            this.core.getEventManager().fireEvent(new ModuleLoadedEvent(this.core, module));
-
             for (Field field : moduleClass.getDeclaredFields())
             {
                 if (Configuration.class.isAssignableFrom(field.getType()))
@@ -128,7 +126,7 @@ public class ModuleLoader
                     {
                         String filename = configClass.getAnnotation(DefaultConfig.class).name();
                         Codec codecAnnotation = Configuration.findCodec((Class<? extends Configuration>) field.getType());
-                        filename += "." + codecAnnotation.value();
+                        filename += '.' + codecAnnotation.value();
                         field.setAccessible(true);
                         field.set(module, Configuration.load(configClass, new File(module.getFolder(), filename)));
                     }
@@ -136,6 +134,8 @@ public class ModuleLoader
             }
 
             module.onLoad();
+
+            this.core.getEventManager().fireEvent(new ModuleLoadedEvent(this.core, module));
 
             this.classLoaders.put(info.getId(), classLoader);
             return module;
