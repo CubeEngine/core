@@ -33,29 +33,47 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-shade-plugin</artifactId>
+                <configuration>
+                    <minimizeJar>false</minimizeJar>
+                    <artifactSet>
+                        <includes>
+                            <include>org.pircbotx:pircbotx</include>
+                        </includes>
+                    </artifactSet>
+                    <relocations>
+                        <relocation>
+                            <pattern>org.pircbotx</pattern>
+                            <shadedPattern>${project.parent.groupId}.cubeengine.${project.artifactId}.external.org.pircbotx</shadedPattern>
+                        </relocation>
+                    </relocations>
+                </configuration>
                 <executions>
                     <execution>
                         <phase>package</phase>
                         <goals>
                             <goal>shade</goal>
                         </goals>
-                        <configuration>
-                            <minimizeJar>true</minimizeJar>
-                            <artifactSet>
-                                <includes>
-                                    <include>org.pircbotx:pircbotx</include>
-                                </includes>
-                            </artifactSet>
-                            <relocations>
-                                <relocation>
-                                    <pattern>org.pircbotx</pattern>
-                                    <shadedPattern>${project.parent.groupId}.cubeengine.${project.artifactId}.external.org.pircbotx</shadedPattern>
-                                </relocation>
-                            </relocations>
-                        </configuration>
                     </execution>
                 </executions>
             </plugin>
         </plugins>
     </build>
+
+    <profiles>
+        <profile>
+            <id>release</id>
+
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-shade-plugin</artifactId>
+                        <configuration>
+                            <minimizeJar>true</minimizeJar>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 </project>
