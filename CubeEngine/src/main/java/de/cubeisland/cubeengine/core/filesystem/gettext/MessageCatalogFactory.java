@@ -1,11 +1,32 @@
 package de.cubeisland.cubeengine.core.filesystem.gettext;
 
-/**
- * Created with IntelliJ IDEA.
- * User: Phillip
- * Date: 23.03.13
- * Time: 20:37
- * To change this template use File | Settings | File Templates.
- */
-public class MessageCatalogFactory {
+import java.io.*;
+
+public class MessageCatalogFactory
+{
+    public MessageCatalogFactory()
+    {}
+
+    public MessageCatalog newMessageCatalog(File file)
+    {
+        if (file.exists())
+        {
+            try
+            {
+                if (this.isBinaryCatalog(new FileInputStream(file)))
+                {
+                    return new MoMessageCatalog(file);
+                }
+            }
+            catch (FileNotFoundException ignored)
+            {}
+        }
+        return new PoMessageCatalog(file);
+    }
+
+    private boolean isBinaryCatalog(InputStream is)
+    {
+        // TODO implement me
+        return false;
+    }
 }
