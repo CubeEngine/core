@@ -8,6 +8,7 @@
 
     <artifactId>fly</artifactId>
     <name>Fly</name>
+    <description>Flying without creative mode</description>
 
     <dependencies>
         <dependency>

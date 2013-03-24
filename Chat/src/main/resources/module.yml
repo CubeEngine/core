@@ -1,5 +1,5 @@
 name: ${project.name}
 revision: 1
-description: Chat formatting
+description: ${project.description}
 soft-dependency:
 - Roles

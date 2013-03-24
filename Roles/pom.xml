@@ -8,7 +8,7 @@
 
     <artifactId>roles</artifactId>
     <name>Roles</name>
-    <description>This modules assigns permissions based on roles</description>
+    <description>This modules assigns permissions based on roles.</description>
 
     <dependencies>
         <dependency>

@@ -5,11 +5,10 @@
         <artifactId>cubeengine-aggregator</artifactId>
         <version>1.0.0-SNAPSHOT</version>
     </parent>
-    
-    <description>An IRC bot</description>
 
     <artifactId>irc</artifactId>
     <name>IRC</name>
+    <description>An IRC bot</description>
 
     <dependencies>
         <dependency>

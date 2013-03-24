@@ -8,6 +8,7 @@
 
     <artifactId>test</artifactId>
     <name>Test</name>
+    <description>Test for testing.</description>
 
     <dependencies>
         <dependency>

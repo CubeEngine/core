@@ -8,6 +8,7 @@
 
     <artifactId>conomy</artifactId>
     <name>Conomy</name>
+    <description>Economy API and basic commands</description>
 
     <dependencies>
         <dependency>

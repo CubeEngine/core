@@ -8,6 +8,7 @@
 
     <artifactId>rulebook</artifactId>
     <name>Rulebook</name>
+    <description>Puts a book in the inventory of new players.</description>
 
     <dependencies>
         <dependency>

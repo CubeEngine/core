@@ -8,6 +8,7 @@
 
     <artifactId>basics</artifactId>
     <name>Basics</name>
+    <description>This module adds all the basic functionality to your minecraft server.</description>
 
     <dependencies>
         <dependency>

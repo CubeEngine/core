@@ -8,6 +8,7 @@
 
     <artifactId>log</artifactId>
     <name>Log</name>
+    <description>Log everything you want!</description>
 
     <dependencies>
         <dependency>

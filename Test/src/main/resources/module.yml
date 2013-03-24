@@ -1,6 +1,6 @@
 name: ${project.name}
 revision: 1
-description: Test for testing
+description: ${project.description}
 soft-dependencies:
 - Basics
 plugin-dependencies:
