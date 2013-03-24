@@ -4,6 +4,7 @@ import de.cubeisland.cubeengine.core.Core;
 import de.cubeisland.cubeengine.core.config.Configuration;
 import de.cubeisland.cubeengine.core.filesystem.FileExtentionFilter;
 import de.cubeisland.cubeengine.core.filesystem.FileManager;
+import de.cubeisland.cubeengine.core.filesystem.gettext.MessageCatalogFactory;
 import de.cubeisland.cubeengine.core.logger.CubeFileHandler;
 import de.cubeisland.cubeengine.core.logger.CubeLogger;
 import de.cubeisland.cubeengine.core.logger.LogLevel;
@@ -36,6 +37,7 @@ public class I18n implements Cleanable
     private final SourceLanguage sourceLanguage;
     private final Map<String, Language> languageMap;
     private Locale defaultLocale;
+    private final MessageCatalogFactory messageCatalogFactory;
 
     public I18n(Core core)
     {
@@ -44,6 +46,7 @@ public class I18n implements Cleanable
         this.languageMap = new THashMap<String, Language>();
         this.sourceLanguage = new SourceLanguage();
         this.registerLanguage(this.sourceLanguage);
+        this.messageCatalogFactory = new MessageCatalogFactory();
 
         this.defaultLocale = core.getConfiguration().defaultLanguage;
         FileManager fm = core.getFileManager();
@@ -66,6 +69,11 @@ public class I18n implements Cleanable
     public Set<Language> getLanguages()
     {
         return new THashSet<Language>(this.languageMap.values());
+    }
+
+    public MessageCatalogFactory getMessageCatalogFactory()
+    {
+        return messageCatalogFactory;
     }
 
     /**

@@ -20,9 +20,17 @@ public class MessageCatalogFactory
                 {
                     return new BinaryMessageCatalog(file);
                 }
+                else
+                {
+                    return new PlaintextMessageCatalog(file);
+                }
             }
             catch (FileNotFoundException ignored)
             {}
+        }
+        if (file.getName().endsWith(".mo"))
+        {
+            return new BinaryMessageCatalog(file);
         }
         return new PlaintextMessageCatalog(file);
     }
