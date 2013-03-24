@@ -1,5 +1,17 @@
 package de.cubeisland.cubeengine.core.module;
 
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.lang.reflect.Field;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
+import java.util.jar.JarEntry;
+import java.util.jar.JarFile;
+
 import de.cubeisland.cubeengine.core.Core;
 import de.cubeisland.cubeengine.core.config.Configuration;
 import de.cubeisland.cubeengine.core.config.annotations.Codec;
@@ -11,18 +23,9 @@ import de.cubeisland.cubeengine.core.module.exception.IncompatibleDependencyExce
 import de.cubeisland.cubeengine.core.module.exception.InvalidModuleException;
 import de.cubeisland.cubeengine.core.module.exception.MissingDependencyException;
 import de.cubeisland.cubeengine.core.storage.Registry;
+
 import gnu.trove.set.hash.THashSet;
 import org.apache.commons.lang.Validate;
-
-import java.io.*;
-import java.lang.reflect.Field;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
-import java.util.jar.JarEntry;
-import java.util.jar.JarFile;
 
 /**
  * This class is used to load modules and provide a centralized place for class
@@ -125,15 +128,10 @@ public class ModuleLoader
                     {
                         String filename = configClass.getAnnotation(DefaultConfig.class).name();
                         Codec codecAnnotation = Configuration.findCodec((Class<? extends Configuration>) field.getType());
-                        filename += "."+codecAnnotation.value();
+                        filename += "." + codecAnnotation.value();
                         field.setAccessible(true);
                         field.set(module, Configuration.load(configClass, new File(module.getFolder(), filename)));
                     }
-                    else
-                    {
-                        continue;
-                    }
-
                 }
             }
 

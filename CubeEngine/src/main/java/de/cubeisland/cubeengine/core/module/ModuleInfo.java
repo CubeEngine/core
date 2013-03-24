@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.Set;
 
 import de.cubeisland.cubeengine.core.Core;
+import de.cubeisland.cubeengine.core.bukkit.BukkitCore;
 
 import org.apache.commons.lang.Validate;
 
@@ -30,10 +31,17 @@ public class ModuleInfo
     private final Set<String> pluginDependencies;
     private final Set<String> loadAfter;
 
-    ModuleInfo()
+    ModuleInfo(Core core)
     {
-        this.file = null;
-        this.main = null;
+        this.file = new File("CubeEngine.jar");
+        if (core instanceof BukkitCore)
+        {
+            this.main = ((BukkitCore)core).getDescription().getMain();
+        }
+        else
+        {
+            this.main = "";
+        }
         this.id = CoreModule.ID;
         this.name = CoreModule.NAME;
         this.revision = Core.REVISION;
@@ -242,6 +250,7 @@ public class ModuleInfo
         return loadAfter;
     }
 
+
     @Override
     public boolean equals(Object o)
     {
@@ -272,11 +281,7 @@ public class ModuleInfo
         {
             return false;
         }
-        if (!description.equals(that.description))
-        {
-            return false;
-        }
-        if (file != null ? !file.equals(that.file) : that.file != null)
+        if (description != null ? !description.equals(that.description) : that.description != null)
         {
             return false;
         }
@@ -288,7 +293,7 @@ public class ModuleInfo
         {
             return false;
         }
-        if (main != null ? !main.equals(that.main) : that.main != null)
+        if (!main.equals(that.main))
         {
             return false;
         }
@@ -311,12 +316,11 @@ public class ModuleInfo
     @Override
     public int hashCode()
     {
-        int result = file != null ? file.hashCode() : 0;
-        result = 31 * result + (main != null ? main.hashCode() : 0);
+        int result = main.hashCode();
         result = 31 * result + id.hashCode();
         result = 31 * result + name.hashCode();
         result = 31 * result + revision;
-        result = 31 * result + description.hashCode();
+        result = 31 * result + (description != null ? description.hashCode() : 0);
         result = 31 * result + minCoreVersion;
         result = 31 * result + (providesWorldGenerator ? 1 : 0);
         result = 31 * result + dependencies.hashCode();

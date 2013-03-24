@@ -1,21 +1,5 @@
 package de.cubeisland.cubeengine.core.module;
 
-import de.cubeisland.cubeengine.core.Core;
-import de.cubeisland.cubeengine.core.filesystem.FileExtentionFilter;
-import de.cubeisland.cubeengine.core.module.event.ModuleDisabledEvent;
-import de.cubeisland.cubeengine.core.module.event.ModuleEnabledEvent;
-import de.cubeisland.cubeengine.core.module.exception.CircularDependencyException;
-import de.cubeisland.cubeengine.core.module.exception.IncompatibleCoreException;
-import de.cubeisland.cubeengine.core.module.exception.IncompatibleDependencyException;
-import de.cubeisland.cubeengine.core.module.exception.InvalidModuleException;
-import de.cubeisland.cubeengine.core.module.exception.MissingDependencyException;
-import de.cubeisland.cubeengine.core.module.exception.MissingPluginDependencyException;
-import de.cubeisland.cubeengine.core.module.exception.ModuleException;
-import de.cubeisland.cubeengine.core.util.Profiler;
-import gnu.trove.map.hash.THashMap;
-import org.apache.commons.lang.Validate;
-import org.bukkit.plugin.Plugin;
-
 import java.io.File;
 import java.io.FileFilter;
 import java.lang.reflect.Field;
@@ -29,6 +13,24 @@ import java.util.Stack;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
+
+import org.bukkit.plugin.Plugin;
+
+import de.cubeisland.cubeengine.core.Core;
+import de.cubeisland.cubeengine.core.filesystem.FileExtentionFilter;
+import de.cubeisland.cubeengine.core.module.event.ModuleDisabledEvent;
+import de.cubeisland.cubeengine.core.module.event.ModuleEnabledEvent;
+import de.cubeisland.cubeengine.core.module.exception.CircularDependencyException;
+import de.cubeisland.cubeengine.core.module.exception.IncompatibleCoreException;
+import de.cubeisland.cubeengine.core.module.exception.IncompatibleDependencyException;
+import de.cubeisland.cubeengine.core.module.exception.InvalidModuleException;
+import de.cubeisland.cubeengine.core.module.exception.MissingDependencyException;
+import de.cubeisland.cubeengine.core.module.exception.MissingPluginDependencyException;
+import de.cubeisland.cubeengine.core.module.exception.ModuleException;
+import de.cubeisland.cubeengine.core.util.Profiler;
+
+import gnu.trove.map.hash.THashMap;
+import org.apache.commons.lang.Validate;
 
 import static de.cubeisland.cubeengine.core.logger.LogLevel.*;
 
@@ -51,7 +53,7 @@ public abstract class BaseModuleManager implements ModuleManager
         this.moduleInfos = new ConcurrentHashMap<String, ModuleInfo>();
         this.classMap = new THashMap<Class<? extends Module>, Module>();
         this.coreModule = new CoreModule();
-        this.coreModule.initialize(core, new ModuleInfo(), core.getFileManager().getDataFolder(), core.getCoreLogger(), null, null);
+        this.coreModule.initialize(core, new ModuleInfo(core), core.getFileManager().getDataFolder(), core.getCoreLogger(), null, null);
     }
 
     public Module getModule(String name)
