@@ -30,6 +30,7 @@ import de.cubeisland.cubeengine.core.logger.CubeFileHandler;
 import de.cubeisland.cubeengine.core.logger.CubeLogger;
 import de.cubeisland.cubeengine.core.logger.LogLevel;
 import de.cubeisland.cubeengine.core.module.event.FinishedLoadModulesEvent;
+import de.cubeisland.cubeengine.core.permission.permtest.TestPermissionContainer;
 import de.cubeisland.cubeengine.core.storage.TableManager;
 import de.cubeisland.cubeengine.core.storage.database.Database;
 import de.cubeisland.cubeengine.core.storage.database.DatabaseFactory;
@@ -277,6 +278,8 @@ public final class BukkitCore extends JavaPlugin implements Core
 
         this.matcherManager = new Match();
         this.inventoryGuard = new InventoryGuardFactory(this);
+
+        new TestPermissionContainer(this.getModuleManager().getCoreModule()); //TODO remove
 
         this.getServer().getScheduler().scheduleSyncDelayedTask(this, new Runnable()
         {
