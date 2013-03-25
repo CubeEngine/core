@@ -1,17 +1,5 @@
 package de.cubeisland.cubeengine.conomy.account;
 
-import de.cubeisland.cubeengine.conomy.Conomy;
-import de.cubeisland.cubeengine.conomy.account.storage.AccountModel;
-import de.cubeisland.cubeengine.conomy.account.storage.AccountStorage;
-import de.cubeisland.cubeengine.conomy.currency.Currency;
-import de.cubeisland.cubeengine.conomy.currency.CurrencyManager;
-import de.cubeisland.cubeengine.core.user.User;
-import de.cubeisland.cubeengine.core.logger.CubeFileHandler;
-import de.cubeisland.cubeengine.core.logger.CubeLogger;
-import de.cubeisland.cubeengine.core.logger.LogLevel;
-import gnu.trove.map.hash.THashMap;
-import gnu.trove.map.hash.TLongObjectHashMap;
-
 import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.Collection;
@@ -19,6 +7,19 @@ import java.util.Date;
 import java.util.logging.Formatter;
 import java.util.logging.LogRecord;
 import java.util.logging.Logger;
+
+import de.cubeisland.cubeengine.core.logger.CubeFileHandler;
+import de.cubeisland.cubeengine.core.logger.CubeLogger;
+import de.cubeisland.cubeengine.core.logger.LogLevel;
+import de.cubeisland.cubeengine.core.user.User;
+import de.cubeisland.cubeengine.conomy.Conomy;
+import de.cubeisland.cubeengine.conomy.account.storage.AccountModel;
+import de.cubeisland.cubeengine.conomy.account.storage.AccountStorage;
+import de.cubeisland.cubeengine.conomy.currency.Currency;
+import de.cubeisland.cubeengine.conomy.currency.CurrencyManager;
+
+import gnu.trove.map.hash.THashMap;
+import gnu.trove.map.hash.TLongObjectHashMap;
 
 public class AccountManager
 {
@@ -41,7 +42,7 @@ public class AccountManager
             try
             {
                 CubeFileHandler handler = new CubeFileHandler(LogLevel.ALL,
-                    new File(this.module.getFileManager().getLogDir(), "conomy_transactions").toString());
+                    new File(this.module.getCore().getFileManager().getLogDir(), "conomy_transactions").toString());
                 this.transactionLogger.addHandler(handler);
                 handler.setFormatter(new Formatter() {
                     @Override
@@ -121,7 +122,7 @@ public class AccountManager
      */
     public Account getAccount(String name, Currency currency)
     {
-        this.bankAccountExists(name, currency);
+        this.bankAccountExists(name, currency); // TODO this is confusing
         return this.bankaccounts.get(name).get(currency);
 
     }
@@ -368,7 +369,7 @@ public class AccountManager
     {
         if (online)
         {
-            for (User user : this.module.getUserManager().getOnlineUsers())
+            for (User user : this.module.getCore().getUserManager().getOnlineUsers())
             {
                 this.userAccountExists(user);
                 Account acc = this.useraccounts.get(user.key).get(currency);
@@ -396,7 +397,7 @@ public class AccountManager
     {
         if (online)
         {
-            for (User user : this.module.getUserManager().getOnlineUsers())
+            for (User user : this.module.getCore().getUserManager().getOnlineUsers())
             {
                 this.userAccountExists(user);
                 Account acc = this.useraccounts.get(user.key).get(currency);

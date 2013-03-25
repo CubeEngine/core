@@ -1,10 +1,5 @@
 package de.cubeisland.cubeengine.guests.prevention.preventions;
 
-import de.cubeisland.cubeengine.core.bukkit.TaskManager;
-import de.cubeisland.cubeengine.core.logger.LogLevel;
-import de.cubeisland.cubeengine.guests.Guests;
-import de.cubeisland.cubeengine.guests.prevention.Prevention;
-import gnu.trove.map.hash.THashMap;
 import org.bukkit.Location;
 import org.bukkit.configuration.Configuration;
 import org.bukkit.entity.Player;
@@ -14,6 +9,13 @@ import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+
+import de.cubeisland.cubeengine.core.bukkit.TaskManager;
+import de.cubeisland.cubeengine.core.logger.LogLevel;
+import de.cubeisland.cubeengine.guests.Guests;
+import de.cubeisland.cubeengine.guests.prevention.Prevention;
+
+import gnu.trove.map.hash.THashMap;
 
 /**
  * Prevents idling players.
@@ -28,7 +30,7 @@ public class AfkPrevention extends Prevention
     {
         super("afk", guests, false);
         this.trackerMap = null;
-        this.taskManager = guests.getTaskManger();
+        this.taskManager = guests.getCore().getTaskManager();
     }
 
     @Override

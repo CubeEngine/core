@@ -25,7 +25,7 @@ public abstract class RoleCommandHelper extends ContainerCommand
     public RoleCommandHelper(Roles module)
     {
         super(module, "role", "Manage roles.");//TODO alias manrole
-        this.manager = module.getManager();
+        this.manager = module.getRoleManager();
         this.module = module;
         this.worldManager = module.getCore().getWorldManager();
     }

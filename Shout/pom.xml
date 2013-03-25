@@ -8,6 +8,7 @@
 
     <artifactId>shout</artifactId>
     <name>Shout</name>
+    <description>Announce things!</description>
 
     <dependencies>
         <dependency>

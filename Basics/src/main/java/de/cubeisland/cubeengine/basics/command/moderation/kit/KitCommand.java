@@ -1,7 +1,10 @@
 package de.cubeisland.cubeengine.basics.command.moderation.kit;
 
-import de.cubeisland.cubeengine.basics.Basics;
-import de.cubeisland.cubeengine.basics.BasicsPerm;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.bukkit.inventory.ItemStack;
+
 import de.cubeisland.cubeengine.core.command.CommandContext;
 import de.cubeisland.cubeengine.core.command.CommandResult;
 import de.cubeisland.cubeengine.core.command.ContainerCommand;
@@ -11,10 +14,8 @@ import de.cubeisland.cubeengine.core.command.reflected.Alias;
 import de.cubeisland.cubeengine.core.command.reflected.Command;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.util.FileUtil;
-import org.bukkit.inventory.ItemStack;
-
-import java.util.ArrayList;
-import java.util.List;
+import de.cubeisland.cubeengine.basics.Basics;
+import de.cubeisland.cubeengine.basics.BasicsPerm;
 
 public class KitCommand extends ContainerCommand
 {
@@ -41,7 +42,7 @@ public class KitCommand extends ContainerCommand
 
     @Command(desc = "Creates a new kit with the items in your inventory.",
             flags = @Flag(longName = "toolbar", name = "t"),
-            usage = "<kitName> [-toolbar]", min = 1)
+            usage = "<kitName> [-toolbar]", min = 1, max = 1)
     public void create(ParameterizedContext context)
     {
         User sender = null;
@@ -124,7 +125,7 @@ public class KitCommand extends ContainerCommand
         {
             boolean gaveKit = false;
             int kitNotreceived = 0;
-            for (User receiver : module.getUserManager().getOnlineUsers())
+            for (User receiver : module.getCore().getUserManager().getOnlineUsers())
             {
                 try
                 {

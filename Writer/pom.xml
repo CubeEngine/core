@@ -8,6 +8,7 @@
 
     <artifactId>writer</artifactId>
     <name>Writer</name>
+    <description>Edit signs and books!</description>
 
     <dependencies>
         <dependency>

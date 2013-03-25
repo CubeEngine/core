@@ -8,6 +8,7 @@
 
     <artifactId>fun</artifactId>
     <name>Fun</name>
+    <description>A bunch of funny commands.</description>
 
     <dependencies>
         <dependency>

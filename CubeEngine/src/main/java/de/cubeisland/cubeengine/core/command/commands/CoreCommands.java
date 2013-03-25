@@ -1,5 +1,7 @@
 package de.cubeisland.cubeengine.core.command.commands;
 
+import org.bukkit.plugin.PluginManager;
+
 import de.cubeisland.cubeengine.core.Core;
 import de.cubeisland.cubeengine.core.CorePerms;
 import de.cubeisland.cubeengine.core.bukkit.BukkitCore;
@@ -13,7 +15,7 @@ import de.cubeisland.cubeengine.core.command.CommandSender;
 import de.cubeisland.cubeengine.core.command.sender.ConsoleCommandSender;
 import de.cubeisland.cubeengine.core.permission.PermDefault;
 import de.cubeisland.cubeengine.core.user.User;
-import org.bukkit.plugin.PluginManager;
+import de.cubeisland.cubeengine.core.user.UserManager;
 
 import static java.util.Arrays.asList;
 
@@ -95,8 +97,9 @@ public class CoreCommands extends ContainerCommand
         {
             if (CorePerms.COMMAND_CLEARPASSWORD_ALL.isAuthorized(context.getSender()))
             {
-                this.getModule().getUserManager().resetAllPasswords();
-                for (User user : this.getModule().getUserManager().getLoadedUsers())
+                final UserManager um = this.getModule().getCore().getUserManager();
+                um.resetAllPasswords();
+                for (User user : um.getLoadedUsers())
                 {
                     user.passwd = null; //update loaded users
                 }

@@ -23,7 +23,7 @@ public class UserCommandHelper extends ContainerCommand
     public UserCommandHelper(Roles module)
     {
         super(module, "user", "Manage users.");
-        this.manager = module.getManager();
+        this.manager = module.getRoleManager();
         this.worldManager = module.getCore().getWorldManager();
         this.module = module;
     }

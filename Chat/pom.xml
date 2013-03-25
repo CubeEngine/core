@@ -8,6 +8,7 @@
 
     <artifactId>chat</artifactId>
     <name>Chat</name>
+    <description>This module adds chat formatting functionality.</description>
 
     <dependencies>
         <dependency>

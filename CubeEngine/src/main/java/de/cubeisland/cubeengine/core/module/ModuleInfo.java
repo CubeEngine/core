@@ -1,14 +1,16 @@
 package de.cubeisland.cubeengine.core.module;
 
-import de.cubeisland.cubeengine.core.Core;
-import org.apache.commons.lang.Validate;
-
 import java.io.File;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
+
+import de.cubeisland.cubeengine.core.Core;
+import de.cubeisland.cubeengine.core.bukkit.BukkitCore;
+
+import org.apache.commons.lang.Validate;
 
 /**
  * This class provides information about a module.
@@ -29,10 +31,17 @@ public class ModuleInfo
     private final Set<String> pluginDependencies;
     private final Set<String> loadAfter;
 
-    ModuleInfo()
+    ModuleInfo(Core core)
     {
-        this.file = null;
-        this.main = null;
+        this.file = new File("CubeEngine.jar");
+        if (core instanceof BukkitCore)
+        {
+            this.main = ((BukkitCore)core).getDescription().getMain();
+        }
+        else
+        {
+            this.main = "";
+        }
         this.id = CoreModule.ID;
         this.name = CoreModule.NAME;
         this.revision = Core.REVISION;
@@ -45,21 +54,28 @@ public class ModuleInfo
         this.loadAfter = this.pluginDependencies;
     }
 
+    private static String nameToId(String name)
+    {
+        name = name.toLowerCase(Locale.US);
+        name = name.replaceAll("[^a-z0-9]", "");
+        name = name.replaceAll("^[0-9]]", "");
+        return name;
+    }
+
     public ModuleInfo(File file, ModuleConfig config)
     {
         Validate.notNull(config, "The module configuration failed to loaded!");
         Validate.notNull(config.name, "The module doesn't seem to have a name.");
 
-        config.name = config.name.trim();
-        Validate.notEmpty(config.name, "The module name seems to be empty.");
+        this.name = config.name.trim();
+        Validate.notEmpty(this.name, "The module name seems to be empty.");
 
         this.file = file;
-        this.id = config.name.toLowerCase(Locale.ENGLISH);
-        this.name = this.id.substring(0, 1).toUpperCase(Locale.ENGLISH) + this.id.substring(1);
+        this.id = nameToId(config.name);
 
         if (config.main == null)
         {
-            config.main = "de.cubeisland.cubeengine." + this.name.toLowerCase(Locale.ENGLISH) + "." + this.name;
+            config.main = "de.cubeisland.cubeengine." + this.id + "." + this.id.substring(0, 1).toUpperCase(Locale.US) + this.id.substring(1);
         }
         this.main = config.main;
 
@@ -234,6 +250,7 @@ public class ModuleInfo
         return loadAfter;
     }
 
+
     @Override
     public boolean equals(Object o)
     {
@@ -264,11 +281,7 @@ public class ModuleInfo
         {
             return false;
         }
-        if (!description.equals(that.description))
-        {
-            return false;
-        }
-        if (file != null ? !file.equals(that.file) : that.file != null)
+        if (description != null ? !description.equals(that.description) : that.description != null)
         {
             return false;
         }
@@ -280,7 +293,7 @@ public class ModuleInfo
         {
             return false;
         }
-        if (main != null ? !main.equals(that.main) : that.main != null)
+        if (!main.equals(that.main))
         {
             return false;
         }
@@ -303,12 +316,11 @@ public class ModuleInfo
     @Override
     public int hashCode()
     {
-        int result = file != null ? file.hashCode() : 0;
-        result = 31 * result + (main != null ? main.hashCode() : 0);
+        int result = main.hashCode();
         result = 31 * result + id.hashCode();
         result = 31 * result + name.hashCode();
         result = 31 * result + revision;
-        result = 31 * result + description.hashCode();
+        result = 31 * result + (description != null ? description.hashCode() : 0);
         result = 31 * result + minCoreVersion;
         result = 31 * result + (providesWorldGenerator ? 1 : 0);
         result = 31 * result + dependencies.hashCode();

@@ -1,8 +1,12 @@
 package de.cubeisland.cubeengine.basics.command.general;
 
-import de.cubeisland.cubeengine.basics.Basics;
-import de.cubeisland.cubeengine.basics.BasicsAttachment;
-import de.cubeisland.cubeengine.basics.storage.BasicUser;
+import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
+
+import org.bukkit.command.CommandSender;
+
 import de.cubeisland.cubeengine.core.command.CommandContext;
 import de.cubeisland.cubeengine.core.command.reflected.Command;
 import de.cubeisland.cubeengine.core.command.sender.ConsoleCommandSender;
@@ -10,11 +14,9 @@ import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.user.UserManager;
 import de.cubeisland.cubeengine.core.util.StringUtils;
 import de.cubeisland.cubeengine.core.util.time.Duration;
-
-import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
+import de.cubeisland.cubeengine.basics.Basics;
+import de.cubeisland.cubeengine.basics.BasicsAttachment;
+import de.cubeisland.cubeengine.basics.storage.BasicUser;
 
 import static de.cubeisland.cubeengine.core.command.ArgBounds.NO_MAX;
 
@@ -27,7 +29,7 @@ public class ChatCommands
     public ChatCommands(Basics basics)
     {
         this.module = basics;
-        this.um = basics.getUserManager();
+        this.um = basics.getCore().getUserManager();
     }
 
     @Command(desc = "Ignores all messages from players", min = 1, max = 1, usage = "<player>")
@@ -41,7 +43,7 @@ public class ChatCommands
             List<String> added = new ArrayList<String>();
             for (String name : userNames)
             {
-                User user = this.module.getUserManager().findUser(name);
+                User user = this.um.findUser(name);
                 if (user == null)
                 {
                     context.sendTranslated("&cUser %s not found!", name);
@@ -74,7 +76,7 @@ public class ChatCommands
             List<String> added = new ArrayList<String>();
             for (String name : userNames)
             {
-                User user = this.module.getUserManager().findUser(name);
+                User user = this.um.findUser(name);
                 if (user == null)
                 {
                     context.sendTranslated("&cUser %s not found!", name);

@@ -1,15 +1,16 @@
 package de.cubeisland.cubeengine.basics.command.teleport;
 
-import de.cubeisland.cubeengine.basics.Basics;
-import de.cubeisland.cubeengine.basics.BasicsPerm;
+import org.bukkit.Location;
+import org.bukkit.World;
+
 import de.cubeisland.cubeengine.core.command.CommandContext;
 import de.cubeisland.cubeengine.core.command.parameterized.Flag;
 import de.cubeisland.cubeengine.core.command.parameterized.Param;
 import de.cubeisland.cubeengine.core.command.parameterized.ParameterizedContext;
 import de.cubeisland.cubeengine.core.command.reflected.Command;
 import de.cubeisland.cubeengine.core.user.User;
-import org.bukkit.Location;
-import org.bukkit.World;
+import de.cubeisland.cubeengine.basics.Basics;
+import de.cubeisland.cubeengine.basics.BasicsPerm;
 
 /**
  * Contains spawn-commands.
@@ -136,7 +137,7 @@ public class SpawnCommands
                 if (!TeleportCommands.teleport(player, loc, true, force, true))
                     return;
             }
-            this.basics.getUserManager().broadcastMessage("basics", "&aTeleported everyone to the spawn of %s!", world.getName());
+            this.basics.getCore().getUserManager().broadcastMessage("basics", "&aTeleported everyone to the spawn of %s!", world.getName());
             return;
         }
         if (user == null && !context.hasArg(0))
@@ -163,7 +164,7 @@ public class SpawnCommands
         spawnLocation.setPitch(userLocation.getPitch());
         spawnLocation.setYaw(userLocation.getYaw());
         SpawnCommandEvent event = new SpawnCommandEvent(this.basics, user, spawnLocation);
-        this.basics.getEventManager().fireEvent(event); // catch this event to change spawn location
+        this.basics.getCore().getEventManager().fireEvent(event); // catch this event to change spawn location
         TeleportCommands.teleport(user, event.getLoc(), true, force, true);
     }
 

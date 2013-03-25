@@ -11,9 +11,9 @@ public class Fly extends Module
     {
         if (this.config.flyfeather)
         {
-            this.registerListener(new FlyListener(this));
+            this.getCore().getEventManager().registerListener(this, new FlyListener(this));
         }
-        this.getFileManager().dropResources(FlyResource.values());
-        this.registerPermissions(FlyPerm.values());
+        this.getCore().getFileManager().dropResources(FlyResource.values());
+        this.getCore().getPermissionManager().registerPermissions(this, FlyPerm.values());
     }
 }

@@ -1,21 +1,5 @@
 package de.cubeisland.cubeengine.core.module;
 
-import de.cubeisland.cubeengine.core.Core;
-import de.cubeisland.cubeengine.core.filesystem.FileExtentionFilter;
-import de.cubeisland.cubeengine.core.module.event.ModuleDisabledEvent;
-import de.cubeisland.cubeengine.core.module.event.ModuleEnabledEvent;
-import de.cubeisland.cubeengine.core.module.exception.CircularDependencyException;
-import de.cubeisland.cubeengine.core.module.exception.IncompatibleCoreException;
-import de.cubeisland.cubeengine.core.module.exception.IncompatibleDependencyException;
-import de.cubeisland.cubeengine.core.module.exception.InvalidModuleException;
-import de.cubeisland.cubeengine.core.module.exception.MissingDependencyException;
-import de.cubeisland.cubeengine.core.module.exception.MissingPluginDependencyException;
-import de.cubeisland.cubeengine.core.module.exception.ModuleException;
-import de.cubeisland.cubeengine.core.util.Profiler;
-import gnu.trove.map.hash.THashMap;
-import org.apache.commons.lang.Validate;
-import org.bukkit.plugin.Plugin;
-
 import java.io.File;
 import java.io.FileFilter;
 import java.lang.reflect.Field;
@@ -30,6 +14,24 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
 
+import org.bukkit.plugin.Plugin;
+
+import de.cubeisland.cubeengine.core.Core;
+import de.cubeisland.cubeengine.core.filesystem.FileExtentionFilter;
+import de.cubeisland.cubeengine.core.module.event.ModuleDisabledEvent;
+import de.cubeisland.cubeengine.core.module.event.ModuleEnabledEvent;
+import de.cubeisland.cubeengine.core.module.exception.CircularDependencyException;
+import de.cubeisland.cubeengine.core.module.exception.IncompatibleCoreException;
+import de.cubeisland.cubeengine.core.module.exception.IncompatibleDependencyException;
+import de.cubeisland.cubeengine.core.module.exception.InvalidModuleException;
+import de.cubeisland.cubeengine.core.module.exception.MissingDependencyException;
+import de.cubeisland.cubeengine.core.module.exception.MissingPluginDependencyException;
+import de.cubeisland.cubeengine.core.module.exception.ModuleException;
+import de.cubeisland.cubeengine.core.util.Profiler;
+
+import gnu.trove.map.hash.THashMap;
+import org.apache.commons.lang.Validate;
+
 import static de.cubeisland.cubeengine.core.logger.LogLevel.*;
 
 public abstract class BaseModuleManager implements ModuleManager
@@ -42,16 +44,16 @@ public abstract class BaseModuleManager implements ModuleManager
     private final Map<Class<? extends Module>, Module> classMap;
     private final CoreModule coreModule;
 
-    public BaseModuleManager(Core core)
+    public BaseModuleManager(Core core, ClassLoader parentClassLoader)
     {
         this.core = core;
         this.logger = core.getCoreLogger();
-        this.loader = new ModuleLoader(core);
+        this.loader = new ModuleLoader(core, parentClassLoader);
         this.modules = new ConcurrentHashMap<String, Module>();
         this.moduleInfos = new ConcurrentHashMap<String, ModuleInfo>();
         this.classMap = new THashMap<Class<? extends Module>, Module>();
         this.coreModule = new CoreModule();
-        this.coreModule.initialize(core, new ModuleInfo(), core.getFileManager().getDataFolder(), core.getCoreLogger(), null, null);
+        this.coreModule.initialize(core, new ModuleInfo(core), core.getFileManager().getDataFolder(), core.getCoreLogger(), null, null);
     }
 
     public Module getModule(String name)
@@ -386,9 +388,9 @@ public abstract class BaseModuleManager implements ModuleManager
     {
         Profiler.startProfiling("disable-module");
         module.disable();
-        this.core.getUserManager().detachAllOf(module);
+        this.core.getUserManager().cleanup(module);
         this.core.getEventManager().removeListeners(module);
-        this.core.getPermissionManager().unregisterPermissions(module);
+        this.core.getPermissionManager().removePermissions(module);
         this.core.getTaskManager().cancelTasks(module);
         this.core.getCommandManager().removeCommands(module);
         this.core.getApiServer().unregisterApiHandlers(module);
@@ -449,7 +451,11 @@ public abstract class BaseModuleManager implements ModuleManager
             }
         }
 
-        module.getClassLoader().shutdown();
+        ClassLoader classLoader = module.getClassLoader();
+        if (classLoader instanceof ModuleClassLoader)
+        {
+            ((ModuleClassLoader)classLoader).shutdown();
+        }
 
         System.gc();
         System.gc();

@@ -1,23 +1,37 @@
 package de.cubeisland.cubeengine.core.bukkit;
 
-import de.cubeisland.cubeengine.core.CubeEngine;
-import de.cubeisland.cubeengine.core.command.CubeCommand;
-import de.cubeisland.cubeengine.core.i18n.I18n;
-import de.cubeisland.cubeengine.core.i18n.Language;
-import de.cubeisland.cubeengine.core.user.User;
-import net.minecraft.server.v1_5_R2.*;
-import org.apache.commons.lang.Validate;
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.Server;
-import org.bukkit.command.*;
-import org.bukkit.command.defaults.BukkitCommand;
+import java.lang.reflect.Field;
+import java.util.Collection;
+import java.util.List;
+import java.util.Locale;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.logging.Filter;
+import java.util.logging.Logger;
+
+import net.minecraft.server.v1_5_R2.EntityPlayer;
+import net.minecraft.server.v1_5_R2.Item;
+import net.minecraft.server.v1_5_R2.LocaleLanguage;
+import net.minecraft.server.v1_5_R2.PlayerConnection;
+import net.minecraft.server.v1_5_R2.RecipesFurnace;
+import net.minecraft.server.v1_5_R2.ServerConnection;
+import net.minecraft.server.v1_5_R2.TileEntityFurnace;
 import org.bukkit.craftbukkit.libs.jline.console.ConsoleReader;
 import org.bukkit.craftbukkit.v1_5_R2.CraftServer;
 import org.bukkit.craftbukkit.v1_5_R2.entity.CraftPlayer;
 import org.bukkit.craftbukkit.v1_5_R2.help.SimpleHelpMap;
 import org.bukkit.craftbukkit.v1_5_R2.inventory.CraftItemStack;
+
+import org.bukkit.Bukkit;
+import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.Server;
+import org.bukkit.command.Command;
+import org.bukkit.command.CommandMap;
+import org.bukkit.command.CommandSender;
+import org.bukkit.command.PluginCommand;
+import org.bukkit.command.SimpleCommandMap;
+import org.bukkit.command.defaults.BukkitCommand;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -29,14 +43,13 @@ import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.SimplePluginManager;
 
-import java.lang.reflect.Field;
-import java.util.Collection;
-import java.util.List;
-import java.util.Locale;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.logging.Filter;
-import java.util.logging.Logger;
+import de.cubeisland.cubeengine.core.CubeEngine;
+import de.cubeisland.cubeengine.core.command.CubeCommand;
+import de.cubeisland.cubeengine.core.i18n.I18n;
+import de.cubeisland.cubeengine.core.i18n.Language;
+import de.cubeisland.cubeengine.core.user.User;
+
+import org.apache.commons.lang.Validate;
 
 import static de.cubeisland.cubeengine.core.logger.LogLevel.DEBUG;
 
@@ -374,7 +387,10 @@ public class BukkitUtils
 
     public static void cleanup()
     {
-        PacketHookInjector.INSTANCE.shutdown();
+        if (PacketHookInjector.INSTANCE != null)
+        {
+            PacketHookInjector.INSTANCE.shutdown();
+        }
 
         resetCommandMap();
         resetCommandLogging();

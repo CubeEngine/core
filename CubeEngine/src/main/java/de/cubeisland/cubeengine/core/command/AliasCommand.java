@@ -2,6 +2,8 @@ package de.cubeisland.cubeengine.core.command;
 
 import java.util.List;
 
+import de.cubeisland.cubeengine.core.permission.PermDefault;
+
 import static de.cubeisland.cubeengine.core.util.StringUtils.explode;
 
 public final class AliasCommand extends CubeCommand
@@ -32,6 +34,24 @@ public final class AliasCommand extends CubeCommand
     public String[] getSuffix()
     {
         return this.suffix;
+    }
+
+    @Override
+    public void setPermission(String permission)
+    {
+        this.target.setPermission(permission);
+    }
+
+    @Override
+    public void updateGeneratedPermission()
+    {
+        this.target.updateGeneratedPermission();
+    }
+
+    @Override
+    public void setGeneratedPermission(PermDefault def)
+    {
+        this.target.setGeneratedPermission(def);
     }
 
     @Override

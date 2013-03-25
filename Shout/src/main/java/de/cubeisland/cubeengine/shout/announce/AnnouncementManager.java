@@ -1,20 +1,5 @@
 package de.cubeisland.cubeengine.shout.announce;
 
-import de.cubeisland.cubeengine.core.config.Configuration;
-import de.cubeisland.cubeengine.core.filesystem.FileExtentionFilter;
-import de.cubeisland.cubeengine.core.filesystem.FileUtil;
-import de.cubeisland.cubeengine.core.i18n.I18n;
-import de.cubeisland.cubeengine.core.i18n.Language;
-import de.cubeisland.cubeengine.core.user.User;
-import de.cubeisland.cubeengine.core.util.StringUtils;
-import de.cubeisland.cubeengine.core.util.matcher.Match;
-import de.cubeisland.cubeengine.shout.Shout;
-import de.cubeisland.cubeengine.shout.ShoutException;
-import de.cubeisland.cubeengine.shout.announce.announcer.Announcer;
-import de.cubeisland.cubeengine.shout.announce.announcer.MessageTask;
-import de.cubeisland.cubeengine.shout.announce.receiver.Receiver;
-import de.cubeisland.cubeengine.shout.announce.receiver.UserReceiver;
-
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
@@ -36,6 +21,21 @@ import java.util.Queue;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Logger;
+
+import de.cubeisland.cubeengine.core.config.Configuration;
+import de.cubeisland.cubeengine.core.filesystem.FileExtentionFilter;
+import de.cubeisland.cubeengine.core.filesystem.FileUtil;
+import de.cubeisland.cubeengine.core.i18n.I18n;
+import de.cubeisland.cubeengine.core.i18n.Language;
+import de.cubeisland.cubeengine.core.user.User;
+import de.cubeisland.cubeengine.core.util.StringUtils;
+import de.cubeisland.cubeengine.core.util.matcher.Match;
+import de.cubeisland.cubeengine.shout.Shout;
+import de.cubeisland.cubeengine.shout.ShoutException;
+import de.cubeisland.cubeengine.shout.announce.announcer.Announcer;
+import de.cubeisland.cubeengine.shout.announce.announcer.MessageTask;
+import de.cubeisland.cubeengine.shout.announce.receiver.Receiver;
+import de.cubeisland.cubeengine.shout.announce.receiver.UserReceiver;
 
 import static de.cubeisland.cubeengine.core.filesystem.FileExtentionFilter.TXT;
 import static de.cubeisland.cubeengine.core.logger.LogLevel.*;
@@ -77,7 +77,7 @@ public class AnnouncementManager
      */
     public List<Announcement> getAnnouncements(String receiver)
     {
-        return new ArrayList<Announcement>(receivers.get(receiver).getAllAnnouncements());
+        return new ArrayList<Announcement>(this.receivers.get(receiver).getAllAnnouncements());
     }
 
     /**
@@ -137,7 +137,7 @@ public class AnnouncementManager
         if (this.motd != null)
         {
             delays = new long[tmpAnnouncements.size() + 1];
-            delays[tmpAnnouncements.size()] = motd.getDelay();
+            delays[tmpAnnouncements.size()] = this.motd.getDelay();
         }
         else
         {
@@ -147,7 +147,7 @@ public class AnnouncementManager
         {
             delays[x] = tmpAnnouncements.get(x).getDelay();
         }
-        return greatestCommonDivisor(delays);
+        return this.greatestCommonDivisor(delays);
     }
 
     /**
@@ -198,7 +198,7 @@ public class AnnouncementManager
         }
 
         // Load what announcements should be displayed to the user
-        for (Announcement announcement : announcements.values())
+        for (Announcement announcement : this.announcements.values())
         {
             if (receiver.couldReceive(announcement))
             {
@@ -212,7 +212,7 @@ public class AnnouncementManager
         receiver.setAllAnnouncements(messages);
 
         this.receivers.put(receiver.getName(), receiver);
-        this.announcer.scheduleTask(receiver.getName(), new MessageTask(module.getTaskManger(), receiver), this.getGreatestCommonDivisor(receiver));
+        this.announcer.scheduleTask(receiver.getName(), new MessageTask(this.module.getCore().getTaskManager(), receiver), this.getGreatestCommonDivisor(receiver));
     }
 
     /**
@@ -231,7 +231,7 @@ public class AnnouncementManager
      */
     public void reload()
     {
-        for (Receiver receiver : receivers.values())
+        for (Receiver receiver : this.receivers.values())
         {
             this.clean(receiver.getName());
         }
@@ -245,7 +245,7 @@ public class AnnouncementManager
 
     public void initUsers()
     {
-        for (User user : module.getUserManager().getOnlineUsers())
+        for (User user : this.module.getCore().getUserManager().getOnlineUsers())
         {
             this.initializeUser(user);
 

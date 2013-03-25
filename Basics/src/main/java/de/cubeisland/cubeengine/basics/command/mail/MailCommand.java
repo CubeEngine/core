@@ -1,7 +1,7 @@
 package de.cubeisland.cubeengine.basics.command.mail;
 
-import de.cubeisland.cubeengine.basics.Basics;
-import de.cubeisland.cubeengine.basics.storage.BasicUser;
+import java.util.List;
+
 import de.cubeisland.cubeengine.core.command.CommandContext;
 import de.cubeisland.cubeengine.core.command.ContainerCommand;
 import de.cubeisland.cubeengine.core.command.reflected.Alias;
@@ -9,10 +9,11 @@ import de.cubeisland.cubeengine.core.command.reflected.Command;
 import de.cubeisland.cubeengine.core.command.CommandSender;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.util.ChatFormat;
+import de.cubeisland.cubeengine.basics.Basics;
+import de.cubeisland.cubeengine.basics.storage.BasicUser;
+
 import gnu.trove.set.TLongSet;
 import gnu.trove.set.hash.TLongHashSet;
-
-import java.util.List;
 
 import static de.cubeisland.cubeengine.core.command.ArgBounds.NO_MAX;
 
@@ -151,7 +152,7 @@ public class MailCommand extends ContainerCommand
     , min = 1 , max = NO_MAX)
     public void sendAll(CommandContext context)
     {
-        List<User> users = this.basics.getUserManager().getOnlineUsers();
+        List<User> users = this.basics.getCore().getUserManager().getOnlineUsers();
         final TLongSet alreadySend = new TLongHashSet();
         User sender = null;
         if (context.getSender() instanceof User)
@@ -165,11 +166,11 @@ public class MailCommand extends ContainerCommand
             alreadySend.add(user.key);
         }
         final User sendingUser = sender;
-        this.basics.getTaskManger().getExecutorService().submit(new Runnable()
+        this.basics.getCore().getTaskManager().getExecutorService().submit(new Runnable()
         {
             public void run() // Async sending to all Users ever
             {
-                for (Long userKey : basics.getUserManager().getAllKeys())
+                for (Long userKey : basics.getCore().getUserManager().getAllKeys())
                 {
                     if (!alreadySend.contains(userKey))
                     {

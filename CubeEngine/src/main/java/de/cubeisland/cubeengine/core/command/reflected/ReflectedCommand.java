@@ -1,5 +1,9 @@
 package de.cubeisland.cubeengine.core.command.reflected;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.List;
+
 import de.cubeisland.cubeengine.core.command.CommandContext;
 import de.cubeisland.cubeengine.core.command.CommandResult;
 import de.cubeisland.cubeengine.core.command.HelpContext;
@@ -7,10 +11,6 @@ import de.cubeisland.cubeengine.core.command.parameterized.ParameterizedCommand;
 import de.cubeisland.cubeengine.core.command.parameterized.ParameterizedContextFactory;
 import de.cubeisland.cubeengine.core.command.result.ErrorResult;
 import de.cubeisland.cubeengine.core.module.Module;
-
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.util.List;
 
 public class ReflectedCommand extends ParameterizedCommand
 {
@@ -26,6 +26,7 @@ public class ReflectedCommand extends ParameterizedCommand
         this.method = method;
         this.method.setAccessible(true);
         this.contextType = (Class<? extends CommandContext>)method.getParameterTypes()[0];
+        this.setGeneratePermission(true);
 
         Alias annotation = method.getAnnotation(Alias.class);
         if (annotation != null)

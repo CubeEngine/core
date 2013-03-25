@@ -1,5 +1,9 @@
 package de.cubeisland.cubeengine.core.module;
 
+import java.io.File;
+import java.util.Collection;
+import java.util.Collections;
+
 import de.cubeisland.cubeengine.core.Core;
 import de.cubeisland.cubeengine.core.module.exception.CircularDependencyException;
 import de.cubeisland.cubeengine.core.module.exception.IncompatibleCoreException;
@@ -8,10 +12,6 @@ import de.cubeisland.cubeengine.core.module.exception.InvalidModuleException;
 import de.cubeisland.cubeengine.core.module.exception.MissingDependencyException;
 import de.cubeisland.cubeengine.core.module.exception.MissingPluginDependencyException;
 import de.cubeisland.cubeengine.core.util.StringUtils;
-
-import java.io.File;
-import java.util.Collection;
-import java.util.Collections;
 
 public class TestModuleManager implements ModuleManager
 {
@@ -28,7 +28,7 @@ public class TestModuleManager implements ModuleManager
     public Module getModule(String id)
     {
         TestModule module = new TestModule();
-        ModuleInfo info = new TestModuleInfo();
+        ModuleInfo info = new TestModuleInfo(this.core);
         module.initialize(this.core, info, null, new ModuleLogger(this.core, info), this.ldr, null);
         return module;
     }

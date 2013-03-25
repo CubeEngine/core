@@ -1,6 +1,12 @@
 package de.cubeisland.cubeengine.basics.command.moderation.spawnmob;
 
-import de.cubeisland.cubeengine.basics.Basics;
+import org.bukkit.DyeColor;
+import org.bukkit.Material;
+import org.bukkit.entity.EntityType;
+import org.bukkit.entity.Villager;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.util.Vector;
+
 import de.cubeisland.cubeengine.core.command.CommandContext;
 import de.cubeisland.cubeengine.core.command.CommandResult;
 import de.cubeisland.cubeengine.core.command.chatcommand.ChatCommand;
@@ -10,15 +16,11 @@ import de.cubeisland.cubeengine.core.command.parameterized.CommandFlag;
 import de.cubeisland.cubeengine.core.command.parameterized.CommandParameter;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.util.matcher.Match;
-import gnu.trove.map.hash.TLongObjectHashMap;
-import org.bukkit.DyeColor;
-import org.bukkit.Material;
-import org.bukkit.entity.EntityType;
-import org.bukkit.entity.Villager;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.util.Vector;
+import de.cubeisland.cubeengine.basics.Basics;
 
-public class AdvancedSpawnMob extends ChatCommand<Basics>
+import gnu.trove.map.hash.TLongObjectHashMap;
+
+public class AdvancedSpawnMob extends ChatCommand
 {
     public AdvancedSpawnMob(Basics module)
     {

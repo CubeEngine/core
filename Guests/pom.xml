@@ -8,6 +8,7 @@
 
     <artifactId>guests</artifactId>
     <name>Guests</name>
+    <description>Protects you from griefers by limiting your guests in their abilities.</description>
 
     <dependencies>
         <dependency>

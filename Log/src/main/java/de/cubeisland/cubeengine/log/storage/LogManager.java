@@ -1,7 +1,38 @@
 package de.cubeisland.cubeengine.log.storage;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import java.io.File;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.sql.Timestamp;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.Map;
+import java.util.Queue;
+import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+
+import org.bukkit.Bukkit;
+import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.World;
+import org.bukkit.block.BrewingStand;
+import org.bukkit.block.Chest;
+import org.bukkit.block.Dispenser;
+import org.bukkit.block.DoubleChest;
+import org.bukkit.block.Dropper;
+import org.bukkit.block.Furnace;
+import org.bukkit.block.Hopper;
+import org.bukkit.entity.HumanEntity;
+import org.bukkit.entity.Player;
+import org.bukkit.entity.minecart.StorageMinecart;
+import org.bukkit.inventory.InventoryHolder;
+
 import de.cubeisland.cubeengine.core.CubeEngine;
+import de.cubeisland.cubeengine.core.bukkit.EventManager;
 import de.cubeisland.cubeengine.core.config.Configuration;
 import de.cubeisland.cubeengine.core.logger.LogLevel;
 import de.cubeisland.cubeengine.core.storage.StorageException;
@@ -18,25 +49,8 @@ import de.cubeisland.cubeengine.log.listeners.BlockListener;
 import de.cubeisland.cubeengine.log.listeners.ChatListener;
 import de.cubeisland.cubeengine.log.listeners.ContainerListener;
 import de.cubeisland.cubeengine.log.listeners.EntityListener;
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.World;
-import org.bukkit.block.*;
-import org.bukkit.entity.HumanEntity;
-import org.bukkit.entity.Player;
-import org.bukkit.entity.minecart.StorageMinecart;
-import org.bukkit.inventory.InventoryHolder;
 
-import java.io.File;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
-import java.sql.Timestamp;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.Map;
-import java.util.Queue;
-import java.util.concurrent.*;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class LogManager
 {
@@ -180,12 +194,14 @@ public class LogManager
         this.chatListener = new ChatListener(module,this);
         this.containerListener = new ContainerListener(module,this);
         this.entityListener = new EntityListener(module,this);
-        module.registerListener(blockListener);
-        module.registerListener(chatListener);
-        module.registerListener(containerListener);
-        module.registerListener(entityListener);
 
-        this.database = module.getDatabase();
+        final EventManager em = module.getCore().getEventManager();
+        em.registerListener(module, blockListener);
+        em.registerListener(module, chatListener);
+        em.registerListener(module, containerListener);
+        em.registerListener(module, entityListener);
+
+        this.database = module.getCore().getDB();
         this.module = module;
         try
         {
@@ -241,7 +257,7 @@ public class LogManager
                 });
             }
         };
-        executor = Executors.newSingleThreadExecutor(this.module.getTaskManger().getThreadFactory());
+        executor = Executors.newSingleThreadExecutor(this.module.getCore().getTaskManager().getThreadFactory());
     }
 
     private Queue<QueuedLog> queuedLogs = new ConcurrentLinkedQueue<QueuedLog>();
@@ -588,9 +604,8 @@ public class LogManager
                         return config.containerMinecart;
                     if (additional instanceof Hopper)
                         return config.containerHopper;
-                    //TODO wait for Dropper Interface
-                    //if (additional instanceof Dropper)
-                    //    return config.containerDropper;
+                    if (additional instanceof Dropper)
+                        return config.containerDropper;
                     if (additional instanceof HumanEntity){
                         return false; // no need to log these
                     }
@@ -599,11 +614,9 @@ public class LogManager
                 }
                 if (additional == null)
                 {
-                    this.module.getLogger().log(LogLevel.DEBUG,"Inventory has no InventoryHolder!");
-                    System.out.print("This happens currently with Droppers!!!");
+                    this.module.getLogger().log(LogLevel.DEBUG, "Inventory has no InventoryHolder!");
                     return false;
                 }
-
                 throw new IllegalStateException("Invalid ITEM_CHANGE_IN_CONTAINER: "+additional);
             case PLAYER_COMMAND :
                 if (additional instanceof String)
@@ -690,7 +703,7 @@ public class LogManager
     {
         Timestamp timestamp = new Timestamp(System.currentTimeMillis());
         Long worldID = this.module.getCore().getWorldManager().getWorldId(location.getWorld());
-        User user = this.module.getUserManager().getExactUser(player);
+        User user = this.module.getCore().getUserManager().getExactUser(player);
         this.queueLog(timestamp,worldID,location.getBlockX(),location.getBlockY(),location.getBlockZ(),action,user.key,null,null,null,null,additionalData);
     }
 
@@ -751,6 +764,8 @@ public class LogManager
     }
 
 
-
+    public int getQueueSize() {
+        return this.queuedLogs.size();
+    }
 }
 

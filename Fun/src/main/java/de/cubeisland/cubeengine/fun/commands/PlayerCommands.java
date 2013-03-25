@@ -1,5 +1,14 @@
 package de.cubeisland.cubeengine.fun.commands;
 
+import org.bukkit.Location;
+import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.entity.EntityDamageByBlockEvent;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.PlayerInventory;
+import org.bukkit.util.Vector;
+
 import de.cubeisland.cubeengine.core.command.CommandContext;
 import de.cubeisland.cubeengine.core.command.parameterized.Flag;
 import de.cubeisland.cubeengine.core.command.parameterized.Param;
@@ -9,14 +18,6 @@ import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.util.matcher.Match;
 import de.cubeisland.cubeengine.fun.Fun;
 import de.cubeisland.cubeengine.fun.FunPerm;
-import org.bukkit.Location;
-import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.Listener;
-import org.bukkit.event.entity.EntityDamageByBlockEvent;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.PlayerInventory;
-import org.bukkit.util.Vector;
 
 public class PlayerCommands
 {
@@ -27,7 +28,7 @@ public class PlayerCommands
     {
         this.module = module;
         this.explosionListener = new ExplosionListener();
-        this.module.registerListener(explosionListener);
+        this.module.getCore().getEventManager().registerListener(module, explosionListener);
     }
     
     @Command(
@@ -338,16 +339,13 @@ public class PlayerCommands
 
             this.location = location;
 
-            module.getTaskManger().scheduleSyncDelayedTask(module,
-                    new Runnable()
-                    {
-                        @Override
-                        public void run()
-                        {
-                            remove();
-                        }
-                    }, 1
-                );
+            module.getCore().getTaskManager().scheduleSyncDelayedTask(module, new Runnable() {
+                @Override
+                public void run()
+                {
+                    remove();
+                }
+            }, 1);
         }
 
         private void remove()

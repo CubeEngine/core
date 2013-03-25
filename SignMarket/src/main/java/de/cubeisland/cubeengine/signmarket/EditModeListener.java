@@ -1,15 +1,5 @@
 package de.cubeisland.cubeengine.signmarket;
 
-import de.cubeisland.cubeengine.conomy.currency.Currency;
-import de.cubeisland.cubeengine.core.command.CommandContext;
-import de.cubeisland.cubeengine.core.command.CommandResult;
-import de.cubeisland.cubeengine.core.command.chatcommand.ChatCommand;
-import de.cubeisland.cubeengine.core.command.chatcommand.ChatCommandContext;
-import de.cubeisland.cubeengine.core.command.chatcommand.ChatCommandContextFactory;
-import de.cubeisland.cubeengine.core.command.parameterized.CommandFlag;
-import de.cubeisland.cubeengine.core.command.parameterized.CommandParameter;
-import de.cubeisland.cubeengine.core.user.User;
-import gnu.trove.map.hash.TLongObjectHashMap;
 import org.bukkit.Location;
 import org.bukkit.block.BlockState;
 import org.bukkit.block.Sign;
@@ -22,10 +12,31 @@ import org.bukkit.event.block.SignChangeEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 
-public class EditModeListener extends ChatCommand<Signmarket>
+import de.cubeisland.cubeengine.core.command.CommandContext;
+import de.cubeisland.cubeengine.core.command.CommandResult;
+import de.cubeisland.cubeengine.core.command.chatcommand.ChatCommand;
+import de.cubeisland.cubeengine.core.command.chatcommand.ChatCommandContext;
+import de.cubeisland.cubeengine.core.command.chatcommand.ChatCommandContextFactory;
+import de.cubeisland.cubeengine.core.command.parameterized.CommandFlag;
+import de.cubeisland.cubeengine.core.command.parameterized.CommandParameter;
+import de.cubeisland.cubeengine.core.user.User;
+import de.cubeisland.cubeengine.conomy.Conomy;
+import de.cubeisland.cubeengine.conomy.currency.Currency;
+
+import gnu.trove.map.hash.TLongObjectHashMap;
+
+public class EditModeListener extends ChatCommand
 {
-    public EditModeListener(Signmarket module) {
-        super(module, new ChatCommandContextFactory());
+    private final MarketSignFactory signFactory;
+    private final SignMarketConfig config;
+    private final Conomy conomy;
+
+    public EditModeListener(Signmarket signmarket, Conomy conomy) {
+        super(signmarket, new ChatCommandContextFactory());
+        this.signFactory = signmarket.getMarketSignFactory();
+        this.config = signmarket.getConfig();
+        this.conomy = conomy;
+
         this.getContextFactory()
                 .addFlag(new CommandFlag("exit", "exit"))
                 .addFlag(new CommandFlag("copy", "copy"))
@@ -53,7 +64,7 @@ public class EditModeListener extends ChatCommand<Signmarket>
         Location previous = this.currentSignLocation.put(user.key, location);
         if (!location.equals(previous))
         {
-            MarketSign previousSign = this.getModule().getMarketSignFactory().getSignAt(previous);
+            MarketSign previousSign = this.signFactory.getSignAt(previous);
             if (previousSign != null)
             {
                 this.previousMarketSign.put(user.key, previousSign);
@@ -69,7 +80,7 @@ public class EditModeListener extends ChatCommand<Signmarket>
     public void removeUser(User user)
     {
         super.removeUser(user);
-        MarketSign marketSign = this.getModule().getMarketSignFactory().getSignAt(this.currentSignLocation.remove(user.key));
+        MarketSign marketSign = this.signFactory.getSignAt(this.currentSignLocation.remove(user.key));
         if (marketSign != null)
         {
             marketSign.exitEditMode(user);
@@ -92,7 +103,7 @@ public class EditModeListener extends ChatCommand<Signmarket>
             user.sendTranslated("&cPlease do select a sign to edit.");
             return null;
         }
-        MarketSign marketSign = this.getModule().getMarketSignFactory().getSignAt(loc);
+        MarketSign marketSign = this.signFactory.getSignAt(loc);
         if (marketSign == null)
         {
             user.sendTranslated("&4No market-sign at position! This should not happen!");
@@ -235,7 +246,7 @@ public class EditModeListener extends ChatCommand<Signmarket>
             {
                 if (marketSign.hasStock())
                 {
-                    if (this.getModule().getConfig().allowAdminNoStock)
+                    if (this.config.allowAdminNoStock)
                     {
                         if (MarketSignPerm.SIGN_CREATE_ADMIN_NOSTOCK.isAuthorized(user))
                         {
@@ -253,7 +264,7 @@ public class EditModeListener extends ChatCommand<Signmarket>
                 }
                 else
                 {
-                    if (this.getModule().getConfig().allowAdminStock)
+                    if (this.config.allowAdminStock)
                     {
                         if (MarketSignPerm.SIGN_CREATE_ADMIN_STOCK.isAuthorized(user))
                         {
@@ -296,7 +307,7 @@ public class EditModeListener extends ChatCommand<Signmarket>
         }
         if (context.hasParam("currency"))
         {
-            Currency currency = this.getModule().getConomy().getCurrencyManager().getCurrencyByName(context.getString("currency"));
+            Currency currency = this.conomy.getCurrencyManager().getCurrencyByName(context.getString("currency"));
             if (currency == null)
             {
                 context.sendTranslated("&cInvalid currency: %s!", context.getString("currency"));
@@ -312,7 +323,7 @@ public class EditModeListener extends ChatCommand<Signmarket>
             Currency currency = marketSign.getCurrency();
             if (currency == null)
             {
-                currency = this.getModule().getConomy().getCurrencyManager().getMainCurrency();
+                currency = this.conomy.getCurrencyManager().getMainCurrency();
                 marketSign.setCurrency(currency);
                 context.sendTranslated("&aCurrency set to default!");
             }
@@ -378,7 +389,7 @@ public class EditModeListener extends ChatCommand<Signmarket>
                     {
                         if (marketSign.isAdminSign())
                         {
-                            int maxAdmin = this.getModule().getConfig().maxAdminStock;
+                            int maxAdmin = this.config.maxAdminStock;
                             if (maxAdmin != -1 && (size > maxAdmin || size == -1))
                             {
                                 context.sendTranslated("&cThe maximum size of admin-signs is set to &6%d&c!", maxAdmin);
@@ -391,7 +402,7 @@ public class EditModeListener extends ChatCommand<Signmarket>
                         }
                         else // user-sign
                         {
-                            int maxUser = this.getModule().getConfig().maxUserStock;
+                            int maxUser = this.config.maxUserStock;
                             if (maxUser != -1 && (size > maxUser || size == -1))
                             {
                                 context.sendTranslated("&cThe maximum size of user-signs is set to &6%d&c!", maxUser);
@@ -430,7 +441,7 @@ public class EditModeListener extends ChatCommand<Signmarket>
             return;
         if (event.getPlayer().isSneaking())
             return;
-        User user = this.getModule().getUserManager().getExactUser(event.getPlayer());
+        User user = this.getModule().getCore().getUserManager().getExactUser(event.getPlayer());
         if (!this.hasUser(user))
         {
             return;
@@ -450,7 +461,7 @@ public class EditModeListener extends ChatCommand<Signmarket>
                         return;
                     }
                 }
-                MarketSign marketSign = this.getModule().getMarketSignFactory().getSignAt(newLoc);
+                MarketSign marketSign = this.signFactory.getSignAt(newLoc);
                 if (marketSign == null)
                 {
                     if (user.isSneaking())
@@ -500,7 +511,7 @@ public class EditModeListener extends ChatCommand<Signmarket>
             if (user.getItemInHand() == null || user.getItemInHand().getTypeId() == 0)
                 return;
             Location curLoc = signFound.getLocation();
-            MarketSign curSign = this.getModule().getMarketSignFactory().getSignAt(curLoc);
+            MarketSign curSign = this.signFactory.getSignAt(curLoc);
             if (curSign == null)
             {
                 user.sendTranslated("&eThis sign is not a market-sign!");
@@ -522,7 +533,7 @@ public class EditModeListener extends ChatCommand<Signmarket>
     {
         if (event.getBlockPlaced().getState() instanceof Sign)
         {
-            User user = this.getModule().getUserManager().getExactUser(event.getPlayer());
+            User user = this.getModule().getCore().getUserManager().getExactUser(event.getPlayer());
             if (this.hasUser(user))
             {
                 if (!MarketSignPerm.SIGN_CREATE.isAuthorized(user))
@@ -532,7 +543,7 @@ public class EditModeListener extends ChatCommand<Signmarket>
                     return;
                 }
                 Location loc = event.getBlockPlaced().getLocation();
-                MarketSign marketSign = this.getModule().getMarketSignFactory().createSignAt(user, loc);
+                MarketSign marketSign = this.signFactory.createSignAt(user, loc);
                 this.setEditingSign(user, loc, marketSign);
                 marketSign.updateSign();
             }
@@ -542,7 +553,7 @@ public class EditModeListener extends ChatCommand<Signmarket>
     @EventHandler
     public void onSignChange(SignChangeEvent event)
     {
-        User user = this.getModule().getUserManager().getExactUser(event.getPlayer());
+        User user = this.getModule().getCore().getUserManager().getExactUser(event.getPlayer());
         if (this.hasUser(user))
         {
             Location loc = event.getBlock().getLocation();

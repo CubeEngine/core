@@ -1,11 +1,12 @@
 package de.cubeisland.cubeengine.signmarket.storage;
 
+import java.util.Collection;
+
 import de.cubeisland.cubeengine.core.storage.SingleKeyStorage;
 import de.cubeisland.cubeengine.signmarket.Signmarket;
+
 import gnu.trove.map.hash.TLongObjectHashMap;
 import gnu.trove.set.hash.TLongHashSet;
-
-import java.util.Collection;
 
 public class SignMarketItemManager extends SingleKeyStorage<Long, SignMarketItemModel>
 {
@@ -15,7 +16,7 @@ public class SignMarketItemManager extends SingleKeyStorage<Long, SignMarketItem
 
     public SignMarketItemManager(Signmarket module)
     {
-        super(module.getDatabase(), SignMarketItemModel.class, REVISION);
+        super(module.getCore().getDB(), SignMarketItemModel.class, REVISION);
         this.initialize();
         for (SignMarketItemModel model : this.getAll())
         {

@@ -1,21 +1,26 @@
 package de.cubeisland.cubeengine.core.user;
 
-import de.cubeisland.cubeengine.core.bukkit.BukkitCore;
-import de.cubeisland.cubeengine.core.command.CommandSender;
-import de.cubeisland.cubeengine.core.filesystem.FileManager;
-import de.cubeisland.cubeengine.core.module.Module;
-import de.cubeisland.cubeengine.core.permission.Permission;
-import de.cubeisland.cubeengine.core.util.ChatFormat;
-import de.cubeisland.cubeengine.core.util.Cleanable;
-import de.cubeisland.cubeengine.core.util.Triplet;
-import de.cubeisland.cubeengine.core.util.matcher.Match;
-import gnu.trove.impl.Constants;
-import gnu.trove.map.TObjectIntMap;
-import gnu.trove.map.hash.TLongObjectHashMap;
-import gnu.trove.map.hash.TObjectIntHashMap;
-import gnu.trove.procedure.TObjectIntProcedure;
-import gnu.trove.set.hash.THashSet;
-import org.apache.commons.lang.RandomStringUtils;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
+
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -29,25 +34,23 @@ import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.scheduler.BukkitScheduler;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
+import de.cubeisland.cubeengine.core.bukkit.BukkitCore;
+import de.cubeisland.cubeengine.core.command.CommandSender;
+import de.cubeisland.cubeengine.core.filesystem.FileManager;
+import de.cubeisland.cubeengine.core.module.Module;
+import de.cubeisland.cubeengine.core.permission.Permission;
+import de.cubeisland.cubeengine.core.util.ChatFormat;
+import de.cubeisland.cubeengine.core.util.Cleanable;
+import de.cubeisland.cubeengine.core.util.Triplet;
+import de.cubeisland.cubeengine.core.util.matcher.Match;
+
+import gnu.trove.impl.Constants;
+import gnu.trove.map.TObjectIntMap;
+import gnu.trove.map.hash.TLongObjectHashMap;
+import gnu.trove.map.hash.TObjectIntHashMap;
+import gnu.trove.procedure.TObjectIntProcedure;
+import gnu.trove.set.hash.THashSet;
+import org.apache.commons.lang.RandomStringUtils;
 
 import static de.cubeisland.cubeengine.core.logger.LogLevel.WARNING;
 
@@ -327,12 +330,6 @@ public class UserManager implements Cleanable
         return this.cachedUsers.values();
     }
 
-    @Override
-    public void clean()
-    {
-        this.storage.cleanup();
-    }
-
     public void shutdown()
     {
         this.clean();
@@ -566,6 +563,18 @@ public class UserManager implements Cleanable
         this.defaultAttachments.remove(attachmentClass);
     }
 
+    public synchronized void removeDefaultAttachments(Module module)
+    {
+        Iterator<DefaultAttachment> it = this.defaultAttachments.iterator();
+        while (it.hasNext())
+        {
+            if (it.next().module == module)
+            {
+                it.remove();
+            }
+        }
+    }
+
     public synchronized void removeDefaultAttachments()
     {
         this.defaultAttachments.clear();
@@ -574,6 +583,18 @@ public class UserManager implements Cleanable
     public Set<Long> getAllKeys()
     {
         return this.storage.getAllKeys();
+    }
+
+    public synchronized void cleanup(Module module)
+    {
+        this.removeDefaultAttachments(module);
+        this.detachAllOf(module);
+    }
+
+    @Override
+    public void clean()
+    {
+        this.storage.cleanup();
     }
 
     private class UserListener implements Listener

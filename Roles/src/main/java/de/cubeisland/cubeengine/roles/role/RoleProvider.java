@@ -1,5 +1,12 @@
 package de.cubeisland.cubeengine.roles.role;
 
+import java.io.File;
+import java.util.HashSet;
+import java.util.Locale;
+import java.util.Set;
+import java.util.Stack;
+import java.util.TreeSet;
+
 import de.cubeisland.cubeengine.core.config.Configuration;
 import de.cubeisland.cubeengine.core.logger.LogLevel;
 import de.cubeisland.cubeengine.core.user.User;
@@ -9,11 +16,9 @@ import de.cubeisland.cubeengine.roles.exception.CircularRoleDepedencyException;
 import de.cubeisland.cubeengine.roles.exception.RoleDependencyMissingException;
 import de.cubeisland.cubeengine.roles.role.config.Priority;
 import de.cubeisland.cubeengine.roles.role.config.RoleConfig;
+
 import gnu.trove.map.hash.THashMap;
 import org.apache.commons.lang.Validate;
-
-import java.io.File;
-import java.util.*;
 
 import static de.cubeisland.cubeengine.core.logger.LogLevel.DEBUG;
 
@@ -51,10 +56,10 @@ public abstract class RoleProvider
 
     public Role getRole(String roleName)
     {
-        Validate.notNull(roles, "The RoleName cannot be null!");
+        Validate.notNull(this.roles, "The RoleName cannot be null!");
         if (roleName.startsWith("g:"))
         {
-            return this.module.getManager().getGlobalRoles().get(roleName.substring(2).toLowerCase(Locale.ENGLISH));
+            return this.module.getRoleManager().getGlobalRoles().get(roleName.substring(2).toLowerCase(Locale.ENGLISH));
         }
         return this.roles.get(roleName.toLowerCase(Locale.ENGLISH));
     }
@@ -109,12 +114,12 @@ public abstract class RoleProvider
             }
         }
         this.recalculateDirtyRoles(dirtyChilds, globalRoles);
-        for (User user : module.getUserManager().getOnlineUsers())
+        for (User user : this.module.getCore().getUserManager().getOnlineUsers())
         {
-            module.getManager().preCalculateRoles(user, true);
+            this.module.getRoleManager().preCalculateRoles(user, true);
             if (user.isOnline())
             {
-                module.getManager().applyRole(user.getPlayer());
+                this.module.getRoleManager().applyRole(user.getPlayer());
             }
         }
     }
@@ -140,7 +145,7 @@ public abstract class RoleProvider
 
     public boolean calculateRoles(boolean recalculate)
     {
-        THashMap<String, Role> globalRoles = this.module.getManager().getGlobalRoles();
+        THashMap<String, Role> globalRoles = this.module.getRoleManager().getGlobalRoles();
         if (this.rolesCalculated && !recalculate)
         {
             return false;
@@ -151,7 +156,7 @@ public abstract class RoleProvider
             Role role = this.calculateRole(config, globalRoles);
             if (role == null)
             {
-                module.getLogger().log(LogLevel.WARNING, config.roleName + " could not be calculated!");
+                this.module.getLogger().log(LogLevel.WARNING, config.roleName + " could not be calculated!");
                 continue;
             }
             this.roles.put(role.getName().toLowerCase(Locale.ENGLISH), role);
@@ -175,7 +180,7 @@ public abstract class RoleProvider
                 {
                     if (this.roleStack.contains(parentName)) // Circular Dependency?
                     {
-                        throw new CircularRoleDepedencyException("Cannot load role! Circular Depenency detected in " + config.roleName + "\n" + StringUtils.implode(", ", roleStack));
+                        throw new CircularRoleDepedencyException("Cannot load role! Circular Depenency detected in " + config.roleName + "\n" + StringUtils.implode(", ", this.roleStack));
                     }
                     RoleConfig parentConfig = null;
 
@@ -202,7 +207,7 @@ public abstract class RoleProvider
                 }
                 catch (RoleDependencyMissingException ex)
                 {
-                    module.getLogger().log(LogLevel.WARNING, ex.getMessage());
+                    this.module.getLogger().log(LogLevel.WARNING, ex.getMessage());
                 }
             }
             // now all parent roles should be loaded
@@ -232,43 +237,43 @@ public abstract class RoleProvider
         }
         catch (CircularRoleDepedencyException ex)
         {
-            module.getLogger().log(LogLevel.WARNING, ex.getMessage());
+            this.module.getLogger().log(LogLevel.WARNING, ex.getMessage());
             return null;
         }
     }
 
     public THashMap<String, Role> getRoles()
     {
-        return roles;
+        return this.roles;
     }
 
     public boolean isCalculated()
     {
-        return rolesCalculated;
+        return this.rolesCalculated;
     }
 
     public void setRolePermission(Role role, String perm, Boolean set)
     {
         role.setPermission(perm, set);
-        this.recalculateDirtyRoles(this.module.getManager().getGlobalRoles());
+        this.recalculateDirtyRoles(this.module.getRoleManager().getGlobalRoles());
     }
 
     public void setRoleMetaData(Role role, String key, String value)
     {
         role.setMetaData(key, value);
-        this.recalculateDirtyRoles(this.module.getManager().getGlobalRoles());
+        this.recalculateDirtyRoles(this.module.getRoleManager().getGlobalRoles());
     }
 
     public void resetRoleMetaData(Role role, String key)
     {
         role.setMetaData(key, null);
-        this.recalculateDirtyRoles(this.module.getManager().getGlobalRoles());
+        this.recalculateDirtyRoles(this.module.getRoleManager().getGlobalRoles());
     }
 
     public void clearRoleMetaData(Role role)
     {
         role.clearMetaData();
-        this.recalculateDirtyRoles(this.module.getManager().getGlobalRoles());
+        this.recalculateDirtyRoles(this.module.getRoleManager().getGlobalRoles());
     }
 
     public boolean setParentRole(Role role, Role pRole) throws CircularRoleDepedencyException
@@ -277,7 +282,7 @@ public abstract class RoleProvider
         boolean added = role.setParentRole(pRole.getName());
         if (added)
         {
-            this.recalculateDirtyRoles(this.module.getManager().getGlobalRoles());
+            this.recalculateDirtyRoles(this.module.getRoleManager().getGlobalRoles());
         }
         return added;
     }
@@ -299,7 +304,7 @@ public abstract class RoleProvider
         boolean removed = role.removeParentRole(pRole.getName());
         if (removed)
         {
-            this.recalculateDirtyRoles(this.module.getManager().getGlobalRoles());
+            this.recalculateDirtyRoles(this.module.getRoleManager().getGlobalRoles());
         }
         return removed;
     }
@@ -307,13 +312,13 @@ public abstract class RoleProvider
     public void clearParentRoles(Role role)
     {
         role.clearParentRoles();
-        this.recalculateDirtyRoles(this.module.getManager().getGlobalRoles());
+        this.recalculateDirtyRoles(this.module.getRoleManager().getGlobalRoles());
     }
 
     public void setRolePriority(Role role, Priority priority)
     {
         role.setPriority(priority);
-        this.recalculateDirtyRoles(this.module.getManager().getGlobalRoles());
+        this.recalculateDirtyRoles(this.module.getRoleManager().getGlobalRoles());
     }
 
     public boolean renameRole(Role role, String newName)
@@ -329,7 +334,7 @@ public abstract class RoleProvider
         this.roles.remove(role.getName());
         // Set new role
         this.configs.put(newName.toLowerCase(Locale.ENGLISH), config);
-        Role newRole = this.calculateRole(config, this.module.getManager().getGlobalRoles());
+        Role newRole = this.calculateRole(config, this.module.getRoleManager().getGlobalRoles());
         newRole.setChildRoles(role.getChildRoles());
         this.roles.put(newName, newRole);
         if (this instanceof WorldRoleProvider)
@@ -337,7 +342,7 @@ public abstract class RoleProvider
             this.module.getDbManager().rename((WorldRoleProvider)this, role.getName(), newName);
         }
         // Recalculate dependend roles
-        this.recalculateDirtyRoles(this.module.getManager().getGlobalRoles());
+        this.recalculateDirtyRoles(this.module.getRoleManager().getGlobalRoles());
         return true;
     }
 
@@ -354,7 +359,7 @@ public abstract class RoleProvider
         config.onLoaded(null);
         config.setFile(new File(this.folder, roleName + ".yml"));
         config.save();
-        this.roles.put(roleName, this.calculateRole(config, this.module.getManager().getGlobalRoles()));
+        this.roles.put(roleName, this.calculateRole(config, this.module.getRoleManager().getGlobalRoles()));
         return true;
     }
 
@@ -367,6 +372,6 @@ public abstract class RoleProvider
         this.roles.remove(role.getName());
         this.configs.remove(role.getName());
         ((ConfigRole)role).deleteConfigFile();
-        this.recalculateDirtyRoles(this.module.getManager().getGlobalRoles());
+        this.recalculateDirtyRoles(this.module.getRoleManager().getGlobalRoles());
     }
 }

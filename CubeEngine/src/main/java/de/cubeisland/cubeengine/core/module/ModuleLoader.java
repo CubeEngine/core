@@ -1,5 +1,17 @@
 package de.cubeisland.cubeengine.core.module;
 
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.lang.reflect.Field;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
+import java.util.jar.JarEntry;
+import java.util.jar.JarFile;
+
 import de.cubeisland.cubeengine.core.Core;
 import de.cubeisland.cubeengine.core.config.Configuration;
 import de.cubeisland.cubeengine.core.config.annotations.Codec;
@@ -11,18 +23,9 @@ import de.cubeisland.cubeengine.core.module.exception.IncompatibleDependencyExce
 import de.cubeisland.cubeengine.core.module.exception.InvalidModuleException;
 import de.cubeisland.cubeengine.core.module.exception.MissingDependencyException;
 import de.cubeisland.cubeengine.core.storage.Registry;
+
 import gnu.trove.set.hash.THashSet;
 import org.apache.commons.lang.Validate;
-
-import java.io.*;
-import java.lang.reflect.Field;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
-import java.util.jar.JarEntry;
-import java.util.jar.JarFile;
 
 /**
  * This class is used to load modules and provide a centralized place for class
@@ -31,15 +34,17 @@ import java.util.jar.JarFile;
 public class ModuleLoader
 {
     private final Core core;
+    private final ClassLoader parentClassLoader;
     private final LibraryClassLoader libClassLoader;
     private final Map<String, ModuleClassLoader> classLoaders;
     protected final String infoFileName;
     private final File tempFolder;
     private Registry registry;
 
-    ModuleLoader(Core core)
+    ModuleLoader(Core core, ClassLoader parentClassLoader)
     {
         this.core = core;
+        this.parentClassLoader = parentClassLoader;
         this.libClassLoader = new LibraryClassLoader(this.getClass().getClassLoader());
         this.classLoaders = new HashMap<String, ModuleClassLoader>();
         this.infoFileName = "module.yml";
@@ -101,19 +106,11 @@ public class ModuleLoader
             tempFile.createNewFile();
             FileManager.copyFile(info.getFile(), tempFile);
 
-            ModuleClassLoader classLoader = new ModuleClassLoader(this, tempFile.toURI().toURL(), info, getClass().getClassLoader());
+            ModuleClassLoader classLoader = new ModuleClassLoader(this, tempFile.toURI().toURL(), info, this.parentClassLoader);
             Class<? extends Module> moduleClass = Class.forName(info.getMain(), true, classLoader).asSubclass(Module.class);
             Module module = moduleClass.getConstructor().newInstance();
 
-            module.initialize(
-                    this.core,
-                    info,
-                    new File(info.getFile().getParentFile(), name),
-                    new ModuleLogger(this.core, info),
-                    this,
-                    classLoader);
-
-            this.core.getEventManager().fireEvent(new ModuleLoadedEvent(this.core, module));
+            module.initialize(this.core, info, new File(info.getFile().getParentFile(), name), new ModuleLogger(this.core, info), this, classLoader);
 
             for (Field field : moduleClass.getDeclaredFields())
             {
@@ -125,19 +122,16 @@ public class ModuleLoader
                     {
                         String filename = configClass.getAnnotation(DefaultConfig.class).name();
                         Codec codecAnnotation = Configuration.findCodec((Class<? extends Configuration>) field.getType());
-                        filename += "."+codecAnnotation.value();
+                        filename += '.' + codecAnnotation.value();
                         field.setAccessible(true);
                         field.set(module, Configuration.load(configClass, new File(module.getFolder(), filename)));
                     }
-                    else
-                    {
-                        continue;
-                    }
-
                 }
             }
 
             module.onLoad();
+
+            this.core.getEventManager().fireEvent(new ModuleLoadedEvent(this.core, module));
 
             this.classLoaders.put(info.getId(), classLoader);
             return module;

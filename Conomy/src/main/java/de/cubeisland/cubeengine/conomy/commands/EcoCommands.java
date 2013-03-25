@@ -1,16 +1,16 @@
 package de.cubeisland.cubeengine.conomy.commands;
 
+import de.cubeisland.cubeengine.core.command.CommandContext;
+import de.cubeisland.cubeengine.core.command.ContainerCommand;
+import de.cubeisland.cubeengine.core.command.parameterized.Flag;
+import de.cubeisland.cubeengine.core.command.parameterized.Param;
+import de.cubeisland.cubeengine.core.command.parameterized.ParameterizedContext;
+import de.cubeisland.cubeengine.core.command.reflected.Command;
+import de.cubeisland.cubeengine.core.user.User;
+import de.cubeisland.cubeengine.core.util.StringUtils;
 import de.cubeisland.cubeengine.conomy.Conomy;
 import de.cubeisland.cubeengine.conomy.account.Account;
 import de.cubeisland.cubeengine.conomy.currency.Currency;
-import de.cubeisland.cubeengine.core.command.CommandContext;
-import de.cubeisland.cubeengine.core.command.ContainerCommand;
-import de.cubeisland.cubeengine.core.command.parameterized.ParameterizedContext;
-import de.cubeisland.cubeengine.core.command.reflected.Command;
-import de.cubeisland.cubeengine.core.command.parameterized.Flag;
-import de.cubeisland.cubeengine.core.command.parameterized.Param;
-import de.cubeisland.cubeengine.core.user.User;
-import de.cubeisland.cubeengine.core.util.StringUtils;
 
 public class EcoCommands extends ContainerCommand
 {
@@ -69,7 +69,7 @@ public class EcoCommands extends ContainerCommand
             String[] users = StringUtils.explode(",", context.getString(0));
             for (String userString : users)
             {
-                User user = this.module.getUserManager().findUser(userString);
+                User user = this.module.getCore().getUserManager().findUser(userString);
                 if (user == null)
                 {
                     context.sendTranslated("&cUser %s not found!", context.getString(0));
@@ -139,7 +139,7 @@ public class EcoCommands extends ContainerCommand
             String[] users = StringUtils.explode(",", context.getString(0));
             for (String userString : users)
             {
-                User user = this.module.getUserManager().findUser(userString);
+                User user = this.module.getCore().getUserManager().findUser(userString);
                 if (user == null)
                 {
                     context.sendTranslated("&cUser %s not found!", context.getString(0));
@@ -200,7 +200,7 @@ public class EcoCommands extends ContainerCommand
             String[] users = StringUtils.explode(",", context.getString(0));
             for (String userString : users)
             {
-                User user = this.module.getUserManager().findUser(userString);
+                User user = this.module.getCore().getUserManager().findUser(userString);
                 if (user == null)
                 {
                     context.sendTranslated("&cUser %s not found!", context.getString(0));
@@ -268,7 +268,7 @@ public class EcoCommands extends ContainerCommand
             String[] users = StringUtils.explode(",", context.getString(0));
             for (String userString : users)
             {
-                User user = this.module.getUserManager().findUser(userString);
+                User user = this.module.getCore().getUserManager().findUser(userString);
                 if (user == null)
                 {
                     context.sendTranslated("&cUser %s not found!", context.getString(0));
@@ -317,7 +317,7 @@ public class EcoCommands extends ContainerCommand
         String[] users = StringUtils.explode(",", context.getString(0));
         for (String userString : users)
         {
-            User user = this.module.getUserManager().findUser(userString);
+            User user = this.module.getCore().getUserManager().findUser(userString);
             if (user == null)
             {
                 context.sendTranslated("&cUser %s not found!", context.getString(0));
@@ -367,7 +367,7 @@ public class EcoCommands extends ContainerCommand
         String[] users = StringUtils.explode(",", context.getString(0));
         for (String userString : users)
         {
-            User user = this.module.getUserManager().findUser(userString);
+            User user = this.module.getCore().getUserManager().findUser(userString);
             if (user == null)
             {
                 context.sendTranslated("&cUser %s not found!", context.getString(0));

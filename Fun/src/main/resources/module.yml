@@ -1,3 +1,3 @@
 name: ${project.name}
 revision: 1
-description: a lot of funny commands.
+description: ${project.description}

@@ -1,5 +1,7 @@
 package de.cubeisland.cubeengine.travel.command;
 
+import org.bukkit.event.player.PlayerTeleportEvent;
+
 import de.cubeisland.cubeengine.core.CubeEngine;
 import de.cubeisland.cubeengine.core.command.CommandContext;
 import de.cubeisland.cubeengine.core.command.reflected.Command;
@@ -8,17 +10,16 @@ import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.travel.Travel;
 import de.cubeisland.cubeengine.travel.storage.Home;
 import de.cubeisland.cubeengine.travel.storage.TelePointManager;
-import org.bukkit.event.player.PlayerTeleportEvent;
 
 public class HomeCommands
 {
     private final TelePointManager tpManager;
     private final Travel module;
 
-    public HomeCommands(Travel module, TelePointManager tpManager)
+    public HomeCommands(Travel module)
     {
         this.module = module;
-        this.tpManager = tpManager;
+        this.tpManager = module.getTelepointManager();
     }
 
     @Command(desc = "Teleport to a home", usage = "<[OwnerName]:>[HomeName]", permDefault = PermDefault.TRUE, min = 0, max = 1)

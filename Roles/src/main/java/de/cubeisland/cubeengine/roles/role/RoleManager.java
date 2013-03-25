@@ -1,5 +1,14 @@
 package de.cubeisland.cubeengine.roles.role;
 
+import java.io.File;
+import java.util.Collection;
+import java.util.List;
+import java.util.Set;
+
+import org.bukkit.Bukkit;
+import org.bukkit.World;
+import org.bukkit.entity.Player;
+
 import de.cubeisland.cubeengine.core.config.Configuration;
 import de.cubeisland.cubeengine.core.logger.LogLevel;
 import de.cubeisland.cubeengine.core.storage.world.WorldManager;
@@ -9,16 +18,9 @@ import de.cubeisland.cubeengine.roles.Roles;
 import de.cubeisland.cubeengine.roles.RolesAttachment;
 import de.cubeisland.cubeengine.roles.role.config.RoleMirror;
 import de.cubeisland.cubeengine.roles.storage.AssignedRole;
+
 import gnu.trove.map.hash.THashMap;
 import gnu.trove.map.hash.TLongObjectHashMap;
-import org.bukkit.Bukkit;
-import org.bukkit.World;
-import org.bukkit.entity.Player;
-
-import java.io.File;
-import java.util.Collection;
-import java.util.List;
-import java.util.Set;
 
 import static de.cubeisland.cubeengine.core.logger.LogLevel.DEBUG;
 
@@ -173,7 +175,7 @@ public class RoleManager
      */
     public void preCalculateRoles(String username, boolean reload)
     {
-        User user = this.module.getUserManager().getUser(username, true);
+        User user = this.module.getCore().getUserManager().getUser(username, true);
         this.preCalculateRoles(user, reload);
     }
 
@@ -225,7 +227,7 @@ public class RoleManager
 
     private void applyRole(Player player, long worldId)
     {
-        User user = this.module.getUserManager().getExactUser(player);
+        User user = this.module.getCore().getUserManager().getExactUser(player);
         if (!Bukkit.getServer().getOnlineMode() && this.module.getConfiguration().doNotAssignPermIfOffline && !user.isLoggedIn())
         {
             user.sendTranslated("&cThe server is currently running in offline-mode. Permissions will not be applied until logging in! Contact an Admin if you think this is an error.");

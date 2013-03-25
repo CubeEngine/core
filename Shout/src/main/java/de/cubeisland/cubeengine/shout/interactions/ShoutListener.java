@@ -1,14 +1,15 @@
 package de.cubeisland.cubeengine.shout.interactions;
 
-import de.cubeisland.cubeengine.core.bukkit.PlayerLanguageReceivedEvent;
-import de.cubeisland.cubeengine.core.user.User;
-import de.cubeisland.cubeengine.core.logger.LogLevel;
-import de.cubeisland.cubeengine.shout.Shout;
-import de.cubeisland.cubeengine.shout.announce.AnnouncementManager;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerQuitEvent;
+
+import de.cubeisland.cubeengine.core.bukkit.PlayerLanguageReceivedEvent;
+import de.cubeisland.cubeengine.core.logger.LogLevel;
+import de.cubeisland.cubeengine.core.user.User;
+import de.cubeisland.cubeengine.shout.Shout;
+import de.cubeisland.cubeengine.shout.announce.AnnouncementManager;
 
 public class ShoutListener implements Listener
 {
@@ -24,7 +25,7 @@ public class ShoutListener implements Listener
     @EventHandler(priority = EventPriority.MONITOR)
     public void onLanguageReceived(PlayerLanguageReceivedEvent event)
     {
-        User user = this.module.getUserManager().getExactUser(event.getPlayer());
+        User user = this.module.getCore().getUserManager().getExactUser(event.getPlayer());
 
         if (this.module.getCore().isDebug())
         {

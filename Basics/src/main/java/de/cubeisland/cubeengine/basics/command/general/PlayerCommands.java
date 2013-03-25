@@ -1,9 +1,20 @@
 package de.cubeisland.cubeengine.basics.command.general;
 
-import de.cubeisland.cubeengine.basics.Basics;
-import de.cubeisland.cubeengine.basics.BasicsAttachment;
-import de.cubeisland.cubeengine.basics.BasicsPerm;
-import de.cubeisland.cubeengine.basics.storage.BasicUser;
+import java.sql.Timestamp;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Locale;
+import java.util.TreeSet;
+
+import org.bukkit.GameMode;
+import org.bukkit.Location;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.Player;
+import org.bukkit.event.entity.EntityDamageEvent;
+
 import de.cubeisland.cubeengine.core.command.CommandContext;
 import de.cubeisland.cubeengine.core.command.CommandSender;
 import de.cubeisland.cubeengine.core.command.parameterized.Flag;
@@ -16,20 +27,10 @@ import de.cubeisland.cubeengine.core.util.ChatFormat;
 import de.cubeisland.cubeengine.core.util.StringUtils;
 import de.cubeisland.cubeengine.core.util.convert.ConversionException;
 import de.cubeisland.cubeengine.core.util.time.Duration;
-import org.bukkit.GameMode;
-import org.bukkit.Location;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.Player;
-import org.bukkit.event.entity.EntityDamageEvent;
-
-import java.sql.Timestamp;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Locale;
-import java.util.TreeSet;
+import de.cubeisland.cubeengine.basics.Basics;
+import de.cubeisland.cubeengine.basics.BasicsAttachment;
+import de.cubeisland.cubeengine.basics.BasicsPerm;
+import de.cubeisland.cubeengine.basics.storage.BasicUser;
 
 import static de.cubeisland.cubeengine.core.command.ArgBounds.NO_MAX;
 import static java.text.DateFormat.SHORT;
@@ -43,7 +44,7 @@ public class PlayerCommands
     public PlayerCommands(Basics basics)
     {
         this.basics = basics;
-        this.um = basics.getUserManager();
+        this.um = basics.getCore().getUserManager();
         final long autoAfk;
         final long afkCheck;
         try
@@ -60,10 +61,10 @@ public class PlayerCommands
             throw new IllegalStateException("illegal time format in configuration!");
         }
         this.afkListener = new AfkListener(basics, autoAfk, afkCheck);
-        basics.registerListener(afkListener);
+        basics.getCore().getEventManager().registerListener(basics, this.afkListener);
         if (autoAfk > 0)
         {
-            basics.getTaskManger().scheduleSyncRepeatingTask(basics, afkListener, 20, afkCheck / 50); // this is in ticks so /50
+            basics.getCore().getTaskManager().scheduleSyncRepeatingTask(basics, this.afkListener, 20, afkCheck / 50); // this is in ticks so /50
         }
     }
 
@@ -302,7 +303,7 @@ public class PlayerCommands
             }
             changeOther = true;
         }
-        if (!BasicsPerm.COMMAND_GAMEMODE_OTHER.isAuthorized(sender))
+        if (changeOther && !BasicsPerm.COMMAND_GAMEMODE_OTHER.isAuthorized(sender))
         {
             context.sendTranslated("&cYou are not allowed to change the gamemode of an other player!");
             return;
@@ -506,13 +507,13 @@ public class PlayerCommands
             user.chat(sb.toString());
             return;
         }
-        this.basics.getCommandManager().runCommand(user,sb.toString());
+        this.basics.getCore().getCommandManager().runCommand(user,sb.toString());
     }
 
     @Command(desc = "Kills yourself", max = 0)
     public void suicide(CommandContext context)
     {
-        User sender = um.getExactUser(context.getSender());
+        User sender = this.um.getExactUser(context.getSender());
         if (sender == null)
         {
             context.sendTranslated("&cYou want to kill yourself? &aThe command for that is stop!");
@@ -588,7 +589,7 @@ public class PlayerCommands
         {
             context.sendTranslated("&eOP: &atrue");
         }
-        Timestamp muted = basics.getBasicUserManager().getBasicUser(user).muted;
+        Timestamp muted = this.basics.getBasicUserManager().getBasicUser(user).muted;
         if (muted != null && muted.getTime() > System.currentTimeMillis())
         {
             context.sendTranslated("&eMuted: &ctrue"); //TODO show time

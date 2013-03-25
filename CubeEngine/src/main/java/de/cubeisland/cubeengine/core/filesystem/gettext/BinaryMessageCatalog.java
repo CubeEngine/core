@@ -5,6 +5,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.ByteBuffer;
 import java.util.Map;
 
 public class BinaryMessageCatalog implements MessageCatalog
@@ -31,6 +32,10 @@ public class BinaryMessageCatalog implements MessageCatalog
         magic[1] = inputStream.read();
         magic[2] = inputStream.read();
         magic[3] = inputStream.read();
+
+        byte[] header = new byte[32];
+        inputStream.read(header);
+        ByteBuffer buffer = ByteBuffer.wrap(header);
 
         if (!MAGIC_NUMBER.equals(magic))
         {

@@ -1,10 +1,5 @@
 package de.cubeisland.cubeengine.basics.command.general;
 
-import de.cubeisland.cubeengine.basics.Basics;
-import de.cubeisland.cubeengine.basics.BasicsAttachment;
-import de.cubeisland.cubeengine.basics.BasicsPerm;
-import de.cubeisland.cubeengine.core.user.User;
-import de.cubeisland.cubeengine.core.user.UserManager;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -17,6 +12,12 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
+import de.cubeisland.cubeengine.core.user.User;
+import de.cubeisland.cubeengine.core.user.UserManager;
+import de.cubeisland.cubeengine.basics.Basics;
+import de.cubeisland.cubeengine.basics.BasicsAttachment;
+import de.cubeisland.cubeengine.basics.BasicsPerm;
+
 public class AfkListener implements Listener, Runnable
 {
     private final Basics basics;
@@ -27,7 +28,7 @@ public class AfkListener implements Listener, Runnable
     public AfkListener(Basics basics, long autoAfk, long afkCheck)
     {
         this.basics = basics;
-        this.um = basics.getUserManager();
+        this.um = basics.getCore().getUserManager();
         this.autoAfk = autoAfk;
         this.afkCheck = afkCheck;
     }
@@ -104,11 +105,11 @@ public class AfkListener implements Listener, Runnable
     public void run()
     {
         BasicsAttachment basicsAttachment;
-        for (User user : basics.getUserManager().getLoadedUsers())
+        for (User user : this.basics.getCore().getUserManager().getLoadedUsers())
         {
             if (user.isOnline())
             {
-                basicsAttachment = user.attachOrGet(BasicsAttachment.class,this.basics);
+                basicsAttachment = user.attachOrGet(BasicsAttachment.class, this.basics);
                 long lastAction = basicsAttachment.getLastAction();
                 if (lastAction == 0)
                 {
@@ -116,13 +117,13 @@ public class AfkListener implements Listener, Runnable
                 }
                 if (basicsAttachment.isAfk())
                 {
-                    if (System.currentTimeMillis() - lastAction < afkCheck)
+                    if (System.currentTimeMillis() - lastAction < this.afkCheck)
                     {
                         basicsAttachment.setAfk(false);
                         this.um.broadcastStatus("basics", "is no longer afk!", user.getName());
                     }
                 }
-                else if (System.currentTimeMillis() - lastAction > autoAfk)
+                else if (System.currentTimeMillis() - lastAction > this.autoAfk)
                 {
                     basicsAttachment.setAfk(true);
                     this.um.broadcastStatus("basics", "is now afk!" ,user.getName());

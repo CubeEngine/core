@@ -1,12 +1,10 @@
 package de.cubeisland.cubeengine.fun.commands;
 
-import de.cubeisland.cubeengine.core.command.parameterized.Flag;
-import de.cubeisland.cubeengine.core.command.parameterized.Param;
-import de.cubeisland.cubeengine.core.command.parameterized.ParameterizedContext;
-import de.cubeisland.cubeengine.core.command.reflected.Command;
-import de.cubeisland.cubeengine.core.user.User;
-import de.cubeisland.cubeengine.fun.Fun;
-import de.cubeisland.cubeengine.fun.FunConfiguration;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.EntityType;
@@ -16,10 +14,13 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.util.Vector;
 
-import java.util.HashSet;
-import java.util.Set;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import de.cubeisland.cubeengine.core.command.parameterized.Flag;
+import de.cubeisland.cubeengine.core.command.parameterized.Param;
+import de.cubeisland.cubeengine.core.command.parameterized.ParameterizedContext;
+import de.cubeisland.cubeengine.core.command.reflected.Command;
+import de.cubeisland.cubeengine.core.user.User;
+import de.cubeisland.cubeengine.fun.Fun;
+import de.cubeisland.cubeengine.fun.FunConfiguration;
 
 public class NukeCommand
 {
@@ -28,9 +29,9 @@ public class NukeCommand
 
     public NukeCommand(Fun module)
     {
-        config = module.getConfig();
-        nukeListener = new NukeListener();
-        module.registerListener(nukeListener);
+        this.config = module.getConfig();
+        this.nukeListener = new NukeListener();
+        module.getCore().getEventManager().registerListener(module, this.nukeListener);
     }
 
     @Command(desc = "A tnt carpet is falling at a player or the place the player is looking at.", max = 1, flags = {
@@ -175,7 +176,7 @@ public class NukeCommand
 
                 if (!context.hasFlag("u"))
                 {
-                    nukeListener.add(tnt);
+                    this.nukeListener.add(tnt);
                 }
             }
         }
@@ -186,7 +187,7 @@ public class NukeCommand
 
             if (!context.hasFlag("u"))
             {
-                nukeListener.add(tnt);
+                this.nukeListener.add(tnt);
                 numberOfBlocks++;
             }
         }

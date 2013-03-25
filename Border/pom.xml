@@ -8,6 +8,7 @@
 
     <artifactId>border</artifactId>
     <name>Border</name>
+    <description>Limiting the world size.</description>
 
     <dependencies>
         <dependency>

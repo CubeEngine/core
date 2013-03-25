@@ -31,17 +31,30 @@ public interface PermissionManager extends Cleanable
     void registerPermissions(Module module, Permission[] permissions);
 
     /**
-     * Unregisters a permission of a module
+     * Removes a permission of a module
      *
      * @param module the module
      * @param perm the permission
      */
-    void unregisterPermission(Module module, String perm);
+    void removePermission(Module module, String perm);
 
     /**
-     * Unregisters all the permissions of the given module
+     * Removes all the permissions of the given module
      *
      * @param module the module
      */
-    void unregisterPermissions(Module module);
+    void removePermissions(Module module);
+
+    /**
+     * Removes all the permissions
+     */
+    void removePermissions();
+
+    /**
+     * Returns the PermDefault for the given permission
+     *
+     * @param permission the permission to search for
+     * @return the default value or null if the permission was not registered
+     */
+    PermDefault getDefaultFor(String permission);
 }

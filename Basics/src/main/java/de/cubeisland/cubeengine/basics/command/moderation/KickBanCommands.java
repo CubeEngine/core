@@ -1,19 +1,20 @@
 package de.cubeisland.cubeengine.basics.command.moderation;
 
-import de.cubeisland.cubeengine.basics.Basics;
-import de.cubeisland.cubeengine.basics.BasicsPerm;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+
+import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
+import org.bukkit.entity.Player;
+
 import de.cubeisland.cubeengine.core.command.CommandContext;
 import de.cubeisland.cubeengine.core.command.parameterized.Flag;
 import de.cubeisland.cubeengine.core.command.parameterized.ParameterizedContext;
 import de.cubeisland.cubeengine.core.command.reflected.Command;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.util.ChatFormat;
-import org.bukkit.Bukkit;
-import org.bukkit.OfflinePlayer;
-import org.bukkit.entity.Player;
-
-import java.net.InetAddress;
-import java.net.UnknownHostException;
+import de.cubeisland.cubeengine.basics.Basics;
+import de.cubeisland.cubeengine.basics.BasicsPerm;
 
 import static de.cubeisland.cubeengine.core.command.ArgBounds.NO_MAX;
 
@@ -105,12 +106,12 @@ public class KickBanCommands
         }
         else if (context.hasFlag("ip"))
         {
-            User user = this.module.getUserManager().getExactUser(player);
+            User user = this.module.getCore().getUserManager().getExactUser(player);
             if (user.getAddress() != null)
             {
                 String ipadress = user.getAddress().getAddress().getHostAddress();
                 Bukkit.banIP(ipadress);
-                for (User ipPlayer : this.module.getUserManager().getOnlineUsers())
+                for (User ipPlayer : this.module.getCore().getUserManager().getOnlineUsers())
                 {
                     if (!ipPlayer.getName().equals(player.getName())
                         && ipPlayer.getAddress() != null

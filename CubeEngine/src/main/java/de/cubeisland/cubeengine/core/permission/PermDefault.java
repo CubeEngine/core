@@ -7,7 +7,8 @@ public enum PermDefault
     TRUE(PermissionDefault.TRUE),
     FALSE(PermissionDefault.FALSE),
     OP(PermissionDefault.OP),
-    NOT_OP(PermissionDefault.NOT_OP);
+    NOT_OP(PermissionDefault.NOT_OP),
+    DEFAULT(PermissionDefault.OP);
 
     private final PermissionDefault value;
 

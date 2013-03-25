@@ -1,10 +1,5 @@
 package de.cubeisland.cubeengine.basics.command.teleport;
 
-import de.cubeisland.cubeengine.basics.Basics;
-import de.cubeisland.cubeengine.basics.BasicsAttachment;
-import de.cubeisland.cubeengine.basics.BasicsPerm;
-import de.cubeisland.cubeengine.core.user.User;
-import de.cubeisland.cubeengine.core.util.LocationUtil;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -14,6 +9,12 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
+
+import de.cubeisland.cubeengine.core.user.User;
+import de.cubeisland.cubeengine.core.util.LocationUtil;
+import de.cubeisland.cubeengine.basics.Basics;
+import de.cubeisland.cubeengine.basics.BasicsAttachment;
+import de.cubeisland.cubeengine.basics.BasicsPerm;
 
 public class TeleportListener implements Listener
 {
@@ -27,7 +28,7 @@ public class TeleportListener implements Listener
     @EventHandler
     public void onTeleport(PlayerTeleportEvent event)
     {
-        User user = basics.getUserManager().getExactUser(event.getPlayer());
+        User user = basics.getCore().getUserManager().getExactUser(event.getPlayer());
         switch (event.getCause())
         {
             case COMMAND:
@@ -40,7 +41,7 @@ public class TeleportListener implements Listener
     @EventHandler
     public void onDeath(PlayerDeathEvent event)
     {
-        User user = this.basics.getUserManager().getExactUser(event.getEntity());
+        User user = this.basics.getCore().getUserManager().getExactUser(event.getEntity());
         if (BasicsPerm.COMMAND_BACK_ONDEATH.isAuthorized(user))
         {
             user.get(BasicsAttachment.class).setLastLocation(user.getLocation());
@@ -65,7 +66,7 @@ public class TeleportListener implements Listener
                         Block block = event.getPlayer().getTargetBlock(null, this.basics.getConfiguration().jumpToMaxRange);
                         if (block.getTypeId() != 0)
                         {
-                            User user = this.basics.getUserManager().getExactUser(event.getPlayer());
+                            User user = this.basics.getCore().getUserManager().getExactUser(event.getPlayer());
                             Location loc = block.getLocation().add(0.5, 1, 0.5);
 
                             user.safeTeleport(loc, PlayerTeleportEvent.TeleportCause.PLUGIN, true);
@@ -78,7 +79,7 @@ public class TeleportListener implements Listener
                 case RIGHT_CLICK_BLOCK:
                     if (BasicsPerm.COMPASS_JUMPTO_RIGHT.isAuthorized(event.getPlayer()))
                     {
-                        User user = this.basics.getUserManager().getExactUser(event.getPlayer());
+                        User user = this.basics.getCore().getUserManager().getExactUser(event.getPlayer());
                         Location loc = LocationUtil.getBlockBehindWall(user, this.basics.getConfiguration().jumpThruMaxRange,
                                 this.basics.getConfiguration().jumpThruMaxWallThickness);
                         if (loc == null)

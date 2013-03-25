@@ -1,5 +1,9 @@
 package de.cubeisland.cubeengine.travel.command.subcommand;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
+
 import de.cubeisland.cubeengine.core.CubeEngine;
 import de.cubeisland.cubeengine.core.command.CommandContext;
 import de.cubeisland.cubeengine.core.command.parameterized.Flag;
@@ -13,10 +17,6 @@ import de.cubeisland.cubeengine.travel.storage.Home;
 import de.cubeisland.cubeengine.travel.storage.TelePointManager;
 import de.cubeisland.cubeengine.travel.storage.TeleportPoint;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
-
 public class HomeAdminSub
 {
     private static final Long ACCEPT_TIMEOUT = 20000l;
@@ -25,11 +25,11 @@ public class HomeAdminSub
     private final TelePointManager tpManager;
     private final Travel module;
 
-    public HomeAdminSub(Travel module, TelePointManager tpManager)
+    public HomeAdminSub(Travel module)
     {
-        this.tpManager = tpManager;
-        this.acceptEntries = new HashMap<String, Pair<Long, ParameterizedContext>>();
         this.module = module;
+        this.tpManager = module.getTelepointManager();
+        this.acceptEntries = new HashMap<String, Pair<Long, ParameterizedContext>>();
     }
 
     @Alias(names = {

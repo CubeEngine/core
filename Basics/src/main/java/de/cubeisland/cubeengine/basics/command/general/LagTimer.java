@@ -1,8 +1,8 @@
 package de.cubeisland.cubeengine.basics.command.general;
 
-import de.cubeisland.cubeengine.basics.Basics;
-import de.cubeisland.cubeengine.core.CubeEngine;
 import java.util.LinkedList;
+
+import de.cubeisland.cubeengine.basics.Basics;
 
 public class LagTimer implements Runnable
 {
@@ -12,7 +12,7 @@ public class LagTimer implements Runnable
 
     public LagTimer(Basics module) {
         this.module = module;
-        module.getTaskManger().scheduleSyncRepeatingTask(module, this, 0, 20); //start timer
+        module.getCore().getTaskManager().scheduleSyncRepeatingTask(module, this, 0, 20); //start timer
     }
 
     @Override

@@ -9,7 +9,7 @@ public class Border extends Module
     @Override
     public void onEnable()
     {
-        this.registerPermissions(BorderPerms.values());
-        this.registerListener(new BorderListener(this));
+        this.getCore().getPermissionManager().registerPermissions(this, BorderPerms.values());
+        this.getCore().getEventManager().registerListener(this, new BorderListener(this));
     }
 }

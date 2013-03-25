@@ -1,23 +1,29 @@
 package de.cubeisland.cubeengine.core.bukkit;
 
-import de.cubeisland.cubeengine.core.module.BaseModuleManager;
-import de.cubeisland.cubeengine.core.module.Module;
-import de.cubeisland.cubeengine.core.module.exception.*;
-import org.bukkit.plugin.Plugin;
-import org.bukkit.plugin.PluginManager;
-
 import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
+import org.bukkit.plugin.Plugin;
+import org.bukkit.plugin.PluginManager;
+
+import de.cubeisland.cubeengine.core.module.BaseModuleManager;
+import de.cubeisland.cubeengine.core.module.Module;
+import de.cubeisland.cubeengine.core.module.exception.CircularDependencyException;
+import de.cubeisland.cubeengine.core.module.exception.IncompatibleCoreException;
+import de.cubeisland.cubeengine.core.module.exception.IncompatibleDependencyException;
+import de.cubeisland.cubeengine.core.module.exception.InvalidModuleException;
+import de.cubeisland.cubeengine.core.module.exception.MissingDependencyException;
+import de.cubeisland.cubeengine.core.module.exception.MissingPluginDependencyException;
+
 public class BukkitModuleManager extends BaseModuleManager
 {
     private final PluginManager pluginManager;
 
-    public BukkitModuleManager(BukkitCore core)
+    public BukkitModuleManager(BukkitCore core, ClassLoader parentClassLoader)
     {
-        super(core);
+        super(core, parentClassLoader);
         this.pluginManager = core.getServer().getPluginManager();
     }
 
