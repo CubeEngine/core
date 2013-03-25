@@ -23,6 +23,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
+import org.bukkit.event.inventory.InventoryMoveItemEvent;
 import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.inventory.*;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -396,6 +397,12 @@ public class ContainerListener implements Listener
                 }
             }
         }
+    }
+
+    @EventHandler
+    public void onItemMove(InventoryMoveItemEvent event)
+    {
+        //TODO
     }
 
     private void prepareForLogging(User user, ItemData itemData, int amount)

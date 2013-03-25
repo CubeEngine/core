@@ -299,7 +299,7 @@ public class PlayerCommands
             }
             changeOther = true;
         }
-        if (!BasicsPerm.COMMAND_GAMEMODE_OTHER.isAuthorized(sender))
+        if (changeOther && !BasicsPerm.COMMAND_GAMEMODE_OTHER.isAuthorized(sender))
         {
             context.sendMessage("basics", "&cYou are not allowed to change the gamemode of an other player!");
             return;
