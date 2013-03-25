@@ -1,9 +1,7 @@
 package de.cubeisland.cubeengine.fly;
 
-import de.cubeisland.cubeengine.core.CubeEngine;
-import de.cubeisland.cubeengine.core.user.User;
-import de.cubeisland.cubeengine.core.user.UserManager;
-import de.cubeisland.cubeengine.core.util.Task;
+import java.util.HashMap;
+
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -14,7 +12,10 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Vector;
 
-import java.util.HashMap;
+import de.cubeisland.cubeengine.core.CubeEngine;
+import de.cubeisland.cubeengine.core.user.User;
+import de.cubeisland.cubeengine.core.user.UserManager;
+import de.cubeisland.cubeengine.core.util.Task;
 
 public class FlyListener implements Listener
 {
@@ -26,7 +27,7 @@ public class FlyListener implements Listener
     public FlyListener(Fly fly)
     {
         this.fly = fly;
-        this.usermanager = fly.getUserManager();
+        this.usermanager = fly.getCore().getUserManager();
     }
 
     @EventHandler

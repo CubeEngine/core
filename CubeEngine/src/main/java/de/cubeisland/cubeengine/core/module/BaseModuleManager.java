@@ -388,7 +388,7 @@ public abstract class BaseModuleManager implements ModuleManager
     {
         Profiler.startProfiling("disable-module");
         module.disable();
-        this.core.getUserManager().detachAllOf(module);
+        this.core.getUserManager().cleanup(module);
         this.core.getEventManager().removeListeners(module);
         this.core.getPermissionManager().removePermissions(module);
         this.core.getTaskManager().cancelTasks(module);
@@ -451,7 +451,11 @@ public abstract class BaseModuleManager implements ModuleManager
             }
         }
 
-        module.getClassLoader().shutdown();
+        ClassLoader classLoader = module.getClassLoader();
+        if (classLoader instanceof ModuleClassLoader)
+        {
+            ((ModuleClassLoader)classLoader).shutdown();
+        }
 
         System.gc();
         System.gc();

@@ -156,7 +156,7 @@ public abstract class CubeCommand extends Command
                 aliases.add(names[i]);
             }
         }
-        this.getModule().registerCommand(new AliasCommand(this, names[0], aliases, prefix, suffix), parents);
+        this.getModule().getCore().getCommandManager().registerCommand(new AliasCommand(this, names[0], aliases, prefix, suffix), parents);
     }
 
     public ContextFactory getContextFactory()

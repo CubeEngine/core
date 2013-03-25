@@ -44,11 +44,11 @@ public class WorldRoleProvider extends RoleProvider
         TLongObjectHashMap<List<String>> rolesFromDb;
         if (reload)
         {
-            rolesFromDb = module.getManager().reloadRoles(user);
+            rolesFromDb = module.getRoleManager().reloadRoles(user);
         }
         else
         {
-            rolesFromDb = module.getManager().loadRoles(user);
+            rolesFromDb = module.getRoleManager().loadRoles(user);
         }
         for (long worldID : rolesFromDb.keys())
         {

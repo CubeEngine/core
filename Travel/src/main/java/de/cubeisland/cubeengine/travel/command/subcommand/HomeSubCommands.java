@@ -1,5 +1,9 @@
 package de.cubeisland.cubeengine.travel.command.subcommand;
 
+import java.util.Set;
+
+import org.bukkit.Location;
+
 import de.cubeisland.cubeengine.core.CubeEngine;
 import de.cubeisland.cubeengine.core.command.CommandContext;
 import de.cubeisland.cubeengine.core.command.parameterized.Flag;
@@ -7,16 +11,14 @@ import de.cubeisland.cubeengine.core.command.parameterized.Param;
 import de.cubeisland.cubeengine.core.command.parameterized.ParameterizedContext;
 import de.cubeisland.cubeengine.core.command.reflected.Alias;
 import de.cubeisland.cubeengine.core.command.reflected.Command;
-import de.cubeisland.cubeengine.core.logger.LogLevel;
 import de.cubeisland.cubeengine.core.permission.PermDefault;
-import de.cubeisland.cubeengine.core.storage.StorageException;
 import de.cubeisland.cubeengine.core.user.User;
-import de.cubeisland.cubeengine.core.util.Pair;
 import de.cubeisland.cubeengine.travel.Travel;
-import de.cubeisland.cubeengine.travel.storage.*;
-import org.bukkit.Location;
-
-import java.util.Set;
+import de.cubeisland.cubeengine.travel.storage.Home;
+import de.cubeisland.cubeengine.travel.storage.InviteManager;
+import de.cubeisland.cubeengine.travel.storage.TelePointManager;
+import de.cubeisland.cubeengine.travel.storage.TeleportInvite;
+import de.cubeisland.cubeengine.travel.storage.TeleportPoint;
 
 public class HomeSubCommands
 {
@@ -24,11 +26,11 @@ public class HomeSubCommands
     private final InviteManager inviteManager;
     private final Travel module;
 
-    public HomeSubCommands(Travel module, TelePointManager tpManager, InviteManager inviteManager)
+    public HomeSubCommands(Travel module)
     {
-        this.tpManager = tpManager;
-        this.inviteManager = inviteManager;
         this.module = module;
+        this.tpManager = module.getTelepointManager();
+        this.inviteManager = module.getInviteManager();
     }
 
     @Alias(names = {

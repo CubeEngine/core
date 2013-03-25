@@ -1,22 +1,24 @@
 package de.cubeisland.cubeengine.travel.storage;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeMap;
+
+import org.bukkit.Location;
+
 import de.cubeisland.cubeengine.core.CubeEngine;
 import de.cubeisland.cubeengine.core.command.sender.CommandSender;
 import de.cubeisland.cubeengine.core.logger.LogLevel;
 import de.cubeisland.cubeengine.core.storage.SingleKeyStorage;
 import de.cubeisland.cubeengine.core.storage.StorageException;
-import de.cubeisland.cubeengine.core.storage.database.Database;
 import de.cubeisland.cubeengine.core.storage.database.querybuilder.QueryBuilder;
 import de.cubeisland.cubeengine.core.user.User;
-import de.cubeisland.cubeengine.core.user.UserManager;
-import de.cubeisland.cubeengine.core.util.Pair;
 import de.cubeisland.cubeengine.core.util.matcher.Match;
 import de.cubeisland.cubeengine.travel.Travel;
-import org.bukkit.Location;
-
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.*;
 
 import static de.cubeisland.cubeengine.core.storage.database.querybuilder.ComponentBuilder.EQUAL;
 
@@ -30,9 +32,9 @@ public class TelePointManager extends SingleKeyStorage<Long, TeleportPoint>
     private final Map<String, Warp> warps;
     private final Travel module;
 
-    public TelePointManager(Database database, Travel module)
+    public TelePointManager(Travel module)
     {
-        super(database, TeleportPoint.class, REVISION);
+        super(module.getCore().getDB(), TeleportPoint.class, REVISION);
         this.module = module;
         this.initialize();
         this.homes = new HashMap<String, Home>();

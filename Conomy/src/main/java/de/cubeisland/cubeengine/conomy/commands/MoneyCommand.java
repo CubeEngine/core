@@ -1,20 +1,20 @@
 package de.cubeisland.cubeengine.conomy.commands;
 
+import java.util.Collection;
+
+import de.cubeisland.cubeengine.core.command.ContainerCommand;
+import de.cubeisland.cubeengine.core.command.parameterized.Flag;
+import de.cubeisland.cubeengine.core.command.parameterized.Param;
+import de.cubeisland.cubeengine.core.command.parameterized.ParameterizedContext;
+import de.cubeisland.cubeengine.core.command.reflected.Alias;
+import de.cubeisland.cubeengine.core.command.reflected.Command;
+import de.cubeisland.cubeengine.core.user.User;
+import de.cubeisland.cubeengine.core.util.StringUtils;
 import de.cubeisland.cubeengine.conomy.Conomy;
 import de.cubeisland.cubeengine.conomy.ConomyPermissions;
 import de.cubeisland.cubeengine.conomy.account.Account;
 import de.cubeisland.cubeengine.conomy.account.storage.AccountModel;
 import de.cubeisland.cubeengine.conomy.currency.Currency;
-import de.cubeisland.cubeengine.core.command.reflected.Alias;
-import de.cubeisland.cubeengine.core.command.ContainerCommand;
-import de.cubeisland.cubeengine.core.command.parameterized.Flag;
-import de.cubeisland.cubeengine.core.command.parameterized.Param;
-import de.cubeisland.cubeengine.core.command.parameterized.ParameterizedContext;
-import de.cubeisland.cubeengine.core.command.reflected.Command;
-import de.cubeisland.cubeengine.core.user.User;
-import de.cubeisland.cubeengine.core.util.StringUtils;
-
-import java.util.Collection;
 
 public class MoneyCommand extends ContainerCommand
 {
@@ -163,7 +163,7 @@ public class MoneyCommand extends ContainerCommand
         for (AccountModel account : models)
         {
             context.sendMessage("conomy", "&a%d &f- &2%s&f: &6%s", i++,
-                    this.module.getUserManager().getUser(account.user_id).getName(), currency.formatLong(account.value));
+                    this.module.getCore().getUserManager().getUser(account.user_id).getName(), currency.formatLong(account.value));
         }
     }
 
@@ -231,7 +231,7 @@ public class MoneyCommand extends ContainerCommand
         String[] users = StringUtils.explode(",", context.getString(0));
         for (String userString : users)
         {
-            User user = this.module.getUserManager().findUser(userString);
+            User user = this.module.getCore().getUserManager().findUser(userString);
             if (user == null)
             {
                 context.sendMessage("conomy", "&cUser %s not found!", context.getString(0));

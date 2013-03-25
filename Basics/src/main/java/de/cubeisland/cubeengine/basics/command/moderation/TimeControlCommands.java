@@ -1,21 +1,27 @@
 package de.cubeisland.cubeengine.basics.command.moderation;
 
-import de.cubeisland.cubeengine.basics.Basics;
-import de.cubeisland.cubeengine.basics.BasicsPerm;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import org.bukkit.Bukkit;
+import org.bukkit.World;
+
 import de.cubeisland.cubeengine.core.bukkit.TaskManager;
 import de.cubeisland.cubeengine.core.command.parameterized.Flag;
 import de.cubeisland.cubeengine.core.command.parameterized.ParameterizedContext;
 import de.cubeisland.cubeengine.core.command.reflected.Command;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.util.StringUtils;
+import de.cubeisland.cubeengine.basics.Basics;
+import de.cubeisland.cubeengine.basics.BasicsPerm;
+
 import gnu.trove.map.hash.THashMap;
 import gnu.trove.map.hash.TLongObjectHashMap;
-import org.bukkit.Bukkit;
-import org.bukkit.World;
-
-import java.util.*;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * Commands changing time. /time /ptime
@@ -30,7 +36,7 @@ public class TimeControlCommands
     public TimeControlCommands(Basics basics)
     {
         this.basics = basics;
-        this.taskmgr = basics.getTaskManger();
+        this.taskmgr = basics.getCore().getTaskManager();
         this.lockTask = new LockTask();
     }
 

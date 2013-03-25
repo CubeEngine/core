@@ -1,13 +1,9 @@
 package de.cubeisland.cubeengine.log.listeners;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import de.cubeisland.cubeengine.core.bukkit.BukkitUtils;
-import de.cubeisland.cubeengine.core.logger.LogLevel;
-import de.cubeisland.cubeengine.core.user.User;
-import de.cubeisland.cubeengine.log.Log;
-import de.cubeisland.cubeengine.log.storage.LogManager;
-import gnu.trove.map.hash.TLongObjectHashMap;
-import gnu.trove.map.hash.TObjectIntHashMap;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
@@ -25,12 +21,22 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryMoveItemEvent;
 import org.bukkit.event.inventory.InventoryOpenEvent;
-import org.bukkit.inventory.*;
+import org.bukkit.inventory.BrewerInventory;
+import org.bukkit.inventory.FurnaceInventory;
+import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.InventoryHolder;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import de.cubeisland.cubeengine.core.bukkit.BukkitUtils;
+import de.cubeisland.cubeengine.core.logger.LogLevel;
+import de.cubeisland.cubeengine.core.user.User;
+import de.cubeisland.cubeengine.log.Log;
+import de.cubeisland.cubeengine.log.storage.LogManager;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import gnu.trove.map.hash.TLongObjectHashMap;
+import gnu.trove.map.hash.TObjectIntHashMap;
 
 import static de.cubeisland.cubeengine.core.util.InventoryUtil.getMissingSpace;
 import static de.cubeisland.cubeengine.log.storage.LogManager.ITEM_INSERT;
@@ -56,7 +62,7 @@ public class ContainerListener implements Listener
     {
         if (event.getPlayer() instanceof Player)
         {
-            User user = this.module.getUserManager().getExactUser((Player)event.getPlayer());
+            User user = this.module.getCore().getUserManager().getExactUser((Player)event.getPlayer());
             TObjectIntHashMap<ItemData> itemDataMap = this.inventoryChanges.get(user.key);
             if (itemDataMap != null)
             {
@@ -135,7 +141,7 @@ public class ContainerListener implements Listener
         if (event.getPlayer() instanceof Player)
         {
             if (this.manager.isIgnored(event.getPlayer().getWorld(),LogManager.ITEM_CHANGE_IN_CONTAINER,event.getInventory().getHolder())) return;
-            User user = this.module.getUserManager().getExactUser((Player)event.getPlayer());
+            User user = this.module.getCore().getUserManager().getExactUser((Player)event.getPlayer());
             this.inventoryChanges.put(user.key,new TObjectIntHashMap<ItemData>());
         }
     }
@@ -149,7 +155,7 @@ public class ContainerListener implements Listener
         }
         if (event.getWhoClicked() instanceof Player)
         {
-            final User user = this.module.getUserManager().getExactUser((Player)event.getWhoClicked());
+            final User user = this.module.getCore().getUserManager().getExactUser((Player)event.getWhoClicked());
             if (!this.inventoryChanges.containsKey(user.key)) return;
             final World world = event.getWhoClicked().getWorld();
             if (this.manager.isIgnored(world, ITEM_INSERT)

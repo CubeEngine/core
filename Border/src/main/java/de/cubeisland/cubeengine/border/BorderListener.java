@@ -1,7 +1,5 @@
 package de.cubeisland.cubeengine.border;
 
-import de.cubeisland.cubeengine.core.user.UserManager;
-import de.cubeisland.cubeengine.core.util.math.BlockVector2;
 import org.bukkit.Chunk;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -9,6 +7,9 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
+
+import de.cubeisland.cubeengine.core.user.UserManager;
+import de.cubeisland.cubeengine.core.util.math.BlockVector2;
 
 public class BorderListener implements Listener
 {
@@ -18,7 +19,7 @@ public class BorderListener implements Listener
     public BorderListener(Border border)
     {
         this.config = border.config;
-        this.um = border.getUserManager();
+        this.um = border.getCore().getUserManager();
     }
 
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)

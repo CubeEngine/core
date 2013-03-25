@@ -1,6 +1,5 @@
 package de.cubeisland.cubeengine.signmarket;
 
-import de.cubeisland.cubeengine.core.user.User;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
 import org.bukkit.block.Sign;
@@ -11,6 +10,8 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.util.BlockIterator;
+
+import de.cubeisland.cubeengine.core.user.User;
 
 public class MarketSignListener implements Listener
 {
@@ -36,7 +37,7 @@ public class MarketSignListener implements Listener
             {
                 return;
             }
-            User user = this.module.getUserManager().getExactUser(event.getPlayer());
+            User user = this.module.getCore().getUserManager().getExactUser(event.getPlayer());
             marketSign.executeAction(user, event.getAction());
             event.setUseInteractedBlock(Event.Result.DENY);
             event.setUseItemInHand(Event.Result.DENY);
@@ -57,7 +58,7 @@ public class MarketSignListener implements Listener
                 {
                     return;
                 }
-                User user = this.module.getUserManager().getExactUser(event.getPlayer());
+                User user = this.module.getCore().getUserManager().getExactUser(event.getPlayer());
                 marketSign.executeAction(user, Action.RIGHT_CLICK_BLOCK);
                 event.setUseInteractedBlock(Event.Result.DENY);
                 event.setUseItemInHand(Event.Result.DENY);

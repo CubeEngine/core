@@ -15,7 +15,7 @@ public abstract class Task implements Runnable
     public Task(Module module)
     {
         this.module = module;
-        this.tm = module.getTaskManger();
+        this.tm = module.getCore().getTaskManager();
     }
 
     /**

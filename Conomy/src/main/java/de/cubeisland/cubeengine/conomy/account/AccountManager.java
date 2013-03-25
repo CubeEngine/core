@@ -42,7 +42,7 @@ public class AccountManager
             try
             {
                 CubeFileHandler handler = new CubeFileHandler(LogLevel.ALL,
-                    new File(this.module.getFileManager().getLogDir(), "conomy_transactions").toString());
+                    new File(this.module.getCore().getFileManager().getLogDir(), "conomy_transactions").toString());
                 this.transactionLogger.addHandler(handler);
                 handler.setFormatter(new Formatter() {
                     @Override
@@ -369,7 +369,7 @@ public class AccountManager
     {
         if (online)
         {
-            for (User user : this.module.getUserManager().getOnlineUsers())
+            for (User user : this.module.getCore().getUserManager().getOnlineUsers())
             {
                 this.userAccountExists(user);
                 Account acc = this.useraccounts.get(user.key).get(currency);
@@ -397,7 +397,7 @@ public class AccountManager
     {
         if (online)
         {
-            for (User user : this.module.getUserManager().getOnlineUsers())
+            for (User user : this.module.getCore().getUserManager().getOnlineUsers())
             {
                 this.userAccountExists(user);
                 Account acc = this.useraccounts.get(user.key).get(currency);

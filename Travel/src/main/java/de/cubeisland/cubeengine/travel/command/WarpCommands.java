@@ -1,19 +1,21 @@
 package de.cubeisland.cubeengine.travel.command;
 
+import org.bukkit.event.player.PlayerTeleportEvent;
+
 import de.cubeisland.cubeengine.core.command.CommandContext;
 import de.cubeisland.cubeengine.core.command.reflected.Command;
 import de.cubeisland.cubeengine.core.user.User;
+import de.cubeisland.cubeengine.travel.Travel;
 import de.cubeisland.cubeengine.travel.storage.TelePointManager;
 import de.cubeisland.cubeengine.travel.storage.Warp;
-import org.bukkit.event.player.PlayerTeleportEvent;
 
 public class WarpCommands
 {
     private final TelePointManager tpManager;
 
-    public WarpCommands(TelePointManager tpManager)
+    public WarpCommands(Travel module)
     {
-        this.tpManager = tpManager;
+        this.tpManager = module.getTelepointManager();
     }
 
     @Command(desc = "Teleport to a warp", min = 1, max = 1)

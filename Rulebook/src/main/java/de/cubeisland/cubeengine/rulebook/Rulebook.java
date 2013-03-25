@@ -13,13 +13,13 @@ public class Rulebook extends Module
     @Override
     public void onEnable()
     {
-        this.getFileManager().dropResources(RulebookResource.values());
+        this.getCore().getFileManager().dropResources(RulebookResource.values());
         this.getCore().getPermissionManager().registerPermission( this, Permission.BASE + '.' + this.getId() + ".command.get.other", PermDefault.OP );
 
         this.rulebookManager = new RulebookManager(this);
 
-        this.registerCommand(new RulebookCommands(this));
-        this.registerListener(new RulebookListener(this));
+        this.getCore().getCommandManager().registerCommand(new RulebookCommands(this));
+        this.getCore().getEventManager().registerListener(this, new RulebookListener(this));
     }
 
     public RulebookManager getRuleBookManager()

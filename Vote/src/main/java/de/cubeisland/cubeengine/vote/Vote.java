@@ -17,7 +17,7 @@ public class Vote extends Module implements Listener
     @Override
     public void onEnable()
     {
-        this.registerListener(this);
+        this.getCore().getEventManager().registerListener(this, this);
     }
 
     @EventHandler

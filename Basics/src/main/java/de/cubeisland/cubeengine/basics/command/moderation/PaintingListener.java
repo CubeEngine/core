@@ -1,8 +1,8 @@
 package de.cubeisland.cubeengine.basics.command.moderation;
 
-import de.cubeisland.cubeengine.basics.Basics;
-import de.cubeisland.cubeengine.basics.BasicsPerm;
-import de.cubeisland.cubeengine.core.user.User;
+import java.util.HashMap;
+import java.util.Map;
+
 import org.bukkit.Art;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Painting;
@@ -12,8 +12,9 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerItemHeldEvent;
 
-import java.util.HashMap;
-import java.util.Map;
+import de.cubeisland.cubeengine.core.user.User;
+import de.cubeisland.cubeengine.basics.Basics;
+import de.cubeisland.cubeengine.basics.BasicsPerm;
 
 public class PaintingListener implements Listener
 {
@@ -31,7 +32,7 @@ public class PaintingListener implements Listener
     {
         if(event.getRightClicked().getType() == EntityType.PAINTING)
         {
-            User user = this.module.getUserManager().getExactUser( event.getPlayer());
+            User user = this.module.getCore().getUserManager().getExactUser( event.getPlayer());
 
             if(!BasicsPerm.CHANGEPAINTING.isAuthorized( user ))
             {
@@ -63,7 +64,7 @@ public class PaintingListener implements Listener
             
             if(painting != null)
             {
-                User user = this.module.getUserManager().getExactUser( event.getPlayer());
+                User user = this.module.getCore().getUserManager().getExactUser( event.getPlayer());
                 final int maxDistanceSquared = this.module.getConfiguration().maxChangePaintingDistance * this.module.getConfiguration().maxChangePaintingDistance;
                 
                 if( painting.getLocation().toVector().distanceSquared( user.getLocation().toVector()) >  maxDistanceSquared)

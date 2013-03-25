@@ -1,5 +1,8 @@
 package de.cubeisland.cubeengine.shout;
 
+import java.io.File;
+import java.io.IOException;
+
 import de.cubeisland.cubeengine.core.command.reflected.ReflectedCommand;
 import de.cubeisland.cubeengine.core.logger.LogLevel;
 import de.cubeisland.cubeengine.core.module.Module;
@@ -8,9 +11,6 @@ import de.cubeisland.cubeengine.shout.announce.announcer.Announcer;
 import de.cubeisland.cubeengine.shout.interactions.ShoutCommand;
 import de.cubeisland.cubeengine.shout.interactions.ShoutListener;
 import de.cubeisland.cubeengine.shout.interactions.ShoutSubCommands;
-
-import java.io.File;
-import java.io.IOException;
 
 public class Shout extends Module
 {
@@ -42,7 +42,7 @@ public class Shout extends Module
         }
 
         this.announcementFolder = this.getFolder();
-        this.getFileManager().dropResources(ShoutResource.values());
+        this.getCore().getFileManager().dropResources(ShoutResource.values());
 
         this.announcer = new Announcer(config.initDelay);
         this.announcementManager = new AnnouncementManager(this, announcementFolder);
@@ -62,9 +62,9 @@ public class Shout extends Module
             }
         }
         this.announcementManager.loadAnnouncements(this.announcementFolder);
-        this.registerListener(new ShoutListener(this));
-        this.registerCommands(new ShoutCommand(this), ReflectedCommand.class);
-        this.registerCommands(new ShoutSubCommands(this), ReflectedCommand.class, "shout");
+        this.getCore().getEventManager().registerListener(this, new ShoutListener(this));
+        this.getCore().getCommandManager().registerCommands(this, new ShoutCommand(this), ReflectedCommand.class);
+        this.getCore().getCommandManager().registerCommands(this, new ShoutSubCommands(this), ReflectedCommand.class, "shout");
 
         this.announcementManager.initUsers();
     }

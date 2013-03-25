@@ -23,14 +23,14 @@ public class ManagementCommands extends ContainerCommand
     {
         Roles module = (Roles)this.getModule();
         module.getConfiguration().load(); // reloads main config
-        module.getManager().init(); // reloads all roleconfigs
-        for (User user : module.getUserManager().getOnlineUsers())
+        module.getRoleManager().init(); // reloads all roleconfigs
+        for (User user : module.getCore().getUserManager().getOnlineUsers())
         {
             user.attach(RolesAttachment.class,this.getModule());
-            module.getManager().preCalculateRoles(user.getName(), true);
+            module.getRoleManager().preCalculateRoles(user.getName(), true);
             if (user.isOnline())
             {
-                module.getManager().applyRole(user.getPlayer());
+                module.getRoleManager().applyRole(user.getPlayer());
             }
         }
         context.sendMessage("roles", "&f[&6Roles&f] &areload complete!");
@@ -43,7 +43,7 @@ public class ManagementCommands extends ContainerCommand
         // database is up to date so only saving configs
         Roles module = (Roles)this.getModule();
         module.getConfiguration().save();
-        module.getManager().saveAllConfigs();
+        module.getRoleManager().saveAllConfigs();
         context.sendMessage("roles", "&f[&6Roles&f] &aall configurations saved!");
     }
 

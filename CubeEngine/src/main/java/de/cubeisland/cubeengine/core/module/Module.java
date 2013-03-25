@@ -1,23 +1,14 @@
 package de.cubeisland.cubeengine.core.module;
 
-import de.cubeisland.cubeengine.core.Core;
-import de.cubeisland.cubeengine.core.bukkit.EventManager;
-import de.cubeisland.cubeengine.core.bukkit.TaskManager;
-import de.cubeisland.cubeengine.core.command.CommandHolder;
-import de.cubeisland.cubeengine.core.command.CommandManager;
-import de.cubeisland.cubeengine.core.command.CubeCommand;
-import de.cubeisland.cubeengine.core.filesystem.FileManager;
-import de.cubeisland.cubeengine.core.permission.Permission;
-import de.cubeisland.cubeengine.core.storage.ModuleRegistry;
-import de.cubeisland.cubeengine.core.storage.SimpleModuleRegistry;
-import de.cubeisland.cubeengine.core.storage.database.Database;
-import de.cubeisland.cubeengine.core.user.UserManager;
-import org.apache.commons.lang.Validate;
-import org.bukkit.event.Listener;
-
 import java.io.File;
 import java.io.InputStream;
 import java.util.logging.Logger;
+
+import de.cubeisland.cubeengine.core.Core;
+import de.cubeisland.cubeengine.core.storage.ModuleRegistry;
+import de.cubeisland.cubeengine.core.storage.SimpleModuleRegistry;
+
+import org.apache.commons.lang.Validate;
 
 import static de.cubeisland.cubeengine.core.logger.LogLevel.ERROR;
 import static de.cubeisland.cubeengine.core.logger.LogLevel.WARNING;
@@ -33,11 +24,11 @@ public abstract class Module
     private Logger logger;
     private ModuleLoader loader;
     private ModuleRegistry registry = null;
-    private ModuleClassLoader classLoader;
+    private ClassLoader classLoader;
     private File folder;
     private boolean enabled;
 
-    final void initialize(Core core, ModuleInfo info, File folder, Logger logger, ModuleLoader loader, ModuleClassLoader classLoader)
+    final void initialize(Core core, ModuleInfo info, File folder, Logger logger, ModuleLoader loader, ClassLoader classLoader)
     {
         if (!this.initialized)
         {
@@ -114,41 +105,11 @@ public abstract class Module
     }
 
     /**
-     * Returns the module manager
-     *
-     * @return the module manager
-     */
-    public ModuleManager getModuleManager()
-    {
-        return this.core.getModuleManager();
-    }
-
-    /**
-     * Returns the command manager
-     *
-     * @return the command manager
-     */
-    public CommandManager getCommandManager()
-    {
-        return this.core.getCommandManager();
-    }
-
-    /**
-     * Returns the event manager
-     *
-     * @return the event manager
-     */
-    public EventManager getEventManager()
-    {
-        return this.core.getEventManager();
-    }
-
-    /**
      * This method returns the ClassLoader which loaded this module
      *
      * @return the ClassLoader
      */
-    public ModuleClassLoader getClassLoader()
+    public ClassLoader getClassLoader()
     {
         return this.classLoader;
     }
@@ -168,16 +129,6 @@ public abstract class Module
             }
         }
         return this.folder;
-    }
-
-    /**
-     * This method returns the database of the engine
-     *
-     * @return the database
-     */
-    public Database getDatabase()
-    {
-        return this.core.getDB();
     }
 
     /**
@@ -265,26 +216,6 @@ public abstract class Module
     }
 
     /**
-     * This method returns the file manager
-     *
-     * @return the file manager
-     */
-    public FileManager getFileManager()
-    {
-        return this.core.getFileManager();
-    }
-
-    /**
-     * This method returns the user manager
-     *
-     * @return the user manager
-     */
-    public UserManager getUserManager()
-    {
-        return this.core.getUserManager();
-    }
-
-    /**
      * This method enables the module
      *
      * @return the enabled state of the module
@@ -323,46 +254,6 @@ public abstract class Module
             }
             this.enabled = false;
         }
-    }
-
-    public ModuleLoader getLoader()
-    {
-        return this.loader;
-    }
-
-    public void registerPermissions(Permission[] permissions)
-    {
-        this.core.getPermissionManager().registerPermissions(this, permissions);
-    }
-
-    public void registerCommand(CubeCommand command, String... parents)
-    {
-        this.core.getCommandManager().registerCommand(command, parents);
-    }
-
-    public void registerCommands(CommandHolder commandHolder, String... parents)
-    {
-        this.core.getCommandManager().registerCommands(this, commandHolder, parents);
-    }
-
-    public void registerCommands(Object commandHolder, Class<? extends CubeCommand> commandType, String... parents)
-    {
-        this.core.getCommandManager().registerCommands(this, commandHolder, commandType, parents);
-    }
-
-    public void registerListener(Listener listener)
-    {
-        this.core.getEventManager().registerListener(this, listener);
-    }
-
-    public void removeListener(Listener listener)
-    {
-        this.core.getEventManager().removeListener(this, listener);
-    }
-
-    public TaskManager getTaskManger()
-    {
-        return this.core.getTaskManager();
     }
 
     public ModuleRegistry getRegistry()
