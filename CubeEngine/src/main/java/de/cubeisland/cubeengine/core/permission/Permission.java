@@ -9,6 +9,7 @@ import de.cubeisland.cubeengine.core.CubeEngine;
 
 import gnu.trove.set.hash.THashSet;
 
+import static de.cubeisland.cubeengine.core.permission.PermDefault.FALSE;
 import static de.cubeisland.cubeengine.core.permission.PermDefault.OP;
 
 public class Permission
@@ -23,7 +24,7 @@ public class Permission
 
     public final boolean canRegister;
 
-    public static final Permission BASE = new Permission(false,"cubeengine",null);
+    public static final Permission BASE = new Permission(false,"cubeengine",FALSE);
 
     /**
      * Creates a new permission
@@ -36,6 +37,7 @@ public class Permission
     {
         this.permission = parentName.toLowerCase() + "." + name.toLowerCase();
         this.canRegister = canRegister;
+        this.def = def;
     }
 
     /**
@@ -176,7 +178,7 @@ public class Permission
      */
     public Permission createAbstract(String name)
     {
-        return new Permission(false, this.permission, name, null);
+        return new Permission(false, this.permission, name, FALSE);
     }
 
     /**

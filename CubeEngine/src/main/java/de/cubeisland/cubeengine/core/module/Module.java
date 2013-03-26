@@ -5,6 +5,7 @@ import java.io.InputStream;
 import java.util.logging.Logger;
 
 import de.cubeisland.cubeengine.core.Core;
+import de.cubeisland.cubeengine.core.permission.Permission;
 import de.cubeisland.cubeengine.core.storage.ModuleRegistry;
 import de.cubeisland.cubeengine.core.storage.SimpleModuleRegistry;
 

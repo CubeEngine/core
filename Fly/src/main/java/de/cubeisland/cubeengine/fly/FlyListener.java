@@ -1,5 +1,7 @@
 package de.cubeisland.cubeengine.fly;
 
+import java.util.HashMap;
+
 import de.cubeisland.cubeengine.core.CubeEngine;
 import de.cubeisland.cubeengine.core.permission.Permission;
 import de.cubeisland.cubeengine.core.permission.PermissionContainer;
