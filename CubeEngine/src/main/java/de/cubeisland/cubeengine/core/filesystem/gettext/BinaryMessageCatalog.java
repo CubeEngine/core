@@ -6,12 +6,20 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
+import java.nio.channels.Channels;
+import java.nio.channels.ReadableByteChannel;
 import java.util.Map;
+
+import gnu.trove.map.TIntIntMap;
+import gnu.trove.map.hash.TIntIntHashMap;
 
 public class BinaryMessageCatalog implements MessageCatalog
 {
     private final File file;
-    private static final int[] MAGIC_NUMBER = {0xde, 0x12, 0x04, 0x95};
+    protected static final int HEADER_SIZE = 28;
+    protected static final int SIGNATURE_BIG = 0x950412DE;
+    protected static final int SIGNATURE_LITTLE = 0xDE120495;
 
     public BinaryMessageCatalog(File file)
     {
@@ -27,30 +35,60 @@ public class BinaryMessageCatalog implements MessageCatalog
     @Override
     public Map<String, String> read(InputStream inputStream) throws IOException
     {
-        int[] magic = new int[4];
-        magic[0] = inputStream.read();
-        magic[1] = inputStream.read();
-        magic[2] = inputStream.read();
-        magic[3] = inputStream.read();
-
-        byte[] header = new byte[32];
-        inputStream.read(header);
-        ByteBuffer buffer = ByteBuffer.wrap(header);
-
-        if (!MAGIC_NUMBER.equals(magic))
+        ReadableByteChannel channel;
+        if (inputStream instanceof FileInputStream)
         {
-            int tmp;
-            for (int i = 0; i < magic.length / 2; ++i)
-            {
-                tmp = magic[i];
-                magic[i] = magic[magic.length - 1 - i];
-                magic[magic.length - 1 - i] = tmp;
-            }
-            if (!MAGIC_NUMBER.equals(magic))
-            {
-                throw new RuntimeException("To specified file is NOT a valid binary message catalog.");
-            }
+            channel = ((FileInputStream)inputStream).getChannel();
         }
+        else
+        {
+            channel = Channels.newChannel(inputStream);
+        }
+        ByteBuffer buf = ByteBuffer.allocateDirect(HEADER_SIZE);
+
+        int bytesRead = channel.read(buf);
+        if (bytesRead < HEADER_SIZE)
+        {
+            throw new IOException("This binary file is not a valid message catalog: Invalid signature!");
+        }
+        buf.rewind();
+
+        int signature = buf.getInt();
+        if (signature == SIGNATURE_LITTLE)
+        {
+            buf.order(ByteOrder.LITTLE_ENDIAN);
+        }
+        else if (signature == SIGNATURE_BIG)
+        {
+            buf.order(ByteOrder.BIG_ENDIAN);
+        }
+        else
+        {
+            throw new IOException("This binary file is not a valid message catalog: Invalid signature!");
+        }
+        int revision = buf.getInt();
+        if (revision != 0)
+        {
+            throw new IOException("This binary file is not a valid message catalog: Invalid revision!");
+        }
+        int count = buf.getInt();
+        int sourceOffset = buf.getInt();
+        int targetOffset = buf.getInt();
+        int hashingTableSize = buf.getInt();
+        int hashingTableOffset = buf.getInt();
+
+        TIntIntMap lengths = new TIntIntHashMap();
+
+        buf.limit(sourceOffset - HEADER_SIZE);
+        channel.read(buf);
+
+        for (int i = 0; i < count; ++i)
+        {
+
+        }
+
+
+        channel.close();
 
         return null;
     }

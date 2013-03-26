@@ -1,7 +1,5 @@
 package de.cubeisland.cubeengine.core.filesystem.gettext;
 
-import gnu.trove.map.hash.THashMap;
-
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
@@ -10,6 +8,10 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.util.Map;
+
+import de.cubeisland.cubeengine.core.Core;
+
+import gnu.trove.map.hash.THashMap;
 
 public class PlaintextMessageCatalog implements MessageCatalog
 {
@@ -23,7 +25,7 @@ public class PlaintextMessageCatalog implements MessageCatalog
     public Map<String, String> read(InputStream inputStream) throws IOException
     {
         Map<String, String> messages = new THashMap<String, String>();
-        BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
+        BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream, Core.CHARSET));
 
         String line;
         int spaceOffset;

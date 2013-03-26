@@ -1,5 +1,15 @@
 package de.cubeisland.cubeengine.core.i18n;
 
+import java.io.File;
+import java.io.FileFilter;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Set;
+import java.util.Stack;
+import java.util.logging.Logger;
+
 import de.cubeisland.cubeengine.core.Core;
 import de.cubeisland.cubeengine.core.config.Configuration;
 import de.cubeisland.cubeengine.core.filesystem.FileExtentionFilter;
@@ -10,18 +20,9 @@ import de.cubeisland.cubeengine.core.logger.CubeLogger;
 import de.cubeisland.cubeengine.core.logger.LogLevel;
 import de.cubeisland.cubeengine.core.util.Cleanable;
 import de.cubeisland.cubeengine.core.util.matcher.Match;
+
 import gnu.trove.map.hash.THashMap;
 import gnu.trove.set.hash.THashSet;
-
-import java.io.File;
-import java.io.FileFilter;
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Set;
-import java.util.Stack;
-import java.util.logging.Logger;
 
 import static de.cubeisland.cubeengine.core.logger.LogLevel.ERROR;
 import static de.cubeisland.cubeengine.core.logger.LogLevel.WARNING;
@@ -359,5 +360,17 @@ public class I18n implements Cleanable
     private void logMissingTranslation(Locale locale, String message)
     {
         this.logger.log(LogLevel.INFO, String.format("\"%s\" \"%s\"", locale.getISO3Country(), message));
+    }
+
+    /**
+     * This method is only only used to mark strings as translated/translatable.
+     * One use-case would be command usages and descriptions.
+     *
+     * @param string the string to mark
+     * @return the unchanged string
+     */
+    public static String _(String string)
+    {
+        return string;
     }
 }

@@ -1,5 +1,8 @@
 package de.cubeisland.cubeengine.core;
 
+import java.nio.charset.Charset;
+import java.util.logging.Logger;
+
 import de.cubeisland.cubeengine.core.bukkit.EventManager;
 import de.cubeisland.cubeengine.core.bukkit.TaskManager;
 import de.cubeisland.cubeengine.core.command.CommandManager;
@@ -15,8 +18,6 @@ import de.cubeisland.cubeengine.core.util.InventoryGuardFactory;
 import de.cubeisland.cubeengine.core.util.matcher.Match;
 import de.cubeisland.cubeengine.core.webapi.ApiServer;
 
-import java.util.logging.Logger;
-
 /**
  * This interface specifies all the methods the core of the CubeEngine has to provide.
  * The core provides essential APIs like the I18n API and all the managers like
@@ -25,6 +26,8 @@ import java.util.logging.Logger;
 public interface Core
 {
     public static final int REVISION = 1;
+
+    public static final Charset CHARSET = Charset.forName("UTF-8");
 
     /**
      * The method returns the database

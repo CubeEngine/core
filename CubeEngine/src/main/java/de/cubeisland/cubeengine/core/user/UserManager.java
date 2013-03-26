@@ -412,7 +412,7 @@ public class UserManager implements Cleanable
         return user;
     }
 
-    public void broadcastMessage(String category, String message, Permission perm, Object... params)
+    public void broadcastMessage(String message, Permission perm, Object... params)
     {
         for (User user : this.onlineUsers)
         {

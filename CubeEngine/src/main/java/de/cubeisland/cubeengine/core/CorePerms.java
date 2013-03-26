@@ -1,10 +1,11 @@
 package de.cubeisland.cubeengine.core;
 
-import de.cubeisland.cubeengine.core.permission.PermDefault;
-import de.cubeisland.cubeengine.core.permission.Permission;
+import java.util.Locale;
+
 import org.bukkit.permissions.Permissible;
 
-import java.util.Locale;
+import de.cubeisland.cubeengine.core.permission.PermDefault;
+import de.cubeisland.cubeengine.core.permission.Permission;
 
 import static de.cubeisland.cubeengine.core.permission.PermDefault.FALSE;
 import static de.cubeisland.cubeengine.core.permission.PermDefault.OP;
@@ -18,7 +19,8 @@ public enum CorePerms implements Permission
     COMMAND_OP_NOTIFY,
     COMMAND_DEOP_NOTIFY,
     COMMAND_DEOP_OTHER(FALSE),
-    COMMAND_VERSION_PLUGINS;
+    COMMAND_VERSION_PLUGINS,
+    COMMAND_RELOAD_NOTIFY(PermDefault.TRUE);
 
     private String permission;
     private PermDefault def;

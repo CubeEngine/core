@@ -1,10 +1,25 @@
 package de.cubeisland.cubeengine.core.command.commands;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Collection;
+import java.util.Date;
+import java.util.Locale;
+import java.util.Set;
+
+import org.bukkit.Difficulty;
+import org.bukkit.OfflinePlayer;
+import org.bukkit.Server;
+import org.bukkit.World;
+import org.bukkit.entity.Player;
+import org.bukkit.plugin.Plugin;
+
 import de.cubeisland.cubeengine.core.Core;
 import de.cubeisland.cubeengine.core.CorePerms;
 import de.cubeisland.cubeengine.core.bukkit.BukkitCore;
 import de.cubeisland.cubeengine.core.command.CommandContext;
 import de.cubeisland.cubeengine.core.command.CommandHolder;
+import de.cubeisland.cubeengine.core.command.CommandSender;
 import de.cubeisland.cubeengine.core.command.ContainerCommand;
 import de.cubeisland.cubeengine.core.command.CubeCommand;
 import de.cubeisland.cubeengine.core.command.exception.PermissionDeniedException;
@@ -14,24 +29,10 @@ import de.cubeisland.cubeengine.core.command.parameterized.ParameterizedContext;
 import de.cubeisland.cubeengine.core.command.parameterized.completer.WorldCompleter;
 import de.cubeisland.cubeengine.core.command.reflected.Command;
 import de.cubeisland.cubeengine.core.command.reflected.ReflectedCommand;
-import de.cubeisland.cubeengine.core.command.CommandSender;
 import de.cubeisland.cubeengine.core.module.Module;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.util.ChatFormat;
 import de.cubeisland.cubeengine.core.util.Profiler;
-import org.bukkit.Difficulty;
-import org.bukkit.OfflinePlayer;
-import org.bukkit.Server;
-import org.bukkit.World;
-import org.bukkit.entity.Player;
-import org.bukkit.plugin.Plugin;
-
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Collection;
-import java.util.Date;
-import java.util.Locale;
-import java.util.Set;
 
 import static de.cubeisland.cubeengine.core.command.ArgBounds.NO_MAX;
 import static de.cubeisland.cubeengine.core.logger.LogLevel.NOTICE;
@@ -80,7 +81,7 @@ public class VanillaCommands implements CommandHolder
         final String message = context.getStrings(0);
         if (message != null)
         {
-            context.getCore().getUserManager().broadcastStatus("core", message);
+            context.getCore().getUserManager().broadcastMessage(message, CorePerms.COMMAND_RELOAD_NOTIFY);
         }
 
         if (context.hasFlag("m"))
@@ -93,7 +94,7 @@ public class VanillaCommands implements CommandHolder
         {
             context.sendTranslated("&eReloading the whole server... (this may take some time)");
             // pre-translate to avoid a NPE
-            final String preTranslated = this.core.getI18n().translate(context.getSender().getLocale(), "core", "&aThe reload is completed after %d seconds");
+            final String preTranslated = context.getSender().translate("&aThe reload is completed after %d seconds");
 
             Profiler.startProfiling("reload_server");
             this.core.getServer().reload();

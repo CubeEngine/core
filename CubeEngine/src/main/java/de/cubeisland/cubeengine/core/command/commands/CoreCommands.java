@@ -38,7 +38,7 @@ public class CoreCommands extends ContainerCommand
         pm.enablePlugin(this.core);
     }
 
-    @Command(desc = "Reloades all of the modules!")
+    @Command(desc = "Reloads all of the modules!")
     public void reloadmodules(CommandContext context)
     {
         this.core.getModuleManager().unloadModules();
