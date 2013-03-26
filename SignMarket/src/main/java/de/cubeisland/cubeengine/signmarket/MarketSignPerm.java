@@ -19,7 +19,7 @@ public class MarketSignPerm extends PermissionContainer
         this.registerAllPermissions();
     }
 
-    private static final Permission SIGNMARKET = BASEPERM.createAbstractChild("signmarket");
+    private static final Permission SIGNMARKET = Permission.BASE.createAbstractChild("signmarket");
     private static final Permission SIGN = SIGNMARKET.createAbstractChild("sign");
 
     private static final Permission SIGN_DESTROY = SIGN.createAbstractChild("destroy");

@@ -17,6 +17,6 @@ public class ChatPerm extends PermissionContainer
         this.registerAllPermissions();
     }
 
-    private static final Permission CHAT = BASEPERM.createAbstractChild("chat");
+    private static final Permission CHAT = Permission.BASE.createAbstractChild("chat");
     public static final Permission COLOR = CHAT.createChild("color");
 }

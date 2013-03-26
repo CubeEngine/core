@@ -25,11 +25,11 @@ public class FlyListener implements Listener
     private Fly fly;
     private final Location helperLocation = new Location(null, 0, 0, 0);
 
-    private final Permission FLY = PermissionContainer.BASEPERM.createAbstractChild("fly");
-    private final Permission FLY_FEATHER = FLY.createChild("feather");
+    private final Permission FLY_FEATHER;
 
     public FlyListener(Fly fly)
     {
+        this.FLY_FEATHER = fly.getBasePermission().createChild("feather");
         fly.getCore().getPermissionManager().registerPermission(fly,FLY_FEATHER);
         this.fly = fly;
         this.usermanager = fly.getUserManager();

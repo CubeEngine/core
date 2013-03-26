@@ -24,7 +24,6 @@ import de.cubeisland.cubeengine.core.command.parameterized.Flag;
 import de.cubeisland.cubeengine.core.command.parameterized.Param;
 import de.cubeisland.cubeengine.core.command.parameterized.ParameterizedContext;
 import de.cubeisland.cubeengine.core.command.reflected.Command;
-import de.cubeisland.cubeengine.core.permission.PermDefault;
 import de.cubeisland.cubeengine.core.permission.PermissionManager;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.util.matcher.Match;
@@ -40,7 +39,7 @@ public class ThrowCommands
     // entities that can't be safe due to bukkit flaws
     private final EnumSet<EntityType> BUGGED_ENTITIES = EnumSet.of(EntityType.SMALL_FIREBALL, EntityType.FIREBALL);
 
-    private static final String BASE_THROW_PERM = FunPerm.COMMAND_THROW.getPermission();
+    private static final String BASE_THROW_PERM = FunPerm.COMMAND_THROW.getName();
 
     private final Fun fun;
     private final ThrowListener throwListener;

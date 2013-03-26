@@ -17,6 +17,6 @@ public class BorderPerms extends PermissionContainer
         this.registerAllPermissions();
     }
 
-    private static final Permission BORDER = BASEPERM.createAbstractChild("border");
+    private static final Permission BORDER = Permission.BASE.createAbstractChild("border");
     public static final Permission BYPASS = BORDER.createChild("bypass");
 }

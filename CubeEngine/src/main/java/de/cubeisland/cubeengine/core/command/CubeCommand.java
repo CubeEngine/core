@@ -17,7 +17,6 @@ import de.cubeisland.cubeengine.core.command.sender.WrappedCommandSender;
 import de.cubeisland.cubeengine.core.module.Module;
 import de.cubeisland.cubeengine.core.permission.PermDefault;
 import de.cubeisland.cubeengine.core.permission.Permission;
-import de.cubeisland.cubeengine.core.permission.PermissionContainer;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.util.StringUtils;
 
@@ -111,7 +110,7 @@ public abstract class CubeCommand extends Command
 
     protected Permission generatePermissionNode()
     {
-        Permission commandBase = this.getModule().getModulePermission().createAbstractChild("command");
+        Permission commandBase = this.getModule().getBasePermission().createAbstractChild("command");
         LinkedList<String> cmds = new LinkedList<String>();
         CubeCommand cmd = this;
         do
@@ -159,7 +158,7 @@ public abstract class CubeCommand extends Command
         this.generatePermission = true;
         this.setGeneratedPermissionDefault(def);
         Permission perm = this.generatePermissionNode();
-        super.setPermission(perm.getPermission());
+        super.setPermission(perm.getName());
         this.getModule().getCore().getPermissionManager().registerPermission(this.getModule(), perm);
     }
 

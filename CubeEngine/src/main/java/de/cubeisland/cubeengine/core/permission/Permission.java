@@ -23,24 +23,32 @@ public class Permission
 
     public final boolean canRegister;
 
-    public static final String BASE = CubeEngine.class.getSimpleName().toLowerCase(Locale.US);
+    public static final Permission BASE = new Permission(false,"cubeengine",null);
 
     /**
-     * Creates a new abstract permission that will not register
+     * Creates a new permission
+     *
+     * @param canRegister false to make an abstract permission that will not register
+     * @param parentName
+     * @param name
      */
-    Permission(boolean b, String parentName, String name)
+    private Permission(boolean canRegister, String parentName, String name, PermDefault def)
     {
         this.permission = parentName.toLowerCase() + "." + name.toLowerCase();
-        this.canRegister = false;
+        this.canRegister = canRegister;
     }
 
     /**
-     * Creates a new abstract permission that will not register
+     * Creates a new permission
+     *
+     * @param canRegister false to make an abstract permission that will not register
+     * @param name
      */
-    Permission(boolean b, String name)
+    private Permission(boolean canRegister, String name, PermDefault def)
     {
         this.permission = name.toLowerCase();
-        this.canRegister = false;
+        this.canRegister = canRegister;
+        this.def = def;
     }
 
     public Permission(String name)
@@ -50,23 +58,17 @@ public class Permission
 
     public Permission(String name, PermDefault def)
     {
-        this.permission = name.toLowerCase();
-        this.def = def;
-        this.canRegister = true;
+        this(true,name,def);
     }
 
     public Permission(String parentName, String name, PermDefault def)
     {
-        this.permission = parentName + "." + name.toLowerCase();
-        this.def = def;
-        this.canRegister = true;
+        this(true,parentName,name,def);
     }
 
     public Permission(String parentName, String name)
     {
-        this.permission = parentName + "." + name.toLowerCase();
-        this.def = def;
-        this.canRegister = true;
+        this(parentName,name,OP);
     }
 
     /**
@@ -174,7 +176,7 @@ public class Permission
      */
     public Permission createAbstract(String name)
     {
-        return new Permission(true, this.permission, name);
+        return new Permission(false, this.permission, name, null);
     }
 
     /**
@@ -256,12 +258,12 @@ public class Permission
         return player.hasPermission(this.permission);
     }
 
-    public String getPermission()
+    public String getName()
     {
         return this.permission;
     }
 
-    public PermDefault getPermissionDefault()
+    public PermDefault getDefault()
     {
         return this.def;
     }

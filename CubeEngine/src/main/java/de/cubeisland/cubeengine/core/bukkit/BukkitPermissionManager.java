@@ -36,7 +36,7 @@ import static de.cubeisland.cubeengine.core.permission.Permission.BASE;
 
 public class BukkitPermissionManager implements PermissionManager
 {
-    private static final org.bukkit.permissions.Permission CUBEENGINE_WILDCARD = new org.bukkit.permissions.Permission(BASE + ".*", PermissionDefault.FALSE);
+    private static final org.bukkit.permissions.Permission CUBEENGINE_WILDCARD = new org.bukkit.permissions.Permission(BASE.getName() + ".*", PermissionDefault.FALSE);
     private final PluginManager pm;
     private final Map<String, org.bukkit.permissions.Permission> wildcards;
     private final Map<Module, Set<String>> modulePermissionMap;
@@ -132,7 +132,7 @@ public class BukkitPermissionManager implements PermissionManager
 
         perm = perm.toLowerCase(Locale.ENGLISH);
         String[] parts = StringUtils.explode(".", perm);
-        if (parts.length < 3 || !BASE.equals(parts[0]) || !module.getId().equals(parts[1]))
+        if (parts.length < 3 || !BASE.getName().equals(parts[0]) || !module.getId().equals(parts[1]))
         {
             throw new IllegalArgumentException("Permissions must start with 'cubeengine.<module>' !");
         }
@@ -176,22 +176,22 @@ public class BukkitPermissionManager implements PermissionManager
     @Override
     public void registerPermission(Module module, Permission permission)
     {
-        System.out.print("--- register " + permission.getPermission() + " ---");//TODO remove
+        System.out.print("--- register " + permission.getName() + " ---");//TODO remove
         String parent = null;
         if (permission.hasParent())
         {
-            parent = permission.getParent().getPermission();
+            parent = permission.getParent().getName();
         }
         Set<String> bundles = new THashSet<String>();
         if (permission.hasBundles())
         {
             for (Permission bundle : permission.getBundles())
             {
-                bundles.add(bundle.getPermission());
+                bundles.add(bundle.getName());
             }
         }
         org.bukkit.permissions.Permission registeredPerm =
-            this.registerPermission(module, permission.getPermission(), permission.getPermissionDefault(),
+            this.registerPermission(module, permission.getName(), permission.getDefault(),
                                     parent, bundles);
         // register all known abstract parents...
         Permission parentpermission;
@@ -203,7 +203,7 @@ public class BukkitPermissionManager implements PermissionManager
                 return; // parent is not abstract and has to register itself
             }
             // register the wildcard-permission
-            org.bukkit.permissions.Permission parentPerm = this.registerWildcard(module, parentpermission.getPermission());
+            org.bukkit.permissions.Permission parentPerm = this.registerWildcard(module, parentpermission.getName());
             // and bind the child-permission to it
             registeredPerm.addParent(parentPerm,true);
             // next parent-permission

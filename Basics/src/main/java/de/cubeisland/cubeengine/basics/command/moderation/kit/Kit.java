@@ -6,7 +6,6 @@ import de.cubeisland.cubeengine.basics.BasicsPerm;
 import de.cubeisland.cubeengine.core.CubeEngine;
 import de.cubeisland.cubeengine.core.command.exception.PermissionDeniedException;
 import de.cubeisland.cubeengine.core.command.sender.CommandSender;
-import de.cubeisland.cubeengine.core.permission.PermDefault;
 import de.cubeisland.cubeengine.core.permission.Permission;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.util.InventoryUtil;
@@ -14,7 +13,6 @@ import de.cubeisland.cubeengine.core.util.time.Duration;
 import org.bukkit.Server;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.permissions.Permissible;
 import org.bukkit.permissions.PermissionAttachment;
 import org.bukkit.permissions.PermissionAttachmentInfo;
 import org.bukkit.plugin.Plugin;
@@ -170,7 +168,7 @@ public class Kit
         @Override
         public boolean isAuthorized(Permission perm)
         {
-            return this.hasPermission(perm.getPermission());
+            return this.hasPermission(perm.getName());
         }
 
         @Override

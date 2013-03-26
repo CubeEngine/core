@@ -20,7 +20,7 @@ public class BasicsPerm extends PermissionContainer
         this.registerAllPermissions();
     }
 
-    public static final Permission BASICS = BASEPERM.createAbstractChild("basics");
+    public static final Permission BASICS = Permission.BASE.createAbstractChild("basics");
     public static final Permission KITS = BASICS.createAbstractChild("kits");
     public static final Permission COMMAND = BASICS.createAbstractChild("command");
 

@@ -27,7 +27,7 @@ import java.util.Locale;
 public abstract class Prevention implements Listener
 {
     private static final PunishmentProcedure PUNISHMENT_PROCEDURE = new PunishmentProcedure();
-    private static final Permission PERMISSION_BASE = PermissionContainer.BASEPERM.createAbstractChild("guests").createAbstractChild("prevention");
+    private static final Permission PERMISSION_BASE = Permission.BASE.createAbstractChild("guests").createAbstractChild("prevention");
     private final String name;
     private final Permission permission;
     private final Guests guests;
@@ -427,7 +427,7 @@ public abstract class Prevention implements Listener
      */
     public boolean can(final Player player)
     {
-        return player.hasPermission(this.permission.getPermission());
+        return player.hasPermission(this.permission.getName());
     }
 
     /**

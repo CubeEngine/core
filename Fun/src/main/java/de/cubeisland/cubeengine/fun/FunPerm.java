@@ -16,7 +16,7 @@ public class FunPerm extends PermissionContainer
         this.registerAllPermissions();
     }
 
-    private static final Permission FUN = BASEPERM.createAbstractChild("fun");
+    private static final Permission FUN = Permission.BASE.createAbstractChild("fun");
     private static final Permission COMMAND = FUN.createAbstractChild("command");
 
     private static final Permission COMMAND_EXPLOSION = COMMAND.createAbstractChild("explosion");

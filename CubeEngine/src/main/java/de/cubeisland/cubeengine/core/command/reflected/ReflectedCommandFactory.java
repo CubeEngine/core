@@ -10,8 +10,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 
-import org.bukkit.permissions.Permission;
-
 import de.cubeisland.cubeengine.core.command.ArgBounds;
 import de.cubeisland.cubeengine.core.command.CommandContext;
 import de.cubeisland.cubeengine.core.command.CommandFactory;
@@ -24,7 +22,6 @@ import de.cubeisland.cubeengine.core.command.parameterized.Param;
 import de.cubeisland.cubeengine.core.command.parameterized.ParameterizedContextFactory;
 import de.cubeisland.cubeengine.core.logger.LogLevel;
 import de.cubeisland.cubeengine.core.module.Module;
-import de.cubeisland.cubeengine.core.permission.PermissionContainer;
 
 import static de.cubeisland.cubeengine.core.command.ArgBounds.NO_MAX;
 import static de.cubeisland.cubeengine.core.logger.LogLevel.ERROR;
@@ -142,10 +139,10 @@ public class ReflectedCommandFactory<T extends CubeCommand> implements CommandFa
             else
             {
                 de.cubeisland.cubeengine.core.permission.Permission perm =
-                    module.getModulePermission().createAbstractChild("command");
+                    module.getBasePermission().createAbstractChild("command");
                 perm = perm.createChild(node,annotation.permDefault());
                 module.getCore().getPermissionManager().registerPermission(module, perm);
-                cmd.setPermission(perm.getPermission());
+                cmd.setPermission(perm.getName());
             }
         }
         return (T)cmd;

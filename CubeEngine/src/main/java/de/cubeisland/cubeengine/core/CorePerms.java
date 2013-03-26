@@ -14,7 +14,7 @@ public class CorePerms extends PermissionContainer
         this.registerAllPermissions();
     }
 
-    private static final Permission CORE = BASEPERM.createAbstractChild("core");
+    private static final Permission CORE = Permission.BASE.createAbstractChild("core");
     private static final Permission COMMAND = CORE.createAbstractChild("command");
     private static final Permission CLEARPASSWORD = COMMAND.createAbstractChild("clearpassword");
     public static final Permission COMMAND_CLEARPASSWORD_ALL = CLEARPASSWORD.createChild("all");

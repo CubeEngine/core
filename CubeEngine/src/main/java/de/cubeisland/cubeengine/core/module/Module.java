@@ -371,11 +371,11 @@ public abstract class Module
         return this.registry;
     }
 
-    public Permission getModulePermission()
+    public Permission getBasePermission()
     {
         if (modulePermission == null)
         {
-            modulePermission = PermissionContainer.BASEPERM.createAbstractChild(this.getId());
+            modulePermission = Permission.BASE.createAbstractChild(this.getId());
         }
         return modulePermission;
     }

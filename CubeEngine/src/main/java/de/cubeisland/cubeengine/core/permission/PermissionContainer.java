@@ -12,7 +12,7 @@ public abstract class PermissionContainer
 {
     private final PermissionManager permissionManager;
     private final Module module;
-    public static final Permission BASEPERM = new Permission(true,"cubeengine");
+
 
     protected PermissionContainer(Module module)
     {
@@ -76,7 +76,7 @@ public abstract class PermissionContainer
         String prefix = "cubeengine." + this.module.getId()+ ".";
         for (Permission perm : getPermissions())
         {
-            if (!perm.getPermission().startsWith(prefix))
+            if (!perm.getName().startsWith(prefix))
             {
                 throw new IllegalArgumentException("Permissions must start with 'cubeengine.<module>' !");
             }

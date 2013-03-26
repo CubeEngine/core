@@ -36,7 +36,7 @@ public class WrappedCommandSender implements CommandSender
     @Override
     public boolean isAuthorized(Permission perm)
     {
-        return this.wrapped.hasPermission(perm.getPermission());
+        return this.wrapped.hasPermission(perm.getName());
     }
 
     @Override

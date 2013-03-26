@@ -24,7 +24,7 @@ public class Home
         this.telePointManager = telePointManager;
         this.inviteManager = inviteManager;
         this.invited = inviteManager.getInvited(parent);
-        this.permission = module.getModulePermission().
+        this.permission = module.getBasePermission().
             createAbstractChild("homes").
             createAbstractChild("access").
             createChild(parent.name.toLowerCase(Locale.ENGLISH),
