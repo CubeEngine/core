@@ -76,14 +76,11 @@ public abstract class PermissionContainer
         String prefix = "cubeengine." + this.module.getId()+ ".";
         for (Permission perm : getPermissions())
         {
-            System.out.print(" - " + perm.getPermission());
             if (!perm.getPermission().startsWith(prefix))
             {
-                //throw new IllegalArgumentException("Permissions must start with 'cubeengine.<module>' !");
+                throw new IllegalArgumentException("Permissions must start with 'cubeengine.<module>' !");
             }
-
-
-            //TODO registering
+            this.permissionManager.registerPermission(module,perm);
         }
     }
 }

@@ -16,7 +16,7 @@ public class Permission
     private String permission;
     private PermDefault def;
 
-    private Set<Permission> roots = null;
+    private Set<Permission> bundle = null;
 
     private Permission parent = null;
     private Set<Permission> children = null;
@@ -78,7 +78,7 @@ public class Permission
      */
     public Permission attachTo(Permission bundlePermission)
     {
-        this.addRoot(bundlePermission);
+        this.addBundle(bundlePermission);
         return this;
     }
 
@@ -241,9 +241,9 @@ public class Permission
         return newPermission;
     }
 
-    public Set<Permission> getRoots()
+    public Set<Permission> getBundles()
     {
-        return this.roots;
+        return this.bundle;
     }
 
     public Permission getParent()
@@ -266,13 +266,13 @@ public class Permission
         return this.def;
     }
 
-    private void addRoot(Permission root)
+    private void addBundle(Permission bundlePermission)
     {
-        if (roots == null)
+        if (bundle == null)
         {
-            roots = new THashSet<Permission>();
+            bundle = new THashSet<Permission>();
         }
-        roots.add(root);
+        bundle.add(bundlePermission);
     }
 
     public Set<Permission> getChildren()
@@ -290,8 +290,8 @@ public class Permission
         return this.parent != null;
     }
 
-    public boolean hasRoots()
+    public boolean hasBundles()
     {
-        return this.roots == null ? false : !this.roots.isEmpty();
+        return this.bundle == null ? false : !this.bundle.isEmpty();
     }
 }

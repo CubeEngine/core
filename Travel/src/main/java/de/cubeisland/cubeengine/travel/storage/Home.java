@@ -25,7 +25,7 @@ public class Home
         this.invited = inviteManager.getInvited(parent);
         this.permission = "cubeengine.travel.homes.access."+parent.name.toLowerCase(Locale.ENGLISH);
         module.getCore().getPermissionManager().registerPermission(module,  this.permission, this.parent.visibility.equals(TeleportPoint.Visibility.PRIVATE) ?
-                PermDefault.OP : PermDefault.TRUE, null, null); // TODO childs?
+                PermDefault.OP : PermDefault.TRUE, null, null, true);
     }
 
     public void update()

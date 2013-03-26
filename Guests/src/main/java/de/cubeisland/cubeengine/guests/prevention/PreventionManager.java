@@ -70,7 +70,7 @@ public class PreventionManager
         if (!this.preventions.containsValue(prevention))
         {
             this.preventions.put(prevention.getName(), prevention);
-            this.pm.registerPermission(this.guests, prevention.getPermission(), PermDefault.OP, null, null); //TODO childs
+            this.pm.registerPermission(this.guests, prevention.getPermission(), PermDefault.OP, null, null, true);
         }
 
         return this;

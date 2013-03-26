@@ -138,7 +138,7 @@ public abstract class CubeCommand extends Command
         this.setGeneratedPermissionDefault(def);
         String permNode = this.generatePermissionNode();
         super.setPermission(permNode);
-        this.getModule().getCore().getPermissionManager().registerPermission(this.getModule(), permNode, def, null, null); // TODO fix this properly
+        this.getModule().getCore().getPermissionManager().registerPermission(this.getModule(), permNode, def, null, null, true);
     }
 
     protected void registerAlias(String[] names, String[] parents, String prefix, String suffix)
