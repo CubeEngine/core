@@ -82,7 +82,7 @@ public class BasicsPerm extends PermissionContainer
     public static final Permission COMMAND_GOD_KEEP = COMMAND_GOD.createChild("keep");
 
     private static final Permission COMMAND_BUTCHER = COMMAND.createAbstractChild("butcher");
-    private static final Permission COMMAND_BUTCHER_FLAG = COMMAND_BUTCHER.createAbstractChild("butcher");
+    private static final Permission COMMAND_BUTCHER_FLAG = COMMAND_BUTCHER.createAbstractChild("flag");
     public static final Permission COMMAND_BUTCHER_FLAG_PET = COMMAND_BUTCHER_FLAG.createChild("pet");
     public static final Permission COMMAND_BUTCHER_FLAG_ANIMAL = COMMAND_BUTCHER_FLAG.createChild("animal");
     public static final Permission COMMAND_BUTCHER_FLAG_LIGHTNING = COMMAND_BUTCHER_FLAG.createChild("lightning");

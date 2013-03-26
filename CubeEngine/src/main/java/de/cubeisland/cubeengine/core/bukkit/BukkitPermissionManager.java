@@ -176,6 +176,7 @@ public class BukkitPermissionManager implements PermissionManager
     @Override
     public void registerPermission(Module module, Permission permission)
     {
+        System.out.print("--- register " + permission.getPermission() + " ---");//TODO remove
         String parent = null;
         if (permission.hasParent())
         {
@@ -192,19 +193,23 @@ public class BukkitPermissionManager implements PermissionManager
         org.bukkit.permissions.Permission registeredPerm =
             this.registerPermission(module, permission.getPermission(), permission.getPermissionDefault(),
                                     parent, bundles);
+        // register all known abstract parents...
         Permission parentpermission;
         while (permission.hasParent())
         {
             parentpermission = permission.getParent();
             if (parentpermission.canRegister)
             {
-                return;
+                return; // parent is not abstract and has to register itself
             }
+            // register the wildcard-permission
             org.bukkit.permissions.Permission parentPerm = this.registerWildcard(module, parentpermission.getPermission());
+            // and bind the child-permission to it
             registeredPerm.addParent(parentPerm,true);
-            // next perm above
+            // next parent-permission
             registeredPerm = parentPerm;
             permission = parentpermission;
+            //TODO detect circular dependen permissions and throw Exception for it
         }
     }
 
