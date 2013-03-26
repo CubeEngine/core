@@ -6,8 +6,6 @@ public class Fly extends Module
 {
     private FlyConfig config;
 
-    private FlyPerm perm;
-
     @Override
     public void onEnable()
     {
@@ -16,12 +14,5 @@ public class Fly extends Module
             this.registerListener(new FlyListener(this));
         }
         this.getFileManager().dropResources(FlyResource.values());
-        this.perm = new FlyPerm(this);
-    }
-
-    @Override
-    public void onDisable()
-    {
-         perm.cleanup();
     }
 }

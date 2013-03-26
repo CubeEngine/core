@@ -1,6 +1,8 @@
 package de.cubeisland.cubeengine.fly;
 
 import de.cubeisland.cubeengine.core.CubeEngine;
+import de.cubeisland.cubeengine.core.permission.Permission;
+import de.cubeisland.cubeengine.core.permission.PermissionContainer;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.user.UserManager;
 import de.cubeisland.cubeengine.core.util.Task;
@@ -23,10 +25,15 @@ public class FlyListener implements Listener
     private Fly fly;
     private final Location helperLocation = new Location(null, 0, 0, 0);
 
+    private final Permission FLY = PermissionContainer.BASEPERM.createAbstractChild("fly");
+    private final Permission FLY_FEATHER = FLY.createChild("feather");
+
     public FlyListener(Fly fly)
     {
+        fly.getCore().getPermissionManager().registerPermission(fly,FLY_FEATHER);
         this.fly = fly;
         this.usermanager = fly.getUserManager();
+
     }
 
     @EventHandler
@@ -47,7 +54,7 @@ public class FlyListener implements Listener
             return;
         }
 
-        if (!FlyPerm.FLY_FEATHER.isAuthorized(player))
+        if (!FLY_FEATHER.isAuthorized(player))
         {
             user.sendMessage("core", "You dont have permission to use this!");
             player.setAllowFlight(false); //Disable when player is flying
