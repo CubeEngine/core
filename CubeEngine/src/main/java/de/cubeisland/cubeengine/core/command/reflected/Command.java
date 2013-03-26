@@ -23,6 +23,12 @@ public @interface Command
 
     boolean checkPerm() default true;
 
+    /**
+     * Use this permission node instead of the automatically generated one.
+     * 'cubeengine.<module>.command' will be prepended to this.
+     *
+     * @return
+     */
     String permNode() default "";
 
     PermDefault permDefault() default PermDefault.OP;

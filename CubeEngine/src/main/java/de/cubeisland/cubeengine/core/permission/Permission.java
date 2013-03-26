@@ -21,7 +21,7 @@ public class Permission
     private Permission parent = null;
     private Set<Permission> children = null;
 
-    final boolean canRegister;
+    public final boolean canRegister;
 
     public static final String BASE = CubeEngine.class.getSimpleName().toLowerCase(Locale.US);
 

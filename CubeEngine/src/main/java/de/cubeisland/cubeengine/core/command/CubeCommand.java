@@ -17,6 +17,7 @@ import de.cubeisland.cubeengine.core.command.sender.WrappedCommandSender;
 import de.cubeisland.cubeengine.core.module.Module;
 import de.cubeisland.cubeengine.core.permission.PermDefault;
 import de.cubeisland.cubeengine.core.permission.Permission;
+import de.cubeisland.cubeengine.core.permission.PermissionContainer;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.util.StringUtils;
 
@@ -108,16 +109,37 @@ public abstract class CubeCommand extends Command
         super.setPermission(permission);
     }
 
-    protected String generatePermissionNode()
+    protected Permission generatePermissionNode()
     {
-        return Permission.BASE + '.' + this.getModule().getId() + ".command." + this.implodeCommandParentNames(".");
+        Permission commandBase = this.getModule().getModulePermission().createAbstractChild("command");
+        LinkedList<String> cmds = new LinkedList<String>();
+        CubeCommand cmd = this;
+        do
+        {
+            cmds.addFirst(cmd.getName());
+        }
+        while ((cmd = cmd.getParent()) != null);
+        Permission result = commandBase;
+        Iterator<String> iter = cmds.iterator();
+        while (iter.hasNext())
+        {
+            String permString = iter.next();
+            if (iter.hasNext())
+            {
+                result = result.createAbstractChild(permString);
+            }
+            else
+            {
+                result = result.createChild(permString, this.getGeneratedPermissionDefault());
+            }
+        }
+        return result;
     }
 
     public void updateGeneratedPermission()
     {
         if (this.generatePermission)
         {
-
             PermDefault def = null;
             String node = this.getPermission();
             if (node != null)
@@ -136,9 +158,9 @@ public abstract class CubeCommand extends Command
     {
         this.generatePermission = true;
         this.setGeneratedPermissionDefault(def);
-        String permNode = this.generatePermissionNode();
-        super.setPermission(permNode);
-        this.getModule().getCore().getPermissionManager().registerPermission(this.getModule(), permNode, def, null, null, true);
+        Permission perm = this.generatePermissionNode();
+        super.setPermission(perm.getPermission());
+        this.getModule().getCore().getPermissionManager().registerPermission(this.getModule(), perm);
     }
 
     protected void registerAlias(String[] names, String[] parents, String prefix, String suffix)

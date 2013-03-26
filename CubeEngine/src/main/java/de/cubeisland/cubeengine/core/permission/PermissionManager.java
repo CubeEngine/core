@@ -19,9 +19,8 @@ public interface PermissionManager extends Cleanable
      * @param permDefault the default value
      * @param parent the parent permission-node
      * @param bundles all permissions creating a bundle with this permission
-     * @param makeWildcards if true this will make all wildcards leading up to the given permission
      */
-    void registerPermission(Module module, String perm, PermDefault permDefault, String parent, Set<String> bundles, boolean makeWildcards);
+    org.bukkit.permissions.Permission registerPermission(Module module, String perm, PermDefault permDefault, String parent, Set<String> bundles);
 
     /**
      * Registers a permission

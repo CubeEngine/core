@@ -1,5 +1,7 @@
 package de.cubeisland.cubeengine.guests.prevention;
 
+import de.cubeisland.cubeengine.core.permission.Permission;
+import de.cubeisland.cubeengine.core.permission.PermissionContainer;
 import de.cubeisland.cubeengine.core.util.ChatFormat;
 import de.cubeisland.cubeengine.guests.Guests;
 import gnu.trove.map.TIntObjectMap;
@@ -25,9 +27,9 @@ import java.util.Locale;
 public abstract class Prevention implements Listener
 {
     private static final PunishmentProcedure PUNISHMENT_PROCEDURE = new PunishmentProcedure();
-    private static final String PERMISSION_BASE = "cubeengine.guests.prevention.";
+    private static final Permission PERMISSION_BASE = PermissionContainer.BASEPERM.createAbstractChild("guests").createAbstractChild("prevention");
     private final String name;
-    private final String permission;
+    private final Permission permission;
     private final Guests guests;
     private final boolean allowPunishing;
     private boolean loaded;
@@ -66,7 +68,7 @@ public abstract class Prevention implements Listener
     public Prevention(final String name, final Guests guests, final boolean allowPunishing)
     {
         this.name = name;
-        this.permission = PERMISSION_BASE + name.toLowerCase(Locale.ENGLISH);
+        this.permission = PERMISSION_BASE.createChild(name.toLowerCase(Locale.ENGLISH));
         this.guests = guests;
         this.allowPunishing = allowPunishing;
 
@@ -352,7 +354,7 @@ public abstract class Prevention implements Listener
      *
      * @return the permission
      */
-    public final String getPermission()
+    public final Permission getPermission()
     {
         return this.permission;
     }
@@ -425,7 +427,7 @@ public abstract class Prevention implements Listener
      */
     public boolean can(final Player player)
     {
-        return player.hasPermission(this.permission);
+        return player.hasPermission(this.permission.getPermission());
     }
 
     /**

@@ -42,8 +42,6 @@ public class BukkitPermissionManager implements PermissionManager
     private final Map<Module, Set<String>> modulePermissionMap;
     private final Logger logger;
 
-
-
     public BukkitPermissionManager(BukkitCore core)
     {
         this.pm = core.getServer().getPluginManager();
@@ -117,7 +115,7 @@ public class BukkitPermissionManager implements PermissionManager
     }
 
     @Override
-    public void registerPermission(Module module, String perm, PermDefault permDefault, String parent, Set<String> bundles, boolean makeWildcards)
+    public org.bukkit.permissions.Permission registerPermission(Module module, String perm, PermDefault permDefault, String parent, Set<String> bundles)
     {
         if (!CubeEngine.isMainThread())
         {
@@ -129,7 +127,7 @@ public class BukkitPermissionManager implements PermissionManager
 
         if (perm.equals(CUBEENGINE_WILDCARD.getName()))
         {
-            return;
+            return null;
         }
 
         perm = perm.toLowerCase(Locale.ENGLISH);
@@ -153,26 +151,10 @@ public class BukkitPermissionManager implements PermissionManager
             //this will happen to all bundel-permissions
             System.out.print(permission.getName() + " already created!");//TODO remove this debug
         }
-        if (makeWildcards) // make wildcard for the whole tree
+        if (parent != null)
         {
-            org.bukkit.permissions.Permission parentPermission = CUBEENGINE_WILDCARD;
-            org.bukkit.permissions.Permission currentPermission;
-            String currentString = BASE;
-            for (int i = 1; i < parts.length - 1; ++i)
-            {
-                currentString += "." + parts[i];
-                currentPermission = this.registerWildcard(module, currentString);
-                currentPermission.addParent(parentPermission, true);
-                parentPermission = currentPermission;
-            }
-        }
-        else // only make wildcard for given parent
-        {
-            if (parent != null)
-            {
-                org.bukkit.permissions.Permission parentPerm = this.registerWildcard(module, parent);
-                permission.addParent(parentPerm, true);
-            }
+            org.bukkit.permissions.Permission parentPerm = this.registerWildcard(module, parent);
+            permission.addParent(parentPerm, true);
         }
         if (bundles != null) // register the known bundles
         {
@@ -188,6 +170,7 @@ public class BukkitPermissionManager implements PermissionManager
                 permission.addParent(bundlePerm, true);
             }
         }
+        return permission;
     }
 
     @Override
@@ -206,7 +189,23 @@ public class BukkitPermissionManager implements PermissionManager
                 bundles.add(bundle.getPermission());
             }
         }
-        this.registerPermission(module,permission.getPermission(),permission.getPermissionDefault(),parent,bundles,false);
+        org.bukkit.permissions.Permission registeredPerm =
+            this.registerPermission(module, permission.getPermission(), permission.getPermissionDefault(),
+                                    parent, bundles);
+        Permission parentpermission;
+        while (permission.hasParent())
+        {
+            parentpermission = permission.getParent();
+            if (parentpermission.canRegister)
+            {
+                return;
+            }
+            org.bukkit.permissions.Permission parentPerm = this.registerWildcard(module, parentpermission.getPermission());
+            registeredPerm.addParent(parentPerm,true);
+            // next perm above
+            registeredPerm = parentPerm;
+            permission = parentpermission;
+        }
     }
 
     @Override

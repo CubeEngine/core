@@ -7,6 +7,8 @@ import de.cubeisland.cubeengine.core.command.CommandHolder;
 import de.cubeisland.cubeengine.core.command.CommandManager;
 import de.cubeisland.cubeengine.core.command.CubeCommand;
 import de.cubeisland.cubeengine.core.filesystem.FileManager;
+import de.cubeisland.cubeengine.core.permission.Permission;
+import de.cubeisland.cubeengine.core.permission.PermissionContainer;
 import de.cubeisland.cubeengine.core.storage.ModuleRegistry;
 import de.cubeisland.cubeengine.core.storage.SimpleModuleRegistry;
 import de.cubeisland.cubeengine.core.storage.database.Database;
@@ -35,6 +37,7 @@ public abstract class Module
     private ModuleClassLoader classLoader;
     private File folder;
     private boolean enabled;
+    private Permission modulePermission;
 
     final void initialize(Core core, ModuleInfo info, File folder, Logger logger, ModuleLoader loader, ModuleClassLoader classLoader)
     {
@@ -366,5 +369,14 @@ public abstract class Module
             this.registry = new SimpleModuleRegistry(this, this.loader.getRegistry());
         }
         return this.registry;
+    }
+
+    public Permission getModulePermission()
+    {
+        if (modulePermission == null)
+        {
+            modulePermission = PermissionContainer.BASEPERM.createAbstractChild(this.getId());
+        }
+        return modulePermission;
     }
 }
