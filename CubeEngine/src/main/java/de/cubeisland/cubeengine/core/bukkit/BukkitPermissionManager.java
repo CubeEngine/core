@@ -146,11 +146,6 @@ public class BukkitPermissionManager implements PermissionManager
             permission = new org.bukkit.permissions.Permission(perm, permDefault.getValue());
             this.registerBukkitPermission(permission);
         }
-        else
-        {
-            //this will happen to all bundel-permissions
-            System.out.print(permission.getName() + " already created!");//TODO remove this debug
-        }
         if (parent != null)
         {
             org.bukkit.permissions.Permission parentPerm = this.registerWildcard(module, parent);
@@ -176,7 +171,6 @@ public class BukkitPermissionManager implements PermissionManager
     @Override
     public void registerPermission(Module module, Permission permission)
     {
-        System.out.print("--- register " + permission.getName() + " ---");//TODO remove
         String parent = null;
         if (permission.hasParent())
         {
