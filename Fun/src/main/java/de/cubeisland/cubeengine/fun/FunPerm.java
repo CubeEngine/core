@@ -1,7 +1,7 @@
 package de.cubeisland.cubeengine.fun;
 
 import de.cubeisland.cubeengine.core.permission.PermDefault;
-import de.cubeisland.cubeengine.core.permission.Permission;
+
 import java.util.Locale;
 import org.bukkit.permissions.Permissible;
 

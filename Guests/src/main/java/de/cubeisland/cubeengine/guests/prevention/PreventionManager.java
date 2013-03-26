@@ -2,7 +2,6 @@ package de.cubeisland.cubeengine.guests.prevention;
 
 import de.cubeisland.cubeengine.core.bukkit.EventManager;
 import de.cubeisland.cubeengine.core.permission.PermDefault;
-import de.cubeisland.cubeengine.core.permission.PermissionManager;
 import de.cubeisland.cubeengine.core.logger.LogLevel;
 import de.cubeisland.cubeengine.guests.Guests;
 import gnu.trove.map.hash.THashMap;

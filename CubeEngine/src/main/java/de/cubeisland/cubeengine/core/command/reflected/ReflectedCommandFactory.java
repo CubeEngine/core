@@ -138,7 +138,7 @@ public class ReflectedCommandFactory<T extends CubeCommand> implements CommandFa
             }
             else
             {
-                module.getCore().getPermissionManager().registerPermission(module, node, annotation.permDefault());
+                module.getCore().getPermissionManager().registerPermission(module, node, annotation.permDefault(), null, null); // TODO fix this properly
                 cmd.setPermission(node);
             }
         }

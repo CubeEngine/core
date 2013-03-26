@@ -2,10 +2,7 @@ package de.cubeisland.cubeengine.core.permission;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
-import java.util.Collection;
-import java.util.HashSet;
 import java.util.Set;
-import java.util.logging.Level;
 
 import de.cubeisland.cubeengine.core.module.Module;
 
@@ -15,7 +12,7 @@ public abstract class PermissionContainer
 {
     private final PermissionManager permissionManager;
     private final Module module;
-    public static final NewPermission BASE = new NewPermission(true,"cubeengine");
+    public static final Permission BASEPERM = new Permission(true,"cubeengine");
 
     protected PermissionContainer(Module module)
     {
@@ -26,14 +23,14 @@ public abstract class PermissionContainer
     /**
      * Nulls all static fields in this
      */
-    public void unload()
+    public void cleanup()
     {
         for (Field field : this.getClass().getDeclaredFields())
         {
             int mask = field.getModifiers();
             if ((((mask & Modifier.STATIC) == Modifier.STATIC)))
             {
-                if (NewPermission.class.isAssignableFrom(field.getType()))
+                if (Permission.class.isAssignableFrom(field.getType()))
                 {
                     try
                     {
@@ -47,19 +44,19 @@ public abstract class PermissionContainer
         }
     }
 
-    private Set<NewPermission> getPermissions()
+    private Set<Permission> getPermissions()
     {
-        THashSet<NewPermission> perms = new THashSet<NewPermission>();
+        THashSet<Permission> perms = new THashSet<Permission>();
         for (Field field : this.getClass().getFields())
         {
             int mask = field.getModifiers();
             if ((((mask & Modifier.STATIC) == Modifier.STATIC)))
             {
-                if (NewPermission.class.isAssignableFrom(field.getType()))
+                if (Permission.class.isAssignableFrom(field.getType()))
                 {
                     try
                     {
-                        NewPermission perm = (NewPermission)field.get(this);
+                        Permission perm = (Permission)field.get(this);
                         if (perm.canRegister)
                         {
                             perms.add(perm);
@@ -77,7 +74,7 @@ public abstract class PermissionContainer
     public void registerAllPermissions()
     {
         String prefix = "cubeengine." + this.module.getId()+ ".";
-        for (NewPermission perm : getPermissions())
+        for (Permission perm : getPermissions())
         {
             System.out.print(" - " + perm.getPermission());
             if (!perm.getPermission().startsWith(prefix))

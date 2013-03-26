@@ -2,11 +2,9 @@ package de.cubeisland.cubeengine.travel.storage;
 
 import de.cubeisland.cubeengine.core.CubeEngine;
 import de.cubeisland.cubeengine.core.permission.PermDefault;
-import de.cubeisland.cubeengine.core.permission.Permission;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.travel.Travel;
 import org.bukkit.Location;
-import org.bukkit.permissions.Permissible;
 
 import java.util.Locale;
 import java.util.Set;

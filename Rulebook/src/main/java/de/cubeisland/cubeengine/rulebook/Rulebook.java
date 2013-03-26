@@ -2,7 +2,6 @@ package de.cubeisland.cubeengine.rulebook;
 
 import de.cubeisland.cubeengine.core.module.Module;
 import de.cubeisland.cubeengine.core.permission.PermDefault;
-import de.cubeisland.cubeengine.core.permission.Permission;
 import de.cubeisland.cubeengine.rulebook.bookManagement.RulebookCommands;
 import de.cubeisland.cubeengine.rulebook.bookManagement.RulebookManager;
 

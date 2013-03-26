@@ -6,7 +6,6 @@ import de.cubeisland.cubeengine.core.CubeEngine;
 import de.cubeisland.cubeengine.core.command.exception.PermissionDeniedException;
 import de.cubeisland.cubeengine.core.command.sender.CommandSender;
 import de.cubeisland.cubeengine.core.permission.PermDefault;
-import de.cubeisland.cubeengine.core.permission.Permission;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.util.InventoryUtil;
 import de.cubeisland.cubeengine.core.util.time.Duration;

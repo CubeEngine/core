@@ -2,7 +2,7 @@ package de.cubeisland.cubeengine.basics.command.teleport;
 
 import de.cubeisland.cubeengine.basics.Basics;
 import de.cubeisland.cubeengine.core.permission.PermDefault;
-import de.cubeisland.cubeengine.core.permission.Permission;
+
 import gnu.trove.map.hash.THashMap;
 import org.bukkit.Bukkit;
 import org.bukkit.World;

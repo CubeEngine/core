@@ -7,7 +7,6 @@ import de.cubeisland.cubeengine.core.command.CommandHolder;
 import de.cubeisland.cubeengine.core.command.CommandManager;
 import de.cubeisland.cubeengine.core.command.CubeCommand;
 import de.cubeisland.cubeengine.core.filesystem.FileManager;
-import de.cubeisland.cubeengine.core.permission.Permission;
 import de.cubeisland.cubeengine.core.storage.ModuleRegistry;
 import de.cubeisland.cubeengine.core.storage.SimpleModuleRegistry;
 import de.cubeisland.cubeengine.core.storage.database.Database;
@@ -328,11 +327,6 @@ public abstract class Module
     public ModuleLoader getLoader()
     {
         return this.loader;
-    }
-
-    public void registerPermissions(Permission[] permissions)
-    {
-        this.core.getPermissionManager().registerPermissions(this, permissions);
     }
 
     public void registerCommand(CubeCommand command, String... parents)

@@ -1,37 +1,297 @@
 package de.cubeisland.cubeengine.core.permission;
 
 import java.util.Locale;
+import java.util.Set;
 
 import org.bukkit.permissions.Permissible;
 
 import de.cubeisland.cubeengine.core.CubeEngine;
 
-/**
- * Represents a permission.
- */
-public interface Permission
+import gnu.trove.set.hash.THashSet;
+
+import static de.cubeisland.cubeengine.core.permission.PermDefault.OP;
+
+public class Permission
 {
+    private String permission;
+    private PermDefault def;
+
+    private Set<Permission> roots = null;
+
+    private Permission parent = null;
+    private Set<Permission> children = null;
+
+    final boolean canRegister;
+
     public static final String BASE = CubeEngine.class.getSimpleName().toLowerCase(Locale.US);
 
     /**
-     * Checks whether the given Permissible is authorized with this permission
-     *
-     * @param permissible
-     * @return true
+     * Creates a new abstract permission that will not register
      */
-    public boolean isAuthorized(Permissible permissible);
+    Permission(boolean b, String parentName, String name)
+    {
+        this.permission = parentName.toLowerCase() + "." + name.toLowerCase();
+        this.canRegister = false;
+    }
 
     /**
-     * Gets the permission as a string
-     *
-     * @return the permission string
+     * Creates a new abstract permission that will not register
      */
-    public String getPermission();
+    Permission(boolean b, String name)
+    {
+        this.permission = name.toLowerCase();
+        this.canRegister = false;
+    }
+
+    public Permission(String name)
+    {
+       this(name,OP);
+    }
+
+    public Permission(String name, PermDefault def)
+    {
+        this.permission = name.toLowerCase();
+        this.def = def;
+        this.canRegister = true;
+    }
+
+    public Permission(String parentName, String name, PermDefault def)
+    {
+        this.permission = parentName + "." + name.toLowerCase();
+        this.def = def;
+        this.canRegister = true;
+    }
+
+    public Permission(String parentName, String name)
+    {
+        this.permission = parentName + "." + name.toLowerCase();
+        this.def = def;
+        this.canRegister = true;
+    }
 
     /**
-     * Returns the permission default
+     * Adds this permission to given bundle-permission.
+     * This will not affect any name of the permissions.
      *
-     * @return the permission default
+     * @param bundlePermission
+     * @return fluent interface
      */
-    public PermDefault getPermissionDefault();
+    public Permission attachTo(Permission bundlePermission)
+    {
+        this.addRoot(bundlePermission);
+        return this;
+    }
+
+    /**
+     * Adds given permissions to this bundle-permission to form a bundle.
+     * This will not affect any name of the permissions.
+     *
+     * @param toAttach
+     * @return fluent interface
+     */
+    public Permission attach(Permission... toAttach)
+    {
+        for (Permission perm : toAttach)
+        {
+            perm.attachTo(this);
+        }
+        return this;
+    }
+
+    /**
+     * Sets this permission as child of given parent-permission.
+     * The child-permission and all its children will prepend the parents-permission
+     *
+     * @param parentPermission
+     * @return fluent interface
+     */
+    public Permission setAsChildOf(Permission parentPermission)
+    {
+        this.parent = parentPermission;
+        this.permission = parentPermission.permission + "." + this.permission;
+        if (!parentPermission.hasChildren())
+        {
+            parentPermission.children = new THashSet<Permission>();
+        }
+        parentPermission.children.add(this);
+        for (Permission childPerm : children)
+        {
+            childPerm.prepend(parentPermission.permission);
+        }
+        return this;
+    }
+
+    /**
+     * Sets the given permission as child of this parent-permission.
+     * The child-permission and all its children will prepend the parents-permission
+     *
+     * @param childPerms
+     * @return fluent interface
+     */
+    public Permission addChildren(Permission... childPerms)
+    {
+        for (Permission child : childPerms)
+        {
+            child.setAsChildOf(this);
+        }
+        return this;
+    }
+
+    /**
+     * Prepends given string to this permission and all child permissions
+     *
+     * @param s
+     */
+    private void prepend(String s)
+    {
+        this.permission = s + "." + this.permission;
+        if (this.hasChildren())
+        {
+            for (Permission childPerm : children)
+            {
+                childPerm.prepend(s);
+            }
+        }
+    }
+
+    /**
+     * Creates a child-permission
+     *
+     * @param name
+     * @return
+     */
+    public Permission createChild(String name)
+    {
+        return this.createChild(name , OP);
+    }
+
+    /**
+     * Creates an independent abstract permission that begins with the path of this permission.
+     * This permission will not be registered.
+     *
+     * @param name
+     * @return
+     */
+    public Permission createAbstract(String name)
+    {
+        return new Permission(true, this.permission, name);
+    }
+
+    /**
+     * Creates an abstract child-permission.
+     * This permission will not be registered.
+     * A wildcard permission however will be registered if needed.
+     *
+     * @param name
+     * @return
+     */
+    public Permission createAbstractChild(String name)
+    {
+        Permission newPermission = this.createAbstract(name);
+        newPermission.parent = this;
+        if (!this.hasChildren())
+        {
+            this.children = new THashSet<Permission>();
+        }
+        this.children.add(newPermission);
+        return newPermission;
+    }
+
+
+    /**
+     * Creates an independent permission that begins with the path of this permission
+     *
+     * @param name
+     * @return
+     */
+    public Permission createNew(String name)
+    {
+        return this.createNew(name, OP);
+    }
+
+    /**
+     * Creates an independent permission that begins with the path of this permission
+     *
+     * @param name
+     * @param def
+     * @return
+     */
+    public Permission createNew(String name, PermDefault def)
+    {
+        Permission newPermission = new Permission(this.permission,name,def);
+        return newPermission;
+    }
+
+    /**
+     * Creates a child-permission
+     *
+     * @param name
+     * @param def
+     * @return
+     */
+    public Permission createChild(String name, PermDefault def)
+    {
+        Permission newPermission = new Permission(this.permission,name,def);
+        newPermission.parent = this;
+        if (!this.hasChildren())
+        {
+            this.children = new THashSet<Permission>();
+        }
+        this.children.add(newPermission);
+        return newPermission;
+    }
+
+    public Set<Permission> getRoots()
+    {
+        return this.roots;
+    }
+
+    public Permission getParent()
+    {
+        return this.parent;
+    }
+
+    public boolean isAuthorized(Permissible player)
+    {
+        return player.hasPermission(this.permission);
+    }
+
+    public String getPermission()
+    {
+        return this.permission;
+    }
+
+    public PermDefault getPermissionDefault()
+    {
+        return this.def;
+    }
+
+    private void addRoot(Permission root)
+    {
+        if (roots == null)
+        {
+            roots = new THashSet<Permission>();
+        }
+        roots.add(root);
+    }
+
+    public Set<Permission> getChildren()
+    {
+        return children;
+    }
+
+    public boolean hasChildren()
+    {
+        return children == null ? false : !children.isEmpty();
+    }
+
+    public boolean hasParent()
+    {
+        return this.parent != null;
+    }
+
+    public boolean hasRoots()
+    {
+        return this.roots == null ? false : !this.roots.isEmpty();
+    }
 }

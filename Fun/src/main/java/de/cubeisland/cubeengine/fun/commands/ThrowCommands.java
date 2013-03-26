@@ -25,7 +25,6 @@ import de.cubeisland.cubeengine.core.command.parameterized.Param;
 import de.cubeisland.cubeengine.core.command.parameterized.ParameterizedContext;
 import de.cubeisland.cubeengine.core.command.reflected.Command;
 import de.cubeisland.cubeengine.core.permission.PermDefault;
-import de.cubeisland.cubeengine.core.permission.PermissionManager;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.util.matcher.Match;
 import de.cubeisland.cubeengine.fun.Fun;

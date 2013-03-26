@@ -74,7 +74,7 @@ public class ReadableCommandFactory extends ReflectedCommandFactory<ReadableComm
             }
             else
             {
-                module.getCore().getPermissionManager().registerPermission(module, node, annotation.permDefault());
+                module.getCore().getPermissionManager().registerPermission(module, node, annotation.permDefault(), null, null); // TODO fix this correctly
                 cmd.setPermission(node);
             }
         }

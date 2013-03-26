@@ -1,7 +1,7 @@
 package de.cubeisland.cubeengine.chat;
 
 import de.cubeisland.cubeengine.core.permission.PermDefault;
-import de.cubeisland.cubeengine.core.permission.Permission;
+
 import org.bukkit.permissions.Permissible;
 
 import java.util.Locale;

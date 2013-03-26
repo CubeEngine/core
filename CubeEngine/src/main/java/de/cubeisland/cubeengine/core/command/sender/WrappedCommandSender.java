@@ -2,6 +2,7 @@ package de.cubeisland.cubeengine.core.command.sender;
 
 import de.cubeisland.cubeengine.core.CubeEngine;
 import de.cubeisland.cubeengine.core.permission.Permission;
+
 import org.bukkit.Server;
 import org.bukkit.permissions.PermissionAttachment;
 import org.bukkit.permissions.PermissionAttachmentInfo;

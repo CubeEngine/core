@@ -15,7 +15,6 @@ import java.util.logging.Level;
 import java.util.logging.LogRecord;
 import java.util.logging.Logger;
 
-import org.bukkit.permissions.Permission;
 import org.bukkit.permissions.PermissionDefault;
 import org.bukkit.plugin.PluginManager;
 
@@ -23,31 +22,32 @@ import de.cubeisland.cubeengine.core.CubeEngine;
 import de.cubeisland.cubeengine.core.logger.CubeFileHandler;
 import de.cubeisland.cubeengine.core.logger.CubeLogger;
 import de.cubeisland.cubeengine.core.module.Module;
-import de.cubeisland.cubeengine.core.permission.PermDefault;
+import de.cubeisland.cubeengine.core.permission.Permission;
 import de.cubeisland.cubeengine.core.permission.PermissionManager;
+import de.cubeisland.cubeengine.core.permission.PermDefault;
 import de.cubeisland.cubeengine.core.util.StringUtils;
 
 import gnu.trove.map.hash.THashMap;
 import gnu.trove.set.hash.THashSet;
 import org.apache.commons.lang.Validate;
 
-import static de.cubeisland.cubeengine.core.logger.LogLevel.DEBUG;
-import static de.cubeisland.cubeengine.core.logger.LogLevel.ERROR;
-import static de.cubeisland.cubeengine.core.logger.LogLevel.INFO;
+import static de.cubeisland.cubeengine.core.logger.LogLevel.*;
 import static de.cubeisland.cubeengine.core.permission.Permission.BASE;
 
 public class BukkitPermissionManager implements PermissionManager
 {
     private static final org.bukkit.permissions.Permission CUBEENGINE_WILDCARD = new org.bukkit.permissions.Permission(BASE + ".*", PermissionDefault.FALSE);
     private final PluginManager pm;
-    private final Map<String, Permission> wildcards;
+    private final Map<String, org.bukkit.permissions.Permission> wildcards;
     private final Map<Module, Set<String>> modulePermissionMap;
     private final Logger logger;
+
+
 
     public BukkitPermissionManager(BukkitCore core)
     {
         this.pm = core.getServer().getPluginManager();
-        this.wildcards = new THashMap<String, Permission>(0);
+        this.wildcards = new THashMap<String, org.bukkit.permissions.Permission>(0);
         this.modulePermissionMap = new THashMap<Module, Set<String>>(0);
         this.logger = new CubeLogger("permissions");
         try
@@ -92,7 +92,32 @@ public class BukkitPermissionManager implements PermissionManager
         }
     }
 
-    public void registerPermission(Module module, String perm, PermDefault permDefault)
+    private org.bukkit.permissions.Permission registerWildcard(Module module, String perm)
+    {
+        perm += ".*";
+
+        org.bukkit.permissions.Permission wildcard = this.wildcards.get(perm);
+        if (wildcard == null)
+        {
+            this.registerBukkitPermission(wildcard = new org.bukkit.permissions.Permission(perm, PermissionDefault.FALSE));
+            this.getPermissions(module).add(perm);
+        }
+
+        return wildcard;
+    }
+
+    private Set<String> getPermissions(Module module)
+    {
+        Set<String> perms = this.modulePermissionMap.get(module);
+        if (perms == null)
+        {
+            this.modulePermissionMap.put(module, perms = new THashSet<String>(1));
+        }
+        return perms;
+    }
+
+    @Override
+    public void registerPermission(Module module, String perm, PermDefault permDefault, String parent, Set<String> roots)
     {
         if (!CubeEngine.isMainThread())
         {
@@ -114,58 +139,64 @@ public class BukkitPermissionManager implements PermissionManager
             throw new IllegalArgumentException("Permissions must start with 'cubeengine.<module>' !");
         }
 
-        Set<String> modulePermissions = this.getPermission(module);
+        Set<String> modulePermissions = this.getPermissions(module);
         modulePermissions.add(perm);
 
-        org.bukkit.permissions.Permission permission = new org.bukkit.permissions.Permission(perm, permDefault.getValue());
-        this.registerBukkitPermission(permission);
-
-        org.bukkit.permissions.Permission parent = CUBEENGINE_WILDCARD;
-        org.bukkit.permissions.Permission current;
-        String currentString = BASE;
-        for (int i = 1; i < parts.length - 1; ++i)
+        org.bukkit.permissions.Permission permission = this.pm.getPermission(perm);
+        if (permission == null)
         {
-            currentString += "." + parts[i];
-            current = this.getWildcard(module, currentString);
-            current.addParent(parent, true);
-            parent = current;
+            permission = new org.bukkit.permissions.Permission(perm, permDefault.getValue());
+            this.registerBukkitPermission(permission);
         }
-
-        permission.addParent(parent, true);
-    }
-
-    private org.bukkit.permissions.Permission getWildcard(Module module, String perm)
-    {
-        perm += ".*";
-
-        org.bukkit.permissions.Permission wildcard = this.wildcards.get(perm);
-        if (wildcard == null)
+        else
         {
-            this.registerBukkitPermission(wildcard = new org.bukkit.permissions.Permission(perm, PermissionDefault.FALSE));
-            this.getPermission(module).add(perm);
+            //this will happen to all bundel-permissions
+            System.out.print(permission.getName() + " already created!");//TODO remove this debug
         }
-
-        return wildcard;
-    }
-
-    private Set<String> getPermission(Module module)
-    {
-        Set<String> perms = this.modulePermissionMap.get(module);
-        if (perms == null)
+        if (parent != null)
         {
-            this.modulePermissionMap.put(module, perms = new THashSet<String>(1));
+            org.bukkit.permissions.Permission parentPerm = this.registerWildcard(module, parent);
+            permission.addParent(parentPerm, true);
         }
-        return perms;
+        if (roots != null)
+        {
+            for (String root : roots)
+            {
+                org.bukkit.permissions.Permission rootPerm = this.pm.getPermission(root);
+                if (rootPerm == null)
+                {
+                    rootPerm = new org.bukkit.permissions.Permission(root, PermissionDefault.FALSE);
+                    this.registerBukkitPermission(rootPerm);
+                }
+                modulePermissions.add(root);
+                permission.addParent(rootPerm, true);
+            }
+        }
     }
 
-    public void registerPermission(Module module, de.cubeisland.cubeengine.core.permission.Permission permission)
+    @Override
+    public void registerPermission(Module module, Permission permission)
     {
-        this.registerPermission(module, permission.getPermission(), permission.getPermissionDefault());
+        String parent = null;
+        if (permission.hasParent())
+        {
+            parent = permission.getParent().getPermission();
+        }
+        Set<String> roots = new THashSet<String>();
+        if (permission.hasRoots())
+        {
+            for (Permission root : permission.getRoots())
+            {
+                roots.add(root.getPermission());
+            }
+        }
+        this.registerPermission(module,permission.getPermission(),permission.getPermissionDefault(),parent,roots);
     }
 
-    public void registerPermissions(Module module, de.cubeisland.cubeengine.core.permission.Permission[] permissions)
+    @Override
+    public void registerPermissions(Module module, Permission[] permissions)
     {
-        for (de.cubeisland.cubeengine.core.permission.Permission permission : permissions)
+        for (Permission permission : permissions)
         {
             this.registerPermission(module, permission);
         }
@@ -208,8 +239,8 @@ public class BukkitPermissionManager implements PermissionManager
 
     public void removePermissions()
     {
-        Iterator<Map.Entry<Module, Set<String>>> modulesIter = this.modulePermissionMap.entrySet().iterator();
-        Map.Entry<Module, Set<String>> entry;
+        Iterator<Entry<Module, Set<String>>> modulesIter = this.modulePermissionMap.entrySet().iterator();
+        Entry<Module, Set<String>> entry;
 
         while (modulesIter.hasNext())
         {
@@ -220,13 +251,6 @@ public class BukkitPermissionManager implements PermissionManager
                 this.pm.removePermission(perm);
             }
         }
-
-        Iterator<Entry<String, Permission>> wildcardsIter = this.wildcards.entrySet().iterator();
-        while (wildcardsIter.hasNext())
-        {
-            this.pm.removePermission(wildcardsIter.next().getKey());
-            wildcardsIter.remove();
-        }
     }
 
     public PermDefault getDefaultFor(String permission)
@@ -235,7 +259,7 @@ public class BukkitPermissionManager implements PermissionManager
         {
             throw new NullPointerException("The permission must not be null!");
         }
-        Permission perm = this.pm.getPermission(permission);
+        org.bukkit.permissions.Permission perm = this.pm.getPermission(permission);
         if (perm == null)
         {
             return null;
