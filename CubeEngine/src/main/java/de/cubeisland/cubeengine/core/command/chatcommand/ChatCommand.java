@@ -1,5 +1,15 @@
 package de.cubeisland.cubeengine.core.command.chatcommand;
 
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.player.AsyncPlayerChatEvent;
+import org.bukkit.event.player.PlayerChatTabCompleteEvent;
+
 import de.cubeisland.cubeengine.core.command.CubeCommand;
 import de.cubeisland.cubeengine.core.command.HelpContext;
 import de.cubeisland.cubeengine.core.command.parameterized.CommandFlag;
@@ -9,31 +19,23 @@ import de.cubeisland.cubeengine.core.module.Module;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.util.ChatFormat;
 import de.cubeisland.cubeengine.core.util.StringUtils;
+
 import gnu.trove.set.hash.TLongHashSet;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.Listener;
-import org.bukkit.event.player.AsyncPlayerChatEvent;
-import org.bukkit.event.player.PlayerChatTabCompleteEvent;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
-public abstract class ChatCommand<M extends Module> extends CubeCommand implements Listener
+public abstract class ChatCommand extends CubeCommand implements Listener
 {
     private TLongHashSet usersInMode = new TLongHashSet();
 
-    protected ChatCommand(M module, ChatCommandContextFactory contextFactory)
+    protected ChatCommand(Module module, ChatCommandContextFactory contextFactory)
     {
         super(module, "", "", contextFactory);
-        module.registerListener(this);
+        module.getCore().getEventManager().registerListener(module, this);
     }
 
     @Override
-    public M getModule()
+    public Module getModule()
     {
-        return (M)super.getModule();
+        return super.getModule();
     }
 
     public boolean hasUser(User user)
@@ -44,7 +46,7 @@ public abstract class ChatCommand<M extends Module> extends CubeCommand implemen
     @EventHandler
     public void onChatHandler(AsyncPlayerChatEvent event)
     {
-        User user = this.getModule().getUserManager().getExactUser(event.getPlayer());
+        User user = this.getModule().getCore().getUserManager().getExactUser(event.getPlayer());
         if (this.hasUser(user))
         {
             user.sendMessage(ChatFormat.parseFormats("&5[&fChatCommand&5]&f ") + String.format(event.getFormat(), event.getPlayer().getDisplayName(), event.getMessage()));
@@ -57,7 +59,7 @@ public abstract class ChatCommand<M extends Module> extends CubeCommand implemen
     @EventHandler
     public void onTabComplete(PlayerChatTabCompleteEvent event)
     {
-        User user = this.getModule().getUserManager().getExactUser(event.getPlayer());
+        User user = this.getModule().getCore().getUserManager().getExactUser(event.getPlayer());
         if (this.hasUser(user))
         {
             event.getTabCompletions().clear();

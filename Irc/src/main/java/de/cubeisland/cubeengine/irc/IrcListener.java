@@ -1,12 +1,13 @@
 package de.cubeisland.cubeengine.irc;
 
-import de.cubeisland.cubeengine.core.bukkit.TaskManager;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+
+import de.cubeisland.cubeengine.core.bukkit.TaskManager;
 
 public class IrcListener implements Listener
 {
@@ -17,7 +18,7 @@ public class IrcListener implements Listener
     public IrcListener(Irc irc)
     {
         this.irc = irc;
-        this.taskmgr = irc.getTaskManger();
+        this.taskmgr = irc.getCore().getTaskManager();
         this.botmgr = irc.getBotManager();
     }
 

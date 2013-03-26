@@ -1,6 +1,22 @@
 package de.cubeisland.cubeengine.test;
 
-import de.cubeisland.cubeengine.basics.Basics;
+import java.io.File;
+import java.sql.Date;
+import java.sql.SQLException;
+import java.util.Calendar;
+import java.util.List;
+import java.util.Random;
+import java.util.Timer;
+import java.util.TimerTask;
+
+import net.minecraft.server.v1_5_R2.DedicatedPlayerList;
+import net.minecraft.server.v1_5_R2.EntityPlayer;
+import net.minecraft.server.v1_5_R2.Packet0KeepAlive;
+import org.bukkit.craftbukkit.v1_5_R2.CraftServer;
+
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+
 import de.cubeisland.cubeengine.core.CubeEngine;
 import de.cubeisland.cubeengine.core.bukkit.BukkitCore;
 import de.cubeisland.cubeengine.core.bukkit.PlayerLanguageReceivedEvent;
@@ -13,25 +29,11 @@ import de.cubeisland.cubeengine.core.module.Module;
 import de.cubeisland.cubeengine.core.storage.database.Database;
 import de.cubeisland.cubeengine.core.user.UserManager;
 import de.cubeisland.cubeengine.core.util.matcher.Match;
+import de.cubeisland.cubeengine.basics.Basics;
 import de.cubeisland.cubeengine.test.commands.TestCommands;
 import de.cubeisland.cubeengine.test.database.TestManager;
 import de.cubeisland.cubeengine.test.database.TestModel;
 import de.cubeisland.cubeengine.test.l18n.TestRecource;
-import net.minecraft.server.v1_5_R2.DedicatedPlayerList;
-import net.minecraft.server.v1_5_R2.EntityPlayer;
-import net.minecraft.server.v1_5_R2.Packet0KeepAlive;
-import org.bukkit.craftbukkit.v1_5_R2.CraftServer;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.Listener;
-
-import java.io.File;
-import java.sql.Date;
-import java.sql.SQLException;
-import java.util.Calendar;
-import java.util.List;
-import java.util.Random;
-import java.util.Timer;
-import java.util.TimerTask;
 
 import static de.cubeisland.cubeengine.core.logger.LogLevel.DEBUG;
 import static de.cubeisland.cubeengine.core.logger.LogLevel.ERROR;
@@ -50,8 +52,8 @@ public class Test extends Module
     {
         config.loadChild(new File(this.getFolder(), "childConfig.yml"));
         Configuration.load(TestConfig2.class, new File(this.getFolder(), "updateConfig.yml"));
-        this.getFileManager().dropResources(TestRecource.values());
-        this.uM = this.getUserManager();
+        this.getCore().getFileManager().dropResources(TestRecource.values());
+        this.uM = this.getCore().getUserManager();
         try
         {
             this.initializeDatabase();
@@ -63,21 +65,21 @@ public class Test extends Module
         }
         try
         {
-            this.getLogger().addHandler(new CubeFileHandler(LogLevel.ALL, new File(this.getFileManager().getLogDir(), "test").toString()));
+            this.getLogger().addHandler(new CubeFileHandler(LogLevel.ALL, new File(this.getCore().getFileManager().getLogDir(), "test").toString()));
         }
         catch (Exception ex)
         {
             this.getLogger().log(ERROR, "Error while adding the FileHandler", ex);
         }
-        this.registerListener(new TestListener(this));
+        this.getCore().getEventManager().registerListener(this, new TestListener(this));
 
         this.testl18n();
         this.testMatchers();
         this.testsomeUtils();
 
-        this.registerCommands(new TestCommands(), ReflectedCommand.class);
+        this.getCore().getCommandManager().registerCommands(this, new TestCommands(), ReflectedCommand.class);
 
-        this.registerListener(new Listener()
+        this.getCore().getEventManager().registerListener(this, new Listener()
         {
             @EventHandler
             public void onLanguageReceived(PlayerLanguageReceivedEvent event)
@@ -95,13 +97,14 @@ public class Test extends Module
 
     public void initializeDatabase() throws SQLException
     {
+        Database db = this.getCore().getDB();
         try
         {
-            this.getDatabase().execute(this.getDatabase().getQueryBuilder().dropTable("Orders").end());
+            db.execute(db.getQueryBuilder().dropTable("Orders").end());
         }
         catch (Exception ignore)
         {}
-        manager = new TestManager(this.getDatabase());
+        manager = new TestManager(db);
 
     }
 
@@ -121,7 +124,7 @@ public class Test extends Module
 
     public void testDatabase() throws SQLException
     {
-        Database database = this.getDatabase();
+        Database database = this.getCore().getDB();
 
         try
         {//Clears the TestLogs in Database (This does always fail with new db)

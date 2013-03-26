@@ -8,8 +8,8 @@ public class Writer extends Module
     @Override
     public void onEnable()
     {
-        this.getFileManager().dropResources(WriterResource.values());
-        registerCommands(new EditCommand(), ReflectedCommand.class);
+        this.getCore().getFileManager().dropResources(WriterResource.values());
+        this.getCore().getCommandManager().registerCommands(this, new EditCommand(), ReflectedCommand.class);
     }
 
     @Override

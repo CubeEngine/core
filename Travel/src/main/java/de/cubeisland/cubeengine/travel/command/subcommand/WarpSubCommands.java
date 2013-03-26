@@ -1,6 +1,9 @@
 package de.cubeisland.cubeengine.travel.command.subcommand;
 
-import com.sun.org.apache.bcel.internal.classfile.StackMapEntry;
+import java.util.TreeMap;
+
+import org.bukkit.Location;
+
 import de.cubeisland.cubeengine.core.command.CommandContext;
 import de.cubeisland.cubeengine.core.command.CommandResult;
 import de.cubeisland.cubeengine.core.command.parameterized.Flag;
@@ -10,23 +13,18 @@ import de.cubeisland.cubeengine.core.command.reflected.Command;
 import de.cubeisland.cubeengine.core.command.result.AsyncResult;
 import de.cubeisland.cubeengine.core.command.sender.CommandSender;
 import de.cubeisland.cubeengine.core.user.User;
-import de.cubeisland.cubeengine.core.util.StringUtils;
-import de.cubeisland.cubeengine.core.util.matcher.Match;
+import de.cubeisland.cubeengine.travel.Travel;
 import de.cubeisland.cubeengine.travel.storage.TelePointManager;
 import de.cubeisland.cubeengine.travel.storage.TeleportPoint;
 import de.cubeisland.cubeengine.travel.storage.Warp;
-import org.bukkit.Location;
-
-import java.util.Map;
-import java.util.TreeMap;
 
 public class WarpSubCommands
 {
     private final TelePointManager telePointManager;
 
-    public WarpSubCommands(TelePointManager telePointManager)
+    public WarpSubCommands(Travel module)
     {
-        this.telePointManager = telePointManager;
+        this.telePointManager = module.getTelepointManager();
     }
 
     @Alias(names = {

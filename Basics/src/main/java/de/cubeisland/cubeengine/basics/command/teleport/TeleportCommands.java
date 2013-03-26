@@ -204,7 +204,7 @@ public class TeleportCommands
         }
         if (!force && BasicsPerm.COMMAND_TPHERE_PREVENT.isAuthorized(target))
         {
-            context.sendMessage("bascics", "&cYou are not allowed to teleport %s!", target.getName());
+            context.sendMessage("basics", "&cYou are not allowed to teleport %s!", target.getName());
             return;
         }
         boolean safe = !context.hasFlag("u");

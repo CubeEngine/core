@@ -1,17 +1,44 @@
 package de.cubeisland.cubeengine.basics;
 
-import de.cubeisland.cubeengine.basics.command.general.*;
-import de.cubeisland.cubeengine.basics.command.mail.MailCommand;
-import de.cubeisland.cubeengine.basics.command.mail.MailManager;
-import de.cubeisland.cubeengine.basics.command.moderation.*;
-import de.cubeisland.cubeengine.basics.command.moderation.kit.*;
-import de.cubeisland.cubeengine.basics.command.moderation.spawnmob.SpawnMobCommand;
-import de.cubeisland.cubeengine.basics.command.teleport.*;
-import de.cubeisland.cubeengine.basics.storage.BasicUserManager;
-import de.cubeisland.cubeengine.basics.storage.IgnoreListManager;
+import de.cubeisland.cubeengine.core.bukkit.EventManager;
+import de.cubeisland.cubeengine.core.command.CommandManager;
 import de.cubeisland.cubeengine.core.command.reflected.ReflectedCommand;
 import de.cubeisland.cubeengine.core.module.Module;
+import de.cubeisland.cubeengine.core.storage.database.Database;
 import de.cubeisland.cubeengine.core.util.convert.Convert;
+import de.cubeisland.cubeengine.basics.command.general.ChatCommands;
+import de.cubeisland.cubeengine.basics.command.general.ColoredSigns;
+import de.cubeisland.cubeengine.basics.command.general.FlyListener;
+import de.cubeisland.cubeengine.basics.command.general.GeneralsListener;
+import de.cubeisland.cubeengine.basics.command.general.InformationCommands;
+import de.cubeisland.cubeengine.basics.command.general.LagTimer;
+import de.cubeisland.cubeengine.basics.command.general.ListCommand;
+import de.cubeisland.cubeengine.basics.command.general.MuteListener;
+import de.cubeisland.cubeengine.basics.command.general.PlayerCommands;
+import de.cubeisland.cubeengine.basics.command.mail.MailCommand;
+import de.cubeisland.cubeengine.basics.command.mail.MailManager;
+import de.cubeisland.cubeengine.basics.command.moderation.DoorCommand;
+import de.cubeisland.cubeengine.basics.command.moderation.InventoryCommands;
+import de.cubeisland.cubeengine.basics.command.moderation.ItemCommands;
+import de.cubeisland.cubeengine.basics.command.moderation.KickBanCommands;
+import de.cubeisland.cubeengine.basics.command.moderation.PaintingListener;
+import de.cubeisland.cubeengine.basics.command.moderation.PowerToolCommand;
+import de.cubeisland.cubeengine.basics.command.moderation.TimeControlCommands;
+import de.cubeisland.cubeengine.basics.command.moderation.WorldControlCommands;
+import de.cubeisland.cubeengine.basics.command.moderation.kit.KitCommand;
+import de.cubeisland.cubeengine.basics.command.moderation.kit.KitItem;
+import de.cubeisland.cubeengine.basics.command.moderation.kit.KitItemConverter;
+import de.cubeisland.cubeengine.basics.command.moderation.kit.KitManager;
+import de.cubeisland.cubeengine.basics.command.moderation.kit.KitsGivenManager;
+import de.cubeisland.cubeengine.basics.command.moderation.spawnmob.SpawnMobCommand;
+import de.cubeisland.cubeengine.basics.command.teleport.MovementCommands;
+import de.cubeisland.cubeengine.basics.command.teleport.SpawnCommands;
+import de.cubeisland.cubeengine.basics.command.teleport.TeleportCommands;
+import de.cubeisland.cubeengine.basics.command.teleport.TeleportListener;
+import de.cubeisland.cubeengine.basics.command.teleport.TeleportRequestCommands;
+import de.cubeisland.cubeengine.basics.command.teleport.TpWorldPermissions;
+import de.cubeisland.cubeengine.basics.storage.BasicUserManager;
+import de.cubeisland.cubeengine.basics.storage.IgnoreListManager;
 
 public class Basics extends Module
 {
@@ -29,54 +56,57 @@ public class Basics extends Module
     @Override
     public void onEnable()
     {
+		final Database db = this.getCore().getDB();
+        final CommandManager cm = this.getCore().getCommandManager();
+        final EventManager em = this.getCore().getEventManager();
         this.basicUM = new BasicUserManager(this.getDatabase());
         this.mailManager = new MailManager(this.getDatabase(), this.basicUM);
         this.ignoreListManager = new IgnoreListManager(this.getDatabase());
         this.perm = new BasicsPerm(this);
         this.getUserManager().addDefaultAttachment(BasicsAttachment.class, this);
 
-        this.registerListener(new ColoredSigns());
+        em.registerListener(this, new ColoredSigns());
 
         //General:
-        this.registerCommands(new ChatCommands(this), ReflectedCommand.class);
-        this.registerCommands(new InformationCommands(this), ReflectedCommand.class);
-        this.registerCommands(new ListCommand(this), ReflectedCommand.class);
-        this.registerCommand(new MailCommand(this));
-        this.registerCommands(new PlayerCommands(this), ReflectedCommand.class);
-        this.registerListener(new GeneralsListener(this));
-        this.registerListener(new MuteListener(this));
+        cm.registerCommands(this, new ChatCommands(this), ReflectedCommand.class);
+        cm.registerCommands(this, new InformationCommands(this), ReflectedCommand.class);
+        cm.registerCommands(this, new ListCommand(this), ReflectedCommand.class);
+        cm.registerCommand(new MailCommand(this));
+        cm.registerCommands(this, new PlayerCommands(this), ReflectedCommand.class);
+        em.registerListener(this, new GeneralsListener(this));
+        em.registerListener(this, new MuteListener(this));
 
         //Moderation:
-        this.registerCommands(new InventoryCommands(this), ReflectedCommand.class);
-        this.registerCommands(new ItemCommands(this), ReflectedCommand.class);
-        this.registerCommands(new KickBanCommands(this), ReflectedCommand.class);
-        this.registerCommands(new SpawnMobCommand(this), ReflectedCommand.class);
-        this.registerCommands(new TimeControlCommands(this), ReflectedCommand.class);
-        this.registerCommands(new WorldControlCommands(this), ReflectedCommand.class);
+        cm.registerCommands(this, new InventoryCommands(this), ReflectedCommand.class);
+        cm.registerCommands(this, new ItemCommands(this), ReflectedCommand.class);
+        cm.registerCommands(this, new KickBanCommands(this), ReflectedCommand.class);
+        cm.registerCommands(this, new SpawnMobCommand(this), ReflectedCommand.class);
+        cm.registerCommands(this, new TimeControlCommands(this), ReflectedCommand.class);
+        cm.registerCommands(this, new WorldControlCommands(this), ReflectedCommand.class);
         PowerToolCommand ptCommands = new PowerToolCommand(this);
-        this.registerCommand(ptCommands);
-        this.registerListener(ptCommands);
-        this.registerCommand(new KitCommand(this));
+        cm.registerCommand(ptCommands);
+        em.registerListener(this, ptCommands);
+        cm.registerCommand(new KitCommand(this));
         
-        this.registerListener(new PaintingListener(this));
+        em.registerListener(this, new PaintingListener(this));
 
         Convert.registerConverter(KitItem.class, new KitItemConverter());
 
         this.kitManager = new KitManager(this);
         kitManager.loadKits();
-        this.kitGivenManager = new KitsGivenManager(this.getDatabase());
+        this.kitGivenManager = new KitsGivenManager(db);
 
         //Teleport:
-        this.registerCommands(new MovementCommands(this), ReflectedCommand.class);
-        this.registerCommands(new SpawnCommands(this), ReflectedCommand.class);
-        this.registerCommands(new TeleportCommands(this), ReflectedCommand.class);
-        this.registerCommands(new TeleportRequestCommands(this), ReflectedCommand.class);
-        this.registerListener(new TeleportListener(this));
-        this.registerListener(new FlyListener());
+        cm.registerCommands(this, new MovementCommands(this), ReflectedCommand.class);
+        cm.registerCommands(this, new SpawnCommands(this), ReflectedCommand.class);
+        cm.registerCommands(this, new TeleportCommands(this), ReflectedCommand.class);
+        cm.registerCommands(this, new TeleportRequestCommands(this), ReflectedCommand.class);
+        em.registerListener(this, new TeleportListener(this));
+        em.registerListener(this, new FlyListener());
         this.tpPerm = new TpWorldPermissions(this); // per world permissions
         this.lagTimer = new LagTimer(this);
 
-        this.registerCommands( new DoorCommand(this), ReflectedCommand.class );
+        cm.registerCommands(this,  new DoorCommand(this), ReflectedCommand.class );
         
         /**
          * * //commands TODO
@@ -93,9 +123,6 @@ public class Basics extends Module
     @Override
     public void onDisable()
     {
-        this.getTaskManger().cancelTasks(this); // afk task
-        this.getUserManager().removeDefaultAttachment(BasicsAttachment.class);
-        this.getUserManager().detachFromAll(BasicsAttachment.class);
         this.perm.cleanup();
         this.tpPerm.cleanup();
     }

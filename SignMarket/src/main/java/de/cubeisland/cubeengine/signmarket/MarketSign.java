@@ -1,15 +1,7 @@
 package de.cubeisland.cubeengine.signmarket;
 
-import de.cubeisland.cubeengine.conomy.account.Account;
-import de.cubeisland.cubeengine.conomy.currency.Currency;
-import de.cubeisland.cubeengine.core.user.User;
-import de.cubeisland.cubeengine.core.util.ChatFormat;
-import de.cubeisland.cubeengine.core.util.InventoryGuardFactory;
-import de.cubeisland.cubeengine.core.util.RomanNumbers;
-import de.cubeisland.cubeengine.core.util.matcher.Match;
-import de.cubeisland.cubeengine.signmarket.storage.SignMarketBlockModel;
-import de.cubeisland.cubeengine.signmarket.storage.SignMarketItemModel;
-import gnu.trove.map.hash.TLongLongHashMap;
+import java.util.Map;
+
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
@@ -22,13 +14,25 @@ import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
-import java.util.Map;
+import de.cubeisland.cubeengine.core.user.User;
+import de.cubeisland.cubeengine.core.util.ChatFormat;
+import de.cubeisland.cubeengine.core.util.InventoryGuardFactory;
+import de.cubeisland.cubeengine.core.util.RomanNumbers;
+import de.cubeisland.cubeengine.core.util.matcher.Match;
+import de.cubeisland.cubeengine.conomy.Conomy;
+import de.cubeisland.cubeengine.conomy.account.Account;
+import de.cubeisland.cubeengine.conomy.currency.Currency;
+import de.cubeisland.cubeengine.signmarket.storage.SignMarketBlockModel;
+import de.cubeisland.cubeengine.signmarket.storage.SignMarketItemModel;
+
+import gnu.trove.map.hash.TLongLongHashMap;
 
 import static de.cubeisland.cubeengine.core.util.InventoryUtil.*;
 
 public class MarketSign
 {
     private final Signmarket module;
+    private final Conomy conomy;
     private SignMarketItemModel itemInfo;
     private SignMarketBlockModel blockInfo;
 
@@ -38,17 +42,18 @@ public class MarketSign
     private boolean editMode;
     public boolean syncOnMe = false;
 
-    public MarketSign(Signmarket module, Location location)
+    public MarketSign(Signmarket module, Conomy conomy, Location location)
     {
-        this(module, location, null);
+        this(module, conomy, location, null);
     }
 
-    public MarketSign(Signmarket module, Location location, User owner)
+    public MarketSign(Signmarket module, Conomy conomy, Location location, User owner)
     {
+        this.module = module;
+        this.conomy = conomy;
         this.itemInfo = new SignMarketItemModel();
         this.blockInfo = new SignMarketBlockModel(location);
         this.blockInfo.setOwner(owner);
-        this.module = module;
     }
 
     /**
@@ -727,13 +732,13 @@ public class MarketSign
                     user.sendMessage("signmarket", "&cYou cannot afford the price of these items!");
                     return;
                 }
-                Account userAccount = this.module.getConomy().getAccountsManager().getAccount(user, this.getCurrency());
-                Account ownerAccount = this.module.getConomy().getAccountsManager().getAccount(this.getOwner(), this.getCurrency());
+                Account userAccount = this.conomy.getAccountsManager().getAccount(user, this.getCurrency());
+                Account ownerAccount = this.conomy.getAccountsManager().getAccount(this.getOwner(), this.getCurrency());
                 ItemStack item = this.getItem().clone();
                 item.setAmount(this.getAmount());
                 if (checkForPlace(user.getInventory(), item.clone()))
                 {
-                    this.module.getConomy().getAccountsManager().transaction(userAccount, ownerAccount, this.getPrice());
+                    this.conomy.getAccountsManager().transaction(userAccount, ownerAccount, this.getPrice());
                     if (this.hasStock())
                     {
                         this.setStock(this.getStock() - this.getAmount());
@@ -774,9 +779,9 @@ public class MarketSign
             ItemStack item = this.getItem().clone();
             item.setAmount(this.getAmount());
 
-            Account userAccount = this.module.getConomy().getAccountsManager().getAccount(user, this.getCurrency());
-            Account ownerAccount = this.module.getConomy().getAccountsManager().getAccount(this.getOwner(), this.getCurrency());
-            this.module.getConomy().getAccountsManager().transaction(ownerAccount, userAccount, this.getPrice());
+            Account userAccount = this.conomy.getAccountsManager().getAccount(user, this.getCurrency());
+            Account ownerAccount = this.conomy.getAccountsManager().getAccount(this.getOwner(), this.getCurrency());
+            this.conomy.getAccountsManager().transaction(ownerAccount, userAccount, this.getPrice());
             user.getInventory().removeItem(item);
             if (this.hasStock())
             {
@@ -1035,7 +1040,7 @@ public class MarketSign
         {
             return true;
         }
-        return this.module.getConomy().getAccountsManager().getAccount(user, this.getCurrency()).canAfford(this.getPrice());
+        return this.conomy.getAccountsManager().getAccount(user, this.getCurrency()).canAfford(this.getPrice());
     }
 
     public Inventory getInventory()
@@ -1114,7 +1119,7 @@ public class MarketSign
     {
         if (this.currency == null)
         {
-            this.currency = this.module.getConomy().getCurrencyManager().getCurrencyByName(this.blockInfo.currency);
+            this.currency = this.conomy.getCurrencyManager().getCurrencyByName(this.blockInfo.currency);
         }
         return this.currency;
     }

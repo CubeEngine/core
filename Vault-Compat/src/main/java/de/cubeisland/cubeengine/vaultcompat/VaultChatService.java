@@ -36,7 +36,7 @@ public class VaultChatService extends net.milkbowl.vault.chat.Chat
     @Override
     public String getPlayerPrefix(String worldName, String playerName)
     {
-        User user = this.compat.getUserManager().getUser(playerName);
+        User user = this.compat.getCore().getUserManager().getUser(playerName);
         World world = this.compat.getCore().getServer().getWorld(worldName);
 
         return this.roles.getApi().getMetaData(user, world, "prefix");
@@ -51,7 +51,7 @@ public class VaultChatService extends net.milkbowl.vault.chat.Chat
     @Override
     public String getPlayerSuffix(String worldName, String playerName)
     {
-        User user = this.compat.getUserManager().getUser(playerName);
+        User user = this.compat.getCore().getUserManager().getUser(playerName);
         World world = this.compat.getCore().getServer().getWorld(worldName);
 
         return this.roles.getApi().getMetaData(user, world, "suffix");

@@ -1,6 +1,8 @@
 package de.cubeisland.cubeengine.roles;
 
+import de.cubeisland.cubeengine.core.command.CommandManager;
 import de.cubeisland.cubeengine.core.module.Module;
+import de.cubeisland.cubeengine.core.storage.database.Database;
 import de.cubeisland.cubeengine.core.util.convert.Convert;
 import de.cubeisland.cubeengine.roles.commands.*;
 import de.cubeisland.cubeengine.roles.commands.ManagementCommands;
@@ -19,7 +21,7 @@ import de.cubeisland.cubeengine.roles.storage.UserPermissionsManager;
 public class Roles extends Module
 {
     private RolesConfig config;
-    private RoleManager manager;
+    private RoleManager roleManager;
     private AssignedRoleManager dbManager;
     private UserMetaDataManager dbUserMeta;
     private UserPermissionsManager dbUserPerm;
@@ -35,21 +37,23 @@ public class Roles extends Module
     @Override
     public void onEnable()
     {
-        this.getUserManager().addDefaultAttachment(RolesAttachment.class, this);
+        this.getCore().getUserManager().addDefaultAttachment(RolesAttachment.class, this);
 
-        this.dbManager = new AssignedRoleManager(this.getDatabase());
-        this.dbUserMeta = new UserMetaDataManager(this.getDatabase());
-        this.dbUserPerm = new UserPermissionsManager(this.getDatabase());
-        this.manager = new RoleManager(this);
+        final Database db = this.getCore().getDB();
+        this.dbManager = new AssignedRoleManager(db);
+        this.dbUserMeta = new UserMetaDataManager(db);
+        this.dbUserPerm = new UserPermissionsManager(db);
+        this.roleManager = new RoleManager(this);
 
-        this.registerCommand(new RoleCommands(this));
-        this.registerCommand(new RoleManagementCommands(this), "roles");
-        this.registerCommands(new RoleInformationCommands(this), "roles", "role");
-        this.registerCommand(new UserManagementCommands(this), "roles");
-        this.registerCommands(new UserInformationCommands(this), "roles", "user");
-        this.registerCommand(new ManagementCommands(this), "roles");
+        final CommandManager cm = this.getCore().getCommandManager();
+        cm.registerCommand(new RoleCommands(this));
+        cm.registerCommand(new RoleManagementCommands(this), "roles");
+        cm.registerCommands(this, new RoleInformationCommands(this), "roles", "role");
+        cm.registerCommand(new UserManagementCommands(this), "roles");
+        cm.registerCommands(this, new UserInformationCommands(this), "roles", "user");
+        cm.registerCommand(new ManagementCommands(this), "roles");
 
-        this.getEventManager().registerListener(this, new RolesEventHandler(this));
+        this.getCore().getEventManager().registerListener(this, new RolesEventHandler(this));
         //init on FinishedLoadModulesEvent
 
         this.api = new RolesAPI(this);
@@ -62,31 +66,31 @@ public class Roles extends Module
 
     public AssignedRoleManager getDbManager()
     {
-        return dbManager;
+        return this.dbManager;
     }
 
     public UserMetaDataManager getDbUserMeta()
     {
-        return dbUserMeta;
+        return this.dbUserMeta;
     }
 
     public UserPermissionsManager getDbUserPerm()
     {
-        return dbUserPerm;
+        return this.dbUserPerm;
     }
 
-    public RoleManager getManager()
+    public RoleManager getRoleManager()
     {
-        return manager;
+        return this.roleManager;
     }
 
     public RolesAPI getApi()
     {
-        return api;
+        return this.api;
     }
 
     public RolesConfig getConfig()
     {
-        return config;
+        return this.config;
     }
 }

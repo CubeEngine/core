@@ -1,14 +1,16 @@
 package de.cubeisland.cubeengine.basics.command.general;
 
-import de.cubeisland.cubeengine.basics.Basics;
-import de.cubeisland.cubeengine.basics.storage.BasicUser;
-import de.cubeisland.cubeengine.core.CubeEngine;
-import de.cubeisland.cubeengine.core.user.User;
 import java.util.ArrayList;
+
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
+
+import de.cubeisland.cubeengine.core.CubeEngine;
+import de.cubeisland.cubeengine.core.user.User;
+import de.cubeisland.cubeengine.basics.Basics;
+import de.cubeisland.cubeengine.basics.storage.BasicUser;
 
 public class MuteListener implements Listener
 {
@@ -39,7 +41,7 @@ public class MuteListener implements Listener
             ArrayList<Player> ignore = new ArrayList<Player>();
             for (Player player : event.getRecipients())
             {
-                User user = this.basics.getUserManager().getExactUser(player);
+                User user = this.basics.getCore().getUserManager().getExactUser(player);
                 if (this.basics.getIgnoreListManager().checkIgnore(user, sender))
                 {
                     ignore.add(player);

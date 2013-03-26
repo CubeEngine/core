@@ -1,11 +1,9 @@
 package de.cubeisland.cubeengine.log.listeners;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import de.cubeisland.cubeengine.core.user.User;
-import de.cubeisland.cubeengine.core.util.BlockUtil;
-import de.cubeisland.cubeengine.core.util.Pair;
-import de.cubeisland.cubeengine.log.Log;
-import de.cubeisland.cubeengine.log.storage.LogManager;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
+
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -59,9 +57,13 @@ import org.bukkit.material.Bed;
 import org.bukkit.material.Diode;
 import org.bukkit.material.Lever;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
+import de.cubeisland.cubeengine.core.user.User;
+import de.cubeisland.cubeengine.core.util.BlockUtil;
+import de.cubeisland.cubeengine.core.util.Pair;
+import de.cubeisland.cubeengine.log.Log;
+import de.cubeisland.cubeengine.log.storage.LogManager;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
 
 import static de.cubeisland.cubeengine.core.bukkit.BlockUtil.isNonFluidProofBlock;
 import static de.cubeisland.cubeengine.core.util.BlockUtil.BLOCK_FACES;
@@ -195,7 +197,7 @@ public class BlockListener implements Listener
         if (!clearPlanned)
         {
             clearPlanned = true;
-            this.module.getTaskManger().scheduleSyncDelayedTask(this.module, new Runnable() {
+            this.module.getCore().getTaskManager().scheduleSyncDelayedTask(this.module, new Runnable() {
                 @Override
                 public void run() {
                     clearPlanned = false;
@@ -892,7 +894,7 @@ public class BlockListener implements Listener
         if (this.manager.isIgnored(blockState.getWorld(),HANGING_BREAK)) return;
         Location location = blockState.getLocation();
         Location entityLocation = blockState.getLocation();
-        User user = this.module.getUserManager().getExactUser(player);
+        User user = this.module.getCore().getUserManager().getExactUser(player);
         for (Entity entity : blockState.getBlock().getChunk().getEntities())
         {
             if (entity instanceof Hanging && location.distanceSquared(entity.getLocation(entityLocation)) < 4)
@@ -978,7 +980,7 @@ public class BlockListener implements Listener
     private Long getUserKey(Player player)
     {
         if (player== null) return null;
-        return this.module.getUserManager().getExactUser(player).key;
+        return this.module.getCore().getUserManager().getExactUser(player).key;
     }
 
 

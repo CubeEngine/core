@@ -1,12 +1,9 @@
 package de.cubeisland.cubeengine.fun.commands;
 
-import de.cubeisland.cubeengine.core.CubeEngine;
-import de.cubeisland.cubeengine.core.command.parameterized.Param;
-import de.cubeisland.cubeengine.core.command.parameterized.ParameterizedContext;
-import de.cubeisland.cubeengine.core.command.reflected.Command;
-import de.cubeisland.cubeengine.core.user.User;
-import de.cubeisland.cubeengine.core.user.UserManager;
-import de.cubeisland.cubeengine.fun.Fun;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
+
 import org.bukkit.Effect;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
@@ -15,9 +12,13 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.util.Vector;
 
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
+import de.cubeisland.cubeengine.core.CubeEngine;
+import de.cubeisland.cubeengine.core.command.parameterized.Param;
+import de.cubeisland.cubeengine.core.command.parameterized.ParameterizedContext;
+import de.cubeisland.cubeengine.core.command.reflected.Command;
+import de.cubeisland.cubeengine.core.user.User;
+import de.cubeisland.cubeengine.core.user.UserManager;
+import de.cubeisland.cubeengine.fun.Fun;
 
 public class RocketCommand
 {
@@ -28,7 +29,7 @@ public class RocketCommand
     {
         this.module = module;
         this.rocketListener = new RocketListener();
-        this.module.registerListener(rocketListener);
+        module.getCore().getEventManager().registerListener(module, rocketListener);
     }
 
     public RocketListener getRocketListener()
@@ -93,7 +94,7 @@ public class RocketCommand
 
         public RocketListener()
         {
-            this.userManager = module.getUserManager();
+            this.userManager = module.getCore().getUserManager();
             this.instances = new HashSet<RocketCMDInstance>();
         }
 
@@ -105,7 +106,7 @@ public class RocketCommand
 
                 if (taskId == -1)
                 {
-                    this.taskId = module.getTaskManger().scheduleSyncRepeatingTask(module, this, 0, 2);
+                    this.taskId = module.getCore().getTaskManager().scheduleSyncRepeatingTask(module, this, 0, 2);
                 }
             }
         }
@@ -151,7 +152,7 @@ public class RocketCommand
 
                 if (instances.isEmpty())
                 {
-                    module.getTaskManger().cancelTask(module, taskId);
+                    module.getCore().getTaskManager().cancelTask(module, taskId);
                     taskId = -1;
                 }
             }
@@ -202,7 +203,7 @@ public class RocketCommand
 
                     if (instance.getNumberOfAirBlocksUnderFeet() == 0 && instance.getDown())
                     {
-                        module.getTaskManger().scheduleSyncDelayedTask(module, new Runnable()
+                        module.getCore().getTaskManager().scheduleSyncDelayedTask(module, new Runnable()
                             {
                                 @Override
                                 public void run()

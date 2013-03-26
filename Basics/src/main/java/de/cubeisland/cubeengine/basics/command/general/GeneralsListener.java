@@ -1,12 +1,5 @@
 package de.cubeisland.cubeengine.basics.command.general;
 
-import de.cubeisland.cubeengine.basics.Basics;
-import de.cubeisland.cubeengine.basics.BasicsAttachment;
-import de.cubeisland.cubeengine.basics.BasicsPerm;
-import de.cubeisland.cubeengine.basics.storage.BasicUser;
-import de.cubeisland.cubeengine.core.bukkit.AfterJoinEvent;
-import de.cubeisland.cubeengine.core.user.User;
-import de.cubeisland.cubeengine.core.util.matcher.Match;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Tameable;
 import org.bukkit.event.EventHandler;
@@ -16,6 +9,14 @@ import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.ItemStack;
+
+import de.cubeisland.cubeengine.core.bukkit.AfterJoinEvent;
+import de.cubeisland.cubeengine.core.user.User;
+import de.cubeisland.cubeengine.core.util.matcher.Match;
+import de.cubeisland.cubeengine.basics.Basics;
+import de.cubeisland.cubeengine.basics.BasicsAttachment;
+import de.cubeisland.cubeengine.basics.BasicsPerm;
+import de.cubeisland.cubeengine.basics.storage.BasicUser;
 
 public class GeneralsListener implements Listener
 {
@@ -42,7 +43,7 @@ public class GeneralsListener implements Listener
     @EventHandler
     public void blockplace(final BlockPlaceEvent event)
     {
-        User user = basics.getUserManager().getExactUser(event.getPlayer());
+        User user = basics.getCore().getUserManager().getExactUser(event.getPlayer());
         if (user.get(BasicsAttachment.class).hasUnlimitedItems())
         {
             ItemStack itemInHand = event.getPlayer().getItemInHand();
@@ -64,7 +65,7 @@ public class GeneralsListener implements Listener
     @EventHandler
     public void onAfterJoin(AfterJoinEvent event)
     {
-        User user = basics.getUserManager().getExactUser(event.getPlayer());
+        User user = basics.getCore().getUserManager().getExactUser(event.getPlayer());
         int amount = basics.getMailManager().countMail(user);
         if (amount > 0)
         {
@@ -85,7 +86,7 @@ public class GeneralsListener implements Listener
             Tameable tamed = (Tameable) event.getRightClicked();
             if (tamed.getOwner() != null && !event.getPlayer().equals(tamed.getOwner()))
             {
-                User clicker = this.basics.getUserManager().getExactUser(event.getPlayer());
+                User clicker = this.basics.getCore().getUserManager().getExactUser(event.getPlayer());
                 clicker.sendMessage("basics","&aThis &6%s &abelongs to &2%s&a!", Match.entity().getNameFor(event.getRightClicked().getType()),tamed.getOwner().getName());
             }
         }

@@ -1,7 +1,7 @@
 package de.cubeisland.cubeengine.signmarket;
 
-import de.cubeisland.cubeengine.conomy.Conomy;
 import de.cubeisland.cubeengine.core.module.Module;
+import de.cubeisland.cubeengine.conomy.Conomy;
 
 public class Signmarket extends Module
 {
@@ -14,14 +14,14 @@ public class Signmarket extends Module
     @Override
     public void onEnable()
     {
-        this.marketSignFactory = new MarketSignFactory(this);
-        this.editModeListener = new EditModeListener(this);
+        this.marketSignFactory = new MarketSignFactory(this, this.conomy);
+        this.editModeListener = new EditModeListener(this, this.conomy);
 
-        this.registerListener(new MarketSignListener(this));
+        this.getCore().getEventManager().registerListener(this, new MarketSignListener(this));
 
         this.perm = new MarketSignPerm(this);
 
-        this.registerCommand(new SignMarketCommands(this));
+        this.getCore().getCommandManager().registerCommand(new SignMarketCommands(this));
     }
 
     @Override
@@ -30,23 +30,18 @@ public class Signmarket extends Module
         this.perm.cleanup();
     }
 
-    public Conomy getConomy()
-    {
-        return conomy;
-    }
-
     public MarketSignFactory getMarketSignFactory()
     {
-        return marketSignFactory;
+        return this.marketSignFactory;
     }
 
     public SignMarketConfig getConfig()
     {
-        return config;
+        return this.config;
     }
 
     public EditModeListener getEditModeListener()
     {
-        return editModeListener;
+        return this.editModeListener;
     }
 }

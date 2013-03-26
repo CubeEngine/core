@@ -125,7 +125,7 @@ public class KitCommand extends ContainerCommand
         {
             boolean gaveKit = false;
             int kitNotreceived = 0;
-            for (User receiver : module.getUserManager().getOnlineUsers())
+            for (User receiver : module.getCore().getUserManager().getOnlineUsers())
             {
                 try
                 {

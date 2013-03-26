@@ -49,7 +49,7 @@ public class ThrowCommands
         this.fun = fun;
         this.thrownItems = new THashMap<String, ThrowTask>();
         this.throwListener = new ThrowListener();
-        fun.registerListener(this.throwListener);
+        fun.getCore().getEventManager().registerListener(fun, this.throwListener);
 
         PermissionManager perm = fun.getCore().getPermissionManager();
         for (EntityType type : EntityType.values())

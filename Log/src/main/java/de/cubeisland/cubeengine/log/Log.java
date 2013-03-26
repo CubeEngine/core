@@ -1,13 +1,15 @@
 package de.cubeisland.cubeengine.log;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.sk89q.worldedit.WorldEdit;
+import de.cubeisland.cubeengine.core.command.CommandManager;
 import de.cubeisland.cubeengine.core.module.Module;
 import de.cubeisland.cubeengine.log.commands.LogCommands;
 import de.cubeisland.cubeengine.log.commands.LookupCommands;
 import de.cubeisland.cubeengine.log.listeners.worldedit.LogEditSessionFactory;
 import de.cubeisland.cubeengine.log.storage.LogManager;
 import de.cubeisland.cubeengine.log.tool.ToolListener;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.sk89q.worldedit.WorldEdit;
 
 public class Log extends Module
 {
@@ -26,8 +28,10 @@ public class Log extends Module
         //flag to ignore what block
         //possibility to select the region containing the last search results
         this.logManager = new LogManager(this);
-        this.registerCommand(new LookupCommands(this));
-        this.registerCommand(new LogCommands(this));
+
+        final CommandManager cm = this.getCore().getCommandManager();
+        cm.registerCommand(new LookupCommands(this));
+        cm.registerCommand(new LogCommands(this));
 
 
 
@@ -42,7 +46,7 @@ public class Log extends Module
             System.out.print("No WorldEdit found!");
         }
 
-        this.registerListener(new ToolListener(this));
+        this.getCore().getEventManager().registerListener(this, new ToolListener(this));
 
     }
 

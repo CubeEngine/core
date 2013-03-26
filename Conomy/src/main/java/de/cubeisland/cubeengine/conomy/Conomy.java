@@ -1,5 +1,8 @@
 package de.cubeisland.cubeengine.conomy;
 
+import de.cubeisland.cubeengine.core.command.CommandManager;
+import de.cubeisland.cubeengine.core.module.Module;
+import de.cubeisland.cubeengine.core.util.convert.Convert;
 import de.cubeisland.cubeengine.conomy.account.AccountManager;
 import de.cubeisland.cubeengine.conomy.account.storage.AccountStorage;
 import de.cubeisland.cubeengine.conomy.commands.EcoCommands;
@@ -10,14 +13,9 @@ import de.cubeisland.cubeengine.conomy.config.CurrencyConfigurationConverter;
 import de.cubeisland.cubeengine.conomy.config.SubCurrencyConfig;
 import de.cubeisland.cubeengine.conomy.config.SubCurrencyConverter;
 import de.cubeisland.cubeengine.conomy.currency.CurrencyManager;
-import de.cubeisland.cubeengine.core.module.Module;
-import de.cubeisland.cubeengine.core.util.convert.Convert;
-import java.io.File;
 
 public class Conomy extends Module
 {
-    public static boolean debugMode = false;
-    protected File dataFolder;
     private ConomyConfiguration config;
     private AccountManager accountsManager;
     private AccountStorage accountsStorage;
@@ -35,38 +33,39 @@ public class Conomy extends Module
     public void onEnable()
     {
         this.perms = new ConomyPermissions(this);
-        this.currencyManager = new CurrencyManager(this, config);
+        this.currencyManager = new CurrencyManager(this, this.config);
         this.currencyManager.load();
-        this.accountsStorage = new AccountStorage(this.getDatabase());
+        this.accountsStorage = new AccountStorage(this.getCore().getDB());
         this.accountsManager = new AccountManager(this); // Needs cManager / aStorage
-        this.registerCommand(new MoneyCommand(this));
-        this.registerCommand(new EcoCommands(this));
+
+        final CommandManager cm = this.getCore().getCommandManager();
+        cm.registerCommand(new MoneyCommand(this));
+        cm.registerCommand(new EcoCommands(this));
     }
 
     @Override
     public void onDisable()
     {
         this.perms.cleanup();
-
     }
 
     public AccountManager getAccountsManager()
     {
-        return accountsManager;
+        return this.accountsManager;
     }
 
     public CurrencyManager getCurrencyManager()
     {
-        return currencyManager;
+        return this.currencyManager;
     }
 
     public AccountStorage getAccountsStorage()
     {
-        return accountsStorage;
+        return this.accountsStorage;
     }
 
     public ConomyConfiguration getConfig()
     {
-        return config;
+        return this.config;
     }
 }

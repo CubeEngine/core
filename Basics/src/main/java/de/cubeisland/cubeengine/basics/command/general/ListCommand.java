@@ -1,13 +1,14 @@
 package de.cubeisland.cubeengine.basics.command.general;
 
-import de.cubeisland.cubeengine.basics.Basics;
+import java.util.List;
+
+import org.bukkit.Bukkit;
+
 import de.cubeisland.cubeengine.core.command.CommandContext;
 import de.cubeisland.cubeengine.core.command.reflected.Command;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.util.StringUtils;
-import org.bukkit.Bukkit;
-
-import java.util.List;
+import de.cubeisland.cubeengine.basics.Basics;
 
 public class ListCommand
 {
@@ -28,12 +29,12 @@ public class ListCommand
             context.sendMessage("basics", "&cThere are no players online now!");
             return;
         }
-        DisplayOnlinePlayerListEvent event = new DisplayOnlinePlayerListEvent(module, context.getSender(), users);
+        DisplayOnlinePlayerListEvent event = new DisplayOnlinePlayerListEvent(this.module, context.getSender(), users);
         if (event.isCancelled())
         {
             return;
         }
-        if (!(module.getEventManager().fireEvent(event)).isCancelled()) // catch this event to change / show list with extra data
+        if (!(this.module.getCore().getEventManager().fireEvent(event)).isCancelled()) // catch this event to change / show list with extra data
         {
             context.sendMessage("basics", "&9Players online: &a%d&f/&e%d", event.getUsers().size(), Bukkit.getMaxPlayers());
             context.sendMessage("basics", "&ePlayers:\n&2%s", this.displayPlayerList(event.getUsers()));

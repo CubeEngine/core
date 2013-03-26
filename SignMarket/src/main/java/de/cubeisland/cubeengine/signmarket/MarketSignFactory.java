@@ -1,13 +1,16 @@
 package de.cubeisland.cubeengine.signmarket;
 
+import org.bukkit.Location;
+
 import de.cubeisland.cubeengine.core.user.User;
+import de.cubeisland.cubeengine.conomy.Conomy;
 import de.cubeisland.cubeengine.signmarket.storage.SignMarketBlockManager;
 import de.cubeisland.cubeengine.signmarket.storage.SignMarketBlockModel;
 import de.cubeisland.cubeengine.signmarket.storage.SignMarketItemManager;
 import de.cubeisland.cubeengine.signmarket.storage.SignMarketItemModel;
+
 import gnu.trove.map.hash.THashMap;
 import gnu.trove.set.hash.TLongHashSet;
-import org.bukkit.Location;
 
 public class MarketSignFactory
 {
@@ -17,10 +20,12 @@ public class MarketSignFactory
     private SignMarketBlockManager signMarketBlockManager;
 
     private final Signmarket module;
+    private final Conomy conomy;
 
-    public MarketSignFactory(Signmarket module)
+    public MarketSignFactory(Signmarket module, Conomy conomy)
     {
         this.module = module;
+        this.conomy = conomy;
         this.signMarketItemManager = new SignMarketItemManager(module);
         this.signMarketBlockManager = new SignMarketBlockManager(module);
         this.loadInAllSigns();
@@ -31,7 +36,7 @@ public class MarketSignFactory
         TLongHashSet usedItemKeys = new TLongHashSet();
         for (SignMarketBlockModel blockModel : this.signMarketBlockManager.getLoadedModels())
         {
-            MarketSign marketSign = new MarketSign(module,blockModel.getLocation());
+            MarketSign marketSign = new MarketSign(module, this.conomy, blockModel.getLocation());
             SignMarketItemModel itemModel = this.signMarketItemManager.getInfoModel(blockModel.itemKey);
             if (itemModel == null)
             {
@@ -61,7 +66,7 @@ public class MarketSignFactory
             this.module.getLogger().warning("Tried to create sign at occupied position!");
             return marketSign;
         }
-        marketSign = new MarketSign(this.module, location);
+        marketSign = new MarketSign(this.module, conomy, location);
         if (this.module.getConfig().allowAdminNoStock)
         {
             marketSign.setAdminSign();

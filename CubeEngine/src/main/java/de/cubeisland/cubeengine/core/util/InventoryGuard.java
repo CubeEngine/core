@@ -1,8 +1,9 @@
 package de.cubeisland.cubeengine.core.util;
 
-import de.cubeisland.cubeengine.core.Core;
-import de.cubeisland.cubeengine.core.module.Module;
-import de.cubeisland.cubeengine.core.user.User;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
+
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -11,9 +12,9 @@ import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
+import de.cubeisland.cubeengine.core.Core;
+import de.cubeisland.cubeengine.core.module.Module;
+import de.cubeisland.cubeengine.core.user.User;
 
 public class InventoryGuard implements Listener
 {
@@ -42,7 +43,7 @@ public class InventoryGuard implements Listener
     public void submitInventory(Module module, boolean openInventory)
     {
         this.module = module;
-        this.module.registerListener(this);
+        this.module.getCore().getEventManager().registerListener(this.module, this);
         if (openInventory)
         {
             for (User user : users)
@@ -102,13 +103,13 @@ public class InventoryGuard implements Listener
                 && event.getInventory().getHolder().getInventory().equals(this.inventory)))
                 && event.getPlayer() instanceof Player)
         {
-            User user = this.module.getUserManager().getExactUser((Player)event.getPlayer());
+            User user = this.module.getCore().getUserManager().getExactUser((Player)event.getPlayer());
             if (user != null && this.users.contains(user))
             {
                 this.users.remove(user);
                 if (this.users.isEmpty())
                 {
-                    this.module.removeListener(this); // no user left to check
+                    this.module.getCore().getEventManager().removeListener(this.module, this); // no user left to check
                 }
                 for (Runnable runner : this.onClose)
                 {
@@ -127,7 +128,7 @@ public class InventoryGuard implements Listener
                     && event.getInventory().getHolder().getInventory().equals(this.inventory)))
             && event.getWhoClicked() instanceof Player)
         {
-            User user = this.module.getUserManager().getExactUser((Player)event.getWhoClicked());
+            User user = this.module.getCore().getUserManager().getExactUser((Player)event.getWhoClicked());
             if (user != null && this.users.contains(user))
             {
                 if (event.getSlot() == -999)
@@ -203,7 +204,7 @@ public class InventoryGuard implements Listener
     {
         for (Runnable runner : this.onChange)
         {
-            this.module.getTaskManger().scheduleSyncDelayedTask(this.module,runner);
+            this.module.getCore().getTaskManager().scheduleSyncDelayedTask(this.module,runner);
         }
     }
 

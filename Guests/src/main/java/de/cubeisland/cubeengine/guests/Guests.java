@@ -1,11 +1,67 @@
 package de.cubeisland.cubeengine.guests;
 
-import de.cubeisland.cubeengine.core.module.Module;
-import de.cubeisland.cubeengine.core.logger.LogLevel;
-import de.cubeisland.cubeengine.guests.prevention.PreventionManager;
-import de.cubeisland.cubeengine.guests.prevention.preventions.*;
-import de.cubeisland.cubeengine.guests.prevention.punishments.*;
 import java.io.File;
+
+import de.cubeisland.cubeengine.core.logger.LogLevel;
+import de.cubeisland.cubeengine.core.module.Module;
+import de.cubeisland.cubeengine.guests.prevention.PreventionManager;
+import de.cubeisland.cubeengine.guests.prevention.preventions.AfkPrevention;
+import de.cubeisland.cubeengine.guests.prevention.preventions.BedPrevention;
+import de.cubeisland.cubeengine.guests.prevention.preventions.BowPrevention;
+import de.cubeisland.cubeengine.guests.prevention.preventions.BreakblockPrevention;
+import de.cubeisland.cubeengine.guests.prevention.preventions.BrewPrevention;
+import de.cubeisland.cubeengine.guests.prevention.preventions.ButtonPrevention;
+import de.cubeisland.cubeengine.guests.prevention.preventions.CakePrevention;
+import de.cubeisland.cubeengine.guests.prevention.preventions.CapsPrevention;
+import de.cubeisland.cubeengine.guests.prevention.preventions.ChangesignPrevention;
+import de.cubeisland.cubeengine.guests.prevention.preventions.ChatPrevention;
+import de.cubeisland.cubeengine.guests.prevention.preventions.ChestPrevention;
+import de.cubeisland.cubeengine.guests.prevention.preventions.CommandPrevention;
+import de.cubeisland.cubeengine.guests.prevention.preventions.DamagePrevention;
+import de.cubeisland.cubeengine.guests.prevention.preventions.DispenserPrevention;
+import de.cubeisland.cubeengine.guests.prevention.preventions.DoorPrevention;
+import de.cubeisland.cubeengine.guests.prevention.preventions.DropPrevention;
+import de.cubeisland.cubeengine.guests.prevention.preventions.EnchantPrevention;
+import de.cubeisland.cubeengine.guests.prevention.preventions.FightPrevention;
+import de.cubeisland.cubeengine.guests.prevention.preventions.FishPrevention;
+import de.cubeisland.cubeengine.guests.prevention.preventions.FurnacePrevention;
+import de.cubeisland.cubeengine.guests.prevention.preventions.GuestlimitPrevention;
+import de.cubeisland.cubeengine.guests.prevention.preventions.HungerPrevention;
+import de.cubeisland.cubeengine.guests.prevention.preventions.ItemPrevention;
+import de.cubeisland.cubeengine.guests.prevention.preventions.JukeboxPrevention;
+import de.cubeisland.cubeengine.guests.prevention.preventions.LavabucketPrevention;
+import de.cubeisland.cubeengine.guests.prevention.preventions.LeverPrevention;
+import de.cubeisland.cubeengine.guests.prevention.preventions.MilkingPrevention;
+import de.cubeisland.cubeengine.guests.prevention.preventions.MonsterPrevention;
+import de.cubeisland.cubeengine.guests.prevention.preventions.MovePrevention;
+import de.cubeisland.cubeengine.guests.prevention.preventions.NoteblockPrevention;
+import de.cubeisland.cubeengine.guests.prevention.preventions.PickupPrevention;
+import de.cubeisland.cubeengine.guests.prevention.preventions.PlaceblockPrevention;
+import de.cubeisland.cubeengine.guests.prevention.preventions.PressureplatePrevention;
+import de.cubeisland.cubeengine.guests.prevention.preventions.RepeaterPrevention;
+import de.cubeisland.cubeengine.guests.prevention.preventions.ShearPrevention;
+import de.cubeisland.cubeengine.guests.prevention.preventions.SneakPrevention;
+import de.cubeisland.cubeengine.guests.prevention.preventions.SpamPrevention;
+import de.cubeisland.cubeengine.guests.prevention.preventions.SpawneggPrevention;
+import de.cubeisland.cubeengine.guests.prevention.preventions.SwearPrevention;
+import de.cubeisland.cubeengine.guests.prevention.preventions.TamePrevention;
+import de.cubeisland.cubeengine.guests.prevention.preventions.TradingPrevention;
+import de.cubeisland.cubeengine.guests.prevention.preventions.TramplePrevention;
+import de.cubeisland.cubeengine.guests.prevention.preventions.VehiclePrevention;
+import de.cubeisland.cubeengine.guests.prevention.preventions.WaterbucketPrevention;
+import de.cubeisland.cubeengine.guests.prevention.preventions.WorkbenchPrevention;
+import de.cubeisland.cubeengine.guests.prevention.punishments.BanPunishment;
+import de.cubeisland.cubeengine.guests.prevention.punishments.BurnPunishment;
+import de.cubeisland.cubeengine.guests.prevention.punishments.DropitemPunishment;
+import de.cubeisland.cubeengine.guests.prevention.punishments.ExplosionPunishment;
+import de.cubeisland.cubeengine.guests.prevention.punishments.KickPunishment;
+import de.cubeisland.cubeengine.guests.prevention.punishments.KillPunishment;
+import de.cubeisland.cubeengine.guests.prevention.punishments.LightningPunishment;
+import de.cubeisland.cubeengine.guests.prevention.punishments.MessagePunishment;
+import de.cubeisland.cubeengine.guests.prevention.punishments.PotionPunishment;
+import de.cubeisland.cubeengine.guests.prevention.punishments.RocketPunishment;
+import de.cubeisland.cubeengine.guests.prevention.punishments.SlapPunishment;
+import de.cubeisland.cubeengine.guests.prevention.punishments.StarvationPunishment;
 
 public class Guests extends Module
 {
@@ -20,7 +76,7 @@ public class Guests extends Module
         this.dataFolder = this.getFolder();
         this.preventionConfigFolder = new File(this.dataFolder, "preventions");
 
-        this.registerCommand(new Commands(this));
+        this.getCore().getCommandManager().registerCommand(new Commands(this));
 
         this.prevManager = new PreventionManager(this)
             .registerPunishment(new BanPunishment())

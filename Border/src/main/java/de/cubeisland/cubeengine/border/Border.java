@@ -11,7 +11,7 @@ public class Border extends Module
     public void onEnable()
     {
         this.perm = new BorderPerms(this);
-        this.registerListener(new BorderListener(this));
+        this.getCore().getEventManager().registerListener(this, new BorderListener(this));
     }
 
     @Override

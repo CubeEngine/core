@@ -1,16 +1,17 @@
 package de.cubeisland.cubeengine.chat;
 
-import de.cubeisland.cubeengine.core.module.Module;
-import de.cubeisland.cubeengine.core.user.User;
-import de.cubeisland.cubeengine.core.util.ChatFormat;
-import de.cubeisland.cubeengine.roles.Roles;
+import java.util.Map;
+
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 
-import java.util.Map;
+import de.cubeisland.cubeengine.core.module.Module;
+import de.cubeisland.cubeengine.core.user.User;
+import de.cubeisland.cubeengine.core.util.ChatFormat;
+import de.cubeisland.cubeengine.roles.Roles;
 
 public class Chat extends Module implements Listener
 {
@@ -24,7 +25,7 @@ public class Chat extends Module implements Listener
     public void onEnable()
     {
         this.perm = new ChatPerm(this);
-        this.getEventManager().registerListener(this, this);
+        this.getCore().getEventManager().registerListener(this, this);
         this.format = this.config.format;
         if (this.config.parseColors)
         {
@@ -66,7 +67,7 @@ public class Chat extends Module implements Listener
 
         if (roles != null)
         {
-            User user = this.getUserManager().getExactUser(player);
+            User user = this.getCore().getUserManager().getExactUser(player);
             if (format.contains("{ROLE.PREFIX}"))
             {
                 String prefix = roles.getApi().getMetaData(user, player.getWorld(), "prefix");
@@ -79,7 +80,7 @@ public class Chat extends Module implements Listener
             }
         }
 
-        this.getEventManager().fireEvent(formatEvent);
+        this.getCore().getEventManager().fireEvent(formatEvent);
 
         for (Map.Entry<String, String> entry : formatEvent.variables.entrySet())
         {

@@ -1,25 +1,57 @@
 package de.cubeisland.cubeengine.log.listeners;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import de.cubeisland.cubeengine.core.user.User;
-import de.cubeisland.cubeengine.log.Log;
-import de.cubeisland.cubeengine.log.storage.LogManager;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+
 import org.bukkit.DyeColor;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.enchantments.Enchantment;
-import org.bukkit.entity.*;
+import org.bukkit.entity.Ageable;
+import org.bukkit.entity.Animals;
+import org.bukkit.entity.Arrow;
+import org.bukkit.entity.EnderDragon;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.Ghast;
+import org.bukkit.entity.ItemFrame;
+import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Monster;
+import org.bukkit.entity.MushroomCow;
+import org.bukkit.entity.Ocelot;
+import org.bukkit.entity.Painting;
+import org.bukkit.entity.Player;
+import org.bukkit.entity.Projectile;
+import org.bukkit.entity.Sheep;
+import org.bukkit.entity.Skeleton;
+import org.bukkit.entity.Tameable;
+import org.bukkit.entity.Villager;
+import org.bukkit.entity.Wither;
+import org.bukkit.entity.Wolf;
 import org.bukkit.entity.minecart.PoweredMinecart;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.enchantment.EnchantItemEvent;
-import org.bukkit.event.entity.*;
+import org.bukkit.event.entity.CreatureSpawnEvent;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.entity.EntityDeathEvent;
+import org.bukkit.event.entity.PotionSplashEvent;
 import org.bukkit.event.hanging.HangingBreakByEntityEvent;
 import org.bukkit.event.hanging.HangingBreakEvent;
 import org.bukkit.event.hanging.HangingPlaceEvent;
 import org.bukkit.event.inventory.CraftItemEvent;
-import org.bukkit.event.player.*;
+import org.bukkit.event.player.PlayerDropItemEvent;
+import org.bukkit.event.player.PlayerExpChangeEvent;
+import org.bukkit.event.player.PlayerInteractEntityEvent;
+import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerPickupItemEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.event.player.PlayerShearEntityEvent;
+import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.event.vehicle.VehicleCreateEvent;
 import org.bukkit.event.vehicle.VehicleDestroyEvent;
 import org.bukkit.event.vehicle.VehicleEnterEvent;
@@ -29,7 +61,12 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.material.Dye;
 import org.bukkit.potion.PotionEffect;
 
-import java.util.*;
+import de.cubeisland.cubeengine.core.user.User;
+import de.cubeisland.cubeengine.core.user.UserManager;
+import de.cubeisland.cubeengine.log.Log;
+import de.cubeisland.cubeengine.log.storage.LogManager;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
 
 import static de.cubeisland.cubeengine.log.storage.LogManager.*;
 import static org.bukkit.Material.*;
@@ -96,13 +133,14 @@ public class EntityListener implements Listener
         Location location = event.getEntity().getLocation();
         if (event.getRemover() instanceof Player || event.getRemover() instanceof Arrow)
         {
+            final UserManager um = this.module.getCore().getUserManager();
             Long causer;
             if (event.getRemover() instanceof Projectile)
             {
                 Projectile projectile = (Projectile) event.getRemover();
                 if (projectile.getShooter() instanceof Player)
                 {
-                    causer = this.module.getUserManager().getExactUser((Player) projectile.getShooter()).key;
+                    causer = um.getExactUser((Player) projectile.getShooter()).key;
                 }
                 else if (projectile.getShooter() != null)
                 {
@@ -115,7 +153,7 @@ public class EntityListener implements Listener
             }
             else
             {
-                causer = this.module.getUserManager().getExactUser((Player) event.getRemover()).key;
+                causer = um.getExactUser((Player) event.getRemover()).key;
             }
             if (event.getEntity() instanceof ItemFrame)
             {
@@ -140,7 +178,7 @@ public class EntityListener implements Listener
     public void onHangingPlace(HangingPlaceEvent event)
     {
         if (this.manager.isIgnored(event.getEntity().getWorld(),LogManager.HANGING_PLACE)) return;
-        User user = this.module.getUserManager().getExactUser(event.getPlayer());
+        User user = this.module.getCore().getUserManager().getExactUser(event.getPlayer());
         if (event.getEntity() instanceof ItemFrame)
         {
             this.manager.queueLog(event.getEntity().getLocation(), HANGING_PLACE, user.key,
@@ -160,6 +198,7 @@ public class EntityListener implements Listener
     public void onEntityDeath(EntityDeathEvent event)
     {
         Location location = event.getEntity().getLocation();
+        final UserManager um = this.module.getCore().getUserManager();
         if (!this.manager.isIgnored(event.getEntity().getWorld(),ITEM_DROP))
         {
             for (ItemStack itemStack : event.getDrops())
@@ -168,7 +207,7 @@ public class EntityListener implements Listener
                 long causer;
                 if (event.getEntity() instanceof Player)
                 {
-                    causer = this.module.getUserManager().getExactUser((Player)event.getEntity()).key;
+                    causer = um.getExactUser((Player)event.getEntity()).key;
                 }
                 else
                 {
@@ -184,7 +223,7 @@ public class EntityListener implements Listener
         {
             if (this.manager.isIgnored(entity.getWorld(),PLAYER_DEATH)) return;
             action = PLAYER_DEATH;
-            killed = this.module.getUserManager().getExactUser((Player)entity).key;
+            killed = um.getExactUser((Player)entity).key;
         }
         else if (entity instanceof Wither || entity instanceof EnderDragon)
         {
@@ -242,7 +281,7 @@ public class EntityListener implements Listener
                 if (shooter instanceof Player)
                 {
                     if (this.manager.isIgnored(entity.getWorld(),PLAYER_KILL)) return;
-                    causer = this.module.getUserManager().getExactUser((Player) shooter).key;
+                    causer = um.getExactUser((Player) shooter).key;
                 }
                 else if (shooter instanceof Skeleton || shooter instanceof Ghast)
                 {
@@ -263,7 +302,7 @@ public class EntityListener implements Listener
             else if (damager instanceof Player)
             {
                 if (this.manager.isIgnored(entity.getWorld(),PLAYER_KILL)) return;
-                causer = this.module.getUserManager().getExactUser((Player) damager).key;
+                causer = um.getExactUser((Player) damager).key;
             }
             else if (damager instanceof Wither || damager instanceof Wither)
             {
@@ -303,18 +342,19 @@ public class EntityListener implements Listener
     {
         if (this.manager.isIgnored(event.getVehicle().getWorld(),VEHICLE_BREAK)) return;
         Long causer = null;
+        final UserManager um = this.module.getCore().getUserManager();
         if (event.getAttacker() != null)
         {
             if (event.getAttacker() instanceof Player)
             {
-                causer = this.module.getUserManager().getExactUser((Player) event.getAttacker()).key;
+                causer = um.getExactUser((Player) event.getAttacker()).key;
             }
             else if (event.getAttacker() instanceof Projectile)
             {
                 Projectile projectile = (Projectile) event.getAttacker();
                 if (projectile.getShooter() instanceof Player)
                 {
-                    causer = this.module.getUserManager().getExactUser((Player) event.getAttacker()).key;
+                    causer = um.getExactUser((Player) event.getAttacker()).key;
                 }
                 else if (projectile.getShooter() != null)
                 {
@@ -324,7 +364,7 @@ public class EntityListener implements Listener
         }
         else if (event.getVehicle().getPassenger() instanceof Player)
         {
-            causer = this.module.getUserManager().getExactUser((Player) event.getVehicle().getPassenger()).key;
+            causer = um.getExactUser((Player) event.getVehicle().getPassenger()).key;
         }
         Long vehicleType = -1L * event.getVehicle().getType().getTypeId();
         this.manager.queueLog(event.getVehicle().getLocation(),VEHICLE_BREAK,causer,vehicleType,null);
@@ -435,7 +475,7 @@ public class EntityListener implements Listener
         Long causer = null;
         if (livingEntity instanceof Player)
         {
-            causer = this.module.getUserManager().getExactUser((Player)livingEntity).key;
+            causer = this.module.getCore().getUserManager().getExactUser((Player)livingEntity).key;
         }
         else if (livingEntity != null)
         {
@@ -464,7 +504,7 @@ public class EntityListener implements Listener
             {
                 if (livingEntity instanceof Player)
                 {
-                    User user = this.module.getUserManager().getExactUser((Player)livingEntity);
+                    User user = this.module.getCore().getUserManager().getExactUser((Player)livingEntity);
                     affected.add(user.key);
                 }
                 else
@@ -538,7 +578,7 @@ public class EntityListener implements Listener
     {
         if (this.manager.isIgnored(event.getEnchanter().getWorld(),ENCHANT_ITEM)) return;
         String applied = this.serializeEnchantments(event.getEnchantsToAdd());
-        User user = this.module.getUserManager().getExactUser(event.getEnchanter());
+        User user = this.module.getCore().getUserManager().getExactUser(event.getEnchanter());
         this.manager.queueLog(event.getEnchanter().getLocation(),ENCHANT_ITEM,user.key,
                 event.getItem().getType().name(),event.getItem().getDurability(),applied);
     }
@@ -548,7 +588,7 @@ public class EntityListener implements Listener
     {
         if (this.manager.isIgnored(event.getWhoClicked().getWorld(),CRAFT_ITEM)) return;
         if (!(event.getWhoClicked() instanceof Player)) return;
-        User user = this.module.getUserManager().getExactUser((Player) event.getWhoClicked());
+        User user = this.module.getCore().getUserManager().getExactUser((Player) event.getWhoClicked());
         this.manager.queueLog(event.getWhoClicked().getLocation(),CRAFT_ITEM,user.key,
                 event.getRecipe().getResult().getType().name(),event.getRecipe().getResult().getDurability(),null);
     }
