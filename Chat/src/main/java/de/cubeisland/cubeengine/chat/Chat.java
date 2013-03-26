@@ -18,16 +18,24 @@ public class Chat extends Module implements Listener
     private ChatConfig config;
     private Roles roles;
     private String format;
+    private ChatPerm perm;
 
     @Override
     public void onEnable()
     {
+        this.perm = new ChatPerm(this);
         this.getEventManager().registerListener(this, this);
         this.format = this.config.format;
         if (this.config.parseColors)
         {
             this.format = ChatFormat.parseFormats(this.format);
         }
+    }
+
+    @Override
+    public void onDisable()
+    {
+        this.perm.cleanup();
     }
 
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)

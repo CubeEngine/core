@@ -2,10 +2,12 @@ package de.cubeisland.cubeengine.basics.command.moderation.kit;
 
 import de.cubeisland.cubeengine.basics.Basics;
 import de.cubeisland.cubeengine.basics.BasicsAttachment;
+import de.cubeisland.cubeengine.basics.BasicsPerm;
 import de.cubeisland.cubeengine.core.CubeEngine;
 import de.cubeisland.cubeengine.core.command.exception.PermissionDeniedException;
 import de.cubeisland.cubeengine.core.command.sender.CommandSender;
 import de.cubeisland.cubeengine.core.permission.PermDefault;
+import de.cubeisland.cubeengine.core.permission.Permission;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.util.InventoryUtil;
 import de.cubeisland.cubeengine.core.util.time.Duration;
@@ -43,29 +45,7 @@ public class Kit
         this.customMessage = customMessage;
         if (usePermission)
         {
-            this.permission = new Permission()
-            {
-                private String permission = "cubeengine.basics.kits." + name.toLowerCase(Locale.ENGLISH);
-                private PermDefault def = PermDefault.OP;
-
-                @Override
-                public boolean isAuthorized(Permissible player)
-                {
-                    return player.hasPermission(permission);
-                }
-
-                @Override
-                public String getPermission()
-                {
-                    return this.permission;
-                }
-
-                @Override
-                public PermDefault getPermissionDefault()
-                {
-                    return this.def;
-                }
-            };
+            this.permission = BasicsPerm.KITS.createChild(name);
         }
         else
         {

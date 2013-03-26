@@ -3,6 +3,7 @@ package de.cubeisland.cubeengine.guests.prevention;
 import de.cubeisland.cubeengine.core.bukkit.EventManager;
 import de.cubeisland.cubeengine.core.permission.PermDefault;
 import de.cubeisland.cubeengine.core.logger.LogLevel;
+import de.cubeisland.cubeengine.core.permission.PermissionManager;
 import de.cubeisland.cubeengine.guests.Guests;
 import gnu.trove.map.hash.THashMap;
 
@@ -69,7 +70,7 @@ public class PreventionManager
         if (!this.preventions.containsValue(prevention))
         {
             this.preventions.put(prevention.getName(), prevention);
-            this.pm.registerPermission(this.guests, prevention.getPermission(), PermDefault.OP);
+            this.pm.registerPermission(this.guests, prevention.getPermission(), PermDefault.OP, null, null); //TODO childs
         }
 
         return this;

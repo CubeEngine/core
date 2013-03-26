@@ -23,6 +23,8 @@ public class Basics extends Module
     private IgnoreListManager ignoreListManager;
     private KitManager kitManager;
     private LagTimer lagTimer;
+    private BasicsPerm perm;
+    private TpWorldPermissions tpPerm;
 
     @Override
     public void onEnable()
@@ -30,7 +32,7 @@ public class Basics extends Module
         this.basicUM = new BasicUserManager(this.getDatabase());
         this.mailManager = new MailManager(this.getDatabase(), this.basicUM);
         this.ignoreListManager = new IgnoreListManager(this.getDatabase());
-        this.registerPermissions(BasicsPerm.values());
+        this.perm = new BasicsPerm(this);
         this.getUserManager().addDefaultAttachment(BasicsAttachment.class, this);
 
         this.registerListener(new ColoredSigns());
@@ -71,7 +73,7 @@ public class Basics extends Module
         this.registerCommands(new TeleportRequestCommands(this), ReflectedCommand.class);
         this.registerListener(new TeleportListener(this));
         this.registerListener(new FlyListener());
-        this.registerPermissions(new TpWorldPermissions(this).getPermissions()); // per world permissions
+        this.tpPerm = new TpWorldPermissions(this); // per world permissions
         this.lagTimer = new LagTimer(this);
 
         this.registerCommands( new DoorCommand(this), ReflectedCommand.class );
@@ -94,6 +96,8 @@ public class Basics extends Module
         this.getTaskManger().cancelTasks(this); // afk task
         this.getUserManager().removeDefaultAttachment(BasicsAttachment.class);
         this.getUserManager().detachFromAll(BasicsAttachment.class);
+        this.perm.cleanup();
+        this.tpPerm.cleanup();
     }
 
     public BasicsConfiguration getConfiguration()

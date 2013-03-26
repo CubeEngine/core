@@ -18,6 +18,7 @@ import de.cubeisland.cubeengine.core.command.reflected.Command;
 import de.cubeisland.cubeengine.core.command.sender.CommandSender;
 import de.cubeisland.cubeengine.core.i18n.Language;
 import de.cubeisland.cubeengine.core.logger.LogLevel;
+import de.cubeisland.cubeengine.core.permission.Permission;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.rulebook.Rulebook;
 
@@ -74,7 +75,7 @@ public class RulebookCommands extends ContainerCommand
             }
         }
 
-        if( sender != target && !context.getSender().hasPermission( Permission.BASE + '.' + context.getCommand().getModule().getId() + ".command.get.other" ) )
+        if( sender != target && !context.getSender().hasPermission( Permission.BASE + '.' + context.getCommand().getModule().getId() + ".command.get.other" ) )// TODO register
         {
             context.sendMessage( "rulebook", "&c You have not the permissions to add the rulebook to the inventory of an other player" );
             return;

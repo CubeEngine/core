@@ -11,6 +11,7 @@ public class CorePerms extends PermissionContainer
     public CorePerms(Module module)
     {
         super(module);
+        this.registerAllPermissions();
     }
 
     private static final Permission CORE = BASEPERM.createAbstractChild("core");

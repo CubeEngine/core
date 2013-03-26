@@ -44,7 +44,7 @@ public abstract class PermissionContainer
         }
     }
 
-    private Set<Permission> getPermissions()
+    public Set<Permission> getPermissions()
     {
         THashSet<Permission> perms = new THashSet<Permission>();
         for (Field field : this.getClass().getFields())

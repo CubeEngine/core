@@ -6,6 +6,7 @@ import de.cubeisland.cubeengine.core.command.parameterized.Param;
 import de.cubeisland.cubeengine.core.command.parameterized.ParameterizedContext;
 import de.cubeisland.cubeengine.core.command.reflected.Command;
 import de.cubeisland.cubeengine.core.i18n.I18n;
+import de.cubeisland.cubeengine.core.permission.Permission;
 import de.cubeisland.cubeengine.shout.Shout;
 import de.cubeisland.cubeengine.shout.announce.Announcement;
 import de.cubeisland.cubeengine.shout.announce.MessageOfTheDay;

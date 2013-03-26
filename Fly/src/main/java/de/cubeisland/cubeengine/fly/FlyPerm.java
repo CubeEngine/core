@@ -1,43 +1,23 @@
 package de.cubeisland.cubeengine.fly;
 
+import de.cubeisland.cubeengine.core.module.Module;
 import de.cubeisland.cubeengine.core.permission.PermDefault;
+import de.cubeisland.cubeengine.core.permission.Permission;
+import de.cubeisland.cubeengine.core.permission.PermissionContainer;
 
 import org.bukkit.permissions.Permissible;
 
 import java.util.Locale;
 
-public enum FlyPerm implements Permission
+public class FlyPerm extends PermissionContainer
 {
-    COMMAND_FLY_SELF,
-    COMMAND_FLY_OTHER,
-    FLY_CANFLY,
-    FLY_FEATHER, ;
-    private final String permission;
-    private PermDefault def;
-
-    private FlyPerm()
+    public FlyPerm(Module module)
     {
-        this(PermDefault.OP);
+        super(module);
+        this.registerAllPermissions();
     }
 
-    private FlyPerm(PermDefault def)
-    {
-        this.permission = "cubeengine.fly." + this.name().toLowerCase(Locale.ENGLISH).replace('_', '.');
-        this.def = def;
-    }
+    private static final Permission FLY = BASEPERM.createAbstractChild("fly");
+    public static final Permission FLY_FEATHER = FLY.createChild("feather");
 
-    public boolean isAuthorized(Permissible player)
-    {
-        return player.hasPermission(permission);
-    }
-
-    public String getPermission()
-    {
-        return this.permission;
-    }
-
-    public PermDefault getPermissionDefault()
-    {
-        return this.def;
-    }
 }
