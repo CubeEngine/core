@@ -84,5 +84,9 @@ public class CoreConfiguration extends Configuration
     public void onLoaded(File loadFrom)
     {
         this.defaultLanguage = I18n.normalizeLanguage(this.defaultLanguage);
+        if (defaultLanguage == null)
+        {
+            defaultLanguage = "en_US";
+        }
     }
 }
