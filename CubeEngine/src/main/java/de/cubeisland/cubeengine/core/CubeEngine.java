@@ -1,20 +1,13 @@
 package de.cubeisland.cubeengine.core;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import de.cubeisland.cubeengine.core.bukkit.EventManager;
-import de.cubeisland.cubeengine.core.bukkit.TaskManager;
-import de.cubeisland.cubeengine.core.command.CommandManager;
-import de.cubeisland.cubeengine.core.filesystem.FileManager;
-import de.cubeisland.cubeengine.core.i18n.I18n;
-import de.cubeisland.cubeengine.core.module.ModuleManager;
-import de.cubeisland.cubeengine.core.permission.PermissionManager;
-import de.cubeisland.cubeengine.core.storage.TableManager;
-import de.cubeisland.cubeengine.core.storage.database.Database;
-import de.cubeisland.cubeengine.core.user.UserManager;
-import de.cubeisland.cubeengine.core.webapi.ApiServer;
-
 import java.io.File;
 import java.util.logging.Logger;
+
+import de.cubeisland.cubeengine.core.filesystem.FileManager;
+import de.cubeisland.cubeengine.core.i18n.I18n;
+import de.cubeisland.cubeengine.core.user.UserManager;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * The CubeEngine provides static method to access all important Manager and the Core.
@@ -89,36 +82,6 @@ public final class CubeEngine
     }
 
     /**
-     * Returns the Database
-     *
-     * @return the Database
-     */
-    public static Database getDatabase()
-    {
-        return core.getDB();
-    }
-
-    /**
-     * Returns the PermissionRegistration
-     *
-     * @return the PermissionRegistration
-     */
-    public static PermissionManager getPermissionManager()
-    {
-        return core.getPermissionManager();
-    }
-
-    /**
-     * Returns the TableManager
-     *
-     * @return the TableManager
-     */
-    public static TableManager getTableManager()
-    {
-        return core.getTableManger();
-    }
-
-    /**
      * Returns the UserManager
      *
      * @return the UserManager
@@ -143,39 +106,9 @@ public final class CubeEngine
      *
      * @return the Logger
      */
-    public static Logger getLogger()
+    public static Logger getLog()
     {
-        return core.getCoreLogger();
-    }
-
-    /**
-     * Returns the ModuleManager
-     *
-     * @return the ModuleManager
-     */
-    public static ModuleManager getModuleManager()
-    {
-        return core.getModuleManager();
-    }
-
-    /**
-     * Returns the EventManager
-     *
-     * @return the EventManager
-     */
-    public static EventManager getEventManager()
-    {
-        return core.getEventManager();
-    }
-
-    /**
-     * Returns the CommandManager
-     *
-     * @return the CommandManager
-     */
-    public static CommandManager getCommandManager()
-    {
-        return core.getCommandManager();
+        return core.getLog();
     }
 
     /**
@@ -189,16 +122,6 @@ public final class CubeEngine
     }
 
     /**
-     * This method returns the Worker/ExecutorService
-     *
-     * @return the ExecutorService
-     */
-    public static TaskManager getTaskManager()
-    {
-        return core.getTaskManager();
-    }
-
-    /**
      * Returns the core configuration.
      *
      * @return the core configuration
@@ -209,16 +132,6 @@ public final class CubeEngine
     }
 
     /**
-     * Checks whether the core is in debug mode.
-     *
-     * @return true if the core is in debug mode
-     */
-    public static boolean isDebug()
-    {
-        return core.isDebug();
-    }
-
-    /**
      * Returns the global instance of the jackson object mapper.
      *
      * @return the global instance of the jackson object mapper.
@@ -226,10 +139,5 @@ public final class CubeEngine
     public static ObjectMapper getJsonObjectMapper()
     {
         return core.getJsonObjectMapper();
-    }
-
-    public static ApiServer getApiServer()
-    {
-        return core.getApiServer();
     }
 }

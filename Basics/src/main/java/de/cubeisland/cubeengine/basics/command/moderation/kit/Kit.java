@@ -1,15 +1,10 @@
 package de.cubeisland.cubeengine.basics.command.moderation.kit;
 
-import de.cubeisland.cubeengine.basics.Basics;
-import de.cubeisland.cubeengine.basics.BasicsAttachment;
-import de.cubeisland.cubeengine.basics.BasicsPerm;
-import de.cubeisland.cubeengine.core.CubeEngine;
-import de.cubeisland.cubeengine.core.command.exception.PermissionDeniedException;
-import de.cubeisland.cubeengine.core.command.sender.CommandSender;
-import de.cubeisland.cubeengine.core.permission.Permission;
-import de.cubeisland.cubeengine.core.user.User;
-import de.cubeisland.cubeengine.core.util.InventoryUtil;
-import de.cubeisland.cubeengine.core.util.time.Duration;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
 import org.bukkit.Server;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -17,7 +12,16 @@ import org.bukkit.permissions.PermissionAttachment;
 import org.bukkit.permissions.PermissionAttachmentInfo;
 import org.bukkit.plugin.Plugin;
 
-import java.util.*;
+import de.cubeisland.cubeengine.core.command.CommandManager;
+import de.cubeisland.cubeengine.core.command.exception.PermissionDeniedException;
+import de.cubeisland.cubeengine.core.command.sender.CommandSender;
+import de.cubeisland.cubeengine.core.permission.Permission;
+import de.cubeisland.cubeengine.core.user.User;
+import de.cubeisland.cubeengine.core.util.InventoryUtil;
+import de.cubeisland.cubeengine.core.util.time.Duration;
+import de.cubeisland.cubeengine.basics.Basics;
+import de.cubeisland.cubeengine.basics.BasicsAttachment;
+import de.cubeisland.cubeengine.basics.BasicsPerm;
 
 /**
  * A Kit of Items a User can receive
@@ -98,10 +102,11 @@ public class Kit
     {
         if (this.commands != null && !this.commands.isEmpty())
         {
+            CommandManager cm = user.getCore().getCommandManager();
             for (String cmd : commands)
             {
                 cmd = cmd.replace("{PLAYER}", user.getName());
-                CubeEngine.getCommandManager().runCommand(new KitCommandSender(user), cmd);
+                cm.runCommand(new KitCommandSender(user), cmd);
             }
         }
     }

@@ -1,17 +1,17 @@
 package de.cubeisland.cubeengine.basics.command.teleport;
 
-import de.cubeisland.cubeengine.basics.Basics;
-import de.cubeisland.cubeengine.basics.BasicsPerm;
-import de.cubeisland.cubeengine.core.CubeEngine;
+import org.bukkit.Location;
+import org.bukkit.World;
+import org.bukkit.entity.Player;
+import org.bukkit.event.player.PlayerTeleportEvent;
+
 import de.cubeisland.cubeengine.core.command.parameterized.Flag;
 import de.cubeisland.cubeengine.core.command.parameterized.Param;
 import de.cubeisland.cubeengine.core.command.parameterized.ParameterizedContext;
 import de.cubeisland.cubeengine.core.command.reflected.Command;
 import de.cubeisland.cubeengine.core.user.User;
-import org.bukkit.Location;
-import org.bukkit.World;
-import org.bukkit.entity.Player;
-import org.bukkit.event.player.PlayerTeleportEvent;
+import de.cubeisland.cubeengine.basics.Basics;
+import de.cubeisland.cubeengine.basics.BasicsPerm;
 
 /**
  * Contains commands to teleport to players/worlds/position.
@@ -170,7 +170,7 @@ public class TeleportCommands
                 continue;
             }
             boolean safe = !context.hasFlag("u");
-            TeleportCommands.teleport(CubeEngine.getUserManager().getExactUser(player), user.getLocation(), safe, force, true);
+            TeleportCommands.teleport(user.getCore().getUserManager().getExactUser(player), user.getLocation(), safe, force, true);
         }
         context.getCore().getUserManager().broadcastMessage("basics", "&aTeleporting everyone to %s", user.getName());
     }
@@ -248,7 +248,7 @@ public class TeleportCommands
                 continue;
             }
             boolean safe = !context.hasFlag("u");
-            TeleportCommands.teleport(CubeEngine.getUserManager().getExactUser(player), sender.getLocation(), safe, force, true);
+            TeleportCommands.teleport(sender.getCore().getUserManager().getExactUser(player), sender.getLocation(), safe, force, true);
         }
         context.sendMessage("basics", "&aYou teleported everyone to you!");
         context.getCore().getUserManager().broadcastMessage("basics", "&aTeleporting everyone to %s", sender.getName());

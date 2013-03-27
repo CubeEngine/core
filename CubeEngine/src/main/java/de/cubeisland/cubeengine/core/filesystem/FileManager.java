@@ -35,7 +35,7 @@ public class FileManager implements Cleanable
 
     public FileManager(Core core, File dataFolder) throws IOException
     {
-        this.logger = core.getCoreLogger();
+        this.logger = core.getLog();
         Validate.notNull(dataFolder, "The CubeEngine plugin folder must not be null!");
         if (!dataFolder.exists())
         {
@@ -282,7 +282,7 @@ public class FileManager implements Cleanable
             }
             catch (IOException e)
             {
-                CubeEngine.getLogger().log(WARNING, "Failed to close a file stream!", e);
+                CubeEngine.getLog().log(WARNING, "Failed to close a file stream!", e);
             }
 
             try
@@ -291,7 +291,7 @@ public class FileManager implements Cleanable
             }
             catch (IOException e)
             {
-                CubeEngine.getLogger().log(WARNING, "Failed to close a file stream!", e);
+                CubeEngine.getLog().log(WARNING, "Failed to close a file stream!", e);
             }
         }
         return false;

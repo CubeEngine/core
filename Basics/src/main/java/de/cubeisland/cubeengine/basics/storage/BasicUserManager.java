@@ -1,25 +1,27 @@
 package de.cubeisland.cubeengine.basics.storage;
 
-import de.cubeisland.cubeengine.basics.BasicsAttachment;
-import de.cubeisland.cubeengine.core.CubeEngine;
-import de.cubeisland.cubeengine.core.storage.SingleKeyStorage;
-import de.cubeisland.cubeengine.core.storage.database.Database;
-import de.cubeisland.cubeengine.core.user.User;
 import org.bukkit.entity.Player;
+
+import de.cubeisland.cubeengine.core.Core;
+import de.cubeisland.cubeengine.core.storage.SingleKeyStorage;
+import de.cubeisland.cubeengine.core.user.User;
+import de.cubeisland.cubeengine.basics.BasicsAttachment;
 
 public class BasicUserManager extends SingleKeyStorage<Long, BasicUser>
 {
+    private final Core core;
     private static final int REVISION = 1;
 
-    public BasicUserManager(Database database)
+    public BasicUserManager(Core core)
     {
-        super(database, BasicUser.class, REVISION);
+        super(core.getDB(), BasicUser.class, REVISION);
+        this.core = core;
         this.initialize();
     }
 
     public BasicUser getBasicUser(Player player)
     {
-        return this.getBasicUser(CubeEngine.getUserManager().getExactUser(player));
+        return this.getBasicUser(this.core.getUserManager().getExactUser(player));
     }
 
     public BasicUser getBasicUser(User user)

@@ -1,10 +1,8 @@
 package de.cubeisland.cubeengine.writer;
 
-import de.cubeisland.cubeengine.core.CubeEngine;
-import de.cubeisland.cubeengine.core.command.parameterized.Param;
-import de.cubeisland.cubeengine.core.command.parameterized.ParameterizedContext;
-import de.cubeisland.cubeengine.core.command.reflected.Command;
-import de.cubeisland.cubeengine.core.user.User;
+import java.util.Map;
+import java.util.Map.Entry;
+
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.Sign;
@@ -12,8 +10,10 @@ import org.bukkit.event.block.SignChangeEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.BookMeta;
 
-import java.util.Map;
-import java.util.Map.Entry;
+import de.cubeisland.cubeengine.core.command.parameterized.Param;
+import de.cubeisland.cubeengine.core.command.parameterized.ParameterizedContext;
+import de.cubeisland.cubeengine.core.command.reflected.Command;
+import de.cubeisland.cubeengine.core.user.User;
 
 public class EditCommand
 {
@@ -75,7 +75,7 @@ public class EditCommand
                     lines[Integer.parseInt(entry.getKey()) - 1] = (String)entry.getValue();
                 }
                 SignChangeEvent event = new SignChangeEvent(sign.getBlock(), user, sign.getLines());
-                CubeEngine.getEventManager().fireEvent(event);
+                context.getCore().getEventManager().fireEvent(event);
                 if (event.isCancelled())
                 {
                     context.sendMessage("basics", "&cCould not change the sign!");

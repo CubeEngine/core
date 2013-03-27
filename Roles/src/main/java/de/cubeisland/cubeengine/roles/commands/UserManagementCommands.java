@@ -40,7 +40,7 @@ public class UserManagementCommands extends UserCommandHelper
             context.sendMessage("roles", "&eCould not find the role &6%s &ein &6%s&e.", roleName, world.getName());
             return;
         }
-        this.module.getLogger().log(LogLevel.DEBUG,"Role added: "+ role.getName() + " -> " + user.getName());
+        this.module.getLog().log(LogLevel.DEBUG,"Role added: "+ role.getName() + " -> " + user.getName());
         if (this.manager.addRoles(user, user.getPlayer(), worldId, role))
         {
             context.sendMessage("roles", "&aAdded the role &6%s&a to &2%s&a in &6%s&a.", roleName, user.getName(), world.getName());

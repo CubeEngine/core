@@ -37,15 +37,16 @@ public class Shout extends Module
         {
             if (this.getCore().isDebug())
             {
-                this.getLogger().log(LogLevel.WARNING, "There was an error creating a file!", ex);
+                this.getLog().log(LogLevel.WARNING, "There was an error creating a file!", ex);
             }
         }
 
         this.announcementFolder = this.getFolder();
         this.getCore().getFileManager().dropResources(ShoutResource.values());
 
-        this.announcer = new Announcer(config.initDelay);
-        this.announcementManager = new AnnouncementManager(this, announcementFolder);
+
+        this.announcer = new Announcer(this.getCore().getTaskManager(), this.config.initDelay);
+        this.announcementManager = new AnnouncementManager(this, this.announcementFolder);
 
         if (firstRun)
         {
@@ -56,9 +57,9 @@ public class Shout extends Module
             }
             catch (Exception ex)
             {
-                this.getLogger().log(LogLevel.WARNING, "An exception occured when creating the example announcement");
-                this.getLogger().log(LogLevel.WARNING, "The message was: " + ex.getLocalizedMessage());
-                this.getLogger().log(LogLevel.DEBUG, ex.getLocalizedMessage(), ex);
+                this.getLog().log(LogLevel.WARNING, "An exception occured when creating the example announcement");
+                this.getLog().log(LogLevel.WARNING, "The message was: " + ex.getLocalizedMessage());
+                this.getLog().log(LogLevel.DEBUG, ex.getLocalizedMessage(), ex);
             }
         }
         this.announcementManager.loadAnnouncements(this.announcementFolder);
@@ -82,6 +83,6 @@ public class Shout extends Module
 
     public Announcer getAnnouncer()
     {
-        return announcer;
+        return this.announcer;
     }
 }

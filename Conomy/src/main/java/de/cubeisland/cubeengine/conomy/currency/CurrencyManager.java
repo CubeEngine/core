@@ -38,14 +38,14 @@ public class CurrencyManager
                 Currency currency = this.getCurrencyByName(entry.getKey().toLowerCase());
                 if (currency == null)
                 {
-                    module.getLogger().warning("Unknown currency in relations! " + entry.getKey());
+                    module.getLog().warning("Unknown currency in relations! " + entry.getKey());
                 }
                 for (Entry<String, Double> relation : entry.getValue().entrySet())
                 {
                     Currency relatedCurrency = this.getCurrencyByName(relation.getKey().toLowerCase());
                     if (relatedCurrency == null)
                     {
-                        module.getLogger().warning("Unknown currency in relations! " + relation.getKey());
+                        module.getLog().warning("Unknown currency in relations! " + relation.getKey());
                         continue;
                     }
                     currency.addConversionRate(relatedCurrency, relation.getValue());

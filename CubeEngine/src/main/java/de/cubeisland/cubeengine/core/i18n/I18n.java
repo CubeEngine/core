@@ -51,7 +51,7 @@ public class I18n implements Cleanable
         }
         catch (IOException e)
         {
-            core.getCoreLogger().log(ERROR, e.getLocalizedMessage(), e);
+            core.getLog().log(ERROR, e.getLocalizedMessage(), e);
         }
     }
 

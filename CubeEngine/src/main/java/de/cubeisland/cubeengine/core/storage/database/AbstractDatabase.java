@@ -1,16 +1,19 @@
 package de.cubeisland.cubeengine.core.storage.database;
 
-import de.cubeisland.cubeengine.core.CubeEngine;
-import de.cubeisland.cubeengine.core.storage.Storage;
-import de.cubeisland.cubeengine.core.util.worker.AsyncTaskQueue;
-import org.apache.commons.lang.Validate;
-
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Locale;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
+import de.cubeisland.cubeengine.core.CubeEngine;
+import de.cubeisland.cubeengine.core.storage.Storage;
+import de.cubeisland.cubeengine.core.util.worker.AsyncTaskQueue;
+
+import org.apache.commons.lang.Validate;
 
 import static de.cubeisland.cubeengine.core.logger.LogLevel.ERROR;
 
@@ -22,7 +25,8 @@ public abstract class AbstractDatabase implements Database
 {
     private final ConcurrentMap<String, String> statements = new ConcurrentHashMap<String, String>();
     private final ConcurrentMap<String, PreparedStatement> preparedStatements = new ConcurrentHashMap<String, PreparedStatement>();
-    private final AsyncTaskQueue taskQueue = new AsyncTaskQueue(CubeEngine.getTaskManager().getExecutorService());
+    private final ExecutorService executorService = Executors.newSingleThreadExecutor(); // TODO thread factory!
+    private final AsyncTaskQueue taskQueue = new AsyncTaskQueue(this.executorService); // TODO shutdown!
 
     @Override
     public Object getLastInsertedId(Class owner, String name, Object... params) throws SQLException
@@ -71,7 +75,7 @@ public abstract class AbstractDatabase implements Database
                 }
                 catch (SQLException e)
                 {
-                    CubeEngine.getLogger().log(ERROR, "An asynchronous query failed!", e);
+                    CubeEngine.getLog().log(ERROR, "An asynchronous query failed!", e);
                 }
             }
         });
@@ -98,7 +102,7 @@ public abstract class AbstractDatabase implements Database
                 }
                 catch (SQLException e)
                 {
-                    CubeEngine.getLogger().log(ERROR, "An asynchronous query failed!", e);
+                    CubeEngine.getLog().log(ERROR, "An asynchronous query failed!", e);
                 }
             }
         });
@@ -131,7 +135,7 @@ public abstract class AbstractDatabase implements Database
                 }
                 catch (SQLException e)
                 {
-                    CubeEngine.getLogger().log(ERROR, "An asynchronous query failed!", e);
+                    CubeEngine.getLog().log(ERROR, "An asynchronous query failed!", e);
                 }
             }
         });
@@ -159,7 +163,7 @@ public abstract class AbstractDatabase implements Database
                 }
                 catch (SQLException e)
                 {
-                    CubeEngine.getLogger().log(ERROR, "An asynchronous query failed!", e);
+                    CubeEngine.getLog().log(ERROR, "An asynchronous query failed!", e);
                 }
             }
         });
@@ -222,7 +226,7 @@ public abstract class AbstractDatabase implements Database
                 }
                 catch (SQLException e)
                 {
-                    CubeEngine.getLogger().log(ERROR, "A statement could not be prepared!", e);
+                    CubeEngine.getLog().log(ERROR, "A statement could not be prepared!", e);
                 }
             }
         }

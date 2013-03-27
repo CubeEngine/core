@@ -3,8 +3,6 @@ package de.cubeisland.cubeengine.core.bukkit;
 import java.lang.reflect.Field;
 import java.util.Collection;
 import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.logging.Filter;
 import java.util.logging.Logger;
 
@@ -38,7 +36,6 @@ import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.SimplePluginManager;
 
@@ -169,7 +166,7 @@ public class BukkitUtils
             }
             catch (Exception e)
             {
-                CubeEngine.getLogger().log(DEBUG, e.getLocalizedMessage(), e);
+                CubeEngine.getLog().log(DEBUG, e.getLocalizedMessage(), e);
             }
         }
         return oldMap;
@@ -235,20 +232,22 @@ public class BukkitUtils
         }
     }
 
+    private static PacketHookInjector hookInjector = null;
     /**
      * Registers the packet hook injector
      *
-     * @param plugin a Plugin to register the injector with
+     * @param core the BukkitCore
      */
-    public static void registerPacketHookInjector(Plugin plugin)
+    public static synchronized void registerPacketHookInjector(BukkitCore core)
     {
-        if (!PacketHookInjector.injected)
+        if (hookInjector == null)
         {
-            Bukkit.getPluginManager().registerEvents(PacketHookInjector.INSTANCE, plugin);
+            hookInjector = new PacketHookInjector();
+            core.getServer().getPluginManager().registerEvents(hookInjector, core);
 
             for (Player player : Bukkit.getOnlinePlayers())
             {
-                PacketHookInjector.INSTANCE.swap(player);
+                hookInjector.swap(player);
             }
         }
     }
@@ -260,19 +259,9 @@ public class BukkitUtils
 
     private static class PacketHookInjector implements Listener
     {
-        public static final PacketHookInjector INSTANCE = new PacketHookInjector();
-        public static boolean injected = false;
-        private final ExecutorService executorService;
-
-        private PacketHookInjector()
-        {
-            this.executorService = Executors.newSingleThreadExecutor(CubeEngine.getTaskManager().getThreadFactory());
-        }
-
         public void shutdown()
         {
             HandlerList.unregisterAll(this);
-            this.executorService.shutdown();
 
             for (Player player : Bukkit.getOnlinePlayers())
             {
@@ -321,14 +310,14 @@ public class BukkitUtils
                 ServerConnection sc = player.server.ae();
                 ((List<PlayerConnection>)NSH_LIST_FIELD.get(sc)).remove(oldHandler);
                 sc.a(newHandler);
-                CubeEngine.getLogger().log(DEBUG, "Replaced the NetServerHandler of player ''{0}''", player.getName());
+                CubeEngine.getLog().log(DEBUG, "Replaced the NetServerHandler of player ''{0}''", player.getName());
                 oldHandler.disconnected = true;
             }
         }
         catch (Exception e)
         {
             player.playerConnection = oldHandler;
-            CubeEngine.getLogger().log(DEBUG, e.getLocalizedMessage(), e);
+            CubeEngine.getLog().log(DEBUG, e.getLocalizedMessage(), e);
         }
     }
 
@@ -377,11 +366,12 @@ public class BukkitUtils
         }
     }
 
-    public static void cleanup()
+    public static synchronized void cleanup()
     {
-        if (PacketHookInjector.INSTANCE != null)
+        if (hookInjector != null)
         {
-            PacketHookInjector.INSTANCE.shutdown();
+            hookInjector.shutdown();
+            hookInjector = null;
         }
 
         resetCommandMap();

@@ -63,11 +63,11 @@ public class BukkitPermissionManager implements PermissionManager
                 }
             });
             this.logger.addHandler(handler);
-            this.logger.setLevel(core.getCoreLogger().getLevel());
+            this.logger.setLevel(core.getLog().getLevel());
         }
         catch (IOException e)
         {
-            core.getCoreLogger().log(ERROR, "Failed to create the permission log");
+            core.getLog().log(ERROR, "Failed to create the permission log");
         }
 
         this.registerBukkitPermission(CUBEENGINE_WILDCARD);

@@ -84,7 +84,7 @@ public class FileUtil
         }
         catch (IOException e)
         {
-            CubeEngine.getLogger().log(ERROR, e.getMessage(), e);
+            CubeEngine.getLog().log(ERROR, e.getMessage(), e);
         }
         finally
         {

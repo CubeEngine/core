@@ -1,13 +1,5 @@
 package de.cubeisland.cubeengine.core.i18n;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import de.cubeisland.cubeengine.core.CubeEngine;
-import de.cubeisland.cubeengine.core.logger.LogLevel;
-import de.cubeisland.cubeengine.core.util.ChatFormat;
-import de.cubeisland.cubeengine.core.util.Cleanable;
-import gnu.trove.map.hash.THashMap;
-import org.apache.commons.lang.Validate;
-
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -15,6 +7,15 @@ import java.io.InputStream;
 import java.util.Collections;
 import java.util.Locale;
 import java.util.Map;
+
+import de.cubeisland.cubeengine.core.CubeEngine;
+import de.cubeisland.cubeengine.core.logger.LogLevel;
+import de.cubeisland.cubeengine.core.util.ChatFormat;
+import de.cubeisland.cubeengine.core.util.Cleanable;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import gnu.trove.map.hash.THashMap;
+import org.apache.commons.lang.Validate;
 
 /**
  * This class is a generic language that loads its translations from files.
@@ -148,11 +149,11 @@ public class NormalLanguage implements Cleanable, Language
         }
         catch (FileNotFoundException ignored)
         {
-            CubeEngine.getLogger().log(LogLevel.WARNING, "The translation category " + cat + " was not found for the language ''" + this.code + "'' !");
+            CubeEngine.getLog().log(LogLevel.WARNING, "The translation category " + cat + " was not found for the language ''" + this.code + "'' !");
         }
         catch (IOException e)
         {
-            CubeEngine.getLogger().log(LogLevel.ERROR, String.valueOf(e), e);
+            CubeEngine.getLog().log(LogLevel.ERROR, String.valueOf(e), e);
         }
         return null;
     }
@@ -176,7 +177,7 @@ public class NormalLanguage implements Cleanable, Language
         }
         catch (IOException e)
         {
-            CubeEngine.getLogger().log(LogLevel.WARNING, e.getLocalizedMessage(), e);
+            CubeEngine.getLog().log(LogLevel.WARNING, e.getLocalizedMessage(), e);
         }
         finally
         {

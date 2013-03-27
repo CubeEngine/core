@@ -27,7 +27,7 @@ public class CubeThreadFactory implements ThreadFactory
     public Thread newThread(Runnable r)
     {
         final String name = "CubeEngine - Thread #" + this.counter.incrementAndGet();
-        CubeEngine.getLogger().log(DEBUG, "Creating thread: {0}", name);
+        CubeEngine.getLog().log(DEBUG, "Creating thread: {0}", name);
         return new Thread(this.group, r, name);
     }
 }

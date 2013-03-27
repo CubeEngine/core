@@ -94,7 +94,7 @@ public class MaterialMatcher
         }
         catch (IllegalArgumentException ex)
         {
-            CubeEngine.getLogger().warning("Unkown Material: " + materialName);
+            CubeEngine.getLog().warning("Unkown Material: " + materialName);
             return;
         }
     }
@@ -196,7 +196,7 @@ public class MaterialMatcher
             List<String> jarinput = FileUtil.readStringList(CubeEngine.getFileManager().getSourceOf(file));
             if (jarinput != null && this.readItems(readItems, jarinput, true))
             {
-                CubeEngine.getLogger().log(LogLevel.NOTICE, "Updated items.txt");
+                CubeEngine.getLog().log(LogLevel.NOTICE, "Updated items.txt");
                 StringBuilder sb = new StringBuilder();
                 for (String itemName : readItems.keySet())
                 {
@@ -358,7 +358,7 @@ public class MaterialMatcher
         TShortObjectHashMap<String> dataMap = this.itemnames.get(mat);
         if (dataMap == null)
         {
-            CubeEngine.getLogger().warning("Unknown Item! ID: " + mat + " DATA: " + data);
+            CubeEngine.getLog().warning("Unknown Item! ID: " + mat + " DATA: " + data);
             return null;
         }
         String itemName = dataMap.get(data);
@@ -367,7 +367,7 @@ public class MaterialMatcher
             itemName = dataMap.get((short)0);
             if (itemName == null)
             {
-                CubeEngine.getLogger().warning("Unknown Item! ID: " + mat + " DATA: " + data);
+                CubeEngine.getLog().warning("Unknown Item! ID: " + mat + " DATA: " + data);
                 return mat.name() + ":" + data;
             }
             itemName += ":" + data;
@@ -380,7 +380,7 @@ public class MaterialMatcher
         TShortObjectHashMap<String> dataMap = this.itemnames.get(mat);
         if (dataMap == null)
         {
-            CubeEngine.getLogger().warning("Unknown Block! ID: " + mat + " DATA: " + blockData);
+            CubeEngine.getLog().warning("Unknown Block! ID: " + mat + " DATA: " + blockData);
             return null;
         }
         String itemName = dataMap.get((short)0);

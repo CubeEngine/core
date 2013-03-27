@@ -1,9 +1,5 @@
 package de.cubeisland.cubeengine.core.module;
 
-import de.cubeisland.cubeengine.core.CubeEngine;
-import de.cubeisland.cubeengine.core.command.ArgumentReader;
-import de.cubeisland.cubeengine.core.util.convert.Convert;
-
 import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -11,6 +7,10 @@ import java.net.URLClassLoader;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+
+import de.cubeisland.cubeengine.core.CubeEngine;
+import de.cubeisland.cubeengine.core.command.ArgumentReader;
+import de.cubeisland.cubeengine.core.util.convert.Convert;
 
 import static de.cubeisland.cubeengine.core.logger.LogLevel.WARNING;
 
@@ -86,8 +86,6 @@ public class ModuleClassLoader extends URLClassLoader
 
     void shutdown()
     {
-        this.moduleInfo = null;
-        this.moduleLoader = null;
         Class clazz;
         final Iterator<Map.Entry<String, Class>> iter = this.classMap.entrySet().iterator();
         while (iter.hasNext())
@@ -95,9 +93,11 @@ public class ModuleClassLoader extends URLClassLoader
             clazz = iter.next().getValue();
             Convert.unregisterConverter(clazz);
             ArgumentReader.unregisterReader(clazz);
-            CubeEngine.getCommandManager().removeCommandFactory(clazz);
+            this.moduleLoader.getCore().getCommandManager().removeCommandFactory(clazz);
             iter.remove();
         }
+        this.moduleInfo = null;
+        this.moduleLoader = null;
 
         try
         {
@@ -107,7 +107,7 @@ public class ModuleClassLoader extends URLClassLoader
         }
         catch (Exception ignored)
         {
-            CubeEngine.getLogger().log(WARNING, "Failed to close the class loader of the module ''{0}''", this.moduleInfo.getName());
+            CubeEngine.getLog().log(WARNING, "Failed to close the class loader of the module ''{0}''", this.moduleInfo.getName());
         }
     }
 }

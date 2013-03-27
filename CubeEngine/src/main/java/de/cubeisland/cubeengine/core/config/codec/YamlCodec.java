@@ -54,7 +54,7 @@ public class YamlCodec extends MultiConfigurationCodec
                 }
                 else
                 {
-                    CubeEngine.getLogger().log(LogLevel.WARNING, "Invalid revision in a configuration!");
+                    CubeEngine.getLog().log(LogLevel.WARNING, "Invalid revision in a configuration!");
                 }
             }
         }

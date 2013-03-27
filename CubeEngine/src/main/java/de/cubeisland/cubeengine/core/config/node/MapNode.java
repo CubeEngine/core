@@ -67,7 +67,7 @@ public class MapNode extends ParentNode
         String loweredKey = key.trim().toLowerCase();
         if (loweredKey.isEmpty())
         {
-            CubeEngine.getLogger().warning("Empty key-mapping!");
+            CubeEngine.getLog().warning("Empty key-mapping!");
         }
         this.keys.put(loweredKey, key);
         node.setParentNode(this);

@@ -1,13 +1,13 @@
 package de.cubeisland.cubeengine.shout.announce.announcer;
 
-import de.cubeisland.cubeengine.core.CubeEngine;
-
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+
+import de.cubeisland.cubeengine.core.bukkit.TaskManager;
 
 /**
  * Class to manage futures based on the system time.
@@ -18,9 +18,9 @@ public class Announcer
     private Map<String, ScheduledFuture> futures;
     private int initDelay;
 
-    public Announcer(int initDelay)
+    public Announcer(TaskManager taskManager, int initDelay)
     {
-        this.executor = Executors.newSingleThreadScheduledExecutor(CubeEngine.getTaskManager().getThreadFactory());
+        this.executor = Executors.newSingleThreadScheduledExecutor(taskManager.getThreadFactory());
         this.futures = new HashMap<String, ScheduledFuture>();
         this.initDelay = initDelay;
     }

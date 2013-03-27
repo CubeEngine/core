@@ -1,6 +1,19 @@
 package de.cubeisland.cubeengine.core.command.commands;
 
-import de.cubeisland.cubeengine.core.Core;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Collection;
+import java.util.Date;
+import java.util.Locale;
+import java.util.Set;
+
+import org.bukkit.Difficulty;
+import org.bukkit.OfflinePlayer;
+import org.bukkit.Server;
+import org.bukkit.World;
+import org.bukkit.entity.Player;
+import org.bukkit.plugin.Plugin;
+
 import de.cubeisland.cubeengine.core.CorePerms;
 import de.cubeisland.cubeengine.core.bukkit.BukkitCore;
 import de.cubeisland.cubeengine.core.command.CommandContext;
@@ -19,19 +32,6 @@ import de.cubeisland.cubeengine.core.module.Module;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.util.ChatFormat;
 import de.cubeisland.cubeengine.core.util.Profiler;
-import org.bukkit.Difficulty;
-import org.bukkit.OfflinePlayer;
-import org.bukkit.Server;
-import org.bukkit.World;
-import org.bukkit.entity.Player;
-import org.bukkit.plugin.Plugin;
-
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Collection;
-import java.util.Date;
-import java.util.Locale;
-import java.util.Set;
 
 import static de.cubeisland.cubeengine.core.command.ArgBounds.NO_MAX;
 import static de.cubeisland.cubeengine.core.i18n.I18n._;
@@ -151,7 +151,8 @@ public class VanillaCommands implements CommandHolder
         }
         else
         {
-            context.sendMessage("core", "The current difficulty level: %s", _("core", world.getDifficulty().toString().toLowerCase(Locale.ENGLISH)));
+            context.sendMessage("core", "The current difficulty level: %s", _("core", world.getDifficulty().toString()
+                                                                                           .toLowerCase(Locale.ENGLISH)));
             if (this.core.getServer().isHardcore())
             {
                 context.sendMessage("core", "Your server has the hardcore mode enabled.");
@@ -182,7 +183,10 @@ public class VanillaCommands implements CommandHolder
                 DateFormat dateFormat = SimpleDateFormat.getDateInstance(SHORT, Locale.ENGLISH); // TODO replace with sender's locale
                 for (OfflinePlayer player : ops)
                 {
-                    context.sendMessage(" - " + BRIGHT_GREEN + player.getName() + WHITE + " (" + _(context.getSender(), "core", "Last seen: %s", arr(dateFormat.format(new Date(player.getLastPlayed())))) + ")");
+                    context.sendMessage(" - " + BRIGHT_GREEN + player.getName() + WHITE + " (" + _(context
+                                                                                                       .getSender(), "core", "Last seen: %s", arr(dateFormat
+                                                                                                                                                      .format(new Date(player
+                                                                                                                                                                           .getLastPlayed())))) + ")");
                 }
             }
             return;
@@ -219,10 +223,11 @@ public class VanillaCommands implements CommandHolder
             {
                 continue;
             }
-            onlineUser.sendMessage("core", "&eUser &2%s &ehas been opped by &2%s&e!", offlinePlayer.getName(), context.getSender().getName());
+            onlineUser.sendMessage("core", "&eUser &2%s &ehas been opped by &2%s&e!", offlinePlayer.getName(), context
+                .getSender().getName());
         }
 
-        this.core.getCoreLogger().log(NOTICE, "Player {0} has been opped by {1}", arr(offlinePlayer.getName(), context.getSender().getName()));
+        this.core.getLog().log(NOTICE, "Player {0} has been opped by {1}", arr(offlinePlayer.getName(), context.getSender().getName()));
     }
 
     @Command(
@@ -270,10 +275,11 @@ public class VanillaCommands implements CommandHolder
             {
                 continue;
             }
-            onlineUser.sendMessage("core", "&eUser &2%s&a has been opped by &2%s&a!", offlinePlayer.getName(), context.getSender().getName());
+            onlineUser.sendMessage("core", "&eUser &2%s&a has been opped by &2%s&a!", offlinePlayer.getName(), context
+                .getSender().getName());
         }
 
-        this.core.getCoreLogger().log(NOTICE, "Player {0} has been deopped by {1}", arr(offlinePlayer.getName(), context.getSender().getName()));
+        this.core.getLog().log(NOTICE, "Player {0} has been deopped by {1}", arr(offlinePlayer.getName(), context.getSender().getName()));
     }
 
     @Command(desc = "Lists all loaded plugins")
@@ -282,13 +288,14 @@ public class VanillaCommands implements CommandHolder
         Plugin[] plugins = this.core.getServer().getPluginManager().getPlugins();
         Collection<Module> modules = this.core.getModuleManager().getModules();
 
-        context.sendMessage("core", "There are %d plugins and %d CubeEngine modules loaded:", plugins.length, modules.size());
+        context.sendMessage("core", "There are %d plugins and %d CubeEngine modules loaded:", plugins.length, modules
+            .size());
         context.sendMessage(" ");
-        context.sendMessage(" - " + BRIGHT_GREEN + core.getName() + RESET + " (r" + Core.REVISION + ")");
+        context.sendMessage(" - " + BRIGHT_GREEN + core.getName() + RESET + " (r" + context.getCore().getVersion() + ")");
 
         for (Module m : modules)
         {
-            context.sendMessage("   - " + (m.isEnabled() ? BRIGHT_GREEN : RED) + m.getName() + RESET + " (r" + m.getRevision() + ")");
+            context.sendMessage("   - " + (m.isEnabled() ? BRIGHT_GREEN : RED) + m.getName() + RESET + " (r" + m.getVersion() + ")");
         }
 
         for (Plugin p : plugins)
@@ -331,7 +338,8 @@ public class VanillaCommands implements CommandHolder
             }
             this.core.getServer().savePlayers();
             context.sendMessage("core", "&aAll worlds have been saved to disk!");
-            context.sendMessage("core", "&aThe saving took %d milliseconds.", Profiler.endProfiling("save-worlds", MILLISECONDS));
+            context.sendMessage("core", "&aThe saving took %d milliseconds.", Profiler
+                .endProfiling("save-worlds", MILLISECONDS));
         }
     }
 
@@ -354,7 +362,8 @@ public class VanillaCommands implements CommandHolder
             else
             {
                 context.sendMessage(" ");
-                context.sendMessage("core", "&e%s&f is currently running in version &9%s&f.", plugin.getName(), plugin.getDescription().getVersion());
+                context.sendMessage("core", "&e%s&f is currently running in version &9%s&f.", plugin.getName(), plugin
+                    .getDescription().getVersion());
                 context.sendMessage(" ");
                 context.sendMessage("core", "&nPlugin information:");
                 context.sendMessage(" ");
@@ -371,16 +380,18 @@ public class VanillaCommands implements CommandHolder
         {
             if (server.getName().equalsIgnoreCase("craftbukkit"))
             {
-                context.sendMessage("core", "This server is unfortunately running &c%s&r in version &9%s", server.getName(), server.getVersion());
+                context.sendMessage("core", "This server is unfortunately running &c%s&r in version &9%s", server
+                    .getName(), server.getVersion());
                 context.sendMessage("core", "&kTrololol EvilSeph&r!");
             }
             else
             {
-                context.sendMessage("core", "This server is running &e%s&r in version &9%s", server.getName(), server.getVersion());
+                context.sendMessage("core", "This server is running &e%s&r in version &9%s", server.getName(), server
+                    .getVersion());
             }
             context.sendMessage("core", "&eBukkit API&r Version: &9%s", server.getBukkitVersion());
             context.sendMessage(" ");
-            context.sendMessage("core", "Expanded and improved by &aCubeEngine&r revision &9%s", Core.REVISION);
+            context.sendMessage("core", "Expanded and improved by &aCubeEngine&r version &9%s", context.getCore().getVersion());
         }
     }
 
@@ -411,7 +422,7 @@ public class VanillaCommands implements CommandHolder
             }
 
             player.setWhitelisted(true);
-            context.sendMessage("core", "&2%s&a is now whitelisted.",player.getName());
+            context.sendMessage("core", "&2%s&a is now whitelisted.", player.getName());
         }
 
         @Command(names = {
@@ -432,7 +443,7 @@ public class VanillaCommands implements CommandHolder
             }
 
             player.setWhitelisted(false);
-            context.sendMessage("core", "&2%s&a is not whitelisted anymore.",player.getName());
+            context.sendMessage("core", "&2%s&a is not whitelisted anymore.", player.getName());
         }
 
         @Command(desc = "Lists all the whitelisted players")

@@ -1,6 +1,7 @@
 package de.cubeisland.cubeengine.core;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import java.util.logging.Logger;
+
 import de.cubeisland.cubeengine.core.bukkit.EventManager;
 import de.cubeisland.cubeengine.core.bukkit.TaskManager;
 import de.cubeisland.cubeengine.core.command.CommandManager;
@@ -13,10 +14,11 @@ import de.cubeisland.cubeengine.core.storage.database.Database;
 import de.cubeisland.cubeengine.core.storage.world.WorldManager;
 import de.cubeisland.cubeengine.core.user.UserManager;
 import de.cubeisland.cubeengine.core.util.InventoryGuardFactory;
+import de.cubeisland.cubeengine.core.util.Version;
 import de.cubeisland.cubeengine.core.util.matcher.Match;
 import de.cubeisland.cubeengine.core.webapi.ApiServer;
 
-import java.util.logging.Logger;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * This interface specifies all the methods the core of the CubeEngine has to provide.
@@ -25,7 +27,12 @@ import java.util.logging.Logger;
  */
 public interface Core
 {
-    public static final int REVISION = 1;
+    /**
+     * Returns the version of the core
+     *
+     * @return the version
+     */
+    public Version getVersion();
 
     /**
      * The method returns the database
@@ -67,7 +74,7 @@ public interface Core
      *
      * @return the engine logger
      */
-    public Logger getCoreLogger();
+    public Logger getLog();
 
     /**
      * This method returns the module manager

@@ -129,7 +129,7 @@ public abstract class ParentNode extends Node
     @Override
     public String unwrap()
     {
-        CubeEngine.getLogger().log(Level.WARNING,"Unexpected parent-node data! Is the config up to date?");
+        CubeEngine.getLog().log(Level.WARNING,"Unexpected parent-node data! Is the config up to date?");
         return null;
     }
 

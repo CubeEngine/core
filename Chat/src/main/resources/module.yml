@@ -1,5 +1,5 @@
 name: ${project.name}
-revision: 1
+revision: ${project.version}
 description: ${project.description}
 soft-dependency:
 - Roles

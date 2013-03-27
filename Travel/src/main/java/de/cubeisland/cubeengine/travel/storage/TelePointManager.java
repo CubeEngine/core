@@ -90,9 +90,9 @@ public class TelePointManager extends SingleKeyStorage<Long, TeleportPoint>
         }
         catch (SQLException ex)
         {
-            module.getLogger().log(LogLevel.ERROR, "An error occurred while preparing the database statements");
-            module.getLogger().log(LogLevel.DEBUG, "The error was: {0}", ex.getMessage());
-            module.getLogger().log(LogLevel.DEBUG, "This is the stack: ", ex);
+            module.getLog().log(LogLevel.ERROR, "An error occurred while preparing the database statements");
+            module.getLog().log(LogLevel.DEBUG, "The error was: {0}", ex.getMessage());
+            module.getLog().log(LogLevel.DEBUG, "This is the stack: ", ex);
         }
     }
 

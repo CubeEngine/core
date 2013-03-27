@@ -60,7 +60,7 @@ public class AnnouncementManager
     public AnnouncementManager(Shout module, File announcementFolder)
     {
         this.module = module;
-        this.logger = module.getLogger();
+        this.logger = module.getLog();
         this.i18n = module.getCore().getI18n();
         this.announcer = module.getAnnouncer();
         this.receivers = new ConcurrentHashMap<String, Receiver>();

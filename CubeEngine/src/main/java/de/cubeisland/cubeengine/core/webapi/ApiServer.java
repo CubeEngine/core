@@ -58,7 +58,7 @@ public class ApiServer
     public ApiServer(Core core)
     {
         this.core = core;
-        this.logger = core.getCoreLogger();
+        this.logger = core.getLog();
         this.bootstrap = new AtomicReference<ServerBootstrap>(null);
         this.channel = new AtomicReference<Channel>(null);
         this.bindAddress = new AtomicReference<InetAddress>(null);

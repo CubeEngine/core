@@ -59,7 +59,7 @@ public class Basics extends Module
 		final Database db = this.getCore().getDB();
         final CommandManager cm = this.getCore().getCommandManager();
         final EventManager em = this.getCore().getEventManager();
-        this.basicUM = new BasicUserManager(db);
+        this.basicUM = new BasicUserManager(this.getCore());
         this.mailManager = new MailManager(db, this.basicUM);
         this.ignoreListManager = new IgnoreListManager(db);
         this.perm = new BasicsPerm(this);

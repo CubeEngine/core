@@ -8,6 +8,7 @@ import de.cubeisland.cubeengine.core.Core;
 import de.cubeisland.cubeengine.core.permission.Permission;
 import de.cubeisland.cubeengine.core.storage.ModuleRegistry;
 import de.cubeisland.cubeengine.core.storage.SimpleModuleRegistry;
+import de.cubeisland.cubeengine.core.util.Version;
 
 import org.apache.commons.lang.Validate;
 
@@ -22,7 +23,7 @@ public abstract class Module
     private boolean initialized = false;
     private Core core;
     private ModuleInfo info;
-    private Logger logger;
+    private Logger log;
     private ModuleLoader loader;
     private ModuleRegistry registry = null;
     private ClassLoader classLoader;
@@ -30,7 +31,7 @@ public abstract class Module
     private boolean enabled;
     private Permission modulePermission;
 
-    final void initialize(Core core, ModuleInfo info, File folder, Logger logger, ModuleLoader loader, ClassLoader classLoader)
+    final void initialize(Core core, ModuleInfo info, File folder, Logger log, ModuleLoader loader, ClassLoader classLoader)
     {
         if (!this.initialized)
         {
@@ -42,7 +43,7 @@ public abstract class Module
             this.folder = folder;
             this.enabled = false;
 
-            this.logger = logger;
+            this.log = log;
         }
     }
 
@@ -71,9 +72,9 @@ public abstract class Module
      *
      * @return the revision number
      */
-    public int getRevision()
+    public Version getVersion()
     {
-        return this.info.getRevision();
+        return this.info.getVersion();
     }
 
     /**
@@ -87,13 +88,13 @@ public abstract class Module
     }
 
     /**
-     * This method returns the module logger
+     * This method returns the module log
      *
-     * @return the module logger
+     * @return the module log
      */
-    public Logger getLogger()
+    public Logger getLog()
     {
-        return this.logger;
+        return this.log;
     }
 
     /**
@@ -233,7 +234,7 @@ public abstract class Module
             }
             catch (Throwable t)
             {
-                this.getLogger().log(ERROR, t.getClass().getSimpleName() + " while enabling: " + t.getLocalizedMessage(), t);
+                this.getLog().log(ERROR, t.getClass().getSimpleName() + " while enabling: " + t.getLocalizedMessage(), t);
             }
         }
         return this.enabled;
@@ -252,7 +253,7 @@ public abstract class Module
             }
             catch (Throwable t)
             {
-                this.getLogger().log(WARNING, t.getClass().getSimpleName() + " while disabling: " + t.getLocalizedMessage(), t);
+                this.getLog().log(WARNING, t.getClass().getSimpleName() + " while disabling: " + t.getLocalizedMessage(), t);
             }
             this.enabled = false;
         }

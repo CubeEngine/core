@@ -50,7 +50,7 @@ public class ReadableCommandFactory extends ReflectedCommandFactory<ReadableComm
         }
         catch (PatternSyntaxException e)
         {
-            module.getLogger().log(LogLevel.WARNING, "The pattern of a readable command failed to compile! ''{0}.{1}''", arr(holder.getClass().getSimpleName(), method.getName()));
+            module.getLog().log(LogLevel.WARNING, "The pattern of a readable command failed to compile! ''{0}.{1}''", arr(holder.getClass().getSimpleName(), method.getName()));
             return null;
         }
 

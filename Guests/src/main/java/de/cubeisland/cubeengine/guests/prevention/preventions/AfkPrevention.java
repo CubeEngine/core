@@ -147,7 +147,7 @@ public class AfkPrevention extends Prevention
                 this.taskId = taskManager.scheduleSyncDelayedTask(getModule(), this, timeout);
                 if (this.taskId < 0)
                 {
-                    getModule().getLogger().log(LogLevel.ERROR, "Tracker for {0} failed to schedule!", this.player.getName());
+                    getModule().getLog().log(LogLevel.ERROR, "Tracker for {0} failed to schedule!", this.player.getName());
                 }
             }
         }

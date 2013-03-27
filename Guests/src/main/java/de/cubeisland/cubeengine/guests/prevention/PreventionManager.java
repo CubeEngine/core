@@ -118,7 +118,7 @@ public class PreventionManager
             }
             catch (Throwable t)
             {
-                this.guests.getLogger().log(LogLevel.ERROR, "Failed to enable the prevention '" + prevention.getName() + "'...", t);
+                this.guests.getLog().log(LogLevel.ERROR, "Failed to enable the prevention '" + prevention.getName() + "'...", t);
             }
         }
         return false;
@@ -179,7 +179,7 @@ public class PreventionManager
             }
             catch (Throwable t)
             {
-                this.guests.getLogger().log(LogLevel.ERROR, "Failed to disable the prevention '" + prevention.getName() + "'...", t);
+                this.guests.getLog().log(LogLevel.ERROR, "Failed to disable the prevention '" + prevention.getName() + "'...", t);
             }
         }
         return this;

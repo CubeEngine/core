@@ -125,7 +125,7 @@ public class PermissionTreeConverter implements Converter<PermissionTree>
         }
         else
         {
-            this.module.getLogger().warning("Deleted Invalid PermissionTree!");
+            this.module.getLog().warning("Deleted Invalid PermissionTree!");
         }
         return permTree;
     }

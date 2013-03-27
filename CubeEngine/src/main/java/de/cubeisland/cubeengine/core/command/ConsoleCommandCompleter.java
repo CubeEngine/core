@@ -99,7 +99,7 @@ public class ConsoleCommandCompleter implements Completer
         }
         catch (Exception e)
         {
-            this.core.getCoreLogger().log(ERROR, "An error occurred while completing your command line!", e);
+            this.core.getLog().log(ERROR, "An error occurred while completing your command line!", e);
         }
         return cursor;
     }

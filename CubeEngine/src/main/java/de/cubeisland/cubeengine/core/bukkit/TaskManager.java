@@ -42,7 +42,7 @@ public class TaskManager
             @Override
             public void rejectedExecution(Runnable r, ThreadPoolExecutor executor)
             {
-                CubeEngine.getLogger().log(DEBUG, "Task " + r.getClass().getName() + " got rejected!");
+                CubeEngine.getLog().log(DEBUG, "Task " + r.getClass().getName() + " got rejected!");
             }
         });
         this.bukkitScheduler = bukkitScheduler;
