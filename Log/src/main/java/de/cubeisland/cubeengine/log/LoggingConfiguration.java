@@ -42,6 +42,8 @@ public class LoggingConfiguration extends YamlConfiguration
     public boolean BLOCK_FADE_ice = false;
     @Option("logging.block.break.fade.snow")
     public boolean BLOCK_FADE_snow = false;
+    @Option("logging.block.break.fade.other")
+    public boolean BLOCK_FADE_other = false;
 
     @Comment("Leaves decaying after breaking the wood nearby")
     @Option("logging.block.break.decay")

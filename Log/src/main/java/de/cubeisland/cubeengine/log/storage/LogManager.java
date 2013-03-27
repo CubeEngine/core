@@ -210,7 +210,7 @@ public class LogManager
             String sql = builder.createTable("log_entries", true).beginFields()
                     .field("key", AttrType.INT, true).autoIncrement()
                     .field("date", AttrType.TIMESTAMP)
-                    .field("action", AttrType.TINYINT, false)
+                    .field("action", AttrType.TINYINT, true)
                     .field("world", AttrType.INT, true, false)
                     .field("x", AttrType.INT, false, false)
                     .field("y", AttrType.INT, false, false)
@@ -413,6 +413,10 @@ public class LogManager
                     else if (additional.equals(Material.SNOW))
                     {
                         return config.BLOCK_FADE_snow;
+                    }
+                    else
+                    {
+                        return config.BLOCK_FADE_other;
                     }
                 }
                 throw new IllegalStateException("Invalid BLOCK_FADE:" +additional);

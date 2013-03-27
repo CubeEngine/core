@@ -221,6 +221,7 @@ public class BasicsPerm extends PermissionContainer
     public static final Permission COMMAND_HEAL_ALL = COMMAND.createAbstractChild("heal").createChild("all");
 
     private static final Permission COMMAND_FLY = COMMAND.createAbstractChild("fly");
+
     public static final Permission COMMAND_FLY_KEEP = COMMAND_FLY.createChild("keep");
     public static final Permission COMMAND_FLY_OTHER = COMMAND_FLY.createChild("other");
 
