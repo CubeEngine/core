@@ -5,6 +5,7 @@ import java.io.InputStream;
 import java.util.logging.Logger;
 
 import de.cubeisland.cubeengine.core.Core;
+import de.cubeisland.cubeengine.core.permission.Permission;
 import de.cubeisland.cubeengine.core.storage.ModuleRegistry;
 import de.cubeisland.cubeengine.core.storage.SimpleModuleRegistry;
 
@@ -27,6 +28,7 @@ public abstract class Module
     private ClassLoader classLoader;
     private File folder;
     private boolean enabled;
+    private Permission modulePermission;
 
     final void initialize(Core core, ModuleInfo info, File folder, Logger logger, ModuleLoader loader, ClassLoader classLoader)
     {
@@ -263,5 +265,14 @@ public abstract class Module
             this.registry = new SimpleModuleRegistry(this, this.loader.getRegistry());
         }
         return this.registry;
+    }
+
+    public Permission getBasePermission()
+    {
+        if (modulePermission == null)
+        {
+            modulePermission = Permission.BASE.createAbstractChild(this.getId());
+        }
+        return modulePermission;
     }
 }

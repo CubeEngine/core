@@ -275,6 +275,9 @@ public class LoggingConfiguration extends YamlConfiguration
     @Comment("Taking items out of a container")
     @Option("logging.container.remove")
     public boolean ITEM_REMOVE_enable = true;
+    @Comment("Items moved by a hopper or dropper")
+    @Option("logging.container.transfer")
+    public boolean ITEM_TRANSFER_enable = true;
 
     @Option("logging.container.type.chest")
     public boolean containerChest = true;

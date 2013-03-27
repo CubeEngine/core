@@ -14,6 +14,5 @@ public class Fly extends Module
             this.getCore().getEventManager().registerListener(this, new FlyListener(this));
         }
         this.getCore().getFileManager().dropResources(FlyResource.values());
-        this.getCore().getPermissionManager().registerPermissions(this, FlyPerm.values());
     }
 }

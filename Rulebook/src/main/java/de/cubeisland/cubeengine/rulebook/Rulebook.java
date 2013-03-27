@@ -3,6 +3,7 @@ package de.cubeisland.cubeengine.rulebook;
 import de.cubeisland.cubeengine.core.module.Module;
 import de.cubeisland.cubeengine.core.permission.PermDefault;
 import de.cubeisland.cubeengine.core.permission.Permission;
+import de.cubeisland.cubeengine.core.permission.PermissionContainer;
 import de.cubeisland.cubeengine.rulebook.bookManagement.RulebookCommands;
 import de.cubeisland.cubeengine.rulebook.bookManagement.RulebookManager;
 
@@ -14,7 +15,12 @@ public class Rulebook extends Module
     public void onEnable()
     {
         this.getCore().getFileManager().dropResources(RulebookResource.values());
-        this.getCore().getPermissionManager().registerPermission( this, Permission.BASE + '.' + this.getId() + ".command.get.other", PermDefault.OP );
+        Permission perm = Permission.BASE.
+            createAbstractChild(this.getId()).
+            createAbstractChild("command").
+            createAbstractChild("get").
+              createChild("other");
+        this.getCore().getPermissionManager().registerPermission( this, perm);
 
         this.rulebookManager = new RulebookManager(this);
 

@@ -41,6 +41,7 @@ import gnu.trove.map.hash.TObjectIntHashMap;
 import static de.cubeisland.cubeengine.core.util.InventoryUtil.getMissingSpace;
 import static de.cubeisland.cubeengine.log.storage.LogManager.ITEM_INSERT;
 import static de.cubeisland.cubeengine.log.storage.LogManager.ITEM_REMOVE;
+import static de.cubeisland.cubeengine.log.storage.LogManager.ITEM_TRANSFER;
 
 public class ContainerListener implements Listener
 {
@@ -408,7 +409,23 @@ public class ContainerListener implements Listener
     @EventHandler
     public void onItemMove(InventoryMoveItemEvent event)
     {
-        //TODO
+        Inventory source = event.getSource();
+        Inventory target = event.getDestination();
+        Location sourceLocation = this.getLocationForHolder(source.getHolder());
+        if (sourceLocation == null)
+        {
+            return;
+        }
+        Location targetLocation = this.getLocationForHolder(target.getHolder());
+        if (targetLocation == null)
+        {
+            return;
+        }
+        if (this.manager.isIgnored(targetLocation.getWorld(),ITEM_TRANSFER)) return;
+        String additional = this.serializeAdditionalItemData(new ItemData(event.getItem()),event.getItem().getAmount());
+        this.manager.queueLog(sourceLocation,ITEM_TRANSFER,
+                              null, event.getItem().getType(), event.getItem().getDurability(),
+                              source.getType().name(), additional);
     }
 
     private void prepareForLogging(User user, ItemData itemData, int amount)

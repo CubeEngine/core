@@ -71,6 +71,7 @@ public final class BukkitCore extends JavaPlugin implements Core
     private Match matcherManager;
     private InventoryGuardFactory inventoryGuard;
     private PacketEventManager packetEventManager;
+    private CorePerms corePerms;
 
     @Override
     public void onEnable()
@@ -256,7 +257,8 @@ public final class BukkitCore extends JavaPlugin implements Core
 
         // depends on: plugin manager, module manager
         this.permissionManager = new BukkitPermissionManager(this);
-        this.permissionManager.registerPermissions(this.getModuleManager().getCoreModule(), CorePerms.values());
+
+        this.corePerms = new CorePerms(this.getModuleManager().getCoreModule());
 
         // depends on: server, module manager
         this.commandManager.registerCommand(new ModuleCommands(this.moduleManager));
@@ -266,9 +268,6 @@ public final class BukkitCore extends JavaPlugin implements Core
             this.commandManager.registerCommands(this.getModuleManager().getCoreModule(), new VanillaCommands(this));
             this.commandManager.registerCommand(new WhitelistCommand(this));
         }
-
-        // depends on: server
-        BukkitUtils.registerPacketHookInjector(this);
 
         this.matcherManager = new Match();
         this.inventoryGuard = new InventoryGuardFactory(this);
@@ -297,6 +296,7 @@ public final class BukkitCore extends JavaPlugin implements Core
     {
         this.logger.log(DEBUG, "utils cleanup");
         BukkitUtils.cleanup();
+        this.corePerms.cleanup();
 
         if (this.packetEventManager != null)
         {

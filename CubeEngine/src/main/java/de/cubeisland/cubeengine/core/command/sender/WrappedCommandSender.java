@@ -3,6 +3,7 @@ package de.cubeisland.cubeengine.core.command.sender;
 import de.cubeisland.cubeengine.core.Core;
 import de.cubeisland.cubeengine.core.command.CommandSender;
 import de.cubeisland.cubeengine.core.permission.Permission;
+
 import org.bukkit.Server;
 import org.bukkit.permissions.PermissionAttachment;
 import org.bukkit.permissions.PermissionAttachmentInfo;
@@ -42,7 +43,7 @@ public class WrappedCommandSender implements CommandSender
     @Override
     public boolean isAuthorized(Permission perm)
     {
-        return this.wrapped.hasPermission(perm.getPermission());
+        return this.wrapped.hasPermission(perm.getName());
     }
 
     @Override

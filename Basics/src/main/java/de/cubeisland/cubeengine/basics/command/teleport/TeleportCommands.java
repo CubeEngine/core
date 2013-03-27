@@ -1,17 +1,18 @@
 package de.cubeisland.cubeengine.basics.command.teleport;
 
-import de.cubeisland.cubeengine.basics.Basics;
-import de.cubeisland.cubeengine.basics.BasicsPerm;
+import org.bukkit.Location;
+import org.bukkit.World;
+import org.bukkit.entity.Player;
+import org.bukkit.event.player.PlayerTeleportEvent;
+
 import de.cubeisland.cubeengine.core.CubeEngine;
 import de.cubeisland.cubeengine.core.command.parameterized.Flag;
 import de.cubeisland.cubeengine.core.command.parameterized.Param;
 import de.cubeisland.cubeengine.core.command.parameterized.ParameterizedContext;
 import de.cubeisland.cubeengine.core.command.reflected.Command;
 import de.cubeisland.cubeengine.core.user.User;
-import org.bukkit.Location;
-import org.bukkit.World;
-import org.bukkit.entity.Player;
-import org.bukkit.event.player.PlayerTeleportEvent;
+import de.cubeisland.cubeengine.basics.Basics;
+import de.cubeisland.cubeengine.basics.BasicsPerm;
 
 /**
  * Contains commands to teleport to players/worlds/position.
@@ -91,16 +92,22 @@ public class TeleportCommands
                     context.sendTranslated("&cYou are not allowed to teleport other persons!");
                     return;
                 }
-                if (BasicsPerm.COMMAND_TP_PREVENT_TP.isAuthorized(user)) // teleport the user
+                if (user != context.getSender())
                 {
-                    context.sendTranslated("&cYou are not allowed to teleport %s!", user.getName());
-                    return;
-                }
-                if (BasicsPerm.COMMAND_TP_PREVENT_TPTO.isAuthorized(target)) // teleport to the target
+                    if (BasicsPerm.COMMAND_TP_PREVENT_TP.isAuthorized(user)) // teleport the user
+                    {
+                        context.sendTranslated("&cYou are not allowed to teleport %s!", user.getName());
+                        return;
+                    }
+                } // else equals tp -> no need to check tp perm
+                if (target != context.getSender())
                 {
-                    context.sendTranslated("&cYou are not allowed to teleport to %s!", target.getName());
-                    return;
-                }
+                    if (BasicsPerm.COMMAND_TP_PREVENT_TPTO.isAuthorized(target)) // teleport to the target
+                    {
+                        context.sendTranslated("&cYou are not allowed to teleport to %s!", target.getName());
+                        return;
+                    }
+                } // else equals tphere -> no need to check tpto perm
             }
         }
         else

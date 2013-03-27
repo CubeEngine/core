@@ -11,6 +11,8 @@ import org.bukkit.plugin.Plugin;
 import java.util.Locale;
 import java.util.Set;
 
+import de.cubeisland.cubeengine.core.permission.Permission;
+
 public class TestConsoleSender implements CommandSender
 {
     private final Core core;

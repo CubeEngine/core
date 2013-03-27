@@ -145,6 +145,7 @@ public class LogManager
     //chest-transactions
     public static final int ITEM_INSERT = 0x90;
     public static final int ITEM_REMOVE = 0x91;
+    public static final int ITEM_TRANSFER = 0x92;
 
     public static final int ITEM_CHANGE_IN_CONTAINER = 0x93; // this ID is not used in the database
     //misc
@@ -587,6 +588,8 @@ public class LogManager
                 return  config.ITEM_INSERT_enable;
             case ITEM_REMOVE :
                 return config.ITEM_REMOVE_enable;
+            case ITEM_TRANSFER :
+                return config.ITEM_TRANSFER_enable;
             case ITEM_CHANGE_IN_CONTAINER:
                 if (additional instanceof InventoryHolder)
                 {
