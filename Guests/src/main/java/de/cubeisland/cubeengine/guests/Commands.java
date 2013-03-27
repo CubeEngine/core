@@ -345,7 +345,7 @@ public class Commands extends ContainerCommand
     {
         if (context != null)
         {
-            this.guests.getLogger().log(LogLevel.INFO, message);
+            this.guests.getLog().log(LogLevel.INFO, message);
         }
         final CommandSender sender = context.getSender();
         for (User user : this.guests.getCore().getUserManager().getOnlineUsers())

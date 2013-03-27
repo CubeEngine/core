@@ -5,7 +5,6 @@ import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerTeleportEvent;
 
-import de.cubeisland.cubeengine.core.CubeEngine;
 import de.cubeisland.cubeengine.core.command.parameterized.Flag;
 import de.cubeisland.cubeengine.core.command.parameterized.Param;
 import de.cubeisland.cubeengine.core.command.parameterized.ParameterizedContext;
@@ -171,7 +170,7 @@ public class TeleportCommands
                 continue;
             }
             boolean safe = !context.hasFlag("u");
-            TeleportCommands.teleport(CubeEngine.getUserManager().getExactUser(player), user.getLocation(), safe, force, true);
+            TeleportCommands.teleport(user.getCore().getUserManager().getExactUser(player), user.getLocation(), safe, force, true);
         }
         context.getCore().getUserManager().broadcastMessage("basics", "&aTeleporting everyone to %s", user.getName());
     }
@@ -249,7 +248,7 @@ public class TeleportCommands
                 continue;
             }
             boolean safe = !context.hasFlag("u");
-            TeleportCommands.teleport(CubeEngine.getUserManager().getExactUser(player), sender.getLocation(), safe, force, true);
+            TeleportCommands.teleport(sender.getCore().getUserManager().getExactUser(player), sender.getLocation(), safe, force, true);
         }
         context.sendTranslated("&aYou teleported everyone to you!");
         context.getCore().getUserManager().broadcastMessage("basics", "&aTeleporting everyone to %s", sender.getName());

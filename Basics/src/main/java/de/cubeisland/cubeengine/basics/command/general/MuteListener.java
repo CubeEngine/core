@@ -7,7 +7,6 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 
-import de.cubeisland.cubeengine.core.CubeEngine;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.basics.Basics;
 import de.cubeisland.cubeengine.basics.storage.BasicUser;
@@ -27,7 +26,7 @@ public class MuteListener implements Listener
         if (!event.getMessage().startsWith("/"))
         {
             // muted?
-            User sender = CubeEngine.getUserManager().getExactUser(event.getPlayer());
+            User sender = this.basics.getCore().getUserManager().getExactUser(event.getPlayer());
             if (sender != null)
             {
                 BasicUser bUser = this.basics.getBasicUserManager().getBasicUser(sender);

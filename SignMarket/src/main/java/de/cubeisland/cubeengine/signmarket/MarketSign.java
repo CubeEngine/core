@@ -1017,7 +1017,7 @@ public class MarketSign
         }
         else
         {
-            this.module.getLogger().warning("Market-Sign is not a sign-block! " + this.getLocation());
+            this.module.getLog().warning("Market-Sign is not a sign-block! " + this.getLocation());
         }
     }
 

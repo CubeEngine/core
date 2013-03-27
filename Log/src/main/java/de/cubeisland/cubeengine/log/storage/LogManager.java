@@ -31,7 +31,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.entity.minecart.StorageMinecart;
 import org.bukkit.inventory.InventoryHolder;
 
-import de.cubeisland.cubeengine.core.CubeEngine;
 import de.cubeisland.cubeengine.core.bukkit.EventManager;
 import de.cubeisland.cubeengine.core.config.Configuration;
 import de.cubeisland.cubeengine.core.logger.LogLevel;
@@ -158,7 +157,8 @@ public class LogManager
     public static final int ENCHANT_ITEM = 0xA6;
     public static final int CRAFT_ITEM = 0xA7;
 
-    private final AsyncTaskQueue taskQueue = new AsyncTaskQueue(CubeEngine.getTaskManager().getExecutorService());
+    private final ExecutorService executorService;
+    private final AsyncTaskQueue taskQueue;
     private final Database database;
     private final Log module;
     private final int batchSize;
@@ -243,6 +243,10 @@ public class LogManager
         {
             throw new StorageException("Error during initialization of log-tables", ex);
         }
+
+        this.executorService = Executors.newSingleThreadScheduledExecutor(this.module.getCore().getTaskManager().getThreadFactory()); // TODO is not shut down!
+        this.taskQueue = new AsyncTaskQueue(this.executorService); // TODO is not shut down!
+
         runner = new Runnable() {
             @Override
             public void run() {
@@ -252,7 +256,7 @@ public class LogManager
                         try {
                             doEmptyLogs(batchSize);
                         } catch (Exception ex) {
-                            LogManager.this.module.getLogger().log(LogLevel.ERROR, "Error while logging!", ex);
+                            LogManager.this.module.getLog().log(LogLevel.ERROR, "Error while logging!", ex);
                         }
                     }
                 });
@@ -317,12 +321,12 @@ public class LogManager
         }
         if (logSize > 20)
         {
-            this.module.getLogger().log(LogLevel.DEBUG,
+            this.module.getLog().log(LogLevel.DEBUG,
                     logSize + " logged in: " + TimeUnit.NANOSECONDS.toMillis(nanos) +
                             "ms | remaining logs: " + queuedLogs.size());
-            this.module.getLogger().log(LogLevel.DEBUG,
+            this.module.getLog().log(LogLevel.DEBUG,
                     "Average logtime per log: " + TimeUnit.NANOSECONDS.toMicros(timeSpend / logsLogged)+ " micros");
-            this.module.getLogger().log(LogLevel.DEBUG,
+            this.module.getLog().log(LogLevel.DEBUG,
                     "Average logtime per log in full load: " + TimeUnit.NANOSECONDS.toMicros(timeSpendFullLoad / logsLoggedFullLoad)+" micros");
         }
         if (!queuedLogs.isEmpty())
@@ -381,7 +385,7 @@ public class LogManager
             try {
                 latch.await();
             } catch (InterruptedException e) {
-                this.module.getLogger().log(LogLevel.WARNING,"Error while waiting!",e);
+                this.module.getLog().log(LogLevel.WARNING,"Error while waiting!",e);
             }
         }
     }
@@ -612,12 +616,12 @@ public class LogManager
                     if (additional instanceof HumanEntity){
                         return false; // no need to log these
                     }
-                    this.module.getLogger().log(LogLevel.DEBUG,"Unknown InventoryHolder: "+ additional);
+                    this.module.getLog().log(LogLevel.DEBUG,"Unknown InventoryHolder: "+ additional);
                     return false;
                 }
                 if (additional == null)
                 {
-                    this.module.getLogger().log(LogLevel.DEBUG, "Inventory has no InventoryHolder!");
+                    this.module.getLog().log(LogLevel.DEBUG, "Inventory has no InventoryHolder!");
                     return false;
                 }
                 throw new IllegalStateException("Invalid ITEM_CHANGE_IN_CONTAINER: "+additional);

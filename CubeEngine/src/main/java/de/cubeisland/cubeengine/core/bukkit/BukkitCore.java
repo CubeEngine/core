@@ -25,7 +25,6 @@ import de.cubeisland.cubeengine.core.command.reflected.ReflectedCommandFactory;
 import de.cubeisland.cubeengine.core.command.reflected.readable.ReadableCommandFactory;
 import de.cubeisland.cubeengine.core.config.Configuration;
 import de.cubeisland.cubeengine.core.filesystem.FileManager;
-import de.cubeisland.cubeengine.core.filesystem.gettext.MessageCatalog;
 import de.cubeisland.cubeengine.core.i18n.I18n;
 import de.cubeisland.cubeengine.core.logger.CubeFileHandler;
 import de.cubeisland.cubeengine.core.logger.CubeLogger;
@@ -38,6 +37,7 @@ import de.cubeisland.cubeengine.core.storage.world.WorldManager;
 import de.cubeisland.cubeengine.core.user.UserManager;
 import de.cubeisland.cubeengine.core.util.InventoryGuardFactory;
 import de.cubeisland.cubeengine.core.util.Profiler;
+import de.cubeisland.cubeengine.core.util.Version;
 import de.cubeisland.cubeengine.core.util.matcher.Match;
 import de.cubeisland.cubeengine.core.util.worker.CubeThreadFactory;
 import de.cubeisland.cubeengine.core.webapi.ApiConfig;
@@ -54,6 +54,7 @@ import static de.cubeisland.cubeengine.core.logger.LogLevel.*;
  */
 public final class BukkitCore extends JavaPlugin implements Core
 {
+    private Version version;
     private Database database;
     private BukkitPermissionManager permissionManager;
     private UserManager userManager;
@@ -76,18 +77,20 @@ public final class BukkitCore extends JavaPlugin implements Core
     @Override
     public void onEnable()
     {
+        this.version = Version.fromString(this.getDescription().getVersion());
         final Server server = this.getServer();
         final PluginManager pm = server.getPluginManager();
         if (!BukkitUtils.isCompatible())
         {
-            this.getLogger().log(ERROR, "Your Bukkit server is incompatible with this CubeEngine revision.");
+            this.getLogger().log(ERROR, "Your Bukkit server is incompatible with this CubeEngine version.");
             pm.disablePlugin(this);
             return;
         }
+
         CubeEngine.initialize(this);
 
         this.logger = new CubeLogger("Core", this.getLogger());
-        // TODO RemoteHandler is not yet implemented this.logger.addHandler(new RemoteHandler(LogLevelERROR, this));
+        // TODO RemoteHandler is not yet implemented this.logger.addHandler(new RemoteHandler(LogLevel.ERROR, this));
 
         this.packetEventManager = new PacketEventManager(this.logger);
         this.packetEventManager.addReceivedListener(204, new PacketReceivedListener() {
@@ -138,15 +141,15 @@ public final class BukkitCore extends JavaPlugin implements Core
                     final long time = System.currentTimeMillis();
                     if (time - this.lastReceived <= 5000)
                     {
-                        getCoreLogger().log(NOTICE, "Shutting down the server now!");
+                        getLog().log(NOTICE, "Shutting down the server now!");
                         getServer().shutdown();
                         this.lastReceived = -1;
                     }
                     else
                     {
                         this.lastReceived = time;
-                        getCoreLogger().log(NOTICE, "You can't copy content from the console using CTRL-C!");
-                        getCoreLogger().log(NOTICE, "If you really want shutdown the server use the stop command or press CTRL-C again within 5 seconds!");
+                        getLog().log(NOTICE, "You can't copy content from the console using CTRL-C!");
+                        getLog().log(NOTICE, "If you really want shutdown the server use the stop command or press CTRL-C again within 5 seconds!");
                     }
                 }
             });
@@ -162,9 +165,9 @@ public final class BukkitCore extends JavaPlugin implements Core
                         if (!this.reloading)
                         {
                             this.reloading = true;
-                            getCoreLogger().log(NOTICE, "Reloading the server!");
+                            getLog().log(NOTICE, "Reloading the server!");
                             getServer().reload();
-                            getCoreLogger().log(NOTICE, "Done reloading the server!");
+                            getLog().log(NOTICE, "Done reloading the server!");
                             this.reloading = false;
                         }
                     }
@@ -184,7 +187,7 @@ public final class BukkitCore extends JavaPlugin implements Core
                     if (!this.shuttingDown)
                     {
                         this.shuttingDown = true;
-                        getCoreLogger().log(NOTICE, "Shutting down the server!");
+                        getLog().log(NOTICE, "Shutting down the server!");
                         getServer().shutdown();
                     }
                 }
@@ -384,6 +387,12 @@ public final class BukkitCore extends JavaPlugin implements Core
     }
 
     @Override
+    public Version getVersion()
+    {
+        return this.version;
+    }
+
+    @Override
     public Database getDB()
     {
         return this.database;
@@ -420,7 +429,7 @@ public final class BukkitCore extends JavaPlugin implements Core
     }
 
     @Override
-    public CubeLogger getCoreLogger()
+    public CubeLogger getLog()
     {
         return this.logger;
     }

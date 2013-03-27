@@ -8,11 +8,13 @@ import gnu.trove.map.hash.THashMap;
  */
 public class TableManager extends SingleKeyStorage<Long, Table>
 {
+    private static final int REVISION = 1;
+
     private THashMap<String, Table> tables = new THashMap<String, Table>();
 
     public TableManager(final Core core)
     {
-        super(core.getDB(), Table.class, Core.REVISION);
+        super(core.getDB(), Table.class, REVISION);
         tableManager = this;
         initialize();
         for (Table t : this.getAll())

@@ -28,6 +28,7 @@ import de.cubeisland.cubeengine.core.module.exception.MissingDependencyException
 import de.cubeisland.cubeengine.core.module.exception.MissingPluginDependencyException;
 import de.cubeisland.cubeengine.core.module.exception.ModuleException;
 import de.cubeisland.cubeengine.core.util.Profiler;
+import de.cubeisland.cubeengine.core.util.Version;
 
 import gnu.trove.map.hash.THashMap;
 import org.apache.commons.lang.Validate;
@@ -47,13 +48,13 @@ public abstract class BaseModuleManager implements ModuleManager
     public BaseModuleManager(Core core, ClassLoader parentClassLoader)
     {
         this.core = core;
-        this.logger = core.getCoreLogger();
+        this.logger = core.getLog();
         this.loader = new ModuleLoader(core, parentClassLoader);
         this.modules = new ConcurrentHashMap<String, Module>();
         this.moduleInfos = new ConcurrentHashMap<String, ModuleInfo>();
         this.classMap = new THashMap<Class<? extends Module>, Module>();
         this.coreModule = new CoreModule();
-        this.coreModule.initialize(core, new ModuleInfo(core), core.getFileManager().getDataFolder(), core.getCoreLogger(), null, null);
+        this.coreModule.initialize(core, new ModuleInfo(core), core.getFileManager().getDataFolder(), core.getLog(), null, null);
     }
 
     public Module getModule(String name)
@@ -147,15 +148,15 @@ public abstract class BaseModuleManager implements ModuleManager
                 module = this.getModule(info.getId());
                 if (module != null)
                 {
-                    if (module.getInfo().getRevision() >= info.getRevision())
+                    if (module.getInfo().getVersion().compareTo(info.getVersion()) >= 0)
                     {
-                        this.logger.log(WARNING, "A newer or equal revision of the module '" + info.getName() + "' is already loaded!");
+                        this.logger.log(WARNING, "A newer or equal version of the module '" + info.getName() + "' is already loaded!");
                         continue;
                     }
                     else
                     {
                         this.unloadModule(module);
-                        this.logger.log(NOTICE, "A newer revision of '" + info.getName() + "' will replace the currently loaded version!");
+                        this.logger.log(NOTICE, "A newer version of '" + info.getName() + "' will replace the currently loaded version!");
                     }
                 }
                 this.moduleInfos.put(info.getId(), info);
@@ -228,16 +229,16 @@ public abstract class BaseModuleManager implements ModuleManager
 
         Module depModule;
         String depName;
-        for (Map.Entry<String, Integer> dep : info.getSoftDependencies().entrySet())
+        for (Map.Entry<String, Version> dep : info.getSoftDependencies().entrySet())
         {
             depName = dep.getKey();
             depModule = this.loadModule(depName, moduleInfos, loadStack);
-            if (dep.getValue() > -1 && depModule.getInfo().getRevision() < dep.getValue())
+            if (dep.getValue().isNewerThan(Version.ZERO) && depModule.getInfo().getVersion().isOlderThan(dep.getValue()))
             {
-                this.logger.log(WARNING, "The module " + name + " requested a newer revision of " + depName + "!");
+                this.logger.log(WARNING, "The module " + name + " requested a newer version of " + depName + "!");
             }
         }
-        for (Map.Entry<String, Integer> dep : info.getDependencies().entrySet())
+        for (Map.Entry<String, Version> dep : info.getDependencies().entrySet())
         {
             depName = dep.getKey();
             depModule = this.loadModule(depName, moduleInfos, loadStack);
@@ -247,9 +248,9 @@ public abstract class BaseModuleManager implements ModuleManager
             }
             else
             {
-                if (dep.getValue() > -1 && depModule.getInfo().getRevision() < dep.getValue())
+                if (dep.getValue().isNewerThan(Version.ZERO) && depModule.getInfo().getVersion().isOlderThan(dep.getValue()))
                 {
-                    throw new IncompatibleDependencyException(name, depName, dep.getValue(), depModule.getInfo().getRevision());
+                    throw new IncompatibleDependencyException(name, depName, dep.getValue(), depModule.getInfo().getVersion());
                 }
             }
         }
@@ -257,7 +258,7 @@ public abstract class BaseModuleManager implements ModuleManager
         loadStack.pop();
 
         Map<Class, Object> pluginClassMap = this.getPluginClassMap();
-        Integer requiredVersion;
+        Version requiredVersion;
         Module injectedModule;
         Class fieldType;
         for (Field field : module.getClass().getDeclaredFields())
@@ -275,7 +276,7 @@ public abstract class BaseModuleManager implements ModuleManager
                     continue;
                 }
                 requiredVersion = module.getInfo().getSoftDependencies().get(injectedModule.getId());
-                if (requiredVersion != null && requiredVersion > -1 && injectedModule.getInfo().getRevision() < requiredVersion)
+                if (requiredVersion != null && requiredVersion.isNewerThan(Version.ZERO) && injectedModule.getInfo().getVersion().isOlderThan(requiredVersion))
                 {
                     continue;
                 }
@@ -289,7 +290,7 @@ public abstract class BaseModuleManager implements ModuleManager
                 }
                 catch (Exception e)
                 {
-                    module.getLogger().log(WARNING, "Failed to inject a dependency: {0}", injectedModule.getName());
+                    module.getLog().log(WARNING, "Failed to inject a dependency: {0}", injectedModule.getName());
                 }
             }
             else
@@ -308,7 +309,7 @@ public abstract class BaseModuleManager implements ModuleManager
                     }
                     catch (Exception e)
                     {
-                        module.getLogger().log(WARNING, "Failed to inject a plugin dependency: {0}", String.valueOf(plugin));
+                        module.getLog().log(WARNING, "Failed to inject a plugin dependency: {0}", String.valueOf(plugin));
                     }
                 }
             }
@@ -333,18 +334,18 @@ public abstract class BaseModuleManager implements ModuleManager
      */
     public synchronized boolean enableModule(Module module)
     {
-        module.getLogger().log(INFO, "Enabling revision {0}...", module.getRevision());
+        module.getLog().log(INFO, "Enabling version {0}...", module.getVersion());
         Profiler.startProfiling("enable-module");
         boolean result = module.enable();
         final long enableTime = Profiler.endProfiling("enable-module", TimeUnit.MICROSECONDS);
         if (!result)
         {
-            module.getLogger().log(ERROR, " Module failed to load.");
+            module.getLog().log(ERROR, " Module failed to load.");
         }
         else
         {
             this.core.getEventManager().fireEvent(new ModuleEnabledEvent(this.core, module));
-            module.getLogger().log(INFO, "Successfully enabled within {0} microseconds!", enableTime);
+            module.getLog().log(INFO, "Successfully enabled within {0} microseconds!", enableTime);
         }
         return result;
     }
@@ -396,7 +397,7 @@ public abstract class BaseModuleManager implements ModuleManager
         this.core.getApiServer().unregisterApiHandlers(module);
 
         this.core.getEventManager().fireEvent(new ModuleDisabledEvent(this.core, module));
-        module.getLogger().log(INFO, "Module disabled within {0} microseconds", Profiler.endProfiling("disable-module", TimeUnit.MICROSECONDS));
+        module.getLog().log(INFO, "Module disabled within {0} microseconds", Profiler.endProfiling("disable-module", TimeUnit.MICROSECONDS));
     }
 
     /**

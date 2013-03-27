@@ -87,7 +87,7 @@ public class WorldRoleProvider extends RoleProvider
         List<String> dRoles = config.defaultRoles.get(this.mirrorConfig.mainWorld);
         if (dRoles == null || dRoles.isEmpty())
         {
-            module.getLogger().log(LogLevel.WARNING, "No default-roles defined for " + this.mirrorConfig.mainWorld);
+            module.getLog().log(LogLevel.WARNING, "No default-roles defined for " + this.mirrorConfig.mainWorld);
             return;
         }
         for (String roleName : dRoles)
@@ -95,7 +95,7 @@ public class WorldRoleProvider extends RoleProvider
             Role role = this.roles.get(roleName.toLowerCase(Locale.ENGLISH));
             if (role == null)
             {
-                module.getLogger().log(LogLevel.WARNING, "Could not find default-role " + roleName);
+                module.getLog().log(LogLevel.WARNING, "Could not find default-role " + roleName);
             }
             this.defaultRoles.add(role);
         }
@@ -113,7 +113,7 @@ public class WorldRoleProvider extends RoleProvider
             // Sets the folder for this provider
             this.folder = new File(rolesFolder, this.mirrorConfig.mainWorld);
         }
-        this.module.getLogger().log(DEBUG, "Loading roles for provider of " + this.mirrorConfig.mainWorld + ":");
+        this.module.getLog().log(DEBUG, "Loading roles for provider of " + this.mirrorConfig.mainWorld + ":");
         super.loadInConfigurations(rolesFolder);
     }
 

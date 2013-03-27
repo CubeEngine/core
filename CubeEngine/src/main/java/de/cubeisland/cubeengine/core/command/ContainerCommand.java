@@ -75,7 +75,7 @@ public abstract class ContainerCommand extends ParameterizedCommand implements C
                 return command.run(childContext);
             }
 
-            this.getModule().getLogger().log(WARNING, "Child delegation failed: child ''{0}'' not found!", this.delegation.getChildName());
+            this.getModule().getLog().log(WARNING, "Child delegation failed: child ''{0}'' not found!", this.delegation.getChildName());
         }
 
         this.help(new HelpContext(context));

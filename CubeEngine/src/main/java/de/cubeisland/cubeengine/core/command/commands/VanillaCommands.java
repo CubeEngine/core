@@ -14,7 +14,6 @@ import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 
-import de.cubeisland.cubeengine.core.Core;
 import de.cubeisland.cubeengine.core.CorePerms;
 import de.cubeisland.cubeengine.core.bukkit.BukkitCore;
 import de.cubeisland.cubeengine.core.command.CommandContext;
@@ -223,7 +222,7 @@ public class VanillaCommands implements CommandHolder
             onlineUser.sendTranslated("&eUser &2%s &ehas been opped by &2%s&e!", offlinePlayer.getName(), context.getSender().getName());
         }
 
-        this.core.getCoreLogger().log(NOTICE, "Player {0} has been opped by {1}", arr(offlinePlayer.getName(), context.getSender().getName()));
+        this.core.getLog().log(NOTICE, "Player {0} has been opped by {1}", arr(offlinePlayer.getName(), context.getSender().getName()));
     }
 
     @Command(
@@ -274,7 +273,7 @@ public class VanillaCommands implements CommandHolder
             onlineUser.sendTranslated("&eUser &2%s&a has been opped by &2%s&a!", offlinePlayer.getName(), context.getSender().getName());
         }
 
-        this.core.getCoreLogger().log(NOTICE, "Player {0} has been deopped by {1}", arr(offlinePlayer.getName(), context.getSender().getName()));
+        this.core.getLog().log(NOTICE, "Player {0} has been deopped by {1}", arr(offlinePlayer.getName(), context.getSender().getName()));
     }
 
     @Command(desc = "Lists all loaded plugins")
@@ -285,11 +284,11 @@ public class VanillaCommands implements CommandHolder
 
         context.sendTranslated("There are %d plugins and %d CubeEngine modules loaded:", plugins.length, modules.size());
         context.sendMessage(" ");
-        context.sendMessage(" - " + BRIGHT_GREEN + core.getName() + RESET + " (r" + Core.REVISION + ")");
+        context.sendMessage(" - " + BRIGHT_GREEN + core.getName() + RESET + " (r" + context.getCore().getVersion() + ")");
 
         for (Module m : modules)
         {
-            context.sendMessage("   - " + (m.isEnabled() ? BRIGHT_GREEN : RED) + m.getName() + RESET + " (r" + m.getRevision() + ")");
+            context.sendMessage("   - " + (m.isEnabled() ? BRIGHT_GREEN : RED) + m.getName() + RESET + " (r" + m.getVersion() + ")");
         }
 
         for (Plugin p : plugins)
@@ -381,7 +380,7 @@ public class VanillaCommands implements CommandHolder
             }
             context.sendTranslated("&eBukkit API&r Version: &9%s", server.getBukkitVersion());
             context.sendMessage(" ");
-            context.sendTranslated("Expanded and improved by &aCubeEngine&r revision &9%s", Core.REVISION);
+            context.sendTranslated("Expanded and improved by &aCubeEngine&r revision &9%s", context.getCore().getVersion());
         }
     }
 

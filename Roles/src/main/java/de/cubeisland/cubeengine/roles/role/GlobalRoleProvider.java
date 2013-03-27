@@ -17,7 +17,7 @@ public class GlobalRoleProvider extends RoleProvider
     @Override
     public void loadInConfigurations(File rolesFolder)
     {
-        this.module.getLogger().log(DEBUG, "Loading global roles...");
+        this.module.getLog().log(DEBUG, "Loading global roles...");
         if (this.init) // provider is already initialized!
         {
             return;

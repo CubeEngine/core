@@ -458,7 +458,7 @@ public abstract class CubeCommand extends Command
         {
             sender.sendTranslated("&4An unknown error occurred while executing this command!");
             sender.sendTranslated("&4Please report this error to an administrator.");
-            this.module.getLogger().log(ERROR, e.getLocalizedMessage(), e);
+            this.module.getLog().log(ERROR, e.getLocalizedMessage(), e);
         }
 
         return true;

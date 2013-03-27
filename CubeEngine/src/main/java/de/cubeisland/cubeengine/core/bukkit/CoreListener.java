@@ -1,13 +1,13 @@
 package de.cubeisland.cubeengine.core.bukkit;
 
-import de.cubeisland.cubeengine.core.Core;
-import de.cubeisland.cubeengine.core.CoreConfiguration;
-import de.cubeisland.cubeengine.core.CubeEngine;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.scheduler.BukkitScheduler;
+
+import de.cubeisland.cubeengine.core.Core;
+import de.cubeisland.cubeengine.core.CoreConfiguration;
 
 public class CoreListener implements Listener
 {
@@ -31,7 +31,7 @@ public class CoreListener implements Listener
             public void run()
             {
                 AfterJoinEvent afterJoinEvent = new AfterJoinEvent(event.getPlayer(), event.getJoinMessage());
-                CubeEngine.getEventManager().fireEvent(afterJoinEvent);
+                bukkitCore.getEventManager().fireEvent(afterJoinEvent);
             }
         }, config.afterJoinEventDelay);
     }

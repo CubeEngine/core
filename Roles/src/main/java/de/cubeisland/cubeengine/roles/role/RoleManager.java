@@ -79,14 +79,14 @@ public class RoleManager
 
     public void recalculateAllRoles()
     {
-        this.module.getLogger().log(DEBUG, "Calculating global Roles...");
+        this.module.getLog().log(DEBUG, "Calculating global Roles...");
         this.globalProvider.calculateRoles(true);
         // Calculate world roles for each world-provider:
         for (WorldRoleProvider provider : providers.valueCollection())
         {
             if (!provider.isCalculated())
             {
-                this.module.getLogger().log(DEBUG, "Calculating roles for " + provider.getMainWorld() + "...");
+                this.module.getLog().log(DEBUG, "Calculating roles for " + provider.getMainWorld() + "...");
                 provider.calculateRoles(false);
             }
         }
@@ -107,7 +107,7 @@ public class RoleManager
             {
                 if (this.providers.containsKey(worldId))
                 {
-                    this.module.getLogger().log(LogLevel.ERROR,
+                    this.module.getLog().log(LogLevel.ERROR,
                             "The world " + this.module.getCore().getWorldManager().getWorld(worldId).getName() + " is mirrored multiple times!\n"
                                 + "Check your configuration under mirrors." + provider.getMainWorld());
                     continue;
@@ -115,7 +115,7 @@ public class RoleManager
                 if (worlds.get(worldId).getLeft()) // Roles are mirrored add to provider...
                 {
                     this.providers.put(worldId, provider);
-                    this.module.getLogger().log(LogLevel.DEBUG,"loading role-provider for "+worldManager.getWorld(worldId).getName());
+                    this.module.getLog().log(LogLevel.DEBUG,"loading role-provider for "+worldManager.getWorld(worldId).getName());
                 }
             }
         }
@@ -124,7 +124,7 @@ public class RoleManager
             if (this.getProvider(worldId) == null)
             {
                 this.providers.put(worldId, new WorldRoleProvider(module, worldId));
-                this.module.getLogger().log(LogLevel.DEBUG,"loading missing role-provider for "+worldManager.getWorld(worldId).getName());
+                this.module.getLog().log(LogLevel.DEBUG,"loading missing role-provider for "+worldManager.getWorld(worldId).getName());
             }
         }
     }
@@ -231,10 +231,10 @@ public class RoleManager
         if (!Bukkit.getServer().getOnlineMode() && this.module.getConfiguration().doNotAssignPermIfOffline && !user.isLoggedIn())
         {
             user.sendTranslated("&cThe server is currently running in offline-mode. Permissions will not be applied until logging in! Contact an Admin if you think this is an error.");
-            this.module.getLogger().warning("Role-permissions not applied! Server is running in unsecured offline-mode!");
+            this.module.getLog().warning("Role-permissions not applied! Server is running in unsecured offline-mode!");
             return;
         }
-        this.module.getLogger().log(LogLevel.DEBUG,"User-role set: "+ user.getName());
+        this.module.getLog().log(LogLevel.DEBUG,"User-role set: "+ user.getName());
         TLongObjectHashMap<UserSpecificRole> roleContainer = this.getRoleContainer(user);
         UserSpecificRole role = roleContainer.get(worldId);
         if (role.getParentRoles().isEmpty())

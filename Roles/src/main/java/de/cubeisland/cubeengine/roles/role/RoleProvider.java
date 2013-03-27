@@ -85,10 +85,10 @@ public abstract class RoleProvider
                 ++i;
                 RoleConfig config = Configuration.load(RoleConfig.class, configFile);
                 this.addConfig(config);
-                this.module.getLogger().log(DEBUG, config.roleName);
+                this.module.getLog().log(DEBUG, config.roleName);
             }
         }
-        this.module.getLogger().log(DEBUG, i + " roles read!");
+        this.module.getLog().log(DEBUG, i + " roles read!");
         this.init = true;
     }
 
@@ -156,7 +156,7 @@ public abstract class RoleProvider
             Role role = this.calculateRole(config, globalRoles);
             if (role == null)
             {
-                this.module.getLogger().log(LogLevel.WARNING, config.roleName + " could not be calculated!");
+                this.module.getLog().log(LogLevel.WARNING, config.roleName + " could not be calculated!");
                 continue;
             }
             this.roles.put(role.getName().toLowerCase(Locale.ENGLISH), role);
@@ -207,7 +207,7 @@ public abstract class RoleProvider
                 }
                 catch (RoleDependencyMissingException ex)
                 {
-                    this.module.getLogger().log(LogLevel.WARNING, ex.getMessage());
+                    this.module.getLog().log(LogLevel.WARNING, ex.getMessage());
                 }
             }
             // now all parent roles should be loaded
@@ -232,12 +232,12 @@ public abstract class RoleProvider
             }
             role = new ConfigRole(config, parentRoles, false);
             this.roleStack.pop();
-            this.module.getLogger().log(DEBUG, role.getName() + " loaded!");
+            this.module.getLog().log(DEBUG, role.getName() + " loaded!");
             return role;
         }
         catch (CircularRoleDepedencyException ex)
         {
-            this.module.getLogger().log(LogLevel.WARNING, ex.getMessage());
+            this.module.getLog().log(LogLevel.WARNING, ex.getMessage());
             return null;
         }
     }

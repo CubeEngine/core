@@ -14,9 +14,9 @@ import org.bukkit.permissions.PermissionAttachmentInfo;
 import org.bukkit.plugin.Plugin;
 
 import de.cubeisland.cubeengine.core.Core;
-import de.cubeisland.cubeengine.core.CubeEngine;
-import de.cubeisland.cubeengine.core.command.exception.PermissionDeniedException;
+import de.cubeisland.cubeengine.core.command.CommandManager;
 import de.cubeisland.cubeengine.core.command.CommandSender;
+import de.cubeisland.cubeengine.core.command.exception.PermissionDeniedException;
 import de.cubeisland.cubeengine.core.permission.Permission;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.util.InventoryUtil;
@@ -104,10 +104,11 @@ public class Kit
     {
         if (this.commands != null && !this.commands.isEmpty())
         {
+            CommandManager cm = user.getCore().getCommandManager();
             for (String cmd : commands)
             {
                 cmd = cmd.replace("{PLAYER}", user.getName());
-                CubeEngine.getCommandManager().runCommand(new KitCommandSender(user), cmd);
+                cm.runCommand(new KitCommandSender(user), cmd);
             }
         }
     }

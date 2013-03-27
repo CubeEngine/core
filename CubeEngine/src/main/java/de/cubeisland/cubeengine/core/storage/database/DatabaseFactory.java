@@ -50,7 +50,7 @@ public class DatabaseFactory
                 {
                     t = e.getCause();
                 }
-                Logger logger = CubeEngine.getLogger();
+                Logger logger = CubeEngine.getLog();
                 logger.log(LogLevel.ERROR, "Couldn't establish the database dataSource: " + t.getLocalizedMessage(), t);
                 while ((t = t.getCause()) != null)
                 {

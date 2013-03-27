@@ -56,6 +56,11 @@ public class ModuleLoader
         }
     }
 
+    public Core getCore()
+    {
+        return core;
+    }
+
     /**
      * Loads a module from a file
      *
@@ -94,9 +99,9 @@ public class ModuleLoader
     {
         final String name = info.getName();
 
-        if (info.getMinimumCoreRevision() > Core.REVISION)
+        if (info.getMinimumCoreVersion().isNewerThan(this.core.getVersion()))
         {
-            throw new IncompatibleCoreException(name, info.getMinimumCoreRevision());
+            throw new IncompatibleCoreException(name, info.getMinimumCoreVersion(), this.core.getVersion());
         }
 
         try

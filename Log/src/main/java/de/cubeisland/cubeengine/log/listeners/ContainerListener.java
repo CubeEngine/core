@@ -127,11 +127,11 @@ public class ContainerListener implements Listener
         }
         if (holder == null)
         {
-            this.module.getLogger().log(LogLevel.DEBUG,"Inventory Holder is null! Logging is impossible.");
+            this.module.getLog().log(LogLevel.DEBUG,"Inventory Holder is null! Logging is impossible.");
         }
         else
         {
-            this.module.getLogger().log(LogLevel.DEBUG,"Unknown InventoryHolder:" + holder.toString());
+            this.module.getLog().log(LogLevel.DEBUG,"Unknown InventoryHolder:" + holder.toString());
         }
         return null;
     }

@@ -1,6 +1,9 @@
 package de.cubeisland.cubeengine.core;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import java.io.File;
+import java.io.IOException;
+import java.util.logging.Logger;
+
 import de.cubeisland.cubeengine.core.bukkit.EventManager;
 import de.cubeisland.cubeengine.core.bukkit.TaskManager;
 import de.cubeisland.cubeengine.core.command.CommandManager;
@@ -16,12 +19,11 @@ import de.cubeisland.cubeengine.core.storage.database.Database;
 import de.cubeisland.cubeengine.core.storage.world.WorldManager;
 import de.cubeisland.cubeengine.core.user.UserManager;
 import de.cubeisland.cubeengine.core.util.InventoryGuardFactory;
+import de.cubeisland.cubeengine.core.util.Version;
 import de.cubeisland.cubeengine.core.util.matcher.Match;
 import de.cubeisland.cubeengine.core.webapi.ApiServer;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.logging.Logger;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  *
@@ -29,6 +31,7 @@ import java.util.logging.Logger;
  */
 public class TestCore implements Core
 {
+    private final Version version = Version.ONE;
     private final Logger logger = Logger.getAnonymousLogger();
     private ObjectMapper jsonObjectMapper = null;
     private CoreConfiguration config = null;
@@ -37,6 +40,12 @@ public class TestCore implements Core
 
     {
         CubeEngine.initialize(this);
+    }
+
+    @Override
+    public Version getVersion()
+    {
+        return this.version;
     }
 
     @Override
@@ -62,7 +71,7 @@ public class TestCore implements Core
     }
 
     @Override
-    public Logger getCoreLogger()
+    public Logger getLog()
     {
         return this.logger;
     }

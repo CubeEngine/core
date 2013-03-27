@@ -186,7 +186,7 @@ public class RulebookCommands extends ContainerCommand
             }
             catch ( IOException ex )
             {
-                this.getModule().getLogger().log( LogLevel.ERROR, "Error by deleting the files.", ex );
+                this.getModule().getLog().log( LogLevel.ERROR, "Error by deleting the files.", ex );
             }
         }
         else
@@ -242,7 +242,7 @@ public class RulebookCommands extends ContainerCommand
             }
             catch ( IOException ex )
             {
-                this.getModule().getLogger().log( LogLevel.ERROR, "Error by deleting the files.", ex );
+                this.getModule().getLog().log( LogLevel.ERROR, "Error by deleting the files.", ex );
             }
         }
         else

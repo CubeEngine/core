@@ -9,6 +9,15 @@ import java.io.File;
 import java.util.Locale;
 import java.util.Map;
 
+import de.cubeisland.cubeengine.core.CubeEngine;
+import de.cubeisland.cubeengine.core.logger.LogLevel;
+import de.cubeisland.cubeengine.core.util.ChatFormat;
+import de.cubeisland.cubeengine.core.util.Cleanable;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import gnu.trove.map.hash.THashMap;
+import org.apache.commons.lang.Validate;
+
 /**
  * This class is a generic language that loads its translations from files.
  */
@@ -123,11 +132,11 @@ public class NormalLanguage implements Cleanable, Language
         }
         catch (FileNotFoundException ignored)
         {
-            this.core.getCoreLogger().log(LogLevel.WARNING, "The translation category " + cat + " was not found for the language ''" + this.code + "'' !");
+            this.core.getLog().log(LogLevel.WARNING, "The translation category " + cat + " was not found for the language ''" + this.code + "'' !");
         }
         catch (IOException e)
         {
-            this.core.getCoreLogger().log(LogLevel.ERROR, String.valueOf(e), e);
+            this.core.getLog().log(LogLevel.ERROR, String.valueOf(e), e);
         }*/
         return null;
     }
@@ -152,7 +161,7 @@ public class NormalLanguage implements Cleanable, Language
         }
         catch (IOException e)
         {
-            CubeEngine.getLogger().log(LogLevel.WARNING, e.getLocalizedMessage(), e);
+            CubeEngine.getLog().log(LogLevel.WARNING, e.getLocalizedMessage(), e);
         }
         finally
         {

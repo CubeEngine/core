@@ -237,7 +237,7 @@ public class User extends UserBase implements Model<Long>, CommandSender, Attach
         }
         if (!Thread.currentThread().getStackTrace()[1].getClassName().equals(this.getClass().getName()))
         {
-            CubeEngine.getLogger().log(DEBUG, "A module sent an untranslated message!");
+            CubeEngine.getLog().log(DEBUG, "A module sent an untranslated message!");
         }
         super.sendMessage(ChatFormat.parseFormats(string));
     }

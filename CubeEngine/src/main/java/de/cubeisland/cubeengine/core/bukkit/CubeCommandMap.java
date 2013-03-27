@@ -80,7 +80,7 @@ public class CubeCommandMap extends SimpleCommandMap
         }
         catch (IOException e)
         {
-            core.getCoreLogger().log(WARNING, "Failed to create the command log!", e);
+            core.getLog().log(WARNING, "Failed to create the command log!", e);
         }
         for (Command command : oldMap.getCommands())
         {

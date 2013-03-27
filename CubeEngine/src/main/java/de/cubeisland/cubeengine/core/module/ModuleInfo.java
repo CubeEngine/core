@@ -9,6 +9,7 @@ import java.util.Set;
 
 import de.cubeisland.cubeengine.core.Core;
 import de.cubeisland.cubeengine.core.bukkit.BukkitCore;
+import de.cubeisland.cubeengine.core.util.Version;
 
 import org.apache.commons.lang.Validate;
 
@@ -22,12 +23,12 @@ public class ModuleInfo
     private final String main;
     private final String id;
     private final String name;
-    private final int revision;
+    private final Version version;
     private final String description;
-    private final int minCoreVersion;
+    private final Version minCoreVersion;
     private final boolean providesWorldGenerator;
-    private final Map<String, Integer> dependencies;
-    private final Map<String, Integer> softDependencies;
+    private final Map<String, Version> dependencies;
+    private final Map<String, Version> softDependencies;
     private final Set<String> pluginDependencies;
     private final Set<String> loadAfter;
 
@@ -44,9 +45,9 @@ public class ModuleInfo
         }
         this.id = CoreModule.ID;
         this.name = CoreModule.NAME;
-        this.revision = Core.REVISION;
+        this.version = core.getVersion();
         this.description = "This is the core meta module.";
-        this.minCoreVersion = Core.REVISION;
+        this.minCoreVersion = core.getVersion();
         this.providesWorldGenerator = false;
         this.dependencies = Collections.emptyMap();
         this.softDependencies = this.dependencies;
@@ -79,28 +80,28 @@ public class ModuleInfo
         }
         this.main = config.main;
 
-        this.revision = config.revision;
+        this.version = config.version;
         this.description = config.description;
         this.minCoreVersion = config.minCoreRevision;
         this.providesWorldGenerator = config.provideWorldGenerator;
 
         int delimOffset;
-        int version;
+        Version version;
 
-        this.dependencies = new HashMap<String, Integer>(config.dependencies.size());
+        this.dependencies = new HashMap<String, Version>(config.dependencies.size());
         config.dependencies.remove(this.id);
         for (String dep : config.dependencies)
         {
             dep = dep.toLowerCase();
 
-            version = -1;
+            version = Version.ZERO;
 
             delimOffset = dep.indexOf(DEP_VERSION_DELIM);
             if (delimOffset > -1)
             {
                 try
                 {
-                    version = Integer.parseInt(dep.substring(delimOffset + 1));
+                    version = Version.fromString(dep.substring(delimOffset + 1));
                 }
                 catch (NumberFormatException ignored)
                 {}
@@ -109,19 +110,19 @@ public class ModuleInfo
             this.dependencies.put(dep, version);
         }
 
-        this.softDependencies = new HashMap<String, Integer>(config.softDependencies.size());
+        this.softDependencies = new HashMap<String, Version>(config.softDependencies.size());
         config.softDependencies.remove(this.id);
         for (String dep : config.softDependencies)
         {
             dep = dep.toLowerCase();
-            version = -1;
+            version = Version.ZERO;
 
             delimOffset = dep.indexOf(DEP_VERSION_DELIM);
             if (delimOffset > -1)
             {
                 try
                 {
-                    version = Integer.parseInt(dep.substring(delimOffset + 1));
+                    version = Version.fromString(dep.substring(delimOffset + 1));
                 }
                 catch (NumberFormatException ignored)
                 {}
@@ -179,9 +180,9 @@ public class ModuleInfo
      *
      * @return the revision
      */
-    public int getRevision()
+    public Version getVersion()
     {
-        return this.revision;
+        return this.version;
     }
 
     /**
@@ -199,7 +200,7 @@ public class ModuleInfo
      *
      * @return the minimum core revision
      */
-    public int getMinimumCoreRevision()
+    public Version getMinimumCoreVersion()
     {
         return this.minCoreVersion;
     }
@@ -220,7 +221,7 @@ public class ModuleInfo
      *
      * @return the dependencies
      */
-    public Map<String, Integer> getDependencies()
+    public Map<String, Version> getDependencies()
     {
         return this.dependencies;
     }
@@ -230,7 +231,7 @@ public class ModuleInfo
      *
      * @return the soft dependencies
      */
-    public Map<String, Integer> getSoftDependencies()
+    public Map<String, Version> getSoftDependencies()
     {
         return this.softDependencies;
     }
@@ -265,7 +266,7 @@ public class ModuleInfo
 
         ModuleInfo that = (ModuleInfo)o;
 
-        if (minCoreVersion != that.minCoreVersion)
+        if (!minCoreVersion.equals(that.minCoreVersion))
         {
             return false;
         }
@@ -273,7 +274,7 @@ public class ModuleInfo
         {
             return false;
         }
-        if (revision != that.revision)
+        if (!version.equals(that.version))
         {
             return false;
         }
@@ -319,9 +320,9 @@ public class ModuleInfo
         int result = main.hashCode();
         result = 31 * result + id.hashCode();
         result = 31 * result + name.hashCode();
-        result = 31 * result + revision;
+        result = 31 * result + version.hashCode();
         result = 31 * result + (description != null ? description.hashCode() : 0);
-        result = 31 * result + minCoreVersion;
+        result = 31 * result + minCoreVersion.hashCode();
         result = 31 * result + (providesWorldGenerator ? 1 : 0);
         result = 31 * result + dependencies.hashCode();
         result = 31 * result + softDependencies.hashCode();

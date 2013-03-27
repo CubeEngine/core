@@ -50,7 +50,7 @@ public class ApiRequestHandler extends ChannelInboundMessageHandlerAdapter<Objec
         }
         catch (IOException e)
         {
-            CubeEngine.getLogger().log(ERROR, "Failed to initialize the file handler for the web api log!", e);
+            CubeEngine.getLog().log(ERROR, "Failed to initialize the file handler for the web api log!", e);
         }
     }
 
