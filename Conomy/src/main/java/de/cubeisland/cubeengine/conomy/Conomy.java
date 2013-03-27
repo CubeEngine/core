@@ -20,6 +20,7 @@ public class Conomy extends Module
     private AccountManager accountsManager;
     private AccountStorage accountsStorage;
     private CurrencyManager currencyManager;
+    private ConomyPermissions perms;
 
     //TODO Roles support (e.g. allow all user of a role to access a bank)
     public Conomy()
@@ -31,7 +32,7 @@ public class Conomy extends Module
     @Override
     public void onEnable()
     {
-        this.getCore().getPermissionManager().registerPermissions(this, ConomyPermissions.values());
+        this.perms = new ConomyPermissions(this);
         this.currencyManager = new CurrencyManager(this, this.config);
         this.currencyManager.load();
         this.accountsStorage = new AccountStorage(this.getCore().getDB());
@@ -40,6 +41,12 @@ public class Conomy extends Module
         final CommandManager cm = this.getCore().getCommandManager();
         cm.registerCommand(new MoneyCommand(this));
         cm.registerCommand(new EcoCommands(this));
+    }
+
+    @Override
+    public void onDisable()
+    {
+        this.perms.cleanup();
     }
 
     public AccountManager getAccountsManager()

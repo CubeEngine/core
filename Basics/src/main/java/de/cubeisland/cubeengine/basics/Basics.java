@@ -50,17 +50,19 @@ public class Basics extends Module
     private IgnoreListManager ignoreListManager;
     private KitManager kitManager;
     private LagTimer lagTimer;
+    private BasicsPerm perm;
+    private TpWorldPermissions tpPerm;
 
     @Override
     public void onEnable()
     {
-        final Database db = this.getCore().getDB();
+		final Database db = this.getCore().getDB();
         final CommandManager cm = this.getCore().getCommandManager();
         final EventManager em = this.getCore().getEventManager();
         this.basicUM = new BasicUserManager(db);
         this.mailManager = new MailManager(db, this.basicUM);
         this.ignoreListManager = new IgnoreListManager(db);
-        this.getCore().getPermissionManager().registerPermissions(this, BasicsPerm.values());
+        this.perm = new BasicsPerm(this);
         this.getCore().getUserManager().addDefaultAttachment(BasicsAttachment.class, this);
 
         em.registerListener(this, new ColoredSigns());
@@ -101,7 +103,7 @@ public class Basics extends Module
         cm.registerCommands(this, new TeleportRequestCommands(this), ReflectedCommand.class);
         em.registerListener(this, new TeleportListener(this));
         em.registerListener(this, new FlyListener());
-        this.getCore().getPermissionManager().registerPermissions(this, new TpWorldPermissions(this).getPermissions()); // per world permissions
+        this.tpPerm = new TpWorldPermissions(this); // per world permissions
         this.lagTimer = new LagTimer(this);
 
         cm.registerCommands(this,  new DoorCommand(this), ReflectedCommand.class );
@@ -116,6 +118,13 @@ public class Basics extends Module
          *
          * help -> Display ALL availiable cmd
          */
+    }
+
+    @Override
+    public void onDisable()
+    {
+        this.perm.cleanup();
+        this.tpPerm.cleanup();
     }
 
     public BasicsConfiguration getConfiguration()

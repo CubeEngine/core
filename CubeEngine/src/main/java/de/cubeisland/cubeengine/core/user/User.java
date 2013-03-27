@@ -256,7 +256,7 @@ public class User extends UserBase implements Model<Long>, CommandSender, Attach
     @Override
     public boolean isAuthorized(de.cubeisland.cubeengine.core.permission.Permission perm)
     {
-        return this.hasPermission(perm.getPermission());
+        return this.hasPermission(perm.getName());
     }
 
     /**

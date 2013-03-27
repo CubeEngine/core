@@ -6,7 +6,6 @@ import de.cubeisland.cubeengine.core.permission.Permission;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.travel.Travel;
 import org.bukkit.Location;
-import org.bukkit.permissions.Permissible;
 
 import java.util.Locale;
 import java.util.Set;
@@ -16,7 +15,7 @@ public class Home
     private final TeleportPoint parent;
     private final TelePointManager telePointManager;
     private final InviteManager inviteManager;
-    private final String permission;
+    private final Permission permission;
     private Set<String> invited;
 
     public Home(TeleportPoint teleportPoint, TelePointManager telePointManager, InviteManager inviteManager, Travel module)
@@ -25,9 +24,13 @@ public class Home
         this.telePointManager = telePointManager;
         this.inviteManager = inviteManager;
         this.invited = inviteManager.getInvited(parent);
-        this.permission = "cubeengine.travel.homes.access."+parent.name.toLowerCase(Locale.ENGLISH);
-        module.getCore().getPermissionManager().registerPermission(module,  this.permission, this.parent.visibility.equals(TeleportPoint.Visibility.PRIVATE) ?
-                PermDefault.OP : PermDefault.TRUE);
+        this.permission = module.getBasePermission().
+            createAbstractChild("homes").
+            createAbstractChild("access").
+            createChild(parent.name.toLowerCase(Locale.ENGLISH),
+                        this.parent.visibility.equals(TeleportPoint.Visibility.PRIVATE) ?
+                                                                PermDefault.OP : PermDefault.TRUE);
+        module.getCore().getPermissionManager().registerPermission(module, this.permission);
     }
 
     public void update()

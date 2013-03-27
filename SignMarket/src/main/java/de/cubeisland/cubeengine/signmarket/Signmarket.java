@@ -9,6 +9,7 @@ public class Signmarket extends Module
     private MarketSignFactory marketSignFactory;
     private SignMarketConfig config;
     private EditModeListener editModeListener;
+    private MarketSignPerm perm;
 
     @Override
     public void onEnable()
@@ -18,9 +19,15 @@ public class Signmarket extends Module
 
         this.getCore().getEventManager().registerListener(this, new MarketSignListener(this));
 
-        this.getCore().getPermissionManager().registerPermissions(this, MarketSignPerm.values());
+        this.perm = new MarketSignPerm(this);
 
         this.getCore().getCommandManager().registerCommand(new SignMarketCommands(this));
+    }
+
+    @Override
+    public void onDisable()
+    {
+        this.perm.cleanup();
     }
 
     public MarketSignFactory getMarketSignFactory()

@@ -132,14 +132,17 @@ public class ReflectedCommandFactory<T extends CubeCommand> implements CommandFa
         if (annotation.checkPerm())
         {
             String node = annotation.permNode();
-            if (node == null || node.isEmpty())
+            if (node == null || node.isEmpty()) // TODO is null even possible
             {
                 cmd.setGeneratedPermissionDefault(annotation.permDefault());
             }
             else
             {
-                module.getCore().getPermissionManager().registerPermission(module, node, annotation.permDefault());
-                cmd.setPermission(node);
+                de.cubeisland.cubeengine.core.permission.Permission perm =
+                    module.getBasePermission().createAbstractChild("command");
+                perm = perm.createChild(node,annotation.permDefault());
+                module.getCore().getPermissionManager().registerPermission(module, perm);
+                cmd.setPermission(perm.getName());
             }
         }
         return (T)cmd;

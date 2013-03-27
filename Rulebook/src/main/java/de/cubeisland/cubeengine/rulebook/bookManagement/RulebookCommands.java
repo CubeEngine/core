@@ -75,7 +75,7 @@ public class RulebookCommands extends ContainerCommand
             }
         }
 
-        if( sender != target && !context.getSender().hasPermission( Permission.BASE + '.' + context.getCommand().getModule().getId() + ".command.get.other" ) )
+        if( sender != target && !context.getSender().hasPermission( Permission.BASE.getName() + '.' + context.getCommand().getModule().getId() + ".command.get.other" ) )// TODO register
         {
             context.sendMessage( "rulebook", "&c You have not the permissions to add the rulebook to the inventory of an other player" );
             return;

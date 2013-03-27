@@ -74,7 +74,11 @@ public class ReadableCommandFactory extends ReflectedCommandFactory<ReadableComm
             }
             else
             {
-                module.getCore().getPermissionManager().registerPermission(module, node, annotation.permDefault());
+                de.cubeisland.cubeengine.core.permission.Permission perm =
+                    module.getBasePermission().createAbstractChild("command");
+                perm = perm.createChild(node,annotation.permDefault());
+                module.getCore().getPermissionManager().registerPermission(module, perm);
+                cmd.setPermission(perm.getName());
                 cmd.setPermission(node);
             }
         }

@@ -91,16 +91,22 @@ public class TeleportCommands
                     context.sendMessage("basics", "&cYou are not allowed to teleport other persons!");
                     return;
                 }
-                if (BasicsPerm.COMMAND_TP_PREVENT_TP.isAuthorized(user)) // teleport the user
+                if (user != context.getSender())
                 {
-                    context.sendMessage("basics", "&cYou are not allowed to teleport %s!", user.getName());
-                    return;
-                }
-                if (BasicsPerm.COMMAND_TP_PREVENT_TPTO.isAuthorized(target)) // teleport to the target
+                    if (BasicsPerm.COMMAND_TP_PREVENT_TP.isAuthorized(user)) // teleport the user
+                    {
+                        context.sendMessage("basics", "&cYou are not allowed to teleport %s!", user.getName());
+                        return;
+                    }
+                } // else equals tp -> no need to check tp perm
+                if (target != context.getSender())
                 {
-                    context.sendMessage("basics", "&cYou are not allowed to teleport to %s!", target.getName());
-                    return;
-                }
+                    if (BasicsPerm.COMMAND_TP_PREVENT_TPTO.isAuthorized(target)) // teleport to the target
+                    {
+                        context.sendMessage("basics", "&cYou are not allowed to teleport to %s!", target.getName());
+                        return;
+                    }
+                } // else equals tphere -> no need to check tpto perm
             }
         }
         else
@@ -198,7 +204,7 @@ public class TeleportCommands
         }
         if (!force && BasicsPerm.COMMAND_TPHERE_PREVENT.isAuthorized(target))
         {
-            context.sendMessage("bascics", "&cYou are not allowed to teleport %s!", target.getName());
+            context.sendMessage("basics", "&cYou are not allowed to teleport %s!", target.getName());
             return;
         }
         boolean safe = !context.hasFlag("u");

@@ -1,49 +1,28 @@
 package de.cubeisland.cubeengine.conomy;
 
+import de.cubeisland.cubeengine.core.module.Module;
 import de.cubeisland.cubeengine.core.permission.PermDefault;
 import de.cubeisland.cubeengine.core.permission.Permission;
+import de.cubeisland.cubeengine.core.permission.PermissionContainer;
+
 import org.bukkit.permissions.Permissible;
 
 import java.util.Locale;
 
 import static de.cubeisland.cubeengine.core.permission.PermDefault.OP;
 
-public enum ConomyPermissions implements Permission
+public class ConomyPermissions extends PermissionContainer
 {
-    ACCOUNT_ALLOWUNDERMIN, // Allows the user to have less money then the minimum (default 0)
-
-    ACCOUNT_SHOWHIDDEN,
-    COMMAND_PAY_FORCE;
-    private String permission;
-    private PermDefault def;
-
-    private ConomyPermissions()
+    public ConomyPermissions(Module module)
     {
-        this(OP);
+        super(module);
     }
 
-    private ConomyPermissions(PermDefault def)
-    {
-        this.permission = "cubeengine.conomy." + this.name().
-                toLowerCase(Locale.ENGLISH).replace('_', '.');
-        this.def = def;
-    }
+    private static final Permission CONOMY = Permission.BASE.createAbstractChild("conomy");
+    private static final Permission ACCOUNT = CONOMY.createAbstractChild("account");
 
-    @Override
-    public boolean isAuthorized(Permissible player)
-    {
-        return player.hasPermission(permission);
-    }
+    public static final Permission ACCOUNT_ALLOWUNDERMIN = ACCOUNT.createChild("allowundermin");
+    public static final Permission ACCOUNT_SHOWHIDDEN = ACCOUNT.createChild("showhidden");
 
-    @Override
-    public String getPermission()
-    {
-        return this.permission;
-    }
-
-    @Override
-    public PermDefault getPermissionDefault()
-    {
-        return this.def;
-    }
+    public static final Permission COMMAND_PAY_FORCE = CONOMY.createChild("command.pay.force");
 }

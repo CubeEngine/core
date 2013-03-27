@@ -1,12 +1,13 @@
 package de.cubeisland.cubeengine.core.command.sender;
 
-import de.cubeisland.cubeengine.core.permission.Permission;
 import org.bukkit.Server;
 import org.bukkit.permissions.PermissionAttachment;
 import org.bukkit.permissions.PermissionAttachmentInfo;
 import org.bukkit.plugin.Plugin;
 
 import java.util.Set;
+
+import de.cubeisland.cubeengine.core.permission.Permission;
 
 public class TestConsoleSender implements CommandSender
 {

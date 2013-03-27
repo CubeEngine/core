@@ -1,55 +1,33 @@
 package de.cubeisland.cubeengine.core;
 
-import de.cubeisland.cubeengine.core.permission.PermDefault;
+import de.cubeisland.cubeengine.core.module.Module;
 import de.cubeisland.cubeengine.core.permission.Permission;
-import org.bukkit.permissions.Permissible;
-
-import java.util.Locale;
+import de.cubeisland.cubeengine.core.permission.PermissionContainer;
 
 import static de.cubeisland.cubeengine.core.permission.PermDefault.FALSE;
-import static de.cubeisland.cubeengine.core.permission.PermDefault.OP;
 
-public enum CorePerms implements Permission
+public class CorePerms extends PermissionContainer
 {
-    SPAM,
-    COMMAND_CLEARPASSWORD_ALL,
-    COMMAND_CLEARPASSWORD_OTHER,
-    COMMAND_SETPASSWORD_OTHER,
-    COMMAND_OP_NOTIFY,
-    COMMAND_DEOP_NOTIFY,
-    COMMAND_DEOP_OTHER(FALSE),
-    COMMAND_VERSION_PLUGINS;
-
-    private String permission;
-    private PermDefault def;
-    private static final String BASE = "cubeengine.core.";
-
-    private CorePerms()
+    public CorePerms(Module module)
     {
-        this(OP);
+        super(module);
+        this.registerAllPermissions();
     }
 
-    private CorePerms(PermDefault def)
-    {
-        this.permission = BASE + this.name().toLowerCase(Locale.ENGLISH).replace('_', '.');
-        this.def = def;
-    }
+    private static final Permission CORE = Permission.BASE.createAbstractChild("core");
+    private static final Permission COMMAND = CORE.createAbstractChild("command");
+    private static final Permission CLEARPASSWORD = COMMAND.createAbstractChild("clearpassword");
+    public static final Permission COMMAND_CLEARPASSWORD_ALL = CLEARPASSWORD.createChild("all");
+    public static final Permission COMMAND_CLEARPASSWORD_OTHER = CLEARPASSWORD.createChild("other");
 
-    @Override
-    public boolean isAuthorized(Permissible player)
-    {
-        return player.hasPermission(this.permission);
-    }
+    public static final Permission COMMAND_SETPASSWORD_OTHER = COMMAND.createChild("other");
+    public static final Permission COMMAND_OP_NOTIFY = COMMAND.createChild("op.notify");
 
-    @Override
-    public String getPermission()
-    {
-        return this.permission;
-    }
+    private static final Permission DEOP = COMMAND.createAbstractChild("deop");
+    public static final Permission COMMAND_DEOP_NOTIFY = DEOP.createChild("notify");
+    public static final Permission COMMAND_DEOP_OTHER = DEOP.createChild("other",FALSE);
 
-    @Override
-    public PermDefault getPermissionDefault()
-    {
-        return this.def;
-    }
+    public static final Permission COMMAND_VERSION_PLUGINS = COMMAND.createChild("version.plugins");
+
+    public static final Permission SPAM = CORE.createChild("spam");
 }

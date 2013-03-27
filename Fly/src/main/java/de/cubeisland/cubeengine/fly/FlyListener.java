@@ -2,6 +2,12 @@ package de.cubeisland.cubeengine.fly;
 
 import java.util.HashMap;
 
+import de.cubeisland.cubeengine.core.CubeEngine;
+import de.cubeisland.cubeengine.core.permission.Permission;
+import de.cubeisland.cubeengine.core.permission.PermissionContainer;
+import de.cubeisland.cubeengine.core.user.User;
+import de.cubeisland.cubeengine.core.user.UserManager;
+import de.cubeisland.cubeengine.core.util.Task;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -24,8 +30,12 @@ public class FlyListener implements Listener
     private Fly fly;
     private final Location helperLocation = new Location(null, 0, 0, 0);
 
+    private final Permission FLY_FEATHER;
+
     public FlyListener(Fly fly)
     {
+        this.FLY_FEATHER = fly.getBasePermission().createChild("feather");
+        fly.getCore().getPermissionManager().registerPermission(fly,FLY_FEATHER);
         this.fly = fly;
         this.usermanager = fly.getCore().getUserManager();
     }
@@ -48,7 +58,7 @@ public class FlyListener implements Listener
             return;
         }
 
-        if (!FlyPerm.FLY_FEATHER.isAuthorized(player))
+        if (!FLY_FEATHER.isAuthorized(player))
         {
             user.sendMessage("core", "You dont have permission to use this!");
             player.setAllowFlight(false); //Disable when player is flying
