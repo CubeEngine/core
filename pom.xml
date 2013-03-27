@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="UTF-8" ?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
@@ -32,13 +33,6 @@
         <module>Travel</module>
         <module>Vault-Compat</module>
         <module>Vote</module>
-
-        <!--
-        <module>CubeWar</module>
-        <module>CubeAuctions</module>
-        -->
-
-        <!-- The test module should always be the last! -->
         <module>Test</module>
     </modules>
 
@@ -128,6 +122,11 @@
             <!--
                 These plugins were added to ensure build consistency
             -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-reactor-plugin</artifactId>
+                <version>1.0</version>
+            </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-dependency-plugin</artifactId>
