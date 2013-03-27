@@ -183,7 +183,7 @@ public class AdvancedSpawnMob extends ChatCommand
             User nearby = context.getParam("nearby",null);
             if (nearby == null || !nearby.isOnline())
             {
-                context.sendMessage("basics","&cUser %s not found!",context.getString("nearby"));
+                context.sendMessage("basics","&cUser &2%s &cnot found!",context.getString("nearby"));
             }
             else
             {

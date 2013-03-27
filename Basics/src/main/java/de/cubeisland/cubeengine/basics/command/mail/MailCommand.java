@@ -53,7 +53,7 @@ public class MailCommand extends ContainerCommand
             {
                 if (!context.getString(0).equalsIgnoreCase("CONSOLE"))
                 {
-                    context.sendMessage("basics", "&cUser %s not found!", context.getString(0));
+                    context.sendMessage("basics", "&cUser &2%s &cnot found!", context.getString(0));
                     return;
                 }
                 nameMailOf = "CONSOLE";
@@ -113,7 +113,7 @@ public class MailCommand extends ContainerCommand
         User user = context.getUser(0);
         if (user == null)
         {
-            context.sendMessage("basics", "&cUser %s not found!", context.getString(0));
+            context.sendMessage("basics", "&cUser &2%s &cnot found!", context.getString(0));
             return;
         }
         List<Mail> mails = mailManager.getMails(user);
@@ -139,7 +139,7 @@ public class MailCommand extends ContainerCommand
         User user = context.getUser(0);
         if (user == null)
         {
-            context.sendMessage("basics", "&cUser %s not found!", context.getString(0));
+            context.sendMessage("basics", "&cUser &2%s &cnot found!", context.getString(0));
             return;
         }
         String message = context.getStrings(1);
@@ -205,7 +205,7 @@ public class MailCommand extends ContainerCommand
         User from = context.getUser(0);
         if (from == null && !context.getString(0).equalsIgnoreCase("Console"))
         {
-            context.sendMessage("basics", "&cUser %s not found!", context.getString(0));
+            context.sendMessage("basics", "&cUser &2%s &cnot found!", context.getString(0));
             return;
         }
         this.mailManager.removeMail(sender, from);

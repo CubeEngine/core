@@ -110,7 +110,7 @@ public class PlayerCommands
                 User user = this.um.findUser(name);
                 if (user == null || !user.isOnline())
                 {
-                    context.sendMessage("basics", "&cUser %s not found!", name);
+                    context.sendMessage("basics", "&cUser &2%s &cnot found!", name);
                     continue;
                 }
                 user.setFoodLevel(20);
@@ -180,7 +180,7 @@ public class PlayerCommands
                 User user = this.um.findUser(name);
                 if (user == null || !user.isOnline())
                 {
-                    context.sendMessage("basics", "&cUser %s not found!", name);
+                    context.sendMessage("basics", "&cUser &2%s &cnot found!", name);
                     continue;
                 }
                 user.setFoodLevel(0);
@@ -299,7 +299,7 @@ public class PlayerCommands
             user = context.getUser(1);
             if (user == null)
             {
-                context.sendMessage("core", "&cUser %s not found!", context.getString(1));
+                context.sendMessage("core", "&cUser &2%s &cnot found!", context.getString(1));
                 return;
             }
             changeOther = true;
@@ -354,12 +354,14 @@ public class PlayerCommands
         "kill", "slay"
     }, desc = "Kills a player", usage = "<player>", flags = {
         @Flag(longName = "force", name = "f"),
+        @Flag(longName = "quiet", name = "q"),
         @Flag(longName = "lightning", name = "l")
     }, min = 0 , max = 1)
     public void kill(ParameterizedContext context)
     {
         boolean lightning = context.hasFlag("l") && BasicsPerm.COMMAND_KILL_LIGHTNING.isAuthorized(context.getSender());
         boolean force = context.hasFlag("f") && BasicsPerm.COMMAND_KILL_FORCE.isAuthorized(context.getSender());
+        boolean quiet = context.hasFlag("q") && BasicsPerm.COMMAND_KILL_QUIET.isAuthorized(context.getSender());
         if (context.hasArg(0))
         {
             String[] names = StringUtils.explode(",",context.getString(0));
@@ -375,7 +377,7 @@ public class PlayerCommands
                 {
                     if (!user.getName().equals(context.getSender().getName()))
                     {
-                        if (this.kill(user, lightning, context, false, force))
+                        if (this.kill(user, lightning, context, false, force, quiet))
                         {
                             killed.add(user.getName());
                         }
@@ -394,7 +396,7 @@ public class PlayerCommands
                     }
                     if (!user.getName().equals(context.getSender().getName()))
                     {
-                        if (this.kill(user, lightning, context, false, force))
+                        if (this.kill(user, lightning, context, false, force, quiet))
                         {
                             killed.add(user.getName());
                         }
@@ -435,13 +437,13 @@ public class PlayerCommands
                 context.sendMessage("basics", "&cNo player to kill in sight!");
                 return;
             }
-            this.kill(user,lightning,context,true,force);
+            this.kill(user,lightning,context,true,force, quiet);
             return;
         }
         context.sendMessage("basics", "&cPlease specify a victim!");
     }
 
-    private boolean kill(Player player, boolean lightning, ParameterizedContext context, boolean showMessage, boolean force)
+    private boolean kill(Player player, boolean lightning, ParameterizedContext context, boolean showMessage, boolean force, boolean quiet)
     {
         if (!force)
         {
@@ -460,6 +462,10 @@ public class PlayerCommands
         {
             context.sendMessage("basics", "&aYou killed &2%s&a!", player.getName());
         }
+        if (!quiet && BasicsPerm.COMMAND_KILL_NOTIFY.isAuthorized(player))
+        {
+            context.sendMessage("basics", "&eYou were killed by &2%s",player.getName());
+        }
         return true;
     }
 
@@ -469,7 +475,7 @@ public class PlayerCommands
         User user = context.getUser(0);
         if (user == null)
         {
-            context.sendMessage("basics", "&cUser %s not found!", context.getString(0));
+            context.sendMessage("basics", "&cUser &2%s &cnot found!", context.getString(0));
             return;
         }
         if (user.isOnline())
@@ -494,7 +500,7 @@ public class PlayerCommands
         User user = context.getUser(0);
         if (user == null)
         {
-            context.sendMessage("core", "&cUser %s not found!", context.getString(0));
+            context.sendMessage("core", "&cUser &2%s &cnot found!", context.getString(0));
             return;
         }
         StringBuilder sb = new StringBuilder();
@@ -622,7 +628,7 @@ public class PlayerCommands
             user = context.getUser(0);
             if (user == null)
             {
-                context.sendMessage("basics", "&cUser %s not found!", context.getString(0));
+                context.sendMessage("basics", "&cUser &2%s &cnot found!", context.getString(0));
                 return;
             }
             other = true;
@@ -691,11 +697,6 @@ public class PlayerCommands
             context.sendMessage("basics", "&cYou are not allowed to change the walk-speed of other user!");
             return;
         }
-        if (!BasicsPerm.WALKSPEED_ISALLOWED.isAuthorized(user)) // if user can get his flymode changed
-        {
-            context.sendMessage("basics", "&cThe user &2%s &cis not allowed to walk faster!", user.getName());
-            return;
-        }
         user.setWalkSpeed(0.2f);
         Float speed = context.getArg(0, Float.class, null);
         if (speed != null && speed >= 0 && speed <= 10)
@@ -737,7 +738,7 @@ public class PlayerCommands
         }
         if (target == null)
         {
-            context.sendMessage("basics", "&cUser %s not found!");
+            context.sendMessage("basics", "&cUser &2%s &cnot found!");
             return;
         }
         // PermissionChecks

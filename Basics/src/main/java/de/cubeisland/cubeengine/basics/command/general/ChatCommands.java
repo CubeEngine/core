@@ -48,7 +48,7 @@ public class ChatCommands
                 User user = this.um.findUser(name);
                 if (user == null)
                 {
-                    context.sendMessage("basics","&cUser %s not found!",name);
+                    context.sendMessage("basics","&cUser &2%s &cnot found!",name);
                 }
                 else if (!this.module.getIgnoreListManager().addIgnore(sender, user))
                 {
@@ -81,7 +81,7 @@ public class ChatCommands
                 User user = this.um.findUser(name);
                 if (user == null)
                 {
-                    context.sendMessage("basics","&cUser %s not found!",name);
+                    context.sendMessage("basics","&cUser &2%s &cnot found!",name);
                 }
                 else if (!this.module.getIgnoreListManager().removeIgnore(sender, user))
                 {
@@ -165,7 +165,7 @@ public class ChatCommands
                 context.sendMessage("basics","Who are you!?");
                 return true;
             }
-            context.sendMessage("core", "&cUser %s not found!", whisperTarget);
+            context.sendMessage("core", "&cUser &2%s &cnot found!", whisperTarget);
             return true;
         }
         if (!user.isOnline())
@@ -214,7 +214,7 @@ public class ChatCommands
         User user = context.getUser(0);
         if (user == null)
         {
-            context.sendMessage("basics", "&cUser %s not found!", context.getString(0));
+            context.sendMessage("basics", "&cUser &2%s &cnot found!", context.getString(0));
             return;
         }
         BasicUser bUser = this.module.getBasicUserManager().getBasicUser(user);
@@ -248,7 +248,7 @@ public class ChatCommands
         User user = context.getUser(0);
         if (user == null)
         {
-            context.sendMessage("basics", "&cUser %s not found!", context.getString(0));
+            context.sendMessage("basics", "&cUser &2%s &cnot found!", context.getString(0));
         }
         BasicUser bUser = this.module.getBasicUserManager().getBasicUser(user);
         bUser.muted = null;

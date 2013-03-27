@@ -53,7 +53,7 @@ public class FlyListener implements Listener
     {
         final Player player = event.getPlayer();
 
-        if (player.getGameMode() != GameMode.CREATIVE && wasFlying(player) && BasicsPerm.FLY_CANFLY.isAuthorized(player))
+        if (player.getGameMode() != GameMode.CREATIVE && wasFlying(player) && BasicsPerm.COMMAND_FLY_KEEP.isAuthorized(player))
         {
             player.setAllowFlight(true);
             player.setFlying(true);
@@ -65,7 +65,7 @@ public class FlyListener implements Listener
     public void quit(final PlayerQuitEvent event)
     {
         final Player player = event.getPlayer();
-        if (player.getGameMode() != GameMode.CREATIVE && player.isFlying() && BasicsPerm.FLY_CANFLY.isAuthorized(player))
+        if (player.getGameMode() != GameMode.CREATIVE && player.isFlying() && BasicsPerm.COMMAND_FLY_KEEP.isAuthorized(player))
         {
             markFlySpeed(player);
         }

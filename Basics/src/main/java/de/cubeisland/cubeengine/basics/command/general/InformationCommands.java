@@ -198,7 +198,7 @@ public class InformationCommands
             user = context.getUser(1);
             if (user == null)
             {
-                context.sendMessage("basics", "&cUser %s not found!",context.getString(1));
+                context.sendMessage("basics", "&cUser &2%s &cnot found!",context.getString(1));
                 return;
             }
         }

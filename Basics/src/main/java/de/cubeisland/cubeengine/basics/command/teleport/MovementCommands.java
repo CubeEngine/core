@@ -1,7 +1,10 @@
 package de.cubeisland.cubeengine.basics.command.teleport;
 
+import java.security.BasicPermission;
+
 import de.cubeisland.cubeengine.basics.Basics;
 import de.cubeisland.cubeengine.basics.BasicsAttachment;
+import de.cubeisland.cubeengine.basics.BasicsPerm;
 import de.cubeisland.cubeengine.core.command.CommandContext;
 import de.cubeisland.cubeengine.core.command.parameterized.Flag;
 import de.cubeisland.cubeengine.core.command.parameterized.ParameterizedContext;
@@ -179,21 +182,39 @@ public class MovementCommands
             return;
         }
         context.sendMessage("basics", "&ePassing through firewalls in the console is not allowed! Go play outside!");
-
     }
 
-    @Command(desc = "Teleports you to your last location", max = 0, flags = {
-        @Flag(longName = "unsafe", name = "u")
-    })
+    @Command(desc = "Teleports you to your last location", max = 0, flags =
+        @Flag(longName = "unsafe", name = "u") , checkPerm = false
+    )
     public void back(ParameterizedContext context)
     {
         if (context.getSender() instanceof User)
         {
             User sender = (User)context.getSender();
-            Location loc = sender.get(BasicsAttachment.class).getLastLocation();
-            if (loc == null)
+            Location loc;
+            boolean backPerm = BasicsPerm.COMMAND_BACK.isAuthorized(sender);
+            if (BasicsPerm.COMMAND_BACK_ONDEATH.isAuthorized(sender))
             {
-                context.sendMessage("basics", "&cYou never teleported!");
+                loc = sender.get(BasicsAttachment.class).getDeathLocation();
+                if (!backPerm && loc == null)
+                {
+                    context.sendMessage("basics", "&cNo death point found!");
+                    return;
+                }
+            }
+            if (BasicsPerm.COMMAND_BACK.isAuthorized(sender))
+            {
+                loc = sender.get(BasicsAttachment.class).getLastLocation();
+                if (loc == null)
+                {
+                    context.sendMessage("basics", "&cYou never teleported!");
+                    return;
+                }
+            }
+            else
+            {
+                context.sendMessage("basics", "&cYou are not allowed to teleport back!");
                 return;
             }
             boolean safe = !context.hasFlag("u");
@@ -201,8 +222,7 @@ public class MovementCommands
                 sender.sendMessage("basics", "&aTeleported to your last location!");
             return;
         }
-        context.sendMessage("basics", "&cYou never teleported!");
-
+        context.sendMessage("basics", "&cUnfortunatly teleporting is still not implemented in the game &6'Life'&c!");
     }
 
     @Command(names = {
@@ -216,7 +236,7 @@ public class MovementCommands
             User user = context.getUser(0);
             if (user == null)
             {
-                context.sendMessage("basics", "&cUser %s not found!", context.getString(0));
+                context.sendMessage("basics", "&cUser &2%s &cnot found!", context.getString(0));
                 return;
             }
             Location loc = sender.getTargetBlock(null, 350).getLocation();
@@ -246,7 +266,7 @@ public class MovementCommands
             sender = context.getUser(1);
             if (sender == null)
             {
-                context.sendMessage("basics", "&cUser %s not found!", context.getString(0));
+                context.sendMessage("basics", "&cUser &2%s &cnot found!", context.getString(0));
                 return;
             }
         }
@@ -267,7 +287,7 @@ public class MovementCommands
         User user = context.getUser(0);
         if (user == null)
         {
-            context.sendMessage("basics", "&cUser %s not found!", context.getString(0));
+            context.sendMessage("basics", "&cUser &2%s &cnot found!", context.getString(0));
             return;
         }
         if (user == sender)
