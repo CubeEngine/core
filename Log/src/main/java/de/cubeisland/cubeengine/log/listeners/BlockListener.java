@@ -874,6 +874,10 @@ public class BlockListener implements Listener
                 this.plannedFallingBlocks.put(onTop.getLocation(),new Pair<Player, Integer>(player,reason));
                 onTop = onTop.getRelative(BlockFace.UP);
             }
+            else
+            {
+                break;
+            }
         }
         if (!blockState.getType().isSolid() && !blockState.getType().equals(Material.SUGAR_CANE_BLOCK))
         {
@@ -883,7 +887,6 @@ public class BlockListener implements Listener
         {
             for (Block block : BlockUtil.getAttachedBlocks(blockState.getBlock()))
             {
-
                 this.plannedFallingBlocks.put(block.getLocation(),new Pair<Player, Integer>(player,reason));
             }
             for (Block block : BlockUtil.getDetachableBlocksOnTop(blockState.getBlock()))
