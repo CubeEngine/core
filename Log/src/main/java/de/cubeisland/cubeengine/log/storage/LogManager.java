@@ -471,9 +471,15 @@ public class LogManager
                     {
                         return config.BLOCK_FORM_snow;
                     }
-                    else
+                    else if (additional.equals(Material.COBBLESTONE)
+                        || additional.equals(Material.STONE)
+                        || additional.equals(Material.OBSIDIAN))
                     {
                         return config.BLOCK_FORM_lavaWater;
+                    }
+                    else
+                    {
+                        return config.BLOCK_FORM_other;
                     }
                 }
                 throw new IllegalStateException("Invalid BLOCK_FORM:" +additional);

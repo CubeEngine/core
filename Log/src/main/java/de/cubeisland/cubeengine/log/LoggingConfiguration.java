@@ -110,6 +110,8 @@ public class LoggingConfiguration extends YamlConfiguration
     public boolean BLOCK_FORM_snow = false;
     @Option("logging.block.form.lava-water")
     public boolean BLOCK_FORM_lavaWater = true;
+    @Option("logging.block.form.lava-water")
+    public boolean BLOCK_FORM_other = true;
     @Option("logging.block.enderman.place")
     public boolean ENDERMAN_PLACE_enable = true;
     @Comment("Blocks created by entities (snowgolem)")

@@ -435,7 +435,7 @@ public class BlockListener implements Listener
                 newToBlock.setType(Material.LAVA);
                 newToBlock.setRawData((byte)(fromBlock.getRawData() + 1));
             }
-            if (this.manager.isIgnored(event.getBlock().getWorld(),action)) return;
+            if (this.manager.isIgnored(event.getBlock().getWorld(),action,toBlock.getType())) return;
             this.logBlockChange(action,toBlock,newToBlock,null);
         }
         else if (fromMat.equals(Material.WATER) || fromMat.equals(Material.STATIONARY_WATER))
