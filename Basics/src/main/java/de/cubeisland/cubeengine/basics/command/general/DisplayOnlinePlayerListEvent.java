@@ -13,6 +13,7 @@ public class DisplayOnlinePlayerListEvent extends Event implements Cancellable
 {
     private final Basics basics;
     private List<User> users;
+    private List<String> userNames;
     private static final HandlerList handlers = new HandlerList();
     private final CommandSender sender;
     private boolean cancelled = false;
@@ -28,12 +29,12 @@ public class DisplayOnlinePlayerListEvent extends Event implements Cancellable
         return handlers;
     }
 
-    public DisplayOnlinePlayerListEvent(Basics basics, CommandSender sender, List<User> users)
+    public DisplayOnlinePlayerListEvent(Basics basics, CommandSender sender, List<User> users, List<String> userNames)
     {
-
         this.basics = basics;
         this.sender = sender;
         this.users = users;
+        this.userNames = userNames;
     }
 
     @Override
@@ -78,5 +79,10 @@ public class DisplayOnlinePlayerListEvent extends Event implements Cancellable
     public CommandSender getSender()
     {
         return sender;
+    }
+
+    public List<String> getUserNames()
+    {
+        return userNames;
     }
 }

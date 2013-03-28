@@ -1,5 +1,6 @@
 package de.cubeisland.cubeengine.basics.command.general;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.bukkit.Bukkit;
@@ -7,6 +8,7 @@ import org.bukkit.Bukkit;
 import de.cubeisland.cubeengine.core.command.CommandContext;
 import de.cubeisland.cubeengine.core.command.reflected.Command;
 import de.cubeisland.cubeengine.core.user.User;
+import de.cubeisland.cubeengine.core.util.ChatFormat;
 import de.cubeisland.cubeengine.core.util.StringUtils;
 import de.cubeisland.cubeengine.basics.Basics;
 
@@ -29,7 +31,12 @@ public class ListCommand
             context.sendMessage("basics", "&cThere are no players online now!");
             return;
         }
-        DisplayOnlinePlayerListEvent event = new DisplayOnlinePlayerListEvent(this.module, context.getSender(), users);
+        List<String> userNames = new ArrayList<String>();
+        for (User user : users)
+        {
+            userNames.add(user.getName());
+        }
+        DisplayOnlinePlayerListEvent event = new DisplayOnlinePlayerListEvent(this.module, context.getSender(), users, userNames);
         if (event.isCancelled())
         {
             return;
@@ -37,68 +44,13 @@ public class ListCommand
         if (!(this.module.getCore().getEventManager().fireEvent(event)).isCancelled()) // catch this event to change / show list with extra data
         {
             context.sendMessage("basics", "&9Players online: &a%d&f/&e%d", event.getUsers().size(), Bukkit.getMaxPlayers());
-            context.sendMessage("basics", "&ePlayers:\n&2%s", this.displayPlayerList(event.getUsers()));
+            context.sendMessage("basics", "&ePlayers:\n&2%s", this.displayPlayerList(event));
         }
     }
 
-    public String displayPlayerList(List<User> users)
+    public String displayPlayerList(DisplayOnlinePlayerListEvent event)
     {
-        //TODO test if it looks good for more players
-        //1 line ~ 70 characters
-        //6 12 18 (+1)
-        StringBuilder sb = new StringBuilder();
-        StringBuilder partBuilder = new StringBuilder();
-        int pos = 0;
-        boolean first = true;
-        for (User user : users)
-        {
-            partBuilder.setLength(0);
-
-            String name = user.getName();
-            if (name.length() < 6)
-            {
-                int k = 6 - name.length();
-                partBuilder.append(StringUtils.repeat(" ", k / 2));
-                k = k - k / 2;
-                partBuilder.append(name);
-                partBuilder.append(StringUtils.repeat(" ", k));
-                pos += 6;
-            }
-            else
-            {
-                if (name.length() < 12)
-                {
-                    int k = 12 - name.length();
-                    partBuilder.append(StringUtils.repeat(" ", k / 2));
-                    k = k - k / 2;
-                    partBuilder.append(name);
-                    partBuilder.append(StringUtils.repeat(" ", k));
-                    pos += 12;
-                }
-                else
-                {
-                    int k = 16 - name.length();
-                    partBuilder.append(StringUtils.repeat(" ", k / 2));
-                    k = k - k / 2;
-                    partBuilder.append(name);
-                    partBuilder.append(StringUtils.repeat(" ", k));
-                    pos += 16;
-                }
-            }
-            if (pos >= 70)
-            {
-                pos = partBuilder.toString().length();
-                sb.append("\n");
-                first = true;
-            }
-            if (!first)
-            {
-                sb.append("&f|&2");
-                pos++;
-            }
-            sb.append(partBuilder.toString());
-            first = false;
-        }
-        return sb.toString();
+        String delim = ChatFormat.parseFormats("&f, &2");
+        return StringUtils.implode(delim,event.getUserNames());
     }
 }
