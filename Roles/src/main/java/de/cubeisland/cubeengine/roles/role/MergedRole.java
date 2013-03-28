@@ -1,6 +1,6 @@
 package de.cubeisland.cubeengine.roles.role;
 
-import de.cubeisland.cubeengine.roles.role.config.Priority;
+import de.cubeisland.cubeengine.roles.config.Priority;
 import gnu.trove.map.hash.THashMap;
 import java.util.ArrayList;
 import java.util.Collection;

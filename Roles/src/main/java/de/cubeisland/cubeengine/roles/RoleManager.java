@@ -1,8 +1,6 @@
-package de.cubeisland.cubeengine.roles.role;
+package de.cubeisland.cubeengine.roles;
 
 import java.io.File;
-import java.util.Collection;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -15,9 +13,13 @@ import de.cubeisland.cubeengine.core.logger.LogLevel;
 import de.cubeisland.cubeengine.core.storage.world.WorldManager;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.util.Pair;
-import de.cubeisland.cubeengine.roles.Roles;
-import de.cubeisland.cubeengine.roles.RolesAttachment;
-import de.cubeisland.cubeengine.roles.role.config.RoleMirror;
+import de.cubeisland.cubeengine.roles.role.MergedRole;
+import de.cubeisland.cubeengine.roles.role.Role;
+import de.cubeisland.cubeengine.roles.role.UserSpecificRole;
+import de.cubeisland.cubeengine.roles.config.RoleMirror;
+import de.cubeisland.cubeengine.roles.provider.GlobalRoleProvider;
+import de.cubeisland.cubeengine.roles.provider.RoleProvider;
+import de.cubeisland.cubeengine.roles.provider.WorldRoleProvider;
 import de.cubeisland.cubeengine.roles.storage.AssignedRole;
 
 import gnu.trove.map.hash.THashMap;

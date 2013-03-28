@@ -1,7 +1,7 @@
 package de.cubeisland.cubeengine.roles.role;
 
-import de.cubeisland.cubeengine.roles.role.config.Priority;
-import de.cubeisland.cubeengine.roles.role.config.RoleConfig;
+import de.cubeisland.cubeengine.roles.config.Priority;
+import de.cubeisland.cubeengine.roles.config.RoleConfig;
 import java.io.File;
 import java.util.TreeSet;
 

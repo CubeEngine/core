@@ -1,4 +1,4 @@
-package de.cubeisland.cubeengine.roles.role;
+package de.cubeisland.cubeengine.roles.provider;
 
 import java.io.File;
 import java.util.HashSet;
@@ -14,8 +14,10 @@ import de.cubeisland.cubeengine.core.util.StringUtils;
 import de.cubeisland.cubeengine.roles.Roles;
 import de.cubeisland.cubeengine.roles.exception.CircularRoleDepedencyException;
 import de.cubeisland.cubeengine.roles.exception.RoleDependencyMissingException;
-import de.cubeisland.cubeengine.roles.role.config.Priority;
-import de.cubeisland.cubeengine.roles.role.config.RoleConfig;
+import de.cubeisland.cubeengine.roles.role.ConfigRole;
+import de.cubeisland.cubeengine.roles.role.Role;
+import de.cubeisland.cubeengine.roles.config.Priority;
+import de.cubeisland.cubeengine.roles.config.RoleConfig;
 
 import gnu.trove.map.hash.THashMap;
 import org.apache.commons.lang.Validate;

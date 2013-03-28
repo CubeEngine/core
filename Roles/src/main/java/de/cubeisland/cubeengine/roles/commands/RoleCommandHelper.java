@@ -11,8 +11,8 @@ import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.roles.Roles;
 import de.cubeisland.cubeengine.roles.RolesAttachment;
 import de.cubeisland.cubeengine.roles.role.Role;
-import de.cubeisland.cubeengine.roles.role.RoleManager;
-import de.cubeisland.cubeengine.roles.role.RoleProvider;
+import de.cubeisland.cubeengine.roles.RoleManager;
+import de.cubeisland.cubeengine.roles.provider.RoleProvider;
 import org.bukkit.World;
 
 public abstract class RoleCommandHelper extends ContainerCommand

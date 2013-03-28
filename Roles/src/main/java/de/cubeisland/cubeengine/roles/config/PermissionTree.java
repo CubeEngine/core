@@ -1,4 +1,4 @@
-package de.cubeisland.cubeengine.roles.role.config;
+package de.cubeisland.cubeengine.roles.config;
 
 import java.util.List;
 import java.util.Locale;

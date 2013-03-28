@@ -5,7 +5,7 @@ import de.cubeisland.cubeengine.core.config.annotations.Codec;
 import de.cubeisland.cubeengine.core.config.annotations.Comment;
 import de.cubeisland.cubeengine.core.config.annotations.DefaultConfig;
 import de.cubeisland.cubeengine.core.config.annotations.Option;
-import de.cubeisland.cubeengine.roles.role.config.RoleMirror;
+import de.cubeisland.cubeengine.roles.config.RoleMirror;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;

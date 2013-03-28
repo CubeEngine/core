@@ -9,7 +9,7 @@ import de.cubeisland.cubeengine.core.storage.world.WorldManager;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.roles.Roles;
 import de.cubeisland.cubeengine.roles.RolesAttachment;
-import de.cubeisland.cubeengine.roles.role.RoleManager;
+import de.cubeisland.cubeengine.roles.RoleManager;
 import de.cubeisland.cubeengine.roles.role.UserSpecificRole;
 import gnu.trove.map.hash.TLongObjectHashMap;
 import org.bukkit.World;

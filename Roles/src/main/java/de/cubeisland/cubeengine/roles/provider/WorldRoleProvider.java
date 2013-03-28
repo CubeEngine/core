@@ -1,4 +1,4 @@
-package de.cubeisland.cubeengine.roles.role;
+package de.cubeisland.cubeengine.roles.provider;
 
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.util.Pair;
@@ -6,7 +6,9 @@ import de.cubeisland.cubeengine.core.logger.LogLevel;
 import de.cubeisland.cubeengine.core.util.StringUtils;
 import de.cubeisland.cubeengine.roles.Roles;
 import de.cubeisland.cubeengine.roles.RolesConfig;
-import de.cubeisland.cubeengine.roles.role.config.RoleMirror;
+import de.cubeisland.cubeengine.roles.role.Role;
+import de.cubeisland.cubeengine.roles.config.RoleMirror;
+
 import gnu.trove.map.hash.TLongObjectHashMap;
 import java.io.File;
 import java.util.ArrayList;
@@ -16,7 +18,6 @@ import java.util.Locale;
 import java.util.Set;
 
 import static de.cubeisland.cubeengine.core.logger.LogLevel.DEBUG;
-import static de.cubeisland.cubeengine.core.logger.LogLevel.WARNING;
 
 public class WorldRoleProvider extends RoleProvider
 {

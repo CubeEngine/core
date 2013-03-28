@@ -1,4 +1,4 @@
-package de.cubeisland.cubeengine.roles.role.config;
+package de.cubeisland.cubeengine.roles.config;
 
 import de.cubeisland.cubeengine.core.CubeEngine;
 import de.cubeisland.cubeengine.core.util.Pair;
