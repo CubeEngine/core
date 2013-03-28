@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.logging.Filter;
 import java.util.logging.Logger;
 
+import net.minecraft.server.v1_5_R2.DedicatedPlayerList;
 import net.minecraft.server.v1_5_R2.EntityPlayer;
 import net.minecraft.server.v1_5_R2.Item;
 import net.minecraft.server.v1_5_R2.LocaleLanguage;
@@ -395,7 +396,22 @@ public class BukkitUtils
     public static void setOnlineMode(boolean mode)
     {
         ((CraftServer)Bukkit.getServer()).getServer().setOnlineMode(mode);
+        saveServerProperties();
+    }
+
+    public static void saveServerProperties()
+    {
         ((CraftServer)Bukkit.getServer()).getServer().getPropertyManager().savePropertiesFile();
+    }
+
+    public static void wipeWhiteliste()
+    {
+        DedicatedPlayerList playerList = ((CraftServer)Bukkit.getServer()).getHandle();
+        playerList.getWhitelisted().clear();
+        // The method to write the whitelist (DedicatedPlayerList.w()) is private,
+        // however removing an entry triggers the write :)
+        playerList.removeWhitelist("");
+
     }
 
     /**
@@ -409,14 +425,16 @@ public class BukkitUtils
         return Item.byId[material.getId()].w();
     }
 
-    public static boolean isFuel(ItemStack item) {
+    public static boolean isFuel(ItemStack item)
+    {
         // Create an NMS item stack
         net.minecraft.server.v1_5_R2.ItemStack nmss = CraftItemStack.asNMSCopy(item);
         // Use the NMS TileEntityFurnace to check if the item being clicked is a fuel
         return TileEntityFurnace.isFuel(nmss);
     }
 
-    public static boolean isSmeltable(ItemStack item) {
+    public static boolean isSmeltable(ItemStack item)
+    {
         net.minecraft.server.v1_5_R2.ItemStack nmss = CraftItemStack.asNMSCopy(item);
         // If the result of that item being cooked is null, it is not cookable
         return RecipesFurnace.getInstance().getResult(nmss.getItem().id) != null;

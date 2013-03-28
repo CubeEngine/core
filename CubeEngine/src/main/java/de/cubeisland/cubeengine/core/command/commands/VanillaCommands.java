@@ -16,6 +16,7 @@ import org.bukkit.plugin.Plugin;
 
 import de.cubeisland.cubeengine.core.CorePerms;
 import de.cubeisland.cubeengine.core.bukkit.BukkitCore;
+import de.cubeisland.cubeengine.core.bukkit.BukkitUtils;
 import de.cubeisland.cubeengine.core.command.CommandContext;
 import de.cubeisland.cubeengine.core.command.CommandHolder;
 import de.cubeisland.cubeengine.core.command.ContainerCommand;
@@ -483,6 +484,7 @@ public class VanillaCommands implements CommandHolder
                 return;
             }
             this.core.getServer().setWhitelist(true);
+            BukkitUtils.saveServerProperties();
             context.sendMessage("core", "&aThe whitelist is now enabled.");
         }
 
@@ -495,7 +497,21 @@ public class VanillaCommands implements CommandHolder
                 return;
             }
             this.core.getServer().setWhitelist(false);
+            BukkitUtils.saveServerProperties();
             context.sendMessage("core", "&aThe whitelist is now disabled.");
+        }
+
+        @Command(desc = "Wipes the whitelist completely")
+        public void wipe(CommandContext context)
+        {
+            if (context.isSender(User.class))
+            {
+                context.sendMessage("core", "&cThis command is too dangerous for users!");
+                return;
+            }
+
+            BukkitUtils.wipeWhiteliste();
+            context.sendMessage("core", "&aThe whitelist was successfully wiped!");
         }
     }
 }
