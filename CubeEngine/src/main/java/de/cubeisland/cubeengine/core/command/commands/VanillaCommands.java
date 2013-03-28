@@ -61,7 +61,8 @@ public class VanillaCommands implements CommandHolder
     @Command(
         names = {"stop", "shutdown", "killserver", "quit"},
         desc = "Shuts down the server",
-        usage = "[message]"
+        usage = "[message]",
+        max = NO_MAX
     )
     public void stop(CommandContext context)
     {
