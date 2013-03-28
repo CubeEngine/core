@@ -307,7 +307,7 @@ public class LogManager
             }
             catch (SQLException ex)
             {
-                throw new StorageException("Error while storing main Log-Entry", ex, stmt);
+                throw new StorageException("Error while storing log-entries", ex, stmt);
             }
             finally
             {

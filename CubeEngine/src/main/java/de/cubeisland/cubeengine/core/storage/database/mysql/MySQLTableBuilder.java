@@ -60,9 +60,9 @@ public class MySQLTableBuilder extends MySQLComponentBuilder<TableBuilder>
     }
 
     @Override
-    public MySQLTableBuilder field(String name, AttrType type, boolean notnull)
+    public MySQLTableBuilder field(String name, AttrType type, boolean unsigned)
     {
-        return this.field(name, type, 0, true);
+        return this.field(name, type, unsigned, true);
     }
 
     @Override
