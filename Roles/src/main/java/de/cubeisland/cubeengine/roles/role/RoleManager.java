@@ -85,7 +85,7 @@ public class RoleManager
         this.module.getLog().log(DEBUG, "Calculating global Roles...");
         this.globalProvider.calculateRoles(true);
         // Calculate world roles for each world-provider:
-        for (WorldRoleProvider provider : providers.valueCollection())
+        for (WorldRoleProvider provider : this.providerSet)
         {
             if (!provider.isCalculated())
             {

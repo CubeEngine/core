@@ -372,6 +372,13 @@ public abstract class RoleProvider
         this.roles.remove(role.getName());
         this.configs.remove(role.getName());
         ((ConfigRole)role).deleteConfigFile();
+        if (this instanceof WorldRoleProvider)
+        {
+            for (long worldID : ((WorldRoleProvider)this).getWorlds().keys())
+            {
+                this.module.getDbManager().deleteRole(worldID, role.getName());
+            }
+        }
         this.recalculateDirtyRoles(this.module.getRoleManager().getGlobalRoles());
     }
 }
