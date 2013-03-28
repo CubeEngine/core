@@ -1,78 +1,80 @@
+<?xml version="1.0" encoding="UTF-8" ?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <modelVersion>4.0.0</modelVersion>
-    <parent>
-        <groupId>de.cubeisland</groupId>
-        <artifactId>cubeengine-aggregator</artifactId>
-        <version>1.0.0-SNAPSHOT</version>
-    </parent>
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>de.cubeisland</groupId>
+    <artifactId>cubeengine-aggregator</artifactId>
+    <version>1.0.0-SNAPSHOT</version>
+  </parent>
 
-    <artifactId>irc</artifactId>
-    <name>IRC</name>
-    <description>An IRC bot</description>
+  <artifactId>irc</artifactId>
+  <name>IRC</name>
+  <description>An IRC bot</description>
 
-    <dependencies>
-        <dependency>
-            <groupId>${project.parent.groupId}</groupId>
-            <artifactId>cubeengine</artifactId>
-            <version>${project.parent.version}</version>
-            <type>jar</type>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.pircbotx</groupId>
-            <artifactId>pircbotx</artifactId>
-            <version>1.8</version>
-            <type>jar</type>
-            <scope>compile</scope>
-        </dependency>
-    </dependencies>
+  <dependencies>
+    <dependency>
+      <groupId>${project.parent.groupId}</groupId>
+      <artifactId>cubeengine</artifactId>
+      <version>${project.parent.version}</version>
+      <type>jar</type>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.pircbotx</groupId>
+      <artifactId>pircbotx</artifactId>
+      <version>1.8</version>
+      <type>jar</type>
+      <scope>compile</scope>
+    </dependency>
+  </dependencies>
 
-    <build>
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-shade-plugin</artifactId>
+        <configuration>
+          <minimizeJar>false</minimizeJar>
+          <artifactSet>
+            <includes>
+              <include>org.pircbotx:pircbotx</include>
+            </includes>
+          </artifactSet>
+          <relocations>
+            <relocation>
+              <pattern>org.pircbotx</pattern>
+              <shadedPattern>${project.parent.groupId}.cubeengine.${project.artifactId}.external.org.pircbotx
+              </shadedPattern>
+            </relocation>
+          </relocations>
+        </configuration>
+        <executions>
+          <execution>
+            <phase>package</phase>
+            <goals>
+              <goal>shade</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+
+  <profiles>
+    <profile>
+      <id>release</id>
+
+      <build>
         <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-shade-plugin</artifactId>
-                <configuration>
-                    <minimizeJar>false</minimizeJar>
-                    <artifactSet>
-                        <includes>
-                            <include>org.pircbotx:pircbotx</include>
-                        </includes>
-                    </artifactSet>
-                    <relocations>
-                        <relocation>
-                            <pattern>org.pircbotx</pattern>
-                            <shadedPattern>${project.parent.groupId}.cubeengine.${project.artifactId}.external.org.pircbotx</shadedPattern>
-                        </relocation>
-                    </relocations>
-                </configuration>
-                <executions>
-                    <execution>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>shade</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-shade-plugin</artifactId>
+            <configuration>
+              <minimizeJar>true</minimizeJar>
+            </configuration>
+          </plugin>
         </plugins>
-    </build>
-
-    <profiles>
-        <profile>
-            <id>release</id>
-
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-shade-plugin</artifactId>
-                        <configuration>
-                            <minimizeJar>true</minimizeJar>
-                        </configuration>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
-    </profiles>
+      </build>
+    </profile>
+  </profiles>
 </project>

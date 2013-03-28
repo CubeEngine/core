@@ -45,6 +45,9 @@
         <option name="JD_KEEP_EMPTY_EXCEPTION" value="false" />
         <option name="JD_KEEP_EMPTY_RETURN" value="false" />
         <XML>
+          <option name="XML_ATTRIBUTE_WRAP" value="0" />
+          <option name="XML_KEEP_BLANK_LINES" value="1" />
+          <option name="XML_KEEP_WHITE_SPACES_INSIDE_CDATA" value="true" />
           <option name="XML_LEGACY_SETTINGS_IMPORTED" value="true" />
         </XML>
         <codeStyleSettings language="JAVA">
@@ -290,7 +293,9 @@
         </codeStyleSettings>
         <codeStyleSettings language="XML">
           <indentOptions>
-            <option name="CONTINUATION_INDENT_SIZE" value="4" />
+            <option name="INDENT_SIZE" value="2" />
+            <option name="CONTINUATION_INDENT_SIZE" value="2" />
+            <option name="TAB_SIZE" value="2" />
           </indentOptions>
         </codeStyleSettings>
         <codeStyleSettings language="yaml">
