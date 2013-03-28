@@ -270,72 +270,80 @@ public class LogManager
 
     private void doEmptyLogs(int amount)
     {
-        if (queuedLogs.isEmpty())
-        {
-            return;
-        }
-        if (running)
-        {
-            return;
-        }
-        running = true;
-        final Queue<QueuedLog> logs = new LinkedList<QueuedLog>();
-        for (int i = 0; i < amount; i++) // log <amount> next logs...
-        {
-            QueuedLog toLog = this.queuedLogs.poll();
-            if (toLog == null)
-            {
-                break;
-            }
-            logs.offer(toLog);
-        }
-        Profiler.startProfiling("logging");
-        int logSize = logs.size();
-        PreparedStatement stmt = this.database.getStoredStatement(this.getClass(),"storeLog");
         try
         {
-            this.database.getConnection().setAutoCommit(false);
-            for (QueuedLog log : logs)
+            if (queuedLogs.isEmpty())
             {
-                log.addDataToBatch(stmt);
+                return;
             }
-            stmt.executeBatch();
-            this.database.getConnection().commit();
-            this.database.getConnection().setAutoCommit(true);
+            if (running)
+            {
+                return;
+            }
+            running = true;
+            final Queue<QueuedLog> logs = new LinkedList<QueuedLog>();
+            for (int i = 0; i < amount; i++) // log <amount> next logs...
+            {
+                QueuedLog toLog = this.queuedLogs.poll();
+                if (toLog == null)
+                {
+                    break;
+                }
+                logs.offer(toLog);
+            }
+            Profiler.startProfiling("logging");
+            int logSize = logs.size();
+            PreparedStatement stmt = this.database.getStoredStatement(this.getClass(),"storeLog");
+            try
+            {
+                this.database.getConnection().setAutoCommit(false);
+                for (QueuedLog log : logs)
+                {
+                    log.addDataToBatch(stmt);
+                }
+                stmt.executeBatch();
+                this.database.getConnection().commit();
+                this.database.getConnection().setAutoCommit(true);
+            }
+            catch (SQLException ex)
+            {
+                throw new StorageException("Error while storing main Log-Entry", ex, stmt);
+            }
+            finally
+            {
+                running = false;
+            }
+            long nanos = Profiler.endProfiling("logging");
+            timeSpend += nanos;
+            logsLogged += logSize;
+            if (logSize == batchSize)
+            {
+                timeSpendFullLoad += nanos;
+                logsLoggedFullLoad += logSize;
+            }
+            if (logSize > 20)
+            {
+                this.module.getLog().log(LogLevel.DEBUG,
+                                         logSize + " logged in: " + TimeUnit.NANOSECONDS.toMillis(nanos) +
+                                             "ms | remaining logs: " + queuedLogs.size());
+                this.module.getLog().log(LogLevel.DEBUG,
+                                         "Average logtime per log: " + TimeUnit.NANOSECONDS.toMicros(timeSpend / logsLogged)+ " micros");
+                this.module.getLog().log(LogLevel.DEBUG,
+                                         "Average logtime per log in full load: " + TimeUnit.NANOSECONDS.toMicros(timeSpendFullLoad / logsLoggedFullLoad)+" micros");
+            }
+            if (!queuedLogs.isEmpty())
+            {
+                this.future = this.executor.submit(this.runner);
+            }
+            else if (this.latch != null)
+            {
+                this.latch.countDown();
+            }
         }
-        catch (SQLException ex)
+        catch (Exception ex)
         {
-            throw new StorageException("Error while storing main Log-Entry", ex, stmt);
-        }
-        finally
-        {
-            running = false;
-        }
-        long nanos = Profiler.endProfiling("logging");
-        timeSpend += nanos;
-        logsLogged += logSize;
-        if (logSize == batchSize)
-        {
-            timeSpendFullLoad += nanos;
-            logsLoggedFullLoad += logSize;
-        }
-        if (logSize > 20)
-        {
-            this.module.getLog().log(LogLevel.DEBUG,
-                    logSize + " logged in: " + TimeUnit.NANOSECONDS.toMillis(nanos) +
-                            "ms | remaining logs: " + queuedLogs.size());
-            this.module.getLog().log(LogLevel.DEBUG,
-                    "Average logtime per log: " + TimeUnit.NANOSECONDS.toMicros(timeSpend / logsLogged)+ " micros");
-            this.module.getLog().log(LogLevel.DEBUG,
-                    "Average logtime per log in full load: " + TimeUnit.NANOSECONDS.toMicros(timeSpendFullLoad / logsLoggedFullLoad)+" micros");
-        }
-        if (!queuedLogs.isEmpty())
-        {
-            this.future = this.executor.submit(this.runner);
-        }
-        else if (this.latch != null)
-        {
-            this.latch.countDown();
+            Profiler.endProfiling("logging"); // end profiling so we can start again later
+            throw new IllegalStateException("Error while logging", ex);
         }
     }
 

@@ -183,6 +183,7 @@ public class RoleManager
     {
         if (!reload && this.getRolesAttachment(user).hasRoleContainer())
         {
+            this.module.getLog().log(LogLevel.DEBUG,"RoleContainer of "+user.getName()+ " already calculated!");
             return; // Roles are calculated!
         }
         TLongObjectHashMap<List<Role>> userRolesPerWorld = new TLongObjectHashMap<List<Role>>();
@@ -279,7 +280,6 @@ public class RoleManager
         {
             return false;
         }
-        this.getRolesAttachment(user).removeRoleContainer();
         this.reloadAllRolesAndApply(user, player);
         return true;
     }

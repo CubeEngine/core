@@ -3,6 +3,7 @@ package de.cubeisland.cubeengine.roles.role;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.util.Pair;
 import de.cubeisland.cubeengine.core.logger.LogLevel;
+import de.cubeisland.cubeengine.core.util.StringUtils;
 import de.cubeisland.cubeengine.roles.Roles;
 import de.cubeisland.cubeengine.roles.RolesConfig;
 import de.cubeisland.cubeengine.roles.role.config.RoleMirror;
@@ -15,6 +16,7 @@ import java.util.Locale;
 import java.util.Set;
 
 import static de.cubeisland.cubeengine.core.logger.LogLevel.DEBUG;
+import static de.cubeisland.cubeengine.core.logger.LogLevel.WARNING;
 
 public class WorldRoleProvider extends RoleProvider
 {
@@ -62,12 +64,16 @@ public class WorldRoleProvider extends RoleProvider
             if (mirrorRoleUsers.getLeft() == mirrorRoleUsers.getRight()// both true -> full mirror
                 || mirrorRoleUsers.getLeft()) // roles are mirrored BUT but assigned roles are not mirrored!
             {
+                this.module.getLog().log(LogLevel.DEBUG,"getRolesFor(" + user.getName() + ","+reload+") " +
+                    "in world #"+worldID+"\n - " +
+                    StringUtils.implode("\n - ", rolesFromDb.get(worldID))); //TODO remove this later
                 for (String roleName : rolesFromDb.get(worldID))
                 {
                     Role role = this.getRole(roleName);
                     if (role == null)
                     {
-                        throw new IllegalStateException("Role does not exist!");
+                        this.module.getLog().log(LogLevel.WARNING,"The role "+ roleName+ " does not exist!");
+                        continue;
                     }
                     roleList.add(role);
                 }
