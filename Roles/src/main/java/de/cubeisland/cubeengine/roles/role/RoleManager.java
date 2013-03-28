@@ -2,6 +2,7 @@ package de.cubeisland.cubeengine.roles.role;
 
 import java.io.File;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -21,6 +22,7 @@ import de.cubeisland.cubeengine.roles.storage.AssignedRole;
 
 import gnu.trove.map.hash.THashMap;
 import gnu.trove.map.hash.TLongObjectHashMap;
+import gnu.trove.set.hash.THashSet;
 
 import static de.cubeisland.cubeengine.core.logger.LogLevel.DEBUG;
 
@@ -31,6 +33,7 @@ public class RoleManager
     private TLongObjectHashMap<WorldRoleProvider> providers = new TLongObjectHashMap<WorldRoleProvider>();
     private GlobalRoleProvider globalProvider;
     private WorldManager worldManager;
+    private Set<WorldRoleProvider> providerSet = new THashSet<WorldRoleProvider>();
 
     public RoleManager(Roles rolesModule)
     {
@@ -115,6 +118,7 @@ public class RoleManager
                 if (worlds.get(worldId).getLeft()) // Roles are mirrored add to provider...
                 {
                     this.providers.put(worldId, provider);
+                    this.providerSet.add(provider);
                     this.module.getLog().log(LogLevel.DEBUG,"loading role-provider for "+worldManager.getWorld(worldId).getName());
                 }
             }
@@ -123,7 +127,9 @@ public class RoleManager
         {
             if (this.getProvider(worldId) == null)
             {
-                this.providers.put(worldId, new WorldRoleProvider(module, worldId));
+                WorldRoleProvider provider = new WorldRoleProvider(module, worldId);
+                this.providers.put(worldId, provider);
+                this.providerSet.add(provider);
                 this.module.getLog().log(LogLevel.DEBUG,"loading missing role-provider for "+worldManager.getWorld(worldId).getName());
             }
         }
@@ -139,9 +145,9 @@ public class RoleManager
         return (Provider)(world == null ? this.globalProvider : this.getProvider(this.worldManager.getWorldId(world)));
     }
 
-    public Collection<WorldRoleProvider> getProviders()
+    public Set<WorldRoleProvider> getProviders()
     {
-        return this.providers.valueCollection();
+        return this.providerSet;
     }
 
     public GlobalRoleProvider getGlobalProvider()
