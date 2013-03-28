@@ -215,7 +215,6 @@ public class CubeCommandMap extends SimpleCommandMap
             System.arraycopy(suffix, 0, newArgs, prefix.length + args.length, suffix.length);
 
             args = newArgs;
-            command = alias.getTarget(); // TODO does this actually work? (test usage strings!)
         }
 
         if (this.core.getEventManager().fireEvent(new CommandExecuteEvent(this.core, command, commandLine)).isCancelled())
