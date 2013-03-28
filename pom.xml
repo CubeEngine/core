@@ -6,9 +6,10 @@
   <artifactId>cubeengine-aggregator</artifactId>
   <version>1.0.0-SNAPSHOT</version>
   <name>CubeEngine-Aggregator</name>
-  <url>http://cubeisland.de</url>
+  <url>http://engine.cubeisland.de</url>
   <packaging>pom</packaging>
   <description>Minecraft module framework.</description>
+  <inceptionYear>2012</inceptionYear>
 
   <prerequisites>
     <maven>3.0.0</maven>
@@ -46,9 +47,24 @@
   <repositories>
     <repository>
       <id>cubeisland-repo</id>
+      <name>Cube Island Nexus</name>
       <url>http://repo.cubeisland.de/</url>
     </repository>
   </repositories>
+
+  <pluginRepositories>
+    <pluginRepository>
+      <id>cubeisland-repo</id>
+      <name>Cube Island Nexus</name>
+      <url>http://repo.cubeisland.de/</url>
+      <releases>
+        <enabled>true</enabled>
+      </releases>
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
+    </pluginRepository>
+  </pluginRepositories>
 
   <dependencies>
     <dependency>
