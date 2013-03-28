@@ -31,7 +31,7 @@
     <module>Border</module>
     <module>SignMarket</module>
     <module>Travel</module>
-    <module>Vault-Compat</module>
+    <module>vaultcompat</module>
     <module>Vote</module>
     <module>Test</module>
   </modules>
