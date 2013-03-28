@@ -20,7 +20,7 @@ public class RolesConfig extends Configuration
     public boolean doNotAssignPermIfOffline = true;
     @Option("default.roles")
     @Comment("The list of roles a user will get when first joining the server.")
-    public Map<String, List<String>> defaultRoles = new HashMap<String, List<String>>();
+    public Map<String, List<String>> defaultRoles = new HashMap<String, List<String>>(); //TODO example in comment
     @Option("mirrors")
-    public List<RoleMirror> mirrors = new ArrayList<RoleMirror>();
+    public List<RoleMirror> mirrors = new ArrayList<RoleMirror>(); //TODO example in comment
 }

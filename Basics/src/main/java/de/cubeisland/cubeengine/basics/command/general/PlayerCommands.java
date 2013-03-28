@@ -289,7 +289,7 @@ public class PlayerCommands
             sender = (User)context.getSender();
         }
         User user = sender;
-        if (user == null)
+        if (user == null && context.hasArg(1))
         {
             context.sendMessage("basics", "&cYou do not not have any gamemode!");
             return;
