@@ -81,11 +81,7 @@ public class ContainerListener implements Listener
 
     public String serializeItemData(ItemData itemData)
     {
-        try {
-            return this.module.getLogManager().mapper.writeValueAsString(itemData.serialize());
-        } catch (JsonProcessingException e) {
-            throw new IllegalStateException("Could not parse itemData!",e);
-        }
+        return itemData.serialize().toString();
     }
 
     private Location getLocationForHolder(InventoryHolder holder)

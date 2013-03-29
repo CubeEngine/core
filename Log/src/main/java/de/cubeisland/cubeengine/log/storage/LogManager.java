@@ -48,7 +48,6 @@ public class LogManager
     private LoggingConfiguration globalConfig;
     private Map<World, LoggingConfiguration> worldConfigs = new HashMap<World, LoggingConfiguration>();
 
-    public final ObjectMapper mapper;
     private final QueryManager queryManager;
     private JsonParser jsonParser;
 
@@ -56,7 +55,6 @@ public class LogManager
     {
         this.module = module;
         this.jsonParser = new JsonParser();
-        this.mapper = module.getObjectMapper();
         File file = new File(module.getFolder(), "worlds");
         file.mkdir();
         this.globalConfig = Configuration.load(LoggingConfiguration.class, new File(module.getFolder(), "globalconfig.yml"));

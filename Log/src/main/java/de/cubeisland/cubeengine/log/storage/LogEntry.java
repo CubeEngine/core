@@ -2,11 +2,6 @@ package de.cubeisland.cubeengine.log.storage;
 
 import java.sql.Timestamp;
 
-import org.bukkit.craftbukkit.libs.com.google.gson.Gson;
-import org.bukkit.craftbukkit.libs.com.google.gson.JsonElement;
-import org.bukkit.craftbukkit.libs.com.google.gson.JsonObject;
-import org.bukkit.craftbukkit.libs.com.google.gson.JsonParser;
-
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.entity.EntityType;
