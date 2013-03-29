@@ -411,9 +411,9 @@ public class ContainerListener implements Listener
     {
         Inventory source = event.getSource();
         Inventory target = event.getDestination();
-        if (source == null || target == null)
+        if (target == null)
         {
-            return; //TODO why does this happens
+            return; // TODO waiting for https://bukkit.atlassian.net/browse/BUKKIT-3916
         }
         Location sourceLocation = this.getLocationForHolder(source.getHolder());
         if (sourceLocation == null)
