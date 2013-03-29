@@ -477,11 +477,20 @@ public class BlockListener implements Listener
                         BlockState newNearBlock = nearBlock.getState();
                         newNearBlock.setType(nearBlock.getData() == 0 ? OBSIDIAN : COBBLESTONE);
                         newNearBlock.setRawData((byte)0);
-                        this.logBlockChange(WATER_FLOW,oldNearBlock,newNearBlock,null);
+                        if (this.manager.isIgnored(event.getBlock().getWorld(),BLOCK_FORM,newNearBlock.getType())) continue;
+                        this.logBlockChange(BLOCK_FORM,oldNearBlock,newNearBlock,null);
                     }
                 }
                 newToBlock.setType(Material.WATER);
                 newToBlock.setRawData((byte)(fromBlock.getRawData() + 1));
+            }
+            if (toBlock.getType().equals(AIR))
+            {
+                if (this.manager.isIgnored(event.getBlock().getWorld(),WATER_FLOW)) return;
+            }
+            else
+            {
+                if (this.manager.isIgnored(event.getBlock().getWorld(),WATER_BREAK)) return;
             }
             this.logBlockChange(toBlock.getType().equals(AIR) ? WATER_FLOW : WATER_BREAK, toBlock, newToBlock, null);
         }
