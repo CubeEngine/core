@@ -41,8 +41,6 @@ public class LogEntry implements Comparable<LogEntry>
     private ItemStack item;
     private InventoryType inventoryType;
 
-
-
     public LogEntry(Log module, long entryID, Timestamp timestamp, int action, long worldId, int x, int y, int z,
                     long causer, String block, Long data, String newBlock, Integer newData, String additionalData)
     {
@@ -104,7 +102,7 @@ public class LogEntry implements Comparable<LogEntry>
             }
         }
         System.out.print(actionType.name +" "+ timestamp + "C:"+ (hasUser ? this.causer_user.getName() : this.causer_entity)
-                        + " " + (hasBlock ? (oldBlock + "->" + this.newBlock + " ") : "") + item != null ? item : "");
+                        + " " + (hasBlock ? (oldBlock + "->" + this.newBlock + " ") : "") + (item != null ? item : ""));
         // data can be killed ID
     }
 
