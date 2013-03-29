@@ -64,9 +64,12 @@ public class LogEditSession extends EditSession
                 {
                     User user = this.module.getCore().getUserManager().getExactUser(((BukkitPlayer)this.player).getPlayer());
                     BlockState newState =  world.getBlockAt(pt.getBlockX(), pt.getBlockY(), pt.getBlockZ()).getState();
-                    this.module.getLogManager().queueLog(oldState.getLocation(), ActionType.WORLDEDIT, user.key,
-                            oldState.getType().name(), oldState.getRawData(),
-                            newState.getType().name(),newState.getRawData(), null);
+                    this.module.getLogManager().queueBlockChangeLog(oldState
+                                                                        .getLocation(), ActionType.WORLDEDIT, user.key, oldState
+                                                                        .getType().name(), oldState
+                                                                        .getRawData(), newState.getType()
+                                                                                               .name(), newState
+                                                                        .getRawData(), null);
                 }
                 return success;
             }

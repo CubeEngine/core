@@ -66,11 +66,11 @@ import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.user.UserManager;
 import de.cubeisland.cubeengine.log.Log;
 import de.cubeisland.cubeengine.log.storage.ActionType;
+import de.cubeisland.cubeengine.log.storage.ItemData;
 import de.cubeisland.cubeengine.log.storage.LogManager;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
-import static de.cubeisland.cubeengine.log.storage.LogManager.*;
 import static org.bukkit.Material.*;
 import static org.bukkit.event.entity.EntityDamageEvent.DamageCause.PROJECTILE;
 
@@ -112,16 +112,14 @@ public class EntityListener implements Listener
                 if (event.getEntity() instanceof ItemFrame)
                 {
                     ItemStack itemStack = ((ItemFrame) event.getEntity()).getItem();
-                    String itemInFrame = this.serializeItemStack(itemStack);
-                    this.manager.queueLog(location, HANGING_BREAK, causer,
-                            ITEM_FRAME.name(), (byte)0,
-                            AIR.name(),(byte) 0, itemInFrame);
+                    String itemInFrame = this.manager.getContainerListener().serializeItemData(new ItemData(itemStack));
+                    this.manager.queueBlockChangeLog(location, HANGING_BREAK, causer, ITEM_FRAME.name(), (byte)0, AIR
+                        .name(), (byte)0, itemInFrame);
                 }
                 else if (event.getEntity() instanceof Painting)
                 {
-                    this.manager.queueLog(location, HANGING_BREAK, causer,
-                            PAINTING.name(), (byte)((Painting)event.getEntity()).getArt().getId(),
-                            AIR.name(),(byte) 0, null);
+                    this.manager.queueBlockChangeLog(location, HANGING_BREAK, causer, PAINTING
+                        .name(), (byte)((Painting)event.getEntity()).getArt().getId(), AIR.name(), (byte)0, null);
                 }
             }
             System.out.print("Unexpected HangingBreak event");
@@ -160,16 +158,14 @@ public class EntityListener implements Listener
             if (event.getEntity() instanceof ItemFrame)
             {
                 ItemStack itemStack = ((ItemFrame) event.getEntity()).getItem();
-                String itemInFrame = this.serializeItemStack(itemStack);
-                this.manager.queueLog(location, HANGING_BREAK, causer,
-                        ITEM_FRAME.name(), (byte)0,
-                        AIR.name(),(byte) 0, itemInFrame);
+                String itemInFrame = this.manager.getContainerListener().serializeItemData(new ItemData(itemStack));
+                this.manager.queueBlockChangeLog(location, HANGING_BREAK, causer, ITEM_FRAME.name(), (byte)0, AIR
+                    .name(), (byte)0, itemInFrame);
             }
             else if (event.getEntity() instanceof Painting)
             {
-                this.manager.queueLog(location, HANGING_BREAK, causer,
-                        PAINTING.name(), (byte)((Painting)event.getEntity()).getArt().getId(),
-                        AIR.name(),(byte) 0, null);
+                this.manager.queueBlockChangeLog(location, HANGING_BREAK, causer, PAINTING
+                    .name(), (byte)((Painting)event.getEntity()).getArt().getId(), AIR.name(), (byte)0, null);
             }
         }
         else
@@ -183,16 +179,13 @@ public class EntityListener implements Listener
         User user = this.module.getCore().getUserManager().getExactUser(event.getPlayer());
         if (event.getEntity() instanceof ItemFrame)
         {
-            this.manager.queueLog(event.getEntity().getLocation(), HANGING_PLACE, user.key,
-                    AIR.name(),(byte) 0,
-                    ITEM_FRAME.name(), (byte)0, null);
+            this.manager.queueBlockChangeLog(event.getEntity().getLocation(), HANGING_PLACE, user.key, AIR
+                .name(), (byte)0, ITEM_FRAME.name(), (byte)0, null);
         }
         else if (event.getEntity() instanceof Painting)
         {
-            this.manager.queueLog(event.getEntity().getLocation(), HANGING_PLACE, user.key,
-                    AIR.name(),(byte) 0,
-                    PAINTING.name(), (byte)((Painting)event.getEntity()).getArt().getId(),
-                    null);
+            this.manager.queueBlockChangeLog(event.getEntity().getLocation(), HANGING_PLACE, user.key, AIR
+                .name(), (byte)0, PAINTING.name(), (byte)((Painting)event.getEntity()).getArt().getId(), null);
         }
     }
 
@@ -205,7 +198,7 @@ public class EntityListener implements Listener
         {
             for (ItemStack itemStack : event.getDrops())
             {
-                String itemData = this.serializeItemStack(itemStack);
+                String itemData = this.manager.getContainerListener().serializeItemData(new ItemData(itemStack));
                 long causer;
                 if (event.getEntity() instanceof Player)
                 {
@@ -215,7 +208,7 @@ public class EntityListener implements Listener
                 {
                     causer = -1L * event.getEntity().getType().getTypeId();
                 }
-                this.manager.queueLog(location,ITEM_DROP,causer,null,itemData);
+                this.manager.queueKillLog(location, ITEM_DROP, causer, null, itemData);
             }
         }
         LivingEntity entity = event.getEntity();
@@ -322,7 +315,7 @@ public class EntityListener implements Listener
             if (this.manager.isIgnored(entity.getWorld(),ENVIRONMENT_KILL)) return;
             causer = 0;
         }
-        this.manager.queueLog(location,action,causer,killed,additionalData);
+        this.manager.queueKillLog(location, action, causer, killed, additionalData);
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
@@ -333,7 +326,7 @@ public class EntityListener implements Listener
         Player player = this.plannedVehiclePlace.get(location);
         if (player != null)
         {
-            this.manager.queueLog(location,VEHICLE_PLACE,player,null);
+            this.manager.queueInteractionLog(location, VEHICLE_PLACE, player, null);
         }
         else
             System.out.print("Unexpected VehiclePlacement: "+event.getVehicle());
@@ -369,7 +362,7 @@ public class EntityListener implements Listener
             causer = um.getExactUser((Player) event.getVehicle().getPassenger()).key;
         }
         Long vehicleType = -1L * event.getVehicle().getType().getTypeId();
-        this.manager.queueLog(event.getVehicle().getLocation(),VEHICLE_BREAK,causer,vehicleType,null);
+        this.manager.queueKillLog(event.getVehicle().getLocation(), VEHICLE_BREAK, causer, vehicleType, null);
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
@@ -378,7 +371,8 @@ public class EntityListener implements Listener
         if (this.manager.isIgnored(event.getVehicle().getWorld(),VEHICLE_ENTER)) return;
         if (event.getEntered() instanceof Player)
         {
-            this.manager.queueLog(event.getVehicle().getLocation(),VEHICLE_ENTER, (Player)event.getEntered(),null);
+            this.manager.queueInteractionLog(event.getVehicle().getLocation(), VEHICLE_ENTER, (Player)event
+                .getEntered(), null);
         }
         else
         {
@@ -392,7 +386,8 @@ public class EntityListener implements Listener
         if (this.manager.isIgnored(event.getVehicle().getWorld(),VEHICLE_EXIT)) return;
         if (event.getExited() instanceof Player)
         {
-            this.manager.queueLog(event.getVehicle().getLocation(),VEHICLE_ENTER, (Player)event.getExited(),null);
+            this.manager.queueInteractionLog(event.getVehicle().getLocation(), VEHICLE_ENTER, (Player)event
+                .getExited(), null);
         }
         else
         {
@@ -437,9 +432,8 @@ public class EntityListener implements Listener
         long spawnedEntity = -event.getEntity().getType().getTypeId();
         if (event.getEntity() instanceof LivingEntity)
         {
-            this.manager.queueLog(event.getEntity().getLocation(), ENTITY_SHEAR,
-                    spawnedEntity, null,
-                    this.serializeData(null,(LivingEntity)event.getEntity(),null));
+            this.manager.queueKillLog(event.getEntity().getLocation(), ENTITY_SHEAR, spawnedEntity, null, this
+                .serializeData(null, (LivingEntity)event.getEntity(), null));
         }
         else
             System.out.print("Sheared something: "+event.getEntity());
@@ -454,18 +448,19 @@ public class EntityListener implements Listener
         if (player.getItemInHand().getType().equals(COAL) && entity instanceof PoweredMinecart)
         {
             if (this.manager.isIgnored(player.getWorld(),ITEM_INSERT)) return;
-            this.manager.queueLog(entity.getLocation(),ITEM_INSERT,player,null);
+            this.manager.queueInteractionLog(entity.getLocation(), ITEM_INSERT, player, null);
         }
         else if(player.getItemInHand().getType().equals(INK_SACK) && entity instanceof Sheep || entity instanceof Wolf)
         {
             if (this.manager.isIgnored(player.getWorld(),ENTITY_DYE)) return;
             Dye dye = (Dye) player.getItemInHand().getData();
-            this.manager.queueLog(entity.getLocation(),ENTITY_DYE,player,this.serializeData(null,entity,dye.getColor()));
+            this.manager.queueInteractionLog(entity.getLocation(), ENTITY_DYE, player, this
+                .serializeData(null, entity, dye.getColor()));
         }
         else if (player.getItemInHand().getType().equals(BOWL) && entity instanceof MushroomCow)
         {
             if (this.manager.isIgnored(player.getWorld(),SOUP_FILL)) return;
-            this.manager.queueLog(entity.getLocation(),SOUP_FILL,player,null);
+            this.manager.queueInteractionLog(entity.getLocation(), SOUP_FILL, player, null);
         }
     }
 
@@ -484,7 +479,7 @@ public class EntityListener implements Listener
             causer = -1L * livingEntity.getType().getTypeId();
         }
         String additionalData = this.serializePotionLog(event);
-        this.manager.queueLog(event.getPotion().getLocation(),POTION_SPLASH,causer,null,additionalData);
+        this.manager.queueKillLog(event.getPotion().getLocation(), POTION_SPLASH, causer, null, additionalData);
     }
 
     public String serializePotionLog(PotionSplashEvent event)
@@ -531,37 +526,40 @@ public class EntityListener implements Listener
         {
             data = event.getPlayer().getAddress().getAddress().getHostName();
         }
-        this.manager.queueLog(event.getPlayer().getLocation(),PLAYER_JOIN,event.getPlayer(),data);
+        this.manager.queueInteractionLog(event.getPlayer().getLocation(), PLAYER_JOIN, event.getPlayer(), data);
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onPlayerQuit(PlayerQuitEvent event)
     {
         if (this.manager.isIgnored(event.getPlayer().getWorld(),PLAYER_QUIT)) return;
-        this.manager.queueLog(event.getPlayer().getLocation(),PLAYER_JOIN,event.getPlayer(),null);
+        this.manager.queueInteractionLog(event.getPlayer().getLocation(), PLAYER_JOIN, event.getPlayer(), null);
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onItemDrop(PlayerDropItemEvent event)
     {
         if (this.manager.isIgnored(event.getPlayer().getWorld(),ITEM_DROP)) return;
-        String itemData = this.serializeItemStack(event.getItemDrop().getItemStack());
-        this.manager.queueLog(event.getPlayer().getLocation(),ITEM_DROP,event.getPlayer(),itemData);
+        String itemData = this.manager.getContainerListener().serializeItemData(new ItemData(event.getItemDrop()
+                                                                                                  .getItemStack()));
+        this.manager.queueInteractionLog(event.getPlayer().getLocation(), ITEM_DROP, event.getPlayer(), itemData);
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onItemPickup(PlayerPickupItemEvent  event)
     {
         if (this.manager.isIgnored(event.getPlayer().getWorld(),ITEM_PICKUP)) return;
-        String itemData = this.serializeItemStack(event.getItem().getItemStack());
-        this.manager.queueLog(event.getPlayer().getLocation(),ITEM_PICKUP,event.getPlayer(),itemData);
+        String itemData = this.manager.getContainerListener().serializeItemData(new ItemData(event.getItem()
+                                                                                                  .getItemStack()));
+        this.manager.queueInteractionLog(event.getPlayer().getLocation(), ITEM_PICKUP, event.getPlayer(), itemData);
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onExpPickup(PlayerExpChangeEvent event)
     {
         if (this.manager.isIgnored(event.getPlayer().getWorld(),XP_PICKUP)) return;
-        this.manager.queueLog(event.getPlayer().getLocation(),XP_PICKUP,event.getPlayer(),String.valueOf(event.getAmount()));
+        this.manager.queueInteractionLog(event.getPlayer().getLocation(), XP_PICKUP, event.getPlayer(), String
+            .valueOf(event.getAmount()));
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
@@ -571,8 +569,8 @@ public class EntityListener implements Listener
         if (event.getFrom().equals(event.getTo())) return;
         String targetLocation = this.serializeLocation(false,event.getTo());
         String sourceLocation = this.serializeLocation(true, event.getFrom());
-        this.manager.queueLog(event.getFrom(),PLAYER_TELEPORT,event.getPlayer(),targetLocation);
-        this.manager.queueLog(event.getTo(),PLAYER_TELEPORT,event.getPlayer(),sourceLocation);
+        this.manager.queueInteractionLog(event.getFrom(), PLAYER_TELEPORT, event.getPlayer(), targetLocation);
+        this.manager.queueInteractionLog(event.getTo(), PLAYER_TELEPORT, event.getPlayer(), sourceLocation);
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
@@ -581,8 +579,9 @@ public class EntityListener implements Listener
         if (this.manager.isIgnored(event.getEnchanter().getWorld(),ENCHANT_ITEM)) return;
         String applied = this.serializeEnchantments(event.getEnchantsToAdd());
         User user = this.module.getCore().getUserManager().getExactUser(event.getEnchanter());
-        this.manager.queueLog(event.getEnchanter().getLocation(),ENCHANT_ITEM,user.key,
-                event.getItem().getType().name(),event.getItem().getDurability(),applied);
+        this.manager.queueItemLog(event.getEnchanter().getLocation(), ENCHANT_ITEM, user.key, event.getItem().getType()
+                                                                                                   .name(), event
+                                      .getItem().getDurability(), applied);
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
@@ -591,8 +590,10 @@ public class EntityListener implements Listener
         if (this.manager.isIgnored(event.getWhoClicked().getWorld(),CRAFT_ITEM)) return;
         if (!(event.getWhoClicked() instanceof Player)) return;
         User user = this.module.getCore().getUserManager().getExactUser((Player) event.getWhoClicked());
-        this.manager.queueLog(event.getWhoClicked().getLocation(),CRAFT_ITEM,user.key,
-                event.getRecipe().getResult().getType().name(),event.getRecipe().getResult().getDurability(),null);
+        this.manager.queueItemLog(event.getWhoClicked().getLocation(), CRAFT_ITEM, user.key, event.getRecipe()
+                                                                                                  .getResult().getType()
+                                                                                                  .name(), event
+                                      .getRecipe().getResult().getDurability(), null);
     }
 
     private String serializeData(EntityDamageEvent.DamageCause cause, LivingEntity entity, DyeColor newColor)
@@ -649,39 +650,6 @@ public class EntityListener implements Listener
         }
     }
 
-    public String serializeItemStack(ItemStack itemStack)
-    {
-        Map<String,Object> dataMap = new HashMap<String, Object>();
-        dataMap.put("type",itemStack.getType().name());
-        dataMap.put("data",itemStack.getDurability());
-        dataMap.put("amount",itemStack.getAmount());
-        if (itemStack.hasItemMeta())
-        {
-            ItemMeta meta = itemStack.getItemMeta();
-            if (meta.hasDisplayName())
-            {
-                dataMap.put("display",meta.getDisplayName());
-            }
-            if (meta.hasLore())
-            {
-                dataMap.put("lore",meta.getLore());
-            }
-            if (meta.hasEnchants())
-            {
-                Map<String,Integer> enchantments = new HashMap<String, Integer>();
-                for (Map.Entry<Enchantment,Integer> entry : meta.getEnchants().entrySet())
-                {
-                    enchantments.put(entry.getKey().getName(),entry.getValue());
-                }
-                dataMap.put("enchant",enchantments);
-            }
-        }
-        try {
-            return this.manager.mapper.writeValueAsString(dataMap);
-        } catch (JsonProcessingException e) {
-            throw new IllegalStateException("Could not parse itemmap!",e);
-        }
-    }
 
     private String serializeLocation(boolean from, Location location)
     {

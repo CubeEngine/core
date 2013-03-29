@@ -5,6 +5,8 @@ import java.sql.Timestamp;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.bukkit.craftbukkit.libs.com.google.gson.JsonParser;
+
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -48,11 +50,12 @@ public class LogManager
 
     public final ObjectMapper mapper;
     private final QueryManager queryManager;
+    private JsonParser jsonParser;
 
     public LogManager(Log module)
     {
         this.module = module;
-
+        this.jsonParser = new JsonParser();
         this.mapper = module.getObjectMapper();
         File file = new File(module.getFolder(), "worlds");
         file.mkdir();
@@ -375,8 +378,6 @@ public class LogManager
                     return  config.PLAYER_COMMAND_enable;
                 }
                 throw new IllegalStateException("Invalid command message! PLAYER_COMMAND");
-            case CONSOLE_COMMAND :
-                return  config.CONSOLE_COMMAND_enable;
             case PLAYER_CHAT :
                 return  config.PLAYER_CHAT_enable;
             case PLAYER_JOIN :
@@ -406,8 +407,6 @@ public class LogManager
         return !this.isLogging(world,action,additional);
     }
 
-
-
     /**
      * Log a block with additional data
      *
@@ -420,7 +419,7 @@ public class LogManager
      * @param newData
      * @param additionalData
      */
-    public void queueLog(Location location, ActionType action, Long causer, String block, Byte data, String newBlock, Byte newData, String additionalData)
+    public void queueBlockChangeLog(Location location, ActionType action, Long causer, String block, Byte data, String newBlock, Byte newData, String additionalData)
     {
         Timestamp timestamp = new Timestamp(System.currentTimeMillis());
         Long worldID = this.module.getCore().getWorldManager().getWorldId(location.getWorld());
@@ -437,7 +436,7 @@ public class LogManager
      * @param player
      * @param additionalData
      */
-    public void queueLog(Location location, ActionType action, Player player, String additionalData)
+    public void queueInteractionLog(Location location, ActionType action, Player player, String additionalData)
     {
         Timestamp timestamp = new Timestamp(System.currentTimeMillis());
         Long worldID = this.module.getCore().getWorldManager().getWorldId(location.getWorld());
@@ -446,13 +445,15 @@ public class LogManager
             .getBlockZ(), action, user.key, null, null, null, null, additionalData);
     }
 
-    public void queueLog(ActionType action, String addionalData)
+    public void queueLog(Location location, ActionType action, long causer)
     {
         Timestamp timestamp = new Timestamp(System.currentTimeMillis());
-        this.queryManager.queueLog(timestamp, null, null, null, null, action, null, null, null, null, null, addionalData);
+        Long worldID = this.module.getCore().getWorldManager().getWorldId(location.getWorld());
+        this.queryManager.queueLog(timestamp, worldID, location.getBlockX(), location.getBlockY(), location
+            .getBlockZ(), action, causer, null, null, null, null, null);
     }
 
-    public void queueLog(Location location, ActionType action, Long causer, Long killed, String additionalData)
+    public void queueKillLog(Location location, ActionType action, Long causer, Long killed, String additionalData)
     {
         Timestamp timestamp = new Timestamp(System.currentTimeMillis());
         Long worldID = this.module.getCore().getWorldManager().getWorldId(location.getWorld());
@@ -460,17 +461,29 @@ public class LogManager
             .getBlockZ(), action, causer, null, killed, null, null, additionalData);
     }
 
-    public void queueLog(Location location, ActionType action, long causer)
-    {
-        this.queueLog(location,action,causer,null,null);
-    }
-
-    public void queueLog(Location location, ActionType action, Long causer, String material, Short data, String additionalData)
+    public void queueItemLog(Location location, ActionType action, Long causer, String material, Short data, String additionalData)
     {
         Timestamp timestamp = new Timestamp(System.currentTimeMillis());
         Long worldID = this.module.getCore().getWorldManager().getWorldId(location.getWorld());
         this.queryManager.queueLog(timestamp, worldID, location.getBlockX(), location.getBlockY(), location
             .getBlockZ(), action, causer, material, data.longValue(), null, null, additionalData);
+    }
+
+    public void queueContainerLog(Location location, ActionType action, Long causer, Material material, Short dura, String containerType, String additional)
+    {
+        Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+        Long worldID = this.module.getCore().getWorldManager().getWorldId(location.getWorld());
+        this.queryManager.queueLog(timestamp, worldID, location.getBlockX(), location.getBlockY(), location
+            .getBlockZ(), action, causer, material.name(), dura.longValue(), containerType, null, additional);
+    }
+
+    public int getQueueSize() {
+        return this.queryManager.queuedLogs.size();
+    }
+
+    public void fillLookup(Lookup lookup)
+    {
+        this.queryManager.fillLookup(lookup);
     }
 
     public BlockListener getBlockListener() {
@@ -494,20 +507,8 @@ public class LogManager
         return this.worldConfigs.get(world);
     }
 
-    public void queueLog(Location location, ActionType action, Long causer, Material material, Short dura, String containerType, String additional)
+    public JsonParser getJsonParser()
     {
-        Timestamp timestamp = new Timestamp(System.currentTimeMillis());
-        Long worldID = this.module.getCore().getWorldManager().getWorldId(location.getWorld());
-        this.queryManager.queueLog(timestamp, worldID, location.getBlockX(), location.getBlockY(), location
-            .getBlockZ(), action, causer, material.name(), dura.longValue(), containerType, null, additional);
-    }
-
-    public int getQueueSize() {
-        return this.queryManager.queuedLogs.size();
-    }
-
-    public void fillLookup(Lookup lookup)
-    {
-        this.queryManager.fillLookup(lookup);
+        return jsonParser;
     }
 }

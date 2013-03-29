@@ -316,7 +316,7 @@ public class QueryManager
             ResultSet resultSet = stmt.executeQuery();
             while (resultSet.next())
             {
-                long key = resultSet.getLong("key");
+                long entryID = resultSet.getLong("key");
                 Timestamp timestamp = resultSet.getTimestamp("date");
                 int action = resultSet.getInt("action");
                 long worldId = resultSet.getLong("world");
@@ -329,9 +329,7 @@ public class QueryManager
                 String newBlock = resultSet.getString("newBlock");
                 Integer newData = resultSet.getInt("newData");
                 String additionalData = resultSet.getString("additionalData");
-
-                System.out.print(key + " " + timestamp + " A"+action+": W"+worldId +"("+x+","+y+","+z+") "
-                                 + "C:"+causer+ " B:"+block+":"+data+"->NB:"+newBlock+":"+newData+ " A:"+additionalData);
+                LogEntry logEntry = new LogEntry(this.module,entryID,timestamp,action,worldId,x,y,z,causer,block,data,newBlock,newData,additionalData);
             }
             //TODO fillLookup
             return lookup;

@@ -1,9 +1,12 @@
 package de.cubeisland.cubeengine.log.storage;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.TreeSet;
+
 import static de.cubeisland.cubeengine.log.storage.ActionType.*;
 import org.bukkit.Location;
 import org.bukkit.World;
@@ -42,6 +45,8 @@ public class Lookup
     private Set<BlockData> blocks;
     private boolean includeBlocks = true;
     // smaller than WORLDEDIT (0x4B) OR HANGING_PLACE/HANGING_BREAK (0x61/0x63)
+
+    private TreeSet<LogEntry> logEntries = new TreeSet<LogEntry>();
 
     private Lookup(Module module)
     {

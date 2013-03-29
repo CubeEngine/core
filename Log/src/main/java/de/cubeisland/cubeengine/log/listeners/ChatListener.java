@@ -7,7 +7,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
-import org.bukkit.event.server.ServerCommandEvent;
+
 import static de.cubeisland.cubeengine.log.storage.ActionType.*;
 
 public class ChatListener implements Listener
@@ -26,7 +26,8 @@ public class ChatListener implements Listener
     {
         if (event.getMessage().trim().isEmpty()) return;
         if (this.manager.isIgnored(event.getPlayer().getWorld(),PLAYER_COMMAND,event.getMessage())) return;
-        this.manager.queueLog(event.getPlayer().getLocation(),PLAYER_COMMAND,event.getPlayer(),event.getMessage());
+        this.manager.queueInteractionLog(event.getPlayer().getLocation(), PLAYER_COMMAND, event.getPlayer(), event
+            .getMessage());
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
@@ -34,13 +35,7 @@ public class ChatListener implements Listener
     {
         if (this.manager.isIgnored(event.getPlayer().getWorld(),PLAYER_CHAT)) return;
         if (event.getMessage().trim().isEmpty()) return;
-        this.manager.queueLog(event.getPlayer().getLocation(),PLAYER_CHAT,event.getPlayer(),event.getMessage());
-    }
-
-    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
-    public void onServerCommand(ServerCommandEvent event)
-    {
-        if (this.manager.isIgnored(null,CONSOLE_COMMAND)) return;
-        this.manager.queueLog(CONSOLE_COMMAND,event.getCommand());
+        this.manager.queueInteractionLog(event.getPlayer().getLocation(), PLAYER_CHAT, event.getPlayer(), event
+            .getMessage());
     }
 }
