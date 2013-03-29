@@ -1,7 +1,7 @@
 package de.cubeisland.cubeengine.roles.role;
 
-import de.cubeisland.cubeengine.roles.role.config.PermissionTree;
-import de.cubeisland.cubeengine.roles.role.config.Priority;
+import de.cubeisland.cubeengine.roles.config.PermissionTree;
+import de.cubeisland.cubeengine.roles.config.Priority;
 import org.bukkit.Bukkit;
 import org.bukkit.permissions.Permission;
 

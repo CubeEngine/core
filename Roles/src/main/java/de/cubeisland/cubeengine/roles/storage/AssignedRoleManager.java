@@ -7,7 +7,7 @@ import static de.cubeisland.cubeengine.core.storage.database.querybuilder.Compon
 import de.cubeisland.cubeengine.core.storage.database.querybuilder.QueryBuilder;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.util.Triplet;
-import de.cubeisland.cubeengine.roles.role.WorldRoleProvider;
+import de.cubeisland.cubeengine.roles.provider.WorldRoleProvider;
 import gnu.trove.map.hash.TLongObjectHashMap;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -38,6 +38,10 @@ public class AssignedRoleManager extends TripletKeyStorage<Long, Long, String, A
                     builder.deleteFrom(this.tableName).where().
                         field("userId").is(EQUAL).value().and().
                         field("worldId").is(EQUAL).value().end().end());
+            this.database.storeStatement(modelClass, "deleteByWorldAndRole", builder.deleteFrom(this.tableName).where().
+                field("worldId").is(EQUAL).value().and().
+                                                                                        field("roleName").is(EQUAL)
+                                                                                    .value().end().end());
             this.database.storeStatement(modelClass, "rename",
                     builder.update(this.tableName).set("roleName").
                         where().field("worldId").isEqual().value().
@@ -71,7 +75,8 @@ public class AssignedRoleManager extends TripletKeyStorage<Long, Long, String, A
         }
         catch (SQLException ex)
         {
-            throw new IllegalStateException("Error while getting Model from Database", ex);
+            throw new StorageException("Error while getting Model from Database", ex,
+                                       this.database.getStoredStatement(modelClass,"getallByUser"));
         }
     }
 
@@ -88,7 +93,8 @@ public class AssignedRoleManager extends TripletKeyStorage<Long, Long, String, A
         }
         catch (SQLException ex)
         {
-            throw new IllegalStateException("Error while deleting assigned Role (multi)", ex);
+            throw new StorageException("Error while deleting assigned Role (multi)", ex,
+                                       this.database.getStoredStatement(modelClass,"deleteByUserAndWorld"));
         }
     }
 
@@ -111,7 +117,21 @@ public class AssignedRoleManager extends TripletKeyStorage<Long, Long, String, A
         }
         catch (SQLException ex)
         {
-            throw new IllegalStateException("Error while renaming roles in database!", ex);
+            throw new StorageException("Error while renaming roles in database!", ex,
+                                       this.database.getStoredStatement(modelClass,"rename"));
+        }
+    }
+
+    public void deleteRole(long worldID, String name)
+    {
+        try
+        {
+            this.database.preparedExecute(modelClass, "deleteByWorldAndRole", worldID, name);
+        }
+        catch (SQLException ex)
+        {
+            throw new StorageException("Error while deleting removed Role (multi)", ex,
+                                       this.database.getStoredStatement(modelClass,"deleteByWorldAndRole"));
         }
     }
 }

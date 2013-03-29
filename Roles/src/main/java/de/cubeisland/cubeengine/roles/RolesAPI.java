@@ -2,7 +2,6 @@ package de.cubeisland.cubeengine.roles;
 
 import de.cubeisland.cubeengine.core.storage.world.WorldManager;
 import de.cubeisland.cubeengine.core.user.User;
-import de.cubeisland.cubeengine.roles.role.RoleManager;
 import de.cubeisland.cubeengine.roles.role.RoleMetaData;
 import de.cubeisland.cubeengine.roles.role.UserSpecificRole;
 import gnu.trove.map.hash.TLongObjectHashMap;

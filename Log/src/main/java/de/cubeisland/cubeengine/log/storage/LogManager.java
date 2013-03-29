@@ -4,10 +4,12 @@ import java.io.File;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Timestamp;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Queue;
+import java.util.Set;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
@@ -50,9 +52,12 @@ import de.cubeisland.cubeengine.log.listeners.ContainerListener;
 import de.cubeisland.cubeengine.log.listeners.EntityListener;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import gnu.trove.set.hash.THashSet;
 
 public class LogManager
 {
+
+
     //BREAK
     public static final int BLOCK_BREAK = 0x00;
     public static final int BLOCK_BURN = 0x01;
@@ -81,6 +86,8 @@ public class LogManager
     public static final int BLOCK_FORM = 0x25; //ice/snow/lava-water
     public static final int ENDERMAN_PLACE = 0x26;
     public static final int ENTITY_FORM = 0x27;//snow-golem snow
+
+
     // SPREAD/ IGNITION
     public static final int FIRE_SPREAD = 0x30;
     public static final int FIREBALL = 0x31;
@@ -157,29 +164,36 @@ public class LogManager
     public static final int ENCHANT_ITEM = 0xA6;
     public static final int CRAFT_ITEM = 0xA7;
 
-    private final ExecutorService executorService;
-    private final AsyncTaskQueue taskQueue;
-    private final Database database;
-    private final Log module;
-    private final int batchSize;
+    Set<Integer> playerLogs = new THashSet<Integer>(
+        Arrays.asList(BLOCK_BREAK, BUCKET_FILL, CROP_TRAMPLE, CREEPER_EXPLODE,
+                      TNT_PRIME, BLOCK_PLACE, LAVA_BUCKET, WATER_BUCKET,
+                      PLAYER_GROW, LIGHTER, BLOCK_FALL, BONEMEAL_USE, LEVER_USE,
+                      REPEATER_CHANGE, NOTEBLOCK_CHANGE, DOOR_USE, CAKE_EAT,
+                      COMPARATOR_CHANGE, WORLDEDIT, CONTAINER_ACCESS, BUTTON_USE,
+                      FIREWORK_USE, VEHICLE_ENTER, VEHICLE_EXIT, POTION_SPLASH,
+                      PLATE_STEP, MILK_FILL, SOUP_FILL, VEHICLE_PLACE, HANGING_PLACE,
+                      VEHICLE_BREAK, HANGING_BREAK, PLAYER_DEATH, MONSTER_DEATH,
+                      ANIMAL_DEATH, PET_DEATH, NPC_DEATH, BOSS_DEATH, OTHER_DEATH,
+                      MONSTER_EGG_USE, OTHER_SPAWN, ITEM_DROP, ITEM_PICKUP, XP_PICKUP,
+                      ENTITY_SHEAR, ENTITY_DYE, ITEM_INSERT, ITEM_REMOVE, PLAYER_COMMAND,
+                      PLAYER_CHAT, PLAYER_JOIN, PLAYER_QUIT, PLAYER_TELEPORT, ENCHANT_ITEM, CRAFT_ITEM));
 
     private final BlockListener blockListener;
     private final ChatListener chatListener;
     private final ContainerListener containerListener;
     private final EntityListener entityListener;
-
-    private final ExecutorService executor;
-    private final Runnable runner;
-    private Future<?> future = null;
+    private final Log module;
 
     private LoggingConfiguration globalConfig;
     private Map<World, LoggingConfiguration> worldConfigs = new HashMap<World, LoggingConfiguration>();
 
     public final ObjectMapper mapper;
+    private final QueryManager queryManager;
 
     public LogManager(Log module)
     {
-        this.batchSize = module.getConfiguration().loggingBatchSize;
+        this.module = module;
+
         this.mapper = module.getObjectMapper();
         File file = new File(module.getFolder(), "worlds");
         file.mkdir();
@@ -202,148 +216,10 @@ public class LogManager
         em.registerListener(module, containerListener);
         em.registerListener(module, entityListener);
 
-        this.database = module.getCore().getDB();
-        this.module = module;
-        try
-        {
-            QueryBuilder builder = database.getQueryBuilder();
-            String sql = builder.createTable("log_entries", true).beginFields()
-                    .field("key", AttrType.INT, true).autoIncrement()
-                    .field("date", AttrType.TIMESTAMP)
-                    .field("action", AttrType.TINYINT, false)
-                    .field("world", AttrType.INT, true, false)
-                    .field("x", AttrType.INT, false, false)
-                    .field("y", AttrType.INT, false, false)
-                    .field("z", AttrType.INT, false, false)
-                    .field("causer", AttrType.BIGINT, false, false)
-                    .field("block",AttrType.VARCHAR, 255, false)
-                    .field("data",AttrType.BIGINT,false,false) // in kill logs this is the killed entity
-                    .field("newBlock", AttrType.VARCHAR, 255, false)
-                    .field("newData",AttrType.TINYINT, false,false)
-                    .field("additionalData",AttrType.VARCHAR,255, false)
-                    .foreignKey("world").references("worlds", "key")
-                    .index("x")
-                    .index("y")
-                    .index("z")
-                    .index("action")
-                    .index("causer")
-                    .index("block")
-                    .index("newBlock")
-                    .primaryKey("key").endFields()
-                    .engine("innoDB").defaultcharset("utf8")
-                    .end().end();
-            this.database.execute(sql);
-            sql = builder.insert().into("log_entries")
-                    .cols("date", "action", "world", "x", "y", "z", "causer",
-                            "block", "data", "newBlock", "newData", "additionalData")
-                    .end().end();
-            this.database.storeStatement(this.getClass(), "storeLog", sql);
-        }
-        catch (SQLException ex)
-        {
-            throw new StorageException("Error during initialization of log-tables", ex);
-        }
+        this.queryManager = new QueryManager(module);
 
-        this.executorService = Executors.newSingleThreadScheduledExecutor(this.module.getCore().getTaskManager().getThreadFactory()); // TODO is not shut down!
-        this.taskQueue = new AsyncTaskQueue(this.executorService); // TODO is not shut down!
 
-        runner = new Runnable() {
-            @Override
-            public void run() {
-                taskQueue.addTask(new Runnable() {
-                    @Override
-                    public void run() {
-                        try {
-                            doEmptyLogs(batchSize);
-                        } catch (Exception ex) {
-                            LogManager.this.module.getLog().log(LogLevel.ERROR, "Error while logging!", ex);
-                        }
-                    }
-                });
-            }
-        };
-        executor = Executors.newSingleThreadExecutor(this.module.getCore().getTaskManager().getThreadFactory());
     }
-
-    private Queue<QueuedLog> queuedLogs = new ConcurrentLinkedQueue<QueuedLog>();
-    private volatile boolean running = false;
-
-    private void doEmptyLogs(int amount)
-    {
-        if (queuedLogs.isEmpty())
-        {
-            return;
-        }
-        if (running)
-        {
-            return;
-        }
-        running = true;
-        final Queue<QueuedLog> logs = new LinkedList<QueuedLog>();
-        for (int i = 0; i < amount; i++) // log <amount> next logs...
-        {
-            QueuedLog toLog = this.queuedLogs.poll();
-            if (toLog == null)
-            {
-                break;
-            }
-            logs.offer(toLog);
-        }
-        Profiler.startProfiling("logging");
-        int logSize = logs.size();
-        PreparedStatement stmt = this.database.getStoredStatement(this.getClass(),"storeLog");
-        try
-        {
-            this.database.getConnection().setAutoCommit(false);
-            for (QueuedLog log : logs)
-            {
-                log.addDataToBatch(stmt);
-            }
-            stmt.executeBatch();
-            this.database.getConnection().commit();
-            this.database.getConnection().setAutoCommit(true);
-        }
-        catch (SQLException ex)
-        {
-            throw new StorageException("Error while storing main Log-Entry", ex, stmt);
-        }
-        finally
-        {
-            running = false;
-        }
-        long nanos = Profiler.endProfiling("logging");
-        timeSpend += nanos;
-        logsLogged += logSize;
-        if (logSize == batchSize)
-        {
-            timeSpendFullLoad += nanos;
-            logsLoggedFullLoad += logSize;
-        }
-        if (logSize > 20)
-        {
-            this.module.getLog().log(LogLevel.DEBUG,
-                    logSize + " logged in: " + TimeUnit.NANOSECONDS.toMillis(nanos) +
-                            "ms | remaining logs: " + queuedLogs.size());
-            this.module.getLog().log(LogLevel.DEBUG,
-                    "Average logtime per log: " + TimeUnit.NANOSECONDS.toMicros(timeSpend / logsLogged)+ " micros");
-            this.module.getLog().log(LogLevel.DEBUG,
-                    "Average logtime per log in full load: " + TimeUnit.NANOSECONDS.toMicros(timeSpendFullLoad / logsLoggedFullLoad)+" micros");
-        }
-        if (!queuedLogs.isEmpty())
-        {
-            this.future = this.executor.submit(this.runner);
-        }
-        else if (this.latch != null)
-        {
-            this.latch.countDown();
-        }
-    }
-
-    private long timeSpend = 0;
-    private long logsLogged = 1;
-
-    private long timeSpendFullLoad = 0;
-    private long logsLoggedFullLoad = 1;
 
     private void buildWorldAndLocation(SelectBuilder builder, World world, Location loc1, Location loc2)
     {
@@ -375,19 +251,11 @@ public class LogManager
         builder.beginSub().field("date").between(fromDate, toDate).endSub();
     }
 
-    private CountDownLatch latch = null;
+
 
     public void disable()
     {
-        if (!queuedLogs.isEmpty())
-        {
-            latch = new CountDownLatch(1);
-            try {
-                latch.await();
-            } catch (InterruptedException e) {
-                this.module.getLog().log(LogLevel.WARNING,"Error while waiting!",e);
-            }
-        }
+        this.queryManager.disable();
     }
 
     public boolean isLogging(World world, int blockBreak, Object additional)
@@ -413,6 +281,10 @@ public class LogManager
                     else if (additional.equals(Material.SNOW))
                     {
                         return config.BLOCK_FADE_snow;
+                    }
+                    else
+                    {
+                        return config.BLOCK_FADE_other;
                     }
                 }
                 throw new IllegalStateException("Invalid BLOCK_FADE:" +additional);
@@ -467,9 +339,15 @@ public class LogManager
                     {
                         return config.BLOCK_FORM_snow;
                     }
-                    else
+                    else if (additional.equals(Material.COBBLESTONE)
+                        || additional.equals(Material.STONE)
+                        || additional.equals(Material.OBSIDIAN))
                     {
                         return config.BLOCK_FORM_lavaWater;
+                    }
+                    else
+                    {
+                        return config.BLOCK_FORM_other;
                     }
                 }
                 throw new IllegalStateException("Invalid BLOCK_FORM:" +additional);
@@ -669,14 +547,7 @@ public class LogManager
         return !this.isLogging(world,action,additional);
     }
 
-    private void queueLog(Timestamp timestamp, Long worldID, Integer x, Integer y, Integer z, Integer action, Long causer, String block, Long data, String newBlock, Byte newData, String additionalData)
-    {
-        this.queuedLogs.offer(new QueuedLog(timestamp,worldID,x,y,z,action,causer,block,data,newBlock,newData,additionalData));
-        if (this.future == null || this.future.isDone())
-        {
-            this.future = executor.submit(runner);
-        }
-    }
+
 
     /**
      * Log a block with additional data
@@ -695,7 +566,8 @@ public class LogManager
         Timestamp timestamp = new Timestamp(System.currentTimeMillis());
         Long worldID = this.module.getCore().getWorldManager().getWorldId(location.getWorld());
         Long longData = data == null ? null : data.longValue();
-        this.queueLog(timestamp,worldID,location.getBlockX(),location.getBlockY(),location.getBlockZ(),action, causer, block, longData, newBlock, newData,additionalData);
+        this.queryManager.queueLog(timestamp, worldID, location.getBlockX(), location.getBlockY(), location
+            .getBlockZ(), action, causer, block, longData, newBlock, newData, additionalData);
     }
 
     /**
@@ -711,21 +583,22 @@ public class LogManager
         Timestamp timestamp = new Timestamp(System.currentTimeMillis());
         Long worldID = this.module.getCore().getWorldManager().getWorldId(location.getWorld());
         User user = this.module.getCore().getUserManager().getExactUser(player);
-        this.queueLog(timestamp,worldID,location.getBlockX(),location.getBlockY(),location.getBlockZ(),action,user.key,null,null,null,null,additionalData);
+        this.queryManager.queueLog(timestamp, worldID, location.getBlockX(), location.getBlockY(), location
+            .getBlockZ(), action, user.key, null, null, null, null, additionalData);
     }
 
     public void queueLog(int action, String addionalData)
     {
         Timestamp timestamp = new Timestamp(System.currentTimeMillis());
-        this.queueLog(timestamp,null,null,null,null,action, null, null,null,null,null,addionalData);
+        this.queryManager.queueLog(timestamp, null, null, null, null, action, null, null, null, null, null, addionalData);
     }
 
     public void queueLog(Location location, int action, Long causer, Long killed, String additionalData)
     {
         Timestamp timestamp = new Timestamp(System.currentTimeMillis());
         Long worldID = this.module.getCore().getWorldManager().getWorldId(location.getWorld());
-        this.queueLog(timestamp,worldID,location.getBlockX(),location.getBlockY(),location.getBlockZ(),
-                action,causer,null,killed,null,null,additionalData);
+        this.queryManager.queueLog(timestamp, worldID, location.getBlockX(), location.getBlockY(), location
+            .getBlockZ(), action, causer, null, killed, null, null, additionalData);
     }
 
     public void queueLog(Location location, int action, long causer)
@@ -737,8 +610,8 @@ public class LogManager
     {
         Timestamp timestamp = new Timestamp(System.currentTimeMillis());
         Long worldID = this.module.getCore().getWorldManager().getWorldId(location.getWorld());
-        this.queueLog(timestamp,worldID,location.getBlockX(),location.getBlockY(),location.getBlockZ(),
-                action,causer,material,data.longValue(),null,null,additionalData);
+        this.queryManager.queueLog(timestamp, worldID, location.getBlockX(), location.getBlockY(), location
+            .getBlockZ(), action, causer, material, data.longValue(), null, null, additionalData);
     }
 
     public BlockListener getBlockListener() {
@@ -766,13 +639,12 @@ public class LogManager
     {
         Timestamp timestamp = new Timestamp(System.currentTimeMillis());
         Long worldID = this.module.getCore().getWorldManager().getWorldId(location.getWorld());
-        this.queueLog(timestamp,worldID,location.getBlockX(),location.getBlockY(),location.getBlockZ(),
-                action,causer,material.name(),dura.longValue(),containerType,null,additional);
+        this.queryManager.queueLog(timestamp, worldID, location.getBlockX(), location.getBlockY(), location
+            .getBlockZ(), action, causer, material.name(), dura.longValue(), containerType, null, additional);
     }
 
 
     public int getQueueSize() {
-        return this.queuedLogs.size();
+        return this.queryManager.queuedLogs.size();
     }
 }
-

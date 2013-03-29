@@ -93,7 +93,7 @@ public class AfkListener implements Listener, Runnable
         BasicsAttachment basicsAttachment = this.um.getExactUser(player).get(BasicsAttachment.class);
         if (basicsAttachment != null)
         {
-            if (basicsAttachment.isAfk() && BasicsPerm.AFK_PREVENT_AUTOUNAFK.isAuthorized(player))
+            if (basicsAttachment.isAfk() && BasicsPerm.PREVENT_AUTOUNAFK.isAuthorized(player))
             {
                 return;
             }
@@ -125,8 +125,11 @@ public class AfkListener implements Listener, Runnable
                 }
                 else if (System.currentTimeMillis() - lastAction > this.autoAfk)
                 {
-                    basicsAttachment.setAfk(true);
-                    this.um.broadcastStatus("basics", "is now afk!" ,user.getName());
+                    if (!BasicsPerm.PREVENT_AUTOAFK.isAuthorized(user))
+                    {
+                        basicsAttachment.setAfk(true);
+                        this.um.broadcastStatus("basics", "is now afk!" ,user.getName());
+                    }
                 }
             }
         }

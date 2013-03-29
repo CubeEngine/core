@@ -44,7 +44,7 @@ public class TeleportListener implements Listener
         User user = this.basics.getCore().getUserManager().getExactUser(event.getEntity());
         if (BasicsPerm.COMMAND_BACK_ONDEATH.isAuthorized(user))
         {
-            user.get(BasicsAttachment.class).setLastLocation(user.getLocation());
+            user.get(BasicsAttachment.class).setDeathLocation(user.getLocation());
         }
     }
 

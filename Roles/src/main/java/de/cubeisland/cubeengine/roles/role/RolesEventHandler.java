@@ -10,8 +10,10 @@ import org.bukkit.event.player.PlayerLoginEvent;
 import de.cubeisland.cubeengine.core.module.event.FinishedLoadModulesEvent;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.user.UserAuthorizedEvent;
+import de.cubeisland.cubeengine.roles.RoleManager;
 import de.cubeisland.cubeengine.roles.Roles;
 import de.cubeisland.cubeengine.roles.RolesAttachment;
+import de.cubeisland.cubeengine.roles.provider.WorldRoleProvider;
 
 public class RolesEventHandler implements Listener
 {

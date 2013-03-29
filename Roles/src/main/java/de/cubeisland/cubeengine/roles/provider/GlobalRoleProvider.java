@@ -1,6 +1,7 @@
-package de.cubeisland.cubeengine.roles.role;
+package de.cubeisland.cubeengine.roles.provider;
 
 import de.cubeisland.cubeengine.roles.Roles;
+import de.cubeisland.cubeengine.roles.role.Role;
 
 import java.io.File;
 import java.util.Locale;

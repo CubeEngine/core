@@ -1,7 +1,6 @@
-package de.cubeisland.cubeengine.roles.role;
+package de.cubeisland.cubeengine.roles;
 
 import java.io.File;
-import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
@@ -14,13 +13,18 @@ import de.cubeisland.cubeengine.core.logger.LogLevel;
 import de.cubeisland.cubeengine.core.storage.world.WorldManager;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.util.Pair;
-import de.cubeisland.cubeengine.roles.Roles;
-import de.cubeisland.cubeengine.roles.RolesAttachment;
-import de.cubeisland.cubeengine.roles.role.config.RoleMirror;
+import de.cubeisland.cubeengine.roles.role.MergedRole;
+import de.cubeisland.cubeengine.roles.role.Role;
+import de.cubeisland.cubeengine.roles.role.UserSpecificRole;
+import de.cubeisland.cubeengine.roles.config.RoleMirror;
+import de.cubeisland.cubeengine.roles.provider.GlobalRoleProvider;
+import de.cubeisland.cubeengine.roles.provider.RoleProvider;
+import de.cubeisland.cubeengine.roles.provider.WorldRoleProvider;
 import de.cubeisland.cubeengine.roles.storage.AssignedRole;
 
 import gnu.trove.map.hash.THashMap;
 import gnu.trove.map.hash.TLongObjectHashMap;
+import gnu.trove.set.hash.THashSet;
 
 import static de.cubeisland.cubeengine.core.logger.LogLevel.DEBUG;
 
@@ -31,6 +35,7 @@ public class RoleManager
     private TLongObjectHashMap<WorldRoleProvider> providers = new TLongObjectHashMap<WorldRoleProvider>();
     private GlobalRoleProvider globalProvider;
     private WorldManager worldManager;
+    private Set<WorldRoleProvider> providerSet = new THashSet<WorldRoleProvider>();
 
     public RoleManager(Roles rolesModule)
     {
@@ -82,7 +87,7 @@ public class RoleManager
         this.module.getLog().log(DEBUG, "Calculating global Roles...");
         this.globalProvider.calculateRoles(true);
         // Calculate world roles for each world-provider:
-        for (WorldRoleProvider provider : providers.valueCollection())
+        for (WorldRoleProvider provider : this.providerSet)
         {
             if (!provider.isCalculated())
             {
@@ -115,6 +120,7 @@ public class RoleManager
                 if (worlds.get(worldId).getLeft()) // Roles are mirrored add to provider...
                 {
                     this.providers.put(worldId, provider);
+                    this.providerSet.add(provider);
                     this.module.getLog().log(LogLevel.DEBUG,"loading role-provider for "+worldManager.getWorld(worldId).getName());
                 }
             }
@@ -123,7 +129,9 @@ public class RoleManager
         {
             if (this.getProvider(worldId) == null)
             {
-                this.providers.put(worldId, new WorldRoleProvider(module, worldId));
+                WorldRoleProvider provider = new WorldRoleProvider(module, worldId);
+                this.providers.put(worldId, provider);
+                this.providerSet.add(provider);
                 this.module.getLog().log(LogLevel.DEBUG,"loading missing role-provider for "+worldManager.getWorld(worldId).getName());
             }
         }
@@ -139,9 +147,9 @@ public class RoleManager
         return (Provider)(world == null ? this.globalProvider : this.getProvider(this.worldManager.getWorldId(world)));
     }
 
-    public Collection<WorldRoleProvider> getProviders()
+    public Set<WorldRoleProvider> getProviders()
     {
-        return this.providers.valueCollection();
+        return this.providerSet;
     }
 
     public GlobalRoleProvider getGlobalProvider()
@@ -183,6 +191,7 @@ public class RoleManager
     {
         if (!reload && this.getRolesAttachment(user).hasRoleContainer())
         {
+            this.module.getLog().log(LogLevel.DEBUG,"RoleContainer of "+user.getName()+ " already calculated!");
             return; // Roles are calculated!
         }
         TLongObjectHashMap<List<Role>> userRolesPerWorld = new TLongObjectHashMap<List<Role>>();
@@ -279,7 +288,6 @@ public class RoleManager
         {
             return false;
         }
-        this.getRolesAttachment(user).removeRoleContainer();
         this.reloadAllRolesAndApply(user, player);
         return true;
     }

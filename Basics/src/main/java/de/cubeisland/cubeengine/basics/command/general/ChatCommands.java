@@ -46,7 +46,7 @@ public class ChatCommands
                 User user = this.um.findUser(name);
                 if (user == null)
                 {
-                    context.sendTranslated("&cUser %s not found!", name);
+                    context.sendTranslated("&cUser &2%s &cnot found!",name);
                 }
                 else if (!this.module.getIgnoreListManager().addIgnore(sender, user))
                 {
@@ -79,7 +79,7 @@ public class ChatCommands
                 User user = this.um.findUser(name);
                 if (user == null)
                 {
-                    context.sendTranslated("&cUser %s not found!", name);
+                    context.sendTranslated("&cUser &2%s &cnot found!",name);
                 }
                 else if (!this.module.getIgnoreListManager().removeIgnore(sender, user))
                 {
@@ -100,7 +100,7 @@ public class ChatCommands
     public void me(CommandContext context)
     {
         String message = context.getStrings(0);
-        this.um.broadcastStatus(message, context.getSender().getName()); //TODO rename CONSOLE when consolecommandsender
+        this.um.broadcastStatus(message, context.getSender().getDisplayName());
     }
 
     @Command(desc = "Sends a private message to someone", names = {
@@ -163,7 +163,7 @@ public class ChatCommands
                 context.sendTranslated("Who are you!?");
                 return true;
             }
-            context.sendTranslated("&cUser %s not found!", whisperTarget);
+            context.sendTranslated("&cUser &2%s &cnot found!", whisperTarget);
             return true;
         }
         if (!user.isOnline())
@@ -212,7 +212,7 @@ public class ChatCommands
         User user = context.getUser(0);
         if (user == null)
         {
-            context.sendTranslated("&cUser %s not found!", context.getString(0));
+            context.sendTranslated("&cUser &2%s &cnot found!", context.getString(0));
             return;
         }
         BasicUser bUser = this.module.getBasicUserManager().getBasicUser(user);
@@ -246,7 +246,7 @@ public class ChatCommands
         User user = context.getUser(0);
         if (user == null)
         {
-            context.sendTranslated("&cUser %s not found!", context.getString(0));
+            context.sendTranslated("&cUser &2%s &cnot found!", context.getString(0));
         }
         BasicUser bUser = this.module.getBasicUserManager().getBasicUser(user);
         bUser.muted = null;

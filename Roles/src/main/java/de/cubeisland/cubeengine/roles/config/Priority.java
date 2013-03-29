@@ -1,4 +1,4 @@
-package de.cubeisland.cubeengine.roles.role.config;
+package de.cubeisland.cubeengine.roles.config;
 
 import gnu.trove.map.hash.THashMap;
 import gnu.trove.map.hash.TIntObjectHashMap;

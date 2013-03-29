@@ -20,6 +20,7 @@ public class BasicsAttachment extends UserAttachment
     private ItemStack[] stashedArmor;
     private ItemStack[] stashedInventory;
     private String lastWhisper;
+    private Location deathLocation;
 
     public long getLastAction()
     {
@@ -141,5 +142,22 @@ public class BasicsAttachment extends UserAttachment
 
     public void resetLastAction() {
         this.lastAction = 0;
+    }
+
+    public void setDeathLocation(Location deathLocation)
+    {
+        this.deathLocation = deathLocation;
+    }
+
+    /**
+     * Also nulls the location
+     *
+     * @return
+     */
+    public Location getDeathLocation()
+    {
+        Location loc = deathLocation;
+        deathLocation = null;
+        return deathLocation;
     }
 }

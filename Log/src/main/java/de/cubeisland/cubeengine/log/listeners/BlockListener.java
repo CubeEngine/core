@@ -435,7 +435,7 @@ public class BlockListener implements Listener
                 newToBlock.setType(Material.LAVA);
                 newToBlock.setRawData((byte)(fromBlock.getRawData() + 1));
             }
-            if (this.manager.isIgnored(event.getBlock().getWorld(),action)) return;
+            if (this.manager.isIgnored(event.getBlock().getWorld(),action,toBlock.getType())) return;
             this.logBlockChange(action,toBlock,newToBlock,null);
         }
         else if (fromMat.equals(Material.WATER) || fromMat.equals(Material.STATIONARY_WATER))
@@ -874,6 +874,10 @@ public class BlockListener implements Listener
                 this.plannedFallingBlocks.put(onTop.getLocation(),new Pair<Player, Integer>(player,reason));
                 onTop = onTop.getRelative(BlockFace.UP);
             }
+            else
+            {
+                break;
+            }
         }
         if (!blockState.getType().isSolid() && !blockState.getType().equals(Material.SUGAR_CANE_BLOCK))
         {
@@ -883,7 +887,6 @@ public class BlockListener implements Listener
         {
             for (Block block : BlockUtil.getAttachedBlocks(blockState.getBlock()))
             {
-
                 this.plannedFallingBlocks.put(block.getLocation(),new Pair<Player, Integer>(player,reason));
             }
             for (Block block : BlockUtil.getDetachableBlocksOnTop(blockState.getBlock()))
@@ -982,6 +985,4 @@ public class BlockListener implements Listener
         if (player== null) return null;
         return this.module.getCore().getUserManager().getExactUser(player).key;
     }
-
-
 }

@@ -69,7 +69,7 @@ public class SpawnMobCommand
             User user = context.getUser(2);
             if (user == null)
             {
-                context.sendTranslated("&cUser %s not found!", context.getString(2));
+                context.sendTranslated("&cUser &2%s &cnot found!", context.getString(2));
                 return;
             }
             loc = user.getLocation();

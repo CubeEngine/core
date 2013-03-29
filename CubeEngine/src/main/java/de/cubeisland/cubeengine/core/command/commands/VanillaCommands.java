@@ -16,6 +16,7 @@ import org.bukkit.plugin.Plugin;
 
 import de.cubeisland.cubeengine.core.CorePerms;
 import de.cubeisland.cubeengine.core.bukkit.BukkitCore;
+import de.cubeisland.cubeengine.core.bukkit.BukkitUtils;
 import de.cubeisland.cubeengine.core.command.CommandContext;
 import de.cubeisland.cubeengine.core.command.CommandHolder;
 import de.cubeisland.cubeengine.core.command.CommandSender;
@@ -59,7 +60,8 @@ public class VanillaCommands implements CommandHolder
     @Command(
         names = {"stop", "shutdown", "killserver", "quit"},
         desc = "Shuts down the server",
-        usage = "[message]"
+        usage = "[message]",
+        max = NO_MAX
     )
     public void stop(CommandContext context)
     {
@@ -472,6 +474,7 @@ public class VanillaCommands implements CommandHolder
                 return;
             }
             this.core.getServer().setWhitelist(true);
+            BukkitUtils.saveServerProperties();
             context.sendTranslated("&aThe whitelist is now enabled.");
         }
 
@@ -484,7 +487,21 @@ public class VanillaCommands implements CommandHolder
                 return;
             }
             this.core.getServer().setWhitelist(false);
+            BukkitUtils.saveServerProperties();
             context.sendTranslated("&aThe whitelist is now disabled.");
+        }
+
+        @Command(desc = "Wipes the whitelist completely")
+        public void wipe(CommandContext context)
+        {
+            if (context.isSender(User.class))
+            {
+                context.sendTranslated("&cThis command is too dangerous for users!");
+                return;
+            }
+
+            BukkitUtils.wipeWhiteliste();
+            context.sendTranslated("&aThe whitelist was successfully wiped!");
         }
     }
 }

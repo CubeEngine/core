@@ -92,6 +92,7 @@ public final class BukkitCore extends JavaPlugin implements Core
         this.logger = new CubeLogger("Core", this.getLogger());
         // TODO RemoteHandler is not yet implemented this.logger.addHandler(new RemoteHandler(LogLevel.ERROR, this));
 
+        BukkitUtils.registerPacketHookInjector(this);
         this.packetEventManager = new PacketEventManager(this.logger);
         this.packetEventManager.addReceivedListener(204, new PacketReceivedListener() {
             @Override

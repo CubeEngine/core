@@ -298,7 +298,7 @@ public class ItemCommands
             context.sendTranslated("&cUnknown Item: &6%s&c!", context.getString(1));
             return;
         }
-        if (!context.hasFlag("b") && BasicsPerm.COMMAND_GIVE_BLACKLIST.isAuthorized(context.getSender())
+        if (!context.hasFlag("b") && BasicsPerm.ITEM_BLACKLIST.isAuthorized(context.getSender())
             && this.basics.getConfiguration().blacklist.contains(item))
         {
             context.sendTranslated("&cThis item is blacklisted!");
@@ -339,7 +339,7 @@ public class ItemCommands
                 context.sendTranslated("&cUnknown Item: &6%s&c!", context.getString(0));
                 return;
             }
-            if (!context.hasFlag("b") && BasicsPerm.COMMAND_ITEM_BLACKLIST.isAuthorized(sender)
+            if (!context.hasFlag("b") && BasicsPerm.ITEM_BLACKLIST.isAuthorized(sender)
                     && this.basics.getConfiguration().blacklist.contains(item))
             {
                 context.sendTranslated("&cThis item is blacklisted!");

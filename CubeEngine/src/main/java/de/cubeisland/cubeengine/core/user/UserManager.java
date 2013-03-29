@@ -402,7 +402,12 @@ public class UserManager implements Cleanable
                 {
                     onlinePlayerList.add(player.getName());
                 }
-                user = this.getUser(Match.string().matchString(name, onlinePlayerList), true);
+                String foundUser = Match.string().matchString(name, onlinePlayerList);
+                if (foundUser == null)
+                {
+                    return null;
+                }
+                user = this.getUser(foundUser, true);
             }
             if (user != null)
             {

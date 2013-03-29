@@ -1,11 +1,13 @@
 package de.cubeisland.cubeengine.basics.command.general;
 
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Tameable;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.player.PlayerChangedWorldEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.ItemStack;
@@ -60,6 +62,25 @@ public class GeneralsListener implements Listener
             bUser.godMode = false;
         }
         this.basics.getBasicUserManager().update(bUser); //update godmode
+        if (!BasicsPerm.COMMAND_GAMEMODE_KEEP.isAuthorized(event.getPlayer()))
+        {
+            event.getPlayer().setGameMode(Bukkit.getServer().getDefaultGameMode()); // reset gamemode to default on the server
+        }
+    }
+
+    @EventHandler
+    public void onWorldChange(PlayerChangedWorldEvent event)
+    {
+        BasicUser bUser = this.basics.getBasicUserManager().getBasicUser(event.getPlayer());
+        if (!BasicsPerm.COMMAND_GOD_KEEP.isAuthorized(event.getPlayer()))
+        {
+            bUser.godMode = false;
+        }
+        this.basics.getBasicUserManager().update(bUser); //update godmode
+        if (!BasicsPerm.COMMAND_GAMEMODE_KEEP.isAuthorized(event.getPlayer()))
+        {
+            event.getPlayer().setGameMode(Bukkit.getServer().getDefaultGameMode()); // reset gamemode to default on the server
+        }
     }
 
     @EventHandler

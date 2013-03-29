@@ -1,18 +1,20 @@
 package de.cubeisland.cubeengine.basics.command.teleport;
 
-import de.cubeisland.cubeengine.basics.Basics;
-import de.cubeisland.cubeengine.basics.BasicsAttachment;
+import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
+import org.bukkit.entity.Player;
+
 import de.cubeisland.cubeengine.core.command.CommandContext;
 import de.cubeisland.cubeengine.core.command.parameterized.Flag;
 import de.cubeisland.cubeengine.core.command.parameterized.ParameterizedContext;
 import de.cubeisland.cubeengine.core.command.reflected.Command;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.util.LocationUtil;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.block.Block;
-import org.bukkit.block.BlockFace;
-import org.bukkit.entity.Player;
+import de.cubeisland.cubeengine.basics.Basics;
+import de.cubeisland.cubeengine.basics.BasicsAttachment;
+import de.cubeisland.cubeengine.basics.BasicsPerm;
 
 /**
  * Contains commands for fast movement. /up /ascend /descend /jumpto /through
@@ -179,21 +181,39 @@ public class MovementCommands
             return;
         }
         context.sendTranslated("&ePassing through firewalls in the console is not allowed! Go play outside!");
-
     }
 
-    @Command(desc = "Teleports you to your last location", max = 0, flags = {
-        @Flag(longName = "unsafe", name = "u")
-    })
+    @Command(desc = "Teleports you to your last location", max = 0, flags =
+        @Flag(longName = "unsafe", name = "u") , checkPerm = false
+    )
     public void back(ParameterizedContext context)
     {
         if (context.getSender() instanceof User)
         {
             User sender = (User)context.getSender();
-            Location loc = sender.get(BasicsAttachment.class).getLastLocation();
-            if (loc == null)
+            Location loc;
+            boolean backPerm = BasicsPerm.COMMAND_BACK.isAuthorized(sender);
+            if (BasicsPerm.COMMAND_BACK_ONDEATH.isAuthorized(sender))
             {
-                context.sendTranslated("&cYou never teleported!");
+                loc = sender.get(BasicsAttachment.class).getDeathLocation();
+                if (!backPerm && loc == null)
+                {
+                    context.sendTranslated("&cNo death point found!");
+                    return;
+                }
+            }
+            if (BasicsPerm.COMMAND_BACK.isAuthorized(sender))
+            {
+                loc = sender.get(BasicsAttachment.class).getLastLocation();
+                if (loc == null)
+                {
+                    context.sendTranslated("&cYou never teleported!");
+                    return;
+                }
+            }
+            else
+            {
+                context.sendTranslated("&cYou are not allowed to teleport back!");
                 return;
             }
             boolean safe = !context.hasFlag("u");
@@ -201,8 +221,7 @@ public class MovementCommands
                 sender.sendTranslated("&aTeleported to your last location!");
             return;
         }
-        context.sendTranslated("&cYou never teleported!");
-
+        context.sendTranslated("&cUnfortunatly teleporting is still not implemented in the game &6'Life'&c!");
     }
 
     @Command(names = {
@@ -216,7 +235,7 @@ public class MovementCommands
             User user = context.getUser(0);
             if (user == null)
             {
-                context.sendTranslated("&cUser %s not found!", context.getString(0));
+                context.sendTranslated("&cUser &2%s &cnot found!", context.getString(0));
                 return;
             }
             Location loc = sender.getTargetBlock(null, 350).getLocation();
@@ -246,7 +265,7 @@ public class MovementCommands
             sender = context.getUser(1);
             if (sender == null)
             {
-                context.sendTranslated("&cUser %s not found!", context.getString(0));
+                context.sendTranslated("&cUser &2%s &cnot found!", context.getString(0));
                 return;
             }
         }
@@ -267,7 +286,7 @@ public class MovementCommands
         User user = context.getUser(0);
         if (user == null)
         {
-            context.sendTranslated("&cUser %s not found!", context.getString(0));
+            context.sendTranslated("&cUser &2%s &cnot found!", context.getString(0));
             return;
         }
         if (user == sender)

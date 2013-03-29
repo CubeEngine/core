@@ -7,9 +7,16 @@
   </parent>
   <modelVersion>4.0.0</modelVersion>
 
-  <artifactId>vote</artifactId>
-  <name>Vote</name>
-  <description>This module integrates into Votifier to provide vote rewards</description>
+  <name>Vault-Compat</name>
+  <artifactId>vaultcompat</artifactId>
+  <description>This module adds vault compatibility to Conomy</description>
+
+  <repositories>
+    <repository>
+      <id>vault-repo</id>
+      <url>http://ci.herocraftonline.com/plugin/repository/everything</url>
+    </repository>
+  </repositories>
 
   <dependencies>
     <dependency>
@@ -23,9 +30,19 @@
       <version>${project.parent.version}</version>
     </dependency>
     <dependency>
-      <groupId>com.vexsoftware</groupId>
-      <artifactId>votifier</artifactId>
-      <version>1.9</version>
+      <groupId>${project.parent.groupId}</groupId>
+      <artifactId>chat</artifactId>
+      <version>${project.parent.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>${project.parent.groupId}</groupId>
+      <artifactId>roles</artifactId>
+      <version>${project.parent.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>net.milkbowl.vault</groupId>
+      <artifactId>Vault</artifactId>
+      <version>1.2.24-SNAPSHOT</version>
     </dependency>
   </dependencies>
 </project>
