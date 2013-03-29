@@ -1,6 +1,7 @@
 package de.cubeisland.cubeengine.log.listeners.worldedit;
 
 import de.cubeisland.cubeengine.log.Log;
+import de.cubeisland.cubeengine.log.storage.ActionType;
 
 import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.EditSessionFactory;
@@ -9,8 +10,6 @@ import com.sk89q.worldedit.LocalWorld;
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.bags.BlockBag;
 import com.sk89q.worldedit.bukkit.BukkitWorld;
-
-import static de.cubeisland.cubeengine.log.storage.LogManager.WORLDEDIT;
 
 public class LogEditSessionFactory extends EditSessionFactory
 {
@@ -35,7 +34,7 @@ public class LogEditSessionFactory extends EditSessionFactory
 
     private boolean ignoreWorldEdit(LocalWorld world)
     {
-        return world instanceof BukkitWorld && this.module.getLogManager().isIgnored(((BukkitWorld)world).getWorld(), WORLDEDIT);
+        return world instanceof BukkitWorld && this.module.getLogManager().isIgnored(((BukkitWorld)world).getWorld(), ActionType.WORLDEDIT);
     }
 
     @Override

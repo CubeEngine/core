@@ -1,13 +1,24 @@
 package de.cubeisland.cubeengine.log.tool;
 
+import java.util.concurrent.TimeUnit;
+
 import de.cubeisland.cubeengine.log.Log;
+import de.cubeisland.cubeengine.log.LogAttachment;
 import de.cubeisland.cubeengine.log.commands.LogCommands;
+import de.cubeisland.cubeengine.log.storage.Lookup;
+
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
+
+import de.cubeisland.cubeengine.core.user.User;
+import de.cubeisland.cubeengine.core.util.matcher.Match;
+
+import gnu.trove.map.hash.TIntObjectHashMap;
 
 public class ToolListener implements Listener
 {
@@ -17,6 +28,8 @@ public class ToolListener implements Listener
     {
         this.module = module;
     }
+
+    //TODO when dropping a logging tool destroy it
 
     @EventHandler
     public void onClick(PlayerInteractEvent event)
@@ -29,10 +42,25 @@ public class ToolListener implements Listener
             {
                 return;
             }
-            event.getPlayer().sendMessage("Used LoggingTool-Block but not implemented yet :/");
+            User user = this.module.getCore().getUserManager().getUser(event.getPlayer());
+            Lookup lookup = user.attachOrGet(LogAttachment.class,this.module).getLookup(item.getType());
+            if (lookup == null)
+            {
+                user.sendMessage("log", "&cInvalid LoggingTool-Block!");
+                return;
+            }
             Location loc = event.getAction().equals(Action.LEFT_CLICK_BLOCK)
                     ? event.getClickedBlock().getLocation()
                     : event.getClickedBlock().getRelative(event.getBlockFace()).getLocation();
+            lookup.setLocation(loc);
+            //-----------
+            lookup.since(System.currentTimeMillis() - TimeUnit.DAYS.toMillis(7)); // 7 days default //TODO this in block creation
+            //-----------
+            this.module.getLogManager().fillLookup(lookup);
+            lookup.show(user);
+
+            event.getPlayer().sendMessage("Used LoggingTool-Block but not implemented yet :/");
+
             /*
 
             BlockLookup lookup = this.module.getLogManager().getBlockLogs(

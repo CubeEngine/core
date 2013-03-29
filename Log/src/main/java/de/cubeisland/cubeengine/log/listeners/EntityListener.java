@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import static de.cubeisland.cubeengine.log.storage.ActionType.*;
 
 import org.bukkit.DyeColor;
 import org.bukkit.Location;
@@ -64,6 +65,7 @@ import org.bukkit.potion.PotionEffect;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.user.UserManager;
 import de.cubeisland.cubeengine.log.Log;
+import de.cubeisland.cubeengine.log.storage.ActionType;
 import de.cubeisland.cubeengine.log.storage.LogManager;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -177,7 +179,7 @@ public class EntityListener implements Listener
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onHangingPlace(HangingPlaceEvent event)
     {
-        if (this.manager.isIgnored(event.getEntity().getWorld(),LogManager.HANGING_PLACE)) return;
+        if (this.manager.isIgnored(event.getEntity().getWorld(),HANGING_PLACE)) return;
         User user = this.module.getCore().getUserManager().getExactUser(event.getPlayer());
         if (event.getEntity() instanceof ItemFrame)
         {
@@ -217,7 +219,7 @@ public class EntityListener implements Listener
             }
         }
         LivingEntity entity = event.getEntity();
-        int action;
+        ActionType action;
         long killed;
         if (entity instanceof Player)
         {

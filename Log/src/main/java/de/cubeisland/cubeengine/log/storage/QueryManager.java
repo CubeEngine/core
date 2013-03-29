@@ -196,9 +196,9 @@ public class QueryManager
         }
     }
 
-    protected void queueLog(Timestamp timestamp, Long worldID, Integer x, Integer y, Integer z, Integer action, Long causer, String block, Long data, String newBlock, Byte newData, String additionalData)
+    protected void queueLog(Timestamp timestamp, Long worldID, Integer x, Integer y, Integer z, ActionType action, Long causer, String block, Long data, String newBlock, Byte newData, String additionalData)
     {
-        this.queuedLogs.offer(new QueuedLog(timestamp,worldID,x,y,z,action,causer,block,data,newBlock,newData,additionalData));
+        this.queuedLogs.offer(new QueuedLog(timestamp,worldID,x,y,z,action.value,causer,block,data,newBlock,newData,additionalData));
         if (this.future == null || this.future.isDone())
         {
             this.future = executor.submit(runner);

@@ -8,10 +8,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.server.ServerCommandEvent;
-
-import static de.cubeisland.cubeengine.log.storage.LogManager.CONSOLE_COMMAND;
-import static de.cubeisland.cubeengine.log.storage.LogManager.PLAYER_CHAT;
-import static de.cubeisland.cubeengine.log.storage.LogManager.PLAYER_COMMAND;
+import static de.cubeisland.cubeengine.log.storage.ActionType.*;
 
 public class ChatListener implements Listener
 {

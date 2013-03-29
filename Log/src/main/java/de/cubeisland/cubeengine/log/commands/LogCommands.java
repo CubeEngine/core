@@ -9,6 +9,8 @@ import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.util.ChatFormat;
 import de.cubeisland.cubeengine.core.util.matcher.Match;
 import de.cubeisland.cubeengine.log.Log;
+import de.cubeisland.cubeengine.log.LogAttachment;
+
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -50,22 +52,10 @@ public class LogCommands extends ContainerCommand
         Material blockMaterial = Material.BEDROCK;
         if (context.hasArg(0))
         {
-            String match = Match.string().matchString(context.getString(0),"chest","container","lava","water","fire","player","kills","block");
+            String match = Match.string().matchString(context.getString(0),"chest","container","player","kills","block");
             if (match.equals("chest") || match.equals("container"))
             {
                   blockMaterial = Material.CHEST;
-            }
-            else if (match.equals("lava"))
-            {
-                 blockMaterial = Material.STATIONARY_LAVA;
-            }
-            else if (match.equals("water"))
-            {
-                blockMaterial = Material.STATIONARY_WATER;
-            }
-            else if (match.equals("fire"))
-            {
-                blockMaterial = Material.FIRE;
             }
             else if (match.equals("player"))
             {
@@ -81,7 +71,7 @@ public class LogCommands extends ContainerCommand
             }
         }
         //TODO show possible blocks in help
-        // chest/container : lava : water : fire : player : kills : block
+        // chest/container : player : kills : block
         if (context.getSender() instanceof User)
         {
             User user = (User) context.getSender();
@@ -109,7 +99,10 @@ public class LogCommands extends ContainerCommand
                     user.getWorld().dropItemNaturally(user.getLocation(),item);
                 }
                 user.updateInventory();
-                context.sendMessage("log","&aReveived a Log-Block!");
+                context.sendMessage("log","&aReveived a new Log-Block!");
+                LogAttachment logAttachment = user.attachOrGet(LogAttachment.class,this.module);
+                logAttachment.createNewLookup(blockMaterial);
+
                 return;
             }
             user.getInventory().removeItem(found);
@@ -117,7 +110,8 @@ public class LogCommands extends ContainerCommand
             user.setItemInHand(found);
             user.getInventory().addItem(oldItemInHand);
             user.updateInventory();
-            context.sendMessage("log","&aFound your Log-Block in your inventory!");
+            context.sendMessage("log","&aFound a Log-Block in your inventory!");
+            //TODO if found on hotbar setHeldItemSlot
         }
         else
         {

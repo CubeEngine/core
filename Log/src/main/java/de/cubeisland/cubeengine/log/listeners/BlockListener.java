@@ -61,6 +61,9 @@ import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.util.BlockUtil;
 import de.cubeisland.cubeengine.core.util.Pair;
 import de.cubeisland.cubeengine.log.Log;
+import static de.cubeisland.cubeengine.log.storage.ActionType.*;
+
+import de.cubeisland.cubeengine.log.storage.ActionType;
 import de.cubeisland.cubeengine.log.storage.LogManager;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -68,10 +71,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import static de.cubeisland.cubeengine.core.bukkit.BlockUtil.isNonFluidProofBlock;
 import static de.cubeisland.cubeengine.core.util.BlockUtil.BLOCK_FACES;
 import static de.cubeisland.cubeengine.core.util.BlockUtil.DIRECTIONS;
-import static de.cubeisland.cubeengine.log.storage.LogManager.*;
-import static de.cubeisland.cubeengine.log.storage.LogManager.FIREBALL;
-import static de.cubeisland.cubeengine.log.storage.LogManager.LAVA_BUCKET;
-import static de.cubeisland.cubeengine.log.storage.LogManager.WATER_BUCKET;
 import static org.bukkit.Material.*;
 
 public class BlockListener implements Listener
@@ -79,7 +78,7 @@ public class BlockListener implements Listener
     private LogManager manager;
     private Log module;
 
-    private Map<Location,Pair<Player,Integer>> plannedFallingBlocks = new HashMap<Location, Pair<Player,Integer>>();
+    private Map<Location,Pair<Player,ActionType>> plannedFallingBlocks = new HashMap<Location, Pair<Player,ActionType>>();
 
     public BlockListener(Log module, LogManager manager)
     {
@@ -100,7 +99,7 @@ public class BlockListener implements Listener
             String[] lines = ((Sign)blockState).getLines();
             try
             {
-                this.logBlockChange(blockState.getLocation(), BLOCK_BREAK, event.getPlayer(), blockState, this.module.getObjectMapper().writeValueAsString(lines));
+                this.logBlockChange(blockState.getLocation(), ActionType.BLOCK_BREAK, event.getPlayer(), blockState, this.module.getObjectMapper().writeValueAsString(lines));
             }
             catch (JsonProcessingException e)
             {
@@ -136,7 +135,7 @@ public class BlockListener implements Listener
             if (this.manager.isIgnored(event.getPlayer().getWorld(),BLOCK_BREAK)) return;
             this.logBlockChange(BLOCK_BREAK,event.getBlock().getRelative(BlockFace.UP).getState(), AIR,event.getPlayer());
         }
-        this.logBlockChange(LogManager.BLOCK_PLACE,event.getBlockReplacedState(),event.getBlockPlaced().getState(),event.getPlayer());
+        this.logBlockChange(BLOCK_PLACE,event.getBlockReplacedState(),event.getBlockPlaced().getState(),event.getPlayer());
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
@@ -145,12 +144,12 @@ public class BlockListener implements Listener
         if (event.getNewState().getType().equals(Material.FIRE))
         {
             if (this.manager.isIgnored(event.getBlock().getWorld(),FIRE_SPREAD)) return;
-            this.logBlockChange(LogManager.FIRE_SPREAD,event.getBlock().getState(),event.getNewState(),null);
+            this.logBlockChange(FIRE_SPREAD,event.getBlock().getState(),event.getNewState(),null);
         }
         else
         {
             if (this.manager.isIgnored(event.getBlock().getWorld(),BLOCK_SPREAD)) return;
-            this.logBlockChange(LogManager.BLOCK_SPREAD,event.getBlock().getState(),event.getNewState(),null);
+            this.logBlockChange(BLOCK_SPREAD,event.getBlock().getState(),event.getNewState(),null);
         }
     }
 
@@ -158,21 +157,21 @@ public class BlockListener implements Listener
     public void onBlockForm(BlockFormEvent event)
     {
         if (this.manager.isIgnored(event.getBlock().getWorld(),BLOCK_FORM)) return;
-        this.logBlockChange(LogManager.BLOCK_FORM,event.getBlock().getState(),event.getNewState(),null);
+        this.logBlockChange(BLOCK_FORM,event.getBlock().getState(),event.getNewState(),null);
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onBlockFade(BlockFadeEvent event)
     {
         if (this.manager.isIgnored(event.getBlock().getWorld(),BLOCK_FADE,event.getBlock().getType())) return;
-        this.logBlockChange(LogManager.BLOCK_FADE,event.getBlock().getState(),event.getNewState(),null);
+        this.logBlockChange(BLOCK_FADE,event.getBlock().getState(),event.getNewState(),null);
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onLeavesDecay(LeavesDecayEvent event)
     {
         if (this.manager.isIgnored(event.getBlock().getWorld(),LEAF_DECAY)) return;
-        this.logBlockChange(LogManager.LEAF_DECAY,event.getBlock().getState(), AIR,null);
+        this.logBlockChange(LEAF_DECAY,event.getBlock().getState(), AIR,null);
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
@@ -182,7 +181,7 @@ public class BlockListener implements Listener
         {
             BlockState blockState = event.getBlock().getState();
             blockState = this.adjustBlockForDoubleBlocks(blockState); // WOOD_DOOR IRON_DOOR OR BED_BLOCK
-            this.logBlockChange(LogManager.BLOCK_BURN,blockState, AIR,null);
+            this.logBlockChange(BLOCK_BURN,blockState, AIR,null);
         }
         if (this.manager.isIgnored(event.getBlock().getWorld(),BLOCK_BREAK)) return;
         this.logRelatedBlocks(event.getBlock().getState(),null,BLOCK_BURN);
@@ -211,7 +210,7 @@ public class BlockListener implements Listener
             if (event.getBlock().getRelative(BlockFace.DOWN).getType().equals(AIR))
             {
                 Location loc = state.getLocation();
-                Pair<Player,Integer> cause = this.plannedFallingBlocks.get(loc);
+                Pair<Player,ActionType> cause = this.plannedFallingBlocks.get(loc);
                 if (cause != null)
                 {
                     this.logBlockChange(loc, BLOCK_FALL, cause.getLeft(), state, "cause:"+cause.getRight());
@@ -238,7 +237,7 @@ public class BlockListener implements Listener
                         case LAVA:
                         case STATIONARY_LAVA:
                             Location loc = state.getLocation();
-                            Pair<Player,Integer> cause = this.plannedFallingBlocks.get(loc);
+                            Pair<Player,ActionType> cause = this.plannedFallingBlocks.get(loc);
                             if (cause != null)
                             {
                                 try
@@ -278,7 +277,7 @@ public class BlockListener implements Listener
                     case LAVA:
                     case STATIONARY_LAVA:
                         Location loc = state.getLocation();
-                        Pair<Player,Integer> cause = this.plannedFallingBlocks.get(loc);
+                        Pair<Player,ActionType> cause = this.plannedFallingBlocks.get(loc);
                         if (cause != null)
                         {
                             try
@@ -315,8 +314,8 @@ public class BlockListener implements Listener
         switch (event.getCause())
         {
             case FIREBALL:
-                if (this.manager.isIgnored(blockState.getWorld(),FIREBALL)) return;
-                this.logBlockChange(FIREBALL,event.getBlock().getState(),blockState,null);
+                if (this.manager.isIgnored(blockState.getWorld(),FIREBALL_IGNITE)) return;
+                this.logBlockChange(FIREBALL_IGNITE,event.getBlock().getState(),blockState,null);
                 break;
             case LAVA:
                 if (this.manager.isIgnored(blockState.getWorld(),LAVA_IGNITE)) return;
@@ -390,7 +389,7 @@ public class BlockListener implements Listener
         BlockState fromBlock = event.getBlock().getState();
         BlockState newToBlock = event.getToBlock().getState();
         Material fromMat = event.getBlock().getType();
-        int action;
+        ActionType action;
         if (fromMat.equals(Material.LAVA) || fromMat.equals(Material.STATIONARY_LAVA))
         {
             if (toBlock.getType().equals(Material.WATER) || toBlock.getType().equals(Material.STATIONARY_WATER))
@@ -588,7 +587,7 @@ public class BlockListener implements Listener
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onEntityExplode(EntityExplodeEvent event)
     {
-        int action;
+        ActionType action;
         Player player = null;
         if (event.getEntity() instanceof TNTPrimed)
         {
@@ -641,13 +640,13 @@ public class BlockListener implements Listener
         BlockState state = event.getBlockClicked().getRelative(event.getBlockFace()).getState();
         if (event.getBucket().equals(Material.WATER_BUCKET))
         {
-            if (this.manager.isIgnored(state.getWorld(),WATER_BUCKET)) return;
-            this.logBlockChange(WATER_BUCKET,state,Material.STATIONARY_WATER, event.getPlayer());
+            if (this.manager.isIgnored(state.getWorld(),ActionType.WATER_BUCKET)) return;
+            this.logBlockChange(ActionType.WATER_BUCKET,state,Material.STATIONARY_WATER, event.getPlayer());
         }
         else if (event.getBucket().equals(Material.LAVA_BUCKET))
         {
-            if (this.manager.isIgnored(state.getWorld(),LAVA_BUCKET)) return;
-            this.logBlockChange(WATER_BUCKET, state, Material.STATIONARY_LAVA, event.getPlayer());
+            if (this.manager.isIgnored(state.getWorld(),ActionType.LAVA_BUCKET)) return;
+            this.logBlockChange(ActionType.LAVA_BUCKET, state, Material.STATIONARY_LAVA, event.getPlayer());
         }
     }
 
@@ -861,7 +860,7 @@ public class BlockListener implements Listener
         return blockState;
     }
 
-    private void logRelatedBlocks(BlockState blockState, Player player, int reason)
+    private void logRelatedBlocks(BlockState blockState, Player player, ActionType reason)
     {
         if (blockState.getType().equals(OBSIDIAN))
         {
@@ -880,7 +879,7 @@ public class BlockListener implements Listener
         {
             if (!this.manager.isIgnored(blockState.getWorld(),BLOCK_FALL))
             {
-                this.plannedFallingBlocks.put(onTop.getLocation(),new Pair<Player, Integer>(player,reason));
+                this.plannedFallingBlocks.put(onTop.getLocation(),new Pair<Player, ActionType>(player,reason));
                 onTop = onTop.getRelative(BlockFace.UP);
             }
             else
@@ -896,11 +895,11 @@ public class BlockListener implements Listener
         {
             for (Block block : BlockUtil.getAttachedBlocks(blockState.getBlock()))
             {
-                this.plannedFallingBlocks.put(block.getLocation(),new Pair<Player, Integer>(player,reason));
+                this.plannedFallingBlocks.put(block.getLocation(),new Pair<Player, ActionType>(player,reason));
             }
             for (Block block : BlockUtil.getDetachableBlocksOnTop(blockState.getBlock()))
             {
-                this.plannedFallingBlocks.put(block.getLocation(),new Pair<Player, Integer>(player,reason));
+                this.plannedFallingBlocks.put(block.getLocation(),new Pair<Player, ActionType>(player,reason));
             }
         }
         if (this.manager.isIgnored(blockState.getWorld(),HANGING_BREAK)) return;
@@ -911,7 +910,7 @@ public class BlockListener implements Listener
         {
             if (entity instanceof Hanging && location.distanceSquared(entity.getLocation(entityLocation)) < 4)
             {
-                this.manager.getEntityListener().preplanBreakedHanging(entity.getLocation(),user == null ? -reason : user.key);
+                this.manager.getEntityListener().preplanBreakedHanging(entity.getLocation(),user == null ? -reason.value : user.key);
             }
         }
     }
@@ -947,44 +946,44 @@ public class BlockListener implements Listener
         }
     }
 
-    private void logBlockChange(int action, BlockState oldState, BlockState newState, Player player, String additional)
+    private void logBlockChange(ActionType action, BlockState oldState, BlockState newState, Player player, String additional)
     {
         this.logBlockChange(oldState.getLocation(), action, player, oldState, newState, additional);
     }
 
-    private void logBlockChange(int action, BlockState oldState, BlockState newState, Player player)
+    private void logBlockChange(ActionType action, BlockState oldState, BlockState newState, Player player)
     {
         this.logBlockChange(action,oldState,newState,player,null);
     }
 
-    private void logBlockChange(int action, BlockState oldState, Material to, Player player)
+    private void logBlockChange(ActionType action, BlockState oldState, Material to, Player player)
     {
         this.logBlockChange(oldState.getLocation(), action, player, oldState, to.name(), (byte) 0);
     }
 
-    private void logBlockChange(int action, BlockState oldState, Material to)
+    private void logBlockChange(ActionType action, BlockState oldState, Material to)
     {
         this.logBlockChange(action,oldState,to,null);
     }
 
-    public void logBlockChange(Location location, int action, Player player, BlockState oldState, String newBlock, Byte newData)
+    public void logBlockChange(Location location, ActionType action, Player player, BlockState oldState, String newBlock, Byte newData)
     {
         this.logBlockChange(location, action, this.getUserKey(player), oldState, newBlock, newData);
     }
 
-    public void logBlockChange(Location location, int action, Player player, BlockState oldState, BlockState newState, String additional)
+    public void logBlockChange(Location location, ActionType action, Player player, BlockState oldState, BlockState newState, String additional)
     {
         this.manager.queueLog(location,action,this.getUserKey(player),
                 oldState.getType().name(),oldState.getRawData(),
                 newState.getType().name(),newState.getRawData(),additional);
     }
 
-    public void logBlockChange(Location location, int action, Long causer, BlockState oldState, String newBlock, Byte newData)
+    public void logBlockChange(Location location, ActionType action, Long causer, BlockState oldState, String newBlock, Byte newData)
     {
         this.manager.queueLog(location, action, causer, oldState.getType().name(), oldState.getRawData(), newBlock, newData, null);
     }
 
-    public void logBlockChange(Location location, int action, Player causer, BlockState oldState, String additionalData)
+    public void logBlockChange(Location location, ActionType action, Player causer, BlockState oldState, String additionalData)
     {
         this.manager.queueLog(location,action,this.getUserKey(causer),oldState.getType().name(),oldState.getRawData(), AIR.name(),(byte)0,additionalData);
     }

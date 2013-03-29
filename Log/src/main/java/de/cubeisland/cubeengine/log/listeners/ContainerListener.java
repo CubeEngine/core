@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static de.cubeisland.cubeengine.log.storage.ActionType.*;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
@@ -39,9 +40,6 @@ import gnu.trove.map.hash.TLongObjectHashMap;
 import gnu.trove.map.hash.TObjectIntHashMap;
 
 import static de.cubeisland.cubeengine.core.util.InventoryUtil.getMissingSpace;
-import static de.cubeisland.cubeengine.log.storage.LogManager.ITEM_INSERT;
-import static de.cubeisland.cubeengine.log.storage.LogManager.ITEM_REMOVE;
-import static de.cubeisland.cubeengine.log.storage.LogManager.ITEM_TRANSFER;
 
 public class ContainerListener implements Listener
 {
@@ -141,7 +139,7 @@ public class ContainerListener implements Listener
     {
         if (event.getPlayer() instanceof Player)
         {
-            if (this.manager.isIgnored(event.getPlayer().getWorld(),LogManager.ITEM_CHANGE_IN_CONTAINER,event.getInventory().getHolder())) return;
+            if (this.manager.isIgnored(event.getPlayer().getWorld(),ITEM_CHANGE_IN_CONTAINER,event.getInventory().getHolder())) return;
             User user = this.module.getCore().getUserManager().getExactUser((Player)event.getPlayer());
             this.inventoryChanges.put(user.key,new TObjectIntHashMap<ItemData>());
         }
@@ -163,7 +161,7 @@ public class ContainerListener implements Listener
              && this.manager.isIgnored(world, ITEM_REMOVE)) return;
             Inventory inventory = event.getInventory();
             InventoryHolder holder = inventory.getHolder();
-            if (this.manager.isIgnored(world,LogManager.ITEM_CHANGE_IN_CONTAINER,holder)) return;
+            if (this.manager.isIgnored(world,ITEM_CHANGE_IN_CONTAINER,holder)) return;
             ItemStack inventoryItem = event.getCurrentItem();
             ItemStack cursorItem = event.getCursor();
             System.out.print("------------Click Event----------- in "+holder);
