@@ -47,4 +47,16 @@ public class RolesAttachment extends UserAttachment
     public void setCurrentWorldId(Long currentWorldId) {
         this.currentWorldId = currentWorldId;
     }
+
+    @Override
+    public void onAttach()
+    {
+        System.out.print("RoleAttachment attach for " + this.getHolder().getName());
+    }
+
+    @Override
+    public void onDetach()
+    {
+        System.out.print("RoleAttachment detach for " + this.getHolder().getName());
+    }
 }
