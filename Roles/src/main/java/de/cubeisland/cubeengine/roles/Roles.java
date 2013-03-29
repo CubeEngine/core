@@ -87,9 +87,4 @@ public class Roles extends Module
     {
         return this.api;
     }
-
-    public RolesConfig getConfig()
-    {
-        return this.config;
-    }
 }

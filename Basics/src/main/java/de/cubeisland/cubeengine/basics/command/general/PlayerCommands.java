@@ -532,7 +532,6 @@ public class PlayerCommands
     }
 
     @Command(desc = "Displays that you are afk", max = 0)
-    //TODO for console {player}
     public void afk(CommandContext context)
     {
         if (context.getSender() instanceof User)
@@ -544,7 +543,6 @@ public class PlayerCommands
                 sender.get(BasicsAttachment.class).setAfk(true);
                 sender.get(BasicsAttachment.class).resetLastAction();
                 this.um.broadcastStatus("basics", "is now afk.", context.getSender().getName());
-
             }
             else
             {

@@ -9,6 +9,7 @@ import de.cubeisland.cubeengine.core.command.sender.CommandSender;
 import de.cubeisland.cubeengine.core.command.sender.ConsoleCommandSender;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.util.ChatFormat;
+import de.cubeisland.cubeengine.core.util.Direction;
 import de.cubeisland.cubeengine.core.util.Pair;
 import de.cubeisland.cubeengine.core.util.StringUtils;
 import de.cubeisland.cubeengine.core.util.matcher.Match;
@@ -102,36 +103,6 @@ public class InformationCommands
             }
         }
         context.sendMessage("basics", "&eSeed of &6%s&e is &6%d", world.getName(), world.getSeed());
-    }
-
-    public enum Direction // TODO move me to core!
-    {
-        N(23),
-        NE(68),
-        E(113),
-        SE(158),
-        S(203),
-        SW(248),
-        W(293),
-        NW(338), ;
-        private final int dir;
-
-        private Direction(int dir)
-        {
-            this.dir = dir;
-        }
-
-        public static Direction matchDirection(int dir)
-        {
-            for (Direction direction : values())
-            {
-                if (dir < direction.dir)
-                {
-                    return direction;
-                }
-            }
-            return Direction.N;
-        }
     }
 
     @Command(desc = "Displays the direction in which you are looking.")

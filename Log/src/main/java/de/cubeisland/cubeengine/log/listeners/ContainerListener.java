@@ -411,6 +411,10 @@ public class ContainerListener implements Listener
     {
         Inventory source = event.getSource();
         Inventory target = event.getDestination();
+        if (source == null || target == null)
+        {
+            return; //TODO why does this happens
+        }
         Location sourceLocation = this.getLocationForHolder(source.getHolder());
         if (sourceLocation == null)
         {
@@ -441,7 +445,7 @@ public class ContainerListener implements Listener
         System.out.print((amount < 0 ? "TAKE " : "PUT ") + itemData.material.name()+":"+itemData.dura+" x"+amount);//TODO remove this
     }
 
-    public static class ItemData
+    private static class ItemData
     {
         public Material material;
         public short dura;

@@ -102,7 +102,7 @@ public class ChatCommands
     public void me(CommandContext context)
     {
         String message = context.getStrings(0);
-        this.um.broadcastStatus(message, context.getSender().getName()); //TODO rename CONSOLE when consolecommandsender
+        this.um.broadcastStatus(message, context.getSender().getDisplayName());
     }
 
     @Command(desc = "Sends a private message to someone", names = {

@@ -985,6 +985,4 @@ public class BlockListener implements Listener
         if (player== null) return null;
         return this.module.getCore().getUserManager().getExactUser(player).key;
     }
-
-
 }

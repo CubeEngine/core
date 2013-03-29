@@ -19,6 +19,7 @@ public class ConfigRole extends Role
             role.addChild(this);
         }
     }
+    //TODO save config when change is made with ingame cmd
 
     public void saveConfigToFile()
     {
