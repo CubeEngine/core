@@ -330,8 +330,8 @@ public class QueryManager
                 Integer newData = resultSet.getInt("newData");
                 String additionalData = resultSet.getString("additionalData");
                 LogEntry logEntry = new LogEntry(this.module,entryID,timestamp,action,worldId,x,y,z,causer,block,data,newBlock,newData,additionalData);
+                lookup.addLogEntry(logEntry);
             }
-            //TODO fillLookup
             return lookup;
         }
         catch (SQLException e)

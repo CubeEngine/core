@@ -256,7 +256,7 @@ public class Lookup
 
     public void show(User user)
     {
-        user.sendMessage("I'll show you the logs... later");
+        user.sendMessage("I'll show you the logs ("+this.logEntries.size()+")... later");
         //TODO show the saved Informations
     }
 
@@ -298,6 +298,11 @@ public class Lookup
     public Long getToBefore()
     {
         return this.to_before;
+    }
+
+    public void addLogEntry(LogEntry entry)
+    {
+        this.logEntries.add(entry);
     }
 
     /**

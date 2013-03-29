@@ -5,6 +5,12 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Map.Entry;
+
+import org.bukkit.craftbukkit.libs.com.google.gson.JsonArray;
+import org.bukkit.craftbukkit.libs.com.google.gson.JsonObject;
+import org.bukkit.craftbukkit.libs.com.google.gson.JsonPrimitive;
+
 import static de.cubeisland.cubeengine.log.storage.ActionType.*;
 
 import org.bukkit.DyeColor;
@@ -484,37 +490,36 @@ public class EntityListener implements Listener
 
     public String serializePotionLog(PotionSplashEvent event)
     {
-        Map<String,Object> dataMap = new HashMap<String, Object>();
-        Collection<Object> effects = new ArrayList<Object>();
-        dataMap.put("effects",effects);
-        for (PotionEffect effect : event.getPotion().getEffects())
+        JsonObject json = new JsonObject();
+        JsonArray effects = new JsonArray();
+        json.add("effects", effects);
+        for (PotionEffect potionEffect : event.getPotion().getEffects())
         {
-            Object[] effectObject = new Object[]{effect.getType().getName(),effect.getAmplifier(),effect.getDuration()};
-            effects.add(effectObject);
+            JsonArray effect = new JsonArray();
+            effects.add(effect);
+            effect.add(new JsonPrimitive(potionEffect.getType().getName()));
+            effect.add(new JsonPrimitive(potionEffect.getAmplifier()));
+            effect.add(new JsonPrimitive(potionEffect.getDuration()));
         }
         if (!event.getAffectedEntities().isEmpty())
         {
-            dataMap.put("amount",event.getAffectedEntities().size());
-            Collection<Long> affected = new HashSet<Long>();
-            dataMap.put("affected",affected);
+            json.add("amount", new JsonPrimitive(event.getAffectedEntities().size()));
+            JsonArray affected = new JsonArray();
+            json.add("affected", affected);
             for (LivingEntity livingEntity : event.getAffectedEntities())
             {
                 if (livingEntity instanceof Player)
                 {
                     User user = this.module.getCore().getUserManager().getExactUser((Player)livingEntity);
-                    affected.add(user.key);
+                    affected.add(new JsonPrimitive(user.key));
                 }
                 else
                 {
-                    affected.add(-1L * livingEntity.getType().getTypeId());
+                    affected.add(new JsonPrimitive(-livingEntity.getType().getTypeId()));
                 }
             }
         }
-        try {
-            return this.manager.mapper.writeValueAsString(dataMap);
-        } catch (JsonProcessingException e) {
-            throw new IllegalStateException("Could not parse locationmap!",e);
-        }
+        return json.toString();
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
@@ -606,81 +611,62 @@ public class EntityListener implements Listener
             }
             return cause.name(); // only save cause
         }
-        Map<String,Object> dataMap = new HashMap<String, Object>();
+        JsonObject json = new JsonObject();
         if (cause != null)
         {
-            dataMap.put("DamageCause",cause.name());
+            json.add("dmgC", new JsonPrimitive(cause.name()));
         }
         if (entity instanceof Ageable)
         {
-            dataMap.put("isAdult",((Ageable) entity).isAdult());
+            json.add("isAdult", new JsonPrimitive(((Ageable)entity).isAdult() ? 1 : 0));
         }
         if (entity instanceof Ocelot)
         {
-            dataMap.put("isSitting",((Ocelot) entity).isSitting());
+            json.add("isSit", new JsonPrimitive(((Ocelot)entity).isSitting() ? 1 : 0));
         }
         if (entity instanceof Wolf)
         {
-            dataMap.put("isSitting",((Wolf) entity).isSitting());
-            dataMap.put("color",((Wolf) entity).getCollarColor().name());
+            json.add("isSit", new JsonPrimitive(((Wolf)entity).isSitting() ? 1 : 0));
+            json.add("color", new JsonPrimitive(((Wolf)entity).getCollarColor().name()));
         }
         if (entity instanceof Sheep)
         {
-            dataMap.put("color",((Sheep) entity).getColor().name());
+            json.add("color", new JsonPrimitive(((Sheep)entity).getColor().name()));
         }
         if (entity instanceof Villager)
         {
-            dataMap.put("profession",((Villager) entity).getProfession().name());
+            json.add("prof", new JsonPrimitive(((Villager)entity).getProfession().name()));
         }
         if (entity instanceof Tameable && ((Tameable) entity).isTamed())
         {
-            dataMap.put("owner",((Tameable) entity).getOwner().getName());
+            json.add("owner", new JsonPrimitive(((Tameable)entity).getOwner().getName()));
         }
         if (newColor != null)
         {
-            dataMap.put("newColor",newColor.name());
+            json.add("newColor", new JsonPrimitive(newColor.name()));
         }
-        try
-        {
-            return this.manager.mapper.writeValueAsString(dataMap);
-        }
-        catch (JsonProcessingException e)
-        {
-            throw new IllegalStateException("Could not parse KillData!",e);
-        }
+        return json.toString();
     }
 
 
     private String serializeLocation(boolean from, Location location)
     {
-        Map<String,Object> dataMap = new HashMap<String, Object>();
-        dataMap.put("direction",from ? "from":"to");
-        dataMap.put("world",this.module.getCore().getWorldManager().getWorldId(location.getWorld()));
-        dataMap.put("x",location.getBlockX());
-        dataMap.put("y",location.getBlockY());
-        dataMap.put("z",location.getBlockZ());
-        try {
-            return this.manager.mapper.writeValueAsString(dataMap);
-        } catch (JsonProcessingException e) {
-            throw new IllegalStateException("Could not parse locationmap!",e);
-        }
+        JsonObject json = new JsonObject();
+        json.add("dir", new JsonPrimitive(from ? "from" : "to"));
+        json.add("world",new JsonPrimitive(this.module.getCore().getWorldManager().getWorldId(location.getWorld())));
+        json.add("x",new JsonPrimitive(location.getBlockX()));
+        json.add("y",new JsonPrimitive(location.getBlockY()));
+        json.add("z",new JsonPrimitive(location.getBlockZ()));
+        return json.toString();
     }
 
     private String serializeEnchantments(Map<Enchantment,Integer> enchantsToAdd)
     {
-        if (enchantsToAdd.isEmpty())
+        JsonArray enchs = new JsonArray();
+        for (Entry<Enchantment,Integer> ench : enchantsToAdd.entrySet())
         {
-            return null;
+            enchs.add(new JsonPrimitive(ench.getKey().getId()+":"+ench.getValue()));
         }
-        Map<String,Integer> enchantments = new HashMap<String, Integer>();
-        for (Map.Entry<Enchantment,Integer> entry : enchantsToAdd.entrySet())
-        {
-            enchantments.put(entry.getKey().getName(),entry.getValue());
-        }
-        try {
-            return this.manager.mapper.writeValueAsString(enchantments);
-        } catch (JsonProcessingException e) {
-            throw new IllegalStateException("Could not parse locationmap!",e);
-        }
+        return enchs.toString();
     }
 }

@@ -4,6 +4,10 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.bukkit.craftbukkit.libs.com.google.gson.JsonArray;
+import org.bukkit.craftbukkit.libs.com.google.gson.JsonObject;
+import org.bukkit.craftbukkit.libs.com.google.gson.JsonPrimitive;
+
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -242,29 +246,23 @@ public class BlockListener implements Listener
                             Pair<Player,ActionType> cause = this.plannedFallingBlocks.get(loc);
                             if (cause != null)
                             {
-                                try
+                                JsonObject json = new JsonObject();
+                                json.add("cause",new JsonPrimitive(cause.getRight().name));
+                                if (state instanceof Sign)
                                 {
-                                    String data;
-                                    if (state instanceof Sign)
+                                    JsonArray sign = new JsonArray();
+                                    json.add("sign",sign);
+                                    for (String line : ((Sign)state).getLines())
                                     {
-                                        data = this.manager.mapper.writeValueAsString(Arrays.asList(cause.getRight(),((Sign) state).getLines()));
+                                        sign.add(new JsonPrimitive(line));
                                     }
-                                    else
-                                    {
-                                        data = this.manager.mapper.writeValueAsString(cause.getRight());
-                                    }
-                                    this.logBlockChange(loc, BLOCK_BREAK, cause.getLeft(), state, data);
-                                    this.plannedFallingBlocks.remove(loc);
                                 }
-                                catch (JsonProcessingException e)
-                                {
-                                    throw new IllegalStateException("Could not parse data on BlockPhysicsEvent");
-                                }
+                                this.logBlockChange(loc, BLOCK_BREAK, cause.getLeft(), state, json.toString());
+                                this.plannedFallingBlocks.remove(loc);
                             }
                         default:
                             return;
                     }
-
                 }
             }
             else // block on bottom missing
@@ -282,24 +280,19 @@ public class BlockListener implements Listener
                         Pair<Player,ActionType> cause = this.plannedFallingBlocks.get(loc);
                         if (cause != null)
                         {
-                            try
+                            JsonObject json = new JsonObject();
+                            json.add("cause",new JsonPrimitive(cause.getRight().name));
+                            if (state instanceof Sign)
                             {
-                                String data;
-                                if (state instanceof Sign)
+                                JsonArray sign = new JsonArray();
+                                json.add("sign",sign);
+                                for (String line : ((Sign)state).getLines())
                                 {
-                                    data = this.manager.mapper.writeValueAsString(Arrays.asList(cause.getRight(),((Sign) state).getLines()));
+                                    sign.add(new JsonPrimitive(line));
                                 }
-                                else
-                                {
-                                    data = this.manager.mapper.writeValueAsString(cause.getRight());
-                                }
-                                this.logBlockChange(loc, BLOCK_BREAK, cause.getLeft(), state, data);
-                                this.plannedFallingBlocks.remove(loc);
                             }
-                            catch (JsonProcessingException e)
-                            {
-                                throw new IllegalStateException("Could not parse data on BlockPhysicsEvent");
-                            }
+                            this.logBlockChange(loc, BLOCK_BREAK, cause.getLeft(), state, json.toString());
+                            this.plannedFallingBlocks.remove(loc);
                         }
                     default:
                         return;
