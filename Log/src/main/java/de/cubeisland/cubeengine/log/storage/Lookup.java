@@ -27,7 +27,7 @@ public class Lookup
 
     // The actions to look for
     private Set<ActionType> actions = new THashSet<ActionType>();
-    boolean includeActions = true;
+    private boolean includeActions = true;
     // When (since/before/from-to)
     private Long from_since;
     private Long to_before;
@@ -251,7 +251,48 @@ public class Lookup
 
     public void show(User user)
     {
+        user.sendMessage("I'll show you the logs... later");
         //TODO show the saved Informations
+    }
+
+    public Set<ActionType> getActions()
+    {
+        return actions;
+    }
+
+    public boolean hasIncludeActions()
+    {
+        return this.includeActions;
+    }
+
+    public Long getWorld()
+    {
+        return worldID;
+    }
+
+    public BlockVector3 getLocation1()
+    {
+        return location1;
+    }
+
+    public BlockVector3 getLocation2()
+    {
+        return location2;
+    }
+
+    public boolean hasTime()
+    {
+        return !(this.from_since == null && this.to_before == null);
+    }
+
+    public Long getFromSince()
+    {
+        return this.from_since;
+    }
+
+    public Long getToBefore()
+    {
+        return this.to_before;
     }
 
     /**

@@ -9,6 +9,7 @@ import de.cubeisland.cubeengine.log.storage.Lookup;
 
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.event.Event.Result;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
@@ -58,9 +59,10 @@ public class ToolListener implements Listener
             //-----------
             this.module.getLogManager().fillLookup(lookup);
             lookup.show(user);
-
-            event.getPlayer().sendMessage("Used LoggingTool-Block but not implemented yet :/");
-
+            event.getPlayer().sendMessage("Used LoggingTool-Block but not fully implemented yet :/");
+            event.setCancelled(true);
+            event.setUseItemInHand(Result.DENY);
+            event.setUseInteractedBlock(Result.DENY);
             /*
 
             BlockLookup lookup = this.module.getLogManager().getBlockLogs(

@@ -117,6 +117,7 @@ public class BlockListener implements Listener
         else if (blockState instanceof InventoryHolder)
         {
            this.logItemDropsFromDestroyedContainer((InventoryHolder) blockState, blockState.getLocation(), event.getPlayer());
+           this.logBlockChange(BLOCK_BREAK,blockState, AIR,event.getPlayer());
         }
         else
         {
@@ -958,7 +959,9 @@ public class BlockListener implements Listener
 
     private void logBlockChange(ActionType action, BlockState oldState, Material to, Player player)
     {
-        this.logBlockChange(oldState.getLocation(), action, player, oldState, to.name(), (byte) 0);
+        Location loc = oldState.getLocation();
+        if (this.manager.isIgnored(oldState.getLocation(loc).getWorld(),action)) return;
+        this.logBlockChange(loc, action, player, oldState, to.name(), (byte) 0);
     }
 
     private void logBlockChange(ActionType action, BlockState oldState, Material to)
