@@ -1,5 +1,7 @@
 package de.cubeisland.cubeengine.core.i18n;
 
+import java.util.Locale;
+
 import de.cubeisland.cubeengine.core.config.Configuration;
 import de.cubeisland.cubeengine.core.config.annotations.Codec;
 import de.cubeisland.cubeengine.core.config.annotations.Option;
@@ -11,13 +13,13 @@ import de.cubeisland.cubeengine.core.config.annotations.Option;
 public class LocaleConfig extends Configuration
 {
     @Option("code")
-    public String code;
+    public Locale locale;
     @Option("name")
     public String name;
     @Option("localname")
     public String localName;
     @Option("parent")
-    public String parent = null;
+    public Locale parent = null;
     @Option("clones")
-    public String[] clones = null;
+    public Locale[] clones = null;
 }

@@ -1,5 +1,9 @@
 package de.cubeisland.cubeengine.shout.interactions;
 
+import java.io.IOException;
+import java.util.Iterator;
+import java.util.Locale;
+
 import de.cubeisland.cubeengine.core.command.CommandContext;
 import de.cubeisland.cubeengine.core.command.parameterized.Param;
 import de.cubeisland.cubeengine.core.command.parameterized.ParameterizedContext;
@@ -10,10 +14,6 @@ import de.cubeisland.cubeengine.core.permission.Permission;
 import de.cubeisland.cubeengine.shout.Shout;
 import de.cubeisland.cubeengine.shout.announce.Announcement;
 import de.cubeisland.cubeengine.shout.announce.MessageOfTheDay;
-
-import java.io.IOException;
-import java.util.Iterator;
-import java.util.Locale;
 
 public class ShoutSubCommands
 {
@@ -85,7 +85,7 @@ public class ShoutSubCommands
         Locale locale = context.getSender().getLocale();
         if (context.hasParam("locale"))
         {
-            locale = Locale.forLanguageTag(I18n.normalizeLanguage(context.getString("locale")));
+            locale = I18n.stringToLocale(context.getString("locale"));
         }
 
         try

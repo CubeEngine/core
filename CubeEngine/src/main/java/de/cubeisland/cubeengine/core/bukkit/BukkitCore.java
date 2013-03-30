@@ -3,6 +3,7 @@ package de.cubeisland.cubeengine.core.bukkit;
 import java.io.File;
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
+import java.util.logging.Level;
 
 import net.minecraft.server.v1_5_R2.Packet204LocaleAndViewDistance;
 
@@ -43,9 +44,6 @@ import de.cubeisland.cubeengine.core.util.worker.CubeThreadFactory;
 import de.cubeisland.cubeengine.core.webapi.ApiConfig;
 import de.cubeisland.cubeengine.core.webapi.ApiServer;
 import de.cubeisland.cubeengine.core.webapi.exception.ApiStartupException;
-
-import sun.misc.Signal;
-import sun.misc.SignalHandler;
 
 import static de.cubeisland.cubeengine.core.logger.LogLevel.*;
 
@@ -90,17 +88,8 @@ public final class BukkitCore extends JavaPlugin implements Core
         CubeEngine.initialize(this);
 
         this.logger = new CubeLogger("Core", this.getLogger());
+        this.logger.setLevel(Level.ALL);
         // TODO RemoteHandler is not yet implemented this.logger.addHandler(new RemoteHandler(LogLevel.ERROR, this));
-
-        BukkitUtils.registerPacketHookInjector(this);
-        this.packetEventManager = new PacketEventManager(this.logger);
-        this.packetEventManager.addReceivedListener(204, new PacketReceivedListener() {
-            @Override
-            public void handle(PacketReceivedEvent event)
-            {
-                pm.callEvent(new PlayerLanguageReceivedEvent(event.getPlayer(), ((Packet204LocaleAndViewDistance)event.getPacket()).d()));
-            }
-        });
 
         try
         {
@@ -115,90 +104,10 @@ public final class BukkitCore extends JavaPlugin implements Core
         this.fileManager.clearTempDir();
         this.fileManager.dropResources(CoreResource.values());
 
-        try
-        {
-            // depends on: file manager
-            this.logger.addHandler(new CubeFileHandler(ALL, new File(this.fileManager.getLogDir(), "core").toString()));
-        }
-        catch (IOException e)
-        {
-            this.logger.log(ERROR, e.getLocalizedMessage(), e);
-        }
-
-        try
-        {
-            Class.forName("sun.misc.Signal");
-
-            Signal.handle(new Signal("INT"), new SignalHandler() {
-                private long lastReceived = 0;
-
-                @Override
-                public void handle(Signal signal)
-                {
-                    if (this.lastReceived == -1)
-                    {
-                        return;
-                    }
-                    final long time = System.currentTimeMillis();
-                    if (time - this.lastReceived <= 5000)
-                    {
-                        getLog().log(NOTICE, "Shutting down the server now!");
-                        getServer().shutdown();
-                        this.lastReceived = -1;
-                    }
-                    else
-                    {
-                        this.lastReceived = time;
-                        getLog().log(NOTICE, "You can't copy content from the console using CTRL-C!");
-                        getLog().log(NOTICE, "If you really want shutdown the server use the stop command or press CTRL-C again within 5 seconds!");
-                    }
-                }
-            });
-
-            try
-            {
-                Signal.handle(new Signal("HUP"), new SignalHandler() {
-                    private volatile boolean reloading = false;
-
-                    @Override
-                    public void handle(Signal signal)
-                    {
-                        if (!this.reloading)
-                        {
-                            this.reloading = true;
-                            getLog().log(NOTICE, "Reloading the server!");
-                            getServer().reload();
-                            getLog().log(NOTICE, "Done reloading the server!");
-                            this.reloading = false;
-                        }
-                    }
-                });
-            }
-            catch (IllegalArgumentException e)
-            {
-                this.logger.log(NOTICE, "You're OS does not support the HUP signal! This can be ignored.");
-            }
-
-            Signal.handle(new Signal("TERM"), new SignalHandler() {
-                private volatile boolean shuttingDown = false;
-
-                @Override
-                public void handle(Signal signal)
-                {
-                    if (!this.shuttingDown)
-                    {
-                        this.shuttingDown = true;
-                        getLog().log(NOTICE, "Shutting down the server!");
-                        getServer().shutdown();
-                    }
-                }
-            });
-        }
-        catch (ClassNotFoundException ignored)
-        {}
-
         // depends on: file manager
         this.config = Configuration.load(BukkitCoreConfiguration.class, new File(this.fileManager.getDataFolder(), "core.yml"));
+
+        this.logger.setLevel(this.config.loggingLevel);
 
         if (!this.config.logCommands)
         {
@@ -208,6 +117,31 @@ public final class BukkitCore extends JavaPlugin implements Core
         if (this.config.preventSpamKick)
         {
             pm.registerEvents(new PreventSpamKickListener(), this);
+        }
+
+        if (this.config.catchSystemSignals)
+        {
+            BukkitUtils.setSignalHandlers(this);
+        }
+
+        this.packetEventManager = new PacketEventManager(this.logger);
+        this.packetEventManager.addReceivedListener(204, new PacketReceivedListener() {
+            @Override
+            public void handle(PacketReceivedEvent event)
+            {
+                pm.callEvent(new PlayerLanguageReceivedEvent(event.getPlayer(), ((Packet204LocaleAndViewDistance)event.getPacket()).d()));
+            }
+        });
+        BukkitUtils.registerPacketHookInjector(this);
+
+        try
+        {
+            // depends on: file manager
+            this.logger.addHandler(new CubeFileHandler(ALL, new File(this.fileManager.getLogDir(), "core").toString()));
+        }
+        catch (IOException e)
+        {
+            this.logger.log(ERROR, e.getLocalizedMessage(), e);
         }
 
         // depends on: object mapper

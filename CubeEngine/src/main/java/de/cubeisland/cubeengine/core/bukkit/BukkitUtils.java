@@ -48,8 +48,11 @@ import de.cubeisland.cubeengine.core.i18n.Language;
 import de.cubeisland.cubeengine.core.user.User;
 
 import org.apache.commons.lang.Validate;
+import sun.misc.Signal;
+import sun.misc.SignalHandler;
 
 import static de.cubeisland.cubeengine.core.logger.LogLevel.DEBUG;
+import static de.cubeisland.cubeengine.core.logger.LogLevel.NOTICE;
 
 /**
  * This class contains various methods to access bukkit-related stuff.
@@ -84,32 +87,22 @@ public class BukkitUtils
         return (hackSucceeded && CraftServer.class == Bukkit.getServer().getClass() && SimplePluginManager.class == Bukkit.getPluginManager().getClass() && SimpleHelpMap.class == Bukkit.getHelpMap().getClass());
     }
 
-    public static Locale getLanguage(I18n i18n, CommandSender sender)
+    public static Locale getLocaleFromSender(I18n i18n, CommandSender sender)
     {
         if (sender instanceof de.cubeisland.cubeengine.core.command.CommandSender)
         {
             return ((de.cubeisland.cubeengine.core.command.CommandSender)sender).getLocale();
         }
-        Locale language = null;
+        Locale locale = null;
         if (sender instanceof Player)
         {
-            language = getLanguage(i18n, (Player)sender);
+            locale = getLocaleFromUser(i18n, (Player)sender);
         }
-        if (language == null)
+        if (locale == null)
         {
-            language = Locale.getDefault();
+            locale = Locale.getDefault();
         }
-        return language;
-    }
-
-    public static ConsoleReader getConsoleReader(final Server server)
-    {
-        return ((CraftServer)server).getServer().reader;
-    }
-
-    public static CommandMap getCommandMap(final Server server)
-    {
-        return ((CraftServer)server).getCommandMap();
+        return locale;
     }
 
     /**
@@ -118,14 +111,14 @@ public class BukkitUtils
      * @param player the Player instance
      * @return the locale string of the player
      */
-    private static Locale getLanguage(I18n i18n, Player player)
+    private static Locale getLocaleFromUser(I18n i18n, Player player)
     {
         if (player.getClass() == CraftPlayer.class)
         {
             try
             {
-                final String langCode = (String)LOCALE_STRING_FIELD.get(((CraftPlayer)player).getHandle().getLocale());
-                final Language lang = i18n.getLanguage(langCode);
+                final String localeString = (String)LOCALE_STRING_FIELD.get(((CraftPlayer)player).getHandle().getLocale());
+                final Language lang = i18n.getLanguage(I18n.stringToLocale(localeString));
                 if (lang != null)
                 {
                     return lang.getLocale();
@@ -135,6 +128,16 @@ public class BukkitUtils
             {}
         }
         return null;
+    }
+
+    static ConsoleReader getConsoleReader(final Server server)
+    {
+        return ((CraftServer)server).getServer().reader;
+    }
+
+    static CommandMap getCommandMap(final Server server)
+    {
+        return ((CraftServer)server).getCommandMap();
     }
 
     private static Field findFirstField(Class type, Object o)
@@ -155,7 +158,7 @@ public class BukkitUtils
         return null;
     }
 
-    public static SimpleCommandMap swapCommandMap(SimpleCommandMap commandMap)
+    static SimpleCommandMap swapCommandMap(SimpleCommandMap commandMap)
     {
         Validate.notNull(commandMap, "The command map must not be null!");
 
@@ -181,7 +184,7 @@ public class BukkitUtils
         return oldMap;
     }
 
-    public static void resetCommandMap()
+    static void resetCommandMap()
     {
         SimpleCommandMap current = ((CraftServer)Bukkit.getServer()).getCommandMap();
         if (current instanceof CubeCommandMap)
@@ -217,7 +220,7 @@ public class BukkitUtils
     private static Filter filter = null;
     private static CommandLogFilter commandFilter = null;
 
-    public static void disableCommandLogging()
+    static void disableCommandLogging()
     {
         if (commandFilter == null)
         {
@@ -228,7 +231,7 @@ public class BukkitUtils
         logger.setFilter(commandFilter);
     }
 
-    public static void resetCommandLogging()
+    static void resetCommandLogging()
     {
         if (commandFilter != null)
         {
@@ -247,7 +250,7 @@ public class BukkitUtils
      *
      * @param core the BukkitCore
      */
-    public static synchronized void registerPacketHookInjector(BukkitCore core)
+    static synchronized void registerPacketHookInjector(BukkitCore core)
     {
         if (hookInjector == null)
         {
@@ -302,7 +305,7 @@ public class BukkitUtils
     private static final Location helperLocation = new Location(null, 0, 0, 0);
 
     @SuppressWarnings("unchecked")
-    public static void swapPlayerNetServerHandler(EntityPlayer player, PlayerConnection newHandler)
+    private static void swapPlayerNetServerHandler(EntityPlayer player, PlayerConnection newHandler)
     {
         if (NSH_LIST_FIELD == null)
         {
@@ -419,7 +422,6 @@ public class BukkitUtils
         // The method to write the whitelist (DedicatedPlayerList.w()) is private,
         // however removing an entry triggers the write :)
         playerList.removeWhitelist("");
-
     }
 
     /**
@@ -446,5 +448,81 @@ public class BukkitUtils
         net.minecraft.server.v1_5_R2.ItemStack nmss = CraftItemStack.asNMSCopy(item);
         // If the result of that item being cooked is null, it is not cookable
         return RecipesFurnace.getInstance().getResult(nmss.getItem().id) != null;
+    }
+
+    static void setSignalHandlers(final BukkitCore core)
+    {
+        try
+        {
+            Class.forName("sun.misc.Signal");
+
+            Signal.handle(new Signal("INT"), new SignalHandler()
+            {
+                private long lastReceived = 0;
+
+                @Override
+                public void handle(Signal signal)
+                {
+                    if (this.lastReceived == -1)
+                    {
+                        return;
+                    }
+                    final long time = System.currentTimeMillis();
+                    if (time - this.lastReceived <= 5000)
+                    {
+                        core.getLog().log(NOTICE, "Shutting down the server now!");
+                        core.getServer().shutdown();
+                        this.lastReceived = -1;
+                    }
+                    else
+                    {
+                        this.lastReceived = time;
+                        core.getLog().log(NOTICE, "You can't copy content from the console using CTRL-C!");
+                        core.getLog().log(NOTICE, "If you really want shutdown the server use the stop command or press CTRL-C again within 5 seconds!");
+                    }
+                }
+            });
+
+            try
+            {
+                Signal.handle(new Signal("HUP"), new SignalHandler() {
+                    private volatile boolean reloading = false;
+
+                    @Override
+                    public void handle(Signal signal)
+                    {
+                        if (!this.reloading)
+                        {
+                            this.reloading = true;
+                            core.getLog().log(NOTICE, "Reloading the server!");
+                            core.getServer().reload();
+                            core.getLog().log(NOTICE, "Done reloading the server!");
+                            this.reloading = false;
+                        }
+                    }
+                });
+            }
+            catch (IllegalArgumentException e)
+            {
+                core.getLog().log(NOTICE, "You're OS does not support the HUP signal! This can be ignored.");
+            }
+
+            Signal.handle(new Signal("TERM"), new SignalHandler() {
+                private volatile boolean shuttingDown = false;
+
+                @Override
+                public void handle(Signal signal)
+                {
+                    if (!this.shuttingDown)
+                    {
+                        this.shuttingDown = true;
+                        core.getLog().log(NOTICE, "Shutting down the server!");
+                        core.getServer().shutdown();
+                    }
+                }
+            });
+        }
+        catch (ClassNotFoundException ignored)
+        {}
     }
 }

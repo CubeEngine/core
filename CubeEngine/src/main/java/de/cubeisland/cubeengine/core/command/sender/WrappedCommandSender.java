@@ -1,16 +1,16 @@
 package de.cubeisland.cubeengine.core.command.sender;
 
-import de.cubeisland.cubeengine.core.Core;
-import de.cubeisland.cubeengine.core.command.CommandSender;
-import de.cubeisland.cubeengine.core.permission.Permission;
+import java.util.Locale;
+import java.util.Set;
 
 import org.bukkit.Server;
 import org.bukkit.permissions.PermissionAttachment;
 import org.bukkit.permissions.PermissionAttachmentInfo;
 import org.bukkit.plugin.Plugin;
 
-import java.util.Locale;
-import java.util.Set;
+import de.cubeisland.cubeengine.core.Core;
+import de.cubeisland.cubeengine.core.command.CommandSender;
+import de.cubeisland.cubeengine.core.permission.Permission;
 
 public class WrappedCommandSender implements CommandSender
 {
@@ -31,7 +31,7 @@ public class WrappedCommandSender implements CommandSender
     @Override
     public String getName()
     {
-        return this.wrapped.getName();
+        return this.getWrappedSender().getName();
     }
 
     @Override
@@ -43,7 +43,7 @@ public class WrappedCommandSender implements CommandSender
     @Override
     public boolean isAuthorized(Permission perm)
     {
-        return this.wrapped.hasPermission(perm.getName());
+        return this.getWrappedSender().hasPermission(perm.getName());
     }
 
     @Override
@@ -55,19 +55,19 @@ public class WrappedCommandSender implements CommandSender
     @Override
     public void sendMessage(String message)
     {
-        this.wrapped.sendMessage(message);
+        this.getWrappedSender().sendMessage(message);
     }
 
     @Override
     public void sendMessage(String[] messages)
     {
-        this.wrapped.sendMessage(messages);
+        this.getWrappedSender().sendMessage(messages);
     }
 
     @Override
     public Server getServer()
     {
-        return this.wrapped.getServer();
+        return this.getWrappedSender().getServer();
     }
 
     public String translate(String message, Object... params)
@@ -84,79 +84,79 @@ public class WrappedCommandSender implements CommandSender
     @Override
     public boolean isPermissionSet(String name)
     {
-        return this.wrapped.isPermissionSet(name);
+        return this.getWrappedSender().isPermissionSet(name);
     }
 
     @Override
     public boolean isPermissionSet(org.bukkit.permissions.Permission perm)
     {
-        return this.wrapped.isPermissionSet(perm);
+        return this.getWrappedSender().isPermissionSet(perm);
     }
 
     @Override
     public boolean hasPermission(String name)
     {
-        return this.wrapped.hasPermission(name);
+        return this.getWrappedSender().hasPermission(name);
     }
 
     @Override
     public boolean hasPermission(org.bukkit.permissions.Permission perm)
     {
-        return this.wrapped.hasPermission(perm);
+        return this.getWrappedSender().hasPermission(perm);
     }
 
     @Override
     public PermissionAttachment addAttachment(Plugin plugin, String name, boolean value)
     {
-        return this.wrapped.addAttachment(plugin, name, value);
+        return this.getWrappedSender().addAttachment(plugin, name, value);
     }
 
     @Override
     public PermissionAttachment addAttachment(Plugin plugin)
     {
-        return this.wrapped.addAttachment(plugin);
+        return this.getWrappedSender().addAttachment(plugin);
     }
 
     @Override
     public PermissionAttachment addAttachment(Plugin plugin, String name, boolean value, int ticks)
     {
-        return this.wrapped.addAttachment(plugin, name, value, ticks);
+        return this.getWrappedSender().addAttachment(plugin, name, value, ticks);
     }
 
     @Override
     public PermissionAttachment addAttachment(Plugin plugin, int ticks)
     {
-        return this.wrapped.addAttachment(plugin, ticks);
+        return this.getWrappedSender().addAttachment(plugin, ticks);
     }
 
     @Override
     public void removeAttachment(PermissionAttachment attachment)
     {
-        this.wrapped.removeAttachment(attachment);
+        this.getWrappedSender().removeAttachment(attachment);
     }
 
     @Override
     public void recalculatePermissions()
     {
-        this.wrapped.recalculatePermissions();
+        this.getWrappedSender().recalculatePermissions();
     }
 
     @Override
     public Set<PermissionAttachmentInfo> getEffectivePermissions()
     {
-        return this.wrapped.getEffectivePermissions();
+        return this.getWrappedSender().getEffectivePermissions();
     }
 
     @Override
     public boolean isOp()
     {
-        return this.wrapped.isOp();
+        return this.getWrappedSender().isOp();
     }
 
     @Override
     public void setOp(boolean value)
     {
-        this.wrapped.setOp(value);
+        this.getWrappedSender().setOp(value);
     }
 
     public org.bukkit.command.CommandSender getWrappedSender()
@@ -173,11 +173,11 @@ public class WrappedCommandSender implements CommandSender
         }
         if (o instanceof WrappedCommandSender)
         {
-            return ((WrappedCommandSender)o).getName().equals(this.wrapped.getName());
+            return ((WrappedCommandSender)o).getName().equals(this.getWrappedSender().getName());
         }
         else if (o instanceof org.bukkit.command.CommandSender)
         {
-            return ((org.bukkit.command.CommandSender)o).getName().equals(this.wrapped.getName());
+            return ((org.bukkit.command.CommandSender)o).getName().equals(this.getWrappedSender().getName());
         }
 
         return false;
@@ -186,6 +186,6 @@ public class WrappedCommandSender implements CommandSender
     @Override
     public int hashCode()
     {
-        return this.wrapped.hashCode();
+        return this.getWrappedSender().hashCode();
     }
 }

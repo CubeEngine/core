@@ -1,5 +1,13 @@
 package de.cubeisland.cubeengine.core.user;
 
+import java.net.InetSocketAddress;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
+
 import org.bukkit.Achievement;
 import org.bukkit.Bukkit;
 import org.bukkit.Effect;
@@ -13,6 +21,7 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.Server;
 import org.bukkit.Sound;
 import org.bukkit.Statistic;
+import org.bukkit.WeatherType;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.conversations.Conversation;
@@ -41,15 +50,6 @@ import org.bukkit.plugin.Plugin;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.util.Vector;
-
-import java.net.InetSocketAddress;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.UUID;
-import org.bukkit.WeatherType;
 
 /**
  * Wrapper around the BukkitPlayer/OfflinePlayer
@@ -1864,18 +1864,6 @@ public class UserBase implements Player
         }
         return null;
     }
-
-    /*
-     * public String getLanguage()
-     * {
-     * final Player player = this.offlinePlayer.getPlayer();
-     * if (player != null)
-     * {
-     * // TODO implement if Bukkit pulled https://github.com/Bukkit/Bukkit/pull/683
-     * // return this.offlinePlayer.getLanguage();
-     * }
-     * return I18n.sourceLanguage;
-     * } */
 
     @Override
     public void giveExpLevels(int amount)

@@ -1,17 +1,18 @@
 package de.cubeisland.cubeengine.shout.announce;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+
 import de.cubeisland.cubeengine.core.CubeEngine;
 import de.cubeisland.cubeengine.core.i18n.ClonedLanguage;
 import de.cubeisland.cubeengine.core.i18n.I18n;
 import de.cubeisland.cubeengine.core.i18n.Language;
 import de.cubeisland.cubeengine.core.i18n.NormalLanguage;
+
 import gnu.trove.map.hash.THashMap;
 import org.apache.commons.lang.Validate;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
 
 /**
  * Class to represent an announcement.
@@ -76,7 +77,7 @@ public class Announcement
         }
 
         final I18n i18n = CubeEngine.getI18n();
-        Language lang = i18n.getLanguage(locale.toString());
+        Language lang = i18n.getLanguage(locale);
         if (lang != null)
         {
             if (lang instanceof NormalLanguage)

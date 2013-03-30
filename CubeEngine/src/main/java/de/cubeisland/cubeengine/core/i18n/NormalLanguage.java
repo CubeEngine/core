@@ -1,20 +1,12 @@
 package de.cubeisland.cubeengine.core.i18n;
 
-import de.cubeisland.cubeengine.core.Core;
-import de.cubeisland.cubeengine.core.util.Cleanable;
-import gnu.trove.map.hash.THashMap;
-import org.apache.commons.lang.Validate;
-
 import java.io.File;
 import java.util.Locale;
 import java.util.Map;
 
-import de.cubeisland.cubeengine.core.CubeEngine;
-import de.cubeisland.cubeengine.core.logger.LogLevel;
-import de.cubeisland.cubeengine.core.util.ChatFormat;
+import de.cubeisland.cubeengine.core.Core;
 import de.cubeisland.cubeengine.core.util.Cleanable;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import gnu.trove.map.hash.THashMap;
 import org.apache.commons.lang.Validate;
 
@@ -24,7 +16,6 @@ import org.apache.commons.lang.Validate;
 public class NormalLanguage implements Cleanable, Language
 {
     private final Core core;
-    private final String code;
     private final String name;
     private final String localName;
     private final Language parent;
@@ -34,21 +25,18 @@ public class NormalLanguage implements Cleanable, Language
 
     public NormalLanguage(Core core, LocaleConfig config, File languageDir, Language parent)
     {
-        Validate.notNull(config.code, "The code must not be null!");
+        Validate.notNull(config.locale, "The code must not be null!");
         Validate.notNull(config.name, "The name must not be null!");
         Validate.notNull(config.localName, "The local name must not be null!");
 
         this.core = core;
-        this.code = I18n.normalizeLanguage(config.code);
-        Validate.notNull(this.code, "The configured language code is invalid!");
 
         this.name = config.name;
         this.localName = config.localName;
+        this.locale = config.locale;
         this.parent = parent;
-        this.messageDir = new File(languageDir, this.code);
+        this.messageDir = new File(languageDir, I18n.localeToString(this.locale));
         this.messages = new THashMap<String, String>();
-
-        this.locale = new Locale(this.code.substring(0, 2), this.code.substring(3, 5));
     }
 
     @Override
@@ -190,7 +178,7 @@ public class NormalLanguage implements Cleanable, Language
     @Override
     public int hashCode()
     {
-        return this.code.hashCode();
+        return this.locale.hashCode();
     }
 
     @Override
@@ -200,6 +188,6 @@ public class NormalLanguage implements Cleanable, Language
         {
             return false;
         }
-        return this.code.equals(((NormalLanguage)obj).code);
+        return this.locale.equals(((NormalLanguage)obj).locale);
     }
 }

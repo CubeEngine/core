@@ -1,7 +1,5 @@
 package de.cubeisland.cubeengine.core.i18n;
 
-import org.apache.commons.lang.Validate;
-
 import java.util.Locale;
 import java.util.Map;
 
@@ -10,26 +8,29 @@ import java.util.Map;
  */
 public class ClonedLanguage implements Language
 {
-    private final String code;
     private final Locale locale;
     private final Language original;
 
-    public ClonedLanguage(String code, Language original)
+    public ClonedLanguage(Locale locale, Language original)
     {
-        code = I18n.normalizeLanguage(code);
-        Validate.notNull(code, "The code must not be null!");
-        Validate.notNull(original, "The original must not be null!");
+        if (locale == null)
+        {
+            throw new NullPointerException("The code must not be null!");
+        }
+        if (original == null)
+        {
+            throw new NullPointerException("The original must not be null!");
+        }
 
-        this.code = code;
-        this.locale = new Locale(code.substring(0, 2), code.substring(3, 5));
+        this.locale = locale;
         this.original = original;
     }
 
-    public static ClonedLanguage clone(Language original, String code)
+    public static ClonedLanguage clone(Locale locale, Language original)
     {
         try
         {
-            return new ClonedLanguage(code, original);
+            return new ClonedLanguage(locale, original);
         }
         catch (IllegalArgumentException e)
         {
@@ -76,7 +77,7 @@ public class ClonedLanguage implements Language
     @Override
     public int hashCode()
     {
-        return this.code.hashCode();
+        return this.locale.hashCode();
     }
 
     @Override

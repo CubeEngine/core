@@ -15,4 +15,8 @@ public class BukkitCoreConfiguration extends CoreConfiguration
     @Option("commands.improve-vanilla")
     @Comment("Whether to replace the vanilla standard commands with improved ones")
     public boolean improveVanillaCommands = true;
+
+    @Option("catch-system-signals")
+    @Comment("This allows the CubeEngine to act when signals are send to the Minecraft server")
+    public boolean catchSystemSignals = true;
 }

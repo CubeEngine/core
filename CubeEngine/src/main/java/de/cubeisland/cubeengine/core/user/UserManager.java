@@ -429,9 +429,9 @@ public class UserManager implements Cleanable
         this.core.getCommandManager().getConsoleSender().sendTranslated(message, params);
     }
 
-    public void broadcastMessage(String category, String message, Object... args)
+    public void broadcastMessage(String message, Object... args)
     {
-        this.broadcastMessage(category, message, null, args);
+        this.broadcastMessage(message, null, args);
     }
 
     public void broadcastStatus(String message, String username)

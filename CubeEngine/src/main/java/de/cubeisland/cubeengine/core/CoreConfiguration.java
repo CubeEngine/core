@@ -1,5 +1,7 @@
 package de.cubeisland.cubeengine.core;
 
+import java.util.Locale;
+
 import de.cubeisland.cubeengine.core.config.Configuration;
 import de.cubeisland.cubeengine.core.config.annotations.Codec;
 import de.cubeisland.cubeengine.core.config.annotations.Comment;
@@ -7,8 +9,6 @@ import de.cubeisland.cubeengine.core.config.annotations.Option;
 import de.cubeisland.cubeengine.core.config.annotations.Revision;
 import de.cubeisland.cubeengine.core.logger.CubeLevel;
 import de.cubeisland.cubeengine.core.logger.LogLevel;
-
-import java.util.Locale;
 
 /**
  * This Configuration holds all basic settings for CubeEngine.
@@ -18,9 +18,9 @@ import java.util.Locale;
 @Revision(1)
 public class CoreConfiguration extends Configuration
 {
-    @Option("default-Language")
-    @Comment("Sets the language to choose by default.\nCurrently supported en_US de_DE fr_FR")
-    public Locale defaultLanguage = Locale.US;
+    @Option("default-locale")
+    @Comment("Sets the locale to choose by default.")
+    public Locale defaultLocale = Locale.US;
 
     @Option("commands.max-correction-offers")
     @Comment("The maximum number of similar commands to offer when more than one command matched a mistyped command.")

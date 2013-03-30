@@ -37,7 +37,7 @@ public class BukkitCommandManager implements CommandManager
         this.knownCommands = this.commandMap.getKnownCommands();
         this.commandFactories = new THashMap<Class<? extends CubeCommand>, CommandFactory>();
         BukkitUtils.swapCommandMap(this.commandMap);
-        this.consoleSender = new ConsoleCommandSender(core, this.server.getConsoleSender());
+        this.consoleSender = new ConsoleCommandSender(core);
 
         this.completer = new ConsoleCommandCompleter(core, this.commandMap);
         BukkitUtils.getConsoleReader(this.server).addCompleter(completer);

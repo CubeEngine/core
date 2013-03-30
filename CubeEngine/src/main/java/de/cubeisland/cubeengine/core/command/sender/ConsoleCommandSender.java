@@ -1,20 +1,24 @@
 package de.cubeisland.cubeengine.core.command.sender;
 
-import de.cubeisland.cubeengine.core.Core;
-import de.cubeisland.cubeengine.core.i18n.I18n;
+import java.util.Locale;
+
+import org.bukkit.Server;
 import org.bukkit.conversations.Conversation;
 import org.bukkit.conversations.ConversationAbandonedEvent;
 import org.bukkit.permissions.Permission;
 
-import java.util.Locale;
+import de.cubeisland.cubeengine.core.bukkit.BukkitCore;
+import de.cubeisland.cubeengine.core.i18n.I18n;
 
 public class ConsoleCommandSender extends WrappedCommandSender implements org.bukkit.command.ConsoleCommandSender
 {
     public static final String NAME = ":console";
+    private final Server server;
 
-    public ConsoleCommandSender(Core core, org.bukkit.command.ConsoleCommandSender sender)
+    public ConsoleCommandSender(BukkitCore core)
     {
-        super(core, sender);
+        super(core, core.getServer().getConsoleSender());
+        this.server = core.getServer();
     }
 
     @Override
@@ -33,7 +37,7 @@ public class ConsoleCommandSender extends WrappedCommandSender implements org.bu
     @Override
     public org.bukkit.command.ConsoleCommandSender getWrappedSender()
     {
-        return (org.bukkit.command.ConsoleCommandSender)super.getWrappedSender();
+        return this.server.getConsoleSender();
     }
 
     @Override

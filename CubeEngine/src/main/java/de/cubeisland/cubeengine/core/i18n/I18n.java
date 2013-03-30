@@ -19,6 +19,7 @@ import de.cubeisland.cubeengine.core.logger.CubeFileHandler;
 import de.cubeisland.cubeengine.core.logger.CubeLogger;
 import de.cubeisland.cubeengine.core.logger.LogLevel;
 import de.cubeisland.cubeengine.core.util.Cleanable;
+import de.cubeisland.cubeengine.core.util.Misc;
 import de.cubeisland.cubeengine.core.util.matcher.Match;
 
 import gnu.trove.map.hash.THashMap;
@@ -36,7 +37,8 @@ public class I18n implements Cleanable
     private static final Object[] NO_PARAMS = {};
     private final Logger logger;
     private final SourceLanguage sourceLanguage;
-    private final Map<String, Language> languageMap;
+    private final Map<Locale, Language> languages;
+    private final Map<String, Language> languageLookupMap;
     private Locale defaultLocale;
     private final MessageCatalogFactory messageCatalogFactory;
 
@@ -44,14 +46,26 @@ public class I18n implements Cleanable
     {
         this.core = core;
         this.logger = new CubeLogger("language");
-        this.languageMap = new THashMap<String, Language>();
+        this.languages = new THashMap<Locale, Language>();
+        this.languageLookupMap = new THashMap<String, Language>();
         this.sourceLanguage = new SourceLanguage();
+        this.languages.put(this.sourceLanguage.getLocale(), this.sourceLanguage);
         this.registerLanguage(this.sourceLanguage);
         this.messageCatalogFactory = new MessageCatalogFactory();
 
-        this.defaultLocale = core.getConfiguration().defaultLanguage;
         FileManager fm = core.getFileManager();
         this.loadLanguages(fm.getLanguageDir());
+
+        Locale def = core.getConfiguration().defaultLocale;
+        if (this.languages.containsKey(def))
+        {
+            Locale.setDefault(def);
+        }
+        else
+        {
+            Locale.setDefault(this.sourceLanguage.getLocale());
+            core.getConfiguration().defaultLocale = Locale.getDefault();
+        }
         try
         {
             this.logger.addHandler(new CubeFileHandler(LogLevel.ALL, new File(fm.getLogDir(), "missing-translations").getPath()));
@@ -62,19 +76,14 @@ public class I18n implements Cleanable
         }
     }
 
+    public Set<Language> getLanguages()
+    {
+        return new THashSet<Language>(this.languages.values());
+    }
+
     public SourceLanguage getSourceLanguage()
     {
         return this.sourceLanguage;
-    }
-
-    public Set<Language> getLanguages()
-    {
-        return new THashSet<Language>(this.languageMap.values());
-    }
-
-    public MessageCatalogFactory getMessageCatalogFactory()
-    {
-        return messageCatalogFactory;
     }
 
     /**
@@ -84,7 +93,7 @@ public class I18n implements Cleanable
      */
     public Language getDefaultLanguage()
     {
-        Language language = this.languageMap.get(Locale.getDefault().toString());
+        Language language = this.languages.get(Locale.getDefault());
         if (language == null)
         {
             language = this.sourceLanguage;
@@ -93,40 +102,20 @@ public class I18n implements Cleanable
     }
 
     /**
-     * Sets the default language
-     *
-     * @param locale the new default language
-     */
-    public void setDefaultLocale(Locale locale)
-    {
-        if (locale == null)
-        {
-            throw new NullPointerException("The language must not be null!");
-        }
-
-        if (this.sourceLanguage.equals(locale) || this.languageMap.containsKey(locale))
-        {
-            Locale.setDefault(locale);
-            this.defaultLocale = locale;
-        }
-    }
-
-    /**
      * This method load all languages from a directory
      *
      * @param languageDir the directory to load from
      */
-    private void loadLanguages(File languageDir)
+    private synchronized void loadLanguages(File languageDir)
     {
-        Map<String, LocaleConfig> languages = new HashMap<String, LocaleConfig>();
+        Map<Locale, LocaleConfig> languages = new HashMap<Locale, LocaleConfig>();
         LocaleConfig config;
         for (File file : languageDir.listFiles((FileFilter)FileExtentionFilter.YAML))
         {
             config = Configuration.load(LocaleConfig.class, file, false);
-            config.code = normalizeLanguage(config.code);
-            if (config.code != null)
+            if (config.locale != null)
             {
-                languages.put(config.code, config);
+                languages.put(config.locale, config);
             }
             else
             {
@@ -134,27 +123,27 @@ public class I18n implements Cleanable
             }
         }
 
-        Stack<String> loadStack = new Stack<String>();
+        Stack<Locale> loadStack = new Stack<Locale>();
         for (LocaleConfig entry : languages.values())
         {
             this.loadLanguage(languageDir, entry, languages, loadStack);
         }
     }
 
-    private Language loadLanguage(File languageDir, LocaleConfig config, Map<String, LocaleConfig> languages, Stack<String> loadStack)
+    private Language loadLanguage(File languageDir, LocaleConfig config, Map<Locale, LocaleConfig> languages, Stack<Locale> loadStack)
     {
-        if (this.languageMap.containsKey(config.code))
+        if (this.languages.containsKey(config.locale))
         {
-            return this.languageMap.get(config.code);
+            return this.languages.get(config.locale);
         }
-        if (loadStack.contains(config.code))
+        if (loadStack.contains(config.locale))
         {
             this.logger.log(ERROR, "The language ''{0}'' caused a circular dependency!", loadStack.peek());
             return null;
         }
         Language language = null;
-        config.parent = normalizeLanguage(config.parent);
-        if (this.sourceLanguage.equals(config.parent))
+
+        if (config.parent != null && this.sourceLanguage.equals(config.parent))
         {
             language = this.sourceLanguage;
         }
@@ -163,7 +152,7 @@ public class I18n implements Cleanable
             LocaleConfig parent = languages.get(config.parent);
             if (parent != null)
             {
-                loadStack.add(config.code);
+                loadStack.add(config.locale);
                 language = this.loadLanguage(languageDir, parent, languages, loadStack);
                 loadStack.pop();
             }
@@ -175,9 +164,9 @@ public class I18n implements Cleanable
             if (config.clones != null)
             {
                 Language clonedLanguage;
-                for (String clone : config.clones)
+                for (Locale cloneLocale : config.clones)
                 {
-                    clonedLanguage = ClonedLanguage.clone(language, clone);
+                    clonedLanguage = ClonedLanguage.clone(cloneLocale, language);
                     if (clonedLanguage != null && !this.sourceLanguage.equals(clonedLanguage.getLocale()))
                     {
                         this.registerLanguage(clonedLanguage);
@@ -190,7 +179,7 @@ public class I18n implements Cleanable
         catch (IllegalArgumentException e)
         {
             this.logger.log(ERROR, "Failed to load the language ''{0}'': {1}", new Object[]{
-                config.code, e.getLocalizedMessage()
+                config.locale, e.getLocalizedMessage()
             });
         }
         return null;
@@ -198,33 +187,24 @@ public class I18n implements Cleanable
 
     private void registerLanguage(Language language)
     {
-        this.languageMap.put(language.getLocale().toString(), language);
-        this.languageMap.put(language.getName().toLowerCase(language.getLocale()), language);
-        this.languageMap.put(language.getLocalName().toLowerCase(language.getLocale()), language);
+        this.languageLookupMap.put(localeToString(language.getLocale()), language);
+        this.languageLookupMap.put(language.getName().toLowerCase(language.getLocale()), language);
+        this.languageLookupMap.put(language.getLocalName().toLowerCase(language.getLocale()), language);
     }
 
     /**
      * Returns a language by their locale string / name
      *
-     * @param name the name / locale string
+     * @param locale the locale
      * @return the language or null if not found
      */
-    public Language getLanguage(String name)
+    public Language getLanguage(Locale locale)
     {
-        return this.getLanguage(name, this.sourceLanguage.getLocale());
-    }
-
-    public Language getLanguage(String name, Locale locale)
-    {
-        if (name == null)
+        if (locale == null)
         {
-            return null;
+            throw new NullPointerException("The locale must not be null!");
         }
-        if (name.indexOf('_') != -1)
-        {
-            name = normalizeLanguage(name);
-        }
-        return this.languageMap.get(name.toLowerCase(locale));
+        return this.languages.get(locale);
     }
 
     public Set<Language> searchLanguages(String name)
@@ -232,17 +212,22 @@ public class I18n implements Cleanable
         return this.searchLanguages(name, 2);
     }
 
-    public Set<Language> searchLanguages(String name, int maximumEditDistance)
+    public Set<Language> searchLanguages(String name, int maximumDifference)
     {
-        Set<String> matches = Match.string().getBestMatches(name, this.languageMap.keySet(), maximumEditDistance);
+        Set<String> matches = Match.string().getBestMatches(name, this.languageLookupMap.keySet(), maximumDifference);
         Set<Language> languages = new THashSet<Language>(matches.size());
 
         for (String match : matches)
         {
-            languages.add(this.getLanguage(match));
+            languages.add(this.languageLookupMap.get(match));
         }
 
         return languages;
+    }
+
+    private void logMissingTranslation(Locale locale, String message)
+    {
+        this.logger.log(LogLevel.INFO, String.format("\"%s\" \"%s\"", localeToString(locale), message));
     }
 
     /**
@@ -281,7 +266,7 @@ public class I18n implements Cleanable
         }
 
         String translation = null;
-        Language lang = this.languageMap.get(locale);
+        Language lang = this.languageLookupMap.get(localeToString(locale)); // TODO locale -> string -> language WTF?
         if (lang != null)
         {
             locale = lang.getLocale();
@@ -291,15 +276,16 @@ public class I18n implements Cleanable
         if (translation == null)
         {
             this.logMissingTranslation(locale, message);
-            Language defLang = this.getLanguage(this.defaultLocale.getISO3Language());
+            Language defLang = this.getLanguage(Locale.getDefault());
             if (defLang != null)
             {
                 translation = defLang.getTranslation(message);
+                locale = Locale.getDefault();
             }
             else
             {
                 this.logger.log(WARNING, "The configured default language {0} was not found! Falling back to the source language...", this.defaultLocale.getDisplayName());
-                this.defaultLocale = this.sourceLanguage.getLocale();
+                locale = this.defaultLocale = this.sourceLanguage.getLocale();
             }
             if (translation == null)
             {
@@ -318,57 +304,88 @@ public class I18n implements Cleanable
     @Override
     public void clean()
     {
-        for (Language language : this.languageMap.values())
+        for (Language language : this.languageLookupMap.values())
         {
             language.clean();
         }
         this.sourceLanguage.clean();
-        this.languageMap.clear();
+        this.languageLookupMap.clear();
+    }
+
+    public static String localeToString(Locale locale)
+    {
+        if (locale == null)
+        {
+            throw new NullPointerException("The locale must not be null!");
+        }
+        return locale.getLanguage().toLowerCase(Locale.US) + '_' + locale.getCountry().toUpperCase(Locale.US);
+    }
+
+    private static boolean mayBeRegionCode(String string)
+    {
+        if (!Misc.isNumeric(string))
+        {
+            return false;
+        }
+        try
+        {
+            int countryCode = Integer.parseInt(string);
+            if (countryCode <= 999)
+            {
+                return true;
+            }
+        }
+        catch (NumberFormatException ignored)
+        {}
+        return false;
+    }
+
+    public static Locale stringToLocale(String string)
+    {
+        if (string == null)
+        {
+            return Locale.getDefault();
+        }
+        string = string.trim();
+        if (string.isEmpty())
+        {
+            return Locale.getDefault();
+        }
+
+        string = string.replace('-', '_').replaceAll("[^a-z0-9_]", "");
+        String[] parts = string.split("_", 2);
+
+        String language = parts[0];
+        String country = "";
+
+        // if the language code is longer than 3-alpha's
+        if (language.length() > 3)
+        {
+            // strip it to a 2-alpha code
+            language = language.substring(0, 2);
+        }
+        if (parts.length > 0)
+        {
+            country = parts[1];
+            if (country.length() > 2 && !mayBeRegionCode(country))
+            {
+                country = country.substring(0, 2);
+            }
+        }
+
+        language = language.toLowerCase(Locale.US);
+        country = language.toUpperCase(Locale.US);
+
+        return new Locale(language, country);
     }
 
     /**
-     * This method normalizes a locale string as good as possible
-     *
-     * @param name the locale string
-     * @return the normalized locale string
-     */
-    public static String normalizeLanguage(String name)
-    {
-        if (name == null)
-        {
-            return null;
-        }
-        final int length = name.length();
-        if (length >= 2 && length <= 5)
-        {
-            final int delimPos = name.indexOf('_');
-            if (delimPos < 0 && length == 2)
-            {
-                return name.toLowerCase(Locale.ENGLISH) + "_" + name.toUpperCase(Locale.ENGLISH);
-            }
-            else
-            {
-                if (delimPos == 2 && length == 5)
-                {
-                    return name.substring(0, 2).toLowerCase(Locale.ENGLISH) + '_' + name.substring(3).replace("_", "").toUpperCase(Locale.ENGLISH);
-                }
-            }
-        }
-        return null;
-    }
-
-    private void logMissingTranslation(Locale locale, String message)
-    {
-        this.logger.log(LogLevel.INFO, String.format("\"%s\" \"%s\"", locale.getISO3Country(), message));
-    }
-
-    /**
-     * This method is only only used to mark strings as translated/translatable.
-     * One use-case would be command usages and descriptions.
+     * Use this method to mark strings as translatable
      *
      * @param string the string to mark
-     * @return the unchanged string
+     * @return the exact same string
      */
+    @Deprecated
     public static String _(String string)
     {
         return string;
