@@ -16,25 +16,25 @@
   </prerequisites>
 
   <modules>
-    <module>CubeEngine</module>
-    <module>Fly</module>
-    <module>Conomy</module>
-    <module>Basics</module>
-    <module>Fun</module>
-    <module>Log</module>
-    <module>Writer</module>
-    <module>Shout</module>
-    <module>Guests</module>
-    <module>Roles</module>
-    <module>Rulebook</module>
-    <module>Irc</module>
-    <module>Chat</module>
-    <module>Border</module>
-    <module>SignMarket</module>
-    <module>Travel</module>
-    <module>Vaultcompat</module>
-    <module>Vote</module>
-    <module>Test</module>
+    <module>cubeengine</module>
+    <module>fly</module>
+    <module>conomy</module>
+    <module>basics</module>
+    <module>fun</module>
+    <module>log</module>
+    <module>writer</module>
+    <module>shout</module>
+    <module>guests</module>
+    <module>roles</module>
+    <module>rulebook</module>
+    <module>irc</module>
+    <module>chat</module>
+    <module>border</module>
+    <module>signmarket</module>
+    <module>travel</module>
+    <module>vaultcompat</module>
+    <module>vote</module>
+    <module>test</module>
   </modules>
 
   <properties>
