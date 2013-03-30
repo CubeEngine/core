@@ -217,6 +217,10 @@ public class UserManager implements Cleanable
         {
             user = this.storage.get(key);
         }
+        else
+        {
+            return user;
+        }
         if (user == null)
         {
             return null;
