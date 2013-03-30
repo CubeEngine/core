@@ -88,7 +88,7 @@ public class LogEntry implements Comparable<LogEntry>
                 case MONSTER_EGG_USE:
                 case ITEM_PICKUP:
                 case HANGING_BREAK:
-                    this.itemData = ItemData.deserialize(this.module.getLogManager().getJsonParser().parse(additionalData));
+                    this.itemData = ItemData.deserialize(additionalData, this.module.getLogManager().mapper);
                     this.item = itemData.toItemStack();
 
                 }

@@ -2,6 +2,7 @@ package de.cubeisland.cubeengine.log.listeners;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import static de.cubeisland.cubeengine.log.storage.ActionType.*;
 import org.bukkit.Location;
@@ -34,7 +35,8 @@ import de.cubeisland.cubeengine.log.Log;
 import de.cubeisland.cubeengine.log.storage.ItemData;
 import de.cubeisland.cubeengine.log.storage.LogManager;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import gnu.trove.map.hash.TLongObjectHashMap;
 import gnu.trove.map.hash.TObjectIntHashMap;
 
@@ -81,7 +83,32 @@ public class ContainerListener implements Listener
 
     public String serializeItemData(ItemData itemData)
     {
-        return itemData.serialize().toString();
+        ObjectNode json = this.manager.mapper.createObjectNode();
+        json.put("mats", itemData.material.name());
+        json.put("dura", itemData.dura);
+        json.put("amount", itemData.amount);
+        if (itemData.displayName != null)
+        {
+            json.put("name", itemData.displayName);
+        }
+        if (itemData.lore != null)
+        {
+            ArrayNode lore = json.putArray("lore");
+            for (String loreLine : itemData.lore)
+            {
+                lore.add(loreLine);
+            }
+        }
+        if (itemData.enchantments != null)
+        {
+            ObjectNode enchs = this.manager.mapper.createObjectNode();
+            json.put("enchs",enchs);
+            for (Entry<Enchantment,Integer> ench : itemData.enchantments.entrySet())
+            {
+                enchs.put(String.valueOf(ench.getKey().getId()),ench.getValue());
+            }
+        }
+        return json.toString();
     }
 
     private Location getLocationForHolder(InventoryHolder holder)

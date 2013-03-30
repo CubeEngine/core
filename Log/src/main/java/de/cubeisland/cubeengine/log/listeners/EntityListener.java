@@ -1,15 +1,10 @@
 package de.cubeisland.cubeengine.log.listeners;
 
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Map.Entry;
 
 import org.bukkit.craftbukkit.libs.com.google.gson.JsonArray;
-import org.bukkit.craftbukkit.libs.com.google.gson.JsonObject;
-import org.bukkit.craftbukkit.libs.com.google.gson.JsonPrimitive;
 
 import static de.cubeisland.cubeengine.log.storage.ActionType.*;
 
@@ -64,7 +59,6 @@ import org.bukkit.event.vehicle.VehicleDestroyEvent;
 import org.bukkit.event.vehicle.VehicleEnterEvent;
 import org.bukkit.event.vehicle.VehicleExitEvent;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.material.Dye;
 import org.bukkit.potion.PotionEffect;
 
@@ -75,7 +69,8 @@ import de.cubeisland.cubeengine.log.storage.ActionType;
 import de.cubeisland.cubeengine.log.storage.ItemData;
 import de.cubeisland.cubeengine.log.storage.LogManager;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import static org.bukkit.Material.*;
 import static org.bukkit.event.entity.EntityDamageEvent.DamageCause.PROJECTILE;
@@ -490,32 +485,30 @@ public class EntityListener implements Listener
 
     public String serializePotionLog(PotionSplashEvent event)
     {
-        JsonObject json = new JsonObject();
-        JsonArray effects = new JsonArray();
-        json.add("effects", effects);
+        ObjectNode json = this.manager.mapper.createObjectNode();
+        ArrayNode effects = json.putArray("effects");
         for (PotionEffect potionEffect : event.getPotion().getEffects())
         {
-            JsonArray effect = new JsonArray();
+            ArrayNode effect = effects.addArray();
             effects.add(effect);
-            effect.add(new JsonPrimitive(potionEffect.getType().getName()));
-            effect.add(new JsonPrimitive(potionEffect.getAmplifier()));
-            effect.add(new JsonPrimitive(potionEffect.getDuration()));
+            effect.add(potionEffect.getType().getName());
+            effect.add(potionEffect.getAmplifier());
+            effect.add(potionEffect.getDuration());
         }
         if (!event.getAffectedEntities().isEmpty())
         {
-            json.add("amount", new JsonPrimitive(event.getAffectedEntities().size()));
-            JsonArray affected = new JsonArray();
-            json.add("affected", affected);
+            json.put("amount", event.getAffectedEntities().size());
+            ArrayNode affected = json.putArray("affected");
             for (LivingEntity livingEntity : event.getAffectedEntities())
             {
                 if (livingEntity instanceof Player)
                 {
                     User user = this.module.getCore().getUserManager().getExactUser((Player)livingEntity);
-                    affected.add(new JsonPrimitive(user.key));
+                    affected.add(user.key);
                 }
                 else
                 {
-                    affected.add(new JsonPrimitive(-livingEntity.getType().getTypeId()));
+                    affected.add(-livingEntity.getType().getTypeId());
                 }
             }
         }
@@ -611,39 +604,39 @@ public class EntityListener implements Listener
             }
             return cause.name(); // only save cause
         }
-        JsonObject json = new JsonObject();
+        ObjectNode json = this.manager.mapper.createObjectNode();
         if (cause != null)
         {
-            json.add("dmgC", new JsonPrimitive(cause.name()));
+            json.put("dmgC", cause.name());
         }
         if (entity instanceof Ageable)
         {
-            json.add("isAdult", new JsonPrimitive(((Ageable)entity).isAdult() ? 1 : 0));
+            json.put("isAdult", ((Ageable)entity).isAdult() ? 1 : 0);
         }
         if (entity instanceof Ocelot)
         {
-            json.add("isSit", new JsonPrimitive(((Ocelot)entity).isSitting() ? 1 : 0));
+            json.put("isSit", ((Ocelot)entity).isSitting() ? 1 : 0);
         }
         if (entity instanceof Wolf)
         {
-            json.add("isSit", new JsonPrimitive(((Wolf)entity).isSitting() ? 1 : 0));
-            json.add("color", new JsonPrimitive(((Wolf)entity).getCollarColor().name()));
+            json.put("isSit", ((Wolf)entity).isSitting() ? 1 : 0);
+            json.put("color", ((Wolf)entity).getCollarColor().name());
         }
         if (entity instanceof Sheep)
         {
-            json.add("color", new JsonPrimitive(((Sheep)entity).getColor().name()));
+            json.put("color", ((Sheep)entity).getColor().name());
         }
         if (entity instanceof Villager)
         {
-            json.add("prof", new JsonPrimitive(((Villager)entity).getProfession().name()));
+            json.put("prof", ((Villager)entity).getProfession().name());
         }
         if (entity instanceof Tameable && ((Tameable) entity).isTamed())
         {
-            json.add("owner", new JsonPrimitive(((Tameable)entity).getOwner().getName()));
+            json.put("owner", ((Tameable)entity).getOwner().getName());
         }
         if (newColor != null)
         {
-            json.add("newColor", new JsonPrimitive(newColor.name()));
+            json.put("nColor", newColor.name());
         }
         return json.toString();
     }
@@ -651,21 +644,21 @@ public class EntityListener implements Listener
 
     private String serializeLocation(boolean from, Location location)
     {
-        JsonObject json = new JsonObject();
-        json.add("dir", new JsonPrimitive(from ? "from" : "to"));
-        json.add("world",new JsonPrimitive(this.module.getCore().getWorldManager().getWorldId(location.getWorld())));
-        json.add("x",new JsonPrimitive(location.getBlockX()));
-        json.add("y",new JsonPrimitive(location.getBlockY()));
-        json.add("z",new JsonPrimitive(location.getBlockZ()));
+        ObjectNode json = this.manager.mapper.createObjectNode();
+        json.put("dir", from ? "from" : "to");
+        json.put("world",this.module.getCore().getWorldManager().getWorldId(location.getWorld()));
+        json.put("x",location.getBlockX());
+        json.put("y",location.getBlockY());
+        json.put("z",location.getBlockZ());
         return json.toString();
     }
 
     private String serializeEnchantments(Map<Enchantment,Integer> enchantsToAdd)
     {
-        JsonArray enchs = new JsonArray();
+        ObjectNode enchs = this.manager.mapper.createObjectNode();
         for (Entry<Enchantment,Integer> ench : enchantsToAdd.entrySet())
         {
-            enchs.add(new JsonPrimitive(ench.getKey().getId()+":"+ench.getValue()));
+            enchs.put(String.valueOf(ench.getKey().getId()),ench.getValue());
         }
         return enchs.toString();
     }

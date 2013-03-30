@@ -1,16 +1,14 @@
 package de.cubeisland.cubeengine.log.storage;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.bukkit.craftbukkit.libs.com.google.gson.JsonArray;
-import org.bukkit.craftbukkit.libs.com.google.gson.JsonElement;
 import org.bukkit.craftbukkit.libs.com.google.gson.JsonObject;
-import org.bukkit.craftbukkit.libs.com.google.gson.JsonParseException;
-import org.bukkit.craftbukkit.libs.com.google.gson.JsonPrimitive;
 
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
@@ -18,6 +16,11 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import de.cubeisland.cubeengine.core.util.StringUtils;
+
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 
 public class ItemData
 {
@@ -87,69 +90,47 @@ public class ItemData
         return result;
     }
 
-    public JsonElement serialize() {
-        JsonObject result = new JsonObject();
-        result.add("mats", new JsonPrimitive(this.material.name()));
-        result.add("dura", new JsonPrimitive(this.dura));
-        result.add("amount", new JsonPrimitive(this.amount));
-        if (this.displayName != null)
-        {
-            result.add("name", new JsonPrimitive(this.displayName));
-        }
-        if (this.lore != null)
-        {
-            JsonArray lore = new JsonArray();
-            for (String loreLine : this.lore)
-            {
-                lore.add(new JsonPrimitive(loreLine));
-            }
-            result.add("lore",lore);
-        }
-        if (this.enchantments != null)
-        {
-            JsonArray enchs = new JsonArray();
-            for (Entry<Enchantment,Integer> ench : this.enchantments.entrySet())
-            {
-                enchs.add(new JsonPrimitive(ench.getKey().getId()+":"+ench.getValue()));
-            }
-            result.add("enchs",enchs);
-        }
-        return result;
-    }
-
-    public static ItemData deserialize(JsonElement jsonElement) throws JsonParseException
+    public static ItemData deserialize(String data, ObjectMapper mapper)
     {
-        JsonObject obj = jsonElement.getAsJsonObject();
-        Material mat = Material.getMaterial(obj.get("mats").getAsString());
-        Short dura = obj.get("data").getAsShort();
-        int amount = obj.get("amount").getAsInt();
-        String name = null;
-        List<String> lore = null;
-        Map<Enchantment,Integer> enchantments = null;
-        if (obj.get("name") != null)
+        try
         {
-            name = obj.get("name").getAsString();
-        }
-        if (obj.get("lore") != null)
-        {
-            lore = new ArrayList<String>();
-            JsonArray jsonLore = obj.get("lore").getAsJsonArray();
-            for (JsonElement elem : jsonLore)
+            JsonNode json = mapper.readTree(data);
+            Material mat = Material.getMaterial(json.get("mats").asText());
+            Short dura = (short)json.get("data").asInt();
+            int amount = json.get("amount").asInt();
+            String name = null;
+            List<String> lore = null;
+            Map<Enchantment,Integer> enchantments = null;
+            if (json.get("name") != null)
             {
-                lore.add(elem.getAsString());
+                name = json.get("name").asText();
             }
-        }
-        if (obj.get("enchs") != null)
-        {
-            enchantments = new HashMap<Enchantment, Integer>();
-            JsonArray jsonLore = obj.get("enchs").getAsJsonArray();
-            for (JsonElement elem : jsonLore)
+            if (json.get("lore") != null)
             {
-                String[] ench = StringUtils.explode(":",elem.getAsString());
-                enchantments.put(Enchantment.getByName(ench[0]),Integer.parseInt(ench[1]));
+                lore = new ArrayList<String>();
+                ArrayNode jsonLore = (ArrayNode)json.get("lore");
+                for (JsonNode elem : jsonLore)
+                {
+                    lore.add(elem.asText());
+                }
             }
+            if (json.get("enchs") != null)
+            {
+                enchantments = new HashMap<Enchantment, Integer>();
+                ObjectNode jsonEnchs = (ObjectNode)json.get("enchs");
+                Iterator<Entry<String,JsonNode>> enchs = jsonEnchs.fields();
+                while (enchs.hasNext())
+                {
+                    Entry<String,JsonNode> entry = enchs.next();
+                    enchantments.put(Enchantment.getById(Integer.valueOf(entry.getKey())),entry.getValue().asInt());
+                }
+            }
+            return new ItemData(mat,dura,amount,name,lore,enchantments);
         }
-        return new ItemData(mat,dura,amount,name,lore,enchantments);
+        catch (IOException ex)
+        {
+            throw new IllegalStateException("Error while deserializing ItemData!", ex);
+        }
     }
 
     public ItemStack toItemStack()

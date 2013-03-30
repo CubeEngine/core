@@ -5,8 +5,6 @@ import java.sql.Timestamp;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.bukkit.craftbukkit.libs.com.google.gson.JsonParser;
-
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -39,6 +37,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class LogManager
 {
+    public final ObjectMapper mapper;
     private final BlockListener blockListener;
     private final ChatListener chatListener;
     private final ContainerListener containerListener;
@@ -49,12 +48,11 @@ public class LogManager
     private Map<World, LoggingConfiguration> worldConfigs = new HashMap<World, LoggingConfiguration>();
 
     private final QueryManager queryManager;
-    private JsonParser jsonParser;
 
     public LogManager(Log module)
     {
         this.module = module;
-        this.jsonParser = new JsonParser();
+        this.mapper = new ObjectMapper();
         File file = new File(module.getFolder(), "worlds");
         file.mkdir();
         this.globalConfig = Configuration.load(LoggingConfiguration.class, new File(module.getFolder(), "globalconfig.yml"));
@@ -503,10 +501,5 @@ public class LogManager
     public LoggingConfiguration getConfig(World world) {
         if (world == null) return globalConfig;
         return this.worldConfigs.get(world);
-    }
-
-    public JsonParser getJsonParser()
-    {
-        return jsonParser;
     }
 }

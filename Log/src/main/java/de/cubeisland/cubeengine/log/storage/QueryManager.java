@@ -132,11 +132,6 @@ public class QueryManager
             {
                 return;
             }
-            if (running)
-            {
-                return;
-            }
-            running = true;
             final Queue<QueuedLog> logs = new LinkedList<QueuedLog>();
             for (int i = 0; i < amount; i++) // log <amount> next logs...
             {
@@ -149,17 +144,16 @@ public class QueryManager
             }
             Profiler.startProfiling("logging");
             int logSize = logs.size();
+            this.database.getConnection().setAutoCommit(false);
             PreparedStatement stmt = this.database.getStoredStatement(this.getClass(),"storeLog");
             try
             {
-                this.database.getConnection().setAutoCommit(false);
                 for (QueuedLog log : logs)
                 {
                     log.addDataToBatch(stmt);
                 }
                 stmt.executeBatch();
                 this.database.getConnection().commit();
-                this.database.getConnection().setAutoCommit(true);
             }
             catch (SQLException ex)
             {
@@ -167,7 +161,7 @@ public class QueryManager
             }
             finally
             {
-                running = false;
+                this.database.getConnection().setAutoCommit(true);
             }
             long nanos = Profiler.endProfiling("logging");
             timeSpend += nanos;

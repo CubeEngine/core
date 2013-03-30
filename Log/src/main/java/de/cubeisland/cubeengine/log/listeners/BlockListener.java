@@ -4,10 +4,6 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.bukkit.craftbukkit.libs.com.google.gson.JsonArray;
-import org.bukkit.craftbukkit.libs.com.google.gson.JsonObject;
-import org.bukkit.craftbukkit.libs.com.google.gson.JsonPrimitive;
-
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -72,6 +68,9 @@ import de.cubeisland.cubeengine.log.storage.ItemData;
 import de.cubeisland.cubeengine.log.storage.LogManager;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import static de.cubeisland.cubeengine.core.bukkit.BlockUtil.isNonFluidProofBlock;
 import static de.cubeisland.cubeengine.core.util.BlockUtil.BLOCK_FACES;
@@ -246,15 +245,14 @@ public class BlockListener implements Listener
                             Pair<Player,ActionType> cause = this.plannedFallingBlocks.get(loc);
                             if (cause != null)
                             {
-                                JsonObject json = new JsonObject();
-                                json.add("cause",new JsonPrimitive(cause.getRight().name));
+                                ObjectNode json = this.manager.mapper.createObjectNode();
+                                json.put("cause", cause.getRight().name);
                                 if (state instanceof Sign)
                                 {
-                                    JsonArray sign = new JsonArray();
-                                    json.add("sign",sign);
+                                    ArrayNode sign = json.putArray("sign");
                                     for (String line : ((Sign)state).getLines())
                                     {
-                                        sign.add(new JsonPrimitive(line));
+                                        sign.add(line);
                                     }
                                 }
                                 this.logBlockChange(loc, BLOCK_BREAK, cause.getLeft(), state, json.toString());
@@ -280,15 +278,14 @@ public class BlockListener implements Listener
                         Pair<Player,ActionType> cause = this.plannedFallingBlocks.get(loc);
                         if (cause != null)
                         {
-                            JsonObject json = new JsonObject();
-                            json.add("cause",new JsonPrimitive(cause.getRight().name));
+                            ObjectNode json = this.manager.mapper.createObjectNode();
+                            json.put("cause",cause.getRight().name);
                             if (state instanceof Sign)
                             {
-                                JsonArray sign = new JsonArray();
-                                json.add("sign",sign);
+                                ArrayNode sign = json.putArray("sign");
                                 for (String line : ((Sign)state).getLines())
                                 {
-                                    sign.add(new JsonPrimitive(line));
+                                    sign.add(line);
                                 }
                             }
                             this.logBlockChange(loc, BLOCK_BREAK, cause.getLeft(), state, json.toString());
