@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -192,7 +193,7 @@ public class Lookup
 
     public void clear()
     {
-// clear all logs
+        this.logEntries.clear();
     }
 
     /**
@@ -256,8 +257,90 @@ public class Lookup
 
     public void show(User user)
     {
-        user.sendMessage("I'll show you the logs ("+this.logEntries.size()+")... later");
+        if (this.logEntries.isEmpty())
+        {
+            if (this.location1 != null)
+            {
+                if (this.location2 != null)
+                {
+                    user.sendMessage("log","&eNo logs found in between &6%d&f:&6%d&f:&6%d&e and &6%d&f:&6%d&f:&6%d&e in &6%s&e!",
+                                     this.location1.x, this.location1.y, this.location1.z,
+                                     this.location2.x, this.location2.y, this.location2.z,
+                                     this.module.getCore().getWorldManager().getWorld(worldID).getName());
+                }
+                else
+                {
+                    user.sendMessage("log","&eNo logs found at &6%d&f:&6%d&f:&6%d&e in &6%s&e!",
+                                     this.location1.x, this.location1.y, this.location1.z,
+                                     this.module.getCore().getWorldManager().getWorld(worldID).getName());
+                }
+            }
+            else
+            {
+                user.sendMessage("log","&eNo logs found for your given parameters");
+            }
+            return;
+        }
+        user.sendMessage("log","&aFound %d logs:", this.logEntries.size());
+        Iterator<LogEntry> entries = this.logEntries.iterator();
+        // compressing data: //TODO add if it should be compressed or not
+        LogEntry entry = entries.next();
+        ArrayList<LogEntry> compressedEntries = new ArrayList<LogEntry>();
+        while (entries.hasNext())
+        {
+            LogEntry next = entries.next();
+            if (entry.isSimilar(next)) // can be compressed ?
+            {
+                entry.attach(next);
+            }
+            else // no more compression -> move on to next entry
+            {
+                compressedEntries.add(entry);
+                entry = next;
+            }
+        }
+        for (LogEntry logEntry : compressedEntries)
+        {
+            switch (logEntry.getType())
+            {
+                case BLOCK_BREAK:
+                    if (logEntry.hasAttached())
+                    {
+                        //TODO
+                    }
+                    else // single
+                    {
+                        user.sendMessage("log","&2%s broke %s",
+                             entry.getCauserUser().getName(),this.getPrettyName(entry.getOldBlock()));
+                    }
+                break;
+                case BLOCK_BURN:
+                break;
+                case BLOCK_FADE:
+                break;
+                case LEAF_DECAY:
+                break;
+                case WATER_BREAK:
+                break;
+                case LAVA_BREAK:
+                break;
+                case ENTITY_BREAK:
+                break;
+                case ENDERMAN_PICKUP:
+                break;
+                case BUCKET_FILL:
+                break;
+                case CROP_TRAMPLE:
+                break;
+            }
+        }
+
         //TODO show the saved Informations
+    }
+
+    private String getPrettyName(BlockData blockData)
+    {
+        return blockData.material+":"+blockData.data;
     }
 
     public Set<ActionType> getActions()

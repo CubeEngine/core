@@ -1,6 +1,8 @@
 package de.cubeisland.cubeengine.log.storage;
 
 import java.sql.Timestamp;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.bukkit.Material;
 import org.bukkit.World;
@@ -11,6 +13,8 @@ import org.bukkit.inventory.ItemStack;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.util.math.BlockVector3;
 import de.cubeisland.cubeengine.log.Log;
+
+import sun.misc.Signal;
 
 public class LogEntry implements Comparable<LogEntry>
 {
@@ -33,6 +37,8 @@ public class LogEntry implements Comparable<LogEntry>
     private ItemData itemData;
     private ItemStack item;
     private InventoryType inventoryType;
+    private final ActionType actionType;
+    private Set<LogEntry> attached = new HashSet<LogEntry>();
 
     public LogEntry(Log module, long entryID, Timestamp timestamp, int action, long worldId, int x, int y, int z,
                     long causer, String block, Long data, String newBlock, Integer newData, String additionalData)
@@ -41,7 +47,7 @@ public class LogEntry implements Comparable<LogEntry>
         this.entryID = entryID;
         this.timestamp = timestamp;
 
-        ActionType actionType = ActionType.getById(action);
+        this.actionType = ActionType.getById(action);
         this.hasBlock = ActionType.LOOKUP_BLOCK.contains(actionType);
         this.hasUser = ActionType.LOOKUP_PLAYER.contains(actionType);
         this.isKill = ActionType.LOOKUP_KILLS.contains(actionType);
@@ -103,5 +109,38 @@ public class LogEntry implements Comparable<LogEntry>
     public int compareTo(LogEntry o)
     {
         return (int)(this.entryID - o.entryID); // correct order ?
+    }
+
+    public ActionType getType()
+    {
+        return this.actionType;
+    }
+
+    public void attach(LogEntry next)
+    {
+        this.attached.add(next);
+    }
+
+    public boolean isSimilar(LogEntry other)
+    {
+        if (this.actionType != other.actionType)
+            return false;
+        //TODO
+        return true;
+    }
+
+    public boolean hasAttached()
+    {
+        return !this.attached.isEmpty();
+    }
+
+    public User getCauserUser()
+    {
+        return this.causer_user;
+    }
+
+    public BlockData getOldBlock()
+    {
+        return oldBlock;
     }
 }
