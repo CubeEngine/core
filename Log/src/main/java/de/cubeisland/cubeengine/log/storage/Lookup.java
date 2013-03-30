@@ -1,17 +1,23 @@
 package de.cubeisland.cubeengine.log.storage;
 
-import java.util.HashSet;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
 import java.util.Set;
+import java.util.TreeSet;
 
 import org.bukkit.Location;
 import org.bukkit.World;
-import org.bukkit.block.DoubleChest;
 
 import de.cubeisland.cubeengine.core.module.Module;
+import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.util.math.BlockVector3;
 
 import gnu.trove.set.hash.THashSet;
-import gnu.trove.set.hash.TIntHashSet;
+
+import static de.cubeisland.cubeengine.log.storage.ActionType.LOOKUP_CONTAINER;
+import static de.cubeisland.cubeengine.log.storage.ActionType.LOOKUP_KILLS;
+
 
 public class Lookup
 {
@@ -22,9 +28,9 @@ public class Lookup
     // Player lookup / all player related / time / location / users
     // Block lookup / all block related / time / location / block MAT:id  | < WORLDEDIT 0x4B || 0x61 || 0x63 (hangings)
 
-
     // The actions to look for
-    private Set<Integer> actions = new THashSet<Integer>();
+    private Set<ActionType> actions = new THashSet<ActionType>();
+    private boolean includeActions = true;
     // When (since/before/from-to)
     private Long from_since;
     private Long to_before;
@@ -38,8 +44,11 @@ public class Lookup
     //Block-Logs:
     private Set<BlockData> blocks;
     private boolean includeBlocks = true;
+    // smaller than WORLDEDIT (0x4B) OR HANGING_PLACE/HANGING_BREAK (0x61/0x63)
 
-    public Lookup(Module module)
+    private TreeSet<LogEntry> logEntries = new TreeSet<LogEntry>();
+
+    private Lookup(Module module)
     {
         this.module = module;
     }
@@ -78,27 +87,55 @@ public class Lookup
         return this;
     }
 
-    public Lookup includeAction(int action)
+    public Lookup includeAction(ActionType action)
     {
-        this.actions.add(action);
+        if (this.includeActions)
+        {
+            this.actions.add(action);
+        }
+        else
+        {
+            this.actions.remove(action);
+        }
         return this;
     }
 
-    public Lookup excludeAction(int action)
+    public Lookup excludeAction(ActionType action)
     {
-        this.actions.remove(action);
+        if (this.includeActions)
+        {
+            this.actions.remove(action);
+        }
+        else
+        {
+            this.actions.add(action);
+        }
         return this;
     }
 
-    public Lookup includeActions(Set<Integer> actions)
+    public Lookup includeActions(Collection<ActionType> actions)
     {
-        this.actions.addAll(actions);
+        if (this.includeActions)
+        {
+            this.actions.addAll(actions);
+        }
+        else
+        {
+            this.actions.removeAll(actions);
+        }
         return this;
     }
 
-    public Lookup excludeActions(Set<Integer> actions)
+    public Lookup excludeActions(Collection<ActionType> actions)
     {
-        this.actions.removeAll(actions);
+        if (this.includeActions)
+        {
+            this.actions.removeAll(actions);
+        }
+        else
+        {
+            this.actions.addAll(actions);
+        }
         return this;
     }
 
@@ -155,7 +192,198 @@ public class Lookup
 
     public void clear()
     {
-// clear all logs
+        this.logEntries.clear();
+    }
+
+    /**
+     * Lookup excluding nothing
+     * @return
+     */
+    public static Lookup general(Module module)
+    {
+        Lookup lookup = new Lookup(module);
+        lookup.includeActions = false;
+        lookup.clearActions();
+        return lookup;
+    }
+    /**
+     * Lookup only including container-actions
+     */
+    public static Lookup container(Module module)
+    {
+        Lookup lookup = new Lookup(module);
+        lookup.includeActions = true;
+        lookup.clearActions();
+        lookup.includeActions(LOOKUP_CONTAINER);
+        return lookup;
+    }
+
+    /**
+     * Lookup only including kill-actions
+     */
+    public static Lookup kills(Module module)
+    {
+        Lookup lookup = new Lookup(module);
+        lookup.includeActions = true;
+        lookup.clearActions();
+        lookup.includeActions(LOOKUP_KILLS);
+        return lookup;
+    }
+
+    /**
+     * Lookup only including player-actions
+     */
+    public static Lookup player(Module module)
+    {
+        Lookup lookup = new Lookup(module);
+        lookup.includeActions = true;
+        lookup.clearActions();
+        lookup.includeActions(ActionType.LOOKUP_PLAYER);
+        return lookup;
+    }
+
+    /**
+     * Lookup only including block-actions
+     */
+    public static Lookup block(Module module)
+    {
+        Lookup lookup = new Lookup(module);
+        lookup.includeActions = true;
+        lookup.clearActions();
+        lookup.includeActions(ActionType.LOOKUP_BLOCK);
+        return lookup;
+    }
+
+    public void show(User user)
+    {
+        if (this.logEntries.isEmpty())
+        {
+            if (this.location1 != null)
+            {
+                if (this.location2 != null)
+                {
+                    user.sendTranslated("&eNo logs found in between &6%d&f:&6%d&f:&6%d&e and &6%d&f:&6%d&f:&6%d&e in &6%s&e!",
+                                     this.location1.x, this.location1.y, this.location1.z,
+                                     this.location2.x, this.location2.y, this.location2.z,
+                                     this.module.getCore().getWorldManager().getWorld(worldID).getName());
+                }
+                else
+                {
+                    user.sendTranslated("&eNo logs found at &6%d&f:&6%d&f:&6%d&e in &6%s&e!",
+                                     this.location1.x, this.location1.y, this.location1.z,
+                                     this.module.getCore().getWorldManager().getWorld(worldID).getName());
+                }
+            }
+            else
+            {
+                user.sendTranslated("&eNo logs found for your given parameters");
+            }
+            return;
+        }
+        user.sendTranslated("&aFound %d logs:", this.logEntries.size());
+        Iterator<LogEntry> entries = this.logEntries.iterator();
+        // compressing data: //TODO add if it should be compressed or not
+        LogEntry entry = entries.next();
+        ArrayList<LogEntry> compressedEntries = new ArrayList<LogEntry>();
+        while (entries.hasNext())
+        {
+            LogEntry next = entries.next();
+            if (entry.isSimilar(next)) // can be compressed ?
+            {
+                entry.attach(next);
+            }
+            else // no more compression -> move on to next entry
+            {
+                compressedEntries.add(entry);
+                entry = next;
+            }
+        }
+        for (LogEntry logEntry : compressedEntries)
+        {
+            switch (logEntry.getType())
+            {
+                case BLOCK_BREAK:
+                    if (logEntry.hasAttached())
+                    {
+                        //TODO
+                    }
+                    else // single
+                    {
+                        user.sendTranslated("&2%s broke %s", entry.getCauserUser().getName(),this.getPrettyName(entry.getOldBlock()));
+                    }
+                break;
+                case BLOCK_BURN:
+                break;
+                case BLOCK_FADE:
+                break;
+                case LEAF_DECAY:
+                break;
+                case WATER_BREAK:
+                break;
+                case LAVA_BREAK:
+                break;
+                case ENTITY_BREAK:
+                break;
+                case ENDERMAN_PICKUP:
+                break;
+                case BUCKET_FILL:
+                break;
+                case CROP_TRAMPLE:
+                break;
+            }
+        }
+
+        //TODO show the saved Informations
+    }
+
+    private String getPrettyName(BlockData blockData)
+    {
+        return blockData.material+":"+blockData.data;
+    }
+
+    public Set<ActionType> getActions()
+    {
+        return actions;
+    }
+
+    public boolean hasIncludeActions()
+    {
+        return this.includeActions;
+    }
+
+    public Long getWorld()
+    {
+        return worldID;
+    }
+
+    public BlockVector3 getLocation1()
+    {
+        return location1;
+    }
+
+    public BlockVector3 getLocation2()
+    {
+        return location2;
+    }
+
+    public boolean hasTime()
+    {
+        return !(this.from_since == null && this.to_before == null);
+    }
+
+    public Long getFromSince()
+    {
+        return this.from_since;
+    }
+
+    public Long getToBefore()
+    {
+        return this.to_before;
+    }
+
+    public void addLogEntry(LogEntry entry)
+    {
+        this.logEntries.add(entry);
     }
 
     /**

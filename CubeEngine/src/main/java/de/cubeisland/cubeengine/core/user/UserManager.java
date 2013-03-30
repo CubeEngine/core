@@ -212,10 +212,11 @@ public class UserManager implements Cleanable
             throw new NullPointerException();
         }
         User user = this.cachedUsers.get(key);
-        if (user == null)
+        if (user != null)
         {
-            user = this.storage.get(key);
+            return user;
         }
+        user = this.storage.get(key);
         if (user == null)
         {
             return null;

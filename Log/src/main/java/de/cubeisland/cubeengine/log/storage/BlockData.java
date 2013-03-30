@@ -24,4 +24,9 @@ public class BlockData
         this.data = data;
     }
 
+    @Override
+    public String toString()
+    {
+        return material + ":" + data;
+    }
 }

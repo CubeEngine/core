@@ -1,9 +1,10 @@
 package de.cubeisland.cubeengine.log.listeners;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
+import static de.cubeisland.cubeengine.log.storage.ActionType.*;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
@@ -26,22 +27,20 @@ import org.bukkit.inventory.FurnaceInventory;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
 
 import de.cubeisland.cubeengine.core.bukkit.BukkitUtils;
 import de.cubeisland.cubeengine.core.logger.LogLevel;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.log.Log;
+import de.cubeisland.cubeengine.log.storage.ItemData;
 import de.cubeisland.cubeengine.log.storage.LogManager;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import gnu.trove.map.hash.TLongObjectHashMap;
 import gnu.trove.map.hash.TObjectIntHashMap;
 
 import static de.cubeisland.cubeengine.core.util.InventoryUtil.getMissingSpace;
-import static de.cubeisland.cubeengine.log.storage.LogManager.ITEM_INSERT;
-import static de.cubeisland.cubeengine.log.storage.LogManager.ITEM_REMOVE;
-import static de.cubeisland.cubeengine.log.storage.LogManager.ITEM_TRANSFER;
 
 public class ContainerListener implements Listener
 {
@@ -73,41 +72,43 @@ public class ContainerListener implements Listener
                 {
                     int amount = itemDataMap.get(itemData);
                     if (amount == 0) continue;
-                    String additional = this.serializeAdditionalItemData(itemData,amount);
-                    this.manager.queueLog(location,amount < 0 ? ITEM_REMOVE : ITEM_INSERT,
-                            user.key, itemData.material, itemData.dura, event.getInventory().getType().name(), additional);
+                    String additional = this.serializeItemData(itemData);
+                    this.manager.queueContainerLog(location, amount < 0 ? ITEM_REMOVE : ITEM_INSERT, user.key, itemData.material, itemData.dura, event
+                        .getInventory().getType().name(), additional);
                 }
             }
             this.inventoryChanges.remove(user.key);
         }
     }
 
-    private String serializeAdditionalItemData(ItemData itemData, int amount)
+    public String serializeItemData(ItemData itemData)
     {
-        Map<String,Object> dataMap = new HashMap<String, Object>();
-        dataMap.put("amount",amount);
+        ObjectNode json = this.manager.mapper.createObjectNode();
+        json.put("mats", itemData.material.name());
+        json.put("dura", itemData.dura);
+        json.put("amount", itemData.amount);
         if (itemData.displayName != null)
         {
-            dataMap.put("display",itemData.displayName);
+            json.put("name", itemData.displayName);
         }
         if (itemData.lore != null)
         {
-            dataMap.put("lore",itemData.lore);
+            ArrayNode lore = json.putArray("lore");
+            for (String loreLine : itemData.lore)
+            {
+                lore.add(loreLine);
+            }
         }
         if (itemData.enchantments != null)
         {
-            Map<String,Integer> enchantments = new HashMap<String, Integer>();
-            for (Map.Entry<Enchantment,Integer> entry : itemData.enchantments.entrySet())
+            ObjectNode enchs = this.manager.mapper.createObjectNode();
+            json.put("enchs",enchs);
+            for (Entry<Enchantment,Integer> ench : itemData.enchantments.entrySet())
             {
-                enchantments.put(entry.getKey().getName(),entry.getValue());
+                enchs.put(String.valueOf(ench.getKey().getId()),ench.getValue());
             }
-            dataMap.put("enchant",enchantments);
         }
-        try {
-            return this.manager.mapper.writeValueAsString(dataMap);
-        } catch (JsonProcessingException e) {
-            throw new IllegalStateException("Could not parse itemmap!",e);
-        }
+        return json.toString();
     }
 
     private Location getLocationForHolder(InventoryHolder holder)
@@ -141,7 +142,7 @@ public class ContainerListener implements Listener
     {
         if (event.getPlayer() instanceof Player)
         {
-            if (this.manager.isIgnored(event.getPlayer().getWorld(),LogManager.ITEM_CHANGE_IN_CONTAINER,event.getInventory().getHolder())) return;
+            if (this.manager.isIgnored(event.getPlayer().getWorld(),ITEM_CHANGE_IN_CONTAINER,event.getInventory().getHolder())) return;
             User user = this.module.getCore().getUserManager().getExactUser((Player)event.getPlayer());
             this.inventoryChanges.put(user.key,new TObjectIntHashMap<ItemData>());
         }
@@ -163,17 +164,14 @@ public class ContainerListener implements Listener
              && this.manager.isIgnored(world, ITEM_REMOVE)) return;
             Inventory inventory = event.getInventory();
             InventoryHolder holder = inventory.getHolder();
-            if (this.manager.isIgnored(world,LogManager.ITEM_CHANGE_IN_CONTAINER,holder)) return;
+            if (this.manager.isIgnored(world,ITEM_CHANGE_IN_CONTAINER,holder)) return;
             ItemStack inventoryItem = event.getCurrentItem();
             ItemStack cursorItem = event.getCursor();
-            System.out.print("------------Click Event----------- in "+holder);
-            System.out.print("Raw slot: "+ event.getRawSlot());
-            System.out.print("Slot: "+ event.getSlot());
-            System.out.print("Cursor: "+ cursorItem);
-            System.out.print("Inventory: "+ inventoryItem);
-            System.out.print((event.isShiftClick() ? "SHIFT-" : "") + (event.isRightClick() ? "RIGHT" : "LEFT"));
-            System.out.print((event.getRawSlot() < event.getView().getTopInventory().getSize() ? "TOP" : "BOT") + "-click");
-
+            //TODO remove this debug
+            System.out.print(user.getName()+"------------Click Event----------- in "+holder);
+            System.out.print("Cursor: "+ cursorItem + " | Inventory: "+ inventoryItem);
+            System.out.print((event.getRawSlot() < event.getView().getTopInventory().getSize() ? "TOP " : "BOT ")
+            + (event.isShiftClick() ? "SHIFT-" : "") + (event.isRightClick() ? "RIGHT" : "LEFT"));
             if (inventoryItem.getType().equals(Material.AIR) && cursorItem.getType().equals(Material.AIR))
             {
                 return; // nothing to log
@@ -426,10 +424,11 @@ public class ContainerListener implements Listener
             return;
         }
         if (this.manager.isIgnored(targetLocation.getWorld(),ITEM_TRANSFER)) return;
-        String additional = this.serializeAdditionalItemData(new ItemData(event.getItem()),event.getItem().getAmount());
-        this.manager.queueLog(sourceLocation,ITEM_TRANSFER,
-                              null, event.getItem().getType(), event.getItem().getDurability(),
-                              source.getType().name(), additional);
+
+        String additional = this.serializeItemData(new ItemData(event.getItem()));
+
+        this.manager.queueContainerLog(sourceLocation, ITEM_TRANSFER, null, event.getItem().getType(),
+                                       event.getItem().getDurability(), source.getType().name(), additional);
     }
 
     private void prepareForLogging(User user, ItemData itemData, int amount)
@@ -443,64 +442,5 @@ public class ContainerListener implements Listener
         int oldAmount = itemDataMap.get(itemData); // if not yet set this returns 0
         itemDataMap.put(itemData,oldAmount + amount);
         System.out.print((amount < 0 ? "TAKE " : "PUT ") + itemData.material.name()+":"+itemData.dura+" x"+amount);//TODO remove this
-    }
-
-    private static class ItemData
-    {
-        public Material material;
-        public short dura;
-        public String displayName;
-        public List<String> lore;
-        public Map<Enchantment,Integer> enchantments;
-
-        public ItemData(ItemStack itemStack)
-        {
-            this.material = itemStack.getType();
-            this.dura = itemStack.getDurability();
-            if (itemStack.hasItemMeta())
-            {
-                ItemMeta meta = itemStack.getItemMeta();
-                if (meta.hasDisplayName())
-                {
-                    displayName = meta.getDisplayName();
-                }
-                if (meta.hasLore())
-                {
-                    lore = meta.getLore();
-                }
-                if (meta.hasEnchants())
-                {
-                    enchantments = meta.getEnchants();
-                }
-            }
-        }
-
-        @Override
-        public boolean equals(Object o) {
-            if (this == o) return true;
-            if (o == null || getClass() != o.getClass()) return false;
-
-            ItemData itemData = (ItemData) o;
-
-            if (dura != itemData.dura) return false;
-            if (displayName != null ? !displayName.equals(itemData.displayName) : itemData.displayName != null)
-                return false;
-            if (enchantments != null ? !enchantments.equals(itemData.enchantments) : itemData.enchantments != null)
-                return false;
-            if (lore != null ? !lore.equals(itemData.lore) : itemData.lore != null) return false;
-            if (material != itemData.material) return false;
-
-            return true;
-        }
-
-        @Override
-        public int hashCode() {
-            int result = material != null ? material.hashCode() : 0;
-            result = 31 * result + (int) dura;
-            result = 31 * result + (displayName != null ? displayName.hashCode() : 0);
-            result = 31 * result + (lore != null ? lore.hashCode() : 0);
-            result = 31 * result + (enchantments != null ? enchantments.hashCode() : 0);
-            return result;
-        }
     }
 }

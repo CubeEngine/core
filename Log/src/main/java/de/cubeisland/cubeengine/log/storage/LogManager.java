@@ -1,21 +1,9 @@
 package de.cubeisland.cubeengine.log.storage;
 
 import java.io.File;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
 import java.sql.Timestamp;
-import java.util.Arrays;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.Map;
-import java.util.Queue;
-import java.util.Set;
-import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -36,14 +24,8 @@ import org.bukkit.inventory.InventoryHolder;
 import de.cubeisland.cubeengine.core.bukkit.EventManager;
 import de.cubeisland.cubeengine.core.config.Configuration;
 import de.cubeisland.cubeengine.core.logger.LogLevel;
-import de.cubeisland.cubeengine.core.storage.StorageException;
-import de.cubeisland.cubeengine.core.storage.database.AttrType;
-import de.cubeisland.cubeengine.core.storage.database.Database;
-import de.cubeisland.cubeengine.core.storage.database.querybuilder.QueryBuilder;
 import de.cubeisland.cubeengine.core.storage.database.querybuilder.SelectBuilder;
 import de.cubeisland.cubeengine.core.user.User;
-import de.cubeisland.cubeengine.core.util.Profiler;
-import de.cubeisland.cubeengine.core.util.worker.AsyncTaskQueue;
 import de.cubeisland.cubeengine.log.Log;
 import de.cubeisland.cubeengine.log.LoggingConfiguration;
 import de.cubeisland.cubeengine.log.listeners.BlockListener;
@@ -52,132 +34,10 @@ import de.cubeisland.cubeengine.log.listeners.ContainerListener;
 import de.cubeisland.cubeengine.log.listeners.EntityListener;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import gnu.trove.set.hash.THashSet;
 
 public class LogManager
 {
-
-
-    //BREAK
-    public static final int BLOCK_BREAK = 0x00;
-    public static final int BLOCK_BURN = 0x01;
-    public static final int BLOCK_FADE = 0x02;
-    public static final int LEAF_DECAY = 0x03;
-    public static final int WATER_BREAK = 0x04;
-    public static final int LAVA_BREAK = 0x05;
-    public static final int ENTITY_BREAK = 0x06;
-    public static final int ENDERMAN_PICKUP = 0x07;
-    public static final int BUCKET_FILL = 0x08;
-    public static final int CROP_TRAMPLE = 0x09;
-    //EXPLOSIONS
-    public static final int ENTITY_EXPLODE = 0x10;
-    public static final int CREEPER_EXPLODE = 0x11;
-    public static final int TNT_EXPLODE = 0x12;
-    public static final int FIREBALL_EXPLODE = 0x13;
-    public static final int ENDERDRAGON_EXPLODE = 0x14;
-    public static final int WITHER_EXPLODE = 0x15;
-    public static final int TNT_PRIME = 0x16;
-    //PLACE etc.
-    public static final int BLOCK_PLACE = 0x20;
-    public static final int LAVA_BUCKET = 0x21;
-    public static final int WATER_BUCKET = 0x22;
-    public static final int NATURAL_GROW = 0x23;
-    public static final int PLAYER_GROW = 0x24;
-    public static final int BLOCK_FORM = 0x25; //ice/snow/lava-water
-    public static final int ENDERMAN_PLACE = 0x26;
-    public static final int ENTITY_FORM = 0x27;//snow-golem snow
-
-
-    // SPREAD/ IGNITION
-    public static final int FIRE_SPREAD = 0x30;
-    public static final int FIREBALL = 0x31;
-    public static final int LIGHTER = 0x32;
-    public static final int LAVA_IGNITE = 0x33;
-    public static final int LIGHTNING = 0x34;
-    public static final int BLOCK_SPREAD = 0x35;
-    public static final int WATER_FLOW = 0x36;
-    public static final int LAVA_FLOW = 0x37;
-    public static final int OTHER_IGNITE = 0x38;
-    //BLOCKCHANGES
-    public static final int BLOCK_SHIFT = 0x40; // moved by piston
-    public static final int BLOCK_FALL = 0x41;
-    public static final int SIGN_CHANGE = 0x42;
-    public static final int SHEEP_EAT = 0x43;
-    public static final int BONEMEAL_USE = 0x44;
-    public static final int LEVER_USE = 0x45;
-    public static final int REPEATER_CHANGE = 0x46;
-    public static final int NOTEBLOCK_CHANGE = 0x47;
-    public static final int DOOR_USE = 0x48;
-    public static final int CAKE_EAT = 0x49;
-    public static final int COMPARATOR_CHANGE = 0x4A;
-    public static final int WORLDEDIT = 0x4B;
-    //INTERACTION (stuff that cannot be rolled back)
-    public static final int CONTAINER_ACCESS = 0x50;
-    public static final int BUTTON_USE = 0x51;
-    public static final int FIREWORK_USE = 0x52;
-    public static final int VEHICLE_ENTER = 0x53;
-    public static final int VEHICLE_EXIT = 0x54;
-    public static final int POTION_SPLASH = 0x55;
-    public static final int PLATE_STEP = 0x56;
-    public static final int MILK_FILL = 0x57;
-    public static final int SOUP_FILL = 0x58;
-    //ENTITY-PLACE/BREAK
-    public static final int VEHICLE_PLACE = 0x60;
-    public static final int HANGING_PLACE = 0x61;
-    public static final int VEHICLE_BREAK = 0x62;
-    public static final int HANGING_BREAK = 0x63; // negative causer -> action-type e.g. BLOCK_BURN -1
-    //KILLING
-    public static final int PLAYER_KILL = 0x70; // determined by causer ID not saved in DB
-    public static final int ENTITY_KILL = 0x71; // determined by causer ID not saved in DB
-    public static final int BOSS_KILL = 0x72;
-    public static final int ENVIRONMENT_KILL = 0x73; // determined by causer ID not saved in DB
-    public static final int PLAYER_DEATH = 0x74;
-    public static final int MONSTER_DEATH = 0x75;
-    public static final int ANIMAL_DEATH = 0x76;
-    public static final int PET_DEATH = 0x77;
-    public static final int NPC_DEATH = 0x78;
-    public static final int BOSS_DEATH = 0x79;
-    public static final int OTHER_DEATH = 0x7A;
-    //other entity
-    public static final int MONSTER_EGG_USE = 0x80;
-    public static final int NATURAL_SPAWN = 0x81;
-    public static final int SPAWNER_SPAWN = 0x82;
-    public static final int OTHER_SPAWN = 0x83;
-    public static final int ITEM_DROP = 0x84;
-    public static final int ITEM_PICKUP = 0x85;
-    public static final int XP_PICKUP = 0x86;
-    public static final int ENTITY_SHEAR = 0x87;
-    public static final int ENTITY_DYE = 0x88;
-    //chest-transactions
-    public static final int ITEM_INSERT = 0x90;
-    public static final int ITEM_REMOVE = 0x91;
-    public static final int ITEM_TRANSFER = 0x92;
-
-    public static final int ITEM_CHANGE_IN_CONTAINER = 0x93; // this ID is not used in the database
-    //misc
-    public static final int PLAYER_COMMAND = 0xA0;
-    public static final int CONSOLE_COMMAND = 0xA1;
-    public static final int PLAYER_CHAT = 0xA2;
-    public static final int PLAYER_JOIN = 0xA3;
-    public static final int PLAYER_QUIT = 0xA4;
-    public static final int PLAYER_TELEPORT = 0xA5;
-    public static final int ENCHANT_ITEM = 0xA6;
-    public static final int CRAFT_ITEM = 0xA7;
-
-    Set<Integer> playerLogs = new THashSet<Integer>(
-        Arrays.asList(BLOCK_BREAK, BUCKET_FILL, CROP_TRAMPLE, CREEPER_EXPLODE,
-                      TNT_PRIME, BLOCK_PLACE, LAVA_BUCKET, WATER_BUCKET,
-                      PLAYER_GROW, LIGHTER, BLOCK_FALL, BONEMEAL_USE, LEVER_USE,
-                      REPEATER_CHANGE, NOTEBLOCK_CHANGE, DOOR_USE, CAKE_EAT,
-                      COMPARATOR_CHANGE, WORLDEDIT, CONTAINER_ACCESS, BUTTON_USE,
-                      FIREWORK_USE, VEHICLE_ENTER, VEHICLE_EXIT, POTION_SPLASH,
-                      PLATE_STEP, MILK_FILL, SOUP_FILL, VEHICLE_PLACE, HANGING_PLACE,
-                      VEHICLE_BREAK, HANGING_BREAK, PLAYER_DEATH, MONSTER_DEATH,
-                      ANIMAL_DEATH, PET_DEATH, NPC_DEATH, BOSS_DEATH, OTHER_DEATH,
-                      MONSTER_EGG_USE, OTHER_SPAWN, ITEM_DROP, ITEM_PICKUP, XP_PICKUP,
-                      ENTITY_SHEAR, ENTITY_DYE, ITEM_INSERT, ITEM_REMOVE, PLAYER_COMMAND,
-                      PLAYER_CHAT, PLAYER_JOIN, PLAYER_QUIT, PLAYER_TELEPORT, ENCHANT_ITEM, CRAFT_ITEM));
-
+    public final ObjectMapper mapper;
     private final BlockListener blockListener;
     private final ChatListener chatListener;
     private final ContainerListener containerListener;
@@ -187,14 +47,12 @@ public class LogManager
     private LoggingConfiguration globalConfig;
     private Map<World, LoggingConfiguration> worldConfigs = new HashMap<World, LoggingConfiguration>();
 
-    public final ObjectMapper mapper;
     private final QueryManager queryManager;
 
     public LogManager(Log module)
     {
         this.module = module;
-
-        this.mapper = module.getObjectMapper();
+        this.mapper = new ObjectMapper();
         File file = new File(module.getFolder(), "worlds");
         file.mkdir();
         this.globalConfig = Configuration.load(LoggingConfiguration.class, new File(module.getFolder(), "globalconfig.yml"));
@@ -258,7 +116,7 @@ public class LogManager
         this.queryManager.disable();
     }
 
-    public boolean isLogging(World world, int blockBreak, Object additional)
+    public boolean isLogging(World world, ActionType blockBreak, Object additional)
     {
         LoggingConfiguration config = this.getConfig(world);
         if (config.enable == false)
@@ -358,7 +216,7 @@ public class LogManager
                 // SPREAD/ IGNITION
             case FIRE_SPREAD :
                 return config.FIRE_SPREAD_enable;
-            case FIREBALL :
+            case FIREBALL_IGNITE:
                 return config.FIREBALL_enable;
             case LIGHTER :
                 return config.LIGHTER_enable;
@@ -516,8 +374,6 @@ public class LogManager
                     return  config.PLAYER_COMMAND_enable;
                 }
                 throw new IllegalStateException("Invalid command message! PLAYER_COMMAND");
-            case CONSOLE_COMMAND :
-                return  config.CONSOLE_COMMAND_enable;
             case PLAYER_CHAT :
                 return  config.PLAYER_CHAT_enable;
             case PLAYER_JOIN :
@@ -538,16 +394,14 @@ public class LogManager
         return false;
     }
 
-    public boolean isIgnored(World world, int action)
+    public boolean isIgnored(World world, ActionType action)
     {
         return this.isIgnored(world,action,null);
     }
 
-    public boolean isIgnored(World world, int action, Object additional) {
+    public boolean isIgnored(World world, ActionType action, Object additional) {
         return !this.isLogging(world,action,additional);
     }
-
-
 
     /**
      * Log a block with additional data
@@ -561,7 +415,7 @@ public class LogManager
      * @param newData
      * @param additionalData
      */
-    public void queueLog(Location location, int action, Long causer, String block, Byte data, String newBlock, Byte newData, String additionalData)
+    public void queueBlockChangeLog(Location location, ActionType action, Long causer, String block, Byte data, String newBlock, Byte newData, String additionalData)
     {
         Timestamp timestamp = new Timestamp(System.currentTimeMillis());
         Long worldID = this.module.getCore().getWorldManager().getWorldId(location.getWorld());
@@ -578,7 +432,7 @@ public class LogManager
      * @param player
      * @param additionalData
      */
-    public void queueLog(Location location, int action, Player player, String additionalData)
+    public void queueInteractionLog(Location location, ActionType action, Player player, String additionalData)
     {
         Timestamp timestamp = new Timestamp(System.currentTimeMillis());
         Long worldID = this.module.getCore().getWorldManager().getWorldId(location.getWorld());
@@ -587,13 +441,15 @@ public class LogManager
             .getBlockZ(), action, user.key, null, null, null, null, additionalData);
     }
 
-    public void queueLog(int action, String addionalData)
+    public void queueLog(Location location, ActionType action, long causer)
     {
         Timestamp timestamp = new Timestamp(System.currentTimeMillis());
-        this.queryManager.queueLog(timestamp, null, null, null, null, action, null, null, null, null, null, addionalData);
+        Long worldID = this.module.getCore().getWorldManager().getWorldId(location.getWorld());
+        this.queryManager.queueLog(timestamp, worldID, location.getBlockX(), location.getBlockY(), location
+            .getBlockZ(), action, causer, null, null, null, null, null);
     }
 
-    public void queueLog(Location location, int action, Long causer, Long killed, String additionalData)
+    public void queueKillLog(Location location, ActionType action, Long causer, Long killed, String additionalData)
     {
         Timestamp timestamp = new Timestamp(System.currentTimeMillis());
         Long worldID = this.module.getCore().getWorldManager().getWorldId(location.getWorld());
@@ -601,17 +457,29 @@ public class LogManager
             .getBlockZ(), action, causer, null, killed, null, null, additionalData);
     }
 
-    public void queueLog(Location location, int action, long causer)
-    {
-        this.queueLog(location,action,causer,null,null);
-    }
-
-    public void queueLog(Location location, int action, Long causer, String material, Short data, String additionalData)
+    public void queueItemLog(Location location, ActionType action, Long causer, String material, Short data, String additionalData)
     {
         Timestamp timestamp = new Timestamp(System.currentTimeMillis());
         Long worldID = this.module.getCore().getWorldManager().getWorldId(location.getWorld());
         this.queryManager.queueLog(timestamp, worldID, location.getBlockX(), location.getBlockY(), location
             .getBlockZ(), action, causer, material, data.longValue(), null, null, additionalData);
+    }
+
+    public void queueContainerLog(Location location, ActionType action, Long causer, Material material, Short dura, String containerType, String additional)
+    {
+        Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+        Long worldID = this.module.getCore().getWorldManager().getWorldId(location.getWorld());
+        this.queryManager.queueLog(timestamp, worldID, location.getBlockX(), location.getBlockY(), location
+            .getBlockZ(), action, causer, material.name(), dura.longValue(), containerType, null, additional);
+    }
+
+    public int getQueueSize() {
+        return this.queryManager.queuedLogs.size();
+    }
+
+    public void fillLookup(Lookup lookup)
+    {
+        this.queryManager.fillLookup(lookup);
     }
 
     public BlockListener getBlockListener() {
@@ -633,18 +501,5 @@ public class LogManager
     public LoggingConfiguration getConfig(World world) {
         if (world == null) return globalConfig;
         return this.worldConfigs.get(world);
-    }
-
-    public void queueLog(Location location, int action, Long causer, Material material, Short dura, String containerType, String additional)
-    {
-        Timestamp timestamp = new Timestamp(System.currentTimeMillis());
-        Long worldID = this.module.getCore().getWorldManager().getWorldId(location.getWorld());
-        this.queryManager.queueLog(timestamp, worldID, location.getBlockX(), location.getBlockY(), location
-            .getBlockZ(), action, causer, material.name(), dura.longValue(), containerType, null, additional);
-    }
-
-
-    public int getQueueSize() {
-        return this.queryManager.queuedLogs.size();
     }
 }
