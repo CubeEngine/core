@@ -309,12 +309,18 @@ public class Lookup
                     }
                     else // single
                     {
-                        user.sendTranslated("&2%s broke %s", entry.getCauserUser().getName(),this.getPrettyName(entry.getOldBlock()));
+                        user.sendTranslated("&2%s &abroke &6%s&a!",
+                            entry.getCauserUser().getName(),
+                            this.getPrettyName(entry.getOldBlock()));
                     }
                 break;
                 case BLOCK_BURN:
+                    user.sendTranslated("&6%s &aburned away!",
+                            this.getPrettyName(entry.getOldBlock()));
                 break;
                 case BLOCK_FADE:
+                    user.sendTranslated("&6%s &afaded away!",
+                           this.getPrettyName(entry.getOldBlock()));
                 break;
                 case LEAF_DECAY:
                 break;

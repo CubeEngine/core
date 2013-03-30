@@ -143,4 +143,9 @@ public class LogEntry implements Comparable<LogEntry>
     {
         return oldBlock;
     }
+
+    public BlockData getNewBlock()
+    {
+        return newBlock;
+    }
 }
