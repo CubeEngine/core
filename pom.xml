@@ -234,7 +234,6 @@
         <artifactId>maven-surefire-plugin</artifactId>
         <version>2.14</version>
         <configuration>
-          <forkMode>never</forkMode>
           <useSystemClassLoader>false</useSystemClassLoader>
           <printSummary>true</printSummary>
           <!-- Move the working directory up to the modules -->
