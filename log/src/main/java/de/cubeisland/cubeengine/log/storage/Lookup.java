@@ -648,7 +648,20 @@ public class Lookup
                                     this.getPrettyName(entry.getNewBlock()),
                                     entry.getCauserUser().getDisplayName());
                 break;
-
+            case PLAYER_DEATH:
+            break;
+            case MONSTER_DEATH:
+            break;
+            case ANIMAL_DEATH:
+            break;
+            case PET_DEATH:
+            break;
+            case NPC_DEATH:
+            break;
+            case BOSS_DEATH:
+            break;
+            case OTHER_DEATH:
+            break;
             //TODO more
             default:
                 user.sendMessage("Something happened there for sure!");

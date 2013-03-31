@@ -393,9 +393,9 @@ public class UserManager implements Cleanable
             user = this.storage.loadUser(name);
             if (user != null)
             {
-                this.cachedUsers.put(name, user);
+                this.cacheUser(user);
             }
-            if (user == null) //then NO user with exact name
+            else //then NO user with exact name
             {
                 //Get all online Player and searching for similar names
                 ArrayList<String> onlinePlayerList = new ArrayList<String>();
@@ -409,10 +409,6 @@ public class UserManager implements Cleanable
                     return null;
                 }
                 user = this.getUser(foundUser, true);
-            }
-            if (user != null)
-            {
-                this.cachedUsers.put(user.getName(), user);//Adds User to loaded users
             }
         }
         return user;
