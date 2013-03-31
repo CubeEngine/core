@@ -442,28 +442,28 @@ public class PlayerCommands
         context.sendTranslated("&cPlease specify a victim!");
     }
 
-    private boolean kill(Player player, boolean lightning, ParameterizedContext context, boolean showMessage, boolean force, boolean quiet)
+    private boolean kill(User user, boolean lightning, ParameterizedContext context, boolean showMessage, boolean force, boolean quiet)
     {
         if (!force)
         {
-            if (BasicsPerm.COMMAND_KILL_PREVENT.isAuthorized(player) || this.basics.getBasicUserManager().getBasicUser(player).godMode)
+            if (BasicsPerm.COMMAND_KILL_PREVENT.isAuthorized(user) || this.basics.getBasicUserManager().getBasicUser(user).godMode)
             {
-                context.sendTranslated("&cYou cannot kill &2%s&c!", player.getName());
+                context.sendTranslated("&cYou cannot kill &2%s&c!", user.getDisplayName());
                 return false;
             }
         }
         if (lightning)
         {
-            player.getWorld().strikeLightningEffect(player.getLocation());
+            user.getWorld().strikeLightningEffect(user.getLocation());
         }
-        player.setHealth(0);
+        user.setHealth(0);
         if (showMessage)
         {
-            context.sendTranslated("&aYou killed &2%s&a!", player.getName());
+            context.sendTranslated("&aYou killed &2%s&a!", user.getDisplayName());
         }
-        if (!quiet && BasicsPerm.COMMAND_KILL_NOTIFY.isAuthorized(player))
+        if (!quiet && BasicsPerm.COMMAND_KILL_NOTIFY.isAuthorized(user))
         {
-            context.sendTranslated("&eYou were killed by &2%s",player.getName());
+            user.sendTranslated("&eYou were killed by &2%s",context.getSender().getDisplayName());
         }
         return true;
     }
