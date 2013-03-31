@@ -578,12 +578,94 @@ public class Lookup
                                         this.getPrettyName(entry.getNewBlock()));
                 }
                 break;
+            case CONTAINER_ACCESS:
+                user.sendTranslated("&2%s &alooked into a &6%s!",
+                                    entry.getCauserUser().getDisplayName(),
+                                   this.getPrettyName(entry.getOldBlock()));
+                break;
+            case BUTTON_USE:
+                user.sendTranslated("&2%s &aused a button!",
+                                    entry.getCauserUser().getDisplayName());
+                break;
+            case FIREWORK_USE:
+                user.sendTranslated("&2%s &aused a firework rocket!",
+                                    entry.getCauserUser().getDisplayName());
+                break;
+            case VEHICLE_ENTER:
+                user.sendTranslated("&2%s &aentered a &6%s&a!",
+                                    entry.getCauserUser() == null ?
+                                    this.getPrettyName(entry.getCauserEntity()) :
+                                    entry.getCauserUser().getDisplayName(),
+                                    this.getPrettyName(entry.getEntity()));
+                break;
+            case VEHICLE_EXIT:
+                user.sendTranslated("&2%s &aexited a &6%s&a!",
+                                    entry.getCauserUser() == null ?
+                                    this.getPrettyName(entry.getCauserEntity()) :
+                                    entry.getCauserUser().getDisplayName(),
+                                    this.getPrettyName(entry.getEntity()));
+                break;
+            case POTION_SPLASH:
+                user.sendMessage("Potion stuff happened!");//TODO
+                break;
+            case PLATE_STEP:
+                user.sendTranslated("&2%s &astepped on a pressure plate!",
+                                    entry.getCauserUser().getDisplayName());
+            case MILK_FILL:
+                user.sendTranslated("&2%s &amilked a cow!",
+                                    entry.getCauserUser().getDisplayName());
+            case SOUP_FILL:
+                user.sendTranslated("&2%s &amade soup with a mooshroom!",
+                                    entry.getCauserUser().getDisplayName());
+            case VEHICLE_PLACE:
+                user.sendTranslated("&2%s &aplaced a &6%s&a!",
+                                    entry.getCauserUser().getDisplayName(),
+                                    this.getPrettyName(entry.getEntity()));
+                break;
+            case VEHICLE_BREAK:
+                user.sendTranslated("&2%s &aebroke a &6%s&a!",
+                                    entry.getCauserUser() == null ?
+                                    this.getPrettyName(entry.getCauserEntity()) :
+                                    entry.getCauserUser().getDisplayName(),
+                                    this.getPrettyName(entry.getEntity()));
+                break;
+            case HANGING_BREAK:
+                if (entry.getItemData() == null)
+                {
+                    user.sendTranslated("&6%s&a got removed by &2%s&a!",
+                                        this.getPrettyName(entry.getOldBlock()),
+                                        entry.getCauserUser().getDisplayName());
+                }
+                else
+                {
+                    user.sendTranslated("&2%s &abroke an &6itemframe&a containing &6%s&a!",
+                                        entry.getCauserUser().getDisplayName(),
+                                        this.getPrettyName(entry.getItemData()));
+                }
+                break;
+            case HANGING_PLACE:
+                user.sendTranslated("&6%s &agot hung up by &2%s&a!",
+                                    this.getPrettyName(entry.getNewBlock()),
+                                    entry.getCauserUser().getDisplayName());
+                break;
+
             //TODO more
             default:
                 user.sendMessage("Something happened there for sure!");
             }
         }
         user.sendMessage("Yeah thats all for now!");
+    }
+
+    private String getPrettyName(ItemData itemData)
+    {
+        //TODO
+        String result = itemData.material.name()+":"+itemData.dura;
+        if (itemData.displayName != null)
+        {
+            result += " ("+ itemData.displayName+ ")";
+        }
+        return result;
     }
 
     private String getPrettyName(EntityType entityType)
@@ -593,6 +675,7 @@ public class Lookup
 
     private String getPrettyName(BlockData blockData)
     {
+        //TODO painting has special data (hanging)
         return blockData.material+":"+blockData.data; //TODO
     }
 

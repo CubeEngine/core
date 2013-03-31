@@ -39,6 +39,7 @@ public class LogEntry implements Comparable<LogEntry>
     private InventoryType inventoryType;
     private final ActionType actionType;
     private Set<LogEntry> attached = new HashSet<LogEntry>();
+    private EntityType entity;
 
     public LogEntry(Log module, long entryID, Timestamp timestamp, int action, long worldId, int x, int y, int z,
                     long causer, String block, Long data, String newBlock, Integer newData, String additionalData)
@@ -71,33 +72,36 @@ public class LogEntry implements Comparable<LogEntry>
         }
         else
         {
-            if (isKill)
+            switch (actionType)
             {
-                //TODO data can be killed id / additional has info about entity
-            }
-            else if (!(actionType.equals(ActionType.HANGING_BREAK) && additionalData == null))
-            {
-                switch (actionType)
+            case ITEM_INSERT:
+            case ITEM_REMOVE:
+            case ITEM_TRANSFER:
+                try
                 {
-                case ITEM_INSERT:
-                case ITEM_REMOVE:
-                case ITEM_TRANSFER:
-                    try
-                    {
-                        this.inventoryType = InventoryType.valueOf(newBlock);
-                    }
-                    catch (IllegalArgumentException ex)
-                    {
-                        throw new IllegalStateException(newBlock + " is not a valid ContainerType");
-                    }
-                case ITEM_DROP:
-                case MONSTER_EGG_USE:
-                case ITEM_PICKUP:
-                case HANGING_BREAK:
-                    this.itemData = ItemData.deserialize(additionalData, this.module.getLogManager().mapper);
-                    this.item = itemData.toItemStack();
-
+                    this.inventoryType = InventoryType.valueOf(newBlock);
                 }
+                catch (IllegalArgumentException ex)
+                {
+                    throw new IllegalStateException(newBlock + " is not a valid ContainerType");
+                }
+            case ITEM_DROP:
+            case MONSTER_EGG_USE:
+            case ITEM_PICKUP:
+            case HANGING_BREAK:
+                if (additionalData == null)
+                    break;
+                this.itemData = ItemData.deserialize(additionalData, this.module.getLogManager().mapper);
+                this.item = itemData.toItemStack();
+                break;
+            case CONTAINER_ACCESS:
+                this.oldBlock = new BlockData(Material.getMaterial(block));
+                break;
+            case VEHICLE_ENTER:
+            case VEHICLE_EXIT:
+            case VEHICLE_BREAK:
+            case VEHICLE_PLACE:
+                this.entity = EntityType.fromId(data.intValue());
             }
         }
         System.out.print(actionType.name +" "+ timestamp + "C:"+ (hasUser ? this.causer_user.getName() : this.causer_entity)
@@ -152,5 +156,25 @@ public class LogEntry implements Comparable<LogEntry>
     public EntityType getCauserEntity()
     {
         return this.causer_entity;
+    }
+
+    public InventoryType getContainerType()
+    {
+        return this.inventoryType;
+    }
+
+    public EntityType getEntity()
+    {
+        return entity;
+    }
+
+    public ItemStack getItem()
+    {
+        return item;
+    }
+
+    public ItemData getItemData()
+    {
+        return itemData;
     }
 }

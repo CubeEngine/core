@@ -462,7 +462,7 @@ public class LogManager
         Timestamp timestamp = new Timestamp(System.currentTimeMillis());
         Long worldID = this.module.getCore().getWorldManager().getWorldId(location.getWorld());
         this.queryManager.queueLog(timestamp, worldID, location.getBlockX(), location.getBlockY(), location
-            .getBlockZ(), action, causer, material, data.longValue(), null, null, additionalData);
+            .getBlockZ(), action, causer, material, data == null ? null : data.longValue(), null, null, additionalData);
     }
 
     public void queueContainerLog(Location location, ActionType action, Long causer, Material material, Short dura, String containerType, String additional)

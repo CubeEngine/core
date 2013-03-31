@@ -36,7 +36,7 @@ public class DisplayOnlinePlayerListEvent extends Event implements Cancellable
         this.basics = basics;
         this.sender = sender;
         this.userStrings = userStrings;
-        this.grouped.put("&6Players:",defaultList);
+        this.grouped.put("&6Players: ",defaultList);
     }
 
     @Override
@@ -67,5 +67,10 @@ public class DisplayOnlinePlayerListEvent extends Event implements Cancellable
     public THashMap<String, List<User>> getGrouped()
     {
         return grouped;
+    }
+
+    public CommandSender getCommand()
+    {
+        return this.sender;
     }
 }

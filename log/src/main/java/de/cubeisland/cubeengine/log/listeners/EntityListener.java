@@ -77,11 +77,13 @@ public class EntityListener implements Listener
 
     private LogManager manager;
     private Log module;
+    private final UserManager um;
 
     public EntityListener(Log module, LogManager manager)
     {
         this.module = module;
         this.manager = manager;
+        this.um = this.module.getCore().getUserManager();
     }
 
     private HashMap<Location,Long> plannedBreakHanging = new HashMap<Location, Long>();
@@ -111,13 +113,13 @@ public class EntityListener implements Listener
                 {
                     ItemStack itemStack = ((ItemFrame) event.getEntity()).getItem();
                     String itemInFrame = this.manager.getContainerListener().serializeItemData(new ItemData(itemStack));
-                    this.manager.queueBlockChangeLog(location, HANGING_BREAK, causer, ITEM_FRAME.name(), (byte)0, AIR
-                        .name(), (byte)0, itemInFrame);
+                    this.manager.queueBlockChangeLog(location, HANGING_BREAK, causer,
+                          ITEM_FRAME.name(), (byte)0, AIR.name(), (byte)0, itemInFrame);
                 }
                 else if (event.getEntity() instanceof Painting)
                 {
-                    this.manager.queueBlockChangeLog(location, HANGING_BREAK, causer, PAINTING
-                        .name(), (byte)((Painting)event.getEntity()).getArt().getId(), AIR.name(), (byte)0, null);
+                    this.manager.queueBlockChangeLog(location, HANGING_BREAK, causer,
+                          PAINTING.name(), (byte)((Painting)event.getEntity()).getArt().getId(), AIR.name(), (byte)0, null);
                 }
             }
             System.out.print("Unexpected HangingBreak event");
@@ -131,7 +133,6 @@ public class EntityListener implements Listener
         Location location = event.getEntity().getLocation();
         if (event.getRemover() instanceof Player || event.getRemover() instanceof Arrow)
         {
-            final UserManager um = this.module.getCore().getUserManager();
             Long causer;
             if (event.getRemover() instanceof Projectile)
             {
@@ -174,7 +175,7 @@ public class EntityListener implements Listener
     public void onHangingPlace(HangingPlaceEvent event)
     {
         if (this.manager.isIgnored(event.getEntity().getWorld(),HANGING_PLACE)) return;
-        User user = this.module.getCore().getUserManager().getExactUser(event.getPlayer());
+        User user = um.getExactUser(event.getPlayer());
         if (event.getEntity() instanceof ItemFrame)
         {
             this.manager.queueBlockChangeLog(event.getEntity().getLocation(), HANGING_PLACE, user.key, AIR
@@ -191,7 +192,6 @@ public class EntityListener implements Listener
     public void onEntityDeath(EntityDeathEvent event)
     {
         Location location = event.getEntity().getLocation();
-        final UserManager um = this.module.getCore().getUserManager();
         if (!this.manager.isIgnored(event.getEntity().getWorld(),ITEM_DROP))
         {
             for (ItemStack itemStack : event.getDrops())
@@ -322,9 +322,11 @@ public class EntityListener implements Listener
         if (this.manager.isIgnored(event.getVehicle().getWorld(), VEHICLE_PLACE)) return;
         Location location = event.getVehicle().getLocation();
         Player player = this.plannedVehiclePlace.get(location);
+        long vehicle = event.getVehicle().getType().getTypeId();
         if (player != null)
         {
-            this.manager.queueInteractionLog(location, VEHICLE_PLACE, player, null);
+            long userkey = um.getExactUser(player).key;
+            this.manager.queueKillLog(location, VEHICLE_PLACE, userkey, vehicle, null);
         }
         else
             System.out.print("Unexpected VehiclePlacement: "+event.getVehicle());
@@ -335,7 +337,7 @@ public class EntityListener implements Listener
     {
         if (this.manager.isIgnored(event.getVehicle().getWorld(),VEHICLE_BREAK)) return;
         Long causer = null;
-        final UserManager um = this.module.getCore().getUserManager();
+
         if (event.getAttacker() != null)
         {
             if (event.getAttacker() instanceof Player)
@@ -359,7 +361,7 @@ public class EntityListener implements Listener
         {
             causer = um.getExactUser((Player) event.getVehicle().getPassenger()).key;
         }
-        Long vehicleType = -1L * event.getVehicle().getType().getTypeId();
+        long vehicleType = -event.getVehicle().getType().getTypeId();
         this.manager.queueKillLog(event.getVehicle().getLocation(), VEHICLE_BREAK, causer, vehicleType, null);
     }
 
@@ -367,14 +369,16 @@ public class EntityListener implements Listener
     public void onVehicleEnter(final VehicleEnterEvent event)
     {
         if (this.manager.isIgnored(event.getVehicle().getWorld(),VEHICLE_ENTER)) return;
+        long vehicle = event.getVehicle().getType().getTypeId();
         if (event.getEntered() instanceof Player)
         {
-            this.manager.queueInteractionLog(event.getVehicle().getLocation(), VEHICLE_ENTER, (Player)event
-                .getEntered(), null);
+            long userKey = um.getExactUser((Player)event.getEntered()).key;
+            this.manager.queueKillLog(event.getVehicle().getLocation(),VEHICLE_ENTER,userKey,vehicle,null);
         }
         else
         {
-            this.manager.queueLog(event.getVehicle().getLocation(),VEHICLE_ENTER, -event.getEntered().getType().getTypeId());
+            long entity = -event.getEntered().getType().getTypeId();
+            this.manager.queueKillLog(event.getVehicle().getLocation(),VEHICLE_ENTER,entity,vehicle,null);
         }
     }
 
@@ -382,14 +386,16 @@ public class EntityListener implements Listener
     public void onVehicleExit(final VehicleExitEvent event)
     {
         if (this.manager.isIgnored(event.getVehicle().getWorld(),VEHICLE_EXIT)) return;
+        long vehicle = event.getVehicle().getType().getTypeId();
         if (event.getExited() instanceof Player)
         {
-            this.manager.queueInteractionLog(event.getVehicle().getLocation(), VEHICLE_ENTER, (Player)event
-                .getExited(), null);
+            long userKey = um.getExactUser((Player)event.getExited()).key;
+            this.manager.queueKillLog(event.getVehicle().getLocation(),VEHICLE_EXIT,userKey,vehicle,null);
         }
         else
         {
-            this.manager.queueLog(event.getVehicle().getLocation(),VEHICLE_ENTER, -event.getExited().getType().getTypeId());
+            long entity = -event.getExited().getType().getTypeId();
+            this.manager.queueKillLog(event.getVehicle().getLocation(),VEHICLE_EXIT,entity,vehicle,null);
         }
     }
 
@@ -470,7 +476,7 @@ public class EntityListener implements Listener
         Long causer = null;
         if (livingEntity instanceof Player)
         {
-            causer = this.module.getCore().getUserManager().getExactUser((Player)livingEntity).key;
+            causer = um.getExactUser((Player)livingEntity).key;
         }
         else if (livingEntity != null)
         {
@@ -500,7 +506,7 @@ public class EntityListener implements Listener
             {
                 if (livingEntity instanceof Player)
                 {
-                    User user = this.module.getCore().getUserManager().getExactUser((Player)livingEntity);
+                    User user = um.getExactUser((Player)livingEntity);
                     affected.add(user.key);
                 }
                 else
@@ -573,7 +579,7 @@ public class EntityListener implements Listener
     {
         if (this.manager.isIgnored(event.getEnchanter().getWorld(),ENCHANT_ITEM)) return;
         String applied = this.serializeEnchantments(event.getEnchantsToAdd());
-        User user = this.module.getCore().getUserManager().getExactUser(event.getEnchanter());
+        User user = um.getExactUser(event.getEnchanter());
         this.manager.queueItemLog(event.getEnchanter().getLocation(), ENCHANT_ITEM, user.key, event.getItem().getType()
                                                                                                    .name(), event
                                       .getItem().getDurability(), applied);
@@ -584,7 +590,7 @@ public class EntityListener implements Listener
     {
         if (this.manager.isIgnored(event.getWhoClicked().getWorld(),CRAFT_ITEM)) return;
         if (!(event.getWhoClicked() instanceof Player)) return;
-        User user = this.module.getCore().getUserManager().getExactUser((Player) event.getWhoClicked());
+        User user = um.getExactUser((Player) event.getWhoClicked());
         this.manager.queueItemLog(event.getWhoClicked().getLocation(), CRAFT_ITEM, user.key, event.getRecipe()
                                                                                                   .getResult().getType()
                                                                                                   .name(), event

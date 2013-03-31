@@ -671,6 +671,7 @@ public class BlockListener implements Listener
             ItemStack itemInHand = event.getPlayer().getItemInHand();
             Location location = event.getClickedBlock().getLocation();
             BlockState state = event.getClickedBlock().getState();
+            long userKey = this.module.getCore().getUserManager().getExactUser(event.getPlayer()).key;
             switch (state.getType())
             {
                 case FURNACE:
@@ -684,8 +685,7 @@ public class BlockListener implements Listener
                 case HOPPER:
                 case DROPPER:
                     if (this.manager.isIgnored(state.getWorld(),CONTAINER_ACCESS)) return;
-                    this.manager.queueInteractionLog(location, CONTAINER_ACCESS, event.getPlayer(), state.getType()
-                                                                                                         .name());
+                    this.manager.queueItemLog(location,CONTAINER_ACCESS,userKey,state.getType().name(),null,null);
                     break;
                 case WOODEN_DOOR:
                 case TRAP_DOOR:
