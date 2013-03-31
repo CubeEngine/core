@@ -9,6 +9,7 @@ import java.util.TreeSet;
 
 import de.cubeisland.cubeengine.core.config.Configuration;
 import de.cubeisland.cubeengine.core.logger.LogLevel;
+import de.cubeisland.cubeengine.core.permission.Permission;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.util.StringUtils;
 import de.cubeisland.cubeengine.roles.Roles;
@@ -34,12 +35,15 @@ public abstract class RoleProvider
     protected Stack<String> roleStack = new Stack<String>();
     protected Roles module;
     public final boolean isGlobal;
+    protected Permission basePerm;
 
     public RoleProvider(Roles module, boolean isGlobal)
     {
         this.module = module;
         this.isGlobal = false;
     }
+
+    public abstract void createBasePerm();
 
     public Iterable<RoleConfig> getConfigs()
     {
@@ -232,9 +236,11 @@ public abstract class RoleProvider
                 }
                 parentRoles.add(parentRole); // Role was found:
             }
-            role = new ConfigRole(config, parentRoles, false);
+            Permission perm = this.basePerm.createChild(config.roleName);
+            this.module.getCore().getPermissionManager().registerPermission(this.module,perm);
+            role = new ConfigRole(config, parentRoles, false, perm);
             this.roleStack.pop();
-            this.module.getLog().log(DEBUG, role.getName() + " loaded!");
+            this.module.getLog().log(DEBUG, role.getName() + " calculated!");
             return role;
         }
         catch (CircularRoleDepedencyException ex)

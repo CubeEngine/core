@@ -8,6 +8,7 @@ import de.cubeisland.cubeengine.core.command.parameterized.Param;
 import de.cubeisland.cubeengine.core.logger.LogLevel;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.roles.Roles;
+import de.cubeisland.cubeengine.roles.role.ConfigRole;
 import de.cubeisland.cubeengine.roles.role.Role;
 import de.cubeisland.cubeengine.roles.role.UserSpecificRole;
 import org.bukkit.World;
@@ -40,6 +41,18 @@ public class UserManagementCommands extends UserCommandHelper
             context.sendTranslated("&eCould not find the role &6%s &ein &6%s&e.", roleName, world.getName());
             return;
         }
+        if (role instanceof ConfigRole)
+        {
+            if (!((ConfigRole)role).canAssignAndRemove(context.getSender()))
+            {
+                context.sendTranslated("&cYou are not allowed to assign the role &6%s&c in &6%s&c!",role.getName(),world.getName());
+                return;
+            }
+        }
+        else
+        {
+            throw new IllegalArgumentException("The role is not a ConfigRole!");
+        }
         this.module.getLog().log(LogLevel.DEBUG,"Role added: "+ role.getName() + " -> " + user.getName());
         if (this.manager.addRoles(user, user.getPlayer(), worldId, role))
         {
@@ -65,6 +78,18 @@ public class UserManagementCommands extends UserCommandHelper
         {
             context.sendTranslated("&eCould not find the role &6%s &ein &6%s&e.", context.getString(0), world.getName());
             return;
+        }
+        if (role instanceof ConfigRole)
+        {
+            if (!((ConfigRole)role).canAssignAndRemove(context.getSender()))
+            {
+                context.sendTranslated("&cYou are not allowed to remove the role &6%s&c in &6%s&c!",role.getName(),world.getName());
+                return;
+            }
+        }
+        else
+        {
+            throw new IllegalArgumentException("The role is not a ConfigRole!");
         }
         if (this.manager.removeRole(user, role, worldId))
         {

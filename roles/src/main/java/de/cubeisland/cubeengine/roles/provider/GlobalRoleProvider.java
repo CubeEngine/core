@@ -13,6 +13,13 @@ public class GlobalRoleProvider extends RoleProvider
     public GlobalRoleProvider(Roles module)
     {
         super(module, true);
+        this.createBasePerm();
+    }
+
+    @Override
+    public void createBasePerm()
+    {
+        this.basePerm = this.module.getBasePermission().createAbstractChild("global");
     }
 
     @Override

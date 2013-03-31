@@ -28,12 +28,20 @@ public class WorldRoleProvider extends RoleProvider
     {
         super(module, false);
         this.mirrorConfig = mirrorConfig;
+        this.createBasePerm();
     }
 
     public WorldRoleProvider(Roles module, long worldId)
     {
         super(module, false);
         this.mirrorConfig = new RoleMirror(this.module, worldId);
+        this.createBasePerm();
+    }
+
+    @Override
+    public void createBasePerm()
+    {
+        this.basePerm = this.module.getBasePermission().createAbstractChild("world").createAbstractChild(this.mirrorConfig.mainWorld);
     }
 
     public TLongObjectHashMap<Pair<Boolean, Boolean>> getWorlds()

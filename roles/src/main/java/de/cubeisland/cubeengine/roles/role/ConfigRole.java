@@ -5,11 +5,24 @@ import de.cubeisland.cubeengine.roles.config.RoleConfig;
 import java.io.File;
 import java.util.TreeSet;
 
+import org.bukkit.permissions.Permissible;
+
+import de.cubeisland.cubeengine.core.permission.Permission;
+
 public class ConfigRole extends Role
 {
     private RoleConfig config;
+    private Permission rolePermission;
 
-    public ConfigRole(RoleConfig config, TreeSet<Role> parentRoles, boolean isGlobal)
+    /**
+     * Creates a new ConfigRole from given config with parents
+     *
+     * @param config the config to load from
+     * @param parentRoles the declared parent roles
+     * @param isGlobal true if this is a global role
+     * @param permission the permission of this role;
+     */
+    public ConfigRole(RoleConfig config, TreeSet<Role> parentRoles, boolean isGlobal, Permission permission)
     {
         super(config.roleName, config.priority, config.perms, parentRoles, config.metadata, isGlobal);
         this.applyInheritence(new MergedRole(parentRoles));
@@ -18,6 +31,7 @@ public class ConfigRole extends Role
         {
             role.addChild(this);
         }
+        this.rolePermission = permission;
     }
     //TODO save config when change is made with ingame cmd
 
@@ -124,5 +138,16 @@ public class ConfigRole extends Role
     public void deleteConfigFile()
     {
         this.config.getFile().delete();
+    }
+
+    /**
+     * Returns true if the permissible has the permission to assign this role to another player
+     *
+     * @param permissible
+     * @return
+     */
+    public boolean canAssignAndRemove(Permissible permissible)
+    {
+        return this.rolePermission.isAuthorized(permissible);
     }
 }
