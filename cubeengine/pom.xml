@@ -134,13 +134,22 @@
                   <include>commons-lang:commons-lang</include>
                   <include>io.netty:*</include>
                   <include>org.yaml:snakeyaml</include>
-                  <include>mysql-connector-java:mysql</include>
                   <include>org.fusesource.jansi:jansi</include>
                 </includes>
               </artifactSet>
+              <filters>
+                <filter>
+                  <artifact>*:*</artifact>
+                  <excludes>
+                    <exclude>lib/**</exclude>
+                    <exclude>templates/**</exclude>
+                    <exclude>META-INF/native/**</exclude>
+                    <exclude>**/*.java</exclude>
+                  </excludes>
+                </filter>
+              </filters>
               <relocations>
-                <!--
-                <relocation>
+                <!--<relocation>
                   <pattern>gnu.trove</pattern>
                   <shadedPattern>${project.parent.groupId}.${project.artifactId}.external.gnu.trove</shadedPattern>
                 </relocation>
@@ -151,8 +160,7 @@
                 <relocation>
                   <pattern>org.apache.commons</pattern>
                   <shadedPattern>${project.parent.groupId}.${project.artifactId}.external.org.apache.commons</shadedPattern>
-                </relocation>
-                -->
+                </relocation>-->
                 <relocation>
                   <pattern>io.netty</pattern>
                   <shadedPattern>${project.parent.groupId}.${project.artifactId}.external.io.netty</shadedPattern>
@@ -166,6 +174,8 @@
                   <shadedPattern>${project.parent.groupId}.${project.artifactId}.external.org.fusesource</shadedPattern>
                 </relocation>
               </relocations>
+              <keepDependenciesWithProvidedScope>true</keepDependenciesWithProvidedScope>
+              <createDependencyReducedPom>false</createDependencyReducedPom>
             </configuration>
           </execution>
         </executions>
