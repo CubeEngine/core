@@ -139,18 +139,20 @@
                 </includes>
               </artifactSet>
               <relocations>
-                <!--<relocation>
-                    <pattern>gnu.trove</pattern>
-                    <shadedPattern>${project.parent.groupId}.${project.artifactId}.external.gnu.trove</shadedPattern>
+                <!--
+                <relocation>
+                  <pattern>gnu.trove</pattern>
+                  <shadedPattern>${project.parent.groupId}.${project.artifactId}.external.gnu.trove</shadedPattern>
                 </relocation>
                 <relocation>
-                    <pattern>com.fasterxml</pattern>
-                    <shadedPattern>${project.parent.groupId}.${project.artifactId}.external.com.fasterxml</shadedPattern>
+                  <pattern>com.fasterxml</pattern>
+                  <shadedPattern>${project.parent.groupId}.${project.artifactId}.external.com.fasterxml</shadedPattern>
                 </relocation>
                 <relocation>
-                    <pattern>org.apache.commons</pattern>
-                    <shadedPattern>${project.parent.groupId}.${project.artifactId}.external.org.apache.commons</shadedPattern>
-                </relocation>-->
+                  <pattern>org.apache.commons</pattern>
+                  <shadedPattern>${project.parent.groupId}.${project.artifactId}.external.org.apache.commons</shadedPattern>
+                </relocation>
+                -->
                 <relocation>
                   <pattern>io.netty</pattern>
                   <shadedPattern>${project.parent.groupId}.${project.artifactId}.external.io.netty</shadedPattern>
