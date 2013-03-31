@@ -153,7 +153,7 @@ public class UserManager implements Cleanable
     public UserManager removeUser(final User user)
     {
         this.storage.delete(user); //this is async
-        this.cachedUsers.remove(user.getName());
+        this.removeCachedUser(user);
         return this;
     }
 
@@ -247,7 +247,7 @@ public class UserManager implements Cleanable
         {
             throw new NullPointerException();
         }
-        User user = this.cachedUsers.get(name);
+        User user = this.cachedUsers.get(name.toLowerCase());
         if (user == null)
         {
             user = this.loadUser(name);
@@ -276,7 +276,7 @@ public class UserManager implements Cleanable
      */
     private synchronized User createUser(String name)
     {
-        User user = this.cachedUsers.get(name);
+        User user = this.cachedUsers.get(name.toLowerCase());
         if (user != null)
         {
             //User was already added
@@ -302,7 +302,7 @@ public class UserManager implements Cleanable
         synchronized (this.cachedUsers)
         {
             this.core.getLog().log(LogLevel.DEBUG,"User "+ user.getName()+ " cached!");
-            this.cachedUsers.put(user.getName(), user);
+            this.cachedUsers.put(user.getName().toLowerCase(), user);
             this.cachedUsers.put(user.getKey(), user);
             this.attachDefaults(user);
         }
@@ -313,7 +313,7 @@ public class UserManager implements Cleanable
         synchronized (this.cachedUsers)
         {
             this.core.getLog().log(LogLevel.DEBUG,"Removed cached user "+ user.getName()+ "!");
-            this.cachedUsers.remove(user.getName());
+            this.cachedUsers.remove(user.getName().toLowerCase());
             this.cachedUsers.remove(user.getKey());
             user.detachAll();
         }
@@ -389,28 +389,27 @@ public class UserManager implements Cleanable
         {
             return null;
         }
-        User user = this.cachedUsers.get(name);
+        User user = this.cachedUsers.get(name.toLowerCase());
         if (user == null)
         {
-            //Looking up saved users
-            user = this.storage.loadUser(name);
-            if (user != null)
+            //Get all online Player and searching for similar names
+            ArrayList<String> onlinePlayerList = new ArrayList<String>();
+            for (Player player : this.core.getServer().getOnlinePlayers())
             {
-                this.cacheUser(user);
+                onlinePlayerList.add(player.getName());
             }
-            else //then NO user with exact name
+            String foundUser = Match.string().matchString(name, onlinePlayerList);
+            if (foundUser == null)
             {
-                //Get all online Player and searching for similar names
-                ArrayList<String> onlinePlayerList = new ArrayList<String>();
-                for (Player player : this.core.getServer().getOnlinePlayers())
+                //Looking up saved users
+                user = this.storage.loadUser(name);
+                if (user != null)
                 {
-                    onlinePlayerList.add(player.getName());
+                    this.cacheUser(user);
                 }
-                String foundUser = Match.string().matchString(name, onlinePlayerList);
-                if (foundUser == null)
-                {
-                    return null;
-                }
+            }
+            else
+            {
                 user = this.getUser(foundUser, true);
             }
         }
@@ -737,7 +736,7 @@ public class UserManager implements Cleanable
             {
                 if (!user.isOnline() && scheduledForRemoval.get(user.getName()) > -1) // Do not delete users that will be deleted anyway
                 {
-                    cachedUsers.remove(user.getName());
+                    UserManager.this.removeCachedUser(user);
                 }
             }
         }
