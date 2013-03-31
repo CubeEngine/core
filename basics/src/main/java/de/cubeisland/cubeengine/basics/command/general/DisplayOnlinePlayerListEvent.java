@@ -9,11 +9,13 @@ import org.bukkit.event.HandlerList;
 
 import java.util.List;
 
+import gnu.trove.map.hash.THashMap;
+
 public class DisplayOnlinePlayerListEvent extends Event implements Cancellable
 {
     private final Basics basics;
-    private List<User> users;
-    private List<String> userNames;
+    private THashMap<User, String> userStrings = new THashMap<User, String>();
+    private THashMap<String, List<User>> grouped = new THashMap<String, List<User>>();
     private static final HandlerList handlers = new HandlerList();
     private final CommandSender sender;
     private boolean cancelled = false;
@@ -29,12 +31,12 @@ public class DisplayOnlinePlayerListEvent extends Event implements Cancellable
         return handlers;
     }
 
-    public DisplayOnlinePlayerListEvent(Basics basics, CommandSender sender, List<User> users, List<String> userNames)
+    public DisplayOnlinePlayerListEvent(Basics basics, CommandSender sender, THashMap<User, String> userStrings, List<User> defaultList)
     {
         this.basics = basics;
         this.sender = sender;
-        this.users = users;
-        this.userNames = userNames;
+        this.userStrings = userStrings;
+        this.grouped.put("&6Players:",defaultList);
     }
 
     @Override
@@ -57,32 +59,13 @@ public class DisplayOnlinePlayerListEvent extends Event implements Cancellable
         return basics;
     }
 
-    /**
-     * @return the players
-     */
-    public List<User> getUsers()
+    public THashMap<User, String> getUserStrings()
     {
-        return users;
+        return userStrings;
     }
 
-    /**
-     * @param users the players to set
-     */
-    public void setUsers(List<User> users)
+    public THashMap<String, List<User>> getGrouped()
     {
-        this.users = users;
-    }
-
-    /**
-     * @return the sender
-     */
-    public CommandSender getSender()
-    {
-        return sender;
-    }
-
-    public List<String> getUserNames()
-    {
-        return userNames;
+        return grouped;
     }
 }
