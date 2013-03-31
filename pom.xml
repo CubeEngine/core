@@ -57,6 +57,29 @@
     </snapshotRepository>
   </distributionManagement>
 
+  <organization>
+    <name>Cube Island</name>
+    <url>https://cubeisland.de</url>
+  </organization>
+
+  <licenses>
+    <license>
+      <name>GNU General Public License Version 3</name>
+      <url>http://www.gnu.org/licenses/gpl.txt</url>
+      <distribution>repo</distribution>
+    </license>
+  </licenses>
+
+  <ciManagement>
+    <system>jenkins</system>
+    <url>http://ci.cubeisland.de/job/CubeEngine</url>
+  </ciManagement>
+
+  <issueManagement>
+    <system>jira</system>
+    <url>http://bugs.engine.cubeisland.de/browse/CE</url>
+  </issueManagement>
+
   <scm>
     <url>scm:git:https://github.com/CubeEngineDev/CubeEngine</url>
     <connection>scm:git:https://github.com/CubeEngineDev/CubeEngine</connection>
@@ -208,6 +231,19 @@
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-shade-plugin</artifactId>
         <version>2.0</version>
+        <configuration>
+          <filters>
+            <filter>
+              <artifact>*:*</artifact>
+              <excludes>
+                <exclude>lib/**</exclude>
+                <exclude>templates/**</exclude>
+                <exclude>META-INF/**</exclude>
+                <exclude>**/*.java</exclude>
+              </excludes>
+            </filter>
+          </filters>
+        </configuration>
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
@@ -251,16 +287,7 @@
           <includes>
             <include>*.java</include>
           </includes>
-          <skip>true</skip>
         </configuration>
-        <executions>
-          <execution>
-            <phase>package</phase>
-            <goals>
-              <goal>format</goal>
-            </goals>
-          </execution>
-        </executions>
       </plugin>
     </plugins>
   </build>
