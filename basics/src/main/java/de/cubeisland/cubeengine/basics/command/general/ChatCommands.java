@@ -204,7 +204,7 @@ public class ChatCommands
         {
             sb.append(context.getString(i++)).append(" ");
         }
-        this.um.broadcastMessage("basics", "&2[&cBroadcast&2] &e" + sb.toString());
+        this.um.broadcastMessage("&2[&cBroadcast&2] &e" + sb.toString());
     }
 
     @Command(desc = "Mutes a player", usage = "<player> [duration]", min = 1, max = 2)

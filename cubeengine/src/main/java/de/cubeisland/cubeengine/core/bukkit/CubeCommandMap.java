@@ -160,11 +160,11 @@ public class CubeCommandMap extends SimpleCommandMap
                 Collections.sort(matches, String.CASE_INSENSITIVE_ORDER);
                 if (matches.size() == 1)
                 {
-                    sender.sendMessage(this.core.getI18n().translate(language, "core", "&cCouldn't find &e/%s&c. Did you mean &a/%s&c?", label, matches.iterator().next()));
+                    sender.sendMessage(this.core.getI18n().translate(language, "&cCouldn't find &e/%s&c. Did you mean &a/%s&c?", label, matches.iterator().next()));
                 }
                 else
                 {
-                    sender.sendMessage(this.core.getI18n().translate(language, "core", "&eDid you mean one of these: &a%s &e?", "/" + StringUtils.implode(", /", matches)));
+                    sender.sendMessage(this.core.getI18n().translate(language, "&eDid you mean one of these: &a%s &e?", "/" + StringUtils.implode(", /", matches)));
                 }
                 if (matches.size() > this.core.getConfiguration().commandTabCompleteOffers)
                 {
@@ -181,7 +181,7 @@ public class CubeCommandMap extends SimpleCommandMap
             }
             else
             {
-                sender.sendMessage(this.core.getI18n().translate(language, "core", "&cI couldn't find any command for &e/%s &c...", label));
+                sender.sendMessage(this.core.getI18n().translate(language, "&cI couldn't find any command for &e/%s &c...", label));
             }
             return false;
         }

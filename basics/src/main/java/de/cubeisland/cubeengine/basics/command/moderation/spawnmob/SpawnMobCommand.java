@@ -117,7 +117,7 @@ public class SpawnMobCommand
                 entitySpawned = entitySpawned.getPassenger();
                 message = sender.translate("%s &ariding &e%s", Match.entity().getNameFor(entitySpawned.getType()), message);
             }
-            message = sender.translate("basics", "&aSpawned %d &e%s!", amount, message);
+            message = sender.translate("&aSpawned %d &e%s!", amount, message);
             context.sendMessage(message);
         }
     }

@@ -58,40 +58,6 @@ public class ToolListener implements Listener
             event.setCancelled(true);
             event.setUseItemInHand(Result.DENY);
             event.setUseInteractedBlock(Result.DENY);
-            /*
-
-            BlockLookup lookup = this.module.getLogManager().getBlockLogs(
-                    loc.getWorld(), loc, null,
-                    new Integer[]
-                    {
-                            LogManager.BLOCK_BREAK, LogManager.BLOCK_CHANGE, LogManager.BLOCK_PLACE,
-                            LogManager.BLOCK_SIGN, LogManager.BLOCK_CHANGE_WE, LogManager.BLOCK_GROW_BP,
-                            LogManager.BLOCK_EXPLODE
-                    },
-                    new Long[]
-                    {
-                    }, false,
-                    new BlockData[]
-                    {
-                    }, false,
-                    null, false,
-                    new Timestamp(System.currentTimeMillis() - 1000 * 60 * 60 * 24 * 7),
-                    new Timestamp(System.currentTimeMillis()));
-            event.setCancelled(true);
-            User user = this.module.getUserManager().getExactUser(event.getPlayer());
-            if (!lookup.getEntries().isEmpty())
-            {
-                user.sendMessage("log", "&6%d &elogs found at &6%d:%d:%d &ein &6%s&e:", lookup.getEntries().size(), loc.getBlockX(), loc.getBlockY(), loc.getBlockZ(), loc.getWorld().getName());
-                for (BlockLog entry : lookup.getEntries())
-                {
-                    entry.sendToUser(user, false);
-                }
-            }
-            else
-            {
-                user.sendMessage("log", "&cNo logs found at &6%d:%d:%d &cin &6%s&c!", loc.getBlockX(), loc.getBlockY(), loc.getBlockZ(), loc.getWorld().getName());
-            }
-            */
         }
     }
 }
