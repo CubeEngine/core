@@ -87,7 +87,7 @@ public class PlayerCommands
                 player.setExhaustion(0);
             }
             context.sendTranslated("&6You made everyone fat!");
-            this.um.broadcastStatus("basics", "&ashared food with everyone.", context.getSender().getName());
+            this.um.broadcastStatus("&ashared food with everyone.", context.getSender());
             return;
         }
         User sender = null;
@@ -157,7 +157,7 @@ public class PlayerCommands
                 player.setExhaustion(4);
             }
             context.sendTranslated("&eYou let everyone starve to death!");
-            this.um.broadcastStatus("basics", "&etook away all food.", context.getSender().getName());
+            this.um.broadcastStatus("&etook away all food.", context.getSender());
             return;
         }
         User sender = null;
@@ -226,7 +226,7 @@ public class PlayerCommands
                 player.setExhaustion(0);
             }
             context.sendTranslated("&aYou healed everyone!");
-            this.um.broadcastStatus("basics", "&ahealed every player.", context.getSender().getName());
+            this.um.broadcastStatus("&ahealed every player.", context.getSender());
             return;
         }
         User sender = null;
@@ -541,7 +541,7 @@ public class PlayerCommands
             {
                 sender.get(BasicsAttachment.class).setAfk(true);
                 sender.get(BasicsAttachment.class).resetLastAction();
-                this.um.broadcastStatus("basics", "is now afk.", context.getSender().getName());
+                this.um.broadcastStatus("is now afk.", context.getSender());
             }
             else
             {

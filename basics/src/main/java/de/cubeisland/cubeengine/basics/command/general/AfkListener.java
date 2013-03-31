@@ -120,7 +120,7 @@ public class AfkListener implements Listener, Runnable
                     if (System.currentTimeMillis() - lastAction < this.afkCheck)
                     {
                         basicsAttachment.setAfk(false);
-                        this.um.broadcastStatus("basics", "is no longer afk!", user.getName());
+                        this.um.broadcastStatus("is no longer afk!", user);
                     }
                 }
                 else if (System.currentTimeMillis() - lastAction > this.autoAfk)
@@ -128,7 +128,7 @@ public class AfkListener implements Listener, Runnable
                     if (!BasicsPerm.PREVENT_AUTOAFK.isAuthorized(user))
                     {
                         basicsAttachment.setAfk(true);
-                        this.um.broadcastStatus("basics", "is now afk!" ,user.getName());
+                        this.um.broadcastStatus("is now afk!" ,user);
                     }
                 }
             }

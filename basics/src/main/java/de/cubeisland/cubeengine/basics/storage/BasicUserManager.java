@@ -5,17 +5,20 @@ import org.bukkit.entity.Player;
 import de.cubeisland.cubeengine.core.Core;
 import de.cubeisland.cubeengine.core.storage.SingleKeyStorage;
 import de.cubeisland.cubeengine.core.user.User;
+import de.cubeisland.cubeengine.basics.Basics;
 import de.cubeisland.cubeengine.basics.BasicsAttachment;
 
 public class BasicUserManager extends SingleKeyStorage<Long, BasicUser>
 {
     private final Core core;
+    private final Basics module;
     private static final int REVISION = 1;
 
-    public BasicUserManager(Core core)
+    public BasicUserManager(Basics module)
     {
-        super(core.getDB(), BasicUser.class, REVISION);
-        this.core = core;
+        super(module.getCore().getDB(), BasicUser.class, REVISION);
+        this.module = module;
+        this.core = module.getCore();
         this.initialize();
     }
 
@@ -26,7 +29,7 @@ public class BasicUserManager extends SingleKeyStorage<Long, BasicUser>
 
     public BasicUser getBasicUser(User user)
     {
-        BasicUser model = user.get(BasicsAttachment.class).getBasicUser();
+        BasicUser model = user.attachOrGet(BasicsAttachment.class, this.module).getBasicUser();
         if (model == null)
         {
             model = this.get(user.getKey());

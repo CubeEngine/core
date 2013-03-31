@@ -423,10 +423,11 @@ public class Lookup
                 }
                 else // single
                 {
-                    if (entry.getOldBlock() != null)
+                    if (entry.getOldBlock().material.equals(Material.AIR))
                     {
-                        user.sendTranslated("&2%s &areplaced &6%s&a!",
+                        user.sendTranslated("&2%s &areplaced &6%s&a with &6%s&a!",
                                             entry.getCauserUser().getDisplayName(),
+                                            this.getPrettyName(entry.getOldBlock()),
                                             this.getPrettyName(entry.getNewBlock()));
                     }
                     else

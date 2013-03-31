@@ -54,7 +54,7 @@ public class ToolListener implements Listener
             //-----------
             this.module.getLogManager().fillLookup(lookup);
             lookup.show(user);
-            event.getPlayer().sendMessage("Used LoggingTool-Block but not fully implemented yet :/");
+
             event.setCancelled(true);
             event.setUseItemInHand(Result.DENY);
             event.setUseInteractedBlock(Result.DENY);

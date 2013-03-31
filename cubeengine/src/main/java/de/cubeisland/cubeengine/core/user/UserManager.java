@@ -435,19 +435,23 @@ public class UserManager implements Cleanable
         this.broadcastMessage(message, null, args);
     }
 
-    public void broadcastStatus(String message, String username)
+    public void broadcastStatus(ChatFormat starColor, String message, CommandSender sender, Object... args)
     {
         message = ChatFormat.parseFormats(message);
+        if (args != null && args.length != 0)
+        {
+            message = String.format(message,args); //TODO is allowed to use color ?
+        }
+        String name = sender.getDisplayName();
         for (User user : this.onlineUsers)
         {
-            user.sendMessage("* &2" + username + " &f" + message); // not yet configurable
+            user.sendTranslated(starColor.toString()+"* &2%s &f%s",name,message);
         }
     }
 
-    public void broadcastStatus(String category, String message, String username, Object... args)
+    public void broadcastStatus(String message, CommandSender sender, Object... args)
     {
-        message = "* &2" + username + " &f" + message;
-        this.broadcastMessage(category, message, args);
+        this.broadcastStatus(ChatFormat.WHITE, message, sender, args);
     }
 
     private void loadSalt()

@@ -528,7 +528,7 @@ public class EntityListener implements Listener
     public void onPlayerQuit(PlayerQuitEvent event)
     {
         if (this.manager.isIgnored(event.getPlayer().getWorld(),PLAYER_QUIT)) return;
-        this.manager.queueInteractionLog(event.getPlayer().getLocation(), PLAYER_JOIN, event.getPlayer(), null);
+        this.manager.queueInteractionLog(event.getPlayer().getLocation(), PLAYER_QUIT, event.getPlayer(), null);
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)

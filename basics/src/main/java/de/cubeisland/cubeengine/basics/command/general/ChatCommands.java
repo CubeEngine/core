@@ -12,6 +12,7 @@ import de.cubeisland.cubeengine.core.command.reflected.Command;
 import de.cubeisland.cubeengine.core.command.sender.ConsoleCommandSender;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.user.UserManager;
+import de.cubeisland.cubeengine.core.util.ChatFormat;
 import de.cubeisland.cubeengine.core.util.StringUtils;
 import de.cubeisland.cubeengine.core.util.time.Duration;
 import de.cubeisland.cubeengine.basics.Basics;
@@ -100,7 +101,7 @@ public class ChatCommands
     public void me(CommandContext context)
     {
         String message = context.getStrings(0);
-        this.um.broadcastStatus(message, context.getSender().getDisplayName());
+        this.um.broadcastStatus(message, context.getSender());
     }
 
     @Command(desc = "Sends a private message to someone", names = {
@@ -257,6 +258,6 @@ public class ChatCommands
     @Command(names = {"rand","roll"},desc = "Shows a random number from 0 to 100")
     public void rand(CommandContext context)
     {
-        this.um.broadcastStatus("basics", "rolled a &6%d&f!", context.getSender().getName(), new Random().nextInt(100));
+        this.um.broadcastStatus(ChatFormat.YELLOW,"rolled a &6%d&f!", context.getSender(), new Random().nextInt(100));
     }
 }
