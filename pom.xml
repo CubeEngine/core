@@ -85,28 +85,8 @@
     </pluginRepository>
   </pluginRepositories>
 
+  <!-- Test dependencies -->
   <dependencies>
-    <dependency>
-      <groupId>org.bukkit</groupId>
-      <artifactId>bukkit</artifactId>
-      <version>${bukkitVersion}</version>
-      <type>jar</type>
-    </dependency>
-    <dependency>
-      <groupId>org.bukkit</groupId>
-      <artifactId>craftbukkit</artifactId>
-      <version>${bukkitVersion}</version>
-      <type>jar</type>
-    </dependency>
-    <dependency>
-      <groupId>org.bukkit</groupId>
-      <artifactId>minecraft-server</artifactId>
-      <version>${minecraftVersion}</version>
-      <type>jar</type>
-    </dependency>
-    <!--
-        Test dependencies
-    -->
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
@@ -260,6 +240,27 @@
           <showDeprecation>true</showDeprecation>
           <showWarnings>true</showWarnings>
         </configuration>
+      </plugin>
+      <plugin>
+        <groupId>com.mycila.maven-license-plugin</groupId>
+        <artifactId>maven-license-plugin</artifactId>
+        <version>1.9.0</version>
+        <configuration>
+          <header>${basedir}/header.txt</header>
+          <aggregate>true</aggregate>
+          <includes>
+            <include>*.java</include>
+          </includes>
+          <skip>true</skip>
+        </configuration>
+        <executions>
+          <execution>
+            <phase>package</phase>
+            <goals>
+              <goal>format</goal>
+            </goals>
+          </execution>
+        </executions>
       </plugin>
     </plugins>
   </build>

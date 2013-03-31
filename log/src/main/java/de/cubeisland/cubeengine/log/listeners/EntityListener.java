@@ -4,10 +4,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.bukkit.craftbukkit.libs.com.google.gson.JsonArray;
-
-import static de.cubeisland.cubeengine.log.storage.ActionType.*;
-
 import org.bukkit.DyeColor;
 import org.bukkit.Location;
 import org.bukkit.World;
@@ -72,6 +68,7 @@ import de.cubeisland.cubeengine.log.storage.LogManager;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
+import static de.cubeisland.cubeengine.log.storage.ActionType.*;
 import static org.bukkit.Material.*;
 import static org.bukkit.event.entity.EntityDamageEvent.DamageCause.PROJECTILE;
 

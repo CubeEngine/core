@@ -72,6 +72,27 @@
       <type>jar</type>
       <scope>compile</scope>
     </dependency>
+    <dependency>
+      <groupId>org.bukkit</groupId>
+      <artifactId>bukkit</artifactId>
+      <version>${bukkitVersion}</version>
+      <type>jar</type>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.bukkit</groupId>
+      <artifactId>craftbukkit</artifactId>
+      <version>${bukkitVersion}</version>
+      <type>jar</type>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.bukkit</groupId>
+      <artifactId>minecraft-server</artifactId>
+      <version>${minecraftVersion}</version>
+      <type>jar</type>
+      <scope>provided</scope>
+    </dependency>
   </dependencies>
 
   <build>
