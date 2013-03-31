@@ -10,8 +10,6 @@ import java.security.NoSuchAlgorithmException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
@@ -150,11 +148,10 @@ public class UserManager implements Cleanable
      * @param user the User
      * @return fluent interface
      */
-    public UserManager removeUser(final User user)
+    public void removeUser(final User user)
     {
         this.storage.delete(user); //this is async
         this.removeCachedUser(user);
-        return this;
     }
 
     public User getExactUser(String name)
@@ -206,7 +203,7 @@ public class UserManager implements Cleanable
      * @param key the key to get the user by
      * @return the user or null if not found
      */
-    public User getUser(Long key)
+    public synchronized User getUser(Long key)
     {
         if (key == null)
         {
@@ -241,7 +238,7 @@ public class UserManager implements Cleanable
         return this.getUser(playerName, false);
     }
 
-    public User getUser(String name, boolean create)
+    public synchronized User getUser(String name, boolean create)
     {
         if (name == null)
         {
@@ -299,24 +296,18 @@ public class UserManager implements Cleanable
 
     private synchronized void cacheUser(User user)
     {
-        synchronized (this.cachedUsers)
-        {
-            this.core.getLog().log(LogLevel.DEBUG,"User "+ user.getName()+ " cached!");
-            this.cachedUsers.put(user.getName().toLowerCase(), user);
-            this.cachedUsers.put(user.getKey(), user);
-            this.attachDefaults(user);
-        }
+        this.core.getLog().log(LogLevel.DEBUG,"User "+ user.getName()+ " cached!");
+        this.cachedUsers.put(user.getName().toLowerCase(), user);
+        this.cachedUsers.put(user.getKey(), user);
+        this.attachDefaults(user);
     }
 
     private synchronized void removeCachedUser(User user)
     {
-        synchronized (this.cachedUsers)
-        {
-            this.core.getLog().log(LogLevel.DEBUG,"Removed cached user "+ user.getName()+ "!");
-            this.cachedUsers.remove(user.getName().toLowerCase());
-            this.cachedUsers.remove(user.getKey());
-            user.detachAll();
-        }
+        this.core.getLog().log(LogLevel.DEBUG,"Removed cached user "+ user.getName()+ "!");
+        this.cachedUsers.remove(user.getName().toLowerCase());
+        this.cachedUsers.remove(user.getKey());
+        user.detachAll();
     }
 
     /**
@@ -324,14 +315,14 @@ public class UserManager implements Cleanable
      *
      * @return a unmodifiable List of players
      */
-    public List<User> getOnlineUsers()
+    public synchronized Set<User> getOnlineUsers()
     {
-        return Collections.unmodifiableList(this.onlineUsers);
+        return new THashSet<User>(this.onlineUsers);
     }
 
-    public Collection<User> getLoadedUsers()
+    public synchronized Set<User> getLoadedUsers()
     {
-        return this.cachedUsers.values();
+        return new THashSet<User>(this.cachedUsers.values());
     }
 
     public void shutdown()
@@ -443,7 +434,7 @@ public class UserManager implements Cleanable
         String name = sender.getDisplayName();
         for (User user : this.onlineUsers)
         {
-            user.sendTranslated(starColor.toString()+"* &2%s &f%s",name,message);
+            user.sendTranslated(starColor.toString() + "* &2%s &f%s", name, message);
         }
     }
 
@@ -514,7 +505,7 @@ public class UserManager implements Cleanable
         this.failedLogins.remove(user.key);
     }
 
-    public void kickAll(String message)
+    public synchronized void kickAll(String message)
     {
         for (User user : this.cachedUsers.values())
         {
@@ -522,7 +513,7 @@ public class UserManager implements Cleanable
         }
     }
 
-    public void kickAll(String category, String message, Object... params)
+    public synchronized void kickAll(String message, Object... params)
     {
         for (User user : this.cachedUsers.values())
         {
@@ -568,7 +559,15 @@ public class UserManager implements Cleanable
 
     public synchronized void removeDefaultAttachment(Class<? extends UserAttachment> attachmentClass)
     {
-        this.defaultAttachments.remove(attachmentClass);
+        Iterator<DefaultAttachment> it = this.defaultAttachments.iterator();
+        while (it.hasNext())
+        {
+            if (it.next().type == attachmentClass)
+            {
+                it.remove();
+                return;
+            }
+        }
     }
 
     public synchronized void removeDefaultAttachments(Module module)
@@ -736,7 +735,7 @@ public class UserManager implements Cleanable
             {
                 if (!user.isOnline() && scheduledForRemoval.get(user.getName()) > -1) // Do not delete users that will be deleted anyway
                 {
-                    UserManager.this.removeCachedUser(user);
+                    removeCachedUser(user);
                 }
             }
         }
