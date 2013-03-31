@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import org.bukkit.Bukkit;
 
@@ -30,7 +31,7 @@ public class ListCommand
     public void list(CommandContext context)
     {
         // TODO CE-94 list sorting by roles
-        List<User> users = context.getCore().getUserManager().getOnlineUsers();
+        Set<User> users = context.getCore().getUserManager().getOnlineUsers();
         if (users.isEmpty())
         {
             context.sendTranslated("&cThere are no players online now!");

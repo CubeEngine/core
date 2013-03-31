@@ -1,6 +1,7 @@
 package de.cubeisland.cubeengine.basics.command.mail;
 
 import java.util.List;
+import java.util.Set;
 
 import de.cubeisland.cubeengine.core.command.CommandContext;
 import de.cubeisland.cubeengine.core.command.ContainerCommand;
@@ -152,7 +153,7 @@ public class MailCommand extends ContainerCommand
     , min = 1 , max = NO_MAX)
     public void sendAll(CommandContext context)
     {
-        List<User> users = this.basics.getCore().getUserManager().getOnlineUsers();
+        Set<User> users = this.basics.getCore().getUserManager().getOnlineUsers();
         final TLongSet alreadySend = new TLongHashSet();
         User sender = null;
         if (context.getSender() instanceof User)
