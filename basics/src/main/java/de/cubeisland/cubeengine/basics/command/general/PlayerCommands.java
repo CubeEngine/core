@@ -709,7 +709,7 @@ public class PlayerCommands
         user.sendTranslated("&eWalkspeed has to be a Number between &60 &eand &610&e!");
     }
 
-    @Command(desc = "Lets you fly away", max = 1,
+    @Command(desc = "Lets you fly away", max = 2,
             params = @Param(names = { "player", "p"}, type = User.class),
             usage = "[flyspeed] [player]")
     public void fly(ParameterizedContext context)
