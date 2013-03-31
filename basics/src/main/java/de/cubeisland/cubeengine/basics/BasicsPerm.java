@@ -189,7 +189,8 @@ public class BasicsPerm extends PermissionContainer
      */
     public static final Permission COMMAND_GOD_KEEP = COMMAND_GOD.createChild("keep");
 
-    private static final Permission COMMAND_AFK_PREVENT = COMMAND.createAbstract("afk.prevent");
+    private static final Permission COMMAND_AFK = COMMAND.createAbstractChild("afk");
+    private static final Permission COMMAND_AFK_PREVENT = COMMAND_AFK.createAbstract("prevent");
     /**
      * Prevents from being displayed as no longer afk automatically unless using chat
      */
@@ -198,6 +199,11 @@ public class BasicsPerm extends PermissionContainer
      * Prevents from being displayed as afk automatically
      */
     public static final Permission PREVENT_AUTOAFK = COMMAND_AFK_PREVENT.createChild("autoafk");
+
+    /**
+     * Allows to set or unset the afk status of other players
+     */
+    public static final Permission COMMAND_AFK_OTHER = COMMAND_AFK.createChild("other");
 
     private static final Permission COMMAND_BUTCHER = COMMAND.createAbstractChild("butcher");
     private static final Permission COMMAND_BUTCHER_FLAG = COMMAND_BUTCHER.createAbstractChild("flag");

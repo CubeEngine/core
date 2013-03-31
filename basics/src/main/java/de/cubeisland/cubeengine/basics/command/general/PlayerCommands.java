@@ -530,27 +530,50 @@ public class PlayerCommands
         context.sendTranslated("&eYou ended your pitiful life. &cWhy? &4:(");
     }
 
-    @Command(desc = "Displays that you are afk", max = 0)
+    @Command(desc = "Displays that you are afk", max = 1, usage = "{player}")
     public void afk(CommandContext context)
     {
-        if (context.getSender() instanceof User)
+        User user;
+        if (context.hasArg(0))
         {
-            User sender = (User)context.getSender();
-            Boolean isAfk = sender.get(BasicsAttachment.class).isAfk();
-            if (isAfk == null || !isAfk)
+            if (!BasicsPerm.COMMAND_AFK_OTHER.isAuthorized(context.getSender()))
             {
-                sender.get(BasicsAttachment.class).setAfk(true);
-                sender.get(BasicsAttachment.class).resetLastAction();
-                this.um.broadcastStatus("is now afk.", context.getSender());
+                context.sendTranslated("&cYou are not allowed to change the afk-state of an other player!");
+                return;
             }
-            else
+            user = context.getUser(0);
+            if (user == null)
             {
-                sender.get(BasicsAttachment.class).updateLastAction();
-                this.afkListener.run();
+                context.sendTranslated("&cUser &2%s &cnot found!", context.getString(0));
+                return;
             }
+            if (!user.isOnline())
+            {
+                context.sendTranslated("&2%s &cis not online!", user.getDisplayName());
+                return;
+            }
+        }
+        else if (context.getSender() instanceof User)
+        {
+            user = (User)context.getSender();
+        }
+        else
+        {
+            context.sendTranslated("&cJust go!");
             return;
         }
-        context.sendTranslated("&cJust go!");
+        Boolean isAfk = user.get(BasicsAttachment.class).isAfk();
+        if (isAfk == null || !isAfk)
+        {
+            user.get(BasicsAttachment.class).setAfk(true);
+            user.get(BasicsAttachment.class).resetLastAction();
+            this.um.broadcastStatus("is now afk.", user);
+        }
+        else
+        {
+            user.get(BasicsAttachment.class).updateLastAction();
+            this.afkListener.run();
+        }
     }
 
     @Command(desc = "Displays informations from a player!", usage = "<player>", min = 1, max = 1)
