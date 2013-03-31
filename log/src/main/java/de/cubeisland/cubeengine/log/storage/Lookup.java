@@ -7,7 +7,9 @@ import java.util.Set;
 import java.util.TreeSet;
 
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.World;
+import org.bukkit.entity.EntityType;
 
 import de.cubeisland.cubeengine.core.module.Module;
 import de.cubeisland.cubeengine.core.user.User;
@@ -310,12 +312,12 @@ public class Lookup
                     else // single
                     {
                         user.sendTranslated("&2%s &abroke &6%s&a!",
-                            entry.getCauserUser().getName(),
+                            entry.getCauserUser().getDisplayName(),
                             this.getPrettyName(entry.getOldBlock()));
                     }
                 break;
                 case BLOCK_BURN:
-                    user.sendTranslated("&6%s &aburned away!",
+                    user.sendTranslated("&6%s &awent up into flames!",
                             this.getPrettyName(entry.getOldBlock()));
                 break;
                 case BLOCK_FADE:
@@ -323,28 +325,166 @@ public class Lookup
                            this.getPrettyName(entry.getOldBlock()));
                 break;
                 case LEAF_DECAY:
+                    user.sendTranslated("&6%s &adecayed!",
+                                        this.getPrettyName(entry.getOldBlock()));
                 break;
                 case WATER_BREAK:
+                    user.sendTranslated("&6%s &agot flushed away by water!",
+                                        this.getPrettyName(entry.getOldBlock()));
                 break;
                 case LAVA_BREAK:
+                    user.sendTranslated("&6%s &agot destroyed by lava!",
+                                        this.getPrettyName(entry.getOldBlock()));
                 break;
                 case ENTITY_BREAK:
+                    user.sendTranslated("&aA &6%s &adestroyed &6%s&a!",
+                                        this.getPrettyName(entry.getCauserEntity()),
+                                        this.getPrettyName(entry.getOldBlock()));
                 break;
                 case ENDERMAN_PICKUP:
+                    user.sendTranslated("&6%s &agot picked up by an enderman!",
+                                        this.getPrettyName(entry.getOldBlock()));
                 break;
                 case BUCKET_FILL:
+                    // TODO attached
+                    if (entry.getOldBlock().material.equals(Material.LAVA) ||
+                        entry.getOldBlock().material.equals(Material.STATIONARY_LAVA))
+                    {
+                        user.sendTranslated("&2%s &afilled a bucket with lava!",
+                                            entry.getCauserUser().getDisplayName());
+                    }
+                    else if (entry.getOldBlock().material.equals(Material.WATER) ||
+                        entry.getOldBlock().material.equals(Material.STATIONARY_WATER))
+                    {
+                        user.sendTranslated("&2%s &afilled a bucket with water!",
+                                            entry.getCauserUser().getDisplayName());
+                    }
+                    else
+                    {
+                        user.sendTranslated("&2%s &afilled a bucket with some random fluids&r&a!",
+                                            entry.getCauserUser().getDisplayName());
+                    }
                 break;
                 case CROP_TRAMPLE:
+                    // TODO attached log only show the crop trampled down then
+                    user.sendTranslated("&2%s &atrampeled down &6%s&a!",
+                                        entry.getCauserUser().getDisplayName(),
+                                        this.getPrettyName(entry.getOldBlock()));
                 break;
+            case ENTITY_EXPLODE:
+                //TODO attached
+                user.sendTranslated("&aSomething unknown blew up &6%s&a!",
+                                    this.getPrettyName(entry.getOldBlock()));
+                break;
+            case CREEPER_EXPLODE:
+                //TODO attached
+                if (entry.getCauserUser() == null)
+                {
+                    user.sendTranslated("&aA Creeper-Explosion wrecked &6%s&a!",
+                                        this.getPrettyName(entry.getOldBlock()));
+                }
+                else
+                {
+                    user.sendTranslated("&2%s &alet a Creeper detonate and destroy &6%s&a!",
+                                        entry.getCauserUser().getDisplayName(),
+                                        this.getPrettyName(entry.getOldBlock()));
+                }
+                break;
+            case TNT_EXPLODE:
+                //TODO attached
+                //TODO if player ignited show it!
+                user.sendTranslated("&aA TNT-Explosion got rid of &6%s&a!",
+                                    this.getPrettyName(entry.getOldBlock()));
+                break;
+            case FIREBALL_EXPLODE:
+                //TODO attached
+                user.sendTranslated("&aAn Fireball blasted away &6%s&a!",
+                                    this.getPrettyName(entry.getOldBlock()));
+                break;
+            case ENDERDRAGON_EXPLODE:
+                //TODO attached
+                user.sendTranslated("&aAn enderdragon changed the integrity of &6%s&a!",
+                                    this.getPrettyName(entry.getOldBlock()));
+                break;
+            case WITHER_EXPLODE:
+                //TODO attached
+                user.sendTranslated("&6%s&a got destroyed by a WitherBoss-Explosion!",
+                                    this.getPrettyName(entry.getOldBlock()));
+                break;
+            case TNT_PRIME:
+                //TODO attached
+                user.sendTranslated("&2%s &aignited TNT!",
+                                    entry.getCauserUser().getDisplayName());
+                break;
+            case BLOCK_PLACE:
+                if (logEntry.hasAttached())
+                {
+                    //TODO
+                }
+                else // single
+                {
+                    if (entry.getOldBlock() != null)
+                    {
+                        user.sendTranslated("&2%s &areplaced &6%s&a!",
+                                            entry.getCauserUser().getDisplayName(),
+                                            this.getPrettyName(entry.getNewBlock()));
+                    }
+                    else
+                    {
+                        user.sendTranslated("&2%s &aplaced &6%s&a!",
+                                            entry.getCauserUser().getDisplayName(),
+                                            this.getPrettyName(entry.getNewBlock()));
+                    }
+                }
+                break;
+            case LAVA_BUCKET:
+                user.sendTranslated("&2%s &aemptied a lava-bucket!",
+                                    entry.getCauserUser().getDisplayName());
+                break;
+            case WATER_BUCKET:
+                user.sendTranslated("&2%s &aemptied a water-bucket!",
+                                    entry.getCauserUser().getDisplayName());
+                break;
+            case NATURAL_GROW:
+                //TODO attach / replace
+                user.sendTranslated("&6%s &agrew naturally!",
+                                    this.getPrettyName(entry.getNewBlock()));
+                break;
+            case PLAYER_GROW:
+                //TODO attach / replace
+                user.sendTranslated("&2%s &alet grow &6%s&a!",
+                                    entry.getCauserUser().getDisplayName(),
+                                    this.getPrettyName(entry.getNewBlock()));
+                break;
+            case BLOCK_FORM:
+                user.sendTranslated("&6%s &aformed naturally!",
+                                    this.getPrettyName(entry.getNewBlock()));
+                break;
+            case ENDERMAN_PLACE:
+                user.sendTranslated("&6%s &agot placed by an enderman!",
+                                    this.getPrettyName(entry.getNewBlock()));
+                break;
+            case ENTITY_FORM:
+                user.sendTranslated("&6%s &aformed &6%s&a!",
+                                    this.getPrettyName(entry.getCauserEntity()),
+                                    this.getPrettyName(entry.getNewBlock()));
+                break;
+
+            //TODO more
+            default:
+                user.sendMessage("Something happened there for sure!");
             }
         }
+    }
 
-        //TODO show the saved Informations
+    private String getPrettyName(EntityType entityType)
+    {
+        return entityType.name(); //TODO
     }
 
     private String getPrettyName(BlockData blockData)
     {
-        return blockData.material+":"+blockData.data;
+        return blockData.material+":"+blockData.data; //TODO
     }
 
     public Set<ActionType> getActions()

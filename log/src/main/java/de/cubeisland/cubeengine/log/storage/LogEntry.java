@@ -148,4 +148,9 @@ public class LogEntry implements Comparable<LogEntry>
     {
         return newBlock;
     }
+
+    public EntityType getCauserEntity()
+    {
+        return this.causer_entity;
+    }
 }

@@ -36,8 +36,6 @@ public enum ActionType
     ,BLOCK_FORM(0x25) //ice/snow/lava-water
     ,ENDERMAN_PLACE(0x26)
     ,ENTITY_FORM(0x27)//snow-golem snow
-
-
     // SPREAD/ IGNITION
     ,FIRE_SPREAD(0x30)
     ,FIREBALL_IGNITE(0x31)

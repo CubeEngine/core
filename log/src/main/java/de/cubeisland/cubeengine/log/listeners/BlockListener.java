@@ -543,7 +543,7 @@ public class BlockListener implements Listener
         if (this.manager.isIgnored(event.getBlock().getWorld(),ENTITY_BREAK)) return;
         BlockState state = event.getBlock().getState();
         state = this.adjustBlockForDoubleBlocks(state);
-        this.logBlockChange(ENTITY_BREAK,state,null,null,event.getEntityType().name());
+        this.logBlockChange(state.getLocation(),ENTITY_BREAK,-1L * event.getEntityType().getTypeId(),state,AIR.name(),(byte)0);
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
@@ -573,7 +573,7 @@ public class BlockListener implements Listener
     public void onEntityBlockForm(final EntityBlockFormEvent event)
     {
         if (this.manager.isIgnored(event.getBlock().getWorld(),ENTITY_FORM,event.getNewState().getType())) return;
-        this.logBlockChange(ENTITY_FORM,event.getBlock().getState(),event.getNewState(),null,event.getEntity().getType().name());
+        this.logBlockChange(event.getBlock().getLocation(),ENTITY_FORM,-1L * event.getEntity().getType().getTypeId(),event.getBlock().getState(),event.getNewState().getType().name(),event.getNewState().getRawData());
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
@@ -828,6 +828,7 @@ public class BlockListener implements Listener
                 case SOIL:
                     if (this.manager.isIgnored(event.getClickedBlock().getWorld(),CROP_TRAMPLE)) return;
                     this.logBlockChange(CROP_TRAMPLE,event.getClickedBlock().getRelative(BlockFace.UP).getState(), AIR,event.getPlayer());
+                    //TODO log the destroyed soil too / and not the crops if there are no crops
                     break;
                 case WOOD_PLATE:
                 case STONE_PLATE:
