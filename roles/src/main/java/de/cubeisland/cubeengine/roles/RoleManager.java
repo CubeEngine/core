@@ -282,6 +282,17 @@ public class RoleManager
             {
                 added = true;
                 this.module.getDbManager().store(new AssignedRole(user.key, worldId, role.getName()), false);
+                // check for inherited roles and remove if lower priority
+                for (Role roleToCheck : roleContainer.get(worldId).getParentRoles())
+                {
+                    if (roleToCheck.getPriority().value < role.getPriority().value)
+                    {
+                        if (role.inheritsFrom(roleToCheck))
+                        {
+                            this.module.getDbManager().delete(user.key,role.getName(),worldId);
+                        }
+                    }
+                }
             }
         }
         if (!added)

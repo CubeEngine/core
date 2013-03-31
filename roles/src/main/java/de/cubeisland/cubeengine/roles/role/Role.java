@@ -283,4 +283,20 @@ public abstract class Role implements Comparable<Role>
     {
         return this.priority.value - o.priority.value;
     }
+
+    public boolean inheritsFrom(Role other)
+    {
+        if (this.getParentRoles().contains(other))
+        {
+            return true;
+        }
+        for (Role role : this.getParentRoles())
+            {
+            if (role.inheritsFrom(other))
+            {
+                return true;
+            }
+        }
+        return false;
+    }
 }
