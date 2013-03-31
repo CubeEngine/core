@@ -37,7 +37,7 @@ public class HomeSubCommands
         "sethome"
     })
     @Command(names = "set", desc = "Set your home", usage = "[HomeName]", min = 1, max = 1, flags = {
-        @Flag(longName = "public", name = "p")
+        @Flag(longName = "public", name = "pub")
     }, permDefault  = PermDefault.TRUE)
     public void setHome(ParameterizedContext context)
     {
@@ -59,7 +59,7 @@ public class HomeSubCommands
             {
                 String name = context.getString(0).toLowerCase();
                 TeleportPoint.Visibility visibility = TeleportPoint.Visibility.PRIVATE;
-                if (context.hasFlag("p"))
+                if (context.hasFlag("pub"))
                 {
                     visibility = TeleportPoint.Visibility.PUBLIC;
                     if (tpManager.getHome(name) != null)
@@ -101,7 +101,7 @@ public class HomeSubCommands
     {
         if (context.getSender() instanceof User)
         {
-            User sender = (User) context.getSender(); //TODO console
+            User sender = (User) context.getSender();
             Home home;
             if (context.hasParam("home"))
             {
@@ -219,8 +219,8 @@ public class HomeSubCommands
     @Command(names = {
         "list"
     }, desc = "List homes you can access", permDefault = PermDefault.TRUE, min = 0, max = 0, flags = {
-            @Flag(name = "p", longName = "public"),
-            @Flag(name = "P", longName = "private"),
+            @Flag(name = "pub", longName = "public"),
+            @Flag(name = "priv", longName = "private"),
             @Flag(name = "o", longName = "owned"),
             @Flag(name = "i", longName = "invited")
     })
@@ -229,8 +229,8 @@ public class HomeSubCommands
         if (!context.isSender(User.class))
         {
             int mask = context.getFlagCount() == 0 ? tpManager.ALL : 0;
-            if (context.hasFlag("p")) mask |= tpManager.PUBLIC;
-            if (context.hasFlag("P")) mask |= tpManager.PRIVATE;
+            if (context.hasFlag("pub")) mask |= tpManager.PUBLIC;
+            if (context.hasFlag("priv")) mask |= tpManager.PRIVATE;
 
             context.sendTranslated("&eHere is a list of the homes: ");
             for (Home home : tpManager.listHomes(mask))
@@ -242,8 +242,8 @@ public class HomeSubCommands
 
         User user = (User)context.getSender();
         int mask = context.getFlagCount() == 0 ? tpManager.ALL : 0;
-        if (context.hasFlag("p")) mask |= tpManager.PUBLIC;
-        if (context.hasFlag("P")) mask |= tpManager.PRIVATE;
+        if (context.hasFlag("pub")) mask |= tpManager.PUBLIC;
+        if (context.hasFlag("priv")) mask |= tpManager.PRIVATE;
         if (context.hasFlag("o")) mask |= tpManager.OWNED;
         if (context.hasFlag("i")) mask |= tpManager.INVITED;
         Set<Home> homes = tpManager.listHomes(user, mask);

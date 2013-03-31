@@ -33,7 +33,7 @@ public class WarpSubCommands
     @Command(names = {
     "create", "make"
     }, flags = {
-            @Flag(name = "p", longName = "private")
+            @Flag(name = "priv", longName = "private")
     }, desc = "Create a warp", min = 1, max = 1)
     public void createWarp(ParameterizedContext context)
     {
@@ -41,7 +41,7 @@ public class WarpSubCommands
         {
             User sender = (User) context.getSender();
             String name = context.getString(0);
-            if (telePointManager.hasWarp(name) && !context.hasFlag("p"))
+            if (telePointManager.hasWarp(name) && !context.hasFlag("priv"))
             {
                 context.sendTranslated("A public warp by that name already exist! maybe you want to include the -private flag?");
                 return;
@@ -52,7 +52,7 @@ public class WarpSubCommands
                 return;
             }
             Location loc = sender.getLocation();
-            Warp warp = telePointManager.createWarp(loc, name, sender, (context.hasFlag("p") ? TeleportPoint.Visibility.PRIVATE : TeleportPoint.Visibility.PUBLIC));
+            Warp warp = telePointManager.createWarp(loc, name, sender, (context.hasFlag("priv") ? TeleportPoint.Visibility.PRIVATE : TeleportPoint.Visibility.PUBLIC));
             context.sendTranslated("Your warp have been created");
             return;
         }

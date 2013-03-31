@@ -9,7 +9,7 @@
 
   <artifactId>travel</artifactId>
   <name>Travel</name>
-  <description>Travel everywhere!</description>
+  <description>Travel anywhere!</description>
 
   <dependencies>
     <dependency>
