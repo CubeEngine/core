@@ -457,6 +457,7 @@ public class Lookup
                                     this.getPrettyName(entry.getNewBlock()));
                 break;
             case BLOCK_FORM:
+                //TODO attach
                 user.sendTranslated("&6%s &aformed naturally!",
                                     this.getPrettyName(entry.getNewBlock()));
                 break;
@@ -465,17 +466,21 @@ public class Lookup
                                     this.getPrettyName(entry.getNewBlock()));
                 break;
             case ENTITY_FORM:
+                //TODO attach
                 user.sendTranslated("&6%s &aformed &6%s&a!",
                                     this.getPrettyName(entry.getCauserEntity()),
                                     this.getPrettyName(entry.getNewBlock()));
                 break;
             case FIRE_SPREAD:
+                //TODO attach
                 user.sendTranslated("&aFire spreaded!");
                 break;
             case FIREBALL_IGNITE:
+                //TODO attach
                 user.sendTranslated("&aFire got set by a FireBall!");
                 break;
             case LIGHTER:
+                //TODO attach
                 user.sendTranslated("&2%s &aset fire!",
                             entry.getCauserUser().getDisplayName());
                 break;
@@ -486,23 +491,98 @@ public class Lookup
                 user.sendTranslated("&aFire got set by a lightning strike!");
                 break;
             case BLOCK_SPREAD:
+                //TODO attach
                 user.sendTranslated("&6%s&a spreaded!",
                                     this.getPrettyName(entry.getNewBlock()));
                 break;
             case WATER_FLOW:
+                //TODO attach
                 user.sendTranslated("&aJust some water flowing.");
                 break;
             case LAVA_FLOW:
+                //TODO attach
                 user.sendTranslated("&aLava flowing.");
                 break;
             case OTHER_IGNITE:
                 user.sendTranslated("&aFire got set by an explosion or smth else!");
+                break;
+            case BLOCK_SHIFT:
+                //TODO attach
+                user.sendTranslated("&6%s&a got moved away by a Piston!",
+                                    this.getPrettyName(entry.getOldBlock()));
+                break;
+            case BLOCK_FALL:
+                user.sendTranslated("&6%s&a did fall to a lower place!",
+                                    this.getPrettyName(entry.getOldBlock()));
+                break;
+            case SIGN_CHANGE:
+                user.sendTranslated("&aThis is a Signchange"); //TODO
+                break;
+            case SHEEP_EAT:
+                user.sendTranslated("&aA sheep ate all the grass!");
+                break;
+            case BONEMEAL_USE:
+                //TODO attach
+                user.sendTranslated("&2%s &aused bonemeal!", //TODO getMaterial from additionalData / or better put it into block and also add byte data
+                                    entry.getCauserUser().getDisplayName());
+                break;
+            case LEVER_USE:
+                // TODO get data from old block and say if switch on or off
+                user.sendTranslated("&2%s &aused the lever!",
+                                    entry.getCauserUser().getDisplayName());
+                break;
+            case REPEATER_CHANGE:
+                // TODO attach (show the actual change no change -> fiddled around but did not change anything)
+                user.sendTranslated("&2%s &amanipulated the repeater!", //TODO data to what?
+                                    entry.getCauserUser().getDisplayName());
+                break;
+            case NOTEBLOCK_CHANGE:
+                // TODO attach (show the actual change no change -> fiddled around but did not change anything)
+                user.sendTranslated("&2%s &amanipulated the noteblock!", //TODO data to what?
+                                    entry.getCauserUser().getDisplayName());
+                break;
+            case DOOR_USE:
+                //TODO open / close   attach
+                user.sendTranslated("&2%s &aused the door!",
+                                    entry.getCauserUser().getDisplayName());
+                break;
+            case CAKE_EAT:
+                //TODO attach / newstate
+                user.sendTranslated("&2%s &aate a bit of cake!",
+                                    entry.getCauserUser().getDisplayName());
+                break;
+            case COMPARATOR_CHANGE:
+                //TODO attach / newstate
+                user.sendTranslated("&2%s &amanipulated a comparator!",
+                                    entry.getCauserUser().getDisplayName());
+                break;
+            case WORLDEDIT:
+                if (entry.getNewBlock().material.equals(Material.AIR))
+                {
+                    user.sendTranslated("&2%s &aused worldedit to remove &6%s&a!",
+                                        entry.getCauserUser().getDisplayName(),
+                                       this.getPrettyName(entry.getOldBlock()));
+                }
+                else if (entry.getOldBlock().material.equals(Material.AIR))
+                {
+                    user.sendTranslated("&2%s &aused worldedit to place &6%s&a!",
+                                        entry.getCauserUser().getDisplayName(),
+                                        this.getPrettyName(entry.getNewBlock()));
+                }
+                else
+                {
+                    user.sendTranslated("&2%s &aused worldedit to replace &6%s&a with &6%s&a!",
+                                        entry.getCauserUser().getDisplayName(),
+                                        this.getPrettyName(entry.getOldBlock()),
+                                        this.getPrettyName(entry.getNewBlock()));
+                }
                 break;
             //TODO more
             default:
                 user.sendMessage("Something happened there for sure!");
             }
         }
+        user.sendMessage("Yeah thats all for now!");
     }
 
     private String getPrettyName(EntityType entityType)
