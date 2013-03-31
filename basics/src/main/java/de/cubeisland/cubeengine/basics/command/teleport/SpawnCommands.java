@@ -153,6 +153,11 @@ public class SpawnCommands
                 context.sendTranslated("&cUser &2%s &cnot found!", context.getString(0));
                 return;
             }
+            if (!user.isOnline())
+            {
+                context.sendTranslated("&cYou cannot teleport an offline player to spawn!");
+                return;
+            }
             if (!force && BasicsPerm.COMMAND_SPAWN_PREVENT.isAuthorized(user))
             {
                 context.sendTranslated("&cYou are not allowed to spawn %s!", user.getName());

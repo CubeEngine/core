@@ -74,6 +74,11 @@ public class TeleportCommands
             context.sendTranslated("&cUser &2%s &cnot found!", context.getString(0));
             return;
         }
+        if (!target.isOnline())
+        {
+            context.sendTranslated("&cTeleportation only works with online players!");
+            return;
+        }
         boolean force = context.hasFlag("f") && BasicsPerm.COMMAND_TP_FORCE.isAuthorized(context.getSender());
         if (context.hasArg(1)) //tp player1 player2
         {
@@ -82,6 +87,11 @@ public class TeleportCommands
             if (target == null)
             {
                 context.sendTranslated("&cUser &2%s &cnot found!", context.getString(1));
+                return;
+            }
+            if (!target.isOnline())
+            {
+                context.sendTranslated("&cTeleportation only works with online players!");
                 return;
             }
             if (target != context.getSender() && !BasicsPerm.COMMAND_TP_OTHER.isAuthorized(context.getSender())) // teleport other persons
@@ -160,6 +170,11 @@ public class TeleportCommands
             context.sendTranslated("&cUser &2%s &cnot found!", context.getString(0));
             return;
         }
+        if (!user.isOnline())
+        {
+            context.sendTranslated("&cYou cannot teleport to an offline player!");
+            return;
+        }
         boolean force = context.hasFlag("f") && BasicsPerm.COMMAND_TPALL_FORCE.isAuthorized(context.getSender());
         boolean safe = !context.hasFlag("u");
         if (!force && BasicsPerm.TELEPORT_PREVENT_TPTO.isAuthorized(user))
@@ -204,6 +219,11 @@ public class TeleportCommands
         if (target == null)
         {
             context.sendTranslated("&cUser &2%s &cnot found!", context.getString(0));
+            return;
+        }
+        if (!target.isOnline())
+        {
+            context.sendTranslated("&cYou cannot teleport an offline player to you!");
             return;
         }
         boolean force = context.hasFlag("f") && BasicsPerm.COMMAND_TPHERE_FORCE.isAuthorized(context.getSender());
@@ -265,7 +285,7 @@ public class TeleportCommands
         }
     }
 
-    @Command(desc = "Teleport a directly to you.", usage = "<x> [y] <z> [world <world>]", min = 2, max = 4, params = @Param(names = {
+    @Command(desc = "Direct teleport to a coordinate.", usage = "<x> [y] <z> [world <world>]", min = 2, max = 4, params = @Param(names = {
         "world", "w"
     }, type = World.class), flags = @Flag(longName = "unsafe", name = "u"))
     public void tppos(ParameterizedContext context)

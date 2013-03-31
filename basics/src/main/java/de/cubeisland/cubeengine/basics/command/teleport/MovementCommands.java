@@ -238,6 +238,11 @@ public class MovementCommands
                 context.sendTranslated("&cUser &2%s &cnot found!", context.getString(0));
                 return;
             }
+            if (!user.isOnline())
+            {
+                context.sendTranslated("&cYou cannot moove an offline player!");
+                return;
+            }
             Location loc = sender.getTargetBlock(null, 350).getLocation();
             if (loc.getBlock().getType().equals(Material.AIR))
             {
@@ -287,6 +292,11 @@ public class MovementCommands
         if (user == null)
         {
             context.sendTranslated("&cUser &2%s &cnot found!", context.getString(0));
+            return;
+        }
+        if (!user.isOnline() || !sender.isOnline())
+        {
+            context.sendTranslated("&cYou cannot moove an offline player!");
             return;
         }
         if (user == sender)
