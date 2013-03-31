@@ -69,7 +69,7 @@ public class DisplayOnlinePlayerListEvent extends Event implements Cancellable
         return grouped;
     }
 
-    public CommandSender getCommand()
+    public CommandSender getCommandSender()
     {
         return this.sender;
     }

@@ -37,6 +37,7 @@ import org.bukkit.scheduler.BukkitScheduler;
 import de.cubeisland.cubeengine.core.bukkit.BukkitCore;
 import de.cubeisland.cubeengine.core.command.CommandSender;
 import de.cubeisland.cubeengine.core.filesystem.FileManager;
+import de.cubeisland.cubeengine.core.logger.LogLevel;
 import de.cubeisland.cubeengine.core.module.Module;
 import de.cubeisland.cubeengine.core.permission.Permission;
 import de.cubeisland.cubeengine.core.util.ChatFormat;
@@ -300,6 +301,7 @@ public class UserManager implements Cleanable
     {
         synchronized (this.cachedUsers)
         {
+            this.core.getLog().log(LogLevel.DEBUG,"User "+ user.getName()+ " cached!");
             this.cachedUsers.put(user.getName(), user);
             this.cachedUsers.put(user.getKey(), user);
             this.attachDefaults(user);
@@ -310,6 +312,7 @@ public class UserManager implements Cleanable
     {
         synchronized (this.cachedUsers)
         {
+            this.core.getLog().log(LogLevel.DEBUG,"Removed cached user "+ user.getName()+ "!");
             this.cachedUsers.remove(user.getName());
             this.cachedUsers.remove(user.getKey());
             user.detachAll();
