@@ -469,7 +469,35 @@ public class Lookup
                                     this.getPrettyName(entry.getCauserEntity()),
                                     this.getPrettyName(entry.getNewBlock()));
                 break;
-
+            case FIRE_SPREAD:
+                user.sendTranslated("&aFire spreaded!");
+                break;
+            case FIREBALL_IGNITE:
+                user.sendTranslated("&aFire got set by a FireBall!");
+                break;
+            case LIGHTER:
+                user.sendTranslated("&2%s &aset fire!",
+                            entry.getCauserUser().getDisplayName());
+                break;
+            case LAVA_IGNITE:
+                user.sendTranslated("&aFire got set by lava!");
+                break;
+            case LIGHTNING:
+                user.sendTranslated("&aFire got set by a lightning strike!");
+                break;
+            case BLOCK_SPREAD:
+                user.sendTranslated("&6%s&a spreaded!",
+                                    this.getPrettyName(entry.getNewBlock()));
+                break;
+            case WATER_FLOW:
+                user.sendTranslated("&aJust some water flowing.");
+                break;
+            case LAVA_FLOW:
+                user.sendTranslated("&aLava flowing.");
+                break;
+            case OTHER_IGNITE:
+                user.sendTranslated("&aFire got set by an explosion or smth else!");
+                break;
             //TODO more
             default:
                 user.sendMessage("Something happened there for sure!");
