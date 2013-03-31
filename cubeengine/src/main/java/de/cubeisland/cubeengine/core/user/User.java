@@ -246,7 +246,7 @@ public class User extends UserBase implements Model<Long>, CommandSender, Attach
 
     public String translate(String message, Object... params)
     {
-        return this.core.getI18n().translate(this.locale, message, params);
+        return this.core.getI18n().translate(this.getLocale(), message, params);
     }
 
     /**
@@ -281,8 +281,8 @@ public class User extends UserBase implements Model<Long>, CommandSender, Attach
         Player onlinePlayer = this.offlinePlayer.getPlayer();
         if (onlinePlayer != null)
         {
-            language = this.core.getI18n().getLanguage(BukkitUtils.getLocaleFromSender(this.core
-                                                                                           .getI18n(), onlinePlayer));
+            language = this.core.getI18n().getLanguage(
+                BukkitUtils.getLocaleFromSender(this.core.getI18n(), onlinePlayer));
         }
         if (language == null)
         {
