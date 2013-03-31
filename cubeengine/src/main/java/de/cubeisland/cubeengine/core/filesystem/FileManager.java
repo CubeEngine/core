@@ -1,11 +1,5 @@
 package de.cubeisland.cubeengine.core.filesystem;
 
-import de.cubeisland.cubeengine.core.Core;
-import de.cubeisland.cubeengine.core.CubeEngine;
-import de.cubeisland.cubeengine.core.logger.LogLevel;
-import de.cubeisland.cubeengine.core.util.Cleanable;
-import org.apache.commons.lang.Validate;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -16,6 +10,13 @@ import java.io.OutputStream;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.logging.Logger;
+
+import de.cubeisland.cubeengine.core.Core;
+import de.cubeisland.cubeengine.core.CubeEngine;
+import de.cubeisland.cubeengine.core.logger.LogLevel;
+import de.cubeisland.cubeengine.core.util.Cleanable;
+
+import org.apache.commons.lang.Validate;
 
 import static de.cubeisland.cubeengine.core.CubeEngine.runsOnWindows;
 import static de.cubeisland.cubeengine.core.logger.LogLevel.*;
@@ -55,6 +56,12 @@ public class FileManager implements Cleanable
         }
         this.dataFolder = dataFolder;
 
+        final File linkSource = new File(System.getProperty("user.dir", "."), CubeEngine.class.getSimpleName());
+        if (!isSymLink(linkSource) && !createSymLink(linkSource, this.dataFolder))
+        {
+            logger.log(NOTICE, "Linking to the CubeEngine directory failed! This can be ignored.");
+        }
+
         this.languageDir = new File(this.dataFolder, "language");
         if (!this.languageDir.isDirectory() && !this.languageDir.mkdirs())
         {
@@ -83,12 +90,6 @@ public class FileManager implements Cleanable
         if (!this.modulesDir.canWrite() && !this.modulesDir.setWritable(true, true))
         {
             throw new IOException("The modules folder is not writable: " + this.modulesDir.getAbsolutePath());
-        }
-
-        final File linkSource = new File(System.getProperty("user.dir", "."), "modules");
-        if (!isSymLink(linkSource) && !createSymLink(linkSource, this.modulesDir))
-        {
-            logger.log(NOTICE, "Linking to the modules directory failed! This can be ignored.");
         }
 
         this.tempDir = new File(this.dataFolder, "temp");

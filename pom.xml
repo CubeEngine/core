@@ -57,6 +57,29 @@
     </snapshotRepository>
   </distributionManagement>
 
+  <organization>
+    <name>Cube Island</name>
+    <url>https://cubeisland.de</url>
+  </organization>
+
+  <licenses>
+    <license>
+      <name>GNU General Public License Version 3</name>
+      <url>http://www.gnu.org/licenses/gpl.txt</url>
+      <distribution>repo</distribution>
+    </license>
+  </licenses>
+
+  <ciManagement>
+    <system>jenkins</system>
+    <url>http://ci.cubeisland.de/job/CubeEngine</url>
+  </ciManagement>
+
+  <issueManagement>
+    <system>jira</system>
+    <url>http://bugs.engine.cubeisland.de/browse/CE</url>
+  </issueManagement>
+
   <scm>
     <url>scm:git:https://github.com/CubeEngineDev/CubeEngine</url>
     <connection>scm:git:https://github.com/CubeEngineDev/CubeEngine</connection>
@@ -85,28 +108,8 @@
     </pluginRepository>
   </pluginRepositories>
 
+  <!-- Test dependencies -->
   <dependencies>
-    <dependency>
-      <groupId>org.bukkit</groupId>
-      <artifactId>bukkit</artifactId>
-      <version>${bukkitVersion}</version>
-      <type>jar</type>
-    </dependency>
-    <dependency>
-      <groupId>org.bukkit</groupId>
-      <artifactId>craftbukkit</artifactId>
-      <version>${bukkitVersion}</version>
-      <type>jar</type>
-    </dependency>
-    <dependency>
-      <groupId>org.bukkit</groupId>
-      <artifactId>minecraft-server</artifactId>
-      <version>${minecraftVersion}</version>
-      <type>jar</type>
-    </dependency>
-    <!--
-        Test dependencies
-    -->
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
@@ -228,6 +231,19 @@
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-shade-plugin</artifactId>
         <version>2.0</version>
+        <configuration>
+          <filters>
+            <filter>
+              <artifact>*:*</artifact>
+              <excludes>
+                <exclude>lib/**</exclude>
+                <exclude>templates/**</exclude>
+                <exclude>META-INF/**</exclude>
+                <exclude>**/*.java</exclude>
+              </excludes>
+            </filter>
+          </filters>
+        </configuration>
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
@@ -259,6 +275,18 @@
           <optimize>true</optimize>
           <showDeprecation>true</showDeprecation>
           <showWarnings>true</showWarnings>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>com.mycila.maven-license-plugin</groupId>
+        <artifactId>maven-license-plugin</artifactId>
+        <version>1.9.0</version>
+        <configuration>
+          <header>${basedir}/header.txt</header>
+          <aggregate>true</aggregate>
+          <includes>
+            <include>*.java</include>
+          </includes>
         </configuration>
       </plugin>
     </plugins>
