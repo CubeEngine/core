@@ -24,24 +24,39 @@ public final class RulebookManager
     private final Rulebook module;
     private Map<Locale, String[]> rulebooks;
 
-    public RulebookManager( Rulebook module )
+    public RulebookManager(Rulebook module)
     {
         this.module = module;
 
         this.rulebooks = new HashMap<Locale, String[]>();
 
-        for( File book : RuleBookFile.getLanguageFiles( this.module.getFolder() ) )
+        for(File book : RuleBookFile.getLanguageFiles(this.module.getFolder()))
         {
-            Language language = this.module.getCore().getI18n().searchLanguages( StringUtils.stripFileExtension( book.getName() ) ).iterator().next();
+            Language language = this.getLanguage(StringUtils.stripFileExtension(book.getName()));
             try
             {
-                rulebooks.put( language.getLocale(), RuleBookFile.convertToPages( book ) );
+                rulebooks.put(language.getLocale(), RuleBookFile.convertToPages(book));
             }
-            catch ( IOException ex )
+            catch(IOException ex)
             {
-                this.module.getLog().log( LogLevel.ERROR, "Can't read the file {0}", book.getName() );
+                this.module.getLog().log(LogLevel.ERROR, "Can't read the file {0}", book.getName());
             }
         }
+    }
+
+    public Language getLanguage(String name)
+    {
+        return this.getLanguage(name, 2);
+    }
+
+    public Language getLanguage(String name, int difference)
+    {
+        Set<Language> languages = this.module.getCore().getI18n().searchLanguages(name, difference);
+        if(languages.size() == 1)
+        {
+            return languages.iterator().next();
+        }
+        return null;
     }
 
     public Collection<Locale> getLocales()
@@ -49,107 +64,90 @@ public final class RulebookManager
         return this.rulebooks.keySet();
     }
 
-    public boolean contains( Locale locale )
+    public boolean contains(String languageName)
     {
-        return this.contains( locale, 2 );
+        return this.contains(languageName, 2);
     }
 
-    public boolean contains( Locale locale, int editDistance )
+    public boolean contains(String languageName, int editDistance)
     {
-        Set<Language> languages = this.module.getCore().getI18n().searchLanguages( locale.toString(), editDistance );
-        return languages.size() == 1 && this.rulebooks.containsKey( languages.iterator().next().getLocale() );
-    }
-
-    public String[] getPages( String language )
-    {
-        return this.getPages( language, 2 );
-    }
-
-    public String[] getPages( String language, int editDistance )
-    {
-        Set<Language> languages = this.module.getCore().getI18n().searchLanguages( language, editDistance );
-        if( languages.size() == 1 )
+        Language language = this.getLanguage(languageName, editDistance);
+        if(language != null)
         {
-            return this.rulebooks.get( languages.iterator().next().getLocale() );
+            return this.contains(language.getLocale());
         }
-        return null;
+        return false;
     }
 
-    public ItemStack getBook( String language )
+    public boolean contains(Locale locale)
     {
-        Set<Language> languages = this.module.getCore().getI18n().searchLanguages( language );
-        if( languages.size() != 1 )
-        {
-            return null;
-        }
-        Locale locale = languages.iterator().next().getLocale();
+        return this.rulebooks.containsKey(locale);
+    }
 
-        if( this.contains( locale ) )
+    public String[] getPages(Locale locale)
+    {
+        return this.rulebooks.get(locale);
+    }
+
+    public ItemStack getBook(Locale locale)
+    {
+        if(this.contains(locale))
         {
-            ItemStack ruleBook = new ItemStack( Material.WRITTEN_BOOK );
-            BookMeta meta = (( BookMeta ) ruleBook.getItemMeta());
-            meta.setAuthor( Bukkit.getServerName() );
-            meta.setTitle( this.module.getCore().getI18n().translate(language, "rulebook", "Rulebook") );
-            meta.setPages( this.getPages( language ) );
+            ItemStack ruleBook = new ItemStack(Material.WRITTEN_BOOK);
+            BookMeta meta = ((BookMeta) ruleBook.getItemMeta());
+            meta.setAuthor(Bukkit.getServerName());
+            meta.setTitle(this.module.getCore().getI18n().translate(locale, "rulebook", "Rulebook"));
+            meta.setPages(this.getPages(locale));
 
             List<String> lore = new ArrayList<String>();
-            lore.add( locale.getLanguage() );
+            lore.add(locale.getLanguage());
 
-            meta.setLore( lore );
-            ruleBook.setItemMeta( meta );
+            meta.setLore(lore);
+            ruleBook.setItemMeta(meta);
 
             return ruleBook;
         }
         return null;
     }
 
-    public boolean removeBook( String language ) throws IOException
+    public boolean removeBook(Locale locale) throws IOException
     {
-        Set<Language> languages = this.module.getCore().getI18n().searchLanguages( language );
         boolean value = false;
 
-        if( languages.size() == 1 )
+        for(File file : RuleBookFile.getLanguageFiles(this.module.getFolder()))
         {
-            Locale locale = languages.iterator().next().getLocale();
-
-            for( File file : RuleBookFile.getLanguageFiles( this.module.getFolder() ) )
+            Locale fileLocale = this.getLanguage(StringUtils.stripFileExtension(file.getName())).getLocale();
+            if(fileLocale.equals(locale))
             {
-                Locale fileLocale = this.module.getCore().getI18n().searchLanguages( StringUtils.stripFileExtension( file.getName() ) ).iterator().next().getLocale();
-
-                if( fileLocale.equals( locale ) )
+                value = file.delete();
+                if(!value)
                 {
-                    value = file.delete();
-                    if( !value )
-                    {
-                        throw new IOException( "Can't delete the file " + file.getName() );
-                    }
+                    throw new IOException("Can't delete the file " + file.getName());
                 }
             }
-            if( value )
-            {
-                this.rulebooks.remove( locale );
-            }
+        }
+        if(value)
+        {
+            this.rulebooks.remove(locale);
         }
         return value;
     }
 
-    public void addBook( ItemStack book, Locale language )
+    public void addBook(ItemStack book, Locale locale)
     {
-        Set<Language> languages = this.module.getCore().getI18n().searchLanguages(language.toString());
-        if( !this.contains( language ) && languages.size() == 1 )
+        if(!this.contains(locale))
         {
-            Language lang = languages.iterator().next();
             try
             {
-                File file = new File( this.module.getFolder().getAbsoluteFile(), lang.getName() + ".txt" );
-                List<String> pages = (( BookMeta ) book.getItemMeta()).getPages();
-                RuleBookFile.createFile( file, pages.toArray( new String[pages.size()] ) );
+                File file = new File(this.module.getFolder().getAbsoluteFile(), locale.getDisplayName() + ".txt");
+                List<String> pages = ((BookMeta) book.getItemMeta()).getPages();
+                RuleBookFile.createFile(file, pages.toArray(new String[pages.size()]));
 
-                this.rulebooks.put( lang.getLocale(), RuleBookFile.convertToPages( file ) );
+                this.rulebooks.put(locale, RuleBookFile.convertToPages(file));
             }
-            catch ( IOException ex )
+            catch(IOException ex)
             {
-                this.module.getLog().log( LogLevel.ERROR, "Error by creating the book" );
+                this.module.getLog().log(LogLevel.ERROR, "Error by creating the book");
             }
         }
     }
