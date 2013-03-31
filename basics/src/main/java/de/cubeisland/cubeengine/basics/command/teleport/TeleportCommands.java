@@ -177,7 +177,7 @@ public class TeleportCommands
             }
             teleport(user.getCore().getUserManager().getExactUser(player), user.getLocation(), safe, force, true);
         }
-        context.getCore().getUserManager().broadcastMessage("basics", "&aTeleporting everyone to %s", user.getName());
+        context.getCore().getUserManager().broadcastMessage("&aTeleporting everyone to %s", user.getName());
         if (!noTp.isEmpty())
         {
             context.sendTranslated("&eThe following players were not teleported: \n&2%s", StringUtils.implode("&f,&2",noTp));
@@ -258,7 +258,7 @@ public class TeleportCommands
             teleport(sender.getCore().getUserManager().getExactUser(player), sender.getLocation(), safe, force, true);
         }
         context.sendTranslated("&aYou teleported everyone to you!");
-        context.getCore().getUserManager().broadcastMessage("basics", "&aTeleporting everyone to %s", sender.getName());
+        context.getCore().getUserManager().broadcastMessage("&aTeleporting everyone to %s", sender.getName());
         if (!noTp.isEmpty())
         {
             context.sendTranslated("&eThe following players were not teleported: \n&2%s", StringUtils.implode("&f,&2",noTp));

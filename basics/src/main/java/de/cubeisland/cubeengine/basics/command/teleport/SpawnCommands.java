@@ -137,7 +137,7 @@ public class SpawnCommands
                 if (!TeleportCommands.teleport(player, loc, true, force, true))
                     return;
             }
-            this.basics.getCore().getUserManager().broadcastMessage("basics", "&aTeleported everyone to the spawn of %s!", world.getName());
+            this.basics.getCore().getUserManager().broadcastMessage("&aTeleported everyone to the spawn of %s!", world.getName());
             return;
         }
         if (user == null && !context.hasArg(0))

@@ -73,7 +73,7 @@ public class KickBanCommands
             return;
         }
         user.kickPlayer(message);
-        context.getCore().getUserManager().broadcastMessage("basics", "&2%s &4was kicked from the server!", BasicsPerm.KICK_RECEIVEMESSAGE, user.getName());
+        context.getCore().getUserManager().broadcastMessage("&2%s &4was kicked from the server!", BasicsPerm.KICK_RECEIVEMESSAGE, user.getName());
     }
 
     @Command(names = {
