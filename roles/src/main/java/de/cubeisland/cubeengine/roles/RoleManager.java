@@ -255,11 +255,10 @@ public class RoleManager
                 {
                     roleList.add(provider.getRole(roleName));
                 }
+                System.out.print(mainWorldID+": "+ StringUtils.implode(", ", rolesInCurrentWorld));//TODO remove
             }
             result.put(mainWorldID,roleList); // mainworld of provider
             TLongObjectHashMap<Triplet<Boolean, Boolean, Boolean>> worlds = provider.getWorlds();
-
-            System.out.print(mainWorldID+": "+ StringUtils.implode(", ", rolesInCurrentWorld));//TODO remove
             for (long worldID : worlds.keys()) // mirrored worlds of provider
             {
                 if (worldID == mainWorldID)
@@ -289,8 +288,8 @@ public class RoleManager
                             {
                                 roleList.add(otherWorldProvider.getRole(roleName));
                             }
+                            System.out.print(worldID+": "+ StringUtils.implode(",", rolesInCurrentWorld));//TODO remove
                         }
-                        System.out.print(worldID+": "+ StringUtils.implode(",", rolesInCurrentWorld));//TODO remove
                     }
                     Set<Role> replaced = result.put(worldID,roleList);
                     if (replaced != null)
