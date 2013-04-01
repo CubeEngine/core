@@ -59,7 +59,7 @@ public class ListCommand
             @Override
             public int compare(User o1, User o2)
             {
-                return o1.getDisplayName().compareTo(o2.getDisplayName());
+                return String.CASE_INSENSITIVE_ORDER.compare(o1.getDisplayName(),o2.getDisplayName());
             }
         };
         Collections.sort(onlineList,comparator);
