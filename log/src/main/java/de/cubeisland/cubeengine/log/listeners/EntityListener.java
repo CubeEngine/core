@@ -112,7 +112,7 @@ public class EntityListener implements Listener
                 if (event.getEntity() instanceof ItemFrame)
                 {
                     ItemStack itemStack = ((ItemFrame) event.getEntity()).getItem();
-                    String itemInFrame = this.manager.getContainerListener().serializeItemData(new ItemData(itemStack));
+                    String itemInFrame = new ItemData(itemStack).serialize(this.module.getObjectMapper());
                     this.manager.queueBlockChangeLog(location, HANGING_BREAK, causer,
                           ITEM_FRAME.name(), (byte)0, AIR.name(), (byte)0, itemInFrame);
                 }
@@ -157,7 +157,7 @@ public class EntityListener implements Listener
             if (event.getEntity() instanceof ItemFrame)
             {
                 ItemStack itemStack = ((ItemFrame) event.getEntity()).getItem();
-                String itemInFrame = this.manager.getContainerListener().serializeItemData(new ItemData(itemStack));
+                String itemInFrame = new ItemData(itemStack).serialize(this.module.getObjectMapper());
                 this.manager.queueBlockChangeLog(location, HANGING_BREAK, causer, ITEM_FRAME.name(), (byte)0, AIR
                     .name(), (byte)0, itemInFrame);
             }
@@ -178,13 +178,13 @@ public class EntityListener implements Listener
         User user = um.getExactUser(event.getPlayer());
         if (event.getEntity() instanceof ItemFrame)
         {
-            this.manager.queueBlockChangeLog(event.getEntity().getLocation(), HANGING_PLACE, user.key, AIR
-                .name(), (byte)0, ITEM_FRAME.name(), (byte)0, null);
+            this.manager.queueBlockChangeLog(event.getEntity().getLocation(), HANGING_PLACE, user.key,
+                 AIR.name(), (byte)0, ITEM_FRAME.name(), (byte)0, null);
         }
         else if (event.getEntity() instanceof Painting)
         {
-            this.manager.queueBlockChangeLog(event.getEntity().getLocation(), HANGING_PLACE, user.key, AIR
-                .name(), (byte)0, PAINTING.name(), (byte)((Painting)event.getEntity()).getArt().getId(), null);
+            this.manager.queueBlockChangeLog(event.getEntity().getLocation(), HANGING_PLACE, user.key,
+                 AIR.name(), (byte)0, PAINTING.name(), (byte)((Painting)event.getEntity()).getArt().getId(), null);
         }
     }
 
@@ -196,7 +196,7 @@ public class EntityListener implements Listener
         {
             for (ItemStack itemStack : event.getDrops())
             {
-                String itemData = this.manager.getContainerListener().serializeItemData(new ItemData(itemStack));
+                String itemData = new ItemData(itemStack).serialize(this.module.getObjectMapper());
                 long causer;
                 if (event.getEntity() instanceof Player)
                 {
@@ -322,7 +322,7 @@ public class EntityListener implements Listener
         if (this.manager.isIgnored(event.getVehicle().getWorld(), VEHICLE_PLACE)) return;
         Location location = event.getVehicle().getLocation();
         Player player = this.plannedVehiclePlace.get(location);
-        long vehicle = event.getVehicle().getType().getTypeId();
+        long vehicle = -event.getVehicle().getType().getTypeId();
         if (player != null)
         {
             long userkey = um.getExactUser(player).key;
@@ -337,7 +337,6 @@ public class EntityListener implements Listener
     {
         if (this.manager.isIgnored(event.getVehicle().getWorld(),VEHICLE_BREAK)) return;
         Long causer = null;
-
         if (event.getAttacker() != null)
         {
             if (event.getAttacker() instanceof Player)
@@ -369,7 +368,7 @@ public class EntityListener implements Listener
     public void onVehicleEnter(final VehicleEnterEvent event)
     {
         if (this.manager.isIgnored(event.getVehicle().getWorld(),VEHICLE_ENTER)) return;
-        long vehicle = event.getVehicle().getType().getTypeId();
+        long vehicle = -event.getVehicle().getType().getTypeId();
         if (event.getEntered() instanceof Player)
         {
             long userKey = um.getExactUser((Player)event.getEntered()).key;
@@ -386,7 +385,7 @@ public class EntityListener implements Listener
     public void onVehicleExit(final VehicleExitEvent event)
     {
         if (this.manager.isIgnored(event.getVehicle().getWorld(),VEHICLE_EXIT)) return;
-        long vehicle = event.getVehicle().getType().getTypeId();
+        long vehicle = -event.getVehicle().getType().getTypeId();
         if (event.getExited() instanceof Player)
         {
             long userKey = um.getExactUser((Player)event.getExited()).key;
@@ -423,7 +422,7 @@ public class EntityListener implements Listener
             case BUILD_WITHER:
             case BREEDING:
                 if (this.manager.isIgnored(world, OTHER_SPAWN)) return;
-                this.manager.queueLog(event.getLocation(), OTHER_SPAWN,-event.getEntityType().getTypeId()); //TODO get player in data
+                this.manager.queueLog(event.getLocation(), OTHER_SPAWN,-event.getEntityType().getTypeId()); //TODO get player in datag
                 return;
             //case SPAWNER_EGG: //is already done
         }
@@ -541,8 +540,8 @@ public class EntityListener implements Listener
     public void onItemDrop(PlayerDropItemEvent event)
     {
         if (this.manager.isIgnored(event.getPlayer().getWorld(),ITEM_DROP)) return;
-        String itemData = this.manager.getContainerListener().serializeItemData(new ItemData(event.getItemDrop()
-                                                                                                  .getItemStack()));
+        String itemData =new ItemData(event.getItemDrop().getItemStack())
+                        .serialize(this.module.getObjectMapper());
         this.manager.queueInteractionLog(event.getPlayer().getLocation(), ITEM_DROP, event.getPlayer(), itemData);
     }
 
@@ -550,8 +549,7 @@ public class EntityListener implements Listener
     public void onItemPickup(PlayerPickupItemEvent  event)
     {
         if (this.manager.isIgnored(event.getPlayer().getWorld(),ITEM_PICKUP)) return;
-        String itemData = this.manager.getContainerListener().serializeItemData(new ItemData(event.getItem()
-                                                                                                  .getItemStack()));
+        String itemData = new ItemData(event.getItem().getItemStack()).serialize(this.module.getObjectMapper());
         this.manager.queueInteractionLog(event.getPlayer().getLocation(), ITEM_PICKUP, event.getPlayer(), itemData);
     }
 
@@ -578,11 +576,10 @@ public class EntityListener implements Listener
     public void onEnchant(EnchantItemEvent event)
     {
         if (this.manager.isIgnored(event.getEnchanter().getWorld(),ENCHANT_ITEM)) return;
-        String applied = this.serializeEnchantments(event.getEnchantsToAdd());
-        User user = um.getExactUser(event.getEnchanter());
-        this.manager.queueItemLog(event.getEnchanter().getLocation(), ENCHANT_ITEM, user.key, event.getItem().getType()
-                                                                                                   .name(), event
-                                      .getItem().getDurability(), applied);
+        ItemData itemData = new ItemData(event.getItem());
+        itemData.enchantments.putAll(event.getEnchantsToAdd());
+        this.manager.queueInteractionLog(event.getEnchanter().getLocation(), ENCHANT_ITEM, event.getEnchanter(),
+                                         itemData.serialize(this.module.getObjectMapper()));
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
@@ -590,11 +587,9 @@ public class EntityListener implements Listener
     {
         if (this.manager.isIgnored(event.getWhoClicked().getWorld(),CRAFT_ITEM)) return;
         if (!(event.getWhoClicked() instanceof Player)) return;
-        User user = um.getExactUser((Player) event.getWhoClicked());
-        this.manager.queueItemLog(event.getWhoClicked().getLocation(), CRAFT_ITEM, user.key, event.getRecipe()
-                                                                                                  .getResult().getType()
-                                                                                                  .name(), event
-                                      .getRecipe().getResult().getDurability(), null);
+        ItemData itemData = new ItemData(event.getRecipe().getResult());
+        this.manager.queueInteractionLog(event.getWhoClicked().getLocation(), ENCHANT_ITEM, (Player)event.getWhoClicked(),
+                                         itemData.serialize(this.module.getObjectMapper()));
     }
 
     private String serializeData(EntityDamageEvent.DamageCause cause, LivingEntity entity, DyeColor newColor)
@@ -651,15 +646,5 @@ public class EntityListener implements Listener
         json.put("y",location.getBlockY());
         json.put("z",location.getBlockZ());
         return json.toString();
-    }
-
-    private String serializeEnchantments(Map<Enchantment,Integer> enchantsToAdd)
-    {
-        ObjectNode enchs = this.manager.mapper.createObjectNode();
-        for (Entry<Enchantment,Integer> ench : enchantsToAdd.entrySet())
-        {
-            enchs.put(String.valueOf(ench.getKey().getId()),ench.getValue());
-        }
-        return enchs.toString();
     }
 }

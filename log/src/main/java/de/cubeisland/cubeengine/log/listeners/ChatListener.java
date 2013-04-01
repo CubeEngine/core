@@ -35,7 +35,7 @@ public class ChatListener implements Listener
     {
         if (this.manager.isIgnored(event.getPlayer().getWorld(),PLAYER_CHAT)) return;
         if (event.getMessage().trim().isEmpty()) return;
-        this.manager.queueInteractionLog(event.getPlayer().getLocation(), PLAYER_CHAT, event.getPlayer(), event
-            .getMessage());
+        this.manager.queueInteractionLog(event.getPlayer().getLocation(), PLAYER_CHAT, event.getPlayer(),
+                                         event.getMessage());
     }
 }

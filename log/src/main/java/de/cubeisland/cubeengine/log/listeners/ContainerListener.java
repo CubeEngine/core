@@ -72,44 +72,16 @@ public class ContainerListener implements Listener
                 {
                     int amount = itemDataMap.get(itemData);
                     if (amount == 0) continue;
-                    String additional = this.serializeItemData(itemData);
-                    this.manager.queueContainerLog(location, amount < 0 ? ITEM_REMOVE : ITEM_INSERT, user.key, itemData.material, itemData.dura, event
-                        .getInventory().getType().name(), additional);
+                    String additional = itemData.serialize(this.module.getObjectMapper());
+                    this.manager.queueContainerLog(location, amount < 0 ? ITEM_REMOVE : ITEM_INSERT, user.key, itemData.material, itemData.dura,
+                         event.getInventory().getType().name(), additional);
                 }
             }
             this.inventoryChanges.remove(user.key);
         }
     }
 
-    public String serializeItemData(ItemData itemData)
-    {
-        ObjectNode json = this.manager.mapper.createObjectNode();
-        json.put("mats", itemData.material.name());
-        json.put("dura", itemData.dura);
-        json.put("amount", itemData.amount);
-        if (itemData.displayName != null)
-        {
-            json.put("name", itemData.displayName);
-        }
-        if (itemData.lore != null)
-        {
-            ArrayNode lore = json.putArray("lore");
-            for (String loreLine : itemData.lore)
-            {
-                lore.add(loreLine);
-            }
-        }
-        if (itemData.enchantments != null)
-        {
-            ObjectNode enchs = this.manager.mapper.createObjectNode();
-            json.put("enchs",enchs);
-            for (Entry<Enchantment,Integer> ench : itemData.enchantments.entrySet())
-            {
-                enchs.put(String.valueOf(ench.getKey().getId()),ench.getValue());
-            }
-        }
-        return json.toString();
-    }
+
 
     private Location getLocationForHolder(InventoryHolder holder)
     {
@@ -425,7 +397,7 @@ public class ContainerListener implements Listener
         }
         if (this.manager.isIgnored(targetLocation.getWorld(),ITEM_TRANSFER)) return;
 
-        String additional = this.serializeItemData(new ItemData(event.getItem()));
+        String additional = new ItemData(event.getItem()).serialize(this.module.getObjectMapper());
 
         this.manager.queueContainerLog(sourceLocation, ITEM_TRANSFER, null, event.getItem().getType(),
                                        event.getItem().getDurability(), source.getType().name(), additional);

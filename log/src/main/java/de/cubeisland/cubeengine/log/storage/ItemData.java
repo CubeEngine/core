@@ -85,47 +85,69 @@ public class ItemData
         return result;
     }
 
-    public static ItemData deserialize(String data, ObjectMapper mapper)
+    public static ItemData deserialize(JsonNode json)
     {
-        try
+        Material mat = Material.getMaterial(json.get("mats").asText());
+        Short dura = (short)json.get("data").asInt();
+        int amount = json.get("amount").asInt();
+        String name = null;
+        List<String> lore = null;
+        Map<Enchantment,Integer> enchantments = null;
+        if (json.get("name") != null)
         {
-            JsonNode json = mapper.readTree(data);
-            Material mat = Material.getMaterial(json.get("mats").asText());
-            Short dura = (short)json.get("data").asInt();
-            int amount = json.get("amount").asInt();
-            String name = null;
-            List<String> lore = null;
-            Map<Enchantment,Integer> enchantments = null;
-            if (json.get("name") != null)
-            {
-                name = json.get("name").asText();
-            }
-            if (json.get("lore") != null)
-            {
-                lore = new ArrayList<String>();
-                ArrayNode jsonLore = (ArrayNode)json.get("lore");
-                for (JsonNode elem : jsonLore)
-                {
-                    lore.add(elem.asText());
-                }
-            }
-            if (json.get("enchs") != null)
-            {
-                enchantments = new HashMap<Enchantment, Integer>();
-                ObjectNode jsonEnchs = (ObjectNode)json.get("enchs");
-                Iterator<Entry<String,JsonNode>> enchs = jsonEnchs.fields();
-                while (enchs.hasNext())
-                {
-                    Entry<String,JsonNode> entry = enchs.next();
-                    enchantments.put(Enchantment.getById(Integer.valueOf(entry.getKey())),entry.getValue().asInt());
-                }
-            }
-            return new ItemData(mat,dura,amount,name,lore,enchantments);
+            name = json.get("name").asText();
         }
-        catch (Exception ex)
+        if (json.get("lore") != null)
         {
-            throw new IllegalStateException("Error while deserializing ItemData: " + data, ex);
+            lore = new ArrayList<String>();
+            ArrayNode jsonLore = (ArrayNode)json.get("lore");
+            for (JsonNode elem : jsonLore)
+            {
+                lore.add(elem.asText());
+            }
         }
+        if (json.get("enchs") != null)
+        {
+            enchantments = new HashMap<Enchantment, Integer>();
+            ObjectNode jsonEnchs = (ObjectNode)json.get("enchs");
+            Iterator<Entry<String,JsonNode>> enchs = jsonEnchs.fields();
+            while (enchs.hasNext())
+            {
+                Entry<String,JsonNode> entry = enchs.next();
+                enchantments.put(Enchantment.getById(Integer.valueOf(entry.getKey())),entry.getValue().asInt());
+            }
+        }
+        return new ItemData(mat,dura,amount,name,lore,enchantments);
+    }
+
+    public String serialize(ObjectMapper mapper)
+    {
+        ObjectNode json = mapper.createObjectNode();
+        json.put("mats", this.material.name());
+        json.put("dura", this.dura);
+        json.put("amount", this.amount);
+        if (this.displayName != null)
+        {
+            json.put("name", this.displayName);
+        }
+        if (this.lore != null)
+        {
+            ArrayNode lore = json.putArray("lore");
+            for (String loreLine : this.lore)
+            {
+                lore.add(loreLine);
+            }
+        }
+        if (this.enchantments != null)
+        {
+            ObjectNode enchs = mapper.createObjectNode();
+            json.put("enchs",enchs);
+            for (Entry<Enchantment,Integer> ench : this.enchantments.entrySet())
+            {
+                enchs.put(String.valueOf(ench.getKey().getId()),ench.getValue());
+            }
+        }
+        return json.toString();
     }
 
     public ItemStack toItemStack()

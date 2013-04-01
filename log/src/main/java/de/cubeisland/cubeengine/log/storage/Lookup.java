@@ -17,6 +17,7 @@ import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.util.matcher.Match;
 import de.cubeisland.cubeengine.core.util.math.BlockVector3;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import gnu.trove.set.hash.THashSet;
 
@@ -671,13 +672,13 @@ public class Lookup
             {
             user.sendTranslated("&2%s &adied! &f(&6%s&f)",
                                 entry.getUser().getDisplayName(),
-                                entry.getDamageCause().name());
+                                "CAUSE"); //TODO get cause from json
             }
             break;
             case PET_DEATH:
                 if (Match.entity().isTameable(entry.getEntity()))
                 {
-                    ObjectNode json = entry.getAdditional();
+                    JsonNode json = entry.getAdditional();
                     if (json.get("owner") != null)
                     {
                         User owner = this.module.getCore().getUserManager().getExactUser(json.get("owner").asText());
@@ -727,7 +728,7 @@ public class Lookup
             {
             user.sendTranslated("&6%s &adied! &f(&6%s&f)",
                                 this.getPrettyName(entry.getEntity()),
-                                entry.getDamageCause().name());
+                               "CAUSE"); //TODO get cause from json
             }
             break;
             case MONSTER_EGG_USE:

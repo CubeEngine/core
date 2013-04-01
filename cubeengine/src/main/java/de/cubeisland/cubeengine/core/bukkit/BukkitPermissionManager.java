@@ -192,14 +192,14 @@ public class BukkitPermissionManager implements PermissionManager
         while (permission.hasParent())
         {
             parentpermission = permission.getParent();
-            if (parentpermission.canRegister)
-            {
-                return; // parent is not abstract and has to register itself
-            }
             // register the wildcard-permission
             org.bukkit.permissions.Permission parentPerm = this.registerWildcard(module, parentpermission.getName());
             // and bind the child-permission to it
             registeredPerm.addParent(parentPerm,true);
+            if (parentpermission.canRegister)
+            {
+                return; // parent is not abstract and has to register itself
+            }
             // next parent-permission
             registeredPerm = parentPerm;
             permission = parentpermission;
