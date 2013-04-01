@@ -319,9 +319,9 @@ public class QueryManager
                 int z = resultSet.getInt("z");
                 long causer = resultSet.getLong("causer");
                 String block = resultSet.getString("block");
-                Long data = resultSet.getLong("data");
+                long data = resultSet.getLong("data");
                 String newBlock = resultSet.getString("newBlock");
-                Integer newData = resultSet.getInt("newData");
+                int newData = resultSet.getInt("newData");
                 String additionalData = resultSet.getString("additionalData");
                 LogEntry logEntry = new LogEntry(this.module,entryID,timestamp,action,worldId,x,y,z,causer,block,data,newBlock,newData,additionalData);
                 lookup.addLogEntry(logEntry);

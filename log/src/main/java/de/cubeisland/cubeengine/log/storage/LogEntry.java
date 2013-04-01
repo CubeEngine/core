@@ -126,7 +126,7 @@ public class LogEntry implements Comparable<LogEntry>
                 try
                 {
                     ObjectNode json = (ObjectNode)this.module.getLogManager().mapper.readTree(additionalData);
-                    this.damageCause = DamageCause.valueOf(json.get("DmgC").asText());
+                    this.damageCause = DamageCause.valueOf(json.get("dmgC").asText());
                     this.additional = json;
                 }
                 catch (IOException e)
