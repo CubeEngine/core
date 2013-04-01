@@ -14,7 +14,6 @@ import de.cubeisland.cubeengine.core.config.Configuration;
 import de.cubeisland.cubeengine.core.logger.LogLevel;
 import de.cubeisland.cubeengine.core.storage.world.WorldManager;
 import de.cubeisland.cubeengine.core.user.User;
-import de.cubeisland.cubeengine.core.util.Pair;
 import de.cubeisland.cubeengine.core.util.StringUtils;
 import de.cubeisland.cubeengine.core.util.Triplet;
 import de.cubeisland.cubeengine.roles.role.MergedRole;
@@ -25,8 +24,6 @@ import de.cubeisland.cubeengine.roles.provider.GlobalRoleProvider;
 import de.cubeisland.cubeengine.roles.provider.RoleProvider;
 import de.cubeisland.cubeengine.roles.provider.WorldRoleProvider;
 import de.cubeisland.cubeengine.roles.storage.AssignedRole;
-
-import gnu.trove.map.TLongLongMap;
 import gnu.trove.map.hash.THashMap;
 import gnu.trove.map.hash.TLongLongHashMap;
 import gnu.trove.map.hash.TLongObjectHashMap;
@@ -38,11 +35,11 @@ public class RoleManager
 {
     private final File rolesFolder;
     private final Roles module;
-    private TLongObjectHashMap<WorldRoleProvider> providers = new TLongObjectHashMap<WorldRoleProvider>();
+    private TLongObjectHashMap<WorldRoleProvider> providers;
     private GlobalRoleProvider globalProvider;
     private WorldManager worldManager;
-    private Set<WorldRoleProvider> providerSet = new THashSet<WorldRoleProvider>();
-    private TLongLongHashMap userMirrors = new TLongLongHashMap();
+    private Set<WorldRoleProvider> providerSet;
+    private TLongLongHashMap userMirrors;
 
     public RoleManager(Roles rolesModule)
     {
@@ -73,6 +70,9 @@ public class RoleManager
     public void init()
     {
         this.rolesFolder.mkdir();
+        this.providerSet = new THashSet<WorldRoleProvider>();
+        this.providers = new TLongObjectHashMap<WorldRoleProvider>();
+        this.userMirrors = new TLongLongHashMap();
         // Global roles:
         this.globalProvider = new GlobalRoleProvider(module);
         this.globalProvider.loadInConfigurations(rolesFolder);
@@ -391,6 +391,10 @@ public class RoleManager
                         }
                     }
                 }
+            }
+            else
+            {
+                this.module.getLog().log(LogLevel.DEBUG,"Role "+ role.getName() + " already assigned to " + user.getName());
             }
         }
         if (!added)
