@@ -58,6 +58,7 @@ public class UserCommandHelper extends ContainerCommand
     protected UserSpecificRole getUserRole(User user, World world)
     {
         long worldId = this.getWorldId(world);
+        worldId = this.manager.getUserMirror(worldId);
         if (user == null)
         {
             return null;

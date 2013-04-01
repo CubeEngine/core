@@ -242,12 +242,14 @@ public class RoleManager
         System.out.print("getRolesFor "+user.getName()+" "+ reload);//TODO remove
         for (WorldRoleProvider provider : this.providerSet) // iterate all providers
         {
+            System.out.print("RoleProvider "+ provider.getMainWorld());//TODO remove
             long mainWorldID = worldManager.getWorldId(provider.getMainWorld());
             List<String> rolesInCurrentWorld = rolesFromDb.get(mainWorldID);
             Set<Role> roleList = new THashSet<Role>();
             if (rolesInCurrentWorld == null || rolesInCurrentWorld.isEmpty())
             {
                 roleList = provider.getDefaultRoles();
+                System.out.print(mainWorldID+": default Set!");//TODO remove
             }
             else
             {
@@ -467,5 +469,10 @@ public class RoleManager
     {
         RoleProvider provider = this.getProvider(worldId);
         return provider.getRole(roleName);
+    }
+
+    public long getUserMirror(long worldId)
+    {
+        return this.userMirrors.get(worldId);
     }
 }
