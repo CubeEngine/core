@@ -285,7 +285,7 @@ public class TeleportCommands
         }
     }
 
-    @Command(desc = "Direct teleport to a coordinate.", usage = "<x> [y] <z> [world <world>]", min = 2, max = 4, params = @Param(names = {
+    @Command(desc = "Direct teleport to a coordinate.", usage = "<x> [y] <z> [w <world>]", min = 2, max = 4, params = @Param(names = {
         "world", "w"
     }, type = World.class), flags = @Flag(longName = "unsafe", name = "u"))
     public void tppos(ParameterizedContext context)
@@ -297,21 +297,6 @@ public class TeleportCommands
             Integer y;
             Integer z;
             World world = sender.getWorld();
-            if (context.hasArg(2))
-            {
-                y = context.getArg(1, Integer.class);
-                z = context.getArg(2, Integer.class);
-            }
-            else
-            {
-                z = context.getArg(1, Integer.class);
-                if (x == null || z == null)
-                {
-                    context.sendTranslated("&cCoordinates have to be numbers!");
-                    return;
-                }
-                y = sender.getWorld().getHighestBlockAt(x, z).getY() + 1;
-            }
             if (context.hasParam("world"))
             {
                 world = context.getParam("world");
@@ -320,6 +305,26 @@ public class TeleportCommands
                     context.sendTranslated("&cWorld not found!");
                     return;
                 }
+            }
+            if (context.hasArg(2))
+            {
+                y = context.getArg(1, Integer.class, null);
+                z = context.getArg(2, Integer.class, null);
+            }
+            else
+            {
+                z = context.getArg(1, Integer.class, null);
+                if (x == null || z == null)
+                {
+                    context.sendTranslated("&cCoordinates have to be numbers!");
+                    return;
+                }
+                y = sender.getWorld().getHighestBlockAt(x, z).getY() + 1;
+            }
+            if (x == null || y == null || z == null)
+            {
+                context.sendTranslated("&cCoordinates have to be numbers!");
+                return;
             }
             boolean safe = !context.hasFlag("u");
             Location loc = new Location(world, x, y, z).add(0.5, 0, 0.5);
