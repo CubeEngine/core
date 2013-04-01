@@ -38,9 +38,18 @@ public class KickBanCommands
     @Command(desc = "Kicks a player from the server", usage = "<player or *> [message]", flags = @Flag(longName = "all", name = "a"),min = 1, max = 2)
     public void kick(ParameterizedContext context)
     {
-        String message = context.getStrings(1);
-        if (message == null)
+        String message;
+        if (context.hasArg(1))
         {
+            message = context.getStrings(1);
+        }
+        else
+        {
+            if (!BasicsPerm.COMMAND_KICK_NOREASON.isAuthorized(context.getSender()))
+            {
+                context.sendTranslated("&cYou need to specify a kick-reason!");
+                return;
+            }
             message = this.module.getConfiguration().defaultKickMessage;
         }
         message = ChatFormat.parseFormats(message);
@@ -130,14 +139,19 @@ public class KickBanCommands
         if (player.isOnline())
         {
             User user = context.getCore().getUserManager().getExactUser(player);
-            String message = context.getStrings(1);
-            if (message == null || message.isEmpty())
+            String message;
+            if (context.hasArg(1))
             {
-                message = user.translate("&cYou got banned from this server!");
+                message = ChatFormat.parseFormats(context.getStrings(1));
             }
             else
             {
-                message = ChatFormat.parseFormats(message);
+                if (!BasicsPerm.COMMAND_BAN_NOREASON.isAuthorized(context.getSender()))
+                {
+                    context.sendTranslated("&cYou need to specify a ban-reason!");
+                    return;
+                }
+                message = user.translate("&cYou got banned from this server!");
             }
             user.kickPlayer(message);
         }

@@ -235,11 +235,16 @@ public class BasicsPerm extends PermissionContainer
     public static final Permission COMPASS_JUMPTO_LEFT = COMPASS_JUMPTO.createChild("left");
     public static final Permission COMPASS_JUMPTO_RIGHT = COMPASS_JUMPTO.createChild("right");
 
-    public static final Permission COMMAND_KICK_ALL = COMMAND.createAbstractChild("kick").createChild("all");
+    private static final Permission COMMAND_KICK = COMMAND.createAbstractChild("kick");
+    public static final Permission COMMAND_KICK_ALL = COMMAND_KICK.createChild("all");
+    public static final Permission COMMAND_KICK_NOREASON = COMMAND_KICK.createNew("noreason");
+
     public static final Permission COMMAND_KIT_GIVE_FORCE = COMMAND.createChild("kit.give.force");
     public static final Permission COMMAND_STACK_FULLSTACK = COMMAND.createAbstractChild("stack").createChild("fullstack");
 
     public static final Permission POWERTOOL_USE = BASICS.createChild("powertool.use");
+
+    public static final Permission COMMAND_BAN_NOREASON = COMMAND.createAbstractChild("ban").createNew("noreason");
 
     /**
      * Allows to change the walkspeed of other players
