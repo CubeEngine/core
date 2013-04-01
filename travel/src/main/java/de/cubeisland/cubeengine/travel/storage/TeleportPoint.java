@@ -121,12 +121,18 @@ public class TeleportPoint implements Model<Long>
         this.key = key;
     }
 
+    /**
+     * Enum to reflect the type a teleport point is
+     */
     public enum Type
     {
         HOME,
         WARP
     }
 
+    /**
+     * Enum to reflect whether the teleport point is public or private
+     */
     public enum Visibility
     {
         PUBLIC,

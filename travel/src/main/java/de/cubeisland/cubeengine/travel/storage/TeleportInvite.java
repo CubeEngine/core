@@ -32,6 +32,12 @@ public class TeleportInvite implements TwoKeyModel<Long, Long>
         this.userKey = userKey;
     }
 
+    /**
+     * Check if the current and the teleportinvite supplied is equal in their contents.
+     * This does not care if they are the same instance of TeleportInvite
+     * @param tpI
+     * @return
+     */
     public boolean semiEquals(TeleportInvite tpI)
     {
         return tpI.teleportPoint == this.teleportPoint && tpI.userKey == this.userKey;

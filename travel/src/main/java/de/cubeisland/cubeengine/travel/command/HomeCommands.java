@@ -22,7 +22,7 @@ public class HomeCommands
         this.tpManager = module.getTelepointManager();
     }
 
-    @Command(desc = "Teleport to a home", usage = "<[OwnerName]:>[HomeName]", permDefault = PermDefault.TRUE, min = 0, max = 1)
+    @Command(desc = "Teleport to a home", usage = "<<owner:>home>", permDefault = PermDefault.TRUE, min = 0, max = 1)
     public void home(CommandContext context)
     {
         if (context.getSender()instanceof User)
@@ -39,7 +39,7 @@ public class HomeCommands
 
                 if (!home.isOwner(sender))
                 {
-                    sender.sendTranslated("&4You don't have a default home!");
+                    sender.sendTranslated("&4You don't have a main home!");
                     return;
                 }
 
@@ -103,7 +103,7 @@ public class HomeCommands
             }
             else
             {
-                // TODO User failed
+                context.sendTranslated("This command does not take any arguments");
             }
         }
         else

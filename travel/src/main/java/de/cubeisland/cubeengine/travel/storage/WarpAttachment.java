@@ -17,22 +17,30 @@ public class WarpAttachment extends UserAttachment
         warps = new HashMap<String, Warp>();
     }
 
+    /**
+     * Will try to find a warp with that name among the warps the user can access
+     * Different variations with the prefix is also tried
+     * @param name
+     * @return the warp if found, else null
+     */
     public Warp getWarp(String name)
     {
         if (name == null)
         {
             return null;
         }
-
-        if (warps.containsKey(name))
+        else if (warps.containsKey(name))
         {
             return warps.get(name);
         }
-        if (name.contains(":"))
+        else if (name.contains(":"))
         {
             return warps.get(name.substring(name.lastIndexOf(":") + 1, name.length()));
         }
-        return null;
+        else
+        {
+            return null;
+        }
     }
 
     /**

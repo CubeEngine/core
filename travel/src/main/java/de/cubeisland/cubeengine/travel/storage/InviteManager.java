@@ -1,6 +1,7 @@
 package de.cubeisland.cubeengine.travel.storage;
 
 import de.cubeisland.cubeengine.core.CubeEngine;
+import de.cubeisland.cubeengine.core.logger.LogLevel;
 import de.cubeisland.cubeengine.core.storage.StorageException;
 import de.cubeisland.cubeengine.core.storage.TwoKeyStorage;
 import de.cubeisland.cubeengine.core.storage.database.Database;
@@ -13,17 +14,21 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
+import de.cubeisland.cubeengine.travel.Travel;
+
 import static de.cubeisland.cubeengine.core.storage.database.querybuilder.ComponentBuilder.EQUAL;
 
 public class InviteManager extends TwoKeyStorage<Long, Long, TeleportInvite>
 {
     private static final int REVISION = 2;
+    private final Travel module;
     private Collection<TeleportInvite> invites;
 
-    public InviteManager(Database database)
+    public InviteManager(Database database, Travel module)
     {
         super(database, TeleportInvite.class, REVISION);
         this.initialize();
+        this.module = module;
         this.invites = this.getAll();
     }
 
@@ -40,7 +45,9 @@ public class InviteManager extends TwoKeyStorage<Long, Long, TeleportInvite>
         }
         catch (SQLException ex)
         {
-            //TODO handle the exception
+            module.getLog().log(LogLevel.ERROR, "An error occurred while preparing the database statements for table " + this.tableName);
+            module.getLog().log(LogLevel.WARNING, "The error was: {0}", ex.getMessage());
+            module.getLog().log(LogLevel.DEBUG, "This is the stack: ", ex);
         }
     }
 
@@ -51,6 +58,11 @@ public class InviteManager extends TwoKeyStorage<Long, Long, TeleportInvite>
         this.store(invite);
     }
 
+    /**
+     * All users invited to a teleport point.
+     * @param tPP
+     * @return A set of User objects invited to the home
+     */
     public Set<User> getInvitedUsers(TeleportPoint tPP)
     {
         Set<User> invitedUsers = new HashSet<User>();
@@ -65,6 +77,11 @@ public class InviteManager extends TwoKeyStorage<Long, Long, TeleportInvite>
         return invitedUsers;
     }
 
+    /**
+     * All users invited to a teleport point.
+     * @param tPP
+     * @return A set of User names invited to the home
+     */
     public Set<String> getInvited(TeleportPoint tPP)
     {
         Set<String> invitedUsers = new HashSet<String>();
@@ -79,6 +96,12 @@ public class InviteManager extends TwoKeyStorage<Long, Long, TeleportInvite>
         return invitedUsers;
     }
 
+    /**
+     * All teleport invites that contains the user.
+     * This can be used to get all teleport points an user is invited to
+     * @param user
+     * @return A set of TeleportInvites
+     */
     public Set<TeleportInvite> getInvites(User user)
     {
         Set<TeleportInvite> invites = new HashSet<TeleportInvite>();
@@ -92,6 +115,12 @@ public class InviteManager extends TwoKeyStorage<Long, Long, TeleportInvite>
         return invites;
     }
 
+    /**
+     * All teleport invites that contains the teleport point
+     * This can be used to get all users that is invited to a teleport point
+     * @param tPP
+     * @return A set of TeleportInvites
+     */
     public Set<TeleportInvite> getInvites(TeleportPoint tPP)
     {
         Set<TeleportInvite> invites = new HashSet<TeleportInvite>();
@@ -105,6 +134,11 @@ public class InviteManager extends TwoKeyStorage<Long, Long, TeleportInvite>
         return invites;
     }
 
+    /**
+     * Update the local changes to the database
+     * @param tPP           The local teleport point
+     * @param newInvited    The user that is currenlty invited to the teleportpoint locally
+     */
     public void updateInvited(TeleportPoint tPP, Set<String> newInvited)
     {
         Set<TeleportInvite> invites = getInvites(tPP);

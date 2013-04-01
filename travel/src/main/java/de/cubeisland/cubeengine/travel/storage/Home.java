@@ -33,6 +33,9 @@ public class Home
         module.getCore().getPermissionManager().registerPermission(module, this.permission);
     }
 
+    /**
+     * Updates the variables in the parent entity to reflect the variables in the home
+     */
     public void update()
     {
         parent.ownerKey = parent.owner.getKey();
@@ -148,7 +151,7 @@ public class Home
 
     public boolean canAccess(User user)
     {
-        return this.isInvited(user) || this.isOwner(user) ;
+        return this.isInvited(user) || this.isOwner(user) || this.isPublic();
     }
 
     public String getStorageName()

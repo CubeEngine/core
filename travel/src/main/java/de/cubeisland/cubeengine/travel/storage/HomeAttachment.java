@@ -17,22 +17,30 @@ public class HomeAttachment extends UserAttachment
         homes = new HashMap<String, Home>();
     }
 
+    /**
+     * Will try to find a home with that name among the homes the user can access
+     * Different variations with the prefix is also tried
+     * @param name
+     * @return
+     */
     public Home getHome(String name)
     {
         if (name == null)
         {
             return null;
         }
-
-        if (homes.containsKey(name))
+        else if (homes.containsKey(name))
         {
             return homes.get(name);
         }
-        if (name.contains(":"))
+        else if (name.contains(":"))
         {
             return homes.get(name.substring(name.lastIndexOf(":") + 1, name.length()));
         }
-        return null;
+        else
+        {
+            return null;
+        }
     }
 
     /**

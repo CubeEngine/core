@@ -90,14 +90,14 @@ public class TelePointManager extends SingleKeyStorage<Long, TeleportPoint>
         }
         catch (SQLException ex)
         {
-            module.getLog().log(LogLevel.ERROR, "An error occurred while preparing the database statements");
-            module.getLog().log(LogLevel.DEBUG, "The error was: {0}", ex.getMessage());
+            module.getLog().log(LogLevel.ERROR, "An error occurred while preparing the database statements for table " + this.tableName);
+            module.getLog().log(LogLevel.WARNING, "The error was: {0}", ex.getMessage());
             module.getLog().log(LogLevel.DEBUG, "This is the stack: ", ex);
         }
     }
 
     /**
-     * Load all warps and homes
+     * Load all warps and homes from the database to a local storage
      *
      * @param inviteManager
      */
@@ -127,7 +127,7 @@ public class TelePointManager extends SingleKeyStorage<Long, TeleportPoint>
      * Get a home by name relative to an user
      * The name can be edit distance <= 2 away from a home name
      *
-     * the name can be just the name of the home, or owner:name
+     * the name can be just the name of the home, owner:name or public:name
      *
      * @param user  the user
      * @param name  the name of the home relative to the user
@@ -244,6 +244,8 @@ public class TelePointManager extends SingleKeyStorage<Long, TeleportPoint>
 
     /**
      * If a home by that name relative to the user exist
+     * The name must be an exact match
+     *
      * @param name the name relative to the user
      * @param user the user
      * @return
@@ -256,6 +258,7 @@ public class TelePointManager extends SingleKeyStorage<Long, TeleportPoint>
 
     /**
      * Put a home in an users home storage
+     *  TODO move this into HomeAttachment?
      * @param home the home
      * @param user the user
      */
@@ -291,7 +294,7 @@ public class TelePointManager extends SingleKeyStorage<Long, TeleportPoint>
 
     /**
      * Unload a home from an users home storage
-     *
+     *  TODO move this into HomeAttachment?
      * @param home the home
      * @param user the user
      */
@@ -331,7 +334,8 @@ public class TelePointManager extends SingleKeyStorage<Long, TeleportPoint>
                 }
             }
         }
-        if (prefixed.size() == 1)
+
+        if (prefixed.size() == 1) // We only want to remove the prefix if there are no conflicts
         {
             for (Home h : prefixed)
             {
@@ -487,7 +491,7 @@ public class TelePointManager extends SingleKeyStorage<Long, TeleportPoint>
 
     /**
      * If a warp by that name exist or not.
-     * @param name the name in this format: ["public",owner]:home
+     * @param name the name in this format: {"public",owner}:home
      * @return
      */
     public boolean hasWarp(String name)

@@ -21,6 +21,9 @@ public class Warp
         this.invited = inviteManager.getInvited(parent);
     }
 
+    /**
+     * Updates the variables in the parent entity to reflect the variables in the home
+     */
     public void update()
     {
         parent.ownerKey = parent.owner.getKey();
@@ -135,7 +138,10 @@ public class Warp
         {
             return "public:" + this.getName();
         }
-        return this.getOwner().getName() + ":" + this.getName();
+        else
+        {
+            return this.getOwner().getName() + ":" + this.getName();
+        }
     }
 
     public boolean canAccess(User user)

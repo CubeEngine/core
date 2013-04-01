@@ -22,7 +22,7 @@ public class Travel extends Module
     public void onEnable()
     {
         this.telePointManager = new TelePointManager(this);
-        this.inviteManager = new InviteManager(this.getCore().getDB());
+        this.inviteManager = new InviteManager(this.getCore().getDB(), this);
         this.telePointManager.load(this.inviteManager);
 
         final CommandManager cm = this.getCore().getCommandManager();
