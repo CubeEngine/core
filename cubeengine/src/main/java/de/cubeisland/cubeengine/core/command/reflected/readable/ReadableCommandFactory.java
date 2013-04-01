@@ -68,7 +68,7 @@ public class ReadableCommandFactory extends ReflectedCommandFactory<ReadableComm
         if (annotation.checkPerm())
         {
             String node = annotation.permNode();
-            if (node == null || node.isEmpty())
+            if (node.isEmpty())
             {
                 cmd.setGeneratedPermissionDefault(annotation.permDefault());
             }

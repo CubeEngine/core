@@ -26,7 +26,6 @@ public class ReflectedCommand extends ParameterizedCommand
         this.method = method;
         this.method.setAccessible(true);
         this.contextType = (Class<? extends CommandContext>)method.getParameterTypes()[0];
-        this.setGeneratePermission(true);
 
         Alias annotation = method.getAnnotation(Alias.class);
         if (annotation != null)

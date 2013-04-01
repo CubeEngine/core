@@ -1,5 +1,19 @@
 package de.cubeisland.cubeengine.core.command;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Set;
+import java.util.Stack;
+
+import org.bukkit.command.Command;
+import org.bukkit.entity.Player;
+
 import de.cubeisland.cubeengine.core.Core;
 import de.cubeisland.cubeengine.core.CubeEngine;
 import de.cubeisland.cubeengine.core.command.exception.IncorrectUsageException;
@@ -16,19 +30,6 @@ import de.cubeisland.cubeengine.core.util.StringUtils;
 import gnu.trove.map.hash.THashMap;
 import gnu.trove.set.hash.THashSet;
 import org.apache.commons.lang.Validate;
-import org.bukkit.command.Command;
-import org.bukkit.entity.Player;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Set;
-import java.util.Stack;
 
 import static de.cubeisland.cubeengine.core.logger.LogLevel.ERROR;
 
@@ -98,6 +99,7 @@ public abstract class CubeCommand extends Command
 
     public void setGeneratedPermissionDefault(PermDefault generatedPermissionDefault)
     {
+        this.setGeneratePermission(true);
         this.generatedPermissionDefault = generatedPermissionDefault;
     }
 

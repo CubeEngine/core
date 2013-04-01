@@ -132,7 +132,7 @@ public class ReflectedCommandFactory<T extends CubeCommand> implements CommandFa
         if (annotation.checkPerm())
         {
             String node = annotation.permNode();
-            if (node == null || node.isEmpty()) // TODO is null even possible
+            if (node.isEmpty())
             {
                 cmd.setGeneratedPermissionDefault(annotation.permDefault());
             }

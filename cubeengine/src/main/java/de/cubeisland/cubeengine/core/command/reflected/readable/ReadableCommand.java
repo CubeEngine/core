@@ -29,7 +29,6 @@ public class ReadableCommand extends CubeCommand
         this.method.setAccessible(true);
         this.contextType = (Class<? extends CommandContext>)method.getParameterTypes()[0];
         this.pattern = pattern;
-        this.setGeneratePermission(true);
 
         Alias annotation = method.getAnnotation(Alias.class);
         if (annotation != null)
