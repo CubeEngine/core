@@ -2,6 +2,7 @@ package de.cubeisland.cubeengine.roles;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -15,6 +16,7 @@ import de.cubeisland.cubeengine.core.storage.world.WorldManager;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.util.Pair;
 import de.cubeisland.cubeengine.core.util.StringUtils;
+import de.cubeisland.cubeengine.core.util.Triplet;
 import de.cubeisland.cubeengine.roles.role.MergedRole;
 import de.cubeisland.cubeengine.roles.role.Role;
 import de.cubeisland.cubeengine.roles.role.UserSpecificRole;
@@ -24,7 +26,9 @@ import de.cubeisland.cubeengine.roles.provider.RoleProvider;
 import de.cubeisland.cubeengine.roles.provider.WorldRoleProvider;
 import de.cubeisland.cubeengine.roles.storage.AssignedRole;
 
+import gnu.trove.map.TLongLongMap;
 import gnu.trove.map.hash.THashMap;
+import gnu.trove.map.hash.TLongLongHashMap;
 import gnu.trove.map.hash.TLongObjectHashMap;
 import gnu.trove.set.hash.THashSet;
 
@@ -38,6 +42,7 @@ public class RoleManager
     private GlobalRoleProvider globalProvider;
     private WorldManager worldManager;
     private Set<WorldRoleProvider> providerSet = new THashSet<WorldRoleProvider>();
+    private TLongLongHashMap userMirrors = new TLongLongHashMap();
 
     public RoleManager(Roles rolesModule)
     {
@@ -109,8 +114,9 @@ public class RoleManager
         for (RoleMirror mirror : this.module.getConfiguration().mirrors)
         {
             WorldRoleProvider provider = new WorldRoleProvider(module, mirror);
-            TLongObjectHashMap<Pair<Boolean, Boolean>> worlds = provider.getWorlds();
+            TLongObjectHashMap<Triplet<Boolean, Boolean, Boolean>> worlds = provider.getWorlds();
             this.module.getLog().log(LogLevel.DEBUG, "Loading role-provider for " + provider.getMainWorld());
+            long mainWorldID = worldManager.getWorldId(provider.getMainWorld());
             for (long worldId : worlds.keys())
             {
                 if (this.providers.containsKey(worldId))
@@ -121,11 +127,19 @@ public class RoleManager
                                 + "Check your configuration under mirrors." + provider.getMainWorld());
                     continue;
                 }
-                if (worlds.get(worldId).getLeft()) // Roles are mirrored add to provider...
+                if (worlds.get(worldId).getFirst()) // Roles are mirrored add to provider...
                 {
                     this.module.getLog().log(LogLevel.DEBUG, "  Mirror: " + worldManager.getWorld(worldId).getName());
                     this.providers.put(worldId, provider);
                     this.providerSet.add(provider);
+                }
+                if (worlds.get(worldId).getThird()) // specific user perm/metadata is mirrored
+                {
+                    this.userMirrors.put(worldId,mainWorldID);
+                }
+                else
+                {
+                    this.userMirrors.put(worldId,worldId);
                 }
             }
         }
@@ -198,22 +212,24 @@ public class RoleManager
             this.module.getLog().log(LogLevel.DEBUG,"RoleContainer of "+user.getName()+ " already calculated!");
             return; // Roles are calculated!
         }
-        TLongObjectHashMap<List<Role>> userRolesPerWorld = this.getRolesFor(user, reload);
+        TLongObjectHashMap<Set<Role>> userRolesPerWorld = this.getRolesFor(user, reload);
         TLongObjectHashMap<UserSpecificRole> roleContainer = new TLongObjectHashMap<UserSpecificRole>();
         TLongObjectHashMap<THashMap<String, Boolean>> userSpecificPerms = this.module.getDbUserPerm().getForUser(user.key);
         TLongObjectHashMap<THashMap<String, String>> userSpecificMeta = this.module.getDbUserMeta().getForUser(user.key);
         for (long worldId : this.worldManager.getAllWorldIds())
         {
+            long userMirror = this.userMirrors.get(worldId);
             roleContainer.put(worldId,
                   this.preCalculateRole(user, userRolesPerWorld.get(worldId), worldId,
-                        userSpecificPerms.get(worldId), userSpecificMeta.get(worldId)));
+                                        userSpecificPerms.get(userMirror),
+                                        userSpecificMeta.get(userMirror)));
         }
         this.getRolesAttachment(user).setRoleContainer(roleContainer);
     }
 
-    public TLongObjectHashMap<List<Role>> getRolesFor(User user, boolean reload)
+    public TLongObjectHashMap<Set<Role>> getRolesFor(User user, boolean reload)
     {
-        TLongObjectHashMap<List<Role>> result = new TLongObjectHashMap<List<Role>>();
+        TLongObjectHashMap<Set<Role>> result = new TLongObjectHashMap<Set<Role>>();
         TLongObjectHashMap<List<String>> rolesFromDb;
         if (reload)
         {
@@ -228,13 +244,17 @@ public class RoleManager
         {
             long mainWorldID = worldManager.getWorldId(provider.getMainWorld());
             List<String> rolesInCurrentWorld = rolesFromDb.get(mainWorldID);
-            List<Role> roleList = new ArrayList<Role>();
+            Set<Role> roleList = new THashSet<Role>();
             for (String roleName : rolesInCurrentWorld)
             {
                 roleList.add(provider.getRole(roleName));
             }
+            if (roleList.isEmpty())
+            {
+                roleList = provider.getDefaultRoles();
+            }
             result.put(mainWorldID,roleList); // mainworld of provider
-            TLongObjectHashMap<Pair<Boolean, Boolean>> worlds = provider.getWorlds();
+            TLongObjectHashMap<Triplet<Boolean, Boolean, Boolean>> worlds = provider.getWorlds();
 
             System.out.print(mainWorldID+": "+ StringUtils.implode(", ", rolesInCurrentWorld));//TODO remove
             for (long worldID : worlds.keys()) // mirrored worlds of provider
@@ -243,26 +263,30 @@ public class RoleManager
                 {
                     continue; // already done
                 }
-                Pair<Boolean, Boolean> mirror = worlds.get(worldID);
-                if (mirror.getLeft()) // users (assigned roles) mirrored
+                Triplet<Boolean, Boolean, Boolean> mirror = worlds.get(worldID);
+                if (mirror.getFirst()) // users (assigned roles) mirrored
                 {
-                    if (mirror.getRight()) // roles (roles from config) mirrored | full mirror
+                    if (mirror.getSecond()) // roles (roles from config) mirrored | full mirror
                     {
                         roleList = result.get(mainWorldID);
                         System.out.print(worldID+ " mirror!");//TODO remove
                     }
                     else  // take roles from other provider | user mirror
                     {
-                        roleList = new ArrayList<Role>();
+                        roleList = new THashSet<Role>();
                         rolesInCurrentWorld = rolesFromDb.get(worldID);
-                        RoleProvider otherWorldProvider = this.getProvider(worldID);
+                        WorldRoleProvider otherWorldProvider = this.getProvider(worldID);
                         for (String roleName : rolesInCurrentWorld)
                         {
                             roleList.add(otherWorldProvider.getRole(roleName));
                         }
+                        if (roleList.isEmpty())
+                        {
+                            roleList = otherWorldProvider.getDefaultRoles();
+                        }
                         System.out.print(worldID+": "+ StringUtils.implode(",", rolesInCurrentWorld));//TODO remove
                     }
-                    List<Role> replaced = result.put(worldID,roleList);
+                    Set<Role> replaced = result.put(worldID,roleList);
                     if (replaced != null)
                     {
                         System.out.print(worldID + " replaced!!! This should not happen unless mirrored multiple times");//TODO remove
@@ -277,7 +301,7 @@ public class RoleManager
         return result;
     }
 
-    private UserSpecificRole preCalculateRole(User user, List<Role> roles, long worldId, THashMap<String, Boolean> userPerms, THashMap<String, String> userMeta)
+    private UserSpecificRole preCalculateRole(User user, Set<Role> roles, long worldId, THashMap<String, Boolean> userPerms, THashMap<String, String> userMeta)
     {
         // UserSpecific Settings:
         UserSpecificRole userSpecificRole = new UserSpecificRole(this.module, user, worldId, userPerms, userMeta);

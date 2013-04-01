@@ -36,7 +36,7 @@ public class RolesEventHandler implements Listener
         WorldRoleProvider toProvider = this.roleManager.getProvider(worldToId);
         if (fromProvider.equals(toProvider))
         {
-            if (toProvider.getWorlds().get(worldToId).getRight())
+            if (toProvider.getWorlds().get(worldToId).getSecond())
             {
                 return;
             }

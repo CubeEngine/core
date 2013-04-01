@@ -105,7 +105,7 @@ public class AssignedRoleManager extends TripletKeyStorage<Long, Long, String, A
             PreparedStatement stm = this.database.getStoredStatement(modelClass, "rename");
             for (long worldId : provider.getWorlds().keys())
             {
-                if (provider.getWorlds().get(worldId).getLeft())
+                if (provider.getWorlds().get(worldId).getFirst())
                 {
                     stm.setObject(1, newName);
                     stm.setObject(2, worldId);

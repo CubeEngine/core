@@ -4,6 +4,7 @@ import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.util.Pair;
 import de.cubeisland.cubeengine.core.logger.LogLevel;
 import de.cubeisland.cubeengine.core.util.StringUtils;
+import de.cubeisland.cubeengine.core.util.Triplet;
 import de.cubeisland.cubeengine.roles.Roles;
 import de.cubeisland.cubeengine.roles.RolesConfig;
 import de.cubeisland.cubeengine.roles.role.Role;
@@ -44,12 +45,10 @@ public class WorldRoleProvider extends RoleProvider
         this.basePerm = this.module.getBasePermission().createAbstractChild("world").createAbstractChild(this.mirrorConfig.mainWorld);
     }
 
-    public TLongObjectHashMap<Pair<Boolean, Boolean>> getWorlds()
+    public TLongObjectHashMap<Triplet<Boolean, Boolean, Boolean>> getWorlds()
     {
         return this.mirrorConfig.getWorlds();
     }
-
-
 
     public Set<Role> getDefaultRoles()
     {

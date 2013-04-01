@@ -91,7 +91,6 @@ public abstract class RoleProvider
                 ++i;
                 RoleConfig config = Configuration.load(RoleConfig.class, configFile);
                 this.addConfig(config);
-                this.module.getLog().log(DEBUG, config.roleName);
             }
         }
         this.module.getLog().log(DEBUG, i + " roles read!");

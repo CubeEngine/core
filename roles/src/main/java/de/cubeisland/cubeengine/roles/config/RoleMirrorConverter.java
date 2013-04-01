@@ -31,11 +31,15 @@ public class RoleMirrorConverter implements Converter<RoleMirror>
             }
             ListNode values = ListNode.emptyList();
             resultMap.setNode(StringNode.of(worldName), values);
-            if (mirror.getWorlds().get(worldId).getLeft())
+            if (mirror.getWorlds().get(worldId).getFirst())
             {
                 values.addNode(StringNode.of("roles"));
             }
-            if (mirror.getWorlds().get(worldId).getRight())
+            if (mirror.getWorlds().get(worldId).getSecond())
+            {
+                values.addNode(StringNode.of("assigned"));
+            }
+            if (mirror.getWorlds().get(worldId).getThird())
             {
                 values.addNode(StringNode.of("users"));
             }
@@ -68,6 +72,7 @@ public class RoleMirrorConverter implements Converter<RoleMirror>
             String worldName = worlds.getKey();
             boolean roles = false;
             boolean users = false;
+            boolean assigned = false;
             for (Node inList : world.getListedNodes())
             {
                 if (inList.unwrap().equals("roles"))
@@ -78,8 +83,12 @@ public class RoleMirrorConverter implements Converter<RoleMirror>
                 {
                     users = true;
                 }
+                else if (inList.unwrap().equals("assigned"))
+                {
+                    assigned = true;
+                }
             }
-            mirror.setWorld(worldName, roles, users);
+            mirror.setWorld(worldName, roles, assigned, users);
         }
         return mirror;
     }
