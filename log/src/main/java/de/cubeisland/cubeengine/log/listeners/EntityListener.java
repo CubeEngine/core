@@ -423,7 +423,7 @@ public class EntityListener implements Listener
             case BUILD_WITHER:
             case BREEDING:
                 if (this.manager.isIgnored(world, OTHER_SPAWN)) return;
-                this.manager.queueLog(event.getLocation(), OTHER_SPAWN,-event.getEntityType().getTypeId());
+                this.manager.queueLog(event.getLocation(), OTHER_SPAWN,-event.getEntityType().getTypeId()); //TODO get player in data
                 return;
             //case SPAWNER_EGG: //is already done
         }
