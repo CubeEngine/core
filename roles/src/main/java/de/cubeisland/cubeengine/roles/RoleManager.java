@@ -386,7 +386,7 @@ public class RoleManager
                     {
                         if (role.inheritsFrom(roleToCheck))
                         {
-                            this.module.getDbManager().delete(user.key,role.getName(),worldId);
+                            this.module.getDbManager().delete(user.key,roleToCheck.getName(),worldId);
                             this.module.getLog().log(LogLevel.DEBUG,"Role removed: "+ roleToCheck.getName() + " X " + user.getName());
                         }
                     }
