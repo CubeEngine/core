@@ -53,7 +53,6 @@ public class UserManagementCommands extends UserCommandHelper
         {
             throw new IllegalArgumentException("The role is not a ConfigRole!");
         }
-        this.module.getLog().log(LogLevel.DEBUG,"Role added: "+ role.getName() + " -> " + user.getName());
         if (this.manager.addRoles(user, user.getPlayer(), worldId, role))
         {
             context.sendTranslated("&aAdded the role &6%s&a to &2%s&a in &6%s&a.", roleName, user.getName(), world.getName());

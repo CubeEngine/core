@@ -70,7 +70,7 @@ public class RoleManager
         this.globalProvider = new GlobalRoleProvider(module);
         this.globalProvider.loadInConfigurations(rolesFolder);
         // World roles:
-        this.createAllProviders();
+        this.createWorldProviders();
         for (RoleProvider provider : this.providers.valueCollection())
         {
             provider.loadInConfigurations(this.rolesFolder);
@@ -101,27 +101,29 @@ public class RoleManager
      * Clears and recreates all needed providers with their respective
      * RoleMirrors
      */
-    private void createAllProviders()
+    private void createWorldProviders()
     {
         this.providers.clear();
         for (RoleMirror mirror : this.module.getConfiguration().mirrors)
         {
             WorldRoleProvider provider = new WorldRoleProvider(module, mirror);
             TLongObjectHashMap<Pair<Boolean, Boolean>> worlds = provider.getWorlds();
+            this.module.getLog().log(LogLevel.DEBUG,"Loading role-provider for " + provider.getMainWorld());
             for (long worldId : worlds.keys())
             {
                 if (this.providers.containsKey(worldId))
                 {
                     this.module.getLog().log(LogLevel.ERROR,
-                            "The world " + this.module.getCore().getWorldManager().getWorld(worldId).getName() + " is mirrored multiple times!\n"
+                            "The world " + this.module.getCore().getWorldManager().getWorld(worldId).getName()
+                                + " is mirrored multiple times!\n"
                                 + "Check your configuration under mirrors." + provider.getMainWorld());
                     continue;
                 }
                 if (worlds.get(worldId).getLeft()) // Roles are mirrored add to provider...
                 {
+                    this.module.getLog().log(LogLevel.DEBUG,"  Mirror: "+worldManager.getWorld(worldId).getName());
                     this.providers.put(worldId, provider);
                     this.providerSet.add(provider);
-                    this.module.getLog().log(LogLevel.DEBUG,"loading role-provider for "+worldManager.getWorld(worldId).getName());
                 }
             }
         }
@@ -132,7 +134,7 @@ public class RoleManager
                 WorldRoleProvider provider = new WorldRoleProvider(module, worldId);
                 this.providers.put(worldId, provider);
                 this.providerSet.add(provider);
-                this.module.getLog().log(LogLevel.DEBUG,"loading missing role-provider for "+worldManager.getWorld(worldId).getName());
+                this.module.getLog().log(LogLevel.DEBUG,"Loading missing role-provider for "+worldManager.getWorld(worldId).getName());
             }
         }
     }
@@ -206,12 +208,14 @@ public class RoleManager
 
         for (long worldId : this.worldManager.getAllWorldIds())
         {
-            this.preCalculateRole(user, roleContainer, userRolesPerWorld.get(worldId), worldId, userSpecificPerms.get(worldId), userSpecificMeta.get(worldId));
+            roleContainer.put(worldId, this
+                .preCalculateRole(user, userRolesPerWorld.get(worldId), worldId, userSpecificPerms
+                    .get(worldId), userSpecificMeta.get(worldId)));
         }
         this.getRolesAttachment(user).setRoleContainer(roleContainer);
     }
 
-    private void preCalculateRole(User user, TLongObjectHashMap<UserSpecificRole> roleContainer, List<Role> roles, long worldId, THashMap<String, Boolean> userPerms, THashMap<String, String> userMeta)
+    private UserSpecificRole preCalculateRole(User user, List<Role> roles, long worldId, THashMap<String, Boolean> userPerms, THashMap<String, String> userMeta)
     {
         // UserSpecific Settings:
         UserSpecificRole userSpecificRole = new UserSpecificRole(this.module, user, worldId, userPerms, userMeta);
@@ -222,7 +226,7 @@ public class RoleManager
             // Apply inheritance
             userSpecificRole.applyInheritence(mergedRole);
         }
-        roleContainer.put(worldId, userSpecificRole);
+        return userSpecificRole;
     }
 
     public void applyRole(Player player)
@@ -277,10 +281,10 @@ public class RoleManager
         boolean added = false;
         for (Role role : roles)
         {
-            if (roleContainer.get(worldId) == null
-                    || !roleContainer.get(worldId).getParentRoles().contains(role))
+            if (!roleContainer.get(worldId).getParentRoles().contains(role))
             {
                 added = true;
+                this.module.getLog().log(LogLevel.DEBUG,"Role added: "+ role.getName() + " -> " + user.getName());
                 this.module.getDbManager().store(new AssignedRole(user.key, worldId, role.getName()), false);
                 // check for inherited roles and remove if lower priority
                 for (Role roleToCheck : roleContainer.get(worldId).getParentRoles())
@@ -290,6 +294,7 @@ public class RoleManager
                         if (role.inheritsFrom(roleToCheck))
                         {
                             this.module.getDbManager().delete(user.key,role.getName(),worldId);
+                            this.module.getLog().log(LogLevel.DEBUG,"Role removed: "+ roleToCheck.getName() + " X " + user.getName());
                         }
                     }
                 }
