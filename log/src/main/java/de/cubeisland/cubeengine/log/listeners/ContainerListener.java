@@ -139,11 +139,10 @@ public class ContainerListener implements Listener
             if (this.manager.isIgnored(world,ITEM_CHANGE_IN_CONTAINER,holder)) return;
             ItemStack inventoryItem = event.getCurrentItem();
             ItemStack cursorItem = event.getCursor();
-            //TODO remove this debug
-            System.out.print(user.getName()+"------------Click Event----------- in "+holder);
-            System.out.print("Cursor: "+ cursorItem + " | Inventory: "+ inventoryItem);
-            System.out.print((event.getRawSlot() < event.getView().getTopInventory().getSize() ? "TOP " : "BOT ")
-            + (event.isShiftClick() ? "SHIFT-" : "") + (event.isRightClick() ? "RIGHT" : "LEFT"));
+            //System.out.print(user.getName()+"------------Click Event----------- in "+holder);
+            //System.out.print("Cursor: "+ cursorItem + " | Inventory: "+ inventoryItem);
+            //System.out.print((event.getRawSlot() < event.getView().getTopInventory().getSize() ? "TOP " : "BOT ")
+            //+ (event.isShiftClick() ? "SHIFT-" : "") + (event.isRightClick() ? "RIGHT" : "LEFT"));
             if (inventoryItem.getType().equals(Material.AIR) && cursorItem.getType().equals(Material.AIR))
             {
                 return; // nothing to log
