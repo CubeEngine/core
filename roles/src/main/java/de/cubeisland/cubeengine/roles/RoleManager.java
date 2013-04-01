@@ -245,13 +245,16 @@ public class RoleManager
             long mainWorldID = worldManager.getWorldId(provider.getMainWorld());
             List<String> rolesInCurrentWorld = rolesFromDb.get(mainWorldID);
             Set<Role> roleList = new THashSet<Role>();
-            for (String roleName : rolesInCurrentWorld)
-            {
-                roleList.add(provider.getRole(roleName));
-            }
-            if (roleList.isEmpty())
+            if (rolesInCurrentWorld == null || rolesInCurrentWorld.isEmpty())
             {
                 roleList = provider.getDefaultRoles();
+            }
+            else
+            {
+                for (String roleName : rolesInCurrentWorld)
+                {
+                    roleList.add(provider.getRole(roleName));
+                }
             }
             result.put(mainWorldID,roleList); // mainworld of provider
             TLongObjectHashMap<Triplet<Boolean, Boolean, Boolean>> worlds = provider.getWorlds();
@@ -276,13 +279,16 @@ public class RoleManager
                         roleList = new THashSet<Role>();
                         rolesInCurrentWorld = rolesFromDb.get(worldID);
                         WorldRoleProvider otherWorldProvider = this.getProvider(worldID);
-                        for (String roleName : rolesInCurrentWorld)
-                        {
-                            roleList.add(otherWorldProvider.getRole(roleName));
-                        }
-                        if (roleList.isEmpty())
+                        if (rolesInCurrentWorld == null || rolesInCurrentWorld.isEmpty())
                         {
                             roleList = otherWorldProvider.getDefaultRoles();
+                        }
+                        else
+                        {
+                            for (String roleName : rolesInCurrentWorld)
+                            {
+                                roleList.add(otherWorldProvider.getRole(roleName));
+                            }
                         }
                         System.out.print(worldID+": "+ StringUtils.implode(",", rolesInCurrentWorld));//TODO remove
                     }
