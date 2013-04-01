@@ -11,6 +11,13 @@
   <name>Log</name>
   <description>Log everything you want!</description>
 
+  <repositories>
+    <repository>
+      <id>sk89q-repo</id>
+      <url>http://maven.sk89q.com/repo/</url>
+    </repository>
+  </repositories>
+
   <dependencies>
     <dependency>
       <groupId>${project.parent.groupId}</groupId>
