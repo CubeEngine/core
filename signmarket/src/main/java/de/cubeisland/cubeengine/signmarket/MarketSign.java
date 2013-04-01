@@ -274,7 +274,6 @@ public class MarketSign
                 }
                 if (sneaking)
                 {
-
                     if (!this.isAdminSign() && (this.isOwner(user) || MarketSignPerm.SIGN_INVENTORY_ACCESS_OTHER.isAuthorized(user)))
                     {
                         if (this.isBuySign() && this.itemInfo.matchesItem(itemInHand))
@@ -304,24 +303,27 @@ public class MarketSign
                         user.sendTranslated("&cThis signs inventory is being edited right now!");
                         return;
                     }
-                    if (this.isOwner(user) || MarketSignPerm.SIGN_INVENTORY_ACCESS_OTHER.isAuthorized(user))
+                    if (this.isValidSign(null))
                     {
-                        if (!this.editMode && this.blockInfo.isBuyOrSell() && this.isBuySign() && this.itemInfo.matchesItem(itemInHand))
+                        if (this.isOwner(user) || MarketSignPerm.SIGN_INVENTORY_ACCESS_OTHER.isAuthorized(user))
                         {
-                            if (!this.getInventory().getViewers().isEmpty())
+                            if (!this.editMode && this.blockInfo.isBuyOrSell() && this.isBuySign() && this.itemInfo.matchesItem(itemInHand))
                             {
-                                user.sendTranslated("&cThis signs inventory is being edited right now!");
+                                if (!this.getInventory().getViewers().isEmpty())
+                                {
+                                    user.sendTranslated("&cThis signs inventory is being edited right now!");
+                                    return;
+                                }
+                                int amount = this.putItems(user, false);
+                                if (amount != 0)
+                                    user.sendTranslated("&aAdded &6%d&ax &6%s &ato the stock!", amount, Match.material().getNameFor(this.itemInfo.getItem()));
                                 return;
                             }
-                            int amount = this.putItems(user, false);
-                            if (amount != 0)
-                                user.sendTranslated("&aAdded &6%d&ax &6%s &ato the stock!", amount, Match.material().getNameFor(this.itemInfo.getItem()));
-                            return;
-                        }
-                        else if (itemInHand != null && itemInHand.getTypeId() != 0)
-                        {
-                            user.sendTranslated("&cUse bare hands to break the sign!");
-                            return;
+                            else if (itemInHand != null && itemInHand.getTypeId() != 0)
+                            {
+                                user.sendTranslated("&cUse bare hands to break the sign!");
+                                return;
+                            }
                         }
                     }
                     if (user.getGameMode().equals(GameMode.CREATIVE)) // instabreak items
@@ -646,7 +648,7 @@ public class MarketSign
 
     public boolean tryBreak(User user)
     {
-        if (this.breakingSign.containsKey(user.key) && System.currentTimeMillis() - this.breakingSign.get(user.key) <= 200)//0.2 sec
+        if (this.breakingSign.containsKey(user.key) && System.currentTimeMillis() - this.breakingSign.get(user.key) <= 300)//0.3 sec
         {
             Location location = this.getLocation();
             if (this.getStock() != null && this.getStock() == 1337) //pssst i am not here
