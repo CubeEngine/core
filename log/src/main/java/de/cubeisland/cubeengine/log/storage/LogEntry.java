@@ -1,12 +1,16 @@
 package de.cubeisland.cubeengine.log.storage;
 
+import java.io.IOException;
 import java.sql.Timestamp;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.bukkit.craftbukkit.libs.com.google.gson.JsonObject;
+
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.entity.EntityType;
+import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.ItemStack;
 
@@ -14,6 +18,7 @@ import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.util.math.BlockVector3;
 import de.cubeisland.cubeengine.log.Log;
 
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import sun.misc.Signal;
 
 public class LogEntry implements Comparable<LogEntry>
@@ -40,6 +45,9 @@ public class LogEntry implements Comparable<LogEntry>
     private final ActionType actionType;
     private Set<LogEntry> attached = new HashSet<LogEntry>();
     private EntityType entity;
+    private User user;
+    private DamageCause damageCause;
+    private ObjectNode additional;
 
     public LogEntry(Log module, long entryID, Timestamp timestamp, int action, long worldId, int x, int y, int z,
                     long causer, String block, Long data, String newBlock, Integer newData, String additionalData)
@@ -102,6 +110,29 @@ public class LogEntry implements Comparable<LogEntry>
             case VEHICLE_BREAK:
             case VEHICLE_PLACE:
                 this.entity = EntityType.fromId(data.intValue());
+                break;
+            case PLAYER_DEATH:
+                this.user = this.module.getCore().getUserManager().getUser(data);
+            case MONSTER_DEATH:
+            case ANIMAL_DEATH:
+            case PET_DEATH:
+            case NPC_DEATH:
+            case BOSS_DEATH:
+            case OTHER_DEATH:
+                if (data < 0)
+                {
+                    this.entity = EntityType.fromId(-data.intValue());
+                }
+                try
+                {
+                    ObjectNode json = (ObjectNode)this.module.getLogManager().mapper.readTree(additionalData);
+                    this.damageCause = DamageCause.valueOf(json.get("DmgC").asText());
+                    this.additional = json;
+                }
+                catch (IOException e)
+                {
+                    throw new IllegalArgumentException("Error while reading killdata from database",e);
+                }
             }
         }
         System.out.print(actionType.name +" "+ timestamp + "C:"+ (hasUser ? this.causer_user.getName() : this.causer_entity)
@@ -176,5 +207,20 @@ public class LogEntry implements Comparable<LogEntry>
     public ItemData getItemData()
     {
         return itemData;
+    }
+
+    public User getUser()
+    {
+        return user;
+    }
+
+    public DamageCause getDamageCause()
+    {
+        return damageCause;
+    }
+
+    public ObjectNode getAdditional()
+    {
+        return additional;
     }
 }

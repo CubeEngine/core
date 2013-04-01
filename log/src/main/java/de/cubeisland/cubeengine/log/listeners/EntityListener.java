@@ -599,18 +599,15 @@ public class EntityListener implements Listener
 
     private String serializeData(EntityDamageEvent.DamageCause cause, LivingEntity entity, DyeColor newColor)
     {
+        ObjectNode json = this.manager.mapper.createObjectNode();
+        json.put("dmgC", cause.name());
         if (entity instanceof Player)
         {
             if (cause == null)
             {
                 return null;
             }
-            return cause.name(); // only save cause
-        }
-        ObjectNode json = this.manager.mapper.createObjectNode();
-        if (cause != null)
-        {
-            json.put("dmgC", cause.name());
+            return json.toString(); // only save cause
         }
         if (entity instanceof Ageable)
         {

@@ -251,4 +251,16 @@ public class EntityMatcher
     {
         return this.reverseNameMap.get(type);
     }
+
+    public boolean isTameable(EntityType type)
+    {
+        switch (type)
+        {
+            case WOLF:
+            case OCELOT:
+                return true;
+            default:
+                return false;
+        }
+    }
 }

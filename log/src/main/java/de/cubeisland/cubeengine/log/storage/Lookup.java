@@ -10,15 +10,19 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.entity.EntityType;
+import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 
 import de.cubeisland.cubeengine.core.module.Module;
 import de.cubeisland.cubeengine.core.user.User;
+import de.cubeisland.cubeengine.core.util.matcher.Match;
 import de.cubeisland.cubeengine.core.util.math.BlockVector3;
 
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import gnu.trove.set.hash.THashSet;
 
 import static de.cubeisland.cubeengine.log.storage.ActionType.LOOKUP_CONTAINER;
 import static de.cubeisland.cubeengine.log.storage.ActionType.LOOKUP_KILLS;
+import static de.cubeisland.cubeengine.log.storage.ActionType.PET_DEATH;
 
 
 public class Lookup
@@ -649,19 +653,83 @@ public class Lookup
                                     entry.getCauserUser().getDisplayName());
                 break;
             case PLAYER_DEATH:
-            break;
-            case MONSTER_DEATH:
-            break;
-            case ANIMAL_DEATH:
-            break;
+                if (entry.getCauserUser() != null)
+                {
+                    user.sendTranslated("&2%s &agot slaughtered by &2%s&a!",
+                                        entry.getUser().getDisplayName(),
+                                        entry.getCauserUser().getDisplayName());
+                }
+                else if (entry.getCauserEntity() != null)
+                {
+                    user.sendTranslated("&2%s &acould not escape &6%s&a!",
+                                        entry.getUser().getDisplayName(),
+                                        this.getPrettyName(entry.getCauserEntity()));
+                }
+                else // something else
+                {
+                    user.sendTranslated("&2%s &adied! &f(&6%s&f)",
+                                        entry.getUser().getDisplayName(),
+                                        entry.getDamageCause().name());
+                }
+                break;
             case PET_DEATH:
-            break;
-            case NPC_DEATH:
-            break;
+                if (Match.entity().isTameable(entry.getEntity()))
+                {
+                    ObjectNode json = entry.getAdditional();
+                    if (json.get("owner") != null)
+                    {
+                        User owner = this.module.getCore().getUserManager().getExactUser(json.get("owner").asText());
+                        if (entry.getCauserUser() != null)
+                        {
+                            user.sendTranslated("&aThe &6%s&a of &2%s &agot slaughtered by &2%s&a!",
+                                                this.getPrettyName(entry.getEntity()),
+                                                owner.getDisplayName(),
+                                                entry.getCauserUser().getDisplayName());
+                        }
+                        else if (entry.getCauserEntity() != null)
+                        {
+                            user.sendTranslated("&aThe &6%s&a of &2%s &acould not escape &6%s&a!",
+                                                this.getPrettyName(entry.getEntity()),
+                                                owner.getDisplayName(),
+                                                this.getPrettyName(entry.getCauserEntity()));
+                        }
+                        else // something else
+                        {
+                            user.sendTranslated("&aThe &6%s&a of &2%s &adied!",
+                                                this.getPrettyName(entry.getEntity()),
+                                                owner.getDisplayName());
+                        }
+                        break;
+                    }
+                }
+                user.sendTranslated("&6%s &adied! &4(Pet without owner)", this.getPrettyName(entry.getEntity()));
+                break;
+            case MONSTER_DEATH:
+            case ANIMAL_DEATH:
             case BOSS_DEATH:
-            break;
+            case NPC_DEATH:
             case OTHER_DEATH:
+                if (entry.getCauserUser() != null)
+                {
+                    user.sendTranslated("&6%s &agot slaughtered by &2%s&a!",
+                                        this.getPrettyName(entry.getEntity()),
+                                        entry.getCauserUser().getDisplayName());
+                }
+                else if (entry.getCauserEntity() != null)
+                {
+                    user.sendTranslated("&6%s &acould not escape &6%s&a!",
+                                        this.getPrettyName(entry.getEntity()),
+                                        this.getPrettyName(entry.getCauserEntity()));
+                }
+                else // something else
+                {
+                    user.sendTranslated("&6%s &adied! &f(&6%s&f)",
+                                        this.getPrettyName(entry.getEntity()),
+                                        entry.getDamageCause().name());
+                }
             break;
+
+
             //TODO more
             default:
                 user.sendMessage("Something happened there for sure!");
