@@ -8,6 +8,17 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
+import net.minecraft.server.v1_5_R2.EntityPlayer;
+import net.minecraft.server.v1_5_R2.NBTTagCompound;
+import net.minecraft.server.v1_5_R2.NBTTagDouble;
+import net.minecraft.server.v1_5_R2.NBTTagFloat;
+import net.minecraft.server.v1_5_R2.NBTTagList;
+import net.minecraft.server.v1_5_R2.PlayerInteractManager;
+import net.minecraft.server.v1_5_R2.WorldNBTStorage;
+import net.minecraft.server.v1_5_R2.WorldServer;
+import org.bukkit.craftbukkit.v1_5_R2.CraftServer;
+import org.bukkit.craftbukkit.v1_5_R2.CraftWorld;
+
 import org.bukkit.Achievement;
 import org.bukkit.Bukkit;
 import org.bukkit.Effect;
@@ -57,10 +68,36 @@ import org.bukkit.util.Vector;
 public class UserBase implements Player
 {
     protected OfflinePlayer offlinePlayer;
+    private EntityPlayer dummy = null;
 
     public UserBase(OfflinePlayer offlinePlayer)
     {
         this.offlinePlayer = offlinePlayer;
+    }
+
+    private EntityPlayer getDummy()
+    {
+        if (this.dummy == null)
+        {
+            CraftServer srv = (CraftServer)this.getServer();
+            WorldServer world = ((CraftWorld)srv.getWorlds().get(0)).getHandle();
+            this.dummy = new EntityPlayer(srv.getServer(), world, this.getName(), new PlayerInteractManager(world));
+        }
+        return this.dummy;
+    }
+
+    private NBTTagCompound getData()
+    {
+        EntityPlayer dummy = this.getDummy();
+        WorldNBTStorage storage = (WorldNBTStorage)dummy.playerInteractManager.world.getDataManager();
+        return storage.getPlayerData(this.getName());
+    }
+
+    private void saveData0()
+    {
+        EntityPlayer dummy = this.getDummy();
+        WorldNBTStorage storage = (WorldNBTStorage)dummy.playerInteractManager.world.getDataManager();
+        storage.save(dummy);
     }
 
     @Override
@@ -215,6 +252,10 @@ public class UserBase implements Player
         if (player != null)
         {
             player.saveData();
+        }
+        else
+        {
+            this.saveData0();
         }
     }
 
@@ -450,6 +491,14 @@ public class UserBase implements Player
         {
             return player.getExp();
         }
+        else
+        {
+            NBTTagCompound data = this.getData();
+            if (data != null)
+            {
+                return data.getFloat("XpP");
+            }
+        }
         return 0;
     }
 
@@ -461,6 +510,15 @@ public class UserBase implements Player
         {
             player.setExp(f);
         }
+        else
+        {
+            NBTTagCompound data = this.getData();
+            if (data != null)
+            {
+                data.setFloat("XpP", f);
+                this.saveData();
+            }
+        }
     }
 
     @Override
@@ -470,6 +528,14 @@ public class UserBase implements Player
         if (player != null)
         {
             return player.getLevel();
+        }
+        else
+        {
+            NBTTagCompound data = this.getData();
+            if (data != null)
+            {
+                return data.getInt("XpLevel");
+            }
         }
         return 0;
     }
@@ -482,6 +548,15 @@ public class UserBase implements Player
         {
             player.setLevel(i);
         }
+        else
+        {
+            NBTTagCompound data = this.getData();
+            if (data != null)
+            {
+                data.setInt("XpLevel", i);
+                this.saveData();
+            }
+        }
     }
 
     @Override
@@ -491,6 +566,14 @@ public class UserBase implements Player
         if (player != null)
         {
             return player.getTotalExperience();
+        }
+        else
+        {
+            NBTTagCompound data = this.getData();
+            if (data != null)
+            {
+                return data.getInt("XpTotal");
+            }
         }
         return 0;
     }
@@ -503,6 +586,15 @@ public class UserBase implements Player
         {
             player.setTotalExperience(i);
         }
+        else
+        {
+            NBTTagCompound data = this.getData();
+            if (data != null)
+            {
+                data.setInt("XpTotal", i);
+                this.saveData();
+            }
+        }
     }
 
     @Override
@@ -512,6 +604,14 @@ public class UserBase implements Player
         if (player != null)
         {
             return player.getExhaustion();
+        }
+        else
+        {
+            NBTTagCompound data = this.getData();
+            if (data != null)
+            {
+                return data.getFloat("foodExhaustionLevel");
+            }
         }
         return 0;
     }
@@ -524,6 +624,15 @@ public class UserBase implements Player
         {
             player.setExhaustion(f);
         }
+        else
+        {
+            NBTTagCompound data = this.getData();
+            if (data != null)
+            {
+                data.setFloat("foodExhaustionLevel", f);
+                this.saveData();
+            }
+        }
     }
 
     @Override
@@ -533,6 +642,14 @@ public class UserBase implements Player
         if (player != null)
         {
             return player.getSaturation();
+        }
+        else
+        {
+            NBTTagCompound data = this.getData();
+            if (data != null)
+            {
+                return data.getFloat("foodSaturationLevel");
+            }
         }
         return 0;
     }
@@ -545,6 +662,15 @@ public class UserBase implements Player
         {
             player.setSaturation(f);
         }
+        else
+        {
+            NBTTagCompound data = this.getData();
+            if (data != null)
+            {
+                data.setFloat("foodSaturationLevel", f);
+                this.saveData();
+            }
+        }
     }
 
     @Override
@@ -554,6 +680,14 @@ public class UserBase implements Player
         if (player != null)
         {
             return player.getFoodLevel();
+        }
+        else
+        {
+            NBTTagCompound data = this.getData();
+            if (data != null)
+            {
+                return data.getInt("foodLevel");
+            }
         }
         return 0;
     }
@@ -566,6 +700,15 @@ public class UserBase implements Player
         {
             player.setFoodLevel(i);
         }
+        else
+        {
+            NBTTagCompound data = this.getData();
+            if (data != null)
+            {
+                data.setInt("foodLevel", i);
+                this.saveData();
+            }
+        }
     }
 
     @Override
@@ -577,6 +720,10 @@ public class UserBase implements Player
     @Override
     public void setBedSpawnLocation(Location lctn)
     {
+        if (lctn == null)
+        {
+            return;
+        }
         final Player player = this.offlinePlayer.getPlayer();
         if (player != null)
         {
@@ -633,7 +780,19 @@ public class UserBase implements Player
     public boolean isOnGround()
     {
         final Player player = this.offlinePlayer.getPlayer();
-        return player != null && player.isOnGround();
+        if (player != null)
+        {
+            return player.isOnGround();
+        }
+        else
+        {
+            NBTTagCompound data = this.getData();
+            if (data != null)
+            {
+                return data.getBoolean("OnGround");
+            }
+        }
+        return true;
     }
 
     @Override
@@ -787,7 +946,19 @@ public class UserBase implements Player
     public boolean isSleeping()
     {
         final Player player = this.offlinePlayer.getPlayer();
-        return player != null && player.isSleeping();
+        if (player != null)
+        {
+            return player.isSleeping();
+        }
+        else
+        {
+            NBTTagCompound data = this.getData();
+            if (data != null)
+            {
+                return data.getBoolean("Sleeping");
+            }
+        }
+        return false;
     }
 
     @Override
@@ -809,6 +980,14 @@ public class UserBase implements Player
         {
             return player.getGameMode();
         }
+        else
+        {
+            NBTTagCompound data = this.getData();
+            if (data != null)
+            {
+                return GameMode.getByValue(data.getInt("playerGameType"));
+            }
+        }
         return null;
     }
 
@@ -819,6 +998,12 @@ public class UserBase implements Player
         if (player != null)
         {
             player.setGameMode(gm);
+        }
+        NBTTagCompound data = this.getData();
+        if (data != null)
+        {
+            data.setInt("playerGameType", gm.getValue());
+            this.saveData();
         }
     }
 
@@ -837,6 +1022,14 @@ public class UserBase implements Player
         {
             return player.getHealth();
         }
+        else
+        {
+            NBTTagCompound data = this.getData();
+            if (data != null)
+            {
+                return data.getInt("Health");
+            }
+        }
         return 0;
     }
 
@@ -848,6 +1041,15 @@ public class UserBase implements Player
         {
             player.setHealth(i);
         }
+        else
+        {
+            NBTTagCompound data = this.getData();
+            if (data != null)
+            {
+                data.setInt("Health", i);
+                this.saveData();
+            }
+        }
     }
 
     @Override
@@ -857,6 +1059,14 @@ public class UserBase implements Player
         if (player != null)
         {
             return player.getMaxHealth();
+        }
+        else
+        {
+            NBTTagCompound data = this.getData();
+            if (data != null)
+            {
+                return data.getInt("Bukkit.MaxHealth");
+            }
         }
         return 0;
     }
@@ -982,7 +1192,15 @@ public class UserBase implements Player
         {
             return player.getRemainingAir();
         }
-        return 0;
+        else
+        {
+            NBTTagCompound data = this.getData();
+            if (data != null)
+            {
+                return data.getInt("Air");
+            }
+        }
+        return this.getMaximumAir();
     }
 
     @Override
@@ -992,6 +1210,15 @@ public class UserBase implements Player
         if (player != null)
         {
             player.setRemainingAir(i);
+        }
+        else
+        {
+            NBTTagCompound data = this.getData();
+            if (data != null)
+            {
+                data.setShort("Air", (short)i);
+                this.saveData();
+            }
         }
     }
 
@@ -1003,7 +1230,7 @@ public class UserBase implements Player
         {
             return player.getMaximumAir();
         }
-        return 0;
+        return 300;
     }
 
     @Override
@@ -1167,17 +1394,67 @@ public class UserBase implements Player
         {
             return player.getLocation();
         }
+        else
+        {
+            NBTTagCompound data = this.getData();
+            if (data != null)
+            {
+                World world = this.getWorld();
+                if (world != null)
+                {
+                    NBTTagList list = data.getList("Pos");
+                    if (list != null)
+                    {
+                        Location loc = new Location(null, 0, 0, 0, 0, 0);
+                        loc.setX(((NBTTagDouble)list.get(0)).data);
+                        loc.setY(((NBTTagDouble)list.get(1)).data);
+                        loc.setZ(((NBTTagDouble)list.get(2)).data);
+                        list = data.getList("Rotation");
+                        if (list != null)
+                        {
+                            loc.setPitch(((NBTTagFloat)list.get(0)).data);
+                            loc.setYaw(((NBTTagFloat)list.get(1)).data);
+                        }
+                        return loc;
+                    }
+                }
+            }
+        }
         return null;
     }
 
-    public Location getLocation(Location location)
+    public Location getLocation(Location loc)
     {
         final Player player = this.offlinePlayer.getPlayer();
         if (player != null)
         {
-            return player.getLocation(location);
+            return player.getLocation(loc);
         }
-        return null;
+        else
+        {
+            NBTTagCompound data = this.getData();
+            if (data != null)
+            {
+                World world = this.getWorld();
+                if (world != null)
+                {
+                    NBTTagList list = data.getList("Pos");
+                    if (list != null)
+                    {
+                        loc.setX(((NBTTagDouble)list.get(0)).data);
+                        loc.setY(((NBTTagDouble)list.get(1)).data);
+                        loc.setZ(((NBTTagDouble)list.get(2)).data);
+                        list = data.getList("Rotation");
+                        if (list != null)
+                        {
+                            loc.setPitch(((NBTTagFloat)list.get(0)).data);
+                            loc.setYaw(((NBTTagFloat)list.get(1)).data);
+                        }
+                    }
+                }
+            }
+        }
+        return loc;
     }
 
     @Override
@@ -1209,35 +1486,79 @@ public class UserBase implements Player
         {
             return player.getWorld();
         }
+        else
+        {
+            NBTTagCompound data = this.getData();
+            if (data != null)
+            {
+                return this.getServer().getWorld(new UUID(data.getLong("WorldUUIDMost"), data.getLong("WorldUUIDLeast")));
+            }
+        }
         return null;
     }
 
     @Override
     public boolean teleport(Location lctn)
     {
-        final Player player = this.offlinePlayer.getPlayer();
-        return player != null && player.teleport(lctn);
+        if (lctn == null)
+        {
+            return false;
+        }
+        return this.teleport(lctn, TeleportCause.PLUGIN);
     }
 
     @Override
     public boolean teleport(Location lctn, TeleportCause tc)
     {
         final Player player = this.offlinePlayer.getPlayer();
-        return player != null && player.teleport(lctn, tc);
+        if (player != null)
+        {
+            return player.teleport(lctn, tc);
+        }
+        else
+        {
+            NBTTagCompound data = this.getData();
+            if (data != null)
+            {
+                NBTTagList list = new NBTTagList();
+                list.add(new NBTTagDouble(null, lctn.getX()));
+                list.add(new NBTTagDouble(null, lctn.getY()));
+                list.add(new NBTTagDouble(null, lctn.getZ()));
+                data.set("Pos", list);
+
+                list = new NBTTagList();
+                list.add(new NBTTagFloat(null, lctn.getPitch()));
+                list.add(new NBTTagFloat(null, lctn.getYaw()));
+                data.set("Rotation", list);
+
+                UUID id = lctn.getWorld().getUID();
+                data.setLong("WorldUUIDMost", id.getMostSignificantBits());
+                data.setLong("WorldUUIDLeast", id.getLeastSignificantBits());
+
+                this.saveData();
+            }
+        }
+        return false;
     }
 
     @Override
     public boolean teleport(Entity entity)
     {
-        final Player player = this.offlinePlayer.getPlayer();
-        return player != null && player.teleport(entity);
+        if (entity == null)
+        {
+            return false;
+        }
+        return this.teleport(entity.getLocation());
     }
 
     @Override
     public boolean teleport(Entity entity, TeleportCause tc)
     {
-        final Player player = this.offlinePlayer.getPlayer();
-        return player != null && player.teleport(entity, tc);
+        if (entity == null)
+        {
+            return false;
+        }
+        return this.teleport(entity.getLocation(), tc);
     }
 
     @Override
@@ -1403,6 +1724,14 @@ public class UserBase implements Player
         if (player != null)
         {
             return player.getUniqueId();
+        }
+        else
+        {
+            NBTTagCompound data = this.getData();
+            if (data != null)
+            {
+                return new UUID(data.getLong("UUIDMost"), data.getLong("UUIDLeast"));
+            }
         }
         return null;
     }
@@ -1948,15 +2277,28 @@ public class UserBase implements Player
         {
             player.setMaxHealth(health);
         }
+        else
+        {
+            NBTTagCompound data = this.getData();
+            if (data != null)
+            {
+                data.setInt("Bukkit.MaxHealth", health);
+                this.saveData();
+            }
+        }
     }
 
     @Override
     public void resetMaxHealth()
     {
-        final Player player = this.offlinePlayer.getPlayer();
+        Player player = this.getPlayer();
         if (player != null)
         {
             player.resetMaxHealth();
+        }
+        else
+        {
+            this.setMaxHealth(20);
         }
     }
 
@@ -1968,6 +2310,15 @@ public class UserBase implements Player
         {
             player.setCustomName(name);
         }
+        else
+        {
+            NBTTagCompound data = this.getData();
+            if (data != null)
+            {
+                data.setString("CustomName", name);
+                this.saveData();
+            }
+        }
     }
 
     @Override
@@ -1977,6 +2328,14 @@ public class UserBase implements Player
         if (player != null)
         {
             return player.getCustomName();
+        }
+        else
+        {
+            NBTTagCompound data = this.getData();
+            if (data != null)
+            {
+                data.getString("CustomName");
+            }
         }
         return null;
     }
@@ -1989,6 +2348,15 @@ public class UserBase implements Player
         {
             player.setCustomNameVisible(flag);
         }
+        else
+        {
+            NBTTagCompound data = this.getData();
+            if (data != null)
+            {
+                data.setBoolean("CustomNameVisible", flag);
+                this.saveData();
+            }
+        }
     }
 
     @Override
@@ -1998,6 +2366,14 @@ public class UserBase implements Player
         if (player != null)
         {
             return player.isCustomNameVisible();
+        }
+        else
+        {
+            NBTTagCompound data = this.getData();
+            if (data != null)
+            {
+                return data.getBoolean("CustomNameVisible");
+            }
         }
         return false;
     }
