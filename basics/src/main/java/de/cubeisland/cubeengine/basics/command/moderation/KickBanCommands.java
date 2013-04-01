@@ -131,7 +131,7 @@ public class KickBanCommands
         {
             User user = context.getCore().getUserManager().getExactUser(player);
             String message = context.getStrings(1);
-            if (message.isEmpty())
+            if (message == null || message.isEmpty())
             {
                 message = user.translate("&cYou got banned from this server!");
             }
