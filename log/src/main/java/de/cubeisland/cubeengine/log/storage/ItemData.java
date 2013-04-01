@@ -1,6 +1,5 @@
 package de.cubeisland.cubeengine.log.storage;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -123,9 +122,9 @@ public class ItemData
             }
             return new ItemData(mat,dura,amount,name,lore,enchantments);
         }
-        catch (IOException ex)
+        catch (Exception ex)
         {
-            throw new IllegalStateException("Error while deserializing ItemData!", ex);
+            throw new IllegalStateException("Error while deserializing ItemData: " + data, ex);
         }
     }
 
