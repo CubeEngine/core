@@ -160,7 +160,7 @@ public class BlockListener implements Listener
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onBlockForm(BlockFormEvent event)
     {
-        if (this.manager.isIgnored(event.getBlock().getWorld(),BLOCK_FORM)) return;
+        if (this.manager.isIgnored(event.getBlock().getWorld(),BLOCK_FORM,event.getNewState().getType())) return;
         this.logBlockChange(BLOCK_FORM,event.getBlock().getState(),event.getNewState(),null);
     }
 

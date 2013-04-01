@@ -202,7 +202,7 @@ public class MovementCommands
                     return;
                 }
             }
-            if (BasicsPerm.COMMAND_BACK.isAuthorized(sender))
+            if (backPerm)
             {
                 loc = sender.get(BasicsAttachment.class).getLastLocation();
                 if (loc == null)
