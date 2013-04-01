@@ -577,9 +577,13 @@ public class EntityListener implements Listener
     {
         if (this.manager.isIgnored(event.getEnchanter().getWorld(),ENCHANT_ITEM)) return;
         ItemData itemData = new ItemData(event.getItem());
+        if (itemData.enchantments == null)
+        {
+            itemData.enchantments = new HashMap<Enchantment, Integer>();
+        }
         itemData.enchantments.putAll(event.getEnchantsToAdd());
-        this.manager.queueInteractionLog(event.getEnchanter().getLocation(), ENCHANT_ITEM, event.getEnchanter(),
-                                         itemData.serialize(this.module.getObjectMapper()));
+        this.manager.queueInteractionLog(event.getEnchanter().getLocation(), ENCHANT_ITEM,
+                                         event.getEnchanter(), itemData.serialize(this.module.getObjectMapper()));
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
