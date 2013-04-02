@@ -94,4 +94,7 @@ public class BasicsConfiguration extends Configuration
     public String defaultKickMessage = "&4Kicked!";
     @Option("changepainting.max.distance")
     public int maxChangePaintingDistance = 10;
+    
+    @Option("commands.door.max.radius")
+    public int maxDoorRadius = 10;
 }

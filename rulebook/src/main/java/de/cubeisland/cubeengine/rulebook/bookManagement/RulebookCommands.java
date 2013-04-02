@@ -230,17 +230,8 @@ public class RulebookCommands extends ContainerCommand
         Language language = this.rulebookManager.getLanguage(context.getString(0));
         if(language == null)
         {
-            context.sendTranslated("&cMore than one or no language is matched with %s", language);
+            context.sendTranslated("&cMore than one or no language is matched with %s", context.getString(0));
             return;
-            /*
-             * 
-             * 
-             * 
-             * 
-             * 
-             * 
-             * 
-             */
         }
         Locale locale = language.getLocale();
 

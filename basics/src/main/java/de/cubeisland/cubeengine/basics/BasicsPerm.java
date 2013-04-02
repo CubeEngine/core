@@ -245,7 +245,10 @@ public class BasicsPerm extends PermissionContainer
     public static final Permission POWERTOOL_USE = BASICS.createChild("powertool.use");
 
     public static final Permission COMMAND_BAN_NOREASON = COMMAND.createAbstractChild("ban").createNew("noreason");
-
+    
+    public static final Permission COMMAND_DOOR = COMMAND.createAbstractChild("door");
+    public static final Permission COMMAND_DOOR_LOCATION = COMMAND.createChild("location");
+    
     /**
      * Allows to change the walkspeed of other players
      */
