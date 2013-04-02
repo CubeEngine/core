@@ -7,7 +7,6 @@ import de.cubeisland.cubeengine.core.command.parameterized.Param;
 import de.cubeisland.cubeengine.core.command.parameterized.ParameterizedContext;
 import de.cubeisland.cubeengine.core.command.reflected.Alias;
 import de.cubeisland.cubeengine.core.command.reflected.Command;
-import de.cubeisland.cubeengine.core.command.CommandSender;
 import de.cubeisland.cubeengine.core.i18n.Language;
 import de.cubeisland.cubeengine.core.logger.LogLevel;
 import de.cubeisland.cubeengine.core.permission.Permission;
@@ -24,7 +23,6 @@ import org.bukkit.inventory.PlayerInventory;
 import java.io.IOException;
 import java.util.List;
 import java.util.Locale;
-import java.util.Set;
 
 import static de.cubeisland.cubeengine.core.permission.PermDefault.TRUE;
 
@@ -98,16 +96,20 @@ public class RulebookCommands extends ContainerCommand
             
             if(!this.rulebookManager.contains(locale))
             {
-                context.sendTranslated("&eThe language %s is not supported yet.", language);
+                context.sendTranslated("&eThe language %s is not supported yet.", language.getLocale().getDisplayLanguage(context.getSender().getLocale()));
                 return;
             }
         }
         else
         {
-            locale = this.module.getCore().getI18n().getDefaultLanguage().getLocale();
+            locale = user.getLocale();
             if(!this.rulebookManager.contains(locale))
             {
-                locale = this.rulebookManager.getLocales().iterator().next();
+                locale = this.module.getCore().getI18n().getDefaultLanguage().getLocale();
+                if(!this.rulebookManager.contains(locale))
+                {
+                    locale = this.rulebookManager.getLocales().iterator().next();
+                }
             }
         }
 
@@ -148,7 +150,7 @@ public class RulebookCommands extends ContainerCommand
                 context.sendTranslated("&6available languages:");
                 for(Locale locale : this.rulebookManager.getLocales())
                 {
-                    context.sendMessage("&e* " + locale.getDisplayName());
+                    context.sendMessage("&e* " + locale.getDisplayLanguage(context.getSender().getLocale()));
                 }
             }
         }
@@ -157,7 +159,7 @@ public class RulebookCommands extends ContainerCommand
             context.sendTranslated("&6supported languages:");
             for(Language language : this.getModule().getCore().getI18n().getLanguages())
             {
-                context.sendMessage("&e* " + language.getName());
+                context.sendMessage("&e* " + language.getLocale().getDisplayLanguage(context.getSender().getLocale()));
             }
         }
     }
@@ -175,12 +177,12 @@ public class RulebookCommands extends ContainerCommand
 
         if(language == null)
         {
-            context.sendTranslated("&cMore than one or no language is matched with %s", language);
+            context.sendTranslated("&cMore than one or no language is matched with %s", context.getString(0));
             return;
         }
         if(!this.rulebookManager.contains(language.getLocale()))
         {
-            context.sendTranslated("&aThe languagefile of %s doesn't exist at the moment", language);
+            context.sendTranslated("&aThe languagefile of %s doesn't exist at the moment", language.getLocale().getDisplayLanguage(context.getSender().getLocale()));
             return;
         }
         
@@ -188,11 +190,11 @@ public class RulebookCommands extends ContainerCommand
         {
             if(this.rulebookManager.removeBook(language.getLocale()))
             {
-                context.sendTranslated("&aThe languagefiles of %s was deleted", language);
+                context.sendTranslated("&aThe languagefiles of %s was deleted", language.getLocale().getDisplayLanguage(context.getSender().getLocale()));
             }
             else
             {
-                context.sendTranslated("%cThe languagefile of %s couldn't be deleted", language);
+                context.sendTranslated("%cThe languagefile of %s couldn't be deleted", language.getLocale().getDisplayLanguage(context.getSender().getLocale()));
             }
         }
         catch(IOException ex)
@@ -230,6 +232,15 @@ public class RulebookCommands extends ContainerCommand
         {
             context.sendTranslated("&cMore than one or no language is matched with %s", language);
             return;
+            /*
+             * 
+             * 
+             * 
+             * 
+             * 
+             * 
+             * 
+             */
         }
         Locale locale = language.getLocale();
 
@@ -240,7 +251,7 @@ public class RulebookCommands extends ContainerCommand
                 if(this.rulebookManager.removeBook(locale))
                 {
                     this.rulebookManager.addBook(item, locale);
-                    context.sendTranslated("&aThe rulebook %s was succesful modified.", locale);
+                    context.sendTranslated("&aThe rulebook %s was succesful modified.", locale.getDisplayLanguage(context.getSender().getLocale()));
                 }
                 else
                 {
@@ -292,7 +303,7 @@ public class RulebookCommands extends ContainerCommand
         if(!this.rulebookManager.contains(locale))
         {
             this.rulebookManager.addBook(item, locale);
-            context.sendTranslated("&aRulebook for the language %s was added succesfully", language);
+            context.sendTranslated("&aRulebook for the language %s was added succesfully", language.getLocale().getDisplayLanguage(context.getSender().getLocale()));
         }
         else
         {

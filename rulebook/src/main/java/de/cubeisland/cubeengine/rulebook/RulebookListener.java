@@ -9,6 +9,7 @@ import de.cubeisland.cubeengine.core.bukkit.PlayerLanguageReceivedEvent;
 import de.cubeisland.cubeengine.core.i18n.Language;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.rulebook.bookManagement.RulebookManager;
+import java.util.Locale;
 
 class RulebookListener implements Listener
 {
@@ -29,17 +30,23 @@ class RulebookListener implements Listener
         if(!user.hasPlayedBefore() && !this.rulebookManager.getLocales().isEmpty())
         {
             Language language = this.rulebookManager.getLanguage(event.getLanguage());
+            Locale locale;
+            
             if(language == null || !this.rulebookManager.contains(language.getLocale()))
             {
-                language = this.module.getCore().getI18n().getDefaultLanguage();
+                locale = this.module.getCore().getI18n().getDefaultLanguage().getLocale();
+                if(!this.rulebookManager.contains(locale))
+                {
+                    locale = this.rulebookManager.getLocales().iterator().next();
+                }
             }
-            if(language == null || !this.rulebookManager.contains(language.getLocale()))
+            else
             {
-                return;
+                locale = language.getLocale();
             }
             
             ItemStack hand = user.getItemInHand();
-            user.setItemInHand(this.rulebookManager.getBook(language.getLocale()));
+            user.setItemInHand(this.rulebookManager.getBook(locale));
 
             if(hand != null && hand.getType() != Material.AIR)
             {

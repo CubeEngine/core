@@ -139,7 +139,7 @@ public final class RulebookManager
         {
             try
             {
-                File file = new File(this.module.getFolder().getAbsoluteFile(), locale.getDisplayName() + ".txt");
+                File file = new File(this.module.getFolder().getAbsoluteFile(), locale.getDisplayLanguage() + ".txt");
                 List<String> pages = ((BookMeta) book.getItemMeta()).getPages();
                 RuleBookFile.createFile(file, pages.toArray(new String[pages.size()]));
 
