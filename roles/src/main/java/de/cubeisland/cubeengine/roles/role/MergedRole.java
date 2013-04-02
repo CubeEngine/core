@@ -74,14 +74,11 @@ public class MergedRole extends Role
             this.litaralPerms = perms;
             for (String keyPerm : perms.keySet())
             {
-                if (keyPerm.endsWith("*"))
+                Map<String, Boolean> map = new HashMap<String, Boolean>();
+                this.resolveBukkitPermission(keyPerm, perms.get(keyPerm), map);
+                for (String subPermKey : map.keySet())
                 {
-                    Map<String, Boolean> map = new HashMap<String, Boolean>();
-                    this.resolveBukkitPermission(keyPerm, perms.get(keyPerm), map);
-                    for (String subPermKey : map.keySet())
-                    {
-                        this.perms.put(subPermKey, new RolePermission(subPermKey, map.get(subPermKey), this));
-                    }
+                    this.perms.put(subPermKey, new RolePermission(subPermKey, map.get(subPermKey), this));
                 }
                 this.perms.put(keyPerm, new RolePermission(keyPerm, perms.get(keyPerm), this));
             }

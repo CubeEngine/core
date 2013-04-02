@@ -177,10 +177,7 @@ public abstract class Role implements Comparable<Role>
         Map<String, Boolean> childPerm = bukkitPerm.getChildren();
         for (String permKey : childPerm.keySet())
         {
-            if (permKey.endsWith("*"))
-            {
-                this.resolveBukkitPermission(permKey, set, resolvedPermissions);
-            }
+            this.resolveBukkitPermission(permKey, set, resolvedPermissions);
             resolvedPermissions.put(permKey, set && childPerm.get(permKey));
         }
     }
