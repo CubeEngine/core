@@ -52,9 +52,7 @@ public class ToolListener implements Listener
             //-----------
             lookup.since(System.currentTimeMillis() - TimeUnit.DAYS.toMillis(7)); // 7 days default //TODO this in block creation
             //-----------
-            this.module.getLogManager().fillLookup(lookup);
-            lookup.show(user);
-
+            this.module.getLogManager().fillLookupAndShow(lookup,user);
             event.setCancelled(true);
             event.setUseItemInHand(Result.DENY);
             event.setUseInteractedBlock(Result.DENY);

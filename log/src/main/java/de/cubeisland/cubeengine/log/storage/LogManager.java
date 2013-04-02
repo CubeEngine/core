@@ -477,9 +477,27 @@ public class LogManager
         return this.queryManager.queuedLogs.size();
     }
 
-    public void fillLookup(Lookup lookup)
+    public void fillLookupAndShow(final Lookup lookup, final User user)
     {
-        this.queryManager.fillLookup(lookup);
+        final Lookup fillLookup = lookup.clone();
+        Thread thread = this.module.getCore().getTaskManager().getThreadFactory().newThread( new Runnable()
+        {
+            @Override
+            public void run()
+            {
+                queryManager.fillLookup(fillLookup);
+                LogManager.this.module.getCore().getTaskManager().scheduleSyncDelayedTask(module,
+                new Runnable()
+                {
+                    @Override
+                    public void run()
+                    {
+                        fillLookup.show(user);
+                    }
+                });
+            }
+        });
+        thread.start();
     }
 
     public BlockListener getBlockListener() {

@@ -706,9 +706,7 @@ public class BlockListener implements Listener
                 case FENCE_GATE:
                     if (this.manager.isIgnored(state.getWorld(),DOOR_USE)) return;
                     state = this.adjustBlockForDoubleBlocks(state);
-                    this.manager.queueInteractionLog(state.getLocation(), DOOR_USE, event.getPlayer(), state.getType().name());
-                    //TODO this is actually a blockchange log it as one
-                    //need to calculate data values of opened door
+                    this.logBlockChange(DOOR_USE,state,state,event.getPlayer()); // TODO on rollback care the newData state is not correct!
                     break;
                 case LEVER:
                     if (this.manager.isIgnored(state.getWorld(),LEVER_USE)) return;
@@ -748,8 +746,9 @@ public class BlockListener implements Listener
                     if (itemInHand.getType().equals(Material.INK_SACK) && itemInHand.getDurability() == 15)
                     {
                         if (this.manager.isIgnored(state.getWorld(),BONEMEAL_USE)) return;
-                        this.manager.queueInteractionLog(location, BONEMEAL_USE, event.getPlayer(), state.getType()
-                                                                                                         .name());
+                        ArrayNode json = this.module.getObjectMapper().createArrayNode();
+                        json.add(state.getType().name());
+                        this.manager.queueInteractionLog(location, BONEMEAL_USE, event.getPlayer(), json.toString());
                     }
                     break;
                 case RAILS:

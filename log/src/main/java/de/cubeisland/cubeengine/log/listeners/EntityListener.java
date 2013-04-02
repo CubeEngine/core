@@ -422,7 +422,7 @@ public class EntityListener implements Listener
             case BUILD_WITHER:
             case BREEDING:
                 if (this.manager.isIgnored(world, OTHER_SPAWN)) return;
-                this.manager.queueLog(event.getLocation(), OTHER_SPAWN,-event.getEntityType().getTypeId()); //TODO get player in datag
+                this.manager.queueLog(event.getLocation(), OTHER_SPAWN, -event.getEntityType().getTypeId());
                 return;
             //case SPAWNER_EGG: //is already done
         }
@@ -432,10 +432,11 @@ public class EntityListener implements Listener
     public void onEntityShear(PlayerShearEntityEvent event)
     {
         if (this.manager.isIgnored(event.getEntity().getWorld(),ENTITY_SHEAR)) return;
-        long spawnedEntity = -event.getEntity().getType().getTypeId();
+        long shearedEntity = -event.getEntity().getType().getTypeId();
+        long userKey = this.um.getExactUser(event.getPlayer()).key;
         if (event.getEntity() instanceof LivingEntity)
         {
-            this.manager.queueKillLog(event.getEntity().getLocation(), ENTITY_SHEAR, spawnedEntity, null, this
+            this.manager.queueKillLog(event.getEntity().getLocation(), ENTITY_SHEAR,userKey, shearedEntity, this
                 .serializeData(null, (LivingEntity)event.getEntity(), null));
         }
         else
@@ -455,10 +456,11 @@ public class EntityListener implements Listener
         }
         else if(player.getItemInHand().getType().equals(INK_SACK) && entity instanceof Sheep || entity instanceof Wolf)
         {
+            long userKey = this.um.getExactUser(player).key;
+            long entityId = -entity.getType().getTypeId();
             if (this.manager.isIgnored(player.getWorld(),ENTITY_DYE)) return;
-            Dye dye = (Dye) player.getItemInHand().getData();
-            this.manager.queueInteractionLog(entity.getLocation(), ENTITY_DYE, player, this
-                .serializeData(null, entity, dye.getColor()));
+            this.manager.queueKillLog(entity.getLocation(), ENTITY_DYE, userKey, entityId,
+                this.serializeData(null, entity, DyeColor.getByDyeData(player.getItemInHand().getData().getData())));
         }
         else if (player.getItemInHand().getType().equals(BOWL) && entity instanceof MushroomCow)
         {
@@ -557,8 +559,9 @@ public class EntityListener implements Listener
     public void onExpPickup(PlayerExpChangeEvent event)
     {
         if (this.manager.isIgnored(event.getPlayer().getWorld(),XP_PICKUP)) return;
-        this.manager.queueInteractionLog(event.getPlayer().getLocation(), XP_PICKUP, event.getPlayer(), String
-            .valueOf(event.getAmount()));
+        ArrayNode json = this.module.getObjectMapper().createArrayNode();
+        json.add(event.getAmount());
+        this.manager.queueInteractionLog(event.getPlayer().getLocation(), XP_PICKUP, event.getPlayer(), json.toString());
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
@@ -599,7 +602,10 @@ public class EntityListener implements Listener
     private String serializeData(EntityDamageEvent.DamageCause cause, LivingEntity entity, DyeColor newColor)
     {
         ObjectNode json = this.manager.mapper.createObjectNode();
-        json.put("dmgC", cause.name());
+        if (cause != null)
+        {
+            json.put("dmgC", cause.name());
+        }
         if (entity instanceof Player)
         {
             if (cause == null)

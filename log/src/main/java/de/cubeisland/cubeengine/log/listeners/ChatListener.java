@@ -8,6 +8,9 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+
 import static de.cubeisland.cubeengine.log.storage.ActionType.*;
 
 public class ChatListener implements Listener
@@ -26,8 +29,9 @@ public class ChatListener implements Listener
     {
         if (event.getMessage().trim().isEmpty()) return;
         if (this.manager.isIgnored(event.getPlayer().getWorld(),PLAYER_COMMAND,event.getMessage())) return;
-        this.manager.queueInteractionLog(event.getPlayer().getLocation(), PLAYER_COMMAND, event.getPlayer(), event
-            .getMessage());
+        ArrayNode json = this.module.getObjectMapper().createArrayNode();
+        json.add(event.getMessage());
+        this.manager.queueInteractionLog(event.getPlayer().getLocation(), PLAYER_COMMAND, event.getPlayer(),json.toString());
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
@@ -35,7 +39,8 @@ public class ChatListener implements Listener
     {
         if (this.manager.isIgnored(event.getPlayer().getWorld(),PLAYER_CHAT)) return;
         if (event.getMessage().trim().isEmpty()) return;
-        this.manager.queueInteractionLog(event.getPlayer().getLocation(), PLAYER_CHAT, event.getPlayer(),
-                                         event.getMessage());
+        ArrayNode json = this.module.getObjectMapper().createArrayNode();
+        json.add(event.getMessage());
+        this.manager.queueInteractionLog(event.getPlayer().getLocation(), PLAYER_CHAT, event.getPlayer(),json.toString());
     }
 }

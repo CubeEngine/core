@@ -56,7 +56,6 @@ public class ContainerListener implements Listener
         this.manager = manager;
     }
 
-
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onInventoryClose(InventoryCloseEvent event)
     {
@@ -73,15 +72,14 @@ public class ContainerListener implements Listener
                     int amount = itemDataMap.get(itemData);
                     if (amount == 0) continue;
                     String additional = itemData.serialize(this.module.getObjectMapper());
-                    this.manager.queueContainerLog(location, amount < 0 ? ITEM_REMOVE : ITEM_INSERT, user.key, itemData.material, itemData.dura,
+                    this.manager.queueContainerLog(location, amount < 0 ? ITEM_REMOVE : ITEM_INSERT, user.key,
+                         itemData.material, itemData.dura,
                          event.getInventory().getType().name(), additional);
                 }
             }
             this.inventoryChanges.remove(user.key);
         }
     }
-
-
 
     private Location getLocationForHolder(InventoryHolder holder)
     {
@@ -398,8 +396,9 @@ public class ContainerListener implements Listener
 
         String additional = new ItemData(event.getItem()).serialize(this.module.getObjectMapper());
 
-        this.manager.queueContainerLog(sourceLocation, ITEM_TRANSFER, null, event.getItem().getType(),
-                                       event.getItem().getDurability(), source.getType().name(), additional);
+        this.manager.queueContainerLog(sourceLocation, ITEM_TRANSFER, null,
+                                       event.getItem().getType(), event.getItem().getDurability(),
+                                       source.getType().name(), additional);
     }
 
     private void prepareForLogging(User user, ItemData itemData, int amount)

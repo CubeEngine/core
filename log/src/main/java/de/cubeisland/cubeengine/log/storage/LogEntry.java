@@ -155,29 +155,30 @@ public class LogEntry implements Comparable<LogEntry>
         case BOSS_DEATH: // data is killed
         case NPC_DEATH: // data is killed
         case OTHER_DEATH: // data is killed
+            //has Additional: (dmgC)
+            //nonPlayer has Additional: (isAdult)(isSit)(color)(prof)(owner)
+        case ENTITY_SHEAR: // data is sheared | has Additional (isAdult) sheep:(color)
+        case ENTITY_DYE:  // data is dyed | has Additional (isAdult)(color)(nColor) wolf:(isSit)(owner)
             this.entity = EntityType.fromId(-data.intValue());
         break;
         case NATURAL_SPAWN:
         case SPAWNER_SPAWN:
+        case OTHER_SPAWN: // sadly player is not given in event
         break;
-        case OTHER_SPAWN:
-        // TODO player
-        break;
+        case ITEM_INSERT: // hasItemData | newBlock is Container
+        case ITEM_REMOVE: // hasItemData | newBlock is Container
+            this.newBlock = new BlockData(Material.getMaterial(newBlock));
         case MONSTER_EGG_USE: // hasItemData
         case ITEM_DROP: // hasItemData
         case ITEM_PICKUP: // hasItemData
-        case ITEM_INSERT: // hasItemData
-        case ITEM_REMOVE: // hasItemData
         case ITEM_TRANSFER: // hasItemData
         case ENCHANT_ITEM: // hasItemData
         case CRAFT_ITEM: // hasItemData
             this.itemData = ItemData.deserialize(this.additional);
         break;
         case XP_PICKUP: // has Additional Xp-Amount
-        case ENTITY_SHEAR: // has Additional (isAdult) sheep:(color)
-        case ENTITY_DYE:  // has Additional (isAdult)(color)(nColor) wolf:(isSit)(owner)
-        case PLAYER_COMMAND: // has Additional string //TODO perhaps have to create jsonElem
-        case PLAYER_CHAT: // has Additional string //TODO perhaps have to create jsonElem
+        case PLAYER_COMMAND: // has Additional string
+        case PLAYER_CHAT: // has Additional string
         case PLAYER_TELEPORT: // has Additional (dir)form|to (world)id (x)(y)(z)
         case PLAYER_JOIN:
         case PLAYER_QUIT:
@@ -223,6 +224,7 @@ public class LogEntry implements Comparable<LogEntry>
     {
         if (this.actionType != other.actionType)
             return false;
+
         //TODO
         return true;
     }
@@ -275,9 +277,7 @@ public class LogEntry implements Comparable<LogEntry>
     @Override
     public String toString()
     {
-        return "LogEntry{" +
-            "module=" + module +
-            ", entryID=" + entryID +
+        return "entryID=" + entryID +
             ", timestamp=" + timestamp +
             ", world=" + world +
             ", location=" + location +
@@ -290,8 +290,6 @@ public class LogEntry implements Comparable<LogEntry>
             ", attached=" + attached +
             ", entity=" + entity +
             ", user=" + user +
-            ", additional=" + additional +
-            ", um=" + um +
-            '}';
+            ", additional=" + additional;
     }
 }

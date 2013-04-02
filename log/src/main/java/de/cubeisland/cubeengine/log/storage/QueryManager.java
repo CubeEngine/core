@@ -80,6 +80,7 @@ public class QueryManager
                 .field("newData",AttrType.TINYINT, false,false)
                 .field("additionalData",AttrType.VARCHAR,255, false)
                 .foreignKey("world").references("worlds", "key")
+                .index("date")
                 .index("x")
                 .index("y")
                 .index("z")
@@ -219,7 +220,7 @@ public class QueryManager
         }
     }
 
-    public Lookup fillLookup(Lookup lookup)
+    public synchronized Lookup fillLookup(Lookup lookup)
     {
         lookup.clear();
         SelectBuilder selectBuilder = this.database.getQueryBuilder().select().wildcard().from("log_entries").where();
