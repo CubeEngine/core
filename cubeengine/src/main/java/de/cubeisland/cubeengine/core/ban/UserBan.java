@@ -8,6 +8,11 @@ public class UserBan extends Ban
 {
     private final User user;
 
+    public UserBan(String source, String reason, User user)
+    {
+        this(source, reason, new Date(System.currentTimeMillis()), null, user);
+    }
+
     public UserBan(String source, String reason, Date expires, User user)
     {
         this(source, reason, new Date(System.currentTimeMillis()), expires, user);

@@ -7,6 +7,11 @@ public class IpBan extends Ban
 {
     private InetAddress address;
 
+    public IpBan(String source, String reason, InetAddress address)
+    {
+        this(source, reason, new Date(System.currentTimeMillis()), null, address);
+    }
+
     public IpBan(String source, String reason, Date expires, InetAddress address)
     {
         this(source, reason, new Date(System.currentTimeMillis()), expires, address);
