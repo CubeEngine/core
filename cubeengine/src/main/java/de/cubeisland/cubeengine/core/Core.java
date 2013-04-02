@@ -3,6 +3,7 @@ package de.cubeisland.cubeengine.core;
 import java.nio.charset.Charset;
 import java.util.logging.Logger;
 
+import de.cubeisland.cubeengine.core.ban.BanManager;
 import de.cubeisland.cubeengine.core.bukkit.EventManager;
 import de.cubeisland.cubeengine.core.bukkit.TaskManager;
 import de.cubeisland.cubeengine.core.command.CommandManager;
@@ -26,126 +27,133 @@ import de.cubeisland.cubeengine.core.webapi.ApiServer;
  */
 public interface Core
 {
+    public static final Charset CHARSET = Charset.forName("UTF-8");
+
     /**
      * Returns the version of the core
      *
      * @return the version
      */
-    public Version getVersion();
-
-    public static final Charset CHARSET = Charset.forName("UTF-8");
+    Version getVersion();
 
     /**
      * The method returns the database
      *
      * @return the database instance
      */
-    public Database getDB();
+    Database getDB();
 
     /**
      * The method returns the permission registration
      *
      * @return an instance of a permission registration
      */
-    public PermissionManager getPermissionManager();
+    PermissionManager getPermissionManager();
 
     /**
      * The method returns the event manager
      *
      * @return the instance of the event manager
      */
-    public EventManager getEventManager();
+    EventManager getEventManager();
 
     /**
      * This method returns the user manager
      *
      * @return the instance of the user manager
      */
-    public UserManager getUserManager();
+    UserManager getUserManager();
 
     /**
      * This method returns the file manager
      *
      * @return the instance of the file manager
      */
-    public FileManager getFileManager();
+    FileManager getFileManager();
 
     /**
      * This method returns the engine logger
      *
      * @return the engine logger
      */
-    public Logger getLog();
+    Logger getLog();
 
     /**
      * This method returns the module manager
      *
      * @return the instance of the module manager
      */
-    public ModuleManager getModuleManager();
+    ModuleManager getModuleManager();
 
     /**
      * This method returns the internationalization API
      *
      * @return the I18n API
      */
-    public I18n getI18n();
+    I18n getI18n();
 
     /**
      * This method returns the engine configuration
      *
      * @return the engine configuration
      */
-    public CoreConfiguration getConfiguration();
+    CoreConfiguration getConfiguration();
 
     /**
      * This method returns the command manager
      *
      * @return the instance of the command manager
      */
-    public CommandManager getCommandManager();
+    CommandManager getCommandManager();
 
     /**
      * This method returns the TaskManager
      *
      * @return the TaskManager
      */
-    public TaskManager getTaskManager();
+    TaskManager getTaskManager();
 
     /**
      * This method returns the DebugMode
      *
      * @return the debugMode
      */
-    public boolean isDebug();
+    boolean isDebug();
 
     /**
      * This method returns the TableManager
      *
      * @return the TableManager
      */
-    public TableManager getTableManger();
+    TableManager getTableManger();
 
     /**
      * This method returns the web API server
      *
      * @return the API server
      */
-    public ApiServer getApiServer();
+    ApiServer getApiServer();
 
     /**
      * This method returns the WorldManager
      *
      * @return the world manager
      */
-    public WorldManager getWorldManager();
+    WorldManager getWorldManager();
 
     /**
      * This method returns the MatcherManager containing all matchers
      *
-     * @return
+     * @return the global matcher manager
      */
-    public Match getMatcherManager();
+    Match getMatcherManager();
 
+    /**
+     * Returns the inventory guard to protect inventories
+     *
+     * @return the global inventory guard instance
+     */
     InventoryGuardFactory getInventoryGuard();
+
+    BanManager getBanManager();
 }

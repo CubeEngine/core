@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.logging.Logger;
 
+import de.cubeisland.cubeengine.core.ban.BanManager;
 import de.cubeisland.cubeengine.core.bukkit.EventManager;
 import de.cubeisland.cubeengine.core.bukkit.TaskManager;
 import de.cubeisland.cubeengine.core.command.CommandManager;
@@ -165,6 +166,12 @@ public class TestCore implements Core
 
     @Override
     public InventoryGuardFactory getInventoryGuard()
+    {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public BanManager getBanManager()
     {
         throw new UnsupportedOperationException("Not supported yet.");
     }

@@ -71,6 +71,7 @@ public final class BukkitCore extends JavaPlugin implements Core
     private InventoryGuardFactory inventoryGuard;
     private PacketEventManager packetEventManager;
     private CorePerms corePerms;
+    private BukkitBanManager banManager;
 
     @Override
     public void onEnable()
@@ -85,11 +86,13 @@ public final class BukkitCore extends JavaPlugin implements Core
             return;
         }
 
-        CubeEngine.initialize(this);
-
         this.logger = new CubeLogger("Core", this.getLogger());
         this.logger.setLevel(Level.ALL);
         // TODO RemoteHandler is not yet implemented this.logger.addHandler(new RemoteHandler(LogLevel.ERROR, this));
+
+        this.banManager = new BukkitBanManager(this);
+
+        CubeEngine.initialize(this);
 
         try
         {
@@ -432,5 +435,11 @@ public final class BukkitCore extends JavaPlugin implements Core
     public PacketEventManager getPacketEventManager()
     {
         return this.packetEventManager;
+    }
+
+    @Override
+    public BukkitBanManager getBanManager()
+    {
+        return this.banManager;
     }
 }
