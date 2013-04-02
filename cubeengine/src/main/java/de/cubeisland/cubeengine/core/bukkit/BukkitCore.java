@@ -219,7 +219,7 @@ public final class BukkitCore extends JavaPlugin implements Core
             public void run()
             {
                 // depends on loaded worlds
-                worldManager = new WorldManager(database);
+                worldManager = new WorldManager(BukkitCore.this);
 
                 // depends on: file manager
                 moduleManager.loadModules(fileManager.getModulesDir());
