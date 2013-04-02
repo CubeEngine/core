@@ -53,7 +53,7 @@ public class Shout extends Module
             try
             {
                 this.announcementManager.createAnnouncement("Example", this.getCore().getConfiguration().defaultLocale,
-                        "This is an example announcement", "10 minutes", "*", "*", "*");
+                        "This is an example announcement", "10 minutes", "*", "*", "*", false);
             }
             catch (Exception ex)
             {

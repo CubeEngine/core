@@ -16,7 +16,7 @@ public class Announcer
 {
     private ScheduledExecutorService executor;
     private Map<String, ScheduledFuture> futures;
-    private int initDelay;
+    public int initDelay;
 
     public Announcer(TaskManager taskManager, int initDelay)
     {

@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -33,6 +34,7 @@ import de.cubeisland.cubeengine.core.util.matcher.Match;
 import de.cubeisland.cubeengine.shout.Shout;
 import de.cubeisland.cubeengine.shout.ShoutException;
 import de.cubeisland.cubeengine.shout.announce.announcer.Announcer;
+import de.cubeisland.cubeengine.shout.announce.announcer.FixedCycleTask;
 import de.cubeisland.cubeengine.shout.announce.announcer.MessageTask;
 import de.cubeisland.cubeengine.shout.announce.receiver.Receiver;
 import de.cubeisland.cubeengine.shout.announce.receiver.UserReceiver;
@@ -56,6 +58,7 @@ public class AnnouncementManager
     private final File announcementFolder;
     private Map<String, Receiver> receivers;
     private Map<String, Announcement> announcements;
+    private Map<String, Announcement> fixedCycleAnnouncements;
     private final I18n i18n;
     private MessageOfTheDay motd;
 
@@ -66,7 +69,8 @@ public class AnnouncementManager
         this.i18n = module.getCore().getI18n();
         this.announcer = module.getAnnouncer();
         this.receivers = new ConcurrentHashMap<String, Receiver>();
-        this.announcements = new LinkedHashMap<String, Announcement>();
+        this.announcements = new HashMap<String, Announcement>();
+        this.fixedCycleAnnouncements = new LinkedHashMap<String, Announcement>();
         this.announcementFolder = announcementFolder;
     }
 
@@ -89,7 +93,10 @@ public class AnnouncementManager
      */
     public Collection<Announcement> getAnnouncements()
     {
-        return this.announcements.values();
+        Collection<Announcement> announcements = new HashSet<Announcement>();
+        announcements.addAll(this.announcements.values());
+        announcements.addAll(this.fixedCycleAnnouncements.values());
+        return announcements;
     }
 
     /**
@@ -100,15 +107,18 @@ public class AnnouncementManager
      */
     public Announcement getAnnouncement(String name)
     {
+        Map<String, Announcement> announcements = new HashMap<String, Announcement>();
+        announcements.putAll(this.announcements);
+        announcements.putAll(this.fixedCycleAnnouncements);
         name = name.toLowerCase(Locale.ENGLISH);
-        Announcement announcement = this.announcements.get(name);
+        Announcement announcement = announcements.get(name);
         if (announcement == null)
         {
-            Set<String> matches = Match.string().getBestMatches(name, this.announcements.keySet(), 3);
+            Set<String> matches = Match.string().getBestMatches(name, announcements.keySet(), 3);
 
             if (matches.size() == 1)
             {
-                announcement = this.announcements.get(matches.iterator().next());
+                announcement = announcements.get(matches.iterator().next());
             }
         }
         return announcement;
@@ -122,7 +132,7 @@ public class AnnouncementManager
      */
     public boolean hasAnnouncement(String name)
     {
-        return this.announcements.containsKey(name.toLowerCase());
+        return this.announcements.containsKey(name.toLowerCase(Locale.ENGLISH)) || this.fixedCycleAnnouncements.containsKey(name.toLowerCase(Locale.ENGLISH));
     }
 
     /**
@@ -237,9 +247,11 @@ public class AnnouncementManager
         {
             this.clean(receiver.getName());
         }
+        module.getCore().getTaskManager().cancelTasks(this.module);
 
-        this.receivers = new ConcurrentHashMap<String, Receiver>();
-        this.announcements = new HashMap<String, Announcement>();
+        this.receivers.clear();
+        this.announcements.clear();
+        this.fixedCycleAnnouncements.clear();
 
         this.loadAnnouncements(this.announcementFolder);
         this.initUsers();
@@ -264,9 +276,18 @@ public class AnnouncementManager
         this.motd = motd;
     }
 
-    public void addAnnouncement(Announcement announcement)
+    public void addAnnouncement(final Announcement announcement)
     {
-        this.announcements.put(announcement.getName().toLowerCase(Locale.ENGLISH), announcement);
+        if (announcement.hasFixedCycle())
+        {
+            this.fixedCycleAnnouncements.put(announcement.getName().toLowerCase(Locale.ENGLISH), announcement);
+            this.module.getCore().getTaskManager().scheduleSyncRepeatingTask(this.module,
+                new FixedCycleTask(this.module, announcement), this.announcer.initDelay, announcement.getDelay());
+        }
+        else
+        {
+            this.announcements.put(announcement.getName().toLowerCase(Locale.ENGLISH), announcement);
+        }
     }
 
     /**
@@ -279,7 +300,7 @@ public class AnnouncementManager
         File[] files = announcementFolder.listFiles();
         if (files == null)
         {
-            this.logger.log(ERROR, "Reading the announcement folder failed!");
+            this.logger.log(ERROR, "Reading the announcement folder failed! No announcements will be loaded");
             return;
         }
 
@@ -415,6 +436,7 @@ public class AnnouncementManager
         this.logger.log(DEBUG, "Delay(in milliseconds): {0}", delay);
         this.logger.log(DEBUG, "Permission: {0}", config.permNode);
         this.logger.log(DEBUG, "Group: {0}", config.group);
+        this.logger.log(DEBUG, "FixedCycle: {0}", config.fixedCycle);
 
         try
         {
@@ -423,7 +445,8 @@ public class AnnouncementManager
                 config.permNode,
                 config.worlds,
                 messages,
-                delay);
+                delay,
+                config.fixedCycle);
         }
         catch (IllegalArgumentException e)
         {
@@ -474,7 +497,7 @@ public class AnnouncementManager
      * This will not load the announcement into the plugin
      *
      */
-    public void createAnnouncement(String name, Locale locale, String message, String delay, String world, String group, String permNode) throws IOException, IllegalArgumentException
+    public void createAnnouncement(String name, Locale locale, String message, String delay, String world, String group, String permNode, boolean fc) throws IOException, IllegalArgumentException
     {
         Validate.notEmpty(name);
         Validate.notNull(locale);
@@ -496,6 +519,7 @@ public class AnnouncementManager
         config.worlds = Arrays.asList(world);
         config.permNode = permNode;
         config.group = group;
+        config.fixedCycle = fc;
         config.save();
 
         BufferedWriter bw = new BufferedWriter(new FileWriter(new File(folder, locale.toString() + ".txt")));

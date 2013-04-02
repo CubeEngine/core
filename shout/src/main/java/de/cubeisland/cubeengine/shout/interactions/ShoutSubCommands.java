@@ -5,6 +5,7 @@ import java.util.Iterator;
 import java.util.Locale;
 
 import de.cubeisland.cubeengine.core.command.CommandContext;
+import de.cubeisland.cubeengine.core.command.parameterized.Flag;
 import de.cubeisland.cubeengine.core.command.parameterized.Param;
 import de.cubeisland.cubeengine.core.command.parameterized.ParameterizedContext;
 import de.cubeisland.cubeengine.core.command.reflected.Alias;
@@ -71,8 +72,10 @@ public class ShoutSubCommands
         {
             "locale", "l"
         })
+    }, flags = {
+        @Flag(name = "fc", longName = "fixed-cycle")
     }, usage = "<name> message \"<message>\" [delay \"<x minutes|hours|days>\"] [world <world>] " +
-            "[permission <permission node>] [group <group>] [locale <locale>]")
+            "[permission <permission node>] [group <group>] [locale <locale>] [-fixed-cycle]")
     public void create(ParameterizedContext context)
     {
         if (!context.hasParam("message"))
@@ -101,7 +104,8 @@ public class ShoutSubCommands
                 context.getString("delay", "10 minutes"),
                 context.getString("world", "*"),
                 context.getString("group", "*"),
-                context.getString("permission", "*"));
+                context.getString("permission", "*"),
+                context.hasFlag("fc"));
         }
         catch (IllegalArgumentException ex)
         {

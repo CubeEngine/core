@@ -24,6 +24,7 @@ public class Announcement
     private final List<String> worlds;
     private final Map<Locale, String[]> messages;
     private final long delay;
+    private final boolean fixedCycle;
 
     public Announcement(Announcement acm)
     {
@@ -37,6 +38,7 @@ public class Announcement
         this.worlds = new ArrayList<String>(acm.getWorlds());
         this.messages = new THashMap<Locale, String[]>(acm.messages);
         this.delay = acm.delay;
+        this.fixedCycle = acm.fixedCycle;
     }
 
     /**
@@ -48,7 +50,7 @@ public class Announcement
      * @param messages      This announcements messages
      * @param delay         This announcements delay
      */
-    public Announcement(String name, String permNode, List<String> worlds, Map<Locale, String[]> messages, long delay)
+    public Announcement(String name, String permNode, List<String> worlds, Map<Locale, String[]> messages, long delay, boolean fixedCycle)
     {
         Validate.notEmpty(name, "The announcement must have a name");
         Validate.notEmpty(permNode, "The announcement must have a permission");
@@ -61,6 +63,7 @@ public class Announcement
         this.worlds = worlds;
         this.messages = messages;
         this.delay = delay;
+        this.fixedCycle = fixedCycle;
     }
 
     /**
@@ -146,5 +149,10 @@ public class Announcement
     public String getName()
     {
         return this.name;
+    }
+
+    public boolean hasFixedCycle()
+    {
+        return this.fixedCycle;
     }
 }
