@@ -1,33 +1,39 @@
-package de.cubeisland.cubeengine.core.command.chatcommand;
+package de.cubeisland.cubeengine.core.command.converstion;
 
-import de.cubeisland.cubeengine.core.command.ArgBounds;
-import de.cubeisland.cubeengine.core.command.ArgumentReader;
-import de.cubeisland.cubeengine.core.command.CubeCommand;
-import de.cubeisland.cubeengine.core.command.exception.IncorrectUsageException;
-import de.cubeisland.cubeengine.core.command.exception.InvalidArgumentException;
-import de.cubeisland.cubeengine.core.command.parameterized.CommandFlag;
-import de.cubeisland.cubeengine.core.command.parameterized.CommandParameter;
-import de.cubeisland.cubeengine.core.command.parameterized.ParameterizedContextFactory;
-import de.cubeisland.cubeengine.core.command.CommandSender;
-import gnu.trove.map.hash.THashMap;
-import gnu.trove.set.hash.THashSet;
-
+import java.util.LinkedList;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.Stack;
 
+import de.cubeisland.cubeengine.core.command.ArgBounds;
+import de.cubeisland.cubeengine.core.command.ArgumentReader;
+import de.cubeisland.cubeengine.core.command.CommandSender;
+import de.cubeisland.cubeengine.core.command.CubeCommand;
+import de.cubeisland.cubeengine.core.command.exception.IncorrectUsageException;
+import de.cubeisland.cubeengine.core.command.exception.InvalidArgumentException;
+import de.cubeisland.cubeengine.core.command.parameterized.CommandFlag;
+import de.cubeisland.cubeengine.core.command.parameterized.CommandParameter;
+import de.cubeisland.cubeengine.core.command.parameterized.ParameterizedContext;
+import de.cubeisland.cubeengine.core.command.parameterized.ParameterizedContextFactory;
+
+import gnu.trove.map.hash.THashMap;
+import gnu.trove.set.hash.THashSet;
+
 import static de.cubeisland.cubeengine.core.command.ArgBounds.NO_MAX;
 
-public class ChatCommandContextFactory extends ParameterizedContextFactory
+public class ConversationContextFactory extends ParameterizedContextFactory
 {
-    public ChatCommandContextFactory()
+    private final LinkedList<String> args;
+
+    public ConversationContextFactory()
     {
         super(new ArgBounds(0, NO_MAX));
+        this.args = new LinkedList<String>();
     }
 
     @Override
-    public ChatCommandContext parse(CubeCommand command, CommandSender sender, Stack<String> labels, String[] commandLine)
+    public ParameterizedContext parse(CubeCommand command, CommandSender sender, Stack<String> labels, String[] commandLine)
     {
         final Set<String> flags = new THashSet<String>();
         final Map<String, Object> params = new THashMap<String, Object>();
@@ -68,6 +74,6 @@ public class ChatCommandContextFactory extends ParameterizedContextFactory
                 offset++;
             }
         }
-        return new ChatCommandContext(command, sender, labels, flags, params);
+        return new ParameterizedContext(command, sender, labels, this.args, flags, params);
     }
 }

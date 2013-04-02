@@ -9,22 +9,22 @@ import org.bukkit.util.Vector;
 
 import de.cubeisland.cubeengine.core.command.CommandContext;
 import de.cubeisland.cubeengine.core.command.CommandResult;
-import de.cubeisland.cubeengine.core.command.chatcommand.ChatCommand;
-import de.cubeisland.cubeengine.core.command.chatcommand.ChatCommandContext;
-import de.cubeisland.cubeengine.core.command.chatcommand.ChatCommandContextFactory;
+import de.cubeisland.cubeengine.core.command.converstion.ConversationCommand;
+import de.cubeisland.cubeengine.core.command.converstion.ConversationContextFactory;
 import de.cubeisland.cubeengine.core.command.parameterized.CommandFlag;
 import de.cubeisland.cubeengine.core.command.parameterized.CommandParameter;
+import de.cubeisland.cubeengine.core.command.parameterized.ParameterizedContext;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.util.matcher.Match;
 import de.cubeisland.cubeengine.basics.Basics;
 
 import gnu.trove.map.hash.TLongObjectHashMap;
 
-public class AdvancedSpawnMob extends ChatCommand
+public class AdvancedSpawnMob extends ConversationCommand
 {
     public AdvancedSpawnMob(Basics module)
     {
-        super(module, new ChatCommandContextFactory());
+        super(module, new ConversationContextFactory());
         this.getContextFactory()
                 .addFlag(new CommandFlag("exit", "exit"))
                 .addFlag(new CommandFlag("spawn", "spawnmob"))
@@ -75,7 +75,7 @@ public class AdvancedSpawnMob extends ChatCommand
     @Override
     public CommandResult run(CommandContext runContext) throws Exception
     {
-        ChatCommandContext context = (ChatCommandContext)runContext;
+        ParameterizedContext context = (ParameterizedContext)runContext;
         User user = (User) context.getSender();
         SpawningData spawningData = this.spawningDatas.get(user.key);
         if (context.hasFlag("clear"))

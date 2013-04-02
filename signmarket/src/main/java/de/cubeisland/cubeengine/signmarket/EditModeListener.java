@@ -14,25 +14,25 @@ import org.bukkit.inventory.ItemStack;
 
 import de.cubeisland.cubeengine.core.command.CommandContext;
 import de.cubeisland.cubeengine.core.command.CommandResult;
-import de.cubeisland.cubeengine.core.command.chatcommand.ChatCommand;
-import de.cubeisland.cubeengine.core.command.chatcommand.ChatCommandContext;
-import de.cubeisland.cubeengine.core.command.chatcommand.ChatCommandContextFactory;
+import de.cubeisland.cubeengine.core.command.converstion.ConversationCommand;
+import de.cubeisland.cubeengine.core.command.converstion.ConversationContextFactory;
 import de.cubeisland.cubeengine.core.command.parameterized.CommandFlag;
 import de.cubeisland.cubeengine.core.command.parameterized.CommandParameter;
+import de.cubeisland.cubeengine.core.command.parameterized.ParameterizedContext;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.conomy.Conomy;
 import de.cubeisland.cubeengine.conomy.currency.Currency;
 
 import gnu.trove.map.hash.TLongObjectHashMap;
 
-public class EditModeListener extends ChatCommand
+public class EditModeListener extends ConversationCommand
 {
     private final MarketSignFactory signFactory;
     private final SignMarketConfig config;
     private final Conomy conomy;
 
     public EditModeListener(Signmarket signmarket, Conomy conomy) {
-        super(signmarket, new ChatCommandContextFactory());
+        super(signmarket, new ConversationContextFactory());
         this.signFactory = signmarket.getMarketSignFactory();
         this.config = signmarket.getConfig();
         this.conomy = conomy;
@@ -91,7 +91,7 @@ public class EditModeListener extends ChatCommand
     public CommandResult run(CommandContext runContext) throws Exception
     {
         User user = (User)runContext.getSender();
-        ChatCommandContext context = (ChatCommandContext) runContext;
+        ParameterizedContext context = (ParameterizedContext) runContext;
         Location loc = this.currentSignLocation.get(user.key);
         if (loc == null)
         {

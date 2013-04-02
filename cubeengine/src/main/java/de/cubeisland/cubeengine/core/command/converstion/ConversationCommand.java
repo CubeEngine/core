@@ -1,4 +1,4 @@
-package de.cubeisland.cubeengine.core.command.chatcommand;
+package de.cubeisland.cubeengine.core.command.converstion;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -22,11 +22,11 @@ import de.cubeisland.cubeengine.core.util.StringUtils;
 
 import gnu.trove.set.hash.TLongHashSet;
 
-public abstract class ChatCommand extends CubeCommand implements Listener
+public abstract class ConversationCommand extends CubeCommand implements Listener
 {
     private TLongHashSet usersInMode = new TLongHashSet();
 
-    protected ChatCommand(Module module, ChatCommandContextFactory contextFactory)
+    protected ConversationCommand(Module module, ConversationContextFactory contextFactory)
     {
         super(module, "", "", contextFactory);
         module.getCore().getEventManager().registerListener(module, this);
@@ -133,9 +133,9 @@ public abstract class ChatCommand extends CubeCommand implements Listener
     }
 
     @Override
-    public ChatCommandContextFactory getContextFactory()
+    public ConversationContextFactory getContextFactory()
     {
-        return (ChatCommandContextFactory)super.getContextFactory();
+        return (ConversationContextFactory)super.getContextFactory();
     }
 
     /**
