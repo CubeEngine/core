@@ -1,34 +1,43 @@
 package de.cubeisland.cubeengine.core.storage.world;
 
-import de.cubeisland.cubeengine.core.storage.SingleKeyStorage;
-import de.cubeisland.cubeengine.core.storage.database.Database;
-import gnu.trove.map.hash.THashMap;
-import gnu.trove.map.hash.TLongObjectHashMap;
-import org.bukkit.Bukkit;
-import org.bukkit.World;
-
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 
-public class WorldManager extends SingleKeyStorage<Long, WorldModel>
-{
-    private static final int REVISION = 3;
-    private Map<World, WorldModel> worlds = new THashMap<World, WorldModel>();
-    private TLongObjectHashMap<World> worldIds = new TLongObjectHashMap<World>();
+import org.bukkit.Bukkit;
+import org.bukkit.World;
 
-    public WorldManager(Database database)
+import de.cubeisland.cubeengine.core.CubeEngine;
+import de.cubeisland.cubeengine.core.bukkit.BukkitCore;
+import de.cubeisland.cubeengine.core.storage.SingleKeyStorage;
+import de.cubeisland.cubeengine.core.storage.database.Database;
+
+import gnu.trove.map.hash.THashMap;
+import gnu.trove.map.hash.TLongObjectHashMap;
+import gnu.trove.set.hash.THashSet;
+
+public class WorldManager
+{
+    private final BukkitCore core;
+    private final WorldStorage storage;
+    private final Map<World, WorldModel> worlds;
+    private final TLongObjectHashMap<World> worldIds;
+
+    public WorldManager(BukkitCore core)
     {
-        super(database, WorldModel.class, REVISION);
-        this.initialize();
+        this.core = core;
+        this.storage = new WorldStorage(core.getDB());
+        this.worlds = new THashMap<World, WorldModel>();
+        this.worldIds = new TLongObjectHashMap<World>();
         this.loadWorlds();
     }
 
     private void loadWorlds()
     {
-        Collection<WorldModel> models = this.getAll();
-        List<World> loadedWorlds = Bukkit.getWorlds();
+        Collection<WorldModel> models = this.storage.getAll();
+        List<World> loadedWorlds = this.core.getServer().getWorlds();
         for (WorldModel model : models)
         {
             World world = Bukkit.getWorld(UUID.fromString(model.worldUUID));
@@ -44,29 +53,29 @@ public class WorldManager extends SingleKeyStorage<Long, WorldModel>
             for (World world : loadedWorlds)
             {
                 WorldModel model = new WorldModel(world);
-                this.store(model);
+                this.storage.store(model);
                 this.worlds.put(world, model);
                 this.worldIds.put(model.key, world);
             }
         }
     }
 
-    public long getWorldId(World world)
+    public synchronized long getWorldId(World world)
     {
         WorldModel model = this.worlds.get(world);
         if (model == null)
         {
             model = new WorldModel(world);
-            this.store(model);
+            this.storage.store(model);
             this.worlds.put(world,model);
             this.worldIds.put(model.key,world);
         }
         return model.key;
     }
 
-    public Long getWorldId(String worldName)
+    public synchronized Long getWorldId(String name)
     {
-        World world = Bukkit.getWorld(worldName);
+        World world = this.core.getServer().getWorld(name);
         if (world == null)
         {
             return null;
@@ -75,17 +84,43 @@ public class WorldManager extends SingleKeyStorage<Long, WorldModel>
         return model == null ? null : model.key;
     }
 
-    public long[] getAllWorldIds()
+    public synchronized long[] getAllWorldIds()
     {
         return this.worldIds.keys();
     }
 
-    public World getWorld(Long worldId)
+    public synchronized World getWorld(long id)
     {
-        if (worldId == null)
+        return this.worldIds.get(id);
+    }
+
+    public World getWorld(String name)
+    {
+        assert CubeEngine.isMainThread(): "Must be executed from main thread!";
+        return this.core.getServer().getWorld(name);
+    }
+
+    public World getWorld(UUID uid)
+    {
+        assert CubeEngine.isMainThread(): "Must be executed from main thread!";
+        return this.core.getServer().getWorld(uid);
+    }
+
+    public Set<World> getWorlds()
+    {
+        assert CubeEngine.isMainThread(): "Must be executed from main thread!";
+        return new THashSet<World>(this.core.getServer().getWorlds());
+    }
+
+    private class WorldStorage extends SingleKeyStorage<Long, WorldModel>
+    {
+        private static final int REVISION = 3;
+
+        public WorldStorage(Database database)
         {
-            return null;
+            super(database, WorldModel.class, REVISION);
+            this.initialize();
         }
-        return this.worldIds.get(worldId);
+
     }
 }
