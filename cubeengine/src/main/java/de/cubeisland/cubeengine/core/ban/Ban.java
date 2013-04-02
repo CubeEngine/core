@@ -48,6 +48,13 @@ public abstract class Ban
     }
 
     /**
+     * Returns the target of this ban as a string
+     *
+     * @return the target, never null
+     */
+    public abstract String getTarget();
+
+    /**
      * This method returns the ban reason
      *
      * @return the ban reason. never null!
@@ -134,6 +141,6 @@ public abstract class Ban
     @Override
     public String toString()
     {
-        throw new UnsupportedOperationException();
+        return this.getTarget();
     }
 }

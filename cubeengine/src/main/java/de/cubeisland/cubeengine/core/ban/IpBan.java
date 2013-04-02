@@ -7,17 +7,17 @@ public class IpBan extends Ban
 {
     private InetAddress address;
 
-    public IpBan(String source, String reason, InetAddress address)
+    public IpBan(InetAddress address, String source, String reason)
     {
-        this(source, reason, new Date(System.currentTimeMillis()), null, address);
+        this(address, source, reason, new Date(System.currentTimeMillis()), null);
     }
 
-    public IpBan(String source, String reason, Date expires, InetAddress address)
+    public IpBan(InetAddress address, String source, String reason, Date expires)
     {
-        this(source, reason, new Date(System.currentTimeMillis()), expires, address);
+        this(address, source, reason, new Date(System.currentTimeMillis()), expires);
     }
 
-    public IpBan(String source, String reason, Date created, Date expires, InetAddress address)
+    public IpBan(InetAddress address, String source, String reason, Date created, Date expires)
     {
         super(source, reason, created, expires);
         assert address != null: "The address must not be null!";
@@ -30,8 +30,8 @@ public class IpBan extends Ban
     }
 
     @Override
-    public String toString()
+    public String getTarget()
     {
-        return this.getAddress().toString();
+        return this.address.toString();
     }
 }

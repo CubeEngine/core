@@ -1,6 +1,10 @@
 package de.cubeisland.cubeengine.core.bukkit;
 
 import java.net.InetAddress;
+import java.net.UnknownHostException;
+import java.util.Collection;
+import java.util.Map;
+import java.util.Set;
 
 import net.minecraft.server.v1_5_R2.BanEntry;
 import net.minecraft.server.v1_5_R2.BanList;
@@ -12,6 +16,8 @@ import de.cubeisland.cubeengine.core.ban.BanManager;
 import de.cubeisland.cubeengine.core.ban.IpBan;
 import de.cubeisland.cubeengine.core.ban.UserBan;
 import de.cubeisland.cubeengine.core.user.User;
+
+import gnu.trove.set.hash.THashSet;
 
 public class BukkitBanManager implements BanManager
 {
@@ -55,7 +61,7 @@ public class BukkitBanManager implements BanManager
         BanEntry entry = (BanEntry)this.nameBans.getEntries().get(user.getName());
         if (entry != null)
         {
-            return new UserBan(entry.getSource(), entry.getReason(), entry.getCreated(), entry.getExpires(), user);
+            return new UserBan(user.getName(), entry.getSource(), entry.getReason(), entry.getCreated(), entry.getExpires());
         }
         return null;
     }
@@ -68,7 +74,7 @@ public class BukkitBanManager implements BanManager
         BanEntry entry = (BanEntry)this.nameBans.getEntries().get(address.toString());
         if (entry != null)
         {
-            return new IpBan(entry.getSource(), entry.getReason(), entry.getCreated(), entry.getExpires(), address);
+            return new IpBan(address, entry.getSource(), entry.getReason(), entry.getCreated(), entry.getExpires());
         }
         return null;
     }
@@ -78,7 +84,8 @@ public class BukkitBanManager implements BanManager
     {
         assert user != null: "The user must not be null!";
 
-        return (this.nameBans.getEntries().get(user.getName()) != null);
+        this.ipBans.remove(user.getName());
+        return true;
     }
 
     @Override
@@ -86,28 +93,61 @@ public class BukkitBanManager implements BanManager
     {
         assert address != null: "The address must not be null!";
 
-        return (this.ipBans.getEntries().get(address.toString()) != null);
+        this.ipBans.remove(address.toString());
+        return true;
     }
 
     @Override
     public boolean isBanned(User user)
     {
-        BanEntry entry = (BanEntry)this.nameBans.getEntries().get(user.getName());
-        if (entry == null)
-        {
-            return false;
-        }
-        return !entry.hasExpired();
+        return this.ipBans.isBanned(user.getName());
     }
 
     @Override
     public boolean isBanned(InetAddress address)
     {
-        BanEntry entry = (BanEntry)this.ipBans.getEntries().get(address.toString());
-        if (entry == null)
+        return this.ipBans.isBanned(address.toString());
+    }
+
+    @SuppressWarnings("unchecked")
+    public Set<IpBan> getIpBans()
+    {
+        Map ipBans = this.ipBans.getEntries();
+        Set<IpBan> bans = new THashSet<IpBan>(ipBans.size());
+
+        for (BanEntry entry : (Collection<BanEntry>)ipBans.values())
         {
-            return false;
+            try
+            {
+                bans.add(new IpBan(InetAddress.getByName(entry.getName()), entry.getSource(), entry.getReason(), entry.getCreated(), entry.getExpires()));
+            }
+            catch (UnknownHostException e)
+            {
+                this.ipBans.remove(entry.getName());
+            }
         }
-        return !entry.hasExpired();
+
+        return bans;
+    }
+
+    @SuppressWarnings("unchecked")
+    public Set<UserBan> getUserBans()
+    {
+        Map nameBans = this.ipBans.getEntries();
+        Set<UserBan> bans = new THashSet<UserBan>(nameBans.size());
+
+        for (BanEntry entry : (Collection<BanEntry>)nameBans.values())
+        {
+            bans.add(new UserBan(entry.getName(), entry.getSource(), entry.getReason(), entry.getCreated(), entry.getExpires()));
+        }
+        return bans;
+    }
+
+    public Set<Ban> getBans()
+    {
+        Set<Ban> bans = new THashSet<Ban>();
+        bans.addAll(this.getIpBans());
+        bans.addAll(this.getUserBans());
+        return bans;
     }
 }

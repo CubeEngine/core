@@ -4,6 +4,7 @@ import java.net.InetSocketAddress;
 import java.sql.Timestamp;
 import java.util.Collection;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -34,6 +35,8 @@ import org.bukkit.util.BlockIterator;
 import de.cubeisland.cubeengine.core.Core;
 import de.cubeisland.cubeengine.core.CubeEngine;
 import de.cubeisland.cubeengine.core.attachment.AttachmentHolder;
+import de.cubeisland.cubeengine.core.ban.IpBan;
+import de.cubeisland.cubeengine.core.ban.UserBan;
 import de.cubeisland.cubeengine.core.bukkit.BukkitCore;
 import de.cubeisland.cubeengine.core.bukkit.BukkitUtils;
 import de.cubeisland.cubeengine.core.command.CommandSender;
@@ -576,5 +579,35 @@ public class User extends UserBase implements Model<Long>, CommandSender, Attach
             return super.getAddress();
         }
         return this.address;
+    }
+
+    public void banIp(CommandSender source, String reason)
+    {
+        this.banIp(source, reason, null);
+    }
+
+    public void banIp(CommandSender source, String reason, Date expire)
+    {
+        this.banIp(source, reason, new Date(System.currentTimeMillis()), expire);
+    }
+
+    public void banIp(CommandSender source, String reason, Date created, Date expire)
+    {
+        this.getCore().getBanManager().addBan(new IpBan(this.getAddress().getAddress(), source.getName(), reason, created, expire));
+    }
+
+    public void ban(CommandSender source, String reason)
+    {
+        this.ban(source, reason, null);
+    }
+
+    public void ban(CommandSender source, String reason, Date expire)
+    {
+        this.ban(source, reason, new Date(System.currentTimeMillis()), expire);
+    }
+
+    public void ban(CommandSender source, String reason, Date created, Date expire)
+    {
+        this.getCore().getBanManager().addBan(new UserBan(this.getName(), source.getName(), reason, created, expire));
     }
 }

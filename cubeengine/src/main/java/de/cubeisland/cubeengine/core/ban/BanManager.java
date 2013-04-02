@@ -1,6 +1,7 @@
 package de.cubeisland.cubeengine.core.ban;
 
 import java.net.InetAddress;
+import java.util.Set;
 
 import de.cubeisland.cubeengine.core.user.User;
 
@@ -19,4 +20,10 @@ public interface BanManager
     boolean isBanned(User user);
 
     boolean isBanned(InetAddress address);
+
+    Set<UserBan> getUserBans();
+
+    Set<IpBan> getIpBans();
+
+    Set<Ban> getBans();
 }

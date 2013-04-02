@@ -2,37 +2,30 @@ package de.cubeisland.cubeengine.core.ban;
 
 import java.util.Date;
 
-import de.cubeisland.cubeengine.core.user.User;
-
 public class UserBan extends Ban
 {
-    private final User user;
+    private final String target;
 
-    public UserBan(String source, String reason, User user)
+    public UserBan(String target, String source, String reason)
     {
-        this(source, reason, new Date(System.currentTimeMillis()), null, user);
+        this(target, source, reason, new Date(System.currentTimeMillis()), null);
     }
 
-    public UserBan(String source, String reason, Date expires, User user)
+    public UserBan(String target, String source, String reason, Date expires)
     {
-        this(source, reason, new Date(System.currentTimeMillis()), expires, user);
+        this(target, source, reason, new Date(System.currentTimeMillis()), expires);
     }
 
-    public UserBan(String source, String reason, Date created, Date expires, User user)
+    public UserBan(String target, String source, String reason, Date created, Date expires)
     {
         super(source, reason, created, expires);
-        assert user != null: "The user must not be null!";
-        this.user = user;
-    }
-
-    public User getUser()
-    {
-        return user;
+        assert target != null: "The user must not be null!";
+        this.target = target;
     }
 
     @Override
-    public String toString()
+    public String getTarget()
     {
-        return this.getUser().getName();
+        return this.target;
     }
 }
