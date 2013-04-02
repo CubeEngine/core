@@ -1,5 +1,6 @@
 package de.cubeisland.cubeengine.shout.interactions;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -41,7 +42,11 @@ public class ShoutCommand
         }
         else
         {
-            players = Bukkit.getWorld(announcement.getFirstWorld()).getPlayers();
+            players = new ArrayList<Player>();
+            for (String world : announcement.getWorlds())
+            {
+                players.addAll(Bukkit.getWorld(world).getPlayers());
+            }
         }
 
         for (Player player : players)

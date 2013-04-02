@@ -37,6 +37,8 @@ import de.cubeisland.cubeengine.shout.announce.announcer.MessageTask;
 import de.cubeisland.cubeengine.shout.announce.receiver.Receiver;
 import de.cubeisland.cubeengine.shout.announce.receiver.UserReceiver;
 
+import org.apache.commons.lang.Validate;
+
 import static de.cubeisland.cubeengine.core.filesystem.FileExtentionFilter.TXT;
 import static de.cubeisland.cubeengine.core.logger.LogLevel.*;
 
@@ -425,7 +427,7 @@ public class AnnouncementManager
         }
         catch (IllegalArgumentException e)
         {
-            throw new ShoutException("The delay was not valid", e);
+            throw new ShoutException(e);
         }
     }
 
@@ -474,6 +476,13 @@ public class AnnouncementManager
      */
     public void createAnnouncement(String name, Locale locale, String message, String delay, String world, String group, String permNode) throws IOException, IllegalArgumentException
     {
+        Validate.notEmpty(name);
+        Validate.notNull(locale);
+        Validate.notEmpty(message);
+        Validate.notEmpty(delay);
+        Validate.notEmpty(world);
+        Validate.notEmpty(group);
+        Validate.notEmpty(permNode);
 
         File folder = new File(this.announcementFolder, name);
         if (!folder.mkdirs())

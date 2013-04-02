@@ -87,6 +87,10 @@ public class ShoutSubCommands
         {
             locale = I18n.stringToLocale(context.getString("locale"));
         }
+        if (locale == null)
+        {
+            context.sendTranslated("%s isn't a valid locale!", context.getString("locale"));
+        }
 
         try
         {
