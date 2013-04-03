@@ -165,7 +165,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-release-plugin</artifactId>
-        <version>2.3.2</version>
+        <version>2.4.1</version>
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
@@ -269,7 +269,7 @@
       <plugin>
         <groupId>com.mycila.maven-license-plugin</groupId>
         <artifactId>maven-license-plugin</artifactId>
-        <version>1.9.0</version>
+        <version>1.10.b1</version>
         <configuration>
           <header>${basedir}/header.txt</header>
           <aggregate>true</aggregate>
@@ -338,6 +338,10 @@
           <plugin>
             <groupId>org.codehaus.mojo</groupId>
             <artifactId>versions-maven-plugin</artifactId>
+            <configuration>
+              <generateBackupPoms>false</generateBackupPoms>
+              <processPlugins>true</processPlugins>
+            </configuration>
             <executions>
               <execution>
                 <phase>initialize</phase>
