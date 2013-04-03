@@ -11,6 +11,7 @@ import de.cubeisland.cubeengine.core.util.math.Vector3;
 import de.cubeisland.cubeengine.core.util.math.shape.Cylinder;
 import de.cubeisland.cubeengine.core.util.math.shape.Shape;
 import de.cubeisland.cubeengine.core.util.math.shape.Sphere;
+import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
@@ -24,54 +25,10 @@ import org.bukkit.material.Openable;
 public class DoorCommand
 {
     private Basics basics;
-    private Set<Block> block = new HashSet<Block>();
 
     public DoorCommand(Basics basics)
     {
         this.basics = basics;
-    }
-
-    @Command(
-            desc = "",
-            max = 0)
-    public void shaperollback(CommandContext context)
-    {
-        Iterator<Block> iter = this.block.iterator();
-        while(iter.hasNext())
-        {
-            Block block = iter.next();
-            block.setType(Material.AIR);
-            iter.remove();
-        }
-    }
-
-    @Command(
-            desc = "",
-            min = 3,
-            max = 6)
-    public void shape(CommandContext context)
-    {
-        User user = (User) context.getSender();
-        int size = 0;
-        int width = context.getArg(0, Integer.class);
-        int height = context.getArg(1, Integer.class);
-        int depth = context.getArg(2, Integer.class);
-        int rotx = context.getArg(3, Integer.class, 0);
-        int roty = context.getArg(4, Integer.class, 0);
-        int rotz = context.getArg(5, Integer.class, 0);
-
-        Block block = user.getTargetBlock(null, 20);
-
-        Shape shape = new Cylinder(new Vector3(block.getX(), block.getY(), block.getZ()), width, height, depth);
-        shape = shape.rotate(new Vector3(rotx, roty, rotz));
-        for(Vector3 p : shape)
-        {
-            Block block2 = user.getWorld().getBlockAt((int) p.x, (int) p.y, (int) p.z);
-            block2.setType(Material.DIRT);
-            this.block.add(block2);
-            size++;
-        }
-        context.sendMessage("finished " + size);
     }
 
     @Command(
@@ -88,14 +45,13 @@ public class DoorCommand
         min = 2,
         max = 6
     )
-    public void doors(ParameterizedContext context)   //TODO flags and permissions for all types of doors
+    public void doors(ParameterizedContext context)
     {
-        // flags % permission -> iron door, trap door, fence gate
         boolean open = false;
         int radius = context.getArg(1, Integer.class, 0);
         Vector3 vector;
         World world;
-        Set<Material> openMaterials = new HashSet<Material>();
+        Set<Material> openMaterials = EnumSet.noneOf(Material.class);
 
         String task = context.getString(0);
         if(task.equalsIgnoreCase("open"))
@@ -129,11 +85,6 @@ public class DoorCommand
             world = location.getWorld();
             vector = new Vector3(location.getX(), location.getY(), location.getZ());
         }
-        else if(!BasicsPerm.COMMAND_DOOR_LOCATION.isAuthorized(context.getSender()))
-        {
-            context.sendTranslated("&cYou are not allowed to open/close doors at other locations");
-            return;
-        }
         else
         {
             world = context.getArg(2, World.class, null);
@@ -165,25 +116,20 @@ public class DoorCommand
         
         if(context.hasFlag("f"))
         {
-            // TODO permission checks!
             openMaterials.add(Material.FENCE_GATE);
         }
         if(context.hasFlag("t"))
         {
-            // TODO permission checks!
             openMaterials.add(Material.TRAP_DOOR);
         }
         if(context.hasFlag("i"))
         {
-            // TODO permission checks!
             openMaterials.add(Material.IRON_DOOR_BLOCK);
         }
         if(context.hasFlag("w") || (openMaterials.isEmpty() && !context.hasFlag("a")))
         {
-            // TODO permission checks!
             openMaterials.add(Material.WOODEN_DOOR);
         }
-        //TODO permission check for all-flag!
 
         Sphere sphere = new Sphere(vector, radius);
         for(Vector3 point : sphere)

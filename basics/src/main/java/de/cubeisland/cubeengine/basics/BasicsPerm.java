@@ -1,16 +1,11 @@
 package de.cubeisland.cubeengine.basics;
 
 import de.cubeisland.cubeengine.core.module.Module;
-import de.cubeisland.cubeengine.core.permission.PermDefault;
 import de.cubeisland.cubeengine.core.permission.Permission;
 import de.cubeisland.cubeengine.core.permission.PermissionContainer;
 
-import org.bukkit.permissions.Permissible;
-
-import java.util.Locale;
 
 import static de.cubeisland.cubeengine.core.permission.PermDefault.FALSE;
-import static de.cubeisland.cubeengine.core.permission.PermDefault.OP;
 
 public class BasicsPerm extends PermissionContainer
 {
@@ -246,9 +241,6 @@ public class BasicsPerm extends PermissionContainer
 
     public static final Permission COMMAND_BAN_NOREASON = COMMAND.createAbstractChild("ban").createNew("noreason");
     
-    public static final Permission COMMAND_DOOR = COMMAND.createAbstractChild("door");
-    public static final Permission COMMAND_DOOR_LOCATION = COMMAND.createChild("location");
-    
     /**
      * Allows to change the walkspeed of other players
      */
@@ -260,5 +252,4 @@ public class BasicsPerm extends PermissionContainer
     public static final Permission SIGN_COLORED = BASICS.createChild("sign.colored"); //TODO permission for each color
     public static final Permission CHANGEPAINTING = BASICS.createChild("changepainting");
     public static final Permission KICK_RECEIVEMESSAGE = BASICS.createChild("kick.receivemessage");
-
 }
