@@ -523,12 +523,14 @@ public class EntityListener implements Listener
     public void onPlayerJoin(PlayerJoinEvent event)
     {
         if (this.manager.isIgnored(event.getPlayer().getWorld(),PLAYER_JOIN)) return;
-        String data = null;
+        ArrayNode data = null;
         if (this.manager.getConfig(event.getPlayer().getWorld()).PLAYER_JOIN_ip)
         {
-            data = event.getPlayer().getAddress().getAddress().getHostName();
+            data = this.module.getObjectMapper().createArrayNode();
+            data.add(event.getPlayer().getAddress().getAddress().getHostName());
         }
-        this.manager.queueInteractionLog(event.getPlayer().getLocation(), PLAYER_JOIN, event.getPlayer(), data);
+        this.manager.queueInteractionLog(event.getPlayer().getLocation(), PLAYER_JOIN, event.getPlayer(),
+                                         data == null ? null : data.toString());
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)

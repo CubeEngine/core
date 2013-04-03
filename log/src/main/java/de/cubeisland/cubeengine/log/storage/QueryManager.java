@@ -40,7 +40,6 @@ public class QueryManager
     private final Runnable runner;
 
     Queue<QueuedLog> queuedLogs = new ConcurrentLinkedQueue<QueuedLog>();
-    private volatile boolean running = false;
 
     private final int batchSize;
     private Future<?> future = null;

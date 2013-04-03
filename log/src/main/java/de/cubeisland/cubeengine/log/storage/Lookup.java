@@ -13,7 +13,6 @@ import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.entity.EntityType;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
-import org.bukkit.material.Diode;
 
 import de.cubeisland.cubeengine.core.module.Module;
 import de.cubeisland.cubeengine.core.user.User;
@@ -23,13 +22,9 @@ import de.cubeisland.cubeengine.core.util.matcher.Match;
 import de.cubeisland.cubeengine.core.util.math.BlockVector3;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
-import gnu.trove.set.hash.THashSet;
 
 import static de.cubeisland.cubeengine.log.storage.ActionType.LOOKUP_CONTAINER;
 import static de.cubeisland.cubeengine.log.storage.ActionType.LOOKUP_KILLS;
-import static de.cubeisland.cubeengine.log.storage.ActionType.PET_DEATH;
 
 
 public class Lookup implements Cloneable
