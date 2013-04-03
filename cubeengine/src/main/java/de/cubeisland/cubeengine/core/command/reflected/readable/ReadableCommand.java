@@ -73,8 +73,10 @@ public class ReadableCommand extends CubeCommand
     @Override
     public void help(HelpContext context) throws Exception
     {
-        context.sendTranslated("Description: &f%s", this.getDescription());
-        context.sendTranslated("Usage: &f%s", this.getUsage(context));
+        context.sendTranslated("&7Description: &f%s", this.getDescription());
+        context.sendTranslated("&7Usage: &f%s", this.getUsage(context));
+        context.sendMessage(" ");
+        context.sendTranslated("&7Detailed help: &9%s", "http://engine.cubeisland.de/commands/" + this.implodeCommandParentNames("/"));
 
         if (this.hasChildren())
         {

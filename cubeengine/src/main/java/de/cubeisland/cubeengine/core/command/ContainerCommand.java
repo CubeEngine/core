@@ -86,7 +86,7 @@ public abstract class ContainerCommand extends ParameterizedCommand implements C
     public void help(HelpContext context) throws Exception
     {
         CommandSender sender = context.getSender();
-        context.sendTranslated("Usage: " + this.getUsage(context));
+        context.sendTranslated("&7Usage: &f%s", this.getUsage(context));
         context.sendMessage(" ");
         context.sendTranslated("The following actions are available:");
         context.sendMessage(" ");
@@ -98,6 +98,9 @@ public abstract class ContainerCommand extends ParameterizedCommand implements C
                 context.sendMessage(ChatFormat.YELLOW + command.getName() + ChatFormat.WHITE + ": "  + ChatFormat.GREY + sender.translate(command.getDescription()));
             }
         }
+
+        context.sendMessage(" ");
+        context.sendTranslated("&7Detailed help: &9%s", "http://engine.cubeisland.de/commands/" + this.implodeCommandParentNames("/"));
     }
 
     @Override

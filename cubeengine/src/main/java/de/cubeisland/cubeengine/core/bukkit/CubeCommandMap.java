@@ -392,7 +392,7 @@ public class CubeCommandMap extends SimpleCommandMap
         {
             if (!(target instanceof CubeCommand) || ((CubeCommand)target).isLoggable())
             {
-                this.commandLogger.log(INFO, "complete " + sender.getName() + ' ' + commandName + ' ' + args);
+                this.commandLogger.log(INFO, "complete " + sender.getName() + ' ' + commandName + ' ' + StringUtils.implode(" ", args));
             }
             return target.tabComplete(sender, commandName, args);
         }
