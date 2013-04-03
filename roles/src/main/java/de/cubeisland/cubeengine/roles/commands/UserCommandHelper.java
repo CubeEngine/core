@@ -101,13 +101,14 @@ public class UserCommandHelper extends ContainerCommand
             if (sender instanceof User)
             {
                 User user = (User)sender;
-                world = this.worldManager.getWorld(user.get(RolesAttachment.class).getCurrentWorldId());
-                if (world == null)
+                Long worldID = user.attachOrGet(RolesAttachment.class, this.module).getCurrentWorldId();
+                if (worldID == null)
                 {
                     world = user.getWorld();
                 }
                 else
                 {
+                    world = this.worldManager.getWorld(worldID);
                     context.sendTranslated("&eYou are using &6%s &eas current world.", world.getName());
                 }
             }

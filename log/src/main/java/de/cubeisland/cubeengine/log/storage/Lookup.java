@@ -532,7 +532,7 @@ public class Lookup implements Cloneable
             break;
             case SIGN_CHANGE:
                 Iterator<JsonNode> oldSignIterator = logEntry.getAdditional().get("oldSign").iterator();
-                Iterator<JsonNode> newSignIterator = logEntry.getAdditional().get("newSign").iterator();
+                Iterator<JsonNode> newSignIterator = logEntry.getAdditional().get("sign").iterator();
                 boolean oldEmpty = true;
                 ArrayList<String> oldLines = new ArrayList<String>();
                 ArrayList<String> newLines = new ArrayList<String>();

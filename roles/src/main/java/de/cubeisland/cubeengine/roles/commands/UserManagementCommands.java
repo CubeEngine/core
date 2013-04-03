@@ -72,7 +72,7 @@ public class UserManagementCommands extends UserCommandHelper
         User user = this.getUser(context, 0);
         World world = this.getWorld(context);
         long worldId = this.getModule().getCore().getWorldManager().getWorldId(world);
-        Role role = this.manager.getProvider(worldId).getRole(context.getString(1));
+        Role role = this.manager.getRoleInWorld(worldId,context.getString(1));
         if (role == null)
         {
             context.sendTranslated("&eCould not find the role &6%s &ein &6%s&e.", context.getString(0), world.getName());

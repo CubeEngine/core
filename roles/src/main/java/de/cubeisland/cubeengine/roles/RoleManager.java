@@ -40,6 +40,7 @@ public class RoleManager
     private WorldManager worldManager;
     private Set<WorldRoleProvider> providerSet;
     private TLongLongHashMap userMirrors;
+    private TLongLongHashMap assignedRoleMirrors;
 
     public RoleManager(Roles rolesModule)
     {
@@ -73,6 +74,7 @@ public class RoleManager
         this.providerSet = new THashSet<WorldRoleProvider>();
         this.providers = new TLongObjectHashMap<WorldRoleProvider>();
         this.userMirrors = new TLongLongHashMap();
+        this.assignedRoleMirrors = new TLongLongHashMap();
         // Global roles:
         this.globalProvider = new GlobalRoleProvider(module);
         this.globalProvider.loadInConfigurations(rolesFolder);
@@ -132,6 +134,14 @@ public class RoleManager
                     this.module.getLog().log(LogLevel.DEBUG, "  Mirror: " + worldManager.getWorld(worldId).getName());
                     this.providers.put(worldId, provider);
                     this.providerSet.add(provider);
+                }
+                if (worlds.get(worldId).getSecond())
+                {
+                    this.assignedRoleMirrors.put(worldId,mainWorldID);
+                }
+                else
+                {
+                    this.assignedRoleMirrors.put(worldId,worldId);
                 }
                 if (worlds.get(worldId).getThird()) // specific user perm/metadata is mirrored
                 {
@@ -365,6 +375,7 @@ public class RoleManager
 
     public boolean addRoles(User user, Player player, long worldId, Role... roles)
     {
+        worldId = this.getAssignedRoleMirror(worldId);
         TLongObjectHashMap<UserSpecificRole> roleContainer = this.getRoleContainer(user);
         if (roleContainer == null)
         {
@@ -478,5 +489,10 @@ public class RoleManager
     public long getUserMirror(long worldId)
     {
         return this.userMirrors.get(worldId);
+    }
+
+    public long getAssignedRoleMirror(long worldId)
+    {
+        return this.assignedRoleMirrors.get(worldId);
     }
 }
