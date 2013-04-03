@@ -23,6 +23,7 @@ import de.cubeisland.cubeengine.core.storage.database.Database;
 import de.cubeisland.cubeengine.core.storage.database.querybuilder.ComponentBuilder;
 import de.cubeisland.cubeengine.core.storage.database.querybuilder.QueryBuilder;
 import de.cubeisland.cubeengine.core.storage.database.querybuilder.SelectBuilder;
+import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.util.Profiler;
 import de.cubeisland.cubeengine.core.util.math.BlockVector3;
 import de.cubeisland.cubeengine.core.util.worker.AsyncTaskQueue;
@@ -220,7 +221,7 @@ public class QueryManager
         }
     }
 
-    public synchronized Lookup fillLookup(Lookup lookup)
+    public void fillLookupAndShow(final Lookup lookup,final User user)
     {
         lookup.clear();
         SelectBuilder selectBuilder = this.database.getQueryBuilder().select().wildcard().from("log_entries").where();
@@ -303,31 +304,57 @@ public class QueryManager
         System.out.print("\n"+sql);
         try
         {
-            PreparedStatement stmt = this.database.prepareStatement(sql);
+            final PreparedStatement stmt = this.database.prepareStatement(sql);
             for (int i = 0 ; i < dataToInsert.size() ; ++i)
             {
                 stmt.setObject(i+1, dataToInsert.get(i));
             }
-            ResultSet resultSet = stmt.executeQuery();
-            while (resultSet.next())
+            Thread thread = this.module.getCore().getTaskManager().getThreadFactory().newThread( new Runnable()
             {
-                long entryID = resultSet.getLong("key");
-                Timestamp timestamp = resultSet.getTimestamp("date");
-                int action = resultSet.getInt("action");
-                long worldId = resultSet.getLong("world");
-                int x = resultSet.getInt("x");
-                int y = resultSet.getInt("y");
-                int z = resultSet.getInt("z");
-                long causer = resultSet.getLong("causer");
-                String block = resultSet.getString("block");
-                long data = resultSet.getLong("data");
-                String newBlock = resultSet.getString("newBlock");
-                int newData = resultSet.getInt("newData");
-                String additionalData = resultSet.getString("additionalData");
-                LogEntry logEntry = new LogEntry(this.module,entryID,timestamp,action,worldId,x,y,z,causer,block,data,newBlock,newData,additionalData);
-                lookup.addLogEntry(logEntry);
-            }
-            return lookup;
+                @Override
+                public void run()
+                {
+                    try
+                    {
+                        ResultSet resultSet = stmt.executeQuery();
+                        while (resultSet.next())
+                        {
+                            long entryID = resultSet.getLong("key");
+                            Timestamp timestamp = resultSet.getTimestamp("date");
+                            int action = resultSet.getInt("action");
+                            long worldId = resultSet.getLong("world");
+                            int x = resultSet.getInt("x");
+                            int y = resultSet.getInt("y");
+                            int z = resultSet.getInt("z");
+                            long causer = resultSet.getLong("causer");
+                            String block = resultSet.getString("block");
+                            long data = resultSet.getLong("data");
+                            String newBlock = resultSet.getString("newBlock");
+                            int newData = resultSet.getInt("newData");
+                            String additionalData = resultSet.getString("additionalData");
+                            LogEntry logEntry = new LogEntry(module,entryID,timestamp,action,worldId,x,y,z,causer,block,data,newBlock,newData,additionalData);
+                            lookup.addLogEntry(logEntry);
+                        }
+                    }
+                    catch (SQLException e)
+                    {
+                        throw new StorageException("Error while getting logs from database!", e);
+                    }
+                    if (user != null && user.isOnline())
+                    {
+                        module.getCore().getTaskManager().scheduleSyncDelayedTask(module,
+                          new Runnable()
+                          {
+                              @Override
+                              public void run()
+                              {
+                                  lookup.show(user);
+                              }
+                          });
+                    }
+                }
+            });
+            thread.start();
         }
         catch (SQLException e)
         {
