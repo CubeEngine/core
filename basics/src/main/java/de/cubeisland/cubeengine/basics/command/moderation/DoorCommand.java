@@ -3,6 +3,8 @@ package de.cubeisland.cubeengine.basics.command.moderation;
 import de.cubeisland.cubeengine.basics.Basics;
 import de.cubeisland.cubeengine.basics.BasicsPerm;
 import de.cubeisland.cubeengine.core.command.CommandContext;
+import de.cubeisland.cubeengine.core.command.parameterized.Flag;
+import de.cubeisland.cubeengine.core.command.parameterized.ParameterizedContext;
 import de.cubeisland.cubeengine.core.command.reflected.Command;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.util.math.Vector3;
@@ -75,17 +77,26 @@ public class DoorCommand
     @Command(
         desc = "",
         usage = "<open|close> <radius> <world> <x> <y> <z>",
+        flags =
+        {
+            @Flag(longName = "all", name = "a"),
+            @Flag(longName = "woodenDoor", name = "w"),
+            @Flag(longName = "ironDoor", name = "i"),
+            @Flag(longName = "trapDoor", name = "t"),
+            @Flag(longName = "fenceGate", name = "f")
+        },
         min = 2,
         max = 6
     )
-    public void doors(CommandContext context)   //TODO flags and permissions for all types of doors
-    {   
+    public void doors(ParameterizedContext context)   //TODO flags and permissions for all types of doors
+    {
         // flags % permission -> iron door, trap door, fence gate
         boolean open = false;
         int radius = context.getArg(1, Integer.class, 0);
         Vector3 vector;
         World world;
-        
+        Set<Material> openMaterials = new HashSet<Material>();
+
         String task = context.getString(0);
         if(task.equalsIgnoreCase("open"))
         {
@@ -100,13 +111,13 @@ public class DoorCommand
             context.sendTranslated("&cDo not know whether I should close or open the doors");
             return;
         }
-        
+
         if(radius > this.basics.getConfiguration().maxDoorRadius)
         {
             context.sendTranslated("&cYou can't execute this with a radius over %d", this.basics.getConfiguration().maxDoorRadius);
             return;
         }
-        
+
         if(!context.hasArg(5) && !(context.getSender() instanceof User))
         {
             context.sendTranslated("&cYou has to specify a location!");
@@ -114,7 +125,7 @@ public class DoorCommand
         }
         else if(!context.hasArg(5))
         {
-            Location location = ((User)context.getSender()).getLocation();
+            Location location = ((User) context.getSender()).getLocation();
             world = location.getWorld();
             vector = new Vector3(location.getX(), location.getY(), location.getZ());
         }
@@ -131,19 +142,19 @@ public class DoorCommand
                 context.sendTranslated("&cWorld &6%s &cnot found!", context.getString(2));
                 return;
             }
-            Double x = context.getArg(3, Double.class, null);
+            Integer x = context.getArg(3, Integer.class, null);
             if(x == null)
             {
                 context.sendTranslated("&cx-value &6%s &cis not supported!", context.getString(3));
                 return;
             }
-            Double y = context.getArg(4, Double.class, null);
+            Integer y = context.getArg(4, Integer.class, null);
             if(y == null)
             {
                 context.sendTranslated("&cy-value &6%s &cis not supported!", context.getString(4));
                 return;
             }
-            Double z = context.getArg(5, Double.class, null);
+            Integer z = context.getArg(5, Integer.class, null);
             if(z == null)
             {
                 context.sendTranslated("&cz-value &6%s &cis not supported!", context.getString(5));
@@ -152,11 +163,33 @@ public class DoorCommand
             vector = new Vector3(x, y, z);
         }
         
+        if(context.hasFlag("f"))
+        {
+            // TODO permission checks!
+            openMaterials.add(Material.FENCE_GATE);
+        }
+        if(context.hasFlag("t"))
+        {
+            // TODO permission checks!
+            openMaterials.add(Material.TRAP_DOOR);
+        }
+        if(context.hasFlag("i"))
+        {
+            // TODO permission checks!
+            openMaterials.add(Material.IRON_DOOR_BLOCK);
+        }
+        if(context.hasFlag("w") || (openMaterials.isEmpty() && !context.hasFlag("a")))
+        {
+            // TODO permission checks!
+            openMaterials.add(Material.WOODEN_DOOR);
+        }
+        //TODO permission check for all-flag!
+
         Sphere sphere = new Sphere(vector, radius);
         for(Vector3 point : sphere)
         {
-            Block block = world.getBlockAt((int)point.x, (int)point.y, (int)point.z);
-            if(block.getType() == Material.WOODEN_DOOR)
+            Block block = world.getBlockAt((int) point.x, (int) point.y, (int) point.z);
+            if(context.hasFlag("a") || openMaterials.contains(block.getType()))
             {
                 this.setOpen(block, open);
             }
