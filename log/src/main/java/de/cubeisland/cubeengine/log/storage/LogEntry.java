@@ -184,7 +184,6 @@ public class LogEntry implements Comparable<LogEntry>
         case PLAYER_QUIT:
             break;
         }
-        System.out.print(this.toString()); //TODO remove this debug
         // data can be killed ID
     }
 
@@ -272,24 +271,5 @@ public class LogEntry implements Comparable<LogEntry>
     public JsonNode getAdditional()
     {
         return additional;
-    }
-
-    @Override
-    public String toString()
-    {
-        return "entryID=" + entryID +
-            ", timestamp=" + timestamp +
-            ", world=" + world +
-            ", location=" + location +
-            ", causer_user=" + causer_user +
-            ", causer_entity=" + causer_entity +
-            ", oldBlock=" + oldBlock +
-            ", newBlock=" + newBlock +
-            ", itemData=" + itemData +
-            ", actionType=" + actionType +
-            ", attached=" + attached +
-            ", entity=" + entity +
-            ", user=" + user +
-            ", additional=" + additional;
     }
 }
