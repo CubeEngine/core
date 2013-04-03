@@ -23,6 +23,10 @@ public abstract class LongRunningResult implements CommandResult
                 }
             }
         }, 0, 1);
+        if (this.taskId == -1)
+        {
+            throw new RuntimeException("Failed to schedule the task for the long running command result!");
+        }
     }
 
     protected void setDone()
