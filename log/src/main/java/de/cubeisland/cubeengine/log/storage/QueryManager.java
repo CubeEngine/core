@@ -14,8 +14,6 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
-import org.bukkit.Location;
-
 import de.cubeisland.cubeengine.core.logger.LogLevel;
 import de.cubeisland.cubeengine.core.storage.StorageException;
 import de.cubeisland.cubeengine.core.storage.database.AttrType;
@@ -24,25 +22,28 @@ import de.cubeisland.cubeengine.core.storage.database.querybuilder.ComponentBuil
 import de.cubeisland.cubeengine.core.storage.database.querybuilder.QueryBuilder;
 import de.cubeisland.cubeengine.core.storage.database.querybuilder.SelectBuilder;
 import de.cubeisland.cubeengine.core.user.User;
+import de.cubeisland.cubeengine.core.util.Pair;
 import de.cubeisland.cubeengine.core.util.Profiler;
+import de.cubeisland.cubeengine.core.util.Triplet;
 import de.cubeisland.cubeengine.core.util.math.BlockVector3;
-import de.cubeisland.cubeengine.core.util.worker.AsyncTaskQueue;
 import de.cubeisland.cubeengine.log.Log;
 
 public class QueryManager
 {
-    private final ExecutorService executorService;
-    private final AsyncTaskQueue taskQueue;
     private final Database database;
     private final Log module;
 
-    private final ExecutorService executor;
-    private final Runnable runner;
+    private final ExecutorService storeExecutor;
+    private final Runnable storeRunner;
+    private final ExecutorService lookupExecutor;
+    private final Runnable lookupRunner;
 
     Queue<QueuedLog> queuedLogs = new ConcurrentLinkedQueue<QueuedLog>();
+    Queue<Triplet<Lookup,User,Pair<String,ArrayList<Object>>>> queuedLookups = new ConcurrentLinkedQueue<Triplet<Lookup, User, Pair<String, ArrayList<Object>>>>();
 
     private final int batchSize;
-    private Future<?> future = null;
+    private Future<?> futureStore = null;
+    private Future<?> futureLookup = null;
 
     private long timeSpend = 0;
     private long logsLogged = 1;
@@ -55,10 +56,7 @@ public class QueryManager
 
     public QueryManager(Log module)
     {
-
         this.database = module.getCore().getDB();
-
-
         this.module = module;
         this.batchSize = module.getConfiguration().loggingBatchSize;
 
@@ -103,26 +101,90 @@ public class QueryManager
             throw new StorageException("Error during initialization of log-tables", ex);
         }
 
-        this.executorService = Executors
-            .newSingleThreadScheduledExecutor(this.module.getCore().getTaskManager().getThreadFactory()); // TODO is not shut down!
-        this.taskQueue = new AsyncTaskQueue(this.executorService); // TODO is not shut down!
-
-        runner = new Runnable() {
+        this.storeRunner = new Runnable() {
             @Override
             public void run() {
-                taskQueue.addTask(new Runnable() {
-                    @Override
-                    public void run() {
-                        try {
-                            doEmptyLogs(batchSize);
-                        } catch (Exception ex) {
-                            QueryManager.this.module.getLog().log(LogLevel.ERROR, "Error while logging!", ex);
-                        }
-                    }
-                });
+                try {
+                    doEmptyLogs(batchSize);
+                } catch (Exception ex) {
+                    QueryManager.this.module.getLog().log(LogLevel.ERROR, "Error while logging!", ex);
+                }
             }
         };
-        executor = Executors.newSingleThreadExecutor(this.module.getCore().getTaskManager().getThreadFactory());
+        this.storeExecutor = Executors.newSingleThreadExecutor(this.module.getCore().getTaskManager().getThreadFactory()); //TODO shut down
+        this.lookupRunner = new Runnable()
+        {
+            @Override
+            public void run()
+            {
+                try {
+                    doQueryLookup();
+                } catch (Exception ex) {
+                    QueryManager.this.module.getLog().log(LogLevel.ERROR, "Error while lookup!", ex);
+                }
+            }
+        };
+        this.lookupExecutor = Executors.newSingleThreadExecutor(this.module.getCore().getTaskManager().getThreadFactory()); //TODO shut down
+    }
+
+    private void doQueryLookup()
+    {
+        try
+        {
+            if (queuedLookups.isEmpty())
+            {
+                return;
+            }
+            Triplet<Lookup, User, Pair<String, ArrayList<Object>>> poll = this.queuedLookups.poll();
+            final Lookup lookup = poll.getFirst();
+            final User user = poll.getSecond();
+            PreparedStatement stmt = this.database.prepareStatement(poll.getThird().getLeft());
+            ArrayList<Object> dataToInsert = poll.getThird().getRight();
+            for (int i = 0 ; i < dataToInsert.size() ; ++i)
+            {
+                stmt.setObject(i+1, dataToInsert.get(i));
+            }
+            System.out.print(stmt); //TODO remove
+            ResultSet resultSet = stmt.executeQuery();
+            while (resultSet.next())
+            {
+                long entryID = resultSet.getLong("key");
+                Timestamp timestamp = resultSet.getTimestamp("date");
+                int action = resultSet.getInt("action");
+                long worldId = resultSet.getLong("world");
+                int x = resultSet.getInt("x");
+                int y = resultSet.getInt("y");
+                int z = resultSet.getInt("z");
+                long causer = resultSet.getLong("causer");
+                String block = resultSet.getString("block");
+                long data = resultSet.getLong("data");
+                String newBlock = resultSet.getString("newBlock");
+                int newData = resultSet.getInt("newData");
+                String additionalData = resultSet.getString("additionalData");
+                LogEntry logEntry = new LogEntry(module,entryID,timestamp,action,worldId,x,y,z,causer,block,data,newBlock,newData,additionalData);
+                lookup.addLogEntry(logEntry);
+            }
+            if (user != null && user.isOnline())
+            {
+                module.getCore().getTaskManager().scheduleSyncDelayedTask(module,
+                  new Runnable()
+                  {
+                      @Override
+                      public void run()
+                      {
+                          lookup.show(user);
+                      }
+                  });
+            }
+        }
+        catch (SQLException e)
+        {
+            throw new StorageException("Error while getting logs from database!", e);
+        }
+        if (!queuedLookups.isEmpty())
+        {
+            this.futureLookup = this.lookupExecutor.submit(this.lookupRunner);
+        }
     }
 
     private void doEmptyLogs(int amount)
@@ -184,7 +246,7 @@ public class QueryManager
             }
             if (!queuedLogs.isEmpty())
             {
-                this.future = this.executor.submit(this.runner);
+                this.futureStore = this.storeExecutor.submit(this.storeRunner);
             }
             else if (this.latch != null)
             {
@@ -201,9 +263,9 @@ public class QueryManager
     protected void queueLog(Timestamp timestamp, Long worldID, Integer x, Integer y, Integer z, ActionType action, Long causer, String block, Long data, String newBlock, Byte newData, String additionalData)
     {
         this.queuedLogs.offer(new QueuedLog(timestamp,worldID,x,y,z,action.value,causer,block,data,newBlock,newData,additionalData));
-        if (this.future == null || this.future.isDone())
+        if (this.futureStore == null || this.futureStore.isDone())
         {
-            this.future = executor.submit(runner);
+            this.futureStore = storeExecutor.submit(storeRunner);
         }
     }
 
@@ -220,7 +282,7 @@ public class QueryManager
         }
     }
 
-    public void fillLookupAndShow(final Lookup lookup,final User user)
+    public void prepareLookupQuery(final Lookup lookup, final User user)
     {
         lookup.clear();
         SelectBuilder selectBuilder = this.database.getQueryBuilder().select().wildcard().from("log_entries").where();
@@ -233,7 +295,7 @@ public class QueryManager
             {
                 selectBuilder.not();
             }
-            selectBuilder.in().valuesInBrackets(lookup.getActions().size()).endSub(); // TODO replace ? with actions later
+            selectBuilder.in().valuesInBrackets(lookup.getActions().size()).endSub();
             for (ActionType type : lookup.getActions())
             {
                 dataToInsert.add(type.value);
@@ -300,64 +362,12 @@ public class QueryManager
             needAnd = true;
         }
         String sql = selectBuilder.end().end();
-        System.out.print("\n"+sql);
-        try
+        this.queuedLookups.offer(
+        new Triplet<Lookup,User,Pair<String,ArrayList<Object>>>(
+            lookup,user,new Pair<String, ArrayList<Object>>(sql,dataToInsert)));
+        if (this.futureLookup == null || this.futureLookup.isDone())
         {
-            final PreparedStatement stmt = this.database.prepareStatement(sql);
-            for (int i = 0 ; i < dataToInsert.size() ; ++i)
-            {
-                stmt.setObject(i+1, dataToInsert.get(i));
-            }
-            Thread thread = this.module.getCore().getTaskManager().getThreadFactory().newThread( new Runnable()
-            {
-                @Override
-                public void run()
-                {
-                    try
-                    {
-                        ResultSet resultSet = stmt.executeQuery();
-                        while (resultSet.next())
-                        {
-                            long entryID = resultSet.getLong("key");
-                            Timestamp timestamp = resultSet.getTimestamp("date");
-                            int action = resultSet.getInt("action");
-                            long worldId = resultSet.getLong("world");
-                            int x = resultSet.getInt("x");
-                            int y = resultSet.getInt("y");
-                            int z = resultSet.getInt("z");
-                            long causer = resultSet.getLong("causer");
-                            String block = resultSet.getString("block");
-                            long data = resultSet.getLong("data");
-                            String newBlock = resultSet.getString("newBlock");
-                            int newData = resultSet.getInt("newData");
-                            String additionalData = resultSet.getString("additionalData");
-                            LogEntry logEntry = new LogEntry(module,entryID,timestamp,action,worldId,x,y,z,causer,block,data,newBlock,newData,additionalData);
-                            lookup.addLogEntry(logEntry);
-                        }
-                    }
-                    catch (SQLException e)
-                    {
-                        throw new StorageException("Error while getting logs from database!", e);
-                    }
-                    if (user != null && user.isOnline())
-                    {
-                        module.getCore().getTaskManager().scheduleSyncDelayedTask(module,
-                          new Runnable()
-                          {
-                              @Override
-                              public void run()
-                              {
-                                  lookup.show(user);
-                              }
-                          });
-                    }
-                }
-            });
-            thread.start();
-        }
-        catch (SQLException e)
-        {
-            throw new StorageException("Error while creating prepared statement for log-query!", e);
+            this.futureLookup = lookupExecutor.submit(lookupRunner);
         }
     }
 }

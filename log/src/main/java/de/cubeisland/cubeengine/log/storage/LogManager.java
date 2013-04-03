@@ -4,11 +4,6 @@ import java.io.File;
 import java.sql.Timestamp;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Queue;
-import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -31,7 +26,6 @@ import de.cubeisland.cubeengine.core.config.Configuration;
 import de.cubeisland.cubeengine.core.logger.LogLevel;
 import de.cubeisland.cubeengine.core.storage.database.querybuilder.SelectBuilder;
 import de.cubeisland.cubeengine.core.user.User;
-import de.cubeisland.cubeengine.core.util.Pair;
 import de.cubeisland.cubeengine.log.Log;
 import de.cubeisland.cubeengine.log.LoggingConfiguration;
 import de.cubeisland.cubeengine.log.listeners.BlockListener;
@@ -57,7 +51,6 @@ public class LogManager
 
     public LogManager(Log module)
     {
-        this.executor  = Executors.newSingleThreadExecutor(module.getCore().getTaskManager().getThreadFactory());
         this.module = module;
         this.mapper = new ObjectMapper();
         File file = new File(module.getFolder(), "worlds");
@@ -484,36 +477,10 @@ public class LogManager
         return this.queryManager.queuedLogs.size();
     }
 
-    private Queue<Pair<Lookup,User>> queuedLookup = new ConcurrentLinkedQueue<Pair<Lookup, User>>();
-    private Future<?> future = null;
-    private final ExecutorService executor;
-    private Runnable runner = new Runnable()
-    {
-        @Override
-        public void run()
-        {
-            Pair<Lookup,User> pair = queuedLookup.poll();
-            if (pair != null)
-            {
-                queryManager.fillLookupAndShow(pair.getLeft(),pair.getRight());
-                if (!queuedLookup.isEmpty())
-                {
-                    future = executor.submit(runner);
-                }
-            }
-        }
-    };
-
     public void fillLookupAndShow(final Lookup lookup, User user)
     {
-        this.queuedLookup.offer(new Pair<Lookup, User>(lookup.clone(),user));
-        if (this.future == null || this.future.isDone())
-        {
-            this.future = executor.submit(runner);
-        }
+        this.queryManager.prepareLookupQuery(lookup.clone(), user);
     }
-
-
 
     public BlockListener getBlockListener() {
         return blockListener;
