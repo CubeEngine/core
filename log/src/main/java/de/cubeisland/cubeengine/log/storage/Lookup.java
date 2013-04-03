@@ -547,7 +547,7 @@ public class Lookup implements Cloneable
                 }
                 while (newSignIterator.hasNext())
                 {
-                    String line = oldSignIterator.next().asText();
+                    String line = newSignIterator.next().asText();
                     newLines.add(line);
                 }
                 String delim = ChatFormat.parseFormats("&7 | &f");

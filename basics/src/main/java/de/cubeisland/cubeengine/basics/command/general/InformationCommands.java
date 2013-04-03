@@ -294,7 +294,7 @@ public class InformationCommands
         }
         else if (entity instanceof LivingEntity)
         {
-            list.add(String.format("&3%s&f (&e%dm&f)", Match.entity().getNameFor(entity.getType())));
+            list.add(String.format("&3%s&f (&e%dm&f)", Match.entity().getNameFor(entity.getType()),(int)distance));
         }
         else
         {
@@ -304,7 +304,7 @@ public class InformationCommands
             }
             else
             {
-                list.add(String.format("&7%s&f (&e%dm&f)", Match.entity().getNameFor(entity.getType())));
+                list.add(String.format("&7%s&f (&e%dm&f)", Match.entity().getNameFor(entity.getType()),(int)distance));
             }
         }
     }

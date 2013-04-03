@@ -525,13 +525,13 @@ SMOOTH_BRICK:3
   roundbrick
   roundstonebrick
 HUGE_MUSHROOM_1:0
-  hugeredmushroom
-  bigredmushroom
-  giantredmushroom
-HUGE_MUSHROOM_2:0
   hugebrownmushroom
   bigbrownmushroom
   giantbrownmushroom
+HUGE_MUSHROOM_2:0
+  hugeredmushroom
+  bigredmushroom
+  giantredmushroom
 IRON_FENCE:0
   ironbars
   metalbars
@@ -843,7 +843,7 @@ GOLD_SPADE:0
 GOLD_PICKAXE:0
   goldpickaxe
   goldpick
-GOLD_PICKAXE:0
+GOLD_AXE:0
   goldaxe
 STRING:0
   string

@@ -162,16 +162,23 @@ public abstract class Role implements Comparable<Role>
         Permission bukkitPerm = Bukkit.getPluginManager().getPermission(name);
         if (bukkitPerm == null)
         {
-            // manually search for child-perms...
-            String baseName = name.substring(0, name.indexOf(".*"));
-            for (Permission permission : Bukkit.getPluginManager().getPermissions())
+            if (name.endsWith(".*"))
             {
-                if (permission.getName().startsWith(baseName))
+                // manually search for child-perms...
+                String baseName = name.substring(0, name.indexOf(".*"));
+                for (Permission permission : Bukkit.getPluginManager().getPermissions())
                 {
-                    resolvedPermissions.put(permission.getName(), set);
+                    if (permission.getName().startsWith(baseName))
+                    {
+                        resolvedPermissions.put(permission.getName(), set);
+                    }
                 }
+                resolvedPermissions.put(name, set);
             }
-            resolvedPermissions.put(name, set);
+            else
+            {
+               System.out.print(name + " is not a registered bukkitperm!");//TODO remove
+            }
             return;
         }
         Map<String, Boolean> childPerm = bukkitPerm.getChildren();

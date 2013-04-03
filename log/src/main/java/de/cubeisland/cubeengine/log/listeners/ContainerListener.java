@@ -378,8 +378,10 @@ public class ContainerListener implements Listener
     {
         Inventory source = event.getSource();
         Inventory target = event.getDestination();
-        if (target == null)
+        if (target == null || source == null)
         {
+            System.out.print("InventoryMoveItem has null "+source+" -> "+target);
+        // TODO source is sometimes null too
             return; // TODO waiting for https://bukkit.atlassian.net/browse/BUKKIT-3916
         }
         Location sourceLocation = this.getLocationForHolder(source.getHolder());
@@ -411,6 +413,6 @@ public class ContainerListener implements Listener
         }
         int oldAmount = itemDataMap.get(itemData); // if not yet set this returns 0
         itemDataMap.put(itemData,oldAmount + amount);
-        System.out.print((amount < 0 ? "TAKE " : "PUT ") + itemData.material.name()+":"+itemData.dura+" x"+amount);//TODO remove this
+        //System.out.print((amount < 0 ? "TAKE " : "PUT ") + itemData.material.name()+":"+itemData.dura+" x"+amount);//TODO remove this
     }
 }

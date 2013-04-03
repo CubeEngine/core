@@ -359,6 +359,7 @@ public class QueryManager
             needAnd = true;
         }
         String sql = selectBuilder.end().end();
+        System.out.print(user.getName()+": Lookup queued!");
         this.queuedLookups.offer(
         new Triplet<Lookup,User,Pair<String,ArrayList<Object>>>(
             lookup,user,new Pair<String, ArrayList<Object>>(sql,dataToInsert)));
