@@ -380,7 +380,7 @@ public class ContainerListener implements Listener
         Inventory target = event.getDestination();
         if (target == null || source == null)
         {
-            System.out.print("InventoryMoveItem has null "+source+" -> "+target);
+            //System.out.print("InventoryMoveItem has null "+source+" -> "+target);
         // TODO source is sometimes null too
             return; // TODO waiting for https://bukkit.atlassian.net/browse/BUKKIT-3916
         }
