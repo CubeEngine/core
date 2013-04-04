@@ -36,14 +36,13 @@ public class MarketSignFactory
         TLongHashSet usedItemKeys = new TLongHashSet();
         for (SignMarketBlockModel blockModel : this.signMarketBlockManager.getLoadedModels())
         {
-            MarketSign marketSign = new MarketSign(module, this.conomy, blockModel.getLocation());
             SignMarketItemModel itemModel = this.signMarketItemManager.getInfoModel(blockModel.itemKey);
             if (itemModel == null)
             {
-                this.module.getLog().warning("Inconsistent Data! BlockInfo withoit Marketsigninfo!");
+                this.module.getLog().warning("Inconsistent Data! BlockInfo without Marketsigninfo!");
+                continue;
             }
-            marketSign.setBlockInfo(blockModel);
-            marketSign.setItemInfo(itemModel);
+            MarketSign marketSign = new MarketSign(module, this.conomy, itemModel, blockModel);
             usedItemKeys.add(blockModel.itemKey);
             this.marketSigns.put(blockModel.getLocation(),marketSign);
         }
@@ -53,7 +52,9 @@ public class MarketSignFactory
     public MarketSign getSignAt(Location location)
     {
         if (location == null)
+        {
             return null;
+        }
         MarketSign result = this.marketSigns.get(location);
         return result;
     }
@@ -67,6 +68,7 @@ public class MarketSignFactory
             return marketSign;
         }
         marketSign = new MarketSign(this.module, conomy, location);
+        //TODO PERMISSIONS!!!
         if (this.module.getConfig().allowAdminNoStock)
         {
             marketSign.setAdminSign();
@@ -94,15 +96,21 @@ public class MarketSignFactory
         return marketSign;
     }
 
+    /**
+     * Deletes a marketSign forever!
+     * This will delete the blockModel and the itemModel if it is no longer referenced.
+     *
+     * @param marketSign
+     */
     public void delete(MarketSign marketSign)
     {
         this.marketSigns.remove(marketSign.getLocation());
-        this.signMarketBlockManager.deleteModel(marketSign.getBlockInfo());
+        this.signMarketBlockManager.delete(marketSign.getBlockInfo());
         SignMarketItemModel itemInfo = marketSign.getItemInfo();
         itemInfo.removeSign(marketSign);
         if (itemInfo.isNotReferenced())
         {
-            this.signMarketItemManager.deleteModel(itemInfo);
+            this.signMarketItemManager.delete(itemInfo);
         }
     }
 
@@ -113,39 +121,34 @@ public class MarketSignFactory
             for (MarketSign sign : this.marketSigns.values())
             {
                 if (sign.hasDemand()) // skip if limited demand
-                    continue;
-                if (marketSign.getOwner() == sign.getOwner() && marketSign != sign) // same owner (but not same sign)
                 {
-                    if (marketSign.getItemInfo().canSync(sign.getItemInfo())) // both have stock AND same item
+                    continue;
+                }
+                if ((marketSign.getOwner() == sign.getOwner() && marketSign != sign)  // same owner (but not same sign)
+                    && marketSign.getItemInfo().canSync(sign.getItemInfo())) // both have stock AND same item -> doSync
+                {
+                    // apply the found item-info to the marketsign
+                    SignMarketItemModel itemModel = marketSign.setItemInfo(sign.getItemInfo());
+                    if (marketSign.syncOnMe) // stock OR stock-size change
                     {
-                        SignMarketItemModel itemModel = marketSign.setItemInfo(sign.getItemInfo()); // change itemInfo (registers the sign in the itemInfo automaticly)
-                        if (marketSign.syncOnMe)
-                        {
-                            marketSign.setStock(itemModel.stock);
-                            marketSign.setSize(itemModel.size);
-                            marketSign.syncOnMe = false;
-                        }
-                        if (marketSign.getBlockInfo().key == -1) // blockInfo not saved in database
-                        {
-                            this.signMarketBlockManager.storeModel(marketSign.getBlockInfo());
-                        }
-                        else // update
-                        {
-                            this.signMarketBlockManager.update(marketSign.getBlockInfo());
-                        }
-                        if (itemModel.isNotReferenced())
-                        {
-                            this.signMarketItemManager.delete(itemModel); // delete if no more referenced
-                        }
-                        marketSign.getItemInfo().updateSigns(); // update all signs that use the same itemInfo
+                        marketSign.setStock(itemModel.stock);
+                        marketSign.setSize(itemModel.size);
+                        marketSign.syncOnMe = false;
                     }
+                    // updating/storing is done down below
+                    if (itemModel.isNotReferenced())
+                    {
+                        this.signMarketItemManager.delete(itemModel); // delete if no more referenced
+                    }
+                    System.out.print("MarketSign synced!");//TODO remove
                 }
             }
         }
         if (marketSign.getItemInfo().key == -1) // itemInfo not saved in database
         {
-            this.signMarketItemManager.storeModel(marketSign.getItemInfo());
-            marketSign.getBlockInfo().itemKey = marketSign.getItemInfo().key; // set correct reference in blockInfo
+            this.signMarketItemManager.store(marketSign.getItemInfo());
+            // set freshly assigned itemData reference in BlockInfo
+            marketSign.getBlockInfo().itemKey = marketSign.getItemInfo().key;
         }
         else // update
         {
@@ -153,13 +156,13 @@ public class MarketSignFactory
         }
         if (marketSign.getBlockInfo().key == -1) // blockInfo not saved in database
         {
-            this.signMarketBlockManager.storeModel(marketSign.getBlockInfo());
+            this.signMarketBlockManager.store(marketSign.getBlockInfo());
         }
         else // update
         {
             this.signMarketBlockManager.update(marketSign.getBlockInfo());
         }
-        marketSign.getItemInfo().updateSigns(); // update all signs that use the same itemInfo
+        marketSign.getItemInfo().updateSignTexts(); // update all signs that use the same itemInfo
     }
 
     public SignMarketItemManager getSignMarketItemManager() {

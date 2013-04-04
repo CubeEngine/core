@@ -31,6 +31,7 @@ import static de.cubeisland.cubeengine.core.util.InventoryUtil.*;
 
 public class MarketSign
 {
+    private final MarketSignFactory msFactory;
     private final Signmarket module;
     private final Conomy conomy;
     private SignMarketItemModel itemInfo;
@@ -49,29 +50,35 @@ public class MarketSign
 
     public MarketSign(Signmarket module, Conomy conomy, Location location, User owner)
     {
-        this.module = module;
-        this.conomy = conomy;
-        this.itemInfo = new SignMarketItemModel();
-        this.blockInfo = new SignMarketBlockModel(location);
+        this(module, conomy, new SignMarketItemModel(), new SignMarketBlockModel(location));
         this.blockInfo.setOwner(owner);
     }
 
+    public MarketSign(Signmarket module, Conomy conomy, SignMarketItemModel itemModel, SignMarketBlockModel blockModel)
+    {
+        this.module = module;
+        this.conomy = conomy;
+        this.itemInfo = itemModel;
+        this.blockInfo = blockModel;
+        this.msFactory = module.getMarketSignFactory();
+    }
+
     /**
-     * Saves all MarketSignData into the database
+     * Saves all MarketSignData into the database if the sign is valid
      */
     public void saveToDatabase()
     {
         if (this.isValidSign(null))
         {
-            this.module.getMarketSignFactory().syncAndSaveSign(this);
+            msFactory.syncAndSaveSign(this);
         }
-        this.updateSign();
+        this.updateSignText();
     }
 
     public void breakSign()
     {
         this.dropContents();
-        this.module.getMarketSignFactory().delete(this);
+        msFactory.delete(this);
     }
 
     public void dropContents()
@@ -212,7 +219,7 @@ public class MarketSign
                         {
                             MarketSign.this.setStock(MarketSign.this.getStock() - MarketSign.this.inventoryStock + newStock);
                             MarketSign.this.inventoryStock = newStock;
-                            MarketSign.this.updateSign();
+                            MarketSign.this.updateSignText();
                         }
                     }
                 }
@@ -845,7 +852,7 @@ public class MarketSign
         return this.blockInfo.isOwner(user);
     }
 
-    public void updateSign()
+    public void updateSignText()
     {
         Block block = this.getLocation().getWorld().getBlockAt(this.getLocation());
         if (block.getState() instanceof Sign)
@@ -1019,6 +1026,7 @@ public class MarketSign
         }
         else
         {
+            //TODO perhaps if AIR and attachable set sign
             this.module.getLog().warning("Market-Sign is not a sign-block! " + this.getLocation());
         }
     }
@@ -1077,7 +1085,8 @@ public class MarketSign
     }
 
     /**
-     * Returns the replaced infoModel or null if not yet set
+     * Sets the new Item-Info and returns the replaced infoModel
+     * The item-infos and block-info will be updated accordingly
      *
      * @param itemInfo
      * @return
@@ -1141,21 +1150,19 @@ public class MarketSign
 
     public void enterEditMode()
     {
-        SignMarketItemModel newItemInfo = new SignMarketItemModel();
-        newItemInfo.applyValues(this.itemInfo);
-        SignMarketItemModel oldItemModel = this.setItemInfo(newItemInfo); // de-sync item-info to prevent changing other signs
-        if (oldItemModel.isNotReferenced())
+        if (this.itemInfo.getReferenced().size() > 1) // ItemInfo is synced with other signs
         {
-            this.module.getMarketSignFactory().getSignMarketItemManager().deleteModel(oldItemModel);
+            SignMarketItemModel newItemInfo = this.itemInfo.clone();
+            this.setItemInfo(newItemInfo); // de-sync to prevent changing other signs
         }
         this.editMode = true;
-        this.updateSign();
+        this.updateSignText();
     }
 
     public void exitEditMode(User user)
     {
         this.editMode = false;
-        this.updateSign();
+        this.updateSignText();
         if (this.isValidSign(user))
         {
             this.saveToDatabase(); // re-sync item-info in here
@@ -1207,10 +1214,10 @@ public class MarketSign
         return this.itemInfo.getItem();
     }
 
-    public void applyValues(MarketSign prevMarketSign)
+    public void copyValuesFrom(MarketSign prevMarketSign)
     {
-        this.blockInfo.applyValues(prevMarketSign.blockInfo);
-        this.itemInfo.applyValues(prevMarketSign.itemInfo);
+        this.blockInfo.copyValuesFrom(prevMarketSign.blockInfo);
+        this.itemInfo.copyValuesFrom(prevMarketSign.itemInfo);
     }
 
     public void setSize(Integer size)

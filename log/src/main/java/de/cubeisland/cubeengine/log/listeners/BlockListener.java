@@ -518,7 +518,7 @@ public class BlockListener implements Listener
         String[] oldLines = ((Sign)event.getBlock().getState()).getLines();
         ObjectNode json = this.module.getObjectMapper().createObjectNode();
         ArrayNode sign = json.putArray("sign");
-        ArrayNode oldSign = json.putArray("oldSign");
+        ArrayNode oldSign = json.putArray("oldSign"); //TODO debug this is not saved correctly
         boolean isEmpty = true;
         boolean wasEmpty = true;
         for (String line : event.getLines())

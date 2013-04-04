@@ -2,6 +2,7 @@ package de.cubeisland.cubeengine.signmarket.storage;
 
 import java.util.Collection;
 
+import de.cubeisland.cubeengine.core.logger.LogLevel;
 import de.cubeisland.cubeengine.core.storage.SingleKeyStorage;
 import de.cubeisland.cubeengine.signmarket.Signmarket;
 
@@ -13,10 +14,12 @@ public class SignMarketItemManager extends SingleKeyStorage<Long, SignMarketItem
     private static final int REVISION = 1;
 
     private TLongObjectHashMap<SignMarketItemModel> itemInfoModels = new TLongObjectHashMap<SignMarketItemModel>();
+    private final Signmarket module;
 
     public SignMarketItemManager(Signmarket module)
     {
         super(module.getCore().getDB(), SignMarketItemModel.class, REVISION);
+        this.module = module;
         this.initialize();
         for (SignMarketItemModel model : this.getAll())
         {
@@ -34,9 +37,10 @@ public class SignMarketItemManager extends SingleKeyStorage<Long, SignMarketItem
         return this.itemInfoModels.valueCollection();
     }
 
-    public void storeModel(SignMarketItemModel itemInfo)
+    @Override
+    public void store(SignMarketItemModel itemInfo)
     {
-        this.store(itemInfo);
+        super.store(itemInfo);
         this.itemInfoModels.put(itemInfo.key, itemInfo);
     }
 
@@ -48,12 +52,15 @@ public class SignMarketItemManager extends SingleKeyStorage<Long, SignMarketItem
             {
                 this.deleteByKey(key);
                 this.itemInfoModels.remove(key);
+                this.module.getLog().log(LogLevel.DEBUG,"Removed unused sign ID " + key);
             }
         }
     }
 
-    public void deleteModel(SignMarketItemModel itemInfo) {
+    @Override
+    public void delete(SignMarketItemModel itemInfo) {
         this.itemInfoModels.remove(itemInfo.key);
-        this.delete(itemInfo);
+        super.delete(itemInfo);
+        System.out.print("Deleted SMItemModel!"); // TODO remove
     }
 }

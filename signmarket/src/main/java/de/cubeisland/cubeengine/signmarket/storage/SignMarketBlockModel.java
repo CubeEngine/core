@@ -57,7 +57,7 @@ public class SignMarketBlockModel implements Model<Long>
         this.z = location.getBlockZ();
     }
 
-    public void applyValues(SignMarketBlockModel blockInfo) {
+    public void copyValuesFrom(SignMarketBlockModel blockInfo) {
         this.signType = blockInfo.signType;
         this.owner = blockInfo.owner;
         this.userOwner = null;

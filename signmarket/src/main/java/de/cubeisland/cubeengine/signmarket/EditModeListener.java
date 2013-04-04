@@ -71,7 +71,7 @@ public class EditModeListener extends ConversationCommand
                 previousSign.exitEditMode(user);
             }
             user.sendTranslated("&aChanged active sign!");
-            marketSign.updateSign();
+            marketSign.updateSignText();
         }
         marketSign.enterEditMode();
     }
@@ -119,7 +119,7 @@ public class EditModeListener extends ConversationCommand
             }
             else
             {
-                marketSign.applyValues(prevMarketSign);
+                marketSign.copyValuesFrom(prevMarketSign);
             }
         }
         if (context.hasFlag("buy"))
@@ -430,7 +430,7 @@ public class EditModeListener extends ConversationCommand
             return null;
         }
         marketSign.showInfo(user);
-        marketSign.updateSign();
+        marketSign.updateSignText();
         return null;
     }
 
@@ -521,7 +521,7 @@ public class EditModeListener extends ConversationCommand
 
             this.setEditingSign(user, curLoc, curSign);
             curSign.setItemStack(user.getItemInHand(), true);
-            curSign.updateSign();
+            curSign.updateSignText();
             user.sendTranslated("&aItem in sign updated!");
             event.setCancelled(true);
             event.setUseItemInHand(Event.Result.DENY);
@@ -545,7 +545,7 @@ public class EditModeListener extends ConversationCommand
                 Location loc = event.getBlockPlaced().getLocation();
                 MarketSign marketSign = this.signFactory.createSignAt(user, loc);
                 this.setEditingSign(user, loc, marketSign);
-                marketSign.updateSign();
+                marketSign.updateSignText();
             }
         }
     }

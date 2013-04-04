@@ -845,7 +845,7 @@ public class Lookup implements Cloneable
                 user.sendTranslated("&6%s &aspawned!",
                                     this.getPrettyName(logEntry.getCauserEntity())); //TODO get player in data
             break;
-            case ITEM_DROP:
+            case ITEM_DROP: //TODO itemdrops that are not caused by user
                 user.sendTranslated("&2%s&a dropped %d &6%s!",
                                     logEntry.getCauserUser().getDisplayName(),
                                     logEntry.getItemData().amount,

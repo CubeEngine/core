@@ -22,7 +22,7 @@ import java.util.Map;
 @SingleKeyEntity(autoIncrement = true, primaryKey = "key", tableName = "signmarketitem", indices = {
 
 })
-public class SignMarketItemModel implements Model<Long>,InventoryHolder
+public class SignMarketItemModel implements Model<Long>,InventoryHolder,Cloneable
 {
     @Attribute(type = AttrType.INT, unsigned = true)
     public long key = -1;
@@ -46,16 +46,7 @@ public class SignMarketItemModel implements Model<Long>,InventoryHolder
 
     private ItemStack itemStack;
 
-    public void applyValues(SignMarketItemModel itemInfo)
-    {
-        this.stock = itemInfo.stock;
-        this.item = itemInfo.item;
-        this.damageValue = itemInfo.damageValue;
-        this.customName = itemInfo.customName;
-        this.lore = itemInfo.lore;
-        this.enchantments = itemInfo.enchantments;
-        this.itemStack = null;
-    }
+
 
     public void setItem(ItemStack item)
     {
@@ -190,11 +181,11 @@ public class SignMarketItemModel implements Model<Long>,InventoryHolder
         return this.sharedStockSigns.size() > 1;
     }
 
-    public void updateSigns()
+    public void updateSignTexts()
     {
         for (MarketSign sign : this.sharedStockSigns)
         {
-            sign.updateSign();
+            sign.updateSignText();
         }
     }
 
@@ -217,5 +208,28 @@ public class SignMarketItemModel implements Model<Long>,InventoryHolder
             return 54;
         }
         return this.size * 9;
+    }
+
+    public THashSet<MarketSign> getReferenced()
+    {
+        return this.sharedStockSigns;
+    }
+
+    public SignMarketItemModel clone()
+    {
+        SignMarketItemModel itemInfo = new SignMarketItemModel();
+        itemInfo.copyValuesFrom(this);
+        return itemInfo;
+    }
+
+    public void copyValuesFrom(SignMarketItemModel itemInfo)
+    {
+        this.stock = itemInfo.stock;
+        this.item = itemInfo.item;
+        this.damageValue = itemInfo.damageValue;
+        this.customName = itemInfo.customName;
+        this.lore = itemInfo.lore;
+        this.enchantments = itemInfo.enchantments;
+        this.itemStack = null;
     }
 }

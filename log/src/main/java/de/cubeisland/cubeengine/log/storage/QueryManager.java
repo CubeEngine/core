@@ -65,7 +65,7 @@ public class QueryManager
             QueryBuilder builder = database.getQueryBuilder();
             String sql = builder.createTable("log_entries", true).beginFields()
                                 .field("key", AttrType.INT, true).autoIncrement()
-                                .field("date", AttrType.TIMESTAMP)
+                                .field("date", AttrType.DATETIME)
                                 .field("action", AttrType.TINYINT, true)
                                 .field("world", AttrType.INT, true, false)
                                 .field("x", AttrType.INT, false, false)
