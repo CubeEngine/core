@@ -135,11 +135,12 @@ public class MarketSignFactory
                         marketSign.syncOnMe = false;
                     }
                     // updating/storing is done down below
-                    if (itemModel.isNotReferenced())
+                    if (itemModel.key != -1 && itemModel.isNotReferenced())
                     {
                         this.signMarketItemManager.delete(itemModel); // delete if no more referenced
                     }
                     System.out.print("MarketSign synced!");//TODO remove
+                    break;
                 }
             }
         }

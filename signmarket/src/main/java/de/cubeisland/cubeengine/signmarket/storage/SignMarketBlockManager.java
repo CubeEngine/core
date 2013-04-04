@@ -36,7 +36,7 @@ public class SignMarketBlockManager extends SingleKeyStorage<Long, SignMarketBlo
     {
         this.blockModels.remove(model.getLocation());
         super.delete(model);
-        System.out.print("Deleted SMBlockModel!"); // TODO remove
+        System.out.print("Deleted SMBlockModel! ID: "+model.key); // TODO remove
     }
 
     @Override
