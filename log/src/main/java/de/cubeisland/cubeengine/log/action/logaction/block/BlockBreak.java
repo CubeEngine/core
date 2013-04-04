@@ -1,4 +1,4 @@
-package de.cubeisland.cubeengine.log.action.logaction;
+package de.cubeisland.cubeengine.log.action.logaction.block;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -44,7 +44,7 @@ public class BlockBreak extends BlockActionType
             return; // breaking air !? -> no logging
         }
         ObjectNode json = null;
-        BlockData blockData = new BlockData(blockState);
+        BlockData blockData = BlockData.of(blockState);
         if (blockState instanceof NoteBlock) // adjust data (which is always 0 to note)
         {
             blockData.data = ((NoteBlock)blockState).getRawNote();
@@ -81,13 +81,13 @@ public class BlockBreak extends BlockActionType
                 if (block.getRelative(face).getType().equals(PORTAL))
                 {
                     Block portal = block.getRelative(face);
-                    this.logBlockChange(portal.getLocation(),event.getPlayer(),new BlockData(portal.getState()),AIR,null);
+                    this.logBlockChange(portal.getLocation(),event.getPlayer(),BlockData.of(portal.getState()),AIR,null);
                     break;
                 }
             }
         }
-        this.logAttachedBlocks(blockState,event.getPlayer());
-        this.logRelatedBlocks(blockState,event.getPlayer());
+        this.logAttached(blockState, event.getPlayer());
+        this.logFallingBlocks(blockState, event.getPlayer());
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
@@ -95,7 +95,7 @@ public class BlockBreak extends BlockActionType
     {
         if (!this.isActive(event.getBlock().getWorld())) return;
         BlockState oldState = event.getBlock().getState();
-        BlockData oldData = new BlockData(oldState);
+        BlockData oldData = BlockData.of(oldState);
         Block blockAttachedTo;
         if (oldState.getData() instanceof Attachable)
         {

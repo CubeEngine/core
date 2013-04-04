@@ -1,4 +1,4 @@
-package de.cubeisland.cubeengine.log.action.logaction;
+package de.cubeisland.cubeengine.log.action.logaction.block;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -8,18 +8,15 @@ import org.bukkit.Material;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.BlockState;
 import org.bukkit.entity.Entity;
-import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.block.BlockPhysicsEvent;
 
 import de.cubeisland.cubeengine.core.util.Pair;
 import de.cubeisland.cubeengine.log.Log;
-import de.cubeisland.cubeengine.log.storage.ActionType;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
-import static de.cubeisland.cubeengine.log.storage.ActionType.BLOCK_FALL;
 import static org.bukkit.Material.AIR;
 
 public class BlockFall extends BlockActionType

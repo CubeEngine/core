@@ -30,6 +30,7 @@ public abstract class ActionType
         this.wm = module.getCore().getWorldManager();
         this.um = module.getCore().getUserManager();
         //TODO register ActionType
+        //negative actionTypeID is used for containerTypes
         //show error if value is already used
         this.actionTypeID = actionTypeID;
         this.om = this.logModule.getObjectMapper();

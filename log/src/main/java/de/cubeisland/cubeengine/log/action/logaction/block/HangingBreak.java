@@ -1,10 +1,9 @@
-package de.cubeisland.cubeengine.log.action.logaction;
+package de.cubeisland.cubeengine.log.action.logaction.block;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.bukkit.Location;
-import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.ItemFrame;
 import org.bukkit.entity.Painting;
@@ -16,11 +15,9 @@ import org.bukkit.event.hanging.HangingBreakByEntityEvent;
 import org.bukkit.event.hanging.HangingBreakEvent;
 import org.bukkit.inventory.ItemStack;
 
-import de.cubeisland.cubeengine.core.util.Pair;
 import de.cubeisland.cubeengine.log.Log;
 import de.cubeisland.cubeengine.log.storage.ItemData;
 
-import static de.cubeisland.cubeengine.log.storage.ActionType.HANGING_BREAK;
 import static org.bukkit.Material.AIR;
 import static org.bukkit.Material.ITEM_FRAME;
 import static org.bukkit.Material.PAINTING;

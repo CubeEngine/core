@@ -3,8 +3,6 @@ package de.cubeisland.cubeengine.log.action;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import de.cubeisland.cubeengine.log.action.logaction.BlockBreak;
-
 import gnu.trove.set.hash.TIntHashSet;
 
 public class ActionTypeManager

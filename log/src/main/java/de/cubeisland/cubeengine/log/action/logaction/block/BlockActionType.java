@@ -1,4 +1,4 @@
-package de.cubeisland.cubeengine.log.action.logaction;
+package de.cubeisland.cubeengine.log.action.logaction.block;
 
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -7,18 +7,11 @@ import org.bukkit.block.BlockFace;
 import org.bukkit.block.BlockState;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Hanging;
-import org.bukkit.entity.Player;
 import org.bukkit.material.Bed;
 
-import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.util.BlockUtil;
-import de.cubeisland.cubeengine.core.util.Pair;
 import de.cubeisland.cubeengine.log.Log;
 import de.cubeisland.cubeengine.log.action.LogActionType;
-import de.cubeisland.cubeengine.log.storage.ActionType;
-
-import static de.cubeisland.cubeengine.log.storage.ActionType.BLOCK_FALL;
-import static de.cubeisland.cubeengine.log.storage.ActionType.HANGING_BREAK;
 
 public class BlockActionType extends LogActionType
 {
@@ -54,15 +47,28 @@ public class BlockActionType extends LogActionType
         this.queueLog(location,causer,oldBlock.name(),0L,newBlock.name(),(byte)0,additional);
     }
 
+    /**
+     * oldBlock is not allowed to be null!
+     */
+    public void logBlockChange(Entity causer, BlockState oldBlock, BlockState newBlock, String additional)
+    {
+        this.logBlockChange(oldBlock.getLocation(),causer,BlockData.of(oldBlock),BlockData.of(newBlock),additional);
+    }
+
     public static class BlockData
     {
         public Material material;
         public Byte data;
 
-        public BlockData(BlockState blockState)
+        private BlockData(BlockState blockState)
         {
             material = blockState.getType();
             data = blockState.getRawData();
+        }
+
+        public static BlockData of(BlockState state)
+        {
+            return new BlockData(state);
         }
     }
 
@@ -91,7 +97,7 @@ public class BlockActionType extends LogActionType
         return blockState;
     }
 
-    protected void logAttachedBlocks(BlockState blockState, Entity player)
+    protected void logAttached(BlockState blockState, Entity player)
     {
         if (!blockState.getType().isSolid())
         {
@@ -109,9 +115,22 @@ public class BlockActionType extends LogActionType
                 blockBreak.preplanBlockPhyiscs(block.getLocation(), player, this);
             }
         }
+        HangingBreak hangingBreak = this.manager.getActionType(HangingBreak.class);
+        if (hangingBreak.isActive(blockState.getWorld()))
+        {
+            Location location = blockState.getLocation();
+            Location entityLocation = blockState.getLocation();
+            for (Entity entity : blockState.getBlock().getChunk().getEntities())
+            {
+                if (entity instanceof Hanging && location.distanceSquared(entity.getLocation(entityLocation)) < 4)
+                {
+                    hangingBreak.preplanHangingBreak(entity.getLocation(),player);
+                }
+            }
+        }
     }
 
-    protected void logRelatedBlocks(BlockState blockState, Entity player)
+    protected void logFallingBlocks(BlockState blockState, Entity player)
     {
         // Falling Blocks
         Block onTop = blockState.getBlock().getRelative(BlockFace.UP);
@@ -122,11 +141,6 @@ public class BlockActionType extends LogActionType
             {
                 blockFall.preplanBlockFall(blockState.getLocation(),player,this);
             }
-        }
-        HangingBreak hangingBreak = this.manager.getActionType(HangingBreak.class);
-        if (hangingBreak.isActive(blockState.getWorld()))
-        {
-            hangingBreak.preplanHangingBreak(blockState.getLocation(),player);
         }
     }
 }
