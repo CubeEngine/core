@@ -21,7 +21,7 @@ public class FireSpread extends BlockActionType
         {
             if (this.isActive(event.getBlock().getWorld()))
             {
-                this.logBlockChange(event.getBlock().getLocation(),null,
+                this.logBlockChange(null,
                                     event.getBlock().getState(),
                                     event.getNewState(),null);
             }

@@ -1,4 +1,4 @@
-package de.cubeisland.cubeengine.log.action.logaction.block;
+package de.cubeisland.cubeengine.log.action.logaction.block.player;
 
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -9,6 +9,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.block.BlockPlaceEvent;
 
 import de.cubeisland.cubeengine.log.Log;
+import de.cubeisland.cubeengine.log.action.logaction.block.BlockActionType;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
@@ -27,8 +28,8 @@ public class BlockPlace extends BlockActionType
         Location location = event.getBlockPlaced().getLocation();
         if (this.isActive(location.getWorld()))
         {
-            BlockData oldData = new BlockData(event.getBlockReplacedState());
-            BlockData newData = new BlockData(event.getBlockPlaced().getState());
+            BlockData oldData = BlockData.of(event.getBlockReplacedState());
+            BlockData newData = BlockData.of(event.getBlockPlaced().getState());
             this.logBlockChange(location,event.getPlayer(),oldData,newData,null);
         }
         if (event.getBlock().getRelative(BlockFace.UP).getType().equals(Material.WATER_LILY)
@@ -38,7 +39,7 @@ public class BlockPlace extends BlockActionType
             if (blockBreak.isActive(location.getWorld()))
             {
                 BlockState state = event.getBlock().getRelative(BlockFace.UP).getState();
-                BlockData oldData = new BlockData(state);
+                BlockData oldData = BlockData.of(state);
                 ObjectNode json = this.om.createObjectNode();
                 json.put("break-cause", this.actionTypeID);
                 blockBreak.logBlockChange(state.getLocation(),event.getPlayer(),oldData,AIR,json.toString());

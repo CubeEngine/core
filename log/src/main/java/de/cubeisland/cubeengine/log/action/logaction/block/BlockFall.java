@@ -41,7 +41,7 @@ public class BlockFall extends BlockActionType
                 {
                     ObjectNode json = this.om.createObjectNode();
                     json.put("fall-cause",cause.getRight().actionTypeID);
-                    this.logBlockChange(loc, cause.getLeft(), new BlockData(state), AIR, json.toString());
+                    this.logBlockChange(loc, cause.getLeft(), BlockData.of(state), AIR, json.toString());
                 }
                 else {
                     System.out.print("Unplanned BlockPhysicsEvent! (BlockFall)"); //TODO remove

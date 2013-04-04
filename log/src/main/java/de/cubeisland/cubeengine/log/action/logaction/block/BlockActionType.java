@@ -12,6 +12,7 @@ import org.bukkit.material.Bed;
 import de.cubeisland.cubeengine.core.util.BlockUtil;
 import de.cubeisland.cubeengine.log.Log;
 import de.cubeisland.cubeengine.log.action.LogActionType;
+import de.cubeisland.cubeengine.log.action.logaction.block.player.BlockBreak;
 
 public class BlockActionType extends LogActionType
 {

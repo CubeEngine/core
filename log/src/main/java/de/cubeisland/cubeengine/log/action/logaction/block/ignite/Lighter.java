@@ -1,30 +1,12 @@
 package de.cubeisland.cubeengine.log.action.logaction.block.ignite;
 
-import org.bukkit.Material;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
-import org.bukkit.event.block.BlockIgniteEvent;
-
 import de.cubeisland.cubeengine.log.Log;
+import de.cubeisland.cubeengine.log.action.logaction.block.BlockActionType;
 
-import static de.cubeisland.cubeengine.log.storage.ActionType.*;
-import static org.bukkit.event.block.BlockIgniteEvent.IgniteCause.FIREBALL;
-import static org.bukkit.event.block.BlockIgniteEvent.IgniteCause.FLINT_AND_STEEL;
-
-public class Lighter extends IgniteActionType
+public class Lighter extends BlockActionType
 {
     public Lighter(Log module)
     {
         super(module, 0x32, "lighter-ignite");
-    }
-
-    @Override
-    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
-    public void onIgnite(BlockIgniteEvent event)
-    {
-        if (event.getCause().equals(FLINT_AND_STEEL) && this.isActive(event.getBlock().getWorld()))
-        {
-            this.logIgnite(event.getBlock().getState(),event.getPlayer());
-        }
     }
 }

@@ -6,13 +6,6 @@ import org.bukkit.event.block.BlockFadeEvent;
 
 import de.cubeisland.cubeengine.log.Log;
 
-/**
- * Created with IntelliJ IDEA.
- * User: Anselm
- * Date: 04.04.13
- * Time: 20:22
- * To change this template use File | Settings | File Templates.
- */
 public class BlockFade extends BlockActionType
 {
     public BlockFade(Log module)
@@ -25,7 +18,7 @@ public class BlockFade extends BlockActionType
     {
         if (this.isActive(event.getBlock().getWorld()))
         {
-            this.logBlockChange(event.getBlock().getLocation(),null,
+            this.logBlockChange(null,
                                 event.getBlock().getState(),
                                 event.getNewState(),null);
         }

@@ -1,4 +1,4 @@
-package de.cubeisland.cubeengine.log.action.logaction.block;
+package de.cubeisland.cubeengine.log.action.logaction.block.player;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -20,6 +20,7 @@ import org.bukkit.material.Attachable;
 
 import de.cubeisland.cubeengine.core.util.Pair;
 import de.cubeisland.cubeengine.log.Log;
+import de.cubeisland.cubeengine.log.action.logaction.block.BlockActionType;
 
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
