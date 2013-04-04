@@ -28,7 +28,6 @@ public class MarketSignFactory
         this.conomy = conomy;
         this.signMarketItemManager = new SignMarketItemManager(module);
         this.signMarketBlockManager = new SignMarketBlockManager(module);
-        this.loadInAllSigns();
     }
 
     public void loadInAllSigns()

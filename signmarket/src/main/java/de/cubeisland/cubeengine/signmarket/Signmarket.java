@@ -15,6 +15,7 @@ public class Signmarket extends Module
     public void onEnable()
     {
         this.marketSignFactory = new MarketSignFactory(this, this.conomy);
+        this.marketSignFactory.loadInAllSigns();
         this.editModeListener = new EditModeListener(this, this.conomy);
 
         this.getCore().getEventManager().registerListener(this, new MarketSignListener(this));
