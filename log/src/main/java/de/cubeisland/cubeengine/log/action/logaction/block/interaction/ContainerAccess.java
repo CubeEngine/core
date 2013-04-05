@@ -3,9 +3,16 @@ package de.cubeisland.cubeengine.log.action.logaction.block.interaction;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.log.Log;
 import de.cubeisland.cubeengine.log.action.LogActionType;
+import de.cubeisland.cubeengine.log.action.logaction.SimpleLogActionType;
+import de.cubeisland.cubeengine.log.action.logaction.block.BlockActionType;
 import de.cubeisland.cubeengine.log.storage.LogEntry;
 
-public class ContainerAccess extends LogActionType
+
+/**
+ * Accessing Containers
+ * <p>Events: {@link RightClickActionType}</p>
+ */
+public class ContainerAccess extends BlockActionType
 {
     public ContainerAccess(Log module)
     {

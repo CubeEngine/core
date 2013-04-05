@@ -9,6 +9,10 @@ import de.cubeisland.cubeengine.log.Log;
 import de.cubeisland.cubeengine.log.action.logaction.SimpleLogActionType;
 import de.cubeisland.cubeengine.log.storage.LogEntry;
 
+/**
+ * Entering vehicles
+ * <p>Events: {@link VehicleEnterEvent}
+ */
 public class VehicleEnter extends SimpleLogActionType
 {
     public VehicleEnter(Log module)
@@ -31,14 +35,21 @@ public class VehicleEnter extends SimpleLogActionType
         if (logEntry.getCauserUser() == null)
         {
             user.sendTranslated("%s&6%s &aentered a &6%s%s&a!",
-                                time,this.getPrettyName(logEntry.getCauserEntity()),
-                                this.getPrettyName(logEntry.getEntity()),loc);
+                                time,logEntry.getCauserEntity(),
+                                logEntry.getEntityFromData(),loc);
         }
         else
         {
             user.sendTranslated("%s&2%s &aentered a &6%s%s&a!",
                                 time,logEntry.getCauserUser().getDisplayName(),
-                                this.getPrettyName(logEntry.getEntity()),loc);
+                                logEntry.getEntityFromData(),loc);
         }
+    }
+    @Override
+    public boolean isSimilar(LogEntry logEntry, LogEntry other)
+    {
+        return logEntry.world == other.world
+            && logEntry.causer == other.causer
+            && logEntry.data == other.data;
     }
 }

@@ -6,6 +6,11 @@ import de.cubeisland.cubeengine.log.action.LogActionType;
 import de.cubeisland.cubeengine.log.action.logaction.block.BlockActionType;
 import de.cubeisland.cubeengine.log.storage.LogEntry;
 
+
+/**
+ * Using doors
+ * <p>Events: {@link RightClickActionType}</p>
+ */
 public class DoorUse extends BlockActionType
 {
     public DoorUse(Log module)

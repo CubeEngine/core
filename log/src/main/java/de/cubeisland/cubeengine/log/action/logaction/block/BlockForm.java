@@ -8,6 +8,11 @@ import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.log.Log;
 import de.cubeisland.cubeengine.log.storage.LogEntry;
 
+
+/**
+ * Blocks forming
+ * <p>Events: {@link BlockFormEvent}</p>
+ */
 public class BlockForm extends BlockActionType
 {
     public BlockForm(Log module)

@@ -1,7 +1,5 @@
 package de.cubeisland.cubeengine.log.action.logaction.block.entity;
 
-import org.bukkit.block.Block;
-import org.bukkit.block.BlockState;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.block.EntityBlockFormEvent;
@@ -11,8 +9,10 @@ import de.cubeisland.cubeengine.log.Log;
 import de.cubeisland.cubeengine.log.action.logaction.block.BlockActionType;
 import de.cubeisland.cubeengine.log.storage.LogEntry;
 
-import static de.cubeisland.cubeengine.log.storage.ActionType.ENTITY_FORM;
-
+/**
+ * Usually Snow-Golems making snow
+ * <p>Events: {@link EntityBlockFormEvent}</p>
+ */
 public class EntityForm extends BlockActionType
 {
     public EntityForm(Log module)
@@ -33,7 +33,7 @@ public class EntityForm extends BlockActionType
     protected void showLogEntry(User user, LogEntry logEntry, String time, String loc)
     {
         user.sendTranslated("%s&6%s &aformed &6%s%s&a!",
-                            time,this.getPrettyName(logEntry.getCauserEntity()),
+                            time,logEntry.getCauserEntity(),
                             logEntry.getNewBlock(),loc);
     }
 }

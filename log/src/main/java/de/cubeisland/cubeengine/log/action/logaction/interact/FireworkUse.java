@@ -5,6 +5,10 @@ import de.cubeisland.cubeengine.log.Log;
 import de.cubeisland.cubeengine.log.action.LogActionType;
 import de.cubeisland.cubeengine.log.storage.LogEntry;
 
+/**
+ * launching firework-rockets
+ * <p>Events: {@link de.cubeisland.cubeengine.log.action.logaction.block.interaction.RightClickActionType RightClickActionType}</p>
+ */
 public class FireworkUse extends LogActionType
 {
     public FireworkUse(Log module)
@@ -17,5 +21,12 @@ public class FireworkUse extends LogActionType
     {
         user.sendTranslated("%s&2%s &aused a firework rocket%s&a!",
                             time,logEntry.getCauserUser().getDisplayName(),loc);
+    }
+
+    @Override
+    public boolean isSimilar(LogEntry logEntry, LogEntry other)
+    {
+        //TODO
+        return false;
     }
 }

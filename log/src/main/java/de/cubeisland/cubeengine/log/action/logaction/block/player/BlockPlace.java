@@ -17,6 +17,11 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import static org.bukkit.Material.AIR;
 
+/**
+ * Blocks placed by a player.
+ * <p>Events: {@link BlockPlaceEvent}</p>
+ * <p>External Actions: {@link BlockBreak} when breaking waterlily by replacing the water below
+ */
 public class BlockPlace extends BlockActionType
 {
     public BlockPlace(Log module)

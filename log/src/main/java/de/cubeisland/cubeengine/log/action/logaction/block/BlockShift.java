@@ -11,9 +11,12 @@ import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.log.Log;
 import de.cubeisland.cubeengine.log.storage.LogEntry;
 
-import static de.cubeisland.cubeengine.log.storage.ActionType.BLOCK_SHIFT;
 import static org.bukkit.Material.AIR;
 
+/**
+ * Blocks moved by piston
+ * <p>Events: {@link BlockPistonExtendEvent}, {@link BlockPistonRetractEvent}</p>
+ */
 public class BlockShift extends BlockActionType
 {
     public BlockShift(Log module)

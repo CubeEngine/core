@@ -25,14 +25,23 @@ import de.cubeisland.cubeengine.log.Log;
 import de.cubeisland.cubeengine.log.action.LogActionType;
 import de.cubeisland.cubeengine.log.action.logaction.ItemDrop;
 import de.cubeisland.cubeengine.log.action.logaction.SimpleLogActionType;
-import de.cubeisland.cubeengine.log.storage.ActionType;
 import de.cubeisland.cubeengine.log.storage.ItemData;
 import de.cubeisland.cubeengine.log.storage.LogEntry;
 
-import static de.cubeisland.cubeengine.log.storage.ActionType.*;
-import static de.cubeisland.cubeengine.log.storage.ActionType.ENVIRONMENT_KILL;
 import static org.bukkit.event.entity.EntityDamageEvent.DamageCause.PROJECTILE;
 
+/**
+ * Container-ActionType for kills
+ * <p>Events: {@link EntityDeathEvent}</p>
+ * <p>External Actions:
+ * {@link PlayerDeath},
+ * {@link BossDeath},
+ * {@link PetDeath},
+ * {@link AnimalDeath},
+ * {@link NpcDeath},
+ * {@link MonsterDeath},
+ * {@link OtherDeath},
+ */
 public class KillActionType extends LogActionType
 {
     public KillActionType(Log module, int id, String name)
@@ -80,7 +89,7 @@ public class KillActionType extends LogActionType
         }
         else if (killed instanceof Villager)
         {
-            actionType = this.manager.getActionType(AnimalDeath.class);
+            actionType = this.manager.getActionType(NpcDeath.class);
         }
         else if (killed instanceof Monster)
         {
@@ -167,26 +176,46 @@ public class KillActionType extends LogActionType
         actionType.logSimple(location,causer,killed,additionalData);
     }
 
-    @Override
-    protected void showLogEntry(User user, LogEntry logEntry, String time, String loc)
+
+
+    static void showSubActionLogEntry(User user, LogEntry logEntry, String time, String loc)
     {
-        if (logEntry.getCauserUser() != null)
+        if (logEntry.hasCauserUser())
         {
             user.sendTranslated("&6%s &agot slaughtered by &2%s&a!",
-                                this.getPrettyName(logEntry.getEntity()),
+                                logEntry.getEntityFromData(),
                                 logEntry.getCauserUser().getDisplayName());
         }
-        else if (logEntry.getCauserEntity() != null)
+        else if (logEntry.hasCauserEntity())
         {
             user.sendTranslated("&6%s &acould not escape &6%s&a!",
-                                this.getPrettyName(logEntry.getEntity()),
-                                this.getPrettyName(logEntry.getCauserEntity()));
+                                logEntry.getEntityFromData(),
+                                logEntry.getCauserEntity());
         }
         else // something else
         {
             user.sendTranslated("&6%s &adied! &f(&6%s&f)",
-                                this.getPrettyName(logEntry.getEntity()),
+                                logEntry.getEntityFromData(),
                                 "CAUSE"); //TODO get cause from json
         }
     }
+
+    public static boolean isSimilarSubAction(LogEntry logEntry, LogEntry other)
+    {
+        return logEntry.causer == other.causer
+            && logEntry.data == other.data
+            && logEntry.world == other.world;
+    }
+
+    @Override
+    public boolean isSimilar(LogEntry logEntry, LogEntry other)
+    {
+        throw new UnsupportedOperationException();
+    }
+    @Override
+    public void showLogEntry(User user, LogEntry logEntry, String time, String loc)
+    {
+        throw new UnsupportedOperationException();
+    }
+
 }

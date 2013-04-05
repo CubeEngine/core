@@ -15,6 +15,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.material.Diode;
 import org.bukkit.material.Lever;
 
+import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.log.Log;
 import de.cubeisland.cubeengine.log.action.logaction.block.BlockActionType;
 import de.cubeisland.cubeengine.log.action.logaction.block.player.BlockPlace;
@@ -22,12 +23,31 @@ import de.cubeisland.cubeengine.log.action.logaction.interact.FireworkUse;
 import de.cubeisland.cubeengine.log.action.logaction.interact.MonsterEggUse;
 import de.cubeisland.cubeengine.log.action.logaction.interact.VehiclePlace;
 import de.cubeisland.cubeengine.log.storage.ItemData;
+import de.cubeisland.cubeengine.log.storage.LogEntry;
 
-import static de.cubeisland.cubeengine.log.storage.ActionType.*;
-import static de.cubeisland.cubeengine.log.storage.ActionType.CROP_TRAMPLE;
-import static de.cubeisland.cubeengine.log.storage.ActionType.PLATE_STEP;
 import static org.bukkit.Material.*;
 
+/**
+ * Container-ActionType for interaction
+ * <p>Events: {@link PlayerInteractEvent}</p>
+ * <p>External Actions:
+ * {@link ContainerAccess},
+ * {@link DoorUse},
+ * {@link LeverUse},
+ * {@link ComparatorChange},
+ * {@link ButtonUse},
+ * {@link BlockPlace} for CocoaPods,
+ * {@link BonemealUse},
+ * {@link VehiclePlace} preplanned,
+ * {@link TntPrime},
+ * {@link CakeEat},
+ * {@link NoteblockChange},
+ * {@link RepeaterChange},
+ * {@link MonsterEggUse},
+ * {@link FireworkUse},
+ * {@link CropTrample},
+ * {@link PlateStep}
+ */
 public class RightClickActionType extends BlockActionType
 {
     public RightClickActionType(Log module)
@@ -220,8 +240,8 @@ public class RightClickActionType extends BlockActionType
                 MonsterEggUse monsterEggUse = this.manager.getActionType(MonsterEggUse.class);
                 if (monsterEggUse.isActive(state.getWorld()))
                 {
-                    monsterEggUse.queueLog(event.getClickedBlock().getRelative(event.getBlockFace()).getLocation(),
-                                           event.getPlayer(),null,null,null,null, new ItemData(itemInHand).serialize(this.om));
+                    monsterEggUse.logSimple(event.getClickedBlock().getRelative(event.getBlockFace()).getLocation(),
+                                           event.getPlayer(),new ItemData(itemInHand).serialize(this.om));
                 }
             }
             else if (itemInHand.getType().equals(Material.FIREWORK))
@@ -269,5 +289,11 @@ public class RightClickActionType extends BlockActionType
                 break;
             }
         }
+    }
+
+    @Override
+    protected void showLogEntry(User user, LogEntry logEntry, String time, String loc)
+    {
+        throw new UnsupportedOperationException();
     }
 }

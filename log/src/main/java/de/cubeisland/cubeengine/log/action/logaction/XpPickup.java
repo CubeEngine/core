@@ -10,6 +10,10 @@ import de.cubeisland.cubeengine.log.storage.LogEntry;
 
 import com.fasterxml.jackson.databind.node.ArrayNode;
 
+/**
+ * experience gain
+ * <p>Events: {@link PlayerExpChangeEvent}</p>
+ */
 public class XpPickup extends SimpleLogActionType
 {
     public XpPickup(Log module)
@@ -31,8 +35,16 @@ public class XpPickup extends SimpleLogActionType
     @Override
     protected void showLogEntry(User user, LogEntry logEntry, String time, String loc)
     {
+        //TODO attached count total amount
         int amount = logEntry.getAdditional().iterator().next().asInt();
         user.sendTranslated("%s&2%s&a earned &6%d experience%s&a!",
                             time, logEntry.getCauserUser().getDisplayName(), amount,loc);
+    }
+
+    @Override
+    public boolean isSimilar(LogEntry logEntry, LogEntry other)
+    {
+        return logEntry.world == other.world
+            && logEntry.causer == other.causer;
     }
 }

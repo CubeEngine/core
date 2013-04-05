@@ -12,13 +12,23 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 
+import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.log.Log;
 import de.cubeisland.cubeengine.log.action.LogActionType;
 import de.cubeisland.cubeengine.log.action.logaction.container.ItemInsert;
 import de.cubeisland.cubeengine.log.storage.ItemData;
+import de.cubeisland.cubeengine.log.storage.LogEntry;
 
 import static org.bukkit.Material.*;
 
+/**
+ * Container-ActionType for interaction
+ * <p>Events: {@link PlayerInteractEntityEvent}</p>
+ * <p>External Actions:
+ * {@link ItemInsert},
+ * {@link EntityDye},
+ * {@link SoupFill}
+ */
 public class InteractEntityActionType extends LogActionType
 {
     public InteractEntityActionType(Log module)
@@ -60,5 +70,17 @@ public class InteractEntityActionType extends LogActionType
                 soupFill.logSimple(entity.getLocation(),player,entity,null);
             }
         }
+    }
+
+    @Override
+    protected void showLogEntry(User user, LogEntry logEntry, String time, String loc)
+    {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public boolean isSimilar(LogEntry logEntry, LogEntry other)
+    {
+        throw new UnsupportedOperationException();
     }
 }

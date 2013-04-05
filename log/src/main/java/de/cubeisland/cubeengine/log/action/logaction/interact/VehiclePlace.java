@@ -12,19 +12,20 @@ import org.bukkit.event.vehicle.VehicleCreateEvent;
 
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.log.Log;
-import de.cubeisland.cubeengine.log.action.LogActionType;
 import de.cubeisland.cubeengine.log.action.logaction.SimpleLogActionType;
 import de.cubeisland.cubeengine.log.storage.LogEntry;
 
-import static de.cubeisland.cubeengine.log.storage.ActionType.VEHICLE_PLACE;
-
+/**
+ * Placing vehicles
+ * <p>Events: {@link VehicleCreateEvent}
+ * {@link de.cubeisland.cubeengine.log.action.logaction.block.interaction.RightClickActionType preplanned place}
+ */
 public class VehiclePlace extends SimpleLogActionType
 {
     public VehiclePlace(Log module)
     {
         super(module, 0x60, "vehicle-place");
     }
-
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onVehicleCreate(final VehicleCreateEvent event)
@@ -66,6 +67,15 @@ public class VehiclePlace extends SimpleLogActionType
     {
         user.sendTranslated("%s&2%s &aplaced a &6%s%s&a!",
                             time,logEntry.getCauserUser().getDisplayName(),
-                            this.getPrettyName(logEntry.getEntity()),loc);
+                            logEntry.getEntityFromData(),loc);
+    }
+
+
+    @Override
+    public boolean isSimilar(LogEntry logEntry, LogEntry other)
+    {
+        return logEntry.world == other.world
+            && logEntry.causer == other.causer
+            && logEntry.data == other.data;
     }
 }

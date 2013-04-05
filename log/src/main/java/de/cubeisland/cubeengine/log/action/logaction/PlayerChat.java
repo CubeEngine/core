@@ -10,6 +10,10 @@ import de.cubeisland.cubeengine.log.storage.LogEntry;
 
 import com.fasterxml.jackson.databind.node.ArrayNode;
 
+/**
+ * chatting
+ * <p>Events: {@link AsyncPlayerChatEvent}</p>
+ */
 public class PlayerChat extends SimpleLogActionType
 {
     public PlayerChat(Log module)
@@ -20,6 +24,7 @@ public class PlayerChat extends SimpleLogActionType
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onPlayerChat(AsyncPlayerChatEvent event)
     {
+        //TODO attach spamming same msg
         if (event.getMessage().trim().isEmpty()) return;
         if (this.isActive(event.getPlayer().getWorld()))
         {
@@ -35,5 +40,13 @@ public class PlayerChat extends SimpleLogActionType
         user.sendTranslated("%s&2%s&a chatted the following%s&a: &f\"&6%s&f\"",
                             time,logEntry.getCauserUser().getDisplayName(), loc,
                             logEntry.getAdditional().iterator().next().asText());
+    }
+
+
+    @Override
+    public boolean isSimilar(LogEntry logEntry, LogEntry other)
+    {
+        return logEntry.causer == other.causer
+            && logEntry.additional.iterator().next().asText().equals(other.additional.iterator().next().asText());
     }
 }

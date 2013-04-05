@@ -5,9 +5,19 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.entity.CreatureSpawnEvent;
 
+import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.log.Log;
 import de.cubeisland.cubeengine.log.action.logaction.SimpleLogActionType;
+import de.cubeisland.cubeengine.log.storage.LogEntry;
 
+/**
+ * Container-ActionType for spawning
+ * <p>Events: {@link CreatureSpawnEvent}</p>
+ * <p>External Actions:
+ * {@link NaturalSpawn},
+ * {@link SpawnerSpawn},
+ * {@link OtherSpawn},
+ */
 public class EntitySpawnActionType extends SimpleLogActionType
 {
     public EntitySpawnActionType(Log module)
@@ -52,5 +62,17 @@ public class EntitySpawnActionType extends SimpleLogActionType
             return;
         //case SPAWNER_EGG: //is already done
         }
+    }
+
+    @Override
+    protected void showLogEntry(User user, LogEntry logEntry, String time, String loc)
+    {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public boolean isSimilar(LogEntry logEntry, LogEntry other)
+    {
+        throw new UnsupportedOperationException();
     }
 }

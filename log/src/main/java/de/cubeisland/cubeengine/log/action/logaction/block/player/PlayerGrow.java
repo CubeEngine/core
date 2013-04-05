@@ -5,6 +5,11 @@ import de.cubeisland.cubeengine.log.Log;
 import de.cubeisland.cubeengine.log.action.logaction.block.BlockActionType;
 import de.cubeisland.cubeengine.log.storage.LogEntry;
 
+
+/**
+ * Filling buckets with lava or water
+ * <p>Events: {@link de.cubeisland.cubeengine.log.action.logaction.block.NaturalGrow NaturalGrow}</p>
+ */
 public class PlayerGrow extends BlockActionType
 {
     public PlayerGrow(Log module)

@@ -10,6 +10,10 @@ import de.cubeisland.cubeengine.log.storage.LogEntry;
 
 import static org.bukkit.Material.AIR;
 
+/**
+ * Leaves decaying
+ * <p>Events: {@link LeavesDecayEvent}
+ */
 public class LeafDecay extends BlockActionType
 {
 

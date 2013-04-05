@@ -12,11 +12,11 @@ import de.cubeisland.cubeengine.log.storage.LogEntry;
 import static org.bukkit.Material.AIR;
 
 /**
- * Created with IntelliJ IDEA.
- * User: Anselm
- * Date: 04.04.13
- * Time: 20:30
- * To change this template use File | Settings | File Templates.
+ * Blocks burning
+ * <p>Events: {@link BlockBurnEvent}</p>
+ * <p>External Actions:
+ * {@link BlockActionType#logAttachedBlocks BlockBreak and HangingBreak} when attached Blocks will fall
+ * {@link BlockActionType#logFallingBlocks BlockFall} when relative Blocks will fall
  */
 public class BlockBurn extends BlockActionType
 {

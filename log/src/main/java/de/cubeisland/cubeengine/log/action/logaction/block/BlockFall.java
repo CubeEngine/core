@@ -15,17 +15,19 @@ import org.bukkit.event.block.BlockPhysicsEvent;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.util.Pair;
 import de.cubeisland.cubeengine.log.Log;
-import de.cubeisland.cubeengine.log.storage.ActionType;
+import de.cubeisland.cubeengine.log.storage.ActionType_old;
 import de.cubeisland.cubeengine.log.storage.LogEntry;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import static org.bukkit.Material.AIR;
 
+/**
+ * Blocks fading
+ * <p>Events: {@link BlockPhysicsEvent} {@link BlockActionType#logFallingBlocks preplanned external} </p>
+ */
 public class BlockFall extends BlockActionType
 {
-
-
     public BlockFall(Log module)
     {
         super(module, 0x41, "block-fall");
@@ -78,7 +80,7 @@ public class BlockFall extends BlockActionType
     {
         if (logEntry.getCauserUser() == null)
         {
-            ActionType type = ActionType.getById(logEntry.getAdditional().get("cause").asInt());
+            ActionType_old type = ActionType_old.getById(logEntry.getAdditional().get("cause").asInt());
             user.sendTranslated("%s&6%s&a did fall to a lower place %s&a because of &6%s&a!",
                                 time,logEntry.getOldBlock(), loc,type.name);
         }

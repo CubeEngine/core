@@ -5,6 +5,10 @@ import de.cubeisland.cubeengine.log.Log;
 import de.cubeisland.cubeengine.log.action.logaction.block.BlockActionType;
 import de.cubeisland.cubeengine.log.storage.LogEntry;
 
+/**
+ * other Entity-Explosions
+ * <p>Events: {@link ExplodeActionType}</p>
+ */
 public class EntityExplode extends BlockActionType
 {
     public EntityExplode(Log module)

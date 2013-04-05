@@ -5,6 +5,10 @@ import de.cubeisland.cubeengine.log.Log;
 import de.cubeisland.cubeengine.log.action.logaction.block.BlockActionType;
 import de.cubeisland.cubeengine.log.storage.LogEntry;
 
+/**
+ * Eating cake
+ * <p>Events: {@link RightClickActionType}</p>
+ */
 public class CakeEat extends BlockActionType
 {
     public CakeEat(Log module)

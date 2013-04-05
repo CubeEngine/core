@@ -15,6 +15,10 @@ import de.cubeisland.cubeengine.log.storage.LogEntry;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
+/**
+ * splashed potions
+ * <p>Events: {@link PotionSplashEvent}</p>
+ */
 public class PotionSplash extends SimpleLogActionType
 {
     public PotionSplash(Log module)
@@ -69,5 +73,12 @@ public class PotionSplash extends SimpleLogActionType
     protected void showLogEntry(User user, LogEntry logEntry, String time, String loc)
     {
         user.sendMessage("Potion stuff happened!");//TODO
+    }
+
+    @Override
+    public boolean isSimilar(LogEntry logEntry, LogEntry other)
+    {
+        //TODO
+        return false;
     }
 }

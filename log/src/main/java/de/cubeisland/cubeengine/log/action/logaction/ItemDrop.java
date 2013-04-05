@@ -17,6 +17,11 @@ import de.cubeisland.cubeengine.log.storage.LogEntry;
 
 import static org.bukkit.Material.AIR;
 
+/**
+ * dropping items
+ * <p>Events: {@link PlayerDropItemEvent},
+ * {@link de.cubeisland.cubeengine.log.action.logaction.block.player.BlockBreak BlockBreak} when breaking inventory-holders</p>
+ */
 public class ItemDrop extends SimpleLogActionType
 
 {
@@ -65,6 +70,7 @@ public class ItemDrop extends SimpleLogActionType
         }
     }
 
+
     @Override
     protected void showLogEntry(User user, LogEntry logEntry, String time, String loc)
     {
@@ -80,5 +86,14 @@ public class ItemDrop extends SimpleLogActionType
         user.sendTranslated("%s&2%s&a dropped %d &6%s%s!",
                             time, logEntry.getCauserUser().getDisplayName(),
                             amount, logEntry.getItemData(),loc);
+    }
+
+
+    @Override
+    public boolean isSimilar(LogEntry logEntry, LogEntry other)
+    {
+        return logEntry.world == other.world
+            && logEntry.causer == other.causer
+            && logEntry.getItemData().equals(other.getItemData());
     }
 }

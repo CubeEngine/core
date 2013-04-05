@@ -1,12 +1,11 @@
 package de.cubeisland.cubeengine.log.storage;
 
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.EnumSet;
 
 import gnu.trove.map.hash.TLongObjectHashMap;
 
-public enum ActionType
+public enum ActionType_old
 {
     //BREAK
     BLOCK_BREAK(0x00)
@@ -116,24 +115,24 @@ public enum ActionType
     public final String name;
     public final boolean noRollback;
 
-    private static TLongObjectHashMap<ActionType> actions = new TLongObjectHashMap<ActionType>();
+    private static TLongObjectHashMap<ActionType_old> actions = new TLongObjectHashMap<ActionType_old>();
 
     static
     {
-        for (ActionType actionType : ActionType.values())
+        for (ActionType_old actionType : ActionType_old.values())
         {
             actions.put(actionType.value,actionType);
         }
     }
 
-    private ActionType(int value)
+    private ActionType_old(int value)
     {
         this.value = value;
         this.name = this.name().toLowerCase().replace("_","-");
         this.noRollback = false; // TODO
     }
 
-    public static final Collection<ActionType> LOOKUP_BLOCK =
+    public static final Collection<ActionType_old> LOOKUP_BLOCK =
         EnumSet.of(BLOCK_BREAK, BLOCK_BURN, BLOCK_FADE, LEAF_DECAY, WATER_BREAK, LAVA_BREAK, ENTITY_BREAK,
                  ENDERMAN_PICKUP, BUCKET_FILL, CROP_TRAMPLE , ENTITY_EXPLODE, CREEPER_EXPLODE, TNT_EXPLODE,
                  FIREBALL_EXPLODE, ENDERDRAGON_EXPLODE, WITHER_EXPLODE, TNT_PRIME , BLOCK_PLACE,
@@ -142,7 +141,7 @@ public enum ActionType
                  WATER_FLOW, LAVA_FLOW, OTHER_IGNITE  , BLOCK_SHIFT , BLOCK_FALL, SIGN_CHANGE, SHEEP_EAT,
                  BONEMEAL_USE, LEVER_USE, REPEATER_CHANGE, NOTEBLOCK_CHANGE, DOOR_USE, CAKE_EAT,
                  COMPARATOR_CHANGE, WORLDEDIT, HANGING_BREAK, HANGING_PLACE);
-    public static final Collection<ActionType> LOOKUP_PLAYER =
+    public static final Collection<ActionType_old> LOOKUP_PLAYER =
         EnumSet.of(BLOCK_BREAK, BUCKET_FILL, CROP_TRAMPLE, CREEPER_EXPLODE, TNT_PRIME, BLOCK_PLACE,
                 LAVA_BUCKET, WATER_BUCKET, PLAYER_GROW, LIGHTER, BLOCK_FALL, BONEMEAL_USE, LEVER_USE,
                 REPEATER_CHANGE, NOTEBLOCK_CHANGE, DOOR_USE, CAKE_EAT, COMPARATOR_CHANGE, WORLDEDIT,
@@ -152,12 +151,12 @@ public enum ActionType
                 BOSS_DEATH, OTHER_DEATH, MONSTER_EGG_USE, OTHER_SPAWN, ITEM_DROP, ITEM_PICKUP,
                 XP_PICKUP, ENTITY_SHEAR, ENTITY_DYE, ITEM_INSERT, ITEM_REMOVE, PLAYER_COMMAND,
                 PLAYER_CHAT, PLAYER_JOIN, PLAYER_QUIT, PLAYER_TELEPORT, ENCHANT_ITEM, CRAFT_ITEM);
-    public static final Collection<ActionType> LOOKUP_KILLS =
+    public static final Collection<ActionType_old> LOOKUP_KILLS =
         EnumSet.of(MONSTER_DEATH, ANIMAL_DEATH, PET_DEATH, NPC_DEATH, BOSS_DEATH, OTHER_DEATH);
-    public static final Collection<ActionType> LOOKUP_CONTAINER =
+    public static final Collection<ActionType_old> LOOKUP_CONTAINER =
         EnumSet.of(ITEM_INSERT, ITEM_REMOVE, ITEM_TRANSFER, CONTAINER_ACCESS);
 
-    public static ActionType getById(int actionID)
+    public static ActionType_old getById(int actionID)
     {
         return actions.get(actionID);
     }

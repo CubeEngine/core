@@ -3,12 +3,17 @@ package de.cubeisland.cubeengine.log.action.logaction.interact;
 import org.bukkit.DyeColor;
 
 import de.cubeisland.cubeengine.core.user.User;
+import de.cubeisland.cubeengine.core.util.matcher.Match;
 import de.cubeisland.cubeengine.log.Log;
 import de.cubeisland.cubeengine.log.action.logaction.SimpleLogActionType;
 import de.cubeisland.cubeengine.log.storage.LogEntry;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
+/**
+ * Dyeing sheeps or wolfcollars
+ * <p>Events: {@link InteractEntityActionType}</p>
+ */
 public class EntityDye extends SimpleLogActionType
 {
     public EntityDye(Log module)
@@ -23,7 +28,15 @@ public class EntityDye extends SimpleLogActionType
         DyeColor color = DyeColor.valueOf(json.get("nColor").asText());
         user.sendTranslated("%s&2%s&a dyed a &6%s&a in &6%s%s&a!",
                             time,logEntry.getCauserUser().getDisplayName(),
-                            this.getPrettyName(logEntry.getEntity()),
-                            this.getPrettyName(color), loc);
+                            logEntry.getEntityFromData(),
+                            color.name(), loc); //TODO get Pretty name for color
+    }
+
+    @Override
+    public boolean isSimilar(LogEntry logEntry, LogEntry other)
+    {
+        return logEntry.causer == other.causer
+            && logEntry.world == other.world
+            && logEntry.data == other.data; //same entity
     }
 }

@@ -5,6 +5,10 @@ import de.cubeisland.cubeengine.log.Log;
 import de.cubeisland.cubeengine.log.action.logaction.block.BlockActionType;
 import de.cubeisland.cubeengine.log.storage.LogEntry;
 
+/**
+ * Enderman placing blocks.
+ * <p>Events: {@link EntityChangeActionType}</p>
+ */
 public class EndermanPlace extends BlockActionType
 {
     public EndermanPlace(Log module)

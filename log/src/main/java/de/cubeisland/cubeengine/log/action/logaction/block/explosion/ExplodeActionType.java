@@ -20,6 +20,17 @@ import de.cubeisland.cubeengine.log.storage.LogEntry;
 
 import static org.bukkit.Material.AIR;
 
+/**
+ * Container-ActionType for explosions
+ * <p>Events: {@link EntityExplodeEvent}</p>
+ * <p>External Actions:
+ * {@link TntExplode},
+ * {@link CreeperExplode},
+ * {@link FireballExplode},
+ * {@link EnderdragonExplode},
+ * {@link WitherExplode},
+ * {@link EntityExplode},
+ */
 public class ExplodeActionType extends BlockActionType
 {
     public ExplodeActionType(Log module)

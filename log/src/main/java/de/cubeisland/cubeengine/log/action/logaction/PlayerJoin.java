@@ -10,6 +10,10 @@ import de.cubeisland.cubeengine.log.storage.LogEntry;
 
 import com.fasterxml.jackson.databind.node.ArrayNode;
 
+/**
+ * player joins
+ * <p>Events: {@link PlayerJoinEvent}</p>
+ */
 public class PlayerJoin extends SimpleLogActionType
 {
     public PlayerJoin(Log module)
@@ -20,6 +24,7 @@ public class PlayerJoin extends SimpleLogActionType
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onPlayerJoin(PlayerJoinEvent event)
     {
+        //TODO attach multiple join at same loc
         if (this.isActive(event.getPlayer().getWorld()))
         {
             ArrayNode data = null;
@@ -38,5 +43,13 @@ public class PlayerJoin extends SimpleLogActionType
         user.sendTranslated("%s&2%s&a joined the server%s&a!",
                             time, logEntry.getCauserUser().getDisplayName(),loc);
         //TODO ip if known
+    }
+
+    @Override
+    public boolean isSimilar(LogEntry logEntry, LogEntry other)
+    {
+        return logEntry.world == other.world
+            && logEntry.location.equals(other.location)
+            && logEntry.causer == other.causer;
     }
 }

@@ -7,6 +7,10 @@ import de.cubeisland.cubeengine.log.Log;
 import de.cubeisland.cubeengine.log.action.logaction.block.BlockActionType;
 import de.cubeisland.cubeengine.log.storage.LogEntry;
 
+/**
+ * Changing comparator state
+ * <p>Events: {@link RightClickActionType}</p>
+ */
 public class ComparatorChange extends BlockActionType
 {
     public ComparatorChange(Log module)

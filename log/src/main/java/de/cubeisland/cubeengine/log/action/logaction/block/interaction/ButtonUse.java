@@ -5,6 +5,10 @@ import de.cubeisland.cubeengine.log.Log;
 import de.cubeisland.cubeengine.log.action.logaction.block.BlockActionType;
 import de.cubeisland.cubeengine.log.storage.LogEntry;
 
+/**
+ * Using buttons
+ * <p>Events: {@link RightClickActionType}</p>
+ */
 public class ButtonUse extends BlockActionType
 {
     public ButtonUse(Log module)

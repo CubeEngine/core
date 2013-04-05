@@ -12,6 +12,16 @@ import de.cubeisland.cubeengine.log.Log;
 import de.cubeisland.cubeengine.log.action.logaction.block.BlockActionType;
 import de.cubeisland.cubeengine.log.storage.LogEntry;
 
+/**
+ * Container-ActionType for ignitions
+ * <p>Events: {@link BlockIgniteEvent}</p>
+ * <p>External Actions:
+ * {@link FireballIgnite},
+ * {@link LavaIgnite},
+ * {@link LightningIgnite},
+ * {@link Lighter},
+ * {@link OtherIgnite},
+ */
 public class IgniteActionType extends BlockActionType
 {
     public IgniteActionType(Log module, String name)

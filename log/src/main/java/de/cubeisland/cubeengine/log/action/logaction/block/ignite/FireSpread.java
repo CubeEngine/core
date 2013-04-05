@@ -10,6 +10,10 @@ import de.cubeisland.cubeengine.log.Log;
 import de.cubeisland.cubeengine.log.action.logaction.block.BlockActionType;
 import de.cubeisland.cubeengine.log.storage.LogEntry;
 
+/**
+ * Fire spreading
+ * <p>Events: {@link BlockSpreadEvent}</p>
+ */
 public class FireSpread extends BlockActionType
 {
     public FireSpread(Log module)

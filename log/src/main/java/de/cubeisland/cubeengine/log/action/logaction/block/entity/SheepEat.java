@@ -5,6 +5,10 @@ import de.cubeisland.cubeengine.log.Log;
 import de.cubeisland.cubeengine.log.action.logaction.block.BlockActionType;
 import de.cubeisland.cubeengine.log.storage.LogEntry;
 
+/**
+ * Sheeps eating grass.
+ * <p>Events: {@link EntityChangeActionType}</p>
+ */
 public class SheepEat extends BlockActionType
 {
     public SheepEat(Log module)

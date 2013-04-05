@@ -25,6 +25,11 @@ import static org.bukkit.Material.AIR;
 import static org.bukkit.Material.ITEM_FRAME;
 import static org.bukkit.Material.PAINTING;
 
+/**
+ * Breaking Item-Frames or Painting
+ * <p>Events: {@link HangingBreakEvent} ({@link #logAttachedBlocks preplanned external}),
+ * {@link HangingBreakByEntityEvent}</p>
+ */
 public class HangingBreak extends BlockActionType
 {
     public HangingBreak(Log module)

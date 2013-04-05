@@ -9,6 +9,10 @@ import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.log.Log;
 import de.cubeisland.cubeengine.log.storage.LogEntry;
 
+/**
+ * Blocks except fire spreading
+ * <p>Events: {@link BlockSpreadEvent}</p>
+ */
 public class BlockSpread extends BlockActionType
 {
     public BlockSpread(Log module)

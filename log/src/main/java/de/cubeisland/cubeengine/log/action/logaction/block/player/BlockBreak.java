@@ -1,5 +1,6 @@
 package de.cubeisland.cubeengine.log.action.logaction.block.player;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -31,6 +32,13 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import static de.cubeisland.cubeengine.core.util.BlockUtil.BLOCK_FACES;
 import static org.bukkit.Material.*;
 
+/**
+ * Blocks broken by a player directly OR blocks broken indirectly.
+ * <p>Events: {@link BlockBreakEvent}, {@link BlockPhysicsEvent}</p>
+ * <p>External Actions: {@link ItemDrop} when Breaking InventoryHolder,
+ * {@link BlockActionType#logAttachedBlocks BlockBreak and HangingBreak} when attached Blocks will fall
+ * {@link BlockActionType#logFallingBlocks BlockFall} when relative Blocks will fall
+ */
 public class BlockBreak extends BlockActionType
 {
     public BlockBreak(Log module)
@@ -38,6 +46,9 @@ public class BlockBreak extends BlockActionType
         super(module, 0x00, "block-break");
     }
 
+    //OldBlockData NoteBlock: RawNote
+    //Json: (sign)(playing)
+    //Doors / Beds only logged bottom / feet
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onBlockBreak(BlockBreakEvent event)
     {
@@ -179,5 +190,6 @@ public class BlockBreak extends BlockActionType
                                 loc);
         }
     }
+
 
 }

@@ -5,6 +5,10 @@ import de.cubeisland.cubeengine.log.Log;
 import de.cubeisland.cubeengine.log.action.logaction.block.BlockActionType;
 import de.cubeisland.cubeengine.log.storage.LogEntry;
 
+/**
+ * Igniting Tnt with a lighter
+ * <p>Events: {@link RightClickActionType}</p>
+ */
 public class TntPrime extends BlockActionType
 {
     public TntPrime(Log module)

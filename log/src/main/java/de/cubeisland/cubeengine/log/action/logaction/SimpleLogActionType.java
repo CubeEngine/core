@@ -20,7 +20,7 @@ import de.cubeisland.cubeengine.log.action.LogActionType;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
-public class SimpleLogActionType extends LogActionType
+public abstract class SimpleLogActionType extends LogActionType
 {
     public SimpleLogActionType(Log module, int id, String name)
     {

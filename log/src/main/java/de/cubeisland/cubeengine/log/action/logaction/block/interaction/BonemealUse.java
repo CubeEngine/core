@@ -8,6 +8,10 @@ import de.cubeisland.cubeengine.log.action.logaction.block.BlockActionType;
 import de.cubeisland.cubeengine.log.storage.BlockData;
 import de.cubeisland.cubeengine.log.storage.LogEntry;
 
+/**
+ * Using bonemeal
+ * <p>Events: {@link RightClickActionType}</p>
+ */
 public class BonemealUse extends BlockActionType
 {
     public BonemealUse(Log module)
@@ -23,4 +27,5 @@ public class BonemealUse extends BlockActionType
                             logEntry.getCauserUser().getDisplayName(),
                             new de.cubeisland.cubeengine.log.storage.BlockData(mat));
     }
+    //TODO override issimilar
 }

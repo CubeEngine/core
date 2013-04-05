@@ -2,7 +2,6 @@ package de.cubeisland.cubeengine.log.action.logaction.container;
 
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.World;
 import org.bukkit.block.BlockState;
 import org.bukkit.block.BrewingStand;
 import org.bukkit.block.DoubleChest;
@@ -27,15 +26,22 @@ import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.log.Log;
 import de.cubeisland.cubeengine.log.action.logaction.SimpleLogActionType;
 import de.cubeisland.cubeengine.log.storage.ItemData;
+import de.cubeisland.cubeengine.log.storage.LogEntry;
 
 import gnu.trove.map.hash.TLongObjectHashMap;
 import gnu.trove.map.hash.TObjectIntHashMap;
 
 import static de.cubeisland.cubeengine.core.util.InventoryUtil.getMissingSpace;
-import static de.cubeisland.cubeengine.log.storage.ActionType.*;
-import static de.cubeisland.cubeengine.log.storage.ActionType.ITEM_TRANSFER;
 
 
+/**
+ * Container-ActionType for container-interaction
+ * <p>Events: {@link InventoryCloseEvent}, {@link InventoryOpenEvent}, {@link InventoryClickEvent}</p>
+ * <p>External Actions:
+ * {@link ItemInsert},
+ * {@link ItemRemove},
+ * {@link ItemTransfer}
+ */
 public class ContainerActionType extends SimpleLogActionType
 {
     public ContainerActionType(Log module)
@@ -388,5 +394,33 @@ public class ContainerActionType extends SimpleLogActionType
             String additional = new ItemData(event.getItem()).serialize(this.om);
             itemTransfer.logSimple(sourceLocation,null,source.getType(),additional);
         }
+    }
+    //TODO getter in logentry block is InventoryType
+
+    static boolean isSubActionSimilar(LogEntry logEntry, LogEntry other)
+    {
+        if (logEntry.causer == other.causer
+            && logEntry.world == other.world
+            && logEntry.location.equals(other.location)
+            && logEntry.block.equals(other.block)) // InventoryType
+        {
+            ItemData itemData1 = logEntry.getItemData();
+            ItemData itemData2 = other.getItemData();
+            return itemData1.equals(itemData2); // this is ignoring amount
+        }
+        return false;
+
+    }
+
+    @Override
+    protected void showLogEntry(User user, LogEntry logEntry, String time, String loc)
+    {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public boolean isSimilar(LogEntry logEntry, LogEntry other)
+    {
+        throw new UnsupportedOperationException();
     }
 }

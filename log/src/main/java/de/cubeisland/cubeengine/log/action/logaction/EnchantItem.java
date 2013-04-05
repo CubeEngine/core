@@ -12,8 +12,10 @@ import de.cubeisland.cubeengine.log.Log;
 import de.cubeisland.cubeengine.log.storage.ItemData;
 import de.cubeisland.cubeengine.log.storage.LogEntry;
 
-import static de.cubeisland.cubeengine.log.storage.ActionType.ENCHANT_ITEM;
-
+/**
+ * enchanting items
+ * <p>Events: {@link EnchantItemEvent}</p>
+ */
 public class EnchantItem extends SimpleLogActionType
 {
     public EnchantItem(Log module)
@@ -42,5 +44,11 @@ public class EnchantItem extends SimpleLogActionType
         user.sendTranslated("%s&2%s&a enchanted &6%s%s&a!",
                            time, logEntry.getCauserUser().getDisplayName(),
                             logEntry.getItemData(),loc);//TODO list enchantments
+    }
+
+    @Override
+    public boolean isSimilar(LogEntry logEntry, LogEntry other)
+    {
+        return false; //TODO how to attach if?
     }
 }

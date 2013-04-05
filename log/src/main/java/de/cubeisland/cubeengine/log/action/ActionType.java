@@ -45,6 +45,17 @@ public abstract class ActionType
         this.lm = module.getLogManager();
     }
 
+    /**
+     * Queues in a log
+     *
+     * @param location
+     * @param causer
+     * @param block
+     * @param data
+     * @param newBlock
+     * @param newData
+     * @param additionalData
+     */
     public void queueLog(Location location, Entity causer, String block, Long data, String newBlock, Byte newData, String additionalData)
     {
         long worldID = this.wm.getWorldId(location.getWorld());
@@ -68,16 +79,35 @@ public abstract class ActionType
     {
         QueuedLog log = new QueuedLog(new Timestamp(System.currentTimeMillis()),worldID,x,y,z,this.actionTypeID,causer,block,data,newBlock,newData,additionalData);
         this.lm.queueLog(log);
-        //TODO add to queryManagerQueue
     }
 
+    /**
+     * Register your events here
+     */
     public abstract void initialize();
+
 
     public boolean isActive(World world)
     {
-        return true;
+        return true; //TODO
     }
 
 
+    /**
+     * Shows the user the logentry from given lookup
+     *
+     * @param user
+     * @param lookup
+     * @param logEntry
+     */
     abstract void showLogEntry(User user, Lookup lookup, LogEntry logEntry);
+
+    /**
+     * Returns true if the given log-entries can be put together to minimize output
+     *
+     * @param logEntry
+     * @param other
+     * @return
+     */
+    public abstract boolean isSimilar(LogEntry logEntry, LogEntry other);
 }

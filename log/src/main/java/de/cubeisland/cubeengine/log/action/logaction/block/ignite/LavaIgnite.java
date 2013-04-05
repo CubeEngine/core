@@ -5,6 +5,10 @@ import de.cubeisland.cubeengine.log.Log;
 import de.cubeisland.cubeengine.log.action.logaction.block.BlockActionType;
 import de.cubeisland.cubeengine.log.storage.LogEntry;
 
+/**
+ * lava-ignite
+ * <p>Events: {@link IgniteActionType}</p>
+ */
 public class LavaIgnite extends BlockActionType
 {
     public LavaIgnite(Log module)

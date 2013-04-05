@@ -8,6 +8,10 @@ import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.log.Log;
 import de.cubeisland.cubeengine.log.storage.LogEntry;
 
+/**
+ * Blocks fading
+ * <p>Events: {@link BlockFadeEvent}</p>
+ */
 public class BlockFade extends BlockActionType
 {
     public BlockFade(Log module)

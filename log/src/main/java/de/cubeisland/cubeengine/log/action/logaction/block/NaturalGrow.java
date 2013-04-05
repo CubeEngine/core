@@ -14,6 +14,11 @@ import de.cubeisland.cubeengine.log.Log;
 import de.cubeisland.cubeengine.log.action.logaction.block.player.PlayerGrow;
 import de.cubeisland.cubeengine.log.storage.LogEntry;
 
+/**
+ * Trees or mushrooms growing
+ * <p>Events: {@link StructureGrowEvent}
+ * <p>External Actions: {@link PlayerGrow}
+ */
 public class NaturalGrow extends BlockActionType
 {
     public NaturalGrow(Log module)

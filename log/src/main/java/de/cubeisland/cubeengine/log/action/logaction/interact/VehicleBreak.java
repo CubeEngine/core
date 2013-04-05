@@ -12,8 +12,10 @@ import de.cubeisland.cubeengine.log.Log;
 import de.cubeisland.cubeengine.log.action.logaction.SimpleLogActionType;
 import de.cubeisland.cubeengine.log.storage.LogEntry;
 
-import static de.cubeisland.cubeengine.log.storage.ActionType.VEHICLE_BREAK;
-
+/**
+ * Breaking vehicles
+ * <p>Events: {@link VehicleDestroyEvent}
+ */
 public class VehicleBreak extends SimpleLogActionType
 {
     public VehicleBreak(Log module)
@@ -59,8 +61,16 @@ public class VehicleBreak extends SimpleLogActionType
     {
         user.sendTranslated("%s&2%s &aebroke a &6%s%s&a!",
                             time, logEntry.getCauserUser() == null ?
-                            this.getPrettyName(logEntry.getCauserEntity()) :
+                            logEntry.getCauserEntity() :
                             logEntry.getCauserUser().getDisplayName(),
-                            this.getPrettyName(logEntry.getEntity()),loc);
+                            logEntry.getEntityFromData(),loc);
+    }
+
+    @Override
+    public boolean isSimilar(LogEntry logEntry, LogEntry other)
+    {
+        return logEntry.world == other.world
+            && logEntry.causer == other.causer
+            && logEntry.data == other.data;
     }
 }

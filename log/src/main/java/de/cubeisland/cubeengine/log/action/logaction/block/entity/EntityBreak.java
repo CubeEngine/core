@@ -10,9 +10,12 @@ import de.cubeisland.cubeengine.log.Log;
 import de.cubeisland.cubeengine.log.action.logaction.block.BlockActionType;
 import de.cubeisland.cubeengine.log.storage.LogEntry;
 
-import static de.cubeisland.cubeengine.log.storage.ActionType.ENTITY_BREAK;
 import static org.bukkit.Material.AIR;
 
+/**
+ * Usually Zombies breaking doors.
+ * <p>Events: {@link EntityBreakDoorEvent}</p>
+ */
 public class EntityBreak extends BlockActionType
 {
     public EntityBreak(Log module)
@@ -36,7 +39,7 @@ public class EntityBreak extends BlockActionType
     {
         user.sendTranslated("%s&aA &6%s &adestroyed &6%s&a%s!",
                             time,
-                            this.getPrettyName(logEntry.getCauserEntity()),
+                            logEntry.getCauserEntity(),
                             logEntry.getOldBlock(),
                             loc);
     }

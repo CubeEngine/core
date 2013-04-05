@@ -10,6 +10,10 @@ import de.cubeisland.cubeengine.log.action.logaction.SimpleLogActionType;
 import de.cubeisland.cubeengine.log.storage.LogEntry;
 
 
+/**
+ * Exiting vehicles
+ * <p>Events: {@link VehicleExitEvent}
+ */
 public class VehicleExit extends SimpleLogActionType
 {
     public VehicleExit(Log module)
@@ -32,14 +36,21 @@ public class VehicleExit extends SimpleLogActionType
         if (logEntry.getCauserUser() == null)
         {
             user.sendTranslated("%s&6%s &aexited a &6%s%s&a!",
-                                time, this.getPrettyName(logEntry.getCauserEntity()),
-                                this.getPrettyName(logEntry.getEntity()),loc);
+                                time, logEntry.getCauserEntity(),
+                                logEntry.getEntityFromData(),loc);
         }
         else
         {
             user.sendTranslated("%s&2%s &aexited a &6%s%s&a!",
                                 time, logEntry.getCauserUser().getDisplayName(),
-                                this.getPrettyName(logEntry.getEntity()),loc);
+                                logEntry.getEntityFromData(),loc);
         }
+    }
+    @Override
+    public boolean isSimilar(LogEntry logEntry, LogEntry other)
+    {
+        return logEntry.world == other.world
+            && logEntry.causer == other.causer
+            && logEntry.data == other.data;
     }
 }

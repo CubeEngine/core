@@ -158,4 +158,14 @@ public abstract class BlockActionType extends LogActionType
             }
         }
     }
+
+    @Override
+    public boolean isSimilar(LogEntry logEntry, LogEntry other)
+    {
+        return logEntry.block.equals(other.block)
+            && logEntry.newBlock.equals(other.newBlock)
+            && logEntry.world == other.world
+            && logEntry.causer == other.causer
+            && logEntry.additional == other.additional; // additional is null
+    }
 }

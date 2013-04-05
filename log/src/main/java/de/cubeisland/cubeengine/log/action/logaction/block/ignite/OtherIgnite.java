@@ -5,6 +5,10 @@ import de.cubeisland.cubeengine.log.Log;
 import de.cubeisland.cubeengine.log.action.logaction.block.BlockActionType;
 import de.cubeisland.cubeengine.log.storage.LogEntry;
 
+/**
+ * other-ignite
+ * <p>Events: {@link IgniteActionType}</p>
+ */
 public class OtherIgnite extends BlockActionType
 {
     public OtherIgnite(Log module)

@@ -293,7 +293,7 @@ public class QueryManager
                 selectBuilder.not();
             }
             selectBuilder.in().valuesInBrackets(lookup.getActions().size()).endSub();
-            for (ActionType type : lookup.getActions())
+            for (ActionType_old type : lookup.getActions())
             {
                 dataToInsert.add(type.value);
             }

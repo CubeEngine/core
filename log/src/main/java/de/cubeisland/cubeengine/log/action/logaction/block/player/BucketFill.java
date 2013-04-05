@@ -14,10 +14,14 @@ import de.cubeisland.cubeengine.log.storage.LogEntry;
 
 import static org.bukkit.Material.AIR;
 
+
+/**
+ * Filling buckets with lava or water
+ * <p>Events: {@link PlayerBucketFillEvent}</p>
+ * <p>External Actions: {@link MilkFill} when filling a milk bucket
+ */
 public class BucketFill extends BlockActionType
 {
-
-
     public BucketFill(Log module)
     {
         super(module, 0x08, "bucket-fill");
@@ -40,8 +44,7 @@ public class BucketFill extends BlockActionType
             MilkFill milkFill = this.manager.getActionType(MilkFill.class);
             if (milkFill.isActive(event.getBlockClicked().getWorld()))
             {
-                milkFill.queueLog(event.getBlockClicked().getLocation(),event.getPlayer(),
-                                  null,null,null,null,null);
+                milkFill.logSimple(event.getBlockClicked().getLocation(),event.getPlayer(),null);
             }
         }
     }

@@ -1,6 +1,5 @@
 package de.cubeisland.cubeengine.log.action.logaction;
 
-import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.inventory.CraftItemEvent;
@@ -10,16 +9,16 @@ import de.cubeisland.cubeengine.log.Log;
 import de.cubeisland.cubeengine.log.storage.ItemData;
 import de.cubeisland.cubeengine.log.storage.LogEntry;
 
-import static de.cubeisland.cubeengine.log.storage.ActionType.CRAFT_ITEM;
-import static de.cubeisland.cubeengine.log.storage.ActionType.ENCHANT_ITEM;
-
+/**
+ * crafting items
+ * <p>Events: {@link CraftItemEvent}</p>
+ */
 public class CraftItem extends SimpleLogActionType
 {
     public CraftItem(Log module, int id, String name)
     {
         super(module, 0xA7, "craft-item");
     }
-
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onCraft(CraftItemEvent event)
@@ -38,4 +37,11 @@ public class CraftItem extends SimpleLogActionType
                             logEntry.getItemData(),loc);
     }
 
+    @Override
+    public boolean isSimilar(LogEntry logEntry, LogEntry other)
+    {
+        return logEntry.causer == other.causer
+            && logEntry.world == other.world
+            && logEntry.getItemData().equals(other.getItemData()); // ignoring amount
+    }
 }

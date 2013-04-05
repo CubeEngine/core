@@ -12,9 +12,14 @@ import de.cubeisland.cubeengine.log.action.logaction.block.BlockActionType;
 import de.cubeisland.cubeengine.log.action.logaction.block.BlockForm;
 import de.cubeisland.cubeengine.log.storage.LogEntry;
 
-import static de.cubeisland.cubeengine.log.storage.ActionType.LAVA_BREAK;
 import static org.bukkit.Material.*;
 
+/**
+ * Lava-flow
+ * <p>Events: {@link FlowActionType}</p>
+ * <p>External Actions:
+ * {@link LavaBreak}, {@link BlockForm}
+ */
 public class LavaFlow extends BlockActionType
 {
     public LavaFlow(Log module)

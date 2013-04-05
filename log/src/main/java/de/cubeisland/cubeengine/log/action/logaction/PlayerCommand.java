@@ -10,6 +10,10 @@ import de.cubeisland.cubeengine.log.storage.LogEntry;
 
 import com.fasterxml.jackson.databind.node.ArrayNode;
 
+/**
+ * player commands
+ * <p>Events: {@link PlayerCommandPreprocessEvent}</p>
+ */
 public class PlayerCommand extends SimpleLogActionType
 {
     public PlayerCommand(Log module)
@@ -20,6 +24,7 @@ public class PlayerCommand extends SimpleLogActionType
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onPlayerCommandPreprocess(PlayerCommandPreprocessEvent event)
     {
+        //TODO attach same cmd
         if (event.getMessage().trim().isEmpty()) return;
         if (this.isActive(event.getPlayer().getWorld()))
         {
@@ -35,5 +40,12 @@ public class PlayerCommand extends SimpleLogActionType
         user.sendTranslated("&2%s&a used the command &f\"&6%s&f\"&a!",
                             logEntry.getCauserUser().getDisplayName(),
                             logEntry.getAdditional().iterator().next().asText());
+    }
+
+    @Override
+    public boolean isSimilar(LogEntry logEntry, LogEntry other)
+    {
+        return logEntry.causer == other.causer
+            && logEntry.additional.iterator().next().asText().equals(other.additional.iterator().next().asText());
     }
 }

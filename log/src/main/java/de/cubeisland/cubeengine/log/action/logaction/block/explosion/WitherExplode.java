@@ -5,6 +5,10 @@ import de.cubeisland.cubeengine.log.Log;
 import de.cubeisland.cubeengine.log.action.logaction.block.BlockActionType;
 import de.cubeisland.cubeengine.log.storage.LogEntry;
 
+/**
+ * Wither-Explosions
+ * <p>Events: {@link ExplodeActionType}</p>
+ */
 public class WitherExplode extends BlockActionType
 {
     public WitherExplode(Log module)

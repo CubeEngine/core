@@ -14,11 +14,14 @@ import de.cubeisland.cubeengine.log.storage.LogEntry;
 
 import static de.cubeisland.cubeengine.core.util.BlockUtil.BLOCK_FACES;
 import static de.cubeisland.cubeengine.core.util.BlockUtil.DIRECTIONS;
-import static de.cubeisland.cubeengine.log.storage.ActionType.BLOCK_FORM;
-import static de.cubeisland.cubeengine.log.storage.ActionType.WATER_BREAK;
-import static de.cubeisland.cubeengine.log.storage.ActionType.WATER_FLOW;
 import static org.bukkit.Material.*;
 
+/**
+ * Water-flow
+ * <p>Events: {@link FlowActionType}</p>
+ * <p>External Actions:
+ * {@link WaterFlow},  {@link BlockForm}
+ */
 public class WaterFlow extends BlockActionType
 {
     public WaterFlow(Log module)

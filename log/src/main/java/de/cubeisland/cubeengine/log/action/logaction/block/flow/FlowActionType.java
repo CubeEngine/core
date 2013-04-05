@@ -1,28 +1,27 @@
 package de.cubeisland.cubeengine.log.action.logaction.block.flow;
 
 import org.bukkit.Material;
-import org.bukkit.block.Block;
-import org.bukkit.block.BlockFace;
 import org.bukkit.block.BlockState;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.block.BlockFromToEvent;
 
-import de.cubeisland.cubeengine.core.util.BlockUtil;
+import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.log.Log;
 import de.cubeisland.cubeengine.log.action.logaction.block.BlockActionType;
-import de.cubeisland.cubeengine.log.storage.ActionType;
+import de.cubeisland.cubeengine.log.storage.ActionType_old;
+import de.cubeisland.cubeengine.log.storage.LogEntry;
 
 import static de.cubeisland.cubeengine.core.bukkit.BlockUtil.isNonFluidProofBlock;
-import static de.cubeisland.cubeengine.core.util.BlockUtil.BLOCK_FACES;
-import static de.cubeisland.cubeengine.core.util.BlockUtil.DIRECTIONS;
-import static de.cubeisland.cubeengine.log.storage.ActionType.*;
-import static de.cubeisland.cubeengine.log.storage.ActionType.WATER_BREAK;
-import static de.cubeisland.cubeengine.log.storage.ActionType.WATER_FLOW;
 import static org.bukkit.Material.AIR;
-import static org.bukkit.Material.COBBLESTONE;
-import static org.bukkit.Material.OBSIDIAN;
 
+/**
+ * Container-ActionType water-lava flows
+ * <p>Events: {@link BlockFromToEvent}</p>
+ * <p>External Actions:
+ * {@link LavaFlow},
+ * {@link WaterFlow}
+ */
 public class FlowActionType extends BlockActionType
 {
     public FlowActionType(Log module)
@@ -43,7 +42,6 @@ public class FlowActionType extends BlockActionType
         BlockState fromBlock = event.getBlock().getState();
         BlockState newToBlock = event.getToBlock().getState();
         Material fromMat = event.getBlock().getType();
-        ActionType action;
         if (fromMat.equals(Material.LAVA) || fromMat.equals(Material.STATIONARY_LAVA))
         {
             LavaFlow lavaFlow = this.manager.getActionType(LavaFlow.class);
@@ -54,5 +52,11 @@ public class FlowActionType extends BlockActionType
             WaterFlow waterFlow = this.manager.getActionType(WaterFlow.class);
             waterFlow.logWaterFlow(event,toBlock,newToBlock,fromBlock);
         }
+    }
+
+    @Override
+    protected void showLogEntry(User user, LogEntry logEntry, String time, String loc)
+    {
+        throw new UnsupportedOperationException();
     }
 }

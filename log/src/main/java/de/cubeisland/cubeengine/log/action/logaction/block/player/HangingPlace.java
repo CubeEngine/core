@@ -13,6 +13,10 @@ import de.cubeisland.cubeengine.log.storage.LogEntry;
 
 import static org.bukkit.Material.*;
 
+/**
+ * Placing Item-Frames or Painting
+ * <p>Events: {@link HangingPlaceEvent}</p>
+ */
 public class HangingPlace extends BlockActionType
 {
     public HangingPlace(Log module)

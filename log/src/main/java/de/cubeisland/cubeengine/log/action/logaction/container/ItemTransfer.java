@@ -5,6 +5,10 @@ import de.cubeisland.cubeengine.log.Log;
 import de.cubeisland.cubeengine.log.action.logaction.SimpleLogActionType;
 import de.cubeisland.cubeengine.log.storage.LogEntry;
 
+/**
+ * Items transferred by hoppers or droppers
+ * <p>Events: {@link ContainerActionType}
+ */
 public class ItemTransfer extends SimpleLogActionType
 {
 
@@ -20,5 +24,9 @@ public class ItemTransfer extends SimpleLogActionType
                             time,logEntry.getItemData(),
                             logEntry.getNewBlock(),loc);
     }
-
+    @Override
+    public boolean isSimilar(LogEntry logEntry, LogEntry other)
+    {
+        return ContainerActionType.isSubActionSimilar(logEntry,other);
+    }
 }

@@ -5,6 +5,10 @@ import de.cubeisland.cubeengine.log.Log;
 import de.cubeisland.cubeengine.log.action.logaction.SimpleLogActionType;
 import de.cubeisland.cubeengine.log.storage.LogEntry;
 
+/**
+ * Filling soup with mooshrooms
+ * <p>Events: {@link InteractEntityActionType}</p>
+ */
 public class SoupFill extends SimpleLogActionType
 {
     public SoupFill(Log module)
@@ -17,5 +21,12 @@ public class SoupFill extends SimpleLogActionType
     {
         user.sendTranslated("%s&2%s &amade soup with a mooshroom!",
                             time, logEntry.getCauserUser().getDisplayName(),loc);
+    }
+
+    @Override
+    public boolean isSimilar(LogEntry logEntry, LogEntry other)
+    {
+        return logEntry.world == other.world
+            && logEntry.causer == other.causer;
     }
 }

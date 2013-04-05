@@ -5,6 +5,11 @@ import de.cubeisland.cubeengine.log.Log;
 import de.cubeisland.cubeengine.log.action.logaction.block.BlockActionType;
 import de.cubeisland.cubeengine.log.storage.LogEntry;
 
+
+/**
+ * Flipping levers
+ * <p>Events: {@link RightClickActionType}</p>
+ */
 public class LeverUse extends BlockActionType
 {
     public LeverUse(Log module)

@@ -11,6 +11,10 @@ import de.cubeisland.cubeengine.log.storage.LogEntry;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
+/**
+ * player teleports
+ * <p>Events: {@link PlayerTeleportEvent}</p>
+ */
 public class PlayerTeleport extends SimpleLogActionType
 {
     public PlayerTeleport(Log module)
@@ -46,5 +50,11 @@ public class PlayerTeleport extends SimpleLogActionType
     protected void showLogEntry(User user, LogEntry logEntry, String time, String loc)
     {
         user.sendTranslated("PLAYER_TELEPORT"); //TODO
+    }
+
+    @Override
+    public boolean isSimilar(LogEntry logEntry, LogEntry other)
+    {
+        return false;
     }
 }

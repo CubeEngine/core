@@ -19,6 +19,10 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
+/**
+ * Changing a signs text.
+ * <p>Events: {@link SignChangeEvent}</p>
+ */
 public class SignChange extends BlockActionType
 {
     public SignChange(Log module)

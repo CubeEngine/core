@@ -16,15 +16,10 @@ import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 
 import de.cubeisland.cubeengine.core.module.Module;
 import de.cubeisland.cubeengine.core.user.User;
-import de.cubeisland.cubeengine.core.util.ChatFormat;
-import de.cubeisland.cubeengine.core.util.StringUtils;
-import de.cubeisland.cubeengine.core.util.matcher.Match;
 import de.cubeisland.cubeengine.core.util.math.BlockVector3;
 
-import com.fasterxml.jackson.databind.JsonNode;
-
-import static de.cubeisland.cubeengine.log.storage.ActionType.LOOKUP_CONTAINER;
-import static de.cubeisland.cubeengine.log.storage.ActionType.LOOKUP_KILLS;
+import static de.cubeisland.cubeengine.log.storage.ActionType_old.LOOKUP_CONTAINER;
+import static de.cubeisland.cubeengine.log.storage.ActionType_old.LOOKUP_KILLS;
 
 
 public class Lookup implements Cloneable
@@ -37,7 +32,7 @@ public class Lookup implements Cloneable
     // Block lookup / all block related / time / location / block MAT:id  | < WORLDEDIT 0x4B || 0x61 || 0x63 (hangings)
 
     // The actions to look for
-    private Set<ActionType> actions = new CopyOnWriteArraySet<ActionType>();
+    private Set<ActionType_old> actions = new CopyOnWriteArraySet<ActionType_old>();
     private volatile boolean includeActions = true;
     // When (since/before/from-to)
     private volatile Long from_since;
@@ -95,7 +90,7 @@ public class Lookup implements Cloneable
         return this;
     }
 
-    public Lookup includeAction(ActionType action)
+    public Lookup includeAction(ActionType_old action)
     {
         if (this.includeActions)
         {
@@ -108,7 +103,7 @@ public class Lookup implements Cloneable
         return this;
     }
 
-    public Lookup excludeAction(ActionType action)
+    public Lookup excludeAction(ActionType_old action)
     {
         if (this.includeActions)
         {
@@ -121,7 +116,7 @@ public class Lookup implements Cloneable
         return this;
     }
 
-    public Lookup includeActions(Collection<ActionType> actions)
+    public Lookup includeActions(Collection<ActionType_old> actions)
     {
         if (this.includeActions)
         {
@@ -134,7 +129,7 @@ public class Lookup implements Cloneable
         return this;
     }
 
-    public Lookup excludeActions(Collection<ActionType> actions)
+    public Lookup excludeActions(Collection<ActionType_old> actions)
     {
         if (this.includeActions)
         {
@@ -246,7 +241,7 @@ public class Lookup implements Cloneable
         Lookup lookup = new Lookup(module);
         lookup.includeActions = true;
         lookup.clearActions();
-        lookup.includeActions(ActionType.LOOKUP_PLAYER);
+        lookup.includeActions(ActionType_old.LOOKUP_PLAYER);
         return lookup;
     }
 
@@ -258,7 +253,7 @@ public class Lookup implements Cloneable
         Lookup lookup = new Lookup(module);
         lookup.includeActions = true;
         lookup.clearActions();
-        lookup.includeActions(ActionType.LOOKUP_BLOCK);
+        lookup.includeActions(ActionType_old.LOOKUP_BLOCK);
         return lookup;
     }
 
@@ -313,9 +308,6 @@ public class Lookup implements Cloneable
         compressedEntries.addAll(this.logEntries); //TODO do the compressing
         for (LogEntry logEntry : compressedEntries)
         {
-            switch (logEntry.getType())
-            {
-                    case WORLDEDIT:
             if (logEntry.getNewBlock().material.equals(Material.AIR))
             {
             user.sendTranslated("&2%s &aused worldedit to remove &6%s&a!",
@@ -336,10 +328,6 @@ public class Lookup implements Cloneable
                                 this.getPrettyName(logEntry.getNewBlock()));
             }
             break;
-
-            default:
-                user.sendMessage("Something happened there for sure! "+logEntry.getType().name);
-            }
         }
         user.sendMessage("Yeah thats all for now!");
     }
@@ -350,21 +338,6 @@ public class Lookup implements Cloneable
     }
 
 
-    private String getPrettyName(DamageCause dmgC)
-    {
-        return dmgC.name(); //TODO
-    }
-
-    private String getPrettyName(ItemData itemData)
-    {
-        //TODO
-
-    }
-
-    private String getPrettyName(EntityType entityType)
-    {
-        return entityType.name(); //TODO
-    }
 
     private String getPrettyName(BlockData blockData)
     {
@@ -372,7 +345,7 @@ public class Lookup implements Cloneable
         return blockData.material+":"+blockData.data; //TODO
     }
 
-    public Set<ActionType> getActions()
+    public Set<ActionType_old> getActions()
     {
         return actions;
     }
@@ -420,7 +393,7 @@ public class Lookup implements Cloneable
     public Lookup clone()
     {
         Lookup lookup = new Lookup(this.module);
-        lookup.actions = new CopyOnWriteArraySet<ActionType>(this.actions);
+        lookup.actions = new CopyOnWriteArraySet<ActionType_old>(this.actions);
         lookup.includeActions = this.includeActions;
         lookup.from_since = this.from_since;
         lookup.to_before = this.to_before;

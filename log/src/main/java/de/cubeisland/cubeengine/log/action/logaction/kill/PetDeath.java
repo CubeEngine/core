@@ -4,10 +4,15 @@ import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.util.matcher.Match;
 import de.cubeisland.cubeengine.log.Log;
 import de.cubeisland.cubeengine.log.action.logaction.SimpleLogActionType;
+import de.cubeisland.cubeengine.log.storage.EntityData;
 import de.cubeisland.cubeengine.log.storage.LogEntry;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
+/**
+ * pet-death
+ * <p>Events: {@link KillActionType}</p>
+ */
 public class PetDeath extends SimpleLogActionType
 {
     public PetDeath(Log module)
@@ -18,35 +23,42 @@ public class PetDeath extends SimpleLogActionType
     @Override
     protected void showLogEntry(User user, LogEntry logEntry, String time, String loc)
     {
-        if (Match.entity().isTameable(logEntry.getEntity()))
+        EntityData killed =  logEntry.getEntityFromData();
+        if (Match.entity().isTameable(killed.entityType))
         {
             JsonNode json = logEntry.getAdditional();
             if (json.get("owner") != null)
             {
                 User owner = this.um.getExactUser(json.get("owner").asText());
-                if (logEntry.getCauserUser() != null)
+                if (logEntry.hasCauserUser())
                 {
-                    user.sendTranslated("&aThe &6%s&a of &2%s &agot slaughtered by &2%s&a!",
-                                        this.getPrettyName(logEntry.getEntity()),
+                    user.sendTranslated("%s&aThe &6%s&a of &2%s &agot slaughtered by &2%s%s&a!",
+                                       time ,killed,
                                         owner.getDisplayName(),
-                                        logEntry.getCauserUser().getDisplayName());
+                                        logEntry.getCauserUser().getDisplayName(),loc);
                 }
-                else if (logEntry.getCauserEntity() != null)
+                else if (logEntry.hasCauserEntity())
                 {
-                    user.sendTranslated("&aThe &6%s&a of &2%s &acould not escape &6%s&a!",
-                                        this.getPrettyName(logEntry.getEntity()),
+                    user.sendTranslated("%s&aThe &6%s&a of &2%s &acould not escape &6%s%s&a!",
+                                        time,killed,
                                         owner.getDisplayName(),
-                                        this.getPrettyName(logEntry.getCauserEntity()));
+                                        logEntry.getCauserEntity(),loc);
                 }
                 else // something else
                 {
-                    user.sendTranslated("&aThe &6%s&a of &2%s &adied!",
-                                        this.getPrettyName(logEntry.getEntity()),
-                                        owner.getDisplayName());
+                    user.sendTranslated("%s&aThe &6%s&a of &2%s &adied%s&a!",
+                                        time,killed,
+                                        owner.getDisplayName(),loc);
                 }
                 return;
             }
         }
-        user.sendTranslated("&6%s &adied! &4(Pet without owner)", this.getPrettyName(logEntry.getEntity()));
+        user.sendTranslated("&6%s &adied! &4(Pet without owner)", logEntry.getEntityFromData());
+    }
+
+    @Override
+    public boolean isSimilar(LogEntry logEntry, LogEntry other)
+    {
+        return KillActionType.isSimilarSubAction(logEntry,other);
     }
 }

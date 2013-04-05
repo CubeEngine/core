@@ -5,6 +5,10 @@ import de.cubeisland.cubeengine.log.Log;
 import de.cubeisland.cubeengine.log.action.logaction.block.BlockActionType;
 import de.cubeisland.cubeengine.log.storage.LogEntry;
 
+/**
+ * Lava-break
+ * <p>Events: {@link LavaFlow}</p>
+ */
 public class LavaBreak extends BlockActionType
 {
     public LavaBreak(Log module)

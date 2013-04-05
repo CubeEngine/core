@@ -5,6 +5,10 @@ import de.cubeisland.cubeengine.log.Log;
 import de.cubeisland.cubeengine.log.action.logaction.block.BlockActionType;
 import de.cubeisland.cubeengine.log.storage.LogEntry;
 
+/**
+ * lightning-ignite
+ * <p>Events: {@link IgniteActionType}</p>
+ */
 public class LightningIgnite extends BlockActionType
 {
     public LightningIgnite(Log module)

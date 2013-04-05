@@ -9,6 +9,10 @@ import de.cubeisland.cubeengine.log.Log;
 import de.cubeisland.cubeengine.log.storage.ItemData;
 import de.cubeisland.cubeengine.log.storage.LogEntry;
 
+/**
+ * picking up items
+ * <p>Events: {@link PlayerPickupItemEvent}</p>
+ */
 public class ItemPickup extends SimpleLogActionType
 {
     public ItemPickup(Log module)
@@ -41,5 +45,13 @@ public class ItemPickup extends SimpleLogActionType
         user.sendTranslated("%s&2%s&a picked up %d &6%s%s&a!",
                             time,logEntry.getCauserUser().getDisplayName(),
                             amount, logEntry.getItemData(), loc);
+    }
+
+    @Override
+    public boolean isSimilar(LogEntry logEntry, LogEntry other)
+    {
+        return logEntry.world == other.world
+            && logEntry.causer == other.causer
+            && logEntry.getItemData().equals(other.getItemData());
     }
 }

@@ -10,8 +10,10 @@ import de.cubeisland.cubeengine.log.Log;
 import de.cubeisland.cubeengine.log.action.logaction.SimpleLogActionType;
 import de.cubeisland.cubeengine.log.storage.LogEntry;
 
-import static de.cubeisland.cubeengine.log.storage.ActionType.ENTITY_SHEAR;
-
+/**
+ * Shearing sheeps or mooshrooms
+ * <p>Events: {@link PlayerShearEntityEvent}</p>
+ */
 public class EntityShear extends SimpleLogActionType
 {
     public EntityShear(Log module)
@@ -25,7 +27,7 @@ public class EntityShear extends SimpleLogActionType
         if (this.isActive(event.getEntity().getWorld()))
         {
             this.logSimple(event.getEntity().getLocation(),event.getPlayer(),event.getEntity(),
-                           this.serializeData(null, (LivingEntity)event.getEntity(),null));
+                           this.serializeData(null, event.getEntity(),null));
         }
         else
         {
@@ -38,6 +40,14 @@ public class EntityShear extends SimpleLogActionType
     {
         user.sendTranslated("%s&2%s&a sheared &6%s%s&a!",
                             time,logEntry.getCauserUser().getDisplayName(),
-                            this.getPrettyName(logEntry.getEntity()),loc);
+                            logEntry.getEntityFromData(),loc);
+    }
+
+    @Override
+    public boolean isSimilar(LogEntry logEntry, LogEntry other)
+    {
+        return logEntry.causer == other.causer
+            && logEntry.data == other.data
+            && logEntry.world == other.world;
     }
 }

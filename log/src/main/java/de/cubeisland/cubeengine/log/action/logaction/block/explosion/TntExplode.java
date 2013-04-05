@@ -5,6 +5,10 @@ import de.cubeisland.cubeengine.log.Log;
 import de.cubeisland.cubeengine.log.action.logaction.block.BlockActionType;
 import de.cubeisland.cubeengine.log.storage.LogEntry;
 
+/**
+ * TNT-Explosions
+ * <p>Events: {@link ExplodeActionType}</p>
+ */
 public class TntExplode extends BlockActionType
 {
     public TntExplode(Log module)

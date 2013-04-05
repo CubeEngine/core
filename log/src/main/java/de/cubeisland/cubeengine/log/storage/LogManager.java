@@ -17,7 +17,6 @@ import org.bukkit.block.Dropper;
 import org.bukkit.block.Furnace;
 import org.bukkit.block.Hopper;
 import org.bukkit.entity.HumanEntity;
-import org.bukkit.entity.Player;
 import org.bukkit.entity.minecart.StorageMinecart;
 import org.bukkit.inventory.InventoryHolder;
 
@@ -100,7 +99,7 @@ public class LogManager
         this.queryManager.disable();
     }
 
-    public boolean isLogging(World world, ActionType blockBreak, Object additional)
+    public boolean isLogging(World world, ActionType_old blockBreak, Object additional)
     {
         LoggingConfiguration config = this.getConfig(world);
         if (config.enable == false)
@@ -378,19 +377,19 @@ public class LogManager
         return false;
     }
 
-    public boolean isIgnored(World world, ActionType action)
+    public boolean isIgnored(World world, ActionType_old action)
     {
         return this.isIgnored(world,action,null);
     }
 
-    public boolean isIgnored(World world, ActionType action, Object additional) {
+    public boolean isIgnored(World world, ActionType_old action, Object additional) {
         return !this.isLogging(world,action,additional);
     }
 
     /**
      * TODO Remove when WE has its actionType
      */
-    public void queueBlockChangeLog(Location location, ActionType action, Long causer, String block, Byte data, String newBlock, Byte newData, String additionalData)
+    public void queueBlockChangeLog(Location location, ActionType_old action, Long causer, String block, Byte data, String newBlock, Byte newData, String additionalData)
     {
     }
 
