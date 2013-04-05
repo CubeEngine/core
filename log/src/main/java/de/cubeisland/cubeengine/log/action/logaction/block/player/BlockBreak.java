@@ -3,6 +3,8 @@ package de.cubeisland.cubeengine.log.action.logaction.block.player;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import net.minecraft.server.v1_5_R2.Item;
+
 import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
@@ -11,6 +13,7 @@ import org.bukkit.block.Jukebox;
 import org.bukkit.block.NoteBlock;
 import org.bukkit.block.Sign;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.block.BlockBreakEvent;
@@ -20,6 +23,7 @@ import org.bukkit.material.Attachable;
 
 import de.cubeisland.cubeengine.core.util.Pair;
 import de.cubeisland.cubeengine.log.Log;
+import de.cubeisland.cubeengine.log.action.logaction.ItemDrop;
 import de.cubeisland.cubeengine.log.action.logaction.block.BlockActionType;
 
 import com.fasterxml.jackson.databind.node.ArrayNode;
@@ -66,8 +70,12 @@ public class BlockBreak extends BlockActionType
         }
         else if (blockState instanceof InventoryHolder)
         {
-            //TODO do log itemdrop ?
-            //TODO this.logItemDropsFromDestroyedContainer((InventoryHolder) blockState, blockState.getLocation(), event.getPlayer());
+            ItemDrop itemDrop = this.manager.getActionType(ItemDrop.class);
+            Location location = blockState.getLocation();
+            if (itemDrop.isActive(location.getWorld()))
+            {
+                itemDrop.logDropsFromChest((InventoryHolder)blockState,location,event.getPlayer());
+            }
         }
         else
         {
@@ -150,4 +158,12 @@ public class BlockBreak extends BlockActionType
             });
         }
     }
+    private void logItemDropsFromDestroyedContainer(InventoryHolder containerBlock, Location location, Player player)
+    {
+
+
+    }
+
+
+
 }

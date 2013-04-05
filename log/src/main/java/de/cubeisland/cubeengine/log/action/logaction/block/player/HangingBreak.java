@@ -1,4 +1,4 @@
-package de.cubeisland.cubeengine.log.action.logaction.block;
+package de.cubeisland.cubeengine.log.action.logaction.block.player;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -16,6 +16,7 @@ import org.bukkit.event.hanging.HangingBreakEvent;
 import org.bukkit.inventory.ItemStack;
 
 import de.cubeisland.cubeengine.log.Log;
+import de.cubeisland.cubeengine.log.action.logaction.block.BlockActionType;
 import de.cubeisland.cubeengine.log.storage.ItemData;
 
 import static org.bukkit.Material.AIR;

@@ -13,6 +13,7 @@ import de.cubeisland.cubeengine.core.util.BlockUtil;
 import de.cubeisland.cubeengine.log.Log;
 import de.cubeisland.cubeengine.log.action.LogActionType;
 import de.cubeisland.cubeengine.log.action.logaction.block.player.BlockBreak;
+import de.cubeisland.cubeengine.log.action.logaction.block.player.HangingBreak;
 
 public class BlockActionType extends LogActionType
 {
@@ -67,9 +68,20 @@ public class BlockActionType extends LogActionType
             data = blockState.getRawData();
         }
 
+        public BlockData(Material mat, byte data)
+        {
+            this.material = mat;
+            this.data = data;
+        }
+
         public static BlockData of(BlockState state)
         {
             return new BlockData(state);
+        }
+
+        public static BlockData of(Material mat, byte data)
+        {
+            return new BlockData(mat,data);
         }
     }
 

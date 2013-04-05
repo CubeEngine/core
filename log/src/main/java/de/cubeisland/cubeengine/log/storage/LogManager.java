@@ -28,20 +28,12 @@ import de.cubeisland.cubeengine.core.storage.database.querybuilder.SelectBuilder
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.log.Log;
 import de.cubeisland.cubeengine.log.LoggingConfiguration;
-import de.cubeisland.cubeengine.log.listeners.BlockListener;
-import de.cubeisland.cubeengine.log.listeners.ChatListener;
-import de.cubeisland.cubeengine.log.listeners.ContainerListener;
-import de.cubeisland.cubeengine.log.listeners.EntityListener;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class LogManager
 {
     public final ObjectMapper mapper;
-    private final BlockListener blockListener;
-    private final ChatListener chatListener;
-    private final ContainerListener containerListener;
-    private final EntityListener entityListener;
     private final Log module;
 
     private LoggingConfiguration globalConfig;
@@ -63,16 +55,8 @@ public class LogManager
             this.worldConfigs.put(world, (LoggingConfiguration)globalConfig.loadChild(new File(file, "config.yml")));
         }
 
-        this.blockListener = new BlockListener(module,this);
-        this.chatListener = new ChatListener(module,this);
-        this.containerListener = new ContainerListener(module,this);
-        this.entityListener = new EntityListener(module,this);
 
         final EventManager em = module.getCore().getEventManager();
-        em.registerListener(module, blockListener);
-        em.registerListener(module, chatListener);
-        em.registerListener(module, containerListener);
-        em.registerListener(module, entityListener);
 
         this.queryManager = new QueryManager(module);
 
@@ -480,22 +464,6 @@ public class LogManager
     public void fillLookupAndShow(final Lookup lookup, User user)
     {
         this.queryManager.prepareLookupQuery(lookup.clone(), user);
-    }
-
-    public BlockListener getBlockListener() {
-        return blockListener;
-    }
-
-    public ChatListener getChatListener() {
-        return chatListener;
-    }
-
-    public ContainerListener getContainerListener() {
-        return containerListener;
-    }
-
-    public EntityListener getEntityListener() {
-        return entityListener;
     }
 
     public LoggingConfiguration getConfig(World world) {
