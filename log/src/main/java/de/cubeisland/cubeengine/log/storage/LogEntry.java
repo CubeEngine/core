@@ -272,4 +272,24 @@ public class LogEntry implements Comparable<LogEntry>
     {
         return additional;
     }
+
+    public Timestamp getTimestamp()
+    {
+        return this.timestamp;
+    }
+
+    public Set<LogEntry> getAttached()
+    {
+        return attached;
+    }
+
+    public boolean hasCauserUser()
+    {
+        return true; //TODO
+    }
+
+    public boolean hasReplacedBlock()
+    {
+        return true; //TODO if oldBlock is not null and not AIR
+    }
 }

@@ -9,8 +9,10 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.world.StructureGrowEvent;
 
+import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.log.Log;
 import de.cubeisland.cubeengine.log.action.logaction.block.player.PlayerGrow;
+import de.cubeisland.cubeengine.log.storage.LogEntry;
 
 public class NaturalGrow extends BlockActionType
 {
@@ -46,6 +48,31 @@ public class NaturalGrow extends BlockActionType
                 {
                     actionType.logBlockChange(player, oldBlock, newBlock, null);
                 }
+            }
+        }
+    }
+
+    @Override
+    protected void showLogEntry(User user, LogEntry logEntry, String time, String loc)
+    {
+        if (logEntry.hasAttached())
+        {
+            int amount = logEntry.getAttached().size()+1;
+            user.sendTranslated("%s&6%dx %s &agrew naturally%s&a!",
+                                time,amount,logEntry.getNewBlock(),loc);
+        }
+        else
+        {
+            if (logEntry.hasReplacedBlock())
+            {
+                user.sendTranslated("%s&6%s &agrew naturally into &6%s%s&a!",
+                                    time,logEntry.getNewBlock(),
+                                    logEntry.getOldBlock(),loc);
+            }
+            else
+            {
+                user.sendTranslated("%s&6%s &agrew naturally%s!",
+                                    time,logEntry.getNewBlock(),loc);
             }
         }
     }

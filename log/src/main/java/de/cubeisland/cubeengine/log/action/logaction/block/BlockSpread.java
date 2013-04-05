@@ -5,7 +5,9 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.block.BlockSpreadEvent;
 
+import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.log.Log;
+import de.cubeisland.cubeengine.log.storage.LogEntry;
 
 public class BlockSpread extends BlockActionType
 {
@@ -26,5 +28,12 @@ public class BlockSpread extends BlockActionType
                                     event.getNewState(),null);
             }
         }
+    }
+
+    @Override
+    protected void showLogEntry(User user, LogEntry logEntry, String time, String loc)
+    {
+        user.sendTranslated("%s&6%s&a spreaded%s&a!",
+                            logEntry.getNewBlock(),time,loc);
     }
 }

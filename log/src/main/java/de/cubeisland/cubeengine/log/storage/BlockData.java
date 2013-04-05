@@ -3,6 +3,9 @@ package de.cubeisland.cubeengine.log.storage;
 import org.bukkit.Material;
 import org.bukkit.block.BlockState;
 
+import de.cubeisland.cubeengine.core.util.matcher.Match;
+import de.cubeisland.cubeengine.log.Log;
+
 public class BlockData
 {
     public final Material material;
@@ -27,6 +30,7 @@ public class BlockData
     @Override
     public String toString()
     {
+        //Match.material() //TODO getPrettyName
         return material + ":" + data;
     }
 }

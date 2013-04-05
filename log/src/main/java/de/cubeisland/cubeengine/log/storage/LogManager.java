@@ -388,73 +388,10 @@ public class LogManager
     }
 
     /**
-     * Log a block with additional data
-     *
-     * @param location
-     * @param action
-     * @param causer
-     * @param block
-     * @param data
-     * @param newBlock
-     * @param newData
-     * @param additionalData
+     * TODO Remove when WE has its actionType
      */
     public void queueBlockChangeLog(Location location, ActionType action, Long causer, String block, Byte data, String newBlock, Byte newData, String additionalData)
     {
-        Timestamp timestamp = new Timestamp(System.currentTimeMillis());
-        Long worldID = this.module.getCore().getWorldManager().getWorldId(location.getWorld());
-        Long longData = data == null ? null : data.longValue();
-        this.queryManager.queueLog(timestamp, worldID, location.getBlockX(), location.getBlockY(), location
-            .getBlockZ(), action, causer, block, longData, newBlock, newData, additionalData);
-    }
-
-    /**
-     * Log with location, player and additional data
-     *
-     * @param location
-     * @param action
-     * @param player
-     * @param additionalData
-     */
-    public void queueInteractionLog(Location location, ActionType action, Player player, String additionalData)
-    {
-        Timestamp timestamp = new Timestamp(System.currentTimeMillis());
-        Long worldID = this.module.getCore().getWorldManager().getWorldId(location.getWorld());
-        User user = this.module.getCore().getUserManager().getExactUser(player);
-        this.queryManager.queueLog(timestamp, worldID, location.getBlockX(), location.getBlockY(), location
-            .getBlockZ(), action, user.key, null, null, null, null, additionalData);
-    }
-
-    public void queueLog(Location location, ActionType action, long causer)
-    {
-        Timestamp timestamp = new Timestamp(System.currentTimeMillis());
-        Long worldID = this.module.getCore().getWorldManager().getWorldId(location.getWorld());
-        this.queryManager.queueLog(timestamp, worldID, location.getBlockX(), location.getBlockY(), location
-            .getBlockZ(), action, causer, null, null, null, null, null);
-    }
-
-    public void queueKillLog(Location location, ActionType action, Long causer, Long killed, String additionalData)
-    {
-        Timestamp timestamp = new Timestamp(System.currentTimeMillis());
-        Long worldID = this.module.getCore().getWorldManager().getWorldId(location.getWorld());
-        this.queryManager.queueLog(timestamp, worldID, location.getBlockX(), location.getBlockY(), location
-            .getBlockZ(), action, causer, null, killed, null, null, additionalData);
-    }
-
-    public void queueItemLog(Location location, ActionType action, Long causer, String material, Short data, String additionalData)
-    {
-        Timestamp timestamp = new Timestamp(System.currentTimeMillis());
-        Long worldID = this.module.getCore().getWorldManager().getWorldId(location.getWorld());
-        this.queryManager.queueLog(timestamp, worldID, location.getBlockX(), location.getBlockY(), location
-            .getBlockZ(), action, causer, material, data == null ? null : data.longValue(), null, null, additionalData);
-    }
-
-    public void queueContainerLog(Location location, ActionType action, Long causer, Material material, Short dura, String containerType, String additional)
-    {
-        Timestamp timestamp = new Timestamp(System.currentTimeMillis());
-        Long worldID = this.module.getCore().getWorldManager().getWorldId(location.getWorld());
-        this.queryManager.queueLog(timestamp, worldID, location.getBlockX(), location.getBlockY(), location
-            .getBlockZ(), action, causer, material.name(), dura.longValue(), containerType, null, additional);
     }
 
     public int getQueueSize() {
@@ -469,5 +406,10 @@ public class LogManager
     public LoggingConfiguration getConfig(World world) {
         if (world == null) return globalConfig;
         return this.worldConfigs.get(world);
+    }
+
+    public void queueLog(QueuedLog log)
+    {
+        this.queryManager.queueLog(log);
     }
 }

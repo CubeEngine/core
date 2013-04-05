@@ -3,8 +3,6 @@ package de.cubeisland.cubeengine.log.action.logaction.block.player;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import net.minecraft.server.v1_5_R2.Item;
-
 import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
@@ -13,7 +11,6 @@ import org.bukkit.block.Jukebox;
 import org.bukkit.block.NoteBlock;
 import org.bukkit.block.Sign;
 import org.bukkit.entity.Entity;
-import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.block.BlockBreakEvent;
@@ -21,10 +18,12 @@ import org.bukkit.event.block.BlockPhysicsEvent;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.material.Attachable;
 
+import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.util.Pair;
 import de.cubeisland.cubeengine.log.Log;
 import de.cubeisland.cubeengine.log.action.logaction.ItemDrop;
 import de.cubeisland.cubeengine.log.action.logaction.block.BlockActionType;
+import de.cubeisland.cubeengine.log.storage.LogEntry;
 
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -95,7 +94,7 @@ public class BlockBreak extends BlockActionType
                 }
             }
         }
-        this.logAttached(blockState, event.getPlayer());
+        this.logAttachedBlocks(blockState, event.getPlayer());
         this.logFallingBlocks(blockState, event.getPlayer());
     }
 
@@ -158,12 +157,27 @@ public class BlockBreak extends BlockActionType
             });
         }
     }
-    private void logItemDropsFromDestroyedContainer(InventoryHolder containerBlock, Location location, Player player)
+
+    @Override
+    protected void showLogEntry(User user, LogEntry logEntry, String time, String loc)
     {
-
-
+        if (logEntry.hasAttached())
+        {
+            int amount = 1+logEntry.getAttached().size();
+            user.sendTranslated("%s&2%s &abroke &6%dx %s&a%s!",
+                                time,
+                                logEntry.getCauserUser().getDisplayName(),
+                                amount,
+                                logEntry.getOldBlock(),
+                                loc);
+        }
+        else {
+            user.sendTranslated("%s&2%s &abroke &6%s&a%s!",
+                                time,
+                                logEntry.getCauserUser().getDisplayName(),
+                                logEntry.getOldBlock(),
+                                loc);
+        }
     }
-
-
 
 }

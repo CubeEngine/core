@@ -2,6 +2,7 @@ package de.cubeisland.cubeengine.log;
 
 import de.cubeisland.cubeengine.core.command.CommandManager;
 import de.cubeisland.cubeengine.core.module.Module;
+import de.cubeisland.cubeengine.log.action.ActionTypeManager;
 import de.cubeisland.cubeengine.log.commands.LogCommands;
 import de.cubeisland.cubeengine.log.commands.LookupCommands;
 import de.cubeisland.cubeengine.log.listeners.worldedit.LogEditSessionFactory;
@@ -16,6 +17,7 @@ public class Log extends Module
     private LogManager logManager;
     private LogConfiguration config;
     private ObjectMapper objectMapper = null;
+    private ActionTypeManager actionTypeManager;
 
     @Override
     public void onEnable()
@@ -28,13 +30,11 @@ public class Log extends Module
         //flag to ignore what block
         //possibility to select the region containing the last search results
         this.logManager = new LogManager(this);
+        this.actionTypeManager = new ActionTypeManager(this);
 
         final CommandManager cm = this.getCore().getCommandManager();
         cm.registerCommand(new LookupCommands(this));
         cm.registerCommand(new LogCommands(this));
-
-
-
 
         try
         {
@@ -73,5 +73,10 @@ public class Log extends Module
             this.objectMapper = new ObjectMapper();
         }
         return objectMapper;
+    }
+
+    public ActionTypeManager getActionTypeManager()
+    {
+        return actionTypeManager;
     }
 }

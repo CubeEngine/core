@@ -6,8 +6,10 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.block.EntityBlockFormEvent;
 
+import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.log.Log;
 import de.cubeisland.cubeengine.log.action.logaction.block.BlockActionType;
+import de.cubeisland.cubeengine.log.storage.LogEntry;
 
 import static de.cubeisland.cubeengine.log.storage.ActionType.ENTITY_FORM;
 
@@ -25,5 +27,13 @@ public class EntityForm extends BlockActionType
         {
             this.logBlockChange(event.getEntity(),event.getBlock().getState(),event.getNewState(),null);
         }
+    }
+
+    @Override
+    protected void showLogEntry(User user, LogEntry logEntry, String time, String loc)
+    {
+        user.sendTranslated("%s&6%s &aformed &6%s%s&a!",
+                            time,this.getPrettyName(logEntry.getCauserEntity()),
+                            logEntry.getNewBlock(),loc);
     }
 }

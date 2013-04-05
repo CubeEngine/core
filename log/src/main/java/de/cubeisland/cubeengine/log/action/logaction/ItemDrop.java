@@ -10,8 +10,10 @@ import org.bukkit.inventory.DoubleChestInventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 
+import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.log.Log;
 import de.cubeisland.cubeengine.log.storage.ItemData;
+import de.cubeisland.cubeengine.log.storage.LogEntry;
 
 import static org.bukkit.Material.AIR;
 
@@ -61,5 +63,22 @@ public class ItemDrop extends SimpleLogActionType
             String itemData = new ItemData(itemStack).serialize(this.om);
             this.logSimple(location,player,itemData);
         }
+    }
+
+    @Override
+    protected void showLogEntry(User user, LogEntry logEntry, String time, String loc)
+    {
+        int amount;
+        if (logEntry.hasAttached())
+        {
+            amount = 42; //TODO iterate and get correct amount
+        }
+        else
+        {
+            amount = logEntry.getItemData().amount;
+        }
+        user.sendTranslated("%s&2%s&a dropped %d &6%s%s!",
+                            time, logEntry.getCauserUser().getDisplayName(),
+                            amount, logEntry.getItemData(),loc);
     }
 }

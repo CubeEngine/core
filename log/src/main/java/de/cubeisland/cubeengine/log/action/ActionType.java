@@ -8,8 +8,12 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 
 import de.cubeisland.cubeengine.core.storage.world.WorldManager;
+import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.user.UserManager;
 import de.cubeisland.cubeengine.log.Log;
+import de.cubeisland.cubeengine.log.storage.LogEntry;
+import de.cubeisland.cubeengine.log.storage.LogManager;
+import de.cubeisland.cubeengine.log.storage.Lookup;
 import de.cubeisland.cubeengine.log.storage.QueuedLog;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -22,7 +26,9 @@ public abstract class ActionType
     protected final UserManager um;
     protected final ObjectMapper om;
     protected final ActionTypeManager manager;
+    protected final LogManager lm;
     public final String name;
+
 
     protected ActionType(Log module, int actionTypeID, String name)
     {
@@ -34,8 +40,9 @@ public abstract class ActionType
         //show error if value is already used
         this.actionTypeID = actionTypeID;
         this.om = this.logModule.getObjectMapper();
-        this.manager = null; //TODO get from Log Module
+        this.manager = module.getActionTypeManager();
         this.name = name;
+        this.lm = module.getLogManager();
     }
 
     public void queueLog(Location location, Entity causer, String block, Long data, String newBlock, Byte newData, String additionalData)
@@ -60,6 +67,7 @@ public abstract class ActionType
     public void queueLog(long worldID, int x, int y, int z, Long causer, String block, Long data, String newBlock, Byte newData, String additionalData)
     {
         QueuedLog log = new QueuedLog(new Timestamp(System.currentTimeMillis()),worldID,x,y,z,this.actionTypeID,causer,block,data,newBlock,newData,additionalData);
+        this.lm.queueLog(log);
         //TODO add to queryManagerQueue
     }
 
@@ -69,4 +77,7 @@ public abstract class ActionType
     {
         return true;
     }
+
+
+    abstract void showLogEntry(User user, Lookup lookup, LogEntry logEntry);
 }

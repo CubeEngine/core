@@ -170,4 +170,15 @@ public class ItemData
         itemStack.setItemMeta(meta);
         return itemStack;
     }
+
+    @Override
+    public String toString()
+    {
+        String result = this.material.name()+":"+this.dura;
+        if (this.displayName != null)
+        {
+            result += " ("+ this.displayName+ ")";
+        }
+        return result;
+    }
 }

@@ -9,13 +9,15 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.Hanging;
 import org.bukkit.material.Bed;
 
+import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.util.BlockUtil;
 import de.cubeisland.cubeengine.log.Log;
 import de.cubeisland.cubeengine.log.action.LogActionType;
 import de.cubeisland.cubeengine.log.action.logaction.block.player.BlockBreak;
 import de.cubeisland.cubeengine.log.action.logaction.block.player.HangingBreak;
+import de.cubeisland.cubeengine.log.storage.LogEntry;
 
-public class BlockActionType extends LogActionType
+public abstract class BlockActionType extends LogActionType
 {
     public BlockActionType(Log module, int id, String name)
     {
@@ -110,7 +112,7 @@ public class BlockActionType extends LogActionType
         return blockState;
     }
 
-    protected void logAttached(BlockState blockState, Entity player)
+    protected void logAttachedBlocks(BlockState blockState, Entity player)
     {
         if (!blockState.getType().isSolid())
         {

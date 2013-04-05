@@ -12,8 +12,11 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.block.BlockPhysicsEvent;
 
+import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.util.Pair;
 import de.cubeisland.cubeengine.log.Log;
+import de.cubeisland.cubeengine.log.storage.ActionType;
+import de.cubeisland.cubeengine.log.storage.LogEntry;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
@@ -21,6 +24,8 @@ import static org.bukkit.Material.AIR;
 
 public class BlockFall extends BlockActionType
 {
+
+
     public BlockFall(Log module)
     {
         super(module, 0x41, "block-fall");
@@ -65,6 +70,23 @@ public class BlockFall extends BlockActionType
                     BlockFall.this.plannedFall.clear();
                 }
             });
+        }
+    }
+
+    @Override
+    protected void showLogEntry(User user, LogEntry logEntry, String time, String loc)
+    {
+        if (logEntry.getCauserUser() == null)
+        {
+            ActionType type = ActionType.getById(logEntry.getAdditional().get("cause").asInt());
+            user.sendTranslated("%s&6%s&a did fall to a lower place %s&a because of &6%s&a!",
+                                time,logEntry.getOldBlock(), loc,type.name);
+        }
+        else
+        {
+            user.sendTranslated("%s&2%s &acaused &6%s&a to fall to a lower place%s!",
+                                time,logEntry.getCauserUser().getDisplayName(),
+                                logEntry.getOldBlock(),loc);
         }
     }
 

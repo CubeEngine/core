@@ -5,7 +5,9 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.block.BlockBurnEvent;
 
+import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.log.Log;
+import de.cubeisland.cubeengine.log.storage.LogEntry;
 
 import static org.bukkit.Material.AIR;
 
@@ -32,7 +34,16 @@ public class BlockBurn extends BlockActionType
             blockState = this.adjustBlockForDoubleBlocks(blockState); // WOOD_DOOR IRON_DOOR OR BED_BLOCK
             this.logBlockChange(blockState.getLocation(),null,BlockData.of(blockState), AIR, null);
         }
-        this.logAttached(event.getBlock().getState(), null);
+        this.logAttachedBlocks(event.getBlock().getState(), null);
         this.logFallingBlocks(event.getBlock().getState(), null);
+    }
+
+    @Override
+    protected void showLogEntry(User user, LogEntry logEntry, String time, String loc)
+    {
+        user.sendTranslated("%s&6%s &awent up into flames%s!",
+                            time,
+                            logEntry.getOldBlock(),
+                            loc);
     }
 }

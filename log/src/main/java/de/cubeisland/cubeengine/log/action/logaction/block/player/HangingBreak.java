@@ -15,9 +15,11 @@ import org.bukkit.event.hanging.HangingBreakByEntityEvent;
 import org.bukkit.event.hanging.HangingBreakEvent;
 import org.bukkit.inventory.ItemStack;
 
+import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.log.Log;
 import de.cubeisland.cubeengine.log.action.logaction.block.BlockActionType;
 import de.cubeisland.cubeengine.log.storage.ItemData;
+import de.cubeisland.cubeengine.log.storage.LogEntry;
 
 import static org.bukkit.Material.AIR;
 import static org.bukkit.Material.ITEM_FRAME;
@@ -108,6 +110,23 @@ public class HangingBreak extends BlockActionType
                     HangingBreak.this.plannedHangingBreak.clear();
                 }
             });
+        }
+    }
+
+    @Override
+    protected void showLogEntry(User user, LogEntry logEntry, String time, String loc)
+    {
+        if (logEntry.getItemData() == null)
+        {
+            user.sendTranslated("%s&6%s&a got removed by &2%s%s&a!",
+                                time,logEntry.getOldBlock(),
+                                logEntry.getCauserUser().getDisplayName(),loc);
+        }
+        else
+        {
+            user.sendTranslated("&2%s &abroke an &6itemframe&a containing &6%s&a!",
+                                time,logEntry.getCauserUser().getDisplayName(),
+                                logEntry.getItemData(),loc);
         }
     }
 }

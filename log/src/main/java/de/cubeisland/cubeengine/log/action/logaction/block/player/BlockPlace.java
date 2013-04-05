@@ -8,8 +8,10 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.block.BlockPlaceEvent;
 
+import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.log.Log;
 import de.cubeisland.cubeengine.log.action.logaction.block.BlockActionType;
+import de.cubeisland.cubeengine.log.storage.LogEntry;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
@@ -43,6 +45,41 @@ public class BlockPlace extends BlockActionType
                 ObjectNode json = this.om.createObjectNode();
                 json.put("break-cause", this.actionTypeID);
                 blockBreak.logBlockChange(state.getLocation(),event.getPlayer(),oldData,AIR,json.toString());
+            }
+        }
+    }
+
+    @Override
+    protected void showLogEntry(User user, LogEntry logEntry, String time, String loc)
+    {
+        if (logEntry.hasAttached())
+        {
+            int amount = logEntry.getAttached().size()+1;
+            user.sendTranslated("%s&2%s &aplaced &6%dx %s&a%s!",
+                                time,
+                                logEntry.getCauserUser().getDisplayName(),
+                                amount,
+                                logEntry.getNewBlock(),
+                                loc);
+        }
+        else // single
+        {
+            if (logEntry.getOldBlock().material.equals(Material.AIR))
+            {
+                user.sendTranslated("%s&2%s &aplaced &6%s&a%s!",
+                                    time,
+                                    logEntry.getCauserUser().getDisplayName(),
+                                    logEntry.getNewBlock(),
+                                    loc);
+            }
+            else
+            {
+                user.sendTranslated("&2%s &areplaced &6%s&a with &6%s&a!",
+                                    time,
+                                    logEntry.getCauserUser().getDisplayName(),
+                                    logEntry.getOldBlock(),
+                                    logEntry.getNewBlock(),
+                                    loc);
             }
         }
     }

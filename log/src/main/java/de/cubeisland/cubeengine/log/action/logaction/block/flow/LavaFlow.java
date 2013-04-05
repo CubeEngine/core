@@ -5,10 +5,12 @@ import org.bukkit.block.BlockFace;
 import org.bukkit.block.BlockState;
 import org.bukkit.event.block.BlockFromToEvent;
 
+import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.util.BlockUtil;
 import de.cubeisland.cubeengine.log.Log;
 import de.cubeisland.cubeengine.log.action.logaction.block.BlockActionType;
 import de.cubeisland.cubeengine.log.action.logaction.block.BlockForm;
+import de.cubeisland.cubeengine.log.storage.LogEntry;
 
 import static de.cubeisland.cubeengine.log.storage.ActionType.LAVA_BREAK;
 import static org.bukkit.Material.*;
@@ -82,5 +84,11 @@ public class LavaFlow extends BlockActionType
             newToBlock.setRawData((byte)0);
             blockForm.logBlockChange(null,toBlock,newToBlock,null);
         }
+    }
+
+    @Override
+    protected void showLogEntry(User user, LogEntry logEntry, String time, String loc)
+    {//TODO attach
+        user.sendTranslated("%s&aLava occupied the block%s!",time,loc);
     }
 }

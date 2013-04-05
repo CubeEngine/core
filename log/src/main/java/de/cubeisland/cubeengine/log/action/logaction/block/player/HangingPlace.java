@@ -6,8 +6,10 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.hanging.HangingPlaceEvent;
 
+import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.log.Log;
 import de.cubeisland.cubeengine.log.action.logaction.block.BlockActionType;
+import de.cubeisland.cubeengine.log.storage.LogEntry;
 
 import static org.bukkit.Material.*;
 
@@ -33,5 +35,13 @@ public class HangingPlace extends BlockActionType
                 this.logBlockChange(event.getEntity().getLocation(),event.getPlayer(),AIR,blockData,null);
             }
         }
+    }
+
+    @Override
+    protected void showLogEntry(User user, LogEntry logEntry, String time, String loc)
+    {
+        user.sendTranslated("%s&6%s &agot hung up by &2%s%s&a!",
+                           time, logEntry.getNewBlock(),
+                            logEntry.getCauserUser().getDisplayName(),loc);
     }
 }

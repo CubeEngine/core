@@ -5,7 +5,9 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.player.PlayerTeleportEvent;
 
+import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.log.Log;
+import de.cubeisland.cubeengine.log.storage.LogEntry;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
@@ -38,5 +40,11 @@ public class PlayerTeleport extends SimpleLogActionType
         json.put("y",location.getBlockY());
         json.put("z",location.getBlockZ());
         return json.toString();
+    }
+
+    @Override
+    protected void showLogEntry(User user, LogEntry logEntry, String time, String loc)
+    {
+        user.sendTranslated("PLAYER_TELEPORT"); //TODO
     }
 }

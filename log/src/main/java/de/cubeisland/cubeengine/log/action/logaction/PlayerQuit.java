@@ -5,7 +5,9 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
+import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.log.Log;
+import de.cubeisland.cubeengine.log.storage.LogEntry;
 
 import com.fasterxml.jackson.databind.node.ArrayNode;
 
@@ -24,5 +26,12 @@ public class PlayerQuit extends SimpleLogActionType
         {
             this.logSimple(event.getPlayer(),null);
         }
+    }
+
+    @Override
+    protected void showLogEntry(User user, LogEntry logEntry, String time, String loc)
+    {
+        user.sendTranslated("%s&2%s&a leaved the server%s&a!",
+                            time,logEntry.getCauserUser().getDisplayName(),loc);
     }
 }

@@ -7,18 +7,13 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.enchantment.EnchantItemEvent;
 
+import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.log.Log;
 import de.cubeisland.cubeengine.log.storage.ItemData;
+import de.cubeisland.cubeengine.log.storage.LogEntry;
 
 import static de.cubeisland.cubeengine.log.storage.ActionType.ENCHANT_ITEM;
 
-/**
- * Created with IntelliJ IDEA.
- * User: Anselm
- * Date: 05.04.13
- * Time: 02:48
- * To change this template use File | Settings | File Templates.
- */
 public class EnchantItem extends SimpleLogActionType
 {
     public EnchantItem(Log module)
@@ -39,5 +34,13 @@ public class EnchantItem extends SimpleLogActionType
             itemData.enchantments.putAll(event.getEnchantsToAdd());
             this.logSimple(event.getEnchanter(),itemData.serialize(this.om));
         }
+    }
+
+    @Override
+    protected void showLogEntry(User user, LogEntry logEntry, String time, String loc)
+    {
+        user.sendTranslated("%s&2%s&a enchanted &6%s%s&a!",
+                           time, logEntry.getCauserUser().getDisplayName(),
+                            logEntry.getItemData(),loc);//TODO list enchantments
     }
 }

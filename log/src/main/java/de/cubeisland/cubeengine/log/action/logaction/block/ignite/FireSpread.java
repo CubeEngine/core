@@ -1,11 +1,14 @@
-package de.cubeisland.cubeengine.log.action.logaction.block;
+package de.cubeisland.cubeengine.log.action.logaction.block.ignite;
 
 import org.bukkit.Material;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.block.BlockSpreadEvent;
 
+import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.log.Log;
+import de.cubeisland.cubeengine.log.action.logaction.block.BlockActionType;
+import de.cubeisland.cubeengine.log.storage.LogEntry;
 
 public class FireSpread extends BlockActionType
 {
@@ -26,5 +29,11 @@ public class FireSpread extends BlockActionType
                                     event.getNewState(),null);
             }
         }
+    }
+
+    @Override
+    protected void showLogEntry(User user, LogEntry logEntry, String time, String loc)
+    {
+        user.sendTranslated("%s&aFire spreaded%s&a!",time,loc);
     }
 }

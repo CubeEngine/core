@@ -6,9 +6,11 @@ import org.bukkit.block.BlockFace;
 import org.bukkit.block.BlockState;
 import org.bukkit.event.block.BlockFromToEvent;
 
+import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.log.Log;
 import de.cubeisland.cubeengine.log.action.logaction.block.BlockActionType;
 import de.cubeisland.cubeengine.log.action.logaction.block.BlockForm;
+import de.cubeisland.cubeengine.log.storage.LogEntry;
 
 import static de.cubeisland.cubeengine.core.util.BlockUtil.BLOCK_FACES;
 import static de.cubeisland.cubeengine.core.util.BlockUtil.DIRECTIONS;
@@ -92,5 +94,11 @@ public class WaterFlow extends BlockActionType
             newToBlock.setRawData((byte)0);
             blockForm.logBlockChange(null,toBlock,newToBlock,null);
         }
+    }
+
+    @Override
+    protected void showLogEntry(User user, LogEntry logEntry, String time, String loc)
+    {//TODO attach
+        user.sendTranslated("%s&aWater flooded the block%s&a!",time,loc);
     }
 }

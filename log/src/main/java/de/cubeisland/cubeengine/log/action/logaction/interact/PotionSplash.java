@@ -10,6 +10,7 @@ import org.bukkit.potion.PotionEffect;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.log.Log;
 import de.cubeisland.cubeengine.log.action.logaction.SimpleLogActionType;
+import de.cubeisland.cubeengine.log.storage.LogEntry;
 
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -62,5 +63,11 @@ public class PotionSplash extends SimpleLogActionType
             }
         }
         return json.toString();
+    }
+
+    @Override
+    protected void showLogEntry(User user, LogEntry logEntry, String time, String loc)
+    {
+        user.sendMessage("Potion stuff happened!");//TODO
     }
 }

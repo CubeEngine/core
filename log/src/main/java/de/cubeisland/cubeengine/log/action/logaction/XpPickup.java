@@ -4,7 +4,9 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.player.PlayerExpChangeEvent;
 
+import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.log.Log;
+import de.cubeisland.cubeengine.log.storage.LogEntry;
 
 import com.fasterxml.jackson.databind.node.ArrayNode;
 
@@ -24,5 +26,13 @@ public class XpPickup extends SimpleLogActionType
             json.add(event.getAmount());
             this.logSimple(event.getPlayer(),json.toString());
         }
+    }
+
+    @Override
+    protected void showLogEntry(User user, LogEntry logEntry, String time, String loc)
+    {
+        int amount = logEntry.getAdditional().iterator().next().asInt();
+        user.sendTranslated("%s&2%s&a earned &6%d experience%s&a!",
+                            time, logEntry.getCauserUser().getDisplayName(), amount,loc);
     }
 }

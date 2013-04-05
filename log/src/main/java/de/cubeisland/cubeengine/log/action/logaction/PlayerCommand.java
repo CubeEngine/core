@@ -4,7 +4,9 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 
+import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.log.Log;
+import de.cubeisland.cubeengine.log.storage.LogEntry;
 
 import com.fasterxml.jackson.databind.node.ArrayNode;
 
@@ -25,5 +27,13 @@ public class PlayerCommand extends SimpleLogActionType
             json.add(event.getMessage());
             this.logSimple(event.getPlayer(),json.toString());
         }
+    }
+
+    @Override
+    protected void showLogEntry(User user, LogEntry logEntry, String time, String loc)
+    {
+        user.sendTranslated("&2%s&a used the command &f\"&6%s&f\"&a!",
+                            logEntry.getCauserUser().getDisplayName(),
+                            logEntry.getAdditional().iterator().next().asText());
     }
 }

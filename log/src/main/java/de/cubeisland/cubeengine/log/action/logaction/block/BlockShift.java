@@ -7,7 +7,9 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.block.BlockPistonExtendEvent;
 import org.bukkit.event.block.BlockPistonRetractEvent;
 
+import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.log.Log;
+import de.cubeisland.cubeengine.log.storage.LogEntry;
 
 import static de.cubeisland.cubeengine.log.storage.ActionType.BLOCK_SHIFT;
 import static org.bukkit.Material.AIR;
@@ -59,5 +61,12 @@ public class BlockShift extends BlockActionType
             this.logBlockChange(retractingBlock.getLocation(), null, BlockData.of(retractingBlock), AIR, null); // pulling
             this.logBlockChange(null,retractedBlock.getBlock().getState(),retractedBlock, null); // pulled
         }
+    }
+
+    @Override
+    protected void showLogEntry(User user, LogEntry logEntry, String time, String loc)
+    {//TODO
+        user.sendTranslated("%s&6%s&a got moved away by a Piston%s&a!",
+                            time,logEntry.getOldBlock(),loc);
     }
 }

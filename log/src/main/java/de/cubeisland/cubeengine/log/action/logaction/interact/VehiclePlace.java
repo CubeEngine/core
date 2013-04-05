@@ -10,9 +10,11 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.vehicle.VehicleCreateEvent;
 
+import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.log.Log;
 import de.cubeisland.cubeengine.log.action.LogActionType;
 import de.cubeisland.cubeengine.log.action.logaction.SimpleLogActionType;
+import de.cubeisland.cubeengine.log.storage.LogEntry;
 
 import static de.cubeisland.cubeengine.log.storage.ActionType.VEHICLE_PLACE;
 
@@ -57,5 +59,13 @@ public class VehiclePlace extends SimpleLogActionType
                 }
             });
         }
+    }
+
+    @Override
+    protected void showLogEntry(User user, LogEntry logEntry, String time, String loc)
+    {
+        user.sendTranslated("%s&2%s &aplaced a &6%s%s&a!",
+                            time,logEntry.getCauserUser().getDisplayName(),
+                            this.getPrettyName(logEntry.getEntity()),loc);
     }
 }

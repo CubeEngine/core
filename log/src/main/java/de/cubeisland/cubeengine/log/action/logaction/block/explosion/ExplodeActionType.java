@@ -13,12 +13,11 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.entity.EntityExplodeEvent;
 
+import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.log.Log;
 import de.cubeisland.cubeengine.log.action.logaction.block.BlockActionType;
-import de.cubeisland.cubeengine.log.storage.ActionType;
+import de.cubeisland.cubeengine.log.storage.LogEntry;
 
-import static de.cubeisland.cubeengine.log.storage.ActionType.*;
-import static de.cubeisland.cubeengine.log.storage.ActionType.ENTITY_EXPLODE;
 import static org.bukkit.Material.AIR;
 
 public class ExplodeActionType extends BlockActionType
@@ -75,9 +74,15 @@ public class ExplodeActionType extends BlockActionType
                     continue; // ignore upper door_halfs
                 }
                 actionType.logBlockChange(block.getLocation(),player,BlockData.of(block.getState()),AIR,null);
-                this.logAttached(block.getState(),player);
+                this.logAttachedBlocks(block.getState(), player);
                 this.logFallingBlocks(block.getState(),player);
             }
         }
+    }
+
+    @Override
+    protected void showLogEntry(User user, LogEntry logEntry, String time, String loc)
+    {
+        throw new UnsupportedOperationException();
     }
 }

@@ -7,8 +7,10 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.block.BlockIgniteEvent;
 
+import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.log.Log;
 import de.cubeisland.cubeengine.log.action.logaction.block.BlockActionType;
+import de.cubeisland.cubeengine.log.storage.LogEntry;
 
 public class IgniteActionType extends BlockActionType
 {
@@ -53,4 +55,9 @@ public class IgniteActionType extends BlockActionType
         }
     }
 
+    @Override
+    protected void showLogEntry(User user, LogEntry logEntry, String time, String loc)
+    {
+        throw new UnsupportedOperationException();
+    }
 }

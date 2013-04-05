@@ -20,12 +20,14 @@ import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.inventory.ItemStack;
 
+import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.log.Log;
 import de.cubeisland.cubeengine.log.action.LogActionType;
 import de.cubeisland.cubeengine.log.action.logaction.ItemDrop;
 import de.cubeisland.cubeengine.log.action.logaction.SimpleLogActionType;
 import de.cubeisland.cubeengine.log.storage.ActionType;
 import de.cubeisland.cubeengine.log.storage.ItemData;
+import de.cubeisland.cubeengine.log.storage.LogEntry;
 
 import static de.cubeisland.cubeengine.log.storage.ActionType.*;
 import static de.cubeisland.cubeengine.log.storage.ActionType.ENVIRONMENT_KILL;
@@ -163,5 +165,28 @@ public class KillActionType extends LogActionType
             causer = null;
         }
         actionType.logSimple(location,causer,killed,additionalData);
+    }
+
+    @Override
+    protected void showLogEntry(User user, LogEntry logEntry, String time, String loc)
+    {
+        if (logEntry.getCauserUser() != null)
+        {
+            user.sendTranslated("&6%s &agot slaughtered by &2%s&a!",
+                                this.getPrettyName(logEntry.getEntity()),
+                                logEntry.getCauserUser().getDisplayName());
+        }
+        else if (logEntry.getCauserEntity() != null)
+        {
+            user.sendTranslated("&6%s &acould not escape &6%s&a!",
+                                this.getPrettyName(logEntry.getEntity()),
+                                this.getPrettyName(logEntry.getCauserEntity()));
+        }
+        else // something else
+        {
+            user.sendTranslated("&6%s &adied! &f(&6%s&f)",
+                                this.getPrettyName(logEntry.getEntity()),
+                                "CAUSE"); //TODO get cause from json
+        }
     }
 }
