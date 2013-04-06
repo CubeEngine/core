@@ -23,6 +23,7 @@ import org.bukkit.inventory.ItemStack;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.log.Log;
 import de.cubeisland.cubeengine.log.action.LogActionType;
+import de.cubeisland.cubeengine.log.action.logaction.ActionTypeContainer;
 import de.cubeisland.cubeengine.log.action.logaction.ItemDrop;
 import de.cubeisland.cubeengine.log.action.logaction.SimpleLogActionType;
 import de.cubeisland.cubeengine.log.storage.ItemData;
@@ -42,11 +43,11 @@ import static org.bukkit.event.entity.EntityDamageEvent.DamageCause.PROJECTILE;
  * {@link MonsterDeath},
  * {@link OtherDeath},
  */
-public class KillActionType extends LogActionType
+public class KillActionType extends ActionTypeContainer
 {
-    public KillActionType(Log module, int id, String name)
+    public KillActionType(Log module)
     {
-        super(module, -1 ,"KILL");
+        super(module, "KILL");
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
@@ -206,16 +207,4 @@ public class KillActionType extends LogActionType
             && logEntry.data == other.data
             && logEntry.world == other.world;
     }
-
-    @Override
-    public boolean isSimilar(LogEntry logEntry, LogEntry other)
-    {
-        throw new UnsupportedOperationException();
-    }
-    @Override
-    public void showLogEntry(User user, LogEntry logEntry, String time, String loc)
-    {
-        throw new UnsupportedOperationException();
-    }
-
 }

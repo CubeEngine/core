@@ -9,7 +9,9 @@ import org.bukkit.event.block.BlockIgniteEvent;
 
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.log.Log;
+import de.cubeisland.cubeengine.log.action.logaction.ActionTypeContainer;
 import de.cubeisland.cubeengine.log.action.logaction.block.BlockActionType;
+import de.cubeisland.cubeengine.log.action.logaction.block.BlockActionType.BlockData;
 import de.cubeisland.cubeengine.log.storage.LogEntry;
 
 /**
@@ -22,11 +24,11 @@ import de.cubeisland.cubeengine.log.storage.LogEntry;
  * {@link Lighter},
  * {@link OtherIgnite},
  */
-public class IgniteActionType extends BlockActionType
+public class IgniteActionType extends ActionTypeContainer
 {
-    public IgniteActionType(Log module, String name)
+    public IgniteActionType(Log module)
     {
-        super(module, -1, name);
+        super(module, "IGNITE");
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
@@ -63,11 +65,5 @@ public class IgniteActionType extends BlockActionType
             data.material = Material.FIRE;
             igniteType.logBlockChange(state.getLocation(),causer,BlockData.of(state),data,null);
         }
-    }
-
-    @Override
-    protected void showLogEntry(User user, LogEntry logEntry, String time, String loc)
-    {
-        throw new UnsupportedOperationException();
     }
 }

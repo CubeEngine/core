@@ -15,6 +15,8 @@ import de.cubeisland.cubeengine.log.Log;
 import de.cubeisland.cubeengine.log.storage.ItemData;
 import de.cubeisland.cubeengine.log.storage.LogEntry;
 
+import static de.cubeisland.cubeengine.log.action.ActionType.Type.ITEM;
+import static de.cubeisland.cubeengine.log.action.ActionType.Type.PLAYER;
 import static org.bukkit.Material.AIR;
 
 /**
@@ -27,7 +29,7 @@ public class ItemDrop extends SimpleLogActionType
 {
     public ItemDrop(Log module)
     {
-        super(module, 0x84, "item-drop");
+        super(module, "item-drop",PLAYER,ITEM);
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
@@ -83,9 +85,19 @@ public class ItemDrop extends SimpleLogActionType
         {
             amount = logEntry.getItemData().amount;
         }
-        user.sendTranslated("%s&2%s&a dropped %d &6%s%s!",
-                            time, logEntry.getCauserUser().getDisplayName(),
-                            amount, logEntry.getItemData(),loc);
+        if (logEntry.hasCauserUser())
+        {
+            user.sendTranslated("%s&2%s&a dropped %d &6%s%s!",
+                                time, logEntry.getCauserUser().getDisplayName(),
+                                amount, logEntry.getItemData(),loc);
+        }
+        else
+        {
+            user.sendTranslated("%s&2%s&a dropped %d &6%s%s!",
+                                time, logEntry.getCauserEntity(),
+                                amount, logEntry.getItemData(),loc);
+        }
+
     }
 
 

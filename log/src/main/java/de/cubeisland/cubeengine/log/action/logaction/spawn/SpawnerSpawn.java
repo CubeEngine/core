@@ -5,6 +5,8 @@ import de.cubeisland.cubeengine.log.Log;
 import de.cubeisland.cubeengine.log.action.logaction.SimpleLogActionType;
 import de.cubeisland.cubeengine.log.storage.LogEntry;
 
+import static de.cubeisland.cubeengine.log.action.ActionType.Type.ENTITY;
+
 /**
  * spawner spawning
  * <p>Events: {@link EntitySpawnActionType}</p>
@@ -14,7 +16,7 @@ public class SpawnerSpawn extends SimpleLogActionType
 {
     public SpawnerSpawn(Log module)
     {
-        super(module, 0x82, "spawner-spawn");
+        super(module, "spawner-spawn", ENTITY);
     }
 
     @Override

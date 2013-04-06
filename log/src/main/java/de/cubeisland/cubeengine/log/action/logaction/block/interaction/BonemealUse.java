@@ -8,6 +8,9 @@ import de.cubeisland.cubeengine.log.action.logaction.block.BlockActionType;
 import de.cubeisland.cubeengine.log.storage.BlockData;
 import de.cubeisland.cubeengine.log.storage.LogEntry;
 
+import static de.cubeisland.cubeengine.log.action.ActionType.Type.BLOCK;
+import static de.cubeisland.cubeengine.log.action.ActionType.Type.PLAYER;
+
 /**
  * Using bonemeal
  * <p>Events: {@link RightClickActionType}</p>
@@ -16,7 +19,7 @@ public class BonemealUse extends BlockActionType
 {
     public BonemealUse(Log module)
     {
-        super(module, 0x44, "bonemeal-use");
+        super(module, "bonemeal-use", BLOCK, PLAYER);
     }
 
     @Override

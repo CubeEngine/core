@@ -5,6 +5,9 @@ import de.cubeisland.cubeengine.log.Log;
 import de.cubeisland.cubeengine.log.action.logaction.block.BlockActionType;
 import de.cubeisland.cubeengine.log.storage.LogEntry;
 
+import static de.cubeisland.cubeengine.log.action.ActionType.Type.BLOCK;
+import static de.cubeisland.cubeengine.log.action.ActionType.Type.PLAYER;
+
 /**
  * Changing Repeater Ticks
  * <p>Events: {@link RightClickActionType}</p>
@@ -13,7 +16,7 @@ public class RepeaterChange extends BlockActionType
 {
     public RepeaterChange(Log module)
     {
-        super(module, 0x46, "repeater-change");
+        super(module, "repeater-change", BLOCK, PLAYER);
     }
 
     @Override

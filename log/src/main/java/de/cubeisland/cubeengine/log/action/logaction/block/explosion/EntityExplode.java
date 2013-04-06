@@ -5,6 +5,10 @@ import de.cubeisland.cubeengine.log.Log;
 import de.cubeisland.cubeengine.log.action.logaction.block.BlockActionType;
 import de.cubeisland.cubeengine.log.storage.LogEntry;
 
+import static de.cubeisland.cubeengine.log.action.ActionType.Type.BLOCK;
+import static de.cubeisland.cubeengine.log.action.ActionType.Type.ENTITY;
+import static de.cubeisland.cubeengine.log.action.ActionType.Type.PLAYER;
+
 /**
  * other Entity-Explosions
  * <p>Events: {@link ExplodeActionType}</p>
@@ -13,7 +17,7 @@ public class EntityExplode extends BlockActionType
 {
     public EntityExplode(Log module)
     {
-        super(module, 0x10, "tnt-explode");
+        super(module, "entity-explode", BLOCK, ENTITY);
     }
 
     @Override

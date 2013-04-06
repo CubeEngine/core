@@ -10,6 +10,8 @@ import de.cubeisland.cubeengine.log.Log;
 import de.cubeisland.cubeengine.log.action.logaction.block.BlockActionType;
 import de.cubeisland.cubeengine.log.storage.LogEntry;
 
+import static de.cubeisland.cubeengine.log.action.ActionType.Type.*;
+
 /**
  * Fire spreading
  * <p>Events: {@link BlockSpreadEvent}</p>
@@ -18,7 +20,7 @@ public class FireSpread extends BlockActionType
 {
     public FireSpread(Log module)
     {
-        super(module, 0x30, "fire-spread");
+        super(module, "fire-spread", BLOCK, ENVIRONEMENT);
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)

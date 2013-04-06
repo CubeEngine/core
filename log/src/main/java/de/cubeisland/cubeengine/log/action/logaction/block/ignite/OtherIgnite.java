@@ -5,6 +5,8 @@ import de.cubeisland.cubeengine.log.Log;
 import de.cubeisland.cubeengine.log.action.logaction.block.BlockActionType;
 import de.cubeisland.cubeengine.log.storage.LogEntry;
 
+import static de.cubeisland.cubeengine.log.action.ActionType.Type.*;
+
 /**
  * other-ignite
  * <p>Events: {@link IgniteActionType}</p>
@@ -13,7 +15,7 @@ public class OtherIgnite extends BlockActionType
 {
     public OtherIgnite(Log module)
     {
-        super(module, 0x38, "other-ignite");
+        super(module, "other-ignite", BLOCK, ENVIRONEMENT);
     }
 
     @Override

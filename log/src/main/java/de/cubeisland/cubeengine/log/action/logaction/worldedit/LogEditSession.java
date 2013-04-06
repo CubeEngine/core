@@ -1,4 +1,4 @@
-package de.cubeisland.cubeengine.log.listeners.worldedit;
+package de.cubeisland.cubeengine.log.action.logaction.worldedit;
 
 import org.bukkit.World;
 import org.bukkit.block.BlockState;
@@ -53,26 +53,22 @@ public class LogEditSession extends EditSession
     @Override
     public boolean rawSetBlock(Vector pt, BaseBlock block)
     {
-        if (this.player instanceof BukkitPlayer)
+        if (this.player instanceof BukkitPlayer && this.player.getWorld() instanceof BukkitWorld )
         {
-            if (this.player.getWorld() instanceof BukkitWorld)
+            World world = ((BukkitWorld)this.player.getWorld()).getWorld();
+            BlockState oldState = world.getBlockAt(pt.getBlockX(), pt.getBlockY(), pt.getBlockZ()).getState();
+            boolean success = super.rawSetBlock(pt, block);
+            if (success)
             {
-                World world = ((BukkitWorld)this.player.getWorld()).getWorld();
-                BlockState oldState = world.getBlockAt(pt.getBlockX(), pt.getBlockY(), pt.getBlockZ()).getState();
-                boolean success = super.rawSetBlock(pt, block);
-                if (success)
+                WorldEditActionType actionType = this.module.getActionTypeManager().getActionType(WorldEditActionType.class);
+                if (actionType.isActive(world))
                 {
                     User user = this.module.getCore().getUserManager().getExactUser(((BukkitPlayer)this.player).getPlayer());
                     BlockState newState =  world.getBlockAt(pt.getBlockX(), pt.getBlockY(), pt.getBlockZ()).getState();
-                    this.module.getLogManager().queueBlockChangeLog(oldState.getLocation(),
-                                                                    ActionType_old.WORLDEDIT, user.key,
-                                                                    oldState.getType().name(),
-                                                                    oldState.getRawData(),
-                                                                    newState.getType().name(),
-                                                                    newState.getRawData(), null);
+                    actionType.logBlockChange(((BukkitPlayer)this.player).getPlayer(),oldState,newState,null);
                 }
-                return success;
             }
+            return success;
         }
         return super.rawSetBlock(pt, block);
     }

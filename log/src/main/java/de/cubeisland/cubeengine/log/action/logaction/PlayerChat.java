@@ -10,6 +10,9 @@ import de.cubeisland.cubeengine.log.storage.LogEntry;
 
 import com.fasterxml.jackson.databind.node.ArrayNode;
 
+import static de.cubeisland.cubeengine.log.action.ActionType.Type.ITEM;
+import static de.cubeisland.cubeengine.log.action.ActionType.Type.PLAYER;
+
 /**
  * chatting
  * <p>Events: {@link AsyncPlayerChatEvent}</p>
@@ -18,7 +21,7 @@ public class PlayerChat extends SimpleLogActionType
 {
     public PlayerChat(Log module)
     {
-        super(module, 0xA2, "player-chat");
+        super(module, "player-chat",PLAYER);
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)

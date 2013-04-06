@@ -6,6 +6,8 @@ import de.cubeisland.cubeengine.log.action.logaction.SimpleLogActionType;
 import de.cubeisland.cubeengine.log.storage.ItemData;
 import de.cubeisland.cubeengine.log.storage.LogEntry;
 
+import static de.cubeisland.cubeengine.log.action.ActionType.Type.*;
+
 /**
  * Inserting items into a container
  * <p>Events: {@link ContainerActionType}
@@ -14,7 +16,7 @@ public class ItemInsert extends SimpleLogActionType
 {
     public ItemInsert(Log module)
     {
-        super(module, 0x90, "item-insert");
+        super(module, "item-insert", PLAYER, INVENTORY, ITEM);
     }
 
     @Override

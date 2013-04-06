@@ -9,6 +9,10 @@ import de.cubeisland.cubeengine.log.storage.LogEntry;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
+import static de.cubeisland.cubeengine.log.action.ActionType.Type.ENTITY;
+import static de.cubeisland.cubeengine.log.action.ActionType.Type.KILL;
+import static de.cubeisland.cubeengine.log.action.ActionType.Type.PLAYER;
+
 /**
  * player-death
  * <p>Events: {@link KillActionType}</p>
@@ -17,7 +21,7 @@ public class PlayerDeath extends SimpleLogActionType
 {
     public PlayerDeath(Log module)
     {
-        super(module, 0x74, "player-death");
+        super(module, "player-death", PLAYER, ENTITY, KILL);
     }
 
     @Override

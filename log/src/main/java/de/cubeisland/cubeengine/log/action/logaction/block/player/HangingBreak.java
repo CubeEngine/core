@@ -21,6 +21,8 @@ import de.cubeisland.cubeengine.log.action.logaction.block.BlockActionType;
 import de.cubeisland.cubeengine.log.storage.ItemData;
 import de.cubeisland.cubeengine.log.storage.LogEntry;
 
+import static de.cubeisland.cubeengine.log.action.ActionType.Type.BLOCK;
+import static de.cubeisland.cubeengine.log.action.ActionType.Type.PLAYER;
 import static org.bukkit.Material.AIR;
 import static org.bukkit.Material.ITEM_FRAME;
 import static org.bukkit.Material.PAINTING;
@@ -34,7 +36,7 @@ public class HangingBreak extends BlockActionType
 {
     public HangingBreak(Log module)
     {
-        super(module, 0x63, "hanging-break");
+        super(module, "hanging-break", BLOCK, PLAYER);
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
@@ -129,7 +131,7 @@ public class HangingBreak extends BlockActionType
         }
         else
         {
-            user.sendTranslated("&2%s &abroke an &6itemframe&a containing &6%s&a!",
+            user.sendTranslated("%s&2%s &abroke an &6itemframe&a containing &6%s%s&a!",
                                 time,logEntry.getCauserUser().getDisplayName(),
                                 logEntry.getItemData(),loc);
         }

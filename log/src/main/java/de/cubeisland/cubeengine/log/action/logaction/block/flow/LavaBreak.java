@@ -5,6 +5,9 @@ import de.cubeisland.cubeengine.log.Log;
 import de.cubeisland.cubeengine.log.action.logaction.block.BlockActionType;
 import de.cubeisland.cubeengine.log.storage.LogEntry;
 
+import static de.cubeisland.cubeengine.log.action.ActionType.Type.BLOCK;
+import static de.cubeisland.cubeengine.log.action.ActionType.Type.ENVIRONEMENT;
+
 /**
  * Lava-break
  * <p>Events: {@link LavaFlow}</p>
@@ -13,7 +16,7 @@ public class LavaBreak extends BlockActionType
 {
     public LavaBreak(Log module)
     {
-        super(module, 0x05, "lava-break");
+        super(module, "lava-break", BLOCK, ENVIRONEMENT);
     }
 
     @Override

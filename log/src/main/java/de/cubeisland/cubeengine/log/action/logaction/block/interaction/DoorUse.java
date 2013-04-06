@@ -6,6 +6,9 @@ import de.cubeisland.cubeengine.log.action.LogActionType;
 import de.cubeisland.cubeengine.log.action.logaction.block.BlockActionType;
 import de.cubeisland.cubeengine.log.storage.LogEntry;
 
+import static de.cubeisland.cubeengine.log.action.ActionType.Type.BLOCK;
+import static de.cubeisland.cubeengine.log.action.ActionType.Type.PLAYER;
+
 
 /**
  * Using doors
@@ -15,7 +18,7 @@ public class DoorUse extends BlockActionType
 {
     public DoorUse(Log module)
     {
-        super(module, 0x48, "door-use");
+        super(module, "door-use", BLOCK, PLAYER);
     }
 
     @Override

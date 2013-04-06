@@ -5,6 +5,9 @@ import de.cubeisland.cubeengine.log.Log;
 import de.cubeisland.cubeengine.log.action.logaction.block.BlockActionType;
 import de.cubeisland.cubeengine.log.storage.LogEntry;
 
+import static de.cubeisland.cubeengine.log.action.ActionType.Type.BLOCK;
+import static de.cubeisland.cubeengine.log.action.ActionType.Type.PLAYER;
+
 /**
  * Emptying lava-buckets
  * <p>Events: {@link BucketEmpty}</p>
@@ -13,7 +16,7 @@ public class LavaBucket  extends BlockActionType
 {
     public LavaBucket(Log module)
     {
-        super(module, 0x21, "lava-bucket");
+        super(module, "lava-bucket", BLOCK, PLAYER);
     }
 
     @Override

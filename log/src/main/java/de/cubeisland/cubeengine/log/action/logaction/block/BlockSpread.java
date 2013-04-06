@@ -9,6 +9,9 @@ import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.log.Log;
 import de.cubeisland.cubeengine.log.storage.LogEntry;
 
+import static de.cubeisland.cubeengine.log.action.ActionType.Type.BLOCK;
+import static de.cubeisland.cubeengine.log.action.ActionType.Type.ENVIRONEMENT;
+
 /**
  * Blocks except fire spreading
  * <p>Events: {@link BlockSpreadEvent}</p>
@@ -17,7 +20,7 @@ public class BlockSpread extends BlockActionType
 {
     public BlockSpread(Log module)
     {
-        super(module, 0x35, "block-spread");
+        super(module, "block-spread", BLOCK, ENVIRONEMENT);
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)

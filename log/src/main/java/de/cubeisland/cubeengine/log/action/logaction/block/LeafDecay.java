@@ -8,6 +8,8 @@ import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.log.Log;
 import de.cubeisland.cubeengine.log.storage.LogEntry;
 
+import static de.cubeisland.cubeengine.log.action.ActionType.Type.BLOCK;
+import static de.cubeisland.cubeengine.log.action.ActionType.Type.ENVIRONEMENT;
 import static org.bukkit.Material.AIR;
 
 /**
@@ -19,7 +21,7 @@ public class LeafDecay extends BlockActionType
 
     public LeafDecay(Log module)
     {
-        super(module, 0x03, "leaf-decay");
+        super(module, "leaf-decay", BLOCK, ENVIRONEMENT);
     }
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onLeavesDecay(LeavesDecayEvent event)

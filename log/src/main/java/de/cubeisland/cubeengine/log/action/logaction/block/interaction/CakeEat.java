@@ -5,6 +5,9 @@ import de.cubeisland.cubeengine.log.Log;
 import de.cubeisland.cubeengine.log.action.logaction.block.BlockActionType;
 import de.cubeisland.cubeengine.log.storage.LogEntry;
 
+import static de.cubeisland.cubeengine.log.action.ActionType.Type.BLOCK;
+import static de.cubeisland.cubeengine.log.action.ActionType.Type.PLAYER;
+
 /**
  * Eating cake
  * <p>Events: {@link RightClickActionType}</p>
@@ -13,7 +16,7 @@ public class CakeEat extends BlockActionType
 {
     public CakeEat(Log module)
     {
-        super(module, 0x49, "cake-eat");
+        super(module, "cake-eat", BLOCK, PLAYER);
     }
 
     @Override

@@ -10,6 +10,9 @@ import de.cubeisland.cubeengine.log.action.logaction.block.BlockActionType;
 import de.cubeisland.cubeengine.log.storage.EntityData;
 import de.cubeisland.cubeengine.log.storage.LogEntry;
 
+import static de.cubeisland.cubeengine.log.action.ActionType.Type.ENTITY;
+import static de.cubeisland.cubeengine.log.action.ActionType.Type.PLAYER;
+
 /**
  * spawing entities with spawneggs
  * <p>Events: {@link de.cubeisland.cubeengine.log.action.logaction.block.interaction.RightClickActionType RightClickActionType}</p>
@@ -18,7 +21,7 @@ public class MonsterEggUse extends SimpleLogActionType
 {
     public MonsterEggUse(Log module)
     {
-        super(module, 0x80, "monsteregg-use");
+        super(module, "monsteregg-use", PLAYER, ENTITY);
     }
 
     @Override

@@ -411,4 +411,9 @@ public class LogManager
     {
         this.queryManager.queueLog(log);
     }
+
+    public QueryManager getQueryManager()
+    {
+        return queryManager;
+    }
 }

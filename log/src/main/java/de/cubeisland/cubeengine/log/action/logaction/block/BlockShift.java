@@ -11,6 +11,8 @@ import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.log.Log;
 import de.cubeisland.cubeengine.log.storage.LogEntry;
 
+import static de.cubeisland.cubeengine.log.action.ActionType.Type.BLOCK;
+import static de.cubeisland.cubeengine.log.action.ActionType.Type.ENVIRONEMENT;
 import static org.bukkit.Material.AIR;
 
 /**
@@ -21,7 +23,7 @@ public class BlockShift extends BlockActionType
 {
     public BlockShift(Log module)
     {
-        super(module, 0x40, "block-shift");
+        super(module, "block-shift", BLOCK);
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)

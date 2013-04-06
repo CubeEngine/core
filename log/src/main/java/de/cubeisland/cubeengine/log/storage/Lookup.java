@@ -17,6 +17,10 @@ import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import de.cubeisland.cubeengine.core.module.Module;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.util.math.BlockVector3;
+import de.cubeisland.cubeengine.core.webapi.Action;
+
+import de.cubeisland.cubeengine.log.action.ActionType;
+import de.cubeisland.cubeengine.log.action.ActionType.Type;
 
 import static de.cubeisland.cubeengine.log.storage.ActionType_old.LOOKUP_CONTAINER;
 import static de.cubeisland.cubeengine.log.storage.ActionType_old.LOOKUP_KILLS;
@@ -26,13 +30,41 @@ public class Lookup implements Cloneable
 {
     private final Module module;
 
+
+    /*
+    	protected boolean allow_no_radius = false;
+protected int id = 0;
+protected Vector maxLoc;
+protected Vector minLoc;
+protected int parent_id = 0;
+protected Location player_location;
+protected int radius;
+protected ArrayList<Location> specific_block_locations = new ArrayList<Location>();
+protected String since_time;
+protected String before_time;
+protected String world;
+protected String keyword;
+protected boolean ignoreTime;
+
+
+Params that allow multiple values
+
+    protected HashMap<String,MatchRule> actionTypeRules = new HashMap<String,MatchRule>();
+    protected HashMap<Integer,Byte> block_filters = new HashMap<Integer,Byte>();
+    protected HashMap<String,MatchRule> entity_filters = new HashMap<String,MatchRule>();
+    protected HashMap<String,MatchRule> player_names = new HashMap<String,MatchRule>();
+    protected ArrayList<Flag> flags = new ArrayList<Flag>();
+    protected ArrayList<String> shared_players = new ArrayList<String>();
+     */
+
+
     // Lookup Types:
     // Full lookup / all action types / can set time & location
     // Player lookup / all player related / time / location / users
     // Block lookup / all block related / time / location / block MAT:id  | < WORLDEDIT 0x4B || 0x61 || 0x63 (hangings)
 
     // The actions to look for
-    private Set<ActionType_old> actions = new CopyOnWriteArraySet<ActionType_old>();
+    private Set<ActionType> actions = new CopyOnWriteArraySet<ActionType>();
     private volatile boolean includeActions = true;
     // When (since/before/from-to)
     private volatile Long from_since;
@@ -90,7 +122,7 @@ public class Lookup implements Cloneable
         return this;
     }
 
-    public Lookup includeAction(ActionType_old action)
+    public Lookup includeAction(ActionType action)
     {
         if (this.includeActions)
         {
@@ -103,7 +135,7 @@ public class Lookup implements Cloneable
         return this;
     }
 
-    public Lookup excludeAction(ActionType_old action)
+    public Lookup excludeAction(ActionType action)
     {
         if (this.includeActions)
         {
@@ -116,7 +148,7 @@ public class Lookup implements Cloneable
         return this;
     }
 
-    public Lookup includeActions(Collection<ActionType_old> actions)
+    public Lookup includeActions(Collection<ActionType> actions)
     {
         if (this.includeActions)
         {
@@ -129,7 +161,7 @@ public class Lookup implements Cloneable
         return this;
     }
 
-    public Lookup excludeActions(Collection<ActionType_old> actions)
+    public Lookup excludeActions(Collection<ActionType> actions)
     {
         if (this.includeActions)
         {
@@ -217,7 +249,7 @@ public class Lookup implements Cloneable
         Lookup lookup = new Lookup(module);
         lookup.includeActions = true;
         lookup.clearActions();
-        lookup.includeActions(LOOKUP_CONTAINER);
+        lookup.includeActions(Type.INVENTORY.getActionTypes());
         return lookup;
     }
 
@@ -229,7 +261,7 @@ public class Lookup implements Cloneable
         Lookup lookup = new Lookup(module);
         lookup.includeActions = true;
         lookup.clearActions();
-        lookup.includeActions(LOOKUP_KILLS);
+        lookup.includeActions(Type.KILL.getActionTypes());
         return lookup;
     }
 
@@ -241,7 +273,7 @@ public class Lookup implements Cloneable
         Lookup lookup = new Lookup(module);
         lookup.includeActions = true;
         lookup.clearActions();
-        lookup.includeActions(ActionType_old.LOOKUP_PLAYER);
+        lookup.includeActions(Type.PLAYER.getActionTypes());
         return lookup;
     }
 
@@ -253,7 +285,7 @@ public class Lookup implements Cloneable
         Lookup lookup = new Lookup(module);
         lookup.includeActions = true;
         lookup.clearActions();
-        lookup.includeActions(ActionType_old.LOOKUP_BLOCK);
+        lookup.includeActions(Type.BLOCK.getActionTypes());
         return lookup;
     }
 
@@ -306,46 +338,15 @@ public class Lookup implements Cloneable
         }
         */
         compressedEntries.addAll(this.logEntries); //TODO do the compressing
+
+        //TODO pages
         for (LogEntry logEntry : compressedEntries)
         {
-            if (logEntry.getNewBlock().material.equals(Material.AIR))
-            {
-            user.sendTranslated("&2%s &aused worldedit to remove &6%s&a!",
-                                logEntry.getCauserUser().getDisplayName(),
-                               this.getPrettyName(logEntry.getOldBlock()));
-            }
-            else if (logEntry.getOldBlock().material.equals(Material.AIR))
-            {
-            user.sendTranslated("&2%s &aused worldedit to place &6%s&a!",
-                                logEntry.getCauserUser().getDisplayName(),
-                                this.getPrettyName(logEntry.getNewBlock()));
-            }
-            else
-            {
-            user.sendTranslated("&2%s &aused worldedit to replace &6%s&a with &6%s&a!",
-                                logEntry.getCauserUser().getDisplayName(),
-                                this.getPrettyName(logEntry.getOldBlock()),
-                                this.getPrettyName(logEntry.getNewBlock()));
-            }
-            break;
+            logEntry.actionType.showLogEntry(user,this,logEntry);
         }
-        user.sendMessage("Yeah thats all for now!");
     }
 
-    private String getPrettyName(DyeColor color)
-    {
-        return color.name(); //TODO
-    }
-
-
-
-    private String getPrettyName(BlockData blockData)
-    {
-        //TODO painting has special data (hanging)
-        return blockData.material+":"+blockData.data; //TODO
-    }
-
-    public Set<ActionType_old> getActions()
+    public Set<ActionType> getActions()
     {
         return actions;
     }
@@ -393,7 +394,7 @@ public class Lookup implements Cloneable
     public Lookup clone()
     {
         Lookup lookup = new Lookup(this.module);
-        lookup.actions = new CopyOnWriteArraySet<ActionType_old>(this.actions);
+        lookup.actions = new CopyOnWriteArraySet<ActionType>(this.actions);
         lookup.includeActions = this.includeActions;
         lookup.from_since = this.from_since;
         lookup.to_before = this.to_before;
@@ -406,26 +407,4 @@ public class Lookup implements Cloneable
         lookup.includeBlocks = this.includeBlocks;
         return lookup;
     }
-
-    /**
-     player [name1] <name2> <name3> ...
-     area <radius>
-     selection, sel
-     block [type1] <type2> <type3> ..., type [type1] <type2> <type3> ...
-     created, destroyed
-     chestaccess
-     kills
-     since [timespec], time [timespec]
-     before [timespec]
-     limit [count]
-     sum [none|blocks|players]
-     world [worldname]
-     asc, desc
-     coords
-     silent
-     last
-     chat
-     search, match
-     loc, location (v1.51+)
-     */
 }

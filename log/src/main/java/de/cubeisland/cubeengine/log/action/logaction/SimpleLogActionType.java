@@ -22,9 +22,9 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 
 public abstract class SimpleLogActionType extends LogActionType
 {
-    public SimpleLogActionType(Log module, int id, String name)
+    public SimpleLogActionType(Log module, String name, Type... types)
     {
-        super(module, id, name);
+        super(module, name, types);
     }
 
     public void logSimple(Entity player, String additional)

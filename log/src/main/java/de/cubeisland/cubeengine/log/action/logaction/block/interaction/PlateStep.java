@@ -5,6 +5,10 @@ import de.cubeisland.cubeengine.log.Log;
 import de.cubeisland.cubeengine.log.action.logaction.block.BlockActionType;
 import de.cubeisland.cubeengine.log.storage.LogEntry;
 
+import static de.cubeisland.cubeengine.log.action.ActionType.Type.BLOCK;
+import static de.cubeisland.cubeengine.log.action.ActionType.Type.CANNOT_ROLLBACK;
+import static de.cubeisland.cubeengine.log.action.ActionType.Type.PLAYER;
+
 
 /**
  * Stepping on PressurePlates
@@ -15,7 +19,7 @@ public class PlateStep extends BlockActionType
 {
     public PlateStep(Log module)
     {
-        super(module, 0x56, "plate-step");
+        super(module, "plate-step", BLOCK, PLAYER, CANNOT_ROLLBACK);
     }
 
     @Override

@@ -8,6 +8,9 @@ import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.log.Log;
 import de.cubeisland.cubeengine.log.storage.LogEntry;
 
+import static de.cubeisland.cubeengine.log.action.ActionType.Type.BLOCK;
+import static de.cubeisland.cubeengine.log.action.ActionType.Type.ENVIRONEMENT;
+
 /**
  * Blocks fading
  * <p>Events: {@link BlockFadeEvent}</p>
@@ -16,7 +19,7 @@ public class BlockFade extends BlockActionType
 {
     public BlockFade(Log module)
     {
-        super(module, 0x02, "block-fade");
+        super(module, "block-fade", BLOCK, ENVIRONEMENT);
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)

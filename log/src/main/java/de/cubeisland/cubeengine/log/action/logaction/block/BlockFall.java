@@ -20,6 +20,9 @@ import de.cubeisland.cubeengine.log.storage.LogEntry;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
+import static de.cubeisland.cubeengine.log.action.ActionType.Type.BLOCK;
+import static de.cubeisland.cubeengine.log.action.ActionType.Type.ENVIRONEMENT;
+import static de.cubeisland.cubeengine.log.action.ActionType.Type.PLAYER;
 import static org.bukkit.Material.AIR;
 
 /**
@@ -30,7 +33,7 @@ public class BlockFall extends BlockActionType
 {
     public BlockFall(Log module)
     {
-        super(module, 0x41, "block-fall");
+        super(module, "block-fall", BLOCK, ENVIRONEMENT, PLAYER);
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
@@ -47,11 +50,11 @@ public class BlockFall extends BlockActionType
                 if (cause != null)
                 {
                     ObjectNode json = this.om.createObjectNode();
-                    json.put("fall-cause",cause.getRight().actionTypeID);
+                    json.put("fall-cause",cause.getRight().getID());
                     this.logBlockChange(loc, cause.getLeft(), BlockData.of(state), AIR, json.toString());
                 }
                 else {
-                    System.out.print("Unplanned BlockPhysicsEvent! (BlockFall)"); //TODO remove
+                    System.out.print("Unplanned BlockPhysicsEvent! (BlockFall) "+state.getType().name()); //TODO remove
                 }
             }
         }

@@ -5,6 +5,9 @@ import de.cubeisland.cubeengine.log.Log;
 import de.cubeisland.cubeengine.log.action.logaction.block.BlockActionType;
 import de.cubeisland.cubeengine.log.storage.LogEntry;
 
+import static de.cubeisland.cubeengine.log.action.ActionType.Type.BLOCK;
+import static de.cubeisland.cubeengine.log.action.ActionType.Type.ENVIRONEMENT;
+
 /**
  * Water-break
  * <p>Events: {@link WaterFlow}</p>
@@ -13,7 +16,7 @@ public class WaterBreak extends BlockActionType
 {
     public WaterBreak(Log module)
     {
-        super(module, 0x04, "water-break");
+        super(module, "water-break", BLOCK, ENVIRONEMENT);
     }
 
     @Override

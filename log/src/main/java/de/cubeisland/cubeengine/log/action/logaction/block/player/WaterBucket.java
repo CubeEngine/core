@@ -5,6 +5,9 @@ import de.cubeisland.cubeengine.log.Log;
 import de.cubeisland.cubeengine.log.action.logaction.block.BlockActionType;
 import de.cubeisland.cubeengine.log.storage.LogEntry;
 
+import static de.cubeisland.cubeengine.log.action.ActionType.Type.BLOCK;
+import static de.cubeisland.cubeengine.log.action.ActionType.Type.PLAYER;
+
 /**
  * Emptying water-buckets
  * <p>Events: {@link BucketEmpty}</p>
@@ -13,7 +16,7 @@ public class WaterBucket extends BlockActionType
 {
     public WaterBucket(Log module)
     {
-        super(module, 0x22, "water-bucket");
+        super(module, "water-bucket", BLOCK, PLAYER);
     }
     @Override
     protected void showLogEntry(User user, LogEntry logEntry, String time, String loc)

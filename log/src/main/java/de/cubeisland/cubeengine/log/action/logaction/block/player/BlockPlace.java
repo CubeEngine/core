@@ -15,6 +15,8 @@ import de.cubeisland.cubeengine.log.storage.LogEntry;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
+import static de.cubeisland.cubeengine.log.action.ActionType.Type.BLOCK;
+import static de.cubeisland.cubeengine.log.action.ActionType.Type.PLAYER;
 import static org.bukkit.Material.AIR;
 
 /**
@@ -26,7 +28,7 @@ public class BlockPlace extends BlockActionType
 {
     public BlockPlace(Log module)
     {
-        super(module, 0x20, "block-place");
+        super(module, "block-place", BLOCK, PLAYER);
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
@@ -48,7 +50,7 @@ public class BlockPlace extends BlockActionType
                 BlockState state = event.getBlock().getRelative(BlockFace.UP).getState();
                 BlockData oldData = BlockData.of(state);
                 ObjectNode json = this.om.createObjectNode();
-                json.put("break-cause", this.actionTypeID);
+                json.put("break-cause", this.getID());
                 blockBreak.logBlockChange(state.getLocation(),event.getPlayer(),oldData,AIR,json.toString());
             }
         }
@@ -79,7 +81,7 @@ public class BlockPlace extends BlockActionType
             }
             else
             {
-                user.sendTranslated("&2%s &areplaced &6%s&a with &6%s&a!",
+                user.sendTranslated("%s&2%s &areplaced &6%s&a with &6%s&a%s&a!",
                                     time,
                                     logEntry.getCauserUser().getDisplayName(),
                                     logEntry.getOldBlock(),

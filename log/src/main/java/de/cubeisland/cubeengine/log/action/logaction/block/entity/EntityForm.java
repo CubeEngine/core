@@ -9,6 +9,9 @@ import de.cubeisland.cubeengine.log.Log;
 import de.cubeisland.cubeengine.log.action.logaction.block.BlockActionType;
 import de.cubeisland.cubeengine.log.storage.LogEntry;
 
+import static de.cubeisland.cubeengine.log.action.ActionType.Type.BLOCK;
+import static de.cubeisland.cubeengine.log.action.ActionType.Type.ENTITY;
+
 /**
  * Usually Snow-Golems making snow
  * <p>Events: {@link EntityBlockFormEvent}</p>
@@ -17,7 +20,7 @@ public class EntityForm extends BlockActionType
 {
     public EntityForm(Log module)
     {
-        super(module, 0x27, "entity-form");
+        super(module, "entity-form", BLOCK, ENTITY);
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)

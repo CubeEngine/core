@@ -9,9 +9,9 @@ public abstract class BukkitActionType extends ActionType implements Listener
 {
     private final Plugin plugin;
 
-    public BukkitActionType(Log module, Plugin plugin, int id, String name)
+    public BukkitActionType(Log module, Plugin plugin, String name, Type... types)
     {
-        super(module, id, name);
+        super(module, name);
         this.plugin = plugin;
     }
 }

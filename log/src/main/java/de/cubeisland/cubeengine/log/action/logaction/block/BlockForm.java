@@ -8,6 +8,9 @@ import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.log.Log;
 import de.cubeisland.cubeengine.log.storage.LogEntry;
 
+import static de.cubeisland.cubeengine.log.action.ActionType.Type.BLOCK;
+import static de.cubeisland.cubeengine.log.action.ActionType.Type.ENVIRONEMENT;
+
 
 /**
  * Blocks forming
@@ -17,7 +20,7 @@ public class BlockForm extends BlockActionType
 {
     public BlockForm(Log module)
     {
-        super(module, 0x25, "block-form");
+        super(module, "block-form", BLOCK, ENVIRONEMENT);
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)

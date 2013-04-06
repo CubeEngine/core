@@ -1,6 +1,11 @@
 package de.cubeisland.cubeengine.log.action;
 
 import java.sql.Timestamp;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.EnumSet;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.bukkit.Location;
 import org.bukkit.World;
@@ -17,10 +22,12 @@ import de.cubeisland.cubeengine.log.storage.Lookup;
 import de.cubeisland.cubeengine.log.storage.QueuedLog;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import gnu.trove.set.hash.THashSet;
 
 public abstract class ActionType
 {
-    public final int actionTypeID;
+    private long actionTypeID;
+
     public final Log logModule;
     protected final WorldManager wm;
     protected final UserManager um;
@@ -28,9 +35,10 @@ public abstract class ActionType
     protected final ActionTypeManager manager;
     protected final LogManager lm;
     public final String name;
+    public final EnumSet<Type> types;
 
 
-    protected ActionType(Log module, int actionTypeID, String name)
+    protected ActionType(Log module, String name, Type... types)
     {
         this.logModule = module;
         this.wm = module.getCore().getWorldManager();
@@ -43,6 +51,11 @@ public abstract class ActionType
         this.manager = module.getActionTypeManager();
         this.name = name;
         this.lm = module.getLogManager();
+        this.types = EnumSet.of(Type.ALL,types);
+        for (Type type : types)
+        {
+            type.registerActionType(this);
+        }
     }
 
     /**
@@ -100,7 +113,7 @@ public abstract class ActionType
      * @param lookup
      * @param logEntry
      */
-    abstract void showLogEntry(User user, Lookup lookup, LogEntry logEntry);
+    public abstract void showLogEntry(User user, Lookup lookup, LogEntry logEntry);
 
     /**
      * Returns true if the given log-entries can be put together to minimize output
@@ -110,4 +123,31 @@ public abstract class ActionType
      * @return
      */
     public abstract boolean isSimilar(LogEntry logEntry, LogEntry other);
+
+    public void setID(long id)
+    {
+        this.actionTypeID = id;
+    }
+
+    public long getID()
+    {
+        return this.actionTypeID;
+    }
+
+    public static enum Type
+    {
+        ALL,PLAYER,BLOCK,ITEM,INVENTORY,ENTITY,ENVIRONEMENT,CANNOT_ROLLBACK,KILL;
+
+        private HashSet<ActionType> actionTypes = new HashSet<ActionType>();
+
+        public void registerActionType(ActionType actionType)
+        {
+            this.actionTypes.add(actionType);
+        }
+
+        public Set<ActionType> getActionTypes()
+        {
+            return Collections.unmodifiableSet(actionTypes);
+        }
+    }
 }

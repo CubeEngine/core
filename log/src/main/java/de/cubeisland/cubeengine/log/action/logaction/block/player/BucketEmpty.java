@@ -9,8 +9,13 @@ import org.bukkit.event.player.PlayerBucketEmptyEvent;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.log.Log;
 import de.cubeisland.cubeengine.log.action.LogActionType;
+import de.cubeisland.cubeengine.log.action.logaction.ActionTypeContainer;
 import de.cubeisland.cubeengine.log.action.logaction.block.BlockActionType.BlockData;
+import de.cubeisland.cubeengine.log.action.logaction.container.ContainerActionType;
 import de.cubeisland.cubeengine.log.storage.LogEntry;
+
+import static de.cubeisland.cubeengine.log.action.ActionType.Type.BLOCK;
+import static de.cubeisland.cubeengine.log.action.ActionType.Type.PLAYER;
 
 /**
  * Container-ActionType for emptying Buckets.
@@ -18,11 +23,11 @@ import de.cubeisland.cubeengine.log.storage.LogEntry;
  * <p>External Actions: {@link LavaBucket} when placing lava,
  * {@link WaterBucket} when placing water
  */
-public class BucketEmpty extends LogActionType
+public class BucketEmpty extends ActionTypeContainer
 {
     public BucketEmpty(Log module)
     {
-        super(module, -1, "BUCKET_EMPTY");
+        super(module, "BUCKET_EMPTY");
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
@@ -45,17 +50,5 @@ public class BucketEmpty extends LogActionType
                 lavaBucket.logBlockChange(state.getLocation(), event.getPlayer(), BlockData.of(state), Material.LAVA, null);
             }
         }
-    }
-
-    @Override
-    protected void showLogEntry(User user, LogEntry logEntry, String time, String loc)
-    {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public boolean isSimilar(LogEntry logEntry, LogEntry other)
-    {
-        throw new UnsupportedOperationException();
     }
 }

@@ -15,7 +15,9 @@ import org.bukkit.event.entity.EntityExplodeEvent;
 
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.log.Log;
+import de.cubeisland.cubeengine.log.action.logaction.ActionTypeContainer;
 import de.cubeisland.cubeengine.log.action.logaction.block.BlockActionType;
+import de.cubeisland.cubeengine.log.action.logaction.block.BlockActionType.BlockData;
 import de.cubeisland.cubeengine.log.storage.LogEntry;
 
 import static org.bukkit.Material.AIR;
@@ -31,11 +33,11 @@ import static org.bukkit.Material.AIR;
  * {@link WitherExplode},
  * {@link EntityExplode},
  */
-public class ExplodeActionType extends BlockActionType
+public class ExplodeActionType extends ActionTypeContainer
 {
     public ExplodeActionType(Log module)
     {
-        super(module, -1, "EXPLOSION");
+        super(module, "EXPLOSION");
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
@@ -84,16 +86,10 @@ public class ExplodeActionType extends BlockActionType
                 {
                     continue; // ignore upper door_halfs
                 }
-                actionType.logBlockChange(block.getLocation(),player,BlockData.of(block.getState()),AIR,null);
-                this.logAttachedBlocks(block.getState(), player);
-                this.logFallingBlocks(block.getState(),player);
+                actionType.logBlockChange(block.getLocation(),player, BlockData.of(block.getState()),AIR,null);
+                actionType.logAttachedBlocks(block.getState(), player);
+                actionType.logFallingBlocks(block.getState(), player);
             }
         }
-    }
-
-    @Override
-    protected void showLogEntry(User user, LogEntry logEntry, String time, String loc)
-    {
-        throw new UnsupportedOperationException();
     }
 }

@@ -6,6 +6,7 @@ import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.LinkedList;
+import java.util.Map;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.CountDownLatch;
@@ -27,6 +28,9 @@ import de.cubeisland.cubeengine.core.util.Profiler;
 import de.cubeisland.cubeengine.core.util.Triplet;
 import de.cubeisland.cubeengine.core.util.math.BlockVector3;
 import de.cubeisland.cubeengine.log.Log;
+import de.cubeisland.cubeengine.log.action.ActionType;
+
+import gnu.trove.map.hash.THashMap;
 
 public class QueryManager
 {
@@ -63,10 +67,30 @@ public class QueryManager
         try
         {
             QueryBuilder builder = database.getQueryBuilder();
-            String sql = builder.createTable("log_entries", true).beginFields()
-                                .field("key", AttrType.INT, true).autoIncrement()
+            String sql = builder.createTable("log_actiontypes",true).beginFields()
+                .field("id",AttrType.INT,true).autoIncrement()
+                .field("name", AttrType.VARCHAR, 32)
+                .unique("name")
+                .primaryKey("id")
+                .endFields()
+                .engine("innoDB").defaultcharset("utf8")
+                .end().end();
+            this.database.execute(sql);
+            sql = builder.insert().into("log_actiontypes")
+                         .cols("name")
+                         .end().end();
+            this.database.storeStatement(this.getClass(), "registerAction", sql);
+            sql = builder.deleteFrom("log_actiontypes")
+                         .where().field("name").isEqual().value()
+                         .end().end();
+            this.database.storeStatement(this.getClass(), "unregisterAction", sql);
+            sql = builder.select().wildcard().from("log_actiontypes").end().end();
+            this.database.storeStatement(this.getClass(), "getAllActions", sql);
+
+            sql = builder.createTable("log_entries", true).beginFields()
+                                .field("id", AttrType.INT, true).autoIncrement()
                                 .field("date", AttrType.DATETIME)
-                                .field("action", AttrType.TINYINT, true)
+                                .field("action", AttrType.INT, true)
                                 .field("world", AttrType.INT, true, false)
                                 .field("x", AttrType.INT, false, false)
                                 .field("y", AttrType.INT, false, false)
@@ -78,12 +102,12 @@ public class QueryManager
                 .field("newData",AttrType.TINYINT, false,false)
                 .field("additionalData",AttrType.VARCHAR,255, false)
                 .foreignKey("world").references("worlds", "key")
+                .foreignKey("action").references("log_actiontypes","id").onDelete("CASCADE")
                 .index("x","y","z","world","date")
-                .index("action")
                 .index("causer")
                 .index("block")
                 .index("newBlock")
-                .primaryKey("key").endFields()
+                .primaryKey("id").endFields()
                 .engine("innoDB").defaultcharset("utf8")
                 .end().end();
             this.database.execute(sql);
@@ -145,7 +169,7 @@ public class QueryManager
             ResultSet resultSet = stmt.executeQuery();
             while (resultSet.next())
             {
-                long entryID = resultSet.getLong("key");
+                long entryID = resultSet.getLong("id");
                 Timestamp timestamp = resultSet.getTimestamp("date");
                 int action = resultSet.getInt("action");
                 long worldId = resultSet.getLong("world");
@@ -282,7 +306,12 @@ public class QueryManager
     public void prepareLookupQuery(final Lookup lookup, final User user)
     {
         lookup.clear();
-        SelectBuilder selectBuilder = this.database.getQueryBuilder().select().wildcard().from("log_entries").where();
+        SelectBuilder selectBuilder =
+            this.database.getQueryBuilder().select("id","date","action",
+                                                   "world","x","y","z","causer",
+                                                   "block","data","newBlock","newData",
+                                                   "additionalData")
+                         .from("log_entries").where();
         boolean needAnd = false;
         ArrayList<Object> dataToInsert = new ArrayList<Object>();
         if (!lookup.getActions().isEmpty())
@@ -293,9 +322,9 @@ public class QueryManager
                 selectBuilder.not();
             }
             selectBuilder.in().valuesInBrackets(lookup.getActions().size()).endSub();
-            for (ActionType_old type : lookup.getActions())
+            for (ActionType type : lookup.getActions())
             {
-                dataToInsert.add(type.value);
+                dataToInsert.add(type.getID());
             }
             needAnd = true;
         }
@@ -366,6 +395,48 @@ public class QueryManager
         if (this.futureLookup == null || this.futureLookup.isDone())
         {
             this.futureLookup = lookupExecutor.submit(lookupRunner);
+        }
+    }
+
+    public Map<String,Long> getActionTypesFromDatabase()
+    {
+        try
+        {
+            Map<String,Long> map = new THashMap<String, Long>();
+            ResultSet resultSet = this.database.preparedQuery(this.getClass(),"getAllActions");
+            while (resultSet.next())
+            {
+                map.put(resultSet.getString("name"),resultSet.getLong("id"));
+            }
+            return map;
+        }
+        catch (SQLException e)
+        {
+            throw new StorageException("Could not get actionTypes from db!",e,this.database.getStoredStatement(this.getClass(),"getAllActions"));
+        }
+    }
+
+    public long registerActionType(String name)
+    {
+        try
+        {
+            return (Long)this.database.getLastInsertedId(this.getClass(),"registerAction",name);
+        }
+        catch (SQLException e)
+        {
+            throw new StorageException("Could not get register ActionType!",e,this.database.getStoredStatement(this.getClass(),"registerAction"));
+        }
+    }
+
+    public void unregisterActionType(String name)
+    {
+        try
+        {
+           this.database.preparedExecute(this.getClass(),"unregisterAction",name);
+        }
+        catch (SQLException e)
+        {
+            throw new StorageException("Could not get unregister ActionType!",e,this.database.getStoredStatement(this.getClass(),"unregisterAction"));
         }
     }
 }

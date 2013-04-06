@@ -5,6 +5,10 @@ import de.cubeisland.cubeengine.log.Log;
 import de.cubeisland.cubeengine.log.action.LogActionType;
 import de.cubeisland.cubeengine.log.storage.LogEntry;
 
+import static de.cubeisland.cubeengine.log.action.ActionType.Type.ENTITY;
+import static de.cubeisland.cubeengine.log.action.ActionType.Type.ITEM;
+import static de.cubeisland.cubeengine.log.action.ActionType.Type.PLAYER;
+
 /**
  * launching firework-rockets
  * <p>Events: {@link de.cubeisland.cubeengine.log.action.logaction.block.interaction.RightClickActionType RightClickActionType}</p>
@@ -13,7 +17,7 @@ public class FireworkUse extends LogActionType
 {
     public FireworkUse(Log module)
     {
-        super(module, 0x52, "firework-use");
+        super(module, "firework-use", PLAYER, ENTITY, ITEM);//TODO item
     }
 
     @Override

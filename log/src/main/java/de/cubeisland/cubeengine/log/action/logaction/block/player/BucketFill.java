@@ -12,6 +12,8 @@ import de.cubeisland.cubeengine.log.action.logaction.block.BlockActionType;
 import de.cubeisland.cubeengine.log.action.logaction.interact.MilkFill;
 import de.cubeisland.cubeengine.log.storage.LogEntry;
 
+import static de.cubeisland.cubeengine.log.action.ActionType.Type.BLOCK;
+import static de.cubeisland.cubeengine.log.action.ActionType.Type.PLAYER;
 import static org.bukkit.Material.AIR;
 
 
@@ -24,7 +26,7 @@ public class BucketFill extends BlockActionType
 {
     public BucketFill(Log module)
     {
-        super(module, 0x08, "bucket-fill");
+        super(module, "bucket-fill", BLOCK, PLAYER);
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)

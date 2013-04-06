@@ -5,6 +5,10 @@ import de.cubeisland.cubeengine.log.Log;
 import de.cubeisland.cubeengine.log.action.logaction.block.BlockActionType;
 import de.cubeisland.cubeengine.log.storage.LogEntry;
 
+import static de.cubeisland.cubeengine.log.action.ActionType.Type.BLOCK;
+import static de.cubeisland.cubeengine.log.action.ActionType.Type.ENTITY;
+import static de.cubeisland.cubeengine.log.action.ActionType.Type.PLAYER;
+
 /**
  * lighter-ignite
  * <p>Events: {@link IgniteActionType}</p>
@@ -13,7 +17,7 @@ public class Lighter extends BlockActionType
 {
     public Lighter(Log module)
     {
-        super(module, 0x32, "lighter-ignite");
+        super(module, "lighter-ignite", BLOCK, PLAYER);
     }
 
     @Override

@@ -9,9 +9,9 @@ import de.cubeisland.cubeengine.log.storage.Lookup;
 
 public abstract class LogActionType extends ActionType implements Listener
 {
-    public LogActionType(Log module, int id, String name)
+    public LogActionType(Log module, String name, Type... types)
     {
-        super(module,id, name);
+        super(module, name);
     }
 
     @Override

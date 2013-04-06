@@ -15,6 +15,10 @@ import de.cubeisland.cubeengine.log.storage.LogEntry;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
+import static de.cubeisland.cubeengine.log.action.ActionType.Type.ENTITY;
+import static de.cubeisland.cubeengine.log.action.ActionType.Type.ITEM;
+import static de.cubeisland.cubeengine.log.action.ActionType.Type.PLAYER;
+
 /**
  * splashed potions
  * <p>Events: {@link PotionSplashEvent}</p>
@@ -23,7 +27,7 @@ public class PotionSplash extends SimpleLogActionType
 {
     public PotionSplash(Log module)
     {
-        super(module, 0x55, "potion-splash");
+        super(module, "potion-splash", PLAYER, ENTITY, ITEM);
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)

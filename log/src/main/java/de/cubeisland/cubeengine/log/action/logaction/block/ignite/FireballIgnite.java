@@ -5,6 +5,8 @@ import de.cubeisland.cubeengine.log.Log;
 import de.cubeisland.cubeengine.log.action.logaction.block.BlockActionType;
 import de.cubeisland.cubeengine.log.storage.LogEntry;
 
+import static de.cubeisland.cubeengine.log.action.ActionType.Type.*;
+
 /**
  * fireball-ignite
  * <p>Events: {@link IgniteActionType}</p>
@@ -13,7 +15,7 @@ public class FireballIgnite extends BlockActionType
 {
     public FireballIgnite(Log module)
     {
-        super(module, 0x31, "fireball-ignite");
+        super(module, "fireball-ignite", BLOCK, ENTITY, PLAYER);
     }
 
     @Override

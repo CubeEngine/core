@@ -9,15 +9,18 @@ import de.cubeisland.cubeengine.log.Log;
 import de.cubeisland.cubeengine.log.storage.ItemData;
 import de.cubeisland.cubeengine.log.storage.LogEntry;
 
+import static de.cubeisland.cubeengine.log.action.ActionType.Type.ITEM;
+import static de.cubeisland.cubeengine.log.action.ActionType.Type.PLAYER;
+
 /**
  * crafting items
  * <p>Events: {@link CraftItemEvent}</p>
  */
 public class CraftItem extends SimpleLogActionType
 {
-    public CraftItem(Log module, int id, String name)
+    public CraftItem(Log module)
     {
-        super(module, 0xA7, "craft-item");
+        super(module, "craft-item" ,PLAYER,ITEM);
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)

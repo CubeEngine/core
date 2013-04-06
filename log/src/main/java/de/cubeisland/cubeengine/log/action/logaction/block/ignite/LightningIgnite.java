@@ -5,6 +5,8 @@ import de.cubeisland.cubeengine.log.Log;
 import de.cubeisland.cubeengine.log.action.logaction.block.BlockActionType;
 import de.cubeisland.cubeengine.log.storage.LogEntry;
 
+import static de.cubeisland.cubeengine.log.action.ActionType.Type.*;
+
 /**
  * lightning-ignite
  * <p>Events: {@link IgniteActionType}</p>
@@ -13,7 +15,7 @@ public class LightningIgnite extends BlockActionType
 {
     public LightningIgnite(Log module)
     {
-        super(module, 0x34, "lightning-ignite");
+        super(module, "lightning-ignite", BLOCK, ENVIRONEMENT);
     }
 
     @Override

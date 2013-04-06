@@ -8,6 +8,8 @@ import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.log.Log;
 import de.cubeisland.cubeengine.log.storage.LogEntry;
 
+import static de.cubeisland.cubeengine.log.action.ActionType.Type.PLAYER;
+
 /**
  * player quits
  * <p>Events: {@link PlayerQuitEvent}</p>
@@ -16,7 +18,7 @@ public class PlayerQuit extends SimpleLogActionType
 {
     public PlayerQuit(Log module)
     {
-        super(module, 0xA4, "player-quit");
+        super(module, "player-quit",PLAYER);
     }
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onPlayerQuit(PlayerQuitEvent event)

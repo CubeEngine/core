@@ -19,9 +19,9 @@ import de.cubeisland.cubeengine.log.storage.LogEntry;
 
 public abstract class BlockActionType extends LogActionType
 {
-    public BlockActionType(Log module, int id, String name)
+    public BlockActionType(Log module, String name, Type... types)
     {
-        super(module, id, name);
+        super(module, name, types);
     }
 
     public void logBlockChange(Location location, Entity causer, BlockData oldState, BlockData newState, String additional)
@@ -93,7 +93,7 @@ public abstract class BlockActionType extends LogActionType
      * @param blockState
      * @return
      */
-    protected final BlockState adjustBlockForDoubleBlocks(BlockState blockState)
+    public final BlockState adjustBlockForDoubleBlocks(BlockState blockState)
     {
         if (blockState.getType().equals(Material.WOOD_DOOR) || blockState.getType().equals(Material.IRON_DOOR_BLOCK))
         {
@@ -112,7 +112,7 @@ public abstract class BlockActionType extends LogActionType
         return blockState;
     }
 
-    protected void logAttachedBlocks(BlockState blockState, Entity player)
+    public void logAttachedBlocks(BlockState blockState, Entity player)
     {
         if (!blockState.getType().isSolid())
         {
@@ -145,7 +145,7 @@ public abstract class BlockActionType extends LogActionType
         }
     }
 
-    protected void logFallingBlocks(BlockState blockState, Entity player)
+    public void logFallingBlocks(BlockState blockState, Entity player)
     {
         // Falling Blocks
         Block onTop = blockState.getBlock().getRelative(BlockFace.UP);

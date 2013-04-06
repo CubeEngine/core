@@ -10,7 +10,10 @@ import org.bukkit.event.entity.EntityChangeBlockEvent;
 
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.log.Log;
+import de.cubeisland.cubeengine.log.action.LogActionType;
+import de.cubeisland.cubeengine.log.action.logaction.ActionTypeContainer;
 import de.cubeisland.cubeengine.log.action.logaction.block.BlockActionType;
+import de.cubeisland.cubeengine.log.action.logaction.block.BlockActionType.BlockData;
 import de.cubeisland.cubeengine.log.storage.LogEntry;
 
 import static org.bukkit.Material.AIR;
@@ -20,11 +23,11 @@ import static org.bukkit.Material.AIR;
  * <p>Events: {@link EntityChangeBlockEvent}</p>
  * <p>External Actions: {@link SheepEat}, {@link EndermanPickup}, {@link EndermanPlace},
  */
-public class EntityChangeActionType extends BlockActionType
+public class EntityChangeActionType extends ActionTypeContainer
 {
     public EntityChangeActionType(Log module)
     {
-        super(module, -1, "ENTITY_CHANGE");
+        super(module, "ENTITY_CHANGE");
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
@@ -38,9 +41,8 @@ public class EntityChangeActionType extends BlockActionType
         {
             if (event.getTo().equals(AIR))
             {
-                this.logEntityChangeBlock(this.manager.getActionType(EndermanPickup.class), event.getBlock()
-                                                                                                 .getState(), event
-                                              .getTo());
+                this.logEntityChangeBlock(this.manager.getActionType(EndermanPickup.class),
+                                          event.getBlock().getState(), event.getTo());
             }
             else
             {
@@ -53,13 +55,8 @@ public class EntityChangeActionType extends BlockActionType
     {
         if (actionType.isActive(from.getWorld()))
         {
-            actionType.logBlockChange(from.getLocation(),null,BlockData.of(from),to,null);
+            actionType.logBlockChange(from.getLocation(),null, BlockData.of(from),to,null);
         }
     }
 
-    @Override
-    protected void showLogEntry(User user, LogEntry logEntry, String time, String loc)
-    {
-        throw new UnsupportedOperationException();
-    }
 }

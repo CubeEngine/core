@@ -9,6 +9,9 @@ import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.log.Log;
 import de.cubeisland.cubeengine.log.storage.LogEntry;
 
+import static de.cubeisland.cubeengine.log.action.ActionType.Type.BLOCK;
+import static de.cubeisland.cubeengine.log.action.ActionType.Type.ENVIRONEMENT;
+import static de.cubeisland.cubeengine.log.action.ActionType.Type.PLAYER;
 import static org.bukkit.Material.AIR;
 
 /**
@@ -22,7 +25,7 @@ public class BlockBurn extends BlockActionType
 {
     public BlockBurn(Log module)
     {
-        super(module, 0x01, "block-burn");
+        super(module, "block-burn", BLOCK, ENVIRONEMENT);
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)

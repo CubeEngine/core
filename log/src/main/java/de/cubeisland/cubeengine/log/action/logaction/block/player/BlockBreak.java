@@ -30,6 +30,9 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import static de.cubeisland.cubeengine.core.util.BlockUtil.BLOCK_FACES;
+import static de.cubeisland.cubeengine.log.action.ActionType.Type.BLOCK;
+import static de.cubeisland.cubeengine.log.action.ActionType.Type.ENVIRONEMENT;
+import static de.cubeisland.cubeengine.log.action.ActionType.Type.PLAYER;
 import static org.bukkit.Material.*;
 
 /**
@@ -43,7 +46,7 @@ public class BlockBreak extends BlockActionType
 {
     public BlockBreak(Log module)
     {
-        super(module, 0x00, "block-break");
+        super(module, "block-break", BLOCK, PLAYER, ENVIRONEMENT);
     }
 
     //OldBlockData NoteBlock: RawNote
@@ -133,7 +136,7 @@ public class BlockBreak extends BlockActionType
             if (cause != null)
             {
                 ObjectNode json = this.om.createObjectNode();
-                json.put("break-cause", cause.getRight().actionTypeID);
+                json.put("break-cause", cause.getRight().getID());
                 if (oldState instanceof Sign)
                 {
                     ArrayNode sign = json.putArray("sign");
@@ -146,7 +149,7 @@ public class BlockBreak extends BlockActionType
             }
             else
             {
-                System.out.print("Unplanned BlockPhysicsEvent! (BlockBreak)"); //TODO remove
+                System.out.print("Unplanned BlockPhysicsEvent! (BlockBreak) "+oldState.getType().name()); //TODO remove
             }
         }
     }

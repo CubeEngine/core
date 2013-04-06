@@ -12,6 +12,9 @@ import de.cubeisland.cubeengine.log.Log;
 import de.cubeisland.cubeengine.log.storage.ItemData;
 import de.cubeisland.cubeengine.log.storage.LogEntry;
 
+import static de.cubeisland.cubeengine.log.action.ActionType.Type.ITEM;
+import static de.cubeisland.cubeengine.log.action.ActionType.Type.PLAYER;
+
 /**
  * enchanting items
  * <p>Events: {@link EnchantItemEvent}</p>
@@ -20,7 +23,7 @@ public class EnchantItem extends SimpleLogActionType
 {
     public EnchantItem(Log module)
     {
-        super(module, 0xA6, "enchant-item");
+        super(module, "enchant-item",PLAYER,ITEM);
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)

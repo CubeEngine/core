@@ -7,6 +7,10 @@ import de.cubeisland.cubeengine.log.action.logaction.SimpleLogActionType;
 import de.cubeisland.cubeengine.log.action.logaction.block.BlockActionType;
 import de.cubeisland.cubeengine.log.storage.LogEntry;
 
+import static de.cubeisland.cubeengine.log.action.ActionType.Type.BLOCK;
+import static de.cubeisland.cubeengine.log.action.ActionType.Type.CANNOT_ROLLBACK;
+import static de.cubeisland.cubeengine.log.action.ActionType.Type.PLAYER;
+
 
 /**
  * Accessing Containers
@@ -16,7 +20,7 @@ public class ContainerAccess extends BlockActionType
 {
     public ContainerAccess(Log module)
     {
-        super(module, 0x50, "container-access");
+        super(module, "container-access", BLOCK, PLAYER, CANNOT_ROLLBACK);
     }
 
     @Override

@@ -5,6 +5,9 @@ import de.cubeisland.cubeengine.log.Log;
 import de.cubeisland.cubeengine.log.action.logaction.block.BlockActionType;
 import de.cubeisland.cubeengine.log.storage.LogEntry;
 
+import static de.cubeisland.cubeengine.log.action.ActionType.Type.BLOCK;
+import static de.cubeisland.cubeengine.log.action.ActionType.Type.PLAYER;
+
 
 /**
  * Filling buckets with lava or water
@@ -14,7 +17,7 @@ public class PlayerGrow extends BlockActionType
 {
     public PlayerGrow(Log module)
     {
-        super(module, 0x24, "player-grow");
+        super(module, "player-grow", BLOCK, PLAYER);
     }
 
     @Override

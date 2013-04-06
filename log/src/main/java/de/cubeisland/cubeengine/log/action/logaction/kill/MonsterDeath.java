@@ -5,6 +5,10 @@ import de.cubeisland.cubeengine.log.Log;
 import de.cubeisland.cubeengine.log.action.logaction.SimpleLogActionType;
 import de.cubeisland.cubeengine.log.storage.LogEntry;
 
+import static de.cubeisland.cubeengine.log.action.ActionType.Type.ENTITY;
+import static de.cubeisland.cubeengine.log.action.ActionType.Type.KILL;
+import static de.cubeisland.cubeengine.log.action.ActionType.Type.PLAYER;
+
 /**
  * monster-death
  * <p>Events: {@link KillActionType}</p>
@@ -13,7 +17,7 @@ public class MonsterDeath extends SimpleLogActionType
 {
     public MonsterDeath(Log module)
     {
-        super(module, 0x75, "monster-death");
+        super(module, "monster-death", PLAYER, ENTITY, KILL);
     }
 
     @Override

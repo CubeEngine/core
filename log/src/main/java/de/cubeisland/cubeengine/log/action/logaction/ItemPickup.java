@@ -9,6 +9,9 @@ import de.cubeisland.cubeengine.log.Log;
 import de.cubeisland.cubeengine.log.storage.ItemData;
 import de.cubeisland.cubeengine.log.storage.LogEntry;
 
+import static de.cubeisland.cubeengine.log.action.ActionType.Type.ITEM;
+import static de.cubeisland.cubeengine.log.action.ActionType.Type.PLAYER;
+
 /**
  * picking up items
  * <p>Events: {@link PlayerPickupItemEvent}</p>
@@ -17,7 +20,7 @@ public class ItemPickup extends SimpleLogActionType
 {
     public ItemPickup(Log module)
     {
-        super(module, 0x85, "item-pickup");
+        super(module, "item-pickup",PLAYER,ITEM);
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)

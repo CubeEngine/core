@@ -5,7 +5,7 @@ import de.cubeisland.cubeengine.core.module.Module;
 import de.cubeisland.cubeengine.log.action.ActionTypeManager;
 import de.cubeisland.cubeengine.log.commands.LogCommands;
 import de.cubeisland.cubeengine.log.commands.LookupCommands;
-import de.cubeisland.cubeengine.log.listeners.worldedit.LogEditSessionFactory;
+import de.cubeisland.cubeengine.log.action.logaction.worldedit.LogEditSessionFactory;
 import de.cubeisland.cubeengine.log.storage.LogManager;
 import de.cubeisland.cubeengine.log.tool.ToolListener;
 
@@ -31,6 +31,7 @@ public class Log extends Module
         //possibility to select the region containing the last search results
         this.logManager = new LogManager(this);
         this.actionTypeManager = new ActionTypeManager(this);
+        this.actionTypeManager.registerLogActionTypes();
 
         final CommandManager cm = this.getCore().getCommandManager();
         cm.registerCommand(new LookupCommands(this));

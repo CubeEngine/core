@@ -8,6 +8,7 @@ import org.bukkit.event.block.BlockFromToEvent;
 
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.log.Log;
+import de.cubeisland.cubeengine.log.action.logaction.ActionTypeContainer;
 import de.cubeisland.cubeengine.log.action.logaction.block.BlockActionType;
 import de.cubeisland.cubeengine.log.storage.ActionType_old;
 import de.cubeisland.cubeengine.log.storage.LogEntry;
@@ -22,11 +23,11 @@ import static org.bukkit.Material.AIR;
  * {@link LavaFlow},
  * {@link WaterFlow}
  */
-public class FlowActionType extends BlockActionType
+public class FlowActionType extends ActionTypeContainer
 {
     public FlowActionType(Log module)
     {
-        super(module, -1, "FLOW");
+        super(module, "FLOW");
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
@@ -52,11 +53,5 @@ public class FlowActionType extends BlockActionType
             WaterFlow waterFlow = this.manager.getActionType(WaterFlow.class);
             waterFlow.logWaterFlow(event,toBlock,newToBlock,fromBlock);
         }
-    }
-
-    @Override
-    protected void showLogEntry(User user, LogEntry logEntry, String time, String loc)
-    {
-        throw new UnsupportedOperationException();
     }
 }

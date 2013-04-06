@@ -5,6 +5,10 @@ import de.cubeisland.cubeengine.log.Log;
 import de.cubeisland.cubeengine.log.action.logaction.block.BlockActionType;
 import de.cubeisland.cubeengine.log.storage.LogEntry;
 
+import static de.cubeisland.cubeengine.log.action.ActionType.Type.BLOCK;
+import static de.cubeisland.cubeengine.log.action.ActionType.Type.ENTITY;
+import static de.cubeisland.cubeengine.log.action.ActionType.Type.PLAYER;
+
 /**
  * TNT-Explosions
  * <p>Events: {@link ExplodeActionType}</p>
@@ -13,7 +17,7 @@ public class TntExplode extends BlockActionType
 {
     public TntExplode(Log module)
     {
-        super(module, 0x12, "tnt-explode");
+        super(module, "tnt-explode", BLOCK, PLAYER);
     }
 
     @Override

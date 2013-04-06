@@ -10,6 +10,8 @@ import de.cubeisland.cubeengine.log.storage.LogEntry;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
+import static de.cubeisland.cubeengine.log.action.ActionType.Type.*;
+
 /**
  * Dyeing sheeps or wolfcollars
  * <p>Events: {@link InteractEntityActionType}</p>
@@ -18,7 +20,7 @@ public class EntityDye extends SimpleLogActionType
 {
     public EntityDye(Log module)
     {
-        super(module, 0x88, "entity-dye");
+        super(module, "entity-dye", PLAYER, ENTITY);
     }
 
     @Override

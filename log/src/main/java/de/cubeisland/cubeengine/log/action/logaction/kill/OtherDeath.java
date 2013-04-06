@@ -6,6 +6,10 @@ import de.cubeisland.cubeengine.log.Log;
 import de.cubeisland.cubeengine.log.action.logaction.SimpleLogActionType;
 import de.cubeisland.cubeengine.log.storage.LogEntry;
 
+import static de.cubeisland.cubeengine.log.action.ActionType.Type.ENTITY;
+import static de.cubeisland.cubeengine.log.action.ActionType.Type.KILL;
+import static de.cubeisland.cubeengine.log.action.ActionType.Type.PLAYER;
+
 /**
  * other-death
  * <p>Events: {@link KillActionType}</p>
@@ -15,7 +19,7 @@ public class OtherDeath extends SimpleLogActionType
 {
     public OtherDeath(Log module)
     {
-        super(module, 0x7A, "other-death");
+        super(module, "other-death", PLAYER, ENTITY, KILL);
     }
 
     @Override

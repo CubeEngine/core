@@ -5,6 +5,8 @@ import de.cubeisland.cubeengine.log.Log;
 import de.cubeisland.cubeengine.log.action.logaction.block.BlockActionType;
 import de.cubeisland.cubeengine.log.storage.LogEntry;
 
+import static de.cubeisland.cubeengine.log.action.ActionType.Type.*;
+
 /**
  * lava-ignite
  * <p>Events: {@link IgniteActionType}</p>
@@ -13,7 +15,7 @@ public class LavaIgnite extends BlockActionType
 {
     public LavaIgnite(Log module)
     {
-        super(module, 0x33, "lava-ignite");
+        super(module, "lava-ignite", BLOCK, ENVIRONEMENT);
     }
 
     @Override

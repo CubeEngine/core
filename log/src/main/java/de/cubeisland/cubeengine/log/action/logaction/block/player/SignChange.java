@@ -19,6 +19,9 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
+import static de.cubeisland.cubeengine.log.action.ActionType.Type.BLOCK;
+import static de.cubeisland.cubeengine.log.action.ActionType.Type.PLAYER;
+
 /**
  * Changing a signs text.
  * <p>Events: {@link SignChangeEvent}</p>
@@ -27,7 +30,7 @@ public class SignChange extends BlockActionType
 {
     public SignChange(Log module)
     {
-        super(module, 0x42, "sign-change");
+        super(module, "sign-change", BLOCK, PLAYER);
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)

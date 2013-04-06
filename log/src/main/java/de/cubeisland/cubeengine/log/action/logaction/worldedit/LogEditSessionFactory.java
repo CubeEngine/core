@@ -1,4 +1,4 @@
-package de.cubeisland.cubeengine.log.listeners.worldedit;
+package de.cubeisland.cubeengine.log.action.logaction.worldedit;
 
 import de.cubeisland.cubeengine.log.Log;
 import de.cubeisland.cubeengine.log.storage.ActionType_old;

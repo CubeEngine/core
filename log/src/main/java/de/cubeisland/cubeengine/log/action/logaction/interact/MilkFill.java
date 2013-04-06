@@ -6,6 +6,9 @@ import de.cubeisland.cubeengine.log.action.LogActionType;
 import de.cubeisland.cubeengine.log.action.logaction.SimpleLogActionType;
 import de.cubeisland.cubeengine.log.storage.LogEntry;
 
+import static de.cubeisland.cubeengine.log.action.ActionType.Type.ENTITY;
+import static de.cubeisland.cubeengine.log.action.ActionType.Type.PLAYER;
+
 /**
  * filling milk bucket
  * <p>Events: {@link de.cubeisland.cubeengine.log.action.logaction.block.player.BucketFill BucketFill}</p>
@@ -14,7 +17,7 @@ public class MilkFill extends SimpleLogActionType
 {
     public MilkFill(Log module)
     {
-        super(module, 0x57, "milk-fill");
+        super(module, "milk-fill", PLAYER, ENTITY);
     }
 
     @Override

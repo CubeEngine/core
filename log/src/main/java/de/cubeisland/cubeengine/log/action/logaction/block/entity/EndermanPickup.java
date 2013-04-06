@@ -5,6 +5,9 @@ import de.cubeisland.cubeengine.log.Log;
 import de.cubeisland.cubeengine.log.action.logaction.block.BlockActionType;
 import de.cubeisland.cubeengine.log.storage.LogEntry;
 
+import static de.cubeisland.cubeengine.log.action.ActionType.Type.BLOCK;
+import static de.cubeisland.cubeengine.log.action.ActionType.Type.ENTITY;
+
 /**
  * Enderman picking up blocks.
  * <p>Events: {@link EntityChangeActionType}</p>
@@ -13,7 +16,7 @@ public class EndermanPickup  extends BlockActionType
 {
     public EndermanPickup(Log module)
     {
-        super(module, 0x07, "enderman-place");
+        super(module, "enderman-pickup", BLOCK, ENTITY);
     }
 
     @Override

@@ -6,6 +6,10 @@ import de.cubeisland.cubeengine.log.action.logaction.SimpleLogActionType;
 import de.cubeisland.cubeengine.log.storage.ItemData;
 import de.cubeisland.cubeengine.log.storage.LogEntry;
 
+import static de.cubeisland.cubeengine.log.action.ActionType.Type.INVENTORY;
+import static de.cubeisland.cubeengine.log.action.ActionType.Type.ITEM;
+import static de.cubeisland.cubeengine.log.action.ActionType.Type.PLAYER;
+
 /**
  * Removing items from a container
  * <p>Events: {@link ContainerActionType}
@@ -15,7 +19,7 @@ public class ItemRemove extends SimpleLogActionType
 {
     public ItemRemove(Log module)
     {
-        super(module, 0x91, "item-remove");
+        super(module, "item-remove", PLAYER, INVENTORY, ITEM);
     }
 
     @Override

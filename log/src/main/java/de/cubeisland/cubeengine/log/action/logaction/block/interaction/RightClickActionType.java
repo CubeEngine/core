@@ -17,7 +17,9 @@ import org.bukkit.material.Lever;
 
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.log.Log;
+import de.cubeisland.cubeengine.log.action.logaction.ActionTypeContainer;
 import de.cubeisland.cubeengine.log.action.logaction.block.BlockActionType;
+import de.cubeisland.cubeengine.log.action.logaction.block.BlockActionType.BlockData;
 import de.cubeisland.cubeengine.log.action.logaction.block.player.BlockPlace;
 import de.cubeisland.cubeengine.log.action.logaction.interact.FireworkUse;
 import de.cubeisland.cubeengine.log.action.logaction.interact.MonsterEggUse;
@@ -48,16 +50,17 @@ import static org.bukkit.Material.*;
  * {@link CropTrample},
  * {@link PlateStep}
  */
-public class RightClickActionType extends BlockActionType
+public class RightClickActionType extends ActionTypeContainer
 {
     public RightClickActionType(Log module)
     {
-        super(module, -1, "RIGHT_CLICK");
+        super(module, "RIGHT_CLICK");
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onPlayerInteract(PlayerInteractEvent event)
     {
+        //TODO put item into itemframe
         if (event.getAction().equals(Action.RIGHT_CLICK_BLOCK))
         {
             ItemStack itemInHand = event.getPlayer().getItemInHand();
@@ -87,8 +90,8 @@ public class RightClickActionType extends BlockActionType
                 DoorUse doorUse = this.manager.getActionType(DoorUse.class);
                 if (doorUse.isActive(state.getWorld()))
                 { // TODO on rollback care the newData state is not correct!
-                    state = this.adjustBlockForDoubleBlocks(state);
-                    doorUse.logBlockChange(location,event.getPlayer(),BlockData.of(state),BlockData.of(state),null);
+                    state = doorUse.adjustBlockForDoubleBlocks(state);
+                    doorUse.logBlockChange(location,event.getPlayer(), BlockData.of(state),BlockData.of(state),null);
                 }
                 break;
             case LEVER:
@@ -210,7 +213,7 @@ public class RightClickActionType extends BlockActionType
                     }
                     BlockData newData = BlockData.of(state);
                     newData.data = clicks;
-                    this.logBlockChange(location, event.getPlayer(), BlockData.of(state), newData, null);
+                    noteblockChange.logBlockChange(location, event.getPlayer(), BlockData.of(state), newData, null);
                 }
                 break;
             case JUKEBOX:
@@ -289,11 +292,5 @@ public class RightClickActionType extends BlockActionType
                 break;
             }
         }
-    }
-
-    @Override
-    protected void showLogEntry(User user, LogEntry logEntry, String time, String loc)
-    {
-        throw new UnsupportedOperationException();
     }
 }

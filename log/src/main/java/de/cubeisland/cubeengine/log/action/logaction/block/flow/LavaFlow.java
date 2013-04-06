@@ -12,6 +12,8 @@ import de.cubeisland.cubeengine.log.action.logaction.block.BlockActionType;
 import de.cubeisland.cubeengine.log.action.logaction.block.BlockForm;
 import de.cubeisland.cubeengine.log.storage.LogEntry;
 
+import static de.cubeisland.cubeengine.log.action.ActionType.Type.BLOCK;
+import static de.cubeisland.cubeengine.log.action.ActionType.Type.ENVIRONEMENT;
 import static org.bukkit.Material.*;
 
 /**
@@ -24,7 +26,7 @@ public class LavaFlow extends BlockActionType
 {
     public LavaFlow(Log module)
     {
-        super(module, 0x37, "lava-flow");
+        super(module, "lava-flow", BLOCK, ENVIRONEMENT);
     }
 
     public void logLavaFlow(BlockFromToEvent event, BlockState toBlock, BlockState newToBlock, BlockState fromBlock)

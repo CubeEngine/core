@@ -5,6 +5,10 @@ import de.cubeisland.cubeengine.log.Log;
 import de.cubeisland.cubeengine.log.action.logaction.SimpleLogActionType;
 import de.cubeisland.cubeengine.log.storage.LogEntry;
 
+import static de.cubeisland.cubeengine.log.action.ActionType.Type.INVENTORY;
+import static de.cubeisland.cubeengine.log.action.ActionType.Type.ITEM;
+import static de.cubeisland.cubeengine.log.action.ActionType.Type.PLAYER;
+
 /**
  * Items transferred by hoppers or droppers
  * <p>Events: {@link ContainerActionType}
@@ -14,7 +18,7 @@ public class ItemTransfer extends SimpleLogActionType
 
     public ItemTransfer(Log module)
     {
-        super(module, 0x92, "item-transfer");
+        super(module, "item-transfer", PLAYER, INVENTORY, ITEM);
     }
 
     @Override

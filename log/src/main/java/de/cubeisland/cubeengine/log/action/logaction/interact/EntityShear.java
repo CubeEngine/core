@@ -10,6 +10,9 @@ import de.cubeisland.cubeengine.log.Log;
 import de.cubeisland.cubeengine.log.action.logaction.SimpleLogActionType;
 import de.cubeisland.cubeengine.log.storage.LogEntry;
 
+import static de.cubeisland.cubeengine.log.action.ActionType.Type.ENTITY;
+import static de.cubeisland.cubeengine.log.action.ActionType.Type.PLAYER;
+
 /**
  * Shearing sheeps or mooshrooms
  * <p>Events: {@link PlayerShearEntityEvent}</p>
@@ -18,7 +21,7 @@ public class EntityShear extends SimpleLogActionType
 {
     public EntityShear(Log module)
     {
-        super(module, 0x87, "entity-shear");
+        super(module, "entity-shear", PLAYER, ENTITY);
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)

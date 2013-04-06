@@ -5,6 +5,9 @@ import de.cubeisland.cubeengine.log.Log;
 import de.cubeisland.cubeengine.log.action.logaction.block.BlockActionType;
 import de.cubeisland.cubeengine.log.storage.LogEntry;
 
+import static de.cubeisland.cubeengine.log.action.ActionType.Type.BLOCK;
+import static de.cubeisland.cubeengine.log.action.ActionType.Type.PLAYER;
+
 
 /**
  * Trampling Crops
@@ -15,7 +18,7 @@ public class CropTrample extends BlockActionType
 {
     public CropTrample(Log module)
     {
-        super(module, 0x09, "crop-trample");
+        super(module, "crop-trample", BLOCK, PLAYER);
     }
 
     @Override
