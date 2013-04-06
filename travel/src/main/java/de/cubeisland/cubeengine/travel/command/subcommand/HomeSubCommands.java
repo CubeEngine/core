@@ -144,6 +144,10 @@ public class HomeSubCommands
             if (context.getArgCount() == 0)
             {
                 Home home = this.tpManager.getHome(sender, "home");
+                if (home == null)
+                {
+                    sender.sendTranslated("&9%s &4Could not be found!", context.getString(0));
+                }
                 if (!home.isOwner(sender))
                 {
                     sender.sendTranslated("&4You can't move another users home");
@@ -156,6 +160,10 @@ public class HomeSubCommands
             else if (module.getConfig().multipleHomes)
             {
                 Home home = this.tpManager.getHome(sender, context.getString(0));
+                if (home == null)
+                {
+                    sender.sendTranslated("&9%s &4Could not be found!", context.getString(0));
+                }
                 if (!home.isOwner(sender))
                 {
                     sender.sendTranslated("&4You can't move another users home");
@@ -186,6 +194,10 @@ public class HomeSubCommands
             if (context.getArgCount() == 0)
             {
                 Home home = this.tpManager.getHome(sender, "home");
+                if (home == null)
+                {
+                    sender.sendTranslated("&9%s &4Could not be found!", context.getString(0));
+                }
                 if (!home.isOwner(sender))
                 {
                     sender.sendTranslated("&4You can't remove another users home");
@@ -197,6 +209,10 @@ public class HomeSubCommands
             else if (module.getConfig().multipleHomes)
             {
                 Home home = this.tpManager.getHome(sender, context.getString(0));
+                if (home == null)
+                {
+                    sender.sendTranslated("&9%s &4Could not be found!", context.getString(0));
+                }
                 if (!home.isOwner(sender))
                 {
                     sender.sendTranslated("&4You can't remove another players home");

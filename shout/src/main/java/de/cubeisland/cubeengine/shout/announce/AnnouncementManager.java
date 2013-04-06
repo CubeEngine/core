@@ -281,8 +281,8 @@ public class AnnouncementManager
         if (announcement.hasFixedCycle())
         {
             this.fixedCycleAnnouncements.put(announcement.getName().toLowerCase(Locale.ENGLISH), announcement);
-            this.module.getCore().getTaskManager().scheduleSyncRepeatingTask(this.module,
-                new FixedCycleTask(this.module, announcement), this.announcer.initDelay, announcement.getDelay());
+            this.module.getCore().getTaskManager().scheduleAsyncRepeatingTask(this.module,
+                new FixedCycleTask(this.module, announcement), this.announcer.initDelay / 50, announcement.getDelay() / 50);
         }
         else
         {
