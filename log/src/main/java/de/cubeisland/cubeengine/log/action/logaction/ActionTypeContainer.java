@@ -1,20 +1,27 @@
 package de.cubeisland.cubeengine.log.action.logaction;
 
 
+import java.util.EnumSet;
+
 import org.bukkit.World;
 
 import de.cubeisland.cubeengine.core.user.User;
-import de.cubeisland.cubeengine.log.Log;
 import de.cubeisland.cubeengine.log.action.LogActionType;
 import de.cubeisland.cubeengine.log.storage.LogEntry;
 
 public class ActionTypeContainer extends LogActionType
 {
     private String name;
-    public ActionTypeContainer(Log module, String name)
+    public ActionTypeContainer(String name)
     {
-        super(module, false);
         this.setID(-1);
+        this.name = name;
+    }
+
+    @Override
+    protected EnumSet<Category> getCategories()
+    {
+        throw new UnsupportedOperationException();
     }
 
     @Override

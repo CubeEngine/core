@@ -11,7 +11,6 @@ import org.bukkit.World;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 
-import de.cubeisland.cubeengine.core.storage.world.WorldManager;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.user.UserManager;
 import de.cubeisland.cubeengine.log.Log;
@@ -26,33 +25,11 @@ public abstract class ActionType
 {
     private long actionTypeID;
 
-    public final Log logModule;
-    protected final WorldManager wm;
-    protected final UserManager um;
-    protected final ObjectMapper om;
-    protected final ActionTypeManager manager;
-    protected final LogManager lm;
-    public final EnumSet<Category> types;
-
-    public final boolean canRollback;
-
-    protected ActionType(Log module, boolean canRollback, Category... types)
-    {
-        this.logModule = module;
-        this.wm = module.getCore().getWorldManager();
-        this.um = module.getCore().getUserManager();
-        this.om = this.logModule.getObjectMapper();
-        this.manager = module.getActionTypeManager();
-        this.lm = module.getLogManager();
-        this.types = EnumSet.of(Category.ALL,types);
-        this.canRollback = canRollback;
-        for (Category type : types)
-        {
-            type.registerActionType(this);
-        }
-    }
-
-    public abstract String getName();
+    protected Log logModule;
+    protected UserManager um;
+    protected ObjectMapper om;
+    protected ActionTypeManager manager;
+    protected LogManager lm;
 
     /**
      * Queues in a log
@@ -67,7 +44,7 @@ public abstract class ActionType
      */
     public void queueLog(Location location, Entity causer, String block, Long data, String newBlock, Byte newData, String additionalData)
     {
-        long worldID = this.wm.getWorldId(location.getWorld());
+        long worldID = this.logModule.getCore().getWorldManager().getWorldId(location.getWorld());
         Long causerID;
         if (causer == null)
         {
@@ -93,10 +70,27 @@ public abstract class ActionType
     /**
      * Register your events here
      */
-    public abstract void initialize();
+    public final void initialize(Log module)
+    {
+        this.logModule = module;
+        this.um = module.getCore().getUserManager();
+        this.om = module.getObjectMapper();
+        this.manager = module.getActionTypeManager();
+        this.lm = module.getLogManager();
+        for (Category type : this.getCategories())
+        {
+            type.registerActionType(this);
+        }
+        this.enable();
+    }
+
+    public abstract String getName();
+    public abstract boolean canRollback();
+    protected abstract EnumSet<Category> getCategories();
+    public abstract void enable();
 
     /**
-     * Returns whether the action is active in this world or not
+     * Returns whether the action is active in given world or not
      *
      * @param world
      * @return

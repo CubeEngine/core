@@ -1,15 +1,14 @@
 package de.cubeisland.cubeengine.log.action.logaction.block.explosion;
 
+import java.util.EnumSet;
+
 import org.bukkit.World;
 
 import de.cubeisland.cubeengine.core.user.User;
-import de.cubeisland.cubeengine.log.Log;
 import de.cubeisland.cubeengine.log.action.logaction.block.BlockActionType;
 import de.cubeisland.cubeengine.log.storage.LogEntry;
 
-import static de.cubeisland.cubeengine.log.action.ActionType.Category.BLOCK;
-import static de.cubeisland.cubeengine.log.action.ActionType.Category.ENTITY;
-import static de.cubeisland.cubeengine.log.action.ActionType.Category.PLAYER;
+import static de.cubeisland.cubeengine.log.action.ActionType.Category.*;
 
 /**
  * Wither-Explosions
@@ -17,9 +16,10 @@ import static de.cubeisland.cubeengine.log.action.ActionType.Category.PLAYER;
  */
 public class WitherExplode extends BlockActionType
 {
-    public WitherExplode(Log module)
+    @Override
+    protected EnumSet<Category> getCategories()
     {
-        super(module, BLOCK, ENTITY, PLAYER);
+        return EnumSet.of(BLOCK, ENTITY, PLAYER);
     }
 
     @Override

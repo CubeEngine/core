@@ -1,12 +1,13 @@
 package de.cubeisland.cubeengine.log.action.logaction.interact;
 
+import java.util.EnumSet;
+
 import org.bukkit.World;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.vehicle.VehicleEnterEvent;
 
 import de.cubeisland.cubeengine.core.user.User;
-import de.cubeisland.cubeengine.log.Log;
 import de.cubeisland.cubeengine.log.action.logaction.SimpleLogActionType;
 import de.cubeisland.cubeengine.log.storage.LogEntry;
 
@@ -19,10 +20,18 @@ import static de.cubeisland.cubeengine.log.action.ActionType.Category.PLAYER;
  */
 public class VehicleEnter extends SimpleLogActionType
 {
-    public VehicleEnter(Log module)
+    @Override
+    protected EnumSet<Category> getCategories()
     {
-        super(module, true, PLAYER, ENTITY);
+        return EnumSet.of(PLAYER, ENTITY);
     }
+
+    @Override
+    public boolean canRollback()
+    {
+        return false;
+    }
+
 
     @Override
     public String getName()

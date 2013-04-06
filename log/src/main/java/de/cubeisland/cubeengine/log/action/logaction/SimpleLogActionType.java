@@ -12,7 +12,6 @@ import org.bukkit.entity.Villager;
 import org.bukkit.entity.Wolf;
 import org.bukkit.event.entity.EntityDamageEvent;
 
-import de.cubeisland.cubeengine.log.Log;
 import de.cubeisland.cubeengine.log.action.LogActionType;
 import de.cubeisland.cubeengine.log.action.logaction.container.ContainerType;
 
@@ -20,15 +19,6 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 
 public abstract class SimpleLogActionType extends LogActionType
 {
-    public SimpleLogActionType(Log module, boolean canRollback,Category... types)
-    {
-        super(module, canRollback,types);
-    }
-    public SimpleLogActionType(Log module, Category... types)
-    {
-        super(module, false,types);
-    }
-
     public void logSimple(Entity player, String additional)
     {
         this.queueLog(player.getLocation(),player,null,null,null,null,additional);

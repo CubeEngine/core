@@ -1,5 +1,7 @@
 package de.cubeisland.cubeengine.log.action.logaction;
 
+import java.util.EnumSet;
+
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.block.Chest;
@@ -12,7 +14,6 @@ import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 
 import de.cubeisland.cubeengine.core.user.User;
-import de.cubeisland.cubeengine.log.Log;
 import de.cubeisland.cubeengine.log.storage.ItemData;
 import de.cubeisland.cubeengine.log.storage.LogEntry;
 
@@ -28,9 +29,16 @@ import static org.bukkit.Material.AIR;
 public class ItemDrop extends SimpleLogActionType
 
 {
-    public ItemDrop(Log module)
+    @Override
+    protected EnumSet<Category> getCategories()
     {
-        super(module, true, PLAYER,ITEM);
+        return EnumSet.of(PLAYER,ITEM);
+    }
+
+    @Override
+    public boolean canRollback()
+    {
+        return false;
     }
 
     @Override

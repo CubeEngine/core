@@ -1,16 +1,15 @@
 package de.cubeisland.cubeengine.log.action.logaction.container;
 
+import java.util.EnumSet;
+
 import org.bukkit.World;
 
 import de.cubeisland.cubeengine.core.user.User;
-import de.cubeisland.cubeengine.log.Log;
 import de.cubeisland.cubeengine.log.action.logaction.SimpleLogActionType;
 import de.cubeisland.cubeengine.log.storage.ItemData;
 import de.cubeisland.cubeengine.log.storage.LogEntry;
 
-import static de.cubeisland.cubeengine.log.action.ActionType.Category.INVENTORY;
-import static de.cubeisland.cubeengine.log.action.ActionType.Category.ITEM;
-import static de.cubeisland.cubeengine.log.action.ActionType.Category.PLAYER;
+import static de.cubeisland.cubeengine.log.action.ActionType.Category.*;
 
 /**
  * Removing items from a container
@@ -19,9 +18,10 @@ import static de.cubeisland.cubeengine.log.action.ActionType.Category.PLAYER;
 public class ItemRemove extends SimpleLogActionType
 
 {
-    public ItemRemove(Log module)
+    @Override
+    protected EnumSet<Category> getCategories()
     {
-        super(module, PLAYER, INVENTORY, ITEM);
+        return EnumSet.of(PLAYER, INVENTORY, ITEM);
     }
 
     @Override

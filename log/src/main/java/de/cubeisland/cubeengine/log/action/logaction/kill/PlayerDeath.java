@@ -1,5 +1,7 @@
 package de.cubeisland.cubeengine.log.action.logaction.kill;
 
+import java.util.EnumSet;
+
 import org.bukkit.World;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 
@@ -20,9 +22,10 @@ import static de.cubeisland.cubeengine.log.action.ActionType.Category.PLAYER;
  */
 public class PlayerDeath extends SimpleLogActionType
 {
-    public PlayerDeath(Log module)
+    @Override
+    protected EnumSet<Category> getCategories()
     {
-        super(module, PLAYER, ENTITY, KILL);
+        return EnumSet.of(PLAYER, ENTITY, KILL);
     }
 
     @Override

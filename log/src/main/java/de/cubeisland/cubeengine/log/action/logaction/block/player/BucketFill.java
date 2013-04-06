@@ -1,5 +1,7 @@
 package de.cubeisland.cubeengine.log.action.logaction.block.player;
 
+import java.util.EnumSet;
+
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.BlockState;
@@ -8,7 +10,6 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.player.PlayerBucketFillEvent;
 
 import de.cubeisland.cubeengine.core.user.User;
-import de.cubeisland.cubeengine.log.Log;
 import de.cubeisland.cubeengine.log.action.logaction.block.BlockActionType;
 import de.cubeisland.cubeengine.log.action.logaction.interact.MilkFill;
 import de.cubeisland.cubeengine.log.storage.LogEntry;
@@ -25,11 +26,11 @@ import static org.bukkit.Material.AIR;
  */
 public class BucketFill extends BlockActionType
 {
-    public BucketFill(Log module)
+    @Override
+    protected EnumSet<Category> getCategories()
     {
-        super(module, BLOCK, PLAYER);
+        return EnumSet.of(BLOCK, PLAYER);
     }
-
     @Override
     public String getName()
     {

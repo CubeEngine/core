@@ -1,16 +1,18 @@
 package de.cubeisland.cubeengine.log.action.logaction.interact;
 
+import java.util.EnumSet;
+
 import org.bukkit.DyeColor;
 import org.bukkit.World;
 
 import de.cubeisland.cubeengine.core.user.User;
-import de.cubeisland.cubeengine.log.Log;
 import de.cubeisland.cubeengine.log.action.logaction.SimpleLogActionType;
 import de.cubeisland.cubeengine.log.storage.LogEntry;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
-import static de.cubeisland.cubeengine.log.action.ActionType.Category.*;
+import static de.cubeisland.cubeengine.log.action.ActionType.Category.ENTITY;
+import static de.cubeisland.cubeengine.log.action.ActionType.Category.PLAYER;
 
 /**
  * Dyeing sheeps or wolfcollars
@@ -18,9 +20,16 @@ import static de.cubeisland.cubeengine.log.action.ActionType.Category.*;
  */
 public class EntityDye extends SimpleLogActionType
 {
-    public EntityDye(Log module)
+    @Override
+    protected EnumSet<Category> getCategories()
     {
-        super(module, true, PLAYER, ENTITY);
+        return EnumSet.of(PLAYER, ENTITY);
+    }
+
+    @Override
+    public boolean canRollback()
+    {
+        return false;
     }
 
     @Override

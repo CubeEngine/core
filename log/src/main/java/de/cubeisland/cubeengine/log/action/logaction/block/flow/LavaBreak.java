@@ -1,9 +1,10 @@
 package de.cubeisland.cubeengine.log.action.logaction.block.flow;
 
+import java.util.EnumSet;
+
 import org.bukkit.World;
 
 import de.cubeisland.cubeengine.core.user.User;
-import de.cubeisland.cubeengine.log.Log;
 import de.cubeisland.cubeengine.log.action.logaction.block.BlockActionType;
 import de.cubeisland.cubeengine.log.storage.LogEntry;
 
@@ -16,9 +17,10 @@ import static de.cubeisland.cubeengine.log.action.ActionType.Category.ENVIRONEME
  */
 public class LavaBreak extends BlockActionType
 {
-    public LavaBreak(Log module)
+    @Override
+    protected EnumSet<Category> getCategories()
     {
-        super(module, BLOCK, ENVIRONEMENT);
+        return EnumSet.of(BLOCK, ENVIRONEMENT);
     }
 
     @Override

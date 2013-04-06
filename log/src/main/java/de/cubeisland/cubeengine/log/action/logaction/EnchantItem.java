@@ -1,5 +1,6 @@
 package de.cubeisland.cubeengine.log.action.logaction;
 
+import java.util.EnumSet;
 import java.util.HashMap;
 
 import org.bukkit.World;
@@ -9,7 +10,6 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.enchantment.EnchantItemEvent;
 
 import de.cubeisland.cubeengine.core.user.User;
-import de.cubeisland.cubeengine.log.Log;
 import de.cubeisland.cubeengine.log.storage.ItemData;
 import de.cubeisland.cubeengine.log.storage.LogEntry;
 
@@ -22,9 +22,16 @@ import static de.cubeisland.cubeengine.log.action.ActionType.Category.PLAYER;
  */
 public class EnchantItem extends SimpleLogActionType
 {
-    public EnchantItem(Log module)
+    @Override
+    protected EnumSet<Category> getCategories()
     {
-        super(module, true, PLAYER,ITEM);
+        return EnumSet.of(PLAYER,ITEM);
+    }
+
+    @Override
+    public boolean canRollback()
+    {
+        return false;
     }
 
     @Override

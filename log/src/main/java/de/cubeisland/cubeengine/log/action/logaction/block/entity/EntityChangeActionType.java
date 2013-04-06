@@ -8,13 +8,9 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.entity.EntityChangeBlockEvent;
 
-import de.cubeisland.cubeengine.core.user.User;
-import de.cubeisland.cubeengine.log.Log;
-import de.cubeisland.cubeengine.log.action.LogActionType;
 import de.cubeisland.cubeengine.log.action.logaction.ActionTypeContainer;
 import de.cubeisland.cubeengine.log.action.logaction.block.BlockActionType;
 import de.cubeisland.cubeengine.log.action.logaction.block.BlockActionType.BlockData;
-import de.cubeisland.cubeengine.log.storage.LogEntry;
 
 import static org.bukkit.Material.AIR;
 
@@ -25,9 +21,9 @@ import static org.bukkit.Material.AIR;
  */
 public class EntityChangeActionType extends ActionTypeContainer
 {
-    public EntityChangeActionType(Log module)
+    public EntityChangeActionType()
     {
-        super(module, "ENTITY_CHANGE");
+        super("ENTITY_CHANGE");
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)

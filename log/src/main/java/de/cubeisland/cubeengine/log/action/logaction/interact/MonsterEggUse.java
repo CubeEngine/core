@@ -1,10 +1,11 @@
 package de.cubeisland.cubeengine.log.action.logaction.interact;
 
+import java.util.EnumSet;
+
 import org.bukkit.World;
 import org.bukkit.entity.EntityType;
 
 import de.cubeisland.cubeengine.core.user.User;
-import de.cubeisland.cubeengine.log.Log;
 import de.cubeisland.cubeengine.log.action.logaction.SimpleLogActionType;
 import de.cubeisland.cubeengine.log.storage.EntityData;
 import de.cubeisland.cubeengine.log.storage.LogEntry;
@@ -18,9 +19,16 @@ import static de.cubeisland.cubeengine.log.action.ActionType.Category.PLAYER;
  */
 public class MonsterEggUse extends SimpleLogActionType
 {
-    public MonsterEggUse(Log module)
+    @Override
+    protected EnumSet<Category> getCategories()
     {
-        super(module, true, PLAYER, ENTITY);
+        return EnumSet.of(PLAYER, ENTITY);
+    }
+
+    @Override
+    public boolean canRollback()
+    {
+        return false;
     }
 
     @Override

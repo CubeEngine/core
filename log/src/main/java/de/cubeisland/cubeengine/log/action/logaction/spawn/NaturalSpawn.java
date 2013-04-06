@@ -1,9 +1,10 @@
 package de.cubeisland.cubeengine.log.action.logaction.spawn;
 
+import java.util.EnumSet;
+
 import org.bukkit.World;
 
 import de.cubeisland.cubeengine.core.user.User;
-import de.cubeisland.cubeengine.log.Log;
 import de.cubeisland.cubeengine.log.action.logaction.SimpleLogActionType;
 import de.cubeisland.cubeengine.log.storage.LogEntry;
 
@@ -16,9 +17,16 @@ import static de.cubeisland.cubeengine.log.action.ActionType.Category.ENTITY;
 public class NaturalSpawn extends SimpleLogActionType
 
 {
-    public NaturalSpawn(Log module)
+    @Override
+    protected EnumSet<Category> getCategories()
     {
-        super(module, true, ENTITY);
+        return EnumSet.of(ENTITY);
+    }
+
+    @Override
+    public boolean canRollback()
+    {
+        return false;
     }
 
     @Override

@@ -1,5 +1,6 @@
 package de.cubeisland.cubeengine.log.action.logaction.block;
 
+import java.util.EnumSet;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -16,13 +17,14 @@ import org.bukkit.event.block.BlockPhysicsEvent;
 
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.util.Pair;
-import de.cubeisland.cubeengine.log.Log;
 import de.cubeisland.cubeengine.log.action.ActionType;
 import de.cubeisland.cubeengine.log.storage.LogEntry;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
-import static de.cubeisland.cubeengine.log.action.ActionType.Category.*;
+import static de.cubeisland.cubeengine.log.action.ActionType.Category.BLOCK;
+import static de.cubeisland.cubeengine.log.action.ActionType.Category.ENVIRONEMENT;
+import static de.cubeisland.cubeengine.log.action.ActionType.Category.PLAYER;
 import static org.bukkit.Material.AIR;
 import static org.bukkit.Material.DRAGON_EGG;
 
@@ -32,9 +34,10 @@ import static org.bukkit.Material.DRAGON_EGG;
  */
 public class BlockFall extends BlockActionType
 {
-    public BlockFall(Log module)
+    @Override
+    protected EnumSet<Category> getCategories()
     {
-        super(module, BLOCK, ENVIRONEMENT, PLAYER);
+        return EnumSet.of(BLOCK, ENVIRONEMENT, PLAYER);
     }
 
     @Override

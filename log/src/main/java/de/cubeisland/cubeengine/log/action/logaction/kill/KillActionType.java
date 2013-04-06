@@ -21,7 +21,6 @@ import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.inventory.ItemStack;
 
 import de.cubeisland.cubeengine.core.user.User;
-import de.cubeisland.cubeengine.log.Log;
 import de.cubeisland.cubeengine.log.action.logaction.ActionTypeContainer;
 import de.cubeisland.cubeengine.log.action.logaction.ItemDrop;
 import de.cubeisland.cubeengine.log.action.logaction.SimpleLogActionType;
@@ -44,9 +43,9 @@ import static org.bukkit.event.entity.EntityDamageEvent.DamageCause.PROJECTILE;
  */
 public class KillActionType extends ActionTypeContainer
 {
-    public KillActionType(Log module)
+    public KillActionType()
     {
-        super(module, "KILL");
+        super("KILL");
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)

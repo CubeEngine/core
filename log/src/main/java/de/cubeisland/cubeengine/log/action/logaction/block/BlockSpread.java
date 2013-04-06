@@ -1,5 +1,7 @@
 package de.cubeisland.cubeengine.log.action.logaction.block;
 
+import java.util.EnumSet;
+
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.event.EventHandler;
@@ -7,7 +9,6 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.block.BlockSpreadEvent;
 
 import de.cubeisland.cubeengine.core.user.User;
-import de.cubeisland.cubeengine.log.Log;
 import de.cubeisland.cubeengine.log.storage.LogEntry;
 
 import static de.cubeisland.cubeengine.log.action.ActionType.Category.BLOCK;
@@ -19,9 +20,10 @@ import static de.cubeisland.cubeengine.log.action.ActionType.Category.ENVIRONEME
  */
 public class BlockSpread extends BlockActionType
 {
-    public BlockSpread(Log module)
+    @Override
+    protected EnumSet<Category> getCategories()
     {
-        super(module, BLOCK, ENVIRONEMENT);
+        return EnumSet.of(BLOCK, ENVIRONEMENT);
     }
 
     @Override

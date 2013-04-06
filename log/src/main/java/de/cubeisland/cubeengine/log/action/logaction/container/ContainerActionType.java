@@ -23,7 +23,6 @@ import org.bukkit.inventory.ItemStack;
 import de.cubeisland.cubeengine.core.bukkit.BukkitUtils;
 import de.cubeisland.cubeengine.core.logger.LogLevel;
 import de.cubeisland.cubeengine.core.user.User;
-import de.cubeisland.cubeengine.log.Log;
 import de.cubeisland.cubeengine.log.LoggingConfiguration;
 import de.cubeisland.cubeengine.log.action.logaction.ActionTypeContainer;
 import de.cubeisland.cubeengine.log.action.logaction.SimpleLogActionType;
@@ -46,9 +45,9 @@ import static de.cubeisland.cubeengine.core.util.InventoryUtil.getMissingSpace;
  */
 public class ContainerActionType extends ActionTypeContainer
 {
-    public ContainerActionType(Log module)
+    public ContainerActionType()
     {
-        super(module, "CONTAINER");
+        super("CONTAINER");
     }
 
     private TLongObjectHashMap<TObjectIntHashMap<ItemData>> inventoryChanges = new TLongObjectHashMap<TObjectIntHashMap<ItemData>>();

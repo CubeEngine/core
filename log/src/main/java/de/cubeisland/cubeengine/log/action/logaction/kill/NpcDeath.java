@@ -1,16 +1,15 @@
 package de.cubeisland.cubeengine.log.action.logaction.kill;
 
 
+import java.util.EnumSet;
+
 import org.bukkit.World;
 
 import de.cubeisland.cubeengine.core.user.User;
-import de.cubeisland.cubeengine.log.Log;
 import de.cubeisland.cubeengine.log.action.logaction.SimpleLogActionType;
 import de.cubeisland.cubeengine.log.storage.LogEntry;
 
-import static de.cubeisland.cubeengine.log.action.ActionType.Category.ENTITY;
-import static de.cubeisland.cubeengine.log.action.ActionType.Category.KILL;
-import static de.cubeisland.cubeengine.log.action.ActionType.Category.PLAYER;
+import static de.cubeisland.cubeengine.log.action.ActionType.Category.*;
 
 /**
  * npc-death
@@ -19,9 +18,10 @@ import static de.cubeisland.cubeengine.log.action.ActionType.Category.PLAYER;
 public class NpcDeath extends SimpleLogActionType
 
 {
-    public NpcDeath(Log module)
+    @Override
+    protected EnumSet<Category> getCategories()
     {
-        super(module, PLAYER, ENTITY, KILL);
+        return EnumSet.of(PLAYER, ENTITY, KILL);
     }
 
     @Override

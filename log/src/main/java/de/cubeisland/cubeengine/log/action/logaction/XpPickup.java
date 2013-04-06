@@ -1,12 +1,13 @@
 package de.cubeisland.cubeengine.log.action.logaction;
 
+import java.util.EnumSet;
+
 import org.bukkit.World;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.player.PlayerExpChangeEvent;
 
 import de.cubeisland.cubeengine.core.user.User;
-import de.cubeisland.cubeengine.log.Log;
 import de.cubeisland.cubeengine.log.storage.LogEntry;
 
 import com.fasterxml.jackson.databind.node.ArrayNode;
@@ -19,9 +20,16 @@ import static de.cubeisland.cubeengine.log.action.ActionType.Category.PLAYER;
  */
 public class XpPickup extends SimpleLogActionType
 {
-    public XpPickup(Log module)
+    @Override
+    public boolean canRollback()
     {
-        super(module, true, PLAYER);
+        return false;
+    }
+
+    @Override
+    protected EnumSet<Category> getCategories()
+    {
+        return EnumSet.of(PLAYER);
     }
 
     @Override

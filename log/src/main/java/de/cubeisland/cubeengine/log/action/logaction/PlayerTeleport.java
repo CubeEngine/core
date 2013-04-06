@@ -1,5 +1,7 @@
 package de.cubeisland.cubeengine.log.action.logaction;
 
+import java.util.EnumSet;
+
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.event.EventHandler;
@@ -7,7 +9,6 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.player.PlayerTeleportEvent;
 
 import de.cubeisland.cubeengine.core.user.User;
-import de.cubeisland.cubeengine.log.Log;
 import de.cubeisland.cubeengine.log.storage.LogEntry;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -20,9 +21,16 @@ import static de.cubeisland.cubeengine.log.action.ActionType.Category.PLAYER;
  */
 public class PlayerTeleport extends SimpleLogActionType
 {
-    public PlayerTeleport(Log module)
+    @Override
+    protected EnumSet<Category> getCategories()
     {
-        super(module, true, PLAYER);
+        return EnumSet.of(PLAYER);
+    }
+
+    @Override
+    public boolean canRollback()
+    {
+        return false;
     }
 
     @Override
@@ -48,7 +56,7 @@ public class PlayerTeleport extends SimpleLogActionType
     {
         ObjectNode json = this.om.createObjectNode();
         json.put("dir", from ? "from" : "to");
-        json.put("world", this.wm.getWorldId(location.getWorld()));
+        json.put("world", this.logModule.getCore().getWorldManager().getWorldId(location.getWorld()));
         json.put("x",location.getBlockX());
         json.put("y",location.getBlockY());
         json.put("z",location.getBlockZ());

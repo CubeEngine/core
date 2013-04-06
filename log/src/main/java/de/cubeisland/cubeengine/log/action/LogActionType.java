@@ -3,19 +3,13 @@ package de.cubeisland.cubeengine.log.action;
 import org.bukkit.event.Listener;
 
 import de.cubeisland.cubeengine.core.user.User;
-import de.cubeisland.cubeengine.log.Log;
 import de.cubeisland.cubeengine.log.storage.LogEntry;
 import de.cubeisland.cubeengine.log.storage.Lookup;
 
 public abstract class LogActionType extends ActionType implements Listener
 {
-    public LogActionType(Log module, boolean canRollback, Category... types)
-    {
-        super(module, canRollback, types);
-    }
-
     @Override
-    public void initialize()
+    public void enable()
     {
         this.logModule.getCore().getEventManager().registerListener(this.logModule,this);
     }
@@ -30,5 +24,11 @@ public abstract class LogActionType extends ActionType implements Listener
         //TODO location OR area if attached
         String loc = " at {loc}";
         this.showLogEntry(user,logEntry,time,loc);
+    }
+
+    @Override
+    public boolean canRollback()
+    {
+        return true;
     }
 }

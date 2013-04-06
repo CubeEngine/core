@@ -1,10 +1,11 @@
 package de.cubeisland.cubeengine.log.action.logaction.block.interaction;
 
+import java.util.EnumSet;
+
 import org.bukkit.Material;
 import org.bukkit.World;
 
 import de.cubeisland.cubeengine.core.user.User;
-import de.cubeisland.cubeengine.log.Log;
 import de.cubeisland.cubeengine.log.action.logaction.block.BlockActionType;
 import de.cubeisland.cubeengine.log.storage.LogEntry;
 
@@ -17,9 +18,10 @@ import static de.cubeisland.cubeengine.log.action.ActionType.Category.PLAYER;
  */
 public class BonemealUse extends BlockActionType
 {
-    public BonemealUse(Log module)
+    @Override
+    protected EnumSet<Category> getCategories()
     {
-        super(module, BLOCK, PLAYER);
+        return EnumSet.of(BLOCK, PLAYER);
     }
 
     @Override

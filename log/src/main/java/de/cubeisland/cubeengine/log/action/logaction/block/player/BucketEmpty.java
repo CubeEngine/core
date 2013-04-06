@@ -6,7 +6,6 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.player.PlayerBucketEmptyEvent;
 
-import de.cubeisland.cubeengine.log.Log;
 import de.cubeisland.cubeengine.log.action.logaction.ActionTypeContainer;
 import de.cubeisland.cubeengine.log.action.logaction.block.BlockActionType.BlockData;
 
@@ -18,9 +17,9 @@ import de.cubeisland.cubeengine.log.action.logaction.block.BlockActionType.Block
  */
 public class BucketEmpty extends ActionTypeContainer
 {
-    public BucketEmpty(Log module)
+    public BucketEmpty()
     {
-        super(module, "BUCKET_EMPTY");
+        super("BUCKET_EMPTY");
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)

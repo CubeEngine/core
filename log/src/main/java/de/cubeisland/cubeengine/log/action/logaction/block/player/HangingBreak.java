@@ -1,5 +1,6 @@
 package de.cubeisland.cubeengine.log.action.logaction.block.player;
 
+import java.util.EnumSet;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -17,16 +18,13 @@ import org.bukkit.event.hanging.HangingBreakEvent;
 import org.bukkit.inventory.ItemStack;
 
 import de.cubeisland.cubeengine.core.user.User;
-import de.cubeisland.cubeengine.log.Log;
 import de.cubeisland.cubeengine.log.action.logaction.block.BlockActionType;
 import de.cubeisland.cubeengine.log.storage.ItemData;
 import de.cubeisland.cubeengine.log.storage.LogEntry;
 
 import static de.cubeisland.cubeengine.log.action.ActionType.Category.BLOCK;
 import static de.cubeisland.cubeengine.log.action.ActionType.Category.PLAYER;
-import static org.bukkit.Material.AIR;
-import static org.bukkit.Material.ITEM_FRAME;
-import static org.bukkit.Material.PAINTING;
+import static org.bukkit.Material.*;
 
 /**
  * Breaking Item-Frames or Painting
@@ -35,10 +33,12 @@ import static org.bukkit.Material.PAINTING;
  */
 public class HangingBreak extends BlockActionType
 {
-    public HangingBreak(Log module)
+    @Override
+    protected EnumSet<Category> getCategories()
     {
-        super(module, BLOCK, PLAYER);
+        return EnumSet.of(BLOCK, PLAYER);
     }
+
 
     @Override
     public String getName()

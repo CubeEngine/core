@@ -12,13 +12,9 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 
-import de.cubeisland.cubeengine.core.user.User;
-import de.cubeisland.cubeengine.log.Log;
-import de.cubeisland.cubeengine.log.action.LogActionType;
 import de.cubeisland.cubeengine.log.action.logaction.ActionTypeContainer;
 import de.cubeisland.cubeengine.log.action.logaction.container.ItemInsert;
 import de.cubeisland.cubeengine.log.storage.ItemData;
-import de.cubeisland.cubeengine.log.storage.LogEntry;
 
 import static org.bukkit.Material.*;
 
@@ -32,9 +28,9 @@ import static org.bukkit.Material.*;
  */
 public class InteractEntityActionType extends ActionTypeContainer
 {
-    public InteractEntityActionType(Log module)
+    public InteractEntityActionType()
     {
-        super(module, "INTERACT_ENTITY");
+        super("INTERACT_ENTITY");
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)

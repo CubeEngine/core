@@ -1,5 +1,6 @@
 package de.cubeisland.cubeengine.log.action.logaction.block;
 
+import java.util.EnumSet;
 import java.util.List;
 
 import org.bukkit.World;
@@ -14,8 +15,8 @@ import de.cubeisland.cubeengine.log.Log;
 import de.cubeisland.cubeengine.log.action.logaction.block.player.PlayerGrow;
 import de.cubeisland.cubeengine.log.storage.LogEntry;
 
-import static de.cubeisland.cubeengine.log.action.ActionType.Category.BLOCK;
-import static de.cubeisland.cubeengine.log.action.ActionType.Category.ENVIRONEMENT;
+import static de.cubeisland.cubeengine.log.action.ActionType.Category.*;
+import static de.cubeisland.cubeengine.log.action.ActionType.Category.ITEM;
 
 /**
  * Trees or mushrooms growing
@@ -24,9 +25,10 @@ import static de.cubeisland.cubeengine.log.action.ActionType.Category.ENVIRONEME
  */
 public class NaturalGrow extends BlockActionType
 {
-    public NaturalGrow(Log module)
+    @Override
+    protected EnumSet<Category> getCategories()
     {
-        super(module, BLOCK, ENVIRONEMENT);
+        return EnumSet.of(BLOCK, ENVIRONEMENT);
     }
 
     @Override

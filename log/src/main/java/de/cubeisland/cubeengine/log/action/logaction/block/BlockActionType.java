@@ -11,7 +11,6 @@ import org.bukkit.entity.Hanging;
 import org.bukkit.material.Bed;
 
 import de.cubeisland.cubeengine.core.util.BlockUtil;
-import de.cubeisland.cubeengine.log.Log;
 import de.cubeisland.cubeengine.log.action.LogActionType;
 import de.cubeisland.cubeengine.log.action.logaction.block.player.BlockBreak;
 import de.cubeisland.cubeengine.log.action.logaction.block.player.HangingBreak;
@@ -19,16 +18,6 @@ import de.cubeisland.cubeengine.log.storage.LogEntry;
 
 public abstract class BlockActionType extends LogActionType
 {
-    public BlockActionType(Log module, boolean canRollback, Category... types)
-    {
-        super(module, canRollback,types);
-    }
-
-    public BlockActionType(Log module, Category... types)
-    {
-        super(module, false,types);
-    }
-
     public void logBlockChange(Location location, Entity causer, BlockData oldState, BlockData newState, String additional)
     {
         this.logBlockChange(location, causer,

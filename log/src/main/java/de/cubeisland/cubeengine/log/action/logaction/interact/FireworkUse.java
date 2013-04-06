@@ -1,9 +1,10 @@
 package de.cubeisland.cubeengine.log.action.logaction.interact;
 
+import java.util.EnumSet;
+
 import org.bukkit.World;
 
 import de.cubeisland.cubeengine.core.user.User;
-import de.cubeisland.cubeengine.log.Log;
 import de.cubeisland.cubeengine.log.action.logaction.SimpleLogActionType;
 import de.cubeisland.cubeengine.log.storage.LogEntry;
 
@@ -15,9 +16,16 @@ import static de.cubeisland.cubeengine.log.action.ActionType.Category.*;
  */
 public class FireworkUse extends SimpleLogActionType
 {
-    public FireworkUse(Log module)
+    @Override
+    protected EnumSet<Category> getCategories()
     {
-        super(module, true, PLAYER, ENTITY, ITEM);//TODO item
+        return EnumSet.of(PLAYER, ENTITY, ITEM);//TODO item
+    }
+
+    @Override
+    public boolean canRollback()
+    {
+        return false;
     }
 
     @Override

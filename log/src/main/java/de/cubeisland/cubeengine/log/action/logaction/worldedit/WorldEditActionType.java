@@ -1,10 +1,11 @@
 package de.cubeisland.cubeengine.log.action.logaction.worldedit;
 
+import java.util.EnumSet;
+
 import org.bukkit.Material;
 import org.bukkit.World;
 
 import de.cubeisland.cubeengine.core.user.User;
-import de.cubeisland.cubeengine.log.Log;
 import de.cubeisland.cubeengine.log.action.logaction.block.BlockActionType;
 import de.cubeisland.cubeengine.log.storage.LogEntry;
 
@@ -13,9 +14,10 @@ import static de.cubeisland.cubeengine.log.action.ActionType.Category.PLAYER;
 
 public class WorldEditActionType extends BlockActionType
 {
-    public WorldEditActionType(Log module)
+    @Override
+    protected EnumSet<Category> getCategories()
     {
-        super(module, BLOCK, PLAYER);
+        return EnumSet.of(PLAYER,BLOCK);
     }
 
     @Override

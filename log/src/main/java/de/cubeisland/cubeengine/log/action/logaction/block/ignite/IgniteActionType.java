@@ -7,12 +7,9 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.block.BlockIgniteEvent;
 
-import de.cubeisland.cubeengine.core.user.User;
-import de.cubeisland.cubeengine.log.Log;
 import de.cubeisland.cubeengine.log.action.logaction.ActionTypeContainer;
 import de.cubeisland.cubeengine.log.action.logaction.block.BlockActionType;
 import de.cubeisland.cubeengine.log.action.logaction.block.BlockActionType.BlockData;
-import de.cubeisland.cubeengine.log.storage.LogEntry;
 
 /**
  * Container-ActionType for ignitions
@@ -26,9 +23,9 @@ import de.cubeisland.cubeengine.log.storage.LogEntry;
  */
 public class IgniteActionType extends ActionTypeContainer
 {
-    public IgniteActionType(Log module)
+    public IgniteActionType()
     {
-        super(module, "IGNITE");
+        super("IGNITE");
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)

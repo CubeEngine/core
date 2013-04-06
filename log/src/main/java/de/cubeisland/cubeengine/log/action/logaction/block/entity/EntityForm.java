@@ -1,12 +1,13 @@
 package de.cubeisland.cubeengine.log.action.logaction.block.entity;
 
+import java.util.EnumSet;
+
 import org.bukkit.World;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.block.EntityBlockFormEvent;
 
 import de.cubeisland.cubeengine.core.user.User;
-import de.cubeisland.cubeengine.log.Log;
 import de.cubeisland.cubeengine.log.action.logaction.block.BlockActionType;
 import de.cubeisland.cubeengine.log.storage.LogEntry;
 
@@ -19,9 +20,10 @@ import static de.cubeisland.cubeengine.log.action.ActionType.Category.ENTITY;
  */
 public class EntityForm extends BlockActionType
 {
-    public EntityForm(Log module)
+    @Override
+    protected EnumSet<Category> getCategories()
     {
-        super(module, BLOCK, ENTITY);
+        return EnumSet.of(BLOCK, ENTITY);
     }
 
     @Override

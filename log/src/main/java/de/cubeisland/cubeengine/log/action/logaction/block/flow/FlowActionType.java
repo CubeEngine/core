@@ -6,7 +6,6 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.block.BlockFromToEvent;
 
-import de.cubeisland.cubeengine.log.Log;
 import de.cubeisland.cubeengine.log.action.logaction.ActionTypeContainer;
 
 import static de.cubeisland.cubeengine.core.bukkit.BlockUtil.isNonFluidProofBlock;
@@ -21,9 +20,9 @@ import static org.bukkit.Material.AIR;
  */
 public class FlowActionType extends ActionTypeContainer
 {
-    public FlowActionType(Log module)
+    public FlowActionType()
     {
-        super(module, "FLOW");
+        super("FLOW");
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)

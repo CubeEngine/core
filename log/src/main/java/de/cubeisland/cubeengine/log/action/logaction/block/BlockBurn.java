@@ -1,5 +1,7 @@
 package de.cubeisland.cubeengine.log.action.logaction.block;
 
+import java.util.EnumSet;
+
 import org.bukkit.World;
 import org.bukkit.block.BlockState;
 import org.bukkit.event.EventHandler;
@@ -7,7 +9,6 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.block.BlockBurnEvent;
 
 import de.cubeisland.cubeengine.core.user.User;
-import de.cubeisland.cubeengine.log.Log;
 import de.cubeisland.cubeengine.log.storage.LogEntry;
 
 import static de.cubeisland.cubeengine.log.action.ActionType.Category.BLOCK;
@@ -23,9 +24,10 @@ import static org.bukkit.Material.AIR;
  */
 public class BlockBurn extends BlockActionType
 {
-    public BlockBurn(Log module)
+    @Override
+    protected EnumSet<Category> getCategories()
     {
-        super(module, BLOCK, ENVIRONEMENT);
+        return EnumSet.of(BLOCK, ENVIRONEMENT);
     }
 
     @Override

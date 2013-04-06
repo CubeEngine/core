@@ -1,5 +1,7 @@
 package de.cubeisland.cubeengine.log.action.logaction.block.entity;
 
+import java.util.EnumSet;
+
 import org.bukkit.World;
 import org.bukkit.block.BlockState;
 import org.bukkit.event.EventHandler;
@@ -7,7 +9,6 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.entity.EntityBreakDoorEvent;
 
 import de.cubeisland.cubeengine.core.user.User;
-import de.cubeisland.cubeengine.log.Log;
 import de.cubeisland.cubeengine.log.action.logaction.block.BlockActionType;
 import de.cubeisland.cubeengine.log.storage.LogEntry;
 
@@ -21,9 +22,10 @@ import static org.bukkit.Material.AIR;
  */
 public class EntityBreak extends BlockActionType
 {
-    public EntityBreak(Log module)
+    @Override
+    protected EnumSet<Category> getCategories()
     {
-        super(module, BLOCK, ENTITY);
+        return EnumSet.of(BLOCK, ENTITY);
     }
 
     @Override

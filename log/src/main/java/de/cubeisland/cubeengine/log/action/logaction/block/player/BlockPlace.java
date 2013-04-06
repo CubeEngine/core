@@ -1,5 +1,7 @@
 package de.cubeisland.cubeengine.log.action.logaction.block.player;
 
+import java.util.EnumSet;
+
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
@@ -10,7 +12,6 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.block.BlockPlaceEvent;
 
 import de.cubeisland.cubeengine.core.user.User;
-import de.cubeisland.cubeengine.log.Log;
 import de.cubeisland.cubeengine.log.action.logaction.block.BlockActionType;
 import de.cubeisland.cubeengine.log.action.logaction.block.BlockFall;
 import de.cubeisland.cubeengine.log.storage.LogEntry;
@@ -30,9 +31,10 @@ import static org.bukkit.Material.DRAGON_EGG;
  */
 public class BlockPlace extends BlockActionType
 {
-    public BlockPlace(Log module)
+    @Override
+    protected EnumSet<Category> getCategories()
     {
-        super(module, BLOCK, PLAYER);
+        return EnumSet.of(BLOCK, PLAYER);
     }
 
     @Override

@@ -1,6 +1,7 @@
 package de.cubeisland.cubeengine.log.action.logaction.block.player;
 
 import java.util.ArrayList;
+import java.util.EnumSet;
 import java.util.Iterator;
 
 import org.bukkit.World;
@@ -12,7 +13,6 @@ import org.bukkit.event.block.SignChangeEvent;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.util.ChatFormat;
 import de.cubeisland.cubeengine.core.util.StringUtils;
-import de.cubeisland.cubeengine.log.Log;
 import de.cubeisland.cubeengine.log.action.logaction.block.BlockActionType;
 import de.cubeisland.cubeengine.log.storage.LogEntry;
 
@@ -29,11 +29,11 @@ import static de.cubeisland.cubeengine.log.action.ActionType.Category.PLAYER;
  */
 public class SignChange extends BlockActionType
 {
-    public SignChange(Log module)
+    @Override
+    protected EnumSet<Category> getCategories()
     {
-        super(module, BLOCK, PLAYER);
+        return EnumSet.of(BLOCK, PLAYER);
     }
-
     @Override
     public String getName()
     {

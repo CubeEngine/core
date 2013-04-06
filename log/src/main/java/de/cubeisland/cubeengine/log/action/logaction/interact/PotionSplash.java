@@ -1,5 +1,7 @@
 package de.cubeisland.cubeengine.log.action.logaction.interact;
 
+import java.util.EnumSet;
+
 import org.bukkit.World;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -9,7 +11,6 @@ import org.bukkit.event.entity.PotionSplashEvent;
 import org.bukkit.potion.PotionEffect;
 
 import de.cubeisland.cubeengine.core.user.User;
-import de.cubeisland.cubeengine.log.Log;
 import de.cubeisland.cubeengine.log.action.logaction.SimpleLogActionType;
 import de.cubeisland.cubeengine.log.storage.LogEntry;
 
@@ -26,11 +27,17 @@ import static de.cubeisland.cubeengine.log.action.ActionType.Category.PLAYER;
  */
 public class PotionSplash extends SimpleLogActionType
 {
-    public PotionSplash(Log module)
+    @Override
+    protected EnumSet<Category> getCategories()
     {
-        super(module, true, PLAYER, ENTITY, ITEM);
+        return EnumSet.of(PLAYER, ENTITY,ITEM);
     }
 
+    @Override
+    public boolean canRollback()
+    {
+        return false;
+    }
     @Override
     public String getName()
     {

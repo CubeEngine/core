@@ -1,9 +1,10 @@
 package de.cubeisland.cubeengine.log.action.logaction.container;
 
+import java.util.EnumSet;
+
 import org.bukkit.World;
 
 import de.cubeisland.cubeengine.core.user.User;
-import de.cubeisland.cubeengine.log.Log;
 import de.cubeisland.cubeengine.log.action.logaction.SimpleLogActionType;
 import de.cubeisland.cubeengine.log.storage.ItemData;
 import de.cubeisland.cubeengine.log.storage.LogEntry;
@@ -16,9 +17,10 @@ import static de.cubeisland.cubeengine.log.action.ActionType.Category.*;
  */
 public class ItemInsert extends SimpleLogActionType
 {
-    public ItemInsert(Log module)
+    @Override
+    protected EnumSet<Category> getCategories()
     {
-        super(module, PLAYER, INVENTORY, ITEM);
+        return EnumSet.of(PLAYER, INVENTORY, ITEM);
     }
 
     @Override

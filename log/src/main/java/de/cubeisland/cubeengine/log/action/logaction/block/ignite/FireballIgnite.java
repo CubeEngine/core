@@ -1,5 +1,7 @@
 package de.cubeisland.cubeengine.log.action.logaction.block.ignite;
 
+import java.util.EnumSet;
+
 import org.bukkit.World;
 
 import de.cubeisland.cubeengine.core.user.User;
@@ -15,9 +17,10 @@ import static de.cubeisland.cubeengine.log.action.ActionType.Category.*;
  */
 public class FireballIgnite extends BlockActionType
 {
-    public FireballIgnite(Log module)
+    @Override
+    protected EnumSet<Category> getCategories()
     {
-        super(module, BLOCK, ENTITY, PLAYER);
+        return EnumSet.of(BLOCK, ENTITY, PLAYER);
     }
 
     @Override

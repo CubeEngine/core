@@ -6,9 +6,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.entity.CreatureSpawnEvent;
 
 import de.cubeisland.cubeengine.core.user.User;
-import de.cubeisland.cubeengine.log.Log;
 import de.cubeisland.cubeengine.log.action.logaction.ActionTypeContainer;
-import de.cubeisland.cubeengine.log.action.logaction.SimpleLogActionType;
 import de.cubeisland.cubeengine.log.storage.LogEntry;
 
 /**
@@ -21,9 +19,9 @@ import de.cubeisland.cubeengine.log.storage.LogEntry;
  */
 public class EntitySpawnActionType extends ActionTypeContainer
 {
-    public EntitySpawnActionType(Log module)
+    public EntitySpawnActionType()
     {
-        super(module, "ENTITY_SPAWN");
+        super("ENTITY_SPAWN");
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)

@@ -15,7 +15,6 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.material.Diode;
 import org.bukkit.material.Lever;
 
-import de.cubeisland.cubeengine.log.Log;
 import de.cubeisland.cubeengine.log.action.logaction.ActionTypeContainer;
 import de.cubeisland.cubeengine.log.action.logaction.block.BlockActionType.BlockData;
 import de.cubeisland.cubeengine.log.action.logaction.block.player.BlockPlace;
@@ -49,9 +48,9 @@ import static org.bukkit.Material.*;
  */
 public class RightClickActionType extends ActionTypeContainer
 {
-    public RightClickActionType(Log module)
+    public RightClickActionType()
     {
-        super(module, "RIGHT_CLICK");
+        super("RIGHT_CLICK");
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)

@@ -1,5 +1,6 @@
 package de.cubeisland.cubeengine.log.action.logaction.block.player;
 
+import java.util.EnumSet;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -22,7 +23,6 @@ import org.bukkit.material.Attachable;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.util.BlockUtil;
 import de.cubeisland.cubeengine.core.util.Pair;
-import de.cubeisland.cubeengine.log.Log;
 import de.cubeisland.cubeengine.log.action.logaction.ItemDrop;
 import de.cubeisland.cubeengine.log.action.logaction.block.BlockActionType;
 import de.cubeisland.cubeengine.log.storage.LogEntry;
@@ -31,7 +31,9 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import static de.cubeisland.cubeengine.core.util.BlockUtil.BLOCK_FACES;
-import static de.cubeisland.cubeengine.log.action.ActionType.Category.*;
+import static de.cubeisland.cubeengine.log.action.ActionType.Category.BLOCK;
+import static de.cubeisland.cubeengine.log.action.ActionType.Category.ENVIRONEMENT;
+import static de.cubeisland.cubeengine.log.action.ActionType.Category.PLAYER;
 import static org.bukkit.Material.*;
 
 /**
@@ -43,9 +45,10 @@ import static org.bukkit.Material.*;
  */
 public class BlockBreak extends BlockActionType
 {
-    public BlockBreak(Log module)
+    @Override
+    protected EnumSet<Category> getCategories()
     {
-        super(module, BLOCK, PLAYER, ENVIRONEMENT);
+        return EnumSet.of(BLOCK, PLAYER, ENVIRONEMENT);
     }
 
     @Override
