@@ -7,23 +7,15 @@ import java.util.Set;
 import java.util.TreeSet;
 import java.util.concurrent.CopyOnWriteArraySet;
 
-import org.bukkit.DyeColor;
 import org.bukkit.Location;
-import org.bukkit.Material;
 import org.bukkit.World;
-import org.bukkit.entity.EntityType;
-import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 
 import de.cubeisland.cubeengine.core.module.Module;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.util.math.BlockVector3;
-import de.cubeisland.cubeengine.core.webapi.Action;
 
 import de.cubeisland.cubeengine.log.action.ActionType;
-import de.cubeisland.cubeengine.log.action.ActionType.Type;
-
-import static de.cubeisland.cubeengine.log.storage.ActionType_old.LOOKUP_CONTAINER;
-import static de.cubeisland.cubeengine.log.storage.ActionType_old.LOOKUP_KILLS;
+import de.cubeisland.cubeengine.log.action.ActionType.Category;
 
 
 public class Lookup implements Cloneable
@@ -249,7 +241,7 @@ Params that allow multiple values
         Lookup lookup = new Lookup(module);
         lookup.includeActions = true;
         lookup.clearActions();
-        lookup.includeActions(Type.INVENTORY.getActionTypes());
+        lookup.includeActions(Category.INVENTORY.getActionTypes());
         return lookup;
     }
 
@@ -261,7 +253,7 @@ Params that allow multiple values
         Lookup lookup = new Lookup(module);
         lookup.includeActions = true;
         lookup.clearActions();
-        lookup.includeActions(Type.KILL.getActionTypes());
+        lookup.includeActions(Category.KILL.getActionTypes());
         return lookup;
     }
 
@@ -273,7 +265,7 @@ Params that allow multiple values
         Lookup lookup = new Lookup(module);
         lookup.includeActions = true;
         lookup.clearActions();
-        lookup.includeActions(Type.PLAYER.getActionTypes());
+        lookup.includeActions(Category.PLAYER.getActionTypes());
         return lookup;
     }
 
@@ -285,7 +277,7 @@ Params that allow multiple values
         Lookup lookup = new Lookup(module);
         lookup.includeActions = true;
         lookup.clearActions();
-        lookup.includeActions(Type.BLOCK.getActionTypes());
+        lookup.includeActions(Category.BLOCK.getActionTypes());
         return lookup;
     }
 

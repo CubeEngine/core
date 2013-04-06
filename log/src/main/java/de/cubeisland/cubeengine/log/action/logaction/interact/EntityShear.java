@@ -1,6 +1,5 @@
 package de.cubeisland.cubeengine.log.action.logaction.interact;
 
-import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.player.PlayerShearEntityEvent;
@@ -10,8 +9,8 @@ import de.cubeisland.cubeengine.log.Log;
 import de.cubeisland.cubeengine.log.action.logaction.SimpleLogActionType;
 import de.cubeisland.cubeengine.log.storage.LogEntry;
 
-import static de.cubeisland.cubeengine.log.action.ActionType.Type.ENTITY;
-import static de.cubeisland.cubeengine.log.action.ActionType.Type.PLAYER;
+import static de.cubeisland.cubeengine.log.action.ActionType.Category.ENTITY;
+import static de.cubeisland.cubeengine.log.action.ActionType.Category.PLAYER;
 
 /**
  * Shearing sheeps or mooshrooms
@@ -21,7 +20,7 @@ public class EntityShear extends SimpleLogActionType
 {
     public EntityShear(Log module)
     {
-        super(module, "entity-shear", PLAYER, ENTITY);
+        super(module, "entity-shear", true, PLAYER, ENTITY);
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)

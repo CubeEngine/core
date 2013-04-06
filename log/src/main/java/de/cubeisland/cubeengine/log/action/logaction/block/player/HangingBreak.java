@@ -21,8 +21,8 @@ import de.cubeisland.cubeengine.log.action.logaction.block.BlockActionType;
 import de.cubeisland.cubeengine.log.storage.ItemData;
 import de.cubeisland.cubeengine.log.storage.LogEntry;
 
-import static de.cubeisland.cubeengine.log.action.ActionType.Type.BLOCK;
-import static de.cubeisland.cubeengine.log.action.ActionType.Type.PLAYER;
+import static de.cubeisland.cubeengine.log.action.ActionType.Category.BLOCK;
+import static de.cubeisland.cubeengine.log.action.ActionType.Category.PLAYER;
 import static org.bukkit.Material.AIR;
 import static org.bukkit.Material.ITEM_FRAME;
 import static org.bukkit.Material.PAINTING;

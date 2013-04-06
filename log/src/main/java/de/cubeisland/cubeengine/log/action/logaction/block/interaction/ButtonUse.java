@@ -5,9 +5,8 @@ import de.cubeisland.cubeengine.log.Log;
 import de.cubeisland.cubeengine.log.action.logaction.block.BlockActionType;
 import de.cubeisland.cubeengine.log.storage.LogEntry;
 
-import static de.cubeisland.cubeengine.log.action.ActionType.Type.BLOCK;
-import static de.cubeisland.cubeengine.log.action.ActionType.Type.CANNOT_ROLLBACK;
-import static de.cubeisland.cubeengine.log.action.ActionType.Type.PLAYER;
+import static de.cubeisland.cubeengine.log.action.ActionType.Category.BLOCK;
+import static de.cubeisland.cubeengine.log.action.ActionType.Category.PLAYER;
 
 /**
  * Using buttons
@@ -17,7 +16,7 @@ public class ButtonUse extends BlockActionType
 {
     public ButtonUse(Log module)
     {
-        super(module, "button-use", BLOCK, PLAYER, CANNOT_ROLLBACK);
+        super(module, "button-use", true, BLOCK, PLAYER);
     }
 
     @Override

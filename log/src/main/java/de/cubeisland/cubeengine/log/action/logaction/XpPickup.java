@@ -10,7 +10,7 @@ import de.cubeisland.cubeengine.log.storage.LogEntry;
 
 import com.fasterxml.jackson.databind.node.ArrayNode;
 
-import static de.cubeisland.cubeengine.log.action.ActionType.Type.PLAYER;
+import static de.cubeisland.cubeengine.log.action.ActionType.Category.PLAYER;
 
 /**
  * experience gain
@@ -20,7 +20,7 @@ public class XpPickup extends SimpleLogActionType
 {
     public XpPickup(Log module)
     {
-        super(module, "xp-pickup",PLAYER);
+        super(module, "xp-pickup",true, PLAYER);
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)

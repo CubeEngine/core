@@ -4,14 +4,12 @@ import org.bukkit.entity.EntityType;
 
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.log.Log;
-import de.cubeisland.cubeengine.log.action.LogActionType;
 import de.cubeisland.cubeengine.log.action.logaction.SimpleLogActionType;
-import de.cubeisland.cubeengine.log.action.logaction.block.BlockActionType;
 import de.cubeisland.cubeengine.log.storage.EntityData;
 import de.cubeisland.cubeengine.log.storage.LogEntry;
 
-import static de.cubeisland.cubeengine.log.action.ActionType.Type.ENTITY;
-import static de.cubeisland.cubeengine.log.action.ActionType.Type.PLAYER;
+import static de.cubeisland.cubeengine.log.action.ActionType.Category.ENTITY;
+import static de.cubeisland.cubeengine.log.action.ActionType.Category.PLAYER;
 
 /**
  * spawing entities with spawneggs
@@ -21,7 +19,7 @@ public class MonsterEggUse extends SimpleLogActionType
 {
     public MonsterEggUse(Log module)
     {
-        super(module, "monsteregg-use", PLAYER, ENTITY);
+        super(module, "monsteregg-use", true, PLAYER, ENTITY);
     }
 
     @Override

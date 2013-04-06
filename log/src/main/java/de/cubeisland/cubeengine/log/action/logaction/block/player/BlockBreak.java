@@ -1,6 +1,5 @@
 package de.cubeisland.cubeengine.log.action.logaction.block.player;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -20,6 +19,7 @@ import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.material.Attachable;
 
 import de.cubeisland.cubeengine.core.user.User;
+import de.cubeisland.cubeengine.core.util.BlockUtil;
 import de.cubeisland.cubeengine.core.util.Pair;
 import de.cubeisland.cubeengine.log.Log;
 import de.cubeisland.cubeengine.log.action.logaction.ItemDrop;
@@ -30,9 +30,7 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import static de.cubeisland.cubeengine.core.util.BlockUtil.BLOCK_FACES;
-import static de.cubeisland.cubeengine.log.action.ActionType.Type.BLOCK;
-import static de.cubeisland.cubeengine.log.action.ActionType.Type.ENVIRONEMENT;
-import static de.cubeisland.cubeengine.log.action.ActionType.Type.PLAYER;
+import static de.cubeisland.cubeengine.log.action.ActionType.Category.*;
 import static org.bukkit.Material.*;
 
 /**
@@ -127,7 +125,12 @@ public class BlockBreak extends BlockActionType
         }
         else // block on bottom missing
         {
+            if (!BlockUtil.isDetachableFromBelow(oldState.getType()))
+            {
+                return;
+            }
             blockAttachedTo = event.getBlock().getRelative(BlockFace.DOWN);
+
         }
         if (blockAttachedTo != null && !blockAttachedTo.getType().isSolid())
         {

@@ -6,16 +6,9 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.player.PlayerBucketEmptyEvent;
 
-import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.log.Log;
-import de.cubeisland.cubeengine.log.action.LogActionType;
 import de.cubeisland.cubeengine.log.action.logaction.ActionTypeContainer;
 import de.cubeisland.cubeengine.log.action.logaction.block.BlockActionType.BlockData;
-import de.cubeisland.cubeengine.log.action.logaction.container.ContainerActionType;
-import de.cubeisland.cubeengine.log.storage.LogEntry;
-
-import static de.cubeisland.cubeengine.log.action.ActionType.Type.BLOCK;
-import static de.cubeisland.cubeengine.log.action.ActionType.Type.PLAYER;
 
 /**
  * Container-ActionType for emptying Buckets.

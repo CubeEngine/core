@@ -15,8 +15,8 @@ import de.cubeisland.cubeengine.log.Log;
 import de.cubeisland.cubeengine.log.action.logaction.SimpleLogActionType;
 import de.cubeisland.cubeengine.log.storage.LogEntry;
 
-import static de.cubeisland.cubeengine.log.action.ActionType.Type.ENTITY;
-import static de.cubeisland.cubeengine.log.action.ActionType.Type.PLAYER;
+import static de.cubeisland.cubeengine.log.action.ActionType.Category.ENTITY;
+import static de.cubeisland.cubeengine.log.action.ActionType.Category.PLAYER;
 
 /**
  * Placing vehicles
@@ -27,7 +27,7 @@ public class VehiclePlace extends SimpleLogActionType
 {
     public VehiclePlace(Log module)
     {
-        super(module, "vehicle-place", PLAYER, ENTITY);
+        super(module, "vehicle-place", true, PLAYER, ENTITY);
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)

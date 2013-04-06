@@ -11,8 +11,7 @@ import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.log.Log;
 import de.cubeisland.cubeengine.log.storage.LogEntry;
 
-import static de.cubeisland.cubeengine.log.action.ActionType.Type.BLOCK;
-import static de.cubeisland.cubeengine.log.action.ActionType.Type.ENVIRONEMENT;
+import static de.cubeisland.cubeengine.log.action.ActionType.Category.BLOCK;
 import static org.bukkit.Material.AIR;
 
 /**

@@ -3,14 +3,13 @@ package de.cubeisland.cubeengine.log.action.logaction.interact;
 import org.bukkit.DyeColor;
 
 import de.cubeisland.cubeengine.core.user.User;
-import de.cubeisland.cubeengine.core.util.matcher.Match;
 import de.cubeisland.cubeengine.log.Log;
 import de.cubeisland.cubeengine.log.action.logaction.SimpleLogActionType;
 import de.cubeisland.cubeengine.log.storage.LogEntry;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
-import static de.cubeisland.cubeengine.log.action.ActionType.Type.*;
+import static de.cubeisland.cubeengine.log.action.ActionType.Category.*;
 
 /**
  * Dyeing sheeps or wolfcollars
@@ -20,7 +19,7 @@ public class EntityDye extends SimpleLogActionType
 {
     public EntityDye(Log module)
     {
-        super(module, "entity-dye", PLAYER, ENTITY);
+        super(module, "entity-dye", true, PLAYER, ENTITY);
     }
 
     @Override

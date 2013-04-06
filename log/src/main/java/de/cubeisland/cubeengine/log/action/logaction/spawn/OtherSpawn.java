@@ -5,7 +5,7 @@ import de.cubeisland.cubeengine.log.Log;
 import de.cubeisland.cubeengine.log.action.logaction.SimpleLogActionType;
 import de.cubeisland.cubeengine.log.storage.LogEntry;
 
-import static de.cubeisland.cubeengine.log.action.ActionType.Type.ENTITY;
+import static de.cubeisland.cubeengine.log.action.ActionType.Category.ENTITY;
 
 /**
  * other spawning (by player)
@@ -16,7 +16,7 @@ public class OtherSpawn extends SimpleLogActionType
 {
     public OtherSpawn(Log module)
     {
-        super(module, "other-spawn", ENTITY);
+        super(module, "other-spawn", true, ENTITY);
     }
 
     @Override

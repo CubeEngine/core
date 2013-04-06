@@ -5,9 +5,7 @@ import de.cubeisland.cubeengine.log.Log;
 import de.cubeisland.cubeengine.log.action.logaction.SimpleLogActionType;
 import de.cubeisland.cubeengine.log.storage.LogEntry;
 
-import static de.cubeisland.cubeengine.log.action.ActionType.Type.ENTITY;
-import static de.cubeisland.cubeengine.log.action.ActionType.Type.KILL;
-import static de.cubeisland.cubeengine.log.action.ActionType.Type.PLAYER;
+import static de.cubeisland.cubeengine.log.action.ActionType.Category.ENTITY;
 
 /**
  * natural spawning
@@ -18,7 +16,7 @@ public class NaturalSpawn extends SimpleLogActionType
 {
     public NaturalSpawn(Log module)
     {
-        super(module, "natural-spawn", ENTITY);
+        super(module, "natural-spawn", true, ENTITY);
     }
 
     @Override

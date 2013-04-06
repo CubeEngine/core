@@ -5,8 +5,8 @@ import de.cubeisland.cubeengine.log.Log;
 import de.cubeisland.cubeengine.log.action.logaction.SimpleLogActionType;
 import de.cubeisland.cubeengine.log.storage.LogEntry;
 
-import static de.cubeisland.cubeengine.log.action.ActionType.Type.ENTITY;
-import static de.cubeisland.cubeengine.log.action.ActionType.Type.PLAYER;
+import static de.cubeisland.cubeengine.log.action.ActionType.Category.ENTITY;
+import static de.cubeisland.cubeengine.log.action.ActionType.Category.PLAYER;
 
 /**
  * Filling soup with mooshrooms
@@ -16,7 +16,7 @@ public class SoupFill extends SimpleLogActionType
 {
     public SoupFill(Log module)
     {
-        super(module, "soup-fill", PLAYER, ENTITY);
+        super(module, "soup-fill", true, PLAYER, ENTITY);
     }
 
     @Override

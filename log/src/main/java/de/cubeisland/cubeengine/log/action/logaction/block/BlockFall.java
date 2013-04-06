@@ -5,6 +5,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.BlockState;
 import org.bukkit.entity.Entity;
@@ -15,15 +16,14 @@ import org.bukkit.event.block.BlockPhysicsEvent;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.util.Pair;
 import de.cubeisland.cubeengine.log.Log;
-import de.cubeisland.cubeengine.log.storage.ActionType_old;
+import de.cubeisland.cubeengine.log.action.ActionType;
 import de.cubeisland.cubeengine.log.storage.LogEntry;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
-import static de.cubeisland.cubeengine.log.action.ActionType.Type.BLOCK;
-import static de.cubeisland.cubeengine.log.action.ActionType.Type.ENVIRONEMENT;
-import static de.cubeisland.cubeengine.log.action.ActionType.Type.PLAYER;
+import static de.cubeisland.cubeengine.log.action.ActionType.Category.*;
 import static org.bukkit.Material.AIR;
+import static org.bukkit.Material.DRAGON_EGG;
 
 /**
  * Blocks fading
@@ -52,6 +52,12 @@ public class BlockFall extends BlockActionType
                     ObjectNode json = this.om.createObjectNode();
                     json.put("fall-cause",cause.getRight().getID());
                     this.logBlockChange(loc, cause.getLeft(), BlockData.of(state), AIR, json.toString());
+
+                    Block onTop = state.getBlock().getRelative(BlockFace.UP);
+                    if (onTop.getType().hasGravity() || onTop.getType().equals(DRAGON_EGG))
+                    {
+                        this.preplanBlockFall(onTop.getLocation(),cause.getLeft(),cause.getRight());
+                    }
                 }
                 else {
                     System.out.print("Unplanned BlockPhysicsEvent! (BlockFall) "+state.getType().name()); //TODO remove
@@ -60,22 +66,16 @@ public class BlockFall extends BlockActionType
         }
     }
 
-    private volatile boolean clearPlanned = false;
     private Map<Location,Pair<Entity,BlockActionType>> plannedFall = new ConcurrentHashMap<Location, Pair<Entity, BlockActionType>>();
-    public void preplanBlockFall(Location location, Entity player, BlockActionType reason)
+    public void preplanBlockFall(final Location location, Entity player, BlockActionType reason)
     {
         plannedFall.put(location, new Pair<Entity, BlockActionType>(player, reason));
-        if (!clearPlanned)
-        {
-            clearPlanned = true;
-            BlockFall.this.logModule.getCore().getTaskManager().scheduleSyncDelayedTask(logModule, new Runnable() {
-                @Override
-                public void run() {
-                    clearPlanned = false;
-                    BlockFall.this.plannedFall.clear();
-                }
-            });
-        }
+        BlockFall.this.logModule.getCore().getTaskManager().scheduleSyncDelayedTask(logModule, new Runnable() {
+            @Override
+            public void run() {
+                BlockFall.this.plannedFall.remove(location);
+            }
+        },3);
     }
 
     @Override
@@ -83,7 +83,7 @@ public class BlockFall extends BlockActionType
     {
         if (logEntry.getCauserUser() == null)
         {
-            ActionType_old type = ActionType_old.getById(logEntry.getAdditional().get("cause").asInt());
+            ActionType type = this.manager.getActionType(logEntry.getAdditional().get("cause").asInt());
             user.sendTranslated("%s&6%s&a did fall to a lower place %s&a because of &6%s&a!",
                                 time,logEntry.getOldBlock(), loc,type.name);
         }

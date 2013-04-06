@@ -9,8 +9,8 @@ import de.cubeisland.cubeengine.log.Log;
 import de.cubeisland.cubeengine.log.action.logaction.SimpleLogActionType;
 import de.cubeisland.cubeengine.log.storage.LogEntry;
 
-import static de.cubeisland.cubeengine.log.action.ActionType.Type.ENTITY;
-import static de.cubeisland.cubeengine.log.action.ActionType.Type.PLAYER;
+import static de.cubeisland.cubeengine.log.action.ActionType.Category.ENTITY;
+import static de.cubeisland.cubeengine.log.action.ActionType.Category.PLAYER;
 
 /**
  * Entering vehicles
@@ -20,7 +20,7 @@ public class VehicleEnter extends SimpleLogActionType
 {
     public VehicleEnter(Log module)
     {
-        super(module, "vehicle-enter", PLAYER, ENTITY);
+        super(module, "vehicle-enter", true, PLAYER, ENTITY);
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)

@@ -9,7 +9,6 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.Hanging;
 import org.bukkit.material.Bed;
 
-import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.util.BlockUtil;
 import de.cubeisland.cubeengine.log.Log;
 import de.cubeisland.cubeengine.log.action.LogActionType;
@@ -19,9 +18,14 @@ import de.cubeisland.cubeengine.log.storage.LogEntry;
 
 public abstract class BlockActionType extends LogActionType
 {
-    public BlockActionType(Log module, String name, Type... types)
+    public BlockActionType(Log module, String name, boolean canRollback, Category... types)
     {
-        super(module, name, types);
+        super(module, name, canRollback,types);
+    }
+
+    public BlockActionType(Log module, String name, Category... types)
+    {
+        super(module, name, false,types);
     }
 
     public void logBlockChange(Location location, Entity causer, BlockData oldState, BlockData newState, String additional)
@@ -114,7 +118,7 @@ public abstract class BlockActionType extends LogActionType
 
     public void logAttachedBlocks(BlockState blockState, Entity player)
     {
-        if (!blockState.getType().isSolid())
+        if (!blockState.getType().isSolid() && !blockState.getType().equals(Material.SUGAR_CANE_BLOCK))
         {
             return; // cannot have attached
         }
@@ -148,13 +152,13 @@ public abstract class BlockActionType extends LogActionType
     public void logFallingBlocks(BlockState blockState, Entity player)
     {
         // Falling Blocks
-        Block onTop = blockState.getBlock().getRelative(BlockFace.UP);
         BlockFall blockFall = this.manager.getActionType(BlockFall.class);
         if (blockFall.isActive(blockState.getWorld()))
         {
-            while (onTop.getType().equals(Material.SAND)||onTop.getType().equals(Material.GRAVEL)||onTop.getType().equals(Material.ANVIL))
+            Block onTop = blockState.getBlock().getRelative(BlockFace.UP);
+            if (onTop.getType().hasGravity()||onTop.getType().equals(Material.DRAGON_EGG))
             {
-                blockFall.preplanBlockFall(blockState.getLocation(),player,this);
+                blockFall.preplanBlockFall(onTop.getLocation(),player,this);
             }
         }
     }

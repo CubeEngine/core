@@ -2,7 +2,6 @@ package de.cubeisland.cubeengine.log.action;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.logging.Level;
 
 import de.cubeisland.cubeengine.core.logger.LogLevel;
 import de.cubeisland.cubeengine.log.Log;
@@ -57,7 +56,7 @@ import de.cubeisland.cubeengine.log.action.logaction.block.interaction.Container
 import de.cubeisland.cubeengine.log.action.logaction.block.interaction.CropTrample;
 import de.cubeisland.cubeengine.log.action.logaction.block.interaction.DoorUse;
 import de.cubeisland.cubeengine.log.action.logaction.block.interaction.LeverUse;
-import de.cubeisland.cubeengine.log.action.logaction.block.interaction.NoteblockChange;
+import de.cubeisland.cubeengine.log.action.logaction.block.interaction.NoteBlockChange;
 import de.cubeisland.cubeengine.log.action.logaction.block.interaction.PlateStep;
 import de.cubeisland.cubeengine.log.action.logaction.block.interaction.RepeaterChange;
 import de.cubeisland.cubeengine.log.action.logaction.block.interaction.RightClickActionType;
@@ -102,10 +101,7 @@ import de.cubeisland.cubeengine.log.action.logaction.spawn.OtherSpawn;
 import de.cubeisland.cubeengine.log.action.logaction.spawn.SpawnerSpawn;
 import de.cubeisland.cubeengine.log.action.logaction.worldedit.WorldEditActionType;
 
-import gnu.trove.map.hash.THashMap;
-import gnu.trove.map.hash.TIntObjectHashMap;
 import gnu.trove.map.hash.TLongObjectHashMap;
-import gnu.trove.set.hash.TIntHashSet;
 
 public class ActionTypeManager
 {
@@ -164,7 +160,7 @@ public class ActionTypeManager
             .registerActionType(new BonemealUse(module))
             .registerActionType(new LeverUse(module))
             .registerActionType(new RepeaterChange(module))
-            .registerActionType(new NoteblockChange(module))
+            .registerActionType(new NoteBlockChange(module))
             .registerActionType(new DoorUse(module))
             .registerActionType(new CakeEat(module))
             .registerActionType(new ComparatorChange(module))

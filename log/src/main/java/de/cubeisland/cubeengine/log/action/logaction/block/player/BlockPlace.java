@@ -11,18 +11,21 @@ import org.bukkit.event.block.BlockPlaceEvent;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.log.Log;
 import de.cubeisland.cubeengine.log.action.logaction.block.BlockActionType;
+import de.cubeisland.cubeengine.log.action.logaction.block.BlockFall;
 import de.cubeisland.cubeengine.log.storage.LogEntry;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
-import static de.cubeisland.cubeengine.log.action.ActionType.Type.BLOCK;
-import static de.cubeisland.cubeengine.log.action.ActionType.Type.PLAYER;
+import static de.cubeisland.cubeengine.log.action.ActionType.Category.BLOCK;
+import static de.cubeisland.cubeengine.log.action.ActionType.Category.PLAYER;
 import static org.bukkit.Material.AIR;
+import static org.bukkit.Material.DRAGON_EGG;
 
 /**
  * Blocks placed by a player.
  * <p>Events: {@link BlockPlaceEvent}</p>
- * <p>External Actions: {@link BlockBreak} when breaking waterlily by replacing the water below
+ * <p>External Actions: {@link BlockBreak} when breaking waterlily by replacing the water below,
+ * {@link BlockFall}
  */
 public class BlockPlace extends BlockActionType
 {
@@ -40,6 +43,15 @@ public class BlockPlace extends BlockActionType
             BlockData oldData = BlockData.of(event.getBlockReplacedState());
             BlockData newData = BlockData.of(event.getBlockPlaced().getState());
             this.logBlockChange(location,event.getPlayer(),oldData,newData,null);
+            if (event.getBlockPlaced().getRelative(BlockFace.DOWN).getType().equals(AIR)
+            && (newData.material.hasGravity() || newData.material.equals(DRAGON_EGG)))
+            {
+                BlockFall blockFall = this.manager.getActionType(BlockFall.class);
+                if (blockFall.isActive(location.getWorld()))
+                {
+                    blockFall.preplanBlockFall(location.clone(), event.getPlayer(), this); // TODO this does not seem to work
+                }
+            }
         }
         if (event.getBlock().getRelative(BlockFace.UP).getType().equals(Material.WATER_LILY)
             && !event.getBlockPlaced().getType().equals(Material.STATIONARY_WATER))

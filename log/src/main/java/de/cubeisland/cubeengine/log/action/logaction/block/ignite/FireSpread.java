@@ -10,7 +10,7 @@ import de.cubeisland.cubeengine.log.Log;
 import de.cubeisland.cubeengine.log.action.logaction.block.BlockActionType;
 import de.cubeisland.cubeengine.log.storage.LogEntry;
 
-import static de.cubeisland.cubeengine.log.action.ActionType.Type.*;
+import static de.cubeisland.cubeengine.log.action.ActionType.Category.*;
 
 /**
  * Fire spreading

@@ -1,13 +1,17 @@
 package de.cubeisland.cubeengine.log;
 
-import de.cubeisland.cubeengine.core.config.YamlConfiguration;
-import de.cubeisland.cubeengine.core.config.annotations.*;
-import org.bukkit.Material;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
+
+import org.bukkit.Material;
+
+import de.cubeisland.cubeengine.core.config.YamlConfiguration;
+import de.cubeisland.cubeengine.core.config.annotations.Comment;
+import de.cubeisland.cubeengine.core.config.annotations.MapComment;
+import de.cubeisland.cubeengine.core.config.annotations.MapComments;
+import de.cubeisland.cubeengine.core.config.annotations.Option;
 
 @MapComments(
         {@MapComment(path = "logging.break.block.fade",text = "Ice and snow fading away"),
@@ -39,6 +43,7 @@ public class LoggingConfiguration extends YamlConfiguration
     public boolean BLOCK_BURN_enable = true;
     @Option("logging.block.break.fade.ice")
 
+    //TODO list of Materials to not log
     public boolean BLOCK_FADE_ice = false;
     @Option("logging.block.break.fade.snow")
     public boolean BLOCK_FADE_snow = false;
@@ -104,6 +109,8 @@ public class LoggingConfiguration extends YamlConfiguration
     public boolean NATURAL_GROW_enable = false;
     @Option("logging.block.grow.player")
     public boolean PLAYER_GROW_enable = true;
+
+    //TODO list of mats not to log
     @Option("logging.block.form.ice")
     public boolean BLOCK_FORM_ice = false;
     @Option("logging.block.form.snow")
@@ -112,6 +119,8 @@ public class LoggingConfiguration extends YamlConfiguration
     public boolean BLOCK_FORM_lavaWater = true;
     @Option("logging.block.form.lava-water")
     public boolean BLOCK_FORM_other = true;
+
+
     @Option("logging.block.enderman.place")
     public boolean ENDERMAN_PLACE_enable = true;
     @Comment("Blocks created by entities (snowgolem)")
@@ -283,6 +292,7 @@ public class LoggingConfiguration extends YamlConfiguration
     @Option("logging.container.transfer")
     public boolean ITEM_TRANSFER_enable = true;
 
+    //TODO list of containers not to log
     @Option("logging.container.type.chest")
     public boolean containerChest = true;
     @Option("logging.container.type.furnace")
@@ -309,9 +319,6 @@ public class LoggingConfiguration extends YamlConfiguration
         PLAYER_COMMAND_ignoreRegex.add("(ce|cubeengine) (login|setpassword|setpw) .+");
     }}
 
-    @Comment("Commands used by the console")
-    @Option("logging.command.console")
-    public boolean CONSOLE_COMMAND_enable = false;
     @Comment("The normal player chat")
     @Option("logging.player.chat")
     public boolean PLAYER_CHAT_enable = false;

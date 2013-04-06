@@ -5,17 +5,17 @@ import de.cubeisland.cubeengine.log.Log;
 import de.cubeisland.cubeengine.log.action.logaction.block.BlockActionType;
 import de.cubeisland.cubeengine.log.storage.LogEntry;
 
-import static de.cubeisland.cubeengine.log.action.ActionType.Type.BLOCK;
-import static de.cubeisland.cubeengine.log.action.ActionType.Type.PLAYER;
+import static de.cubeisland.cubeengine.log.action.ActionType.Category.BLOCK;
+import static de.cubeisland.cubeengine.log.action.ActionType.Category.PLAYER;
 
 
 /**
  * Changing NoteblockNotes
  * <p>Events: {@link RightClickActionType}</p>
  */
-public class NoteblockChange extends BlockActionType
+public class NoteBlockChange extends BlockActionType
 {
-    public NoteblockChange(Log module)
+    public NoteBlockChange(Log module)
     {
         super(module, "noteblock-change", BLOCK, PLAYER);
     }

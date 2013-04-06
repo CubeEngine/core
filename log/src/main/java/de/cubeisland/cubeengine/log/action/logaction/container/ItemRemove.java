@@ -6,9 +6,9 @@ import de.cubeisland.cubeengine.log.action.logaction.SimpleLogActionType;
 import de.cubeisland.cubeengine.log.storage.ItemData;
 import de.cubeisland.cubeengine.log.storage.LogEntry;
 
-import static de.cubeisland.cubeengine.log.action.ActionType.Type.INVENTORY;
-import static de.cubeisland.cubeengine.log.action.ActionType.Type.ITEM;
-import static de.cubeisland.cubeengine.log.action.ActionType.Type.PLAYER;
+import static de.cubeisland.cubeengine.log.action.ActionType.Category.INVENTORY;
+import static de.cubeisland.cubeengine.log.action.ActionType.Category.ITEM;
+import static de.cubeisland.cubeengine.log.action.ActionType.Category.PLAYER;
 
 /**
  * Removing items from a container
@@ -29,7 +29,7 @@ public class ItemRemove extends SimpleLogActionType
         user.sendTranslated("%s&2%s&a took &6%d %s&a out of &6%s%s&a!",
                             time, logEntry.getCauserUser().getDisplayName(),
                             itemData.amount,itemData,
-                            logEntry.getMaterialFromNewBlock(),loc);
+                            logEntry.getInventoryTypeFromBlock(),loc);
     }
     @Override
     public boolean isSimilar(LogEntry logEntry, LogEntry other)

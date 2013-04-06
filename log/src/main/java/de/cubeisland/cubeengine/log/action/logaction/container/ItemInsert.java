@@ -6,7 +6,7 @@ import de.cubeisland.cubeengine.log.action.logaction.SimpleLogActionType;
 import de.cubeisland.cubeengine.log.storage.ItemData;
 import de.cubeisland.cubeengine.log.storage.LogEntry;
 
-import static de.cubeisland.cubeengine.log.action.ActionType.Type.*;
+import static de.cubeisland.cubeengine.log.action.ActionType.Category.*;
 
 /**
  * Inserting items into a container

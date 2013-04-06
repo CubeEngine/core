@@ -10,7 +10,7 @@ import de.cubeisland.cubeengine.log.storage.LogEntry;
 
 import com.fasterxml.jackson.databind.node.ArrayNode;
 
-import static de.cubeisland.cubeengine.log.action.ActionType.Type.PLAYER;
+import static de.cubeisland.cubeengine.log.action.ActionType.Category.PLAYER;
 
 /**
  * player joins
@@ -20,7 +20,7 @@ public class PlayerJoin extends SimpleLogActionType
 {
     public PlayerJoin(Log module)
     {
-        super(module, "player-join",PLAYER);
+        super(module, "player-join",true, PLAYER);
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)

@@ -1,7 +1,6 @@
 package de.cubeisland.cubeengine.log.action;
 
 import java.sql.Timestamp;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.HashSet;
@@ -22,7 +21,6 @@ import de.cubeisland.cubeengine.log.storage.Lookup;
 import de.cubeisland.cubeengine.log.storage.QueuedLog;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import gnu.trove.set.hash.THashSet;
 
 public abstract class ActionType
 {
@@ -35,24 +33,23 @@ public abstract class ActionType
     protected final ActionTypeManager manager;
     protected final LogManager lm;
     public final String name;
-    public final EnumSet<Type> types;
+    public final EnumSet<Category> types;
+
+    public final boolean canRollback;
 
 
-    protected ActionType(Log module, String name, Type... types)
+    protected ActionType(Log module, String name, boolean canRollback, Category... types)
     {
         this.logModule = module;
         this.wm = module.getCore().getWorldManager();
         this.um = module.getCore().getUserManager();
-        //TODO register ActionType
-        //negative actionTypeID is used for containerTypes
-        //show error if value is already used
-        this.actionTypeID = actionTypeID;
         this.om = this.logModule.getObjectMapper();
         this.manager = module.getActionTypeManager();
         this.name = name;
         this.lm = module.getLogManager();
-        this.types = EnumSet.of(Type.ALL,types);
-        for (Type type : types)
+        this.types = EnumSet.of(Category.ALL,types);
+        this.canRollback = canRollback;
+        for (Category type : types)
         {
             type.registerActionType(this);
         }
@@ -99,12 +96,10 @@ public abstract class ActionType
      */
     public abstract void initialize();
 
-
     public boolean isActive(World world)
     {
-        return true; //TODO
+        return false;
     }
-
 
     /**
      * Shows the user the logentry from given lookup
@@ -134,9 +129,16 @@ public abstract class ActionType
         return this.actionTypeID;
     }
 
-    public static enum Type
+    public static enum Category
     {
-        ALL,PLAYER,BLOCK,ITEM,INVENTORY,ENTITY,ENVIRONEMENT,CANNOT_ROLLBACK,KILL;
+        ALL,
+        PLAYER,
+        BLOCK,
+        ITEM,
+        INVENTORY,
+        ENTITY,
+        ENVIRONEMENT,
+        KILL;
 
         private HashSet<ActionType> actionTypes = new HashSet<ActionType>();
 

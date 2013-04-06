@@ -9,9 +9,9 @@ import de.cubeisland.cubeengine.log.storage.Lookup;
 
 public abstract class LogActionType extends ActionType implements Listener
 {
-    public LogActionType(Log module, String name, Type... types)
+    public LogActionType(Log module, String name, boolean canRollback, Category... types)
     {
-        super(module, name);
+        super(module, name, canRollback, types);
     }
 
     @Override

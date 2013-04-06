@@ -15,8 +15,8 @@ import de.cubeisland.cubeengine.log.Log;
 import de.cubeisland.cubeengine.log.storage.ItemData;
 import de.cubeisland.cubeengine.log.storage.LogEntry;
 
-import static de.cubeisland.cubeengine.log.action.ActionType.Type.ITEM;
-import static de.cubeisland.cubeengine.log.action.ActionType.Type.PLAYER;
+import static de.cubeisland.cubeengine.log.action.ActionType.Category.ITEM;
+import static de.cubeisland.cubeengine.log.action.ActionType.Category.PLAYER;
 import static org.bukkit.Material.AIR;
 
 /**
@@ -29,7 +29,7 @@ public class ItemDrop extends SimpleLogActionType
 {
     public ItemDrop(Log module)
     {
-        super(module, "item-drop",PLAYER,ITEM);
+        super(module, "item-drop",true, PLAYER,ITEM);
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)

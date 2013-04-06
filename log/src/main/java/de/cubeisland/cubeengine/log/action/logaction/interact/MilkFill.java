@@ -2,12 +2,11 @@ package de.cubeisland.cubeengine.log.action.logaction.interact;
 
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.log.Log;
-import de.cubeisland.cubeengine.log.action.LogActionType;
 import de.cubeisland.cubeengine.log.action.logaction.SimpleLogActionType;
 import de.cubeisland.cubeengine.log.storage.LogEntry;
 
-import static de.cubeisland.cubeengine.log.action.ActionType.Type.ENTITY;
-import static de.cubeisland.cubeengine.log.action.ActionType.Type.PLAYER;
+import static de.cubeisland.cubeengine.log.action.ActionType.Category.ENTITY;
+import static de.cubeisland.cubeengine.log.action.ActionType.Category.PLAYER;
 
 /**
  * filling milk bucket
@@ -17,7 +16,7 @@ public class MilkFill extends SimpleLogActionType
 {
     public MilkFill(Log module)
     {
-        super(module, "milk-fill", PLAYER, ENTITY);
+        super(module, "milk-fill", true, PLAYER, ENTITY);
     }
 
     @Override

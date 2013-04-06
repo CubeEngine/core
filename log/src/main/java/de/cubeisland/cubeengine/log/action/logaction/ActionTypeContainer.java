@@ -10,7 +10,7 @@ public class ActionTypeContainer extends LogActionType
 {
     public ActionTypeContainer(Log module, String name)
     {
-        super(module, name);
+        super(module, name, false);
         this.setID(-1);
     }
     @Override

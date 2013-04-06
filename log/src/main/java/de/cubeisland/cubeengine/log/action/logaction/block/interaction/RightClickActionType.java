@@ -15,17 +15,14 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.material.Diode;
 import org.bukkit.material.Lever;
 
-import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.log.Log;
 import de.cubeisland.cubeengine.log.action.logaction.ActionTypeContainer;
-import de.cubeisland.cubeengine.log.action.logaction.block.BlockActionType;
 import de.cubeisland.cubeengine.log.action.logaction.block.BlockActionType.BlockData;
 import de.cubeisland.cubeengine.log.action.logaction.block.player.BlockPlace;
 import de.cubeisland.cubeengine.log.action.logaction.interact.FireworkUse;
 import de.cubeisland.cubeengine.log.action.logaction.interact.MonsterEggUse;
 import de.cubeisland.cubeengine.log.action.logaction.interact.VehiclePlace;
 import de.cubeisland.cubeengine.log.storage.ItemData;
-import de.cubeisland.cubeengine.log.storage.LogEntry;
 
 import static org.bukkit.Material.*;
 
@@ -43,7 +40,7 @@ import static org.bukkit.Material.*;
  * {@link VehiclePlace} preplanned,
  * {@link TntPrime},
  * {@link CakeEat},
- * {@link NoteblockChange},
+ * {@link NoteBlockChange},
  * {@link RepeaterChange},
  * {@link MonsterEggUse},
  * {@link FireworkUse},
@@ -202,7 +199,7 @@ public class RightClickActionType extends ActionTypeContainer
                 }
                 break;
             case NOTE_BLOCK:
-                NoteblockChange noteblockChange = this.manager.getActionType(NoteblockChange.class);
+                NoteBlockChange noteblockChange = this.manager.getActionType(NoteBlockChange.class);
                 if (noteblockChange.isActive(state.getWorld()))
                 {
                     NoteBlock noteBlock = (NoteBlock) event.getClickedBlock().getState();

@@ -10,7 +10,7 @@ import de.cubeisland.cubeengine.log.storage.LogEntry;
 
 import com.fasterxml.jackson.databind.node.ArrayNode;
 
-import static de.cubeisland.cubeengine.log.action.ActionType.Type.PLAYER;
+import static de.cubeisland.cubeengine.log.action.ActionType.Category.PLAYER;
 
 /**
  * player commands
@@ -20,7 +20,7 @@ public class PlayerCommand extends SimpleLogActionType
 {
     public PlayerCommand(Log module)
     {
-        super(module, "player-command",PLAYER);
+        super(module, "player-command",true, PLAYER);
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)

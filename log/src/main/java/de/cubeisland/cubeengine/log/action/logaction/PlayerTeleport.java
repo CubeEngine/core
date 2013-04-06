@@ -11,7 +11,7 @@ import de.cubeisland.cubeengine.log.storage.LogEntry;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
-import static de.cubeisland.cubeengine.log.action.ActionType.Type.PLAYER;
+import static de.cubeisland.cubeengine.log.action.ActionType.Category.PLAYER;
 
 /**
  * player teleports
@@ -21,7 +21,7 @@ public class PlayerTeleport extends SimpleLogActionType
 {
     public PlayerTeleport(Log module)
     {
-        super(module, "player-teleport",PLAYER);
+        super(module, "player-teleport",true, PLAYER);
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)

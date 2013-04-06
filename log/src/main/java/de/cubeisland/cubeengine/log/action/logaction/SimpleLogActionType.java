@@ -4,8 +4,6 @@ import org.bukkit.DyeColor;
 import org.bukkit.Location;
 import org.bukkit.entity.Ageable;
 import org.bukkit.entity.Entity;
-import org.bukkit.entity.HumanEntity;
-import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Ocelot;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Sheep;
@@ -22,9 +20,13 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 
 public abstract class SimpleLogActionType extends LogActionType
 {
-    public SimpleLogActionType(Log module, String name, Type... types)
+    public SimpleLogActionType(Log module, String name, boolean canRollback,Category... types)
     {
-        super(module, name, types);
+        super(module, name, canRollback,types);
+    }
+    public SimpleLogActionType(Log module, String name,Category... types)
+    {
+        super(module, name, false,types);
     }
 
     public void logSimple(Entity player, String additional)

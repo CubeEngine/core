@@ -5,9 +5,8 @@ import de.cubeisland.cubeengine.log.Log;
 import de.cubeisland.cubeengine.log.action.logaction.block.BlockActionType;
 import de.cubeisland.cubeengine.log.storage.LogEntry;
 
-import static de.cubeisland.cubeengine.log.action.ActionType.Type.BLOCK;
-import static de.cubeisland.cubeengine.log.action.ActionType.Type.CANNOT_ROLLBACK;
-import static de.cubeisland.cubeengine.log.action.ActionType.Type.PLAYER;
+import static de.cubeisland.cubeengine.log.action.ActionType.Category.BLOCK;
+import static de.cubeisland.cubeengine.log.action.ActionType.Category.PLAYER;
 
 
 /**
@@ -19,7 +18,7 @@ public class PlateStep extends BlockActionType
 {
     public PlateStep(Log module)
     {
-        super(module, "plate-step", BLOCK, PLAYER, CANNOT_ROLLBACK);
+        super(module, "plate-step", true, BLOCK, PLAYER);
     }
 
     @Override
