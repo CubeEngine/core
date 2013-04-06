@@ -1,8 +1,6 @@
 package de.cubeisland.cubeengine.roles;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -16,14 +14,15 @@ import de.cubeisland.cubeengine.core.storage.world.WorldManager;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.util.StringUtils;
 import de.cubeisland.cubeengine.core.util.Triplet;
-import de.cubeisland.cubeengine.roles.role.MergedRole;
-import de.cubeisland.cubeengine.roles.role.Role;
-import de.cubeisland.cubeengine.roles.role.UserSpecificRole;
 import de.cubeisland.cubeengine.roles.config.RoleMirror;
 import de.cubeisland.cubeengine.roles.provider.GlobalRoleProvider;
 import de.cubeisland.cubeengine.roles.provider.RoleProvider;
 import de.cubeisland.cubeengine.roles.provider.WorldRoleProvider;
+import de.cubeisland.cubeengine.roles.role.MergedRole;
+import de.cubeisland.cubeengine.roles.role.Role;
+import de.cubeisland.cubeengine.roles.role.UserSpecificRole;
 import de.cubeisland.cubeengine.roles.storage.AssignedRole;
+
 import gnu.trove.map.hash.THashMap;
 import gnu.trove.map.hash.TLongLongHashMap;
 import gnu.trove.map.hash.TLongObjectHashMap;
@@ -118,7 +117,12 @@ public class RoleManager
             WorldRoleProvider provider = new WorldRoleProvider(module, mirror);
             TLongObjectHashMap<Triplet<Boolean, Boolean, Boolean>> worlds = provider.getWorlds();
             this.module.getLog().log(LogLevel.DEBUG, "Loading role-provider for " + provider.getMainWorld());
-            long mainWorldID = worldManager.getWorldId(provider.getMainWorld());
+            Long mainWorldID = worldManager.getWorldId(provider.getMainWorld());
+            if (mainWorldID == null)
+            {
+                this.module.getLog().log(LogLevel.WARNING, "Unknown world " + provider.getMainWorld());
+                continue;
+            }
             for (long worldId : worlds.keys())
             {
                 if (this.providers.containsKey(worldId))
