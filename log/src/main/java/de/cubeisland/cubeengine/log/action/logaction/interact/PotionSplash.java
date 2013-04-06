@@ -1,5 +1,6 @@
 package de.cubeisland.cubeengine.log.action.logaction.interact;
 
+import org.bukkit.World;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -84,5 +85,12 @@ public class PotionSplash extends SimpleLogActionType
     {
         //TODO
         return false;
+    }
+
+
+    @Override
+    public boolean isActive(World world)
+    {
+        return this.lm.getConfig(world).POTION_SPLASH_enable;
     }
 }

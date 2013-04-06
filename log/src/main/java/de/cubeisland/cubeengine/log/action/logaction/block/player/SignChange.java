@@ -3,6 +3,7 @@ package de.cubeisland.cubeengine.log.action.logaction.block.player;
 import java.util.ArrayList;
 import java.util.Iterator;
 
+import org.bukkit.World;
 import org.bukkit.block.Sign;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -101,5 +102,11 @@ public class SignChange extends BlockActionType
                                 StringUtils.implode(delim,newLines), loc,
                                 StringUtils.implode(delim,oldLines));
         }
+    }
+
+    @Override
+    public boolean isActive(World world)
+    {
+        return this.lm.getConfig(world).SIGN_CHANGE_enable;
     }
 }

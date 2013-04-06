@@ -1,5 +1,7 @@
 package de.cubeisland.cubeengine.log.action.logaction.block.interaction;
 
+import org.bukkit.World;
+
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.log.Log;
 import de.cubeisland.cubeengine.log.action.logaction.block.BlockActionType;
@@ -28,5 +30,12 @@ public class CropTrample extends BlockActionType
         user.sendTranslated("&2%s &atrampeled down &6%s&a!",
                             logEntry.getCauserUser().getDisplayName(),
                             logEntry.getOldBlock());
+    }
+
+
+    @Override
+    public boolean isActive(World world)
+    {
+        return this.lm.getConfig(world).CROP_TRAMPLE_enable;
     }
 }

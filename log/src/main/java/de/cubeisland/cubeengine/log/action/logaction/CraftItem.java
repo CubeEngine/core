@@ -1,5 +1,6 @@
 package de.cubeisland.cubeengine.log.action.logaction;
 
+import org.bukkit.World;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.inventory.CraftItemEvent;
@@ -46,5 +47,11 @@ public class CraftItem extends SimpleLogActionType
         return logEntry.causer == other.causer
             && logEntry.world == other.world
             && logEntry.getItemData().equals(other.getItemData()); // ignoring amount
+    }
+
+    @Override
+    public boolean isActive(World world)
+    {
+        return this.lm.getConfig(world).CRAFT_ITEM_enable;
     }
 }

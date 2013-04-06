@@ -37,7 +37,6 @@ public abstract class ActionType
 
     public final boolean canRollback;
 
-
     protected ActionType(Log module, String name, boolean canRollback, Category... types)
     {
         this.logModule = module;
@@ -96,10 +95,13 @@ public abstract class ActionType
      */
     public abstract void initialize();
 
-    public boolean isActive(World world)
-    {
-        return false;
-    }
+    /**
+     * Returns whether the action is active in this world or not
+     *
+     * @param world
+     * @return
+     */
+    public abstract boolean isActive(World world);
 
     /**
      * Shows the user the logentry from given lookup

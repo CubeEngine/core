@@ -1,5 +1,6 @@
 package de.cubeisland.cubeengine.log.action.logaction;
 
+import org.bukkit.World;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.player.PlayerJoinEvent;
@@ -26,11 +27,11 @@ public class PlayerJoin extends SimpleLogActionType
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onPlayerJoin(PlayerJoinEvent event)
     {
-        //TODO attach multiple join at same loc
+
         if (this.isActive(event.getPlayer().getWorld()))
         {
             ArrayNode data = null;
-            if (false) //TODO config
+            if (this.lm.getConfig(event.getPlayer().getWorld()).PLAYER_JOIN_ip)
             {
                 data = this.om.createArrayNode();
                 data.add(event.getPlayer().getAddress().getAddress().getHostAddress());
@@ -42,6 +43,7 @@ public class PlayerJoin extends SimpleLogActionType
     @Override
     protected void showLogEntry(User user, LogEntry logEntry, String time, String loc)
     {
+        //TODO attach multiple join at same loc
         user.sendTranslated("%s&2%s&a joined the server%s&a!",
                             time, logEntry.getCauserUser().getDisplayName(),loc);
         //TODO ip if known
@@ -53,5 +55,12 @@ public class PlayerJoin extends SimpleLogActionType
         return logEntry.world == other.world
             && logEntry.location.equals(other.location)
             && logEntry.causer == other.causer;
+    }
+
+
+    @Override
+    public boolean isActive(World world)
+    {
+        return this.lm.getConfig(world).PLAYER_JOIN_enable;
     }
 }

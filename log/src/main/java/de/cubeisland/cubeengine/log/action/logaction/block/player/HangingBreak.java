@@ -4,6 +4,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.bukkit.Location;
+import org.bukkit.World;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.ItemFrame;
 import org.bukkit.entity.Painting;
@@ -135,5 +136,13 @@ public class HangingBreak extends BlockActionType
                                 time,logEntry.getCauserUser().getDisplayName(),
                                 logEntry.getItemData(),loc);
         }
+    }
+
+
+
+    @Override
+    public boolean isActive(World world)
+    {
+        return this.lm.getConfig(world).HANGING_BREAK_enable;
     }
 }

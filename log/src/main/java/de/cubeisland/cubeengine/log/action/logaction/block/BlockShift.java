@@ -1,5 +1,6 @@
 package de.cubeisland.cubeengine.log.action.logaction.block;
 
+import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
 import org.bukkit.event.EventHandler;
@@ -72,5 +73,11 @@ public class BlockShift extends BlockActionType
     {//TODO
         user.sendTranslated("%s&6%s&a got moved away by a Piston%s&a!",
                             time,logEntry.getOldBlock(),loc);
+    }
+
+    @Override
+    public boolean isActive(World world)
+    {
+        return this.lm.getConfig(world).BLOCK_SHIFT_enable;
     }
 }

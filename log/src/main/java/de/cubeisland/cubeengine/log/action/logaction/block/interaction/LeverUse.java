@@ -1,5 +1,7 @@
 package de.cubeisland.cubeengine.log.action.logaction.block.interaction;
 
+import org.bukkit.World;
+
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.log.Log;
 import de.cubeisland.cubeengine.log.action.logaction.block.BlockActionType;
@@ -33,5 +35,12 @@ public class LeverUse extends BlockActionType
             user.sendTranslated("&s&2%s &adeactivated the lever%s&a!",
                                 time, logEntry.getCauserUser().getDisplayName(),loc);
         }
+    }
+
+
+    @Override
+    public boolean isActive(World world)
+    {
+        return this.lm.getConfig(world).LEVER_USE_enable;
     }
 }

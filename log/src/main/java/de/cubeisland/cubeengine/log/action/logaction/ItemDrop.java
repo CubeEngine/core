@@ -1,6 +1,7 @@
 package de.cubeisland.cubeengine.log.action.logaction;
 
 import org.bukkit.Location;
+import org.bukkit.World;
 import org.bukkit.block.Chest;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -107,5 +108,12 @@ public class ItemDrop extends SimpleLogActionType
         return logEntry.world == other.world
             && logEntry.causer == other.causer
             && logEntry.getItemData().equals(other.getItemData());
+    }
+
+
+    @Override
+    public boolean isActive(World world)
+    {
+        return this.lm.getConfig(world).ITEM_DROP_enable;
     }
 }

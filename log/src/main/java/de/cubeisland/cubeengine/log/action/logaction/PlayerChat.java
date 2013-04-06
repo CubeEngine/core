@@ -1,5 +1,6 @@
 package de.cubeisland.cubeengine.log.action.logaction;
 
+import org.bukkit.World;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
@@ -50,5 +51,12 @@ public class PlayerChat extends SimpleLogActionType
     {
         return logEntry.causer == other.causer
             && logEntry.additional.iterator().next().asText().equals(other.additional.iterator().next().asText());
+    }
+
+
+    @Override
+    public boolean isActive(World world)
+    {
+        return this.lm.getConfig(world).PLAYER_CHAT_enable;
     }
 }

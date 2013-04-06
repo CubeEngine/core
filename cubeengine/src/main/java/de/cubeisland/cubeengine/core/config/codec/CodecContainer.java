@@ -1,17 +1,10 @@
 package de.cubeisland.cubeengine.core.config.codec;
 
-import de.cubeisland.cubeengine.core.config.Configuration;
-import de.cubeisland.cubeengine.core.config.InvalidConfigurationException;
-import de.cubeisland.cubeengine.core.config.annotations.Comment;
-import de.cubeisland.cubeengine.core.config.annotations.MapComment;
-import de.cubeisland.cubeengine.core.config.annotations.MapComments;
-import de.cubeisland.cubeengine.core.config.annotations.Option;
-import de.cubeisland.cubeengine.core.config.node.*;
-import de.cubeisland.cubeengine.core.util.StringUtils;
-import de.cubeisland.cubeengine.core.util.convert.Convert;
-import gnu.trove.map.hash.THashMap;
-
-import java.io.*;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStreamWriter;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
@@ -19,6 +12,22 @@ import java.lang.reflect.Type;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.Map;
+
+import de.cubeisland.cubeengine.core.config.Configuration;
+import de.cubeisland.cubeengine.core.config.InvalidConfigurationException;
+import de.cubeisland.cubeengine.core.config.annotations.Comment;
+import de.cubeisland.cubeengine.core.config.annotations.MapComment;
+import de.cubeisland.cubeengine.core.config.annotations.MapComments;
+import de.cubeisland.cubeengine.core.config.annotations.Option;
+import de.cubeisland.cubeengine.core.config.node.ListNode;
+import de.cubeisland.cubeengine.core.config.node.MapNode;
+import de.cubeisland.cubeengine.core.config.node.Node;
+import de.cubeisland.cubeengine.core.config.node.NullNode;
+import de.cubeisland.cubeengine.core.config.node.StringNode;
+import de.cubeisland.cubeengine.core.util.StringUtils;
+import de.cubeisland.cubeengine.core.util.convert.Convert;
+
+import gnu.trove.map.hash.THashMap;
 
 /**
  * This class temporarily holds the values/comments of the configuration to
@@ -268,7 +277,7 @@ public class CodecContainer<ConfigCodec extends ConfigurationCodec>
                 throw new InvalidConfigurationException(
                         "Error while dumping loaded config into fields!" +
                                 "\ncurrent config: " + config.getClass().toString() +
-                                "\ncurent field:" + field.getName(), e);
+                                "\ncurrent field:" + field.getName(), e);
             }
         }
     }

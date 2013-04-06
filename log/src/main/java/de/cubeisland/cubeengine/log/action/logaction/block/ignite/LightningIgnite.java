@@ -1,5 +1,7 @@
 package de.cubeisland.cubeengine.log.action.logaction.block.ignite;
 
+import org.bukkit.World;
+
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.log.Log;
 import de.cubeisland.cubeengine.log.action.logaction.block.BlockActionType;
@@ -22,5 +24,11 @@ public class LightningIgnite extends BlockActionType
     protected void showLogEntry(User user, LogEntry logEntry, String time, String loc)
     {
         user.sendTranslated("%s&aFire got set by a lightning strike%s&a!",time,loc);
+    }
+
+    @Override
+    public boolean isActive(World world)
+    {
+        return this.lm.getConfig(world).LIGHTNING_IGNITE_enable;
     }
 }

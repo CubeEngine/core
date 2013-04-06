@@ -1,5 +1,7 @@
 package de.cubeisland.cubeengine.log.action.logaction.container;
 
+import org.bukkit.World;
+
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.log.Log;
 import de.cubeisland.cubeengine.log.action.logaction.SimpleLogActionType;
@@ -29,11 +31,18 @@ public class ItemRemove extends SimpleLogActionType
         user.sendTranslated("%s&2%s&a took &6%d %s&a out of &6%s%s&a!",
                             time, logEntry.getCauserUser().getDisplayName(),
                             itemData.amount,itemData,
-                            logEntry.getInventoryTypeFromBlock(),loc);
+                            logEntry.getContainerTypeFromBlock(),loc);
     }
     @Override
     public boolean isSimilar(LogEntry logEntry, LogEntry other)
     {
         return ContainerActionType.isSubActionSimilar(logEntry,other);
+    }
+
+
+    @Override
+    public boolean isActive(World world)
+    {
+        return this.lm.getConfig(world).ITEM_REMOVE_enable;
     }
 }

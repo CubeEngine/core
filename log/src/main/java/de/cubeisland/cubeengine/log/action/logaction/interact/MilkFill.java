@@ -1,5 +1,7 @@
 package de.cubeisland.cubeengine.log.action.logaction.interact;
 
+import org.bukkit.World;
+
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.log.Log;
 import de.cubeisland.cubeengine.log.action.logaction.SimpleLogActionType;
@@ -31,5 +33,12 @@ public class MilkFill extends SimpleLogActionType
     {
         user.sendTranslated("%s&2%s &amilked a cow%s&a!",
                             time, logEntry.getCauserUser().getDisplayName(),loc);
+    }
+
+
+    @Override
+    public boolean isActive(World world)
+    {
+        return this.lm.getConfig(world).BUCKET_FILL_milk;
     }
 }

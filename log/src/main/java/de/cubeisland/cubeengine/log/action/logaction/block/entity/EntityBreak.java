@@ -1,5 +1,6 @@
 package de.cubeisland.cubeengine.log.action.logaction.block.entity;
 
+import org.bukkit.World;
 import org.bukkit.block.BlockState;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -44,5 +45,12 @@ public class EntityBreak extends BlockActionType
                             logEntry.getCauserEntity(),
                             logEntry.getOldBlock(),
                             loc);
+    }
+
+
+    @Override
+    public boolean isActive(World world)
+    {
+        return this.lm.getConfig(world).ENTITY_BREAK_enable;
     }
 }

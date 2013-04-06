@@ -1,5 +1,7 @@
 package de.cubeisland.cubeengine.log.action.logaction.block.explosion;
 
+import org.bukkit.World;
+
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.log.Log;
 import de.cubeisland.cubeengine.log.action.logaction.block.BlockActionType;
@@ -33,5 +35,12 @@ public class EntityExplode extends BlockActionType
             user.sendTranslated("%s&aSomething blew up &6%s&a%s!",
                                 time, logEntry.getOldBlock(), loc);
         }
+    }
+
+
+    @Override
+    public boolean isActive(World world)
+    {
+        return this.lm.getConfig(world).ENTITY_EXPLODE_enable;
     }
 }

@@ -1,5 +1,6 @@
 package de.cubeisland.cubeengine.log.action.logaction;
 
+import org.bukkit.World;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.player.PlayerQuitEvent;
@@ -43,5 +44,12 @@ public class PlayerQuit extends SimpleLogActionType
         return logEntry.world == other.world
             && logEntry.location.equals(other.location)
             && logEntry.causer == other.causer;
+    }
+
+
+    @Override
+    public boolean isActive(World world)
+    {
+        return this.lm.getConfig(world).PLAYER_QUIT_enable;
     }
 }

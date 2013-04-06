@@ -1,5 +1,7 @@
 package de.cubeisland.cubeengine.log.action.logaction.block.explosion;
 
+import org.bukkit.World;
+
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.log.Log;
 import de.cubeisland.cubeengine.log.action.logaction.block.BlockActionType;
@@ -51,5 +53,12 @@ public class TntExplode extends BlockActionType
                                     time,logEntry.getOldBlock(),loc);
             }
         }
+    }
+
+
+    @Override
+    public boolean isActive(World world)
+    {
+        return this.lm.getConfig(world).TNT_EXPLODE_enable;
     }
 }

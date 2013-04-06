@@ -72,16 +72,4 @@ public class InteractEntityActionType extends ActionTypeContainer
             }
         }
     }
-
-    @Override
-    protected void showLogEntry(User user, LogEntry logEntry, String time, String loc)
-    {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public boolean isSimilar(LogEntry logEntry, LogEntry other)
-    {
-        throw new UnsupportedOperationException();
-    }
 }

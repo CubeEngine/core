@@ -5,6 +5,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.BlockState;
@@ -93,6 +94,12 @@ public class BlockFall extends BlockActionType
                                 time,logEntry.getCauserUser().getDisplayName(),
                                 logEntry.getOldBlock(),loc);
         }
+    }
+
+    @Override
+    public boolean isActive(World world)
+    {
+        return this.lm.getConfig(world).BLOCK_FALL_enable;
     }
 
 }

@@ -1,5 +1,6 @@
 package de.cubeisland.cubeengine.log.action.logaction.block.player;
 
+import org.bukkit.World;
 import org.bukkit.entity.ItemFrame;
 import org.bukkit.entity.Painting;
 import org.bukkit.event.EventHandler;
@@ -49,5 +50,11 @@ public class HangingPlace extends BlockActionType
         user.sendTranslated("%s&6%s &agot hung up by &2%s%s&a!",
                            time, logEntry.getNewBlock(),
                             logEntry.getCauserUser().getDisplayName(),loc);
+    }
+
+    @Override
+    public boolean isActive(World world)
+    {
+        return this.lm.getConfig(world).HANGING_PLACE_enable;
     }
 }

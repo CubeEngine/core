@@ -1,5 +1,7 @@
 package de.cubeisland.cubeengine.log.action.logaction.kill;
 
+import org.bukkit.World;
+
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.log.Log;
 import de.cubeisland.cubeengine.log.action.logaction.SimpleLogActionType;
@@ -29,5 +31,12 @@ public class MonsterDeath extends SimpleLogActionType
     public boolean isSimilar(LogEntry logEntry, LogEntry other)
     {
         return KillActionType.isSimilarSubAction(logEntry,other);
+    }
+
+
+    @Override
+    public boolean isActive(World world)
+    {
+        return this.lm.getConfig(world).MONSTER_DEATH_enable;
     }
 }

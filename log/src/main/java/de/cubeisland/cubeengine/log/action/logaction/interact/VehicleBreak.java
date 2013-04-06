@@ -1,5 +1,6 @@
 package de.cubeisland.cubeengine.log.action.logaction.interact;
 
+import org.bukkit.World;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
@@ -75,5 +76,12 @@ public class VehicleBreak extends SimpleLogActionType
         return logEntry.world == other.world
             && logEntry.causer == other.causer
             && logEntry.data == other.data;
+    }
+
+
+    @Override
+    public boolean isActive(World world)
+    {
+        return this.lm.getConfig(world).VEHICLE_BREAK_enable;
     }
 }

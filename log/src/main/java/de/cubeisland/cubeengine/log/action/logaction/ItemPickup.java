@@ -1,5 +1,6 @@
 package de.cubeisland.cubeengine.log.action.logaction;
 
+import org.bukkit.World;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.player.PlayerPickupItemEvent;
@@ -56,5 +57,12 @@ public class ItemPickup extends SimpleLogActionType
         return logEntry.world == other.world
             && logEntry.causer == other.causer
             && logEntry.getItemData().equals(other.getItemData());
+    }
+
+
+    @Override
+    public boolean isActive(World world)
+    {
+        return this.lm.getConfig(world).ITEM_PICKUP_enable;
     }
 }

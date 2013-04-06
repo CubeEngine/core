@@ -1,5 +1,6 @@
 package de.cubeisland.cubeengine.log.action.logaction.block;
 
+import org.bukkit.World;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.block.BlockFadeEvent;
@@ -27,9 +28,12 @@ public class BlockFade extends BlockActionType
     {
         if (this.isActive(event.getBlock().getWorld()))
         {
-            this.logBlockChange(null,
-                                event.getBlock().getState(),
-                                event.getNewState(),null);
+            if (!this.lm.getConfig(event.getBlock().getWorld()).BLOCK_FADE_ignore.contains(event.getBlock().getType()))
+            {
+                this.logBlockChange(null,
+                                    event.getBlock().getState(),
+                                    event.getNewState(),null);
+            }
         }
     }
 
@@ -38,5 +42,11 @@ public class BlockFade extends BlockActionType
     {
         user.sendTranslated("%s&6%s &afaded away%s!",
                             time,logEntry.getOldBlock(),loc);
+    }
+
+    @Override
+    public boolean isActive(World world)
+    {
+        return this.lm.getConfig(world).BLOCK_FADE_enable;
     }
 }

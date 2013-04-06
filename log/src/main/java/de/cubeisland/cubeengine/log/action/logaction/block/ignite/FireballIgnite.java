@@ -1,5 +1,7 @@
 package de.cubeisland.cubeengine.log.action.logaction.block.ignite;
 
+import org.bukkit.World;
+
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.log.Log;
 import de.cubeisland.cubeengine.log.action.logaction.block.BlockActionType;
@@ -30,5 +32,12 @@ public class FireballIgnite extends BlockActionType
         {
             user.sendTranslated("%s&aFire got set by a FireBall%s&a!",time,loc);
         }
+    }
+
+
+    @Override
+    public boolean isActive(World world)
+    {
+        return this.lm.getConfig(world).FIREBALL_IGNITE_enable;
     }
 }

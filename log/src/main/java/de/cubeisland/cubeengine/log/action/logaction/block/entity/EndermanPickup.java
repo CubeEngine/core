@@ -1,5 +1,7 @@
 package de.cubeisland.cubeengine.log.action.logaction.block.entity;
 
+import org.bukkit.World;
+
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.log.Log;
 import de.cubeisland.cubeengine.log.action.logaction.block.BlockActionType;
@@ -24,5 +26,11 @@ public class EndermanPickup  extends BlockActionType
     {
         user.sendTranslated("%s&6%s &agot picked up by an enderman%s!",
                             logEntry.getOldBlock());
+    }
+
+    @Override
+    public boolean isActive(World world)
+    {
+        return this.lm.getConfig(world).ENDERMAN_PICKUP_enable;
     }
 }

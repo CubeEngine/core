@@ -1,5 +1,7 @@
 package de.cubeisland.cubeengine.log.action.logaction.container;
 
+import org.bukkit.World;
+
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.log.Log;
 import de.cubeisland.cubeengine.log.action.logaction.SimpleLogActionType;
@@ -11,7 +13,7 @@ import static de.cubeisland.cubeengine.log.action.ActionType.Category.PLAYER;
 
 /**
  * Items transferred by hoppers or droppers
- * <p>Events: {@link ContainerActionType}
+ * <p>Events: {@link ContainerActionType#onItemMove ContainerAction}
  */
 public class ItemTransfer extends SimpleLogActionType
 {
@@ -26,11 +28,17 @@ public class ItemTransfer extends SimpleLogActionType
     {
         user.sendTranslated("%s&6%s&a got moved out of &6%s%s&a!",
                             time,logEntry.getItemData(),
-                            logEntry.getNewBlock(),loc);
+                            logEntry.getContainerTypeFromBlock(),loc);
     }
     @Override
     public boolean isSimilar(LogEntry logEntry, LogEntry other)
     {
         return ContainerActionType.isSubActionSimilar(logEntry,other);
+    }
+
+    @Override
+    public boolean isActive(World world)
+    {
+        return this.lm.getConfig(world).ITEM_TRANSFER_enable;
     }
 }

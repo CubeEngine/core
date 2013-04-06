@@ -1,5 +1,22 @@
 package de.cubeisland.cubeengine.core.util.convert;
 
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
+import java.sql.Date;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+
+import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.OfflinePlayer;
+import org.bukkit.World;
+import org.bukkit.enchantments.Enchantment;
+import org.bukkit.inventory.ItemStack;
+
 import de.cubeisland.cubeengine.core.Core;
 import de.cubeisland.cubeengine.core.CubeEngine;
 import de.cubeisland.cubeengine.core.config.node.BooleanNode;
@@ -30,6 +47,7 @@ import de.cubeisland.cubeengine.core.util.convert.converter.ItemStackConverter;
 import de.cubeisland.cubeengine.core.util.convert.converter.LocaleConverter;
 import de.cubeisland.cubeengine.core.util.convert.converter.LocationConverter;
 import de.cubeisland.cubeengine.core.util.convert.converter.LongConverter;
+import de.cubeisland.cubeengine.core.util.convert.converter.MaterialConverter;
 import de.cubeisland.cubeengine.core.util.convert.converter.PlayerConverter;
 import de.cubeisland.cubeengine.core.util.convert.converter.ShortConverter;
 import de.cubeisland.cubeengine.core.util.convert.converter.StringConverter;
@@ -39,21 +57,6 @@ import de.cubeisland.cubeengine.core.util.converter.generic.ArrayConverter;
 import de.cubeisland.cubeengine.core.util.converter.generic.CollectionConverter;
 import de.cubeisland.cubeengine.core.util.converter.generic.MapConverter;
 import de.cubeisland.cubeengine.core.util.time.Duration;
-import org.bukkit.Location;
-import org.bukkit.OfflinePlayer;
-import org.bukkit.World;
-import org.bukkit.enchantments.Enchantment;
-import org.bukkit.inventory.ItemStack;
-
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
-import java.sql.Date;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * This class provides the converters.
@@ -87,6 +90,7 @@ public class Convert
         registerConverter(Long.class, converter = new LongConverter());
         registerConverter(long.class, converter);
         registerConverter(ItemStack.class, new ItemStackConverter());
+        registerConverter(Material.class, new MaterialConverter());
         registerConverter(Enchantment.class, new EnchantmentConverter());
         registerConverter(User.class, new UserConverter());
         registerConverter(World.class, new WorldConverter());

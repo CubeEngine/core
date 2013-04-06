@@ -2,6 +2,7 @@ package de.cubeisland.cubeengine.log.action.logaction.block.player;
 
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.World;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.BlockState;
 import org.bukkit.event.EventHandler;
@@ -101,5 +102,12 @@ public class BlockPlace extends BlockActionType
                                     loc);
             }
         }
+    }
+
+
+    @Override
+    public boolean isActive(World world)
+    {
+        return this.lm.getConfig(world).BLOCK_PLACE_enable;
     }
 }

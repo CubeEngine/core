@@ -1,6 +1,7 @@
 package de.cubeisland.cubeengine.log.action.logaction.block.interaction;
 
 import org.bukkit.Material;
+import org.bukkit.World;
 
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.log.Log;
@@ -34,5 +35,12 @@ public class ComparatorChange extends BlockActionType
             user.sendTranslated("%s&2%s &adeactivated the comparator%s&a!",
                                 time,logEntry.getCauserUser().getDisplayName(),loc);
         }
+    }
+
+
+    @Override
+    public boolean isActive(World world)
+    {
+        return this.lm.getConfig(world).COMPARATPR_CHANGE_enable;
     }
 }

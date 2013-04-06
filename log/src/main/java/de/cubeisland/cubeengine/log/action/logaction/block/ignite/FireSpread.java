@@ -1,6 +1,7 @@
 package de.cubeisland.cubeengine.log.action.logaction.block.ignite;
 
 import org.bukkit.Material;
+import org.bukkit.World;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.block.BlockSpreadEvent;
@@ -41,5 +42,11 @@ public class FireSpread extends BlockActionType
     protected void showLogEntry(User user, LogEntry logEntry, String time, String loc)
     {
         user.sendTranslated("%s&aFire spreaded%s&a!",time,loc);
+    }
+
+    @Override
+    public boolean isActive(World world)
+    {
+        return this.lm.getConfig(world).FIRE_SPREAD_enable;
     }
 }

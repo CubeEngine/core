@@ -1,5 +1,7 @@
 package de.cubeisland.cubeengine.log.action.logaction.block.player;
 
+import org.bukkit.World;
+
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.log.Log;
 import de.cubeisland.cubeengine.log.action.logaction.block.BlockActionType;
@@ -46,5 +48,11 @@ public class PlayerGrow extends BlockActionType
                                     logEntry.getNewBlock(),loc);
             }
         }
+    }
+
+    @Override
+    public boolean isActive(World world)
+    {
+        return this.lm.getConfig(world).PLAYER_GROW_enable;
     }
 }

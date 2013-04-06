@@ -2,10 +2,13 @@ package de.cubeisland.cubeengine.log;
 
 import de.cubeisland.cubeengine.core.command.CommandManager;
 import de.cubeisland.cubeengine.core.module.Module;
+import de.cubeisland.cubeengine.core.util.convert.Convert;
 import de.cubeisland.cubeengine.log.action.ActionTypeManager;
+import de.cubeisland.cubeengine.log.action.logaction.container.ContainerType;
+import de.cubeisland.cubeengine.log.action.logaction.container.ContainerTypeConverter;
+import de.cubeisland.cubeengine.log.action.logaction.worldedit.LogEditSessionFactory;
 import de.cubeisland.cubeengine.log.commands.LogCommands;
 import de.cubeisland.cubeengine.log.commands.LookupCommands;
-import de.cubeisland.cubeengine.log.action.logaction.worldedit.LogEditSessionFactory;
 import de.cubeisland.cubeengine.log.storage.LogManager;
 import de.cubeisland.cubeengine.log.tool.ToolListener;
 
@@ -22,6 +25,8 @@ public class Log extends Module
     @Override
     public void onEnable()
     {
+
+        Convert.registerConverter(ContainerType.class, new ContainerTypeConverter());
         //        TODO when sending logs to player
         //        if same player and block type do not use 1 line for each block
         //        but instead something like this:

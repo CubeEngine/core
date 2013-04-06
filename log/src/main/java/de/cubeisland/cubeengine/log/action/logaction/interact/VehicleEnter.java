@@ -1,5 +1,6 @@
 package de.cubeisland.cubeengine.log.action.logaction.interact;
 
+import org.bukkit.World;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.vehicle.VehicleEnterEvent;
@@ -54,5 +55,11 @@ public class VehicleEnter extends SimpleLogActionType
         return logEntry.world == other.world
             && logEntry.causer == other.causer
             && logEntry.data == other.data;
+    }
+
+    @Override
+    public boolean isActive(World world)
+    {
+        return this.lm.getConfig(world).VEHICLE_ENTER_enable;
     }
 }

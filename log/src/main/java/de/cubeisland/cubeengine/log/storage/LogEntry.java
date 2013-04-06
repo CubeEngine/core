@@ -8,13 +8,13 @@ import java.util.Set;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.entity.EntityType;
-import org.bukkit.event.inventory.InventoryType;
 
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.user.UserManager;
 import de.cubeisland.cubeengine.core.util.math.BlockVector3;
 import de.cubeisland.cubeengine.log.Log;
 import de.cubeisland.cubeengine.log.action.ActionType;
+import de.cubeisland.cubeengine.log.action.logaction.container.ContainerType;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
@@ -196,8 +196,10 @@ public class LogEntry implements Comparable<LogEntry>
 
     }
 
-    public InventoryType getInventoryTypeFromBlock()
+    public ContainerType getContainerTypeFromBlock()
     {
-        return InventoryType.valueOf(this.block);
+        return ContainerType.ofName(this.block);
     }
+
+
 }

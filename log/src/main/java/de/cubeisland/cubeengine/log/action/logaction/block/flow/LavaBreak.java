@@ -1,5 +1,7 @@
 package de.cubeisland.cubeengine.log.action.logaction.block.flow;
 
+import org.bukkit.World;
+
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.log.Log;
 import de.cubeisland.cubeengine.log.action.logaction.block.BlockActionType;
@@ -24,5 +26,12 @@ public class LavaBreak extends BlockActionType
     {
         user.sendTranslated("%s&6%s &agot destroyed by lava%s!",
                             time,logEntry.getOldBlock(),loc);
+    }
+
+
+    @Override
+    public boolean isActive(World world)
+    {
+        return this.lm.getConfig(world).LAVA_BREAK_enable;
     }
 }

@@ -1,5 +1,7 @@
 package de.cubeisland.cubeengine.log.action.logaction.block.entity;
 
+import org.bukkit.World;
+
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.log.Log;
 import de.cubeisland.cubeengine.log.action.logaction.block.BlockActionType;
@@ -24,5 +26,12 @@ public class EndermanPlace extends BlockActionType
     {
         user.sendTranslated("%s&6%s &agot placed by an enderman%s&a!",
                             time,logEntry.getNewBlock(),loc);
+    }
+
+
+    @Override
+    public boolean isActive(World world)
+    {
+        return this.lm.getConfig(world).ENDERMAN_PLACE_enable;
     }
 }

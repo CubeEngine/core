@@ -24,6 +24,7 @@ import de.cubeisland.cubeengine.core.bukkit.BukkitUtils;
 import de.cubeisland.cubeengine.core.logger.LogLevel;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.log.Log;
+import de.cubeisland.cubeengine.log.LoggingConfiguration;
 import de.cubeisland.cubeengine.log.action.logaction.ActionTypeContainer;
 import de.cubeisland.cubeengine.log.action.logaction.SimpleLogActionType;
 import de.cubeisland.cubeengine.log.storage.ItemData;
@@ -77,7 +78,7 @@ public class ContainerActionType extends ActionTypeContainer
                     {
                         actionType = this.manager.getActionType(ItemInsert.class);
                     }
-                    actionType.logSimple(location,event.getPlayer(),event.getInventory().getType(),additional);
+                    actionType.logSimple(location,event.getPlayer(),new ContainerType(event.getInventory().getHolder()),additional);
                 }
             }
             this.inventoryChanges.remove(user.key);
@@ -115,10 +116,15 @@ public class ContainerActionType extends ActionTypeContainer
     {
         if (event.getPlayer() instanceof Player)
         {
-            if (true) //TODO check if inventory is logged! AND not both ignored
+            LoggingConfiguration config = this.lm.getConfig(event.getPlayer().getWorld());
+            if (config.ITEM_INSERT_enable || config.ITEM_PICKUP_enable)
             {
-                User user = this.um.getExactUser((Player)event.getPlayer());
-                this.inventoryChanges.put(user.key,new TObjectIntHashMap<ItemData>());
+                ContainerType type = new ContainerType(event.getInventory().getHolder());
+                if (!config.CONTAINER_ignore.contains(type))
+                {
+                    User user = this.um.getExactUser((Player)event.getPlayer());
+                    this.inventoryChanges.put(user.key,new TObjectIntHashMap<ItemData>());
+                }
             }
         }
     }
@@ -377,7 +383,7 @@ public class ContainerActionType extends ActionTypeContainer
         {
             //System.out.print("InventoryMoveItem has null "+source+" -> "+target);
             // TODO source is sometimes null too
-            return; // TODO waiting for https://bukkit.atlassian.net/browse/BUKKIT-3916
+            return;
         }
         Location sourceLocation = this.getLocationForHolder(source.getHolder());
         if (sourceLocation == null)
@@ -392,8 +398,12 @@ public class ContainerActionType extends ActionTypeContainer
         ItemTransfer itemTransfer = this.manager.getActionType(ItemTransfer.class);
         if (itemTransfer.isActive(targetLocation.getWorld()))
         {
+            if (this.lm.getConfig(targetLocation.getWorld()).ITEM_TRANSFER_ignore.contains(event.getItem().getType()))
+            {
+                return;
+            }
             String additional = new ItemData(event.getItem()).serialize(this.om);
-            itemTransfer.logSimple(sourceLocation,null,source.getType(),additional);
+            itemTransfer.logSimple(sourceLocation,null,new ContainerType(source.getHolder()),additional);
         }
     }
     //TODO getter in logentry block is InventoryType

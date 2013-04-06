@@ -1,6 +1,7 @@
 package de.cubeisland.cubeengine.log.action.logaction.block.player;
 
 import org.bukkit.Material;
+import org.bukkit.World;
 import org.bukkit.block.BlockState;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -95,5 +96,12 @@ public class BucketFill extends BlockActionType
                                     time,logEntry.getCauserUser().getDisplayName(),loc);
             }
         }
+    }
+
+
+    @Override
+    public boolean isActive(World world)
+    {
+        return this.lm.getConfig(world).BUCKET_FILL_enable;
     }
 }

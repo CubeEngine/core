@@ -1,5 +1,7 @@
 package de.cubeisland.cubeengine.log.action.logaction.block.ignite;
 
+import org.bukkit.World;
+
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.log.Log;
 import de.cubeisland.cubeengine.log.action.logaction.block.BlockActionType;
@@ -24,5 +26,12 @@ public class Lighter extends BlockActionType
     {
         user.sendTranslated("%s&2%s &aset fire%s&a!",
                             time, logEntry.getCauserUser().getDisplayName(),loc);
+    }
+
+
+    @Override
+    public boolean isActive(World world)
+    {
+        return this.lm.getConfig(world).LIGHTER_IGNITE_enable;
     }
 }

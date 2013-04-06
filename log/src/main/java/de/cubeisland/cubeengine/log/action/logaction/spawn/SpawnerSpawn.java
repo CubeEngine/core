@@ -1,5 +1,7 @@
 package de.cubeisland.cubeengine.log.action.logaction.spawn;
 
+import org.bukkit.World;
+
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.log.Log;
 import de.cubeisland.cubeengine.log.action.logaction.SimpleLogActionType;
@@ -31,5 +33,12 @@ public class SpawnerSpawn extends SimpleLogActionType
         return logEntry.causer == other.causer
             && logEntry.world == other.world
             && logEntry.location.equals(other.location);
+    }
+
+
+    @Override
+    public boolean isActive(World world)
+    {
+        return this.lm.getConfig(world).SPAWNER_SPAWN_enable;
     }
 }

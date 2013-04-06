@@ -2,8 +2,10 @@ package de.cubeisland.cubeengine.log;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
 import org.bukkit.Material;
 
@@ -12,6 +14,7 @@ import de.cubeisland.cubeengine.core.config.annotations.Comment;
 import de.cubeisland.cubeengine.core.config.annotations.MapComment;
 import de.cubeisland.cubeengine.core.config.annotations.MapComments;
 import de.cubeisland.cubeengine.core.config.annotations.Option;
+import de.cubeisland.cubeengine.log.action.logaction.container.ContainerType;
 
 @MapComments(
         {@MapComment(path = "logging.break.block.fade",text = "Ice and snow fading away"),
@@ -41,14 +44,13 @@ public class LoggingConfiguration extends YamlConfiguration
     @Comment("Blocks destroyed by fire")
     @Option("logging.block.break.fire")
     public boolean BLOCK_BURN_enable = true;
-    @Option("logging.block.break.fade.ice")
 
-    //TODO list of Materials to not log
-    public boolean BLOCK_FADE_ice = false;
-    @Option("logging.block.break.fade.snow")
-    public boolean BLOCK_FADE_snow = false;
-    @Option("logging.block.break.fade.other")
-    public boolean BLOCK_FADE_other = false;
+
+    @Option("logging.block.break.fade.enable")
+    public boolean BLOCK_FADE_enable = false;
+    @Comment("The blocks not to log when fading away (ICE, SNOW, GRASS)")
+    @Option("logging.block.break.fade.ignore")
+    public Set<Material> BLOCK_FADE_ignore = new LinkedHashSet<Material>();
 
     @Comment("Leaves decaying after breaking the wood nearby")
     @Option("logging.block.break.decay")
@@ -83,7 +85,7 @@ public class LoggingConfiguration extends YamlConfiguration
 
     @Comment("A List of all materials that will not be logged when destroyed.")
     @Option("logging.block.break.no-logging")
-    public Collection<Material> breakNoLogging = new LinkedList<Material>();//TODO
+    public Set<Material> breakNoLogging = new LinkedHashSet<Material>();
 
     @Option("logging.block.explode.creeper")
     public boolean CREEPER_EXPLODE_enable = true;
@@ -110,16 +112,11 @@ public class LoggingConfiguration extends YamlConfiguration
     @Option("logging.block.grow.player")
     public boolean PLAYER_GROW_enable = true;
 
-    //TODO list of mats not to log
-    @Option("logging.block.form.ice")
-    public boolean BLOCK_FORM_ice = false;
-    @Option("logging.block.form.snow")
-    public boolean BLOCK_FORM_snow = false;
-    @Option("logging.block.form.lava-water")
-    public boolean BLOCK_FORM_lavaWater = true;
-    @Option("logging.block.form.lava-water")
-    public boolean BLOCK_FORM_other = true;
-
+    @Option("logging.block.form.enable")
+    public boolean BLOCK_FORM_enable = true;
+    @Comment("The blocks not to log when forming away (ICE, SNOW, COBBLESTONE, STONE, OBSIDIAN, GRASS?)")
+    @Option("logging.block.form.ignore")
+    public Set<Material> BLOCK_FORM_ignore = new LinkedHashSet<Material>();
 
     @Option("logging.block.enderman.place")
     public boolean ENDERMAN_PLACE_enable = true;
@@ -129,18 +126,18 @@ public class LoggingConfiguration extends YamlConfiguration
 
     @Comment("A List of all materials that will not be logged when placed.")
     @Option("logging.block.place.no-logging")
-    public Collection<Material> placeNoLogging = new LinkedList<Material>();//TODO
+    public Collection<Material> placeNoLogging = new LinkedList<Material>();
 
     @Option("logging.block.spread.fire")
     public boolean FIRE_SPREAD_enable = true;
     @Option("logging.block.ignite.fireball")
-    public boolean FIREBALL_enable = false;
+    public boolean FIREBALL_IGNITE_enable = false;
     @Option("logging.block.ignite.lighter")
-    public boolean LIGHTER_enable = true;
+    public boolean LIGHTER_IGNITE_enable = true;
     @Option("logging.block.ignite.lava")
     public boolean LAVA_IGNITE_enable = false;
     @Option("logging.block.ignite.lightning")
-    public boolean LIGHTNING_enable = false;
+    public boolean LIGHTNING_IGNITE_enable = false;
     @Option("logging.block.ignite.other")
     public boolean OTHER_IGNITE_enable = false;
     @Option("logging.block.spread.other")
@@ -289,24 +286,25 @@ public class LoggingConfiguration extends YamlConfiguration
     @Option("logging.container.remove")
     public boolean ITEM_REMOVE_enable = true;
     @Comment("Items moved by a hopper or dropper")
-    @Option("logging.container.transfer")
+    @Option("logging.container.transfer.enable")
     public boolean ITEM_TRANSFER_enable = true;
+    @Comment("Items to ignore when moved by a hopper or dropper")
+    @Option("logging.container.transfer.ignore")
+    public Set<Material> ITEM_TRANSFER_ignore = new LinkedHashSet<Material>()
+    {
+        {
+        this.add(Material.EGG);
+        this.add(Material.MELON);
+        this.add(Material.PUMPKIN);
+        this.add(Material.SUGAR_CANE);
+        this.add(Material.FEATHER);
+        this.add(Material.RAW_CHICKEN);
+        }
+    };
 
-    //TODO list of containers not to log
-    @Option("logging.container.type.chest")
-    public boolean containerChest = true;
-    @Option("logging.container.type.furnace")
-    public boolean containerFurnace = true;
-    @Option("logging.container.type.brewingstand")
-    public boolean containerBrewingstand = true;
-    @Option("logging.container.type.dispenser")
-    public boolean containerDispenser = true;
-    @Option("logging.container.type.minecart")
-    public boolean containerMinecart = false;
-    @Option("logging.container.type.hopper")
-    public boolean containerHopper = false;
-    @Option("logging.container.type.dropper")
-    public boolean containerDropper = false;
+    @Comment("InventoryTypes to ignore (chest,furnace,dispenser,dropper,hopper,brewing-stand,storage-minecart)")
+    @Option("logging.container.ignored-types")
+    public Set<ContainerType> CONTAINER_ignore = new LinkedHashSet<ContainerType>();
 
     @Comment("Commands used by a player")
     @Option("logging.command.player")

@@ -1,6 +1,7 @@
 package de.cubeisland.cubeengine.log.action.logaction.block.interaction;
 
 import org.bukkit.Material;
+import org.bukkit.World;
 
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.log.Log;
@@ -30,4 +31,11 @@ public class BonemealUse extends BlockActionType
                             new de.cubeisland.cubeengine.log.storage.BlockData(mat));
     }
     //TODO override issimilar
+
+
+    @Override
+    public boolean isActive(World world)
+    {
+        return this.lm.getConfig(world).BONEMEAL_USE_enable;
+    }
 }

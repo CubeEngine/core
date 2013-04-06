@@ -1,5 +1,7 @@
 package de.cubeisland.cubeengine.log.action.logaction.interact;
 
+import org.bukkit.World;
+
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.log.Log;
 import de.cubeisland.cubeengine.log.action.logaction.SimpleLogActionType;
@@ -31,5 +33,12 @@ public class SoupFill extends SimpleLogActionType
     {
         return logEntry.world == other.world
             && logEntry.causer == other.causer;
+    }
+
+
+    @Override
+    public boolean isActive(World world)
+    {
+        return this.lm.getConfig(world).BOWL_FILL_SOUP;
     }
 }

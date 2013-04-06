@@ -1,6 +1,7 @@
 package de.cubeisland.cubeengine.log.action.logaction;
 
 import org.bukkit.Location;
+import org.bukkit.World;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.player.PlayerTeleportEvent;
@@ -58,5 +59,12 @@ public class PlayerTeleport extends SimpleLogActionType
     public boolean isSimilar(LogEntry logEntry, LogEntry other)
     {
         return false;
+    }
+
+
+    @Override
+    public boolean isActive(World world)
+    {
+        return this.lm.getConfig(world).PLAYER_TELEPORT_enable;
     }
 }

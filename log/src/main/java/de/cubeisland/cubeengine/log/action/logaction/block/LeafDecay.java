@@ -1,5 +1,6 @@
 package de.cubeisland.cubeengine.log.action.logaction.block;
 
+import org.bukkit.World;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.block.LeavesDecayEvent;
@@ -38,6 +39,13 @@ public class LeafDecay extends BlockActionType
     {
         user.sendTranslated("%s&6%s &adecayed%s!",
                             time,logEntry.getOldBlock(),loc);
+    }
+
+
+    @Override
+    public boolean isActive(World world)
+    {
+        return this.lm.getConfig(world).LEAF_DECAY_enable;
     }
 
 }

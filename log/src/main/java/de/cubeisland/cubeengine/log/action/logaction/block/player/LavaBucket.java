@@ -1,5 +1,7 @@
 package de.cubeisland.cubeengine.log.action.logaction.block.player;
 
+import org.bukkit.World;
+
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.log.Log;
 import de.cubeisland.cubeengine.log.action.logaction.block.BlockActionType;
@@ -33,5 +35,11 @@ public class LavaBucket  extends BlockActionType
             user.sendTranslated("&2%s &aemptied a lava-bucket!",
                                 logEntry.getCauserUser().getDisplayName());
         }
+    }
+
+    @Override
+    public boolean isActive(World world)
+    {
+        return this.lm.getConfig(world).LAVA_BUCKET_enable;
     }
 }

@@ -1,6 +1,7 @@
 package de.cubeisland.cubeengine.log.action.logaction.interact;
 
 import org.bukkit.DyeColor;
+import org.bukkit.World;
 
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.log.Log;
@@ -39,5 +40,12 @@ public class EntityDye extends SimpleLogActionType
         return logEntry.causer == other.causer
             && logEntry.world == other.world
             && logEntry.data == other.data; //same entity
+    }
+
+
+    @Override
+    public boolean isActive(World world)
+    {
+        return this.lm.getConfig(world).ENTITY_DYE_enable;
     }
 }

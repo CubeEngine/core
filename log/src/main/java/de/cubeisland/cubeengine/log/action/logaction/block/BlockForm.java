@@ -1,5 +1,8 @@
 package de.cubeisland.cubeengine.log.action.logaction.block;
 
+import org.bukkit.World;
+import org.bukkit.block.BlockState;
+import org.bukkit.entity.Entity;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.block.BlockFormEvent;
@@ -48,5 +51,21 @@ public class BlockForm extends BlockActionType
             user.sendTranslated("%s&6%s &aformed naturally%s&a!",
                                 time,logEntry.getNewBlock(),loc);
         }
+    }
+
+    @Override
+    public boolean isActive(World world)
+    {
+        return this.lm.getConfig(world).BLOCK_FORM_enable;
+    }
+
+    @Override
+    public void logBlockChange(Entity causer, BlockState oldBlock, BlockState newBlock, String additional)
+    {
+        if (this.lm.getConfig(newBlock.getWorld()).BLOCK_FORM_ignore.contains(newBlock.getType()))
+        {
+            return;
+        }
+        super.logBlockChange(causer, oldBlock, newBlock, additional);
     }
 }

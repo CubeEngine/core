@@ -1,6 +1,8 @@
 package de.cubeisland.cubeengine.log.action.logaction;
 
 
+import org.bukkit.World;
+
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.log.Log;
 import de.cubeisland.cubeengine.log.action.LogActionType;
@@ -21,6 +23,12 @@ public class ActionTypeContainer extends LogActionType
 
     @Override
     public boolean isSimilar(LogEntry logEntry, LogEntry other)
+    {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public boolean isActive(World world)
     {
         throw new UnsupportedOperationException();
     }

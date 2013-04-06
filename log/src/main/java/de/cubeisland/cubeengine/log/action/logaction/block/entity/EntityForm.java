@@ -1,5 +1,6 @@
 package de.cubeisland.cubeengine.log.action.logaction.block.entity;
 
+import org.bukkit.World;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.block.EntityBlockFormEvent;
@@ -38,5 +39,12 @@ public class EntityForm extends BlockActionType
         user.sendTranslated("%s&6%s &aformed &6%s%s&a!",
                             time,logEntry.getCauserEntity(),
                             logEntry.getNewBlock(),loc);
+    }
+
+
+    @Override
+    public boolean isActive(World world)
+    {
+        return this.lm.getConfig(world).ENTITY_FORM_enable;
     }
 }

@@ -1,5 +1,6 @@
 package de.cubeisland.cubeengine.log.action.logaction.kill;
 
+import org.bukkit.World;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 
 import de.cubeisland.cubeengine.core.user.User;
@@ -54,4 +55,12 @@ public class PlayerDeath extends SimpleLogActionType
     {
         return KillActionType.isSimilarSubAction(logEntry,other);
     }
+
+
+    @Override
+    public boolean isActive(World world)
+    {
+        return this.lm.getConfig(world).PLAYER_DEATH_enable;
+    }
+
 }

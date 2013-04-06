@@ -1,6 +1,7 @@
 package de.cubeisland.cubeengine.log.action.logaction.worldedit;
 
 import org.bukkit.Material;
+import org.bukkit.World;
 
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.log.Log;
@@ -36,5 +37,12 @@ public class WorldEditActionType extends BlockActionType
                                 logEntry.getOldBlock(),
                                 logEntry.getNewBlock());
         }
+    }
+
+
+    @Override
+    public boolean isActive(World world)
+    {
+        return this.lm.getConfig(world).WORLDEDIT_enable;
     }
 }

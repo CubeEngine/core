@@ -1,5 +1,6 @@
 package de.cubeisland.cubeengine.log.action.logaction;
 
+import org.bukkit.World;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.player.PlayerExpChangeEvent;
@@ -48,5 +49,12 @@ public class XpPickup extends SimpleLogActionType
     {
         return logEntry.world == other.world
             && logEntry.causer == other.causer;
+    }
+
+
+    @Override
+    public boolean isActive(World world)
+    {
+        return this.lm.getConfig(world).XP_PICKUP_enable;
     }
 }

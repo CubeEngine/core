@@ -11,10 +11,10 @@ import org.bukkit.entity.Tameable;
 import org.bukkit.entity.Villager;
 import org.bukkit.entity.Wolf;
 import org.bukkit.event.entity.EntityDamageEvent;
-import org.bukkit.event.inventory.InventoryType;
 
 import de.cubeisland.cubeengine.log.Log;
 import de.cubeisland.cubeengine.log.action.LogActionType;
+import de.cubeisland.cubeengine.log.action.logaction.container.ContainerType;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
@@ -86,9 +86,9 @@ public abstract class SimpleLogActionType extends LogActionType
         return json.toString();
     }
 
-    public void logSimple(Location location, Entity player, InventoryType type, String additional)
+    public void logSimple(Location location, Entity player, ContainerType type, String additional)
     {
-        this.queueLog(location,player,type.name(),null,null,null,additional);
+        this.queueLog(location,player,type.name,null,null,null,additional);
     }
 
     public void logSimple(Location location, Player player, String additional)

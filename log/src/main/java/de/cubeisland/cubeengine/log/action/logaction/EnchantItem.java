@@ -2,6 +2,7 @@ package de.cubeisland.cubeengine.log.action.logaction;
 
 import java.util.HashMap;
 
+import org.bukkit.World;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -53,5 +54,12 @@ public class EnchantItem extends SimpleLogActionType
     public boolean isSimilar(LogEntry logEntry, LogEntry other)
     {
         return false; //TODO how to attach if?
+    }
+
+
+    @Override
+    public boolean isActive(World world)
+    {
+        return this.lm.getConfig(world).ENCHANT_ITEM_enable;
     }
 }

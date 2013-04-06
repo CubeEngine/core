@@ -1,5 +1,6 @@
 package de.cubeisland.cubeengine.log.action.logaction.interact;
 
+import org.bukkit.World;
 import org.bukkit.entity.EntityType;
 
 import de.cubeisland.cubeengine.core.user.User;
@@ -37,5 +38,12 @@ public class MonsterEggUse extends SimpleLogActionType
         return logEntry.causer == other.causer
             && logEntry.world == other.world
             && logEntry.getItemData().dura == other.getItemData().dura;
+   }
+
+    @Override
+    public boolean isActive(World world)
+    {
+        return this.lm.getConfig(world).MONSTER_EGG_USE_enable;
     }
+
 }

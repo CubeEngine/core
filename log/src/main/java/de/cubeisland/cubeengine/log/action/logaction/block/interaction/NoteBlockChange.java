@@ -1,5 +1,7 @@
 package de.cubeisland.cubeengine.log.action.logaction.block.interaction;
 
+import org.bukkit.World;
+
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.log.Log;
 import de.cubeisland.cubeengine.log.action.logaction.block.BlockActionType;
@@ -27,5 +29,12 @@ public class NoteBlockChange extends BlockActionType
         user.sendTranslated("%s&2%s &aset the noteblock to &6%d&a clicks%s&a!",
                             time, logEntry.getCauserUser().getDisplayName(), clicks,loc);
         // TODO attach (show the actual change no change -> fiddled around but did not change anything)
+    }
+
+
+    @Override
+    public boolean isActive(World world)
+    {
+        return this.lm.getConfig(world).NOTEBLOCK_CHANGE_enable;
     }
 }

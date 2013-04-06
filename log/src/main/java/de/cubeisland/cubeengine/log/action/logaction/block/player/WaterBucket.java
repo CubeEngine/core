@@ -1,5 +1,7 @@
 package de.cubeisland.cubeengine.log.action.logaction.block.player;
 
+import org.bukkit.World;
+
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.log.Log;
 import de.cubeisland.cubeengine.log.action.logaction.block.BlockActionType;
@@ -32,5 +34,11 @@ public class WaterBucket extends BlockActionType
             user.sendTranslated("&2%s &aemptied a water-bucket!",
                                 logEntry.getCauserUser().getDisplayName());
         }
+    }
+
+    @Override
+    public boolean isActive(World world)
+    {
+        return this.lm.getConfig(world).WATER_BUCKET_enable;
     }
 }

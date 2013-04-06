@@ -1,6 +1,7 @@
 package de.cubeisland.cubeengine.log.action.logaction.block.flow;
 
 import org.bukkit.Material;
+import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.BlockState;
@@ -105,5 +106,12 @@ public class WaterFlow extends BlockActionType
     protected void showLogEntry(User user, LogEntry logEntry, String time, String loc)
     {//TODO attach
         user.sendTranslated("%s&aWater flooded the block%s&a!",time,loc);
+    }
+
+
+    @Override
+    public boolean isActive(World world)
+    {
+        return this.lm.getConfig(world).WATER_FLOW_enable;
     }
 }

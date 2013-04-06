@@ -2,6 +2,7 @@ package de.cubeisland.cubeengine.log.action.logaction.block;
 
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.BlockState;
@@ -47,17 +48,46 @@ public abstract class BlockActionType extends LogActionType
 
     private void logBlockChange(Location location, Entity causer, String block, Long data, String newBlock, Byte newData, String additional)
     {
-        this.queueLog(location,causer,block,data.longValue(),newBlock,newData,additional);
+        if (this.isBreakingBlockIgnored(location.getWorld(),block) || this.isPlacingBlockIgnored(location.getWorld(),newBlock))
+        {
+            return;
+        }
+        this.queueLog(location,causer,block,data,newBlock,newData,additional);
     }
+
+    private boolean isBreakingBlockIgnored(World world, String block)
+    {
+        if (block == null || block.equals("AIR"))
+        {
+            return false;
+        }
+        Material mat = Material.getMaterial(block);
+        if (this.lm.getConfig(world).breakNoLogging.contains(mat))
+        {
+            return true;
+        }
+        return false;
+    }
+    private boolean isPlacingBlockIgnored(World world, String block)
+    {
+        if (block == null || block.equals("AIR"))
+        {
+            return false;
+        }
+        Material mat = Material.getMaterial(block);
+        if (this.lm.getConfig(world).placeNoLogging.contains(mat))
+        {
+            return true;
+        }
+        return false;
+    }
+
 
     public void logBlockChange(Location location, Entity causer, Material oldBlock, Material newBlock, String additional)
     {
-        this.queueLog(location,causer,oldBlock.name(),0L,newBlock.name(),(byte)0,additional);
+        this.logBlockChange(location, causer, oldBlock.name(), 0L, newBlock.name(), (byte)0, additional);
     }
 
-    /**
-     * oldBlock is not allowed to be null!
-     */
     public void logBlockChange(Entity causer, BlockState oldBlock, BlockState newBlock, String additional)
     {
         this.logBlockChange(oldBlock.getLocation(),causer,BlockData.of(oldBlock),BlockData.of(newBlock),additional);

@@ -1,6 +1,7 @@
 package de.cubeisland.cubeengine.log.action.logaction.block.flow;
 
 import org.bukkit.Material;
+import org.bukkit.World;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.BlockState;
 import org.bukkit.event.block.BlockFromToEvent;
@@ -97,5 +98,12 @@ public class LavaFlow extends BlockActionType
     protected void showLogEntry(User user, LogEntry logEntry, String time, String loc)
     {//TODO attach
         user.sendTranslated("%s&aLava occupied the block%s!",time,loc);
+    }
+
+
+    @Override
+    public boolean isActive(World world)
+    {
+        return this.lm.getConfig(world).LAVA_FLOW_enable;
     }
 }

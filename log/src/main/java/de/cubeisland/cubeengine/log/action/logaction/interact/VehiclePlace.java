@@ -4,6 +4,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.bukkit.Location;
+import org.bukkit.World;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -80,5 +81,11 @@ public class VehiclePlace extends SimpleLogActionType
         return logEntry.world == other.world
             && logEntry.causer == other.causer
             && logEntry.data == other.data;
+    }
+
+    @Override
+    public boolean isActive(World world)
+    {
+        return this.lm.getConfig(world).VEHICLE_PLACE_enable;
     }
 }

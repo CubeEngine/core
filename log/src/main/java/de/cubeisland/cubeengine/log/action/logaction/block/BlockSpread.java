@@ -1,6 +1,7 @@
 package de.cubeisland.cubeengine.log.action.logaction.block;
 
 import org.bukkit.Material;
+import org.bukkit.World;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.block.BlockSpreadEvent;
@@ -42,5 +43,12 @@ public class BlockSpread extends BlockActionType
     {
         user.sendTranslated("%s&6%s&a spreaded%s&a!",
                             logEntry.getNewBlock(),time,loc);
+    }
+
+
+    @Override
+    public boolean isActive(World world)
+    {
+        return this.lm.getConfig(world).BLOCK_SPREAD_enable;
     }
 }

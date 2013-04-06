@@ -1,5 +1,7 @@
 package de.cubeisland.cubeengine.log.action.logaction.container;
 
+import org.bukkit.World;
+
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.log.Log;
 import de.cubeisland.cubeengine.log.action.logaction.SimpleLogActionType;
@@ -26,12 +28,19 @@ public class ItemInsert extends SimpleLogActionType
         user.sendTranslated("%s&2%s&a placed &6%d %s&a into &6%s%s&a!",
                             time, logEntry.getCauserUser().getDisplayName(),
                             itemData.amount,itemData,
-                            logEntry.getMaterialFromNewBlock(),loc);
+                            logEntry.getContainerTypeFromBlock(),loc);
     }
 
     @Override
     public boolean isSimilar(LogEntry logEntry, LogEntry other)
     {
         return ContainerActionType.isSubActionSimilar(logEntry,other);
+    }
+
+
+    @Override
+    public boolean isActive(World world)
+    {
+        return this.lm.getConfig(world).ITEM_INSERT_enable;
     }
 }
