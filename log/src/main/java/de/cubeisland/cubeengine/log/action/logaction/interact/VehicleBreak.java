@@ -24,7 +24,13 @@ public class VehicleBreak extends SimpleLogActionType
 {
     public VehicleBreak(Log module)
     {
-        super(module, "vehicle-break", true, PLAYER, ENTITY);
+        super(module, true, PLAYER, ENTITY);
+    }
+
+    @Override
+    public String getName()
+    {
+        return "vehicle-break";
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)

@@ -21,7 +21,13 @@ public class XpPickup extends SimpleLogActionType
 {
     public XpPickup(Log module)
     {
-        super(module, "xp-pickup",true, PLAYER);
+        super(module, true, PLAYER);
+    }
+
+    @Override
+    public String getName()
+    {
+        return "xp-pickup";
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)

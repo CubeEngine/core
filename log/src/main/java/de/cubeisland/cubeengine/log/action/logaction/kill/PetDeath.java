@@ -23,7 +23,13 @@ public class PetDeath extends SimpleLogActionType
 {
     public PetDeath(Log module)
     {
-        super(module, "pet-death", PLAYER, ENTITY, KILL);
+        super(module, PLAYER, ENTITY, KILL);
+    }
+
+    @Override
+    public String getName()
+    {
+        return "pet-death";
     }
 
     @Override

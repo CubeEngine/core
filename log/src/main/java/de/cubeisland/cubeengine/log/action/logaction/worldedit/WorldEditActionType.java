@@ -8,11 +8,20 @@ import de.cubeisland.cubeengine.log.Log;
 import de.cubeisland.cubeengine.log.action.logaction.block.BlockActionType;
 import de.cubeisland.cubeengine.log.storage.LogEntry;
 
+import static de.cubeisland.cubeengine.log.action.ActionType.Category.BLOCK;
+import static de.cubeisland.cubeengine.log.action.ActionType.Category.PLAYER;
+
 public class WorldEditActionType extends BlockActionType
 {
     public WorldEditActionType(Log module)
     {
-        super(module, "worldedit");
+        super(module, BLOCK, PLAYER);
+    }
+
+    @Override
+    public String getName()
+    {
+        return "worldedit";
     }
 
     @Override

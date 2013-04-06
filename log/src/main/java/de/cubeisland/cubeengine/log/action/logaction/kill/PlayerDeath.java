@@ -22,7 +22,13 @@ public class PlayerDeath extends SimpleLogActionType
 {
     public PlayerDeath(Log module)
     {
-        super(module, "player-death", PLAYER, ENTITY, KILL);
+        super(module, PLAYER, ENTITY, KILL);
+    }
+
+    @Override
+    public String getName()
+    {
+        return "player-death";
     }
 
     @Override

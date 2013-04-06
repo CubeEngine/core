@@ -21,7 +21,13 @@ public class ItemRemove extends SimpleLogActionType
 {
     public ItemRemove(Log module)
     {
-        super(module, "item-remove", PLAYER, INVENTORY, ITEM);
+        super(module, PLAYER, INVENTORY, ITEM);
+    }
+
+    @Override
+    public String getName()
+    {
+        return "item-remove";
     }
 
     @Override

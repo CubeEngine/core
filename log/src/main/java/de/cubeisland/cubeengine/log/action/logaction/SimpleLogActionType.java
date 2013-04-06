@@ -20,13 +20,13 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 
 public abstract class SimpleLogActionType extends LogActionType
 {
-    public SimpleLogActionType(Log module, String name, boolean canRollback,Category... types)
+    public SimpleLogActionType(Log module, boolean canRollback,Category... types)
     {
-        super(module, name, canRollback,types);
+        super(module, canRollback,types);
     }
-    public SimpleLogActionType(Log module, String name,Category... types)
+    public SimpleLogActionType(Log module, Category... types)
     {
-        super(module, name, false,types);
+        super(module, false,types);
     }
 
     public void logSimple(Entity player, String additional)

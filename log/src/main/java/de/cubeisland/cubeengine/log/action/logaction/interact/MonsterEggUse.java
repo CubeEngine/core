@@ -20,7 +20,13 @@ public class MonsterEggUse extends SimpleLogActionType
 {
     public MonsterEggUse(Log module)
     {
-        super(module, "monsteregg-use", true, PLAYER, ENTITY);
+        super(module, true, PLAYER, ENTITY);
+    }
+
+    @Override
+    public String getName()
+    {
+        return "monsteregg-use";
     }
 
     @Override

@@ -21,7 +21,13 @@ public class PlayerJoin extends SimpleLogActionType
 {
     public PlayerJoin(Log module)
     {
-        super(module, "player-join",true, PLAYER);
+        super(module, true, PLAYER);
+    }
+
+    @Override
+    public String getName()
+    {
+        return "player-join";
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)

@@ -18,8 +18,15 @@ public class EndermanPickup  extends BlockActionType
 {
     public EndermanPickup(Log module)
     {
-        super(module, "enderman-pickup", BLOCK, ENTITY);
+        super(module, BLOCK, ENTITY);
     }
+
+    @Override
+    public String getName()
+    {
+        return "enderman-pickup";
+    }
+
 
     @Override
     protected void showLogEntry(User user, LogEntry logEntry, String time, String loc)

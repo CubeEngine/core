@@ -23,7 +23,13 @@ public class BlockShift extends BlockActionType
 {
     public BlockShift(Log module)
     {
-        super(module, "block-shift", BLOCK);
+        super(module, BLOCK);
+    }
+
+    @Override
+    public String getName()
+    {
+        return "block-shift";
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)

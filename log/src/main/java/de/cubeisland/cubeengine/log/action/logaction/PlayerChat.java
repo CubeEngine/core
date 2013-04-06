@@ -21,7 +21,13 @@ public class PlayerChat extends SimpleLogActionType
 {
     public PlayerChat(Log module)
     {
-        super(module, "player-chat",true, PLAYER);
+        super(module, true, PLAYER);
+    }
+
+    @Override
+    public String getName()
+    {
+        return "player-chat";
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)

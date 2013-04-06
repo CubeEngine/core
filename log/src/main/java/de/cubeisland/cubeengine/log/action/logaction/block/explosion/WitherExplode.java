@@ -19,7 +19,13 @@ public class WitherExplode extends BlockActionType
 {
     public WitherExplode(Log module)
     {
-        super(module, "wither-explode", BLOCK, ENTITY, PLAYER);
+        super(module, BLOCK, ENTITY, PLAYER);
+    }
+
+    @Override
+    public String getName()
+    {
+        return "wither-explode";
     }
 
     @Override

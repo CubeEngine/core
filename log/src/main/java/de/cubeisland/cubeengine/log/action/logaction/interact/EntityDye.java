@@ -20,7 +20,13 @@ public class EntityDye extends SimpleLogActionType
 {
     public EntityDye(Log module)
     {
-        super(module, "entity-dye", true, PLAYER, ENTITY);
+        super(module, true, PLAYER, ENTITY);
+    }
+
+    @Override
+    public String getName()
+    {
+        return "entity-dye";
     }
 
     @Override

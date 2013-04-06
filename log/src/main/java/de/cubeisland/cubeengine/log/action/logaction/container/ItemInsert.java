@@ -18,7 +18,13 @@ public class ItemInsert extends SimpleLogActionType
 {
     public ItemInsert(Log module)
     {
-        super(module, "item-insert", PLAYER, INVENTORY, ITEM);
+        super(module, PLAYER, INVENTORY, ITEM);
+    }
+
+    @Override
+    public String getName()
+    {
+        return "item-insert";
     }
 
     @Override

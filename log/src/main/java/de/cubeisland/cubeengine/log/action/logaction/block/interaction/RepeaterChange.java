@@ -18,7 +18,13 @@ public class RepeaterChange extends BlockActionType
 {
     public RepeaterChange(Log module)
     {
-        super(module, "repeater-change", BLOCK, PLAYER);
+        super(module, BLOCK, PLAYER);
+    }
+
+    @Override
+    public String getName()
+    {
+        return "repeater-change";
     }
 
     @Override

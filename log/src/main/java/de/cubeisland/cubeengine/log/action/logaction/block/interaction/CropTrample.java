@@ -20,7 +20,13 @@ public class CropTrample extends BlockActionType
 {
     public CropTrample(Log module)
     {
-        super(module, "crop-trample", BLOCK, PLAYER);
+        super(module, BLOCK, PLAYER);
+    }
+
+    @Override
+    public String getName()
+    {
+        return "crop-trample";
     }
 
     @Override

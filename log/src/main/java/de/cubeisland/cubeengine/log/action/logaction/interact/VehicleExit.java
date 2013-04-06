@@ -22,7 +22,13 @@ public class VehicleExit extends SimpleLogActionType
 {
     public VehicleExit(Log module)
     {
-        super(module, "vehicle-exit", true, PLAYER, ENTITY);
+        super(module, true, PLAYER, ENTITY);
+    }
+
+    @Override
+    public String getName()
+    {
+        return "vehicle-exit";
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)

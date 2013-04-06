@@ -19,7 +19,13 @@ public class PlayerGrow extends BlockActionType
 {
     public PlayerGrow(Log module)
     {
-        super(module, "player-grow", BLOCK, PLAYER);
+        super(module, BLOCK, PLAYER);
+    }
+
+    @Override
+    public String getName()
+    {
+        return "player-grow";
     }
 
     @Override

@@ -37,7 +37,13 @@ public class HangingBreak extends BlockActionType
 {
     public HangingBreak(Log module)
     {
-        super(module, "hanging-break", BLOCK, PLAYER);
+        super(module, BLOCK, PLAYER);
+    }
+
+    @Override
+    public String getName()
+    {
+        return "hanging-break";
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)

@@ -27,7 +27,13 @@ public class BucketFill extends BlockActionType
 {
     public BucketFill(Log module)
     {
-        super(module, "bucket-fill", BLOCK, PLAYER);
+        super(module, BLOCK, PLAYER);
+    }
+
+    @Override
+    public String getName()
+    {
+        return  "bucket-fill";
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)

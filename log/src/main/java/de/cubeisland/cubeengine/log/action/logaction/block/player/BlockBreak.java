@@ -45,7 +45,13 @@ public class BlockBreak extends BlockActionType
 {
     public BlockBreak(Log module)
     {
-        super(module, "block-break", BLOCK, PLAYER, ENVIRONEMENT);
+        super(module, BLOCK, PLAYER, ENVIRONEMENT);
+    }
+
+    @Override
+    public String getName()
+    {
+        return "block-break";
     }
 
     //OldBlockData NoteBlock: RawNote

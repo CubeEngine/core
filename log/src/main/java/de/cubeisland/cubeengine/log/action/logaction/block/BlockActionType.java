@@ -19,14 +19,14 @@ import de.cubeisland.cubeengine.log.storage.LogEntry;
 
 public abstract class BlockActionType extends LogActionType
 {
-    public BlockActionType(Log module, String name, boolean canRollback, Category... types)
+    public BlockActionType(Log module, boolean canRollback, Category... types)
     {
-        super(module, name, canRollback,types);
+        super(module, canRollback,types);
     }
 
-    public BlockActionType(Log module, String name, Category... types)
+    public BlockActionType(Log module, Category... types)
     {
-        super(module, name, false,types);
+        super(module, false,types);
     }
 
     public void logBlockChange(Location location, Entity causer, BlockData oldState, BlockData newState, String additional)

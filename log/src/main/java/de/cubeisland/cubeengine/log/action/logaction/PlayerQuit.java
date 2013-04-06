@@ -19,8 +19,15 @@ public class PlayerQuit extends SimpleLogActionType
 {
     public PlayerQuit(Log module)
     {
-        super(module, "player-quit",true, PLAYER);
+        super(module, true, PLAYER);
     }
+
+    @Override
+    public String getName()
+    {
+        return "player-quit";
+    }
+
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onPlayerQuit(PlayerQuitEvent event)
     {

@@ -32,7 +32,13 @@ public class BlockPlace extends BlockActionType
 {
     public BlockPlace(Log module)
     {
-        super(module, "block-place", BLOCK, PLAYER);
+        super(module, BLOCK, PLAYER);
+    }
+
+    @Override
+    public String getName()
+    {
+        return "block-place";
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)

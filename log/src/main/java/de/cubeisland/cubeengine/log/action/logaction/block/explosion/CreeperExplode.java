@@ -19,7 +19,13 @@ public class CreeperExplode extends BlockActionType
 {
     public CreeperExplode(Log module)
     {
-        super(module, "creeper-explode", BLOCK, ENTITY, PLAYER);
+        super(module, BLOCK, ENTITY, PLAYER);
+    }
+
+    @Override
+    public String getName()
+    {
+        return "creeper-explode";
     }
 
     @Override

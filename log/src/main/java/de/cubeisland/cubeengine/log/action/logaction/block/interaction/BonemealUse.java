@@ -19,7 +19,13 @@ public class BonemealUse extends BlockActionType
 {
     public BonemealUse(Log module)
     {
-        super(module, "bonemeal-use", BLOCK, PLAYER);
+        super(module, BLOCK, PLAYER);
+    }
+
+    @Override
+    public String getName()
+    {
+        return "bonemeal-use";
     }
 
     @Override

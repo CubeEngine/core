@@ -21,7 +21,13 @@ public class ItemPickup extends SimpleLogActionType
 {
     public ItemPickup(Log module)
     {
-        super(module, "item-pickup",true, PLAYER,ITEM);
+        super(module, true, PLAYER,ITEM);
+    }
+
+    @Override
+    public String getName()
+    {
+        return "item-pickup";
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)

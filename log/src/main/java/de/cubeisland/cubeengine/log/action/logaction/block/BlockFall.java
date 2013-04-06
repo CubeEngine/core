@@ -34,7 +34,13 @@ public class BlockFall extends BlockActionType
 {
     public BlockFall(Log module)
     {
-        super(module, "block-fall", BLOCK, ENVIRONEMENT, PLAYER);
+        super(module, BLOCK, ENVIRONEMENT, PLAYER);
+    }
+
+    @Override
+    public String getName()
+    {
+        return "block-fall";
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
@@ -86,7 +92,7 @@ public class BlockFall extends BlockActionType
         {
             ActionType type = this.manager.getActionType(logEntry.getAdditional().get("cause").asInt());
             user.sendTranslated("%s&6%s&a did fall to a lower place %s&a because of &6%s&a!",
-                                time,logEntry.getOldBlock(), loc,type.name);
+                                time,logEntry.getOldBlock(), loc,type.getName());
         }
         else
         {

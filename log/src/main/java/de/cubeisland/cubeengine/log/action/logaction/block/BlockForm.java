@@ -23,7 +23,13 @@ public class BlockForm extends BlockActionType
 {
     public BlockForm(Log module)
     {
-        super(module, "block-form", BLOCK, ENVIRONEMENT);
+        super(module, BLOCK, ENVIRONEMENT);
+    }
+
+    @Override
+    public String getName()
+    {
+        return "block-form";
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)

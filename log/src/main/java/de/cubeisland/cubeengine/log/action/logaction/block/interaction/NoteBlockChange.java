@@ -19,7 +19,13 @@ public class NoteBlockChange extends BlockActionType
 {
     public NoteBlockChange(Log module)
     {
-        super(module, "noteblock-change", BLOCK, PLAYER);
+        super(module, BLOCK, PLAYER);
+    }
+
+    @Override
+    public String getName()
+    {
+        return "noteblock-change";
     }
 
     @Override

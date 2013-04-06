@@ -23,8 +23,15 @@ public class EntityBreak extends BlockActionType
 {
     public EntityBreak(Log module)
     {
-        super(module, "entity-break", BLOCK, ENTITY);
+        super(module, BLOCK, ENTITY);
     }
+
+    @Override
+    public String getName()
+    {
+        return "entity-break";
+    }
+
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onEntityBreakDoor(final EntityBreakDoorEvent event)

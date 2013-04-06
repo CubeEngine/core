@@ -18,8 +18,15 @@ public class WaterBreak extends BlockActionType
 {
     public WaterBreak(Log module)
     {
-        super(module, "water-break", BLOCK, ENVIRONEMENT);
+        super(module, BLOCK, ENVIRONEMENT);
     }
+
+    @Override
+    public String getName()
+    {
+        return "water-break";
+    }
+
 
     @Override
     protected void showLogEntry(User user, LogEntry logEntry, String time, String loc)
@@ -27,7 +34,6 @@ public class WaterBreak extends BlockActionType
         user.sendTranslated("%s&6%s &agot flushed away by water%s!",
                             time ,logEntry.getOldBlock(), loc);
     }
-
 
     @Override
     public boolean isActive(World world)

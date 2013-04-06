@@ -21,8 +21,15 @@ public class EntityForm extends BlockActionType
 {
     public EntityForm(Log module)
     {
-        super(module, "entity-form", BLOCK, ENTITY);
+        super(module, BLOCK, ENTITY);
     }
+
+    @Override
+    public String getName()
+    {
+        return "entity-form";
+    }
+
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onEntityBlockForm(final EntityBlockFormEvent event)

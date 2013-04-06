@@ -18,7 +18,13 @@ public class OtherSpawn extends SimpleLogActionType
 {
     public OtherSpawn(Log module)
     {
-        super(module, "other-spawn", true, ENTITY);
+        super(module, true, ENTITY);
+    }
+
+    @Override
+    public String getName()
+    {
+        return "other-spawn";
     }
 
     @Override

@@ -18,7 +18,13 @@ public class MilkFill extends SimpleLogActionType
 {
     public MilkFill(Log module)
     {
-        super(module, "milk-fill", true, PLAYER, ENTITY);
+        super(module, true, PLAYER, ENTITY);
+    }
+
+    @Override
+    public String getName()
+    {
+        return  "milk-fill";
     }
 
     @Override

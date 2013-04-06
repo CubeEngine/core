@@ -32,19 +32,17 @@ public abstract class ActionType
     protected final ObjectMapper om;
     protected final ActionTypeManager manager;
     protected final LogManager lm;
-    public final String name;
     public final EnumSet<Category> types;
 
     public final boolean canRollback;
 
-    protected ActionType(Log module, String name, boolean canRollback, Category... types)
+    protected ActionType(Log module, boolean canRollback, Category... types)
     {
         this.logModule = module;
         this.wm = module.getCore().getWorldManager();
         this.um = module.getCore().getUserManager();
         this.om = this.logModule.getObjectMapper();
         this.manager = module.getActionTypeManager();
-        this.name = name;
         this.lm = module.getLogManager();
         this.types = EnumSet.of(Category.ALL,types);
         this.canRollback = canRollback;
@@ -53,6 +51,8 @@ public abstract class ActionType
             type.registerActionType(this);
         }
     }
+
+    public abstract String getName();
 
     /**
      * Queues in a log

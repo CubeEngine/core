@@ -18,8 +18,15 @@ public class EndermanPlace extends BlockActionType
 {
     public EndermanPlace(Log module)
     {
-        super(module, "enderman-place", BLOCK, ENTITY);
+        super(module, BLOCK, ENTITY);
     }
+
+    @Override
+    public String getName()
+    {
+        return "enderman-place";
+    }
+
 
     @Override
     protected void showLogEntry(User user, LogEntry logEntry, String time, String loc)

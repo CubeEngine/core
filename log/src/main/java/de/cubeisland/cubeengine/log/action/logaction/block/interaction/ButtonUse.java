@@ -18,7 +18,13 @@ public class ButtonUse extends BlockActionType
 {
     public ButtonUse(Log module)
     {
-        super(module, "button-use", true, BLOCK, PLAYER);
+        super(module, true, BLOCK, PLAYER);
+    }
+
+    @Override
+    public String getName()
+    {
+        return "button-use";
     }
 
     @Override

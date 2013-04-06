@@ -28,7 +28,13 @@ public class PotionSplash extends SimpleLogActionType
 {
     public PotionSplash(Log module)
     {
-        super(module, "potion-splash", true, PLAYER, ENTITY, ITEM);
+        super(module, true, PLAYER, ENTITY, ITEM);
+    }
+
+    @Override
+    public String getName()
+    {
+        return "potion-splash";
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)

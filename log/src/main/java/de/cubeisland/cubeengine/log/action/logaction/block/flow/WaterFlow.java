@@ -29,7 +29,13 @@ public class WaterFlow extends BlockActionType
 {
     public WaterFlow(Log module)
     {
-        super(module, "water-flow", BLOCK, ENVIRONEMENT);
+        super(module, BLOCK, ENVIRONEMENT);
+    }
+
+    @Override
+    public String getName()
+    {
+        return "water-flow";
     }
 
     public void logWaterFlow(BlockFromToEvent event, BlockState toBlock, BlockState newToBlock, BlockState fromBlock)

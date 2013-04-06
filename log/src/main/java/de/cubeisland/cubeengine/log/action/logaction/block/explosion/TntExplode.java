@@ -18,7 +18,13 @@ public class TntExplode extends BlockActionType
 {
     public TntExplode(Log module)
     {
-        super(module, "tnt-explode", BLOCK, PLAYER);
+        super(module, BLOCK, PLAYER);
+    }
+
+    @Override
+    public String getName()
+    {
+        return "tnt-explode";
     }
 
     @Override

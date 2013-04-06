@@ -18,7 +18,13 @@ public class NaturalSpawn extends SimpleLogActionType
 {
     public NaturalSpawn(Log module)
     {
-        super(module, "natural-spawn", true, ENTITY);
+        super(module, true, ENTITY);
+    }
+
+    @Override
+    public String getName()
+    {
+        return "natural-spawn";
     }
 
     @Override

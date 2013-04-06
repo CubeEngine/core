@@ -18,8 +18,15 @@ public class WaterBucket extends BlockActionType
 {
     public WaterBucket(Log module)
     {
-        super(module, "water-bucket", BLOCK, PLAYER);
+        super(module, BLOCK, PLAYER);
     }
+
+    @Override
+    public String getName()
+    {
+        return "water-bucket";
+    }
+
     @Override
     protected void showLogEntry(User user, LogEntry logEntry, String time, String loc)
     {

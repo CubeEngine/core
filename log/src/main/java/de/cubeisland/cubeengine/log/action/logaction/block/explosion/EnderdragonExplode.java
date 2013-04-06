@@ -19,7 +19,13 @@ public class EnderdragonExplode extends BlockActionType
 {
     public EnderdragonExplode(Log module)
     {
-        super(module, "eenderdragon-explode", BLOCK, ENTITY, PLAYER);
+        super(module, BLOCK, ENTITY, PLAYER);
+    }
+
+    @Override
+    public String getName()
+    {
+        return "enderdragon-explode";
     }
 
     @Override

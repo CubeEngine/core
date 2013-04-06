@@ -18,7 +18,13 @@ public class SpawnerSpawn extends SimpleLogActionType
 {
     public SpawnerSpawn(Log module)
     {
-        super(module, "spawner-spawn", true, ENTITY);
+        super(module, true, ENTITY);
+    }
+
+    @Override
+    public String getName()
+    {
+        return "spawner-spawn";
     }
 
     @Override

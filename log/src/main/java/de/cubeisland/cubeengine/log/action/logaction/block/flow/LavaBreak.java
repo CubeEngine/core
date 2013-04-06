@@ -18,8 +18,15 @@ public class LavaBreak extends BlockActionType
 {
     public LavaBreak(Log module)
     {
-        super(module, "lava-break", BLOCK, ENVIRONEMENT);
+        super(module, BLOCK, ENVIRONEMENT);
     }
+
+    @Override
+    public String getName()
+    {
+        return "lava-break";
+    }
+
 
     @Override
     protected void showLogEntry(User user, LogEntry logEntry, String time, String loc)

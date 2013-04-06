@@ -25,7 +25,13 @@ public class BlockBurn extends BlockActionType
 {
     public BlockBurn(Log module)
     {
-        super(module, "block-burn", BLOCK, ENVIRONEMENT);
+        super(module, BLOCK, ENVIRONEMENT);
+    }
+
+    @Override
+    public String getName()
+    {
+        return "block-burn";
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)

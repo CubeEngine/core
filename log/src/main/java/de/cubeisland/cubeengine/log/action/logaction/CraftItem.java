@@ -21,7 +21,13 @@ public class CraftItem extends SimpleLogActionType
 {
     public CraftItem(Log module)
     {
-        super(module, "craft-item" ,true, PLAYER,ITEM);
+        super(module, true, PLAYER,ITEM);
+    }
+
+    @Override
+    public String getName()
+    {
+        return "craft-item";
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)

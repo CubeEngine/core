@@ -18,7 +18,13 @@ public class EntityExplode extends BlockActionType
 {
     public EntityExplode(Log module)
     {
-        super(module, "entity-explode", BLOCK, ENTITY);
+        super(module,  BLOCK, ENTITY);
+    }
+
+    @Override
+    public String getName()
+    {
+        return "entity-explode";
     }
 
     @Override

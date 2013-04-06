@@ -18,8 +18,15 @@ public class SheepEat extends BlockActionType
 {
     public SheepEat(Log module)
     {
-        super(module, "sheep-eat", BLOCK, ENTITY);
+        super(module, BLOCK, ENTITY);
     }
+
+    @Override
+    public String getName()
+    {
+        return "sheep-eat";
+    }
+
 
     @Override
     protected void showLogEntry(User user, LogEntry logEntry, String time, String loc)

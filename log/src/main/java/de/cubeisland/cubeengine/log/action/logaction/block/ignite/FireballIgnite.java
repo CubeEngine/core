@@ -17,7 +17,13 @@ public class FireballIgnite extends BlockActionType
 {
     public FireballIgnite(Log module)
     {
-        super(module, "fireball-ignite", BLOCK, ENTITY, PLAYER);
+        super(module, BLOCK, ENTITY, PLAYER);
+    }
+
+    @Override
+    public String getName()
+    {
+        return "fireball-ignite";
     }
 
     @Override

@@ -220,18 +220,18 @@ public class ActionTypeManager
     {
         if (actionType.getID() != -1)
         {
-            Long actionTypeId = this.actionIDs.get(actionType.name);
+            Long actionTypeId = this.actionIDs.get(actionType.getName());
             if (actionTypeId == null)
             {
-                actionTypeId = this.module.getLogManager().getQueryManager().registerActionType(actionType.name);
-                this.actionIDs.put(actionType.name,actionTypeId);
+                actionTypeId = this.module.getLogManager().getQueryManager().registerActionType(actionType.getName());
+                this.actionIDs.put(actionType.getName(),actionTypeId);
             }
             actionType.setID(actionTypeId);
         }
         registeredIds.put(actionType.getID(),actionType);
         registeredActionTypes.put(actionType.getClass(),actionType);
         actionType.initialize();
-        this.module.getLog().log(LogLevel.DEBUG,"ActionType registered: " + actionType.getID() + " " + actionType.name);
+        this.module.getLog().log(LogLevel.DEBUG,"ActionType registered: " + actionType.getID() + " " + actionType.getName());
         return this;
     }
 

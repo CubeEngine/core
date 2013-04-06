@@ -19,7 +19,13 @@ public class FireballExplode extends BlockActionType
 {
     public FireballExplode(Log module)
     {
-        super(module, "fireball-explode", BLOCK, ENTITY, PLAYER);
+        super(module, BLOCK, ENTITY, PLAYER);
+    }
+
+    @Override
+    public String getName()
+    {
+        return "fireball-explode";
     }
 
     @Override

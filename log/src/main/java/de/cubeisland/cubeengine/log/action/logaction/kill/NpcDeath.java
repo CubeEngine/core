@@ -21,7 +21,13 @@ public class NpcDeath extends SimpleLogActionType
 {
     public NpcDeath(Log module)
     {
-        super(module, "npc-death", PLAYER, ENTITY, KILL);
+        super(module, PLAYER, ENTITY, KILL);
+    }
+
+    @Override
+    public String getName()
+    {
+        return "npc-death";
     }
 
     @Override

@@ -17,7 +17,13 @@ public class FireworkUse extends SimpleLogActionType
 {
     public FireworkUse(Log module)
     {
-        super(module, "firework-use", true, PLAYER, ENTITY, ITEM);//TODO item
+        super(module, true, PLAYER, ENTITY, ITEM);//TODO item
+    }
+
+    @Override
+    public String getName()
+    {
+        return "firework-use";
     }
 
     @Override

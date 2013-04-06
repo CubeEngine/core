@@ -30,7 +30,13 @@ public class ItemDrop extends SimpleLogActionType
 {
     public ItemDrop(Log module)
     {
-        super(module, "item-drop",true, PLAYER,ITEM);
+        super(module, true, PLAYER,ITEM);
+    }
+
+    @Override
+    public String getName()
+    {
+        return "item-drop";
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)

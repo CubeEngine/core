@@ -19,7 +19,13 @@ public class LeverUse extends BlockActionType
 {
     public LeverUse(Log module)
     {
-        super(module, "lever-use", BLOCK, PLAYER);
+        super(module, BLOCK, PLAYER);
+    }
+
+    @Override
+    public String getName()
+    {
+        return "lever-use";
     }
 
     @Override

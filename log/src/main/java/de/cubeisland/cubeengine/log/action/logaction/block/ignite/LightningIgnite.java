@@ -17,7 +17,13 @@ public class LightningIgnite extends BlockActionType
 {
     public LightningIgnite(Log module)
     {
-        super(module, "lightning-ignite", BLOCK, ENVIRONEMENT);
+        super(module, BLOCK, ENVIRONEMENT);
+    }
+
+    @Override
+    public String getName()
+    {
+        return "lightning-ignite";
     }
 
     @Override

@@ -24,7 +24,13 @@ public class HangingPlace extends BlockActionType
 {
     public HangingPlace(Log module)
     {
-        super(module, "hanging-place", BLOCK, PLAYER);
+        super(module, BLOCK, PLAYER);
+    }
+
+    @Override
+    public String getName()
+    {
+        return "hanging-place";
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)

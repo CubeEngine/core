@@ -18,7 +18,13 @@ public class Lighter extends BlockActionType
 {
     public Lighter(Log module)
     {
-        super(module, "lighter-ignite", BLOCK, PLAYER);
+        super(module, BLOCK, PLAYER);
+    }
+
+    @Override
+    public String getName()
+    {
+        return  "lighter-ignite";
     }
 
     @Override

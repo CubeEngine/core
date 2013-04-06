@@ -21,7 +21,13 @@ public class PlayerCommand extends SimpleLogActionType
 {
     public PlayerCommand(Log module)
     {
-        super(module, "player-command",true, PLAYER);
+        super(module, true, PLAYER);
+    }
+
+    @Override
+    public String getName()
+    {
+        return "player-command";
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)

@@ -21,7 +21,13 @@ public class BlockSpread extends BlockActionType
 {
     public BlockSpread(Log module)
     {
-        super(module, "block-spread", BLOCK, ENVIRONEMENT);
+        super(module, BLOCK, ENVIRONEMENT);
+    }
+
+    @Override
+    public String getName()
+    {
+        return "block-spread";
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)

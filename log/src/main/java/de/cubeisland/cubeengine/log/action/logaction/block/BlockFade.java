@@ -20,7 +20,13 @@ public class BlockFade extends BlockActionType
 {
     public BlockFade(Log module)
     {
-        super(module, "block-fade", BLOCK, ENVIRONEMENT);
+        super(module, BLOCK, ENVIRONEMENT);
+    }
+
+    @Override
+    public String getName()
+    {
+        return "block-fade";
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)

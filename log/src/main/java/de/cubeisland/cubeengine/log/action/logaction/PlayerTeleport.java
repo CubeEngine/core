@@ -22,7 +22,13 @@ public class PlayerTeleport extends SimpleLogActionType
 {
     public PlayerTeleport(Log module)
     {
-        super(module, "player-teleport",true, PLAYER);
+        super(module, true, PLAYER);
+    }
+
+    @Override
+    public String getName()
+    {
+        return "player-teleport";
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)

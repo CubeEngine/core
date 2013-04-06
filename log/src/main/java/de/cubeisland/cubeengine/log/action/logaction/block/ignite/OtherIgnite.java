@@ -17,7 +17,13 @@ public class OtherIgnite extends BlockActionType
 {
     public OtherIgnite(Log module)
     {
-        super(module, "other-ignite", BLOCK, ENVIRONEMENT);
+        super(module, BLOCK, ENVIRONEMENT);
+    }
+
+    @Override
+    public String getName()
+    {
+        return "other-ignite";
     }
 
     @Override

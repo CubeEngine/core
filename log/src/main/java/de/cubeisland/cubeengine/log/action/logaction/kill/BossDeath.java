@@ -19,7 +19,13 @@ public class BossDeath extends SimpleLogActionType
 {
     public BossDeath(Log module)
     {
-        super(module, "boss-death", PLAYER, ENTITY, KILL);
+        super(module, PLAYER, ENTITY, KILL);
+    }
+
+    @Override
+    public String getName()
+    {
+        return "boss-death";
     }
 
     @Override

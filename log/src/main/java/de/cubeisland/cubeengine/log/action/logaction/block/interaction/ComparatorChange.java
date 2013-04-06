@@ -19,7 +19,13 @@ public class ComparatorChange extends BlockActionType
 {
     public ComparatorChange(Log module)
     {
-        super(module, "comparator-change", BLOCK, PLAYER);
+        super(module, BLOCK, PLAYER);
+    }
+
+    @Override
+    public String getName()
+    {
+        return "comparator-change";
     }
 
     @Override

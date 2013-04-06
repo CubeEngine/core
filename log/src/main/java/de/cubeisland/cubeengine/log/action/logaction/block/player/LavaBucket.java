@@ -18,7 +18,13 @@ public class LavaBucket  extends BlockActionType
 {
     public LavaBucket(Log module)
     {
-        super(module, "lava-bucket", BLOCK, PLAYER);
+        super(module,  BLOCK, PLAYER);
+    }
+
+    @Override
+    public String getName()
+    {
+        return "lava-bucket";
     }
 
     @Override

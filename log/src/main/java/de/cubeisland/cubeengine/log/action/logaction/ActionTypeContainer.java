@@ -10,11 +10,19 @@ import de.cubeisland.cubeengine.log.storage.LogEntry;
 
 public class ActionTypeContainer extends LogActionType
 {
+    private String name;
     public ActionTypeContainer(Log module, String name)
     {
-        super(module, name, false);
+        super(module, false);
         this.setID(-1);
     }
+
+    @Override
+    public String getName()
+    {
+        return name;
+    }
+
     @Override
     protected void showLogEntry(User user, LogEntry logEntry, String time, String loc)
     {

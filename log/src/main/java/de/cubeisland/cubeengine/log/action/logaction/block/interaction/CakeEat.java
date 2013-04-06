@@ -18,7 +18,13 @@ public class CakeEat extends BlockActionType
 {
     public CakeEat(Log module)
     {
-        super(module, "cake-eat", BLOCK, PLAYER);
+        super(module, BLOCK, PLAYER);
+    }
+
+    @Override
+    public String getName()
+    {
+        return "cake-eat";
     }
 
     @Override

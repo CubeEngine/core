@@ -17,7 +17,13 @@ public class LavaIgnite extends BlockActionType
 {
     public LavaIgnite(Log module)
     {
-        super(module, "lava-ignite", BLOCK, ENVIRONEMENT);
+        super(module, BLOCK, ENVIRONEMENT);
+    }
+
+    @Override
+    public String getName()
+    {
+        return "lava-ignite";
     }
 
     @Override

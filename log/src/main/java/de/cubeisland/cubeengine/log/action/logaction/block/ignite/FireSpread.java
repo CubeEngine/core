@@ -21,7 +21,13 @@ public class FireSpread extends BlockActionType
 {
     public FireSpread(Log module)
     {
-        super(module, "fire-spread", BLOCK, ENVIRONEMENT);
+        super(module, BLOCK, ENVIRONEMENT);
+    }
+
+    @Override
+    public String getName()
+    {
+        return  "fire-spread";
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)

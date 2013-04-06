@@ -20,7 +20,13 @@ public class PlateStep extends BlockActionType
 {
     public PlateStep(Log module)
     {
-        super(module, "plate-step", true, BLOCK, PLAYER);
+        super(module, true, BLOCK, PLAYER);
+    }
+
+    @Override
+    public String getName()
+    {
+        return "plate-step";
     }
 
     @Override

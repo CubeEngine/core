@@ -18,7 +18,13 @@ public class SoupFill extends SimpleLogActionType
 {
     public SoupFill(Log module)
     {
-        super(module, "soup-fill", true, PLAYER, ENTITY);
+        super(module, true, PLAYER, ENTITY);
+    }
+
+    @Override
+    public String getName()
+    {
+        return "soup-fill";
     }
 
     @Override

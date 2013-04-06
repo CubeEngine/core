@@ -22,8 +22,15 @@ public class LeafDecay extends BlockActionType
 
     public LeafDecay(Log module)
     {
-        super(module, "leaf-decay", BLOCK, ENVIRONEMENT);
+        super(module, BLOCK, ENVIRONEMENT);
     }
+
+    @Override
+    public String getName()
+    {
+        return "leaf-decay";
+    }
+
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onLeavesDecay(LeavesDecayEvent event)
     {
@@ -34,13 +41,13 @@ public class LeafDecay extends BlockActionType
                                 AIR,null);
         }
     }
+
     @Override
     protected void showLogEntry(User user, LogEntry logEntry, String time, String loc)
     {
         user.sendTranslated("%s&6%s &adecayed%s!",
                             time,logEntry.getOldBlock(),loc);
     }
-
 
     @Override
     public boolean isActive(World world)

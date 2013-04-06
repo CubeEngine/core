@@ -19,7 +19,13 @@ public class DoorUse extends BlockActionType
 {
     public DoorUse(Log module)
     {
-        super(module, "door-use", BLOCK, PLAYER);
+        super(module, BLOCK, PLAYER);
+    }
+
+    @Override
+    public String getName()
+    {
+        return "door-use";
     }
 
     @Override

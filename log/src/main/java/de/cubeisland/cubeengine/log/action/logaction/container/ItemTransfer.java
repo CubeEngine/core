@@ -20,7 +20,13 @@ public class ItemTransfer extends SimpleLogActionType
 
     public ItemTransfer(Log module)
     {
-        super(module, "item-transfer", PLAYER, INVENTORY, ITEM);
+        super(module, PLAYER, INVENTORY, ITEM);
+    }
+
+    @Override
+    public String getName()
+    {
+        return "item-transfer";
     }
 
     @Override

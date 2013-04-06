@@ -28,7 +28,13 @@ public class VehiclePlace extends SimpleLogActionType
 {
     public VehiclePlace(Log module)
     {
-        super(module, "vehicle-place", true, PLAYER, ENTITY);
+        super(module, true, PLAYER, ENTITY);
+    }
+
+    @Override
+    public String getName()
+    {
+        return "vehicle-place";
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)

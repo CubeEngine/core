@@ -24,7 +24,13 @@ public class EnchantItem extends SimpleLogActionType
 {
     public EnchantItem(Log module)
     {
-        super(module, "enchant-item",true, PLAYER,ITEM);
+        super(module, true, PLAYER,ITEM);
+    }
+
+    @Override
+    public String getName()
+    {
+        return "enchant-item";
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)

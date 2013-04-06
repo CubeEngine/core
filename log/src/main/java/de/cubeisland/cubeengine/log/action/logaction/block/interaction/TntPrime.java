@@ -18,7 +18,13 @@ public class TntPrime extends BlockActionType
 {
     public TntPrime(Log module)
     {
-        super(module, "tnt-prime",BLOCK, PLAYER);
+        super(module, BLOCK, PLAYER);
+    }
+
+    @Override
+    public String getName()
+    {
+        return "tnt-prime";
     }
 
     @Override

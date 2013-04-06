@@ -21,7 +21,13 @@ public class EntityShear extends SimpleLogActionType
 {
     public EntityShear(Log module)
     {
-        super(module, "entity-shear", true, PLAYER, ENTITY);
+        super(module, true, PLAYER, ENTITY);
+    }
+
+    @Override
+    public String getName()
+    {
+        return "entity-shear";
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)

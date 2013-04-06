@@ -21,7 +21,13 @@ public class VehicleEnter extends SimpleLogActionType
 {
     public VehicleEnter(Log module)
     {
-        super(module, "vehicle-enter", true, PLAYER, ENTITY);
+        super(module, true, PLAYER, ENTITY);
+    }
+
+    @Override
+    public String getName()
+    {
+        return "vehicle-enter";
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)

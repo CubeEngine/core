@@ -19,7 +19,13 @@ public class ContainerAccess extends BlockActionType
 {
     public ContainerAccess(Log module)
     {
-        super(module, "container-access", true, BLOCK, PLAYER);
+        super(module, true, BLOCK, PLAYER);
+    }
+
+    @Override
+    public String getName()
+    {
+        return "container-access";
     }
 
     @Override

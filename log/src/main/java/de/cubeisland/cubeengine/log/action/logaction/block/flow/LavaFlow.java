@@ -27,8 +27,15 @@ public class LavaFlow extends BlockActionType
 {
     public LavaFlow(Log module)
     {
-        super(module, "lava-flow", BLOCK, ENVIRONEMENT);
+        super(module, BLOCK, ENVIRONEMENT);
     }
+
+    @Override
+    public String getName()
+    {
+        return "lava-flow";
+    }
+
 
     public void logLavaFlow(BlockFromToEvent event, BlockState toBlock, BlockState newToBlock, BlockState fromBlock)
     {

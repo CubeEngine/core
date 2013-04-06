@@ -31,7 +31,13 @@ public class SignChange extends BlockActionType
 {
     public SignChange(Log module)
     {
-        super(module, "sign-change", BLOCK, PLAYER);
+        super(module, BLOCK, PLAYER);
+    }
+
+    @Override
+    public String getName()
+    {
+        return "sign-change";
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)

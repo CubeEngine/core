@@ -26,7 +26,13 @@ public class NaturalGrow extends BlockActionType
 {
     public NaturalGrow(Log module)
     {
-        super(module, "natural-grow", BLOCK, ENVIRONEMENT);
+        super(module, BLOCK, ENVIRONEMENT);
+    }
+
+    @Override
+    public String getName()
+    {
+        return "natural-grow";
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
