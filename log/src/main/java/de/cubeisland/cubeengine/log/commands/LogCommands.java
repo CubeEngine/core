@@ -17,13 +17,6 @@ import de.cubeisland.cubeengine.core.util.matcher.Match;
 import de.cubeisland.cubeengine.log.Log;
 import de.cubeisland.cubeengine.log.LogAttachment;
 
-import org.bukkit.Material;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
-
-import java.util.Arrays;
-import java.util.HashMap;
-
 public class LogCommands extends ContainerCommand
 {
     public static final String toolName = ChatFormat.parseFormats("&9Logging-ToolBlock");
@@ -50,10 +43,16 @@ public class LogCommands extends ContainerCommand
         }
     }
 
+    //TODO add rollback tool
+    //TODO logtool (cmd: tool)
+    //TODO decide toolItmes
+    //TODO loghand (cmd hand) -> toggles general lookup with bare hands
+
     @Alias(names = "lb")
     @Command(desc = "Gives you a block to check logs with.",
     usage = "[log-type]", max = 2)
     public void block(CommandContext context)
+        //TODO tabcompleter for logBlockTypes
     {
         Material blockMaterial = Material.BEDROCK;
         if (context.hasArg(0))

@@ -1,8 +1,8 @@
 package de.cubeisland.cubeengine.core.config.node;
 
-import de.cubeisland.cubeengine.core.CubeEngine;
-
 import java.util.logging.Level;
+
+import de.cubeisland.cubeengine.core.CubeEngine;
 
 /**
  * A Node that can be a parent of another Node
@@ -69,7 +69,9 @@ public abstract class ParentNode extends Node
             }
             else if (!(baseNode instanceof ParentNode))
             {
-                throw new IllegalArgumentException("Could not resolve path (" + path + ") for " + baseNode);
+                CubeEngine.getCore().getLog().warning("Could not resolve path (" + path + ") for " + baseNode);
+                CubeEngine.getCore().getLog().warning("Is your configuration outdated?");
+                return null;
             }
             return ((ParentNode)baseNode).getNodeAt(subPath, pathSeparator);
         }

@@ -1,12 +1,12 @@
 package de.cubeisland.cubeengine.core.util;
 
+import java.util.Collection;
+import java.util.HashSet;
+
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.material.Attachable;
-
-import java.util.Collection;
-import java.util.HashSet;
 
 /**
  * Provides Utils for blocks in Bukkit.
@@ -45,14 +45,11 @@ public class BlockUtil
         return blocks;
     }
 
-    public static Collection<Block> getDetachableBlocksOnTop(Block block)
+    public static boolean isDetachableFromBelow(Material mat)
     {
-        Collection<Block> blocks = new HashSet<Block>();
-        Block onTop = block.getRelative(BlockFace.UP);
-        switch(onTop.getType())
+        switch(mat)
         {
             case BROWN_MUSHROOM:
-
             case CARROT:
             case DEAD_BUSH:
             case DETECTOR_RAIL:
@@ -97,22 +94,32 @@ public class BlockUtil
             case WOOD_PLATE:
             case WOODEN_DOOR:
             case YELLOW_FLOWER:
-                blocks.add(onTop);
-                return blocks;
             case SUGAR_CANE_BLOCK:
             case CACTUS:
-                // get blocks above cacti and sugarcane
+            return true;
+            default: return false;
+        }
+    }
+
+    public static Collection<Block> getDetachableBlocksOnTop(Block block)
+    {
+        Collection<Block> blocks = new HashSet<Block>();
+        Block onTop = block.getRelative(BlockFace.UP);
+        if (onTop.getType().equals(Material.SUGAR_CANE_BLOCK) || onTop.getType().equals(Material.CACTUS))
+        {
+            blocks.add(onTop);
+            onTop = onTop.getRelative(BlockFace.UP);
+            while (onTop.getType().equals(Material.SUGAR_CANE_BLOCK) || onTop.getType().equals(Material.CACTUS))
+            {
                 blocks.add(onTop);
                 onTop = onTop.getRelative(BlockFace.UP);
-                while (onTop.getType().equals(Material.SUGAR_CANE_BLOCK) || onTop.getType().equals(Material.CACTUS))
-                {
-                    blocks.add(onTop);
-                    onTop = onTop.getRelative(BlockFace.UP);
-                }
-                return blocks;
-            default:
-                return blocks;
+            }
         }
+        else if (isDetachableFromBelow(onTop.getType()))
+        {
+            blocks.add(onTop);
+        }
+        return blocks;
     }
 
     public static boolean isSurroundedByWater(Block block)
