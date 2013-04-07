@@ -5,6 +5,7 @@ import org.bukkit.event.Listener;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.log.storage.LogEntry;
 import de.cubeisland.cubeengine.log.storage.Lookup;
+import de.cubeisland.cubeengine.log.storage.QueryParameter;
 
 public abstract class LogActionType extends ActionType implements Listener
 {
@@ -17,7 +18,7 @@ public abstract class LogActionType extends ActionType implements Listener
     protected abstract void showLogEntry(User user, LogEntry logEntry, String time, String loc);
 
     @Override
-    public void showLogEntry(User user, Lookup lookup, LogEntry logEntry)
+    public void showLogEntry(User user, QueryParameter params, LogEntry logEntry)
     {
         //TODO time OR time-frame if attached
         String time = "{time} - ";

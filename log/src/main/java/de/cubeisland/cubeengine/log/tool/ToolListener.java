@@ -48,9 +48,9 @@ public class ToolListener implements Listener
             Location loc = event.getAction().equals(Action.LEFT_CLICK_BLOCK)
                     ? event.getClickedBlock().getLocation()
                     : event.getClickedBlock().getRelative(event.getBlockFace()).getLocation();
-            lookup.setLocation(loc);
+            lookup.getQueryParameter().setSingleLocations(loc);
             //-----------
-            lookup.since(System.currentTimeMillis() - TimeUnit.DAYS.toMillis(7)); // 7 days default //TODO this in block creation
+            lookup.getQueryParameter().since(System.currentTimeMillis() - TimeUnit.DAYS.toMillis(7)); // 7 days default //TODO this in block creation
             //-----------
             this.module.getLogManager().fillLookupAndShow(lookup,user);
             event.setCancelled(true);

@@ -185,10 +185,33 @@ public abstract class BlockActionType extends LogActionType
     @Override
     public boolean isSimilar(LogEntry logEntry, LogEntry other)
     {
-        return logEntry.block.equals(other.block)
-            && logEntry.newBlock.equals(other.newBlock)
+        if (logEntry.newBlock == other.newBlock
             && logEntry.world == other.world
             && logEntry.causer == other.causer
-            && logEntry.additional == other.additional; // additional is null
+            && logEntry.additional == other.additional) // additional
+        {
+            if (logEntry.block.equals(other.block))
+            {
+                return true;
+            }
+            else
+            {
+                if (logEntry.block.equals("LAVA") || logEntry.block.equals("STATIONARY_LAVA"))
+                {
+                    if (other.block.equals("LAVA") || other.block.equals("STATIONARY_LAVA"))
+                    {
+                        return true;
+                    }
+                }
+                else if (logEntry.block.equals("WATER") || logEntry.block.equals("STATIONARY_WATER"))
+                {
+                    if (other.block.equals("WATER") || other.block.equals("STATIONARY_WATER"))
+                    {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
     }
 }

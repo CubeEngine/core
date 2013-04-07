@@ -29,35 +29,35 @@ public class LogAttachment extends UserAttachment
 
     public Lookup createNewGeneralLookup()
     {
-        this.generalLookup = Lookup.general(this.getModule());
+        this.generalLookup = Lookup.general((Log)this.getModule());
         lastLookup = generalLookup;
         return this.generalLookup;
     }
 
     public Lookup createNewContainerLookup()
     {
-        this.containerLookup = Lookup.container(this.getModule());
+        this.containerLookup = Lookup.container((Log)this.getModule());
         lastLookup = containerLookup;
         return this.containerLookup;
     }
 
     public Lookup createNewKillsLookup()
     {
-        this.killLookup = Lookup.kills(this.getModule());
+        this.killLookup = Lookup.kills((Log)this.getModule());
         lastLookup = killLookup;
         return this.killLookup;
     }
 
     public Lookup createNewPlayerLookup()
     {
-        this.playerLookup = Lookup.player(this.getModule());
+        this.playerLookup = Lookup.player((Log)this.getModule());
         lastLookup = playerLookup;
         return this.playerLookup;
     }
 
     public Lookup createNewBlockLookup()
     {
-        this.playerLookup = Lookup.block(this.getModule());
+        this.playerLookup = Lookup.block((Log)this.getModule());
         lastLookup = playerLookup;
         return this.playerLookup;
     }

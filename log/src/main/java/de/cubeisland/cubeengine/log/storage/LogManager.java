@@ -89,7 +89,7 @@ public class LogManager
         return this.queryManager.queuedLogs.size();
     }
 
-    public void fillLookupAndShow(final Lookup lookup, User user)
+    public void fillLookupAndShow(Lookup lookup, User user)
     {
         this.queryManager.prepareLookupQuery(lookup.clone(), user);
     }

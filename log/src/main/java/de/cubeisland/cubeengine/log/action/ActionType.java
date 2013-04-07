@@ -16,7 +16,7 @@ import de.cubeisland.cubeengine.core.user.UserManager;
 import de.cubeisland.cubeengine.log.Log;
 import de.cubeisland.cubeengine.log.storage.LogEntry;
 import de.cubeisland.cubeengine.log.storage.LogManager;
-import de.cubeisland.cubeengine.log.storage.Lookup;
+import de.cubeisland.cubeengine.log.storage.QueryParameter;
 import de.cubeisland.cubeengine.log.storage.QueuedLog;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -77,9 +77,12 @@ public abstract class ActionType
         this.om = module.getObjectMapper();
         this.manager = module.getActionTypeManager();
         this.lm = module.getLogManager();
-        for (Category type : this.getCategories())
+        if (this.getID() != -1)
         {
-            type.registerActionType(this);
+            for (Category type : this.getCategories())
+            {
+                type.registerActionType(this);
+            }
         }
         this.enable();
     }
@@ -98,13 +101,13 @@ public abstract class ActionType
     public abstract boolean isActive(World world);
 
     /**
-     * Shows the user the logentry from given lookup
+     * Shows the user the logentry from given queryparams
      *
      * @param user
-     * @param lookup
+     * @param params
      * @param logEntry
      */
-    public abstract void showLogEntry(User user, Lookup lookup, LogEntry logEntry);
+    public abstract void showLogEntry(User user, QueryParameter params, LogEntry logEntry);
 
     /**
      * Returns true if the given log-entries can be put together to minimize output

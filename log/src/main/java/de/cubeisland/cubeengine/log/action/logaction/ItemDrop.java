@@ -14,6 +14,7 @@ import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 
 import de.cubeisland.cubeengine.core.user.User;
+import de.cubeisland.cubeengine.log.action.logaction.container.ContainerType;
 import de.cubeisland.cubeengine.log.storage.ItemData;
 import de.cubeisland.cubeengine.log.storage.LogEntry;
 
@@ -83,7 +84,7 @@ public class ItemDrop extends SimpleLogActionType
                 continue;
             }
             String itemData = new ItemData(itemStack).serialize(this.om);
-            this.logSimple(location,player,itemData);
+            this.logSimple(location,player,new ContainerType(containerBlock), itemData);
         }
     }
 
@@ -102,17 +103,36 @@ public class ItemDrop extends SimpleLogActionType
         }
         if (logEntry.hasCauserUser())
         {
-            user.sendTranslated("%s&2%s&a dropped %d &6%s%s!",
-                                time, logEntry.getCauserUser().getDisplayName(),
-                                amount, logEntry.getItemData(),loc);
+            if (logEntry.block != null)
+            {
+                user.sendTranslated("%s&2%s&a let drop %d &6%s&a from &6%s%s&a!",
+                                    time, logEntry.getCauserUser().getDisplayName(),
+                                    amount, logEntry.getItemData(),logEntry.getContainerTypeFromBlock(),loc);
+            }
+            else
+            {
+                user.sendTranslated("%s&2%s&a dropped %d &6%s%s!",
+                                    time, logEntry.getCauserUser().getDisplayName(),
+                                    amount, logEntry.getItemData(),loc);
+            }
         }
         else
         {
-            user.sendTranslated("%s&2%s&a dropped %d &6%s%s!",
-                                time, logEntry.getCauserEntity(),
-                                amount, logEntry.getItemData(),loc);
-        }
+            if (logEntry.block != null)
+            {
+                user.sendTranslated("%s&6%s&a let drop %d &6%s&a from &6%s%s&a!",
+                                    time, logEntry.getCauserEntity(),
+                                    amount, logEntry.getItemData(),
+                                    logEntry.getContainerTypeFromBlock(),loc);
+            }
+            else
+            {
+                user.sendTranslated("%s&6%s&a dropped %d &6%s%s!",
+                                    time, logEntry.getCauserEntity(),
+                                    amount, logEntry.getItemData(),loc);
+            }
 
+        }
     }
 
 

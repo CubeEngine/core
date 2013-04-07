@@ -49,11 +49,11 @@ public class Mail implements Model<Long>
     @Override
     public String toString()
     {
-        User user = CubeEngine.getUserManager().getUser(this.senderId);
-        if (user == null)
+        if (this.senderId == null || this.senderId == 0)
         {
             return "&cCONSOLE&f: " + this.message;
         }
+        User user = CubeEngine.getUserManager().getUser(this.senderId);
         return "&2" + user.getName() + "&f: " + this.message;
     }
 }

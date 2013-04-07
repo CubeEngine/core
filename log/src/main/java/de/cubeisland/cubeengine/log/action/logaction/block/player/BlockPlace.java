@@ -83,12 +83,25 @@ public class BlockPlace extends BlockActionType
         if (logEntry.hasAttached())
         {
             int amount = logEntry.getAttached().size()+1;
-            user.sendTranslated("%s&2%s &aplaced &6%dx %s&a%s!",
-                                time,
-                                logEntry.getCauserUser().getDisplayName(),
-                                amount,
-                                logEntry.getNewBlock(),
-                                loc);
+            if (logEntry.getOldBlock().material.equals(Material.AIR))
+            {
+                user.sendTranslated("%s&2%s &aplaced &6%dx %s&a%s!",
+                                    time,
+                                    logEntry.getCauserUser().getDisplayName(),
+                                    amount,
+                                    logEntry.getNewBlock(),
+                                    loc);
+            }
+            else
+            {
+                user.sendTranslated("%s&2%s &areplaced &6%dx %s&a with &6%s&a%s&a!",
+                                    time,
+                                    logEntry.getCauserUser().getDisplayName(),
+                                    amount,
+                                    logEntry.getOldBlock(),
+                                    logEntry.getNewBlock(),
+                                    loc);
+            }
         }
         else // single
         {

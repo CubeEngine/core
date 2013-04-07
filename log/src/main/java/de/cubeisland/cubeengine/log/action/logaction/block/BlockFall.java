@@ -111,4 +111,13 @@ public class BlockFall extends BlockActionType
         return this.lm.getConfig(world).BLOCK_FALL_enable;
     }
 
+    @Override
+    public boolean isSimilar(LogEntry logEntry, LogEntry other)
+    {
+        return logEntry.newBlock.equals(other.newBlock)
+            && logEntry.world == other.world
+            && logEntry.causer == other.causer
+            && logEntry.additional.equals(other.additional) // additional
+            && logEntry.block == other.block;
+    }
 }

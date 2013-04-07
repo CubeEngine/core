@@ -23,9 +23,7 @@ import de.cubeisland.cubeengine.core.storage.database.querybuilder.ComponentBuil
 import de.cubeisland.cubeengine.core.storage.database.querybuilder.QueryBuilder;
 import de.cubeisland.cubeengine.core.storage.database.querybuilder.SelectBuilder;
 import de.cubeisland.cubeengine.core.user.User;
-import de.cubeisland.cubeengine.core.util.Pair;
 import de.cubeisland.cubeengine.core.util.Profiler;
-import de.cubeisland.cubeengine.core.util.Triplet;
 import de.cubeisland.cubeengine.core.util.math.BlockVector3;
 import de.cubeisland.cubeengine.log.Log;
 import de.cubeisland.cubeengine.log.action.ActionType;
@@ -43,7 +41,7 @@ public class QueryManager
     private final Runnable lookupRunner;
 
     Queue<QueuedLog> queuedLogs = new ConcurrentLinkedQueue<QueuedLog>();
-    Queue<Triplet<Lookup,User,Pair<String,ArrayList<Object>>>> queuedLookups = new ConcurrentLinkedQueue<Triplet<Lookup, User, Pair<String, ArrayList<Object>>>>();
+    Queue<QueuedSqlParams> queuedLookups = new ConcurrentLinkedQueue<QueuedSqlParams>();
 
     private final int batchSize;
     private Future<?> futureStore = null;
@@ -90,11 +88,11 @@ public class QueryManager
             sql = builder.createTable("log_entries", true).beginFields()
                                 .field("id", AttrType.INT, true).autoIncrement()
                                 .field("date", AttrType.DATETIME)
-                                .field("action", AttrType.INT, true)
                                 .field("world", AttrType.INT, true, false)
                                 .field("x", AttrType.INT, false, false)
                                 .field("y", AttrType.INT, false, false)
                                 .field("z", AttrType.INT, false, false)
+                                .field("action", AttrType.INT, true)
                                 .field("causer", AttrType.BIGINT, false, false)
                                 .field("block",AttrType.VARCHAR, 255, false)
                 .field("data",AttrType.BIGINT,false,false) // in kill logs this is the killed entity
@@ -156,17 +154,17 @@ public class QueryManager
             {
                 return;
             }
-            Triplet<Lookup, User, Pair<String, ArrayList<Object>>> poll = this.queuedLookups.poll();
-            final Lookup lookup = poll.getFirst();
-            final User user = poll.getSecond();
-            PreparedStatement stmt = this.database.prepareStatement(poll.getThird().getLeft());
-            ArrayList<Object> dataToInsert = poll.getThird().getRight();
-            for (int i = 0 ; i < dataToInsert.size() ; ++i)
+            QueuedSqlParams poll = this.queuedLookups.poll();
+            final Lookup lookup = poll.lookup;
+            final User user = poll.user;
+            PreparedStatement stmt = this.database.prepareStatement(poll.sql);
+            for (int i = 0 ; i <  poll.sqlData.size() ; ++i)
             {
-                stmt.setObject(i+1, dataToInsert.get(i));
+                stmt.setObject(i+1, poll.sqlData.get(i));
             }
             System.out.print(stmt); //TODO remove
             ResultSet resultSet = stmt.executeQuery();
+            QueryResults results = new QueryResults();
             while (resultSet.next())
             {
                 long entryID = resultSet.getLong("id");
@@ -183,8 +181,9 @@ public class QueryManager
                 int newData = resultSet.getInt("newData");
                 String additionalData = resultSet.getString("additionalData");
                 LogEntry logEntry = new LogEntry(module,entryID,timestamp,action,worldId,x,y,z,causer,block,data,newBlock,newData,additionalData);
-                lookup.addLogEntry(logEntry);
+                results.addResult(logEntry);
             }
+            lookup.setQueryResults(results);
             if (user != null && user.isOnline())
             {
                 module.getCore().getTaskManager().scheduleSyncDelayedTask(module,
@@ -255,7 +254,7 @@ public class QueryManager
                 timeSpendFullLoad += nanos;
                 logsLoggedFullLoad += logSize;
             }
-            if (logSize > 20)
+            if (logSize > 50)
             {
                 this.module.getLog().log(LogLevel.DEBUG,
                                          logSize + " logged in: " + TimeUnit.NANOSECONDS.toMillis(nanos) +
@@ -305,7 +304,7 @@ public class QueryManager
 
     public void prepareLookupQuery(final Lookup lookup, final User user)
     {
-        lookup.clear();
+        final QueryParameter params = lookup.getQueryParameter();
         SelectBuilder selectBuilder =
             this.database.getQueryBuilder().select("id","date","action",
                                                    "world","x","y","z","causer",
@@ -314,29 +313,29 @@ public class QueryManager
                          .from("log_entries").where();
         boolean needAnd = false;
         ArrayList<Object> dataToInsert = new ArrayList<Object>();
-        if (!lookup.getActions().isEmpty())
+        if (!params.actions.isEmpty())
         {
             selectBuilder.beginSub().field("action");
-            if (!lookup.hasIncludeActions())
+            if (!params.includeActions)
             {
                 selectBuilder.not();
             }
-            selectBuilder.in().valuesInBrackets(lookup.getActions().size()).endSub();
-            for (ActionType type : lookup.getActions())
+            selectBuilder.in().valuesInBrackets(params.actions.size()).endSub();
+            for (ActionType type : params.actions)
             {
                 dataToInsert.add(type.getID());
             }
             needAnd = true;
         }
-        if (lookup.hasTime()) // has since / before / from-to
+        if (params.hasTime()) // has since / before / from-to
         {
             if (needAnd)
             {
                 selectBuilder.and();
             }
             selectBuilder.beginSub();
-            Long from_since = lookup.getFromSince();
-            Long to_before = lookup.getToBefore();
+            Long from_since = params.from_since;
+            Long to_before = params.to_before;
             if (from_since == null) // before
             {
                 selectBuilder.field("date").is(ComponentBuilder.LESS).value();
@@ -356,26 +355,26 @@ public class QueryManager
             selectBuilder.endSub();
             needAnd = true;
         }
-        if (lookup.getWorld() != null) // has world
+        if (params.worldID != null) // has world
         {
             if (needAnd)
             {
                 selectBuilder.and();
             }
-            selectBuilder.beginSub().field("world").isEqual().value(lookup.getWorld());
-            if (lookup.getLocation1() != null)
+            selectBuilder.beginSub().field("world").isEqual().value(params.worldID);
+            if (params.location1 != null)
             {
-                BlockVector3 loc1 = lookup.getLocation1();
-                if (lookup.getLocation2() != null)// has area
+                BlockVector3 loc1 = params.location1;
+                if (params.location2 != null)// has area
                 {
-                    BlockVector3 loc2 = lookup.getLocation2();
+                    BlockVector3 loc2 = params.location2;
                     selectBuilder.and().beginSub()
                         .field("x").between(loc1.x,loc2.x)
                         .and().field("y").between(loc1.y,loc2.y)
                         .and().field("z").between(loc1.z,loc2.z)
                         .endSub();
                 }
-                else // has single location
+                else if (params.radius == null)// has single location
                 {
                     selectBuilder.and().beginSub()
                          .field("x").isEqual().value(loc1.x)
@@ -383,15 +382,21 @@ public class QueryManager
                          .and().field("z").isEqual().value(loc1.z)
                          .endSub();
                 }
+                else
+                {
+                    selectBuilder.and().beginSub()
+                                 .field("x").between(loc1.x-params.radius,loc1.x+params.radius)
+                                 .and().field("y").between(loc1.y-params.radius,loc1.y+params.radius)
+                                 .and().field("z").between(loc1.z-params.radius,loc1.z+params.radius)
+                                 .endSub();
+                }
             }
             selectBuilder.endSub();
             needAnd = true;
         }
         String sql = selectBuilder.end().end();
-        System.out.print(user.getName()+": Lookup queued!");
-        this.queuedLookups.offer(
-        new Triplet<Lookup,User,Pair<String,ArrayList<Object>>>(
-            lookup,user,new Pair<String, ArrayList<Object>>(sql,dataToInsert)));
+        System.out.print(user.getName() + ": Lookup queued!");
+        this.queuedLookups.offer(new QueuedSqlParams(lookup,user,sql,dataToInsert));
         if (this.futureLookup == null || this.futureLookup.isDone())
         {
             this.futureLookup = lookupExecutor.submit(lookupRunner);
@@ -438,5 +443,23 @@ public class QueryManager
         {
             throw new StorageException("Could not get unregister ActionType!",e,this.database.getStoredStatement(this.getClass(),"unregisterAction"));
         }
+    }
+
+    public static class QueuedSqlParams
+    {
+        public final Lookup lookup;
+        public final String sql;
+        public final ArrayList sqlData;
+        private final User user;
+
+        public QueuedSqlParams(Lookup lookup, User user, String sql, ArrayList sqlData)
+        {
+            this.lookup = lookup;
+            this.sql = sql;
+            this.sqlData = sqlData;
+            this.user = user;
+        }
+
+
     }
 }
