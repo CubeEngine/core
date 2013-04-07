@@ -11,6 +11,10 @@
   <name>Border</name>
   <description>Limiting the world size.</description>
 
+  <properties>
+    <projectBase>${project.parent.basedir}</projectBase>
+  </properties>
+
   <dependencies>
     <dependency>
       <groupId>${project.parent.groupId}</groupId>

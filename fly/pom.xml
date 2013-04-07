@@ -11,6 +11,10 @@
   <name>Fly</name>
   <description>Flying without creative mode</description>
 
+  <properties>
+    <projectBase>${project.parent.basedir}</projectBase>
+  </properties>
+
   <dependencies>
     <dependency>
       <groupId>${project.parent.groupId}</groupId>

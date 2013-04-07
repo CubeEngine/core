@@ -11,6 +11,10 @@
   <name>Shout</name>
   <description>Announce things!</description>
 
+  <properties>
+    <projectBase>${project.parent.basedir}</projectBase>
+  </properties>
+
   <dependencies>
     <dependency>
       <groupId>${project.parent.groupId}</groupId>

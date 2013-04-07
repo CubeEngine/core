@@ -11,6 +11,10 @@
   <name>Rulebook</name>
   <description>Puts a book in the inventory of new players.</description>
 
+  <properties>
+    <projectBase>${project.parent.basedir}</projectBase>
+  </properties>
+
   <dependencies>
     <dependency>
       <groupId>${project.parent.groupId}</groupId>

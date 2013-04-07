@@ -11,6 +11,10 @@
   <name>IRC</name>
   <description>An IRC bot</description>
 
+  <properties>
+    <projectBase>${project.parent.basedir}</projectBase>
+  </properties>
+
   <dependencies>
     <dependency>
       <groupId>${project.parent.groupId}</groupId>

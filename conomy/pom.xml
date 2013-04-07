@@ -11,6 +11,10 @@
   <name>Conomy</name>
   <description>Economy API and basic commands</description>
 
+  <properties>
+    <projectBase>${project.parent.basedir}</projectBase>
+  </properties>
+
   <dependencies>
     <dependency>
       <groupId>${project.parent.groupId}</groupId>

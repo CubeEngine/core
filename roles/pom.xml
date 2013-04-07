@@ -11,6 +11,10 @@
   <name>Roles</name>
   <description>This modules assigns permissions based on roles.</description>
 
+  <properties>
+    <projectBase>${project.parent.basedir}</projectBase>
+  </properties>
+
   <dependencies>
     <dependency>
       <groupId>${project.parent.groupId}</groupId>

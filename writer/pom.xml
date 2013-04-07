@@ -11,6 +11,10 @@
   <name>Writer</name>
   <description>Edit signs and books!</description>
 
+  <properties>
+    <projectBase>${project.parent.basedir}</projectBase>
+  </properties>
+
   <dependencies>
     <dependency>
       <groupId>${project.parent.groupId}</groupId>

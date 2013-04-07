@@ -11,6 +11,10 @@
   <name>Chat</name>
   <description>This module adds chat formatting functionality.</description>
 
+  <properties>
+    <projectBase>${project.parent.basedir}</projectBase>
+  </properties>
+
   <dependencies>
     <dependency>
       <groupId>${project.parent.groupId}</groupId>

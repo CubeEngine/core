@@ -11,6 +11,10 @@
   <name>Test</name>
   <description>Test for testing.</description>
 
+  <properties>
+    <projectBase>${project.parent.basedir}</projectBase>
+  </properties>
+
   <dependencies>
     <dependency>
       <groupId>${project.parent.groupId}</groupId>

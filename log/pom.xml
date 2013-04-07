@@ -11,6 +11,10 @@
   <name>Log</name>
   <description>Log everything you want!</description>
 
+  <properties>
+    <projectBase>${project.parent.basedir}</projectBase>
+  </properties>
+
   <repositories>
     <repository>
       <id>sk89q-repo</id>

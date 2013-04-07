@@ -11,6 +11,10 @@
   <name>Basics</name>
   <description>This module adds all the basic functionality to your minecraft server.</description>
 
+  <properties>
+    <projectBase>${project.parent.basedir}</projectBase>
+  </properties>
+
   <dependencies>
     <dependency>
       <groupId>${project.parent.groupId}</groupId>

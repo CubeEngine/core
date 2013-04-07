@@ -10,6 +10,10 @@
   <artifactId>cubeengine</artifactId>
   <name>CubeEngine</name>
 
+  <properties>
+    <projectBase>${project.parent.basedir}</projectBase>
+  </properties>
+
   <dependencies>
     <dependency>
       <groupId>com.ibm.icu</groupId>

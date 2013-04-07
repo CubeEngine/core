@@ -44,6 +44,7 @@
     <minecraftVersion>1.5.1</minecraftVersion>
     <bukkitVersion>${minecraftVersion}-R0.1-SNAPSHOT</bukkitVersion>
     <jdkVersion>1.6</jdkVersion>
+    <projectBase>${project.basedir}</projectBase>
   </properties>
 
   <distributionManagement>
@@ -271,10 +272,11 @@
         <artifactId>maven-license-plugin</artifactId>
         <version>1.10.b1</version>
         <configuration>
-          <header>${basedir}/header.txt</header>
+          <header>${projectBase}/header.txt</header>
+          <strictCheck>true</strictCheck>
           <aggregate>true</aggregate>
           <includes>
-            <include>*.java</include>
+            <include>**/*.java</include>
           </includes>
         </configuration>
       </plugin>
@@ -320,7 +322,7 @@
               <logViolationsToConsole>true</logViolationsToConsole>
               <failsOnError>true</failsOnError>
               <failsOnError>true</failsOnError>
-              <configLocation>${basedir}/../checkstyle.xml</configLocation>
+              <configLocation>${projectBase}/checkstyle.xml</configLocation>
             </configuration>
             <!--
             <executions>

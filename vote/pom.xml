@@ -11,6 +11,10 @@
   <name>Vote</name>
   <description>This module integrates into Votifier to provide vote rewards</description>
 
+  <properties>
+    <projectBase>${project.parent.basedir}</projectBase>
+  </properties>
+
   <dependencies>
     <dependency>
       <groupId>${project.parent.groupId}</groupId>

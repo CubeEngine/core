@@ -11,6 +11,10 @@
   <name>Guests</name>
   <description>Protects you from griefers by limiting your guests in their abilities.</description>
 
+  <properties>
+    <projectBase>${project.parent.basedir}</projectBase>
+  </properties>
+
   <dependencies>
     <dependency>
       <groupId>${project.parent.groupId}</groupId>

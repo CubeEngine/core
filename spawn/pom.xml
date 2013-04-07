@@ -13,6 +13,10 @@
     <name>Spawn</name>
     <description>Modifies the default spawn behaviour</description>
 
+  <properties>
+    <projectBase>${project.parent.basedir}</projectBase>
+  </properties>
+
     <dependencies>
         <dependency>
             <groupId>${project.parent.groupId}</groupId>
