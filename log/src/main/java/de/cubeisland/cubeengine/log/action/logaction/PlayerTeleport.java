@@ -11,6 +11,7 @@ import org.bukkit.event.player.PlayerTeleportEvent;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.log.storage.LogEntry;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import static de.cubeisland.cubeengine.log.action.ActionType.Category.PLAYER;
@@ -66,7 +67,23 @@ public class PlayerTeleport extends SimpleLogActionType
     @Override
     protected void showLogEntry(User user, LogEntry logEntry, String time, String loc)
     {
-        user.sendTranslated("PLAYER_TELEPORT"); //TODO
+        JsonNode json = logEntry.additional;
+        String world = this.logModule.getCore().getWorldManager().getWorld(json.get("world").asInt()).getName();
+        if (json.get("dir").asText().equals("from"))
+        {
+            user.sendTranslated("%s&2%s&a teleported from &6%d&f:&6%d&f:&6%d&a in &6%s%s!",
+                                time,logEntry.getCauserUser().getDisplayName(),
+                                json.get("x").asInt(),json.get("y").asInt(),json.get("z").asInt(),
+                                world, loc);
+        }
+        else
+        {
+
+            user.sendTranslated("%s&2%s&a teleported to &6%d&f:&6%d&f:&6%d&a in &6%s%s!",
+                                time,logEntry.getCauserUser().getDisplayName(),
+                                json.get("x").asInt(),json.get("y").asInt(),json.get("z").asInt(),
+                                world, loc);
+        }
     }
 
     @Override

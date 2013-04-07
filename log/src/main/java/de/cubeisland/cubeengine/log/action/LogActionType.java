@@ -4,7 +4,6 @@ import org.bukkit.event.Listener;
 
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.log.storage.LogEntry;
-import de.cubeisland.cubeengine.log.storage.Lookup;
 import de.cubeisland.cubeengine.log.storage.QueryParameter;
 
 public abstract class LogActionType extends ActionType implements Listener
@@ -23,7 +22,58 @@ public abstract class LogActionType extends ActionType implements Listener
         //TODO time OR time-frame if attached
         String time = "{time} - ";
         //TODO location OR area if attached
-        String loc = " at {loc}";
+        String loc = "";
+        if (logEntry.hasAttached())
+        {
+            int xMin = logEntry.location.x;
+            int yMin = logEntry.location.y;
+            int zMin = logEntry.location.z;
+            int xMax = logEntry.location.x;
+            int yMax = logEntry.location.y;
+            int zMax = logEntry.location.z;
+            for (LogEntry entry : logEntry.getAttached())
+            {
+                if (entry.location.x < xMin)
+                {
+                    xMin = entry.location.x;
+                }
+                else if (entry.location.x > xMax)
+                {
+                    xMax = entry.location.x;
+                }
+                if (entry.location.x < yMin)
+                {
+                    yMin = entry.location.x;
+                }
+                else if (entry.location.x > yMax)
+                {
+                    yMax = entry.location.x;
+                }
+                if (entry.location.x < zMin)
+                {
+                    zMin = entry.location.x;
+                }
+                else if (entry.location.x > zMax)
+                {
+                    zMax = entry.location.x;
+                }
+            }
+            if (xMax == xMin && yMax == yMin && zMax == zMin)
+            {
+                loc = " &aat &3%d&f:&3%d&f:&3%d&a in &3%s";
+                loc = String.format(loc,xMax,yMax,zMax,logEntry.world.getName());
+            }
+            else
+            {
+                loc = " &ain between &3%d&f:&3%d&f:&3%d&a and &3%d&f:&3%d&f:&3%d&a in &3%s";
+                loc = String.format(loc,xMax,yMax,zMax,logEntry.world.getName());
+            }
+        }
+        else
+        {
+            loc = " &aat &3%d&f:&3%d&f:&3%d&a in &3%s";
+            loc = String.format(loc,logEntry.location.x,logEntry.location.y,logEntry.location.z,logEntry.world.getName());
+        }
         this.showLogEntry(user,logEntry,time,loc);
     }
 

@@ -43,6 +43,7 @@ public class QueryParameter implements Cloneable
     boolean showDate = false;
     boolean showLoc = false;
     boolean showID = false;
+    private String locationString;
 
     public QueryParameter(Log module)
     {
