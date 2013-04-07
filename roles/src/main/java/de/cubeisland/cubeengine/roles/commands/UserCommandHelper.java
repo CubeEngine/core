@@ -1,18 +1,20 @@
 package de.cubeisland.cubeengine.roles.commands;
 
+import org.bukkit.World;
+
 import de.cubeisland.cubeengine.core.command.CommandContext;
+import de.cubeisland.cubeengine.core.command.CommandSender;
 import de.cubeisland.cubeengine.core.command.ContainerCommand;
 import de.cubeisland.cubeengine.core.command.exception.MissingParameterException;
 import de.cubeisland.cubeengine.core.command.parameterized.ParameterizedContext;
-import de.cubeisland.cubeengine.core.command.CommandSender;
 import de.cubeisland.cubeengine.core.storage.world.WorldManager;
 import de.cubeisland.cubeengine.core.user.User;
+import de.cubeisland.cubeengine.roles.RoleManager;
 import de.cubeisland.cubeengine.roles.Roles;
 import de.cubeisland.cubeengine.roles.RolesAttachment;
-import de.cubeisland.cubeengine.roles.RoleManager;
 import de.cubeisland.cubeengine.roles.role.UserSpecificRole;
+
 import gnu.trove.map.hash.TLongObjectHashMap;
-import org.bukkit.World;
 
 public class UserCommandHelper extends ContainerCommand
 {
@@ -114,14 +116,14 @@ public class UserCommandHelper extends ContainerCommand
             }
             else
             {
-                world = this.worldManager.getWorld(ManagementCommands.curWorldIdOfConsole);
-                if (world == null)
+                if (ManagementCommands.curWorldIdOfConsole == null)
                 {
                     context.sendTranslated("&ePlease provide a world.\n&aYou can define a world with &6/roles admin defaultworld <world>");
                     throw new MissingParameterException("world"); //TODO this is bullshit
                 }
                 else
                 {
+                    world = this.worldManager.getWorld(ManagementCommands.curWorldIdOfConsole);
                     context.sendTranslated("&eYou are using &6%s &eas current world.", world.getName());
                 }
             }

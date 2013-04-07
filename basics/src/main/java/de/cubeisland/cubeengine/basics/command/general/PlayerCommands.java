@@ -725,7 +725,7 @@ public class PlayerCommands
             user.sendTranslated("&aYou can now walk at &6%.2f&a.", speed);
             return;
         }
-        if (speed > 9000)
+        if (speed != null && speed > 9000)
         {
             user.sendTranslated("&cIt's over 9000!");
         }
