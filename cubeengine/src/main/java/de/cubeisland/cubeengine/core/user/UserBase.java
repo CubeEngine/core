@@ -108,7 +108,7 @@ public class UserBase implements Player
         {
             return player.getDisplayName();
         }
-        return player.getName();
+        return this.offlinePlayer.getName();
     }
 
     @Override

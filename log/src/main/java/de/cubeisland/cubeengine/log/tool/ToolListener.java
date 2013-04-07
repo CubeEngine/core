@@ -7,6 +7,7 @@ import org.bukkit.event.Event.Result;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
+import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 
@@ -48,14 +49,26 @@ public class ToolListener implements Listener
             Location loc = event.getAction().equals(Action.LEFT_CLICK_BLOCK)
                     ? event.getClickedBlock().getLocation()
                     : event.getClickedBlock().getRelative(event.getBlockFace()).getLocation();
-            lookup.setLocation(loc);
+            lookup.getQueryParameter().setSingleLocations(loc);
             //-----------
-            lookup.since(System.currentTimeMillis() - TimeUnit.DAYS.toMillis(7)); // 7 days default //TODO this in block creation
+            lookup.getQueryParameter().since(System.currentTimeMillis() - TimeUnit.DAYS.toMillis(7)); // 7 days default //TODO this in block creation
             //-----------
             this.module.getLogManager().fillLookupAndShow(lookup,user);
             event.setCancelled(true);
             event.setUseItemInHand(Result.DENY);
             event.setUseInteractedBlock(Result.DENY);
         }
+    }
+
+    @EventHandler
+    public void onDrop(PlayerDropItemEvent event)
+    {
+        ItemStack item = event.getItemDrop().getItemStack();
+        if (!item.hasItemMeta() || !item.getItemMeta().hasDisplayName() ||
+            !item.getItemMeta().getDisplayName().equals(LogCommands.toolName))
+        {
+            return;
+        }
+        event.getItemDrop().remove();
     }
 }

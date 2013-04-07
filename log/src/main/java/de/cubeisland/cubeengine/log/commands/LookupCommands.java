@@ -1,32 +1,46 @@
 package de.cubeisland.cubeengine.log.commands;
 
+import java.util.Date;
+
+import org.bukkit.Location;
+import org.bukkit.World;
+
 import de.cubeisland.cubeengine.core.command.CommandContext;
 import de.cubeisland.cubeengine.core.command.ContainerCommand;
 import de.cubeisland.cubeengine.core.command.parameterized.Flag;
 import de.cubeisland.cubeengine.core.command.parameterized.Param;
 import de.cubeisland.cubeengine.core.command.parameterized.ParameterizedContext;
 import de.cubeisland.cubeengine.core.command.reflected.Command;
-import de.cubeisland.cubeengine.core.module.Module;
-import de.cubeisland.cubeengine.core.user.User;
-import org.bukkit.Location;
-import org.bukkit.World;
-import org.bukkit.inventory.ItemStack;
-
-import java.util.Date;
+import de.cubeisland.cubeengine.log.Log;
 
 public class LookupCommands extends ContainerCommand
 {
-    public LookupCommands(Module module)
+    private final Log module;
+
+    public LookupCommands(Log module)
     {
         super(module, "lookup", "Searches in the database for needed informations.");
+        this.module = module;
     }
-
-
 
     @Command(desc = "Displays all possible parameters.")
     public void params(CommandContext context)
     {
-        context.sendMessage("You used the /log params command!");
+        context.sendTranslated("&6Lookup&f/&6Rollback&f/&6Restore&f-&6Parameters:");
+        context.sendMessage("");
+        context.sendTranslated(" &f-&6 action &7<actionType> &flike &3block-break &f(See full list below)");
+        context.sendTranslated(" &f-&6 radius &7<radius>&f or &3sel&f, &3global&f, &3player:<radius>");
+        context.sendTranslated(" &f-&6 player &7<users>&f like &3p Faithcaio ");
+        context.sendTranslated(" &f-&6 entity &7<entities>&f like &3e sheep");
+        context.sendTranslated(" &f-&6 block &7<blocks>&f like &3b stone &for &3b 1");
+        context.sendTranslated(" &f-&6 since &7<time>&f default is 3 days");
+        context.sendTranslated(" &f-&6 before &7<time>");
+        context.sendTranslated(" &f-&6 world &7<world>&f default is your current world");
+        context.sendMessage("");
+        context.sendTranslated("Use &6!&f to exclude the parameters instead of including them.");
+        context.sendMessage("");
+        context.sendTranslated("&6Registered ActionTypes:");
+        context.sendMessage(this.module.getActionTypeManager().getActionTypesAsString());
     }
 
     /**
@@ -48,68 +62,23 @@ public class LookupCommands extends ContainerCommand
     @Command(names = {
         "block", "blocklog"
     }, desc = "Changes regarding blocks", usage = "", flags = {
-        @Flag(longName = "selection", name = "sel"),
         @Flag(longName = "coordinates", name = "coords"),
-        @Flag(longName = "detailed", name = "det")
-    })
-    // /lookup block [types][radius <r>][block <blocks...>][player <player...>][in world][-selection][-coords][-detailed]
-    //FLAGS:
-    //Selection
-    //show coords
-    //detailed or simple/brief (summing up results or not?)
-    //TYPEs:    
-    //break/place/interact/signs (default: break,place,interact)
-    //WORLD:
-    //in|world world (def current world)
-    //PLAYER
-    //player player1,player2,!notplayer3
-    //including commaseparated exclude with ! infront
-    //BLOCKTYPE
-    //block 35,!1,!wood
-    //same as player matching ,-separated ! infront excludes
-    //RADIUS
-    //radius|area 6
-    //time (since before (timeframe))//<-- TODO very difficult
-    public void block(CommandContext context)
-    {
-    //blocklog_
-    //[<world_>[loc_|range_]]
-    //
-
-    }
-
-    //TODO remove that
-    @Command(names = {
-        "lookup"
-    }, desc = "Lookups", usage = "<params>", flags = {
-        @Flag(longName = "selection", name = "sel"), // only search in Selection
-        @Flag(longName = "created", name = "c"), // only search for placed blocks (on by default)
-        @Flag(longName = "destroyed", name = "d"), // only search for breaked blocks (on by default)
-        @Flag(longName = "chat", name = "ch"), //only search for chatlogs (off by default)
-        @Flag(longName = "chestaccess", name = "chest"), //only search for chestaccess (off by default)
-        @Flag(longName = "coordinates", name = "coords"),//display position (off by default)
-        @Flag(longName = "descending", name = "desc"), //sort in descending order (default ascending)
-    }, params = {
-        @Param(names =
-        {
-            "player", "p"
-        }, type = User[].class),
-        @Param(names = "area", type = Integer.class),
-        @Param(names = "block", type = ItemStack[].class),
-        @Param(names =
-        {
-            "since", "time"
-        }, type = Date.class),
-        @Param(names = "before", type = Date.class),
-        @Param(names = "limit", type = Date.class),
-        @Param(names = "world", type = World.class),
+        @Flag(longName = "detailed", name = "det"),
+        @Flag(longName = "descending", name = "desc") //sort in descending order (default ascending)
+    },
+    params = {
+        @Param(names = {"action","a"}),// !!must have tabcompleter for all register actionTypes
+        @Param(names = {"radius","r"}),//<radius> OR selection|sel OR global|g OR player|p:<radius>
+        @Param(names = {"user","player","p"}),
+        @Param(names = {"block","b"}),
+        @Param(names = {"entity","e"}),
+        @Param(names = {"since","time","t"},type = Date.class), // if not given default since 3d
+        @Param(names = {"before"},type = Date.class),
+        @Param(names = {"world","w","in"}, type = World.class),
+        @Param(names = {"limit"},type = Integer.class),
     })
     public void lookup(ParameterizedContext context)
     {
-        ItemStack[] blocktypes;
-        if (context.hasParam("block"))
-        {
-            blocktypes = context.getParam("block");
-        }
+        context.sendMessage("LOOKUP IS NOT IMPLEMENTED YET");
     }
 }
