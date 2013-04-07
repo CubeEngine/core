@@ -7,6 +7,7 @@ import org.bukkit.event.Event.Result;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
+import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 
@@ -57,5 +58,17 @@ public class ToolListener implements Listener
             event.setUseItemInHand(Result.DENY);
             event.setUseInteractedBlock(Result.DENY);
         }
+    }
+
+    @EventHandler
+    public void onDrop(PlayerDropItemEvent event)
+    {
+        ItemStack item = event.getItemDrop().getItemStack();
+        if (!item.hasItemMeta() || !item.getItemMeta().hasDisplayName() ||
+            !item.getItemMeta().getDisplayName().equals(LogCommands.toolName))
+        {
+            return;
+        }
+        event.getItemDrop().remove();
     }
 }

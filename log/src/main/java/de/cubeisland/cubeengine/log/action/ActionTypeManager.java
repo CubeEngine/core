@@ -1,9 +1,12 @@
 package de.cubeisland.cubeengine.log.action;
 
 import java.util.Map;
+import java.util.TreeSet;
 import java.util.concurrent.ConcurrentHashMap;
 
 import de.cubeisland.cubeengine.core.logger.LogLevel;
+import de.cubeisland.cubeengine.core.util.ChatFormat;
+import de.cubeisland.cubeengine.core.util.StringUtils;
 import de.cubeisland.cubeengine.log.Log;
 import de.cubeisland.cubeengine.log.action.logaction.CraftItem;
 import de.cubeisland.cubeengine.log.action.logaction.EnchantItem;
@@ -243,5 +246,15 @@ public class ActionTypeManager
     public ActionType getActionType(int id)
     {
         return this.registeredIds.get(id);
+    }
+
+    public String getActionTypesAsString()
+    {
+        TreeSet<String> actionTypes = new TreeSet<String>();
+        for (ActionType actionType : this.registeredActionTypes.values())
+        {
+            actionTypes.add(actionType.getName().replace("-","&f-&7"));
+        }
+        return ChatFormat.parseFormats("&7&o"+StringUtils.implode("&f, &7&o",actionTypes));
     }
 }

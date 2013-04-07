@@ -262,24 +262,24 @@ public class QueryParameter implements Cloneable
         {
             if (this.location2 != null)
             {
-                user.sendTranslated("&eNo logs found in between &6%d&f:&6%d&f:&6%d&e and &6%d&f:&6%d&f:&6%d&e in &6%s&e!",
+                user.sendTranslated("&eNo logs found in between &3%d&f:&3%d&f:&3%d&e and &3%d&f:&3%d&f:&3%d&e in &3%s&e!",
                                     this.location1.x, this.location1.y, this.location1.z,
                                     this.location2.x, this.location2.y, this.location2.z,
                                     this.module.getCore().getWorldManager().getWorld(worldID).getName());
             }
             else if (radius == null)
             {
-                user.sendTranslated("&eNo logs found at &6%d&f:&6%d&f:&6%d&e in &6%s&e!",
+                user.sendTranslated("&eNo logs found at &3%d&f:&3%d&f:&3%d&e in &3%s&e!",
                                     this.location1.x, this.location1.y, this.location1.z,
                                     this.module.getCore().getWorldManager().getWorld(worldID).getName());
             }
             else if (user.getLocation().equals(location1))
             {
-                user.sendTranslated("&eNo logs found in a radius of &6%d&e around you!", radius);
+                user.sendTranslated("&eNo logs found in a radius of &3%d&e around you!", radius);
             }
             else
             {
-                user.sendTranslated("&eNo logs found in a radius of &6%d around %d&f:&6%d&f:&6%d&e in &6%s&e!",
+                user.sendTranslated("&eNo logs found in a radius of &3%d around %d&f:&3%d&f:&3%d&e in &3%s&e!",
                                     radius,this.location1.x, this.location1.y, this.location1.z,
                                     this.module.getCore().getWorldManager().getWorld(worldID).getName());
             }

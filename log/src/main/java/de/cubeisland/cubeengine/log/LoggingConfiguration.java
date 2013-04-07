@@ -242,7 +242,7 @@ public class LoggingConfiguration extends YamlConfiguration
     public boolean PET_DEATH_enable = true;
     @Comment("Villager-Death")
     @Option("logging.death.npc")
-    public boolean NPC_DEATH_enable = false;
+    public boolean NPC_DEATH_enable = true;
     @Option("logging.death.boss")
     public boolean BOSS_DEATH_enable = true;
     @Comment("Other-Death: Golems,Squids,Bats")
