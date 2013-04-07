@@ -213,7 +213,7 @@ public final class BukkitCore extends JavaPlugin implements Core
         this.matcherManager = new Match();
         this.inventoryGuard = new InventoryGuardFactory(this);
 
-        this.getServer().getScheduler().scheduleSyncDelayedTask(this, new Runnable()
+        server.getScheduler().scheduleSyncDelayedTask(this, new Runnable()
         {
             @Override
             public void run()

@@ -286,7 +286,6 @@
         </codeStyleSettings>
         <codeStyleSettings language="Python">
           <option name="KEEP_LINE_BREAKS" value="false" />
-          <option name="ALIGN_MULTILINE_PARAMETERS_IN_CALLS" value="true" />
           <indentOptions>
             <option name="USE_TAB_CHARACTER" value="true" />
           </indentOptions>
