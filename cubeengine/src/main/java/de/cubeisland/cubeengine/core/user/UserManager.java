@@ -103,6 +103,12 @@ public class UserManager implements Cleanable
 
         this.defaultAttachments = new THashSet<DefaultAttachment>();
         this.scheduledForRemoval = new TObjectIntHashMap<String>(Constants.DEFAULT_CAPACITY, Constants.DEFAULT_LOAD_FACTOR, -1);
+
+        for (Player player : ((BukkitCore)core).getServer().getOnlinePlayers())
+        {
+            this.onlineUsers.add(this.getExactUser(player));
+        }
+
         this.loadSalt();
 
         try

@@ -17,6 +17,8 @@
  */
 package de.cubeisland.cubeengine.core.command.commands;
 
+import java.util.concurrent.TimeUnit;
+
 import org.bukkit.plugin.PluginManager;
 
 import de.cubeisland.cubeengine.core.Core;
@@ -33,6 +35,7 @@ import de.cubeisland.cubeengine.core.command.sender.ConsoleCommandSender;
 import de.cubeisland.cubeengine.core.permission.PermDefault;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.user.UserManager;
+import de.cubeisland.cubeengine.core.util.Profiler;
 
 import static java.util.Arrays.asList;
 
@@ -58,8 +61,12 @@ public class CoreCommands extends ContainerCommand
     @Command(desc = "Reloads all of the modules!")
     public void reloadmodules(CommandContext context)
     {
+        context.sendTranslated("&aReloading all modules! This may take some time...");
+        Profiler.startProfiling("modulesReload");
         this.core.getModuleManager().unloadModules();
         this.core.getModuleManager().loadModules(this.core.getFileManager().getModulesDir());
+        long time = Profiler.endProfiling("modulesReload", TimeUnit.MILLISECONDS);
+        context.sendTranslated("&aModules-Reload completed in &6%d&ams!",time);
     }
 
     @Command(names = {

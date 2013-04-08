@@ -516,4 +516,17 @@ public class RoleManager
     {
         return this.assignedRoleMirrors.get(worldId);
     }
+
+    public void reloadAllRolesAndApply()
+    {
+        for (User user : this.module.getCore().getUserManager().getOnlineUsers()) // reapply roles on reload
+        {
+            user.attachOrGet(RolesAttachment.class,module).removeRoleContainer(); // remove potential old calculated roles
+            this.preCalculateRoles(user.getName(), false);
+            if (user.isOnline())
+            {
+                this.applyRole(user.getPlayer());
+            }
+        }
+    }
 }

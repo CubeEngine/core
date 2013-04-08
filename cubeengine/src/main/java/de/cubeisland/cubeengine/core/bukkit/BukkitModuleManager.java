@@ -27,6 +27,7 @@ import org.bukkit.plugin.PluginManager;
 
 import de.cubeisland.cubeengine.core.module.BaseModuleManager;
 import de.cubeisland.cubeengine.core.module.Module;
+import de.cubeisland.cubeengine.core.module.event.FinishedLoadModulesEvent;
 import de.cubeisland.cubeengine.core.module.exception.CircularDependencyException;
 import de.cubeisland.cubeengine.core.module.exception.IncompatibleCoreException;
 import de.cubeisland.cubeengine.core.module.exception.IncompatibleDependencyException;
@@ -57,6 +58,7 @@ public class BukkitModuleManager extends BaseModuleManager
     {
         super.loadModules(directory);
         BukkitUtils.reloadHelpMap();
+        this.pluginManager.callEvent(new FinishedLoadModulesEvent(this.core));
     }
 
     @Override

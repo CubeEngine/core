@@ -43,8 +43,6 @@ public class ToolListener implements Listener
         this.module = module;
     }
 
-    //TODO when dropping a logging tool destroy it
-
     @EventHandler
     public void onClick(PlayerInteractEvent event)
     {

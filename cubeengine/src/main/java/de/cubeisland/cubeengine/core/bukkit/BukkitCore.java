@@ -47,7 +47,6 @@ import de.cubeisland.cubeengine.core.i18n.I18n;
 import de.cubeisland.cubeengine.core.logger.CubeFileHandler;
 import de.cubeisland.cubeengine.core.logger.CubeLogger;
 import de.cubeisland.cubeengine.core.logger.LogLevel;
-import de.cubeisland.cubeengine.core.module.event.FinishedLoadModulesEvent;
 import de.cubeisland.cubeengine.core.storage.TableManager;
 import de.cubeisland.cubeengine.core.storage.database.Database;
 import de.cubeisland.cubeengine.core.storage.database.DatabaseFactory;
@@ -240,8 +239,6 @@ public final class BukkitCore extends JavaPlugin implements Core
 
                 // depends on: file manager
                 moduleManager.loadModules(fileManager.getModulesDir());
-
-                pm.callEvent(new FinishedLoadModulesEvent(BukkitCore.this));
 
                 // depends on: finished loading modules
                 userManager.clean();

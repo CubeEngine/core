@@ -41,15 +41,7 @@ public class ManagementCommands extends ContainerCommand
         Roles module = (Roles)this.getModule();
         module.getConfiguration().load(); // reloads main config
         module.getRoleManager().init(); // reloads all roleconfigs
-        for (User user : module.getCore().getUserManager().getOnlineUsers())
-        {
-            user.attach(RolesAttachment.class,this.getModule());
-            module.getRoleManager().preCalculateRoles(user.getName(), true);
-            if (user.isOnline())
-            {
-                module.getRoleManager().applyRole(user.getPlayer());
-            }
-        }
+        module.getRoleManager().reloadAllRolesAndApply();
         context.sendTranslated("&f[&6Roles&f] &areload complete!");
     }
 
@@ -78,7 +70,7 @@ public class ManagementCommands extends ContainerCommand
                 context.sendTranslated("&cInvalid world! No world &6%s &cfound", context.getString(0));
                 return;
             }
-            context.sendTranslated("&aAll your roles commands will now have &6%s &aas default world!", context.getString(0));
+            context.sendTranslated("&aAll your roles commands will now have &6%s&a as default world!", context.getString(0));
         }
         else
         {

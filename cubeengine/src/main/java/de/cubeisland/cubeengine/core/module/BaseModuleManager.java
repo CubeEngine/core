@@ -55,7 +55,7 @@ import static de.cubeisland.cubeengine.core.logger.LogLevel.*;
 public abstract class BaseModuleManager implements ModuleManager
 {
     private final Logger logger;
-    private final Core core;
+    protected final Core core;
     private final ModuleLoader loader;
     private final Map<String, Module> modules;
     private final Map<String, ModuleInfo> moduleInfos;
