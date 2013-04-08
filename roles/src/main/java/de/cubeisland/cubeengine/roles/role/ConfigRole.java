@@ -17,14 +17,14 @@
  */
 package de.cubeisland.cubeengine.roles.role;
 
-import de.cubeisland.cubeengine.roles.config.Priority;
-import de.cubeisland.cubeengine.roles.config.RoleConfig;
 import java.io.File;
 import java.util.TreeSet;
 
 import org.bukkit.permissions.Permissible;
 
 import de.cubeisland.cubeengine.core.permission.Permission;
+import de.cubeisland.cubeengine.roles.config.Priority;
+import de.cubeisland.cubeengine.roles.config.RoleConfig;
 
 public class ConfigRole extends Role
 {
@@ -39,7 +39,7 @@ public class ConfigRole extends Role
      * @param isGlobal true if this is a global role
      * @param permission the permission of this role;
      */
-    public ConfigRole(RoleConfig config, TreeSet<Role> parentRoles, boolean isGlobal, Permission permission)
+    public ConfigRole(RoleConfig config, TreeSet<ConfigRole> parentRoles, boolean isGlobal, Permission permission)
     {
         super(config.roleName, config.priority, config.perms, parentRoles, config.metadata, isGlobal);
         this.applyInheritence(new MergedRole(parentRoles));

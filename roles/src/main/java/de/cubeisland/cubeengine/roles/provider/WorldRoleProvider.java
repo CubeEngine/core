@@ -17,30 +17,27 @@
  */
 package de.cubeisland.cubeengine.roles.provider;
 
-import de.cubeisland.cubeengine.core.user.User;
-import de.cubeisland.cubeengine.core.util.Pair;
-import de.cubeisland.cubeengine.core.logger.LogLevel;
-import de.cubeisland.cubeengine.core.util.StringUtils;
-import de.cubeisland.cubeengine.core.util.Triplet;
-import de.cubeisland.cubeengine.roles.Roles;
-import de.cubeisland.cubeengine.roles.RolesConfig;
-import de.cubeisland.cubeengine.roles.role.Role;
-import de.cubeisland.cubeengine.roles.config.RoleMirror;
-
-import gnu.trove.map.hash.TLongObjectHashMap;
 import java.io.File;
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
+
+import de.cubeisland.cubeengine.core.logger.LogLevel;
+import de.cubeisland.cubeengine.core.util.Triplet;
+import de.cubeisland.cubeengine.roles.Roles;
+import de.cubeisland.cubeengine.roles.RolesConfig;
+import de.cubeisland.cubeengine.roles.config.RoleMirror;
+import de.cubeisland.cubeengine.roles.role.ConfigRole;
+
+import gnu.trove.map.hash.TLongObjectHashMap;
 
 import static de.cubeisland.cubeengine.core.logger.LogLevel.DEBUG;
 
 public class WorldRoleProvider extends RoleProvider
 {
     private RoleMirror mirrorConfig;
-    private Set<Role> defaultRoles = new HashSet<Role>();
+    private Set<ConfigRole> defaultRoles = new HashSet<ConfigRole>();
 
     public WorldRoleProvider(Roles module, RoleMirror mirrorConfig)
     {
@@ -67,7 +64,7 @@ public class WorldRoleProvider extends RoleProvider
         return this.mirrorConfig.getWorlds();
     }
 
-    public Set<Role> getDefaultRoles()
+    public Set<ConfigRole> getDefaultRoles()
     {
         return this.defaultRoles;
     }
@@ -82,7 +79,7 @@ public class WorldRoleProvider extends RoleProvider
         }
         for (String roleName : dRoles)
         {
-            Role role = this.roles.get(roleName.toLowerCase(Locale.ENGLISH));
+            ConfigRole role = this.roles.get(roleName.toLowerCase(Locale.ENGLISH));
             if (role == null)
             {
                 module.getLog().log(LogLevel.WARNING, "Could not find default-role " + roleName);
@@ -112,7 +109,7 @@ public class WorldRoleProvider extends RoleProvider
         return this.mirrorConfig.mainWorld;
     }
 
-    public boolean toggleDefaultRole(Role role)
+    public boolean toggleDefaultRole(ConfigRole role)
     {
         if (this.defaultRoles.contains(role))
         {

@@ -17,20 +17,20 @@
  */
 package de.cubeisland.cubeengine.roles.commands;
 
+import java.util.Set;
+
+import org.bukkit.World;
+
 import de.cubeisland.cubeengine.core.command.CommandContext;
-import de.cubeisland.cubeengine.core.command.reflected.Alias;
-import de.cubeisland.cubeengine.core.command.parameterized.ParameterizedContext;
-import de.cubeisland.cubeengine.core.command.reflected.Command;
 import de.cubeisland.cubeengine.core.command.parameterized.Param;
-import de.cubeisland.cubeengine.core.logger.LogLevel;
+import de.cubeisland.cubeengine.core.command.parameterized.ParameterizedContext;
+import de.cubeisland.cubeengine.core.command.reflected.Alias;
+import de.cubeisland.cubeengine.core.command.reflected.Command;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.roles.Roles;
 import de.cubeisland.cubeengine.roles.role.ConfigRole;
 import de.cubeisland.cubeengine.roles.role.Role;
 import de.cubeisland.cubeengine.roles.role.UserSpecificRole;
-import org.bukkit.World;
-
-import java.util.Set;
 
 public class UserManagementCommands extends UserCommandHelper
 {
@@ -92,7 +92,7 @@ public class UserManagementCommands extends UserCommandHelper
         Role role = this.manager.getRoleInWorld(worldId,context.getString(1));
         if (role == null)
         {
-            context.sendTranslated("&eCould not find the role &6%s &ein &6%s&e.", context.getString(0), world.getName());
+            context.sendTranslated("&eCould not find the role &6%s &ein &6%s&e.", context.getString(1), world.getName());
             return;
         }
         if (role instanceof ConfigRole)
@@ -124,7 +124,7 @@ public class UserManagementCommands extends UserCommandHelper
         User user = this.getUser(context, 0);
         World world = this.getWorld(context);
         long worldId = this.getModule().getCore().getWorldManager().getWorldId(world);
-        Set<Role> newRoles = this.manager.clearRoles(user, worldId);
+        Set<ConfigRole> newRoles = this.manager.clearRoles(user, worldId);
         context.sendTranslated("&eCleared the roles of &2%s &ein &6%s&e.", user.getName(), world.getName());
         if (!newRoles.isEmpty())
         {

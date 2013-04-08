@@ -17,13 +17,19 @@
  */
 package de.cubeisland.cubeengine.roles.role;
 
-import de.cubeisland.cubeengine.roles.config.PermissionTree;
-import de.cubeisland.cubeengine.roles.config.Priority;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
+import java.util.TreeSet;
+
 import org.bukkit.Bukkit;
 import org.bukkit.permissions.Permission;
 
-import java.util.*;
-import java.util.Map.Entry;
+import de.cubeisland.cubeengine.roles.config.PermissionTree;
+import de.cubeisland.cubeengine.roles.config.Priority;
 
 public abstract class Role implements Comparable<Role>
 {
@@ -31,8 +37,8 @@ public abstract class Role implements Comparable<Role>
     protected Priority priority;
     protected Map<String, RolePermission> perms;
     protected Map<String, Boolean> litaralPerms;
-    protected TreeSet<Role> parentRoles;
-    protected Set<Role> childRoles = new HashSet<Role>();
+    protected TreeSet<ConfigRole> parentRoles;
+    protected Set<ConfigRole> childRoles = new HashSet<ConfigRole>();
     protected Map<String, RoleMetaData> metaData;
     protected boolean isGlobal;
     private boolean dirty;
@@ -41,11 +47,11 @@ public abstract class Role implements Comparable<Role>
     {
         this.perms = new HashMap<String, RolePermission>();
         this.metaData = new HashMap<String, RoleMetaData>();
-        this.parentRoles = new TreeSet<Role>();
+        this.parentRoles = new TreeSet<ConfigRole>();
         this.litaralPerms = new HashMap<String, Boolean>();
     }
 
-    public Role(String name, Priority priority, PermissionTree permTree, TreeSet<Role> parentRoles, Map<String, String> metaData, boolean isGlobal)
+    public Role(String name, Priority priority, PermissionTree permTree, TreeSet<ConfigRole> parentRoles, Map<String, String> metaData, boolean isGlobal)
     {
         this.name = name;
         this.priority = priority;
@@ -76,7 +82,7 @@ public abstract class Role implements Comparable<Role>
         }
         if (parentRoles == null)
         {
-            this.parentRoles = new TreeSet<Role>();
+            this.parentRoles = new TreeSet<ConfigRole>();
         }
         else
         {
@@ -94,7 +100,7 @@ public abstract class Role implements Comparable<Role>
         return priority;
     }
 
-    public Set<Role> getParentRoles()
+    public Set<ConfigRole> getParentRoles()
     {
         return parentRoles;
     }
@@ -114,7 +120,7 @@ public abstract class Role implements Comparable<Role>
         return isGlobal;
     }
 
-    public void setParentRoles(TreeSet<Role> parentRoles)
+    public void setParentRoles(TreeSet<ConfigRole> parentRoles)
     {
         this.parentRoles = parentRoles;
     }
@@ -123,7 +129,7 @@ public abstract class Role implements Comparable<Role>
     {
         if (this.parentRoles == null)
         {
-            this.parentRoles = new TreeSet<Role>();
+            this.parentRoles = new TreeSet<ConfigRole>();
         }
         // Inherit missing permissions:
         Map<String, RolePermission> parentPerms = parent.getPerms();
@@ -148,7 +154,7 @@ public abstract class Role implements Comparable<Role>
         }
         else
         {
-            this.parentRoles.add(parent);
+            this.parentRoles.add((ConfigRole)parent);
         }
     }
 
@@ -273,7 +279,7 @@ public abstract class Role implements Comparable<Role>
         this.dirty = true;
     }
 
-    public Set<Role> getChildRoles()
+    public Set<ConfigRole> getChildRoles()
     {
         return childRoles;
     }
@@ -294,7 +300,7 @@ public abstract class Role implements Comparable<Role>
 
     public abstract void rename(String newName);
 
-    public void setChildRoles(Set<Role> childRoles)
+    public void setChildRoles(Set<ConfigRole> childRoles)
     {
         this.childRoles = childRoles;
     }

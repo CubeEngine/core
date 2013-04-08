@@ -17,19 +17,21 @@
  */
 package de.cubeisland.cubeengine.roles.role;
 
-import de.cubeisland.cubeengine.roles.config.Priority;
-import gnu.trove.map.hash.THashMap;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import de.cubeisland.cubeengine.roles.config.Priority;
+
+import gnu.trove.map.hash.THashMap;
+
 public class MergedRole extends Role
 {
-    private Collection<Role> mergedWith;
+    private Collection<ConfigRole> mergedWith;
 
-    public MergedRole(Collection<Role> roleToMerge)
+    public MergedRole(Collection<ConfigRole> roleToMerge)
     {
         if (roleToMerge != null && !roleToMerge.isEmpty())
         {
@@ -72,7 +74,7 @@ public class MergedRole extends Role
         }
         else
         {
-            mergedWith = new ArrayList<Role>();
+            mergedWith = new ArrayList<ConfigRole>();
         }
     }
 
@@ -111,7 +113,7 @@ public class MergedRole extends Role
         }
     }
 
-    public Collection<Role> getMergedWith()
+    public Collection<ConfigRole> getMergedWith()
     {
         return mergedWith;
     }

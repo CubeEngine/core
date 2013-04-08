@@ -35,6 +35,7 @@ import de.cubeisland.cubeengine.roles.config.RoleMirror;
 import de.cubeisland.cubeengine.roles.provider.GlobalRoleProvider;
 import de.cubeisland.cubeengine.roles.provider.RoleProvider;
 import de.cubeisland.cubeengine.roles.provider.WorldRoleProvider;
+import de.cubeisland.cubeengine.roles.role.ConfigRole;
 import de.cubeisland.cubeengine.roles.role.MergedRole;
 import de.cubeisland.cubeengine.roles.role.Role;
 import de.cubeisland.cubeengine.roles.role.UserSpecificRole;
@@ -243,7 +244,7 @@ public class RoleManager
             this.module.getLog().log(LogLevel.DEBUG,"RoleContainer of "+user.getName()+ " already calculated!");
             return; // Roles are calculated!
         }
-        TLongObjectHashMap<Set<Role>> userRolesPerWorld = this.getRolesFor(user, reload);
+        TLongObjectHashMap<Set<ConfigRole>> userRolesPerWorld = this.getRolesFor(user, reload);
         TLongObjectHashMap<UserSpecificRole> roleContainer = new TLongObjectHashMap<UserSpecificRole>();
         TLongObjectHashMap<THashMap<String, Boolean>> userSpecificPerms = this.module.getDbUserPerm().getForUser(user.key);
         TLongObjectHashMap<THashMap<String, String>> userSpecificMeta = this.module.getDbUserMeta().getForUser(user.key);
@@ -258,9 +259,9 @@ public class RoleManager
         this.getRolesAttachment(user).setRoleContainer(roleContainer);
     }
 
-    public TLongObjectHashMap<Set<Role>> getRolesFor(User user, boolean reload)
+    public TLongObjectHashMap<Set<ConfigRole>> getRolesFor(User user, boolean reload)
     {
-        TLongObjectHashMap<Set<Role>> result = new TLongObjectHashMap<Set<Role>>();
+        TLongObjectHashMap<Set<ConfigRole>> result = new TLongObjectHashMap<Set<ConfigRole>>();
         TLongObjectHashMap<List<String>> rolesFromDb;
         if (reload)
         {
@@ -276,7 +277,7 @@ public class RoleManager
             System.out.print("RoleProvider "+ provider.getMainWorld());//TODO remove
             long mainWorldID = worldManager.getWorldId(provider.getMainWorld());
             List<String> rolesInCurrentWorld = rolesFromDb.get(mainWorldID);
-            Set<Role> roleList = new THashSet<Role>();
+            Set<ConfigRole> roleList = new THashSet<ConfigRole>();
             if (rolesInCurrentWorld == null || rolesInCurrentWorld.isEmpty())
             {
                 roleList = provider.getDefaultRoles();
@@ -308,7 +309,7 @@ public class RoleManager
                     }
                     else  // take roles from other provider | user mirror
                     {
-                        roleList = new THashSet<Role>();
+                        roleList = new THashSet<ConfigRole>();
                         rolesInCurrentWorld = rolesFromDb.get(worldID);
                         WorldRoleProvider otherWorldProvider = this.getProvider(worldID);
                         if (rolesInCurrentWorld == null || rolesInCurrentWorld.isEmpty())
@@ -324,7 +325,7 @@ public class RoleManager
                             System.out.print(worldID+": "+ StringUtils.implode(",", rolesInCurrentWorld));//TODO remove
                         }
                     }
-                    Set<Role> replaced = result.put(worldID,roleList);
+                    Set<ConfigRole> replaced = result.put(worldID,roleList);
                     if (replaced != null)
                     {
                         System.out.print(worldID + " replaced!!! This should not happen unless mirrored multiple times");//TODO remove
@@ -339,7 +340,7 @@ public class RoleManager
         return result;
     }
 
-    private UserSpecificRole preCalculateRole(User user, Set<Role> roles, long worldId, THashMap<String, Boolean> userPerms, THashMap<String, String> userMeta)
+    private UserSpecificRole preCalculateRole(User user, Set<ConfigRole> roles, long worldId, THashMap<String, Boolean> userPerms, THashMap<String, String> userMeta)
     {
         // UserSpecific Settings:
         UserSpecificRole userSpecificRole = new UserSpecificRole(this.module, user, worldId, userPerms, userMeta);
@@ -376,7 +377,7 @@ public class RoleManager
         UserSpecificRole role = roleContainer.get(worldId);
         if (role.getParentRoles().isEmpty())
         {
-            Set<Role> roles = this.getProvider(worldId).getDefaultRoles();
+            Set<ConfigRole> roles = this.getProvider(worldId).getDefaultRoles();
             this.addRoles(user, player, worldId, roles.toArray(new Role[roles.size()]));
             return;
         }
@@ -459,10 +460,10 @@ public class RoleManager
         return true;
     }
 
-    public Set<Role> clearRoles(User user, long worldId)
+    public Set<ConfigRole> clearRoles(User user, long worldId)
     {
         this.module.getDbManager().clear(user.key, worldId);
-        Set<Role> result = this.providers.get(worldId).getDefaultRoles();
+        Set<ConfigRole> result = this.providers.get(worldId).getDefaultRoles();
 
         this.addRoles(user, user.getPlayer(), worldId, result.toArray(new Role[result.size()]));
         this.getRolesAttachment(user).removeRoleContainer();
@@ -470,7 +471,7 @@ public class RoleManager
         return result;
     }
 
-    public THashMap<String, Role> getGlobalRoles()
+    public THashMap<String, ConfigRole> getGlobalRoles()
     {
         return this.globalProvider.getRoles();
     }
@@ -527,6 +528,15 @@ public class RoleManager
             {
                 this.applyRole(user.getPlayer());
             }
+        }
+    }
+
+    public void recalculateAllDirtyRoles()
+    {
+        this.globalProvider.recalculateDirtyRoles(null);
+        for (WorldRoleProvider provider : getProviders())
+        {
+            provider.recalculateDirtyRoles(this.getGlobalRoles());
         }
     }
 }

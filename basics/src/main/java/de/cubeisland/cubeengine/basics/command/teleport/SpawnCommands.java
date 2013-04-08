@@ -99,7 +99,7 @@ public class SpawnCommands
             z = loc.getBlockZ();
         }
         world.setSpawnLocation(x, y, z);
-        context.sendTranslated("&aSpawn was in world %s set to &eX:&6%d &eY:&6%d &eZ:&6%d", world.getName(), x, y, z);
+        context.sendTranslated("&aThe spawn in &6%s&a is now set to &eX:&6%d &eY:&6%d &eZ:&6%d", world.getName(), x, y, z);
     }
 
     @Command(desc = "Teleport directly to the worlds spawn.", usage = "[player] [world <world>]", max = 2, params = @Param(names = {
@@ -185,9 +185,7 @@ public class SpawnCommands
         final Location userLocation = user.getLocation();
         spawnLocation.setPitch(userLocation.getPitch());
         spawnLocation.setYaw(userLocation.getYaw());
-        SpawnCommandEvent event = new SpawnCommandEvent(this.basics, user, spawnLocation);
-        this.basics.getCore().getEventManager().fireEvent(event); // catch this event to change spawn location
-        TeleportCommands.teleport(user, event.getLoc(), true, force, true);
+        TeleportCommands.teleport(user, spawnLocation, true, force, true);
     }
 
     @Command(desc = "Teleports you to the spawn of given world", usage = "<world>", min = 1, max = 1)

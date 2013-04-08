@@ -289,14 +289,16 @@ public class CubeCommandMap extends SimpleCommandMap
             }
             else if (oldCommand instanceof CubeCommand)
             {
-                label = fallback = fallbackPrefix.toLowerCase(Locale.ENGLISH) + ":" + label;
-                command.setLabel(label);
+                fallback = ((CubeCommand)oldCommand).getModule().getId() + ":" + label;
+                oldCommand.setLabel(fallback);
             }
 
-            if (fallback.equals(label))
+            if (fallback != label)
             {
                 this.knownCommands.remove(label);
+                oldCommand.unregister(this);
                 this.knownCommands.put(fallback, oldCommand);
+                oldCommand.register(this);
             }
         }
 

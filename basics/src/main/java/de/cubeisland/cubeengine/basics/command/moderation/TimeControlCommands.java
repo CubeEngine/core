@@ -358,7 +358,7 @@ public class TimeControlCommands
             user = context.getUser(1);
             if (user == null)
             {
-                context.sendTranslated("&cUser &2%s &cnot found!", context.getUser(0));
+                context.sendTranslated("&cUser &2%s &cnot found!", context.getString(1));
                 return;
             }
             if (!BasicsPerm.COMMAND_PTIME_OTHER.

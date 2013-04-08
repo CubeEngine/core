@@ -17,20 +17,21 @@
  */
 package de.cubeisland.cubeengine.roles.commands;
 
+import org.bukkit.World;
+
 import de.cubeisland.cubeengine.core.command.CommandContext;
+import de.cubeisland.cubeengine.core.command.CommandSender;
 import de.cubeisland.cubeengine.core.command.ContainerCommand;
 import de.cubeisland.cubeengine.core.command.exception.IncorrectUsageException;
 import de.cubeisland.cubeengine.core.command.exception.MissingParameterException;
 import de.cubeisland.cubeengine.core.command.parameterized.ParameterizedContext;
-import de.cubeisland.cubeengine.core.command.CommandSender;
 import de.cubeisland.cubeengine.core.storage.world.WorldManager;
 import de.cubeisland.cubeengine.core.user.User;
+import de.cubeisland.cubeengine.roles.RoleManager;
 import de.cubeisland.cubeengine.roles.Roles;
 import de.cubeisland.cubeengine.roles.RolesAttachment;
-import de.cubeisland.cubeengine.roles.role.Role;
-import de.cubeisland.cubeengine.roles.RoleManager;
 import de.cubeisland.cubeengine.roles.provider.RoleProvider;
-import org.bukkit.World;
+import de.cubeisland.cubeengine.roles.role.ConfigRole;
 
 public abstract class RoleCommandHelper extends ContainerCommand
 {
@@ -57,13 +58,14 @@ public abstract class RoleCommandHelper extends ContainerCommand
             {
                 User user = (User)sender;
                 user.get(RolesAttachment.class).getRoleContainer();
-                world = this.worldManager.getWorld(user.get(RolesAttachment.class).getCurrentWorldId());
-                if (world == null)
+                Long worldId = user.get(RolesAttachment.class).getCurrentWorldId();
+                if (worldId == null)
                 {
                     world = user.getWorld();
                 }
                 else
                 {
+                    world = this.worldManager.getWorld(worldId);
                     context.sendTranslated("&eYou are using &6%s &eas current world.", world.getName());
                 }
             }
@@ -90,9 +92,9 @@ public abstract class RoleCommandHelper extends ContainerCommand
         return world;
     }
 
-    protected Role getRole(CommandContext context, RoleProvider provider, String name, World world)
+    protected ConfigRole getRole(CommandContext context, RoleProvider provider, String name, World world)
     {
-        Role role = provider.getRole(name);
+        ConfigRole role = provider.getRole(name);
         if (role == null)
         {
             if (world == null)

@@ -17,20 +17,22 @@
  */
 package de.cubeisland.cubeengine.roles.commands;
 
-import de.cubeisland.cubeengine.core.command.reflected.Alias;
+import java.util.Collection;
+import java.util.Map;
+
+import org.bukkit.World;
+
 import de.cubeisland.cubeengine.core.command.parameterized.Param;
 import de.cubeisland.cubeengine.core.command.parameterized.ParameterizedContext;
+import de.cubeisland.cubeengine.core.command.reflected.Alias;
 import de.cubeisland.cubeengine.core.command.reflected.Command;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.roles.Roles;
+import de.cubeisland.cubeengine.roles.role.ConfigRole;
 import de.cubeisland.cubeengine.roles.role.Role;
 import de.cubeisland.cubeengine.roles.role.RoleMetaData;
 import de.cubeisland.cubeengine.roles.role.RolePermission;
 import de.cubeisland.cubeengine.roles.role.UserSpecificRole;
-import org.bukkit.World;
-
-import java.util.Collection;
-import java.util.Map;
 
 public class UserInformationCommands extends UserCommandHelper
 {
@@ -47,7 +49,7 @@ public class UserInformationCommands extends UserCommandHelper
         World world = this.getWorld(context);
         Role role = this.getUserRole(user, world);
         // List all assigned roles
-        Collection<Role> roles = role.getParentRoles();
+        Collection<ConfigRole> roles = role.getParentRoles();
         context.sendTranslated("&eRoles of &2%s&e in &6%s&e:", user.getName(), world.getName());
         for (Role pRole : roles)
         {

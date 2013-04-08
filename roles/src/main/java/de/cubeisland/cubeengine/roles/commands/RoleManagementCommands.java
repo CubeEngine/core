@@ -27,6 +27,7 @@ import de.cubeisland.cubeengine.core.util.convert.Convert;
 import de.cubeisland.cubeengine.core.util.convert.Converter;
 import de.cubeisland.cubeengine.roles.Roles;
 import de.cubeisland.cubeengine.roles.exception.CircularRoleDepedencyException;
+import de.cubeisland.cubeengine.roles.role.ConfigRole;
 import de.cubeisland.cubeengine.roles.role.Role;
 import de.cubeisland.cubeengine.roles.provider.RoleProvider;
 import de.cubeisland.cubeengine.roles.provider.WorldRoleProvider;
@@ -449,7 +450,7 @@ public class RoleManagementCommands extends RoleCommandHelper
         String roleName = context.getString(0);
         World world = this.getWorld(context);
         WorldRoleProvider provider = this.manager.getProvider(world);
-        Role role = this.getRole(context, provider, roleName, world);
+        ConfigRole role = this.getRole(context, provider, roleName, world);
         if (provider.toggleDefaultRole(role))
         {
             context.sendTranslated("&6%s &ais now a default-role in &6%s&a!", role.getName(), world.getName());

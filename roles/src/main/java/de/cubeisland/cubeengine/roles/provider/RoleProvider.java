@@ -45,7 +45,7 @@ import static de.cubeisland.cubeengine.core.logger.LogLevel.DEBUG;
 public abstract class RoleProvider
 {
     protected THashMap<String, RoleConfig> configs = new THashMap<String, RoleConfig>();
-    protected THashMap<String, Role> roles = new THashMap<String, Role>();
+    protected THashMap<String, ConfigRole> roles = new THashMap<String, ConfigRole>();
     protected boolean init = false;
     protected boolean rolesCalculated = false;
     protected File folder = null;
@@ -72,12 +72,12 @@ public abstract class RoleProvider
         this.configs.put(config.roleName.toLowerCase(Locale.ENGLISH), config);
     }
 
-    public void setRole(Role role)
+    public void setRole(ConfigRole role)
     {
         this.roles.put(role.getName().toLowerCase(Locale.ENGLISH), role);
     }
 
-    public Role getRole(String roleName)
+    public ConfigRole getRole(String roleName)
     {
         Validate.notNull(this.roles, "The RoleName cannot be null!");
         if (roleName.startsWith("g:"))
@@ -125,7 +125,7 @@ public abstract class RoleProvider
         this.calculateRoles(true);
     }
 
-    public void recalculateDirtyRoles(THashMap<String, Role> globalRoles)
+    public void recalculateDirtyRoles(THashMap<String, ConfigRole> globalRoles)
     {
         Set<Role> dirtyChilds = new HashSet<Role>();
         for (Role role : this.roles.values())
@@ -146,7 +146,7 @@ public abstract class RoleProvider
         }
     }
 
-    private void recalculateDirtyRoles(Set<Role> dirtyRoles, THashMap<String, Role> globalRoles)
+    private void recalculateDirtyRoles(Set<Role> dirtyRoles, THashMap<String, ConfigRole> globalRoles)
     {
         Set<Role> dirtyChilds = new HashSet<Role>();
         for (Role role : dirtyRoles)
@@ -154,6 +154,13 @@ public abstract class RoleProvider
             String roleName = role.getName().toLowerCase(Locale.ENGLISH);
             this.roles.remove(roleName);
             this.roles.put(roleName, this.calculateRole(this.configs.get(roleName), globalRoles));
+            if (this instanceof WorldRoleProvider)
+            {
+                if (((WorldRoleProvider)this).getDefaultRoles().remove(role)) // replace old DefaultRole
+                {
+                    ((WorldRoleProvider)this).getDefaultRoles().add(this.roles.get(roleName));
+                }
+            }
             for (Role childRole : role.getChildRoles())
             {
                 dirtyChilds.add(childRole);
@@ -167,7 +174,7 @@ public abstract class RoleProvider
 
     public boolean calculateRoles(boolean recalculate)
     {
-        THashMap<String, Role> globalRoles = this.module.getRoleManager().getGlobalRoles();
+        THashMap<String, ConfigRole> globalRoles = this.module.getRoleManager().getGlobalRoles();
         if (this.rolesCalculated && !recalculate)
         {
             return false;
@@ -175,7 +182,7 @@ public abstract class RoleProvider
         this.rolesCalculated = true;
         for (RoleConfig config : this.configs.values())
         {
-            Role role = this.calculateRole(config, globalRoles);
+            ConfigRole role = this.calculateRole(config, globalRoles);
             if (role == null)
             {
                 this.module.getLog().log(LogLevel.WARNING, config.roleName + " could not be calculated!");
@@ -186,11 +193,11 @@ public abstract class RoleProvider
         return true;
     }
 
-    public Role calculateRole(RoleConfig config, THashMap<String, Role> globalRoles)
+    public ConfigRole calculateRole(RoleConfig config, THashMap<String, ConfigRole> globalRoles)
     {
         try
         {
-            Role role = this.getRole(config.roleName);
+            ConfigRole role = this.getRole(config.roleName);
             if (role != null)
             {
                 return role;
@@ -221,7 +228,7 @@ public abstract class RoleProvider
                     {
                         throw new RoleDependencyMissingException("ParentRole missing for \"" + config.roleName + "\"\nUnkown role: " + parentName);
                     }
-                    Role parentRole = this.calculateRole(parentConfig, globalRoles); // calculate parent-role
+                    ConfigRole parentRole = this.calculateRole(parentConfig, globalRoles); // calculate parent-role
                     if (parentRole != null)
                     {
                         this.roles.put(parentRole.getName().toLowerCase(Locale.ENGLISH), parentRole);
@@ -233,10 +240,10 @@ public abstract class RoleProvider
                 }
             }
             // now all parent roles should be loaded
-            TreeSet<Role> parentRoles = new TreeSet<Role>();
+            TreeSet<ConfigRole> parentRoles = new TreeSet<ConfigRole>();
             for (String parentName : config.parents)
             {
-                Role parentRole;
+                ConfigRole parentRole;
                 parentName = parentName.toLowerCase(Locale.ENGLISH);
                 if (parentName.startsWith("g:"))
                 {
@@ -266,7 +273,7 @@ public abstract class RoleProvider
         }
     }
 
-    public THashMap<String, Role> getRoles()
+    public THashMap<String, ConfigRole> getRoles()
     {
         return this.roles;
     }
@@ -358,7 +365,7 @@ public abstract class RoleProvider
         this.roles.remove(role.getName());
         // Set new role
         this.configs.put(newName.toLowerCase(Locale.ENGLISH), config);
-        Role newRole = this.calculateRole(config, this.module.getRoleManager().getGlobalRoles());
+        ConfigRole newRole = this.calculateRole(config, this.module.getRoleManager().getGlobalRoles());
         newRole.setChildRoles(role.getChildRoles());
         this.roles.put(newName, newRole);
         if (this instanceof WorldRoleProvider)

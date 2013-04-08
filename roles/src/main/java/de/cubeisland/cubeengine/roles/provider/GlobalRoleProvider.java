@@ -17,11 +17,11 @@
  */
 package de.cubeisland.cubeengine.roles.provider;
 
-import de.cubeisland.cubeengine.roles.Roles;
-import de.cubeisland.cubeengine.roles.role.Role;
-
 import java.io.File;
 import java.util.Locale;
+
+import de.cubeisland.cubeengine.roles.Roles;
+import de.cubeisland.cubeengine.roles.role.ConfigRole;
 
 import static de.cubeisland.cubeengine.core.logger.LogLevel.DEBUG;
 
@@ -56,7 +56,7 @@ public class GlobalRoleProvider extends RoleProvider
     }
 
     @Override
-    public Role getRole(String roleName)
+    public ConfigRole getRole(String roleName)
     {
         if (roleName == null)
         {

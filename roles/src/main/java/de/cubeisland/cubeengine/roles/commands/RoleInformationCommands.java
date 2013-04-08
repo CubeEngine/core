@@ -305,7 +305,7 @@ public class RoleInformationCommands extends RoleCommandHelper
     {
         World world = this.getWorld(context);
         WorldRoleProvider provider = this.manager.getProvider(world);
-        Set<Role> defaultRoles = provider.getDefaultRoles();
+        Set<ConfigRole> defaultRoles = provider.getDefaultRoles();
         if (defaultRoles.isEmpty())
         {
             context.sendTranslated("&cThere are no default roles set for &6%s&c!", world.getName());

@@ -17,12 +17,17 @@
  */
 package de.cubeisland.cubeengine.roles;
 
+import org.bukkit.World;
+import org.bukkit.entity.Player;
+
 import de.cubeisland.cubeengine.core.storage.world.WorldManager;
 import de.cubeisland.cubeengine.core.user.User;
+import de.cubeisland.cubeengine.roles.provider.WorldRoleProvider;
+import de.cubeisland.cubeengine.roles.role.ConfigRole;
 import de.cubeisland.cubeengine.roles.role.RoleMetaData;
 import de.cubeisland.cubeengine.roles.role.UserSpecificRole;
+
 import gnu.trove.map.hash.TLongObjectHashMap;
-import org.bukkit.World;
 
 public class RolesAPI
 {
@@ -34,15 +39,16 @@ public class RolesAPI
     {
         this.module = module;
         this.worldManager = module.getCore().getWorldManager();
-
+        this.manager = module.getRoleManager();
     }
 
-    public String getMetaData(User user, World world, String metaKey)
+    public String getMetaData(Player player, World world, String metaKey)
     {
-        if (user == null || world == null || metaKey == null)
+        if (player == null || world == null || metaKey == null)
         {
             return null;
         }
+        User user = this.module.getCore().getUserManager().getExactUser(player);
         TLongObjectHashMap<UserSpecificRole> roleContainer = user.get(RolesAttachment.class).getRoleContainer();
         if (roleContainer == null)
         {
@@ -63,5 +69,17 @@ public class RolesAPI
             return null;
         }
         return data.getValue();
+    }
+
+    public ConfigRole getRole(World world, String name)
+    {
+        WorldRoleProvider provider = this.manager.getProvider(world);
+        return provider.getRole(name);
+    }
+
+    public void recalculateDiryRoles()
+    {
+        this.manager.recalculateAllDirtyRoles();
+
     }
 }
