@@ -32,6 +32,7 @@ import de.cubeisland.cubeengine.core.Core;
 import de.cubeisland.cubeengine.core.CorePerms;
 import de.cubeisland.cubeengine.core.CoreResource;
 import de.cubeisland.cubeengine.core.CubeEngine;
+import de.cubeisland.cubeengine.core.bukkit.metrics.MetricsInitializer;
 import de.cubeisland.cubeengine.core.bukkit.packethook.PacketEventManager;
 import de.cubeisland.cubeengine.core.bukkit.packethook.PacketReceivedEvent;
 import de.cubeisland.cubeengine.core.bukkit.packethook.PacketReceivedListener;
@@ -237,8 +238,12 @@ public final class BukkitCore extends JavaPlugin implements Core
                 // depends on loaded worlds
                 worldManager = new WorldManager(BukkitCore.this);
 
+                MetricsInitializer metricsInit = new MetricsInitializer(BukkitCore.this);
+
                 // depends on: file manager
                 moduleManager.loadModules(fileManager.getModulesDir());
+
+                metricsInit.start();
 
                 // depends on: finished loading modules
                 userManager.clean();

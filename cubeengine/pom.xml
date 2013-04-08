@@ -12,6 +12,7 @@
 
   <properties>
     <projectBase>${project.parent.basedir}</projectBase>
+    <externalPackage>${project.parent.groupId}.${project.artifactId}.external</externalPackage>
   </properties>
 
   <dependencies>
@@ -97,6 +98,11 @@
       <type>jar</type>
       <scope>provided</scope>
     </dependency>
+    <dependency>
+      <groupId>org.mcstats.bukkit</groupId>
+      <artifactId>metrics</artifactId>
+      <version>R6</version>
+    </dependency>
   </dependencies>
 
   <build>
@@ -139,6 +145,7 @@
                   <include>io.netty:*</include>
                   <include>org.yaml:snakeyaml</include>
                   <include>org.fusesource.jansi:jansi</include>
+                  <include>org.mcstats.bukkit:metrics</include>
                 </includes>
               </artifactSet>
               <filters>
@@ -155,27 +162,31 @@
               <relocations>
                 <!--<relocation>
                   <pattern>gnu.trove</pattern>
-                  <shadedPattern>${project.parent.groupId}.${project.artifactId}.external.gnu.trove</shadedPattern>
+                  <shadedPattern>${externalPackage}.trove</shadedPattern>
                 </relocation>
                 <relocation>
                   <pattern>com.fasterxml</pattern>
-                  <shadedPattern>${project.parent.groupId}.${project.artifactId}.external.com.fasterxml</shadedPattern>
+                  <shadedPattern>${externalPackage}.jackson</shadedPattern>
                 </relocation>
                 <relocation>
                   <pattern>org.apache.commons</pattern>
-                  <shadedPattern>${project.parent.groupId}.${project.artifactId}.external.org.apache.commons</shadedPattern>
+                  <shadedPattern>${externalPackage}.apachecommons</shadedPattern>
                 </relocation>-->
                 <relocation>
                   <pattern>io.netty</pattern>
-                  <shadedPattern>${project.parent.groupId}.${project.artifactId}.external.io.netty</shadedPattern>
+                  <shadedPattern>${externalPackage}.netty</shadedPattern>
                 </relocation>
                 <relocation>
                   <pattern>org.yaml.snakeyaml</pattern>
-                  <shadedPattern>${project.parent.groupId}.${project.artifactId}.external.org.yaml.org</shadedPattern>
+                  <shadedPattern>${externalPackage}.snakeyaml</shadedPattern>
                 </relocation>
                 <relocation>
                   <pattern>org.fusesource</pattern>
-                  <shadedPattern>${project.parent.groupId}.${project.artifactId}.external.org.fusesource</shadedPattern>
+                  <shadedPattern>${externalPackage}.jansi</shadedPattern>
+                </relocation>
+                <relocation>
+                  <pattern>org.mcstats.metrics</pattern>
+                  <shadedPattern>${externalPackage}.metrics</shadedPattern>
                 </relocation>
               </relocations>
               <keepDependenciesWithProvidedScope>true</keepDependenciesWithProvidedScope>
