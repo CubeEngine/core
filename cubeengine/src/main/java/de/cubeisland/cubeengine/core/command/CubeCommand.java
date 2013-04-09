@@ -161,7 +161,7 @@ public abstract class CubeCommand extends Command
 
     public void updateGeneratedPermission()
     {
-        if (this.generatePermission)
+        if (this.isGeneratePermission())
         {
             PermDefault def = null;
             String node = this.getPermission();
@@ -434,6 +434,10 @@ public abstract class CubeCommand extends Command
     {
         try
         {
+            if (!this.testPermissionSilent(sender))
+            {
+                throw new PermissionDeniedException();
+            }
             labels.push(label);
             if (args.length > 0)
             {
@@ -447,10 +451,6 @@ public abstract class CubeCommand extends Command
                 {
                     return child.execute(sender, Arrays.copyOfRange(args, 1, args.length), args[0], labels);
                 }
-            }
-            if (!this.testPermissionSilent(sender))
-            {
-                throw new PermissionDeniedException();
             }
             final CommandContext ctx = this.getContextFactory().parse(this, sender, labels, args);
             CommandResult result = this.run(ctx);
