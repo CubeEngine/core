@@ -18,6 +18,7 @@
 package de.cubeisland.cubeengine.shout.announce.receiver;
 
 import de.cubeisland.cubeengine.core.user.User;
+import de.cubeisland.cubeengine.core.util.ChatFormat;
 import de.cubeisland.cubeengine.shout.announce.Announcement;
 import de.cubeisland.cubeengine.shout.announce.AnnouncementManager;
 
@@ -44,12 +45,10 @@ public class UserReceiver extends AbstractReceiver
     @Override
     public void sendMessage(String[] message)
     {
-        this.user.sendMessage(" ");
         for (String line : message)
         {
-            this.user.sendMessage(line);
+            user.sendMessage(ChatFormat.parseFormats(line));
         }
-        this.user.sendMessage(" ");
     }
 
     @Override

@@ -50,7 +50,7 @@ public class ShoutSubCommands
     }, desc = "List all announcements")
     public void list(CommandContext context)
     {
-        Iterator<Announcement> iter = this.module.getAnnouncementManager().getAnnouncements().iterator();
+        Iterator<Announcement> iter = this.module.getAnnouncementManager().getDynamicAnnouncements().iterator();
         if (iter.hasNext())
         {
             context.sendTranslated("Here is the list of announcements:");

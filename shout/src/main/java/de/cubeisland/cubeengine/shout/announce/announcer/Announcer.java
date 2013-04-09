@@ -17,8 +17,8 @@
  */
 package de.cubeisland.cubeengine.shout.announce.announcer;
 
-import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
@@ -27,18 +27,22 @@ import java.util.concurrent.TimeUnit;
 import de.cubeisland.cubeengine.core.bukkit.TaskManager;
 
 /**
- * Class to manage futures based on the system time.
+ * Class to manage dynamicTasks based on the system time.
  */
 public class Announcer
 {
+    private final TaskManager taskManager;
     private ScheduledExecutorService executor;
-    private Map<String, ScheduledFuture> futures;
+    private Map<String, ScheduledFuture> dynamicTasks;
+    private Map<String, ScheduledFuture> fixedTasks;
     public int initDelay;
 
     public Announcer(TaskManager taskManager, int initDelay)
     {
+        this.taskManager = taskManager;
         this.executor = Executors.newSingleThreadScheduledExecutor(taskManager.getThreadFactory());
-        this.futures = new HashMap<String, ScheduledFuture>();
+        this.dynamicTasks = new ConcurrentHashMap<String, ScheduledFuture>();
+        this.fixedTasks = new ConcurrentHashMap<String, ScheduledFuture>();
         this.initDelay = initDelay;
     }
 
@@ -48,9 +52,22 @@ public class Announcer
      * @param	task	 The task to schedule
      * @param	delay	 Delay between each time this task in run.
      */
-    public void scheduleTask(String receiver, Runnable task, long delay)
+    public void scheduleDynamicTask(String receiver, Runnable task, long delay)
     {
-        this.futures.put(receiver, this.executor.scheduleAtFixedRate(task, this.initDelay, delay, TimeUnit.MILLISECONDS));
+        this.dynamicTasks.put(receiver, this.executor
+            .scheduleAtFixedRate(task, this.initDelay, delay, TimeUnit.MILLISECONDS));
+    }
+
+    /**
+     * Schedule a task based on the system time.
+     *
+     * @param	task	 The task to schedule
+     * @param	delay	 Delay between each time this task in run.
+     */
+    public void scheduleFixedTask(String announcement, Runnable task, long delay)
+    {
+        this.fixedTasks.put(announcement, this.executor
+            .scheduleAtFixedRate(task, this.initDelay, delay, TimeUnit.MILLISECONDS));
     }
 
     /**
@@ -58,9 +75,23 @@ public class Announcer
      *
      * @param receiver the receiver the task should be stopped for
      */
-    public void cancel(String receiver)
+    public void cancelDynamicTask(String receiver)
     {
-        ScheduledFuture future = this.futures.remove(receiver);
+        ScheduledFuture future = this.dynamicTasks.remove(receiver);
+        if (future != null)
+        {
+            future.cancel(false);
+        }
+    }
+
+    /**
+     * Stops a receiver from receiving any more announcements
+     *
+     * @param name the receiver the task should be stopped for
+     */
+    public void cancelFixedTask(String name)
+    {
+        ScheduledFuture future = this.fixedTasks.remove(name);
         if (future != null)
         {
             future.cancel(false);
@@ -72,7 +103,14 @@ public class Announcer
      */
     public void shutdown()
     {
-        this.futures.clear();
+        for (String receiver : this.dynamicTasks.keySet())
+        {
+            this.cancelDynamicTask(receiver);
+        }
+        for (String name : this.fixedTasks.keySet())
+        {
+            this.cancelFixedTask(name);
+        }
         this.executor.shutdown();
         try
         {
@@ -81,7 +119,15 @@ public class Announcer
         }
         catch (InterruptedException ignore)
         {}
-        this.executor = null;
-        this.futures = null;
+        this.dynamicTasks = null;
+        this.fixedTasks = null;
+    }
+
+    public void restart()
+    {
+        this.shutdown();
+        this.executor = Executors.newSingleThreadScheduledExecutor(taskManager.getThreadFactory());
+        this.dynamicTasks = new ConcurrentHashMap<String, ScheduledFuture>();
+        this.fixedTasks = new ConcurrentHashMap<String, ScheduledFuture>();
     }
 }

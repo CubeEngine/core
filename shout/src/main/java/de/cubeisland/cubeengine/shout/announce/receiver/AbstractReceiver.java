@@ -51,7 +51,7 @@ public abstract class AbstractReceiver implements Receiver
         for (int x = 0; x < this.announcements.size(); x++)
         {
             Announcement announcement = this.announcements.poll();
-
+            this.announcements.add(announcement);
             if (this.canReceiver(announcement))
             {
                 return new Pair<Announcement, Integer>(announcement, (int)(announcement.getDelay() / announcementManager.getGreatestCommonDivisor(this)));

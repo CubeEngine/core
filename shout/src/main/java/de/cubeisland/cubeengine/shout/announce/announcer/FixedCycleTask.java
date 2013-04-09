@@ -17,6 +17,8 @@
  */
 package de.cubeisland.cubeengine.shout.announce.announcer;
 
+import java.util.Locale;
+import java.util.Queue;
 import java.util.concurrent.Callable;
 
 import org.bukkit.Bukkit;
@@ -25,8 +27,11 @@ import org.bukkit.entity.Player;
 
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.util.ChatFormat;
+import de.cubeisland.cubeengine.core.util.Pair;
 import de.cubeisland.cubeengine.shout.Shout;
 import de.cubeisland.cubeengine.shout.announce.Announcement;
+import de.cubeisland.cubeengine.shout.announce.MessageOfTheDay;
+import de.cubeisland.cubeengine.shout.announce.receiver.Receiver;
 
 public class FixedCycleTask implements Runnable
 {
@@ -43,36 +48,80 @@ public class FixedCycleTask implements Runnable
     @Override
     public void run()
     {
-        module.getCore().getTaskManager().callSyncMethod(new Callable(){
-            public Object call() throws Exception
+        if (announcement.getFirstWorld().equals("*"))
+        {
+            for (User user : module.getCore().getUserManager().getOnlineUsers())
             {
-                if (announcement.getFirstWorld().equals("*"))
-                {
-                    for (User user : module.getCore().getUserManager().getOnlineUsers())
-                    {
-                        for (String message : announcement.getMessage(user.getLocale()))
-                        {
-                            user.sendMessage(ChatFormat.parseFormats(message));
-                        }
-                    }
-                }
-                else
-                {
-                    for (String world : announcement.getWorlds())
-                    {
-                        for (Player player : Bukkit.getWorld(world).getPlayers())
-                        {
-                            User user = module.getCore().getUserManager().getUser(player);
-                            for (String message : announcement.getMessage(user.getLocale()))
-                            {
-                                user.sendMessage(ChatFormat.parseFormats(message));
-                            }
-
-                        }
-                    }
-                }
-                return null;
+                module.getCore().getTaskManager().callSyncMethod(
+                    new SenderTask(announcement.getMessage(user.getLocale()), new CleanReceiver(user)));
             }
-        });
+        }
+        else
+        {
+            for (String w : announcement.getWorlds())
+            {
+                World world = Bukkit.getWorld(w);
+                if (world != null)
+                {
+                    for (Player player : world.getPlayers())
+                    {
+                        User user = module.getCore().getUserManager().getUser(player);
+                        module.getCore().getTaskManager().callSyncMethod(
+                            new SenderTask(announcement.getMessage(user.getLocale()), new CleanReceiver(user)));
+                    }
+                }
+            }
+        }
+    }
+
+    private final class CleanReceiver implements Receiver
+    {
+        private final User user;
+
+        protected CleanReceiver(User user)
+        {
+            this.user = user;
+        }
+
+        @Override
+        public void sendMessage(String[] message)
+        {
+            for (String line : message)
+            {
+                user.sendMessage(ChatFormat.parseFormats(line));
+            }
+        }
+
+        @Override
+        public String getName()
+        {return null;}
+
+        @Override
+        public Pair<Announcement, Integer> getNextDelayAndAnnouncement()
+        {return null;}
+
+        @Override
+        public Queue<Announcement> getAllAnnouncements()
+        {return null;}
+
+        @Override
+        public Locale getLocale()
+        {return null;}
+
+        @Override
+        public void setAllAnnouncements(Queue<Announcement> announcements)
+        {}
+
+        @Override
+        public boolean canReceiver(Announcement announcement)
+        {return false;}
+
+        @Override
+        public boolean couldReceive(Announcement announcement)
+        {return false;}
+
+        @Override
+        public void setMOTD(MessageOfTheDay motd)
+        {}
     }
 }

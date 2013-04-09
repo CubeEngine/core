@@ -47,7 +47,7 @@ public class MessageTask implements Runnable
             Pair<Announcement, Integer> pair = receiver.getNextDelayAndAnnouncement();
             if (pair != null && pair.getLeft() != null && pair.getRight() != null)
             {
-                this.tm.callSyncMethod(new SenderTask(pair.getLeft().getMessage(receiver.getLocale())));
+                this.tm.callSyncMethod(new SenderTask(pair.getLeft().getMessage(receiver.getLocale()), this.receiver));
                 this.nextExecution = this.runs + pair.getRight();
             }
             else
@@ -56,22 +56,5 @@ public class MessageTask implements Runnable
             }
         }
         ++this.runs;
-    }
-
-    private final class SenderTask implements Callable<Void>
-    {
-        private final String[] message;
-
-        public SenderTask(String[] message)
-        {
-            this.message = message;
-        }
-
-        @Override
-        public Void call() throws Exception
-        {
-            receiver.sendMessage(this.message);
-            return null;
-        }
     }
 }

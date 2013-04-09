@@ -40,24 +40,6 @@ public class Shout extends Module
     @Override
     public void onEnable()
     {
-        boolean firstRun = true;
-        File file = new File(this.getFolder(), ".shout");
-        if (file.exists())
-        {
-            firstRun = false;
-        }
-        try
-        {
-            file.createNewFile();
-        }
-        catch (IOException ex)
-        {
-            if (this.getCore().isDebug())
-            {
-                this.getLog().log(LogLevel.WARNING, "There was an error creating a file!", ex);
-            }
-        }
-
         this.announcementFolder = this.getFolder();
         this.getCore().getFileManager().dropResources(ShoutResource.values());
 
@@ -65,7 +47,7 @@ public class Shout extends Module
         this.announcer = new Announcer(this.getCore().getTaskManager(), this.config.initDelay);
         this.announcementManager = new AnnouncementManager(this, this.announcementFolder);
 
-        if (firstRun)
+        if (isFirstRun())
         {
             try
             {
@@ -101,5 +83,27 @@ public class Shout extends Module
     public Announcer getAnnouncer()
     {
         return this.announcer;
+    }
+
+    private boolean isFirstRun()
+    {
+        File file = new File(this.getFolder(), ".shout");
+        if (file.exists())
+        {
+            return false;
+        }
+        try
+        {
+            file.createNewFile();
+            return true;
+        }
+        catch (IOException ex)
+        {
+            if (this.getCore().isDebug())
+            {
+                this.getLog().log(LogLevel.WARNING, "There was an error creating a file!", ex);
+            }
+            return false;
+        }
     }
 }

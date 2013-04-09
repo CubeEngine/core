@@ -62,7 +62,7 @@ import static de.cubeisland.cubeengine.core.filesystem.FileExtentionFilter.TXT;
 import static de.cubeisland.cubeengine.core.logger.LogLevel.*;
 
 /**
- * Class to manage all the announcements and their receivers
+ * Class to manage all the dynamicAnnouncements and their receivers
  */
 public class AnnouncementManager
 {
@@ -74,7 +74,7 @@ public class AnnouncementManager
     private final Announcer announcer;
     private final File announcementFolder;
     private Map<String, Receiver> receivers;
-    private Map<String, Announcement> announcements;
+    private Map<String, Announcement> dynamicAnnouncements;
     private Map<String, Announcement> fixedCycleAnnouncements;
     private final I18n i18n;
     private MessageOfTheDay motd;
@@ -86,16 +86,16 @@ public class AnnouncementManager
         this.i18n = module.getCore().getI18n();
         this.announcer = module.getAnnouncer();
         this.receivers = new ConcurrentHashMap<String, Receiver>();
-        this.announcements = new HashMap<String, Announcement>();
+        this.dynamicAnnouncements = new HashMap<String, Announcement>();
         this.fixedCycleAnnouncements = new LinkedHashMap<String, Announcement>();
         this.announcementFolder = announcementFolder;
     }
 
     /**
-     * Get all the announcements this receiver should receive.
+     * Get all the dynamicAnnouncements this receiver should receive.
      *
-     * @param    receiver    The receiver to get announcements of.
-     * @return A list of all announcements that should be displayed to this
+     * @param    receiver    The receiver to get dynamicAnnouncements of.
+     * @return A list of all dynamicAnnouncements that should be displayed to this
      *         receiver.
      */
     public List<Announcement> getAnnouncements(String receiver)
@@ -104,14 +104,14 @@ public class AnnouncementManager
     }
 
     /**
-     * Get all the announcements
+     * Get all the dynamicAnnouncements
      *
-     * @return All announcements
+     * @return All dynamicAnnouncements
      */
-    public Collection<Announcement> getAnnouncements()
+    public Collection<Announcement> getDynamicAnnouncements()
     {
         Collection<Announcement> announcements = new HashSet<Announcement>();
-        announcements.addAll(this.announcements.values());
+        announcements.addAll(this.dynamicAnnouncements.values());
         announcements.addAll(this.fixedCycleAnnouncements.values());
         return announcements;
     }
@@ -125,7 +125,7 @@ public class AnnouncementManager
     public Announcement getAnnouncement(String name)
     {
         Map<String, Announcement> announcements = new HashMap<String, Announcement>();
-        announcements.putAll(this.announcements);
+        announcements.putAll(this.dynamicAnnouncements);
         announcements.putAll(this.fixedCycleAnnouncements);
         name = name.toLowerCase(Locale.ENGLISH);
         Announcement announcement = announcements.get(name);
@@ -149,15 +149,15 @@ public class AnnouncementManager
      */
     public boolean hasAnnouncement(String name)
     {
-        return this.announcements.containsKey(name.toLowerCase(Locale.ENGLISH)) || this.fixedCycleAnnouncements.containsKey(name.toLowerCase(Locale.ENGLISH));
+        return this.dynamicAnnouncements.containsKey(name.toLowerCase(Locale.ENGLISH)) || this.fixedCycleAnnouncements.containsKey(name.toLowerCase(Locale.ENGLISH));
     }
 
     /**
-     * Get the greatest common divisor of the delays from the announcements this
+     * Get the greatest common divisor of the delays from the dynamicAnnouncements this
      * receiver should receive.
      *
-     * @param   receiver	The user to get the gcd of their announcements.
-     * @return	The gcd of the users announcements.
+     * @param   receiver	The user to get the gcd of their dynamicAnnouncements.
+     * @return	The gcd of the users dynamicAnnouncements.
      */
     public long getGreatestCommonDivisor(Receiver receiver)
     {
@@ -202,7 +202,7 @@ public class AnnouncementManager
     }
 
     /**
-     * Load the announcements of a user
+     * Load the dynamicAnnouncements of a user
      * this will create an Receiver and call initializeReceiver
      *
      * @param user the user to load
@@ -213,7 +213,7 @@ public class AnnouncementManager
     }
 
     /**
-     * initialize this receivers announcements
+     * initialize this receivers dynamicAnnouncements
      *
      * @param receiver	The receiver
      */
@@ -226,8 +226,8 @@ public class AnnouncementManager
             receiver.setMOTD(this.motd);
         }
 
-        // Load what announcements should be displayed to the user
-        for (Announcement announcement : this.announcements.values())
+        // Load what dynamicAnnouncements should be displayed to the user
+        for (Announcement announcement : this.dynamicAnnouncements.values())
         {
             if (receiver.couldReceive(announcement))
             {
@@ -241,7 +241,8 @@ public class AnnouncementManager
         receiver.setAllAnnouncements(messages);
 
         this.receivers.put(receiver.getName(), receiver);
-        this.announcer.scheduleTask(receiver.getName(), new MessageTask(this.module.getCore().getTaskManager(), receiver), this.getGreatestCommonDivisor(receiver));
+        this.announcer.scheduleDynamicTask(receiver.getName(),
+            new MessageTask(this.module.getCore().getTaskManager(), receiver), this.getGreatestCommonDivisor(receiver));
     }
 
     /**
@@ -252,7 +253,7 @@ public class AnnouncementManager
     public void clean(String receiver)
     {
         this.receivers.remove(receiver);
-        this.announcer.cancel(receiver);
+        this.announcer.cancelDynamicTask(receiver);
     }
 
     /**
@@ -266,8 +267,10 @@ public class AnnouncementManager
         }
         module.getCore().getTaskManager().cancelTasks(this.module);
 
+        this.announcer.restart();
+
         this.receivers.clear();
-        this.announcements.clear();
+        this.dynamicAnnouncements.clear();
         this.fixedCycleAnnouncements.clear();
 
         this.loadAnnouncements(this.announcementFolder);
@@ -298,26 +301,25 @@ public class AnnouncementManager
         if (announcement.hasFixedCycle())
         {
             this.fixedCycleAnnouncements.put(announcement.getName().toLowerCase(Locale.ENGLISH), announcement);
-            this.module.getCore().getTaskManager().scheduleAsyncRepeatingTask(this.module,
-                new FixedCycleTask(this.module, announcement), this.announcer.initDelay / 50, announcement.getDelay() / 50);
+            this.announcer.scheduleFixedTask(announcement.getName().toLowerCase(Locale.ENGLISH), new FixedCycleTask(this.module, announcement), announcement.getDelay());
         }
         else
         {
-            this.announcements.put(announcement.getName().toLowerCase(Locale.ENGLISH), announcement);
+            this.dynamicAnnouncements.put(announcement.getName().toLowerCase(Locale.ENGLISH), announcement);
         }
     }
 
     /**
-     * Load announcements
+     * Load dynamicAnnouncements
      *
-     * @param	announcementFolder	The folder to load the announcements from
+     * @param	announcementFolder	The folder to load the dynamicAnnouncements from
      */
     public void loadAnnouncements(File announcementFolder)
     {
         File[] files = announcementFolder.listFiles();
         if (files == null)
         {
-            this.logger.log(ERROR, "Reading the announcement folder failed! No announcements will be loaded");
+            this.logger.log(ERROR, "Reading the announcement folder failed! No dynamicAnnouncements will be loaded");
             return;
         }
 
@@ -439,7 +441,7 @@ public class AnnouncementManager
                     String content = FileUtil.readToString(new FileInputStream(langFile), Charset.forName("UTF-8"));
                     if (content != null)
                     {
-                        content = content.replace("\r\n", "\n").replace('\r', '\n');
+                        content = content.replace("\r\n", "\n").replace('\r', '\n').trim();
                         messages.put(language.getLocale(), StringUtils.explode("\n", content));
                     }
                 }
