@@ -83,7 +83,7 @@ public abstract class LogActionType extends ActionType implements Listener
             else
             {
                 loc = " &ain between &3%d&f:&3%d&f:&3%d&a and &3%d&f:&3%d&f:&3%d&a in &3%s";
-                loc = String.format(loc,xMax,yMax,zMax,logEntry.world.getName());
+                loc = String.format(loc,xMin, yMin, zMin, xMax,yMax,zMax,logEntry.world.getName());
             }
         }
         else

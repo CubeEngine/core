@@ -57,8 +57,7 @@ public abstract class RoleCommandHelper extends ContainerCommand
             if (sender instanceof User)
             {
                 User user = (User)sender;
-                user.get(RolesAttachment.class).getRoleContainer();
-                Long worldId = user.get(RolesAttachment.class).getCurrentWorldId();
+                Long worldId = user.attachOrGet(RolesAttachment.class,this.module).getCurrentWorldId();
                 if (worldId == null)
                 {
                     world = user.getWorld();
