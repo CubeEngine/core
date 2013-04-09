@@ -93,7 +93,7 @@ public class ListCommand
             context.sendTranslated("&9Players online: &a%d&f/&e%d", event.getUserStrings().size(), Bukkit.getMaxPlayers());
             for (Entry<String,List<User>> entry : event.getGrouped().entrySet())
             {
-                String group = entry.getKey();
+                String group = entry.getKey()+ChatFormat.parseFormats("&f: ");
                 List<String> displayNames = new ArrayList<String>();
                 for (User user : entry.getValue())
                 {

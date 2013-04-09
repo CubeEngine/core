@@ -21,15 +21,19 @@ import de.cubeisland.cubeengine.core.command.CommandManager;
 import de.cubeisland.cubeengine.core.module.Module;
 import de.cubeisland.cubeengine.core.storage.database.Database;
 import de.cubeisland.cubeengine.core.util.convert.Convert;
-import de.cubeisland.cubeengine.roles.commands.*;
 import de.cubeisland.cubeengine.roles.commands.ManagementCommands;
-import de.cubeisland.cubeengine.roles.role.RolesEventHandler;
+import de.cubeisland.cubeengine.roles.commands.RoleCommands;
+import de.cubeisland.cubeengine.roles.commands.RoleInformationCommands;
+import de.cubeisland.cubeengine.roles.commands.RoleManagementCommands;
+import de.cubeisland.cubeengine.roles.commands.UserInformationCommands;
+import de.cubeisland.cubeengine.roles.commands.UserManagementCommands;
 import de.cubeisland.cubeengine.roles.config.PermissionTree;
 import de.cubeisland.cubeengine.roles.config.PermissionTreeConverter;
 import de.cubeisland.cubeengine.roles.config.Priority;
 import de.cubeisland.cubeengine.roles.config.PriorityConverter;
 import de.cubeisland.cubeengine.roles.config.RoleMirror;
 import de.cubeisland.cubeengine.roles.config.RoleMirrorConverter;
+import de.cubeisland.cubeengine.roles.role.RolesEventHandler;
 import de.cubeisland.cubeengine.roles.storage.AssignedRoleManager;
 import de.cubeisland.cubeengine.roles.storage.UserMetaDataManager;
 import de.cubeisland.cubeengine.roles.storage.UserPermissionsManager;
@@ -71,6 +75,11 @@ public class Roles extends Module
 
         this.getCore().getEventManager().registerListener(this, new RolesEventHandler(this));
         //init on FinishedLoadModulesEvent
+        Module basicsModule = this.getCore().getModuleManager().getModule("basics");
+        if (basicsModule != null)
+        {
+            this.getCore().getEventManager().registerListener(basicsModule,new BasicsOnlinePlayerList(this));
+        }
 
         this.api = new RolesAPI(this);
     }

@@ -17,14 +17,15 @@
  */
 package de.cubeisland.cubeengine.basics.command.general;
 
-import de.cubeisland.cubeengine.basics.Basics;
-import de.cubeisland.cubeengine.core.user.User;
+import java.util.List;
+
 import org.bukkit.command.CommandSender;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 
-import java.util.List;
+import de.cubeisland.cubeengine.core.user.User;
+import de.cubeisland.cubeengine.basics.Basics;
 
 import gnu.trove.map.hash.THashMap;
 
@@ -36,6 +37,8 @@ public class DisplayOnlinePlayerListEvent extends Event implements Cancellable
     private static final HandlerList handlers = new HandlerList();
     private final CommandSender sender;
     private boolean cancelled = false;
+
+    private List<User> defaultList;
 
     @Override
     public HandlerList getHandlers()
@@ -53,7 +56,8 @@ public class DisplayOnlinePlayerListEvent extends Event implements Cancellable
         this.basics = basics;
         this.sender = sender;
         this.userStrings = userStrings;
-        this.grouped.put("&6Players: ",defaultList);
+        this.grouped.put("&6Players",defaultList);
+        this.defaultList = defaultList;
     }
 
     @Override
@@ -89,5 +93,10 @@ public class DisplayOnlinePlayerListEvent extends Event implements Cancellable
     public CommandSender getCommandSender()
     {
         return this.sender;
+    }
+
+    public List<User> getDefaultList()
+    {
+        return defaultList;
     }
 }

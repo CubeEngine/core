@@ -80,4 +80,21 @@ public class UserSpecificRole extends MergedRole
         umManager.clearByUser(user.key);
         this.module.getRoleManager().reloadAllRolesAndApply(user, user.getPlayer());
     }
+
+    public ConfigRole getDominantRole()
+    {
+        ConfigRole role = null;
+        for (ConfigRole cf : getParentRoles())
+        {
+            if (role == null)
+            {
+                role = cf;
+            }
+            else if (role.getPriority().value >= cf.getPriority().value)
+            {
+                role = cf;
+            }
+        }
+        return role;
+    }
 }
