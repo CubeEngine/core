@@ -179,7 +179,6 @@ public class QueryManager
             {
                 stmt.setObject(i+1, poll.sqlData.get(i));
             }
-            System.out.print(stmt); //TODO remove
             ResultSet resultSet = stmt.executeQuery();
             QueryResults results = new QueryResults();
             while (resultSet.next())

@@ -179,7 +179,8 @@ public class BlockBreak extends BlockActionType
             }
             else
             {
-                System.out.print("Unplanned BlockPhysicsEvent! (BlockBreak) "+oldState.getType().name()); //TODO remove
+                System.out.print("Unplanned BlockPhysicsEvent! (BlockBreak) "+oldState.getType().name()+ " " +
+                                     "A: "+blockAttachedTo + "L:"+oldState.getLocation()); //TODO remove
             }
         }
     }
