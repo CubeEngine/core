@@ -86,11 +86,6 @@ public class BlockFall extends BlockActionType
                         this.preplanBlockFall(onTop.getLocation(),cause.getLeft(),cause.getRight());
                     }
                 }
-                else
-                {
-                    System.out.print("Unplanned BlockPhysicsEvent! (BlockFall) "+state.getType().name()+
-                                         " ON: "+event.getBlock().getRelative(BlockFace.DOWN)+ "L:"+state.getLocation()); //TODO remove); //TODO remove
-                }
             }
         }
     }

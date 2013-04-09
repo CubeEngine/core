@@ -177,11 +177,6 @@ public class BlockBreak extends BlockActionType
                 }
                 this.logBlockChange(loc, cause.getLeft(), oldData, AIR, json.toString());
             }
-            else
-            {
-                System.out.print("Unplanned BlockPhysicsEvent! (BlockBreak) "+oldState.getType().name()+ " " +
-                                     "A: "+blockAttachedTo + "L:"+oldState.getLocation()); //TODO remove
-            }
         }
     }
 
