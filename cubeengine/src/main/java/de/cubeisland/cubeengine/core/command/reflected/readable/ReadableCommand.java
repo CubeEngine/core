@@ -92,11 +92,10 @@ public class ReadableCommand extends CubeCommand
     {
         context.sendTranslated("&7Description: &f%s", this.getDescription());
         context.sendTranslated("&7Usage: &f%s", this.getUsage(context));
-        context.sendMessage(" ");
-        context.sendTranslated("&7Detailed help: &9%s", "http://engine.cubeisland.de/commands/" + this.implodeCommandParentNames("/"));
 
         if (this.hasChildren())
         {
+            context.sendMessage(" ");
             context.sendTranslated("The following sub commands are available:");
             context.sendMessage(" ");
 
@@ -109,5 +108,7 @@ public class ReadableCommand extends CubeCommand
                 }
             }
         }
+        context.sendMessage(" ");
+        context.sendTranslated("&7Detailed help: &9%s", "http://engine.cubeisland.de/commands/" + this.implodeCommandParentNames("/"));
     }
 }
