@@ -18,6 +18,7 @@
 package de.cubeisland.cubeengine.core.command.commands;
 
 import java.util.concurrent.TimeUnit;
+import java.util.logging.Level;
 
 import org.bukkit.plugin.PluginManager;
 
@@ -32,6 +33,7 @@ import de.cubeisland.cubeengine.core.command.parameterized.ParameterizedContext;
 import de.cubeisland.cubeengine.core.command.reflected.Command;
 import de.cubeisland.cubeengine.core.command.CommandSender;
 import de.cubeisland.cubeengine.core.command.sender.ConsoleCommandSender;
+import de.cubeisland.cubeengine.core.logger.LogLevel;
 import de.cubeisland.cubeengine.core.permission.PermDefault;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.user.UserManager;
@@ -223,6 +225,28 @@ public class CoreCommands extends ContainerCommand
         else
         {
             context.sendTranslated("&aThe server is not in offline-mode.");
+        }
+    }
+
+    @Command(desc = "Changes or displays the log level of the server.", usage = "[log level]")
+    public void loglevel(CommandContext context)
+    {
+        if (context.hasArgs())
+        {
+            Level level = LogLevel.parse(context.getString(0));
+            if (level != null)
+            {
+                context.getCore().getLog().setLevel(level);
+                context.sendTranslated("&aNew log level successfully set!");
+            }
+            else
+            {
+                context.sendTranslated("&cThe given log level is unknown.");
+            }
+        }
+        else
+        {
+            context.sendTranslated("&eThe current log level: &a%s", context.getCore().getLog().getLevel().getLocalizedName());
         }
     }
 }
