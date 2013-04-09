@@ -162,6 +162,11 @@ public class HomeAdminSub
         else
         {
             User user = context.getUser(0);
+            if (user == null)
+            {
+                context.sendTranslated("Can't find any user named %s", context.getString(0));
+                return;
+            }
             homes = tpManager.listHomes(user, mask);
         }
         if (homes.isEmpty())
