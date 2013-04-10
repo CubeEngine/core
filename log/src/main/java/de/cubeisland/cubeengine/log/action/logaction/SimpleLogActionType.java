@@ -84,7 +84,10 @@ public abstract class SimpleLogActionType extends LogActionType
         }
         if (entity instanceof Tameable && ((Tameable) entity).isTamed())
         {
-            json.put("owner", ((Tameable)entity).getOwner().getName());
+            if (((Tameable)entity).getOwner() != null)
+            {
+                json.put("owner", ((Tameable)entity).getOwner().getName());
+            }
         }
         if (newColor != null)
         {
