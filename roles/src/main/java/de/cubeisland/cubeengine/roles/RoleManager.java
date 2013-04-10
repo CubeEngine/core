@@ -533,10 +533,10 @@ public class RoleManager
 
     public void recalculateAllDirtyRoles()
     {
-        this.globalProvider.recalculateDirtyRoles(null);
+        this.globalProvider.recalculateDirtyRoles();
         for (WorldRoleProvider provider : getProviders())
         {
-            provider.recalculateDirtyRoles(this.getGlobalRoles());
+            provider.recalculateDirtyRoles();
         }
     }
 }
