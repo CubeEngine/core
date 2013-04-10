@@ -47,7 +47,7 @@ public class InventoryCommands
 
     @Command(desc = "Allows you to see into the inventory of someone else.",
             flags = {@Flag(longName = "force", name = "f"),
-                     @Flag(longName = "quiet", name = "f")},
+                     @Flag(longName = "quiet", name = "q")},
             usage = "<player>", min = 1, max = 1)
     public void invsee(ParameterizedContext context)
     {

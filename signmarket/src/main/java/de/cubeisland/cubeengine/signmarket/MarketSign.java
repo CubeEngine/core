@@ -75,8 +75,8 @@ public class MarketSign
     {
         this.module = module;
         this.conomy = conomy;
-        this.itemInfo = itemModel;
         this.blockInfo = blockModel;
+        this.setItemInfo(itemModel);
         this.msFactory = module.getMarketSignFactory();
     }
 
@@ -126,7 +126,10 @@ public class MarketSign
     public void setItemStack(ItemStack itemStack, boolean setAmount)
     {
         this.itemInfo.setItem(itemStack);
-        this.blockInfo.amount = itemStack.getAmount();
+        if (setAmount)
+        {
+            this.blockInfo.amount = itemStack.getAmount();
+        }
     }
 
     /**
@@ -331,7 +334,7 @@ public class MarketSign
                     {
                         if (this.isOwner(user) || MarketSignPerm.SIGN_INVENTORY_ACCESS_OTHER.isAuthorized(user))
                         {
-                            if (!this.editMode && this.blockInfo.isBuyOrSell() && this.isBuySign() && this.itemInfo.matchesItem(itemInHand))
+                            if (!this.editMode && this.blockInfo.isBuyOrSell() && this.isBuySign() && this.hasStock() && this.itemInfo.matchesItem(itemInHand))
                             {
                                 if (!this.getInventory().getViewers().isEmpty())
                                 {
@@ -672,7 +675,7 @@ public class MarketSign
 
     public boolean tryBreak(User user)
     {
-        if (this.breakingSign.containsKey(user.key) && System.currentTimeMillis() - this.breakingSign.get(user.key) <= 300)//0.3 sec
+        if (this.breakingSign.containsKey(user.key) && System.currentTimeMillis() - this.breakingSign.get(user.key) <= 500)//0.5 sec
         {
             Location location = this.getLocation();
             if (this.getStock() != null && this.getStock() == 1337) //pssst i am not here
@@ -682,6 +685,7 @@ public class MarketSign
             this.breakSign();
             location.getWorld().getBlockAt(location).breakNaturally();
             this.breakingSign.remove(user.key);
+            user.sendTranslated("&aMarketSign destroyed!");
             return true;
         }
         this.breakingSign.put(user.key, System.currentTimeMillis());
@@ -1111,7 +1115,10 @@ public class MarketSign
     public SignMarketItemModel setItemInfo(SignMarketItemModel itemInfo)
     {
         SignMarketItemModel old = this.itemInfo;
-        old.removeSign(this);
+        if (old != null)
+        {
+            old.removeSign(this);
+        }
         this.itemInfo = itemInfo;
         itemInfo.addSign(this);
         this.blockInfo.itemKey = itemInfo.key;
@@ -1167,6 +1174,7 @@ public class MarketSign
 
     public void enterEditMode()
     {
+        if (this.editMode) return;
         if (this.itemInfo.getReferenced().size() > 1) // ItemInfo is synced with other signs
         {
             SignMarketItemModel newItemInfo = this.itemInfo.clone();

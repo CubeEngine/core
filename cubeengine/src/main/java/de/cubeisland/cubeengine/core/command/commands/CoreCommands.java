@@ -56,9 +56,13 @@ public class CoreCommands extends ContainerCommand
     @Command(desc = "Reloads the whole CubeEngine")
     public void reload(CommandContext context)
     {
+        context.sendTranslated("&aReloading CubeEngine! This may take some time...");
+        Profiler.startProfiling("ceReload");
         PluginManager pm = this.core.getServer().getPluginManager();
         pm.disablePlugin(this.core);
         pm.enablePlugin(this.core);
+        long time = Profiler.endProfiling("ceReload", TimeUnit.MILLISECONDS);
+        context.sendTranslated("&aCubeEngine-Reload completed in &6%d&ams!",time);
     }
 
     @Command(desc = "Reloads all of the modules!")

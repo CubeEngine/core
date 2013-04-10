@@ -17,14 +17,20 @@
  */
 package de.cubeisland.cubeengine.conomy.currency;
 
-import com.google.common.collect.Lists;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.Locale;
+import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import de.cubeisland.cubeengine.conomy.config.CurrencyConfiguration;
 import de.cubeisland.cubeengine.conomy.config.SubCurrencyConfig;
+
+import com.google.common.collect.Lists;
 import gnu.trove.map.hash.TObjectDoubleHashMap;
 import org.apache.commons.lang.StringUtils;
-
-import java.util.*;
-import java.util.regex.Pattern;
 
 public class Currency
 {
@@ -75,7 +81,7 @@ public class Currency
         return this.defaultBalance;
     }
 
-    private String format(String format, Long balance)
+    private String format(String format, Long balance, boolean isShort)
     {
         boolean neg = false;
         if (balance < 0)
@@ -85,30 +91,58 @@ public class Currency
         }
         for (SubCurrency subcur : Lists.reverse(this.sub))
         {
+            Pattern pattern = Pattern.compile("(%" + subcur.getSymbol() + ")(\\d*)");
+            Matcher matcher = pattern.matcher(format);
             Long subBalance = balance % subcur.getValueForParent();
-            if (subcur.equals(this.sub.getFirst()))
+            format = format.replace("%-", neg ? "-" : "");
+            while (matcher.find())
             {
-                format = format.replace("%" + subcur.getSymbol(), balance.toString());
-            }
-            else
-            {
-                format = format.replace("%" + subcur.getSymbol(), subBalance.toString());
+                if (subcur.equals(this.sub.getFirst()))
+                {
+                    format = format.replace(matcher.group(), balance.toString());
+                }
+                else
+                {
+                    String subBalanceString = subBalance.toString();
+                    if (!matcher.group(2).equals(""))
+                    {
+                        Integer zerofill = Integer.valueOf(matcher.group(2));
+                        if (subBalanceString.length() < zerofill)
+                        {
+                            subBalanceString = de.cubeisland.cubeengine.core.util.StringUtils.repeat('0',zerofill - subBalanceString.length()) + subBalanceString;
+                        }
+                    }
+                    format = format.replace(matcher.group(), subBalanceString);
+                }
             }
             balance -= balance % subcur.getValueForParent();
             balance /= subcur.getValueForParent();
+            // CurencyNames
+            pattern = Pattern.compile("#" + subcur.getSymbol());
+            matcher = pattern.matcher(format);
+            while (matcher.find())
+            {
+                if (subBalance == 1)
+                {
+                    format = format.replace(matcher.group(),isShort ? subcur.getSymbol() : subcur.getName());
+                }
+                else
+                {
+                    format = format.replace(matcher.group(),isShort ? subcur.getPluralSymbol() : subcur.getPluralName());
+                }
+            }
         }
-        format = format.replace("%-", neg ? "-" : "");
         return format;
     }
 
     public String formatLong(Long balance)
     {
-        return this.format(this.formatlong, balance);
+        return this.format(this.formatlong, balance, false);
     }
 
     public String formatShort(Long balance)
     {
-        return this.format(this.formatshort, balance);
+        return this.format(this.formatshort, balance, true);
     }
 
     public Long parse(String amountString)

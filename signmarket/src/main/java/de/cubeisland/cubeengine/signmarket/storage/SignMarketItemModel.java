@@ -17,13 +17,13 @@
  */
 package de.cubeisland.cubeengine.signmarket.storage;
 
-import de.cubeisland.cubeengine.core.storage.Model;
-import de.cubeisland.cubeengine.core.storage.database.AttrType;
-import de.cubeisland.cubeengine.core.storage.database.Attribute;
-import de.cubeisland.cubeengine.core.storage.database.SingleKeyEntity;
-import de.cubeisland.cubeengine.core.util.StringUtils;
-import de.cubeisland.cubeengine.signmarket.MarketSign;
-import gnu.trove.set.hash.THashSet;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+
+import javax.print.attribute.standard.MediaSize.Other;
+
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.Inventory;
@@ -31,10 +31,14 @@ import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
+import de.cubeisland.cubeengine.core.storage.Model;
+import de.cubeisland.cubeengine.core.storage.database.AttrType;
+import de.cubeisland.cubeengine.core.storage.database.Attribute;
+import de.cubeisland.cubeengine.core.storage.database.SingleKeyEntity;
+import de.cubeisland.cubeengine.core.util.StringUtils;
+import de.cubeisland.cubeengine.signmarket.MarketSign;
+
+import gnu.trove.set.hash.THashSet;
 
 @SingleKeyEntity(autoIncrement = true, primaryKey = "key", tableName = "signmarketitem", indices = {
 
@@ -157,8 +161,9 @@ public class SignMarketItemModel implements Model<Long>,InventoryHolder,Cloneabl
      */
     public boolean canSync(SignMarketItemModel model)
     {
-        return this.hasStock() && model.hasStock() // both not infinite stocks
-            && this.getItem().isSimilar(model.getItem()); // same item
+        return this.hasStock() == model.hasStock()
+            && this.getItem().isSimilar(model.getItem())
+            && this.getSize() == model.getSize();
     }
 
     //for database:

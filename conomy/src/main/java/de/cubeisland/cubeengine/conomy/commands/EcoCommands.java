@@ -181,7 +181,7 @@ public class EcoCommands extends ContainerCommand
 
     @Command(desc = "Reset the money from given user", usage = "<player>|* [-o] [in <currency>]", flags = @Flag(longName = "online", name = "o"), params = @Param(names = {
     "in", "c", "currency"
-    }, type = String.class), max = 1)
+    }, type = String.class), min = 1, max = 1)
     public void reset(ParameterizedContext context)
     {
         Currency currency;

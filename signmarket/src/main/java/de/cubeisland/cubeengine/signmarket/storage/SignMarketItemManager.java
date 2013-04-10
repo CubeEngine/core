@@ -69,15 +69,14 @@ public class SignMarketItemManager extends SingleKeyStorage<Long, SignMarketItem
             {
                 this.deleteByKey(key);
                 this.itemInfoModels.remove(key);
-                this.module.getLog().log(LogLevel.DEBUG,"Removed unused sign ID " + key);
             }
         }
     }
 
     @Override
-    public void delete(SignMarketItemModel itemInfo) {
+    public void delete(SignMarketItemModel itemInfo)
+    {
         this.itemInfoModels.remove(itemInfo.key);
         super.delete(itemInfo);
-        System.out.print("Deleted SMItemModel! ID: "+itemInfo.key); // TODO remove
     }
 }

@@ -26,11 +26,15 @@ public class SubCurrency
     private SubCurrency parent = null;
     private long valueForParent;
     private long valueInLowest;
+    private String pluralSymbol;
+    private String pluralName;
 
     public SubCurrency(String name, SubCurrencyConfig config, SubCurrency parent)
     {
         this.name = name;
+        this.pluralName = config.longNamePlural;
         this.symbol = config.shortName;
+        this.pluralSymbol = config.shortNamePlural;
         this.valueForParent = config.value;
         this.parent = parent;
     }
@@ -63,5 +67,15 @@ public class SubCurrency
     public String getName()
     {
         return name;
+    }
+
+    public String getPluralSymbol()
+    {
+        return pluralSymbol;
+    }
+
+    public String getPluralName()
+    {
+        return pluralName;
     }
 }
