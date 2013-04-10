@@ -272,10 +272,6 @@ public class Currency
         {
             tokens.add(token.toString());
         }
-        for (String s : tokens)
-        {
-            System.out.println(s);
-        }
         HashMap<String, SubCurrency> symbols = this.getAllSymbolsAndNames();
         try
         {
