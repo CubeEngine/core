@@ -159,7 +159,8 @@ public class BlockBreak extends BlockActionType
             blockAttachedTo = event.getBlock().getRelative(BlockFace.DOWN);
 
         }
-        if (blockAttachedTo != null && !blockAttachedTo.getType().isSolid())
+        if (blockAttachedTo == null) return;
+        if (!blockAttachedTo.getType().isSolid())
         {
             Location loc = oldState.getLocation();
             Pair<Entity,BlockActionType> cause = this.plannedPyhsics.remove(loc);

@@ -768,6 +768,7 @@ public class MarketSign
                 item.setAmount(this.getAmount());
                 if (checkForPlace(user.getInventory(), item.clone()))
                 {
+                    String price = this.parsePrice();
                     this.conomy.getAccountsManager().transaction(userAccount, ownerAccount, this.getPrice());
                     if (this.hasStock())
                     {
@@ -780,7 +781,7 @@ public class MarketSign
                     }
                     user.getInventory().addItem(item);
                     user.updateInventory();
-                    user.sendTranslated("&aYou bought &6%dx %s &afor &6%s&a.", this.getAmount(), Match.material().getNameFor(this.getItem()), this.parsePrice());
+                    user.sendTranslated("&aYou bought &6%dx %s &afor &6%s&a.", this.getAmount(), Match.material().getNameFor(this.getItem()), price);
                     return;
                 }
                 user.sendTranslated("&cYou do not have enough space for these items!");
