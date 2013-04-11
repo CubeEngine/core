@@ -1,28 +1,14 @@
-/**
- * This file is part of CubeEngine.
- * CubeEngine is licensed under the GNU General Public License Version 3.
- *
- * CubeEngine is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * CubeEngine is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
- */
-package de.cubeisland.cubeengine.travel.command.subcommand;
+package de.cubeisland.cubeengine.travel.interactions;
 
 import java.util.Set;
 
 import org.bukkit.Location;
+import org.bukkit.event.player.PlayerTeleportEvent;
 
 import de.cubeisland.cubeengine.core.CubeEngine;
 import de.cubeisland.cubeengine.core.command.CommandContext;
+import de.cubeisland.cubeengine.core.command.CommandResult;
+import de.cubeisland.cubeengine.core.command.ContainerCommand;
 import de.cubeisland.cubeengine.core.command.parameterized.Flag;
 import de.cubeisland.cubeengine.core.command.parameterized.Param;
 import de.cubeisland.cubeengine.core.command.parameterized.ParameterizedContext;
@@ -37,17 +23,107 @@ import de.cubeisland.cubeengine.travel.storage.TelePointManager;
 import de.cubeisland.cubeengine.travel.storage.TeleportInvite;
 import de.cubeisland.cubeengine.travel.storage.TeleportPoint;
 
-public class HomeSubCommands
+public class HomeCommand  extends ContainerCommand
 {
     private final TelePointManager tpManager;
     private final InviteManager inviteManager;
     private final Travel module;
 
-    public HomeSubCommands(Travel module)
+    public HomeCommand(Travel module)
     {
+        super(module, "home", "Teleport to your home");
         this.module = module;
         this.tpManager = module.getTelepointManager();
         this.inviteManager = module.getInviteManager();
+
+        this.setUsage("<<owner:>home>");
+    }
+
+    @Override
+    public CommandResult run(CommandContext context) throws Exception
+    {
+        if (context.isSender(User.class))
+        {
+            User sender = (User)context.getSender();
+            if (context.getArgCount() == 0)
+            {
+                Home home = tpManager.getHome(sender, "home");
+                if (home == null)
+                {
+                    context.sendTranslated("&4You don't have a home! do /setHome");
+                    return null;
+                }
+
+                if (!home.isOwner(sender))
+                {
+                    sender.sendTranslated("&4You don't have a main home!");
+                    return null;
+                }
+
+                sender.teleport(home.getLocation(), PlayerTeleportEvent.TeleportCause.COMMAND);
+                if (home.getWelcomeMsg() != null)
+                {
+                    context.sendMessage(home.getWelcomeMsg());
+                }
+                else
+                {
+                    context.sendTranslated("&6You have been teleported to your home!");
+                }
+            }
+            else if (module.getConfig().multipleHomes)
+            {
+                if (CubeEngine.getUserManager().findUser(context.getString(0)) != null)
+                {
+                    User user = CubeEngine.getUserManager().findUser(context.getString(0));
+                    Home home = tpManager.getHome(user, "home");
+                    if (home != null && home.canAccess(sender))
+                    {
+                        sender.teleport(home.getLocation(), PlayerTeleportEvent.TeleportCause.COMMAND);
+                        if (home.getWelcomeMsg() != null)
+                        {
+                            context.sendMessage(home.getWelcomeMsg());
+                        }
+                        else
+                        {
+                            sender.sendTranslated("&6You have been teleported to &9%s's &6default home", home.getOwner().getDisplayName());
+                        }
+                        return null;
+                    }
+                }
+            }
+                Home home = tpManager.getHome(sender, context.getString(0).toLowerCase());
+                if (home == null)
+                {
+                    context.sendTranslated("&9" + context.getString(0).toLowerCase() + " &4 is not a home");
+                    return null;
+                }
+
+                sender.teleport(home.getLocation(), PlayerTeleportEvent.TeleportCause.COMMAND);
+                if (home.getWelcomeMsg() != null)
+                {
+                    context.sendMessage(home.getWelcomeMsg());
+                }
+                else
+                {
+                    if (home.isOwner(sender))
+                    {
+                        context.sendTranslated("&6You have been teleported to your home: &9%s", home.getName());
+                    }
+                    else if (home.isPublic())
+                    {
+                        context.sendTranslated("&6You have been teleported to the public home &9%s", home.getName());
+                    }
+                    else
+                    {
+                        context.sendTranslated("&6You have been teleported to &3%s&6's home: &9%s", home.getOwner().getDisplayName(), home.getName());
+                    }
+                }
+        }
+        else
+        {
+            return super.run(context);
+        }
+        return  null;
     }
 
     @Alias(names = {
@@ -104,15 +180,15 @@ public class HomeSubCommands
         }
         else
         {
-            context.sendTranslated("&4This command can only be used by users!");
+            context.sendTranslated("&4This interactions can only be used by users!");
         }
 
 
     }
 
     @Command(desc = "Set the welcome message of homes", names = {"setgreeting", "greeting", "setwelcome", "setwelcomemsg"},
-    min = 1, max = -1, permDefault = PermDefault.TRUE, params = {
-            @Param(names = {"home", "h"})
+             min = 1, max = -1, permDefault = PermDefault.TRUE, params = {
+        @Param(names = {"home", "h"})
     }, usage = "[Welcome message goes here] <home: [home name]>")
     public void setWelcomeMessage(ParameterizedContext context)
     {
@@ -193,15 +269,15 @@ public class HomeSubCommands
         }
         else
         {
-            context.sendTranslated("&4This command can only be used by users!");
+            context.sendTranslated("&4This interactions can only be used by users!");
         }
     }
 
     @Alias(names = {
-    "remhome", "removehome", "delhome", "deletehome"
+        "remhome", "removehome", "delhome", "deletehome"
     })
     @Command(names = {
-    "remove", "delete", "rem", "del"
+        "remove", "delete", "rem", "del"
     }, desc = "Remove a home", usage = "[HomeName]",min = 1, max = 1, permDefault = PermDefault.TRUE)
     public void removeHome(CommandContext context)
     {
@@ -241,21 +317,21 @@ public class HomeSubCommands
         }
         else
         {
-            context.sendTranslated("&4This command can only be used by users!");
+            context.sendTranslated("&4This interactions can only be used by users!");
         }
     }
 
     // TODO Unload if multihomes isn't enabled
     @Alias(names = {
-    "listhomes", "homes"
+        "listhomes", "homes"
     })
     @Command(names = {
         "list"
     }, desc = "List homes you can access", permDefault = PermDefault.TRUE, min = 0, max = 0, flags = {
-            @Flag(name = "pub", longName = "public"),
-            @Flag(name = "priv", longName = "private"),
-            @Flag(name = "o", longName = "owned"),
-            @Flag(name = "i", longName = "invited")
+        @Flag(name = "pub", longName = "public"),
+        @Flag(name = "priv", longName = "private"),
+        @Flag(name = "o", longName = "owned"),
+        @Flag(name = "i", longName = "invited")
     })
     public void listHomes(ParameterizedContext context)
     {
@@ -265,6 +341,12 @@ public class HomeSubCommands
             if (context.hasFlag("pub")) mask |= tpManager.PUBLIC;
             if (context.hasFlag("priv")) mask |= tpManager.PRIVATE;
 
+            Set<Home> homes = tpManager.listHomes(mask);
+            if (homes.isEmpty())
+            {
+                context.sendTranslated("&6Could not find any homes!");
+                return;
+            }
             context.sendTranslated("&eHere is a list of the homes: ");
             for (Home home : tpManager.listHomes(mask))
             {
@@ -307,7 +389,7 @@ public class HomeSubCommands
     }
 
     @Command(names = {
-    "ilist", "invited"
+        "ilist", "invited"
     }, desc = "List all players invited to your homes", min = 0, max = 0, permDefault = PermDefault.TRUE)
     public void invitedList(CommandContext context)
     {
@@ -424,7 +506,7 @@ public class HomeSubCommands
             }
         }
         else {
-            context.sendTranslated("&4This command can only be used by users!");
+            context.sendTranslated("&4This interactions can only be used by users!");
         }
 
 
@@ -510,14 +592,14 @@ public class HomeSubCommands
             }
         }
         else {
-            context.sendTranslated("&4This command can only be used by users!");
+            context.sendTranslated("&4This interactions can only be used by users!");
         }
 
 
     }
 
     @Command(names = {
-    "makeprivate"
+        "makeprivate"
     }, desc = "Make one of your homes private", min = 1, max = 1, permDefault = PermDefault.TRUE)
     public void makePrivate(CommandContext context)
     {
@@ -547,12 +629,12 @@ public class HomeSubCommands
             context.sendTranslated("&6Your home is now private");
             return;
         }
-        context.sendTranslated("&4This command can only be used by users!");
+        context.sendTranslated("&4This interactions can only be used by users!");
 
     }
 
     @Command(names = {
-    "makepublic"
+        "makepublic"
     }, desc = "Make one of your homes public", min = 1, max = 1, permDefault = PermDefault.TRUE)
     public void makePublic(CommandContext context)
     {
@@ -582,56 +664,7 @@ public class HomeSubCommands
             context.sendTranslated("&6Your home is now public");
             return;
         }
-        context.sendTranslated("&4This command can only be used by users!");
-
-    }
-
-    @Command(names = {
-    "admin"
-    }, desc = "Teleport to another users home", usage = "[User] [Home]", min = 1, max = 2, permDefault = PermDefault.OP)
-    public void admin(CommandContext context)
-    {
-        if (context.getSender() instanceof User)
-        {
-            User sender = (User) context.getSender(); //TODO console
-            User user = context.getUser(0);
-            Home home;
-            if (user == null)
-            {
-                sender.sendTranslated("%s is not an user on this server!", context.getString(0));
-                return;
-            }
-
-            if (context.getArgCount() == 2)
-            {
-                home = tpManager.getHome(user, context.getString(1));
-                if (home == null)
-                {
-                    sender.sendTranslated("%s does not have a home named %s", user.getName(), context.getString(1));
-                    return;
-                }
-            }
-            else
-            {
-                home = tpManager.getHome(user, "home");
-                if (home == null)
-                {
-                    sender.sendTranslated("%s does not have a home ", user.getName());
-                    return;
-                }
-            }
-
-            sender.teleport(home.getLocation());
-            if (home.getWelcomeMsg() != null)
-            {
-                sender.sendMessage(home.getWelcomeMsg());
-            }
-            else
-            {
-                sender.sendTranslated("You have been teleported to %s's home", user.getName());
-            }
-            return;
-        }
+        context.sendTranslated("&4This interactions can only be used by users!");
 
     }
 }

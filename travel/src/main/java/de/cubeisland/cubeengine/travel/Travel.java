@@ -20,11 +20,9 @@ package de.cubeisland.cubeengine.travel;
 import de.cubeisland.cubeengine.core.command.CommandManager;
 import de.cubeisland.cubeengine.core.command.reflected.ReflectedCommand;
 import de.cubeisland.cubeengine.core.module.Module;
-import de.cubeisland.cubeengine.travel.command.HomeCommands;
-import de.cubeisland.cubeengine.travel.command.WarpCommands;
-import de.cubeisland.cubeengine.travel.command.subcommand.HomeAdminSub;
-import de.cubeisland.cubeengine.travel.command.subcommand.HomeSubCommands;
-import de.cubeisland.cubeengine.travel.command.subcommand.WarpSubCommands;
+import de.cubeisland.cubeengine.travel.interactions.HomeAdminCommand;
+import de.cubeisland.cubeengine.travel.interactions.HomeCommand;
+import de.cubeisland.cubeengine.travel.interactions.WarpCommand;
 import de.cubeisland.cubeengine.travel.storage.InviteManager;
 import de.cubeisland.cubeengine.travel.storage.TelePointManager;
 
@@ -43,11 +41,9 @@ public class Travel extends Module
         this.telePointManager.load(this.inviteManager);
 
         final CommandManager cm = this.getCore().getCommandManager();
-        cm.registerCommands(this, new HomeCommands(this), ReflectedCommand.class);
-        cm.registerCommands(this, new HomeSubCommands(this), ReflectedCommand.class, "home");
-        cm.registerCommands(this, new HomeAdminSub(this), ReflectedCommand.class, "home", "admin");
-        cm.registerCommands(this, new WarpCommands(this), ReflectedCommand.class);
-        cm.registerCommands(this, new WarpSubCommands(this),ReflectedCommand.class, "warp");
+        cm.registerCommand(new HomeCommand(this));
+        cm.registerCommand(new HomeAdminCommand(this), "home");
+        cm.registerCommand(new WarpCommand(this));
     }
 
     public TravelConfig getConfig()
