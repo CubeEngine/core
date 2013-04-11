@@ -127,7 +127,10 @@ public class MoneyCommand extends ContainerCommand
     @Alias(names = {
         "toplist", "balancetop"
     })
-    @Command(desc = "Shows the players with the highest balance.", usage = "[[fromRank]-ToRank] [in <currency>]", params = @Param(names = "in", type = String.class), flags = @Flag(longName = "showhidden", name = "f"))
+    @Command(desc = "Shows the players with the highest balance.",
+             usage = "[[fromRank]-ToRank] [in <currency>]", max = 1,
+             params = @Param(names = "in", type = String.class),
+             flags = @Flag(longName = "showhidden", name = "f"))
     public void top(ParameterizedContext context)
     {
         boolean showHidden = context.hasFlag("f");

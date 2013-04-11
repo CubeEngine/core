@@ -648,6 +648,7 @@ public class PlayerCommands
         }
         DateFormat dateFormat = SimpleDateFormat.getDateTimeInstance(SHORT, SHORT, Locale.ENGLISH);
         context.sendTranslated("&eFirst played: &6%s", dateFormat.format(new Date(user.getFirstPlayed()))); //TODO locale
+        //TODO banned (to when if temp)
     }
 
     @Command(desc = "Toggles the god-mode!", usage = "[player]", max = 1)
