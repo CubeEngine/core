@@ -19,6 +19,7 @@ package de.cubeisland.cubeengine.basics.command.moderation;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.Date;
 
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
@@ -35,6 +36,8 @@ import de.cubeisland.cubeengine.core.permission.Permission;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.user.UserManager;
 import de.cubeisland.cubeengine.core.util.ChatFormat;
+import de.cubeisland.cubeengine.core.util.StringUtils;
+import de.cubeisland.cubeengine.core.util.convert.ConversionException;
 import de.cubeisland.cubeengine.basics.Basics;
 import de.cubeisland.cubeengine.basics.BasicsPerm;
 
@@ -275,7 +278,7 @@ public class KickBanCommands
         }
     }
 
-    @Command(names = "tban",
+    @Command(names = {"tempban","tban"},
              desc = "Bans a player for a given time.",
              min = 2, max = 3,
              usage = "<player> <time> [reason]",
@@ -293,15 +296,25 @@ public class KickBanCommands
             return;
         }
         User user = context.getCore().getUserManager().getExactUser(player);
-        String reason = this.getReasonFrom(context, 1, user, BasicsPerm.COMMAND_TEMPBAN_NOREASON, false);
+        String reason = this.getReasonFrom(context, 2, user, BasicsPerm.COMMAND_TEMPBAN_NOREASON, false);
         if (reason == null) return;
         if (this.banManager.isBanned(user))
         {
             context.sendTranslated("&2%s&c is already banned!", player.getName());
             return;
         }
-        this.banManager.addBan(new UserBan(user.getName(),context.getSender().getName(), reason));
-        user.kickPlayer(reason);
+        try
+        {
+            long millis = StringUtils.convertTimeToMillis(context.getString(1));
+            Date toDate = new Date(System.currentTimeMillis() + millis);
+            this.banManager.addBan(new UserBan(user.getName(),context.getSender().getName(), reason, toDate));
+            user.kickPlayer(reason);
+        }
+        catch (ConversionException ex)
+        {
+            context.sendTranslated("&cInvalid time value! &eExamples: 1d 12h 5m");
+            return;
+        }
     }
 
     private boolean cannotBanUser(CommandContext context)

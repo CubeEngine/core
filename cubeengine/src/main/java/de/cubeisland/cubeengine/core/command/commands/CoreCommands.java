@@ -17,6 +17,8 @@
  */
 package de.cubeisland.cubeengine.core.command.commands;
 
+import java.util.Date;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 
@@ -24,6 +26,8 @@ import org.bukkit.plugin.PluginManager;
 
 import de.cubeisland.cubeengine.core.Core;
 import de.cubeisland.cubeengine.core.CorePerms;
+import de.cubeisland.cubeengine.core.ban.BanManager;
+import de.cubeisland.cubeengine.core.ban.UserBan;
 import de.cubeisland.cubeengine.core.bukkit.BukkitCore;
 import de.cubeisland.cubeengine.core.bukkit.BukkitUtils;
 import de.cubeisland.cubeengine.core.command.CommandContext;
@@ -45,12 +49,15 @@ public class CoreCommands extends ContainerCommand
 {
 
     private final BukkitCore core;
+    private final BanManager banManager;
+    private ConcurrentHashMap<String, Long> fails = new ConcurrentHashMap<String, Long>();
 
     public CoreCommands(Core core)
     {
         super(core.getModuleManager().getCoreModule(), "cubeengine", "These are the basic commands of the CubeEngine.", asList("ce"));
         this.core = (BukkitCore)core;
         this.setGeneratePermission(true);
+        this.banManager = core.getBanManager();
     }
 
     @Command(desc = "Reloads the whole CubeEngine")
@@ -186,6 +193,20 @@ public class CoreCommands extends ContainerCommand
             else
             {
                 user.sendTranslated("&cWrong password!");
+                if (this.core.getConfiguration().fail2ban)
+                {
+                    if (fails.get(user.getName()) != null)
+                    {
+                        if (fails.get(user.getName()) + TimeUnit.SECONDS.toMillis(10) > System.currentTimeMillis())
+                        {
+                            String msg = user.translate("&cToo many wrong passwords! \nFor your security you were banned 10 seconds.");
+                            this.banManager.addBan(new UserBan(user.getName(),user.getName(),msg,
+                                 new Date(System.currentTimeMillis() + TimeUnit.SECONDS.toMillis(this.core.getConfiguration().banDuration))));
+                            user.kickPlayer(msg);
+                        }
+                    }
+                    fails.put(user.getName(),System.currentTimeMillis());
+                }
             }
         }
         else

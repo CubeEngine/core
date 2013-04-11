@@ -87,6 +87,14 @@ public class CoreConfiguration extends Configuration
     @Comment("Whether to enable the Web API server")
     public boolean userWebapi = false;
 
+    @Option("security.fail2ban")
+    @Comment("Enable fail2ban on login")
+    public boolean fail2ban = true;
+
+    @Option("security.ban-duration")
+    @Comment("Ban duration on fail2ban")
+    public int banDuration = 10;
+
     @Override
     public String[] head()
     {

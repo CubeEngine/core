@@ -116,11 +116,7 @@ public class ContainerActionType extends ActionTypeContainer
         {
             return ((BlockState)holder).getLocation();
         }
-        if (holder == null)
-        {
-            this.logModule.getLog().log(LogLevel.DEBUG,"Inventory Holder is null! Logging is impossible.");
-        }
-        else
+        if (holder != null)
         {
             this.logModule.getLog().log(LogLevel.DEBUG,"Unknown InventoryHolder:" + holder.toString());
         }
