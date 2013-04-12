@@ -25,11 +25,13 @@ import de.cubeisland.cubeengine.travel.storage.Warp;
 
 public class WarpCommand extends ContainerCommand
 {
+    private final Travel module;
     private final TelePointManager telePointManager;
 
     public WarpCommand(Travel module)
     {
         super(module, "warp", "Teleport to a warp");
+        this.module = module;
         this.telePointManager = module.getTelepointManager();
 
         this.getContextFactory().setArgBounds(new ArgBounds(0, 1));
@@ -69,6 +71,12 @@ public class WarpCommand extends ContainerCommand
     }, permDefault = PermDefault.OP, desc = "Create a warp", min = 1, max = 1)
     public void createWarp(ParameterizedContext context)
     {
+        if (this.telePointManager.getNumberOfWarps() == this.module.getConfig().maxwarps)
+        {
+            context.sendTranslated("The server have reached it's maximum number of warps!");
+            context.sendTranslated("Some warps have to be delete for new ones to be made");
+            return;
+        }
         if (context.getSender() instanceof User)
         {
             User sender = (User)context.getSender();

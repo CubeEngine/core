@@ -48,11 +48,11 @@ public class HomeCommand extends ContainerCommand
             this.setUsage("<owner>");
             this.getContextFactory().setArgBounds(new ArgBounds(0, 1));
 
-            ((CubeCommand)this.getChild("set").setUsage("")).getContextFactory().setArgBounds(new ArgBounds(0, 0));
-            ((CubeCommand)this.getChild("move").setUsage("")).getContextFactory().setArgBounds(new ArgBounds(0, 0));
-            ((CubeCommand)this.getChild("remove").setUsage("")).getContextFactory().setArgBounds(new ArgBounds(0, 0));
-            ((CubeCommand)this.getChild("invite").setUsage("[user]")).getContextFactory().setArgBounds(new ArgBounds(1, 1));
-            ((CubeCommand)this.getChild("uninvite").setUsage("[user]")).getContextFactory().setArgBounds(new ArgBounds(1, 1));
+            this.getChild("set").setUsage("").getContextFactory().setArgBounds(new ArgBounds(0, 0));
+            this.getChild("move").setUsage("").getContextFactory().setArgBounds(new ArgBounds(0, 0));
+            this.getChild("remove").setUsage("").getContextFactory().setArgBounds(new ArgBounds(0, 0));
+            this.getChild("invite").setUsage("[user]").getContextFactory().setArgBounds(new ArgBounds(1, 1));
+            this.getChild("uninvite").setUsage("[user]").getContextFactory().setArgBounds(new ArgBounds(1, 1));
             this.getChild("setgreeting").setUsage("[welcome message]");
         }
     }
@@ -157,6 +157,12 @@ public class HomeCommand extends ContainerCommand
         if (context.getSender() instanceof User)
         {
             User sender = (User)context.getSender();
+            if (this.tpManager.getNumberOfHomes(sender) == this.module.getConfig().maxhomes)
+            {
+                sender.sendTranslated("You have reached your maximum number of homes!");
+                sender.sendTranslated("You have to delete a home to make a new one");
+                return;
+            }
             Location location = sender.getLocation();
             if (context.getArgCount() == 0)
             {

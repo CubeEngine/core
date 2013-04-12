@@ -44,6 +44,12 @@ public class HomeListener implements Listener
                     }
                     else
                     {
+                        if (this.tpManager.getNumberOfHomes(user) == this.module.getConfig().maxhomes)
+                        {
+                            user.sendTranslated("You have reached your maximum number of homes!");
+                            user.sendTranslated("You have to delete a home to make a new one");
+                            return;
+                        }
                         Home home = tpManager.createHome(user.getLocation(), "home", user, TeleportPoint.Visibility.PRIVATE);
                         user.sendTranslated("&6Your home have been created!");
                         event.setCancelled(true);

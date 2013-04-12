@@ -322,6 +322,26 @@ public class TelePointManager extends SingleKeyStorage<Long, TeleportPoint>
         return home;
     }
 
+    public int getNumberOfHomes(User user)
+    {
+        int homes = 0;
+        for (Home home : this.homes.values())
+        {
+            if (home.isOwner(user))
+            {
+                homes++;
+            }
+        }
+        for (Home home : this.publicHomes.values())
+        {
+            if (home.isOwner(user))
+            {
+                homes++;
+            }
+        }
+        return homes;
+    }
+
     /**
      * If a home by that name relative to the user exist
      * The name must be an exact match
@@ -472,6 +492,11 @@ public class TelePointManager extends SingleKeyStorage<Long, TeleportPoint>
         {
             this.publicHomes.remove(home.getName());
         }
+    }
+
+    public int getNumberOfWarps()
+    {
+        return this.warps.keySet().size();
     }
 
     /**

@@ -31,4 +31,12 @@ public class TravelConfig extends Configuration
     @Comment("If users should be able to have multiple homes")
     @Option("homes.multiple-homes")
     public boolean multipleHomes = true;
+
+    @Comment("How many homes each user can have")
+    @Option("homes.max")
+    public int maxhomes = 10;
+
+    @Comment("How many warps the whole server can have")
+    @Option("warps.max")
+    public int maxwarps = 100;
 }
