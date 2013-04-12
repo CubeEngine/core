@@ -143,11 +143,11 @@ public abstract class CubeCommand extends Command
         }
         while ((cmd = cmd.getParent()) != null);
         Permission result = commandBase;
-        Iterator<String> iter = cmds.iterator();
-        while (iter.hasNext())
+        Iterator<String> it = cmds.iterator();
+        while (it.hasNext())
         {
-            String permString = iter.next();
-            if (iter.hasNext())
+            String permString = it.next();
+            if (it.hasNext())
             {
                 result = result.createAbstractChild(permString);
             }
@@ -238,6 +238,34 @@ public abstract class CubeCommand extends Command
         {
             return usage.replace('{', '<').replace('}', '>');
         }
+    }
+
+    @Override
+    public CubeCommand setAliases(List<String> aliases)
+    {
+        super.setAliases(aliases);
+        return this;
+    }
+
+    @Override
+    public CubeCommand setPermissionMessage(String permissionMessage)
+    {
+        super.setPermissionMessage(permissionMessage);
+        return this;
+    }
+
+    @Override
+    public CubeCommand setDescription(String description)
+    {
+        super.setDescription(description);
+        return this;
+    }
+
+    @Override
+    public CubeCommand setUsage(String usage)
+    {
+        super.setUsage(usage);
+        return this;
     }
 
     @Override
