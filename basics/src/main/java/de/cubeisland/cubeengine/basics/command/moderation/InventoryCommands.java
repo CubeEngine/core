@@ -60,6 +60,11 @@ public class InventoryCommands
                 context.sendTranslated("&cUser &2%s &cnot found!", context.getString(0));
                 return;
             }
+            if (!user.isOnline())
+            {
+                context.sendTranslated("&2%s is not online!",user.getName());
+                return;
+            }
             boolean allowModify = false;
             if (BasicsPerm.COMMAND_INVSEE_MODIFY.isAuthorized(sender))
             {
