@@ -6,6 +6,7 @@ import org.bukkit.Location;
 import org.bukkit.event.player.PlayerTeleportEvent;
 
 import de.cubeisland.cubeengine.core.CubeEngine;
+import de.cubeisland.cubeengine.core.command.ArgBounds;
 import de.cubeisland.cubeengine.core.command.CommandContext;
 import de.cubeisland.cubeengine.core.command.CommandResult;
 import de.cubeisland.cubeengine.core.command.ContainerCommand;
@@ -37,6 +38,7 @@ public class HomeCommand extends ContainerCommand
         this.inviteManager = module.getInviteManager();
 
         this.setUsage("<<owner:>home>");
+        this.getContextFactory().setArgBounds(new ArgBounds(0, 1));
     }
 
     @Override
@@ -85,40 +87,39 @@ public class HomeCommand extends ContainerCommand
                         }
                         else
                         {
-                            sender.sendTranslated("&6You have been teleported to &9%s's &6default home", home.getOwner()
-                                                                                                             .getDisplayName());
+                            sender.sendTranslated("&6You have been teleported to &9%s's &6default home",
+                                                  home.getOwner().getDisplayName());
                         }
                         return null;
                     }
                 }
-            }
-            Home home = tpManager.getHome(sender, context.getString(0).toLowerCase());
-            if (home == null)
-            {
-                context.sendTranslated("&9" + context.getString(0).toLowerCase() + " &4 is not a home");
-                return null;
-            }
-
-            sender.teleport(home.getLocation(), PlayerTeleportEvent.TeleportCause.COMMAND);
-            if (home.getWelcomeMsg() != null)
-            {
-                context.sendMessage(home.getWelcomeMsg());
-            }
-            else
-            {
-                if (home.isOwner(sender))
+                Home home = tpManager.getHome(sender, context.getString(0).toLowerCase());
+                if (home == null)
                 {
-                    context.sendTranslated("&6You have been teleported to your home: &9%s", home.getName());
+                    context.sendTranslated("&9" + context.getString(0).toLowerCase() + " &4 is not a home");
+                    return null;
                 }
-                else if (home.isPublic())
+
+                sender.teleport(home.getLocation(), PlayerTeleportEvent.TeleportCause.COMMAND);
+                if (home.getWelcomeMsg() != null)
                 {
-                    context.sendTranslated("&6You have been teleported to the public home &9%s", home.getName());
+                    context.sendMessage(home.getWelcomeMsg());
                 }
                 else
                 {
-                    context.sendTranslated("&6You have been teleported to &3%s&6's home: &9%s", home.getOwner()
-                                                                                                    .getDisplayName(), home
-                                               .getName());
+                    if (home.isOwner(sender))
+                    {
+                        context.sendTranslated("&6You have been teleported to your home: &9%s", home.getName());
+                    }
+                    else if (home.isPublic())
+                    {
+                        context.sendTranslated("&6You have been teleported to the public home &9%s", home.getName());
+                    }
+                    else
+                    {
+                        context.sendTranslated("&6You have been teleported to &3%s&6's home: &9%s",
+                                               home.getOwner().getDisplayName(), home.getName());
+                    }
                 }
             }
         }
@@ -132,7 +133,7 @@ public class HomeCommand extends ContainerCommand
     @Alias(names = {
         "sethome"
     })
-    @Command(names = "set", desc = "Set your home", usage = "[HomeName]", min = 1, max = 1, flags = {
+    @Command(names = "set", desc = "Set your home", usage = "[HomeName]", min = 0, max = 1, flags = {
         @Flag(longName = "public", name = "pub")
     }, permDefault = PermDefault.TRUE)
     public void setHome(ParameterizedContext context)
@@ -231,7 +232,7 @@ public class HomeCommand extends ContainerCommand
         }
     }
 
-    @Command(names = {"move", "replace"}, desc = "Move a home", usage = "[HomeName]", min = 1, max = 1, permDefault = PermDefault.TRUE)
+    @Command(names = {"move", "replace"}, desc = "Move a home", usage = "[HomeName]", min = 0, max = 1, permDefault = PermDefault.TRUE)
     public void moveHome(CommandContext context)
     {
         if (context.getSender() instanceof User)
@@ -281,7 +282,7 @@ public class HomeCommand extends ContainerCommand
     })
     @Command(names = {
         "remove", "delete", "rem", "del"
-    }, desc = "Remove a home", usage = "[HomeName]", min = 1, max = 1, permDefault = PermDefault.TRUE)
+    }, desc = "Remove a home", usage = "[HomeName]", min = 0, max = 1, permDefault = PermDefault.TRUE)
     public void removeHome(CommandContext context)
     {
         if (context.getSender() instanceof User)
@@ -331,7 +332,10 @@ public class HomeCommand extends ContainerCommand
     @Command(names = {
         "list"
     }, desc = "List homes you can access", permDefault = PermDefault.TRUE, min = 0, max = 0, flags = {
-        @Flag(name = "pub", longName = "public"), @Flag(name = "priv", longName = "private"), @Flag(name = "o", longName = "owned"), @Flag(name = "i", longName = "invited")
+        @Flag(name = "pub", longName = "public"),
+        @Flag(name = "priv", longName = "private"),
+        @Flag(name = "o", longName = "owned"),
+        @Flag(name = "i", longName = "invited")
     })
     public void listHomes(ParameterizedContext context)
     {
@@ -620,8 +624,8 @@ public class HomeCommand extends ContainerCommand
     }
 
     @Command(names = {
-        "makeprivate"
-    }, desc = "Make one of your homes private", min = 1, max = 1, permDefault = PermDefault.TRUE)
+        "makeprivate", "setprivate", "private"
+    }, desc = "Make one of your homes private", min = 0, max = 1, permDefault = PermDefault.TRUE)
     public void makePrivate(CommandContext context)
     {
         if (context.getSender() instanceof User)
@@ -654,8 +658,8 @@ public class HomeCommand extends ContainerCommand
     }
 
     @Command(names = {
-        "makepublic"
-    }, desc = "Make one of your homes public", min = 1, max = 1, permDefault = PermDefault.TRUE)
+        "makepublic", "setpublic", "public"
+    }, desc = "Make one of your homes public", min = 0, max = 1, permDefault = PermDefault.TRUE)
     public void makePublic(CommandContext context)
     {
         if (context.getSender() instanceof User)

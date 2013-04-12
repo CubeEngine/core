@@ -5,6 +5,7 @@ import java.util.Map;
 import java.util.Set;
 
 import de.cubeisland.cubeengine.core.CubeEngine;
+import de.cubeisland.cubeengine.core.command.ArgBounds;
 import de.cubeisland.cubeengine.core.command.CommandContext;
 import de.cubeisland.cubeengine.core.command.CommandResult;
 import de.cubeisland.cubeengine.core.command.ContainerCommand;
@@ -12,6 +13,7 @@ import de.cubeisland.cubeengine.core.command.parameterized.Flag;
 import de.cubeisland.cubeengine.core.command.parameterized.ParameterizedContext;
 import de.cubeisland.cubeengine.core.command.reflected.Alias;
 import de.cubeisland.cubeengine.core.command.reflected.Command;
+import de.cubeisland.cubeengine.core.permission.PermDefault;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.util.Pair;
 import de.cubeisland.cubeengine.travel.Travel;
@@ -35,6 +37,7 @@ public class HomeAdminCommand extends ContainerCommand
         this.acceptEntries = new HashMap<String, Pair<Long, ParameterizedContext>>();
 
         this.setUsage("[User] [Home]");
+        this.getContextFactory().setArgBounds(new ArgBounds(0, 2));
     }
 
     @Override
@@ -91,8 +94,9 @@ public class HomeAdminCommand extends ContainerCommand
         "clearhomes"
     })
     @Command(desc = "Clear all homes (of an user)", flags = {
-        @Flag(name = "pub", longName = "public"), @Flag(name = "priv", longName = "Private")
-    }, max = 1, usage = " <user> <-public> <-Private>")
+        @Flag(name = "pub", longName = "public"),
+        @Flag(name = "priv", longName = "Private")
+    }, permDefault =  PermDefault.OP, max = 1, usage = " <user> <-public> <-Private>")
     public void clear(ParameterizedContext context)
     {
         if (context.getArgCount() > 0)
@@ -156,7 +160,8 @@ public class HomeAdminCommand extends ContainerCommand
                                                                                                   .currentTimeMillis(), context));
     }
 
-    @Command(desc = "accept your previous interactions", min = 0, max = 0)
+    @Alias(names = {"accept"})
+    @Command(desc = "accept your previous interactions", permDefault =  PermDefault.OP,  min = 0, max = 0)
     public void accept(ParameterizedContext context)
     {
         if (this.acceptEntries.containsKey(context.getSender().getName()))
@@ -204,8 +209,11 @@ public class HomeAdminCommand extends ContainerCommand
     }
 
     @Command(desc = "List all (public) homes", flags = {
-        @Flag(name = "pub", longName = "public"), @Flag(name = "priv", longName = "private"), @Flag(name = "o", longName = "owned"), @Flag(name = "i", longName = "invited")
-    }, min = 0, max = 1, usage = " <<user>  <-owned> <-invited>> <-public> <-Private>")
+        @Flag(name = "pub", longName = "public"),
+        @Flag(name = "priv", longName = "private"),
+        @Flag(name = "o", longName = "owned"),
+        @Flag(name = "i", longName = "invited")
+    }, permDefault =  PermDefault.OP, min = 0, max = 1, usage = " <<user>  <-owned> <-invited>> <-public> <-private>")
     public void list(ParameterizedContext context)
     {
         int mask = context.getFlagCount() == 0 ? tpManager.ALL : 0;
@@ -261,7 +269,7 @@ public class HomeAdminCommand extends ContainerCommand
 
     @Command(names = {
         "private"
-    }, desc = "Make a home private", min = 1, max = 1, usage = " owner:home")
+    }, permDefault =  PermDefault.OP, desc = "Make a users home private", min = 1, max = 1, usage = " owner:home")
     public void makePrivate(CommandContext context)
     {
         User user = CubeEngine.getUserManager().getUser(context.getString(0), false);
@@ -283,7 +291,7 @@ public class HomeAdminCommand extends ContainerCommand
 
     @Command(names = {
         "public"
-    }, desc = "Make a home public", min = 1, max = 1, usage = " owner:home")
+    }, permDefault =  PermDefault.OP, desc = "Make a users home public", min = 1, max = 1, usage = " owner:home")
     public void makePublic(CommandContext context)
     {
         User user = CubeEngine.getUserManager().getUser(context.getString(0), false);

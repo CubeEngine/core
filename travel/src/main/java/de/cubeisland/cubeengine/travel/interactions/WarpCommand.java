@@ -1,10 +1,12 @@
 package de.cubeisland.cubeengine.travel.interactions;
 
+import java.util.Set;
 import java.util.TreeMap;
 
 import org.bukkit.Location;
 import org.bukkit.event.player.PlayerTeleportEvent;
 
+import de.cubeisland.cubeengine.core.command.ArgBounds;
 import de.cubeisland.cubeengine.core.command.CommandContext;
 import de.cubeisland.cubeengine.core.command.CommandResult;
 import de.cubeisland.cubeengine.core.command.CommandSender;
@@ -14,6 +16,7 @@ import de.cubeisland.cubeengine.core.command.parameterized.ParameterizedContext;
 import de.cubeisland.cubeengine.core.command.reflected.Alias;
 import de.cubeisland.cubeengine.core.command.reflected.Command;
 import de.cubeisland.cubeengine.core.command.result.AsyncResult;
+import de.cubeisland.cubeengine.core.permission.PermDefault;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.travel.Travel;
 import de.cubeisland.cubeengine.travel.storage.TelePointManager;
@@ -28,6 +31,8 @@ public class WarpCommand extends ContainerCommand
     {
         super(module, "warp", "Teleport to a warp");
         this.telePointManager = module.getTelepointManager();
+
+        this.getContextFactory().setArgBounds(new ArgBounds(0, 1));
     }
 
     @Override
@@ -61,7 +66,7 @@ public class WarpCommand extends ContainerCommand
         "create", "make"
     }, flags = {
         @Flag(name = "priv", longName = "private")
-    }, desc = "Create a warp", min = 1, max = 1)
+    }, permDefault = PermDefault.OP, desc = "Create a warp", min = 1, max = 1)
     public void createWarp(ParameterizedContext context)
     {
         if (context.getSender() instanceof User)
@@ -94,7 +99,7 @@ public class WarpCommand extends ContainerCommand
     })
     @Command(names = {
         "remove", "delete"
-    }, desc = "Remove a warp", min = 1, max = 1)
+    }, permDefault = PermDefault.OP, desc = "Remove a warp", min = 1, max = 1)
     public void removeWarp(CommandContext context)
     {
         Warp warp;
@@ -115,7 +120,7 @@ public class WarpCommand extends ContainerCommand
         context.sendTranslated("The warp is now deleted");
     }
 
-    @Command(desc = "Rename a warp", min = 2, max = 2)
+    @Command(permDefault = PermDefault.OP, desc = "Rename a warp", min = 2, max = 2)
     public void rename(CommandContext context)
     {
         String name = context.getString(1);
@@ -145,7 +150,7 @@ public class WarpCommand extends ContainerCommand
         context.sendTranslated("The warps name is now changed");
     }
 
-    @Command(desc = "Move a warp", min = 1, max = 2)
+    @Command(permDefault = PermDefault.OP, desc = "Move a warp", min = 1, max = 2)
     public void move(CommandContext context)
     {
         CommandSender sender = context.getSender();
@@ -171,7 +176,7 @@ public class WarpCommand extends ContainerCommand
         user.sendTranslated("The warp is now moved to your current location");
     }
 
-    @Command(desc = "Search for a warp", min = 1, max = 2)
+    @Command(permDefault = PermDefault.TRUE, desc = "Search for a warp", min = 1, max = 2)
     public CommandResult search(CommandContext context)
     {
         String search = context.getString(0);
@@ -218,9 +223,60 @@ public class WarpCommand extends ContainerCommand
         };
     }
 
-    @Command(desc = "List all available warps")
-    public void list(CommandContext context)
+    @Command(permDefault = PermDefault.TRUE, desc = "List all available warps", flags = {
+        @Flag(name = "pub", longName = "public"),
+        @Flag(name = "priv", longName = "private"),
+        @Flag(name = "o", longName = "owned"),
+        @Flag(name = "i", longName = "invited")
+    }, usage = "<user> <-PUBlic> <-PRIVate> <-Owned> <-Invited>", min = 0, max = 1)
+    public void list(ParameterizedContext context)
     {
-        // TODO
+        int mask = context.getFlagCount() < 1 ? telePointManager.ALL : 0;
+        if (context.hasFlag("pub"))
+        {
+            mask |= telePointManager.PUBLIC;
+        }
+        if (context.hasFlag("priv"))
+        {
+            mask |= telePointManager.PRIVATE;
+        }
+        if (context.hasFlag("o"))
+        {
+            mask |= telePointManager.OWNED;
+        }
+        if (context.hasFlag("i"))
+        {
+            mask |= telePointManager.INVITED;
+        }
+
+        Set<Warp> warps;
+        if (context.getArgCount() == 1)
+        {
+            User user = context.getUser(0);
+            if (user == null)
+            {
+                context.sendTranslated("%s is not a user on this server");
+                return;
+            }
+            warps = telePointManager.listWarps(context.getUser(0), mask);
+        }
+        else
+        {
+            warps = telePointManager.listWarps(mask);
+        }
+
+        if (warps.isEmpty())
+        {
+            context.sendTranslated("The query returned no warps!");
+
+        }
+        else
+        {
+            context.sendTranslated("Here are the warps:");
+            for (Warp warp : warps)
+            {
+                context.sendMessage(warp.getOwner().getDisplayName() + ":" + warp.getName());
+            }
+        }
     }
 }

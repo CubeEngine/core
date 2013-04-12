@@ -17,11 +17,10 @@
  */
 package de.cubeisland.cubeengine.travel;
 
+import de.cubeisland.cubeengine.core.bukkit.EventManager;
 import de.cubeisland.cubeengine.core.command.CommandManager;
 import de.cubeisland.cubeengine.core.module.Module;
-import de.cubeisland.cubeengine.travel.interactions.HomeAdminCommand;
-import de.cubeisland.cubeengine.travel.interactions.HomeCommand;
-import de.cubeisland.cubeengine.travel.interactions.WarpCommand;
+import de.cubeisland.cubeengine.travel.interactions.*;
 import de.cubeisland.cubeengine.travel.storage.InviteManager;
 import de.cubeisland.cubeengine.travel.storage.TelePointManager;
 
@@ -43,6 +42,9 @@ public class Travel extends Module
         cm.registerCommand(new HomeCommand(this));
         cm.registerCommand(new HomeAdminCommand(this), "home");
         cm.registerCommand(new WarpCommand(this));
+
+        final EventManager em = this.getCore().getEventManager();
+        em.registerListener(this, new HomeListener(this));
     }
 
     public TravelConfig getConfig()

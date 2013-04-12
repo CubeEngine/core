@@ -117,7 +117,7 @@ public class TelePointManager extends SingleKeyStorage<Long, TeleportPoint>
                                                                                                               .ordinal())
                                                                                      .end().end());
             this.database
-                .storeStatement(this.modelClass, "warps_all_private", builder.select().cols("key", "name", "visibility")
+                .storeStatement(this.modelClass, "warps_all_private", builder.select().cols("key", "name", "owner", "visibility")
                                                                              .from(this.tableName).where()
                                                                              .field("visibility").is(EQUAL)
                                                                              .value(TeleportPoint.Visibility.PRIVATE
