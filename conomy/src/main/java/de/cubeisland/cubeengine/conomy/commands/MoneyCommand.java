@@ -19,6 +19,8 @@ package de.cubeisland.cubeengine.conomy.commands;
 
 import java.util.Collection;
 
+import de.cubeisland.cubeengine.core.command.CommandContext;
+import de.cubeisland.cubeengine.core.command.CommandResult;
 import de.cubeisland.cubeengine.core.command.ContainerCommand;
 import de.cubeisland.cubeengine.core.command.parameterized.Flag;
 import de.cubeisland.cubeengine.core.command.parameterized.Param;
@@ -43,19 +45,19 @@ public class MoneyCommand extends ContainerCommand
         this.module = module;
     }
 
-    //    @Override
-    //    public void run(CommandContext context) {
-    //        super.run(context);
-    //        /*
-    //        if (context.hasIndexed(0))
-    //        {
-    //            super.run(context);
-    //        }
-    //        else
-    //        {
-    //            this.balance(context); // Alias for balance //TODO this is broken because of flags checks in balance
-    //        }*/
-    //    }
+    @Override
+    public CommandResult run(CommandContext context) throws Exception
+    {
+        if (context.hasArg(0))
+        {
+            return super.run(context);
+        }
+        else
+        {
+            this.balance((ParameterizedContext)context);
+            return null;
+        }
+    }
 
     @Alias(names = {
         "balance", "moneybalance"
