@@ -40,18 +40,18 @@ public class HomeListener implements Listener
                         home.setLocation(user.getLocation());
                         home.update();
                         tpManager.update(home.getModel());
-                        user.sendTranslated("&6Your home have been set!");
+                        user.sendTranslated("&aYour home have been set!");
                     }
                     else
                     {
                         if (this.tpManager.getNumberOfHomes(user) == this.module.getConfig().maxhomes)
                         {
-                            user.sendTranslated("You have reached your maximum number of homes!");
-                            user.sendTranslated("You have to delete a home to make a new one");
+                            user.sendTranslated("&4You have reached your maximum number of homes!");
+                            user.sendTranslated("&cYou have to delete a home to make a new one");
                             return;
                         }
                         Home home = tpManager.createHome(user.getLocation(), "home", user, TeleportPoint.Visibility.PRIVATE);
-                        user.sendTranslated("&6Your home have been created!");
+                        user.sendTranslated("&aYour home have been created!");
                         event.setCancelled(true);
                     }
                 }
