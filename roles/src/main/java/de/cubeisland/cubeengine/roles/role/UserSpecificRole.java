@@ -34,7 +34,7 @@ public class UserSpecificRole extends MergedRole
     private UserPermissionsManager upManager;
     private long worldId;
 
-    public UserSpecificRole(Roles module, User user, long worldId, THashMap<String, Boolean> perms, THashMap<String, String> meta)
+    private UserSpecificRole(Roles module, User user, long worldId, THashMap<String, Boolean> perms, THashMap<String, String> meta)
     {
         super(user.getName(), perms, meta);
         this.user = user;
@@ -44,7 +44,11 @@ public class UserSpecificRole extends MergedRole
         this.upManager = module.getDbUserPerm();
     }
 
-    @Override
+    public UserSpecificRole(Roles module, User user, long worldId)
+    {
+        this(module,user,worldId, module.getDbUserPerm().getForUser(user.key,false).get(worldId), module.getDbUserMeta().getForUser(user.key,false).get(worldId));
+    }
+
     public void setPermission(String perm, Boolean set)
     {
         if (set == null)
@@ -60,7 +64,6 @@ public class UserSpecificRole extends MergedRole
         this.module.getRoleManager().reloadAllRolesAndApply(user, user.getPlayer());
     }
 
-    @Override
     public void setMetaData(String key, String value)
     {
         if (value == null)
@@ -74,7 +77,6 @@ public class UserSpecificRole extends MergedRole
         this.module.getRoleManager().reloadAllRolesAndApply(user, user.getPlayer());
     }
 
-    @Override
     public void clearMetaData()
     {
         umManager.clearByUser(user.key);

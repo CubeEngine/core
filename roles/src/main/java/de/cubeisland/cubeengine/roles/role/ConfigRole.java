@@ -50,7 +50,6 @@ public class ConfigRole extends Role
         }
         this.rolePermission = permission;
     }
-    //TODO save config when change is made with ingame cmd
 
     public void saveConfigToFile()
     {
@@ -64,7 +63,6 @@ public class ConfigRole extends Role
         this.config.save();
     }
 
-    @Override
     public void setPermission(String perm, Boolean set)
     {
         this.makeDirty();
@@ -79,7 +77,6 @@ public class ConfigRole extends Role
         this.saveConfigToFile();
     }
 
-    @Override
     public void setMetaData(String key, String value)
     {
         this.makeDirty();
@@ -94,7 +91,6 @@ public class ConfigRole extends Role
         this.saveConfigToFile();
     }
 
-    @Override
     public void clearMetaData()
     {
         this.makeDirty();
@@ -102,7 +98,6 @@ public class ConfigRole extends Role
         this.saveConfigToFile();
     }
 
-    @Override
     public boolean setParentRole(String pRole)
     {
         this.makeDirty();
@@ -111,7 +106,6 @@ public class ConfigRole extends Role
         return added;
     }
 
-    @Override
     public boolean removeParentRole(String pRole)
     {
         if (this.config.parents.remove(pRole))
@@ -123,7 +117,6 @@ public class ConfigRole extends Role
         return false;
     }
 
-    @Override
     public void clearParentRoles()
     {
         this.makeDirty();
@@ -131,7 +124,6 @@ public class ConfigRole extends Role
         this.saveConfigToFile();
     }
 
-    @Override
     public void setPriority(Priority priority)
     {
         this.makeDirty();
@@ -139,13 +131,12 @@ public class ConfigRole extends Role
         this.saveConfigToFile();
     }
 
-    @Override
     public void rename(String newName)
     {
         this.makeDirty();
         this.config.roleName = newName;
         this.saveConfigToNewFile();
-        for (Role role : this.childRoles)
+        for (ConfigRole role : this.childRoles)
         {
             role.removeParentRole(this.name);
             role.setParentRole(newName);

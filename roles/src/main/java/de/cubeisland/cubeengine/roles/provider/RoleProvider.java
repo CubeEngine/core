@@ -27,16 +27,15 @@ import java.util.TreeSet;
 import de.cubeisland.cubeengine.core.config.Configuration;
 import de.cubeisland.cubeengine.core.logger.LogLevel;
 import de.cubeisland.cubeengine.core.permission.Permission;
-import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.util.StringUtils;
 import de.cubeisland.cubeengine.roles.RoleManager;
 import de.cubeisland.cubeengine.roles.Roles;
+import de.cubeisland.cubeengine.roles.config.Priority;
+import de.cubeisland.cubeengine.roles.config.RoleConfig;
 import de.cubeisland.cubeengine.roles.exception.CircularRoleDepedencyException;
 import de.cubeisland.cubeengine.roles.exception.RoleDependencyMissingException;
 import de.cubeisland.cubeengine.roles.role.ConfigRole;
 import de.cubeisland.cubeengine.roles.role.Role;
-import de.cubeisland.cubeengine.roles.config.Priority;
-import de.cubeisland.cubeengine.roles.config.RoleConfig;
 
 import gnu.trove.map.hash.THashMap;
 import org.apache.commons.lang.Validate;
@@ -47,23 +46,21 @@ public abstract class RoleProvider
 {
     protected THashMap<String, RoleConfig> configs = new THashMap<String, RoleConfig>();
     protected THashMap<String, ConfigRole> roles = new THashMap<String, ConfigRole>();
-    protected boolean init = false;
-    protected boolean rolesCalculated = false;
     protected File folder = null;
-    protected Stack<String> roleStack = new Stack<String>();
-    protected Roles module;
+
     public final boolean isGlobal;
-    protected Permission basePerm;
+    protected final Permission basePerm;
+
+    protected Roles module;
     protected RoleManager manager;
 
-    public RoleProvider(Roles module, boolean isGlobal)
+    public RoleProvider(Roles module, boolean isGlobal, Permission basePerm)
     {
         this.module = module;
-        this.isGlobal = false;
+        this.isGlobal = isGlobal;
         this.manager = module.getRoleManager();
+        this.basePerm = basePerm;
     }
-
-    public abstract void createBasePerm();
 
     public Iterable<RoleConfig> getConfigs()
     {
@@ -73,11 +70,6 @@ public abstract class RoleProvider
     public void addConfig(RoleConfig config)
     {
         this.configs.put(config.roleName.toLowerCase(Locale.ENGLISH), config);
-    }
-
-    public void setRole(ConfigRole role)
-    {
-        this.roles.put(role.getName().toLowerCase(Locale.ENGLISH), role);
     }
 
     public ConfigRole getRole(String roleName)
@@ -90,11 +82,6 @@ public abstract class RoleProvider
         return this.roles.get(roleName.toLowerCase(Locale.ENGLISH));
     }
 
-    public RoleConfig getConfig(String parentName)
-    {
-        return this.configs.get(parentName.toLowerCase(Locale.ENGLISH));
-    }
-
     /**
      * Initializes this RoleProvider with its configurations
      *
@@ -102,7 +89,7 @@ public abstract class RoleProvider
      */
     public void loadInConfigurations(File rolesFolder)
     {
-        this.folder.mkdir(); // Creates folder for this privder if not existant
+        this.folder.mkdir(); // Creates folder for this provider if not existent
         int i = 0;
         for (File configFile : this.folder.listFiles())
         {
@@ -114,20 +101,12 @@ public abstract class RoleProvider
             }
         }
         this.module.getLog().log(DEBUG, i + " roles read!");
-        this.init = true;
     }
 
-    public void reload()
-    {
-        this.init = false;
-        this.loadInConfigurations(null);
-    }
-
-    public void recalculateRoles()
-    {
-        this.calculateRoles(true);
-    }
-
+    /**
+     * Searches for dirty roles in this provider and recalculates all those and dependent roles.
+     * Then reapply the roles to users if needed.
+     */
     public void recalculateDirtyRoles()
     {
         Set<Role> dirtyChilds = new HashSet<Role>();
@@ -139,16 +118,19 @@ public abstract class RoleProvider
             }
         }
         this.recalculateDirtyRoles(dirtyChilds);
-        for (User user : this.module.getCore().getUserManager().getOnlineUsers())
-        {
-            this.module.getRoleManager().preCalculateRoles(user, true);
-            if (user.isOnline())
-            {
-                this.module.getRoleManager().applyRole(user.getPlayer());
-            }
-        }
+        this.reapplyDirtyRoles();
     }
 
+    /**
+     * Searches for dirtyRoles in the user-roles and recalculates the user-role if found.
+     */
+    public abstract void reapplyDirtyRoles();
+
+    /**
+     * Recalculates this set of dirty roles and also recursively their child-roles.
+     *
+     * @param dirtyRoles a set of dirtyRoles
+     */
     private void recalculateDirtyRoles(Set<Role> dirtyRoles)
     {
         Set<Role> dirtyChilds = new HashSet<Role>();
@@ -166,6 +148,7 @@ public abstract class RoleProvider
             }
             for (Role childRole : role.getChildRoles())
             {
+                childRole.makeDirty();
                 dirtyChilds.add(childRole);
             }
         }
@@ -175,14 +158,13 @@ public abstract class RoleProvider
         }
     }
 
-    public boolean calculateRoles(boolean recalculate)
+    /**
+     * Calculates all the roles of this provider.
+     *
+     * @return
+     */
+    public boolean calculateRoles()
     {
-        THashMap<String, ConfigRole> globalRoles = this.module.getRoleManager().getGlobalRoles();
-        if (this.rolesCalculated && !recalculate)
-        {
-            return false;
-        }
-        this.rolesCalculated = true;
         for (RoleConfig config : this.configs.values())
         {
             ConfigRole role = this.calculateRole(config);
@@ -196,6 +178,14 @@ public abstract class RoleProvider
         return true;
     }
 
+    private Stack<String> roleStack = new Stack<String>(); // stack for detecting circular dependencies
+
+    /**
+     * Calculates a Role with given RoleConfig also resolve its dependencies
+     *
+     * @param config
+     * @return
+     */
     public ConfigRole calculateRole(RoleConfig config)
     {
         try
@@ -264,7 +254,7 @@ public abstract class RoleProvider
             }
             Permission perm = this.basePerm.createChild(config.roleName);
             this.module.getCore().getPermissionManager().registerPermission(this.module,perm);
-            role = new ConfigRole(config, parentRoles, false, perm);
+            role = new ConfigRole(config, parentRoles, isGlobal, perm);
             this.roleStack.pop();
             this.module.getLog().log(DEBUG, role.getName() + " calculated!");
             return role;
@@ -276,41 +266,41 @@ public abstract class RoleProvider
         }
     }
 
+    /**
+     * Returns all the roles of this provider
+     *
+     * @return
+     */
     public THashMap<String, ConfigRole> getRoles()
     {
         return this.roles;
     }
 
-    public boolean isCalculated()
-    {
-        return this.rolesCalculated;
-    }
-
-    public void setRolePermission(Role role, String perm, Boolean set)
+    public void setRolePermission(ConfigRole role, String perm, Boolean set)
     {
         role.setPermission(perm, set);
         this.recalculateDirtyRoles();
     }
 
-    public void setRoleMetaData(Role role, String key, String value)
+    public void setRoleMetaData(ConfigRole role, String key, String value)
     {
         role.setMetaData(key, value);
         this.recalculateDirtyRoles();
     }
 
-    public void resetRoleMetaData(Role role, String key)
+    public void resetRoleMetaData(ConfigRole role, String key)
     {
         role.setMetaData(key, null);
         this.recalculateDirtyRoles();
     }
 
-    public void clearRoleMetaData(Role role)
+    public void clearRoleMetaData(ConfigRole role)
     {
         role.clearMetaData();
         this.recalculateDirtyRoles();
     }
 
-    public boolean setParentRole(Role role, Role pRole) throws CircularRoleDepedencyException
+    public boolean setParentRole(ConfigRole role, Role pRole) throws CircularRoleDepedencyException
     {
         this.checkCircularDependency(role, pRole);
         boolean added = role.setParentRole(pRole.getName());
@@ -333,7 +323,7 @@ public abstract class RoleProvider
         }
     }
 
-    public boolean removeParentRole(Role role, Role pRole)
+    public boolean removeParentRole(ConfigRole role, Role pRole)
     {
         boolean removed = role.removeParentRole(pRole.getName());
         if (removed)
@@ -343,19 +333,19 @@ public abstract class RoleProvider
         return removed;
     }
 
-    public void clearParentRoles(Role role)
+    public void clearParentRoles(ConfigRole role)
     {
         role.clearParentRoles();
         this.recalculateDirtyRoles();
     }
 
-    public void setRolePriority(Role role, Priority priority)
+    public void setRolePriority(ConfigRole role, Priority priority)
     {
         role.setPriority(priority);
         this.recalculateDirtyRoles();
     }
 
-    public boolean renameRole(Role role, String newName)
+    public boolean renameRole(ConfigRole role, String newName)
     {
         newName = newName.toLowerCase(Locale.ENGLISH);
         if (this.roles.containsKey(newName))
@@ -397,15 +387,15 @@ public abstract class RoleProvider
         return true;
     }
 
-    public void deleteRole(Role role)
+    public void deleteRole(ConfigRole role)
     {
-        for (Role crole : role.getChildRoles())
+        for (ConfigRole crole : role.getChildRoles())
         {
             crole.removeParentRole(role.getName());
         }
         this.roles.remove(role.getName());
         this.configs.remove(role.getName());
-        ((ConfigRole)role).deleteConfigFile();
+        role.deleteConfigFile();
         if (this instanceof WorldRoleProvider)
         {
             for (long worldID : ((WorldRoleProvider)this).getWorlds().keys())

@@ -23,8 +23,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import de.cubeisland.cubeengine.roles.config.Priority;
-
 import gnu.trove.map.hash.THashMap;
 
 public class MergedRole extends Role
@@ -116,53 +114,5 @@ public class MergedRole extends Role
     public Collection<ConfigRole> getMergedWith()
     {
         return mergedWith;
-    }
-
-    @Override
-    public void setPermission(String perm, Boolean set)
-    {
-        throw new UnsupportedOperationException("Not supported.");
-    }
-
-    @Override
-    public void setMetaData(String key, String value)
-    {
-        throw new UnsupportedOperationException("Not supported.");
-    }
-
-    @Override
-    public void clearMetaData()
-    {
-        throw new UnsupportedOperationException("Not supported.");
-    }
-
-    @Override
-    public boolean setParentRole(String pRole)
-    {
-        throw new UnsupportedOperationException("Not supported.");
-    }
-
-    @Override
-    public boolean removeParentRole(String pRole)
-    {
-        throw new UnsupportedOperationException("Not supported.");
-    }
-
-    @Override
-    public void clearParentRoles()
-    {
-        throw new UnsupportedOperationException("Not supported.");
-    }
-
-    @Override
-    public void setPriority(Priority priority)
-    {
-        throw new UnsupportedOperationException("Not supported.");
-    }
-
-    @Override
-    public void rename(String newName)
-    {
-        throw new UnsupportedOperationException("Not supported.");
     }
 }

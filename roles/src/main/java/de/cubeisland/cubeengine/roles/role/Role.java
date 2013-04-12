@@ -284,22 +284,6 @@ public abstract class Role implements Comparable<Role>
         return childRoles;
     }
 
-    public abstract void setPermission(String perm, Boolean set);
-
-    public abstract void setMetaData(String key, String value);
-
-    public abstract void clearMetaData();
-
-    public abstract boolean setParentRole(String pRole);
-
-    public abstract boolean removeParentRole(String pRole);
-
-    public abstract void clearParentRoles();
-
-    public abstract void setPriority(Priority priority);
-
-    public abstract void rename(String newName);
-
     public void setChildRoles(Set<ConfigRole> childRoles)
     {
         this.childRoles = childRoles;

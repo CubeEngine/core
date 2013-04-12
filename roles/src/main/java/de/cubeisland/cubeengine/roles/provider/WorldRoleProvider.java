@@ -24,11 +24,14 @@ import java.util.Locale;
 import java.util.Set;
 
 import de.cubeisland.cubeengine.core.logger.LogLevel;
+import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.util.Triplet;
 import de.cubeisland.cubeengine.roles.Roles;
 import de.cubeisland.cubeengine.roles.RolesConfig;
 import de.cubeisland.cubeengine.roles.config.RoleMirror;
 import de.cubeisland.cubeengine.roles.role.ConfigRole;
+import de.cubeisland.cubeengine.roles.role.Role;
+import de.cubeisland.cubeengine.roles.role.UserSpecificRole;
 
 import gnu.trove.map.hash.TLongObjectHashMap;
 
@@ -41,22 +44,15 @@ public class WorldRoleProvider extends RoleProvider
 
     public WorldRoleProvider(Roles module, RoleMirror mirrorConfig)
     {
-        super(module, false);
+        super(module, false, module.getBasePermission().createAbstractChild("world").createAbstractChild(mirrorConfig.mainWorld));
         this.mirrorConfig = mirrorConfig;
-        this.createBasePerm();
     }
 
     public WorldRoleProvider(Roles module, long worldId)
     {
-        super(module, false);
+        super(module, false, module.getBasePermission().createAbstractChild("world").
+            createAbstractChild(module.getCore().getWorldManager().getWorld(worldId).getName()));
         this.mirrorConfig = new RoleMirror(this.module, worldId);
-        this.createBasePerm();
-    }
-
-    @Override
-    public void createBasePerm()
-    {
-        this.basePerm = this.module.getBasePermission().createAbstractChild("world").createAbstractChild(this.mirrorConfig.mainWorld);
     }
 
     public TLongObjectHashMap<Triplet<Boolean, Boolean, Boolean>> getWorlds()
@@ -91,10 +87,6 @@ public class WorldRoleProvider extends RoleProvider
     @Override
     public void loadInConfigurations(File rolesFolder)
     {
-        if (this.init) // provider is already initialized!
-        {
-            return;
-        }
         if (this.folder == null)
         {
             // Sets the folder for this provider
@@ -102,6 +94,39 @@ public class WorldRoleProvider extends RoleProvider
         }
         this.module.getLog().log(DEBUG, "Loading roles for provider of " + this.mirrorConfig.mainWorld + ":");
         super.loadInConfigurations(rolesFolder);
+    }
+
+    @Override
+    public void reapplyDirtyRoles()
+    {
+        for (User user : this.module.getCore().getUserManager().getOnlineUsers())
+        {
+            boolean isDirty = false;
+            TLongObjectHashMap<UserSpecificRole> roleContainer = this.manager.getRoleContainer(user);
+            Long userWorld = user.isOnline() ? user.getWorldId() : null;
+            for (long worldId : this.getWorlds().keys())
+            {
+                UserSpecificRole userRole = roleContainer.get(worldId);
+                for (Role role : userRole.getParentRoles())
+                {
+                    if (role.isDirty())
+                    {
+                        isDirty = true; // found a dirty role recalculate!
+                        break;
+                    }
+                }
+                if (isDirty)
+                {
+                    UserSpecificRole newRole = this.manager.recalculateDirtyUserRole(user,worldId);
+                    roleContainer.put(worldId,newRole);
+                    if (userWorld == worldId) // if user is in that world
+                    {
+                        this.module.getRoleManager().applyRole(user.getPlayer()); // reapply freshly generated userrole
+                    }
+                }
+                isDirty = false; // check next world
+            }
+        }
     }
 
     public String getMainWorld()

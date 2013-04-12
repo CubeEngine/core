@@ -20,8 +20,13 @@ package de.cubeisland.cubeengine.roles.provider;
 import java.io.File;
 import java.util.Locale;
 
+import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.roles.Roles;
 import de.cubeisland.cubeengine.roles.role.ConfigRole;
+import de.cubeisland.cubeengine.roles.role.Role;
+import de.cubeisland.cubeengine.roles.role.UserSpecificRole;
+
+import gnu.trove.map.hash.TLongObjectHashMap;
 
 import static de.cubeisland.cubeengine.core.logger.LogLevel.DEBUG;
 
@@ -29,30 +34,52 @@ public class GlobalRoleProvider extends RoleProvider
 {
     public GlobalRoleProvider(Roles module)
     {
-        super(module, true);
-        this.createBasePerm();
-    }
-
-    @Override
-    public void createBasePerm()
-    {
-        this.basePerm = this.module.getBasePermission().createAbstractChild("global");
+        super(module, true, module.getBasePermission().createAbstractChild("global"));
     }
 
     @Override
     public void loadInConfigurations(File rolesFolder)
     {
         this.module.getLog().log(DEBUG, "Loading global roles...");
-        if (this.init) // provider is already initialized!
-        {
-            return;
-        }
         if (this.folder == null)
         {
             // Sets the folder for this provider
             this.folder = rolesFolder;
         }
         super.loadInConfigurations(rolesFolder);
+    }
+
+    @Override
+    public void reapplyDirtyRoles()
+    {
+        for (User user : this.module.getCore().getUserManager().getOnlineUsers())
+        {
+            boolean isDirty = false;
+            TLongObjectHashMap<UserSpecificRole> roleContainer = this.manager.getRoleContainer(user);
+            Long userWorld = user.isOnline() ? user.getWorldId() : null;
+            for (long worldId : roleContainer.keys())
+            {
+                UserSpecificRole userRole = roleContainer.get(worldId);
+                for (Role role : userRole.getParentRoles())
+                {
+                    if (role.isDirty())
+                    {
+                        isDirty = true; // found a dirty role recalculate!
+                        break;
+                    }
+                }
+                if (isDirty)
+                {
+                    UserSpecificRole newRole = this.manager.recalculateDirtyUserRole(user,worldId);
+                    roleContainer.put(worldId,newRole);
+                    if (userWorld == worldId) // if user is in that world
+                    {
+                        this.module.getRoleManager().applyRole(user.getPlayer()); // reapply freshly generated userrole
+                    }
+                }
+                isDirty = false; // check next world
+            }
+        }
     }
 
     @Override

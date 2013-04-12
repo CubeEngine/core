@@ -103,7 +103,7 @@ public class SpawnCommands
                 locStrings[4] = String.valueOf(pitch);
                 locStrings[5] = world.getName();
                 role.setMetaData("rolespawn", StringUtils.implode(":",locStrings));
-                roles.getApi().recalculateDiryRoles();
+                roles.getApi().recalculateDirtyRoles();
             }
         }
         else

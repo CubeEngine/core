@@ -17,18 +17,21 @@
  */
 package de.cubeisland.cubeengine.roles.storage;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
+
 import de.cubeisland.cubeengine.core.storage.StorageException;
 import de.cubeisland.cubeengine.core.storage.TripletKeyStorage;
 import de.cubeisland.cubeengine.core.storage.database.Database;
 import de.cubeisland.cubeengine.core.storage.database.querybuilder.QueryBuilder;
+
 import gnu.trove.map.hash.THashMap;
 import gnu.trove.map.hash.TLongObjectHashMap;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 
 public class UserPermissionsManager extends TripletKeyStorage<Long, Long, String, UserPermission>
 {
     private static final int REVISION = 1;
+    private TLongObjectHashMap<TLongObjectHashMap<THashMap<String, Boolean>>> userperms = new TLongObjectHashMap<TLongObjectHashMap<THashMap<String, Boolean>>>();
 
     public UserPermissionsManager(Database database)
     {
@@ -52,29 +55,41 @@ public class UserPermissionsManager extends TripletKeyStorage<Long, Long, String
         }
     }
 
-    public TLongObjectHashMap<THashMap<String, Boolean>> getForUser(long key)
+    public TLongObjectHashMap<THashMap<String, Boolean>> getForUser(long key, boolean reload)
     {
-        try
+        if (reload)
         {
-            ResultSet resulsSet = this.database.preparedQuery(modelClass, "getallByUser", key);
-            TLongObjectHashMap<THashMap<String, Boolean>> result = new TLongObjectHashMap<THashMap<String, Boolean>>();
-            while (resulsSet.next())
+            try
             {
-                int worldId = resulsSet.getInt("worldId");
-
-                THashMap<String, Boolean> map = result.get(worldId);
-                if (map == null)
+                ResultSet resulsSet = this.database.preparedQuery(modelClass, "getallByUser", key);
+                TLongObjectHashMap<THashMap<String, Boolean>> result = new TLongObjectHashMap<THashMap<String, Boolean>>();
+                while (resulsSet.next())
                 {
-                    map = new THashMap<String, Boolean>();
-                    result.put(worldId, map);
+                    int worldId = resulsSet.getInt("worldId");
+
+                    THashMap<String, Boolean> map = result.get(worldId);
+                    if (map == null)
+                    {
+                        map = new THashMap<String, Boolean>();
+                        result.put(worldId, map);
+                    }
+                    map.put(resulsSet.getString("perm"), resulsSet.getBoolean("isSet"));
                 }
-                map.put(resulsSet.getString("perm"), resulsSet.getBoolean("isSet"));
+                this.userperms.put(key,result);
+                return result;
             }
-            return result;
+            catch (SQLException ex)
+            {
+                throw new IllegalStateException("Error while getting Model from Database", ex);
+            }
         }
-        catch (SQLException ex)
+        else
         {
-            throw new IllegalStateException("Error while getting Model from Database", ex);
+            if (this.userperms.containsKey(key))
+            {
+                return this.userperms.get(key);
+            }
+            return this.getForUser(key, true);
         }
     }
 }

@@ -77,7 +77,7 @@ public class RolesAPI
         return provider.getRole(name);
     }
 
-    public void recalculateDiryRoles()
+    public void recalculateDirtyRoles()
     {
         this.manager.recalculateAllDirtyRoles();
 

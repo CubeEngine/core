@@ -118,7 +118,7 @@ public class KillActionType extends ActionTypeContainer
         EntityDamageEvent dmgEvent = killed.getLastDamageCause();
         if (dmgEvent == null)
         {
-            return; // squids dying in air, lazy bukkit :S -> https://bukkit.atlassian.net/browse/BUKKIT-3684
+            return; // should not happen anymore (but i'll leave it in to prevent NPE)
         }
         String additionalData = actionType.serializeData(dmgEvent.getCause(), killed,null);
         Entity causer;
