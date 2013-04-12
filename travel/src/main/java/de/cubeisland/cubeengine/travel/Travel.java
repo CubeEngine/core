@@ -18,7 +18,6 @@
 package de.cubeisland.cubeengine.travel;
 
 import de.cubeisland.cubeengine.core.command.CommandManager;
-import de.cubeisland.cubeengine.core.command.reflected.ReflectedCommand;
 import de.cubeisland.cubeengine.core.module.Module;
 import de.cubeisland.cubeengine.travel.interactions.HomeAdminCommand;
 import de.cubeisland.cubeengine.travel.interactions.HomeCommand;

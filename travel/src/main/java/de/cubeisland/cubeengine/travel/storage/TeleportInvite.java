@@ -25,10 +25,9 @@ import de.cubeisland.cubeengine.core.util.convert.ConversionException;
 import java.util.List;
 
 @TwoKeyEntity(tableName = "teleportinvites", firstPrimaryKey = "teleportpoint", secondPrimaryKey = "userkey",
-    indices = {
-            @Index(value = Index.IndexType.FOREIGN_KEY, fields = "teleportpoint", f_table = "teleportpoints", f_field = "key"),
-            @Index(value = Index.IndexType.FOREIGN_KEY, fields = "userkey", f_table = "user", f_field = "key")
-    })
+              indices = {
+                  @Index(value = Index.IndexType.FOREIGN_KEY, fields = "teleportpoint", f_table = "teleportpoints", f_field = "key"), @Index(value = Index.IndexType.FOREIGN_KEY, fields = "userkey", f_table = "user", f_field = "key")
+              })
 public class TeleportInvite implements TwoKeyModel<Long, Long>
 {
     @Attribute(type = AttrType.INT, unsigned = true, name = "teleportpoint")
@@ -52,8 +51,6 @@ public class TeleportInvite implements TwoKeyModel<Long, Long>
     /**
      * Check if the current and the teleportinvite supplied is equal in their contents.
      * This does not care if they are the same instance of TeleportInvite
-     * @param tpI
-     * @return
      */
     public boolean semiEquals(TeleportInvite tpI)
     {

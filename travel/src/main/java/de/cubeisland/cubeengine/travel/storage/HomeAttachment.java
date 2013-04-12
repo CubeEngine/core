@@ -37,8 +37,6 @@ public class HomeAttachment extends UserAttachment
     /**
      * Will try to find a home with that name among the homes the user can access
      * Different variations with the prefix is also tried
-     * @param name
-     * @return
      */
     public Home getHome(String name)
     {
@@ -62,8 +60,6 @@ public class HomeAttachment extends UserAttachment
 
     /**
      * Will check if getHome(name) is not null
-     * @param name
-     * @return
      */
     public boolean hasHome(String name)
     {
@@ -72,8 +68,6 @@ public class HomeAttachment extends UserAttachment
 
     /**
      * Will find direct matches
-     * @param name
-     * @return
      */
     public boolean containsHome(String name)
     {

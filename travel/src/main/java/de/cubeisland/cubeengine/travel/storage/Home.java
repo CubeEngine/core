@@ -22,6 +22,7 @@ import de.cubeisland.cubeengine.core.permission.PermDefault;
 import de.cubeisland.cubeengine.core.permission.Permission;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.travel.Travel;
+
 import org.bukkit.Location;
 
 import java.util.Locale;
@@ -43,10 +44,9 @@ public class Home
         this.invited = inviteManager.getInvited(parent);
         this.permission = module.getBasePermission().
             createAbstractChild("homes").
-            createAbstractChild("access").
-            createChild(parent.name.toLowerCase(Locale.ENGLISH),
-                        this.parent.visibility.equals(TeleportPoint.Visibility.PRIVATE) ?
-                                                                PermDefault.OP : PermDefault.TRUE);
+                                    createAbstractChild("access").
+                                    createChild(parent.name.toLowerCase(Locale.ENGLISH), this.parent.visibility
+                                                                                                    .equals(TeleportPoint.Visibility.PRIVATE) ? PermDefault.OP : PermDefault.TRUE);
         module.getCore().getPermissionManager().registerPermission(module, this.permission);
     }
 
@@ -191,7 +191,8 @@ public class Home
         return parent;
     }
 
-    public Long getKey() {
+    public Long getKey()
+    {
         return this.parent.getKey();
     }
 }

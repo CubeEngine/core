@@ -42,7 +42,7 @@ public class HomeAdminCommand extends ContainerCommand
     {
         if (context.isSender(User.class))
         {
-            User sender = (User) context.getSender(); //TODO console
+            User sender = (User)context.getSender(); //TODO console
             User user = context.getUser(0);
             Home home;
             if (user == null)
@@ -91,8 +91,7 @@ public class HomeAdminCommand extends ContainerCommand
         "clearhomes"
     })
     @Command(desc = "Clear all homes (of an user)", flags = {
-        @Flag(name = "pub", longName = "public"),
-        @Flag(name = "priv", longName = "Private")
+        @Flag(name = "pub", longName = "public"), @Flag(name = "priv", longName = "Private")
     }, max = 1, usage = " <user> <-public> <-Private>")
     public void clear(ParameterizedContext context)
     {
@@ -107,18 +106,26 @@ public class HomeAdminCommand extends ContainerCommand
             {
                 if (context.hasFlag("pub"))
                 {
-                    context.sendTranslated("&5Are you sure you want to delete all public homes ever created by &3%s", context.getString(0));
-                    context.sendTranslated("&5To delete all the public homes, do: &9\"/home admin accept\" &5before 20 secunds");
+                    context
+                        .sendTranslated("&5Are you sure you want to delete all public homes ever created by &3%s", context
+                            .getString(0));
+                    context
+                        .sendTranslated("&5To delete all the public homes, do: &9\"/home admin accept\" &5before 20 secunds");
                 }
                 else if (context.hasFlag("priv"))
                 {
-                    context.sendTranslated("&5Are you sure you want to delete all private homes ever created by &3%s", context.getString(0));
-                    context.sendTranslated("&5To delete all the private homes, do: &9\"/home admin accept\" &5before 20 secunds");
+                    context
+                        .sendTranslated("&5Are you sure you want to delete all private homes ever created by &3%s", context
+                            .getString(0));
+                    context
+                        .sendTranslated("&5To delete all the private homes, do: &9\"/home admin accept\" &5before 20 secunds");
                 }
                 else
                 {
-                    context.sendTranslated("&5Are you sure you want to delete all homes ever created by &3%s", context.getString(0));
-                    context.sendTranslated("&5To delete all the homes, do: &9\"/home admin accept\" &5before 20 secunds");
+                    context.sendTranslated("&5Are you sure you want to delete all homes ever created by &3%s", context
+                        .getString(0));
+                    context
+                        .sendTranslated("&5To delete all the homes, do: &9\"/home admin accept\" &5before 20 secunds");
                 }
             }
         }
@@ -126,22 +133,27 @@ public class HomeAdminCommand extends ContainerCommand
         {
             if (context.hasFlag("pub"))
             {
-                context.sendTranslated("&5Are you sure you want to delete all public homes ever created on this server!?");
-                context.sendTranslated("&5To delete all the public homes of every user, do: &9\"/home admin accept\" &5before 20 secunds");
+                context
+                    .sendTranslated("&5Are you sure you want to delete all public homes ever created on this server!?");
+                context
+                    .sendTranslated("&5To delete all the public homes of every user, do: &9\"/home admin accept\" &5before 20 secunds");
             }
             else if (context.hasFlag("priv"))
             {
-                context.sendTranslated("&5Are you sure you want to delete all private homes ever created on this server!?");
-                context.sendTranslated("&5To delete all the private homes of every user, do: &9\"/home admin accept\" &5before 20 secunds");
+                context
+                    .sendTranslated("&5Are you sure you want to delete all private homes ever created on this server!?");
+                context
+                    .sendTranslated("&5To delete all the private homes of every user, do: &9\"/home admin accept\" &5before 20 secunds");
             }
             else
             {
                 context.sendTranslated("&5Are you sure you want to delete all homes ever created on this server!?");
-                context.sendTranslated("&5To delete all the homes of every user, do: &9\"/home admin accept\" &5before 20 secunds");
+                context
+                    .sendTranslated("&5To delete all the homes of every user, do: &9\"/home admin accept\" &5before 20 secunds");
             }
         }
-        acceptEntries.put(context.getSender().getName(), new Pair<Long, ParameterizedContext>(System.currentTimeMillis(), context));
-
+        acceptEntries.put(context.getSender().getName(), new Pair<Long, ParameterizedContext>(System
+                                                                                                  .currentTimeMillis(), context));
     }
 
     @Command(desc = "accept your previous interactions", min = 0, max = 0)
@@ -149,7 +161,8 @@ public class HomeAdminCommand extends ContainerCommand
     {
         if (this.acceptEntries.containsKey(context.getSender().getName()))
         {
-            if (this.acceptEntries.get(context.getSender().getName()).getLeft() + ACCEPT_TIMEOUT > System.currentTimeMillis())
+            if (this.acceptEntries.get(context.getSender().getName()).getLeft() + ACCEPT_TIMEOUT > System
+                .currentTimeMillis())
             {
                 ParameterizedContext usedContext = this.acceptEntries.get(context.getSender().getName()).getRight();
                 if (usedContext.getCommand().getName().equals("clear"))
@@ -157,8 +170,14 @@ public class HomeAdminCommand extends ContainerCommand
                     if (usedContext.getArgCount() == 0)
                     { // No user
                         int mask = usedContext.getFlagCount() == 0 ? tpManager.ALL : 0;
-                        if (context.hasFlag("pub")) mask |= tpManager.PUBLIC;
-                        if (context.hasFlag("priv")) mask |= tpManager.PRIVATE;
+                        if (context.hasFlag("pub"))
+                        {
+                            mask |= tpManager.PUBLIC;
+                        }
+                        if (context.hasFlag("priv"))
+                        {
+                            mask |= tpManager.PRIVATE;
+                        }
                         tpManager.deleteHomes(mask);
                         context.sendTranslated("The homes are now deleted");
                     }
@@ -166,8 +185,14 @@ public class HomeAdminCommand extends ContainerCommand
                     {
                         User user = usedContext.getUser(0);
                         int mask = usedContext.getFlagCount() == 0 ? tpManager.ALL : 0;
-                        if (context.hasFlag("pub")) mask |= tpManager.PUBLIC;
-                        if (context.hasFlag("priv")) mask |= tpManager.PRIVATE;
+                        if (context.hasFlag("pub"))
+                        {
+                            mask |= tpManager.PUBLIC;
+                        }
+                        if (context.hasFlag("priv"))
+                        {
+                            mask |= tpManager.PRIVATE;
+                        }
                         tpManager.deleteHomes(user, mask);
                         context.sendTranslated("The homes are now deleted");
                     }
@@ -179,18 +204,27 @@ public class HomeAdminCommand extends ContainerCommand
     }
 
     @Command(desc = "List all (public) homes", flags = {
-        @Flag(name = "pub", longName = "public"),
-        @Flag(name = "priv", longName = "private"),
-        @Flag(name = "o", longName = "owned"),
-        @Flag(name = "i", longName = "invited")
+        @Flag(name = "pub", longName = "public"), @Flag(name = "priv", longName = "private"), @Flag(name = "o", longName = "owned"), @Flag(name = "i", longName = "invited")
     }, min = 0, max = 1, usage = " <<user>  <-owned> <-invited>> <-public> <-Private>")
     public void list(ParameterizedContext context)
     {
         int mask = context.getFlagCount() == 0 ? tpManager.ALL : 0;
-        if (context.hasFlag("pub")) mask |= tpManager.PUBLIC;
-        if (context.hasFlag("priv")) mask |= tpManager.PRIVATE;
-        if (context.hasFlag("o")) mask |= tpManager.OWNED;
-        if (context.hasFlag("i")) mask |= tpManager.INVITED;
+        if (context.hasFlag("pub"))
+        {
+            mask |= tpManager.PUBLIC;
+        }
+        if (context.hasFlag("priv"))
+        {
+            mask |= tpManager.PRIVATE;
+        }
+        if (context.hasFlag("o"))
+        {
+            mask |= tpManager.OWNED;
+        }
+        if (context.hasFlag("i"))
+        {
+            mask |= tpManager.INVITED;
+        }
 
         Set<Home> homes;
         if (context.getArgCount() == 0)

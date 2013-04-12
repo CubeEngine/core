@@ -31,5 +31,4 @@ public class TravelConfig extends Configuration
     @Comment("If users should be able to have multiple homes")
     @Option("homes.multiple-homes")
     public boolean multipleHomes = true;
-
 }

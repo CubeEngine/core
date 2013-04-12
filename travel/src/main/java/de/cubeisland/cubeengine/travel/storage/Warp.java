@@ -19,6 +19,7 @@ package de.cubeisland.cubeengine.travel.storage;
 
 import de.cubeisland.cubeengine.core.CubeEngine;
 import de.cubeisland.cubeengine.core.user.User;
+
 import org.bukkit.Location;
 
 import java.util.Set;

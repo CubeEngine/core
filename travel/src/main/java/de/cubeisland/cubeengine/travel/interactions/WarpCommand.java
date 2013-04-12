@@ -35,7 +35,7 @@ public class WarpCommand extends ContainerCommand
     {
         if (context.isSender(User.class) && context.getArgCount() > 0)
         {
-            User sender = (User) context.getSender();
+            User sender = (User)context.getSender();
             Warp warp = telePointManager.getWarp(sender, context.getString(0).toLowerCase());
             if (warp == null)
             {
@@ -66,26 +66,27 @@ public class WarpCommand extends ContainerCommand
     {
         if (context.getSender() instanceof User)
         {
-            User sender = (User) context.getSender();
+            User sender = (User)context.getSender();
             String name = context.getString(0);
             if (telePointManager.hasWarp(name) && !context.hasFlag("priv"))
             {
-                context.sendTranslated("A public warp by that name already exist! maybe you want to include the -private flag?");
+                context
+                    .sendTranslated("A public warp by that name already exist! maybe you want to include the -private flag?");
                 return;
             }
             if (name.contains(":") || name.length() >= 32)
             {
-                context.sendTranslated("&4Warps may not have names that are longer then 32 characters, and they may not contain colon(:)'s!");
+                context
+                    .sendTranslated("&4Warps may not have names that are longer then 32 characters, and they may not contain colon(:)'s!");
                 return;
             }
             Location loc = sender.getLocation();
-            Warp warp = telePointManager.createWarp(loc, name, sender, (context.hasFlag("priv") ? TeleportPoint.Visibility.PRIVATE : TeleportPoint.Visibility.PUBLIC));
+            Warp warp = telePointManager.createWarp(loc, name, sender, (context
+                                                                            .hasFlag("priv") ? TeleportPoint.Visibility.PRIVATE : TeleportPoint.Visibility.PUBLIC));
             context.sendTranslated("Your warp have been created");
             return;
         }
         context.sendTranslated("You have to be in the world to set a warp");
-
-
     }
 
     @Alias(names = {
@@ -99,7 +100,7 @@ public class WarpCommand extends ContainerCommand
         Warp warp;
         if (context.getSender() instanceof User)
         {
-            warp = telePointManager.getWarp((User) context.getSender(), context.getString(0));
+            warp = telePointManager.getWarp((User)context.getSender(), context.getString(0));
         }
         else
         {
@@ -121,7 +122,7 @@ public class WarpCommand extends ContainerCommand
         Warp warp;
         if (context.getSender() instanceof User)
         {
-            warp = telePointManager.getWarp((User) context.getSender(), context.getString(0));
+            warp = telePointManager.getWarp((User)context.getSender(), context.getString(0));
         }
         else
         {
@@ -135,7 +136,8 @@ public class WarpCommand extends ContainerCommand
 
         if (name.contains(":") || name.length() >= 32)
         {
-            context.sendTranslated("&4Warps may not have names that are longer then 32 characters, and they may not contain colon(:)'s!");
+            context
+                .sendTranslated("&4Warps may not have names that are longer then 32 characters, and they may not contain colon(:)'s!");
             return;
         }
 
@@ -147,7 +149,10 @@ public class WarpCommand extends ContainerCommand
     public void move(CommandContext context)
     {
         CommandSender sender = context.getSender();
-        if (!(sender instanceof User)) return;
+        if (!(sender instanceof User))
+        {
+            return;
+        }
         User user = (User)sender;
 
         Warp warp = telePointManager.getWarp(user, context.getString(0));
@@ -181,7 +186,8 @@ public class WarpCommand extends ContainerCommand
         }
         if (first != null)
         {
-            context.sendTranslated("Found a direct match: %s owned by %s", first.getName(), first.getOwner().getDisplayName());
+            context.sendTranslated("Found a direct match: %s owned by %s", first.getName(), first.getOwner()
+                                                                                                 .getDisplayName());
             return null;
         }
 

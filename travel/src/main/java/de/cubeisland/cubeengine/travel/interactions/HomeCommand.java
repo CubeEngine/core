@@ -23,7 +23,7 @@ import de.cubeisland.cubeengine.travel.storage.TelePointManager;
 import de.cubeisland.cubeengine.travel.storage.TeleportInvite;
 import de.cubeisland.cubeengine.travel.storage.TeleportPoint;
 
-public class HomeCommand  extends ContainerCommand
+public class HomeCommand extends ContainerCommand
 {
     private final TelePointManager tpManager;
     private final InviteManager inviteManager;
@@ -85,45 +85,48 @@ public class HomeCommand  extends ContainerCommand
                         }
                         else
                         {
-                            sender.sendTranslated("&6You have been teleported to &9%s's &6default home", home.getOwner().getDisplayName());
+                            sender.sendTranslated("&6You have been teleported to &9%s's &6default home", home.getOwner()
+                                                                                                             .getDisplayName());
                         }
                         return null;
                     }
                 }
             }
-                Home home = tpManager.getHome(sender, context.getString(0).toLowerCase());
-                if (home == null)
-                {
-                    context.sendTranslated("&9" + context.getString(0).toLowerCase() + " &4 is not a home");
-                    return null;
-                }
+            Home home = tpManager.getHome(sender, context.getString(0).toLowerCase());
+            if (home == null)
+            {
+                context.sendTranslated("&9" + context.getString(0).toLowerCase() + " &4 is not a home");
+                return null;
+            }
 
-                sender.teleport(home.getLocation(), PlayerTeleportEvent.TeleportCause.COMMAND);
-                if (home.getWelcomeMsg() != null)
+            sender.teleport(home.getLocation(), PlayerTeleportEvent.TeleportCause.COMMAND);
+            if (home.getWelcomeMsg() != null)
+            {
+                context.sendMessage(home.getWelcomeMsg());
+            }
+            else
+            {
+                if (home.isOwner(sender))
                 {
-                    context.sendMessage(home.getWelcomeMsg());
+                    context.sendTranslated("&6You have been teleported to your home: &9%s", home.getName());
+                }
+                else if (home.isPublic())
+                {
+                    context.sendTranslated("&6You have been teleported to the public home &9%s", home.getName());
                 }
                 else
                 {
-                    if (home.isOwner(sender))
-                    {
-                        context.sendTranslated("&6You have been teleported to your home: &9%s", home.getName());
-                    }
-                    else if (home.isPublic())
-                    {
-                        context.sendTranslated("&6You have been teleported to the public home &9%s", home.getName());
-                    }
-                    else
-                    {
-                        context.sendTranslated("&6You have been teleported to &3%s&6's home: &9%s", home.getOwner().getDisplayName(), home.getName());
-                    }
+                    context.sendTranslated("&6You have been teleported to &3%s&6's home: &9%s", home.getOwner()
+                                                                                                    .getDisplayName(), home
+                                               .getName());
                 }
+            }
         }
         else
         {
             return super.run(context);
         }
-        return  null;
+        return null;
     }
 
     @Alias(names = {
@@ -131,12 +134,12 @@ public class HomeCommand  extends ContainerCommand
     })
     @Command(names = "set", desc = "Set your home", usage = "[HomeName]", min = 1, max = 1, flags = {
         @Flag(longName = "public", name = "pub")
-    }, permDefault  = PermDefault.TRUE)
+    }, permDefault = PermDefault.TRUE)
     public void setHome(ParameterizedContext context)
     {
         if (context.getSender() instanceof User)
         {
-            User sender = (User) context.getSender();
+            User sender = (User)context.getSender();
             Location location = sender.getLocation();
             if (context.getArgCount() == 0)
             {
@@ -159,14 +162,16 @@ public class HomeCommand  extends ContainerCommand
                     {
                         if (tpManager.getHome(name).isPublic())
                         {
-                            sender.sendTranslated("&4A public home by that name already exist. Please choose another name");
+                            sender
+                                .sendTranslated("&4A public home by that name already exist. Please choose another name");
                             return;
                         }
                     }
                 }
                 if (name.contains(":") || name.length() >= 32)
                 {
-                    sender.sendTranslated("&4Homes may not have names that are longer then 32 characters, and they may not contain colon(:)'s!");
+                    sender
+                        .sendTranslated("&4Homes may not have names that are longer then 32 characters, and they may not contain colon(:)'s!");
                     return;
                 }
                 if (tpManager.hasHome(context.getString(0).toLowerCase(), sender))
@@ -182,8 +187,6 @@ public class HomeCommand  extends ContainerCommand
         {
             context.sendTranslated("&4This interactions can only be used by users!");
         }
-
-
     }
 
     @Command(desc = "Set the welcome message of homes", names = {"setgreeting", "greeting", "setwelcome", "setwelcomemsg"},
@@ -194,7 +197,7 @@ public class HomeCommand  extends ContainerCommand
     {
         if (context.getSender() instanceof User)
         {
-            User sender = (User) context.getSender();
+            User sender = (User)context.getSender();
             Home home;
             if (context.hasParam("home"))
             {
@@ -233,7 +236,7 @@ public class HomeCommand  extends ContainerCommand
     {
         if (context.getSender() instanceof User)
         {
-            User sender = (User) context.getSender();
+            User sender = (User)context.getSender();
             if (context.getArgCount() == 0)
             {
                 Home home = this.tpManager.getHome(sender, "home");
@@ -278,12 +281,12 @@ public class HomeCommand  extends ContainerCommand
     })
     @Command(names = {
         "remove", "delete", "rem", "del"
-    }, desc = "Remove a home", usage = "[HomeName]",min = 1, max = 1, permDefault = PermDefault.TRUE)
+    }, desc = "Remove a home", usage = "[HomeName]", min = 1, max = 1, permDefault = PermDefault.TRUE)
     public void removeHome(CommandContext context)
     {
-        if (context.getSender()  instanceof  User)
+        if (context.getSender() instanceof User)
         {
-            User sender = (User) context.getSender();
+            User sender = (User)context.getSender();
             if (context.getArgCount() == 0)
             {
                 Home home = this.tpManager.getHome(sender, "home");
@@ -328,18 +331,21 @@ public class HomeCommand  extends ContainerCommand
     @Command(names = {
         "list"
     }, desc = "List homes you can access", permDefault = PermDefault.TRUE, min = 0, max = 0, flags = {
-        @Flag(name = "pub", longName = "public"),
-        @Flag(name = "priv", longName = "private"),
-        @Flag(name = "o", longName = "owned"),
-        @Flag(name = "i", longName = "invited")
+        @Flag(name = "pub", longName = "public"), @Flag(name = "priv", longName = "private"), @Flag(name = "o", longName = "owned"), @Flag(name = "i", longName = "invited")
     })
     public void listHomes(ParameterizedContext context)
     {
         if (!context.isSender(User.class))
         {
             int mask = context.getFlagCount() == 0 ? tpManager.ALL : 0;
-            if (context.hasFlag("pub")) mask |= tpManager.PUBLIC;
-            if (context.hasFlag("priv")) mask |= tpManager.PRIVATE;
+            if (context.hasFlag("pub"))
+            {
+                mask |= tpManager.PUBLIC;
+            }
+            if (context.hasFlag("priv"))
+            {
+                mask |= tpManager.PRIVATE;
+            }
 
             Set<Home> homes = tpManager.listHomes(mask);
             if (homes.isEmpty())
@@ -357,10 +363,22 @@ public class HomeCommand  extends ContainerCommand
 
         User user = (User)context.getSender();
         int mask = context.getFlagCount() == 0 ? tpManager.ALL : 0;
-        if (context.hasFlag("pub")) mask |= tpManager.PUBLIC;
-        if (context.hasFlag("priv")) mask |= tpManager.PRIVATE;
-        if (context.hasFlag("o")) mask |= tpManager.OWNED;
-        if (context.hasFlag("i")) mask |= tpManager.INVITED;
+        if (context.hasFlag("pub"))
+        {
+            mask |= tpManager.PUBLIC;
+        }
+        if (context.hasFlag("priv"))
+        {
+            mask |= tpManager.PRIVATE;
+        }
+        if (context.hasFlag("o"))
+        {
+            mask |= tpManager.OWNED;
+        }
+        if (context.hasFlag("i"))
+        {
+            mask |= tpManager.INVITED;
+        }
         Set<Home> homes = tpManager.listHomes(user, mask);
         if (homes.isEmpty())
         {
@@ -426,7 +444,7 @@ public class HomeCommand  extends ContainerCommand
     {
         if (context.getSender() instanceof User)
         {
-            User sender = (User) context.getSender();
+            User sender = (User)context.getSender();
             if (context.getArgCount() == 1)
             {
                 Home home = tpManager.getHome(sender, "home");
@@ -463,8 +481,9 @@ public class HomeCommand  extends ContainerCommand
                 home.invite(invited);
                 if (invited.isOnline())
                 {
-                    invited.sendTranslated("&3%s &6has invited you to his home. To access it do: /home &9%s:home",
-                                           sender.getDisplayName(), sender.getName());
+                    invited
+                        .sendTranslated("&3%s &6has invited you to his home. To access it do: /home &9%s:home", sender
+                            .getDisplayName(), sender.getName());
                 }
                 sender.sendTranslated("&3%s &6Is now invited to home", context.getString(0));
             }
@@ -499,17 +518,17 @@ public class HomeCommand  extends ContainerCommand
                 home.invite(invited);
                 if (invited.isOnline())
                 {
-                    invited.sendTranslated("&6%s has invited you to his home &9%s&6. To access it do: /home &9%s:%2$s",
-                                           sender.getDisplayName(), context.getString(0), sender.getName());
+                    invited
+                        .sendTranslated("&6%s has invited you to his home &9%s&6. To access it do: /home &9%s:%2$s", sender
+                            .getDisplayName(), context.getString(0), sender.getName());
                 }
                 sender.sendTranslated("&3%s &6Is now invited to &9%s", context.getString(1), context.getString(0));
             }
         }
-        else {
+        else
+        {
             context.sendTranslated("&4This interactions can only be used by users!");
         }
-
-
     }
 
     @Command(desc = "Uninvite a user from one of your homes", min = 1, max = 2, usage = "[home] <user>", permDefault = PermDefault.TRUE)
@@ -517,7 +536,7 @@ public class HomeCommand  extends ContainerCommand
     {
         if (context.getSender() instanceof User)
         {
-            User sender = (User) context.getSender();
+            User sender = (User)context.getSender();
             if (context.getArgCount() == 1)
             {
                 Home home = tpManager.getHome(sender, "home");
@@ -586,16 +605,18 @@ public class HomeCommand  extends ContainerCommand
                 home.unInvite(invited);
                 if (invited.isOnline())
                 {
-                    invited.sendTranslated("You are no longer invited to %s' home &9%s", sender.getDisplayName(), context.getString(0));
+                    invited
+                        .sendTranslated("You are no longer invited to %s' home &9%s", sender.getDisplayName(), context
+                            .getString(0));
                 }
-                sender.sendTranslated("&3%s &6Is no longer invited to &9%s", context.getString(1), context.getString(0));
+                sender
+                    .sendTranslated("&3%s &6Is no longer invited to &9%s", context.getString(1), context.getString(0));
             }
         }
-        else {
+        else
+        {
             context.sendTranslated("&4This interactions can only be used by users!");
         }
-
-
     }
 
     @Command(names = {
@@ -605,7 +626,7 @@ public class HomeCommand  extends ContainerCommand
     {
         if (context.getSender() instanceof User)
         {
-            User sender = (User) context.getSender();
+            User sender = (User)context.getSender();
             Home home;
             if (context.getArgCount() == 0)
             {
@@ -630,7 +651,6 @@ public class HomeCommand  extends ContainerCommand
             return;
         }
         context.sendTranslated("&4This interactions can only be used by users!");
-
     }
 
     @Command(names = {
@@ -640,7 +660,7 @@ public class HomeCommand  extends ContainerCommand
     {
         if (context.getSender() instanceof User)
         {
-            User sender = (User) context.getSender();
+            User sender = (User)context.getSender();
             Home home;
             if (context.getArgCount() == 0)
             {
@@ -665,6 +685,5 @@ public class HomeCommand  extends ContainerCommand
             return;
         }
         context.sendTranslated("&4This interactions can only be used by users!");
-
     }
 }

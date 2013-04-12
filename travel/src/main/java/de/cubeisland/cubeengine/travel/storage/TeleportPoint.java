@@ -22,7 +22,9 @@ import de.cubeisland.cubeengine.core.storage.Model;
 import de.cubeisland.cubeengine.core.storage.database.*;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.util.convert.ConversionException;
+
 import org.apache.commons.lang.Validate;
+
 import org.bukkit.Location;
 
 import java.util.HashSet;
@@ -30,11 +32,9 @@ import java.util.List;
 import java.util.Set;
 
 @SingleKeyEntity(tableName = "teleportpoints", primaryKey = "key", autoIncrement = true,
-       indices = {
-               @Index(value = Index.IndexType.FOREIGN_KEY, fields = "owner", f_table = "user", f_field = "key"),
-               @Index(value = Index.IndexType.FOREIGN_KEY, fields = "world", f_table = "worlds", f_field = "key"),
-               @Index(value = Index.IndexType.UNIQUE, fields = {"owner", "name", "type"})
-       })
+                 indices = {
+                     @Index(value = Index.IndexType.FOREIGN_KEY, fields = "owner", f_table = "user", f_field = "key"), @Index(value = Index.IndexType.FOREIGN_KEY, fields = "world", f_table = "worlds", f_field = "key"), @Index(value = Index.IndexType.UNIQUE, fields = {"owner", "name", "type"})
+                 })
 public class TeleportPoint implements Model<Long>
 {
 

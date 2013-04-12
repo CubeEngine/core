@@ -37,7 +37,7 @@ public class WarpAttachment extends UserAttachment
     /**
      * Will try to find a warp with that name among the warps the user can access
      * Different variations with the prefix is also tried
-     * @param name
+     *
      * @return the warp if found, else null
      */
     public Warp getWarp(String name)
@@ -62,8 +62,6 @@ public class WarpAttachment extends UserAttachment
 
     /**
      * Will check if getWarp(name) is not null
-     * @param name
-     * @return
      */
     public boolean hasWarp(String name)
     {
@@ -72,8 +70,6 @@ public class WarpAttachment extends UserAttachment
 
     /**
      * Will find direct matches
-     * @param name
-     * @return
      */
     public boolean containsWarp(String name)
     {

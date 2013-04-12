@@ -55,14 +55,19 @@ public class InviteManager extends TwoKeyStorage<Long, Long, TeleportInvite>
         {
             super.initialize();
             QueryBuilder builder = database.getQueryBuilder();
-            this.database.storeStatement(this.modelClass, "getInvitedTo",
-                    builder.select().cols("teleportpoint").from(this.tableName).where().field("userkey").is(EQUAL).value().end().end());
-            this.database.storeStatement(this.modelClass, "getInvited",
-                    builder.select().cols("userkey").from(this.tableName).where().field("teleportpoint").is(EQUAL).value().end().end());
+            this.database.storeStatement(this.modelClass, "getInvitedTo", builder.select().cols("teleportpoint")
+                                                                                 .from(this.tableName).where()
+                                                                                 .field("userkey").is(EQUAL).value()
+                                                                                 .end().end());
+            this.database
+                .storeStatement(this.modelClass, "getInvited", builder.select().cols("userkey").from(this.tableName)
+                                                                      .where().field("teleportpoint").is(EQUAL).value()
+                                                                      .end().end());
         }
         catch (SQLException ex)
         {
-            module.getLog().log(LogLevel.ERROR, "An error occurred while preparing the database statements for table " + this.tableName);
+            module.getLog()
+                  .log(LogLevel.ERROR, "An error occurred while preparing the database statements for table " + this.tableName);
             module.getLog().log(LogLevel.WARNING, "The error was: {0}", ex.getMessage());
             module.getLog().log(LogLevel.DEBUG, "This is the stack: ", ex);
         }
@@ -77,7 +82,7 @@ public class InviteManager extends TwoKeyStorage<Long, Long, TeleportInvite>
 
     /**
      * All users invited to a teleport point.
-     * @param tPP
+     *
      * @return A set of User objects invited to the home
      */
     public Set<User> getInvitedUsers(TeleportPoint tPP)
@@ -96,7 +101,7 @@ public class InviteManager extends TwoKeyStorage<Long, Long, TeleportInvite>
 
     /**
      * All users invited to a teleport point.
-     * @param tPP
+     *
      * @return A set of User names invited to the home
      */
     public Set<String> getInvited(TeleportPoint tPP)
@@ -116,7 +121,7 @@ public class InviteManager extends TwoKeyStorage<Long, Long, TeleportInvite>
     /**
      * All teleport invites that contains the user.
      * This can be used to get all teleport points an user is invited to
-     * @param user
+     *
      * @return A set of TeleportInvites
      */
     public Set<TeleportInvite> getInvites(User user)
@@ -135,7 +140,7 @@ public class InviteManager extends TwoKeyStorage<Long, Long, TeleportInvite>
     /**
      * All teleport invites that contains the teleport point
      * This can be used to get all users that is invited to a teleport point
-     * @param tPP
+     *
      * @return A set of TeleportInvites
      */
     public Set<TeleportInvite> getInvites(TeleportPoint tPP)
@@ -153,8 +158,9 @@ public class InviteManager extends TwoKeyStorage<Long, Long, TeleportInvite>
 
     /**
      * Update the local changes to the database
-     * @param tPP           The local teleport point
-     * @param newInvited    The user that is currenlty invited to the teleportpoint locally
+     *
+     * @param tPP        The local teleport point
+     * @param newInvited The user that is currenlty invited to the teleportpoint locally
      */
     public void updateInvited(TeleportPoint tPP, Set<String> newInvited)
     {
@@ -173,7 +179,8 @@ public class InviteManager extends TwoKeyStorage<Long, Long, TeleportInvite>
         {
             for (TeleportInvite invite : invites)
             {
-                if (invite.semiEquals(new TeleportInvite(tPP.getKey(), CubeEngine.getUserManager().getUser(user, false).getKey())))
+                if (invite.semiEquals(new TeleportInvite(tPP.getKey(), CubeEngine.getUserManager().getUser(user, false)
+                                                                                 .getKey())))
                 {
                     this.delete(invite);
                 }
