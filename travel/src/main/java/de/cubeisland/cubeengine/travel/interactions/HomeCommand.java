@@ -10,6 +10,7 @@ import de.cubeisland.cubeengine.core.command.ArgBounds;
 import de.cubeisland.cubeengine.core.command.CommandContext;
 import de.cubeisland.cubeengine.core.command.CommandResult;
 import de.cubeisland.cubeengine.core.command.ContainerCommand;
+import de.cubeisland.cubeengine.core.command.CubeCommand;
 import de.cubeisland.cubeengine.core.command.parameterized.Flag;
 import de.cubeisland.cubeengine.core.command.parameterized.Param;
 import de.cubeisland.cubeengine.core.command.parameterized.ParameterizedContext;
@@ -37,8 +38,23 @@ public class HomeCommand extends ContainerCommand
         this.tpManager = module.getTelepointManager();
         this.inviteManager = module.getInviteManager();
 
-        this.setUsage("<<owner:>home>");
-        this.getContextFactory().setArgBounds(new ArgBounds(0, 1));
+        if (module.getConfig().multipleHomes)
+        {
+            this.setUsage("<<owner:>home>");
+            this.getContextFactory().setArgBounds(new ArgBounds(0, 1));
+        }
+        else
+        { // Set usage and argBounds according to single homes
+            this.setUsage("<owner>");
+            this.getContextFactory().setArgBounds(new ArgBounds(0, 1));
+
+            ((CubeCommand)this.getChild("set").setUsage("")).getContextFactory().setArgBounds(new ArgBounds(0, 0));
+            ((CubeCommand)this.getChild("move").setUsage("")).getContextFactory().setArgBounds(new ArgBounds(0, 0));
+            ((CubeCommand)this.getChild("remove").setUsage("")).getContextFactory().setArgBounds(new ArgBounds(0, 0));
+            ((CubeCommand)this.getChild("invite").setUsage("[user]")).getContextFactory().setArgBounds(new ArgBounds(1, 1));
+            ((CubeCommand)this.getChild("uninvite").setUsage("[user]")).getContextFactory().setArgBounds(new ArgBounds(1, 1));
+            this.getChild("setgreeting").setUsage("[welcome message]");
+        }
     }
 
     @Override
@@ -152,7 +168,7 @@ public class HomeCommand extends ContainerCommand
                 Home home = tpManager.createHome(location, "home", sender, TeleportPoint.Visibility.PRIVATE);
                 sender.sendTranslated("&6Your home have been created!");
             }
-            else
+            else if (module.getConfig().multipleHomes)
             {
                 String name = context.getString(0).toLowerCase();
                 TeleportPoint.Visibility visibility = TeleportPoint.Visibility.PRIVATE;
@@ -193,7 +209,7 @@ public class HomeCommand extends ContainerCommand
     @Command(desc = "Set the welcome message of homes", names = {"setgreeting", "greeting", "setwelcome", "setwelcomemsg"},
              min = 1, max = -1, permDefault = PermDefault.TRUE, params = {
         @Param(names = {"home", "h"})
-    }, usage = "[Welcome message goes here] <home: [home name]>")
+    }, usage = "[Welcome message goes here] <home [home name]>")
     public void setWelcomeMessage(ParameterizedContext context)
     {
         if (context.getSender() instanceof User)
@@ -325,7 +341,6 @@ public class HomeCommand extends ContainerCommand
         }
     }
 
-    // TODO Unload if multihomes isn't enabled
     @Alias(names = {
         "listhomes", "homes"
     })
