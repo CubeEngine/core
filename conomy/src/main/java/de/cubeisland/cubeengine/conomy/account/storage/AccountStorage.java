@@ -17,17 +17,18 @@
  */
 package de.cubeisland.cubeengine.conomy.account.storage;
 
-import de.cubeisland.cubeengine.conomy.currency.Currency;
-import de.cubeisland.cubeengine.core.storage.SingleKeyStorage;
-import de.cubeisland.cubeengine.core.storage.StorageException;
-import de.cubeisland.cubeengine.core.storage.database.Database;
-import de.cubeisland.cubeengine.core.storage.database.querybuilder.QueryBuilder;
 import java.lang.reflect.Field;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
+
+import de.cubeisland.cubeengine.core.storage.SingleKeyStorage;
+import de.cubeisland.cubeengine.core.storage.StorageException;
+import de.cubeisland.cubeengine.core.storage.database.Database;
+import de.cubeisland.cubeengine.core.storage.database.querybuilder.QueryBuilder;
+import de.cubeisland.cubeengine.conomy.currency.Currency;
 
 public class AccountStorage extends SingleKeyStorage<Long, AccountModel>
 {
@@ -138,11 +139,11 @@ public class AccountStorage extends SingleKeyStorage<Long, AccountModel>
             ResultSet resultSet;
             if (showHidden)
             {
-                resultSet = this.database.preparedQuery(modelClass, "getTopBalanceWithHidden", currency.getName().toLowerCase(), toRank - fromRank, fromRank - 1);
+                resultSet = this.database.preparedQuery(modelClass, "getTopBalanceWithHidden", currency.getName().toLowerCase(), toRank + 1 - fromRank, fromRank - 1);
             }
             else
             {
-                resultSet = this.database.preparedQuery(modelClass, "getTopBalance", currency.getName().toLowerCase(), toRank - fromRank, fromRank - 1);
+                resultSet = this.database.preparedQuery(modelClass, "getTopBalance", currency.getName().toLowerCase(), toRank + 1  - fromRank, fromRank - 1);
             }
             LinkedList<AccountModel> list = new LinkedList<AccountModel>();
             while (resultSet.next())
