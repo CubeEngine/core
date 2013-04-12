@@ -84,6 +84,21 @@ public class MovementCommands
         context.sendTranslated("&eProTip: Teleport does not work IRL!");
     }
 
+    @Command(desc = "Teleports to the highest point at your position.")
+    public void top(CommandContext context)
+    {
+        if (context.getSender() instanceof User)
+        {
+            User sender = (User)context.getSender();
+            Location loc = sender.getLocation();
+            loc.getWorld().getHighestBlockAt(loc).getLocation(loc);
+            if (TeleportCommands.teleport(sender, loc, true, false, true)) // is save anyway so we do not need to check again
+                context.sendTranslated("&aYou are now on top!");
+            return;
+        }
+        context.sendTranslated("&eProTip: Teleport does not work IRL!");
+    }
+
     @Command(desc = "Teleports you to the next safe spot upwards.", max = 0)
     public void ascend(CommandContext context)
     {
