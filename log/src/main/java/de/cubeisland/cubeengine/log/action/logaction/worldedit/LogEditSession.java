@@ -20,7 +20,6 @@ package de.cubeisland.cubeengine.log.action.logaction.worldedit;
 import org.bukkit.World;
 import org.bukkit.block.BlockState;
 
-import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.log.Log;
 
 import com.sk89q.worldedit.EditSession;
@@ -79,7 +78,6 @@ public class LogEditSession extends EditSession
                 WorldEditActionType actionType = this.module.getActionTypeManager().getActionType(WorldEditActionType.class);
                 if (actionType.isActive(world))
                 {
-                    User user = this.module.getCore().getUserManager().getExactUser(((BukkitPlayer)this.player).getPlayer());
                     BlockState newState =  world.getBlockAt(pt.getBlockX(), pt.getBlockY(), pt.getBlockZ()).getState();
                     actionType.logBlockChange(((BukkitPlayer)this.player).getPlayer(),oldState,newState,null);
                 }

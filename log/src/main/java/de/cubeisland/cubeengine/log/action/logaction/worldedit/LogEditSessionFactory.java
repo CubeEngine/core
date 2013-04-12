@@ -50,7 +50,7 @@ public class LogEditSessionFactory extends EditSessionFactory
 
     private boolean ignoreWorldEdit(LocalWorld world)
     {
-        return world instanceof BukkitWorld && this.module.getActionTypeManager().getActionType(WorldEditActionType.class).isActive(((BukkitWorld)world).getWorld());
+        return world instanceof BukkitWorld && !this.module.getActionTypeManager().getActionType(WorldEditActionType.class).isActive(((BukkitWorld)world).getWorld());
     }
 
     @Override

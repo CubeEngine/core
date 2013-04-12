@@ -17,7 +17,24 @@
  */
 package de.cubeisland.cubeengine.basics.command.general;
 
-import de.cubeisland.cubeengine.basics.Basics;
+import java.lang.management.ManagementFactory;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Locale;
+import java.util.TreeMap;
+
+import org.bukkit.Bukkit;
+import org.bukkit.Location;
+import org.bukkit.World;
+import org.bukkit.block.Biome;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.Item;
+import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Player;
+
 import de.cubeisland.cubeengine.core.command.CommandContext;
 import de.cubeisland.cubeengine.core.command.CommandSender;
 import de.cubeisland.cubeengine.core.command.parameterized.Flag;
@@ -32,23 +49,7 @@ import de.cubeisland.cubeengine.core.util.StringUtils;
 import de.cubeisland.cubeengine.core.util.matcher.Match;
 import de.cubeisland.cubeengine.core.util.math.MathHelper;
 import de.cubeisland.cubeengine.core.util.time.Duration;
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
-import org.bukkit.World;
-import org.bukkit.block.Biome;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.Item;
-import org.bukkit.entity.LivingEntity;
-import org.bukkit.entity.Player;
-
-import java.lang.management.ManagementFactory;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.LinkedHashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Locale;
-import java.util.TreeMap;
+import de.cubeisland.cubeengine.basics.Basics;
 
 public class InformationCommands
 {
@@ -206,7 +207,7 @@ public class InformationCommands
         int radius = this.basics.getConfiguration().nearDefaultRadius;
         if (context.hasArg(0))
         {
-            radius = context.getArg(0, int.class, radius);
+            radius = context.getArg(0, Integer.class, radius);
         }
         int squareRadius = radius * radius;
         Location userLocation = user.getLocation();
