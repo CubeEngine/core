@@ -37,7 +37,7 @@ public abstract class LogActionType extends ActionType implements Listener
     public void showLogEntry(User user, QueryParameter params, LogEntry logEntry)
     {
         //TODO time OR time-frame if attached
-        String time = "{time} - ";
+        String time = logEntry.timestamp.toString() + " - ";
         //TODO location OR area if attached
         String loc = "";
         if (logEntry.hasAttached())

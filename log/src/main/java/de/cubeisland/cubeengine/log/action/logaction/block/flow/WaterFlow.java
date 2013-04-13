@@ -128,8 +128,16 @@ public class WaterFlow extends BlockActionType
 
     @Override
     protected void showLogEntry(User user, LogEntry logEntry, String time, String loc)
-    {//TODO attach
-        user.sendTranslated("%s&aWater flooded the block%s&a!",time,loc);
+    {
+        if (logEntry.hasAttached())
+        {
+            int amount = logEntry.getAttached().size();
+            user.sendTranslated("%s&aWater flooded &6%dx&a the block%s&a!",time,amount,loc);
+        }
+        else
+        {
+            user.sendTranslated("%s&aWater flooded the block%s&a!",time,loc);
+        }
     }
 
 
