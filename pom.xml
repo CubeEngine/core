@@ -2,18 +2,21 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
-  <groupId>de.cubeisland</groupId>
-  <artifactId>cubeengine-aggregator</artifactId>
-  <version>1.0.0-SNAPSHOT</version>
-  <name>CubeEngine-Aggregator</name>
-  <url>http://engine.cubeisland.de</url>
-  <packaging>pom</packaging>
-  <description>Minecraft module framework.</description>
-  <inceptionYear>2012</inceptionYear>
+  <parent>
+    <groupId>de.cubeisland.engine</groupId>
+    <artifactId>parent</artifactId>
+    <version>1.0.0</version>
+    <relativePath>parent-pom.xml</relativePath>
+  </parent>
 
-  <prerequisites>
-    <maven>3.0.0</maven>
-  </prerequisites>
+  <artifactId>aggregator</artifactId>
+  <version>1.0.0</version>
+  <name>CubeEngine Aggregator</name>
+  <packaging>pom</packaging>
+
+  <properties>
+    <projectBase>${project.basedir}</projectBase>
+  </properties>
 
   <modules>
     <module>cubeengine</module>
@@ -39,103 +42,6 @@
     <module>powersigns</module>
   </modules>
 
-  <properties>
-    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <minecraftVersion>1.5.1</minecraftVersion>
-    <bukkitVersion>${minecraftVersion}-R0.1-SNAPSHOT</bukkitVersion>
-    <jdkVersion>1.6</jdkVersion>
-    <projectBase>${project.basedir}</projectBase>
-  </properties>
-
-  <distributionManagement>
-    <repository>
-      <id>cubeisland-repo</id>
-      <name>Release</name>
-      <url>http://nexus.cubeisland.de/content/repositories/releases</url>
-    </repository>
-    <snapshotRepository>
-      <id>cubeisland-repo</id>
-      <name>Release</name>
-      <url>http://nexus.cubeisland.de/content/repositories/snapshots</url>
-    </snapshotRepository>
-  </distributionManagement>
-
-  <organization>
-    <name>Cube Island</name>
-    <url>https://cubeisland.de</url>
-  </organization>
-
-  <licenses>
-    <license>
-      <name>GNU General Public License Version 3</name>
-      <url>http://www.gnu.org/licenses/gpl.txt</url>
-      <distribution>repo</distribution>
-    </license>
-  </licenses>
-
-  <ciManagement>
-    <system>jenkins</system>
-    <url>http://ci.cubeisland.de/job/CubeEngine</url>
-  </ciManagement>
-
-  <issueManagement>
-    <system>jira</system>
-    <url>http://bugs.engine.cubeisland.de/browse/CE</url>
-  </issueManagement>
-
-  <scm>
-    <url>scm:git:https://github.com/CubeEngineDev/CubeEngine</url>
-    <connection>scm:git:https://github.com/CubeEngineDev/CubeEngine</connection>
-    <developerConnection>scm:git:https://github.com/CubeEngineDev/CubeEngine</developerConnection>
-  </scm>
-
-  <repositories>
-    <repository>
-      <id>cubeisland-repo</id>
-      <name>Cube Island Nexus</name>
-      <url>http://repo.cubeisland.de/</url>
-    </repository>
-  </repositories>
-
-  <pluginRepositories>
-    <pluginRepository>
-      <id>cubeisland-repo</id>
-      <name>Cube Island Nexus</name>
-      <url>http://repo.cubeisland.de/</url>
-      <releases>
-        <enabled>true</enabled>
-      </releases>
-      <snapshots>
-        <enabled>true</enabled>
-      </snapshots>
-    </pluginRepository>
-  </pluginRepositories>
-
-  <!-- Test dependencies -->
-  <dependencies>
-    <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
-      <version>4.11</version>
-      <type>jar</type>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.powermock</groupId>
-      <artifactId>powermock-api-mockito</artifactId>
-      <version>1.5</version>
-      <type>jar</type>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.powermock</groupId>
-      <artifactId>powermock-module-junit4</artifactId>
-      <version>1.5</version>
-      <type>jar</type>
-      <scope>test</scope>
-    </dependency>
-  </dependencies>
-
   <build>
     <finalName>${project.artifactId}</finalName>
     <defaultGoal>clean install</defaultGoal>
@@ -160,271 +66,13 @@
     </resources>
 
     <plugins>
-      <!--
-          These plugins were added to ensure build consistency
-      -->
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-release-plugin</artifactId>
-        <version>2.4.1</version>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-checkstyle-plugin</artifactId>
-        <version>2.10</version>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-reactor-plugin</artifactId>
-        <version>1.0</version>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-dependency-plugin</artifactId>
-        <version>2.7</version>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-deploy-plugin</artifactId>
-        <version>2.7</version>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-site-plugin</artifactId>
-        <version>3.2</version>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-source-plugin</artifactId>
-        <version>2.2.1</version>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-javadoc-plugin</artifactId>
-        <version>2.9</version>
-        <configuration>
-          <charset>${project.build.sourceEncoding}</charset>
-          <docencoding>${project.build.sourceEncoding}</docencoding>
-        </configuration>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-jar-plugin</artifactId>
-        <version>2.4</version>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-install-plugin</artifactId>
-        <version>2.4</version>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-clean-plugin</artifactId>
-        <version>2.5</version>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-resources-plugin</artifactId>
-        <version>2.6</version>
-        <configuration>
-          <includeEmptyDirs>false</includeEmptyDirs>
-        </configuration>
-      </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-shade-plugin</artifactId>
         <version>2.0</version>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-surefire-plugin</artifactId>
-        <version>2.14</version>
         <configuration>
-          <useSystemClassLoader>false</useSystemClassLoader>
-          <printSummary>true</printSummary>
-          <!-- Move the working directory up to the modules -->
-          <workingDirectory>${project.build.directory}/test-data</workingDirectory>
-        </configuration>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-surefire-report-plugin</artifactId>
-        <version>2.14</version>
-        <configuration>
-          <showSuccess>true</showSuccess>
-        </configuration>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-compiler-plugin</artifactId>
-        <version>3.0</version>
-        <configuration>
-          <encoding>${project.build.sourceEncoding}</encoding>
-          <source>${jdkVersion}</source>
-          <target>${jdkVersion}</target>
-          <optimize>true</optimize>
-          <showDeprecation>true</showDeprecation>
-          <showWarnings>true</showWarnings>
-        </configuration>
-      </plugin>
-      <plugin>
-        <groupId>com.mycila.maven-license-plugin</groupId>
-        <artifactId>maven-license-plugin</artifactId>
-        <version>1.10.b1</version>
-        <configuration>
-          <header>${projectBase}/header.txt</header>
-          <strictCheck>true</strictCheck>
-          <aggregate>true</aggregate>
-          <includes>
-            <include>**/*.java</include>
-          </includes>
         </configuration>
       </plugin>
     </plugins>
   </build>
-
-  <profiles>
-    <profile>
-      <id>development</id>
-
-      <build>
-        <plugins>
-          <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-dependency-plugin</artifactId>
-            <configuration>
-              <skip>true</skip>
-            </configuration>
-          </plugin>
-          <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-surefire-plugin</artifactId>
-            <configuration>
-              <skip>true</skip>
-            </configuration>
-          </plugin>
-        </plugins>
-      </build>
-    </profile>
-    <profile>
-      <id>release</id>
-
-      <build>
-        <plugins>
-          <!--
-              Checks style
-          -->
-          <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-checkstyle-plugin</artifactId>
-            <configuration>
-              <consoleOutput>true</consoleOutput>
-              <logViolationsToConsole>true</logViolationsToConsole>
-              <failsOnError>true</failsOnError>
-              <failsOnError>true</failsOnError>
-              <configLocation>${projectBase}/checkstyle.xml</configLocation>
-            </configuration>
-            <!--
-            <executions>
-                <execution>
-                    <id>checkstyle</id>
-                    <phase>validate</phase>
-                    <goals>
-                        <goal>check</goal>
-                    </goals>
-                </execution>
-            </executions>
-            -->
-          </plugin>
-
-          <plugin>
-            <groupId>com.mycila.maven-license-plugin</groupId>
-            <artifactId>maven-license-plugin</artifactId>
-            <executions>
-              <execution>
-                <phase>generate-sources</phase>
-                <goals>
-                  <goal>check</goal>
-                </goals>
-              </execution>
-            </executions>
-          </plugin>
-
-          <plugin>
-            <groupId>org.codehaus.mojo</groupId>
-            <artifactId>versions-maven-plugin</artifactId>
-            <version>2.0</version>
-            <configuration>
-              <generateBackupPoms>false</generateBackupPoms>
-              <processPlugins>true</processPlugins>
-            </configuration>
-            <executions>
-              <execution>
-                <phase>initialize</phase>
-                <goals>
-                  <goal>display-plugin-updates</goal>
-                  <goal>display-dependency-updates</goal>
-                </goals>
-              </execution>
-            </executions>
-          </plugin>
-
-          <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-javadoc-plugin</artifactId>
-            <executions>
-              <execution>
-                <phase>package</phase>
-                <goals>
-                  <goal>jar</goal>
-                </goals>
-              </execution>
-            </executions>
-          </plugin>
-
-          <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-source-plugin</artifactId>
-            <executions>
-              <execution>
-                <phase>package</phase>
-                <goals>
-                  <goal>jar</goal>
-                </goals>
-              </execution>
-            </executions>
-          </plugin>
-
-          <!--
-              Enforce that at least JDK 1.7 and Maven 3.0.2 are used to compile the project
-          -->
-          <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-enforcer-plugin</artifactId>
-            <version>1.2</version>
-            <configuration>
-              <detail>true</detail>
-              <fail>true</fail>
-              <failFast>true</failFast>
-              <rules>
-                <requireJavaVersion>
-                  <version>[1.7.0,)</version>
-                </requireJavaVersion>
-                <requireMavenVersion>
-                  <version>[3.0.2,)</version>
-                </requireMavenVersion>
-              </rules>
-            </configuration>
-            <executions>
-              <execution>
-                <goals>
-                  <goal>enforce</goal>
-                </goals>
-              </execution>
-            </executions>
-          </plugin>
-        </plugins>
-      </build>
-    </profile>
-  </profiles>
 </project>
