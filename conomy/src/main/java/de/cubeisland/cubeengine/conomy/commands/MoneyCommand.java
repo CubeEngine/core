@@ -180,7 +180,7 @@ public class MoneyCommand extends ContainerCommand
         }
         else
         {
-            context.sendTranslated("&aTop Balance from &6%d &ato &6%d", fromRank, fromRank + models.size());
+            context.sendTranslated("&aTop Balance from &6%d &ato &6%d", fromRank, fromRank + models.size() -1);
         }
         for (AccountModel account : models)
         {

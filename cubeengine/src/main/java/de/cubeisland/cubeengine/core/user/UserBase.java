@@ -1044,7 +1044,7 @@ public class UserBase implements Player
             NBTTagCompound data = this.getData();
             if (data != null)
             {
-                return data.getInt("Health");
+                return data.getShort("Health");
             }
         }
         return 0;
