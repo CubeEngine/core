@@ -66,8 +66,8 @@ public class InviteManager extends TwoKeyStorage<Long, Long, TeleportInvite>
         }
         catch (SQLException ex)
         {
-            module.getLog()
-                  .log(LogLevel.ERROR, "An error occurred while preparing the database statements for table " + this.tableName);
+            module.getLog().log(LogLevel.ERROR, "An error occurred while preparing the database statements for table " +
+                this.tableName);
             module.getLog().log(LogLevel.WARNING, "The error was: {0}", ex.getMessage());
             module.getLog().log(LogLevel.DEBUG, "This is the stack: ", ex);
         }
@@ -129,7 +129,7 @@ public class InviteManager extends TwoKeyStorage<Long, Long, TeleportInvite>
         Set<TeleportInvite> invites = new HashSet<TeleportInvite>();
         for (TeleportInvite invite : this.invites)
         {
-            if (invite.userKey == user.getKey())
+            if (invite.userKey.equals(user.getKey()))
             {
                 invites.add(invite);
             }
@@ -148,7 +148,7 @@ public class InviteManager extends TwoKeyStorage<Long, Long, TeleportInvite>
         Set<TeleportInvite> invites = new HashSet<TeleportInvite>();
         for (TeleportInvite invite : this.invites)
         {
-            if (invite.teleportPoint == tPP.getKey())
+            if (invite.teleportPoint.equals(tPP.getKey()))
             {
                 invites.add(invite);
             }
@@ -160,7 +160,7 @@ public class InviteManager extends TwoKeyStorage<Long, Long, TeleportInvite>
      * Update the local changes to the database
      *
      * @param tPP        The local teleport point
-     * @param newInvited The user that is currenlty invited to the teleportpoint locally
+     * @param newInvited The users that is currently invited to the teleportpoint locally
      */
     public void updateInvited(TeleportPoint tPP, Set<String> newInvited)
     {

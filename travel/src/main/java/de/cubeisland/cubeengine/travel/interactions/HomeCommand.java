@@ -166,12 +166,13 @@ public class HomeCommand extends ContainerCommand
             Location location = sender.getLocation();
             if (context.getArgCount() == 0)
             {
-                if (tpManager.hasHome("home", sender))
+                Home test = tpManager.getHome(sender, "home");
+                if (test != null && test.isOwner(sender))
                 {
                     sender.sendTranslated("&cYou already have a home! Maybe you need /home move?");
                     return;
                 }
-                Home home = tpManager.createHome(location, "home", sender, TeleportPoint.Visibility.PRIVATE);
+                tpManager.createHome(location, "home", sender, TeleportPoint.Visibility.PRIVATE);
                 sender.sendTranslated("&aYour home have been created!");
             }
             else if (module.getConfig().multipleHomes)
@@ -523,9 +524,8 @@ public class HomeCommand extends ContainerCommand
                 home.invite(invited);
                 if (invited.isOnline())
                 {
-                    invited
-                        .sendTranslated("&2%s &ehas invited you to his home &6%s&e. To access it do: /home &2%s&e:&6%s", sender
-                            .getDisplayName(), context.getString(0), sender.getName());
+                    invited.sendTranslated("&2%s &ehas invited you to his home &6%s&e. To access it do: /home &2%s&e:&6%s",
+                                        sender.getDisplayName(), context.getString(0), sender.getName(), context.getString(0));
                 }
                 sender.sendTranslated("&2%s &aIs now invited to &6%s", context.getString(1), context.getString(0));
             }
