@@ -357,32 +357,12 @@ public class HomeCommand extends ContainerCommand
         @Flag(name = "priv", longName = "private"),
         @Flag(name = "o", longName = "owned"),
         @Flag(name = "i", longName = "invited")
-    })
-    public void listHomes(ParameterizedContext context)
+    }, usage = "<-public> <-private> <-owned> <-invited>")
+    public void listHomes(ParameterizedContext context) throws Exception
     {
         if (!context.isSender(User.class))
         {
-            int mask = context.getFlagCount() == 0 ? tpManager.ALL : 0;
-            if (context.hasFlag("pub"))
-            {
-                mask |= tpManager.PUBLIC;
-            }
-            if (context.hasFlag("priv"))
-            {
-                mask |= tpManager.PRIVATE;
-            }
-
-            Set<Home> homes = tpManager.listHomes(mask);
-            if (homes.isEmpty())
-            {
-                context.sendTranslated("&cCould not find any homes!");
-                return;
-            }
-            context.sendTranslated("&eHere is a list of the homes: ");
-            for (Home home : tpManager.listHomes(mask))
-            {
-                context.sendTranslated("  &2%s&e:&6%s", home.getOwner().getName(), home.getName());
-            }
+            this.getChild("admin").getChild("list").run(context);
             return;
         }
 
