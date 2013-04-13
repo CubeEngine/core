@@ -58,15 +58,15 @@ public class TeleportInvite implements TwoKeyModel<Long, Long>
     }
 
     @Override
-    public Pair<Long, Long> getKey()
+    public Pair<Long, Long> getId()
     {
         return new Pair<Long, Long>(teleportPoint, userKey);
     }
 
     @Override
-    public void setKey(Pair<Long, Long> key)
+    public void setId(Pair<Long, Long> id)
     {
-        this.teleportPoint = key.getLeft();
-        this.userKey = key.getRight();
+        this.teleportPoint = id.getLeft();
+        this.userKey = id.getRight();
     }
 }

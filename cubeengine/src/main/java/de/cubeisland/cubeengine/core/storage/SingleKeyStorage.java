@@ -17,6 +17,12 @@
  */
 package de.cubeisland.cubeengine.core.storage;
 
+import java.lang.reflect.Field;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
+
 import de.cubeisland.cubeengine.core.storage.database.AttrType;
 import de.cubeisland.cubeengine.core.storage.database.Attribute;
 import de.cubeisland.cubeengine.core.storage.database.Database;
@@ -25,11 +31,6 @@ import de.cubeisland.cubeengine.core.storage.database.SingleKeyEntity;
 import de.cubeisland.cubeengine.core.storage.database.querybuilder.QueryBuilder;
 import de.cubeisland.cubeengine.core.storage.database.querybuilder.TableBuilder;
 import de.cubeisland.cubeengine.core.util.Callback;
-import java.lang.reflect.Field;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Storage-Implementation for single Integer-Key-Models
@@ -196,15 +197,15 @@ public class SingleKeyStorage<Key_f, M extends Model<Key_f>> extends AbstractSto
         M loadedModel = null;
         try
         {
-            ResultSet resulsSet = this.database.preparedQuery(this.modelClass, "get", key);
-            if (resulsSet.next())
+            ResultSet resultSet = this.database.preparedQuery(this.modelClass, "get", key);
+            if (resultSet.next())
             {
                 if (this.modelConstructor == null)
                 {
                     loadedModel = this.modelClass.newInstance();
                     for (Field field : this.fieldNames.keySet())
                     {
-                        field.set(loadedModel, resulsSet.getObject(this.fieldNames.get(field)));
+                        field.set(loadedModel, resultSet.getObject(this.fieldNames.get(field)));
                     }
                 }
                 else
@@ -212,7 +213,7 @@ public class SingleKeyStorage<Key_f, M extends Model<Key_f>> extends AbstractSto
                     ArrayList<Object> values = new ArrayList<Object>();
                     for (String name : this.reverseFieldNames.keySet())
                     {
-                        values.add(resulsSet.getObject(name));
+                        values.add(resultSet.getObject(name));
                     }
                     loadedModel = this.modelConstructor.newInstance(values);
                 }
@@ -246,7 +247,7 @@ public class SingleKeyStorage<Key_f, M extends Model<Key_f>> extends AbstractSto
             if (this.keyIsAi && !storeAsync)
             {
                 // This is never async
-                model.setKey((Key_f)this.database.getLastInsertedId(this.modelClass, "store", values.toArray()));
+                model.setId((Key_f)this.database.getLastInsertedId(this.modelClass, "store", values.toArray()));
             }
             else
             {
@@ -261,7 +262,7 @@ public class SingleKeyStorage<Key_f, M extends Model<Key_f>> extends AbstractSto
             }
             for (Callback cb : this.createCallbacks)
             {
-                cb.call(model.getKey());
+                cb.call(model.getId());
             }
         }
         catch (SQLException ex)
@@ -298,7 +299,7 @@ public class SingleKeyStorage<Key_f, M extends Model<Key_f>> extends AbstractSto
             }
             for (Callback cb : this.updateCallbacks)
             {
-                cb.call(model.getKey());
+                cb.call(model.getId());
             }
         }
         catch (SQLException ex)
@@ -331,7 +332,7 @@ public class SingleKeyStorage<Key_f, M extends Model<Key_f>> extends AbstractSto
             }
             for (Callback cb : this.updateCallbacks)
             {
-                cb.call(model.getKey());
+                cb.call(model.getId());
             }
         }
         catch (SQLException ex)

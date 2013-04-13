@@ -168,15 +168,15 @@ public class SignMarketItemModel implements Model<Long>,InventoryHolder,Cloneabl
 
     //for database:
     @Override
-    public Long getKey()
+    public Long getId()
     {
         return this.key;
     }
 
     @Override
-    public void setKey(Long key)
+    public void setId(Long id)
     {
-        this.key = key;
+        this.key = id;
     }
     public SignMarketItemModel()
     {}

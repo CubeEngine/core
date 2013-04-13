@@ -228,7 +228,7 @@ public class TwoKeyStorage<Key_f, Key_s, M extends TwoKeyModel<Key_f, Key_s>> ex
 
             for (Callback cb : this.createCallbacks)
             {
-                cb.call(model.getKey());
+                cb.call(model.getId());
             }
         }
         catch (SQLException ex)
@@ -270,7 +270,7 @@ public class TwoKeyStorage<Key_f, Key_s, M extends TwoKeyModel<Key_f, Key_s>> ex
             }
             for (Callback cb : this.updateCallbacks)
             {
-                cb.call(model.getKey());
+                cb.call(model.getId());
             }
         }
         catch (SQLException ex)
@@ -307,7 +307,7 @@ public class TwoKeyStorage<Key_f, Key_s, M extends TwoKeyModel<Key_f, Key_s>> ex
             }
             for (Callback cb : this.updateCallbacks)
             {
-                cb.call(model.getKey());
+                cb.call(model.getId());
             }
         }
         catch (SQLException ex)

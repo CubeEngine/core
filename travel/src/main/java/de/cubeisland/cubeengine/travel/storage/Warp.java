@@ -44,7 +44,7 @@ public class Warp
      */
     public void update()
     {
-        parent.ownerKey = parent.owner.getKey();
+        parent.ownerKey = parent.owner.getId();
         parent.x = parent.location.getX();
         parent.y = parent.location.getY();
         parent.z = parent.location.getZ();
@@ -85,7 +85,7 @@ public class Warp
     {
         this.invited.add(user.getName());
         telePointManager.putWarpToUser(this, user);
-        inviteManager.store(new TeleportInvite(parent.key, user.getKey()));
+        inviteManager.store(new TeleportInvite(parent.key, user.getId()));
     }
 
     public void unInvite(User user)
@@ -169,7 +169,7 @@ public class Warp
 
     public Long getKey()
     {
-        return parent.getKey();
+        return parent.getId();
     }
 
     public TeleportPoint getModel()

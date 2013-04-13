@@ -18,23 +18,23 @@
 package de.cubeisland.cubeengine.core.storage;
 
 /**
- * A Model to save into the database with keytype K
+ * A Model to save into the database with id-type ID
  *
- * @param <K>
+ * @param <ID>
  */
-public interface Model<K>
+public interface Model<ID>
 {
     /**
-     * Returns the key of this model
+     * Returns the id of this model
      *
-     * @return the key
+     * @return the id
      */
-    public K getKey();
+    public ID getId();
 
     /**
-     * Sets the key of this model.
+     * Sets the id of this model.
      *
-     * @param key the key
+     * @param id the id
      */
-    public void setKey(K key);
+    public void setId(ID id);
 }

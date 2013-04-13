@@ -38,15 +38,15 @@ public class KitsGiven implements TwoKeyModel<Long, String>
     public int amount;
 
     @Override
-    public Pair<Long, String> getKey()
+    public Pair<Long, String> getId()
     {
         return new Pair<Long, String>(userId, kitName);
     }
 
     @Override
-    public void setKey(Pair<Long, String> key)
+    public void setId(Pair<Long, String> id)
     {
-        this.userId = key.getLeft();
-        this.kitName = key.getRight();
+        this.userId = id.getLeft();
+        this.kitName = id.getRight();
     }
 }

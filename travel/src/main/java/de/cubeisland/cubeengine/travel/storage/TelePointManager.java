@@ -819,7 +819,7 @@ public class TelePointManager extends SingleKeyStorage<Long, TeleportPoint>
         {
             try
             {
-                ResultSet resultSet = database.preparedQuery(this.modelClass, "homes_owned_public", user.getKey());
+                ResultSet resultSet = database.preparedQuery(this.modelClass, "homes_owned_public", user.getId());
                 homes.addAll(this.getHomes(resultSet));
                 resultSet.close();
             }
@@ -832,7 +832,7 @@ public class TelePointManager extends SingleKeyStorage<Long, TeleportPoint>
         {
             try
             {
-                ResultSet resultSet = database.preparedQuery(this.modelClass, "homes_owned_private", user.getKey());
+                ResultSet resultSet = database.preparedQuery(this.modelClass, "homes_owned_private", user.getId());
                 homes.addAll(this.getHomes(resultSet));
                 resultSet.close();
             }
@@ -922,7 +922,7 @@ public class TelePointManager extends SingleKeyStorage<Long, TeleportPoint>
         {
             try
             {
-                ResultSet resultSet = database.preparedQuery(this.modelClass, "warps_owned_public", user.getKey());
+                ResultSet resultSet = database.preparedQuery(this.modelClass, "warps_owned_public", user.getId());
                 warps.addAll(this.getWarps(resultSet));
                 resultSet.close();
             }
@@ -935,7 +935,7 @@ public class TelePointManager extends SingleKeyStorage<Long, TeleportPoint>
         {
             try
             {
-                ResultSet resultSet = database.preparedQuery(this.modelClass, "warps_owned_private", user.getKey());
+                ResultSet resultSet = database.preparedQuery(this.modelClass, "warps_owned_private", user.getId());
                 warps.addAll(this.getWarps(resultSet));
                 resultSet.close();
             }

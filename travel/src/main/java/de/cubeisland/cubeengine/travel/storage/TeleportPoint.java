@@ -27,9 +27,7 @@ import org.apache.commons.lang.Validate;
 
 import org.bukkit.Location;
 
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 @SingleKeyEntity(tableName = "teleportpoints", primaryKey = "key", autoIncrement = true,
                  indices = {
@@ -115,7 +113,7 @@ public class TeleportPoint implements Model<Long>
         this.visibility = visibility;
 
         // Load the values used in the DB
-        this.ownerKey = owner.getKey();
+        this.ownerKey = owner.getId();
         this.typeId = type.ordinal();
         this.visibilityId = visibility.ordinal();
         this.worldKey = CubeEngine.getCore().getWorldManager().getWorldId(location.getWorld());
@@ -127,15 +125,15 @@ public class TeleportPoint implements Model<Long>
     }
 
     @Override
-    public Long getKey()
+    public Long getId()
     {
         return key;
     }
 
     @Override
-    public void setKey(Long key)
+    public void setId(Long id)
     {
-        this.key = key;
+        this.key = id;
     }
 
     /**

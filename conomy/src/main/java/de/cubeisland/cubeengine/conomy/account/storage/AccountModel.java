@@ -49,15 +49,15 @@ public class AccountModel implements Model<Long>
     public boolean hidden = false;
 
     @Override
-    public Long getKey()
+    public Long getId()
     {
         return key;
     }
 
     @Override
-    public void setKey(Long key)
+    public void setId(Long id)
     {
-        this.key = key;
+        this.key = id;
     }
 
     public AccountModel()

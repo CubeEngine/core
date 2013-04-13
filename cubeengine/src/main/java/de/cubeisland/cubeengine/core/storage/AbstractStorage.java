@@ -17,14 +17,6 @@
  */
 package de.cubeisland.cubeengine.core.storage;
 
-import de.cubeisland.cubeengine.core.storage.database.Attribute;
-import de.cubeisland.cubeengine.core.storage.database.Database;
-import de.cubeisland.cubeengine.core.storage.database.DatabaseConstructor;
-import de.cubeisland.cubeengine.core.storage.database.DatabaseUpdater;
-import de.cubeisland.cubeengine.core.storage.database.querybuilder.QueryBuilder;
-import de.cubeisland.cubeengine.core.util.Callback;
-import gnu.trove.map.hash.TIntObjectHashMap;
-
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
@@ -34,6 +26,15 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Map;
+
+import de.cubeisland.cubeengine.core.storage.database.Attribute;
+import de.cubeisland.cubeengine.core.storage.database.Database;
+import de.cubeisland.cubeengine.core.storage.database.DatabaseConstructor;
+import de.cubeisland.cubeengine.core.storage.database.DatabaseUpdater;
+import de.cubeisland.cubeengine.core.storage.database.querybuilder.QueryBuilder;
+import de.cubeisland.cubeengine.core.util.Callback;
+
+import gnu.trove.map.hash.TIntObjectHashMap;
 
 // TODO possibility to set an order to the fields but how? perhaps give int
 // values -> then use TreeMap for fields but what with map.values is it sorted?
@@ -263,7 +264,7 @@ public abstract class AbstractStorage<K, M extends Model<K>, T> implements Stora
     @Override
     public void delete(M model, boolean async)
     {
-        this.deleteByKey(model.getKey(), async);
+        this.deleteByKey(model.getId(), async);
     }
 
     @Override

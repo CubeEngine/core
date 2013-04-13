@@ -239,13 +239,13 @@ public class User extends UserBase implements Model<Long>, CommandSender, Attach
     }
 
     @Override
-    public Long getKey()
+    public Long getId()
     {
         return this.key;
     }
 
     @Override
-    public void setKey(Long id)
+    public void setId(Long id)
     {
         this.key = id;
     }

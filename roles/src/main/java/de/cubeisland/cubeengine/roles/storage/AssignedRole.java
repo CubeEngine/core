@@ -21,9 +21,10 @@ import de.cubeisland.cubeengine.core.storage.TripletKeyModel;
 import de.cubeisland.cubeengine.core.storage.database.AttrType;
 import de.cubeisland.cubeengine.core.storage.database.Attribute;
 import de.cubeisland.cubeengine.core.storage.database.Index;
-import static de.cubeisland.cubeengine.core.storage.database.Index.IndexType.FOREIGN_KEY;
 import de.cubeisland.cubeengine.core.storage.database.TripletKeyEntity;
 import de.cubeisland.cubeengine.core.util.Triplet;
+
+import static de.cubeisland.cubeengine.core.storage.database.Index.IndexType.FOREIGN_KEY;
 
 @TripletKeyEntity(tableName = "roles", firstPrimaryKey = "userId", secondPrimaryKey = "worldId", thirdPrimaryKey = "roleName", indices = {
     @Index(value = FOREIGN_KEY, fields = "userId", f_table = "user", f_field = "key"),
@@ -46,16 +47,16 @@ public class AssignedRole implements TripletKeyModel<Long, Long, String>
     }
 
     @Override
-    public Triplet<Long, Long, String> getKey()
+    public Triplet<Long, Long, String> getId()
     {
         return new Triplet<Long, Long, String>(this.userId, this.worldId, this.roleName);
     }
 
     @Override
-    public void setKey(Triplet<Long, Long, String> key)
+    public void setId(Triplet<Long, Long, String> id)
     {
-        this.userId = key.getFirst();
-        this.worldId = key.getSecond();
-        this.roleName = key.getThird();
+        this.userId = id.getFirst();
+        this.worldId = id.getSecond();
+        this.roleName = id.getThird();
     }
 }

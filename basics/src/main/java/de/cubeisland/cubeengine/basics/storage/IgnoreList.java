@@ -45,15 +45,15 @@ public class IgnoreList implements TwoKeyModel<Long, Long>
     }
 
     @Override
-    public Pair<Long, Long> getKey()
+    public Pair<Long, Long> getId()
     {
         return new Pair<Long, Long>(key, ignore);
     }
 
     @Override
-    public void setKey(Pair<Long, Long> key)
+    public void setId(Pair<Long, Long> id)
     {
-        this.key = key.getLeft();
-        this.ignore = key.getRight();
+        this.key = id.getLeft();
+        this.ignore = id.getRight();
     }
 }

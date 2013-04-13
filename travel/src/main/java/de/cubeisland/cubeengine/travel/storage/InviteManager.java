@@ -19,13 +19,11 @@ package de.cubeisland.cubeengine.travel.storage;
 
 import de.cubeisland.cubeengine.core.CubeEngine;
 import de.cubeisland.cubeengine.core.logger.LogLevel;
-import de.cubeisland.cubeengine.core.storage.StorageException;
 import de.cubeisland.cubeengine.core.storage.TwoKeyStorage;
 import de.cubeisland.cubeengine.core.storage.database.Database;
 import de.cubeisland.cubeengine.core.storage.database.querybuilder.QueryBuilder;
 import de.cubeisland.cubeengine.core.user.User;
 
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.HashSet;
@@ -75,7 +73,7 @@ public class InviteManager extends TwoKeyStorage<Long, Long, TeleportInvite>
 
     public void invite(TeleportPoint tPP, User user)
     {
-        TeleportInvite invite = new TeleportInvite(tPP.key, user.getKey());
+        TeleportInvite invite = new TeleportInvite(tPP.key, user.getId());
         this.invites.add(invite);
         this.store(invite);
     }
@@ -129,7 +127,7 @@ public class InviteManager extends TwoKeyStorage<Long, Long, TeleportInvite>
         Set<TeleportInvite> invites = new HashSet<TeleportInvite>();
         for (TeleportInvite invite : this.invites)
         {
-            if (invite.userKey.equals(user.getKey()))
+            if (invite.userKey.equals(user.getId()))
             {
                 invites.add(invite);
             }
@@ -148,7 +146,7 @@ public class InviteManager extends TwoKeyStorage<Long, Long, TeleportInvite>
         Set<TeleportInvite> invites = new HashSet<TeleportInvite>();
         for (TeleportInvite invite : this.invites)
         {
-            if (invite.teleportPoint.equals(tPP.getKey()))
+            if (invite.teleportPoint.equals(tPP.getId()))
             {
                 invites.add(invite);
             }
@@ -173,14 +171,14 @@ public class InviteManager extends TwoKeyStorage<Long, Long, TeleportInvite>
 
         for (String user : added)
         {
-            this.store(new TeleportInvite(tPP.getKey(), CubeEngine.getUserManager().getUser(user, false).getKey()));
+            this.store(new TeleportInvite(tPP.getId(), CubeEngine.getUserManager().getUser(user, false).getId()));
         }
         for (String user : removed)
         {
             for (TeleportInvite invite : invites)
             {
-                if (invite.semiEquals(new TeleportInvite(tPP.getKey(), CubeEngine.getUserManager().getUser(user, false)
-                                                                                 .getKey())))
+                if (invite.semiEquals(new TeleportInvite(tPP.getId(), CubeEngine.getUserManager().getUser(user, false)
+                                                                                 .getId())))
                 {
                     this.delete(invite);
                 }

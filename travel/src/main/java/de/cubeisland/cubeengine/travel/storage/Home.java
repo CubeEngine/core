@@ -55,7 +55,7 @@ public class Home
      */
     public void update()
     {
-        parent.ownerKey = parent.owner.getKey();
+        parent.ownerKey = parent.owner.getId();
         parent.x = parent.location.getX();
         parent.y = parent.location.getY();
         parent.z = parent.location.getZ();
@@ -90,7 +90,7 @@ public class Home
     public void setOwner(User owner)
     {
         parent.owner = owner;
-        parent.ownerKey = owner.getKey();
+        parent.ownerKey = owner.getId();
     }
 
     public boolean isOwner(User user)
@@ -193,6 +193,6 @@ public class Home
 
     public Long getKey()
     {
-        return this.parent.getKey();
+        return this.parent.getId();
     }
 }

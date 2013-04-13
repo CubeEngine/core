@@ -52,16 +52,16 @@ public class UserPermission implements TripletKeyModel<Long, Long, String>
     }
 
     @Override
-    public Triplet<Long, Long, String> getKey()
+    public Triplet<Long, Long, String> getId()
     {
         return new Triplet<Long, Long, String>(userId, worldId, perm);
     }
 
     @Override
-    public void setKey(Triplet<Long, Long, String> key)
+    public void setId(Triplet<Long, Long, String> id)
     {
-        this.userId = key.getFirst();
-        this.worldId = key.getSecond();
-        this.perm = key.getThird();
+        this.userId = id.getFirst();
+        this.worldId = id.getSecond();
+        this.perm = id.getThird();
     }
 }

@@ -22,4 +22,18 @@ import de.cubeisland.cubeengine.core.module.Module;
 public class Powersigns extends Module
 {
     private PowersignsConfig config;
+    private SignManager signManager;
+
+    @Override
+    public void onEnable()
+    {
+        this.signManager = new SignManager(this);
+
+        this.signManager.init();
+    }
+
+    public SignManager getManager()
+    {
+        return signManager;
+    }
 }

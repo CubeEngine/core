@@ -49,7 +49,7 @@ public class BasicUserManager extends SingleKeyStorage<Long, BasicUser>
         BasicUser model = user.attachOrGet(BasicsAttachment.class, this.module).getBasicUser();
         if (model == null)
         {
-            model = this.get(user.getKey());
+            model = this.get(user.getId());
             if (model == null)
             {
                 model = new BasicUser(user);

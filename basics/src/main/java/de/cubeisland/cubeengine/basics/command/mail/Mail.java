@@ -52,15 +52,15 @@ public class Mail implements Model<Long>
     public Mail() {}
 
     @Override
-    public Long getKey()
+    public Long getId()
     {
         return key;
     }
 
     @Override
-    public void setKey(Long key)
+    public void setId(Long id)
     {
-        this.key = key;
+        this.key = id;
     }
 
     @Override

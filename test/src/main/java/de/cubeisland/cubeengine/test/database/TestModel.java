@@ -47,14 +47,14 @@ public class TestModel implements Model<Long>
     }
 
     @Override
-    public Long getKey()
+    public Long getId()
     {
         return this.id;
     }
 
     @Override
-    public void setKey(Long key)
+    public void setId(Long id)
     {
-        this.id = key;
+        this.id = id;
     }
 }

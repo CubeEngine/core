@@ -50,17 +50,17 @@ public class BasicUser implements Model<Long>
 
     public BasicUser(User user)
     {
-        this.key = user.getKey();
+        this.key = user.getId();
     }
 
     @Override
-    public Long getKey()
+    public Long getId()
     {
         return key;
     }
 
     @Override
-    public void setKey(Long key)
+    public void setId(Long id)
     {
         throw new UnsupportedOperationException("Not supported. The BasicUserKey is final!");
     }

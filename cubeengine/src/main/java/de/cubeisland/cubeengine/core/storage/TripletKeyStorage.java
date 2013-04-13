@@ -17,6 +17,12 @@
  */
 package de.cubeisland.cubeengine.core.storage;
 
+import java.lang.reflect.Field;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
+
 import de.cubeisland.cubeengine.core.storage.database.AttrType;
 import de.cubeisland.cubeengine.core.storage.database.Attribute;
 import de.cubeisland.cubeengine.core.storage.database.Database;
@@ -26,11 +32,6 @@ import de.cubeisland.cubeengine.core.storage.database.querybuilder.QueryBuilder;
 import de.cubeisland.cubeengine.core.storage.database.querybuilder.TableBuilder;
 import de.cubeisland.cubeengine.core.util.Callback;
 import de.cubeisland.cubeengine.core.util.Triplet;
-import java.lang.reflect.Field;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
 
 public class TripletKeyStorage<Key_f, Key_s, Key_t, M extends TripletKeyModel<Key_f, Key_s, Key_t>> extends AbstractStorage<Triplet<Key_f, Key_s, Key_t>, M, TripletKeyEntity>
 {
@@ -236,7 +237,7 @@ public class TripletKeyStorage<Key_f, Key_s, Key_t, M extends TripletKeyModel<Ke
 
             for (Callback cb : this.createCallbacks)
             {
-                cb.call(model.getKey());
+                cb.call(model.getId());
             }
         }
         catch (SQLException ex)
@@ -279,7 +280,7 @@ public class TripletKeyStorage<Key_f, Key_s, Key_t, M extends TripletKeyModel<Ke
             }
             for (Callback cb : this.updateCallbacks)
             {
-                cb.call(model.getKey());
+                cb.call(model.getId());
             }
         }
         catch (SQLException ex)
@@ -316,7 +317,7 @@ public class TripletKeyStorage<Key_f, Key_s, Key_t, M extends TripletKeyModel<Ke
             }
             for (Callback cb : this.updateCallbacks)
             {
-                cb.call(model.getKey());
+                cb.call(model.getId());
             }
         }
         catch (SQLException ex)
