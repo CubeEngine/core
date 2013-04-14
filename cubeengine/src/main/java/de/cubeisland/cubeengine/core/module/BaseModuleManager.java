@@ -433,7 +433,7 @@ public abstract class BaseModuleManager implements ModuleManager
         {
             return;
         }
-        Profiler.startProfiling("unload-" + module.getId());
+
         Set<Module> disable = new HashSet<Module>();
         for (Module m : this.modules.values())
         {
@@ -447,11 +447,12 @@ public abstract class BaseModuleManager implements ModuleManager
         {
             this.unloadModule(m);
         }
-
+        Profiler.startProfiling("unload-" + module.getId());
         this.disableModule(module);
         this.loader.unloadModule(module);
         this.moduleInfos.remove(module.getId());
 
+        this.logger.log(DEBUG, Profiler.getCurrentDelta("unload-" + module.getId(), TimeUnit.MILLISECONDS)+ "ms - null fields");
         // null all the fields referencing this module
         for (Module m : this.modules.values())
         {
@@ -468,13 +469,13 @@ public abstract class BaseModuleManager implements ModuleManager
                     {}
             }
         }
-
+        this.logger.log(DEBUG, Profiler.getCurrentDelta("unload-" + module.getId(), TimeUnit.MILLISECONDS)+ "ms - classloader");
         ClassLoader classLoader = module.getClassLoader();
         if (classLoader instanceof ModuleClassLoader)
         {
             ((ModuleClassLoader)classLoader).shutdown();
         }
-
+        this.logger.log(DEBUG, Profiler.getCurrentDelta("unload-" + module.getId(), TimeUnit.MILLISECONDS)+ "ms - Before GC ");
         System.gc();
         System.gc();
         this.logger.log(DEBUG, "Unloading '" + module.getName() + "' took {0} milliseconds!", Profiler.endProfiling("unload-" + module.getId(), TimeUnit.MILLISECONDS));
@@ -525,13 +526,13 @@ public abstract class BaseModuleManager implements ModuleManager
     @Override
     public void clean()
     {
-        this.logger.log(DEBUG, "unload modules");
+        this.logger.log(DEBUG, "Unload modules...");
         Profiler.startProfiling("unload-modules");
         this.unloadModules();
-        this.logger.log(DEBUG, "Unloading the module took {0} milliseconds!", Profiler.endProfiling("unload-modules", TimeUnit.MILLISECONDS));
+        this.logger.log(DEBUG, "Unloading the modules took {0} milliseconds!", Profiler.endProfiling("unload-modules", TimeUnit.MILLISECONDS));
         this.modules.clear();
         this.moduleInfos.clear();
-        this.logger.log(DEBUG, "shutting down the loader");
+        this.logger.log(DEBUG, "Shutting down the loader");
         this.loader.shutdown();
     }
 
