@@ -28,11 +28,17 @@ public class PowerSign<T extends SignType, I extends SignTypeInfo>
     private T signType;
     private I signInfo;
 
-    public PowerSign(T signType, Location location, User user, String[] lines , String id)
+    public PowerSign(T signType, Location location, User user, String[] lines)
     {
         this.signType = signType;
-        this.signInfo = (I)signType.createInfo(user,location,lines[0],id,lines[2],lines[3]);
+        this.signInfo = (I)signType.createInfo(user,location,lines[0],lines[1],lines[2],lines[3]);
         //this.signInfo.saveData();
+    }
+
+    public PowerSign(T signType, I signInfo)
+    {
+        this.signType = signType;
+        this.signInfo = signInfo;
     }
 
     public T getSignType()

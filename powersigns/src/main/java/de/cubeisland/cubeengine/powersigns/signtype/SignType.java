@@ -25,6 +25,7 @@ import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.powersigns.PowerSign;
 import de.cubeisland.cubeengine.powersigns.Powersigns;
 import de.cubeisland.cubeengine.powersigns.SignManager;
+import de.cubeisland.cubeengine.powersigns.storage.PowerSignModel;
 
 import gnu.trove.map.hash.THashMap;
 
@@ -67,4 +68,5 @@ public abstract class SignType<T extends SignType, I extends SignTypeInfo>
     }
 
     public abstract I createInfo(User user, Location location, String line1, String id, String line3, String line4);
+    public abstract I createInfo(PowerSignModel model);
 }
