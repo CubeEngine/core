@@ -27,6 +27,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.block.SignChangeEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.world.ChunkLoadEvent;
 
 import de.cubeisland.cubeengine.core.logger.LogLevel;
 import de.cubeisland.cubeengine.core.user.User;
@@ -89,6 +90,25 @@ public class SignManager implements Listener
         }
         signType.init(this.module);
         return this;
+    }
+
+    @EventHandler
+    public void onChunkLoad(ChunkLoadEvent event)
+    {
+        Set<PowerSignModel> powerSignModels = this.storage
+            .loadFromChunk(event.getChunk());
+        for (PowerSignModel powerSignModel : powerSignModels)
+        {
+            SignType signType = this.registerdSignTypes.get(powerSignModel.PSID);
+            SignTypeInfo info = signType.createInfo(powerSignModel);
+            PowerSign powerSign = new PowerSign(signType,info);
+            this.loadedPowerSigns.put(powerSign.getLocation(),powerSign);
+        }
+    }
+
+    public void onChunkUnload(ChunkLoadEvent event)
+    {
+
     }
 
     @EventHandler

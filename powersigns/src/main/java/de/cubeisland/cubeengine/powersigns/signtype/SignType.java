@@ -67,6 +67,6 @@ public abstract class SignType<T extends SignType, I extends SignTypeInfo>
         return this.lowerCasedNames;
     }
 
-    public abstract I createInfo(User user, Location location, String line1, String id, String line3, String line4);
+    public abstract I createInfo(long owner, Location location, String line1, String id, String line3, String line4);
     public abstract I createInfo(PowerSignModel model);
 }

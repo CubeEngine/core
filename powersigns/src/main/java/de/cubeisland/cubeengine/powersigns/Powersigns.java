@@ -28,7 +28,6 @@ public class Powersigns extends Module
     public void onEnable()
     {
         this.signManager = new SignManager(this);
-
         this.signManager.init();
     }
 

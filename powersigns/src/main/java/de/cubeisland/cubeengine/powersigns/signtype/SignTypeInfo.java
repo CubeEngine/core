@@ -21,7 +21,6 @@ import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.block.Sign;
 
-import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.powersigns.Powersigns;
 import de.cubeisland.cubeengine.powersigns.SignManager;
 import de.cubeisland.cubeengine.powersigns.storage.PowerSignModel;
@@ -35,12 +34,12 @@ public abstract class SignTypeInfo<T extends SignType>
     protected SignManager manager;
     private PowerSignModel model = null;
 
-    protected SignTypeInfo(Powersigns module, Location location, T signType, User user)
+    protected SignTypeInfo(Powersigns module, Location location, T signType, long creator)
     {
         this.module = module;
         this.manager = module.getManager();
         this.location = location;
-        this.creator = user.key;
+        this.creator = creator;
         this.signType = signType;
     }
 

@@ -43,6 +43,17 @@ public class PowerSignStorage extends SingleKeyStorage<Long,PowerSignModel>
         this.initialize();
     }
 
+    @Override
+    protected void prepareStatements() throws SQLException
+    {
+        super.prepareStatements();
+        this.database.storeStatement(this.modelClass,"getFromChunk",this.database.getQueryBuilder().
+                                    select().wildcard().from(this.tableName).where().
+                                    field("chunkX").isEqual().value().and().
+                                    field("chunkZ").isEqual().value().and().
+                                    field("world").isEqual().value().end().end());
+    }
+
     public Set<PowerSignModel> loadFromLoadedChunks(Set<World> worlds)
     {
         SelectBuilder builder = this.database.getQueryBuilder().select().wildcard().from(this.tableName).where();
@@ -55,7 +66,7 @@ public class PowerSignStorage extends SingleKeyStorage<Long,PowerSignModel>
             }
             if (!first)
             {
-                builder.and();
+                builder.or();
             }
             first = false;
             builder.beginSub().field("world").isEqual().value(this.wm.getWorldId(world)).and().beginSub();
@@ -76,6 +87,37 @@ public class PowerSignStorage extends SingleKeyStorage<Long,PowerSignModel>
         {
             Set<PowerSignModel> models = new HashSet<PowerSignModel>();
             ResultSet resultSet = this.database.query(sql);
+            while (resultSet.next())
+            {
+                PowerSignModel loadedModel = this.modelClass.newInstance();
+                for (Field field : this.fieldNames.keySet())
+                {
+                    field.set(loadedModel, resultSet.getObject(this.fieldNames.get(field)));
+                }
+                models.add(loadedModel);
+            }
+            return models;
+        }
+        catch (InstantiationException e)
+        {
+            throw new IllegalStateException("Error while creating new PowerSignModel",e);
+        }
+        catch (IllegalAccessException e)
+        {
+            throw new IllegalStateException("Error while setting fields of PowerSignModel",e);
+        }
+        catch (SQLException e)
+        {
+            throw new StorageException("Error while loading powersigns on startup!",e);
+        }
+    }
+
+    public Set<PowerSignModel> loadFromChunk(Chunk chunk)
+    {
+        try
+        {
+            Set<PowerSignModel> models = new HashSet<PowerSignModel>();
+            ResultSet resultSet = this.database.preparedQuery(this.modelClass,"getFromChunk",chunk.getX(),chunk.getZ(),this.wm.getWorldId(chunk.getWorld()));
             while (resultSet.next())
             {
                 PowerSignModel loadedModel = this.modelClass.newInstance();

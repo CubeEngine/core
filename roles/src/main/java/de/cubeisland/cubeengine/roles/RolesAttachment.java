@@ -17,13 +17,14 @@
  */
 package de.cubeisland.cubeengine.roles;
 
+import java.util.Map;
+
 import de.cubeisland.cubeengine.core.logger.LogLevel;
 import de.cubeisland.cubeengine.core.user.UserAttachment;
 import de.cubeisland.cubeengine.roles.role.RoleMetaData;
 import de.cubeisland.cubeengine.roles.role.UserSpecificRole;
-import gnu.trove.map.hash.TLongObjectHashMap;
 
-import java.util.Map;
+import gnu.trove.map.hash.TLongObjectHashMap;
 
 public class RolesAttachment extends UserAttachment
 {
@@ -33,7 +34,7 @@ public class RolesAttachment extends UserAttachment
 
     public void setRoleContainer(TLongObjectHashMap<UserSpecificRole> roleContainer) {
         this.roleContainer = roleContainer;
-        this.getModule().getLog().log(LogLevel.DEBUG, "RoleContainer attached for " + this.getHolder().getName());
+        this.getModule().getLog().log(LogLevel.DEBUG, this.getHolder().getName() + ": RoleContainer attached!");
     }
 
     public TLongObjectHashMap<UserSpecificRole> getRoleContainer() {
@@ -45,8 +46,11 @@ public class RolesAttachment extends UserAttachment
     }
 
     public void removeRoleContainer() {
-        this.roleContainer = null;
-        this.getModule().getLog().log(LogLevel.DEBUG, "RoleContainer removed for " + this.getHolder().getName());
+        if (roleContainer != null)
+        {
+            this.roleContainer = null;
+            this.getModule().getLog().log(LogLevel.DEBUG, this.getHolder().getName() + ": RoleContainer removed!");
+        }
     }
 
     public void setMetaData(Map<String, RoleMetaData> metaData) {

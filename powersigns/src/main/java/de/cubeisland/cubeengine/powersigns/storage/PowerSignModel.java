@@ -27,10 +27,12 @@ import de.cubeisland.cubeengine.core.storage.database.SingleKeyEntity;
 import de.cubeisland.cubeengine.powersigns.signtype.SignTypeInfo;
 
 import static de.cubeisland.cubeengine.core.storage.database.Index.IndexType.FOREIGN_KEY;
+import static de.cubeisland.cubeengine.core.storage.database.Index.IndexType.UNIQUE;
 
 @SingleKeyEntity(tableName = "powerSign", primaryKey = "id", autoIncrement = true, indices = {
     @Index(value = FOREIGN_KEY, fields = "owner_id", f_table = "user", f_field = "key"),
-    @Index(value = FOREIGN_KEY, fields = "world", f_table = "worlds", f_field = "key")
+    @Index(value = FOREIGN_KEY, fields = "world", f_table = "worlds", f_field = "key"),
+    @Index(value = UNIQUE, fields = {"x","y","z","world"})
 })
 public class PowerSignModel implements Model<Long>
 {

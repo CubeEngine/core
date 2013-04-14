@@ -114,7 +114,7 @@ public class LiftSign extends SignType<LiftSign,LiftSignInfo>
     }
 
     @Override
-    public LiftSignInfo createInfo(User user, Location location, String line1, String line2, String line3, String line4)
+    public LiftSignInfo createInfo(long owner, Location location, String line1, String line2, String line3, String line4)
     {
         int amount = 1;
         try
@@ -123,7 +123,7 @@ public class LiftSign extends SignType<LiftSign,LiftSignInfo>
         }
         catch (NumberFormatException ignore){}
         Boolean up;
-        line2 = ChatFormat.stripFormats(line2);
+        line2 = ChatFormat.stripFormats(line2).toLowerCase();
         if (line2.equals("[" + this.getPSID()+ "]") || line2.equals("[lift]"))
         {
             up = null;
@@ -140,16 +140,15 @@ public class LiftSign extends SignType<LiftSign,LiftSignInfo>
         {
             throw new IllegalArgumentException();
         }
-        return new LiftSignInfo(this.module,location,user,line1,up,amount);
+        return new LiftSignInfo(this.module,location,owner,line1,up,amount);
     }
 
     @Override
     public LiftSignInfo createInfo(PowerSignModel model)
     {
         Location location = new Location(this.module.getCore().getWorldManager().getWorld(model.world),model.x,model.y,model.z);
-        User user = this.module.getCore().getUserManager().getUser(model.owner_id);
         Sign sign = (Sign)location.getBlock().getState(); //TODO when there is no sign
-        return this.createInfo(user,location,sign.getLine(0),sign.getLine(1),sign.getLine(2),sign.getLine(3));
+        return this.createInfo(model.owner_id,location,sign.getLine(0),sign.getLine(1),sign.getLine(2),sign.getLine(3));
     }
 
     public class LiftSignInfo extends SignTypeInfo<LiftSign>
@@ -162,7 +161,7 @@ public class LiftSign extends SignType<LiftSign,LiftSignInfo>
         private Location destination;
 
 
-        public LiftSignInfo(Powersigns module, Location location, User creator, String floorName, Boolean up, int amount)
+        public LiftSignInfo(Powersigns module, Location location, long creator, String floorName, Boolean up, int amount)
         {
             super(module,location,LiftSign.this,creator);
             this.floorName = floorName;

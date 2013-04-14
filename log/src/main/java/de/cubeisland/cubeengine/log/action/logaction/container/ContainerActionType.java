@@ -422,6 +422,7 @@ public class ContainerActionType extends ActionTypeContainer
 
     static boolean isSubActionSimilar(LogEntry logEntry, LogEntry other)
     {
+        //TODO there was an NPE here
         if (logEntry.causer == other.causer
             && logEntry.world == other.world
             && logEntry.location.equals(other.location)
