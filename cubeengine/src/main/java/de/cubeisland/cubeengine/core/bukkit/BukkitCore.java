@@ -152,7 +152,7 @@ public final class BukkitCore extends JavaPlugin implements Core
                 pm.callEvent(new PlayerLanguageReceivedEvent(event.getPlayer(), ((Packet204LocaleAndViewDistance)event.getPacket()).d()));
             }
         });
-        BukkitUtils.registerPacketHookInjector(this);
+        //TODO this is not working atm BukkitUtils.registerPacketHookInjector(this);
 
         try
         {
