@@ -22,6 +22,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+import org.bukkit.permissions.Permissible;
+
 import de.cubeisland.cubeengine.core.CubeEngine;
 import de.cubeisland.cubeengine.core.i18n.ClonedLanguage;
 import de.cubeisland.cubeengine.core.i18n.I18n;
@@ -171,5 +173,11 @@ public class Announcement
     public boolean hasFixedCycle()
     {
         return this.fixedCycle;
+    }
+
+    public boolean canAccess(Permissible permissible)
+    {
+        // TODO check the group
+        return this.getPermNode().equals("*") || permissible.hasPermission(this.getPermNode());
     }
 }

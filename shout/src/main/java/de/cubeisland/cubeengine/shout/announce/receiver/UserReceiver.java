@@ -58,7 +58,7 @@ public class UserReceiver extends AbstractReceiver
     }
 
     @Override
-    public boolean canReceiver(Announcement announcement)
+    public boolean canReceive(Announcement announcement)
     {
         return announcement.hasWorld(this.user.getWorld().getName());
     }
@@ -66,6 +66,6 @@ public class UserReceiver extends AbstractReceiver
     @Override
     public boolean couldReceive(Announcement announcement)
     {
-        return announcement.getPermNode().equals("*") || this.user.hasPermission(announcement.getPermNode());
+        return announcement.canAccess(this.user);
     }
 }

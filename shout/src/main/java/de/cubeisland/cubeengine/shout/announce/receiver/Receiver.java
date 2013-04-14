@@ -78,7 +78,7 @@ public interface Receiver
      * @param   announcement the announcement to check with
      * @return  if receiver can receive this announcement now
      */
-    public boolean canReceiver(Announcement announcement);
+    public boolean canReceive(Announcement announcement);
 
     /**
      * If the receiver under a specific circumstance could receive an announcement

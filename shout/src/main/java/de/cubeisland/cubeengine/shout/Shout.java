@@ -23,6 +23,7 @@ import java.io.IOException;
 import de.cubeisland.cubeengine.core.command.reflected.ReflectedCommand;
 import de.cubeisland.cubeengine.core.logger.LogLevel;
 import de.cubeisland.cubeengine.core.module.Module;
+import de.cubeisland.cubeengine.roles.Roles;
 import de.cubeisland.cubeengine.shout.announce.AnnouncementManager;
 import de.cubeisland.cubeengine.shout.announce.announcer.Announcer;
 import de.cubeisland.cubeengine.shout.interactions.ShoutCommand;
@@ -31,18 +32,25 @@ import de.cubeisland.cubeengine.shout.interactions.ShoutSubCommands;
 
 public class Shout extends Module
 {
+    private Roles roles;
+    public boolean usingRoles = false;
+
     private AnnouncementManager announcementManager;
     private Announcer announcer;
     private ShoutConfiguration config;
     private File announcementFolder;
 
-    // TODO CubeRoles
     @Override
     public void onEnable()
     {
         this.announcementFolder = this.getFolder();
         this.getCore().getFileManager().dropResources(ShoutResource.values());
 
+        if (this.getCore().getModuleManager().getModule(Roles.class) == null)
+        {
+            this.usingRoles = true;
+            this.roles = this.getCore().getModuleManager().getModule(Roles.class);
+        }
 
         this.announcer = new Announcer(this.getCore().getTaskManager(), this.config.initDelay);
         this.announcementManager = new AnnouncementManager(this, this.announcementFolder);
