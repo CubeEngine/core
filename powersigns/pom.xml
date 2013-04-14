@@ -1,21 +1,29 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-  <modelVersion>4.0.0</modelVersion>
-  <parent>
-    <groupId>de.cubeisland.engine</groupId>
-    <artifactId>parent</artifactId>
-    <version>1.0.0</version>
-    <relativePath>../parent-pom.xml</relativePath>
-  </parent>
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>de.cubeisland</groupId>
+        <artifactId>cubeengine-aggregator</artifactId>
+        <version>1.0.0-SNAPSHOT</version>
+    </parent>
 
-  <artifactId>powersigns</artifactId>
-  <name>PowerSigns</name>
-  <version>1.0.0-SNAPSHOT</version>
-  <description>A collection of powerful signs.</description>
+    <groupId>de.cubeisland.cubeengine</groupId>
+    <artifactId>powersigns</artifactId>
+    <version>1.0.0-SNAPSHOT</version>
 
-  <dependencies>
-    <dependency>
-      <groupId>${project.parent.groupId}</groupId>
-      <artifactId>cubeengine</artifactId>
-    </dependency>
-  </dependencies>
+    <name>PowerSigns</name>
+    <description>A collection of powerful signs.</description>
+
+  <properties>
+    <projectBase>${project.parent.basedir}</projectBase>
+  </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>${project.parent.groupId}</groupId>
+            <artifactId>cubeengine</artifactId>
+            <version>${project.parent.version}</version>
+            <type>jar</type>
+            <scope>provided</scope>
+        </dependency>
+    </dependencies>
 </project>

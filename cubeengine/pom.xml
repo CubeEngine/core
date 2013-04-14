@@ -2,17 +2,16 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <parent>
-    <groupId>de.cubeisland.engine</groupId>
-    <artifactId>parent</artifactId>
-    <version>1.0.0</version>
-    <relativePath>../parent-pom.xml</relativePath>
+    <groupId>de.cubeisland</groupId>
+    <artifactId>cubeengine-aggregator</artifactId>
+    <version>1.0.0-SNAPSHOT</version>
   </parent>
 
   <artifactId>cubeengine</artifactId>
   <name>CubeEngine</name>
-  <version>1.0.0-SNAPSHOT</version>
 
   <properties>
+    <projectBase>${project.parent.basedir}</projectBase>
     <externalPackage>${project.parent.groupId}.${project.artifactId}.external</externalPackage>
   </properties>
 
@@ -131,69 +130,69 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-shade-plugin</artifactId>
-        <configuration>
-          <artifactSet>
-            <includes>
-              <include>net.sf.trove4j:trove4j</include>
-              <include>com.fasterxml.jackson.core:*</include>
-              <include>commons-lang:commons-lang</include>
-              <include>io.netty:*</include>
-              <include>org.yaml:snakeyaml</include>
-              <include>org.fusesource.jansi:jansi</include>
-              <include>org.mcstats.bukkit:metrics</include>
-            </includes>
-          </artifactSet>
-          <filters>
-            <filter>
-              <artifact>*:*</artifact>
-              <excludes>
-                <exclude>lib/**</exclude>
-                <exclude>templates/**</exclude>
-                <exclude>META-INF/native/**</exclude>
-                <exclude>**/*.java</exclude>
-              </excludes>
-            </filter>
-          </filters>
-          <relocations>
-            <relocation>
-              <pattern>gnu.trove</pattern>
-              <shadedPattern>${externalPackage}.trove</shadedPattern>
-            </relocation>
-            <relocation>
-              <pattern>com.fasterxml</pattern>
-              <shadedPattern>${externalPackage}.jackson</shadedPattern>
-            </relocation>
-            <relocation>
-              <pattern>org.apache.commons</pattern>
-              <shadedPattern>${externalPackage}.apachecommons</shadedPattern>
-            </relocation>
-            <relocation>
-              <pattern>io.netty</pattern>
-              <shadedPattern>${externalPackage}.netty</shadedPattern>
-            </relocation>
-            <relocation>
-              <pattern>org.yaml.snakeyaml</pattern>
-              <shadedPattern>${externalPackage}.snakeyaml</shadedPattern>
-            </relocation>
-            <relocation>
-              <pattern>org.fusesource</pattern>
-              <shadedPattern>${externalPackage}.jansi</shadedPattern>
-            </relocation>
-            <relocation>
-              <pattern>org.mcstats.metrics</pattern>
-              <shadedPattern>${externalPackage}.metrics</shadedPattern>
-            </relocation>
-          </relocations>
-          <keepDependenciesWithProvidedScope>true</keepDependenciesWithProvidedScope>
-          <createDependencyReducedPom>false</createDependencyReducedPom>
-        </configuration>
         <executions>
-          <!--<execution>
+          <execution>
             <phase>package</phase>
             <goals>
               <goal>shade</goal>
             </goals>
-          </execution>-->
+            <configuration>
+              <artifactSet>
+                <includes>
+                  <include>net.sf.trove4j:trove4j</include>
+                  <include>com.fasterxml.jackson.core:*</include>
+                  <include>commons-lang:commons-lang</include>
+                  <include>io.netty:*</include>
+                  <include>org.yaml:snakeyaml</include>
+                  <include>org.fusesource.jansi:jansi</include>
+                  <include>org.mcstats.bukkit:metrics</include>
+                </includes>
+              </artifactSet>
+              <filters>
+                <filter>
+                  <artifact>*:*</artifact>
+                  <excludes>
+                    <exclude>lib/**</exclude>
+                    <exclude>templates/**</exclude>
+                    <exclude>META-INF/native/**</exclude>
+                    <exclude>**/*.java</exclude>
+                  </excludes>
+                </filter>
+              </filters>
+              <relocations>
+                <!--<relocation>
+                  <pattern>gnu.trove</pattern>
+                  <shadedPattern>${externalPackage}.trove</shadedPattern>
+                </relocation>
+                <relocation>
+                  <pattern>com.fasterxml</pattern>
+                  <shadedPattern>${externalPackage}.jackson</shadedPattern>
+                </relocation>
+                <relocation>
+                  <pattern>org.apache.commons</pattern>
+                  <shadedPattern>${externalPackage}.apachecommons</shadedPattern>
+                </relocation>-->
+                <relocation>
+                  <pattern>io.netty</pattern>
+                  <shadedPattern>${externalPackage}.netty</shadedPattern>
+                </relocation>
+                <relocation>
+                  <pattern>org.yaml.snakeyaml</pattern>
+                  <shadedPattern>${externalPackage}.snakeyaml</shadedPattern>
+                </relocation>
+                <relocation>
+                  <pattern>org.fusesource</pattern>
+                  <shadedPattern>${externalPackage}.jansi</shadedPattern>
+                </relocation>
+                <relocation>
+                  <pattern>org.mcstats.metrics</pattern>
+                  <shadedPattern>${externalPackage}.metrics</shadedPattern>
+                </relocation>
+              </relocations>
+              <keepDependenciesWithProvidedScope>true</keepDependenciesWithProvidedScope>
+              <createDependencyReducedPom>false</createDependencyReducedPom>
+            </configuration>
+          </execution>
         </executions>
       </plugin>
     </plugins>
