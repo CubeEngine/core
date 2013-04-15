@@ -286,7 +286,7 @@ public class TelePointManager extends SingleKeyStorage<Long, TeleportPoint>
                 Set<String> publicMatches = Match.string().getBestMatches(name, publicHomes.keySet(), 2);
                 if (!publicMatches.isEmpty())
                 {
-                    Home home = publicHomes.get(matches.iterator().next());
+                    Home home = publicHomes.get(publicMatches.iterator().next());
                     if (home.canAccess(user))
                     {
                         return home;
