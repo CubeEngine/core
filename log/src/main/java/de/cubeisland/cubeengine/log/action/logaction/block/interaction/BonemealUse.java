@@ -53,7 +53,6 @@ public class BonemealUse extends BlockActionType
                             logEntry.getCauserUser().getDisplayName(),
                             logEntry.getOldBlock());
     }
-    //TODO override issimilar
 
     @Override
     public boolean isActive(World world)

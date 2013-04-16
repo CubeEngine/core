@@ -23,8 +23,11 @@ import org.bukkit.entity.Creeper;
 import org.bukkit.entity.EnderDragon;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Fireball;
+import org.bukkit.entity.Ghast;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.TNTPrimed;
+import org.bukkit.entity.Wither;
 import org.bukkit.entity.WitherSkull;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -62,8 +65,11 @@ public class ExplodeActionType extends ActionTypeContainer
         if (event.getEntity() instanceof TNTPrimed)
         {
             actionType = this.manager.getActionType(TntExplode.class);
-            //((TNTPrimed)event.getEntity()).getSource()
-            //TODO get player who ignited if found
+            Entity source = ((TNTPrimed)event.getEntity()).getSource();
+            if (source != null && source instanceof Player)
+            {
+                  player = (Player)source;
+            }
         }
         else if (event.getEntity() instanceof Creeper)
         {
@@ -74,6 +80,9 @@ public class ExplodeActionType extends ActionTypeContainer
         else if (event.getEntity() instanceof Fireball)
         {
             actionType = this.manager.getActionType(FireballExplode.class);
+            LivingEntity shooter = ((Fireball)event.getEntity()).getShooter();
+            // http://pastie.org/4350900#43
+            //TODO add to BukkitUtil Methods to get/set Target of Ghast & Enderdragon
             //TODO get shooter if shooter is attacking player log player too
         }
         else if (event.getEntity() instanceof EnderDragon)
@@ -83,8 +92,15 @@ public class ExplodeActionType extends ActionTypeContainer
         }
         else if (event.getEntity() instanceof WitherSkull)
         {
-            //TODO if is attacking player log player too
             actionType = this.manager.getActionType(WitherExplode.class);
+            if (((WitherSkull)event.getEntity()).getShooter() instanceof Wither)
+            {
+                LivingEntity target = ((Wither)((WitherSkull)event.getEntity()).getShooter()).getTarget();
+                if (target instanceof Player)
+                {
+                    player = (Player)target;
+                }
+            }
         }
         else
         {
