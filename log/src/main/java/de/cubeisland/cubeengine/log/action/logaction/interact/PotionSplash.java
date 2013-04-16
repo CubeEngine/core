@@ -33,6 +33,7 @@ import de.cubeisland.cubeengine.log.storage.LogEntry;
 
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import gnu.trove.set.hash.TShortHashSet;
 
 import static de.cubeisland.cubeengine.log.action.ActionType.Category.ENTITY;
 import static de.cubeisland.cubeengine.log.action.ActionType.Category.ITEM;
@@ -88,16 +89,20 @@ public class PotionSplash extends SimpleLogActionType
         {
             json.put("amount", event.getAffectedEntities().size());
             ArrayNode affected = json.putArray("affected");
+            TShortHashSet set = new TShortHashSet();
             for (LivingEntity livingEntity : event.getAffectedEntities())
             {
                 if (livingEntity instanceof Player)
                 {
                     User user = um.getExactUser((Player)livingEntity);
                     affected.add(user.key);
+                    continue;
                 }
-                else
+                short entity = livingEntity.getType().getTypeId();
+                if (!set.contains(entity))
                 {
-                    affected.add(-livingEntity.getType().getTypeId());
+                    affected.add(-entity);
+                    set.add(entity);
                 }
             }
         }

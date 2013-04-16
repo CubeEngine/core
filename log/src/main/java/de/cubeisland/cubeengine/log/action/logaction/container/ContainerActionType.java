@@ -21,6 +21,7 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.BlockState;
 import org.bukkit.block.BrewingStand;
+import org.bukkit.block.Chest;
 import org.bukkit.block.DoubleChest;
 import org.bukkit.block.Furnace;
 import org.bukkit.entity.Entity;
@@ -32,6 +33,7 @@ import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryMoveItemEvent;
 import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.inventory.BrewerInventory;
+import org.bukkit.inventory.DoubleChestInventory;
 import org.bukkit.inventory.FurnaceInventory;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
@@ -62,6 +64,9 @@ import static de.cubeisland.cubeengine.core.util.InventoryUtil.getMissingSpace;
  */
 public class ContainerActionType extends ActionTypeContainer
 {
+    // TODO do we want to track the postion of the items?
+    // problem -> we cannot first gather the information and then log it but have to log every single click
+    // also the new inventory "clicks" are not yet possible to log
     public ContainerActionType()
     {
         super("CONTAINER");
@@ -109,7 +114,8 @@ public class ContainerActionType extends ActionTypeContainer
         }
         else if (holder instanceof DoubleChest)
         {
-            return ((DoubleChest)holder).getLocation();//TODO get a blocklocation
+            //((Chest)inventory.getLeftSide().getHolder()).getLocation()
+            return ((DoubleChest)holder).getLocation();
             //TODO get the correct chest
         }
         else if (holder instanceof BlockState)
@@ -393,8 +399,8 @@ public class ContainerActionType extends ActionTypeContainer
         Inventory target = event.getDestination();
         if (target == null || source == null)
         {
-            //System.out.print("InventoryMoveItem has null "+source+" -> "+target);
-            // TODO source is sometimes null too
+            System.out.print("InventoryMoveItem has null "+source+" -> "+target);
+            // TODO remove if fixed
             return;
         }
         Location sourceLocation = this.getLocationForHolder(source.getHolder());
@@ -422,11 +428,10 @@ public class ContainerActionType extends ActionTypeContainer
 
     static boolean isSubActionSimilar(LogEntry logEntry, LogEntry other)
     {
-        //TODO there was an NPE here
         if (logEntry.causer == other.causer
             && logEntry.world == other.world
             && logEntry.location.equals(other.location)
-            && logEntry.block.equals(other.block)) // InventoryType
+            && (logEntry.block == other.block || logEntry.block.equals(other.block))) // InventoryType
         {
             ItemData itemData1 = logEntry.getItemData();
             ItemData itemData2 = other.getItemData();

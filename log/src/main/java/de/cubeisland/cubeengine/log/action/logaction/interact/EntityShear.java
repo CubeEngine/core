@@ -65,7 +65,7 @@ public class EntityShear extends SimpleLogActionType
         }
         else
         {
-            System.out.print("Sheared something: "+event.getEntity()); //TODO remove
+            System.out.print("Sheared something unknown: "+event.getEntity()); //TODO remove
         }
     }
 
