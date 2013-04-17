@@ -1422,7 +1422,7 @@ public class UserBase implements Player
                     NBTTagList list = data.getList("Pos");
                     if (list != null)
                     {
-                        Location loc = new Location(null, 0, 0, 0, 0, 0);
+                        Location loc = new Location(world, 0, 0, 0, 0, 0);
                         loc.setX(((NBTTagDouble)list.get(0)).data);
                         loc.setY(((NBTTagDouble)list.get(1)).data);
                         loc.setZ(((NBTTagDouble)list.get(2)).data);
