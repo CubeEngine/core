@@ -19,6 +19,7 @@ package de.cubeisland.cubeengine.core.storage.database.mysql;
 
 import de.cubeisland.cubeengine.core.storage.database.Database;
 import de.cubeisland.cubeengine.core.storage.database.querybuilder.ComponentBuilder;
+import de.cubeisland.cubeengine.core.storage.database.querybuilder.IndexBuilder;
 import de.cubeisland.cubeengine.core.storage.database.querybuilder.QueryBuilder;
 import java.sql.Timestamp;
 
@@ -297,5 +298,21 @@ public abstract class MySQLComponentBuilder<This extends ComponentBuilder> imple
         this.parent.query.append(this.query);
         this.query = null;
         return this.parent;
+    }
+
+    @Override
+    public This fieldsInBrackets(String[] fields)
+    {
+        if (fields.length == 0)
+        {
+            throw new IllegalArgumentException("The fields cannot be none!");
+        }
+        this.beginSub().field(fields[0]);
+        for (int i = 1; i < fields.length; ++i)
+        {
+            this.query.append(", ");
+            this.field(fields[i]);
+        }
+        return this.endSub();
     }
 }

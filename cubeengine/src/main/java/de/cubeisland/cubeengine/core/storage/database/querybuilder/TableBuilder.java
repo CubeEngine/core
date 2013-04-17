@@ -148,7 +148,7 @@ public interface TableBuilder extends ComponentBuilder<TableBuilder>
     /**
      * Sets a foreign key.
      *
-     * @param key the name
+     * @param keys the name
      * @return fluent interface
      */
     public TableBuilder foreignKey(String... keys);
@@ -157,7 +157,7 @@ public interface TableBuilder extends ComponentBuilder<TableBuilder>
      * Sets the reference for the foreign key
      *
      * @param table the table to reference
-     * @param field the field of the references table
+     * @param fields the field of the references table
      * @return fluent interface
      */
     public TableBuilder references(String table, String... fields);

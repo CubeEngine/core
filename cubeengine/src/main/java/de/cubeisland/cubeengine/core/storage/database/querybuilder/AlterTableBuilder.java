@@ -38,30 +38,107 @@ public interface AlterTableBuilder extends ComponentBuilder<AlterTableBuilder>
      */
     public AlterTableBuilder add(String field, AttrType type);
 
+    /**
+     * Adds a UNIQUE CONSTRAINT for given fields
+     *
+     * @param fields the unique fields
+     * @return
+     */
     public AlterTableBuilder addUniques(String... fields);
 
+    /**
+     * Starts a CHECK CONSTRAINT
+     *
+     * @return
+     */
     public AlterTableBuilder addCheck();
 
+    /**
+     * Starts a DEFAULT statements
+     *
+     * @param field
+     * @return
+     */
     public AlterTableBuilder setDefault(String field);
 
+    /**
+     * Adds a FOREIGN KEY
+     *
+     * @param field
+     * @param foreignTable
+     * @param foreignField
+     * @return
+     */
     public AlterTableBuilder addForeignKey(String field, String foreignTable, String foreignField);
 
+    /**
+     * Sets the PRIMARY KEY
+     *
+     * @param field
+     * @return
+     */
     public AlterTableBuilder setPrimary(String field);
 
+    /**
+     * Drops a UNIQUE field
+     *
+     * @param field
+     * @return
+     */
     public AlterTableBuilder dropUnique(String field);
 
+    /**
+     * Drops a PRIMARY KEY
+     *
+     * @return
+     */
     public AlterTableBuilder dropPrimary();
 
+    /**
+     * Drops a CHECK
+     *
+     * @param field
+     * @return
+     */
     public AlterTableBuilder dropCheck(String field);
 
+    /**
+     * Drops a DEFAULT value
+     *
+     * @param field
+     * @return
+     */
     public AlterTableBuilder dropDefault(String field);
 
+    /**
+     * Drops an INDEX or KEY
+     *
+     * @param field
+     * @return
+     */
     public AlterTableBuilder dropIndex(String field);
 
+    /**
+     * Drops a FOREIGN KEY
+     *
+     * @param field
+     * @return
+     */
     public AlterTableBuilder dropForeignKey(String field);
 
+    /**
+     * Sets the default value
+     *
+     * @param value
+     * @return
+     */
     public AlterTableBuilder defaultValue(String value);
 
+    /**
+     * Sets a placeholder ? for the default value
+     *
+     * @return
+     */
     public AlterTableBuilder defaultValue();
 
     /**
