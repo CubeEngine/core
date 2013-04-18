@@ -269,6 +269,12 @@ public class RoleManager
         UserSpecificRole userSpecificRole = new UserSpecificRole(this.module, user, this.userMirrors.get(worldId));
         if (roles != null)
         {
+            RolesAttachment rolesAttachment = user.get(RolesAttachment.class);
+            if (rolesAttachment.hasTemporaryRoles(worldId))
+            {
+                Set<ConfigRole> temporaryRoles = rolesAttachment.getTemporaryRoles(worldId);
+                roles.addAll(temporaryRoles);
+            }
             // Roles Assigned to this user:
             MergedRole mergedRole = new MergedRole(roles); // merge all assigned roles
             // Apply inheritance
@@ -280,6 +286,7 @@ public class RoleManager
 
     public UserSpecificRole recalculateDirtyUserRole(User user, long worldId)
     {
+        user.get(RolesAttachment.class).replaceDirtyTemporaryRoles(this);
         return this.preCalculateRole(user,this.getRolesFor(user,false).get(worldId),worldId);
     }
 
@@ -510,7 +517,7 @@ public class RoleManager
      * @param roleName the role to lookup
      * @return the role OR null if not found
      */
-    public Role getRoleInWorld(long worldId, String roleName)
+    public ConfigRole getRoleInWorld(long worldId, String roleName)
     {
         RoleProvider provider = this.getProvider(worldId);
         return provider.getRole(roleName);
@@ -530,7 +537,7 @@ public class RoleManager
     {
         for (User user : this.module.getCore().getUserManager().getOnlineUsers()) // reapply roles on reload
         {
-            user.attachOrGet(RolesAttachment.class,module).removeRoleContainer(); // remove potential old calculated roles
+            user.attach(RolesAttachment.class,module); // clear RolesAttachment
             this.preCalculateRoles(user.getName(), false);
             if (user.isOnline())
             {

@@ -45,7 +45,8 @@ public class UserManagementCommands extends UserCommandHelper
     })
     @Command(names = {
         "assign", "add", "give"
-    }, desc = "Assign a role to the player [in world]", usage = "<player> <role> [in <world>]", params = @Param(names = "in", type = World.class), max = 3, min = 2)
+    }, desc = "Assign a role to the player [in world]", usage = "<player> <role> [in <world>]",
+             params = @Param(names = "in", type = World.class), max = 3, min = 2)
     public void assign(ParameterizedContext context)
     {
         User user = this.getUser(context, 0);
