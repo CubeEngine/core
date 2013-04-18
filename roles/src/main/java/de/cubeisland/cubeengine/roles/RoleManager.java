@@ -556,4 +556,9 @@ public class RoleManager
     }
 
 
+    public boolean addTempRoles(User user, Player player, long worldId, ConfigRole... roles)
+    {
+        //TODO;
+        return false;
+    }
 }
