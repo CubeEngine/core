@@ -556,8 +556,9 @@ public class RoleManager
     }
 
 
-    public boolean addTempRoles(User user, Player player, long worldId, ConfigRole... roles)
+    public boolean addTempRoles(User user, long worldId, ConfigRole... roles)
     {
+        user.attachOrGet(RolesAttachment.class, this.module).addTemporaryRoles(worldId, roles);
         //TODO;
         return false;
     }

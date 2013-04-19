@@ -17,6 +17,7 @@
  */
 package de.cubeisland.cubeengine.roles;
 
+import java.util.Arrays;
 import java.util.Map;
 import java.util.Set;
 
@@ -86,22 +87,19 @@ public class RolesAttachment extends UserAttachment
         return temporaryRoles.get(worldId);
     }
 
-    public void addTemporaryRoles(Set<ConfigRole> roles, long... worldIds)
+    public void addTemporaryRoles(long worldID, ConfigRole[] roles)
     {
         if (this.temporaryRoles == null)
         {
             this.temporaryRoles = new TLongObjectHashMap<TLinkedHashSet<ConfigRole>>();
         }
-        for (long worldID : worldIds)
+        TLinkedHashSet<ConfigRole> configRoles = this.temporaryRoles.get(worldID);
+        if (configRoles == null)
         {
-            TLinkedHashSet<ConfigRole> configRoles = this.temporaryRoles.get(worldID);
-            if (configRoles == null)
-            {
-                configRoles = new TLinkedHashSet<ConfigRole>();
-                this.temporaryRoles.put(worldID,configRoles);
-            }
-            configRoles.addAll(roles);
+            configRoles = new TLinkedHashSet<ConfigRole>();
+            this.temporaryRoles.put(worldID,configRoles);
         }
+        configRoles.addAll(Arrays.asList(roles));
     }
 
     public void replaceDirtyTemporaryRoles(final RoleManager manager)

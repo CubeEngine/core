@@ -68,7 +68,7 @@ public class UserManagementCommands extends UserCommandHelper
         }
         if (context.hasFlag("t"))
         {
-            if (this.manager.addTempRoles(user, user.getPlayer(), worldId, role))
+            if (this.manager.addTempRoles(user, worldId, role))
             {
                 context.sendTranslated("&aAdded the role &6%s&a temporarily to &2%s&a in &6%s&a.", roleName, user.getName(), world.getName());
             }
