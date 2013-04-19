@@ -87,7 +87,7 @@ public class RolesAttachment extends UserAttachment
         return temporaryRoles.get(worldId);
     }
 
-    public void addTemporaryRoles(long worldID, ConfigRole[] roles)
+    public void addTemporaryRole(long worldID, ConfigRole role)
     {
         if (this.temporaryRoles == null)
         {
@@ -99,7 +99,7 @@ public class RolesAttachment extends UserAttachment
             configRoles = new TLinkedHashSet<ConfigRole>();
             this.temporaryRoles.put(worldID,configRoles);
         }
-        configRoles.addAll(Arrays.asList(roles));
+        configRoles.add(role);
     }
 
     public void replaceDirtyTemporaryRoles(final RoleManager manager)

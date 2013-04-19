@@ -178,6 +178,8 @@ public class RoleManager
                 WorldRoleProvider provider = new WorldRoleProvider(module, worldId);
                 this.providers.put(worldId, provider);
                 this.providerSet.add(provider);
+                this.assignedRoleMirrors.put(worldId,worldId);
+                this.userMirrors.put(worldId,worldId);
                 this.module.getLog().log(LogLevel.DEBUG,"Loading missing role-provider for "+worldManager.getWorld(worldId).getName());
             }
         }
@@ -555,11 +557,15 @@ public class RoleManager
         }
     }
 
-
-    public boolean addTempRoles(User user, long worldId, ConfigRole... roles)
+    public boolean addTempRole(User user, long worldId, ConfigRole role)
     {
-        user.attachOrGet(RolesAttachment.class, this.module).addTemporaryRoles(worldId, roles);
-        //TODO;
-        return false;
+        RolesAttachment rolesAttachment = user.attachOrGet(RolesAttachment.class, this.module);
+        if (rolesAttachment.getRoleContainer().get(worldId).getParentRoles().contains(role))
+        {
+            return false;
+        }
+        rolesAttachment.addTemporaryRole(worldId,role);
+        this.recalculateDirtyUserRole(user, worldId);
+        return true;
     }
 }

@@ -68,7 +68,12 @@ public class UserManagementCommands extends UserCommandHelper
         }
         if (context.hasFlag("t"))
         {
-            if (this.manager.addTempRoles(user, worldId, role))
+            if (!user.isOnline())
+            {
+                context.sendTranslated("&cYou cannot assign a temporary role to a offline player!");
+                return;
+            }
+            if (this.manager.addTempRole(user, worldId, role))
             {
                 context.sendTranslated("&aAdded the role &6%s&a temporarily to &2%s&a in &6%s&a.", roleName, user.getName(), world.getName());
             }
