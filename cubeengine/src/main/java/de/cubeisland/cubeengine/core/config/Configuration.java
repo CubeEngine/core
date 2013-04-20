@@ -17,19 +17,24 @@
  */
 package de.cubeisland.cubeengine.core.config;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.HashMap;
+import java.util.Locale;
+import java.util.Map;
+
 import de.cubeisland.cubeengine.core.CubeEngine;
 import de.cubeisland.cubeengine.core.config.annotations.Codec;
 import de.cubeisland.cubeengine.core.config.codec.ConfigurationCodec;
 import de.cubeisland.cubeengine.core.config.codec.YamlCodec;
 import de.cubeisland.cubeengine.core.logger.LogLevel;
 import de.cubeisland.cubeengine.core.module.Module;
+
 import org.apache.commons.lang.Validate;
 import org.yaml.snakeyaml.reader.ReaderException;
-
-import java.io.*;
-import java.util.HashMap;
-import java.util.Locale;
-import java.util.Map;
 
 import static java.util.logging.Level.SEVERE;
 
@@ -89,7 +94,7 @@ public abstract class Configuration<ConfigCodec extends ConfigurationCodec>
         this.onSaved(targetFile);
     }
 
-    public void load()
+    public void reload()
     {
         if (this.file == null)
         {

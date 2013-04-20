@@ -21,6 +21,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.entity.EntityShootBowEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerChatTabCompleteEvent;
@@ -102,6 +103,15 @@ public class AfkListener implements Listener, Runnable
         {
             basicsAttachment.setAfk(false);
             basicsAttachment.resetLastAction();
+        }
+    }
+
+    @EventHandler(priority = EventPriority.MONITOR)
+    public void onBowShot(EntityShootBowEvent event)
+    {
+        if (event.getEntity() instanceof Player)
+        {
+            this.updateLastAction((Player)event.getEntity());
         }
     }
 
