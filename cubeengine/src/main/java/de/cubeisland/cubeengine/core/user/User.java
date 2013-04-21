@@ -109,9 +109,9 @@ public class User extends UserBase implements Model<Long>, CommandSender, Attach
     @DatabaseConstructor
     User(List<Object> args) throws ConversionException
     {
-        super(Bukkit.getOfflinePlayer((String)args.get(1)));
+        super((String)args.get(1));
         this.key = (Long)args.get(0);
-        this.player = this.offlinePlayer.getName();
+        this.player = this.getOfflinePlayer().getName();
         this.nogc = (Boolean)args.get(2);
         this.lastseen = (Timestamp)args.get(3);
         this.firstseen = (Timestamp)args.get(3);
@@ -120,11 +120,11 @@ public class User extends UserBase implements Model<Long>, CommandSender, Attach
         this.core = CubeEngine.getCore();
     }
 
-    User(Core core, Long key, OfflinePlayer player)
+    User(BukkitCore core, Long key, String playerName)
     {
-        super(player);
+        super(playerName);
         this.key = key;
-        this.player = player.getName();
+        this.player = playerName;
         this.lastseen = new Timestamp(System.currentTimeMillis());
         this.firstseen = this.lastseen;
         this.passwd = new byte[0];
@@ -132,14 +132,14 @@ public class User extends UserBase implements Model<Long>, CommandSender, Attach
         this.core = core;
     }
 
-    User(Core core, OfflinePlayer player)
+    User(BukkitCore core, OfflinePlayer player)
     {
-        this(core, NO_ID, player);
+        this(core, NO_ID, player.getName());
     }
 
     User(BukkitCore core, String name)
     {
-        this(core, NO_ID, core.getServer().getOfflinePlayer(name));
+        this(core, NO_ID, name);
     }
 
     public Core getCore()
@@ -235,14 +235,6 @@ public class User extends UserBase implements Model<Long>, CommandSender, Attach
         }
     }
 
-    /**
-     * @return the OfflinePlayer
-     */
-    public OfflinePlayer getOfflinePlayer()
-    {
-        return this.offlinePlayer;
-    }
-
     @Override
     public Long getId()
     {
@@ -303,7 +295,7 @@ public class User extends UserBase implements Model<Long>, CommandSender, Attach
             return this.locale;
         }
         Language language = null;
-        Player onlinePlayer = this.offlinePlayer.getPlayer();
+        Player onlinePlayer = this.getOfflinePlayer().getPlayer();
         if (onlinePlayer != null)
         {
             language = this.core.getI18n().getLanguage(
@@ -327,7 +319,7 @@ public class User extends UserBase implements Model<Long>, CommandSender, Attach
 
     public int getPing()
     {
-        Player onlinePlayer = this.offlinePlayer.getPlayer();
+        Player onlinePlayer = this.getOfflinePlayer().getPlayer();
         if (onlinePlayer == null)
         {
             return BukkitUtils.getPing(onlinePlayer);
@@ -536,7 +528,7 @@ public class User extends UserBase implements Model<Long>, CommandSender, Attach
      */
     public TreeSet<Entity> getTargets(int distance)
     {
-        if (this.offlinePlayer.isOnline())
+        if (this.getOfflinePlayer().isOnline())
         {
             final Location blockLoc = new Location(null, 0, 0, 0);
             final Location entityLoc = new Location(null, 0, 0, 0);
@@ -589,7 +581,7 @@ public class User extends UserBase implements Model<Long>, CommandSender, Attach
         }
         else if (o instanceof OfflinePlayer)
         {
-            return this.offlinePlayer.equals(o);
+            return this.getOfflinePlayer().equals(o);
         }
         else if (o instanceof CommandSender)
         {
@@ -606,7 +598,7 @@ public class User extends UserBase implements Model<Long>, CommandSender, Attach
     @Override
     public int hashCode()
     {
-        return this.offlinePlayer.hashCode();
+        return this.getOfflinePlayer().hashCode();
     }
 
     private InetSocketAddress address = null;

@@ -32,7 +32,6 @@ import org.bukkit.command.Command;
 import org.bukkit.entity.Player;
 
 import de.cubeisland.cubeengine.core.Core;
-import de.cubeisland.cubeengine.core.CubeEngine;
 import de.cubeisland.cubeengine.core.command.exception.IncorrectUsageException;
 import de.cubeisland.cubeengine.core.command.exception.MissingParameterException;
 import de.cubeisland.cubeengine.core.command.exception.PermissionDeniedException;
@@ -428,7 +427,7 @@ public abstract class CubeCommand extends Command
         }
         else if (bukkitSender instanceof Player)
         {
-            return CubeEngine.getUserManager().getExactUser((Player)bukkitSender);
+            return core.getUserManager().getExactUser((Player)bukkitSender);
         }
         else if (bukkitSender instanceof org.bukkit.command.ConsoleCommandSender)
         {
