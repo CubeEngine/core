@@ -284,6 +284,7 @@ public class HomeCommand extends ContainerCommand
                 if (home == null)
                 {
                     sender.sendTranslated("&6%s &cCould not be found!", context.getString(0));
+                    return;
                 }
                 if (!home.isOwner(sender))
                 {
@@ -300,6 +301,7 @@ public class HomeCommand extends ContainerCommand
                 if (home == null)
                 {
                     sender.sendTranslated("&96%s &cCould not be found!", context.getString(0));
+                    return;
                 }
                 if (!home.isOwner(sender))
                 {
@@ -334,6 +336,7 @@ public class HomeCommand extends ContainerCommand
                 if (home == null)
                 {
                     sender.sendTranslated("&6%s &cCould not be found!", context.getString(0));
+                    return;
                 }
                 if (!home.isOwner(sender))
                 {
@@ -349,6 +352,7 @@ public class HomeCommand extends ContainerCommand
                 if (home == null)
                 {
                     sender.sendTranslated("&6%s &cCould not be found!", context.getString(0));
+                    return;
                 }
                 if (!home.isOwner(sender))
                 {
