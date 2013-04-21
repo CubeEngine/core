@@ -18,6 +18,7 @@
 package de.cubeisland.cubeengine.powersigns;
 
 import java.util.Map;
+import java.util.Set;
 
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -26,11 +27,14 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.block.SignChangeEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.world.ChunkLoadEvent;
 
 import de.cubeisland.cubeengine.core.logger.LogLevel;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.powersigns.signtype.LiftSign;
 import de.cubeisland.cubeengine.powersigns.signtype.SignType;
+import de.cubeisland.cubeengine.powersigns.signtype.SignTypeInfo;
+import de.cubeisland.cubeengine.powersigns.storage.PowerSignModel;
 import de.cubeisland.cubeengine.powersigns.storage.PowerSignStorage;
 
 import gnu.trove.map.hash.THashMap;
@@ -59,10 +63,15 @@ public class SignManager implements Listener
     {
         this.module.getCore().getEventManager().registerListener(this.module,this);
         this.registerSignType(new LiftSign());
-        this.storage.loadFromLoadedChunks(this.module.getCore().getWorldManager().getWorlds());
-
-
-
+        Set<PowerSignModel> powerSignModels = this.storage
+            .loadFromLoadedChunks(this.module.getCore().getWorldManager().getWorlds());
+        for (PowerSignModel powerSignModel : powerSignModels)
+        {
+            SignType signType = this.registerdSignTypes.get(powerSignModel.PSID);
+            SignTypeInfo info = signType.createInfo(powerSignModel);
+            PowerSign powerSign = new PowerSign(signType,info);
+            this.loadedPowerSigns.put(powerSign.getLocation(),powerSign);
+        }
     }
 
     public SignManager registerSignType(SignType<?,?> signType)
@@ -84,6 +93,25 @@ public class SignManager implements Listener
     }
 
     @EventHandler
+    public void onChunkLoad(ChunkLoadEvent event)
+    {
+        Set<PowerSignModel> powerSignModels = this.storage
+            .loadFromChunk(event.getChunk());
+        for (PowerSignModel powerSignModel : powerSignModels)
+        {
+            SignType signType = this.registerdSignTypes.get(powerSignModel.PSID);
+            SignTypeInfo info = signType.createInfo(powerSignModel);
+            PowerSign powerSign = new PowerSign(signType,info);
+            this.loadedPowerSigns.put(powerSign.getLocation(),powerSign);
+        }
+    }
+
+    public void onChunkUnload(ChunkLoadEvent event)
+    {
+
+    }
+
+    @EventHandler
     public void onSignChange(SignChangeEvent event)
     {
         if (event.getLine(1).startsWith("[") && event.getLine(1).endsWith("]"))
@@ -98,7 +126,7 @@ public class SignManager implements Listener
                 return; //not valid -> ignore
             }
             User user = this.module.getCore().getUserManager().getExactUser(event.getPlayer());
-            PowerSign powerSign = new PowerSign(signType,event.getBlock().getLocation(),user,event.getLines(),idLine);
+            PowerSign powerSign = new PowerSign(signType,event.getBlock().getLocation(),user,event.getLines());
             this.loadedPowerSigns.put(powerSign.getLocation(),powerSign);
             powerSign.updateSignText();
             powerSign.getSignTypeInfo().saveData();

@@ -217,6 +217,8 @@ public class BasicsPerm extends PermissionContainer
      */
     public static final Permission COMMAND_AFK_OTHER = COMMAND_AFK.createChild("other");
 
+    public static final Permission COMMAND_IGNORE_PREVENT = COMMAND.createAbstractChild("ignore").createChild("prevent",FALSE);
+
     private static final Permission COMMAND_BUTCHER = COMMAND.createAbstractChild("butcher");
     private static final Permission COMMAND_BUTCHER_FLAG = COMMAND_BUTCHER.createAbstractChild("flag");
     public static final Permission COMMAND_BUTCHER_FLAG_PET = COMMAND_BUTCHER_FLAG.createChild("pet");

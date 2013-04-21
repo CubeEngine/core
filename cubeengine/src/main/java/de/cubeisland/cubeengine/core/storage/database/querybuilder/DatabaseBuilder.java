@@ -15,24 +15,22 @@
  * You should have received a copy of the GNU General Public License
  * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-package de.cubeisland.cubeengine.powersigns;
+package de.cubeisland.cubeengine.core.storage.database.querybuilder;
 
-import de.cubeisland.cubeengine.core.module.Module;
-
-public class Powersigns extends Module
+public interface DatabaseBuilder extends ComponentBuilder<DatabaseBuilder>
 {
-    private PowersignsConfig config;
-    private SignManager signManager;
+    /**
+     * Creates a new Database with given name
+     *
+     * @return
+     */
+    public DatabaseBuilder createDatabase(String name);
 
-    @Override
-    public void onEnable()
-    {
-        this.signManager = new SignManager(this);
-        this.signManager.init();
-    }
-
-    public SignManager getManager()
-    {
-        return signManager;
-    }
+    /**
+     * Creates a new Database with given name
+     *
+     * @param ifNotExists
+     * @return
+     */
+    public DatabaseBuilder createDatabase(String name, boolean ifNotExists);
 }

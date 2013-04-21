@@ -123,58 +123,60 @@ public class TripletKeyStorage<Key_f, Key_s, Key_t, M extends TripletKeyModel<Ke
         {
             throw new IllegalStateException("Error while creating Table", ex);
         }
-        this.prepareStatements();
+        try
+        {
+            this.prepareStatements();
+        }
+        catch (SQLException ex)
+        {
+            throw new IllegalStateException("Error while preparing statements for the table "+ this.tableName, ex);
+        }
         tableManager.registerTable(this.tableName, this.revision);
     }
 
     /**
      * Prepares the Default-Statements
      */
-    private void prepareStatements()
+    @Override
+    protected void prepareStatements() throws SQLException
     {
-        try
+        super.prepareStatements();
+        String[] fields = new String[this.fieldNames.size() - 2];
+        int i = 0;
+        for (String fieldName : this.fieldNames.values())
         {
-            String[] fields = new String[this.fieldNames.size() - 2];
-            int i = 0;
-            for (String fieldName : this.fieldNames.values())
+            if (!(fieldName.equals(this.f_dbKey) || fieldName.equals(this.s_dbKey)))
             {
-                if (!(fieldName.equals(this.f_dbKey) || fieldName.equals(this.s_dbKey)))
-                {
-                    fields[i++] = fieldName;
-                }
+                fields[i++] = fieldName;
             }
-            QueryBuilder builder = this.database.getQueryBuilder();
-
-            this.database.storeStatement(this.modelClass, "store",
-                    builder.insert().into(this.tableName).cols(this.allFields).end().end());
-
-            if (fields.length != 0)
-            {
-                this.database.storeStatement(this.modelClass, "merge",
-                        builder.merge().into(this.tableName).cols(this.allFields).updateCols(fields).end().end());
-                this.database.storeStatement(this.modelClass, "update",
-                        builder.update(this.tableName).set(fields).where().
-                            field(this.f_dbKey).isEqual().value().and().
-                            field(this.s_dbKey).isEqual().value().and().
-                            field(this.t_dbKey).isEqual().value().end().end());
-            }
-
-            this.database.storeStatement(this.modelClass, "get",
-                    builder.select(allFields).from(this.tableName).where().
-                        field(this.f_dbKey).isEqual().value().and().
-                        field(this.s_dbKey).isEqual().value().and().
-                        field(this.t_dbKey).isEqual().value().end().end());
-
-            this.database.storeStatement(this.modelClass, "delete",
-                    builder.deleteFrom(this.tableName).where().
-                        field(this.f_dbKey).isEqual().value().and().
-                        field(this.s_dbKey).isEqual().value().and().
-                        field(this.t_dbKey).isEqual().value().limit(1).end().end());
         }
-        catch (SQLException ex)
+        QueryBuilder builder = this.database.getQueryBuilder();
+
+        this.database.storeStatement(this.modelClass, "store",
+                                     builder.insert().into(this.tableName).cols(this.allFields).end().end());
+
+        if (fields.length != 0)
         {
-            throw new IllegalStateException("Error while preparing statements for " + this.tableName, ex);
+            this.database.storeStatement(this.modelClass, "merge",
+                                         builder.merge().into(this.tableName).cols(this.allFields).updateCols(fields).end().end());
+            this.database.storeStatement(this.modelClass, "update",
+                                         builder.update(this.tableName).set(fields).where().
+                                             field(this.f_dbKey).isEqual().value().and().
+                                                    field(this.s_dbKey).isEqual().value().and().
+                                                    field(this.t_dbKey).isEqual().value().end().end());
         }
+
+        this.database.storeStatement(this.modelClass, "get",
+                                     builder.select(allFields).from(this.tableName).where().
+                                         field(this.f_dbKey).isEqual().value().and().
+                                                field(this.s_dbKey).isEqual().value().and().
+                                                field(this.t_dbKey).isEqual().value().end().end());
+
+        this.database.storeStatement(this.modelClass, "delete",
+                                     builder.deleteFrom(this.tableName).where().
+                                         field(this.f_dbKey).isEqual().value().and().
+                                                field(this.s_dbKey).isEqual().value().and().
+                                                field(this.t_dbKey).isEqual().value().limit(1).end().end());
     }
 
     @Override

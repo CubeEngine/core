@@ -128,7 +128,14 @@ public abstract class AbstractStorage<K, M extends Model<K>, T> implements Stora
             this.initialized = true;
         }
         this.updateStructure();
-        this.prepareStatements();
+        try
+        {
+            this.prepareStatements();
+        }
+        catch (SQLException ex)
+        {
+            throw new IllegalStateException("Error while preparing statements for the table "+ this.tableName, ex);
+        }
     }
 
     @Override
@@ -163,18 +170,11 @@ public abstract class AbstractStorage<K, M extends Model<K>, T> implements Stora
         }
     }
 
-    private void prepareStatements()
+    protected void prepareStatements() throws SQLException
     {
-        try
-        {
-            QueryBuilder builder = this.database.getQueryBuilder();
-            this.database.storeStatement(this.modelClass, "clear", builder.truncateTable(this.tableName).end());
-            this.database.storeStatement(this.modelClass, "getall", builder.select().wildcard().from(this.tableName).end().end());
-        }
-        catch (SQLException ex)
-        {
-            throw new IllegalStateException("Error while preparing abstract-storage statements!", ex);
-        }
+        QueryBuilder builder = this.database.getQueryBuilder();
+        this.database.storeStatement(this.modelClass, "clear", builder.truncateTable(this.tableName).end());
+        this.database.storeStatement(this.modelClass, "getall", builder.select().wildcard().from(this.tableName).end().end());
     }
 
     @Override

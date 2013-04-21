@@ -556,4 +556,9 @@ public class AnnouncementManager
             bw.close();
         }
     }
+
+    public Shout getModule()
+    {
+        return module;
+    }
 }

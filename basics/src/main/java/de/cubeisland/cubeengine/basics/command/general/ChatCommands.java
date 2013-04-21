@@ -22,8 +22,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-import org.bukkit.command.CommandSender;
-
 import de.cubeisland.cubeengine.core.command.CommandContext;
 import de.cubeisland.cubeengine.core.command.reflected.Command;
 import de.cubeisland.cubeengine.core.command.sender.ConsoleCommandSender;
@@ -34,6 +32,7 @@ import de.cubeisland.cubeengine.core.util.StringUtils;
 import de.cubeisland.cubeengine.core.util.time.Duration;
 import de.cubeisland.cubeengine.basics.Basics;
 import de.cubeisland.cubeengine.basics.BasicsAttachment;
+import de.cubeisland.cubeengine.basics.BasicsPerm;
 import de.cubeisland.cubeengine.basics.storage.BasicUser;
 
 import static de.cubeisland.cubeengine.core.command.ArgBounds.NO_MAX;
@@ -68,6 +67,11 @@ public class ChatCommands
                 }
                 else if (!this.module.getIgnoreListManager().addIgnore(sender, user))
                 {
+                    if (BasicsPerm.COMMAND_IGNORE_PREVENT.isAuthorized(user))
+                    {
+                        context.sendTranslated("&cYou are not allowed to ignore &2%s&c!",user.getName());
+                        continue;
+                    }
                     context.sendTranslated("&2%s&c is already on your ignore list!", user.getName());
                 }
                 else

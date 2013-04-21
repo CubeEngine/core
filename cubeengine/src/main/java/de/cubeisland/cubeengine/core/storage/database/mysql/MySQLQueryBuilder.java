@@ -37,6 +37,8 @@ public class MySQLQueryBuilder implements QueryBuilder
     protected Database database;
     protected StringBuilder query;
     private boolean nextQuery = false;
+    private MySQLIndexBuilder indexBuilder;
+    private MySQLDatabaseBuilder databaseBuilder;
 
     protected MySQLQueryBuilder(MySQLDatabase database)
     {
@@ -133,6 +135,28 @@ public class MySQLQueryBuilder implements QueryBuilder
         }
         this.init();
         return this.tableBuilder.create(name, ifNoExist ? 1 : 2);
+    }
+
+    @Override
+    public IndexBuilder createIndex(String name, boolean unique)
+    {
+        if (this.indexBuilder == null)
+        {
+            this.indexBuilder = new MySQLIndexBuilder(this);
+        }
+        this.init();
+        return this.indexBuilder.createIndex(name,unique);
+    }
+
+    @Override
+    public DatabaseBuilder createDatabase(String name, boolean ifNoExist)
+    {
+        if (this.databaseBuilder == null)
+        {
+            this.databaseBuilder = new MySQLDatabaseBuilder(this);
+        }
+        this.init();
+        return this.databaseBuilder.createDatabase(name,ifNoExist);
     }
 
     @Override

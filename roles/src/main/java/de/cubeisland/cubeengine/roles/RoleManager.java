@@ -96,12 +96,12 @@ public class RoleManager
         this.globalProvider.loadInConfigurations(rolesFolder);
         // World roles:
         this.createWorldProviders();
-        for (RoleProvider provider : this.providers.valueCollection())
+        for (RoleProvider provider : this.providerSet)
         {
             provider.loadInConfigurations(this.rolesFolder);
         }
         this.recalculateAllRoles();
-        for (WorldRoleProvider provider : this.providers.valueCollection())
+        for (WorldRoleProvider provider : this.providerSet)
         {
             provider.loadDefaultRoles(this.module.getConfiguration());
         }
@@ -178,6 +178,8 @@ public class RoleManager
                 WorldRoleProvider provider = new WorldRoleProvider(module, worldId);
                 this.providers.put(worldId, provider);
                 this.providerSet.add(provider);
+                this.assignedRoleMirrors.put(worldId,worldId);
+                this.userMirrors.put(worldId,worldId);
                 this.module.getLog().log(LogLevel.DEBUG,"Loading missing role-provider for "+worldManager.getWorld(worldId).getName());
             }
         }
@@ -269,6 +271,12 @@ public class RoleManager
         UserSpecificRole userSpecificRole = new UserSpecificRole(this.module, user, this.userMirrors.get(worldId));
         if (roles != null)
         {
+            RolesAttachment rolesAttachment = user.get(RolesAttachment.class);
+            if (rolesAttachment.hasTemporaryRoles(worldId))
+            {
+                Set<ConfigRole> temporaryRoles = rolesAttachment.getTemporaryRoles(worldId);
+                roles.addAll(temporaryRoles);
+            }
             // Roles Assigned to this user:
             MergedRole mergedRole = new MergedRole(roles); // merge all assigned roles
             // Apply inheritance
@@ -280,6 +288,7 @@ public class RoleManager
 
     public UserSpecificRole recalculateDirtyUserRole(User user, long worldId)
     {
+        user.get(RolesAttachment.class).replaceDirtyTemporaryRoles(this);
         return this.preCalculateRole(user,this.getRolesFor(user,false).get(worldId),worldId);
     }
 
@@ -376,11 +385,11 @@ public class RoleManager
         User user = this.module.getCore().getUserManager().getExactUser(player);
         if (!Bukkit.getServer().getOnlineMode() && this.module.getConfiguration().doNotAssignPermIfOffline && !user.isLoggedIn())
         {
-            user.sendTranslated("&cThe server is currently running in offline-mode. Permissions will not be applied until logging in! Contact an Admin if you think this is an error.");
+            user.sendTranslated("&cThe server is currently running in offline-mode. Permissions will not be applied until logging in! Contact an Administrator if you think this is an error.");
             this.module.getLog().warning("Role-permissions not applied! Server is running in unsecured offline-mode!");
             return;
         }
-        this.module.getLog().log(LogLevel.DEBUG,"User-role set: "+ user.getName());
+        this.module.getLog().log(LogLevel.DEBUG, user.getName()+ ": UserRole set!");
         TLongObjectHashMap<UserSpecificRole> roleContainer = this.getRoleContainer(user);
         UserSpecificRole role = roleContainer.get(worldId);
         if (role.getParentRoles().isEmpty())
@@ -510,7 +519,7 @@ public class RoleManager
      * @param roleName the role to lookup
      * @return the role OR null if not found
      */
-    public Role getRoleInWorld(long worldId, String roleName)
+    public ConfigRole getRoleInWorld(long worldId, String roleName)
     {
         RoleProvider provider = this.getProvider(worldId);
         return provider.getRole(roleName);
@@ -530,7 +539,7 @@ public class RoleManager
     {
         for (User user : this.module.getCore().getUserManager().getOnlineUsers()) // reapply roles on reload
         {
-            user.attachOrGet(RolesAttachment.class,module).removeRoleContainer(); // remove potential old calculated roles
+            user.attach(RolesAttachment.class,module); // clear RolesAttachment
             this.preCalculateRoles(user.getName(), false);
             if (user.isOnline())
             {
@@ -548,5 +557,15 @@ public class RoleManager
         }
     }
 
-
+    public boolean addTempRole(User user, long worldId, ConfigRole role)
+    {
+        RolesAttachment rolesAttachment = user.attachOrGet(RolesAttachment.class, this.module);
+        if (rolesAttachment.getRoleContainer().get(worldId).getParentRoles().contains(role))
+        {
+            return false;
+        }
+        rolesAttachment.addTemporaryRole(worldId,role);
+        this.recalculateDirtyUserRole(user, worldId);
+        return true;
+    }
 }

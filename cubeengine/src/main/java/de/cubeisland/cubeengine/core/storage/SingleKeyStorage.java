@@ -140,55 +140,57 @@ public class SingleKeyStorage<Key_f, M extends Model<Key_f>> extends AbstractSto
         {
             throw new IllegalStateException("Error while creating Table", ex);
         }
-        this.prepareStatements();
+        try
+        {
+            this.prepareStatements();
+        }
+        catch (SQLException ex)
+        {
+            throw new IllegalStateException("Error while preparing statements for the table "+ this.tableName, ex);
+        }
         tableManager.registerTable(this.tableName, this.revision);
     }
 
     /**
      * Prepares the Default-Statements
      */
-    private void prepareStatements()
+    @Override
+    protected void prepareStatements() throws SQLException
     {
-        try
+        super.prepareStatements();
+        String[] fields = new String[this.fieldNames.size() - 1];
+        int i = 0;
+        for (String fieldName : this.fieldNames.values())
         {
-            String[] fields = new String[this.fieldNames.size() - 1];
-            int i = 0;
-            for (String fieldName : this.fieldNames.values())
+            if (!fieldName.equals(this.dbKey))
             {
-                if (!fieldName.equals(this.dbKey))
-                {
-                    fields[i++] = fieldName;
-                }
+                fields[i++] = fieldName;
             }
-            QueryBuilder builder = this.database.getQueryBuilder();
-            if (this.keyIsAi)
-            {
-                builder.insert()
-                        .into(this.tableName)
-                        .cols(fields)
-                        .end();
-            }
-            else
-            {
-                builder.insert()
-                        .into(this.tableName)
-                        .cols(this.allFields)
-                        .end();
-            }
-            this.database.storeStatement(this.modelClass, "store", builder.end());
-
-            this.database.storeStatement(this.modelClass, "merge", builder.merge().into(this.tableName).cols(this.allFields).updateCols(fields).end().end());
-
-            this.database.storeStatement(this.modelClass, "get", builder.select(this.allFields).from(this.tableName).where().field(this.dbKey).isEqual().value().end().end());
-
-            this.database.storeStatement(this.modelClass, "update", builder.update(this.tableName).set(fields).where().field(this.dbKey).isEqual().value().end().end());
-
-            this.database.storeStatement(this.modelClass, "delete", builder.deleteFrom(this.tableName).where().field(this.dbKey).isEqual().value().limit(1).end().end());
         }
-        catch (SQLException ex)
+        QueryBuilder builder = this.database.getQueryBuilder();
+        if (this.keyIsAi)
         {
-            throw new IllegalStateException("Error while preparing statements for " + this.tableName, ex);
+            builder.insert()
+                   .into(this.tableName)
+                   .cols(fields)
+                   .end();
         }
+        else
+        {
+            builder.insert()
+                   .into(this.tableName)
+                   .cols(this.allFields)
+                   .end();
+        }
+        this.database.storeStatement(this.modelClass, "store", builder.end());
+
+        this.database.storeStatement(this.modelClass, "merge", builder.merge().into(this.tableName).cols(this.allFields).updateCols(fields).end().end());
+
+        this.database.storeStatement(this.modelClass, "get", builder.select(this.allFields).from(this.tableName).where().field(this.dbKey).isEqual().value().end().end());
+
+        this.database.storeStatement(this.modelClass, "update", builder.update(this.tableName).set(fields).where().field(this.dbKey).isEqual().value().end().end());
+
+        this.database.storeStatement(this.modelClass, "delete", builder.deleteFrom(this.tableName).where().field(this.dbKey).isEqual().value().limit(1).end().end());
     }
 
     @Override

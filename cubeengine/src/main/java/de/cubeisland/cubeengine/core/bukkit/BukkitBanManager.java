@@ -88,7 +88,7 @@ public class BukkitBanManager implements BanManager
     {
         assert address != null: "The address must not be null!";
 
-        BanEntry entry = (BanEntry)this.nameBans.getEntries().get(address.toString());
+        BanEntry entry = (BanEntry)this.ipBans.getEntries().get(address.toString());
         if (entry != null)
         {
             return new IpBan(address, entry.getSource(), entry.getReason(), entry.getCreated(), entry.getExpires());
@@ -101,7 +101,7 @@ public class BukkitBanManager implements BanManager
     {
         assert user != null: "The user must not be null!";
 
-        this.ipBans.remove(user.getName());
+        this.nameBans.remove(user.getName());
         return true;
     }
 
@@ -117,7 +117,7 @@ public class BukkitBanManager implements BanManager
     @Override
     public boolean isBanned(User user)
     {
-        return this.ipBans.isBanned(user.getName());
+        return this.nameBans.isBanned(user.getName());
     }
 
     @Override
@@ -150,7 +150,7 @@ public class BukkitBanManager implements BanManager
     @SuppressWarnings("unchecked")
     public Set<UserBan> getUserBans()
     {
-        Map nameBans = this.ipBans.getEntries();
+        Map nameBans = this.nameBans.getEntries();
         Set<UserBan> bans = new THashSet<UserBan>(nameBans.size());
 
         for (BanEntry entry : (Collection<BanEntry>)nameBans.values())

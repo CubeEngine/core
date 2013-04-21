@@ -52,7 +52,7 @@ public class IgniteActionType extends ActionTypeContainer
         switch (event.getCause())
         {
         case FIREBALL:
-            //TODO get targeted player
+            //TODO get targeted player will need reflection for that see explosion
             this.logIgnite(this.manager.getActionType(FireballIgnite.class),blockState,null);
             break;
         case LAVA:

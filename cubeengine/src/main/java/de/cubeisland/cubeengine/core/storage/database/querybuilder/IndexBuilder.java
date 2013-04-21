@@ -15,24 +15,33 @@
  * You should have received a copy of the GNU General Public License
  * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-package de.cubeisland.cubeengine.powersigns;
+package de.cubeisland.cubeengine.core.storage.database.querybuilder;
 
-import de.cubeisland.cubeengine.core.module.Module;
-
-public class Powersigns extends Module
+public interface IndexBuilder extends ComponentBuilder<IndexBuilder>
 {
-    private PowersignsConfig config;
-    private SignManager signManager;
+    /**
+     * Starts a CREATE INDEX statement
+     *
+     * @param name
+     * @return
+     */
+    public IndexBuilder createIndex(String name);
 
-    @Override
-    public void onEnable()
-    {
-        this.signManager = new SignManager(this);
-        this.signManager.init();
-    }
+    /**
+     * Starts a CREATE INDEX statement
+     *
+     * @param name
+     * @param unique make a UNIQUE INDEX
+     * @return
+     */
+    public IndexBuilder createIndex(String name, boolean unique);
 
-    public SignManager getManager()
-    {
-        return signManager;
-    }
+    /**
+     * Adds ON table (fields...)
+     *
+     * @param table
+     * @param fields
+     * @return
+     */
+    public IndexBuilder on(String table, String... fields);
 }

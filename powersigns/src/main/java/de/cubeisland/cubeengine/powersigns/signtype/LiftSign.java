@@ -28,6 +28,7 @@ import de.cubeisland.cubeengine.core.util.ChatFormat;
 import de.cubeisland.cubeengine.powersigns.PowerSign;
 import de.cubeisland.cubeengine.powersigns.Powersigns;
 import de.cubeisland.cubeengine.powersigns.signtype.LiftSign.LiftSignInfo;
+import de.cubeisland.cubeengine.powersigns.storage.PowerSignModel;
 
 public class LiftSign extends SignType<LiftSign,LiftSignInfo>
 {
@@ -113,7 +114,7 @@ public class LiftSign extends SignType<LiftSign,LiftSignInfo>
     }
 
     @Override
-    public LiftSignInfo createInfo(User user, Location location, String line1, String id, String line3, String line4)
+    public LiftSignInfo createInfo(long owner, Location location, String line1, String line2, String line3, String line4)
     {
         int amount = 1;
         try
@@ -122,15 +123,16 @@ public class LiftSign extends SignType<LiftSign,LiftSignInfo>
         }
         catch (NumberFormatException ignore){}
         Boolean up;
-        if (id.equals(this.getPSID()) || id.equals("lift"))
+        line2 = ChatFormat.stripFormats(line2).toLowerCase();
+        if (line2.equals("[" + this.getPSID()+ "]") || line2.equals("[lift]"))
         {
             up = null;
         }
-        else if (id.equals("lift down"))
+        else if (line2.equals("[lift down]"))
         {
             up = false;
         }
-        else if (id.equals("lift up"))
+        else if (line2.equals("[lift up]"))
         {
             up = true;
         }
@@ -138,7 +140,15 @@ public class LiftSign extends SignType<LiftSign,LiftSignInfo>
         {
             throw new IllegalArgumentException();
         }
-        return new LiftSignInfo(this.module,location,user,line1,up,amount);
+        return new LiftSignInfo(this.module,location,owner,line1,up,amount);
+    }
+
+    @Override
+    public LiftSignInfo createInfo(PowerSignModel model)
+    {
+        Location location = new Location(this.module.getCore().getWorldManager().getWorld(model.world),model.x,model.y,model.z);
+        Sign sign = (Sign)location.getBlock().getState(); //TODO when there is no sign
+        return this.createInfo(model.owner_id,location,sign.getLine(0),sign.getLine(1),sign.getLine(2),sign.getLine(3));
     }
 
     public class LiftSignInfo extends SignTypeInfo<LiftSign>
@@ -151,7 +161,7 @@ public class LiftSign extends SignType<LiftSign,LiftSignInfo>
         private Location destination;
 
 
-        public LiftSignInfo(Powersigns module, Location location, User creator, String floorName, Boolean up, int amount)
+        public LiftSignInfo(Powersigns module, Location location, long creator, String floorName, Boolean up, int amount)
         {
             super(module,location,LiftSign.this,creator);
             this.floorName = floorName;

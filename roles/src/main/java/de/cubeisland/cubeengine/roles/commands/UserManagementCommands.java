@@ -22,6 +22,7 @@ import java.util.Set;
 import org.bukkit.World;
 
 import de.cubeisland.cubeengine.core.command.CommandContext;
+import de.cubeisland.cubeengine.core.command.parameterized.Flag;
 import de.cubeisland.cubeengine.core.command.parameterized.Param;
 import de.cubeisland.cubeengine.core.command.parameterized.ParameterizedContext;
 import de.cubeisland.cubeengine.core.command.reflected.Alias;
@@ -45,38 +46,52 @@ public class UserManagementCommands extends UserCommandHelper
     })
     @Command(names = {
         "assign", "add", "give"
-    }, desc = "Assign a role to the player [in world]", usage = "<player> <role> [in <world>]", params = @Param(names = "in", type = World.class), max = 3, min = 2)
+    }, desc = "Assign a role to the player [in world] [-temp]", usage = "<player> <role> [in <world>]",
+             params = @Param(names = "in", type = World.class), max = 3, min = 2,
+    flags = @Flag(name = "t",longName = "temp"))
     public void assign(ParameterizedContext context)
     {
         User user = this.getUser(context, 0);
         World world = this.getWorld(context);
         long worldId = this.getModule().getCore().getWorldManager().getWorldId(world);
         String roleName = context.getString(1);
-        Role role = this.manager.getRoleInWorld(worldId,roleName);
+        ConfigRole role = this.manager.getRoleInWorld(worldId,roleName);
         if (role == null)
         {
             context.sendTranslated("&eCould not find the role &6%s &ein &6%s&e.", roleName, world.getName());
             return;
         }
-        if (role instanceof ConfigRole)
+        if (!role.canAssignAndRemove(context.getSender()))
         {
-            if (!((ConfigRole)role).canAssignAndRemove(context.getSender()))
+            context.sendTranslated("&cYou are not allowed to assign the role &6%s&c in &6%s&c!",role.getName(),world.getName());
+            return;
+        }
+        if (context.hasFlag("t"))
+        {
+            if (!user.isOnline())
             {
-                context.sendTranslated("&cYou are not allowed to assign the role &6%s&c in &6%s&c!",role.getName(),world.getName());
+                context.sendTranslated("&cYou cannot assign a temporary role to a offline player!");
                 return;
+            }
+            if (this.manager.addTempRole(user, worldId, role))
+            {
+                context.sendTranslated("&aAdded the role &6%s&a temporarily to &2%s&a in &6%s&a.", roleName, user.getName(), world.getName());
+            }
+            else
+            {
+                context.sendTranslated("&2%s&e already had the role &6%s&e in &6%s&e.", user.getName(), roleName, world.getName());
             }
         }
         else
         {
-            throw new IllegalArgumentException("The role is not a ConfigRole!");
-        }
-        if (this.manager.addRoles(user, user.getPlayer(), worldId, role))
-        {
-            context.sendTranslated("&aAdded the role &6%s&a to &2%s&a in &6%s&a.", roleName, user.getName(), world.getName());
-        }
-        else
-        {
-            context.sendTranslated("&2%s&e already had the role &6%s&e in &6%s&e.", user.getName(), roleName, world.getName());
+            if (this.manager.addRoles(user, user.getPlayer(), worldId, role))
+            {
+                context.sendTranslated("&aAdded the role &6%s&a to &2%s&a in &6%s&a.", roleName, user.getName(), world.getName());
+            }
+            else
+            {
+                context.sendTranslated("&2%s&e already had the role &6%s&e in &6%s&e.", user.getName(), roleName, world.getName());
+            }
         }
     }
 

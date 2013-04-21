@@ -58,7 +58,8 @@ public class EditCommand
     {
         if (!(context.getSender() instanceof User))
         {
-            context.sendTranslated("This command can only be used by players");
+            context.sendTranslated("&cEdit what?");
+            return;
         }
         User user = (User)context.getSender();
 

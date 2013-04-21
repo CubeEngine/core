@@ -66,6 +66,24 @@ public interface QueryBuilder
     public TableBuilder createTable(String name, boolean ifNoExist);
 
     /**
+     * STARTS a CREATE INDEX query
+     *
+     * @param name the index name
+     * @param unique whether to create a unique index
+     * @return the IndexBuilder
+     */
+    public IndexBuilder createIndex(String name, boolean unique);
+
+    /**
+     * Creates a Database with given name
+     *
+     * @param name
+     * @param ifNoExist
+     * @return
+     */
+    public DatabaseBuilder createDatabase(String name, boolean ifNoExist);
+
+    /**
      * Clears the table
      *
      * @param table the table to truncate
@@ -136,6 +154,4 @@ public interface QueryBuilder
      * @return the query as String
      */
     public String end();
-    //TODO create DB
-    //TODO create Index
 }

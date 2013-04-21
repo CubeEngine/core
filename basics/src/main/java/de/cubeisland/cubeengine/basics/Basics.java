@@ -17,11 +17,15 @@
  */
 package de.cubeisland.cubeengine.basics;
 
+import java.util.concurrent.TimeUnit;
+
 import de.cubeisland.cubeengine.core.bukkit.EventManager;
 import de.cubeisland.cubeengine.core.command.CommandManager;
 import de.cubeisland.cubeengine.core.command.reflected.ReflectedCommand;
+import de.cubeisland.cubeengine.core.logger.LogLevel;
 import de.cubeisland.cubeengine.core.module.Module;
 import de.cubeisland.cubeengine.core.storage.database.Database;
+import de.cubeisland.cubeengine.core.util.Profiler;
 import de.cubeisland.cubeengine.core.util.convert.Convert;
 import de.cubeisland.cubeengine.basics.command.general.ChatCommands;
 import de.cubeisland.cubeengine.basics.command.general.ColoredSigns;
@@ -73,17 +77,23 @@ public class Basics extends Module
     @Override
     public void onEnable()
     {
+        Profiler.startProfiling("basicsEnable");
 		final Database db = this.getCore().getDB();
         final CommandManager cm = this.getCore().getCommandManager();
         final EventManager em = this.getCore().getEventManager();
+
+        this.getLog().log(LogLevel.DEBUG,Profiler.getCurrentDelta("basicsEnable", TimeUnit.MILLISECONDS) + "ms - BU-Manager");
         this.basicUM = new BasicUserManager(this);
+        this.getLog().log(LogLevel.DEBUG,Profiler.getCurrentDelta("basicsEnable", TimeUnit.MILLISECONDS) + "ms - Mail.Manager");
         this.mailManager = new MailManager(db, this.basicUM);
+        this.getLog().log(LogLevel.DEBUG,Profiler.getCurrentDelta("basicsEnable", TimeUnit.MILLISECONDS) + "ms - IgnoreList.Manager");
         this.ignoreListManager = new IgnoreListManager(db);
         this.perm = new BasicsPerm(this);
         this.getCore().getUserManager().addDefaultAttachment(BasicsAttachment.class, this);
 
         em.registerListener(this, new ColoredSigns());
 
+        this.getLog().log(LogLevel.DEBUG,Profiler.getCurrentDelta("basicsEnable", TimeUnit.MILLISECONDS) + "ms - General-Commands");
         //General:
         cm.registerCommands(this, new ChatCommands(this), ReflectedCommand.class);
         cm.registerCommands(this, new InformationCommands(this), ReflectedCommand.class);
@@ -92,7 +102,7 @@ public class Basics extends Module
         cm.registerCommands(this, new PlayerCommands(this), ReflectedCommand.class);
         em.registerListener(this, new GeneralsListener(this));
         em.registerListener(this, new MuteListener(this));
-
+        this.getLog().log(LogLevel.DEBUG,Profiler.getCurrentDelta("basicsEnable", TimeUnit.MILLISECONDS) + "ms - Moderation-Commands");
         //Moderation:
         cm.registerCommands(this, new InventoryCommands(this), ReflectedCommand.class);
         cm.registerCommands(this, new ItemCommands(this), ReflectedCommand.class);
@@ -107,12 +117,13 @@ public class Basics extends Module
         
         em.registerListener(this, new PaintingListener(this));
 
+        this.getLog().log(LogLevel.DEBUG,Profiler.getCurrentDelta("basicsEnable", TimeUnit.MILLISECONDS) + "ms - Kits");
         Convert.registerConverter(KitItem.class, new KitItemConverter());
 
         this.kitManager = new KitManager(this);
         kitManager.loadKits();
         this.kitGivenManager = new KitsGivenManager(db);
-
+        this.getLog().log(LogLevel.DEBUG,Profiler.getCurrentDelta("basicsEnable", TimeUnit.MILLISECONDS) + "ms - Teleport-Commands");
         //Teleport:
         cm.registerCommands(this, new MovementCommands(this), ReflectedCommand.class);
         cm.registerCommands(this, new SpawnCommands(this), ReflectedCommand.class);
@@ -124,6 +135,8 @@ public class Basics extends Module
         this.lagTimer = new LagTimer(this);
 
         cm.registerCommands(this,  new DoorCommand(this), ReflectedCommand.class );
+
+        this.getLog().log(LogLevel.DEBUG,Profiler.endProfiling("basicsEnable", TimeUnit.MILLISECONDS) + "ms - done");
         
         /**
          * * //commands TODO

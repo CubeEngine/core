@@ -309,6 +309,7 @@ public class KickBanCommands
             Date toDate = new Date(System.currentTimeMillis() + millis);
             this.banManager.addBan(new UserBan(user.getName(),context.getSender().getName(), reason, toDate));
             user.kickPlayer(reason);
+            context.sendTranslated("&aYou banned &2%s&a temporarily!",user.getName());
         }
         catch (ConversionException ex)
         {

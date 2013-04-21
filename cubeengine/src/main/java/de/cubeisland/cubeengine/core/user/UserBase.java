@@ -77,7 +77,6 @@ import org.bukkit.permissions.PermissionAttachmentInfo;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
-import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.util.Vector;
 
 /**
@@ -1423,7 +1422,7 @@ public class UserBase implements Player
                     NBTTagList list = data.getList("Pos");
                     if (list != null)
                     {
-                        Location loc = new Location(null, 0, 0, 0, 0, 0);
+                        Location loc = new Location(world, 0, 0, 0, 0, 0);
                         loc.setX(((NBTTagDouble)list.get(0)).data);
                         loc.setY(((NBTTagDouble)list.get(1)).data);
                         loc.setZ(((NBTTagDouble)list.get(2)).data);
@@ -2424,27 +2423,6 @@ public class UserBase implements Player
         if(player != null)
         {
             player.resetPlayerWeather();
-        }
-    }
-
-    @Override
-    public Scoreboard getScoreboard()
-    {
-        final Player player = this.offlinePlayer.getPlayer();
-        if (player != null)
-        {
-            return player.getScoreboard();
-        }
-        return null;
-    }
-
-    @Override
-    public void setScoreboard(Scoreboard scoreboard) throws IllegalArgumentException, IllegalStateException
-    {
-        final Player player = this.offlinePlayer.getPlayer();
-        if (player != null)
-        {
-            player.setScoreboard(scoreboard);
         }
     }
 }

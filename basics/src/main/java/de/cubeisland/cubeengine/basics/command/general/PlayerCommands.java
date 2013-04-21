@@ -305,7 +305,7 @@ public class PlayerCommands
             sender = (User)context.getSender();
         }
         User user = sender;
-        if (user == null && context.hasArg(1))
+        if (user == null && !context.hasArg(1))
         {
             context.sendTranslated("&cYou do not not have any gamemode!");
             return;

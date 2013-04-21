@@ -15,24 +15,32 @@
  * You should have received a copy of the GNU General Public License
  * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-package de.cubeisland.cubeengine.powersigns;
+package de.cubeisland.cubeengine.core.storage.database.mysql;
 
-import de.cubeisland.cubeengine.core.module.Module;
+import de.cubeisland.cubeengine.core.storage.database.querybuilder.DatabaseBuilder;
 
-public class Powersigns extends Module
+public class MySQLDatabaseBuilder extends MySQLComponentBuilder<DatabaseBuilder> implements DatabaseBuilder
 {
-    private PowersignsConfig config;
-    private SignManager signManager;
-
-    @Override
-    public void onEnable()
+    public MySQLDatabaseBuilder(MySQLQueryBuilder parent)
     {
-        this.signManager = new SignManager(this);
-        this.signManager.init();
+        super(parent);
     }
 
-    public SignManager getManager()
+    @Override
+    public DatabaseBuilder createDatabase(String name)
     {
-        return signManager;
+        return this.createDatabase(name,false);
+    }
+
+    @Override
+    public DatabaseBuilder createDatabase(String name, boolean ifNotExists)
+    {
+        this.query.append("CREATE DATABASE ");
+        if (ifNotExists)
+        {
+            this.query.append("IF NOT EXISTS");
+        }
+        this.query.append(this.database.prepareTableName(name));
+        return this;
     }
 }

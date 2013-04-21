@@ -197,4 +197,13 @@ public interface ComponentBuilder<This extends ComponentBuilder>
      * @return the QueryBuilder
      */
     public QueryBuilder end();
+
+    /**
+     * Adds fields in brackets separated by ,
+     * e.g.: (`field1`, `field2`, `field3`)
+     *
+     * @param fields
+     * @return
+     */
+    public This fieldsInBrackets(String[] fields);
 }

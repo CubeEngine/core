@@ -113,7 +113,7 @@ public class FixedCycleTask implements Runnable
         {}
 
         @Override
-        public boolean canReceiver(Announcement announcement)
+        public boolean canReceive(Announcement announcement)
         {return false;}
 
         @Override

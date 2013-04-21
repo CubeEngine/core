@@ -202,7 +202,7 @@ public abstract class BlockActionType extends LogActionType
     @Override
     public boolean isSimilar(LogEntry logEntry, LogEntry other)
     {
-        if (logEntry.newBlock == other.newBlock
+        if ((logEntry.newBlock == other.newBlock || logEntry.newBlock.equals(other.newBlock))
             && logEntry.world == other.world
             && logEntry.causer == other.causer
             && logEntry.additional == other.additional) // additional
