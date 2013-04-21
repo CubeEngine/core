@@ -88,6 +88,7 @@ public class Basics extends Module
         this.mailManager = new MailManager(db, this.basicUM);
         this.getLog().log(LogLevel.DEBUG,Profiler.getCurrentDelta("basicsEnable", TimeUnit.MILLISECONDS) + "ms - IgnoreList.Manager");
         this.ignoreListManager = new IgnoreListManager(db);
+        this.getLog().log(LogLevel.DEBUG,Profiler.getCurrentDelta("basicsEnable", TimeUnit.MILLISECONDS) + "ms - Basics.Permission");
         this.perm = new BasicsPerm(this);
         this.getCore().getUserManager().addDefaultAttachment(BasicsAttachment.class, this);
 
@@ -100,6 +101,7 @@ public class Basics extends Module
         cm.registerCommands(this, new ListCommand(this), ReflectedCommand.class);
         cm.registerCommand(new MailCommand(this));
         cm.registerCommands(this, new PlayerCommands(this), ReflectedCommand.class);
+        this.getLog().log(LogLevel.DEBUG,Profiler.getCurrentDelta("basicsEnable", TimeUnit.MILLISECONDS) + "ms - General-Listener");
         em.registerListener(this, new GeneralsListener(this));
         em.registerListener(this, new MuteListener(this));
         this.getLog().log(LogLevel.DEBUG,Profiler.getCurrentDelta("basicsEnable", TimeUnit.MILLISECONDS) + "ms - Moderation-Commands");
@@ -129,6 +131,7 @@ public class Basics extends Module
         cm.registerCommands(this, new SpawnCommands(this), ReflectedCommand.class);
         cm.registerCommands(this, new TeleportCommands(this), ReflectedCommand.class);
         cm.registerCommands(this, new TeleportRequestCommands(this), ReflectedCommand.class);
+        this.getLog().log(LogLevel.DEBUG,Profiler.getCurrentDelta("basicsEnable", TimeUnit.MILLISECONDS) + "ms - Teleport/Fly-Listener");
         em.registerListener(this, new TeleportListener(this));
         em.registerListener(this, new FlyListener());
         this.tpPerm = new TpWorldPermissions(this); // per world permissions

@@ -17,15 +17,19 @@
  */
 package de.cubeisland.cubeengine.basics.storage;
 
-import de.cubeisland.cubeengine.core.storage.StorageException;
-import de.cubeisland.cubeengine.core.storage.TwoKeyStorage;
-import de.cubeisland.cubeengine.core.storage.database.Database;
-import de.cubeisland.cubeengine.core.user.User;
-import gnu.trove.map.hash.TLongObjectHashMap;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
+
+import de.cubeisland.cubeengine.core.storage.StorageException;
+import de.cubeisland.cubeengine.core.storage.TwoKeyStorage;
+import de.cubeisland.cubeengine.core.storage.database.Database;
+import de.cubeisland.cubeengine.core.user.User;
+import de.cubeisland.cubeengine.core.util.Profiler;
+
+import gnu.trove.map.hash.TLongObjectHashMap;
 
 public class IgnoreListManager extends TwoKeyStorage<Long, Long, IgnoreList>
 {
@@ -36,23 +40,18 @@ public class IgnoreListManager extends TwoKeyStorage<Long, Long, IgnoreList>
     public IgnoreListManager(Database database)
     {
         super(database, IgnoreList.class, REVISION);
+        System.out.print(Profiler.getCurrentDelta("basicsEnable", TimeUnit.MILLISECONDS) + "ms - IgnoreList.Manager-super");
         this.initialize();
+        System.out.print(Profiler.getCurrentDelta("basicsEnable", TimeUnit.MILLISECONDS) + "ms - IgnoreList.Manager-init");
     }
 
     @Override
-    public void initialize()
+    protected void prepareStatements() throws SQLException
     {
-        try
-        {
-            super.initialize();
-            this.database.storeStatement(modelClass, "getAllByUser", this.database.getQueryBuilder()
-                    .select().wildcard().from(this.tableName)
-                    .where().field("key").isEqual().value().end().end());
-        }
-        catch (SQLException ex)
-        {
-            throw new StorageException("Error while initializing queries for IngoreList", ex);
-        }
+        super.prepareStatements();
+        this.database.storeStatement(modelClass, "getAllByUser", this.database.getQueryBuilder()
+                                                                              .select().wildcard().from(this.tableName)
+                                                                              .where().field("key").isEqual().value().end().end());
     }
 
     public boolean addIgnore(User user, User toIgnore)

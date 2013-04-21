@@ -17,7 +17,10 @@
  */
 package de.cubeisland.cubeengine.signmarket;
 
+import java.util.concurrent.TimeUnit;
+
 import de.cubeisland.cubeengine.core.module.Module;
+import de.cubeisland.cubeengine.core.util.Profiler;
 import de.cubeisland.cubeengine.conomy.Conomy;
 
 public class Signmarket extends Module
@@ -31,15 +34,20 @@ public class Signmarket extends Module
     @Override
     public void onEnable()
     {
+        Profiler.startProfiling("marketSignEnable");
+        System.out.print(Profiler.getCurrentDelta("marketSignEnable", TimeUnit.MILLISECONDS) + "ms - MarketSignFactory");
         this.marketSignFactory = new MarketSignFactory(this, this.conomy);
+        System.out.print(Profiler.getCurrentDelta("marketSignEnable", TimeUnit.MILLISECONDS) + "ms - MarketSignFactory-loadAllSigns");
         this.marketSignFactory.loadInAllSigns();
+        System.out.print(Profiler.getCurrentDelta("marketSignEnable", TimeUnit.MILLISECONDS) + "ms - EditModeListener");
         this.editModeListener = new EditModeListener(this, this.conomy);
-
+        System.out.print(Profiler.getCurrentDelta("marketSignEnable", TimeUnit.MILLISECONDS) + "ms - MarketSignListener");
         this.getCore().getEventManager().registerListener(this, new MarketSignListener(this));
-
+        System.out.print(Profiler.getCurrentDelta("marketSignEnable", TimeUnit.MILLISECONDS) + "ms - Perms");
         this.perm = new MarketSignPerm(this);
-
+        System.out.print(Profiler.getCurrentDelta("marketSignEnable", TimeUnit.MILLISECONDS) + "ms - Command");
         this.getCore().getCommandManager().registerCommand(new SignMarketCommands(this));
+        System.out.print(Profiler.getCurrentDelta("marketSignEnable", TimeUnit.MILLISECONDS) + "ms - done");
     }
 
     @Override

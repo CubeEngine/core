@@ -17,8 +17,11 @@
  */
 package de.cubeisland.cubeengine.conomy;
 
+import java.util.concurrent.TimeUnit;
+
 import de.cubeisland.cubeengine.core.command.CommandManager;
 import de.cubeisland.cubeengine.core.module.Module;
+import de.cubeisland.cubeengine.core.util.Profiler;
 import de.cubeisland.cubeengine.core.util.convert.Convert;
 import de.cubeisland.cubeengine.conomy.account.AccountManager;
 import de.cubeisland.cubeengine.conomy.account.storage.AccountStorage;
@@ -49,15 +52,22 @@ public class Conomy extends Module
     @Override
     public void onEnable()
     {
+        Profiler.startProfiling("conomyEnable");
+        System.out.print(Profiler.getCurrentDelta("conomyEnable", TimeUnit.MILLISECONDS) + "ms - perms");
         this.perms = new ConomyPermissions(this);
+        System.out.print(Profiler.getCurrentDelta("conomyEnable", TimeUnit.MILLISECONDS) + "ms - CurrencyManager");
         this.currencyManager = new CurrencyManager(this, this.config);
+        System.out.print(Profiler.getCurrentDelta("conomyEnable", TimeUnit.MILLISECONDS) + "ms - CurrencyManager-load");
         this.currencyManager.load();
+        System.out.print(Profiler.getCurrentDelta("conomyEnable", TimeUnit.MILLISECONDS) + "ms - AccountStorage");
         this.accountsStorage = new AccountStorage(this.getCore().getDB());
+        System.out.print(Profiler.getCurrentDelta("conomyEnable", TimeUnit.MILLISECONDS) + "ms - AccountManager");
         this.accountsManager = new AccountManager(this); // Needs cManager / aStorage
-
+        System.out.print(Profiler.getCurrentDelta("conomyEnable", TimeUnit.MILLISECONDS) + "ms - register Commands");
         final CommandManager cm = this.getCore().getCommandManager();
         cm.registerCommand(new MoneyCommand(this));
         cm.registerCommand(new EcoCommands(this));
+        System.out.print(Profiler.getCurrentDelta("conomyEnable", TimeUnit.MILLISECONDS) + "ms - done");
     }
 
     @Override
