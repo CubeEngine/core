@@ -17,12 +17,9 @@
  */
 package de.cubeisland.cubeengine.core.permission;
 
-import java.util.Locale;
 import java.util.Set;
 
 import org.bukkit.permissions.Permissible;
-
-import de.cubeisland.cubeengine.core.CubeEngine;
 
 import gnu.trove.set.hash.THashSet;
 
@@ -41,7 +38,27 @@ public class Permission
 
     public final boolean canRegister;
 
-    public static final Permission BASE = new Permission(false,"cubeengine",FALSE);
+    public static final Permission BASE = createAbstractPermission("cubeengine",FALSE);
+
+    public static final Permission createAbstractPermission(String name)
+    {
+        return new Permission(false,name,OP);
+    }
+
+    public static final Permission createAbstractPermission(String name, PermDefault def)
+    {
+        return new Permission(false,name,def);
+    }
+
+    public static final Permission createPermission(String name)
+    {
+        return new Permission(true,name,OP);
+    }
+
+    public static final Permission createPermission(String name, PermDefault def)
+    {
+        return new Permission(true,name,def);
+    }
 
     /**
      * Creates a new permission
@@ -70,22 +87,22 @@ public class Permission
         this.def = def;
     }
 
-    public Permission(String name)
+    protected Permission(String name)
     {
        this(name,OP);
     }
 
-    public Permission(String name, PermDefault def)
+    protected Permission(String name, PermDefault def)
     {
         this(true,name,def);
     }
 
-    public Permission(String parentName, String name, PermDefault def)
+    protected Permission(String parentName, String name, PermDefault def)
     {
         this(true,parentName,name,def);
     }
 
-    public Permission(String parentName, String name)
+    protected Permission(String parentName, String name)
     {
         this(parentName,name,OP);
     }
@@ -135,9 +152,12 @@ public class Permission
             parentPermission.children = new THashSet<Permission>();
         }
         parentPermission.children.add(this);
-        for (Permission childPerm : children)
+        if (children != null)
         {
-            childPerm.prepend(parentPermission.permission);
+            for (Permission childPerm : children)
+            {
+                childPerm.prepend(parentPermission.permission);
+            }
         }
         return this;
     }
@@ -314,5 +334,38 @@ public class Permission
     public boolean hasBundles()
     {
         return this.bundle == null ? false : !this.bundle.isEmpty();
+    }
+
+    @Override
+    public boolean equals(Object o)
+    {
+        if (this == o)
+        {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass())
+        {
+            return false;
+        }
+
+        Permission that = (Permission)o;
+
+        if (permission != null ? !permission.equals(that.permission) : that.permission != null)
+        {
+            return false;
+        }
+
+        return true;
+    }
+
+    @Override
+    public int hashCode()
+    {
+        return permission != null ? permission.hashCode() : 0;
+    }
+
+    public void removeChild(Permission permission)
+    {
+        this.children.remove(permission);
     }
 }

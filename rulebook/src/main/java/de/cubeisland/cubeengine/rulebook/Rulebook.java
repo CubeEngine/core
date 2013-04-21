@@ -30,8 +30,7 @@ public class Rulebook extends Module
     public void onEnable()
     {
         this.getCore().getFileManager().dropResources(RulebookResource.values());
-        Permission perm = Permission.BASE.
-                createAbstractChild(this.getId()).
+        Permission perm = this.getBasePermission().
                 createAbstractChild("command").
                 createAbstractChild("get").
                 createChild("other");

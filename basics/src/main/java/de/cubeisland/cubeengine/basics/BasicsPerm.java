@@ -17,31 +17,39 @@
  */
 package de.cubeisland.cubeengine.basics;
 
-import de.cubeisland.cubeengine.core.module.Module;
+import java.util.concurrent.TimeUnit;
+
+import de.cubeisland.cubeengine.core.logger.LogLevel;
 import de.cubeisland.cubeengine.core.permission.Permission;
 import de.cubeisland.cubeengine.core.permission.PermissionContainer;
+import de.cubeisland.cubeengine.core.util.Profiler;
 
+import de.cubeisland.cubeengine.basics.command.teleport.TpWorldPermissions;
 
 import static de.cubeisland.cubeengine.core.permission.PermDefault.FALSE;
 
-public class BasicsPerm extends PermissionContainer
+public class BasicsPerm extends PermissionContainer<Basics>
 {
-    public BasicsPerm(Module module)
+    public BasicsPerm(Basics module)
     {
         super(module);
+        module.getLog().log(LogLevel.DEBUG,Profiler.getCurrentDelta("basicsEnable", TimeUnit.MILLISECONDS) + "ms - Basics.Permission-register");
+        this.bindToModule(KITS,COMMAND,ITEM_BLACKLIST,TELEPORT,COMPASS_JUMPTO,POWERTOOL_USE,SIGN_COLORED,CHANGEPAINTING,KICK_RECEIVEMESSAGE,
+                          COMMAND_KILL_PREVENT, COMMAND_CLEARINVENTORY_PREVENT, COMMAND_INVSEE_MODIFY_PREVENT, COMMAND_KICK_NOREASON, TELEPORT_PREVENT, COMMAND_AFK_PREVENT);
         this.registerAllPermissions();
+
+        new TpWorldPermissions(module); // per world permissions
     }
 
-    public static final Permission BASICS = Permission.BASE.createAbstractChild("basics");
-    public static final Permission KITS = BASICS.createAbstractChild("kits");
-    public static final Permission COMMAND = BASICS.createAbstractChild("command");
+    public static final Permission KITS = Permission.createAbstractPermission("kits");
+    public static final Permission COMMAND = Permission.createAbstractPermission("command");
 
     public static final Permission COMMAND_ENCHANT_UNSAFE = COMMAND.createAbstractChild("enchant").createChild("unsafe");
 
     /**
      * Allows to create items that are blacklisted
      */
-    public static final Permission ITEM_BLACKLIST = BASICS.createChild("item-blacklist");
+    public static final Permission ITEM_BLACKLIST = Permission.createPermission("item-blacklist");
 
     private static final Permission COMMAND_ITEM = COMMAND.createAbstractChild("item");
     public static final Permission COMMAND_ITEM_ENCHANTMENTS = COMMAND_ITEM.createChild("enchantments");
@@ -115,7 +123,7 @@ public class BasicsPerm extends PermissionContainer
     /**
      * Prevents an inventory from being modified unless forced
      */
-    public static final Permission COMMAND_INVSEE_MODIFY_PREVENT = COMMAND_INVSEE.createNew("modify.prevent");
+    public static final Permission COMMAND_INVSEE_MODIFY_PREVENT = COMMAND_INVSEE.createNew("modify.prevent",FALSE);
     /**
      * Allows modifying an inventory even if the player has the prevent permission
      */
@@ -153,8 +161,8 @@ public class BasicsPerm extends PermissionContainer
      */
     public static final Permission COMMAND_TP_OTHER = COMMAND_TP.createChild("other");
 
-    private static final Permission TELEPORT = BASICS.createAbstractChild("teleport");
-    private static final Permission TELEPORT_PREVENT = TELEPORT.createAbstract("prevent"); // not bound
+    private static final Permission TELEPORT = Permission.createAbstractPermission("teleport");
+    private static final Permission TELEPORT_PREVENT = TELEPORT.createAbstract("prevent");
     /**
      * Prevents from being teleported by someone else
      */
@@ -245,7 +253,7 @@ public class BasicsPerm extends PermissionContainer
     public static final Permission COMMAND_FLY_KEEP = COMMAND_FLY.createChild("keep");
     public static final Permission COMMAND_FLY_OTHER = COMMAND_FLY.createChild("other");
 
-    private static final Permission COMPASS_JUMPTO = BASICS.createAbstractChild("compass.jumpto");
+    private static final Permission COMPASS_JUMPTO = Permission.createAbstractPermission("compass.jumpto");
     public static final Permission COMPASS_JUMPTO_LEFT = COMPASS_JUMPTO.createChild("left");
     public static final Permission COMPASS_JUMPTO_RIGHT = COMPASS_JUMPTO.createChild("right");
 
@@ -256,11 +264,11 @@ public class BasicsPerm extends PermissionContainer
     public static final Permission COMMAND_KIT_GIVE_FORCE = COMMAND.createChild("kit.give.force");
     public static final Permission COMMAND_STACK_FULLSTACK = COMMAND.createAbstractChild("stack").createChild("fullstack");
 
-    public static final Permission POWERTOOL_USE = BASICS.createChild("powertool.use");
+    public static final Permission POWERTOOL_USE = Permission.createPermission("powertool.use");
 
-    public static final Permission COMMAND_BAN_NOREASON = COMMAND.createAbstractChild("ban").createNew("noreason");
-    public static final Permission COMMAND_IPBAN_NOREASON = COMMAND.createAbstractChild("ipban").createNew("noreason");
-    public static final Permission COMMAND_TEMPBAN_NOREASON = COMMAND.createAbstractChild("tempban").createNew("noreason");
+    public static final Permission COMMAND_BAN_NOREASON = COMMAND.createAbstractChild("ban").createChild("noreason");
+    public static final Permission COMMAND_IPBAN_NOREASON = COMMAND.createAbstractChild("ipban").createChild("noreason",FALSE);
+    public static final Permission COMMAND_TEMPBAN_NOREASON = COMMAND.createAbstractChild("tempban").createChild("noreason",FALSE);
     
     /**
      * Allows to change the walkspeed of other players
@@ -270,7 +278,7 @@ public class BasicsPerm extends PermissionContainer
     /**
      * Allows writing colored signs
      */
-    public static final Permission SIGN_COLORED = BASICS.createChild("sign.colored"); //TODO permission for each color
-    public static final Permission CHANGEPAINTING = BASICS.createChild("changepainting");
-    public static final Permission KICK_RECEIVEMESSAGE = BASICS.createChild("kick.receivemessage");
+    public static final Permission SIGN_COLORED = Permission.createPermission("sign.colored"); //TODO permission for each color
+    public static final Permission CHANGEPAINTING = Permission.createPermission("changepainting");
+    public static final Permission KICK_RECEIVEMESSAGE = Permission.createPermission("kick.receivemessage");
 }

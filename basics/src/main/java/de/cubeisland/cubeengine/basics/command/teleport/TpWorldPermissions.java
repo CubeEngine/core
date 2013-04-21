@@ -17,27 +17,23 @@
  */
 package de.cubeisland.cubeengine.basics.command.teleport;
 
-import de.cubeisland.cubeengine.basics.Basics;
-import de.cubeisland.cubeengine.basics.BasicsPerm;
+import java.util.Map;
+import java.util.Set;
+
+import org.bukkit.Bukkit;
+import org.bukkit.World;
+
 import de.cubeisland.cubeengine.core.module.Module;
-import de.cubeisland.cubeengine.core.permission.PermDefault;
 import de.cubeisland.cubeengine.core.permission.Permission;
 import de.cubeisland.cubeengine.core.permission.PermissionContainer;
 
 import gnu.trove.map.hash.THashMap;
 import gnu.trove.set.hash.THashSet;
 
-import org.bukkit.Bukkit;
-import org.bukkit.World;
-import org.bukkit.permissions.Permissible;
-
-import java.util.Map;
-import java.util.Set;
-
 import static de.cubeisland.cubeengine.basics.BasicsPerm.COMMAND;
 
 /**
- * Dynamicly registerd Permissions for each world.
+ * Dynamically registered Permissions for each world.
  */
 public class TpWorldPermissions extends PermissionContainer
 {

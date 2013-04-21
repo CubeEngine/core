@@ -17,23 +17,23 @@
  */
 package de.cubeisland.cubeengine.core;
 
-import de.cubeisland.cubeengine.core.module.Module;
+import de.cubeisland.cubeengine.core.module.CoreModule;
 import de.cubeisland.cubeengine.core.permission.Permission;
 import de.cubeisland.cubeengine.core.permission.PermissionContainer;
 
 import static de.cubeisland.cubeengine.core.permission.PermDefault.FALSE;
 
-public class CorePerms extends PermissionContainer
+public class CorePerms extends PermissionContainer<CoreModule>
 {
 
-    public CorePerms(Module module)
+    public CorePerms(CoreModule module)
     {
         super(module);
+        this.bindToModule(COMMAND,SPAM);
         this.registerAllPermissions();
     }
 
-    private static final Permission CORE = Permission.BASE.createAbstractChild("core");
-    private static final Permission COMMAND = CORE.createAbstractChild("command");
+    private static final Permission COMMAND = Permission.createAbstractPermission("command");
     private static final Permission CLEARPASSWORD = COMMAND.createAbstractChild("clearpassword");
     public static final Permission COMMAND_CLEARPASSWORD_ALL = CLEARPASSWORD.createChild("all");
     public static final Permission COMMAND_CLEARPASSWORD_OTHER = CLEARPASSWORD.createChild("other");
@@ -48,5 +48,5 @@ public class CorePerms extends PermissionContainer
 
     public static final Permission COMMAND_VERSION_PLUGINS = COMMAND.createChild("version.plugins");
 
-    public static final Permission SPAM = CORE.createChild("spam");
+    public static final Permission SPAM = Permission.createPermission("spam");
 }

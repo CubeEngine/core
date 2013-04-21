@@ -267,6 +267,11 @@ public abstract class Module
             try
             {
                 this.onDisable();
+                if (this.modulePermission != null)
+                {
+                    Permission.BASE.removeChild(this.modulePermission);
+                    this.modulePermission = null;
+                }
             }
             catch (Throwable t)
             {

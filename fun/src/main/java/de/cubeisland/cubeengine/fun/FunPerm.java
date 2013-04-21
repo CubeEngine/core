@@ -17,24 +17,20 @@
  */
 package de.cubeisland.cubeengine.fun;
 
-import de.cubeisland.cubeengine.core.module.Module;
 import de.cubeisland.cubeengine.core.permission.PermDefault;
 import de.cubeisland.cubeengine.core.permission.Permission;
 import de.cubeisland.cubeengine.core.permission.PermissionContainer;
 
-import java.util.Locale;
-import org.bukkit.permissions.Permissible;
-
-public class FunPerm extends PermissionContainer
+public class FunPerm extends PermissionContainer<Fun>
 {
-    public FunPerm(Module module)
+    public FunPerm(Fun module)
     {
         super(module);
+        this.bindToModule(COMMAND);
         this.registerAllPermissions();
     }
 
-    private static final Permission FUN = Permission.BASE.createAbstractChild("fun");
-    private static final Permission COMMAND = FUN.createAbstractChild("command");
+    private static final Permission COMMAND = Permission.createAbstractPermission("command");
 
     private static final Permission COMMAND_EXPLOSION = COMMAND.createAbstractChild("explosion");
     public static final Permission COMMAND_EXPLOSION_OTHER = COMMAND_EXPLOSION.createChild("other");

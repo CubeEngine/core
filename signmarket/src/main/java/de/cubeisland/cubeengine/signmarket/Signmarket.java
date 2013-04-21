@@ -29,7 +29,6 @@ public class Signmarket extends Module
     private MarketSignFactory marketSignFactory;
     private SignMarketConfig config;
     private EditModeListener editModeListener;
-    private MarketSignPerm perm;
 
     @Override
     public void onEnable()
@@ -44,16 +43,10 @@ public class Signmarket extends Module
         System.out.print(Profiler.getCurrentDelta("marketSignEnable", TimeUnit.MILLISECONDS) + "ms - MarketSignListener");
         this.getCore().getEventManager().registerListener(this, new MarketSignListener(this));
         System.out.print(Profiler.getCurrentDelta("marketSignEnable", TimeUnit.MILLISECONDS) + "ms - Perms");
-        this.perm = new MarketSignPerm(this);
+        new MarketSignPerm(this);
         System.out.print(Profiler.getCurrentDelta("marketSignEnable", TimeUnit.MILLISECONDS) + "ms - Command");
         this.getCore().getCommandManager().registerCommand(new SignMarketCommands(this));
         System.out.print(Profiler.getCurrentDelta("marketSignEnable", TimeUnit.MILLISECONDS) + "ms - done");
-    }
-
-    @Override
-    public void onDisable()
-    {
-        this.perm.cleanup();
     }
 
     public MarketSignFactory getMarketSignFactory()

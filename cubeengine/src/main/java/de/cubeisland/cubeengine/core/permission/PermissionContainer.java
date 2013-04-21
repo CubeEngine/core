@@ -25,39 +25,24 @@ import de.cubeisland.cubeengine.core.module.Module;
 
 import gnu.trove.set.hash.THashSet;
 
-public abstract class PermissionContainer
+public abstract class PermissionContainer<T extends Module>
 {
     private final PermissionManager permissionManager;
-    private final Module module;
+    private final T module;
 
-
-    protected PermissionContainer(Module module)
+    protected PermissionContainer(T module)
     {
         this.permissionManager = module.getCore().getPermissionManager();
         this.module = module;
+        this.bindToModule();
     }
 
-    /**
-     * Nulls all static fields in this
-     */
-    public void cleanup()
+    protected final void bindToModule(Permission... perms)
     {
-        for (Field field : this.getClass().getDeclaredFields())
+        Permission modulePerm = this.module.getBasePermission();
+        for (Permission perm : perms)
         {
-            int mask = field.getModifiers();
-            if ((((mask & Modifier.STATIC) == Modifier.STATIC)))
-            {
-                if (Permission.class.isAssignableFrom(field.getType()))
-                {
-                    try
-                    {
-                        field.set(this,null);
-                    }
-                    catch (IllegalAccessException e)
-                    {
-                    }
-                }
-            }
+            modulePerm.addChildren(perm);
         }
     }
 
@@ -95,7 +80,7 @@ public abstract class PermissionContainer
         {
             if (!perm.getName().startsWith(prefix))
             {
-                throw new IllegalArgumentException("Permissions must start with 'cubeengine.<module>' !");
+                throw new IllegalArgumentException("Permissions must start with 'cubeengine."+ module.getId() +"' ! Actual perm: " + perm.getName());
             }
             this.permissionManager.registerPermission(module,perm);
         }

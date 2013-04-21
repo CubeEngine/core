@@ -40,7 +40,6 @@ public class Conomy extends Module
     private AccountManager accountsManager;
     private AccountStorage accountsStorage;
     private CurrencyManager currencyManager;
-    private ConomyPermissions perms;
 
     //TODO Roles support (e.g. allow all user of a role to access a bank)
     public Conomy()
@@ -54,7 +53,7 @@ public class Conomy extends Module
     {
         Profiler.startProfiling("conomyEnable");
         System.out.print(Profiler.getCurrentDelta("conomyEnable", TimeUnit.MILLISECONDS) + "ms - perms");
-        this.perms = new ConomyPermissions(this);
+        new ConomyPermissions(this);
         System.out.print(Profiler.getCurrentDelta("conomyEnable", TimeUnit.MILLISECONDS) + "ms - CurrencyManager");
         this.currencyManager = new CurrencyManager(this, this.config);
         System.out.print(Profiler.getCurrentDelta("conomyEnable", TimeUnit.MILLISECONDS) + "ms - CurrencyManager-load");
@@ -68,12 +67,6 @@ public class Conomy extends Module
         cm.registerCommand(new MoneyCommand(this));
         cm.registerCommand(new EcoCommands(this));
         System.out.print(Profiler.getCurrentDelta("conomyEnable", TimeUnit.MILLISECONDS) + "ms - done");
-    }
-
-    @Override
-    public void onDisable()
-    {
-        this.perms.cleanup();
     }
 
     public AccountManager getAccountsManager()
