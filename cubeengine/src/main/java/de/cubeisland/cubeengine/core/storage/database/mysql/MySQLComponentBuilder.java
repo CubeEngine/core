@@ -17,11 +17,11 @@
  */
 package de.cubeisland.cubeengine.core.storage.database.mysql;
 
+import java.sql.Timestamp;
+
 import de.cubeisland.cubeengine.core.storage.database.Database;
 import de.cubeisland.cubeengine.core.storage.database.querybuilder.ComponentBuilder;
-import de.cubeisland.cubeengine.core.storage.database.querybuilder.IndexBuilder;
 import de.cubeisland.cubeengine.core.storage.database.querybuilder.QueryBuilder;
-import java.sql.Timestamp;
 
 /**
  * Abstract MYSQLlQueryBuilder used by other builders.
@@ -307,12 +307,19 @@ public abstract class MySQLComponentBuilder<This extends ComponentBuilder> imple
         {
             throw new IllegalArgumentException("The fields cannot be none!");
         }
-        this.beginSub().field(fields[0]);
+        this.beginSub().fields(fields);
+        return this.endSub();
+    }
+
+    @Override
+    public This fields(String... fields)
+    {
+        this.field(fields[0]);
         for (int i = 1; i < fields.length; ++i)
         {
             this.query.append(", ");
             this.field(fields[i]);
         }
-        return this.endSub();
+        return (This)this;
     }
 }

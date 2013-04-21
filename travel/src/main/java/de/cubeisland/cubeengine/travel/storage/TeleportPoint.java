@@ -17,17 +17,21 @@
  */
 package de.cubeisland.cubeengine.travel.storage;
 
+import java.util.List;
+
+import org.bukkit.Location;
+
 import de.cubeisland.cubeengine.core.CubeEngine;
 import de.cubeisland.cubeengine.core.storage.Model;
-import de.cubeisland.cubeengine.core.storage.database.*;
+import de.cubeisland.cubeengine.core.storage.database.AttrType;
+import de.cubeisland.cubeengine.core.storage.database.Attribute;
+import de.cubeisland.cubeengine.core.storage.database.DatabaseConstructor;
+import de.cubeisland.cubeengine.core.storage.database.Index;
+import de.cubeisland.cubeengine.core.storage.database.SingleKeyEntity;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.util.convert.ConversionException;
 
 import org.apache.commons.lang.Validate;
-
-import org.bukkit.Location;
-
-import java.util.List;
 
 @SingleKeyEntity(tableName = "teleportpoints", primaryKey = "key", autoIncrement = true,
                  indices = {
@@ -70,6 +74,8 @@ public class TeleportPoint implements Model<Long>
     public Type type;
     public Visibility visibility;
 
+    public final String ownerName;
+
     @DatabaseConstructor
     public TeleportPoint(List<Object> args) throws ConversionException
     {
@@ -85,6 +91,7 @@ public class TeleportPoint implements Model<Long>
         this.pitch = Float.valueOf(args.get(9).toString());
         this.name = args.get(10).toString();
         this.welcomeMsg = args.get(11).toString();
+        this.ownerName = args.get(12).toString();
 
         this.type = Type.values()[typeId];
         this.visibility = Visibility.values()[visibilityId];
@@ -106,6 +113,7 @@ public class TeleportPoint implements Model<Long>
         this.location = location;
         this.name = name;
         this.owner = owner;
+        this.ownerName = owner.getName();
         this.welcomeMsg = welcomeMsg;
         this.type = type;
         this.visibility = visibility;

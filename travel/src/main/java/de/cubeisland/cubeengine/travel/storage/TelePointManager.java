@@ -19,6 +19,8 @@ package de.cubeisland.cubeengine.travel.storage;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -29,7 +31,6 @@ import org.bukkit.Location;
 
 import de.cubeisland.cubeengine.core.CubeEngine;
 import de.cubeisland.cubeengine.core.command.CommandSender;
-import de.cubeisland.cubeengine.core.logger.LogLevel;
 import de.cubeisland.cubeengine.core.storage.SingleKeyStorage;
 import de.cubeisland.cubeengine.core.storage.StorageException;
 import de.cubeisland.cubeengine.core.storage.database.querybuilder.QueryBuilder;
@@ -60,111 +61,114 @@ public class TelePointManager extends SingleKeyStorage<Long, TeleportPoint>
     }
 
     @Override
-    public void initialize()
+    protected void prepareStatements() throws SQLException
     {
-        try
-        {
-            super.initialize();
-            QueryBuilder builder = this.database.getQueryBuilder();
+        super.prepareStatements();
+        QueryBuilder builder = this.database.getQueryBuilder();
 
-            // List statements
-            this.database
-                .storeStatement(this.modelClass, "homes_all_public", builder.select().cols("key", "name", "owner")
-                                                                            .from(this.tableName).where()
-                                                                            .field("visibility").is(EQUAL)
-                                                                            .value(TeleportPoint.Visibility.PUBLIC
-                                                                                                           .ordinal())
-                                                                            .and().field("type").is(EQUAL)
-                                                                            .value(TeleportPoint.Type.HOME.ordinal())
-                                                                            .end().end());
-            this.database
-                .storeStatement(this.modelClass, "homes_all_private", builder.select().cols("key", "name", "owner")
-                                                                             .from(this.tableName).where()
-                                                                             .field("visibility").is(EQUAL)
-                                                                             .value(TeleportPoint.Visibility.PRIVATE
-                                                                                                            .ordinal())
-                                                                             .and().field("type").is(EQUAL)
-                                                                             .value(TeleportPoint.Type.HOME.ordinal())
-                                                                             .end().end());
-            this.database
-                .storeStatement(this.modelClass, "homes_owned_private", builder.select().cols("key", "name", "owner")
-                                                                               .from(this.tableName).where()
-                                                                               .field("owner").is(EQUAL).value().and()
-                                                                               .field("visibility").is(EQUAL)
-                                                                               .value(TeleportPoint.Visibility.PRIVATE
-                                                                                                              .ordinal())
-                                                                               .and().field("type").is(EQUAL)
-                                                                               .value(TeleportPoint.Type.HOME.ordinal())
-                                                                               .end().end());
-            this.database
-                .storeStatement(this.modelClass, "homes_owned_public", builder.select().cols("key", "name", "owner")
-                                                                              .from(this.tableName).where()
-                                                                              .field("owner").is(EQUAL).value().and()
-                                                                              .field("visibility").is(EQUAL)
-                                                                              .value(TeleportPoint.Visibility.PUBLIC
+        // List statements
+        this.database
+            .storeStatement(this.modelClass, "homes_all_public", builder.select().cols("key", "name", "owner")
+                                                                        .from(this.tableName).where()
+                                                                        .field("visibility").is(EQUAL)
+                                                                        .value(TeleportPoint.Visibility.PUBLIC
+                                                                                                       .ordinal())
+                                                                        .and().field("type").is(EQUAL)
+                                                                        .value(TeleportPoint.Type.HOME.ordinal())
+                                                                        .end().end());
+        this.database
+            .storeStatement(this.modelClass, "homes_all_private", builder.select().cols("key", "name", "owner")
+                                                                         .from(this.tableName).where()
+                                                                         .field("visibility").is(EQUAL)
+                                                                         .value(TeleportPoint.Visibility.PRIVATE
+                                                                                                        .ordinal())
+                                                                         .and().field("type").is(EQUAL)
+                                                                         .value(TeleportPoint.Type.HOME.ordinal())
+                                                                         .end().end());
+        this.database
+            .storeStatement(this.modelClass, "homes_owned_private", builder.select().cols("key", "name", "owner")
+                                                                           .from(this.tableName).where()
+                                                                           .field("owner").is(EQUAL).value().and()
+                                                                           .field("visibility").is(EQUAL)
+                                                                           .value(TeleportPoint.Visibility.PRIVATE
+                                                                                                          .ordinal())
+                                                                           .and().field("type").is(EQUAL)
+                                                                           .value(TeleportPoint.Type.HOME.ordinal())
+                                                                           .end().end());
+        this.database
+            .storeStatement(this.modelClass, "homes_owned_public", builder.select().cols("key", "name", "owner")
+                                                                          .from(this.tableName).where()
+                                                                          .field("owner").is(EQUAL).value().and()
+                                                                          .field("visibility").is(EQUAL)
+                                                                          .value(TeleportPoint.Visibility.PUBLIC
+                                                                                                         .ordinal())
+                                                                          .and().field("type").is(EQUAL)
+                                                                          .value(TeleportPoint.Type.HOME.ordinal())
+                                                                          .end().end());
+        this.database.storeStatement(this.modelClass, "warps_all_public", builder.select()
+                                                                                 .cols("key", "name", "owner", "visibility")
+                                                                                 .from(this.tableName).where()
+                                                                                 .field("visibility").is(EQUAL)
+                                                                                 .value(TeleportPoint.Visibility
+                                                                                            .PUBLIC.ordinal()).and()
+                                                                                 .field("type").is(EQUAL)
+                                                                                 .value(TeleportPoint.Type.WARP
+                                                                                                          .ordinal())
+                                                                                 .end().end());
+        this.database
+            .storeStatement(this.modelClass, "warps_all_private", builder.select().cols("key", "name", "owner", "visibility")
+                                                                         .from(this.tableName).where()
+                                                                         .field("visibility").is(EQUAL)
+                                                                         .value(TeleportPoint.Visibility.PRIVATE
+                                                                                                        .ordinal())
+                                                                         .and().field("type").is(EQUAL)
+                                                                         .value(TeleportPoint.Type.WARP.ordinal())
+                                                                         .end().end());
+        this.database.storeStatement(this.modelClass, "warps_owned_private", builder.select()
+                                                                                    .cols("key", "name", "owner", "visibility")
+                                                                                    .from(this.tableName).where()
+                                                                                    .field("owner").is(EQUAL)
+                                                                                    .value().and()
+                                                                                    .field("visibility").is(EQUAL)
+                                                                                    .value(TeleportPoint.Visibility
+                                                                                               .PRIVATE.ordinal())
+                                                                                    .and().field("type").is(EQUAL)
+                                                                                    .value(TeleportPoint.Type.WARP
                                                                                                              .ordinal())
-                                                                              .and().field("type").is(EQUAL)
-                                                                              .value(TeleportPoint.Type.HOME.ordinal())
-                                                                              .end().end());
-            this.database.storeStatement(this.modelClass, "warps_all_public", builder.select()
-                                                                                     .cols("key", "name", "owner", "visibility")
-                                                                                     .from(this.tableName).where()
-                                                                                     .field("visibility").is(EQUAL)
-                                                                                     .value(TeleportPoint.Visibility
-                                                                                                .PUBLIC.ordinal()).and()
-                                                                                     .field("type").is(EQUAL)
-                                                                                     .value(TeleportPoint.Type.WARP
-                                                                                                              .ordinal())
-                                                                                     .end().end());
-            this.database
-                .storeStatement(this.modelClass, "warps_all_private", builder.select().cols("key", "name", "owner", "visibility")
-                                                                             .from(this.tableName).where()
-                                                                             .field("visibility").is(EQUAL)
-                                                                             .value(TeleportPoint.Visibility.PRIVATE
+                                                                                    .end().end());
+        this.database.storeStatement(this.modelClass, "warps_owned_public", builder.select()
+                                                                                   .cols("key", "name", "owner", "visibility")
+                                                                                   .from(this.tableName).where()
+                                                                                   .field("owner").is(EQUAL).value()
+                                                                                   .and().field("visibility")
+                                                                                   .is(EQUAL)
+                                                                                   .value(TeleportPoint.Visibility
+                                                                                              .PUBLIC.ordinal())
+                                                                                   .and().field("type").is(EQUAL)
+                                                                                   .value(TeleportPoint.Type.WARP
                                                                                                             .ordinal())
-                                                                             .and().field("type").is(EQUAL)
-                                                                             .value(TeleportPoint.Type.WARP.ordinal())
-                                                                             .end().end());
-            this.database.storeStatement(this.modelClass, "warps_owned_private", builder.select()
-                                                                                        .cols("key", "name", "owner", "visibility")
-                                                                                        .from(this.tableName).where()
-                                                                                        .field("owner").is(EQUAL)
-                                                                                        .value().and()
-                                                                                        .field("visibility").is(EQUAL)
-                                                                                        .value(TeleportPoint.Visibility
-                                                                                                   .PRIVATE.ordinal())
-                                                                                        .and().field("type").is(EQUAL)
-                                                                                        .value(TeleportPoint.Type.WARP
-                                                                                                                 .ordinal())
-                                                                                        .end().end());
-            this.database.storeStatement(this.modelClass, "warps_owned_public", builder.select()
-                                                                                       .cols("key", "name", "owner", "visibility")
-                                                                                       .from(this.tableName).where()
-                                                                                       .field("owner").is(EQUAL).value()
-                                                                                       .and().field("visibility")
-                                                                                       .is(EQUAL)
-                                                                                       .value(TeleportPoint.Visibility
-                                                                                                  .PUBLIC.ordinal())
-                                                                                       .and().field("type").is(EQUAL)
-                                                                                       .value(TeleportPoint.Type.WARP
-                                                                                                                .ordinal())
-                                                                                       .end().end());
+                                                                                   .end().end());
 
-            // Other statements
-            this.database
-                .storeStatement(this.modelClass, "get_name", builder.select().cols("name").from(this.tableName).where()
-                                                                    .field("key").is(EQUAL).value().end().end());
-            this.database
-                .storeStatement(User.class, "get_owner", builder.select().cols("owner").from(this.tableName).where()
+        // Other statements
+        this.database
+            .storeStatement(this.modelClass, "get_name", builder.select().cols("name").from(this.tableName).where()
                                                                 .field("key").is(EQUAL).value().end().end());
-        }
-        catch (SQLException ex)
-        {
-            module.getLog()
-                  .log(LogLevel.ERROR, "An error occurred while preparing the database statements for table " + this.tableName);
-            module.getLog().log(LogLevel.WARNING, "The error was: {0}", ex.getMessage());
-            module.getLog().log(LogLevel.DEBUG, "This is the stack: ", ex);
-        }
+        // TODO is this ever used???
+        this.database
+            .storeStatement(User.class, "get_owner", builder.select().cols("owner").from(this.tableName).where()
+                                                            .field("key").is(EQUAL).value().end().end());
+
+        // Override getAll and get Statements
+        this.database.storeStatement(this.modelClass, "getall", builder.select().
+            fields(tableName + ".key", "owner", "type", "visibility", "world", "x", "y", "z", "yaw", "pitch", "name", "welcomemsg", "player")
+           .from(tableName).joinOnEqual("user", "key", tableName, "owner")
+           .end().end());
+
+        this.database.storeStatement(this.modelClass, "get", builder.select().
+            fields(tableName + ".key", "owner", "type", "visibility", "world", "x", "y", "z", "yaw", "pitch", "name", "welcomemsg", "player")
+               .from(tableName).joinOnEqual("user", "key", tableName, "owner")
+            .where().field(tableName + ".key").isEqual().value()
+               .end().end());
     }
 
     /**
@@ -189,6 +193,64 @@ public class TelePointManager extends SingleKeyStorage<Long, TeleportPoint>
                 Warp warp = new Warp(teleportPoint, this, inviteManager);
                 warps.put(warp.getStorageName(), warp);
             }
+        }
+    }
+
+    @Override
+    public Collection<TeleportPoint> getAll()
+    {
+        Collection<TeleportPoint> loadedModels = new ArrayList<TeleportPoint>();
+        try
+        {
+            ResultSet resulsSet = this.database.preparedQuery(this.modelClass, "getall");
+
+            while (resulsSet.next())
+            {
+                ArrayList<Object> values = new ArrayList<Object>();
+                for (String name : this.reverseFieldNames.keySet())
+                {
+                    values.add(resulsSet.getObject(name));
+                }
+                values.add(resulsSet.getObject("player"));
+                loadedModels.add(this.modelConstructor.newInstance(values));
+            }
+        }
+        catch (SQLException ex)
+        {
+            throw new StorageException("Error while getting Model from Database", ex, this.database.getStoredStatement(this.modelClass,"getall"));
+        }
+        catch (Exception ex)
+        {
+            throw new IllegalStateException("Error while creating fresh Model from Database", ex);
+        }
+        return loadedModels;
+    }
+
+    @Override
+    public TeleportPoint get(Long key)
+    {
+        try
+        {
+            ResultSet resulsSet = this.database.preparedQuery(this.modelClass, "getall");
+            if (resulsSet.next())
+            {
+                ArrayList<Object> values = new ArrayList<Object>();
+                for (String name : this.reverseFieldNames.keySet())
+                {
+                    values.add(resulsSet.getObject(name));
+                }
+                values.add(resulsSet.getObject("player"));
+                return this.modelConstructor.newInstance(values);
+            }
+            return null;
+        }
+        catch (SQLException ex)
+        {
+            throw new StorageException("Error while getting Model from Database", ex, this.database.getStoredStatement(this.modelClass,"get"));
+        }
+        catch (Exception ex)
+        {
+            throw new IllegalStateException("Error while creating fresh Model from Database", ex);
         }
     }
 
