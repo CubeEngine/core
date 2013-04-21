@@ -107,7 +107,7 @@ public class InviteManager extends TwoKeyStorage<Long, Long, TeleportInvite>
         Set<String> invitedUsers = new HashSet<String>();
         for (TeleportInvite tpI : getInvites(tPP))
         {
-            User user = CubeEngine.getUserManager().getUser(tpI.userKey);
+            User user = CubeEngine.getUserManager().getUser(tpI.userKey); // TODO!
             if (user != null)
             {
                 invitedUsers.add(user.getName());

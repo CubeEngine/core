@@ -65,8 +65,8 @@ public class TeleportPoint implements Model<Long>
     public String welcomeMsg;
 
     // "Normal" values
-    public Location location;
-    public User owner;
+    protected Location location;
+    protected User owner;
     public Type type;
     public Visibility visibility;
 
@@ -86,8 +86,6 @@ public class TeleportPoint implements Model<Long>
         this.name = args.get(10).toString();
         this.welcomeMsg = args.get(11).toString();
 
-        this.location = new Location(CubeEngine.getCore().getWorldManager().getWorld(worldKey), x, y, z, yaw, pitch);
-        this.owner = CubeEngine.getUserManager().getUser(ownerKey);
         this.type = Type.values()[typeId];
         this.visibility = Visibility.values()[visibilityId];
     }
@@ -136,6 +134,24 @@ public class TeleportPoint implements Model<Long>
         this.key = id;
     }
 
+    protected User getOwner()
+    {
+        if (this.owner == null)
+        {
+            this.owner = CubeEngine.getUserManager().getUser(ownerKey);
+        }
+        return this.owner;
+    }
+
+
+    protected Location getLocation()
+    {
+        if (this.location == null)
+        {
+            this.location = new Location(CubeEngine.getCore().getWorldManager().getWorld(worldKey), x, y, z, yaw, pitch);
+        }
+        return this.location;
+    }
     /**
      * Enum to reflect the type a teleport point is
      */

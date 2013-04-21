@@ -31,14 +31,17 @@ import java.util.Set;
 public class Home
 {
     private final TeleportPoint parent;
+    private final Travel module;
     private final TelePointManager telePointManager;
     private final InviteManager inviteManager;
     private final Permission permission;
+    private String storageName;
     private Set<String> invited;
 
     public Home(TeleportPoint teleportPoint, TelePointManager telePointManager, InviteManager inviteManager, Travel module)
     {
         this.parent = teleportPoint;
+        this.module = module;
         this.telePointManager = telePointManager;
         this.inviteManager = inviteManager;
         this.invited = inviteManager.getInvited(parent);
@@ -55,13 +58,14 @@ public class Home
      */
     public void update()
     {
-        parent.ownerKey = parent.owner.getId();
-        parent.x = parent.location.getX();
-        parent.y = parent.location.getY();
-        parent.z = parent.location.getZ();
-        parent.pitch = parent.location.getPitch();
-        parent.yaw = parent.location.getYaw();
-        parent.worldKey = CubeEngine.getCore().getWorldManager().getWorldId(parent.location.getWorld());
+        parent.ownerKey = parent.getOwner().getId();
+        parent.owner = null;
+        parent.x = parent.getLocation().getX();
+        parent.y = parent.getLocation().getY();
+        parent.z = parent.getLocation().getZ();
+        parent.pitch = parent.getLocation().getPitch();
+        parent.yaw = parent.getLocation().getYaw();
+        parent.worldKey = CubeEngine.getCore().getWorldManager().getWorldId(parent.getLocation().getWorld());
         parent.typeId = parent.type.ordinal();
         parent.visibilityId = parent.visibility.ordinal();
         telePointManager.update(parent);
@@ -69,33 +73,33 @@ public class Home
 
     public Location getLocation()
     {
-        return parent.location;
+        return parent.getLocation();
     }
 
     public void setLocation(Location location)
     {
-        parent.location = location;
         parent.x = location.getX();
         parent.y = location.getY();
         parent.z = location.getZ();
         parent.yaw = location.getYaw();
         parent.pitch = location.getPitch();
+        parent.location = null;
     }
 
     public User getOwner()
     {
-        return parent.owner;
+        return parent.getOwner();
     }
 
     public void setOwner(User owner)
     {
-        parent.owner = owner;
         parent.ownerKey = owner.getId();
+        parent.owner = null;
     }
 
     public boolean isOwner(User user)
     {
-        return parent.owner.equals(user);
+        return parent.getOwner().equals(user);
     }
 
     public void invite(User user)
@@ -107,7 +111,7 @@ public class Home
 
     public void unInvite(User user)
     {
-        this.invited.remove(user);
+        this.invited.remove(user.getName());
         telePointManager.removeHomeFromUser(this, user);
         inviteManager.updateInvited(this.parent, this.invited);
     }

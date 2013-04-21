@@ -54,7 +54,7 @@ public class TeleportInvite implements TwoKeyModel<Long, Long>
      */
     public boolean semiEquals(TeleportInvite tpI)
     {
-        return tpI.teleportPoint == this.teleportPoint && tpI.userKey == this.userKey;
+        return tpI.teleportPoint.equals(this.teleportPoint) && tpI.userKey.equals(this.userKey);
     }
 
     @Override

@@ -58,27 +58,34 @@ public class Warp
 
     public Location getLocation()
     {
-        return parent.location;
+        return parent.getLocation();
     }
 
     public void setLocation(Location location)
     {
-        parent.location = location;
+        parent.x = location.getX();
+        parent.y = location.getY();
+        parent.z = location.getZ();
+        parent.pitch = location.getPitch();
+        parent.yaw = location.getYaw();
+        parent.worldKey = CubeEngine.getCore().getWorldManager().getWorldId(location.getWorld());
+        parent.location = null;
     }
 
     public User getOwner()
     {
-        return parent.owner;
+        return parent.getOwner();
     }
 
     public void setOwner(User owner)
     {
-        parent.owner = owner;
+        parent.ownerKey = owner.getId();
+        parent.owner = null;
     }
 
     public boolean isOwner(User user)
     {
-        return parent.owner == user;
+        return parent.getOwner().equals(user);
     }
 
     public void invite(User user)
@@ -90,14 +97,14 @@ public class Warp
 
     public void unInvite(User user)
     {
-        this.invited.remove(user);
+        this.invited.remove(user.getName());
         telePointManager.removeWarpFromUser(this, user);
         inviteManager.updateInvited(parent, this.invited);
     }
 
     public boolean isInvited(User user)
     {
-        return this.invited.contains(user) || this.isPublic();
+        return this.invited.contains(user.getName()) || this.isPublic();
     }
 
     public TeleportPoint.Visibility getVisibility()
