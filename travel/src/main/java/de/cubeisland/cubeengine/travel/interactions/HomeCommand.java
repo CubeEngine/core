@@ -27,7 +27,6 @@ import de.cubeisland.cubeengine.core.command.ArgBounds;
 import de.cubeisland.cubeengine.core.command.CommandContext;
 import de.cubeisland.cubeengine.core.command.CommandResult;
 import de.cubeisland.cubeengine.core.command.ContainerCommand;
-import de.cubeisland.cubeengine.core.command.CubeCommand;
 import de.cubeisland.cubeengine.core.command.parameterized.Flag;
 import de.cubeisland.cubeengine.core.command.parameterized.Param;
 import de.cubeisland.cubeengine.core.command.parameterized.ParameterizedContext;
@@ -220,7 +219,7 @@ public class HomeCommand extends ContainerCommand
                     sender.sendTranslated("&cYou already have a home by that name! Maybe you need /home move?");
                     return;
                 }
-                Home home = tpManager.createHome(location, name, sender, visibility);
+                tpManager.createHome(location, name, sender, visibility);
                 sender.sendTranslated("&aYour home &6%s &ahave been created!", context.getString(0));
             }
         }
