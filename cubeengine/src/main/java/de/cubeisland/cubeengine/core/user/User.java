@@ -37,10 +37,13 @@ import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
+import org.bukkit.block.BlockState;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Spider;
 import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
+import org.bukkit.material.Step;
+import org.bukkit.material.WoodenStep;
 import org.bukkit.permissions.Permission;
 import org.bukkit.permissions.PermissionAttachment;
 import org.bukkit.permissions.PermissionAttachmentInfo;
@@ -66,6 +69,7 @@ import de.cubeisland.cubeengine.core.storage.database.DatabaseConstructor;
 import de.cubeisland.cubeengine.core.storage.database.Index;
 import de.cubeisland.cubeengine.core.storage.database.SingleKeyEntity;
 import de.cubeisland.cubeengine.core.util.ChatFormat;
+import de.cubeisland.cubeengine.core.util.LocationUtil;
 import de.cubeisland.cubeengine.core.util.convert.ConversionException;
 
 import gnu.trove.map.hash.THashMap;
@@ -73,6 +77,7 @@ import gnu.trove.set.hash.THashSet;
 
 import static de.cubeisland.cubeengine.core.logger.LogLevel.DEBUG;
 import static de.cubeisland.cubeengine.core.storage.database.Index.IndexType.UNIQUE;
+import static de.cubeisland.cubeengine.core.util.LocationUtil.isInvertedStep;
 
 /**
  * A CubeEngine User (can exist offline too).
@@ -348,6 +353,20 @@ public class User extends UserBase implements Model<Long>, CommandSender, Attach
         Location checkLocation = location.clone().add(0, 1, 0);
         while (location.getBlock().getType().isSolid() || checkLocation.getBlock().getType().isSolid())
         {
+            if (!checkLocation.getBlock().getType().isSolid())
+            {
+                BlockState block = location.getBlock().getState();
+                BlockState upperBlock = checkLocation.getBlock().getRelative(BlockFace.UP).getState();
+                if ((block.getData() instanceof Step || block.getData() instanceof  WoodenStep)
+                    && (upperBlock.getData() instanceof Step || upperBlock.getData() instanceof  WoodenStep))
+                {
+                    if (!isInvertedStep(block.getData()) && isInvertedStep(upperBlock.getData()))
+                    {
+                        location.add(0,0.5,0);
+                        break;
+                    }
+                }
+            }
             location.add(0, 1, 0);
             checkLocation.add(0, 1, 0);
         }
@@ -360,15 +379,23 @@ public class User extends UserBase implements Model<Long>, CommandSender, Attach
             }
         }
         checkLocation = location.clone().add(0, -1, 0);
-        if (checkLocation.getBlock().getType() == Material.STATIONARY_LAVA || checkLocation.getBlock().getType() == Material.LAVA)
+        Block blockBelow = checkLocation.getBlock();
+        if (blockBelow.getType() == Material.STATIONARY_LAVA || blockBelow.getType() == Material.LAVA)
         {
             location = location.getWorld().getHighestBlockAt(location).getLocation().add(0, 1, 0); // If would fall in lava tp on highest position.
             // If there is still lava then you shall burn!
         }
-        if (location.getBlock().getRelative(BlockFace.DOWN).getType().equals(Material.FENCE)
-                || location.getBlock().getRelative(BlockFace.DOWN).getType().equals(Material.NETHER_FENCE))
+        if (blockBelow.getType().equals(Material.FENCE)
+         || blockBelow.getType().equals(Material.NETHER_FENCE))
         {
-            location.add(0, 2, 0);
+            location.add(0, 0.5, 0);
+        }
+        if (blockBelow.getType().equals(Material.STEP) || blockBelow.getType().equals(Material.WOOD_STEP))
+        {
+            if (!LocationUtil.isInvertedStep(blockBelow.getState().getData()))
+            {
+                location.setY(location.getBlockY() - 0.5);
+            }
         }
         if (keepDirection)
         {

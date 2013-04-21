@@ -107,6 +107,7 @@ public class MovementCommands
             User sender = (User)context.getSender();
             final Location userLocation = sender.getLocation();
             final Location currentLocation = userLocation.clone();
+            currentLocation.add(0,2,0);
             //go upwards until hitting solid blocks
             while (currentLocation.getBlock().getType().equals(Material.AIR) && currentLocation.getBlockY() < currentLocation.getWorld().getMaxHeight())
             {
