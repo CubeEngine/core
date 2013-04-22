@@ -17,20 +17,25 @@
  */
 package de.cubeisland.cubeengine.roles.storage;
 
-import de.cubeisland.cubeengine.core.storage.StorageException;
-import de.cubeisland.cubeengine.core.storage.TripletKeyStorage;
-import de.cubeisland.cubeengine.core.storage.database.Database;
-import static de.cubeisland.cubeengine.core.storage.database.querybuilder.ComponentBuilder.EQUAL;
-import de.cubeisland.cubeengine.core.storage.database.querybuilder.QueryBuilder;
-import de.cubeisland.cubeengine.core.user.User;
-import de.cubeisland.cubeengine.core.util.Triplet;
-import de.cubeisland.cubeengine.roles.provider.WorldRoleProvider;
-import gnu.trove.map.hash.TLongObjectHashMap;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+
+import de.cubeisland.cubeengine.core.storage.StorageException;
+import de.cubeisland.cubeengine.core.storage.TripletKeyStorage;
+import de.cubeisland.cubeengine.core.storage.database.Database;
+import de.cubeisland.cubeengine.core.storage.database.querybuilder.QueryBuilder;
+import de.cubeisland.cubeengine.core.user.User;
+import de.cubeisland.cubeengine.core.util.Triplet;
+import de.cubeisland.cubeengine.roles.provider.WorldRoleProvider;
+
+import gnu.trove.map.hash.TLongObjectHashMap;
+import gnu.trove.set.hash.THashSet;
+
+import static de.cubeisland.cubeengine.core.storage.database.querybuilder.ComponentBuilder.EQUAL;
 
 public class AssignedRoleManager extends TripletKeyStorage<Long, Long, String, AssignedRole>
 {
@@ -43,31 +48,29 @@ public class AssignedRoleManager extends TripletKeyStorage<Long, Long, String, A
     }
 
     @Override
-    public void initialize()
+    protected void prepareStatements() throws SQLException
     {
-        try
-        {
-            super.initialize();
-            QueryBuilder builder = this.database.getQueryBuilder();
-            this.database.storeStatement(modelClass, "getallByUser",
-                    builder.select().cols("worldID", "roleName").from(this.tableName).where().field("userId").is(EQUAL).value().end().end());
-            this.database.storeStatement(modelClass, "deleteByUserAndWorld",
-                    builder.deleteFrom(this.tableName).where().
-                        field("userId").is(EQUAL).value().and().
-                        field("worldId").is(EQUAL).value().end().end());
-            this.database.storeStatement(modelClass, "deleteByWorldAndRole", builder.deleteFrom(this.tableName).where().
-                field("worldId").is(EQUAL).value().and().
-                                                                                        field("roleName").is(EQUAL)
-                                                                                    .value().end().end());
-            this.database.storeStatement(modelClass, "rename",
-                    builder.update(this.tableName).set("roleName").
-                        where().field("worldId").isEqual().value().
-                        and().field("roleName").isEqual().value().end().end());
-        }
-        catch (SQLException e)
-        {
-            throw new StorageException("Failed to initialize the role-manager!", e);
-        }
+        super.prepareStatements();
+        QueryBuilder builder = this.database.getQueryBuilder();
+        this.database.storeStatement(modelClass, "getallByUser",
+                                     builder.select().cols("worldID", "roleName").from(this.tableName).where().field("userId").is(EQUAL).value().end().end());
+        this.database.storeStatement(modelClass, "getallByUserAndWorld",
+                                     builder.select().cols("roleName").from(this.tableName).
+                                         where().field("userId").is(EQUAL).value().and().field("worldID").isEqual().value().end().end());
+
+        this.database.storeStatement(modelClass, "deleteByUserAndWorld",
+                                     builder.deleteFrom(this.tableName).where().
+                                         field("userId").is(EQUAL).value().and().
+                                                field("worldId").is(EQUAL).value().end().end());
+        this.database.storeStatement(modelClass, "deleteByWorldAndRole", builder.deleteFrom(this.tableName).where().
+            field("worldId").is(EQUAL).value().and().
+                                                                                    field("roleName").is(EQUAL)
+                                                                                .value().end().end());
+        this.database.storeStatement(modelClass, "rename",
+                                     builder.update(this.tableName).set("roleName").
+                                         where().field("worldId").isEqual().value().
+                                                and().field("roleName").isEqual().value().end().end());
+
     }
 
     public TLongObjectHashMap<List<String>> getRolesByUser(User user)
@@ -149,6 +152,25 @@ public class AssignedRoleManager extends TripletKeyStorage<Long, Long, String, A
         {
             throw new StorageException("Error while deleting removed Role (multi)", ex,
                                        this.database.getStoredStatement(modelClass,"deleteByWorldAndRole"));
+        }
+    }
+
+    public Set<String> getRolesByUserInWorld(long userID, long worldId)
+    {
+        try
+        {
+            ResultSet resultSet = this.database.preparedQuery(modelClass, "getallByUserAndWorld", userID, worldId);
+            Set<String> result = new THashSet<String>();
+            while (resultSet.next())
+            {
+                result.add(resultSet.getString("roleName"));
+            }
+            return result;
+        }
+        catch (SQLException ex)
+        {
+            throw new StorageException("Error while getting Model from Database", ex,
+                                       this.database.getStoredStatement(modelClass,"getallByUserAndWorld"));
         }
     }
 }

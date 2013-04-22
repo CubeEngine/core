@@ -17,14 +17,11 @@
  */
 package de.cubeisland.cubeengine.roles;
 
-import java.util.Arrays;
 import java.util.Map;
 import java.util.Set;
 
 import de.cubeisland.cubeengine.core.logger.LogLevel;
 import de.cubeisland.cubeengine.core.user.UserAttachment;
-import de.cubeisland.cubeengine.roles.role.ConfigRole;
-import de.cubeisland.cubeengine.roles.role.RoleMetaData;
 import de.cubeisland.cubeengine.roles.role.UserSpecificRole;
 
 import gnu.trove.iterator.hash.TObjectHashIterator;

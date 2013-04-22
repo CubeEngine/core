@@ -47,12 +47,12 @@ public class Priority
         prio.put(value, this);
     }
 
-    public Priority(int value)
+    private Priority(int value)
     {
         this(value, null);
     }
 
-    public static Priority getPriority(int value)
+    public static Priority getByValue(int value)
     {
         Priority p = prio.get(value);
         if (p == null)

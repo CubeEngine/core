@@ -28,10 +28,6 @@ import de.cubeisland.cubeengine.core.command.reflected.Alias;
 import de.cubeisland.cubeengine.core.command.reflected.Command;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.roles.Roles;
-import de.cubeisland.cubeengine.roles.role.ConfigRole;
-import de.cubeisland.cubeengine.roles.role.Role;
-import de.cubeisland.cubeengine.roles.role.RoleMetaData;
-import de.cubeisland.cubeengine.roles.role.RolePermission;
 import de.cubeisland.cubeengine.roles.role.UserSpecificRole;
 
 public class UserInformationCommands extends UserCommandHelper

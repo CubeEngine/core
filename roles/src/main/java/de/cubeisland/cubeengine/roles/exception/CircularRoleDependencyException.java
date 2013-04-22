@@ -15,38 +15,12 @@
  * You should have received a copy of the GNU General Public License
  * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-package de.cubeisland.cubeengine.roles.role;
+package de.cubeisland.cubeengine.roles.exception;
 
-public class RolePermission
+public class CircularRoleDependencyException extends Exception
 {
-    private String perm;
-    private boolean isSet;
-    private final Role origin;
-
-    public RolePermission(String perm, boolean isSet, Role origin)
+    public CircularRoleDependencyException(String string)
     {
-        this.perm = perm;
-        this.isSet = isSet;
-        this.origin = origin;
-    }
-
-    public String getPerm()
-    {
-        return perm;
-    }
-
-    public boolean isSet()
-    {
-        return isSet;
-    }
-
-    public int getPriorityValue()
-    {
-        return this.origin.priority.value;
-    }
-
-    public Role getOrigin()
-    {
-        return origin;
+        super(string);
     }
 }

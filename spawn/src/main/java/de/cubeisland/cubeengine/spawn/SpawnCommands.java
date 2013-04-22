@@ -29,8 +29,6 @@ import de.cubeisland.cubeengine.core.command.reflected.Command;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.util.StringUtils;
 import de.cubeisland.cubeengine.roles.Roles;
-import de.cubeisland.cubeengine.roles.role.ConfigRole;
-import de.cubeisland.cubeengine.roles.role.RoleMetaData;
 
 public class SpawnCommands
 {

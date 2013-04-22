@@ -22,8 +22,6 @@ import java.util.Locale;
 
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.roles.Roles;
-import de.cubeisland.cubeengine.roles.role.ConfigRole;
-import de.cubeisland.cubeengine.roles.role.Role;
 import de.cubeisland.cubeengine.roles.role.UserSpecificRole;
 
 import gnu.trove.map.hash.TLongObjectHashMap;

@@ -23,8 +23,6 @@ import org.bukkit.entity.Player;
 import de.cubeisland.cubeengine.core.storage.world.WorldManager;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.roles.provider.WorldRoleProvider;
-import de.cubeisland.cubeengine.roles.role.ConfigRole;
-import de.cubeisland.cubeengine.roles.role.RoleMetaData;
 import de.cubeisland.cubeengine.roles.role.UserSpecificRole;
 
 import gnu.trove.map.hash.TLongObjectHashMap;

@@ -31,7 +31,6 @@ import de.cubeisland.cubeengine.roles.RoleManager;
 import de.cubeisland.cubeengine.roles.Roles;
 import de.cubeisland.cubeengine.roles.RolesAttachment;
 import de.cubeisland.cubeengine.roles.provider.RoleProvider;
-import de.cubeisland.cubeengine.roles.role.ConfigRole;
 
 public abstract class RoleCommandHelper extends ContainerCommand
 {

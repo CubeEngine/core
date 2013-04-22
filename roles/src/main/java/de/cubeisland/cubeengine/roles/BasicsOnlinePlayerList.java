@@ -26,7 +26,6 @@ import org.bukkit.event.Listener;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.util.ChatFormat;
 import de.cubeisland.cubeengine.basics.command.general.DisplayOnlinePlayerListEvent;
-import de.cubeisland.cubeengine.roles.role.ConfigRole;
 import de.cubeisland.cubeengine.roles.role.UserSpecificRole;
 
 import gnu.trove.map.hash.THashMap;

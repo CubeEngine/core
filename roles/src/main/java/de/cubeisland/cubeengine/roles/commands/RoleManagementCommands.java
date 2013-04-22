@@ -29,10 +29,9 @@ import de.cubeisland.cubeengine.core.util.convert.Convert;
 import de.cubeisland.cubeengine.core.util.convert.Converter;
 import de.cubeisland.cubeengine.roles.Roles;
 import de.cubeisland.cubeengine.roles.config.Priority;
-import de.cubeisland.cubeengine.roles.exception.CircularRoleDepedencyException;
+import de.cubeisland.cubeengine.roles.exception.CircularRoleDependencyException;
 import de.cubeisland.cubeengine.roles.provider.RoleProvider;
 import de.cubeisland.cubeengine.roles.provider.WorldRoleProvider;
-import de.cubeisland.cubeengine.roles.role.ConfigRole;
 
 public class RoleManagementCommands extends RoleCommandHelper
 {
@@ -245,7 +244,7 @@ public class RoleManagementCommands extends RoleCommandHelper
                 }
             }
         }
-        catch (CircularRoleDepedencyException ex)
+        catch (CircularRoleDependencyException ex)
         {
             context.sendTranslated("&cCircular Dependency! &6%s &cdepends on &6%s&c!", pRole.getName(), role.getName());
         }

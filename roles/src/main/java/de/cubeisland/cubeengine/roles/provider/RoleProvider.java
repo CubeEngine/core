@@ -32,10 +32,8 @@ import de.cubeisland.cubeengine.roles.RoleManager;
 import de.cubeisland.cubeengine.roles.Roles;
 import de.cubeisland.cubeengine.roles.config.Priority;
 import de.cubeisland.cubeengine.roles.config.RoleConfig;
-import de.cubeisland.cubeengine.roles.exception.CircularRoleDepedencyException;
+import de.cubeisland.cubeengine.roles.exception.CircularRoleDependencyException;
 import de.cubeisland.cubeengine.roles.exception.RoleDependencyMissingException;
-import de.cubeisland.cubeengine.roles.role.ConfigRole;
-import de.cubeisland.cubeengine.roles.role.Role;
 
 import gnu.trove.map.hash.THashMap;
 import org.apache.commons.lang.Validate;
@@ -202,7 +200,7 @@ public abstract class RoleProvider
                 {
                     if (this.roleStack.contains(parentName)) // Circular Dependency?
                     {
-                        throw new CircularRoleDepedencyException("Cannot load role! Circular Depenency detected in " + config.roleName + "\n" + StringUtils.implode(", ", this.roleStack));
+                        throw new CircularRoleDependencyException("Cannot load role! Circular Depenency detected in " + config.roleName + "\n" + StringUtils.implode(", ", this.roleStack));
                     }
                     RoleConfig parentConfig = null;
 
@@ -259,7 +257,7 @@ public abstract class RoleProvider
             this.module.getLog().log(DEBUG, role.getName() + " calculated!");
             return role;
         }
-        catch (CircularRoleDepedencyException ex)
+        catch (CircularRoleDependencyException ex)
         {
             this.module.getLog().log(LogLevel.WARNING, ex.getMessage());
             return null;
@@ -300,7 +298,7 @@ public abstract class RoleProvider
         this.recalculateDirtyRoles();
     }
 
-    public boolean setParentRole(ConfigRole role, Role pRole) throws CircularRoleDepedencyException
+    public boolean setParentRole(ConfigRole role, Role pRole) throws CircularRoleDependencyException
     {
         this.checkCircularDependency(role, pRole);
         boolean added = role.setParentRole(pRole.getName());
@@ -311,13 +309,13 @@ public abstract class RoleProvider
         return added;
     }
 
-    private void checkCircularDependency(Role role, Role pRole) throws CircularRoleDepedencyException
+    private void checkCircularDependency(Role role, Role pRole) throws CircularRoleDependencyException
     {
         for (Role cRole : pRole.getParentRoles())
         {
             if (cRole.equals(role))
             {
-                throw new CircularRoleDepedencyException("Cannot add parent!");
+                throw new CircularRoleDependencyException("Cannot add parent!");
             }
             this.checkCircularDependency(role, cRole);
         }

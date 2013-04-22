@@ -29,8 +29,6 @@ import de.cubeisland.cubeengine.core.util.Triplet;
 import de.cubeisland.cubeengine.roles.Roles;
 import de.cubeisland.cubeengine.roles.RolesConfig;
 import de.cubeisland.cubeengine.roles.config.RoleMirror;
-import de.cubeisland.cubeengine.roles.role.ConfigRole;
-import de.cubeisland.cubeengine.roles.role.Role;
 import de.cubeisland.cubeengine.roles.role.UserSpecificRole;
 
 import gnu.trove.map.hash.TLongObjectHashMap;
@@ -55,15 +53,7 @@ public class WorldRoleProvider extends RoleProvider
         this.mirrorConfig = new RoleMirror(this.module, worldId);
     }
 
-    public TLongObjectHashMap<Triplet<Boolean, Boolean, Boolean>> getWorlds()
-    {
-        return this.mirrorConfig.getWorlds();
-    }
 
-    public Set<ConfigRole> getDefaultRoles()
-    {
-        return this.defaultRoles;
-    }
 
     public void loadDefaultRoles(RolesConfig config)
     {
@@ -127,6 +117,16 @@ public class WorldRoleProvider extends RoleProvider
                 isDirty = false; // check next world
             }
         }
+    }
+
+    public TLongObjectHashMap<Triplet<Boolean, Boolean, Boolean>> getWorlds()
+    {
+        return this.mirrorConfig.getWorlds();
+    }
+
+    public Set<ConfigRole> getDefaultRoles()
+    {
+        return this.defaultRoles;
     }
 
     public String getMainWorld()
