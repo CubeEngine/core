@@ -1,3 +1,20 @@
+/**
+ * This file is part of CubeEngine.
+ * CubeEngine is licensed under the GNU General Public License Version 3.
+ *
+ * CubeEngine is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * CubeEngine is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
+ */
 package de.cubeisland.cubeengine.roles.role.newRole;
 
 import java.io.File;
@@ -10,7 +27,7 @@ import java.util.Set;
 import de.cubeisland.cubeengine.roles.config.Priority;
 import de.cubeisland.cubeengine.roles.config.RoleConfig;
 
-public class Role
+public class Role implements RawDataStore
 {
     protected RoleConfig config;
     protected ResolvedDataStore resolvedData;
@@ -137,13 +154,19 @@ public class Role
         this.saveToConfig();
     }
 
-    public void setParentRoles(Set<Role> pRoles)
+    public void setParents(Set<Role> pRoles)
     {
         this.clearParentRoles();
         for (Role pRole : pRoles)
         {
             this.addParentRole(pRole);
         }
+    }
+
+    @Override
+    public ResolvedDataStore getResolvedData()
+    {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
     public void setPermission(String perm, Boolean set)
@@ -191,10 +214,28 @@ public class Role
         }
     }
 
+    @Override
+    public boolean addParent(Role role)
+    {
+        return false;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    public boolean removeParent(Role role)
+    {
+        return false;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
     public void clearMetadata()
     {
         this.makeDirty();
         this.config.metadata.clear();
+    }
+
+    @Override
+    public void clearParents()
+    {
+        //To change body of implemented methods use File | Settings | File Templates.
     }
 
     public void setMetadata(Map<String,String> data)
@@ -211,6 +252,11 @@ public class Role
         this.makeDirty();
         this.config.getFile().delete();
         this.resolvedData.performDeleteRole();
+    }
+
+    protected void setName(String name)
+    {
+        this.config.roleName = name;
     }
 
     // TODO rolePermission for assign / remove from user

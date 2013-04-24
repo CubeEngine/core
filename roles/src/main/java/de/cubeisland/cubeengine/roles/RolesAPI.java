@@ -24,6 +24,7 @@ import de.cubeisland.cubeengine.core.storage.world.WorldManager;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.roles.provider.WorldRoleProvider;
 import de.cubeisland.cubeengine.roles.role.UserSpecificRole;
+import de.cubeisland.cubeengine.roles.role.newRole.RolesAttachment;
 
 import gnu.trove.map.hash.TLongObjectHashMap;
 

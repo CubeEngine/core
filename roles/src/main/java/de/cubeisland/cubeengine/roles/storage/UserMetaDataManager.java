@@ -95,11 +95,11 @@ public class UserMetaDataManager extends TripletKeyStorage<Long, Long, String, U
         }
     }
 
-    public void clearByUser(Long key)
+    public void clearByUserAndWorld(Long userID, Long worldID)
     {
         try
-        {
-            this.database.preparedExecute(modelClass, "deleteAllByUser", key);
+        {//TODO add world stuff
+            this.database.preparedExecute(modelClass, "deleteAllByUser", userID);
         }
         catch (SQLException ex)
         {

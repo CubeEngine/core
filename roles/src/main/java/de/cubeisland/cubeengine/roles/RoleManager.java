@@ -25,7 +25,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
 
-import de.cubeisland.cubeengine.core.config.Configuration;
 import de.cubeisland.cubeengine.core.logger.LogLevel;
 import de.cubeisland.cubeengine.core.storage.world.WorldManager;
 import de.cubeisland.cubeengine.core.user.User;
@@ -35,6 +34,7 @@ import de.cubeisland.cubeengine.roles.provider.GlobalRoleProvider;
 import de.cubeisland.cubeengine.roles.provider.RoleProvider;
 import de.cubeisland.cubeengine.roles.provider.WorldRoleProvider;
 import de.cubeisland.cubeengine.roles.role.UserSpecificRole;
+import de.cubeisland.cubeengine.roles.role.newRole.RolesAttachment;
 import de.cubeisland.cubeengine.roles.storage.AssignedRole;
 
 import gnu.trove.map.hash.THashMap;
@@ -60,22 +60,11 @@ public class RoleManager
         this.module = rolesModule;
         this.worldManager = rolesModule.getCore().getWorldManager();
         this.rolesFolder = new File(rolesModule.getFolder(), "roles");
+
+
     }
 
-    public void saveAllConfigs()
-    {
-        for (Configuration config : this.globalProvider.getConfigs())
-        {
-            config.save();
-        }
-        for (RoleProvider provider : this.providers.valueCollection())
-        {
-            for (Configuration config : provider.getConfigs())
-            {
-                config.save();
-            }
-        }
-    }
+
 
     /**
      * Initializes the RoleManager and all RoleProviders and Roles for currently
@@ -187,10 +176,7 @@ public class RoleManager
         return this.providers.get(worldID);
     }
 
-    public <Provider extends RoleProvider> Provider getProvider(World world)
-    {
-        return (Provider)(world == null ? this.globalProvider : this.getProvider(this.worldManager.getWorldId(world)));
-    }
+
 
     public Set<WorldRoleProvider> getProviders()
     {
@@ -202,7 +188,8 @@ public class RoleManager
         return globalProvider;
     }
 
-    private TLongObjectHashMap<TLongObjectHashMap<List<String>>> loadedUserRoles = new TLongObjectHashMap<TLongObjectHashMap<List<String>>>();
+    private TLongObjectHashMap<TLongObjectHashMap<List<String>>> loadedUserRoles =
+        new TLongObjectHashMap<TLongObjectHashMap<List<String>>>();
 
     public TLongObjectHashMap<List<String>> loadRoles(User user)
     {

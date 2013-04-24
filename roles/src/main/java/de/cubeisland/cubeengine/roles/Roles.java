@@ -34,18 +34,14 @@ import de.cubeisland.cubeengine.roles.config.PriorityConverter;
 import de.cubeisland.cubeengine.roles.config.RoleMirror;
 import de.cubeisland.cubeengine.roles.config.RoleMirrorConverter;
 import de.cubeisland.cubeengine.roles.role.RolesEventHandler;
-import de.cubeisland.cubeengine.roles.storage.AssignedRoleManager;
-import de.cubeisland.cubeengine.roles.storage.UserMetaDataManager;
-import de.cubeisland.cubeengine.roles.storage.UserPermissionsManager;
+import de.cubeisland.cubeengine.roles.role.newRole.RolesAttachment;
+import de.cubeisland.cubeengine.roles.role.newRole.RolesManager;
 
 public class Roles extends Module
 {
     private RolesConfig config;
-    private RoleManager roleManager;
-    private AssignedRoleManager dbManager;
-    private UserMetaDataManager dbUserMeta;
-    private UserPermissionsManager dbUserPerm;
     private RolesAPI api;
+    private RolesManager rolesManager;
 
     public Roles()
     {
@@ -60,10 +56,8 @@ public class Roles extends Module
         this.getCore().getUserManager().addDefaultAttachment(RolesAttachment.class, this);
 
         final Database db = this.getCore().getDB();
-        this.dbManager = new AssignedRoleManager(db);
-        this.dbUserMeta = new UserMetaDataManager(db);
-        this.dbUserPerm = new UserPermissionsManager(db);
-        this.roleManager = new RoleManager(this);
+
+        this.rolesManager = new RolesManager(this);
 
         final CommandManager cm = this.getCore().getCommandManager();
         cm.registerCommand(new RoleCommands(this));
@@ -89,28 +83,13 @@ public class Roles extends Module
         return this.config;
     }
 
-    public AssignedRoleManager getDbManager()
-    {
-        return this.dbManager;
-    }
-
-    public UserMetaDataManager getDbUserMeta()
-    {
-        return this.dbUserMeta;
-    }
-
-    public UserPermissionsManager getDbUserPerm()
-    {
-        return this.dbUserPerm;
-    }
-
-    public RoleManager getRoleManager()
-    {
-        return this.roleManager;
-    }
-
     public RolesAPI getApi()
     {
         return this.api;
+    }
+
+    public RolesManager getRolesManager()
+    {
+        return this.rolesManager;
     }
 }

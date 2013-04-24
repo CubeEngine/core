@@ -92,4 +92,9 @@ public class UserPermissionsManager extends TripletKeyStorage<Long, Long, String
             return this.getForUser(key, true);
         }
     }
+
+    public void removeByUserAndWorld(Long userID, long worldID)
+    {
+        //TODO
+    }
 }

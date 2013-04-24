@@ -49,39 +49,6 @@ public class UserSpecificRole extends MergedRole
         this(module,user,worldId, module.getDbUserPerm().getForUser(user.key,false).get(worldId), module.getDbUserMeta().getForUser(user.key,false).get(worldId));
     }
 
-    public void setPermission(String perm, Boolean set)
-    {
-        if (set == null)
-        {
-            upManager.deleteByKey(new Triplet<Long, Long, String>(user.key, worldId, perm));
-        }
-        else
-        {
-            UserPermission up = new UserPermission(user.key, worldId, perm, set);
-            upManager.merge(up);
-
-        }
-        this.module.getRoleManager().reloadAllRolesAndApply(user, user.getPlayer());
-    }
-
-    public void setMetaData(String key, String value)
-    {
-        if (value == null)
-        {
-            umManager.deleteByKey(new Triplet<Long, Long, String>(user.key, worldId, key));
-        }
-        else
-        {
-            umManager.merge(new UserMetaData(user.key, worldId, key, value));
-        }
-        this.module.getRoleManager().reloadAllRolesAndApply(user, user.getPlayer());
-    }
-
-    public void clearMetaData()
-    {
-        umManager.clearByUser(user.key);
-        this.module.getRoleManager().reloadAllRolesAndApply(user, user.getPlayer());
-    }
 
     public ConfigRole getDominantRole()
     {

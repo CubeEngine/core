@@ -27,6 +27,7 @@ import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.util.ChatFormat;
 import de.cubeisland.cubeengine.basics.command.general.DisplayOnlinePlayerListEvent;
 import de.cubeisland.cubeengine.roles.role.UserSpecificRole;
+import de.cubeisland.cubeengine.roles.role.newRole.RolesAttachment;
 
 import gnu.trove.map.hash.THashMap;
 

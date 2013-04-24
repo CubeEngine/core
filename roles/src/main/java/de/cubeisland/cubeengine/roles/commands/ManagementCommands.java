@@ -24,7 +24,7 @@ import de.cubeisland.cubeengine.core.command.reflected.Command;
 import de.cubeisland.cubeengine.core.command.CommandSender;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.roles.Roles;
-import de.cubeisland.cubeengine.roles.RolesAttachment;
+import de.cubeisland.cubeengine.roles.role.newRole.RolesAttachment;
 
 public class ManagementCommands extends ContainerCommand
 {
