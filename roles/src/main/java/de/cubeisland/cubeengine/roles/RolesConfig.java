@@ -17,16 +17,18 @@
  */
 package de.cubeisland.cubeengine.roles;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
 import de.cubeisland.cubeengine.core.config.Configuration;
 import de.cubeisland.cubeengine.core.config.annotations.Codec;
 import de.cubeisland.cubeengine.core.config.annotations.Comment;
 import de.cubeisland.cubeengine.core.config.annotations.DefaultConfig;
 import de.cubeisland.cubeengine.core.config.annotations.Option;
 import de.cubeisland.cubeengine.roles.config.RoleMirror;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 @Codec("yml")
 @DefaultConfig
@@ -37,7 +39,7 @@ public class RolesConfig extends Configuration
     public boolean doNotAssignPermIfOffline = true;
     @Option("default.roles")
     @Comment("The list of roles a user will get when first joining the server.")
-    public Map<String, List<String>> defaultRoles = new HashMap<String, List<String>>(); //TODO example in comment
+    public Map<String, Set<String>> defaultRoles = new HashMap<String, Set<String>>(); //TODO example in comment
     @Option("mirrors")
     public List<RoleMirror> mirrors = new ArrayList<RoleMirror>(); //TODO example in comment
 }

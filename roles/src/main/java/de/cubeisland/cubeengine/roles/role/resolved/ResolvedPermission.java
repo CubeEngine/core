@@ -15,21 +15,21 @@
  * You should have received a copy of the GNU General Public License
  * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-package de.cubeisland.cubeengine.roles.role.newRole.resolved;
+package de.cubeisland.cubeengine.roles.role.resolved;
 
-import de.cubeisland.cubeengine.roles.role.newRole.RawDataStore;
+import de.cubeisland.cubeengine.roles.role.RawDataStore;
 
-public class ResolvedMetadata extends ResolvedData
+public class ResolvedPermission extends ResolvedData
 {
-    private String value;
+    private boolean value;
 
-    public ResolvedMetadata(RawDataStore origin, String key, String value)
+    public ResolvedPermission(RawDataStore origin, String key, boolean value)
     {
-        super(origin,key);
+        super(origin, key);
         this.value = value;
     }
 
-    public String getValue()
+    public boolean isSet()
     {
         return value;
     }

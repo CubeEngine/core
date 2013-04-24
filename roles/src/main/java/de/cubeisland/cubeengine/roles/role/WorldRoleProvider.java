@@ -15,14 +15,16 @@
  * You should have received a copy of the GNU General Public License
  * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-package de.cubeisland.cubeengine.roles.role.newRole;
+package de.cubeisland.cubeengine.roles.role;
 
 import java.io.File;
 import java.util.HashSet;
+import java.util.Locale;
 import java.util.Set;
 
 import de.cubeisland.cubeengine.core.util.Triplet;
 import de.cubeisland.cubeengine.roles.Roles;
+import de.cubeisland.cubeengine.roles.config.RoleConfig;
 import de.cubeisland.cubeengine.roles.config.RoleMirror;
 
 import gnu.trove.map.hash.TLongObjectHashMap;
@@ -39,6 +41,22 @@ public class WorldRoleProvider extends RoleProvider
         super(module,manager,mainWorldId);
         this.mirrorConfig = mirror;
     }
+
+    public void reloadRoles()
+    {
+        Set<String> defaultRoles = this.module.getConfiguration().defaultRoles.get(mirrorConfig.mainWorld);
+        for (RoleConfig config : this.configs.values())
+        {
+            Role role = new Role(config, this.mainWorldId);
+            if (defaultRoles.contains(config.roleName))
+            {
+                role.isDefaultRole = true;
+                this.defaultRoles.add(role);
+            }
+            this.roles.put(role.getName().toLowerCase(Locale.ENGLISH), role);
+        }
+    }
+
 
     public WorldRoleProvider(Roles module, RolesManager manager, long worldId)
     {

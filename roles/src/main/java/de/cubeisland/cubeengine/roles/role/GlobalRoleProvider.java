@@ -15,38 +15,31 @@
  * You should have received a copy of the GNU General Public License
  * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-package de.cubeisland.cubeengine.roles.role.newRole.resolved;
+package de.cubeisland.cubeengine.roles.role;
 
-import de.cubeisland.cubeengine.roles.role.newRole.RawDataStore;
-import de.cubeisland.cubeengine.roles.role.newRole.Role;
+import java.io.File;
 
-public class ResolvedData
+import de.cubeisland.cubeengine.roles.Roles;
+
+import static de.cubeisland.cubeengine.core.logger.LogLevel.DEBUG;
+
+public class GlobalRoleProvider extends RoleProvider
 {
-    private final RawDataStore origin;
-    private String key;
-
-    public ResolvedData(RawDataStore origin, String key)
+    public GlobalRoleProvider(Roles module, RolesManager manager)
     {
-        this.origin = origin;
-        this.key = key;
+        super(module, manager, 0);
     }
 
-    public RawDataStore getOrigin()
+    @Override
+    public File getFolder()
     {
-        return origin;
+        return this.manager.getRolesFolder();
     }
 
-    public String getKey()
+    @Override
+    public void recalculateRoles()
     {
-        return key;
-    }
-
-    public int getPriorityValue()
-    {
-        if (origin instanceof Role)
-        {
-            return ((Role)origin).getPriorityValue();
-        }
-        return Integer.MAX_VALUE;
+        this.module.getLog().log(DEBUG, "Calculating global Roles...");
+        super.recalculateRoles();
     }
 }

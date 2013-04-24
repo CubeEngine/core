@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-package de.cubeisland.cubeengine.roles.role.newRole;
+package de.cubeisland.cubeengine.roles.role;
 
 
 import java.util.HashMap;
@@ -27,29 +27,28 @@ import java.util.TreeSet;
 import org.bukkit.Bukkit;
 import org.bukkit.permissions.Permission;
 
-import de.cubeisland.cubeengine.roles.role.newRole.resolved.ResolvedMetadata;
-import de.cubeisland.cubeengine.roles.role.newRole.resolved.ResolvedPermission;
+import de.cubeisland.cubeengine.roles.role.resolved.ResolvedMetadata;
+import de.cubeisland.cubeengine.roles.role.resolved.ResolvedPermission;
 
 import gnu.trove.map.hash.THashMap;
 
 public class ResolvedDataStore
 {
-    private Map<String,ResolvedPermission> permissions;
-    private Map<String,ResolvedMetadata> metadata;
-    private Set<Role> parentRoles;
+    protected Map<String,ResolvedPermission> permissions;
+    protected Map<String,ResolvedMetadata> metadata;
+    protected Set<Role> parentRoles;
 
     private Set<ResolvedDataStore> dependentData;
     private RawDataStore rawDataStore;
     private boolean dirty = true;
 
-    public ResolvedDataStore(Role role)
+    public ResolvedDataStore(RawDataStore store)
     {
-        this.rawDataStore = role;
+        this.rawDataStore = store;
+
     }
 
-    // TODO constructor for User-RolesAttachment
-
-    private void inheritFrom(TreeSet<Role> parentRoles)
+    private void inheritFrom(Set<Role> parentRoles)
     {
         this.parentRoles = parentRoles;
         this.dependentData = new TreeSet<ResolvedDataStore>();
@@ -64,18 +63,18 @@ public class ResolvedDataStore
         return dirty;
     }
 
-    public void makeDirty()
+    protected void makeDirty()
     {
         this.dirty = true;
         this.makeChildsDirty();
     }
 
-    public void calculateWithParentRoles(TreeSet<Role> parentRoles)
+    private void doCalculate(Map<String, Boolean> perms, Map<String, String> metadata, Set<Role> parentRoles)
     {
         this.inheritFrom(parentRoles);
         // First calculate/apply direct Perm & Metadata
         this.permissions = new THashMap<String, ResolvedPermission>();
-        for (Entry<String, Boolean> entry : rawDataStore.getRawPermissions().entrySet())
+        for (Entry<String, Boolean> entry : perms.entrySet())
         {
             if (entry.getKey().endsWith("*"))
             {
@@ -89,7 +88,7 @@ public class ResolvedDataStore
             this.permissions.put(entry.getKey(), new ResolvedPermission(rawDataStore,entry.getKey(),entry.getValue()));
         }
         this.metadata = new THashMap<String, ResolvedMetadata>();
-        for (Entry<String, String> entry : rawDataStore.getRawMetadata().entrySet())
+        for (Entry<String, String> entry : metadata.entrySet())
         {
             this.metadata.put(entry.getKey(), new ResolvedMetadata(this.rawDataStore, entry.getKey(), entry.getValue()));
         }
@@ -136,6 +135,33 @@ public class ResolvedDataStore
             this.metadata.putAll(mergeMeta);
         }
         this.dirty = false;
+    }
+
+    protected void calculate(RawDataStore temporary, Set<Role> parentRoles)
+    {
+        this.calculate(parentRoles);
+        for (Entry<String, Boolean> entry : temporary.getRawPermissions().entrySet())
+        {
+            if (entry.getKey().endsWith("*"))
+            {
+                Map<String, Boolean> subperms = new HashMap<String, Boolean>();
+                this.resolveBukkitPermission(entry.getKey(), entry.getValue(), subperms);
+                for (Entry<String, Boolean> subEntry : subperms.entrySet())
+                {
+                    this.permissions.put(subEntry.getKey(), new ResolvedPermission(temporary,subEntry.getKey(),subEntry.getValue()));
+                }
+            }
+            this.permissions.put(entry.getKey(), new ResolvedPermission(temporary,entry.getKey(),entry.getValue()));
+        }
+        for (Entry<String, String> entry : temporary.getRawMetadata().entrySet())
+        {
+            this.metadata.put(entry.getKey(), new ResolvedMetadata(temporary, entry.getKey(), entry.getValue()));
+        }
+    }
+
+    protected void calculate(Set<Role> parentRoles)
+    {
+        this.doCalculate(this.rawDataStore.getRawPermissions(),this.rawDataStore.getRawMetadata(),parentRoles);
     }
 
     private void resolveBukkitPermission(String name, boolean set, Map<String, Boolean> resolvedPermissions)
@@ -230,5 +256,25 @@ public class ResolvedDataStore
         {
             throw new UnsupportedOperationException("Deleting is only supported by Config-Roles");
         }
+    }
+
+    public Map<String, Boolean> getResolvedPermissions()
+    {
+        Map <String, Boolean> result = new HashMap<String, Boolean>();
+        for (ResolvedPermission perm : this.permissions.values())
+        {
+            result.put(perm.getKey(), perm.isSet());
+        }
+        return result;
+    }
+
+    public Map<String, String> getResolvedMetadata()
+    {
+        Map <String, String> result = new HashMap<String, String>();
+        for (ResolvedMetadata metadata : this.metadata.values())
+        {
+            result.put(metadata.getKey(), metadata.getValue());
+        }
+        return result;
     }
 }

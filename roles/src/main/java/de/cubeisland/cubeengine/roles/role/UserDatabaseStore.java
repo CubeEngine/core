@@ -15,10 +15,9 @@
  * You should have received a copy of the GNU General Public License
  * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-package de.cubeisland.cubeengine.roles.role.newRole;
+package de.cubeisland.cubeengine.roles.role;
 
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
 
 import de.cubeisland.cubeengine.core.util.Triplet;
@@ -38,9 +37,10 @@ public class UserDatabaseStore extends UserDataStore
     public UserDatabaseStore(RolesAttachment attachment, long worldID, RolesManager manager)
     {
         super(attachment,worldID);
-        this.pm = manager.pm;
+        this.rm = manager.rm;
         this.mdm = manager.mdm;
         this.pm = manager.pm;
+        // TODO load from database
     }
 
     @Override
@@ -139,10 +139,5 @@ public class UserDatabaseStore extends UserDataStore
         this.clearParents();
         // TODO batch set parents
         super.setParents(roles);
-    }
-
-    @Override
-    public ResolvedDataStore getResolvedData()
-    {
     }
 }

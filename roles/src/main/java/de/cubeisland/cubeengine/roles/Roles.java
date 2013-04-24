@@ -19,7 +19,6 @@ package de.cubeisland.cubeengine.roles;
 
 import de.cubeisland.cubeengine.core.command.CommandManager;
 import de.cubeisland.cubeengine.core.module.Module;
-import de.cubeisland.cubeengine.core.storage.database.Database;
 import de.cubeisland.cubeengine.core.util.convert.Convert;
 import de.cubeisland.cubeengine.roles.commands.ManagementCommands;
 import de.cubeisland.cubeengine.roles.commands.RoleCommands;
@@ -33,14 +32,13 @@ import de.cubeisland.cubeengine.roles.config.Priority;
 import de.cubeisland.cubeengine.roles.config.PriorityConverter;
 import de.cubeisland.cubeengine.roles.config.RoleMirror;
 import de.cubeisland.cubeengine.roles.config.RoleMirrorConverter;
+import de.cubeisland.cubeengine.roles.role.RolesAttachment;
 import de.cubeisland.cubeengine.roles.role.RolesEventHandler;
-import de.cubeisland.cubeengine.roles.role.newRole.RolesAttachment;
-import de.cubeisland.cubeengine.roles.role.newRole.RolesManager;
+import de.cubeisland.cubeengine.roles.role.RolesManager;
 
 public class Roles extends Module
 {
     private RolesConfig config;
-    private RolesAPI api;
     private RolesManager rolesManager;
 
     public Roles()
@@ -55,9 +53,8 @@ public class Roles extends Module
     {
         this.getCore().getUserManager().addDefaultAttachment(RolesAttachment.class, this);
 
-        final Database db = this.getCore().getDB();
-
         this.rolesManager = new RolesManager(this);
+        this.rolesManager.initRoleProviders();
 
         final CommandManager cm = this.getCore().getCommandManager();
         cm.registerCommand(new RoleCommands(this));
@@ -74,18 +71,11 @@ public class Roles extends Module
         {
             this.getCore().getEventManager().registerListener(basicsModule,new BasicsOnlinePlayerList(this));
         }
-
-        this.api = new RolesAPI(this);
     }
 
     public RolesConfig getConfiguration()
     {
         return this.config;
-    }
-
-    public RolesAPI getApi()
-    {
-        return this.api;
     }
 
     public RolesManager getRolesManager()

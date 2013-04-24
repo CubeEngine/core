@@ -25,30 +25,31 @@ import org.bukkit.event.player.PlayerChangedWorldEvent;
 import org.bukkit.event.player.PlayerLoginEvent;
 
 import de.cubeisland.cubeengine.core.module.event.FinishedLoadModulesEvent;
+import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.user.UserAuthorizedEvent;
-import de.cubeisland.cubeengine.roles.RoleManager;
 import de.cubeisland.cubeengine.roles.Roles;
-import de.cubeisland.cubeengine.roles.provider.WorldRoleProvider;
 
 public class RolesEventHandler implements Listener
 {
     private Roles module;
-    private RoleManager roleManager;
+    private RolesManager rolesManager;
 
     public RolesEventHandler(Roles module)
     {
-        this.roleManager = module.getRoleManager();
+        this.rolesManager = module.getRolesManager();
         this.module = module;
     }
 
     @EventHandler
     public void onPlayerChangedWorld(PlayerChangedWorldEvent event)
     {
-        this.roleManager.preCalculateRoles(event.getPlayer().getName(), false);
+
+
         long worldFromId = this.module.getCore().getWorldManager().getWorldId(event.getFrom());
         long worldToId = this.module.getCore().getWorldManager().getWorldId(event.getPlayer().getWorld());
-        WorldRoleProvider fromProvider = this.roleManager.getProvider(worldFromId);
-        WorldRoleProvider toProvider = this.roleManager.getProvider(worldToId);
+        WorldRoleProvider fromProvider = this.rolesManager.getProvider(worldFromId);
+        WorldRoleProvider toProvider = this.rolesManager.getProvider(worldToId);
+        // TODO mirrors
         if (fromProvider.equals(toProvider))
         {
             if (toProvider.getWorlds().get(worldToId).getSecond())
@@ -56,32 +57,42 @@ public class RolesEventHandler implements Listener
                 return;
             }
         }
-        this.roleManager.applyRole(event.getPlayer());
+        RolesAttachment rolesAttachment = this.rolesManager.getRolesAttachment(event.getPlayer());
+        rolesAttachment.apply();
     }
 
     @EventHandler(priority = EventPriority.LOWEST)
     public void onPreLogin(AsyncPlayerPreLoginEvent event)
     {
-        this.roleManager.preCalculateRoles(event.getName(), false);
+        User user = this.module.getCore().getUserManager().findUser(event.getName());
+        if (user != null)
+        {
+            RolesAttachment rolesAttachment = this.rolesManager.getRolesAttachment(user);
+            rolesAttachment.getResolvedData(user.getWorldId()); // Pre-calculate
+        }
     }
 
     @EventHandler
     public void onLogin(PlayerLoginEvent event)
     {
-        this.roleManager.preCalculateRoles(event.getPlayer().getName(), false);
-        this.roleManager.applyRole(event.getPlayer());
+        RolesAttachment rolesAttachment = this.rolesManager.getRolesAttachment(event.getPlayer());
+        rolesAttachment.getResolvedData(); // Pre-calculate
+        rolesAttachment.apply();
     }
 
     @EventHandler
     public void onAllModulesLoaded(FinishedLoadModulesEvent event)
     {
-        this.roleManager.init();
-        this.roleManager.reloadAllRolesAndApply();
+        this.rolesManager.recalculateAllRoles();
+
     }
 
     @EventHandler
     public void onAuthorized(UserAuthorizedEvent event)
     {
-        this.roleManager.reloadAllRolesAndApply(event.getUser(), event.getUser().getPlayer());
+        RolesAttachment rolesAttachment = this.rolesManager.getRolesAttachment(event.getUser());
+        rolesAttachment.flushResolvedData();
+        rolesAttachment.getResolvedData(); // Pre-calculate
+        rolesAttachment.apply();
     }
 }

@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-package de.cubeisland.cubeengine.roles.role.newRole;
+package de.cubeisland.cubeengine.roles.role;
 
 import java.io.File;
 import java.util.Locale;
@@ -79,14 +79,14 @@ public abstract class RoleProvider
     {
         for (RoleConfig config : this.configs.values())
         {
-            Role role = new Role(config, this.getMainWorldId());
+            Role role = new Role(config, this.mainWorldId);
             this.roles.put(role.getName().toLowerCase(Locale.ENGLISH), role);
         }
     }
 
     public void recalculateRoles()
     {
-
+        this.module.getLog().log(DEBUG, "Calculating roles for world #"+this.mainWorldId);
         Stack<String> roleStack = new Stack<String>(); // stack for detecting circular dependencies
         for (Role role : this.roles.values())
         {
@@ -129,7 +129,7 @@ public abstract class RoleProvider
                 Permission perm = this.basePerm.createChild(role.getName());
                 this.module.getCore().getPermissionManager().registerPermission(this.module,perm);
                 ResolvedDataStore data = new ResolvedDataStore(role);
-                data.calculateWithParentRoles(parentRoles);
+                data.calculate(parentRoles);
                 role.resolvedData = data;
                 roleStack.pop();
                 this.module.getLog().log(DEBUG, role.getName() + " calculated!");
@@ -153,4 +153,6 @@ public abstract class RoleProvider
     {
         return mainWorldId;
     }
+
+    // TODO create Role
 }

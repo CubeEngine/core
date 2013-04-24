@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-package de.cubeisland.cubeengine.roles.role.newRole;
+package de.cubeisland.cubeengine.roles.role;
 
 import java.io.File;
 import java.util.HashMap;
@@ -32,6 +32,7 @@ public class Role implements RawDataStore
     protected RoleConfig config;
     protected ResolvedDataStore resolvedData;
     private long worldID;
+    protected boolean isDefaultRole = false;
 
     public Role(RoleConfig config, long worldID)
     {
@@ -163,12 +164,6 @@ public class Role implements RawDataStore
         }
     }
 
-    @Override
-    public ResolvedDataStore getResolvedData()
-    {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
-    }
-
     public void setPermission(String perm, Boolean set)
     {
         this.makeDirty();
@@ -217,13 +212,13 @@ public class Role implements RawDataStore
     @Override
     public boolean addParent(Role role)
     {
-        return false;  //To change body of implemented methods use File | Settings | File Templates.
+        return this.config.parents.add(role.getName());
     }
 
     @Override
     public boolean removeParent(Role role)
     {
-        return false;  //To change body of implemented methods use File | Settings | File Templates.
+        return this.config.parents.remove(role.getName());
     }
 
     public void clearMetadata()
@@ -235,7 +230,7 @@ public class Role implements RawDataStore
     @Override
     public void clearParents()
     {
-        //To change body of implemented methods use File | Settings | File Templates.
+        this.config.parents.clear();
     }
 
     public void setMetadata(Map<String,String> data)
@@ -259,6 +254,17 @@ public class Role implements RawDataStore
         this.config.roleName = name;
     }
 
+    public boolean isDefaultRole()
+    {
+        return this.isDefaultRole;
+    }
+
+    @Override
+    public long getWorldID()
+    {
+        return this.worldID;
+    }
+
     // TODO rolePermission for assign / remove from user
     // TODO getParentRoles (actual objects)
     // TODO getPermissions (resolved)
@@ -267,5 +273,6 @@ public class Role implements RawDataStore
     // TODO getAllPerms (unresolved)
     // TODO getAllMetadata (unresolved)
 
+    // TODO isDefaultRole?
     // TODO setToDefaultRole (saved in another config)
 }

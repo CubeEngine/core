@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-package de.cubeisland.cubeengine.roles.role.newRole;
+package de.cubeisland.cubeengine.roles.role;
 
 import java.util.Map;
 import java.util.Set;
@@ -41,5 +41,5 @@ public interface RawDataStore
     public void setMetadata(Map<String,String> metadata);
     public void setParents(Set<Role> roles);
 
-    public ResolvedDataStore getResolvedData(); //TODO ???
+    public long getWorldID();
 }

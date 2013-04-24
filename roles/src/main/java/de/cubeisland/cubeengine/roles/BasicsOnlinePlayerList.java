@@ -26,20 +26,20 @@ import org.bukkit.event.Listener;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.util.ChatFormat;
 import de.cubeisland.cubeengine.basics.command.general.DisplayOnlinePlayerListEvent;
-import de.cubeisland.cubeengine.roles.role.UserSpecificRole;
-import de.cubeisland.cubeengine.roles.role.newRole.RolesAttachment;
+import de.cubeisland.cubeengine.roles.role.RolesAttachment;
+import de.cubeisland.cubeengine.roles.role.RolesManager;
 
 import gnu.trove.map.hash.THashMap;
 
 public class BasicsOnlinePlayerList implements Listener
 {
-    private final RoleManager manager;
+    private final RolesManager manager;
     private final Roles module;
 
     public BasicsOnlinePlayerList(Roles module)
     {
         this.module = module;
-        this.manager = this.module.getRoleManager();
+        this.manager = this.module.getRolesManager();
     }
 
     @EventHandler

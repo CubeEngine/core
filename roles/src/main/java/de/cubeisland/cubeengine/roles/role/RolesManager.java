@@ -15,13 +15,14 @@
  * You should have received a copy of the GNU General Public License
  * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-package de.cubeisland.cubeengine.roles.role.newRole;
+package de.cubeisland.cubeengine.roles.role;
 
 import java.io.File;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
 import org.bukkit.World;
+import org.bukkit.entity.Player;
 
 import de.cubeisland.cubeengine.core.logger.LogLevel;
 import de.cubeisland.cubeengine.core.storage.world.WorldManager;
@@ -67,6 +68,8 @@ public class RolesManager
 
     public void initRoleProviders()
     {
+        this.rolesFolder.mkdir();
+
         this.userMirrors = new TLongLongHashMap();
         this.assignedRoleMirrors = new TLongLongHashMap();
 
@@ -155,16 +158,18 @@ public class RolesManager
         }
     }
 
-    private WorldRoleProvider getProvider(long worldId)
+    protected WorldRoleProvider getProvider(long worldId)
     {
         return this.worldRoleProviders.get(worldId);
     }
 
     public <Provider extends RoleProvider> Provider getProvider(World world)
     {
-        return (Provider)(world == null ?
-                          this.globalRoleProvider :
-                          this.getProvider(this.wm.getWorldId(world)));
+        if (world == null)
+        {
+            return (Provider)this.globalRoleProvider;
+        }
+        return (Provider)this.getProvider(this.wm.getWorldId(world));
     }
 
     public File getRolesFolder()
@@ -177,15 +182,6 @@ public class RolesManager
         return this.globalRoleProvider;
     }
 
-    private void recalculateAllRoles()
-    {
-        for (RoleProvider roleProvider : providerSet)
-        {
-
-            roleProvider.recalculateRoles();
-        }
-    }
-
     public void reloadAllRoles()
     {
         for (RoleProvider roleProvider : providerSet)
@@ -193,11 +189,27 @@ public class RolesManager
             roleProvider.loadConfigurations();
             roleProvider.reloadRoles();
         }
-        this.recalculateAllRoles();
     }
 
-    public RolesAttachment getRolesAttachment(User user)
+    protected void recalculateAllRoles() // TODO
     {
+        for (RoleProvider roleProvider : providerSet)
+        {
+            roleProvider.recalculateRoles();
+        }
+    }
+
+    public RolesAttachment getRolesAttachment(Player player)
+    {
+        User user;
+        if (player instanceof User)
+        {
+            user = (User)player;
+        }
+        else
+        {
+            user = this.module.getCore().getUserManager().getExactUser(player);
+        }
         return user.attachOrGet(RolesAttachment.class, this.module);
     }
 }

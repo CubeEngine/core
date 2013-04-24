@@ -29,7 +29,6 @@ import de.cubeisland.cubeengine.core.util.Triplet;
 import de.cubeisland.cubeengine.roles.Roles;
 import de.cubeisland.cubeengine.roles.RolesConfig;
 import de.cubeisland.cubeengine.roles.config.RoleMirror;
-import de.cubeisland.cubeengine.roles.role.UserSpecificRole;
 
 import gnu.trove.map.hash.TLongObjectHashMap;
 

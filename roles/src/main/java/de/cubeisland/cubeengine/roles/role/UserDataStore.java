@@ -1,4 +1,4 @@
-package de.cubeisland.cubeengine.roles.role.newRole;
+package de.cubeisland.cubeengine.roles.role;
 
 import java.util.Map;
 import java.util.Set;
@@ -124,12 +124,15 @@ public class UserDataStore implements RawDataStore
     }
 
     @Override
-    public ResolvedDataStore getResolvedData()
+    public long getWorldID()
     {
+        return this.worldID;
     }
 
     public Long getUserID()
     {
         return this.attachment.getHolder().key;
     }
+
+    // TODO getDominantRole
 }
