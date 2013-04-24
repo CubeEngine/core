@@ -24,6 +24,7 @@ import de.cubeisland.cubeengine.core.storage.database.Database;
 import de.cubeisland.cubeengine.core.storage.database.querybuilder.QueryBuilder;
 import de.cubeisland.cubeengine.core.user.User;
 
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.HashSet;
@@ -104,14 +105,31 @@ public class InviteManager extends TwoKeyStorage<Long, Long, TeleportInvite>
      */
     public Set<String> getInvited(TeleportPoint tPP)
     {
+
         Set<String> invitedUsers = new HashSet<String>();
+        Set<Long> keys = new HashSet<Long>();
         for (TeleportInvite tpI : getInvites(tPP))
         {
-            User user = CubeEngine.getUserManager().getUser(tpI.userKey); // TODO!
-            if (user != null)
+            keys.add(tpI.userKey);
+        }
+        if (keys.isEmpty())
+        {
+            return invitedUsers;
+        }
+        try
+        {
+            ResultSet names = database.query(database.getQueryBuilder().select("player").from("user").where().field("key").in()
+                                   .valuesInBrackets(keys.toArray()).end().end());
+            while (names.next())
             {
-                invitedUsers.add(user.getName());
+                invitedUsers.add(names.getString("player"));
             }
+        }
+        catch (SQLException ex)
+        {
+            module.getLog().log(LogLevel.WARNING, "Something wrong happened while getting usernames for some users");
+            module.getLog().log(LogLevel.WARNING, "The error message was: {0}", ex.getMessage());
+            module.getLog().log(LogLevel.DEBUG, "This is the stack: ", ex);
         }
         return invitedUsers;
     }

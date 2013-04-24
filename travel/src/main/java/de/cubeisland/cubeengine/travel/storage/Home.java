@@ -59,6 +59,7 @@ public class Home
     public void update()
     {
         parent.ownerKey = parent.getOwner().getId();
+        parent.ownerName = parent.getOwner().getName();
         parent.owner = null;
         parent.x = parent.getLocation().getX();
         parent.y = parent.getLocation().getY();
@@ -94,6 +95,7 @@ public class Home
     public void setOwner(User owner)
     {
         parent.ownerKey = owner.getId();
+        parent.ownerName = owner.getName();
         parent.owner = null;
     }
 
@@ -177,7 +179,7 @@ public class Home
 
     public String getStorageName()
     {
-        return this.getOwner().getName() + ":" + this.getName();
+        return parent.ownerName + ":" + this.getName();
     }
 
     public Set<String> getInvited()

@@ -44,7 +44,9 @@ public class Warp
      */
     public void update()
     {
-        parent.ownerKey = parent.owner.getId();
+        parent.ownerKey = parent.getOwner().getId();
+        parent.ownerName = parent.getOwner().getName();
+        parent.owner = null;
         parent.x = parent.location.getX();
         parent.y = parent.location.getY();
         parent.z = parent.location.getZ();
@@ -80,6 +82,7 @@ public class Warp
     public void setOwner(User owner)
     {
         parent.ownerKey = owner.getId();
+        parent.ownerName = owner.getName();
         parent.owner = null;
     }
 
@@ -165,7 +168,7 @@ public class Warp
         }
         else
         {
-            return this.getOwner().getName() + ":" + this.getName();
+            return parent.ownerName + ":" + this.getName();
         }
     }
 

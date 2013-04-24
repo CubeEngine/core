@@ -26,15 +26,18 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
+import java.util.concurrent.TimeUnit;
 
 import org.bukkit.Location;
 
 import de.cubeisland.cubeengine.core.CubeEngine;
 import de.cubeisland.cubeengine.core.command.CommandSender;
+import de.cubeisland.cubeengine.core.logger.LogLevel;
 import de.cubeisland.cubeengine.core.storage.SingleKeyStorage;
 import de.cubeisland.cubeengine.core.storage.StorageException;
 import de.cubeisland.cubeengine.core.storage.database.querybuilder.QueryBuilder;
 import de.cubeisland.cubeengine.core.user.User;
+import de.cubeisland.cubeengine.core.util.Profiler;
 import de.cubeisland.cubeengine.core.util.matcher.Match;
 import de.cubeisland.cubeengine.travel.Travel;
 
@@ -222,6 +225,10 @@ public class TelePointManager extends SingleKeyStorage<Long, TeleportPoint>
         catch (Exception ex)
         {
             throw new IllegalStateException("Error while creating fresh Model from Database", ex);
+        }
+        if (module.getCore().isDebug())
+        {
+            System.out.print("getAll" + Profiler.getCurrentDelta("travelEnable", TimeUnit.MILLISECONDS));
         }
         return loadedModels;
     }
@@ -1072,7 +1079,15 @@ public class TelePointManager extends SingleKeyStorage<Long, TeleportPoint>
             String name = resultSet.getString("name");
             long ownerId = resultSet.getLong("owner");
             User owner = CubeEngine.getUserManager().getUser(ownerId);
-            Home home = this.homes.get(owner.getName() + ":" + name);
+            Home home;
+            if (owner == null)
+            {
+                home = this.homes.get("Unknown" + ":" + name);
+            }
+            else
+            {
+                home = this.homes.get(owner.getName() + ":" + name);
+            }
             homes.add(home);
         }
         return homes;
