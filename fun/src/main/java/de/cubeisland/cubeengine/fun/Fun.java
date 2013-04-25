@@ -45,7 +45,7 @@ public class Fun extends Module
         cm.registerCommands(this, new DiscoCommand(this), ReflectedCommand.class);
         cm.registerCommands(this, new InvasionCommand(this), ReflectedCommand.class);
         cm.registerCommands(this, new RocketCommand(this), ReflectedCommand.class);
-        System.out.print(Profiler.getCurrentDelta("funEnable", TimeUnit.MILLISECONDS) + "ms - done");
+        System.out.print(Profiler.endProfiling("funEnable", TimeUnit.MILLISECONDS) + "ms - done");
     }
 
     public FunConfiguration getConfig()

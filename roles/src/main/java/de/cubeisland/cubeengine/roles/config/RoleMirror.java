@@ -18,10 +18,10 @@
 package de.cubeisland.cubeengine.roles.config;
 
 import de.cubeisland.cubeengine.core.CubeEngine;
-import de.cubeisland.cubeengine.core.util.Pair;
 import de.cubeisland.cubeengine.core.logger.LogLevel;
 import de.cubeisland.cubeengine.core.util.Triplet;
 import de.cubeisland.cubeengine.roles.Roles;
+
 import gnu.trove.map.hash.TLongObjectHashMap;
 
 public class RoleMirror
@@ -57,7 +57,13 @@ public class RoleMirror
         this.mainWorld = CubeEngine.getCore().getWorldManager().getWorld(worldId).getName();
     }
 
-    public TLongObjectHashMap<Triplet<Boolean, Boolean, Boolean>> getWorlds()
+    /**
+     * Returns a map of the mirrored worlds.
+     * The mirrors are: roles | assigned roles | assigned permissions and metadata
+     *
+     * @return
+     */
+    public TLongObjectHashMap<Triplet<Boolean, Boolean, Boolean>> getWorldMirrors()
     {
         return this.worlds;
     }

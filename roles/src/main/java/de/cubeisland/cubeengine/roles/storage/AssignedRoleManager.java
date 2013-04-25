@@ -30,7 +30,7 @@ import de.cubeisland.cubeengine.core.storage.database.Database;
 import de.cubeisland.cubeengine.core.storage.database.querybuilder.QueryBuilder;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.util.Triplet;
-import de.cubeisland.cubeengine.roles.provider.WorldRoleProvider;
+import de.cubeisland.cubeengine.roles.role.WorldRoleProvider;
 
 import gnu.trove.map.hash.TLongObjectHashMap;
 import gnu.trove.set.hash.THashSet;
@@ -70,6 +70,10 @@ public class AssignedRoleManager extends TripletKeyStorage<Long, Long, String, A
                                      builder.update(this.tableName).set("roleName").
                                          where().field("worldId").isEqual().value().
                                                 and().field("roleName").isEqual().value().end().end());
+
+        this.database.storeStatement(modelClass, "renameGlobal",
+                                     builder.update(this.tableName).set("roleName").
+                                         where().field("roleName").isEqual().value().end().end());
 
     }
 
@@ -123,9 +127,9 @@ public class AssignedRoleManager extends TripletKeyStorage<Long, Long, String, A
         try
         {
             PreparedStatement stm = this.database.getStoredStatement(modelClass, "rename");
-            for (long worldId : provider.getWorlds().keys())
+            for (long worldId : provider.getWorldMirrors().keys())
             {
-                if (provider.getWorlds().get(worldId).getFirst())
+                if (provider.getWorldMirrors().get(worldId).getFirst())
                 {
                     stm.setObject(1, newName);
                     stm.setObject(2, worldId);
@@ -139,6 +143,19 @@ public class AssignedRoleManager extends TripletKeyStorage<Long, Long, String, A
         {
             throw new StorageException("Error while renaming roles in database!", ex,
                                        this.database.getStoredStatement(modelClass,"rename"));
+        }
+    }
+
+    public void renameGlobal(String name, String newName)
+    {
+        try
+        {
+            this.database.preparedExecute(modelClass,"renameGlobal","g:"+newName,"g:"+name);
+        }
+        catch (SQLException ex)
+        {
+            throw new StorageException("Error while renaming global roles in database!", ex,
+                                       this.database.getStoredStatement(modelClass,"renameGlobal"));
         }
     }
 

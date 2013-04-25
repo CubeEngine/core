@@ -18,41 +18,48 @@
 package de.cubeisland.cubeengine.roles.role;
 
 import java.io.File;
-import java.util.HashMap;
-import java.util.HashSet;
+import java.util.Collections;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import org.bukkit.permissions.Permissible;
+
+import de.cubeisland.cubeengine.core.permission.Permission;
 import de.cubeisland.cubeengine.roles.config.Priority;
 import de.cubeisland.cubeengine.roles.config.RoleConfig;
+import de.cubeisland.cubeengine.roles.exception.CircularRoleDependencyException;
+import de.cubeisland.cubeengine.roles.role.resolved.ResolvedMetadata;
+import de.cubeisland.cubeengine.roles.role.resolved.ResolvedPermission;
 
 public class Role implements RawDataStore
 {
     protected RoleConfig config;
     protected ResolvedDataStore resolvedData;
-    private long worldID;
     protected boolean isDefaultRole = false;
+    protected RoleProvider roleProvider;
+    protected Permission rolePermission;
 
-    public Role(RoleConfig config, long worldID)
+    public Role(RoleProvider roleProvider, RoleConfig config)
     {
         this.config = config;
-        this.worldID = worldID;
+        this.roleProvider = roleProvider;
+        this.rolePermission = roleProvider.basePerm.createChild(config.roleName);
     }
 
     public Map<String,Boolean> getRawPermissions()
     {
-        return new HashMap<String, Boolean>(config.perms.getPermissions());
+        return Collections.unmodifiableMap(config.perms.getPermissions());
     }
 
     public Map<String,String> getRawMetadata()
     {
-        return new HashMap<String, String>(config.metadata);
+        return Collections.unmodifiableMap(config.metadata);
     }
 
-    public Set<String> getRawParents()
+    public Set<String> getRawAssignedRoles()
     {
-        return new HashSet<String>(this.config.parents);
+        return Collections.unmodifiableSet(this.config.parents);
     }
 
     public void saveToConfig()
@@ -60,7 +67,7 @@ public class Role implements RawDataStore
         this.config.save();
     }
 
-    private void saveConfigToNewFile()
+    protected void saveConfigToNewFile()
     {
         this.config.getFile().delete();
         this.config.setFile(new File(this.config.getFile().getParentFile(), this.config.roleName + ".yml"));
@@ -78,7 +85,7 @@ public class Role implements RawDataStore
         return this.config.roleName;
     }
 
-    private void makeDirty()
+    protected void makeDirty()
     {
         if (this.resolvedData != null)
         {
@@ -94,7 +101,7 @@ public class Role implements RawDataStore
 
     public boolean isGlobal()
     {
-        return this.worldID == 0;
+        return this.roleProvider instanceof GlobalRoleProvider;
     }
 
     public boolean inheritsFrom(Role other)
@@ -104,15 +111,8 @@ public class Role implements RawDataStore
 
     public boolean rename(String newName)
     {
-        if (false)// TODO check if a role exists for that name
-        {
-            return false;
-        }
         this.makeDirty();
-        this.resolvedData.performRename(newName);
-
-        this.saveConfigToNewFile();
-        return true;
+        return this.roleProvider.renameRole(this,newName);
     }
 
     public int getPriorityValue()
@@ -126,45 +126,17 @@ public class Role implements RawDataStore
         this.config.priority = Priority.getByValue(value);
     }
 
-    public boolean addParentRole(Role pRole)
+    @Override
+    public void setAssignedRoles(Set<Role> pRoles)
     {
-        // TODO check circular dependency!
-        boolean added = this.config.parents.add(pRole.getName());
-        if (added)
-        {
-            this.makeDirty();
-            this.saveToConfig();
-        }
-        return added;
-    }
-
-    public boolean removeParentRole(Role pRole)
-    {
-        if (this.config.parents.remove(pRole.getName()))
-        {
-            this.makeDirty();
-            this.saveToConfig();
-            return true;
-        }
-        return false;
-    }
-
-    public void clearParentRoles()
-    {
-        this.makeDirty();
-        this.config.parents.clear();
-        this.saveToConfig();
-    }
-
-    public void setParents(Set<Role> pRoles)
-    {
-        this.clearParentRoles();
+        this.clearAssignedRoles();
         for (Role pRole : pRoles)
         {
-            this.addParentRole(pRole);
+            this.assignRole(pRole);
         }
     }
 
+    @Override
     public void setPermission(String perm, Boolean set)
     {
         this.makeDirty();
@@ -178,12 +150,14 @@ public class Role implements RawDataStore
         }
     }
 
+    @Override
     public void clearPermissions()
     {
         this.makeDirty();
         this.config.perms.getPermissions().clear();
     }
 
+    @Override
     public void setPermissions(Map<String, Boolean> perms)
     {
         this.clearPermissions();
@@ -197,6 +171,7 @@ public class Role implements RawDataStore
         }
     }
 
+    @Override
     public void setMetadata(String key, String value)
     {
         this.makeDirty();
@@ -211,17 +186,32 @@ public class Role implements RawDataStore
     }
 
     @Override
-    public boolean addParent(Role role)
+    public boolean assignRole(Role pRole)
     {
-        return this.config.parents.add(role.getName());
+        if (this.inheritsFrom(pRole))
+        {
+            throw new CircularRoleDependencyException("Cannot add parentrole!");
+        }
+        boolean added = this.config.parents.add(pRole.getName());
+        if (added)
+        {
+            this.makeDirty();
+        }
+        return added;
     }
 
     @Override
-    public boolean removeParent(Role role)
+    public boolean removeRole(Role pRole)
     {
-        return this.config.parents.remove(role.getName());
+        if (this.config.parents.remove(pRole.getName()))
+        {
+            this.makeDirty();
+            return true;
+        }
+        return false;
     }
 
+    @Override
     public void clearMetadata()
     {
         this.makeDirty();
@@ -229,11 +219,13 @@ public class Role implements RawDataStore
     }
 
     @Override
-    public void clearParents()
+    public void clearAssignedRoles()
     {
+        this.makeDirty();
         this.config.parents.clear();
     }
 
+    @Override
     public void setMetadata(Map<String,String> data)
     {
         this.clearMetadata();
@@ -250,30 +242,55 @@ public class Role implements RawDataStore
         this.resolvedData.performDeleteRole();
     }
 
-    protected void setName(String name)
-    {
-        this.config.roleName = name;
-    }
-
     public boolean isDefaultRole()
     {
         return this.isDefaultRole;
     }
 
+    /**
+     * Sets the whether this role should be a default role
+     *
+     * @param set
+     * @return false if this role is a global role or already set
+     */
+    public boolean setDefaultRole(boolean set)
+    {
+        if (!this.isGlobal())
+        {
+            if (this.isDefaultRole != set)
+            {
+                this.isDefaultRole = set;
+                ((WorldRoleProvider)this.roleProvider).setDefaultRole(this, set);
+                return true;
+            }
+        }
+        return false;
+    }
+
     @Override
     public long getWorldID()
     {
-        return this.worldID;
+        return this.roleProvider.mainWorldId;
     }
 
-    // TODO rolePermission for assign / remove from user
-    // TODO getParentRoles (actual objects)
-    // TODO getPermissions (resolved)
-    // TODO getMetadata (resolved)
+    @Override
+    public Set<Role> getAssignedRoles()
+    {
+        return Collections.unmodifiableSet(this.resolvedData.assignedRoles);
+    }
 
-    // TODO getAllPerms (unresolved)
-    // TODO getAllMetadata (unresolved)
+    public boolean canAssignAndRemove(Permissible permissible)
+    {
+        return this.rolePermission.isAuthorized(permissible);
+    }
 
-    // TODO isDefaultRole?
-    // TODO setToDefaultRole (saved in another config)
+    public Map<String, ResolvedPermission> getPermissions()
+    {
+        return Collections.unmodifiableMap(this.resolvedData.permissions);
+    }
+
+    public Map<String, ResolvedMetadata> getMetadata()
+    {
+        return Collections.unmodifiableMap(this.resolvedData.metadata);
+    }
 }

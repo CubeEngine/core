@@ -29,6 +29,8 @@ import de.cubeisland.cubeengine.core.command.reflected.Command;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.util.StringUtils;
 import de.cubeisland.cubeengine.roles.Roles;
+import de.cubeisland.cubeengine.roles.role.Role;
+import de.cubeisland.cubeengine.roles.role.RolesAttachment;
 
 public class SpawnCommands
 {
@@ -103,7 +105,7 @@ public class SpawnCommands
 
         if (context.hasArg(0))
         {
-            ConfigRole role = roles.getApi().getRole(world,context.getString(0));
+            Role role = roles.getRolesManager().getProvider(world).getRole(context.getString(0));
             if (role == null)
             {
                context.sendTranslated("&cCould not find the role &6%s&c in &6%s&c!",context.getString(0),world.getName());
@@ -117,8 +119,8 @@ public class SpawnCommands
                 locStrings[3] = String.valueOf(yaw);
                 locStrings[4] = String.valueOf(pitch);
                 locStrings[5] = world.getName();
-                role.setMetaData("rolespawn", StringUtils.implode(":",locStrings));
-                roles.getApi().recalculateDirtyRoles();
+                role.setMetadata("rolespawn", StringUtils.implode(":", locStrings));
+                roles.getRolesManager().getProvider(world).recalculateRoles();
             }
         }
         else
@@ -176,7 +178,13 @@ public class SpawnCommands
             for (User player : context.getCore().getUserManager().getOnlineUsers())
             {
                 final Location spawnLocation;
-                String rolespawn = roles.getApi().getMetaData(user, world, "rolespawn");
+                RolesAttachment rolesAttachment = user.get(RolesAttachment.class);
+                if (rolesAttachment == null)
+                {
+                    this.roles.getLog().warning("Missing RolesAttachment!");
+                    return;
+                }
+                String rolespawn = rolesAttachment.getMetadata("rolespawn");
                 if (rolespawn == null)
                 {
                     spawnLocation = this.getSpawnLocation(rolespawn);
@@ -233,30 +241,36 @@ public class SpawnCommands
         if (context.hasParam("role"))
         {
             String roleName = context.getString("role");
-            ConfigRole role = this.roles.getApi().getRole(world,roleName);
+            Role role = this.roles.getRolesManager().getProvider(world).getRole(roleName);
             if (role == null)
             {
                 context.sendTranslated("&cCould not find the role &6%s&c in &6%s&c!",roleName,world.getName());
                 return;
             }
-            RoleMetaData rolespawn = role.getMetaData().get("rolespawn");
+            String rolespawn = role.getRawMetadata().get("rolespawn");
             if (rolespawn == null)
             {
                 context.sendTranslated("&cThe role &6%s&c in &6%s&c has no spawn-point!",role.getName(),world.getName());
                 return;
             }
-            spawnLocation = this.getSpawnLocation(rolespawn.getValue());
+            spawnLocation = this.getSpawnLocation(rolespawn);
             if (spawnLocation == null)
             {
                 context.sendTranslated("&cInvalid spawn-location for the role &6%s&c! &ePlease check your role-configuration!\n&7%s",
-                                       role.getName(),rolespawn.getValue());
+                                       role.getName(),rolespawn);
                 return;
             }
             context.sendTranslated("&aYou are now standing at the spawn of &6%s&a!",role.getName());
         }
         else
         {
-            String rolespawn = roles.getApi().getMetaData(user, world, "rolespawn");
+            RolesAttachment rolesAttachment = user.get(RolesAttachment.class);
+            if (rolesAttachment == null)
+            {
+                this.roles.getLog().warning("Missing RolesAttachment!");
+                return;
+            }
+            String rolespawn = rolesAttachment.getMetadata("rolespawn");
             if (rolespawn == null)
             {
                 spawnLocation = world.getSpawnLocation();

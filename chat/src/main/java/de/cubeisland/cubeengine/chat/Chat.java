@@ -29,6 +29,7 @@ import de.cubeisland.cubeengine.core.module.Module;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.util.ChatFormat;
 import de.cubeisland.cubeengine.roles.Roles;
+import de.cubeisland.cubeengine.roles.role.RolesAttachment;
 
 public class Chat extends Module implements Listener
 {
@@ -78,14 +79,20 @@ public class Chat extends Module implements Listener
         if (roles != null)
         {
             User user = this.getCore().getUserManager().getExactUser(player);
+            RolesAttachment rolesAttachment = user.get(RolesAttachment.class);
+            if (rolesAttachment == null)
+            {
+                this.roles.getLog().warning("Missing RolesAttachment!");
+                return;
+            }
             if (format.contains("{ROLE.PREFIX}"))
             {
-                String prefix = roles.getApi().getMetaData(user, player.getWorld(), "prefix");
+                String prefix = rolesAttachment.getMetadata("prefix");
                 format = format.replace("{ROLE.PREFIX}", prefix == null ? "" : ChatFormat.parseFormats(prefix));
             }
             if (format.contains("{ROLE.SUFFIX}"))
             {
-                String suffix = roles.getApi().getMetaData(user, player.getWorld(), "suffix");
+                String suffix = rolesAttachment.getMetadata("suffix");
                 format = format.replace("{ROLE.SUFFIX}", suffix == null ? "" : ChatFormat.parseFormats(suffix));
             }
         }

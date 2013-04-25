@@ -17,6 +17,7 @@
  */
 package de.cubeisland.cubeengine.roles.role;
 
+import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
 
@@ -26,6 +27,8 @@ import de.cubeisland.cubeengine.core.logger.LogLevel;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.user.UserAttachment;
 import de.cubeisland.cubeengine.roles.Roles;
+import de.cubeisland.cubeengine.roles.role.resolved.ResolvedMetadata;
+import de.cubeisland.cubeengine.roles.role.resolved.ResolvedPermission;
 
 import gnu.trove.map.hash.TLongObjectHashMap;
 import gnu.trove.set.hash.THashSet;
@@ -43,6 +46,28 @@ public class RolesAttachment extends UserAttachment
     private TLongObjectHashMap<ResolvedDataStore> resolvedDataStores = new TLongObjectHashMap<ResolvedDataStore>();
     private Map<String, String> currentMetaData;
 
+    private Long workingWorldID = null;
+
+    /**
+     * Gets the resolved data-store.
+     * If not yet calculated or dirty the data-store gets calculated.
+     * And also applied to the player if online.
+     *
+     * @return
+     */
+    protected ResolvedDataStore getResolvedData()
+    {
+        return this.getResolvedData(this.getHolder().getWorldId());
+    }
+
+    /**
+     * Gets the resolved data-store.
+     * If not yet calculated or dirty the data-store gets calculated.
+     * And also applied to the player if online in the given world
+     *
+     * @param worldID
+     * @return
+     */
     protected ResolvedDataStore getResolvedData(long worldID)
     {
         ResolvedDataStore dataStore = resolvedDataStores.get(worldID);
@@ -50,7 +75,7 @@ public class RolesAttachment extends UserAttachment
         {
             Set<Role> assignedRoles = new THashSet<Role>();
             RoleProvider provider = ((Roles)this.getModule()).getRolesManager().getProvider(worldID);
-            for (String roleName : this.getRawData(worldID).getRawParents())
+            for (String roleName : this.getRawData(worldID).getRawAssignedRoles())
             {
                 assignedRoles.add(provider.getRole(roleName));
             }
@@ -58,7 +83,7 @@ public class RolesAttachment extends UserAttachment
             UserDataStore tempStore = this.temporaryData.get(worldID);
             if (tempStore != null)
             {
-                for (String roleName : this.temporaryData.get(worldID).getRawParents())
+                for (String roleName : this.temporaryData.get(worldID).getRawAssignedRoles())
                 {
                     assignedRoles.add(provider.getRole(roleName));
                 }
@@ -70,15 +95,33 @@ public class RolesAttachment extends UserAttachment
             }
             resolvedDataStores.put(worldID,dataStore);
             //TODO mirrors
+
+            if (worldID == this.getHolder().getWorldId())
+            {
+                this.apply(); // Apply the new calculated roles if in that world
+            }
         }
         return dataStore;
     }
 
-    protected ResolvedDataStore getResolvedData()
+    /**
+     * Gets the currently assigned metadatavalue for given key
+     *
+     * @param key
+     * @return
+     */
+    public String getMetadata(String key)
     {
-        return this.getResolvedData(this.getHolder().getWorldId());
+        if (currentMetaData == null)
+        {
+            return null;
+        }
+        return currentMetaData.get(key);
     }
 
+    /**
+     * Removes all currently calculated data forcing to recalculate the resolved data stores when needed.
+     */
     public void flushResolvedData()
     {
         this.resolvedDataStores = new TLongObjectHashMap<ResolvedDataStore>();
@@ -89,6 +132,12 @@ public class RolesAttachment extends UserAttachment
         //TODO
     }
 
+    /**
+     * Gets the DataStore containing the data saved in database for the holder in given world.
+     *
+     * @param worldID
+     * @return
+     */
     public RawDataStore getRawData(long worldID)
     {
         UserDatabaseStore rawDataStore = this.rawUserData.get(worldID);
@@ -100,6 +149,12 @@ public class RolesAttachment extends UserAttachment
         return rawDataStore;
     }
 
+    /**
+     * Gets the DataStore containing only temporary data that will automatically be removed when disconnection or reloading
+     *
+     * @param worldID
+     * @return
+     */
     public RawDataStore getTemporaryRawData(long worldID)
     {
         UserDataStore rawDataStore = this.temporaryData.get(worldID);
@@ -124,13 +179,76 @@ public class RolesAttachment extends UserAttachment
             return;
         }
         this.getModule().getLog().log(LogLevel.DEBUG, user.getName()+ ": UserRole set!");
-        if (this.getRawData(user.getWorldId()).getRawParents().isEmpty())
+        if (this.getRawData(user.getWorldId()).getRawAssignedRoles().isEmpty())
         {
-            // TODO no roles set -> add default roles to that user!
-            // null resolvedDataStore
+            this.getRawData(user.getWorldId()).setAssignedRoles(((Roles)this.getModule()).getRolesManager().getProvider(user.getWorldId()).getDefaultRoles());
         }
         ResolvedDataStore resolvedData = this.getResolvedData();
         user.setPermission(resolvedData.getResolvedPermissions());
         this.currentMetaData = resolvedData.getResolvedMetadata();
+    }
+
+    /**
+     * Returns the role with highest priority value assigned to the holder in the current world
+     *
+     * @return
+     */
+    public Role getDominantRole()
+    {
+       return this.getDominantRole(this.getHolder().getWorldId());
+    }
+
+    /**
+     * Returns the role with highest priority value assigned to the holder in the given world
+     *
+     * @param worldID
+     * @return
+     */
+    public Role getDominantRole(long worldID)
+    {
+        Role dominantRole = null;
+        for (Role role : this.getResolvedData(worldID).assignedRoles)
+        {
+            if (dominantRole == null)
+            {
+                dominantRole = role;
+            }
+            else if (dominantRole.getPriorityValue() <= role.getPriorityValue())
+            {
+                dominantRole = role;
+            }
+        }
+        return dominantRole;
+    }
+
+    public void setWorkingWorldId(Long workingWorldId)
+    {
+        this.workingWorldID = workingWorldId;
+    }
+
+    public Long getWorkingWorldId()
+    {
+        return workingWorldID;
+    }
+
+    public Set<Role> getAssignedRoles(long worldID)
+    {
+        return Collections.unmodifiableSet(this.getResolvedData(worldID).assignedRoles);
+    }
+
+    public Map<String,ResolvedPermission> getPermissions(long worldID)
+    {
+        return Collections.unmodifiableMap(this.getResolvedData(worldID).permissions);
+    }
+
+    public Map<String,ResolvedMetadata> getMetadata(long worldID)
+    {
+        return Collections.unmodifiableMap(this.getResolvedData(worldID).metadata);
+    }
+
+    public Map<String,Boolean> getAllRawPermissions()
+    {
+        // TODO
+        return null;
     }
 }

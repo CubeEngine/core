@@ -40,7 +40,12 @@ public class UserDatabaseStore extends UserDataStore
         this.rm = manager.rm;
         this.mdm = manager.mdm;
         this.pm = manager.pm;
-        // TODO load from database
+        this.loadFromDatabase();
+    }
+
+    protected void loadFromDatabase()
+    {
+        //TODO
     }
 
     @Override
@@ -72,23 +77,23 @@ public class UserDatabaseStore extends UserDataStore
     }
 
     @Override
-    public boolean addParent(Role role)
+    public boolean assignRole(Role role)
     {
         if (this.roles.contains(role.getName()))
         {
             return false;
         }
         this.rm.merge(new AssignedRole(this.getUserID(),this.worldID,role.getName()));
-        return super.addParent(role);
+        return super.assignRole(role);
     }
 
     @Override
-    public boolean removeParent(Role role)
+    public boolean removeRole(Role role)
     {
         if (this.roles.contains(role.getName()))
         {
             this.rm.delete(this.getUserID(),role.getName(),this.worldID);
-            return super.removeParent(role);
+            return super.removeRole(role);
         }
         return false;
     }
@@ -111,10 +116,10 @@ public class UserDatabaseStore extends UserDataStore
     }
 
     @Override
-    public void clearParents()
+    public void clearAssignedRoles()
     {
         rm.clearByUserAndWorld(this.getUserID(),this.worldID);
-        super.clearParents();
+        super.clearAssignedRoles();
     }
 
     @Override
@@ -134,10 +139,10 @@ public class UserDatabaseStore extends UserDataStore
     }
 
     @Override
-    public void setParents(Set<Role> roles)
+    public void setAssignedRoles(Set<Role> roles)
     {
-        this.clearParents();
+        this.clearAssignedRoles();
         // TODO batch set parents
-        super.setParents(roles);
+        super.setAssignedRoles(roles);
     }
 }

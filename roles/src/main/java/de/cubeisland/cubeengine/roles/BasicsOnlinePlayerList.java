@@ -26,6 +26,7 @@ import org.bukkit.event.Listener;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.util.ChatFormat;
 import de.cubeisland.cubeengine.basics.command.general.DisplayOnlinePlayerListEvent;
+import de.cubeisland.cubeengine.roles.role.Role;
 import de.cubeisland.cubeengine.roles.role.RolesAttachment;
 import de.cubeisland.cubeengine.roles.role.RolesManager;
 
@@ -51,7 +52,7 @@ public class BasicsOnlinePlayerList implements Listener
         for (User user : event.getDefaultList())
         {
             RolesAttachment attachment = user.get(RolesAttachment.class);
-            if (attachment == null || attachment.getRoleContainer() == null)
+            if (attachment == null)
             {
                 List<User> users = grouped.get(noRole);
                 if (users == null)
@@ -63,18 +64,15 @@ public class BasicsOnlinePlayerList implements Listener
             }
             else
             {
-                UserSpecificRole userSpecificRole = attachment.getRoleContainer()
-                                                              .get(this.module.getCore().getWorldManager()
-                                                                              .getWorldId(user.getWorld()));
-                ConfigRole configRole = userSpecificRole.getDominantRole();
+                Role role = attachment.getDominantRole();
                 String display;
-                if (configRole.getMetaData().get("prefix") == null)
+                if (role.getRawMetadata().get("prefix") == null)
                 {
-                    display = "&7"+configRole.getName();
+                    display = "&7"+role.getName();
                 }
                 else
                 {
-                    display = configRole.getMetaData().get("prefix").getValue();
+                    display = role.getRawMetadata().get("prefix");
                 }
                 display = ChatFormat.parseFormats(display);
                 List<User> users = grouped.get(display);

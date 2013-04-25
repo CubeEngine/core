@@ -26,18 +26,18 @@ import de.cubeisland.cubeengine.core.command.exception.MissingParameterException
 import de.cubeisland.cubeengine.core.command.parameterized.ParameterizedContext;
 import de.cubeisland.cubeengine.core.storage.world.WorldManager;
 import de.cubeisland.cubeengine.core.user.User;
-import de.cubeisland.cubeengine.roles.RoleManager;
+import de.cubeisland.cubeengine.core.util.ChatFormat;
 import de.cubeisland.cubeengine.roles.Roles;
 import de.cubeisland.cubeengine.roles.role.RolesAttachment;
 import de.cubeisland.cubeengine.roles.role.RolesManager;
-
-import gnu.trove.map.hash.TLongObjectHashMap;
 
 public class UserCommandHelper extends ContainerCommand
 {
     protected RolesManager manager;
     protected WorldManager worldManager;
     protected Roles module;
+    protected final String LISTELEM_VALUE = ChatFormat.parseFormats("- &e%s: &6%s");
+    protected final String LISTELEM = ChatFormat.parseFormats("- &e%s");
 
     public UserCommandHelper(Roles module)
     {
@@ -74,23 +74,6 @@ public class UserCommandHelper extends ContainerCommand
         return user;
     }
 
-    protected UserSpecificRole getUserRole(User user, World world)
-    {
-        long worldId = this.getWorldId(world);
-        worldId = this.manager.getUserMirror(worldId);
-        if (user == null)
-        {
-            return null;
-        }
-        TLongObjectHashMap<UserSpecificRole> roleContainer = this.manager.getRoleContainer(user);
-        if (roleContainer == null)
-        {
-            this.manager.preCalculateRoles(user, true);
-            roleContainer = this.manager.getRoleContainer(user);
-        }
-        return roleContainer.get(worldId);
-    }
-
     protected long getWorldId(World world)
     {
         return this.getModule().getCore().getWorldManager().getWorldId(world);
@@ -120,7 +103,7 @@ public class UserCommandHelper extends ContainerCommand
             if (sender instanceof User)
             {
                 User user = (User)sender;
-                Long worldID = user.attachOrGet(RolesAttachment.class, this.module).getCurrentWorldId();
+                Long worldID = user.attachOrGet(RolesAttachment.class, this.module).getWorkingWorldId();
                 if (worldID == null)
                 {
                     world = user.getWorld();

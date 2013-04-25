@@ -17,7 +17,7 @@
  */
 package de.cubeisland.cubeengine.roles.exception;
 
-public class CircularRoleDependencyException extends Exception
+public class CircularRoleDependencyException extends RuntimeException
 {
     public CircularRoleDependencyException(String string)
     {

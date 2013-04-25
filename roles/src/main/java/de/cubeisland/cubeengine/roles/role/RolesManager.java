@@ -20,6 +20,7 @@ package de.cubeisland.cubeengine.roles.role;
 import java.io.File;
 import java.util.LinkedHashSet;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
 import org.bukkit.World;
 import org.bukkit.entity.Player;
@@ -27,6 +28,7 @@ import org.bukkit.entity.Player;
 import de.cubeisland.cubeengine.core.logger.LogLevel;
 import de.cubeisland.cubeengine.core.storage.world.WorldManager;
 import de.cubeisland.cubeengine.core.user.User;
+import de.cubeisland.cubeengine.core.util.Profiler;
 import de.cubeisland.cubeengine.core.util.Triplet;
 import de.cubeisland.cubeengine.roles.Roles;
 import de.cubeisland.cubeengine.roles.config.RoleConfig;
@@ -101,14 +103,14 @@ public class RolesManager
         for (RoleMirror mirror : this.module.getConfiguration().mirrors)
         {
             Long mainWorldID = wm.getWorldId(mirror.mainWorld);
+            if (mainWorldID == null)
+            {
+                this.module.getLog().log(LogLevel.WARNING, "Ignoring unknown world: " + mirror.mainWorld);
+                continue;
+            }
             WorldRoleProvider provider = new WorldRoleProvider(module, this, mirror, mainWorldID);
             TLongObjectHashMap<Triplet<Boolean, Boolean, Boolean>> worldMirrors = provider.getWorldMirrors();
             this.module.getLog().log(LogLevel.DEBUG, "Loading role-provider for " + provider.getMainWorld());
-            if (mainWorldID == null)
-            {
-                this.module.getLog().log(LogLevel.WARNING, "Unknown world " + provider.getMainWorld());
-                continue;
-            }
             for (long worldId : worldMirrors.keys())
             {
                 if (this.worldRoleProviders.containsKey(worldId))
@@ -121,7 +123,9 @@ public class RolesManager
                 }
                 if (worldMirrors.get(worldId).getFirst()) // Roles are mirrored add to provider...
                 {
-                    this.module.getLog().log(LogLevel.DEBUG, "  Mirror: " + wm.getWorld(worldId).getName());
+                    this.module.getLog().log(LogLevel.DEBUG, "  " + wm.getWorld(worldId).getName()+
+                        ": ( RoleMirror " + (worldMirrors.get(worldId).getSecond() ? "; AssignedRoleMirror " : "")
+                        + (worldMirrors.get(worldId).getThird() ? "; UserDataMirror " :"") + ")");
                     this.worldRoleProviders.put(worldId, provider);
                     this.providerSet.add(provider);
                 }
@@ -158,7 +162,7 @@ public class RolesManager
         }
     }
 
-    protected WorldRoleProvider getProvider(long worldId)
+    public WorldRoleProvider getProvider(long worldId)
     {
         return this.worldRoleProviders.get(worldId);
     }
@@ -191,12 +195,15 @@ public class RolesManager
         }
     }
 
-    protected void recalculateAllRoles() // TODO
+    public void recalculateAllRoles()
     {
+        this.module.getLog().log(LogLevel.DEBUG,"Calculating all roles...");
+        Profiler.startProfiling("calculateAllRoles");
         for (RoleProvider roleProvider : providerSet)
         {
             roleProvider.recalculateRoles();
         }
+        this.module.getLog().log(LogLevel.DEBUG,"All roles are now calculated! ("+Profiler.endProfiling("calculateAllRoles", TimeUnit.MILLISECONDS)+"ms)");
     }
 
     public RolesAttachment getRolesAttachment(Player player)
@@ -211,5 +218,24 @@ public class RolesManager
             user = this.module.getCore().getUserManager().getExactUser(player);
         }
         return user.attachOrGet(RolesAttachment.class, this.module);
+    }
+
+    public void reapplyAllRoles()
+    {
+        for (User user : this.module.getCore().getUserManager().getLoadedUsers())
+        {
+            RolesAttachment rolesAttachment = user.get(RolesAttachment.class);
+            if (rolesAttachment == null)
+            {
+                if (!user.isOnline())
+                {
+                    continue;
+                }
+                rolesAttachment = this.getRolesAttachment(user);
+            }
+            rolesAttachment.flushResolvedData();
+            rolesAttachment.apply();
+        }
+
     }
 }

@@ -28,6 +28,7 @@ public class GlobalRoleProvider extends RoleProvider
     public GlobalRoleProvider(Roles module, RolesManager manager)
     {
         super(module, manager, 0);
+        this.basePerm = module.getBasePermission().createAbstractChild("global");
     }
 
     @Override
@@ -41,5 +42,16 @@ public class GlobalRoleProvider extends RoleProvider
     {
         this.module.getLog().log(DEBUG, "Calculating global Roles...");
         super.recalculateRoles();
+    }
+
+    @Override
+    protected boolean renameRole(Role role, String newName)
+    {
+        if (super.renameRole(role,newName))
+        {
+            this.manager.rm.renameGlobal(role.getName(),newName);
+            return true;
+        }
+        return false;
     }
 }

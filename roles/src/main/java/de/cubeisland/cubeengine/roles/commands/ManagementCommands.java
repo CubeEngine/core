@@ -39,9 +39,9 @@ public class ManagementCommands extends ContainerCommand
     public void reload(CommandContext context)
     {
         Roles module = (Roles)this.getModule();
-        module.getConfiguration().reload(); // reloads main config
-        module.getRolesManager().init(); // reloads all roleconfigs
-        module.getRolesManager().reloadAllRolesAndApply();
+        module.getRolesManager().initRoleProviders();
+        module.getRolesManager().recalculateAllRoles();
+        module.getRolesManager().reapplyAllRoles();
         context.sendTranslated("&f[&6Roles&f] &areload complete!");
     }
 
@@ -52,7 +52,7 @@ public class ManagementCommands extends ContainerCommand
         // database is up to date so only saving configs
         Roles module = (Roles)this.getModule();
         module.getConfiguration().save();
-        module.getRolesManager().saveAllConfigs();
+        module.getRolesManager().saveAll();
         context.sendTranslated("&f[&6Roles&f] &aall configurations saved!");
     }
 
@@ -81,11 +81,11 @@ public class ManagementCommands extends ContainerCommand
         {
             if (worldId == null)
             {
-                ((User)sender).get(RolesAttachment.class).setCurrentWorldId(null);
+                ((User)sender).get(RolesAttachment.class).setWorkingWorldId(null);
             }
             else
             {
-                ((User)sender).get(RolesAttachment.class).setCurrentWorldId(worldId);
+                ((User)sender).get(RolesAttachment.class).setWorkingWorldId(worldId);
             }
         }
         else

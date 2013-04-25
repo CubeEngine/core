@@ -27,10 +27,11 @@ import de.cubeisland.cubeengine.core.command.exception.MissingParameterException
 import de.cubeisland.cubeengine.core.command.parameterized.ParameterizedContext;
 import de.cubeisland.cubeengine.core.storage.world.WorldManager;
 import de.cubeisland.cubeengine.core.user.User;
-import de.cubeisland.cubeengine.roles.RoleManager;
+import de.cubeisland.cubeengine.core.util.ChatFormat;
 import de.cubeisland.cubeengine.roles.Roles;
+import de.cubeisland.cubeengine.roles.role.Role;
+import de.cubeisland.cubeengine.roles.role.RoleProvider;
 import de.cubeisland.cubeengine.roles.role.RolesAttachment;
-import de.cubeisland.cubeengine.roles.provider.RoleProvider;
 import de.cubeisland.cubeengine.roles.role.RolesManager;
 
 public abstract class RoleCommandHelper extends ContainerCommand
@@ -39,6 +40,9 @@ public abstract class RoleCommandHelper extends ContainerCommand
     protected RolesManager manager;
     protected Roles module;
     protected WorldManager worldManager;
+
+    protected final String LISTELEM = ChatFormat.parseFormats("- &e%s");
+    protected final String LISTELEM_VALUE = ChatFormat.parseFormats("- &e%s: &6%s");
 
     public RoleCommandHelper(Roles module)
     {
@@ -57,7 +61,7 @@ public abstract class RoleCommandHelper extends ContainerCommand
             if (sender instanceof User)
             {
                 User user = (User)sender;
-                Long worldId = user.attachOrGet(RolesAttachment.class,this.module).getCurrentWorldId();
+                Long worldId = user.attachOrGet(RolesAttachment.class,this.module).getWorkingWorldId();
                 if (worldId == null)
                 {
                     world = user.getWorld();
@@ -91,9 +95,9 @@ public abstract class RoleCommandHelper extends ContainerCommand
         return world;
     }
 
-    protected ConfigRole getRole(CommandContext context, RoleProvider provider, String name, World world)
+    protected Role getRole(CommandContext context, RoleProvider provider, String name, World world)
     {
-        ConfigRole role = provider.getRole(name);
+        Role role = provider.getRole(name);
         if (role == null)
         {
             if (world == null)

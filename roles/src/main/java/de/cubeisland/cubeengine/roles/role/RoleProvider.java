@@ -19,13 +19,15 @@ package de.cubeisland.cubeengine.roles.role;
 
 import java.io.File;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Locale;
+import java.util.Set;
 import java.util.Stack;
-import java.util.TreeSet;
 
 import de.cubeisland.cubeengine.core.config.Configuration;
 import de.cubeisland.cubeengine.core.logger.LogLevel;
 import de.cubeisland.cubeengine.core.permission.Permission;
+import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.util.StringUtils;
 import de.cubeisland.cubeengine.roles.Roles;
 import de.cubeisland.cubeengine.roles.config.RoleConfig;
@@ -40,8 +42,8 @@ public abstract class RoleProvider
     protected Roles module;
     protected RolesManager manager;
 
-    protected THashMap<String, RoleConfig> configs = new THashMap<String, RoleConfig>();
-    protected THashMap<String, Role> roles = new THashMap<String, Role>();
+    protected THashMap<String, RoleConfig> configs;
+    protected THashMap<String, Role> roles;
     protected Permission basePerm;
     protected File folder;
     protected final long mainWorldId;
@@ -53,20 +55,42 @@ public abstract class RoleProvider
         this.mainWorldId = mainWorldId;
     }
 
+    /**
+     * Gets the role with given name in the worlds managed by this RoleProvider
+     *
+     * @param name
+     * @return
+     */
     public Role getRole(String name)
     {
         return this.roles.get(name.toLowerCase());
     }
 
+    /**
+     * Gets all available roles in the worlds managed by this RoleProvider
+     *
+     * @return
+     */
     public Collection<Role> getRoles()
     {
         return this.roles.values();
     }
 
-    public abstract File getFolder();
+    /**
+     * Gets the folder where the configurations of this RoleProvider are saved.
+     *
+     * @return
+     */
+    protected abstract File getFolder();
 
-    public void loadConfigurations()
+    /**
+     * Loads in the configurations. Also removes all currently loaded roles.
+     */
+    protected void loadConfigurations()
     {
+        this.configs = new THashMap<String, RoleConfig>();
+        this.roles = new THashMap<String, Role>();
+        // TODO remove all roles from RolesAttachments
         this.getFolder().mkdir(); // Creates folder for this provider if not existent
         int i = 0;
         for (File configFile : this.getFolder().listFiles())
@@ -78,18 +102,24 @@ public abstract class RoleProvider
                 this.configs.put(config.roleName.toLowerCase(), config);
             }
         }
-        this.module.getLog().log(DEBUG, i + " role-configs read!");
+        this.module.getLog().log(DEBUG, this.getFolder().getName()+ ": " + i + " role-configs read!");
     }
 
-    public void reloadRoles()
+    /**
+     * Loads in all roles from the previously loaded configurations
+     */
+    protected void reloadRoles()
     {
         for (RoleConfig config : this.configs.values())
         {
-            Role role = new Role(config, this.mainWorldId);
+            Role role = new Role(this, config);
             this.roles.put(role.getName().toLowerCase(Locale.ENGLISH), role);
         }
     }
 
+    /**
+     * ReCalculates all roles
+     */
     public void recalculateRoles()
     {
         Stack<String> roleStack = new Stack<String>(); // stack for detecting circular dependencies
@@ -97,16 +127,36 @@ public abstract class RoleProvider
         {
             this.calculateRole(role, roleStack);
         }
+        for (User user : this.module.getCore().getUserManager().getLoadedUsers())
+        {
+            RolesAttachment rolesAttachment = user.get(RolesAttachment.class);
+            if (rolesAttachment == null)
+            {
+                if (!user.isOnline())
+                {
+                    continue;
+                }
+                rolesAttachment = user.attachOrGet(RolesAttachment.class,this.module);
+            }
+            rolesAttachment.getResolvedData(); // recalculates and applies the data if needed
+        }
     }
 
-    public Role calculateRole(Role role, Stack<String> roleStack)
+    /**
+     * Calculates a single role, resolving/calculating its dependencies
+     *
+     * @param role
+     * @param roleStack
+     * @return
+     */
+    private Role calculateRole(Role role, Stack<String> roleStack)
     {
         if (role.isDirty())
         {
             try
             {
                 roleStack.push(role.getName());
-                for (String parentName : role.getRawParents())
+                for (String parentName : role.getRawAssignedRoles())
                 {
                     if (roleStack.contains(parentName)) // Circular Dependency?
                     {
@@ -121,8 +171,8 @@ public abstract class RoleProvider
                     this.calculateRole(parentRole,roleStack);
                 }
                 // now all parent roles should be loaded
-                TreeSet<Role> parentRoles = new TreeSet<Role>();
-                for (String parentName : role.getRawParents())
+                Set<Role> parentRoles = new HashSet<Role>();
+                for (String parentName : role.getRawAssignedRoles())
                 {
                     Role parentRole = this.getRole(parentName);
                     if (parentRole == null)
@@ -137,7 +187,7 @@ public abstract class RoleProvider
                 data.calculate(parentRoles);
                 role.resolvedData = data;
                 roleStack.pop();
-                this.module.getLog().log(DEBUG, role.getName() + " calculated!");
+                this.module.getLog().log(DEBUG, "   - " + role.getName() + " calculated!");
                 return role;
             }
             catch (CircularRoleDependencyException ex)
@@ -149,18 +199,89 @@ public abstract class RoleProvider
         return role;
     }
 
-    public void recalculateDirtyRoles()
-    {
-
-    }
-
+    /**
+     * Returns the ID of the main world of this RoleProvider.
+     *
+     * @return the main-worldID or 0 if GlobalProvider
+     */
     public long getMainWorldId()
     {
         return mainWorldId;
     }
 
-    // TODO create Role
+    /**
+     * Creates a new Role with given name
+     *
+     * @param roleName
+     * @return
+     */
+    public Role createRole(String roleName)
+    {
+        roleName = roleName.toLowerCase(Locale.ENGLISH);
+        if (this.roles.containsKey(roleName))
+        {
+            return null;
+        }
+        RoleConfig config = new RoleConfig();
+        config.roleName = roleName;
+        this.configs.put(roleName,config);
+        config.onLoaded(null);
+        config.setFile(new File(this.folder, roleName + ".yml"));
+        config.save();
+        Role role = new Role(this, config);
+        this.roles.put(roleName,role);
+        this.calculateRole(role, new Stack<String>());
+        return role;
+    }
 
-    // TODO handle renaming a role
-    // TODO defaultRole
+    /**
+     * Deletes a role forever.
+     *
+     * @param role
+     */
+    protected void deleteRole(Role role)
+    {
+        for (ResolvedDataStore crole : role.resolvedData.dependentData)
+        {
+            crole.rawDataStore.removeRole(role);
+        }
+        this.roles.remove(role.getName());
+        this.configs.remove(role.getName());
+
+        this.manager.rm.deleteRole(this.mainWorldId, role.getName());
+    }
+
+    /**
+     * Renames a role
+     *
+     * @param role
+     * @param newName
+     * @return
+     */
+    protected boolean renameRole(Role role, String newName)
+    {
+        if (this.getRole(newName) != null)
+        {
+            return false;
+        }
+        for (ResolvedDataStore resolvedDataStore : role.resolvedData.dependentData)
+        {
+            if (resolvedDataStore.rawDataStore instanceof Role)
+            {
+                resolvedDataStore.rawDataStore.removeRole(role);
+            }
+        }
+
+        role.config.roleName = newName;
+        for (ResolvedDataStore resolvedDataStore : role.resolvedData.dependentData)
+        {
+            if (resolvedDataStore.rawDataStore instanceof Role)
+            {
+                resolvedDataStore.rawDataStore.assignRole(role);
+            }
+        }
+        role.saveConfigToNewFile();
+
+        return true;
+    }
 }

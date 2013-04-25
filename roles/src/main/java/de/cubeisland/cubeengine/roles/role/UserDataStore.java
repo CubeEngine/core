@@ -1,5 +1,6 @@
 package de.cubeisland.cubeengine.roles.role;
 
+import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
 
@@ -34,9 +35,15 @@ public class UserDataStore implements RawDataStore
     }
 
     @Override
-    public Set<String> getRawParents()
+    public Set<String> getRawAssignedRoles()
     {
        return this.roles;
+    }
+
+    @Override
+    public Set<Role> getAssignedRoles()
+    {
+        return Collections.unmodifiableSet(this.attachment.getResolvedData(this.worldID).assignedRoles);
     }
 
     @Override
@@ -72,13 +79,13 @@ public class UserDataStore implements RawDataStore
     }
 
     @Override
-    public boolean addParent(Role role)
+    public boolean assignRole(Role role)
     {
         return this.roles.add(role.getName());
     }
 
     @Override
-    public boolean removeParent(Role role)
+    public boolean removeRole(Role role)
     {
         return this.roles.remove(role.getName());
     }
@@ -96,7 +103,7 @@ public class UserDataStore implements RawDataStore
     }
 
     @Override
-    public void clearParents()
+    public void clearAssignedRoles()
     {
         this.roles = new THashSet<String>();
     }
@@ -114,9 +121,9 @@ public class UserDataStore implements RawDataStore
     }
 
     @Override
-    public void setParents(Set<Role> roles)
+    public void setAssignedRoles(Set<Role> roles)
     {
-        this.clearParents();
+        this.clearAssignedRoles();
         for (Role role : roles)
         {
             this.roles.add(role.getName());
@@ -134,5 +141,4 @@ public class UserDataStore implements RawDataStore
         return this.attachment.getHolder().key;
     }
 
-    // TODO getDominantRole
 }

@@ -17,13 +17,17 @@
  */
 package de.cubeisland.cubeengine.roles.config;
 
+import java.util.Map;
+
 import de.cubeisland.cubeengine.core.CubeEngine;
-import de.cubeisland.cubeengine.core.config.node.*;
+import de.cubeisland.cubeengine.core.config.node.ListNode;
+import de.cubeisland.cubeengine.core.config.node.MapNode;
+import de.cubeisland.cubeengine.core.config.node.Node;
+import de.cubeisland.cubeengine.core.config.node.NullNode;
+import de.cubeisland.cubeengine.core.config.node.StringNode;
 import de.cubeisland.cubeengine.core.util.convert.ConversionException;
 import de.cubeisland.cubeengine.core.util.convert.Converter;
 import de.cubeisland.cubeengine.roles.Roles;
-
-import java.util.Map;
 
 public class RoleMirrorConverter implements Converter<RoleMirror>
 {
@@ -39,7 +43,7 @@ public class RoleMirrorConverter implements Converter<RoleMirror>
     {
         MapNode resultMap = MapNode.emptyMap();
         resultMap.setNode(new StringNode(mirror.mainWorld), NullNode.emptyNode());
-        for (long worldId : mirror.getWorlds().keys())
+        for (long worldId : mirror.getWorldMirrors().keys())
         {
             String worldName = CubeEngine.getCore().getWorldManager().getWorld(worldId).getName();
             if (mirror.mainWorld.equals(worldName))
@@ -48,15 +52,15 @@ public class RoleMirrorConverter implements Converter<RoleMirror>
             }
             ListNode values = ListNode.emptyList();
             resultMap.setNode(StringNode.of(worldName), values);
-            if (mirror.getWorlds().get(worldId).getFirst())
+            if (mirror.getWorldMirrors().get(worldId).getFirst())
             {
                 values.addNode(StringNode.of("roles"));
             }
-            if (mirror.getWorlds().get(worldId).getSecond())
+            if (mirror.getWorldMirrors().get(worldId).getSecond())
             {
                 values.addNode(StringNode.of("assigned"));
             }
-            if (mirror.getWorlds().get(worldId).getThird())
+            if (mirror.getWorldMirrors().get(worldId).getThird())
             {
                 values.addNode(StringNode.of("users"));
             }

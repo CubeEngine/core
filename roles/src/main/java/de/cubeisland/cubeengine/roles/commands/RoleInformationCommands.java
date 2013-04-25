@@ -17,17 +17,22 @@
  */
 package de.cubeisland.cubeengine.roles.commands;
 
-import de.cubeisland.cubeengine.core.command.reflected.Alias;
-import de.cubeisland.cubeengine.core.command.parameterized.Flag;
-import de.cubeisland.cubeengine.core.command.parameterized.Param;
-import de.cubeisland.cubeengine.core.command.parameterized.ParameterizedContext;
-import de.cubeisland.cubeengine.core.command.reflected.Command;
-import de.cubeisland.cubeengine.roles.Roles;
-import de.cubeisland.cubeengine.roles.role.*;
+import java.util.Set;
 
 import org.bukkit.World;
 
-import java.util.Set;
+import de.cubeisland.cubeengine.core.command.parameterized.Flag;
+import de.cubeisland.cubeengine.core.command.parameterized.Param;
+import de.cubeisland.cubeengine.core.command.parameterized.ParameterizedContext;
+import de.cubeisland.cubeengine.core.command.reflected.Alias;
+import de.cubeisland.cubeengine.core.command.reflected.Command;
+import de.cubeisland.cubeengine.core.util.ChatFormat;
+import de.cubeisland.cubeengine.roles.Roles;
+import de.cubeisland.cubeengine.roles.role.Role;
+import de.cubeisland.cubeengine.roles.role.RoleProvider;
+import de.cubeisland.cubeengine.roles.role.WorldRoleProvider;
+import de.cubeisland.cubeengine.roles.role.resolved.ResolvedMetadata;
+import de.cubeisland.cubeengine.roles.role.resolved.ResolvedPermission;
 
 public class RoleInformationCommands extends RoleCommandHelper
 {
@@ -64,9 +69,9 @@ public class RoleInformationCommands extends RoleCommandHelper
             {
                 context.sendTranslated("&aThe following roles are available in &6%s&a:", world.getName());
             }
-            for (Role role : provider.getRoles().values())
+            for (Role role : provider.getRoles())
             {
-                context.sendMessage(String.format(" - &6%s", role.getName()));
+                context.sendMessage(String.format(this.LISTELEM,role.getName()));
             }
         }
     }
@@ -83,7 +88,7 @@ public class RoleInformationCommands extends RoleCommandHelper
         RoleProvider provider = this.manager.getProvider(world);
         Role role = this.getRole(context, provider, roleName, world);
         String permission = context.getString(1);
-        RolePermission myPerm = role.getPerms().get(permission);
+        ResolvedPermission myPerm = role.getPermissions().get(permission);
         if (myPerm != null)
         {
             if (myPerm.isSet())
@@ -126,8 +131,8 @@ public class RoleInformationCommands extends RoleCommandHelper
                                        context.getString(1), role.getName(), world.getName());
             }
         }
-        Role originRole = myPerm.getOrigin();
-        if (!originRole.getLitaralPerms().containsKey(permission))
+        Role originRole = (Role)myPerm.getOrigin();
+        if (!originRole.getRawPermissions().containsKey(permission))
         {
             boolean found = false;
             while (!permission.equals("*"))
@@ -138,9 +143,9 @@ public class RoleInformationCommands extends RoleCommandHelper
                 }
                 permission = permission.substring(0, permission.lastIndexOf(".") + 1) + "*";
 
-                if (originRole.getLitaralPerms().containsKey(permission))
+                if (originRole.getRawPermissions().containsKey(permission))
                 {
-                    if (originRole.getLitaralPerms().get(permission) == myPerm.isSet())
+                    if (originRole.getRawPermissions().get(permission) == myPerm.isSet())
                     {
                         found = true;
                         break;
@@ -162,12 +167,13 @@ public class RoleInformationCommands extends RoleCommandHelper
     }, desc = "Lists all permissions of given role [in world]", usage = "<[g:]role> [in <world>]", params = @Param(names = "in", type = World.class), max = 2, min = 1)
     public void listperm(ParameterizedContext context)
     {
+        // TODO list ALL perm OR only list perm of this role
         String roleName = context.getString(0);
         boolean global = roleName.startsWith(GLOBAL_PREFIX);
         World world = global ? null : this.getWorld(context);
         RoleProvider provider = this.manager.getProvider(world);
         Role role = this.getRole(context, provider, roleName, world);
-        if (role.getPerms().isEmpty())
+        if (role.getRawPermissions().isEmpty())
         {
             if (global)
             {
@@ -175,7 +181,7 @@ public class RoleInformationCommands extends RoleCommandHelper
             }
             else
             {
-                context.sendTranslated("&eNo permissions set for the role &6%s &ein &6%s&e.", role.getName(), world.getName());
+                context.sendTranslated("&eNo permissions set for the role &6%s&e in &6%s&e.", role.getName(), world.getName());
             }
         }
         else
@@ -188,15 +194,17 @@ public class RoleInformationCommands extends RoleCommandHelper
             {
                 context.sendTranslated("&aPermissions of the role &6%s &ain &6%s&a:", role.getName(), world.getName());
             }
-            for (String perm : role.getAllLiteralPerms().keySet())
+            for (String perm : role.getRawPermissions().keySet())
             {
-                if (role.getAllLiteralPerms().get(perm))
+                String trueString = ChatFormat.parseFormats("&2true");
+                String falseString = ChatFormat.parseFormats("&4false");
+                if (role.getRawPermissions().get(perm))
                 {
-                    context.sendMessage(" - &6" + perm + "&f: &2true");
+                    context.sendMessage(String.format(this.LISTELEM_VALUE,perm,trueString));
                 }
                 else
                 {
-                    context.sendMessage(" - &6" + perm + "&f: &4false");
+                    context.sendMessage(String.format(this.LISTELEM_VALUE,perm,falseString));
                 }
             }
         }
@@ -208,12 +216,13 @@ public class RoleInformationCommands extends RoleCommandHelper
     }, desc = "Lists all metadata of given role [in world]", usage = "<[g:]role> [in <world>]", params = @Param(names = "in", type = World.class), max = 2, min = 1)
     public void listmetadata(ParameterizedContext context)
     {
+        // TODO list ALL metadata OR only list metadata of this role
         String roleName = context.getString(0);
         boolean global = roleName.startsWith(GLOBAL_PREFIX);
         World world = global ? null : this.getWorld(context);
         RoleProvider provider = this.manager.getProvider(world);
         Role role = this.getRole(context, provider, roleName, world);
-        if (role.getMetaData().isEmpty())
+        if (role.getRawMetadata().isEmpty())
         {
             if (global)
             {
@@ -234,9 +243,9 @@ public class RoleInformationCommands extends RoleCommandHelper
             {
                 context.sendTranslated("&aMetadata of the role &6%s &ain &6%s&a:", role.getName(), world.getName());
             }
-            for (RoleMetaData data : role.getMetaData().values())
+            for (ResolvedMetadata data : role.getMetadata().values())
             {
-                context.sendMessage(" - " + data.getKey() + ": " + data.getValue());
+                context.sendMessage(String.format(this.LISTELEM_VALUE,data.getKey(), data.getValue()));
             }
         }
     }
@@ -249,7 +258,7 @@ public class RoleInformationCommands extends RoleCommandHelper
         World world = global ? null : this.getWorld(context);
         RoleProvider provider = this.manager.getProvider(world);
         Role role = this.getRole(context, provider, roleName, world);
-        if (role.getParentRoles().isEmpty())
+        if (role.getAssignedRoles().isEmpty())
         {
             if (global)
             {
@@ -270,9 +279,9 @@ public class RoleInformationCommands extends RoleCommandHelper
             {
                 context.sendTranslated("&eThe role &6%s &ein &6%s &ehas following parent roles:", role.getName(), world.getName());
             }
-            for (Role parent : role.getParentRoles())
+            for (Role parent : role.getAssignedRoles())
             {
-                context.sendMessage(" - " + parent.getName());
+                context.sendMessage(String.format(this.LISTELEM,parent.getName()));
             }
         }
     }
@@ -288,11 +297,11 @@ public class RoleInformationCommands extends RoleCommandHelper
         Role role = this.getRole(context, provider, roleName, world);
         if (world == null)
         {
-            context.sendTranslated("&eThe priority of the global role &6%s &eis: &6%d", role.getName(), role.getPriority().value);
+            context.sendTranslated("&eThe priority of the global role &6%s &eis: &6%d", role.getName(), role.getPriorityValue());
         }
         else
         {
-            context.sendTranslated("&eThe priority of the role &6%s &ein &6%s &eis: &6%d", role.getName(), world.getName(), role.getPriority().value);
+            context.sendTranslated("&eThe priority of the role &6%s &ein &6%s &eis: &6%d", role.getName(), world.getName(), role.getPriorityValue());
         }
     }
 
@@ -303,7 +312,7 @@ public class RoleInformationCommands extends RoleCommandHelper
     {
         World world = this.getWorld(context);
         WorldRoleProvider provider = this.manager.getProvider(world);
-        Set<ConfigRole> defaultRoles = provider.getDefaultRoles();
+        Set<Role> defaultRoles = provider.getDefaultRoles();
         if (defaultRoles.isEmpty())
         {
             context.sendTranslated("&cThere are no default roles set for &6%s&c!", world.getName());
@@ -313,7 +322,7 @@ public class RoleInformationCommands extends RoleCommandHelper
             context.sendTranslated("&aThe following roles are default roles in &6%s&a!", world.getName());
             for (Role role : defaultRoles)
             {
-                context.sendMessage(" - &6" + role.getName());
+                context.sendMessage(String.format(this.LISTELEM,role.getName()));
             }
         }
     }

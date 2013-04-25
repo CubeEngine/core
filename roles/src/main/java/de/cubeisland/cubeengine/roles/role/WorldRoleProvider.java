@@ -28,6 +28,7 @@ import de.cubeisland.cubeengine.roles.config.RoleConfig;
 import de.cubeisland.cubeengine.roles.config.RoleMirror;
 
 import gnu.trove.map.hash.TLongObjectHashMap;
+import gnu.trove.procedure.TLongObjectProcedure;
 
 import static de.cubeisland.cubeengine.core.logger.LogLevel.DEBUG;
 
@@ -40,6 +41,7 @@ public class WorldRoleProvider extends RoleProvider
     {
         super(module,manager,mainWorldId);
         this.mirrorConfig = mirror;
+        this.basePerm = module.getBasePermission().createAbstractChild("world").createAbstractChild(mirror.mainWorld);
     }
 
     public void reloadRoles()
@@ -47,13 +49,17 @@ public class WorldRoleProvider extends RoleProvider
         Set<String> defaultRoles = this.module.getConfiguration().defaultRoles.get(mirrorConfig.mainWorld);
         for (RoleConfig config : this.configs.values())
         {
-            Role role = new Role(config, this.mainWorldId);
+            Role role = new Role(this, config);
             if (defaultRoles.contains(config.roleName))
             {
                 role.isDefaultRole = true;
                 this.defaultRoles.add(role);
             }
             this.roles.put(role.getName().toLowerCase(Locale.ENGLISH), role);
+        }
+        if (this.defaultRoles.isEmpty())
+        {
+            this.module.getLog().warning("The role-provider for " + this.mirrorConfig.mainWorld + " has no default roles!");
         }
     }
 
@@ -66,7 +72,7 @@ public class WorldRoleProvider extends RoleProvider
 
     public TLongObjectHashMap<Triplet<Boolean, Boolean, Boolean>> getWorldMirrors()
     {
-        return this.mirrorConfig.getWorlds();
+        return this.mirrorConfig.getWorldMirrors();
     }
 
     public Set<Role> getDefaultRoles()
@@ -82,7 +88,7 @@ public class WorldRoleProvider extends RoleProvider
     @Override
     public void recalculateRoles()
     {
-        this.module.getLog().log(DEBUG, "Calculating Roles of world " + this.mirrorConfig.mainWorld + "...");
+        this.module.getLog().log(DEBUG, "Calculating Roles of " + this.mirrorConfig.mainWorld + "...");
         super.recalculateRoles();
     }
 
@@ -106,5 +112,53 @@ public class WorldRoleProvider extends RoleProvider
             return this.manager.getGlobalProvider().getRole(name.substring(2));
         }
         return super.getRole(name);
+    }
+
+    protected void setDefaultRole(Role role, boolean set)
+    {
+        if (set)
+        {
+            Set<String> defaultRoles = this.module.getConfiguration().defaultRoles.get(this.getMainWorld());
+            defaultRoles.add(role.getName());
+            this.defaultRoles.add(role);
+            this.module.getConfiguration().save();
+        }
+        else
+        {
+            Set<String> defaultRoles = this.module.getConfiguration().defaultRoles.get(this.getMainWorld());
+            defaultRoles.remove(role.getName());
+            this.defaultRoles.remove(role);
+            this.module.getConfiguration().save();
+        }
+    }
+
+    @Override
+    protected void deleteRole(final Role role)
+    {
+        super.deleteRole(role);
+        // Also delete possible mirrors
+        this.mirrorConfig.getWorldMirrors().forEachEntry(new TLongObjectProcedure<Triplet<Boolean, Boolean, Boolean>>()
+        {
+            @Override
+            public boolean execute(long worldID, Triplet<Boolean, Boolean, Boolean> mirrors)
+            {
+                if (mirrors.getFirst() && !mirrors.getSecond()) // roles are mirrored but not assigned roles
+                {
+                    manager.rm.deleteRole(worldID, role.getName());
+                }
+                return true;
+            }
+        });
+    }
+
+    @Override
+    protected boolean renameRole(Role role, String newName)
+    {
+        if (super.renameRole(role,newName))
+        {
+            this.manager.rm.rename(this,role.getName(),newName);
+            return true;
+        }
+        return false;
     }
 }

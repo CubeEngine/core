@@ -19,10 +19,10 @@ package de.cubeisland.cubeengine.roles.role;
 
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
-import java.util.TreeSet;
 
 import org.bukkit.Bukkit;
 import org.bukkit.permissions.Permission;
@@ -36,10 +36,10 @@ public class ResolvedDataStore
 {
     protected Map<String,ResolvedPermission> permissions;
     protected Map<String,ResolvedMetadata> metadata;
-    protected Set<Role> parentRoles;
+    protected Set<Role> assignedRoles;
 
-    private Set<ResolvedDataStore> dependentData;
-    private RawDataStore rawDataStore;
+    protected Set<ResolvedDataStore> dependentData;
+    protected RawDataStore rawDataStore;
     private boolean dirty = true;
 
     public ResolvedDataStore(RawDataStore store)
@@ -48,11 +48,11 @@ public class ResolvedDataStore
 
     }
 
-    private void inheritFrom(Set<Role> parentRoles)
+    private void inheritFrom(Set<Role> assignedRoles)
     {
-        this.parentRoles = parentRoles;
-        this.dependentData = new TreeSet<ResolvedDataStore>();
-        for (Role role : parentRoles)
+        this.assignedRoles = assignedRoles;
+        this.dependentData = new HashSet<ResolvedDataStore>();
+        for (Role role : assignedRoles)
         {
             role.resolvedData.dependentData.add(this);
         }
@@ -69,9 +69,9 @@ public class ResolvedDataStore
         this.makeChildsDirty();
     }
 
-    private void doCalculate(Map<String, Boolean> perms, Map<String, String> metadata, Set<Role> parentRoles)
+    private void doCalculate(Map<String, Boolean> perms, Map<String, String> metadata, Set<Role> assignedRoles)
     {
-        this.inheritFrom(parentRoles);
+        this.inheritFrom(assignedRoles);
         // First calculate/apply direct Perm & Metadata
         this.permissions = new THashMap<String, ResolvedPermission>();
         for (Entry<String, Boolean> entry : perms.entrySet())
@@ -93,11 +93,11 @@ public class ResolvedDataStore
             this.metadata.put(entry.getKey(), new ResolvedMetadata(this.rawDataStore, entry.getKey(), entry.getValue()));
         }
         // Then merge inheritance Perm & Metadata
-        if (parentRoles != null && !parentRoles.isEmpty())
+        if (assignedRoles != null && !assignedRoles.isEmpty())
         {
             Map<String, ResolvedPermission> mergePerm = new HashMap<String, ResolvedPermission>();
             Map<String, ResolvedMetadata> mergeMeta = new HashMap<String, ResolvedMetadata>();
-            for (Role toMerge : parentRoles)
+            for (Role toMerge : assignedRoles)
             {
                 for (Entry<String, ResolvedPermission> entry : toMerge.resolvedData.permissions.entrySet())
                 {
@@ -137,9 +137,9 @@ public class ResolvedDataStore
         this.dirty = false;
     }
 
-    protected void calculate(RawDataStore temporary, Set<Role> parentRoles)
+    protected void calculate(RawDataStore temporary, Set<Role> assignedRoles)
     {
-        this.calculate(parentRoles);
+        this.calculate(assignedRoles);
         for (Entry<String, Boolean> entry : temporary.getRawPermissions().entrySet())
         {
             if (entry.getKey().endsWith("*"))
@@ -159,9 +159,9 @@ public class ResolvedDataStore
         }
     }
 
-    protected void calculate(Set<Role> parentRoles)
+    protected void calculate(Set<Role> assignedRoles)
     {
-        this.doCalculate(this.rawDataStore.getRawPermissions(),this.rawDataStore.getRawMetadata(),parentRoles);
+        this.doCalculate(this.rawDataStore.getRawPermissions(),this.rawDataStore.getRawMetadata(),assignedRoles);
     }
 
     private void resolveBukkitPermission(String name, boolean set, Map<String, Boolean> resolvedPermissions)
@@ -192,26 +192,6 @@ public class ResolvedDataStore
         }
     }
 
-    protected void performRename(String newName)
-    {
-        if (this.rawDataStore instanceof Role)
-        {
-            for (ResolvedDataStore role : this.dependentData)
-            {
-                role.rawDataStore.removeParent((Role)this.rawDataStore);
-            }
-            ((Role)this.rawDataStore).setName(newName);
-            for (ResolvedDataStore role : this.dependentData)
-            {
-                role.rawDataStore.addParent((Role)this.rawDataStore);
-            }
-        }
-        else
-        {
-            throw new UnsupportedOperationException("Renaming is only supported by Config-Roles");
-        }
-    }
-
     private void makeChildsDirty()
     {
         for (ResolvedDataStore resolvedData : this.dependentData)
@@ -222,11 +202,11 @@ public class ResolvedDataStore
 
     public boolean inheritsFrom(Role other)
     {
-        if (this.parentRoles.contains(other))
+        if (this.assignedRoles.contains(other))
         {
             return true;
         }
-        for (Role role : parentRoles)
+        for (Role role : assignedRoles)
         {
             if (role.inheritsFrom(other))
             {
@@ -234,7 +214,6 @@ public class ResolvedDataStore
             }
         }
         return false;
-
     }
 
     protected void performDeleteRole()
@@ -242,14 +221,14 @@ public class ResolvedDataStore
         if (this.rawDataStore instanceof Role)
         {
             // remove instances in parents
-            for (Role parentRole : this.parentRoles)
+            for (Role parentRole : this.assignedRoles)
             {
                 parentRole.resolvedData.dependentData.remove(this.rawDataStore);
             }
             // remove from config in children
             for (ResolvedDataStore subData : this.dependentData)
             {
-                subData.rawDataStore.removeParent((Role)this.rawDataStore);
+                subData.rawDataStore.removeRole((Role)this.rawDataStore);
             }
         }
         else

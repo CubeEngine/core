@@ -20,6 +20,7 @@ package de.cubeisland.cubeengine.spawn;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
@@ -30,6 +31,7 @@ import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.user.UserManager;
 import de.cubeisland.cubeengine.core.util.StringUtils;
 import de.cubeisland.cubeengine.roles.Roles;
+import de.cubeisland.cubeengine.roles.role.RolesAttachment;
 
 public class SpawnListener implements Listener
 {
@@ -44,13 +46,19 @@ public class SpawnListener implements Listener
         this.um = roles.getCore().getUserManager();
     }
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.HIGH) // has to be called after roles could assign data
     public void onJoin(PlayerJoinEvent event)
     {
         if (!event.getPlayer().hasPlayedBefore())
         {
             User user = um.getExactUser(event.getPlayer());
-            String spawnString = roles.getApi().getMetaData(user, event.getPlayer().getWorld(), "rolespawn");
+            RolesAttachment rolesAttachment = user.get(RolesAttachment.class);
+            if (rolesAttachment == null)
+            {
+                this.roles.getLog().warning("Missing RolesAttachment!");
+                return;
+            }
+            String spawnString = rolesAttachment.getMetadata("rolespawn");
             if (spawnString != null)
             {
                 Location spawnLoc = this.getSpawnLocation(spawnString);
@@ -70,7 +78,13 @@ public class SpawnListener implements Listener
         if (!event.isBedSpawn())
         {
             User user = um.getExactUser(event.getPlayer());
-            String spawnString = roles.getApi().getMetaData(user, event.getRespawnLocation().getWorld(), "rolespawn");
+            RolesAttachment rolesAttachment = user.get(RolesAttachment.class);
+            if (rolesAttachment == null)
+            {
+                this.roles.getLog().warning("Missing RolesAttachment!");
+                return;
+            }
+            String spawnString = rolesAttachment.getMetadata("rolespawn");
             if (spawnString != null)
             {
                 Location spawnLoc = this.getSpawnLocation(spawnString);

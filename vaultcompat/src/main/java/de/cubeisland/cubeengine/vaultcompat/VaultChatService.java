@@ -21,6 +21,8 @@ import org.bukkit.World;
 
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.roles.Roles;
+import de.cubeisland.cubeengine.roles.role.RolesAttachment;
+import de.cubeisland.cubeengine.roles.role.resolved.ResolvedMetadata;
 
 import net.milkbowl.vault.chat.Chat;
 
@@ -55,8 +57,19 @@ public class VaultChatService extends net.milkbowl.vault.chat.Chat
     {
         User user = this.compat.getCore().getUserManager().getUser(playerName);
         World world = this.compat.getCore().getServer().getWorld(worldName);
-
-        return this.roles.getApi().getMetaData(user, world, "prefix");
+        RolesAttachment rolesAttachment = user.get(RolesAttachment.class);
+        if (rolesAttachment == null)
+        {
+            this.roles.getLog().warning("Missing RolesAttachment!");
+            return "";
+        }
+        ResolvedMetadata prefix = rolesAttachment.
+            getMetadata(this.compat.getCore().getWorldManager().getWorldId(world)).get("prefix");
+        if (prefix == null)
+        {
+            return "";
+        }
+        return prefix.getValue();
     }
 
     @Override
@@ -70,8 +83,19 @@ public class VaultChatService extends net.milkbowl.vault.chat.Chat
     {
         User user = this.compat.getCore().getUserManager().getUser(playerName);
         World world = this.compat.getCore().getServer().getWorld(worldName);
-
-        return this.roles.getApi().getMetaData(user, world, "suffix");
+        RolesAttachment rolesAttachment = user.get(RolesAttachment.class);
+        if (rolesAttachment == null)
+        {
+            this.roles.getLog().warning("Missing RolesAttachment!");
+            return "";
+        }
+        ResolvedMetadata suffix = rolesAttachment.
+             getMetadata(this.compat.getCore().getWorldManager().getWorldId(world)).get("suffix");
+        if (suffix == null)
+        {
+            return "";
+        }
+        return suffix.getValue();
     }
 
     @Override

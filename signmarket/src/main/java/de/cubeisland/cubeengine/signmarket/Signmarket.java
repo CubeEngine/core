@@ -46,7 +46,7 @@ public class Signmarket extends Module
         new MarketSignPerm(this);
         System.out.print(Profiler.getCurrentDelta("marketSignEnable", TimeUnit.MILLISECONDS) + "ms - Command");
         this.getCore().getCommandManager().registerCommand(new SignMarketCommands(this));
-        System.out.print(Profiler.getCurrentDelta("marketSignEnable", TimeUnit.MILLISECONDS) + "ms - done");
+        System.out.print(Profiler.endProfiling("marketSignEnable", TimeUnit.MILLISECONDS) + "ms - done");
     }
 
     public MarketSignFactory getMarketSignFactory()
