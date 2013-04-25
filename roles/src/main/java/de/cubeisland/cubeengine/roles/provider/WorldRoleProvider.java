@@ -53,38 +53,6 @@ public class WorldRoleProvider extends RoleProvider
     }
 
 
-
-    public void loadDefaultRoles(RolesConfig config)
-    {
-        List<String> dRoles = config.defaultRoles.get(this.mirrorConfig.mainWorld);
-        if (dRoles == null || dRoles.isEmpty())
-        {
-            module.getLog().log(LogLevel.WARNING, "No default-roles defined for " + this.mirrorConfig.mainWorld);
-            return;
-        }
-        for (String roleName : dRoles)
-        {
-            ConfigRole role = this.roles.get(roleName.toLowerCase(Locale.ENGLISH));
-            if (role == null)
-            {
-                module.getLog().log(LogLevel.WARNING, "Could not find default-role " + roleName);
-            }
-            this.defaultRoles.add(role);
-        }
-    }
-
-    @Override
-    public void loadInConfigurations(File rolesFolder)
-    {
-        if (this.folder == null)
-        {
-            // Sets the folder for this provider
-            this.folder = new File(rolesFolder, this.mirrorConfig.mainWorld);
-        }
-        this.module.getLog().log(DEBUG, "Loading roles for provider of " + this.mirrorConfig.mainWorld + ":");
-        super.loadInConfigurations(rolesFolder);
-    }
-
     @Override
     public void reapplyDirtyRoles()
     {
@@ -116,21 +84,6 @@ public class WorldRoleProvider extends RoleProvider
                 isDirty = false; // check next world
             }
         }
-    }
-
-    public TLongObjectHashMap<Triplet<Boolean, Boolean, Boolean>> getWorlds()
-    {
-        return this.mirrorConfig.getWorlds();
-    }
-
-    public Set<ConfigRole> getDefaultRoles()
-    {
-        return this.defaultRoles;
-    }
-
-    public String getMainWorld()
-    {
-        return this.mirrorConfig.mainWorld;
     }
 
     public boolean toggleDefaultRole(ConfigRole role)

@@ -31,18 +31,19 @@ import de.cubeisland.cubeengine.roles.RoleManager;
 import de.cubeisland.cubeengine.roles.Roles;
 import de.cubeisland.cubeengine.roles.role.RolesAttachment;
 import de.cubeisland.cubeengine.roles.provider.RoleProvider;
+import de.cubeisland.cubeengine.roles.role.RolesManager;
 
 public abstract class RoleCommandHelper extends ContainerCommand
 {
     protected static final String GLOBAL_PREFIX = "g:";
-    protected RoleManager manager;
+    protected RolesManager manager;
     protected Roles module;
     protected WorldManager worldManager;
 
     public RoleCommandHelper(Roles module)
     {
         super(module, "role", "Manage roles.");//TODO alias manrole
-        this.manager = module.getRoleManager();
+        this.manager = module.getRolesManager();
         this.module = module;
         this.worldManager = module.getCore().getWorldManager();
     }

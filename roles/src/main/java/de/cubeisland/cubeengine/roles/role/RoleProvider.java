@@ -18,6 +18,7 @@
 package de.cubeisland.cubeengine.roles.role;
 
 import java.io.File;
+import java.util.Collection;
 import java.util.Locale;
 import java.util.Stack;
 import java.util.TreeSet;
@@ -57,6 +58,11 @@ public abstract class RoleProvider
         return this.roles.get(name.toLowerCase());
     }
 
+    public Collection<Role> getRoles()
+    {
+        return this.roles.values();
+    }
+
     public abstract File getFolder();
 
     public void loadConfigurations()
@@ -86,7 +92,6 @@ public abstract class RoleProvider
 
     public void recalculateRoles()
     {
-        this.module.getLog().log(DEBUG, "Calculating roles for world #"+this.mainWorldId);
         Stack<String> roleStack = new Stack<String>(); // stack for detecting circular dependencies
         for (Role role : this.roles.values())
         {
@@ -155,4 +160,7 @@ public abstract class RoleProvider
     }
 
     // TODO create Role
+
+    // TODO handle renaming a role
+    // TODO defaultRole
 }

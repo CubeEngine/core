@@ -29,19 +29,20 @@ import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.roles.RoleManager;
 import de.cubeisland.cubeengine.roles.Roles;
 import de.cubeisland.cubeengine.roles.role.RolesAttachment;
+import de.cubeisland.cubeengine.roles.role.RolesManager;
 
 import gnu.trove.map.hash.TLongObjectHashMap;
 
 public class UserCommandHelper extends ContainerCommand
 {
-    protected RoleManager manager;
+    protected RolesManager manager;
     protected WorldManager worldManager;
     protected Roles module;
 
     public UserCommandHelper(Roles module)
     {
         super(module, "user", "Manage users.");
-        this.manager = module.getRoleManager();
+        this.manager = module.getRolesManager();
         this.worldManager = module.getCore().getWorldManager();
         this.module = module;
     }

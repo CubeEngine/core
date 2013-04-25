@@ -40,8 +40,8 @@ public class ManagementCommands extends ContainerCommand
     {
         Roles module = (Roles)this.getModule();
         module.getConfiguration().reload(); // reloads main config
-        module.getRoleManager().init(); // reloads all roleconfigs
-        module.getRoleManager().reloadAllRolesAndApply();
+        module.getRolesManager().init(); // reloads all roleconfigs
+        module.getRolesManager().reloadAllRolesAndApply();
         context.sendTranslated("&f[&6Roles&f] &areload complete!");
     }
 
@@ -52,7 +52,7 @@ public class ManagementCommands extends ContainerCommand
         // database is up to date so only saving configs
         Roles module = (Roles)this.getModule();
         module.getConfiguration().save();
-        module.getRoleManager().saveAllConfigs();
+        module.getRolesManager().saveAllConfigs();
         context.sendTranslated("&f[&6Roles&f] &aall configurations saved!");
     }
 

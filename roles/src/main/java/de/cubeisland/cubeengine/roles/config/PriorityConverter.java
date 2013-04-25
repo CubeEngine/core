@@ -36,7 +36,7 @@ public class PriorityConverter implements Converter<Priority>
         Priority prio = Priority.getByName(node.unwrap());
         if (prio == null)
         {
-            prio = new Priority(Integer.valueOf(node.unwrap()));
+            prio = Priority.getByValue(Integer.valueOf(node.unwrap()));
         }
         return prio;
     }

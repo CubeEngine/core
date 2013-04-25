@@ -24,8 +24,6 @@ import de.cubeisland.cubeengine.core.command.parameterized.ParameterizedContext;
 import de.cubeisland.cubeengine.core.command.reflected.Command;
 import de.cubeisland.cubeengine.roles.Roles;
 import de.cubeisland.cubeengine.roles.role.*;
-import de.cubeisland.cubeengine.roles.provider.RoleProvider;
-import de.cubeisland.cubeengine.roles.provider.WorldRoleProvider;
 
 import org.bukkit.World;
 

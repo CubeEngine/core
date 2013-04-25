@@ -52,7 +52,7 @@ public class RolesEventHandler implements Listener
         // TODO mirrors
         if (fromProvider.equals(toProvider))
         {
-            if (toProvider.getWorlds().get(worldToId).getSecond())
+            if (toProvider.getWorldMirrors().get(worldToId).getSecond())
             {
                 return;
             }

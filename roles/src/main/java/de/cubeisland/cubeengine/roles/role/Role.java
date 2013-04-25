@@ -128,6 +128,7 @@ public class Role implements RawDataStore
 
     public boolean addParentRole(Role pRole)
     {
+        // TODO check circular dependency!
         boolean added = this.config.parents.add(pRole.getName());
         if (added)
         {

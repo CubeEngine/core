@@ -35,18 +35,6 @@ public class GlobalRoleProvider extends RoleProvider
     }
 
     @Override
-    public void loadInConfigurations(File rolesFolder)
-    {
-        this.module.getLog().log(DEBUG, "Loading global roles...");
-        if (this.folder == null)
-        {
-            // Sets the folder for this provider
-            this.folder = rolesFolder;
-        }
-        super.loadInConfigurations(rolesFolder);
-    }
-
-    @Override
     public void reapplyDirtyRoles()
     {
         for (User user : this.module.getCore().getUserManager().getOnlineUsers())
@@ -79,17 +67,4 @@ public class GlobalRoleProvider extends RoleProvider
         }
     }
 
-    @Override
-    public ConfigRole getRole(String roleName)
-    {
-        if (roleName == null)
-        {
-            return null;
-        }
-        if (roleName.startsWith("g:"))
-        {
-            roleName = roleName.substring(2);
-        }
-        return this.roles.get(roleName.toLowerCase(Locale.ENGLISH));
-    }
 }
