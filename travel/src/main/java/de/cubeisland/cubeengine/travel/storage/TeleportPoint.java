@@ -129,7 +129,7 @@ public class TeleportPoint implements Model<Long>
         this.ownerKey = owner.getId();
         this.typeId = type.ordinal();
         this.visibilityId = visibility.ordinal();
-        this.worldKey = CubeEngine.getCore().getWorldManager().getWorldId(location.getWorld());
+        this.worldKey = owner.getCore().getWorldManager().getWorldId(location.getWorld());
         this.x = location.getX();
         this.y = location.getY();
         this.z = location.getZ();
@@ -153,16 +153,17 @@ public class TeleportPoint implements Model<Long>
     {
         if (this.owner == null)
         {
+            // TODO get rid of CubeEngine
             this.owner = CubeEngine.getUserManager().getUser(ownerKey);
         }
         return this.owner;
     }
 
-
     protected Location getLocation()
     {
         if (this.location == null)
         {
+            // TODO get rid of CubeEngine
             this.location = new Location(CubeEngine.getCore().getWorldManager().getWorld(worldKey), x, y, z, yaw, pitch);
         }
         return this.location;
