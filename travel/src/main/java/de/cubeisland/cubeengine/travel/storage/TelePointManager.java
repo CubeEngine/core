@@ -193,7 +193,7 @@ public class TelePointManager extends SingleKeyStorage<Long, TeleportPoint>
             }
             else
             {
-                Warp warp = new Warp(teleportPoint, this, inviteManager);
+                Warp warp = new Warp(teleportPoint, this, inviteManager, this.module);
                 warps.put(warp.getStorageName(), warp);
             }
         }
@@ -764,7 +764,8 @@ public class TelePointManager extends SingleKeyStorage<Long, TeleportPoint>
      */
     public Warp createWarp(Location location, String name, User owner, TeleportPoint.Visibility visibility)
     {
-        Warp warp = new Warp(new TeleportPoint(location, name, owner, null, TeleportPoint.Type.WARP, visibility), this, inviteManager);
+        Warp warp = new Warp(new TeleportPoint(location, name, owner, null, TeleportPoint.Type.WARP, visibility),
+                this, inviteManager, this.module);
         this.store(warp.getModel());
         this.putWarpToUser(warp, warp.getOwner());
         this.warps.put(warp.getStorageName(), warp);

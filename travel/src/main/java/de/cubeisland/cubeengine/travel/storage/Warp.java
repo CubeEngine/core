@@ -18,10 +18,14 @@
 package de.cubeisland.cubeengine.travel.storage;
 
 import de.cubeisland.cubeengine.core.CubeEngine;
+import de.cubeisland.cubeengine.core.permission.PermDefault;
+import de.cubeisland.cubeengine.core.permission.Permission;
 import de.cubeisland.cubeengine.core.user.User;
 
+import de.cubeisland.cubeengine.travel.Travel;
 import org.bukkit.Location;
 
+import java.util.Locale;
 import java.util.Set;
 
 public class Warp
@@ -29,14 +33,20 @@ public class Warp
     private final TeleportPoint parent;
     private final TelePointManager telePointManager;
     private final InviteManager inviteManager;
+    private final Permission permission;
     private Set<String> invited;
 
-    public Warp(TeleportPoint teleportPoint, TelePointManager telePointManager, InviteManager inviteManager)
+    public Warp(TeleportPoint teleportPoint, TelePointManager telePointManager, InviteManager inviteManager, Travel module)
     {
         this.parent = teleportPoint;
         this.telePointManager = telePointManager;
         this.inviteManager = inviteManager;
-        this.invited = inviteManager.getInvited(parent);
+        this.permission = module.getBasePermission().
+                createAbstractChild("warps").
+                createAbstractChild("access").
+                createChild(parent.name.toLowerCase(Locale.ENGLISH), this.parent.visibility
+                        .equals(TeleportPoint.Visibility.PRIVATE) ? PermDefault.OP : PermDefault.TRUE);
+        module.getCore().getPermissionManager().registerPermission(module, this.permission);
     }
 
     /**
@@ -93,6 +103,10 @@ public class Warp
 
     public void invite(User user)
     {
+        if (this.invited == null)
+        {
+            this.invited = inviteManager.getInvited(parent);
+        }
         this.invited.add(user.getName());
         telePointManager.putWarpToUser(this, user);
         inviteManager.store(new TeleportInvite(parent.key, user.getId()));
@@ -100,6 +114,10 @@ public class Warp
 
     public void unInvite(User user)
     {
+        if (this.invited == null)
+        {
+            this.invited = inviteManager.getInvited(parent);
+        }
         this.invited.remove(user.getName());
         telePointManager.removeWarpFromUser(this, user);
         inviteManager.updateInvited(parent, this.invited);
@@ -107,7 +125,7 @@ public class Warp
 
     public boolean isInvited(User user)
     {
-        return this.invited.contains(user.getName()) || this.isPublic();
+        return this.getInvited().contains(user.getName()) || this.isPublic();
     }
 
     public TeleportPoint.Visibility getVisibility()
@@ -194,6 +212,10 @@ public class Warp
 
     public Set<String> getInvited()
     {
+        if (this.invited == null)
+        {
+            this.invited = inviteManager.getInvited(parent);
+        }
         return this.invited;
     }
 }
