@@ -107,7 +107,7 @@ public class ResolvedDataStore
                     }
                     if (mergePerm.containsKey(entry.getKey())) // handle conflict
                     {
-                        if (entry.getValue().getPriorityValue() < this.permissions.get(entry.getKey()).getPriorityValue())
+                        if (entry.getValue().getPriorityValue() < mergePerm.get(entry.getKey()).getPriorityValue())
                         {
                             continue; // lower priority -> ignore
                         }

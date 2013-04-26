@@ -293,4 +293,16 @@ public class Role implements RawDataStore
     {
         return Collections.unmodifiableMap(this.resolvedData.metadata);
     }
+
+    @Override
+    public Map<String, Boolean> getAllRawPermissions()
+    {
+        return null; // TODO
+    }
+
+    @Override
+    public Map<String, String> getAllRawMetadata()
+    {
+        return null; // TODO
+    }
 }

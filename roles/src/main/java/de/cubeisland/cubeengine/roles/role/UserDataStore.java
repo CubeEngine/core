@@ -141,4 +141,15 @@ public class UserDataStore implements RawDataStore
         return this.attachment.getHolder().key;
     }
 
+    @Override
+    public Map<String, Boolean> getAllRawPermissions()
+    {
+        return this.getRawPermissions();
+    }
+
+    @Override
+    public Map<String, String> getAllRawMetadata()
+    {
+       return this.getRawMetadata();
+    }
 }

@@ -19,6 +19,7 @@ package de.cubeisland.cubeengine.roles.storage;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Map;
 
 import de.cubeisland.cubeengine.core.storage.StorageException;
 import de.cubeisland.cubeengine.core.storage.TripletKeyStorage;
@@ -31,7 +32,6 @@ import gnu.trove.map.hash.TLongObjectHashMap;
 public class UserPermissionsManager extends TripletKeyStorage<Long, Long, String, UserPermission>
 {
     private static final int REVISION = 1;
-    private TLongObjectHashMap<TLongObjectHashMap<THashMap<String, Boolean>>> userperms = new TLongObjectHashMap<TLongObjectHashMap<THashMap<String, Boolean>>>();
 
     public UserPermissionsManager(Database database)
     {
@@ -46,8 +46,12 @@ public class UserPermissionsManager extends TripletKeyStorage<Long, Long, String
         {
             super.initialize();
             QueryBuilder builder = this.database.getQueryBuilder();
-            this.database.storeStatement(modelClass, "getallByUser",
-                    builder.select().cols("worldId", "perm", "isSet").from(this.tableName).where().field("userId").isEqual().value().end().end());
+            this.database.storeStatement(modelClass, "removeByUserInWorld",
+                    builder.deleteFrom(tableName).where().field("userId").isEqual().value().and().field("worldId").isEqual().value().end().end());
+
+            this.database.storeStatement(modelClass, "getallByUserInWorld",
+                                         builder.select().cols("perm", "isSet").from(this.tableName)
+                                        .where().field("userId").isEqual().value().and().field("worldId").isEqual().value().end().end());
         }
         catch (SQLException e)
         {
@@ -55,46 +59,33 @@ public class UserPermissionsManager extends TripletKeyStorage<Long, Long, String
         }
     }
 
-    public TLongObjectHashMap<THashMap<String, Boolean>> getForUser(long key, boolean reload)
+    public void removeByUserInWorld(Long userID, long worldID)
     {
-        if (reload)
+        try
         {
-            try
-            {
-                ResultSet resulsSet = this.database.preparedQuery(modelClass, "getallByUser", key);
-                TLongObjectHashMap<THashMap<String, Boolean>> result = new TLongObjectHashMap<THashMap<String, Boolean>>();
-                while (resulsSet.next())
-                {
-                    int worldId = resulsSet.getInt("worldId");
-
-                    THashMap<String, Boolean> map = result.get(worldId);
-                    if (map == null)
-                    {
-                        map = new THashMap<String, Boolean>();
-                        result.put(worldId, map);
-                    }
-                    map.put(resulsSet.getString("perm"), resulsSet.getBoolean("isSet"));
-                }
-                this.userperms.put(key,result);
-                return result;
-            }
-            catch (SQLException ex)
-            {
-                throw new IllegalStateException("Error while getting Model from Database", ex);
-            }
+            this.database.preparedExecute(modelClass, "removeByUserInWorld", userID,worldID);
         }
-        else
+        catch (SQLException ex)
         {
-            if (this.userperms.containsKey(key))
-            {
-                return this.userperms.get(key);
-            }
-            return this.getForUser(key, true);
+            throw new StorageException("Error while deleting from Database", ex, this.database.getStoredStatement(modelClass,"removeByUserInWorld"));
         }
     }
 
-    public void removeByUserAndWorld(Long userID, long worldID)
+    public Map<String, Boolean> getPermissionsByUserInWorld(Long userID, long worldID)
     {
-        //TODO
+        try
+        {
+            ResultSet resultSet = this.database.preparedQuery(modelClass, "getallByUserInWorld", userID,worldID);
+            THashMap<String, Boolean> result = new THashMap<String, Boolean>();
+            while (resultSet.next())
+            {
+                result.put(resultSet.getString("perm"), resultSet.getBoolean("isSet"));
+            }
+            return result;
+        }
+        catch (SQLException ex)
+        {
+            throw new StorageException("Error while getting permissions from Database", ex, this.database.getStoredStatement(modelClass,"getallByUserInWorld"));
+        }
     }
 }

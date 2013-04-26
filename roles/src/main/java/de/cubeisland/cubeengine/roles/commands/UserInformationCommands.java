@@ -57,7 +57,7 @@ public class UserInformationCommands extends UserCommandHelper
             }
             else
             {
-                context.sendMessage("&6" + world.getName() + "&e: " + pRole.getName());
+                context.sendMessage(String.format(this.LISTELEM_VALUE,world.getName(),pRole.getName()));
             }
         }
     }
@@ -143,7 +143,8 @@ public class UserInformationCommands extends UserCommandHelper
         World world = this.getWorld(context);
         RolesAttachment rolesAttachment = this.manager.getRolesAttachment(user);
         // List permissions
-        Map<String,Boolean> perms = rolesAttachment.getAllRawPermissions();
+        // TODO List ALL permissions or only directly assigned
+        Map<String,Boolean> perms = rolesAttachment.getRawData(this.worldManager.getWorldId(world)).getRawPermissions();
         if (perms.isEmpty())
         {
             context.sendTranslated("&2%s &ehas no permissions set in &6%s&e.", user.getName(), world.getName());

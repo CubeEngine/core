@@ -19,6 +19,7 @@ package de.cubeisland.cubeengine.roles.storage;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Map;
 
 import de.cubeisland.cubeengine.core.storage.StorageException;
 import de.cubeisland.cubeengine.core.storage.TripletKeyStorage;
@@ -31,7 +32,6 @@ import gnu.trove.map.hash.TLongObjectHashMap;
 public class UserMetaDataManager extends TripletKeyStorage<Long, Long, String, UserMetaData>
 {
     private static final int REVISION = 1;
-    private TLongObjectHashMap<TLongObjectHashMap<THashMap<String, String>>> usermeta = new TLongObjectHashMap<TLongObjectHashMap<THashMap<String, String>>>();
 
     public UserMetaDataManager(Database database)
     {
@@ -46,8 +46,12 @@ public class UserMetaDataManager extends TripletKeyStorage<Long, Long, String, U
         {
             super.initialize();
             QueryBuilder builder = this.database.getQueryBuilder();
-            this.database.storeStatement(modelClass, "getallByUser",
-                    builder.select().cols("worldId", "key", "value").from(this.tableName).where().field("userId").isEqual().value().end().end());
+            this.database.storeStatement(modelClass, "getallByUserInWorld",
+                    builder.select().cols("key", "value").from(this.tableName).
+                        where().field("userId").isEqual().value().and().field("worldId").isEqual().value().end().end());
+            this.database.storeStatement(modelClass, "deleteAllByUserInWorld",
+                                         builder.deleteFrom(this.tableName).where().field("userId").isEqual().value().
+                                             and().field("worldId").isEqual().value().end().end());
             this.database.storeStatement(modelClass, "deleteAllByUser",
                     builder.deleteFrom(this.tableName).where().field("userId").isEqual().value().end().end());
         }
@@ -57,53 +61,48 @@ public class UserMetaDataManager extends TripletKeyStorage<Long, Long, String, U
         }
     }
 
-    public TLongObjectHashMap<THashMap<String, String>> getForUser(long key, boolean reload)
+    public void clearByUserInWorld(Long userID, Long worldID)
     {
-        if (reload)
+        try
         {
-            try
-            {
-                ResultSet resulsSet = this.database.preparedQuery(modelClass, "getallByUser", key);
-                TLongObjectHashMap<THashMap<String, String>> result = new TLongObjectHashMap<THashMap<String, String>>();
-                while (resulsSet.next())
-                {
-                    int worldId = resulsSet.getInt("worldId");
-
-                    THashMap<String, String> map = result.get(worldId);
-                    if (map == null)
-                    {
-                        map = new THashMap<String, String>();
-                        result.put(worldId, map);
-                    }
-                    map.put(resulsSet.getString("key"), resulsSet.getString("value"));
-                }
-                this.usermeta.put(key,result);
-                return result;
-            }
-            catch (SQLException ex)
-            {
-                throw new IllegalStateException("Error while getting Model from Database", ex);
-            }
+            this.database.preparedExecute(modelClass, "deleteAllByUserInWorld", userID, worldID);
         }
-        else
+        catch (SQLException ex)
         {
-            if (this.usermeta.containsKey(key))
-            {
-                return this.usermeta.get(key);
-            }
-            return this.getForUser(key, true);
+            throw new StorageException("Error while deleting Models in Database", ex,
+                                       this.database.getStoredStatement(modelClass,"deleteAllByUserInWorld"));
         }
     }
 
-    public void clearByUserAndWorld(Long userID, Long worldID)
+    public void clearByUser(long userID)
     {
         try
-        {//TODO add world stuff
+        {
             this.database.preparedExecute(modelClass, "deleteAllByUser", userID);
         }
         catch (SQLException ex)
         {
-            throw new IllegalStateException("Error while deleting Models in Database", ex);
+            throw new StorageException("Error while deleting Models in Database", ex,
+                                       this.database.getStoredStatement(modelClass,"deleteAllByUser"));
+        }
+    }
+
+    public Map<String, String> getMetadataByUserInWorld(Long userID, long worldID)
+    {
+        try
+        {
+            ResultSet resulsSet = this.database.preparedQuery(modelClass, "getallByUserInWorld", userID, worldID);
+            THashMap<String, String> result = new THashMap<String, String>();
+            while (resulsSet.next())
+            {
+                result.put(resulsSet.getString("key"), resulsSet.getString("value"));
+            }
+            return result;
+        }
+        catch (SQLException ex)
+        {
+            throw new StorageException("Error while getting Model from Database", ex,
+                           this.database.getStoredStatement(modelClass,"getallByUserInWorld"));
         }
     }
 }

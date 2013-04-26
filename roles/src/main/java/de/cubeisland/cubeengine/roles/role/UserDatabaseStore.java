@@ -45,7 +45,9 @@ public class UserDatabaseStore extends UserDataStore
 
     protected void loadFromDatabase()
     {
-        //TODO
+        this.roles = this.rm.getRolesByUserInWorld(this.getUserID(),this.worldID);
+        this.permissions = this.pm.getPermissionsByUserInWorld(this.getUserID(),this.worldID);
+        this.metadata = this.mdm.getMetadataByUserInWorld(this.getUserID(),this.worldID);
     }
 
     @Override
@@ -57,7 +59,7 @@ public class UserDatabaseStore extends UserDataStore
         }
         else
         {
-            pm.merge(new UserPermission(this.getUserID(),  this.worldID, perm, set));
+            pm.store(new UserPermission(this.getUserID(),  this.worldID, perm, set));
         }
         super.setPermission(perm,set);
     }
@@ -71,7 +73,7 @@ public class UserDatabaseStore extends UserDataStore
         }
         else
         {
-            mdm.merge(new UserMetaData(this.getUserID(), this.worldID, key, value));
+            mdm.store(new UserMetaData(this.getUserID(), this.worldID, key, value));
         }
         super.setMetadata(key,value);
     }
@@ -83,7 +85,7 @@ public class UserDatabaseStore extends UserDataStore
         {
             return false;
         }
-        this.rm.merge(new AssignedRole(this.getUserID(),this.worldID,role.getName()));
+        this.rm.store(new AssignedRole(this.getUserID(),this.worldID,role.getName()));
         return super.assignRole(role);
     }
 
@@ -103,7 +105,7 @@ public class UserDatabaseStore extends UserDataStore
     {
         if (!this.permissions.isEmpty())
         {
-            this.pm.removeByUserAndWorld(this.getUserID(),this.worldID);
+            this.pm.removeByUserInWorld(this.getUserID(), this.worldID);
             super.clearPermissions();
         }
     }
@@ -111,7 +113,7 @@ public class UserDatabaseStore extends UserDataStore
     @Override
     public void clearMetadata()
     {
-        mdm.clearByUserAndWorld(this.getUserID(),this.worldID);
+        mdm.clearByUserInWorld(this.getUserID(), this.worldID);
         super.clearMetadata();
     }
 
@@ -144,5 +146,17 @@ public class UserDatabaseStore extends UserDataStore
         this.clearAssignedRoles();
         // TODO batch set parents
         super.setAssignedRoles(roles);
+    }
+
+    @Override
+    public Map<String, Boolean> getAllRawPermissions()
+    {
+        return null; // TODO
+    }
+
+    @Override
+    public Map<String, String> getAllRawMetadata()
+    {
+        return null; // TODO
     }
 }

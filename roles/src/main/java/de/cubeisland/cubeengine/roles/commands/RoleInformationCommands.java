@@ -130,6 +130,7 @@ public class RoleInformationCommands extends RoleCommandHelper
                 context.sendTranslated("&eThe permission &6%s &eis not assigned in the role &6%s &ein &6%s&e.",
                                        context.getString(1), role.getName(), world.getName());
             }
+            return;
         }
         Role originRole = (Role)myPerm.getOrigin();
         if (!originRole.getRawPermissions().containsKey(permission))

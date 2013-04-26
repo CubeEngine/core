@@ -50,4 +50,7 @@ public interface RawDataStore
     public void setAssignedRoles(Set<Role> roles);
 
     public long getWorldID();
+
+    public Map<String,Boolean> getAllRawPermissions();
+    public Map<String,String> getAllRawMetadata();
 }

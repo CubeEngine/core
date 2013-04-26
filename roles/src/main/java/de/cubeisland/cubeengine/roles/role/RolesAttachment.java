@@ -96,7 +96,7 @@ public class RolesAttachment extends UserAttachment
             resolvedDataStores.put(worldID,dataStore);
             //TODO mirrors
 
-            if (worldID == this.getHolder().getWorldId())
+            if (this.getHolder().isOnline() && worldID == this.getHolder().getWorldId())
             {
                 this.apply(); // Apply the new calculated roles if in that world
             }
@@ -248,7 +248,7 @@ public class RolesAttachment extends UserAttachment
 
     public Map<String,Boolean> getAllRawPermissions()
     {
-        // TODO
-        return null;
+        UserDatabaseStore userDatabaseStore = this.rawUserData.get(this.getHolder().getWorldId());
+        return userDatabaseStore.getAllRawPermissions();
     }
 }
