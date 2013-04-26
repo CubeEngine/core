@@ -203,6 +203,19 @@ public class RolesManager
         {
             roleProvider.recalculateRoles();
         }
+        for (User user : this.module.getCore().getUserManager().getLoadedUsers())
+        {
+            RolesAttachment rolesAttachment = user.get(RolesAttachment.class);
+            if (rolesAttachment == null)
+            {
+                if (!user.isOnline())
+                {
+                    continue;
+                }
+                rolesAttachment = user.attachOrGet(RolesAttachment.class,this.module);
+            }
+            rolesAttachment.getResolvedData(); // recalculates and applies the data if needed
+        }
         this.module.getLog().log(LogLevel.DEBUG,"All roles are now calculated! ("+Profiler.endProfiling("calculateAllRoles", TimeUnit.MILLISECONDS)+"ms)");
     }
 

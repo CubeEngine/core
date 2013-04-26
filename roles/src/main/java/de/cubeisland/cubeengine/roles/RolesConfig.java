@@ -40,6 +40,18 @@ public class RolesConfig extends Configuration
     @Option("default.roles")
     @Comment("The list of roles a user will get when first joining the server.")
     public Map<String, Set<String>> defaultRoles = new HashMap<String, Set<String>>(); //TODO example in comment
+    @Comment("The following configuration would mirror \n" +
+             "roles, assigned roles and directly assigned data\n" +
+             "to the user from world to the end and the nether\n"+
+             "  - world: \n" +
+             "    world_the_end: \n" +
+             "      - roles\n" +
+             "      - assigned\n" +
+             "      - users\n" +
+             "    world_nether: \n" +
+             "      - roles\n" +
+             "      - assigned\n" +
+             "      - users\n")
     @Option("mirrors")
-    public List<RoleMirror> mirrors = new ArrayList<RoleMirror>(); //TODO example in comment
+    public List<RoleMirror> mirrors = new ArrayList<RoleMirror>();
 }

@@ -127,19 +127,7 @@ public abstract class RoleProvider
         {
             this.calculateRole(role, roleStack);
         }
-        for (User user : this.module.getCore().getUserManager().getLoadedUsers())
-        {
-            RolesAttachment rolesAttachment = user.get(RolesAttachment.class);
-            if (rolesAttachment == null)
-            {
-                if (!user.isOnline())
-                {
-                    continue;
-                }
-                rolesAttachment = user.attachOrGet(RolesAttachment.class,this.module);
-            }
-            rolesAttachment.getResolvedData(); // recalculates and applies the data if needed
-        }
+
     }
 
     /**
@@ -149,7 +137,7 @@ public abstract class RoleProvider
      * @param roleStack
      * @return
      */
-    private Role calculateRole(Role role, Stack<String> roleStack)
+    protected Role calculateRole(Role role, Stack<String> roleStack)
     {
         if (role.isDirty())
         {

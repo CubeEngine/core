@@ -45,7 +45,6 @@ public class ResolvedDataStore
     public ResolvedDataStore(RawDataStore store)
     {
         this.rawDataStore = store;
-
     }
 
     private void inheritFrom(Set<Role> assignedRoles)

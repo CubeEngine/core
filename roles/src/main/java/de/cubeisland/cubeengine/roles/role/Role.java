@@ -305,4 +305,32 @@ public class Role implements RawDataStore
     {
         return null; // TODO
     }
+
+    @Override
+    public boolean equals(Object o)
+    {
+        if (this == o)
+        {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass())
+        {
+            return false;
+        }
+
+        Role role = (Role)o;
+
+        if (getName() != null ? !getName().equals(role.getName()) : role.getName() != null)
+        {
+            return false;
+        }
+
+        return true;
+    }
+
+    @Override
+    public int hashCode()
+    {
+        return getName() != null ? getName().hashCode() : 0;
+    }
 }

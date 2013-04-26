@@ -26,11 +26,13 @@ import org.bukkit.Bukkit;
 import de.cubeisland.cubeengine.core.logger.LogLevel;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.user.UserAttachment;
+import de.cubeisland.cubeengine.core.util.Triplet;
 import de.cubeisland.cubeengine.roles.Roles;
 import de.cubeisland.cubeengine.roles.role.resolved.ResolvedMetadata;
 import de.cubeisland.cubeengine.roles.role.resolved.ResolvedPermission;
 
 import gnu.trove.map.hash.TLongObjectHashMap;
+import gnu.trove.procedure.TLongObjectProcedure;
 import gnu.trove.set.hash.THashSet;
 
 public class RolesAttachment extends UserAttachment
@@ -44,6 +46,7 @@ public class RolesAttachment extends UserAttachment
     private TLongObjectHashMap<UserDataStore> temporaryData = new TLongObjectHashMap<UserDataStore>();
 
     private TLongObjectHashMap<ResolvedDataStore> resolvedDataStores = new TLongObjectHashMap<ResolvedDataStore>();
+
     private Map<String, String> currentMetaData;
 
     private Long workingWorldID = null;
@@ -74,7 +77,7 @@ public class RolesAttachment extends UserAttachment
         if (dataStore == null || dataStore.isDirty())
         {
             Set<Role> assignedRoles = new THashSet<Role>();
-            RoleProvider provider = ((Roles)this.getModule()).getRolesManager().getProvider(worldID);
+            WorldRoleProvider provider = ((Roles)this.getModule()).getRolesManager().getProvider(worldID);
             for (String roleName : this.getRawData(worldID).getRawAssignedRoles())
             {
                 assignedRoles.add(provider.getRole(roleName));
@@ -94,8 +97,15 @@ public class RolesAttachment extends UserAttachment
                 dataStore.calculate(assignedRoles);
             }
             resolvedDataStores.put(worldID,dataStore);
-            //TODO mirrors
-
+            TLongObjectHashMap<Triplet<Boolean, Boolean, Boolean>> worldMirrors = provider.getWorldMirrors();
+            for (long world : worldMirrors.keys()) // Apply to fully mirrored too!
+            {
+                if (worldMirrors.get(world).getSecond() && worldMirrors.get(world).getThird())
+                {
+                    resolvedDataStores.put(world,dataStore);
+                }
+            }
+            //TODO care when recalculating mirrors could have changed!!! recalculating one would remove the dirty state of other that are no longer mirrored
             if (this.getHolder().isOnline() && worldID == this.getHolder().getWorldId())
             {
                 this.apply(); // Apply the new calculated roles if in that world
@@ -129,7 +139,11 @@ public class RolesAttachment extends UserAttachment
 
     public void reloadFromDatabase()
     {
-        //TODO
+        for (UserDatabaseStore userDatabaseStore : this.rawUserData.valueCollection())
+        {
+            userDatabaseStore.loadFromDatabase();
+        }
+        this.resolvedDataStores.clear(); // Assume they are all dirty
     }
 
     /**
@@ -172,20 +186,24 @@ public class RolesAttachment extends UserAttachment
     public void apply()
     {
         User user = this.getHolder();
-        if (!Bukkit.getServer().getOnlineMode() && ((Roles)this.getModule()).getConfiguration().doNotAssignPermIfOffline && !user.isLoggedIn())
+        if (user.isOnline())
         {
-            user.sendTranslated("&cThe server is currently running in offline-mode. Permissions will not be applied until logging in! Contact an Administrator if you think this is an error.");
-            this.getModule().getLog().warning("Role-permissions not applied! Server is running in unsecured offline-mode!");
-            return;
+            if (!Bukkit.getServer().getOnlineMode() && ((Roles)this.getModule()).getConfiguration().doNotAssignPermIfOffline && !user.isLoggedIn())
+            {
+                user.sendTranslated("&cThe server is currently running in offline-mode. Permissions will not be applied until logging in! Contact an Administrator if you think this is an error.");
+                this.getModule().getLog().warning("Role-permissions not applied! Server is running in unsecured offline-mode!");
+                return;
+            }
+            this.getModule().getLog().log(LogLevel.DEBUG, user.getName()+ ": UserRole set!");
+            if (this.getRawData(user.getWorldId()).getRawAssignedRoles().isEmpty())
+            {
+                this.getRawData(user.getWorldId()).setAssignedRoles(((Roles)this.getModule()).getRolesManager().getProvider(user.getWorldId()).getDefaultRoles());
+            }
+            ResolvedDataStore resolvedData = this.getResolvedData();
+            user.setPermission(resolvedData.getResolvedPermissions());
+            this.currentMetaData = resolvedData.getResolvedMetadata();
         }
-        this.getModule().getLog().log(LogLevel.DEBUG, user.getName()+ ": UserRole set!");
-        if (this.getRawData(user.getWorldId()).getRawAssignedRoles().isEmpty())
-        {
-            this.getRawData(user.getWorldId()).setAssignedRoles(((Roles)this.getModule()).getRolesManager().getProvider(user.getWorldId()).getDefaultRoles());
-        }
-        ResolvedDataStore resolvedData = this.getResolvedData();
-        user.setPermission(resolvedData.getResolvedPermissions());
-        this.currentMetaData = resolvedData.getResolvedMetadata();
+        // else user is offline ignore
     }
 
     /**

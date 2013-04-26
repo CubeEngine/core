@@ -23,6 +23,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
 import org.bukkit.event.player.PlayerChangedWorldEvent;
 import org.bukkit.event.player.PlayerLoginEvent;
+import org.bukkit.event.player.PlayerLoginEvent.Result;
 
 import de.cubeisland.cubeengine.core.module.event.FinishedLoadModulesEvent;
 import de.cubeisland.cubeengine.core.user.User;
@@ -43,16 +44,13 @@ public class RolesEventHandler implements Listener
     @EventHandler
     public void onPlayerChangedWorld(PlayerChangedWorldEvent event)
     {
-
-
         long worldFromId = this.module.getCore().getWorldManager().getWorldId(event.getFrom());
         long worldToId = this.module.getCore().getWorldManager().getWorldId(event.getPlayer().getWorld());
         WorldRoleProvider fromProvider = this.rolesManager.getProvider(worldFromId);
         WorldRoleProvider toProvider = this.rolesManager.getProvider(worldToId);
-        // TODO mirrors
         if (fromProvider.equals(toProvider))
         {
-            if (toProvider.getWorldMirrors().get(worldToId).getSecond())
+            if (toProvider.getWorldMirrors().get(worldToId).getSecond() && fromProvider.getWorldMirrors().get(worldFromId).getSecond())
             {
                 return;
             }
@@ -72,19 +70,28 @@ public class RolesEventHandler implements Listener
         }
     }
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.MONITOR)
     public void onLogin(PlayerLoginEvent event)
     {
-        RolesAttachment rolesAttachment = this.rolesManager.getRolesAttachment(event.getPlayer());
-        rolesAttachment.getResolvedData(); // Pre-calculate
-        rolesAttachment.apply();
+        if (event.getResult().equals(Result.ALLOWED)) // only if allowed to join
+        {
+            final RolesAttachment rolesAttachment = this.rolesManager.getRolesAttachment(event.getPlayer());
+            rolesAttachment.getResolvedData(); // Pre-calculate
+            this.module.getCore().getTaskManager().scheduleSyncDelayedTask(this.module, new Runnable()
+            {
+                @Override
+                public void run()
+                {
+                    rolesAttachment.apply(); // apply once joined
+                }
+            });
+        }
     }
 
     @EventHandler
     public void onAllModulesLoaded(FinishedLoadModulesEvent event)
     {
         this.rolesManager.recalculateAllRoles();
-
     }
 
     @EventHandler
