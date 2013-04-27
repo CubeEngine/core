@@ -56,7 +56,7 @@ public class BukkitCommandManager implements CommandManager
         BukkitUtils.swapCommandMap(this.commandMap);
         this.consoleSender = new ConsoleCommandSender(core);
 
-        this.completer = new ConsoleCommandCompleter(core, this.commandMap);
+        this.completer = new ConsoleCommandCompleter(core);
         BukkitUtils.getConsoleReader(this.server).addCompleter(completer);
     }
 
