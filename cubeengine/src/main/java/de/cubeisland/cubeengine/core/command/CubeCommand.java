@@ -454,7 +454,9 @@ public abstract class CubeCommand extends Command
     @Override
     public final boolean execute(org.bukkit.command.CommandSender bukkitSender, String label, String[] args)
     {
-        return this.execute(wrapSender(this.getModule().getCore(), bukkitSender), args, label, new Stack<String>());
+        CommandSender sender = wrapSender(this.getModule().getCore(), bukkitSender);
+        this.getModule().getCore().getCommandManager().logExecution(sender, this, args);
+        return this.execute(sender, args, label, new Stack<String>());
     }
 
     /**
@@ -538,7 +540,10 @@ public abstract class CubeCommand extends Command
                 completer = child;
             }
         }
-        List<String> result = completer.tabComplete(wrapSender(this.getModule().getCore(), bukkitSender), alias, args);
+        CommandSender sender = wrapSender(this.getModule().getCore(), bukkitSender);
+
+        this.getModule().getCore().getCommandManager().logTabCompletion(sender, this, args);
+        List<String> result = completer.tabComplete(sender, alias, args);
         if (result == null)
         {
             result = completer.tabCompleteFallback(bukkitSender, alias, args);

@@ -17,29 +17,19 @@
  */
 package de.cubeisland.cubeengine.core.bukkit;
 
-import java.io.File;
-import java.io.IOException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.logging.FileHandler;
-import java.util.logging.Formatter;
-import java.util.logging.Level;
-import java.util.logging.LogRecord;
-import java.util.logging.Logger;
 import java.util.regex.Pattern;
 
 import org.bukkit.Server;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandException;
 import org.bukkit.command.CommandSender;
-import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.command.SimpleCommandMap;
 import org.bukkit.command.defaults.BukkitCommand;
@@ -49,16 +39,10 @@ import org.bukkit.util.StringUtil;
 import de.cubeisland.cubeengine.core.Core;
 import de.cubeisland.cubeengine.core.CubeEngine;
 import de.cubeisland.cubeengine.core.command.CubeCommand;
-import de.cubeisland.cubeengine.core.logger.CubeFileHandler;
-import de.cubeisland.cubeengine.core.logger.CubeLogger;
 import de.cubeisland.cubeengine.core.util.StringUtils;
 import de.cubeisland.cubeengine.core.util.matcher.Match;
 
-import gnu.trove.map.hash.THashMap;
 import org.apache.commons.lang.Validate;
-
-import static de.cubeisland.cubeengine.core.logger.LogLevel.INFO;
-import static de.cubeisland.cubeengine.core.logger.LogLevel.WARNING;
 
 /**
  * This CommandMap extends the SimpleCommandMap to add some functionality:
@@ -68,45 +52,16 @@ import static de.cubeisland.cubeengine.core.logger.LogLevel.WARNING;
 public class CubeCommandMap extends SimpleCommandMap
 {
     private final Core core;
-    private final Logger commandLogger;
-    private final Map<String, List<String>> lastCommandOffers;
 
     public CubeCommandMap(Core core, Server server, SimpleCommandMap oldMap)
     {
         super(server);
         this.core = core;
-        this.commandLogger = new CubeLogger("commands");
-        this.lastCommandOffers = new THashMap<String, List<String>>();
-        try
-        {
-            FileHandler handler = new CubeFileHandler(Level.ALL, new File(core.getFileManager().getLogDir(), this.commandLogger.getName()).getPath());
-            handler.setFormatter(new Formatter() {
-                private final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-
-                @Override
-                public String format(LogRecord record)
-                {
-                    StringBuilder sb = new StringBuilder(this.dateFormat.format(new Date(record.getMillis())));
-                    sb.append(' ').append(record.getMessage()).append('\n');
-                    return sb.toString();
-                }
-            });
-            this.commandLogger.addHandler(handler);
-        }
-        catch (IOException e)
-        {
-            core.getLog().log(WARNING, "Failed to create the command log!", e);
-        }
         for (Command command : oldMap.getCommands())
         {
             command.unregister(oldMap);
             this.register(command);
         }
-    }
-
-    public List<String> getLastOfferFor(String sender)
-    {
-        return this.lastCommandOffers.remove(sender);
     }
 
     /**
@@ -185,14 +140,6 @@ public class CubeCommandMap extends SimpleCommandMap
                 {
                     matches = matches.subList(0, this.core.getConfiguration().commandTabCompleteOffers);
                 }
-                if (sender instanceof ConsoleCommandSender)
-                {
-                    this.lastCommandOffers.put(de.cubeisland.cubeengine.core.command.sender.ConsoleCommandSender.NAME, matches);
-                }
-                else
-                {
-                    this.lastCommandOffers.put(sender.getName(), matches);
-                }
             }
             else
             {
@@ -220,10 +167,6 @@ public class CubeCommandMap extends SimpleCommandMap
         {
             // TODO we might catch errors here instead of on CubeCommand
             command.execute(sender, label, args);
-            if (!(command instanceof CubeCommand) || ((CubeCommand)command).isLoggable())
-            {
-                this.commandLogger.log(INFO, "execute " + sender.getName() + ' ' + commandLine);
-            }
         }
         catch (CommandException e)
         {
@@ -307,17 +250,6 @@ public class CubeCommandMap extends SimpleCommandMap
 
         if (spaceIndex == -1)
         {
-
-            List<String> lastOffer = this.lastCommandOffers.remove(sender.getName());
-            if (lastOffer != null && cmdLine.isEmpty())
-            {
-                List<String> commands = new ArrayList<String>(lastOffer.size());
-                for (String cmd : lastOffer)
-                {
-                    commands.add('/' + cmd);
-                }
-                return commands;
-            }
             List<String> completions = new ArrayList<String>();
 
             for (VanillaCommand command : fallbackCommands)
@@ -388,10 +320,6 @@ public class CubeCommandMap extends SimpleCommandMap
 
         try
         {
-            if (!(target instanceof CubeCommand) || ((CubeCommand)target).isLoggable())
-            {
-                this.commandLogger.log(INFO, "complete " + sender.getName() + ' ' + commandName + ' ' + StringUtils.implode(" ", args));
-            }
             return target.tabComplete(sender, commandName, args);
         }
         catch (CommandException e)

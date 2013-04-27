@@ -17,9 +17,18 @@
  */
 package de.cubeisland.cubeengine.core.bukkit;
 
+import java.io.File;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.logging.FileHandler;
+import java.util.logging.Formatter;
+import java.util.logging.Level;
+import java.util.logging.LogRecord;
+import java.util.logging.Logger;
 
 import org.bukkit.Server;
 import org.bukkit.command.Command;
@@ -33,9 +42,15 @@ import de.cubeisland.cubeengine.core.command.ConsoleCommandCompleter;
 import de.cubeisland.cubeengine.core.command.CubeCommand;
 import de.cubeisland.cubeengine.core.command.CommandSender;
 import de.cubeisland.cubeengine.core.command.sender.ConsoleCommandSender;
+import de.cubeisland.cubeengine.core.logger.CubeFileHandler;
+import de.cubeisland.cubeengine.core.logger.CubeLogger;
 import de.cubeisland.cubeengine.core.module.Module;
+import de.cubeisland.cubeengine.core.util.StringUtils;
 
 import gnu.trove.map.hash.THashMap;
+
+import static de.cubeisland.cubeengine.core.logger.LogLevel.INFO;
+import static de.cubeisland.cubeengine.core.logger.LogLevel.WARNING;
 
 public class BukkitCommandManager implements CommandManager
 {
@@ -45,6 +60,7 @@ public class BukkitCommandManager implements CommandManager
     private final Map<Class<? extends CubeCommand>, CommandFactory> commandFactories;
     private final ConsoleCommandCompleter completer;
     private final ConsoleCommandSender consoleSender;
+    private final Logger commandLogger;
 
     public BukkitCommandManager(BukkitCore core)
     {
@@ -58,6 +74,28 @@ public class BukkitCommandManager implements CommandManager
 
         this.completer = new ConsoleCommandCompleter(core);
         BukkitUtils.getConsoleReader(this.server).addCompleter(completer);
+
+        this.commandLogger = new CubeLogger("commands");
+        try
+        {
+            FileHandler handler = new CubeFileHandler(Level.ALL, new File(core.getFileManager().getLogDir(), this.commandLogger.getName()).getPath());
+            handler.setFormatter(new Formatter() {
+                private final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+
+                @Override
+                public String format(LogRecord record)
+                {
+                    StringBuilder sb = new StringBuilder(this.dateFormat.format(new Date(record.getMillis())));
+                    sb.append(' ').append(record.getMessage()).append('\n');
+                    return sb.toString();
+                }
+            });
+            this.commandLogger.addHandler(handler);
+        }
+        catch (IOException e)
+        {
+            core.getLog().log(WARNING, "Failed to create the command log!", e);
+        }
     }
 
     /**
@@ -294,5 +332,23 @@ public class BukkitCommandManager implements CommandManager
     public ConsoleCommandSender getConsoleSender()
     {
         return this.consoleSender;
+    }
+
+    @Override
+    public void logExecution(CommandSender sender, CubeCommand command, String[] args)
+    {
+        if (command.isLoggable())
+        {
+            this.commandLogger.log(INFO, "execute " + sender.getName() + ' ' + command.getName() + ' ' + StringUtils.implode(" ", args));
+        }
+    }
+
+    @Override
+    public void logTabCompletion(CommandSender sender, CubeCommand command, String[] args)
+    {
+        if (command.isLoggable())
+        {
+            this.commandLogger.log(INFO, "complete " + sender.getName() + ' ' + command.getName() + ' ' + StringUtils.implode(" ", args));
+        }
     }
 }

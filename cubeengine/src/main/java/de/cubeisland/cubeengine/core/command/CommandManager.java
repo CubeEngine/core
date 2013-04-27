@@ -38,4 +38,7 @@ public interface CommandManager extends Cleanable
     boolean runCommand(CommandSender sender, String commandLine);
     void removeCommands();
     ConsoleCommandSender getConsoleSender();
+
+    void logExecution(CommandSender sender, CubeCommand cubeCommand, String[] args);
+    void logTabCompletion(CommandSender sender, CubeCommand cubeCommand, String[] args);
 }
