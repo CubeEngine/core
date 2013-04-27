@@ -54,4 +54,14 @@ public class GlobalRoleProvider extends RoleProvider
         }
         return false;
     }
+
+    @Override
+    public Role getRole(String name)
+    {
+        if (name.startsWith("g:"))
+        {
+            return super.getRole(name.substring(2));
+        }
+        return super.getRole(name);
+    }
 }

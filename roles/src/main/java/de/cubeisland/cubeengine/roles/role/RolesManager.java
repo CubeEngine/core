@@ -214,7 +214,9 @@ public class RolesManager
                 }
                 rolesAttachment = user.attachOrGet(RolesAttachment.class,this.module);
             }
-            rolesAttachment.getResolvedData(); // recalculates and applies the data if needed
+            rolesAttachment.flushResolvedData();
+            rolesAttachment.getResolvedData(); // recalculates data
+            rolesAttachment.apply(); // and applies
         }
         this.module.getLog().log(LogLevel.DEBUG,"All roles are now calculated! ("+Profiler.endProfiling("calculateAllRoles", TimeUnit.MILLISECONDS)+"ms)");
     }
@@ -249,6 +251,7 @@ public class RolesManager
             rolesAttachment.flushResolvedData();
             rolesAttachment.apply();
         }
-
     }
+
+    // TODO when changing mirrors delete ALL resolved data (not only make Dirty)
 }

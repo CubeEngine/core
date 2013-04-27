@@ -32,7 +32,6 @@ import de.cubeisland.cubeengine.roles.role.resolved.ResolvedMetadata;
 import de.cubeisland.cubeengine.roles.role.resolved.ResolvedPermission;
 
 import gnu.trove.map.hash.TLongObjectHashMap;
-import gnu.trove.procedure.TLongObjectProcedure;
 import gnu.trove.set.hash.THashSet;
 
 public class RolesAttachment extends UserAttachment
@@ -54,7 +53,6 @@ public class RolesAttachment extends UserAttachment
     /**
      * Gets the resolved data-store.
      * If not yet calculated or dirty the data-store gets calculated.
-     * And also applied to the player if online.
      *
      * @return
      */
@@ -66,7 +64,6 @@ public class RolesAttachment extends UserAttachment
     /**
      * Gets the resolved data-store.
      * If not yet calculated or dirty the data-store gets calculated.
-     * And also applied to the player if online in the given world
      *
      * @param worldID
      * @return
@@ -105,11 +102,6 @@ public class RolesAttachment extends UserAttachment
                     resolvedDataStores.put(world,dataStore);
                 }
             }
-            //TODO care when recalculating mirrors could have changed!!! recalculating one would remove the dirty state of other that are no longer mirrored
-            if (this.getHolder().isOnline() && worldID == this.getHolder().getWorldId())
-            {
-                this.apply(); // Apply the new calculated roles if in that world
-            }
         }
         return dataStore;
     }
@@ -120,11 +112,18 @@ public class RolesAttachment extends UserAttachment
      * @param key
      * @return
      */
-    public String getMetadata(String key)
+    public String getCurrentMetadata(String key)
     {
         if (currentMetaData == null)
         {
-            return null;
+            if (this.getHolder().isOnline())
+            {
+                this.apply();
+            }
+            else
+            {
+                return null;
+            }
         }
         return currentMetaData.get(key);
     }
@@ -135,6 +134,7 @@ public class RolesAttachment extends UserAttachment
     public void flushResolvedData()
     {
         this.resolvedDataStores = new TLongObjectHashMap<ResolvedDataStore>();
+        this.currentMetaData = null;
     }
 
     public void reloadFromDatabase()
@@ -194,7 +194,7 @@ public class RolesAttachment extends UserAttachment
                 this.getModule().getLog().warning("Role-permissions not applied! Server is running in unsecured offline-mode!");
                 return;
             }
-            this.getModule().getLog().log(LogLevel.DEBUG, user.getName()+ ": UserRole set!");
+            this.getModule().getLog().log(LogLevel.DEBUG, user.getName()+ ": resolved UserData set!");
             if (this.getRawData(user.getWorldId()).getRawAssignedRoles().isEmpty())
             {
                 this.getRawData(user.getWorldId()).setAssignedRoles(((Roles)this.getModule()).getRolesManager().getProvider(user.getWorldId()).getDefaultRoles());
@@ -268,5 +268,14 @@ public class RolesAttachment extends UserAttachment
     {
         UserDatabaseStore userDatabaseStore = this.rawUserData.get(this.getHolder().getWorldId());
         return userDatabaseStore.getAllRawPermissions();
+    }
+
+    protected void makeDirty(long worldID)
+    {
+        if (this.getHolder().getWorldId() == worldID)
+        {
+            this.currentMetaData = null;
+        }
+        this.resolvedDataStores.remove(worldID);
     }
 }

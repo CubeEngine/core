@@ -63,6 +63,7 @@ public class UserDataStore implements RawDataStore
         {
             this.permissions.put(perm,set);
         }
+        this.makeDirty();
     }
 
     @Override
@@ -76,48 +77,74 @@ public class UserDataStore implements RawDataStore
         {
             this.metadata.put(key,value);
         }
+        this.makeDirty();
     }
 
     @Override
     public boolean assignRole(Role role)
     {
-        return this.roles.add(role.getName());
+        String roleName = role.getName();
+        if (role.isGlobal())
+        {
+            roleName = "g:" + roleName;
+        }
+        if (this.roles.add(roleName))
+        {
+            this.makeDirty();
+            return true;
+        }
+        return false;
     }
 
     @Override
     public boolean removeRole(Role role)
     {
-        return this.roles.remove(role.getName());
+        String roleName = role.getName();
+        if (role.isGlobal())
+        {
+            roleName = "g:" + roleName;
+        }
+        if (this.roles.remove(roleName))
+        {
+            this.makeDirty();
+            return true;
+        }
+        return false;
     }
 
     @Override
     public void clearPermissions()
     {
       this.permissions = new THashMap<String, Boolean>();
+        this.makeDirty();
     }
 
     @Override
     public void clearMetadata()
     {
         this.metadata = new THashMap<String, String>();
+        this.makeDirty();
     }
 
     @Override
     public void clearAssignedRoles()
     {
         this.roles = new THashSet<String>();
+        this.makeDirty();
     }
 
     @Override
     public void setPermissions(Map<String, Boolean> perms)
     {
        this.permissions = new THashMap<String, Boolean>(perms);
+        this.makeDirty();
     }
 
     @Override
     public void setMetadata(Map<String, String> metadata)
     {
         this.metadata = new THashMap<String, String>(metadata);
+        this.makeDirty();
     }
 
     @Override
@@ -128,6 +155,7 @@ public class UserDataStore implements RawDataStore
         {
             this.roles.add(role.getName());
         }
+        this.makeDirty();
     }
 
     @Override
@@ -151,5 +179,10 @@ public class UserDataStore implements RawDataStore
     public Map<String, String> getAllRawMetadata()
     {
        return this.getRawMetadata();
+    }
+
+    protected void makeDirty()
+    {
+        this.attachment.makeDirty(worldID);
     }
 }

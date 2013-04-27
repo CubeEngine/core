@@ -53,7 +53,7 @@ public class UserInformationCommands extends UserCommandHelper
         {
             if (pRole.isGlobal())
             {
-                context.sendMessage("&6global&e: " + pRole.getName());
+                context.sendMessage(String.format(this.LISTELEM_VALUE,"global",pRole.getName()));
             }
             else
             {
@@ -65,7 +65,9 @@ public class UserInformationCommands extends UserCommandHelper
     @Alias(names = "checkuperm")
     @Command(names = {
         "checkperm", "checkpermission"
-    }, desc = "Checks for permissions of a user [in world]", usage = "<player> <permission> [in <world>]", params = @Param(names = "in", type = World.class), max = 3, min = 1)
+    }, desc = "Checks for permissions of a user [in world]",
+             usage = "<player> <permission> [in <world>]",
+             params = @Param(names = "in", type = World.class), max = 2, min = 2)
     public void checkpermission(ParameterizedContext context)
     {
         User user = context.getUser(0);
@@ -78,13 +80,13 @@ public class UserInformationCommands extends UserCommandHelper
         RolesAttachment rolesAttachment = this.manager.getRolesAttachment(user);
         // Search for permission
         String permission = context.getString(1);
-        ResolvedPermission resolvedPermission = rolesAttachment.
-            getPermissions(this.worldManager.getWorldId(world)).get(permission);
+        ResolvedPermission resolvedPermission = rolesAttachment.getPermissions(
+            this.worldManager.getWorldId(world)).get(permission);
         if (user.isOp())
         {
-            context.sendTranslated("&2%s &ais Op!", user.getName());
+            context.sendTranslated("&2%s&a is Op!", user.getName());
         }
-        if (user.isOnline() && !permission.endsWith("*")) // Can have superperm
+        if (user.isOnline()) // Can have superperm
         {
             boolean superPerm = user.hasPermission(permission);
             context.sendTranslated("&eSuperPerm Node: %s", superPerm);
@@ -96,8 +98,8 @@ public class UserInformationCommands extends UserCommandHelper
         else
         {
             context.sendTranslated((resolvedPermission.isSet()
-                ? "&aThe player &2%s &adoes have access to &f\"&6%s&f\"&a"
-                : "&cThe player &2%s &cdoes not have access to &f\"&6%s&f\"&c")
+                ? "&aThe player &2%s&a does have access to &f\"&6%s&f\"&a"
+                : "&cThe player &2%s&c does not have access to &f\"&6%s&f\"&c")
                                        + " in &6%s", user.getName(), permission, world.getName());
 
             // Display origin

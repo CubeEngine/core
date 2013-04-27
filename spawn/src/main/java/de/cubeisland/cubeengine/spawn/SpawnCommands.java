@@ -184,7 +184,7 @@ public class SpawnCommands
                     this.roles.getLog().warning("Missing RolesAttachment!");
                     return;
                 }
-                String rolespawn = rolesAttachment.getMetadata("rolespawn");
+                String rolespawn = rolesAttachment.getCurrentMetadata("rolespawn");
                 if (rolespawn == null)
                 {
                     spawnLocation = this.getSpawnLocation(rolespawn);
@@ -270,7 +270,7 @@ public class SpawnCommands
                 this.roles.getLog().warning("Missing RolesAttachment!");
                 return;
             }
-            String rolespawn = rolesAttachment.getMetadata("rolespawn");
+            String rolespawn = rolesAttachment.getCurrentMetadata("rolespawn");
             if (rolespawn == null)
             {
                 spawnLocation = world.getSpawnLocation();

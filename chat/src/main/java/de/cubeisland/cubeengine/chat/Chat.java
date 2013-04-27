@@ -87,12 +87,12 @@ public class Chat extends Module implements Listener
             }
             if (format.contains("{ROLE.PREFIX}"))
             {
-                String prefix = rolesAttachment.getMetadata("prefix");
+                String prefix = rolesAttachment.getCurrentMetadata("prefix");
                 format = format.replace("{ROLE.PREFIX}", prefix == null ? "" : ChatFormat.parseFormats(prefix));
             }
             if (format.contains("{ROLE.SUFFIX}"))
             {
-                String suffix = rolesAttachment.getMetadata("suffix");
+                String suffix = rolesAttachment.getCurrentMetadata("suffix");
                 format = format.replace("{ROLE.SUFFIX}", suffix == null ? "" : ChatFormat.parseFormats(suffix));
             }
         }

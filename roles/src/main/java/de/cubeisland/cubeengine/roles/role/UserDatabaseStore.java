@@ -59,7 +59,7 @@ public class UserDatabaseStore extends UserDataStore
         }
         else
         {
-            pm.store(new UserPermission(this.getUserID(),  this.worldID, perm, set));
+            pm.merge(new UserPermission(this.getUserID(),  this.worldID, perm, set));
         }
         super.setPermission(perm,set);
     }
@@ -73,7 +73,7 @@ public class UserDatabaseStore extends UserDataStore
         }
         else
         {
-            mdm.store(new UserMetaData(this.getUserID(), this.worldID, key, value));
+            mdm.merge(new UserMetaData(this.getUserID(), this.worldID, key, value));
         }
         super.setMetadata(key,value);
     }
@@ -81,20 +81,30 @@ public class UserDatabaseStore extends UserDataStore
     @Override
     public boolean assignRole(Role role)
     {
-        if (this.roles.contains(role.getName()))
+        String roleName = role.getName();
+        if (role.isGlobal())
+        {
+            roleName = "g:" + roleName;
+        }
+        if (this.roles.contains(roleName))
         {
             return false;
         }
-        this.rm.store(new AssignedRole(this.getUserID(),this.worldID,role.getName()));
+        this.rm.store(new AssignedRole(this.getUserID(),this.worldID,roleName));
         return super.assignRole(role);
     }
 
     @Override
     public boolean removeRole(Role role)
     {
-        if (this.roles.contains(role.getName()))
+        String roleName = role.getName();
+        if (role.isGlobal())
         {
-            this.rm.delete(this.getUserID(),role.getName(),this.worldID);
+            roleName = "g:" + roleName;
+        }
+        if (this.roles.contains(roleName))
+        {
+            this.rm.delete(this.getUserID(),roleName,this.worldID);
             return super.removeRole(role);
         }
         return false;

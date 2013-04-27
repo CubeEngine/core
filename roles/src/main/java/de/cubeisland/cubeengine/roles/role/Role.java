@@ -186,13 +186,18 @@ public class Role implements RawDataStore
     }
 
     @Override
-    public boolean assignRole(Role pRole)
+    public boolean assignRole(Role role)
     {
-        if (this.inheritsFrom(pRole))
+        if (this.inheritsFrom(role))
         {
             throw new CircularRoleDependencyException("Cannot add parentrole!");
         }
-        boolean added = this.config.parents.add(pRole.getName());
+        String roleName = role.getName();
+        if (role.isGlobal())
+        {
+            roleName = "g:" + roleName;
+        }
+        boolean added = this.config.parents.add(roleName);
         if (added)
         {
             this.makeDirty();
@@ -201,9 +206,14 @@ public class Role implements RawDataStore
     }
 
     @Override
-    public boolean removeRole(Role pRole)
+    public boolean removeRole(Role role)
     {
-        if (this.config.parents.remove(pRole.getName()))
+        String roleName = role.getName();
+        if (role.isGlobal())
+        {
+            roleName = "g:" + roleName;
+        }
+        if (this.config.parents.remove(roleName))
         {
             this.makeDirty();
             return true;

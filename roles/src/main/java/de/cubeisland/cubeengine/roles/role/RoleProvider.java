@@ -63,7 +63,12 @@ public abstract class RoleProvider
      */
     public Role getRole(String name)
     {
-        return this.roles.get(name.toLowerCase());
+        Role role = this.roles.get(name.toLowerCase());
+        if (role != null && role.isDirty())
+        {
+            this.calculateRole(role,new Stack<String>());
+        }
+        return role;
     }
 
     /**
@@ -90,7 +95,14 @@ public abstract class RoleProvider
     {
         this.configs = new THashMap<String, RoleConfig>();
         this.roles = new THashMap<String, Role>();
-        // TODO remove all roles from RolesAttachments
+        for (User user : this.module.getCore().getUserManager().getLoadedUsers())
+        {
+            RolesAttachment rolesAttachment = user.get(RolesAttachment.class);
+            if (rolesAttachment != null)
+            {
+                rolesAttachment.flushResolvedData();
+            }
+        }
         this.getFolder().mkdir(); // Creates folder for this provider if not existent
         int i = 0;
         for (File configFile : this.getFolder().listFiles())
