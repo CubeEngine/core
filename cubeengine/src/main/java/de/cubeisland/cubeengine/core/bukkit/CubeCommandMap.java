@@ -254,10 +254,6 @@ public class CubeCommandMap extends SimpleCommandMap
 
             for (VanillaCommand command : fallbackCommands)
             {
-                if (completions.size() == this.core.getConfiguration().commandTabCompleteOffers)
-                {
-                    break;
-                }
                 String name = command.getName();
 
                 if (!command.testPermissionSilent(sender))
@@ -280,10 +276,6 @@ public class CubeCommandMap extends SimpleCommandMap
 
             for (Map.Entry<String, Command> commandEntry : this.knownCommands.entrySet())
             {
-                if (completions.size() == this.core.getConfiguration().commandTabCompleteOffers)
-                {
-                    break;
-                }
                 Command command = commandEntry.getValue();
 
                 if (!command.testPermissionSilent(sender))

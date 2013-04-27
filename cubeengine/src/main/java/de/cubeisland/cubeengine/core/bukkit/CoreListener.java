@@ -20,7 +20,6 @@ package de.cubeisland.cubeengine.core.bukkit;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.scheduler.BukkitScheduler;
 
 import de.cubeisland.cubeengine.core.Core;
@@ -51,10 +50,5 @@ public class CoreListener implements Listener
                 bukkitCore.getEventManager().fireEvent(afterJoinEvent);
             }
         }, config.afterJoinEventDelay);
-    }
-
-    public void onQuit(final PlayerQuitEvent event)
-    {
-        this.bukkitCore.getCommandManager().commandMap.getLastOfferFor(event.getPlayer().getName());
     }
 }
