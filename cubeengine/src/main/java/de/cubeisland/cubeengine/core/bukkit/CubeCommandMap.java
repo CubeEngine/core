@@ -48,8 +48,6 @@ import org.bukkit.util.StringUtil;
 
 import de.cubeisland.cubeengine.core.Core;
 import de.cubeisland.cubeengine.core.CubeEngine;
-import de.cubeisland.cubeengine.core.command.AliasCommand;
-import de.cubeisland.cubeengine.core.command.CommandExecuteEvent;
 import de.cubeisland.cubeengine.core.command.CubeCommand;
 import de.cubeisland.cubeengine.core.logger.CubeFileHandler;
 import de.cubeisland.cubeengine.core.logger.CubeLogger;
@@ -216,25 +214,6 @@ public class CubeCommandMap extends SimpleCommandMap
         if (args == null)
         {
             args = Arrays.copyOfRange(parts, 1, parts.length);
-        }
-
-        if (command instanceof AliasCommand)
-        {
-            AliasCommand alias = ((AliasCommand)command);
-            String[] prefix = alias.getPrefix();
-            String[] suffix = alias.getSuffix();
-
-            String[] newArgs = new String[prefix.length + args.length + suffix.length];
-            System.arraycopy(prefix, 0, newArgs, 0, prefix.length);
-            System.arraycopy(args, 0, newArgs, prefix.length, args.length);
-            System.arraycopy(suffix, 0, newArgs, prefix.length + args.length, suffix.length);
-
-            args = newArgs;
-        }
-
-        if (this.core.getEventManager().fireEvent(new CommandExecuteEvent(this.core, command, commandLine)).isCancelled())
-        {
-            return false;
         }
 
         try

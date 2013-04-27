@@ -457,7 +457,17 @@ public abstract class CubeCommand extends Command
         return this.execute(wrapSender(this.getModule().getCore(), bukkitSender), args, label, new Stack<String>());
     }
 
-    private boolean execute(CommandSender sender, String[] args, String label, Stack<String> labels)
+    /**
+     * This method should only ever be overwritten in really special cases!
+     * One example for this: the AliasCommand
+     *
+     * @param sender the CE command server
+     * @param args the args array
+     * @param label the command label
+     * @param labels the label stack
+     * @return true on success
+     */
+    protected boolean execute(CommandSender sender, String[] args, String label, Stack<String> labels)
     {
         try
         {

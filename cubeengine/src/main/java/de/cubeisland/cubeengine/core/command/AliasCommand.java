@@ -18,8 +18,7 @@
 package de.cubeisland.cubeengine.core.command;
 
 import java.util.List;
-
-import de.cubeisland.cubeengine.core.permission.PermDefault;
+import java.util.Stack;
 
 import static de.cubeisland.cubeengine.core.util.StringUtils.explode;
 
@@ -54,27 +53,18 @@ public final class AliasCommand extends CubeCommand
     }
 
     @Override
-    public void setPermission(String permission)
+    protected boolean execute(CommandSender sender, String[] args, String label, Stack<String> labels)
     {
-        this.target.setPermission(permission);
-    }
+        String[] prefix = this.getPrefix();
+        String[] suffix = this.getSuffix();
 
-    @Override
-    public void updateGeneratedPermission()
-    {
-        this.target.updateGeneratedPermission();
-    }
+        String[] newArgs = new String[prefix.length + args.length + suffix.length];
+        System.arraycopy(prefix, 0, newArgs, 0, prefix.length);
+        System.arraycopy(args, 0, newArgs, prefix.length, args.length);
+        System.arraycopy(suffix, 0, newArgs, prefix.length + args.length, suffix.length);
 
-    @Override
-    public void setGeneratedPermission(PermDefault def)
-    {
-        this.target.setGeneratedPermission(def);
-    }
-
-    @Override
-    public ContextFactory getContextFactory()
-    {
-        return this.target.getContextFactory();
+        args = newArgs;
+        return this.target.execute(sender, args, label, labels);
     }
 
     @Override
