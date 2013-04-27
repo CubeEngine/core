@@ -32,7 +32,9 @@ import de.cubeisland.cubeengine.roles.exception.CircularRoleDependencyException;
 import de.cubeisland.cubeengine.roles.role.resolved.ResolvedMetadata;
 import de.cubeisland.cubeengine.roles.role.resolved.ResolvedPermission;
 
-public class Role implements RawDataStore
+import gnu.trove.map.hash.THashMap;
+
+public class Role implements RawDataStore,Comparable<Role>
 {
     protected RoleConfig config;
     protected ResolvedDataStore resolvedData;
@@ -317,13 +319,25 @@ public class Role implements RawDataStore
     @Override
     public Map<String, Boolean> getAllRawPermissions()
     {
-        return null; // TODO
+        Map<String,Boolean> result = new THashMap<String, Boolean>();
+        for (Role assignedRole : this.resolvedData.assignedRoles)
+        {
+            result.putAll(assignedRole.getAllRawPermissions());
+        }
+        result.putAll(this.getRawPermissions());
+        return result;
     }
 
     @Override
     public Map<String, String> getAllRawMetadata()
     {
-        return null; // TODO
+        Map<String,String> result = new THashMap<String, String>();
+        for (Role assignedRole : this.resolvedData.assignedRoles)
+        {
+            result.putAll(assignedRole.getAllRawMetadata());
+        }
+        result.putAll(this.getRawMetadata());
+        return result;
     }
 
     @Override
@@ -352,5 +366,11 @@ public class Role implements RawDataStore
     public int hashCode()
     {
         return getName() != null ? getName().hashCode() : 0;
+    }
+
+    @Override
+    public int compareTo(Role o)
+    {
+        return this.getPriorityValue() - o.getPriorityValue();
     }
 }

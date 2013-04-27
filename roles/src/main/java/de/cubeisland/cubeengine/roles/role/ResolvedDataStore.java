@@ -23,6 +23,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.TreeSet;
 
 import org.bukkit.Bukkit;
 import org.bukkit.permissions.Permission;
@@ -36,7 +37,7 @@ public class ResolvedDataStore
 {
     protected Map<String,ResolvedPermission> permissions;
     protected Map<String,ResolvedMetadata> metadata;
-    protected Set<Role> assignedRoles;
+    protected TreeSet<Role> assignedRoles;
 
     protected Set<ResolvedDataStore> dependentData;
     protected RawDataStore rawDataStore;
@@ -49,7 +50,7 @@ public class ResolvedDataStore
 
     private void inheritFrom(Set<Role> assignedRoles)
     {
-        this.assignedRoles = assignedRoles;
+        this.assignedRoles = new TreeSet<Role>(assignedRoles);
         this.dependentData = new HashSet<ResolvedDataStore>();
         for (Role role : assignedRoles)
         {

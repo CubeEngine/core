@@ -18,6 +18,8 @@
 package de.cubeisland.cubeengine.roles.role;
 
 import java.io.File;
+import java.util.Collection;
+import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
@@ -31,6 +33,7 @@ import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.util.Profiler;
 import de.cubeisland.cubeengine.core.util.Triplet;
 import de.cubeisland.cubeengine.roles.Roles;
+import de.cubeisland.cubeengine.roles.RolesConfig;
 import de.cubeisland.cubeengine.roles.config.RoleConfig;
 import de.cubeisland.cubeengine.roles.config.RoleMirror;
 import de.cubeisland.cubeengine.roles.storage.AssignedRoleManager;
@@ -39,6 +42,7 @@ import de.cubeisland.cubeengine.roles.storage.UserPermissionsManager;
 
 import gnu.trove.map.hash.TLongLongHashMap;
 import gnu.trove.map.hash.TLongObjectHashMap;
+import gnu.trove.set.hash.TLongHashSet;
 
 public class RolesManager
 {
@@ -109,45 +113,54 @@ public class RolesManager
                 continue;
             }
             WorldRoleProvider provider = new WorldRoleProvider(module, this, mirror, mainWorldID);
-            TLongObjectHashMap<Triplet<Boolean, Boolean, Boolean>> worldMirrors = provider.getWorldMirrors();
-            this.module.getLog().log(LogLevel.DEBUG, "Loading role-provider for " + provider.getMainWorld());
-            for (long worldId : worldMirrors.keys())
+            this.registerWorldRoleProvider(provider); // mirrors
+        }
+        this.createMissingWorldRoleProviders();// World without mirrors
+    }
+
+    private void registerWorldRoleProvider(WorldRoleProvider provider)
+    {
+        TLongObjectHashMap<Triplet<Boolean, Boolean, Boolean>> worldMirrors = provider.getWorldMirrors();
+        this.module.getLog().log(LogLevel.DEBUG, "Loading role-provider for " + provider.getMainWorld());
+        for (long worldId : worldMirrors.keys())
+        {
+            if (this.worldRoleProviders.containsKey(worldId))
             {
-                if (this.worldRoleProviders.containsKey(worldId))
-                {
-                    this.module.getLog().log(LogLevel.ERROR,
-                                             "The world " + this.module.getCore().getWorldManager().getWorld(worldId).getName()
-                                                 + " is mirrored multiple times!\n"
-                                                 + "Check your configuration under mirrors." + provider.getMainWorld());
-                    continue;
-                }
-                if (worldMirrors.get(worldId).getFirst()) // Roles are mirrored add to provider...
-                {
-                    this.module.getLog().log(LogLevel.DEBUG, "  " + wm.getWorld(worldId).getName()+
-                        ": ( RoleMirror " + (worldMirrors.get(worldId).getSecond() ? "; AssignedRoleMirror " : "")
-                        + (worldMirrors.get(worldId).getThird() ? "; UserDataMirror " :"") + ")");
-                    this.worldRoleProviders.put(worldId, provider);
-                    this.providerSet.add(provider);
-                }
-                if (worldMirrors.get(worldId).getSecond())
-                {
-                    this.assignedRoleMirrors.put(worldId,mainWorldID);
-                }
-                else
-                {
-                    this.assignedRoleMirrors.put(worldId,worldId);
-                }
-                if (worldMirrors.get(worldId).getThird()) // specific user perm/metadata is mirrored
-                {
-                    this.userMirrors.put(worldId,mainWorldID);
-                }
-                else
-                {
-                    this.userMirrors.put(worldId,worldId);
-                }
+                this.module.getLog().log(LogLevel.ERROR,
+                                         "The world " + this.module.getCore().getWorldManager().getWorld(worldId).getName()
+                                             + " is mirrored multiple times!\n"
+                                             + "Check your configuration under mirrors." + provider.getMainWorld());
+                continue;
+            }
+            if (worldMirrors.get(worldId).getFirst()) // Roles are mirrored add to provider...
+            {
+                this.module.getLog().log(LogLevel.DEBUG, "  " + wm.getWorld(worldId).getName()+
+                    ": ( RoleMirror " + (worldMirrors.get(worldId).getSecond() ? "; AssignedRoleMirror " : "")
+                    + (worldMirrors.get(worldId).getThird() ? "; UserDataMirror " :"") + ")");
+                this.worldRoleProviders.put(worldId, provider);
+                this.providerSet.add(provider);
+            }
+            if (worldMirrors.get(worldId).getSecond())
+            {
+                this.assignedRoleMirrors.put(worldId,provider.getMainWorldId());
+            }
+            else
+            {
+                this.assignedRoleMirrors.put(worldId,worldId);
+            }
+            if (worldMirrors.get(worldId).getThird()) // specific user perm/metadata is mirrored
+            {
+                this.userMirrors.put(worldId,provider.getMainWorldId());
+            }
+            else
+            {
+                this.userMirrors.put(worldId,worldId);
             }
         }
-        // World without mirrors
+    }
+
+    private void createMissingWorldRoleProviders()
+    {
         for (long worldId : this.module.getCore().getWorldManager().getAllWorldIds())
         {
             if (this.getProvider(worldId) == null)
@@ -256,6 +269,117 @@ public class RolesManager
         }
     }
 
-    // TODO API for mirrors
-    // TODO when changing mirrors delete ALL resolved data (not only make Dirty)
+    /**
+     * Sets the worlds to mirror world.
+     * And then loads the newly created provider/s
+     *
+     * @param world to world to mirror from
+     * @param roles if true mirror roles defined in the configurations
+     * @param assignedRoles if true mirror roles assigned to users too
+     * @param assignedData if true mirror data assigned to users too
+     * @param worlds the worlds to mirror to
+     */
+    public void setMirror(World world, boolean roles, boolean assignedRoles, boolean assignedData, Collection<World> worlds)
+    {
+        RolesConfig config = this.module.getConfiguration();
+        Iterator<RoleMirror> iterator = config.mirrors.iterator();
+        RoleMirror next = null;
+        while (iterator.hasNext())
+        {
+            next = iterator.next();
+            if (next.mainWorld.equalsIgnoreCase(world.getName()))
+            {
+                config.mirrors.remove(next);
+                break;
+            }
+        }
+        if (next != null)
+        {
+            // Delete old provider
+            WorldRoleProvider provider = this.getProvider(world);
+            this.providerSet.remove(provider);
+            for (long m : provider.getMirroredWorlds())
+            {
+                this.worldRoleProviders.remove(m);
+            }
+        }
+        RoleMirror roleMirror = new RoleMirror(this.module, world.getName());
+        for (World mWorld : worlds)
+        {
+            // Remove all providers of related worlds
+            WorldRoleProvider provider = this.getProvider(mWorld);
+            if (provider != null)
+            {
+                this.providerSet.remove(provider);
+                for (long m : provider.getMirroredWorlds())
+                {
+                    this.worldRoleProviders.remove(m);
+                }
+            }
+            roleMirror.setWorld(mWorld.getName(), roles, assignedRoles, assignedData);
+        }
+        config.mirrors.add(roleMirror);
+        config.save();
+
+        for (RoleMirror mirror : config.mirrors)
+        {
+            long id = this.wm.getWorldId(mirror.mainWorld);
+            if (!this.worldRoleProviders.keySet().contains(id))
+            {
+                WorldRoleProvider provider = new WorldRoleProvider(module, this, mirror, id);
+                this.registerWorldRoleProvider(provider);
+            }
+        }
+
+        this.createMissingWorldRoleProviders();
+        this.reloadAllRoles();
+        this.recalculateAllRoles();
+    }
+
+    /**
+     * Removes a mirror from the world
+     *
+     * @param world
+     */
+    public void removeMirror(World world, Collection<World> toRemove)
+    {
+        WorldRoleProvider provider = this.getProvider(world);
+        TLongHashSet mirrored = new TLongHashSet(provider.getMirroredWorlds());
+        for (World remWorld : toRemove)
+        {
+            long worldID = this.wm.getWorldId(remWorld);
+            if (mirrored.contains(worldID))
+            {
+                RoleMirror mirrorConfig = provider.getMirrorConfig();
+                mirrorConfig.getWorldMirrors().remove(worldID);
+                this.worldRoleProviders.remove(worldID);
+            }
+        }
+        this.module.getConfiguration().save();
+
+        this.createMissingWorldRoleProviders();
+        this.reloadAllRoles();
+        this.recalculateAllRoles();
+    }
+
+    /**
+     * Deletes the mirrors from the world
+     *
+     * @param world
+     */
+    public void deleteMirror(World world)
+    {
+        WorldRoleProvider provider = this.getProvider(world);
+        this.providerSet.remove(provider);
+        for (long w : provider.getMirroredWorlds())
+        {
+            this.worldRoleProviders.remove(w);
+        }
+        this.module.getConfiguration().mirrors.remove(provider.getMirrorConfig());
+        this.module.getConfiguration().save();
+
+        this.createMissingWorldRoleProviders();
+        this.reloadAllRoles();
+        this.recalculateAllRoles();
+    }
 }

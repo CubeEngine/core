@@ -24,8 +24,6 @@ import java.util.Locale;
 import java.util.Set;
 import java.util.Stack;
 
-import org.bukkit.World;
-
 import de.cubeisland.cubeengine.core.config.Configuration;
 import de.cubeisland.cubeengine.core.logger.LogLevel;
 import de.cubeisland.cubeengine.core.permission.Permission;

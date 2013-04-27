@@ -20,8 +20,6 @@ package de.cubeisland.cubeengine.roles.role;
 import java.util.Map;
 import java.util.Set;
 
-import de.cubeisland.cubeengine.core.storage.database.AttrType;
-import de.cubeisland.cubeengine.core.storage.database.Attribute;
 import de.cubeisland.cubeengine.core.util.Triplet;
 import de.cubeisland.cubeengine.roles.storage.AssignedRole;
 import de.cubeisland.cubeengine.roles.storage.AssignedRoleManager;
@@ -29,6 +27,8 @@ import de.cubeisland.cubeengine.roles.storage.UserMetaData;
 import de.cubeisland.cubeengine.roles.storage.UserMetaDataManager;
 import de.cubeisland.cubeengine.roles.storage.UserPermission;
 import de.cubeisland.cubeengine.roles.storage.UserPermissionsManager;
+
+import gnu.trove.map.hash.THashMap;
 
 public class UserDatabaseStore extends UserDataStore
 {
@@ -163,12 +163,24 @@ public class UserDatabaseStore extends UserDataStore
     @Override
     public Map<String, Boolean> getAllRawPermissions()
     {
-        return null; // TODO
+        Map<String,Boolean> result = new THashMap<String, Boolean>();
+        for (Role assignedRole : this.attachment.getResolvedData(this.worldID).assignedRoles)
+        {
+            result.putAll(assignedRole.getAllRawPermissions());
+        }
+        result.putAll(this.getRawPermissions());
+        return result;
     }
 
     @Override
     public Map<String, String> getAllRawMetadata()
     {
-        return null; // TODO
+        Map<String,String> result = new THashMap<String, String>();
+        for (Role assignedRole : this.attachment.getResolvedData(this.worldID).assignedRoles)
+        {
+            result.putAll(assignedRole.getAllRawMetadata());
+        }
+        result.putAll(this.getRawMetadata());
+        return result;
     }
 }

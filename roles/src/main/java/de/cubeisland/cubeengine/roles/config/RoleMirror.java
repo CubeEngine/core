@@ -38,7 +38,7 @@ public class RoleMirror
         Long worldId = CubeEngine.getCore().getWorldManager().getWorldId(mainWorld);
         if (worldId == null)
         {
-            module.getLog().log(LogLevel.WARNING, "Unkown world " + mainWorld);
+            module.getLog().log(LogLevel.WARNING, "Unknown world " + mainWorld);
         }
         else
         {
@@ -53,6 +53,7 @@ public class RoleMirror
      */
     public RoleMirror(Roles module, long worldId)
     {
+        this.module = module;
         this.worlds.put(worldId, new Triplet<Boolean, Boolean, Boolean>(true, true, true));
         this.mainWorld = CubeEngine.getCore().getWorldManager().getWorld(worldId).getName();
     }
@@ -73,7 +74,7 @@ public class RoleMirror
         Long world = CubeEngine.getCore().getWorldManager().getWorldId(worldName);
         if (world == null)
         {
-            module.getLog().log(LogLevel.WARNING, "Unkown world " + worldName + "! Removing from config...");
+            module.getLog().log(LogLevel.WARNING, "Unknown world " + worldName + "! Removing from config...");
             return;
         }
         this.worlds.put(world, new Triplet<Boolean, Boolean, Boolean>(roles, assigned, users));

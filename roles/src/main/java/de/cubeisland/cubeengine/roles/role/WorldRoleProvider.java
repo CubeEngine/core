@@ -162,4 +162,14 @@ public class WorldRoleProvider extends RoleProvider
         }
         return false;
     }
+
+    public long[] getMirroredWorlds()
+    {
+        return this.mirrorConfig.getWorldMirrors().keys();
+    }
+
+    protected RoleMirror getMirrorConfig()
+    {
+        return mirrorConfig;
+    }
 }
