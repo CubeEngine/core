@@ -17,14 +17,12 @@
  */
 package de.cubeisland.cubeengine.core.bukkit;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.regex.Pattern;
 
 import org.bukkit.Server;
 import org.bukkit.command.Command;
@@ -33,16 +31,12 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.command.SimpleCommandMap;
 import org.bukkit.command.defaults.BukkitCommand;
-import org.bukkit.command.defaults.VanillaCommand;
-import org.bukkit.util.StringUtil;
 
 import de.cubeisland.cubeengine.core.Core;
 import de.cubeisland.cubeengine.core.CubeEngine;
 import de.cubeisland.cubeengine.core.command.CubeCommand;
 import de.cubeisland.cubeengine.core.util.StringUtils;
 import de.cubeisland.cubeengine.core.util.matcher.Match;
-
-import org.apache.commons.lang.Validate;
 
 /**
  * This CommandMap extends the SimpleCommandMap to add some functionality:
@@ -236,92 +230,6 @@ public class CubeCommandMap extends SimpleCommandMap
         this.knownCommands.put(label, command);
 
         return true;
-    }
-
-    private final Pattern PATTERN_ON_SPACE = Pattern.compile(" ", Pattern.LITERAL);
-
-    @Override
-    public List<String> tabComplete(CommandSender sender, String cmdLine)
-    {
-        Validate.notNull(sender, "Sender cannot be null");
-        Validate.notNull(cmdLine, "Command line cannot null");
-
-        int spaceIndex = cmdLine.indexOf(' ');
-
-        if (spaceIndex == -1)
-        {
-            List<String> completions = new ArrayList<String>();
-
-            for (VanillaCommand command : fallbackCommands)
-            {
-                String name = command.getName();
-
-                if (!command.testPermissionSilent(sender))
-                {
-                    continue;
-                }
-                if (this.knownCommands.containsKey(name))
-                {
-                    // Don't let a vanilla command override a command added below
-                    // This has to do with the way aliases work
-                    continue;
-                }
-                if (!StringUtil.startsWithIgnoreCase(name, cmdLine))
-                {
-                    continue;
-                }
-
-                completions.add('/' + name);
-            }
-
-            for (Map.Entry<String, Command> commandEntry : this.knownCommands.entrySet())
-            {
-                Command command = commandEntry.getValue();
-
-                if (!command.testPermissionSilent(sender))
-                {
-                    continue;
-                }
-
-                String name = commandEntry.getKey(); // Use the alias, not command name
-
-                if (StringUtil.startsWithIgnoreCase(name, cmdLine))
-                {
-                    completions.add('/' + name);
-                }
-            }
-
-            Collections.sort(completions, String.CASE_INSENSITIVE_ORDER);
-            return completions;
-        }
-
-        final String commandName = cmdLine.substring(0, spaceIndex);
-        final Command target = getCommand(commandName);
-
-        if (target == null)
-        {
-            return null;
-        }
-
-        if (!target.testPermissionSilent(sender))
-        {
-            return null;
-        }
-
-        final String[] args = PATTERN_ON_SPACE.split(cmdLine.substring(spaceIndex + 1, cmdLine.length()), -1); // TODO what exactly is done here?
-
-        try
-        {
-            return target.tabComplete(sender, commandName, args);
-        }
-        catch (CommandException e)
-        {
-            throw e;
-        }
-        catch (Exception e)
-        {
-            throw new CommandException("Unhandled exception executing tab-completer for '" + cmdLine + "' in " + target, e);
-        }
     }
 
     @Override
