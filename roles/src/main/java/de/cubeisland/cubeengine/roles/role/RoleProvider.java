@@ -24,6 +24,8 @@ import java.util.Locale;
 import java.util.Set;
 import java.util.Stack;
 
+import org.bukkit.World;
+
 import de.cubeisland.cubeengine.core.config.Configuration;
 import de.cubeisland.cubeengine.core.logger.LogLevel;
 import de.cubeisland.cubeengine.core.permission.Permission;
@@ -217,6 +219,10 @@ public abstract class RoleProvider
      */
     public Role createRole(String roleName)
     {
+        if (roleName.length() > 255)
+        {
+            throw new IllegalArgumentException("The max. length for rolenames is 255!");
+        }
         roleName = roleName.toLowerCase(Locale.ENGLISH);
         if (this.roles.containsKey(roleName))
         {
@@ -266,19 +272,16 @@ public abstract class RoleProvider
         }
         for (ResolvedDataStore resolvedDataStore : role.resolvedData.dependentData)
         {
-            if (resolvedDataStore.rawDataStore instanceof Role)
-            {
-                resolvedDataStore.rawDataStore.removeRole(role);
-            }
+            resolvedDataStore.rawDataStore.removeRole(role);
         }
-
+        this.configs.remove(role.getName());
+        this.roles.remove(role.getName());
         role.config.roleName = newName;
+        this.configs.put(role.getName(),role.config);
+        this.roles.put(role.getName(),role);
         for (ResolvedDataStore resolvedDataStore : role.resolvedData.dependentData)
         {
-            if (resolvedDataStore.rawDataStore instanceof Role)
-            {
-                resolvedDataStore.rawDataStore.assignRole(role);
-            }
+            resolvedDataStore.rawDataStore.assignRole(role);
         }
         role.saveConfigToNewFile();
 

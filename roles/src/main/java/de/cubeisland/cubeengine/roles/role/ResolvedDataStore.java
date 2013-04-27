@@ -53,7 +53,7 @@ public class ResolvedDataStore
         this.dependentData = new HashSet<ResolvedDataStore>();
         for (Role role : assignedRoles)
         {
-            if (role.isDirty())
+             if (role.isDirty())
             {
                 System.out.print("Role to assign is dirty! " + role.getName());
             }

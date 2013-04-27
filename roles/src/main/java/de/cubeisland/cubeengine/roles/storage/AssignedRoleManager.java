@@ -30,6 +30,7 @@ import de.cubeisland.cubeengine.core.storage.database.Database;
 import de.cubeisland.cubeengine.core.storage.database.querybuilder.QueryBuilder;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.util.Triplet;
+import de.cubeisland.cubeengine.roles.role.Role;
 import de.cubeisland.cubeengine.roles.role.WorldRoleProvider;
 
 import gnu.trove.map.hash.TLongObjectHashMap;
@@ -188,6 +189,32 @@ public class AssignedRoleManager extends TripletKeyStorage<Long, Long, String, A
         {
             throw new StorageException("Error while getting Model from Database", ex,
                                        this.database.getStoredStatement(modelClass,"getallByUserAndWorld"));
+        }
+    }
+
+    public void setAssigned(Long user, long worldID, Set<Role> roles)
+    {
+        try
+        {
+            PreparedStatement stm = this.database.getStoredStatement(modelClass, "store");
+            for (Role role : roles)
+            {
+                String roleName = role.getName();
+                if (role.isGlobal())
+                {
+                    roleName = "g:" + roleName;
+                }
+                stm.setObject(1, user);
+                stm.setObject(2, worldID);
+                stm.setObject(3, roleName);
+                stm.addBatch();
+            }
+            stm.executeBatch();
+        }
+        catch (SQLException ex)
+        {
+            throw new StorageException("Error while storing Models into Database", ex,
+                                       this.database.getStoredStatement(modelClass,"store"));
         }
     }
 }

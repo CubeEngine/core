@@ -22,8 +22,6 @@ import org.bukkit.World;
 import de.cubeisland.cubeengine.core.command.CommandContext;
 import de.cubeisland.cubeengine.core.command.CommandSender;
 import de.cubeisland.cubeengine.core.command.ContainerCommand;
-import de.cubeisland.cubeengine.core.command.exception.IncorrectUsageException;
-import de.cubeisland.cubeengine.core.command.exception.MissingParameterException;
 import de.cubeisland.cubeengine.core.command.parameterized.ParameterizedContext;
 import de.cubeisland.cubeengine.core.storage.world.WorldManager;
 import de.cubeisland.cubeengine.core.user.User;
@@ -42,11 +40,11 @@ public abstract class RoleCommandHelper extends ContainerCommand
     protected WorldManager worldManager;
 
     protected final String LISTELEM = ChatFormat.parseFormats("- &e%s");
-    protected final String LISTELEM_VALUE = ChatFormat.parseFormats("- &e%s: &6%s");
+    protected final String LISTELEM_VALUE = ChatFormat.parseFormats("- &e%s&f: &6%s");
 
     public RoleCommandHelper(Roles module)
     {
-        super(module, "role", "Manage roles.");//TODO alias manrole
+        super(module, "role", "Manage roles.");
         this.manager = module.getRolesManager();
         this.module = module;
         this.worldManager = module.getCore().getWorldManager();
@@ -69,18 +67,19 @@ public abstract class RoleCommandHelper extends ContainerCommand
                 else
                 {
                     world = this.worldManager.getWorld(worldId);
-                    context.sendTranslated("&eYou are using &6%s &eas current world.", world.getName());
+                    context.sendTranslated("&eYou are using &6%s&e as current world.", world.getName());
                 }
             }
             else
             {
                 if (ManagementCommands.curWorldIdOfConsole == null)
                 {
-                    context.sendTranslated("&ePlease provide a world.\n&aYou can define a world with &6/roles admin defaultworld <world>");
-                    throw new IncorrectUsageException(); //TODO this is bullshit
+                    context.sendTranslated("&ePlease provide a world.");
+                    context.sendTranslated("&aYou can define a world with &6/roles admin defaultworld <world>");
+                    return null;
                 }
                 world = this.worldManager.getWorld(ManagementCommands.curWorldIdOfConsole);
-                context.sendTranslated("&eYou are using &6%s &eas current world.", world.getName());
+                context.sendTranslated("&eYou are using &6%s&e as current world.", world.getName());
             }
         }
         else
@@ -89,7 +88,7 @@ public abstract class RoleCommandHelper extends ContainerCommand
             if (world == null)
             {
                 context.sendTranslated("&cWorld %s not found!", context.getString("in"));
-                throw new MissingParameterException("world"); //TODO this is bullshit
+                return null;
             }
         }
         return world;
@@ -103,12 +102,12 @@ public abstract class RoleCommandHelper extends ContainerCommand
             if (world == null)
             {
                 context.sendTranslated("&cCould not find the global role &6%s&c.", name);
-                throw new MissingParameterException("role"); //TODO this is bullshit
+                return null;
             }
             else
             {
-                context.sendTranslated("&cCould not find the role &6%s &cin &6%s&c.", name, world.getName());
-                throw new MissingParameterException("role"); //TODO this is bullshit
+                context.sendTranslated("&cCould not find the role &6%s&c in &6%s&c.", name, world.getName());
+                return null;
             }
         }
         return role;

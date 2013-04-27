@@ -22,7 +22,6 @@ import org.bukkit.World;
 import de.cubeisland.cubeengine.core.command.CommandContext;
 import de.cubeisland.cubeengine.core.command.CommandSender;
 import de.cubeisland.cubeengine.core.command.ContainerCommand;
-import de.cubeisland.cubeengine.core.command.exception.MissingParameterException;
 import de.cubeisland.cubeengine.core.command.parameterized.ParameterizedContext;
 import de.cubeisland.cubeengine.core.storage.world.WorldManager;
 import de.cubeisland.cubeengine.core.user.User;
@@ -36,7 +35,7 @@ public class UserCommandHelper extends ContainerCommand
     protected RolesManager manager;
     protected WorldManager worldManager;
     protected Roles module;
-    protected final String LISTELEM_VALUE = ChatFormat.parseFormats("- &e%s: &6%s");
+    protected final String LISTELEM_VALUE = ChatFormat.parseFormats("- &e%s&f: &6%s");
     protected final String LISTELEM = ChatFormat.parseFormats("- &e%s");
 
     public UserCommandHelper(Roles module)
@@ -63,13 +62,13 @@ public class UserCommandHelper extends ContainerCommand
             if (user == null)
             {
                 context.sendTranslated("&cYou have to specify a player.");
-                throw new MissingParameterException("user"); //TODO this is bullshit
+                return null;
             }
         }
         if (user == null)
         {
             context.sendTranslated("&cUser %s not found!", context.getString(pos));
-            throw new MissingParameterException("user"); //TODO this is bullshit
+            return null;
         }
         return user;
     }
@@ -94,40 +93,33 @@ public class UserCommandHelper extends ContainerCommand
             if (world == null)
             {
                 context.sendTranslated("&cWorld %s not found!", context.getString("in"));
-                throw new MissingParameterException("world"); //TODO this is bullshit
             }
+            return world;
         }
-        else
+        CommandSender sender = context.getSender();
+        if (sender instanceof User)
         {
-            CommandSender sender = context.getSender();
-            if (sender instanceof User)
+            User user = (User)sender;
+            Long worldID = user.attachOrGet(RolesAttachment.class, this.module).getWorkingWorldId();
+            if (worldID == null)
             {
-                User user = (User)sender;
-                Long worldID = user.attachOrGet(RolesAttachment.class, this.module).getWorkingWorldId();
-                if (worldID == null)
-                {
-                    world = user.getWorld();
-                }
-                else
-                {
-                    world = this.worldManager.getWorld(worldID);
-                    context.sendTranslated("&eYou are using &6%s &eas current world.", world.getName());
-                }
+                world = user.getWorld();
             }
             else
             {
-                if (ManagementCommands.curWorldIdOfConsole == null)
-                {
-                    context.sendTranslated("&ePlease provide a world.\n&aYou can define a world with &6/roles admin defaultworld <world>");
-                    throw new MissingParameterException("world"); //TODO this is bullshit
-                }
-                else
-                {
-                    world = this.worldManager.getWorld(ManagementCommands.curWorldIdOfConsole);
-                    context.sendTranslated("&eYou are using &6%s &eas current world.", world.getName());
-                }
+                world = this.worldManager.getWorld(worldID);
+                context.sendTranslated("&eYou are using &6%s&e as current world.", world.getName());
             }
+            return world;
         }
+        if (ManagementCommands.curWorldIdOfConsole == null)
+        {
+            context.sendTranslated("&ePlease provide a world.");
+            context.sendTranslated("&aYou can define a world with &6/roles admin defaultworld <world>");
+            return null;
+        }
+        world = this.worldManager.getWorld(ManagementCommands.curWorldIdOfConsole);
+        context.sendTranslated("&eYou are using &6%s&e as current world.", world.getName());
         return world;
     }
 }

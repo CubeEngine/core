@@ -38,11 +38,18 @@ public class RolesConfig extends Configuration
     @Comment("If this is set to true no permissions will be assigned to any user if the server runs in offline-mode")
     public boolean doNotAssignPermIfOffline = true;
     @Option("default.roles")
-    @Comment("The list of roles a user will get when first joining the server.")
-    public Map<String, Set<String>> defaultRoles = new HashMap<String, Set<String>>(); //TODO example in comment
+    @Comment("The list of roles a user will get when first joining the server.\n" +
+                 "default:\n" +
+                 "  roles: \n" +
+                 "    world: \n" +
+                 "      - guest\n" +
+                 "    world_the_end\n" +
+                 "      - guest_in_the_end")
+    public Map<String, Set<String>> defaultRoles = new HashMap<String, Set<String>>();
     @Comment("The following configuration would mirror \n" +
              "roles, assigned roles and directly assigned data\n" +
-             "to the user from world to the end and the nether\n"+
+             "to the user from world to the end and the nether:\n"+
+             "mirrors:\n" +
              "  - world: \n" +
              "    world_the_end: \n" +
              "      - roles\n" +

@@ -21,6 +21,7 @@ import java.util.Map;
 
 import org.bukkit.World;
 
+import de.cubeisland.cubeengine.core.command.parameterized.Flag;
 import de.cubeisland.cubeengine.core.command.parameterized.Param;
 import de.cubeisland.cubeengine.core.command.parameterized.ParameterizedContext;
 import de.cubeisland.cubeengine.core.command.reflected.Alias;
@@ -41,11 +42,16 @@ public class UserInformationCommands extends UserCommandHelper
     }
 
     @Alias(names = "listuroles")
-    @Command(desc = "Lists roles of a user [in world]", usage = "[player] [in <world>]", params = @Param(names = "in", type = World.class), max = 2)
+    @Command(desc = "Lists roles of a user [in world]",
+             usage = "[player] [in <world>]",
+             params = @Param(names = "in", type = World.class),
+             max = 1)
     public void list(ParameterizedContext context)
     {
         User user = this.getUser(context, 0);
+        if (user == null) return;
         World world = this.getWorld(context);
+        if (world == null) return;
         RolesAttachment rolesAttachment = this.manager.getRolesAttachment(user);
         // List all assigned roles
         context.sendTranslated("&eRoles of &2%s&e in &6%s&e:", user.getName(), world.getName());
@@ -54,20 +60,18 @@ public class UserInformationCommands extends UserCommandHelper
             if (pRole.isGlobal())
             {
                 context.sendMessage(String.format(this.LISTELEM_VALUE,"global",pRole.getName()));
+                continue;
             }
-            else
-            {
-                context.sendMessage(String.format(this.LISTELEM_VALUE,world.getName(),pRole.getName()));
-            }
+            context.sendMessage(String.format(this.LISTELEM_VALUE,world.getName(),pRole.getName()));
         }
     }
 
     @Alias(names = "checkuperm")
-    @Command(names = {
-        "checkperm", "checkpermission"
-    }, desc = "Checks for permissions of a user [in world]",
+    @Command(names = {"checkperm", "checkpermission"},
+             desc = "Checks for permissions of a user [in world]",
              usage = "<player> <permission> [in <world>]",
-             params = @Param(names = "in", type = World.class), max = 2, min = 2)
+             params = @Param(names = "in", type = World.class),
+             max = 2, min = 2)
     public void checkpermission(ParameterizedContext context)
     {
         User user = context.getUser(0);
@@ -77,6 +81,7 @@ public class UserInformationCommands extends UserCommandHelper
             return;
         }
         World world = this.getWorld(context);
+        if (world == null) return;
         RolesAttachment rolesAttachment = this.manager.getRolesAttachment(user);
         // Search for permission
         String permission = context.getString(1);
@@ -94,77 +99,77 @@ public class UserInformationCommands extends UserCommandHelper
         if (resolvedPermission == null)
         {
             context.sendTranslated("&cPermission not declared!");
+            return;
         }
-        else
+        context.sendTranslated((resolvedPermission.isSet()
+            ? "&aThe player &2%s&a does have access to &f\"&6%s&f\"&a"
+            : "&cThe player &2%s&c does not have access to &f\"&6%s&f\"&c")
+                                   + " in &6%s", user.getName(), permission, world.getName());
+
+        // Display origin
+        RawDataStore store = resolvedPermission.getOrigin();
+        if (!store.getRawPermissions().containsKey(permission))
         {
-            context.sendTranslated((resolvedPermission.isSet()
-                ? "&aThe player &2%s&a does have access to &f\"&6%s&f\"&a"
-                : "&cThe player &2%s&c does not have access to &f\"&6%s&f\"&c")
-                                       + " in &6%s", user.getName(), permission, world.getName());
-
-            // Display origin
-            RawDataStore store = resolvedPermission.getOrigin();
-            if (!store.getRawPermissions().containsKey(permission))
+            while (!permission.equals("*"))
             {
-                while (!permission.equals("*"))
+                if (permission.endsWith("*"))
                 {
-                    if (permission.endsWith("*"))
-                    {
-                        permission = permission.substring(0, permission.lastIndexOf("."));
-                    }
-                    permission = permission.substring(0, permission.lastIndexOf(".") + 1) + "*";
+                    permission = permission.substring(0, permission.lastIndexOf("."));
+                }
+                permission = permission.substring(0, permission.lastIndexOf(".") + 1) + "*";
 
-                    if (store.getRawPermissions().containsKey(permission))
+                if (store.getRawPermissions().containsKey(permission))
+                {
+                    if (store.getRawPermissions().get(permission) == resolvedPermission.isSet())
                     {
-                        if (store.getRawPermissions().get(permission) == resolvedPermission.isSet())
-                        {
-                            break;
-                        }
+                        break;
                     }
                 }
             }
-            context.sendTranslated("&ePermission inherited from:");
-            if (user.getName().equals(store.getName()))
-            {
-                context.sendTranslated("&6%s &ein the users role!", permission);
-            }
-            else
-            {
-                context.sendTranslated("&6%s &ein the role &6%s&e!", permission, store.getName());
-            }
         }
+        context.sendTranslated("&ePermission inherited from:");
+        if (user.getName().equals(store.getName()))
+        {
+            context.sendTranslated("&6%s&e directly assigned to the user!", permission);
+            return;
+        }
+        context.sendTranslated("&6%s&e in the role &6%s&e!", permission, store.getName());
     }
 
     @Alias(names = "listuperm")
-    @Command(names = {
-        "listperm", "listpermission"
-    }, desc = "List permission of a user [in world]", usage = "[player] [in <world>]", params = @Param(names = "in", type = World.class), max = 2)
+    @Command(names = {"listperm", "listpermission"},
+             desc = "List permission of a user [in world]",
+             usage = "[player] [in <world>]",
+             params = @Param(names = "in", type = World.class),
+             flags = @Flag(longName = "all", name = "a"),
+             max = 1)
     public void listpermission(ParameterizedContext context)
     {
         User user = this.getUser(context, 0);
+        if (user == null) return;
         World world = this.getWorld(context);
+        if (world == null) return;
         RolesAttachment rolesAttachment = this.manager.getRolesAttachment(user);
-        // List permissions
-        // TODO List ALL permissions or only directly assigned
-        Map<String,Boolean> perms = rolesAttachment.getRawData(this.worldManager.getWorldId(world)).getRawPermissions();
+        RawDataStore rawData = rolesAttachment.getRawData(this.worldManager.getWorldId(world));
+        Map<String,Boolean> perms = context.hasFlag("a") ? rawData.getAllRawPermissions() : rawData.getRawPermissions();
         if (perms.isEmpty())
         {
             context.sendTranslated("&2%s &ehas no permissions set in &6%s&e.", user.getName(), world.getName());
+            return;
         }
-        else
+        context.sendTranslated("&ePermissions of &2%s&e in &6%s&e.", user.getName(), world.getName());
+        for (Map.Entry<String, Boolean> entry : perms.entrySet())
         {
-            context.sendTranslated("&ePermissions of &2%s&e in &6%s&e.", user.getName(), world.getName());
-            for (Map.Entry<String, Boolean> entry : perms.entrySet())
-            {
-                context.sendMessage(String.format(this.LISTELEM_VALUE,entry.getKey(), entry.getValue()));
-            }
+            context.sendMessage(String.format(this.LISTELEM_VALUE,entry.getKey(), entry.getValue()));
         }
     }
 
     @Alias(names = "checkumeta")
-    @Command(names = {
-        "checkdata", "checkmeta", "checkmetadata"
-    }, desc = "Checks for metadata of a user [in world]", usage = "<player> <metadatakey> [in <world>]", params = @Param(names = "in", type = World.class), max = 3, min = 1)
+    @Command(names = {"checkdata", "checkmeta", "checkmetadata"},
+             desc = "Checks for metadata of a user [in world]",
+             usage = "<player> <metadatakey> [in <world>]",
+             params = @Param(names = "in", type = World.class),
+             max = 2, min = 2)
     public void checkmetadata(ParameterizedContext context)
     {
         User user = context.getUser(0);
@@ -174,6 +179,7 @@ public class UserInformationCommands extends UserCommandHelper
             return;
         }
         World world = this.getWorld(context);
+        if (world == null) return;
         RolesAttachment rolesAttachment = this.manager.getRolesAttachment(user);
         // Check metadata
         String metaKey = context.getString(1);
@@ -183,28 +189,34 @@ public class UserInformationCommands extends UserCommandHelper
             context.sendTranslated("&6%s &is not set for &2%s&e in &6%s&e.", metaKey, user.getName(), world.getName());
             return;
         }
-        context.sendTranslated("&6%s&e: &6%s&e is set for &2%s &ein &6%s&e.", metaKey, metadata.get(metaKey).getValue(), user.getName(), world.getName());
+        context.sendTranslated("&6%s&e: &6%s&e is set for &2%s&e in &6%s&e.", metaKey, metadata.get(metaKey).getValue(), user.getName(), world.getName());
         if (metadata.get(metaKey).getOrigin() != rolesAttachment.getRawData(this.worldManager.getWorldId(world)))
         {
-            context.sendTranslated("&eOrigin: &&%s&e.", metadata.get(metaKey).getOrigin().getName());
+            context.sendTranslated("&eOrigin: &6%s&e.", metadata.get(metaKey).getOrigin().getName());
         }
     }
 
     @Alias(names = "listumeta")
-    @Command(names = {
-        "listdata", "listmeta", "listmetadata"
-    }, desc = "List metadata of a user [in world]", usage = "[player] [in <world>]", params = @Param(names = "in", type = World.class), max = 2)
+    @Command(names = {"listdata", "listmeta", "listmetadata"},
+             desc = "List metadata of a user [in world]",
+             usage = "[player] [in <world>]",
+             params = @Param(names = "in", type = World.class),
+             flags = @Flag(longName = "all", name = "a"),
+             max = 1)
     public void listmetadata(ParameterizedContext context)
     {
         User user = this.getUser(context, 0);
+        if (user == null) return;
         World world = this.getWorld(context);
+        if (world == null) return;
         RolesAttachment rolesAttachment = this.manager.getRolesAttachment(user);
-        Map<String, ResolvedMetadata> metadata = rolesAttachment.getMetadata(this.worldManager.getWorldId(world));
+        RawDataStore rawData = rolesAttachment.getRawData(this.worldManager.getWorldId(world));
+        Map<String, String> metadata = context.hasFlag("a") ? rawData.getAllRawMetadata() : rawData.getRawMetadata();
         // List all metadata
         context.sendTranslated("&eMetadata of &2%s&e in &6%s&e.:", user.getName(), world.getName());
-        for (Map.Entry<String, ResolvedMetadata> entry : metadata.entrySet())
+        for (Map.Entry<String, String> entry : metadata.entrySet())
         {
-            context.sendMessage(String.format(this.LISTELEM_VALUE,entry.getKey(), entry.getValue().getValue()));
+            context.sendMessage(String.format(this.LISTELEM_VALUE,entry.getKey(), entry.getValue()));
         }
     }
 }

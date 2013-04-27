@@ -65,6 +65,16 @@ public class Role implements RawDataStore
     public void saveToConfig()
     {
         this.config.save();
+        if (this.resolvedData != null)
+        {
+            for (ResolvedDataStore resolvedDataStore : this.resolvedData.dependentData)
+            {
+                if (resolvedDataStore.rawDataStore instanceof Role)
+                {
+                    ((Role)resolvedDataStore.rawDataStore).saveToConfig();
+                }
+            }
+        }
     }
 
     protected void saveConfigToNewFile()

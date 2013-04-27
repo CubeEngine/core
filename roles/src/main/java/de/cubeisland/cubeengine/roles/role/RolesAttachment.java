@@ -77,7 +77,12 @@ public class RolesAttachment extends UserAttachment
             WorldRoleProvider provider = ((Roles)this.getModule()).getRolesManager().getProvider(worldID);
             for (String roleName : this.getRawData(worldID).getRawAssignedRoles())
             {
-                assignedRoles.add(provider.getRole(roleName));
+                Role role = provider.getRole(roleName);
+                if (role == null)
+                {
+                    System.out.print("WARNING NULL-Role! "+ roleName);
+                }
+                assignedRoles.add(role);
             }
             dataStore = new ResolvedDataStore(this.getRawData(worldID));
             UserDataStore tempStore = this.temporaryData.get(worldID);
@@ -85,7 +90,12 @@ public class RolesAttachment extends UserAttachment
             {
                 for (String roleName : this.temporaryData.get(worldID).getRawAssignedRoles())
                 {
-                    assignedRoles.add(provider.getRole(roleName));
+                    Role role = provider.getRole(roleName);
+                    if (role == null)
+                    {
+                        System.out.print("WARNING NULL-Role! "+ roleName);
+                    }
+                    assignedRoles.add(role);
                 }
                 dataStore.calculate(tempStore,assignedRoles);
             }
@@ -262,12 +272,6 @@ public class RolesAttachment extends UserAttachment
     public Map<String,ResolvedMetadata> getMetadata(long worldID)
     {
         return Collections.unmodifiableMap(this.getResolvedData(worldID).metadata);
-    }
-
-    public Map<String,Boolean> getAllRawPermissions()
-    {
-        UserDatabaseStore userDatabaseStore = this.rawUserData.get(this.getHolder().getWorldId());
-        return userDatabaseStore.getAllRawPermissions();
     }
 
     protected void makeDirty(long worldID)

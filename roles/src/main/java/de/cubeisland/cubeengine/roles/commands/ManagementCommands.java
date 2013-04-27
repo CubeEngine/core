@@ -42,7 +42,7 @@ public class ManagementCommands extends ContainerCommand
         module.getRolesManager().initRoleProviders();
         module.getRolesManager().recalculateAllRoles();
         module.getRolesManager().reapplyAllRoles();
-        context.sendTranslated("&f[&6Roles&f] &areload complete!");
+        context.sendTranslated("&f[&6Roles&f]&a reload complete!");
     }
 
     @Alias(names = "mansave")
@@ -53,12 +53,13 @@ public class ManagementCommands extends ContainerCommand
         Roles module = (Roles)this.getModule();
         module.getConfiguration().save();
         module.getRolesManager().saveAll();
-        context.sendTranslated("&f[&6Roles&f] &aall configurations saved!");
+        context.sendTranslated("&f[&6Roles&f]&a all configurations saved!");
     }
 
     public static Long curWorldIdOfConsole = null;
 
-    @Command(desc = "Sets or resets the current default world", usage = "[world]", max = 1)
+    @Command(desc = "Sets or resets the current default world",
+             usage = "[world]", max = 1)
     public void defaultworld(CommandContext context)
     {
         Long worldId = null;
@@ -82,22 +83,16 @@ public class ManagementCommands extends ContainerCommand
             if (worldId == null)
             {
                 ((User)sender).get(RolesAttachment.class).setWorkingWorldId(null);
+                return;
             }
-            else
-            {
-                ((User)sender).get(RolesAttachment.class).setWorkingWorldId(worldId);
-            }
+            ((User)sender).get(RolesAttachment.class).setWorkingWorldId(worldId);
+            return;
         }
-        else
+        if (context.hasArg(0))
         {
-            if (context.hasArg(0))
-            {
-                curWorldIdOfConsole = worldId;
-            }
-            else
-            {
-                curWorldIdOfConsole = null;
-            }
+            curWorldIdOfConsole = worldId;
+            return;
         }
+        curWorldIdOfConsole = null;
     }
 }

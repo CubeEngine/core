@@ -17,17 +17,17 @@
  */
 package de.cubeisland.cubeengine.roles.config;
 
-import de.cubeisland.cubeengine.core.config.Configuration;
-import de.cubeisland.cubeengine.core.config.annotations.Codec;
-import de.cubeisland.cubeengine.core.config.annotations.Comment;
-import de.cubeisland.cubeengine.core.config.annotations.DefaultConfig;
-import de.cubeisland.cubeengine.core.config.annotations.Option;
-
 import java.io.File;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
+
+import de.cubeisland.cubeengine.core.config.Configuration;
+import de.cubeisland.cubeengine.core.config.annotations.Codec;
+import de.cubeisland.cubeengine.core.config.annotations.Comment;
+import de.cubeisland.cubeengine.core.config.annotations.DefaultConfig;
+import de.cubeisland.cubeengine.core.config.annotations.Option;
 
 @Codec("yml")
 @DefaultConfig
@@ -41,14 +41,26 @@ public class RoleConfig extends Configuration
         + "ABSULTEZERO(-273) < MINIMUM(0) < LOWEST(125) < LOWER(250) < LOW(375) < NORMAL(500) < HIGH(675) < HIGHER(750) < HIGHEST(1000) < OVER9000(9001)")
     public Priority priority = Priority.ABSULTEZERO;
     @Option("permissions")
-    @Comment("the permissions")
+    @Comment("The permission\n" +
+                 "permissions nodes can be assigned individually e.g.:\n" +
+                 " - cubeengine.roles.command.assign\n" +
+                 "or grouped into a tree (this will be done automatically) like this:\n" +
+                 " - cubeengine.roles:\n" +
+                 "     - command.assign\n" +
+                 "     - world.world:\n" +
+                 "         - guest\n" +
+                 "         - member\n" +
+                 "Use - directly in front of a permission to revoke that permission e.g.:\n" +
+                 " - -cubeengine.roles.command.assign")
     public PermissionTree perms = new PermissionTree();
     @Option("parents")
     @Comment("The roles this role will inherit from.\n"
         + "Any priority of parents will be ignored!")
     public Set<String> parents = new HashSet<String>();
     @Option("metadata")
-    @Comment("such as prefix / suffix")
+    @Comment("The metadata such as prefix or suffix e.g.:\n" +
+                 "metadata: \n" +
+                 "  prefix: '&7Guest'")
     public Map<String, String> metadata = new LinkedHashMap<String, String>();
 
     @Override

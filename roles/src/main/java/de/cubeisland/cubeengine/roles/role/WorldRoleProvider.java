@@ -154,9 +154,10 @@ public class WorldRoleProvider extends RoleProvider
     @Override
     protected boolean renameRole(Role role, String newName)
     {
+        String name = role.getName();
         if (super.renameRole(role,newName))
         {
-            this.manager.rm.rename(this,role.getName(),newName);
+            this.manager.rm.rename(this,name,newName);
             return true;
         }
         return false;

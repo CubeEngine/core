@@ -17,9 +17,11 @@
  */
 package de.cubeisland.cubeengine.roles.storage;
 
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import de.cubeisland.cubeengine.core.storage.StorageException;
 import de.cubeisland.cubeengine.core.storage.TripletKeyStorage;
@@ -27,7 +29,6 @@ import de.cubeisland.cubeengine.core.storage.database.Database;
 import de.cubeisland.cubeengine.core.storage.database.querybuilder.QueryBuilder;
 
 import gnu.trove.map.hash.THashMap;
-import gnu.trove.map.hash.TLongObjectHashMap;
 
 public class UserPermissionsManager extends TripletKeyStorage<Long, Long, String, UserPermission>
 {
@@ -86,6 +87,29 @@ public class UserPermissionsManager extends TripletKeyStorage<Long, Long, String
         catch (SQLException ex)
         {
             throw new StorageException("Error while getting permissions from Database", ex, this.database.getStoredStatement(modelClass,"getallByUserInWorld"));
+        }
+    }
+
+    public void setPermissions(Long user, long worldID, Map<String, Boolean> perms)
+    {
+        try
+        {
+            PreparedStatement stm = this.database.getStoredStatement(modelClass, "store");
+            for (Entry<String, Boolean> entry : perms.entrySet())
+            {
+                if (entry.getValue() == null) continue;
+                stm.setObject(1, user);
+                stm.setObject(2, worldID);
+                stm.setObject(3, entry.getKey());
+                stm.setObject(3, entry.getValue());
+                stm.addBatch();
+            }
+            stm.executeBatch();
+        }
+        catch (SQLException ex)
+        {
+            throw new StorageException("Error while storing Models into Database", ex,
+                                       this.database.getStoredStatement(modelClass,"store"));
         }
     }
 }

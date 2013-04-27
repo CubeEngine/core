@@ -20,6 +20,8 @@ package de.cubeisland.cubeengine.roles.role;
 import java.util.Map;
 import java.util.Set;
 
+import de.cubeisland.cubeengine.core.storage.database.AttrType;
+import de.cubeisland.cubeengine.core.storage.database.Attribute;
 import de.cubeisland.cubeengine.core.util.Triplet;
 import de.cubeisland.cubeengine.roles.storage.AssignedRole;
 import de.cubeisland.cubeengine.roles.storage.AssignedRoleManager;
@@ -138,7 +140,7 @@ public class UserDatabaseStore extends UserDataStore
     public void setPermissions(Map<String, Boolean> perms)
     {
         this.clearPermissions();
-        // TODO batch set perms
+        pm.setPermissions(this.attachment.getHolder().key,this.worldID,perms);
         super.setPermissions(perms);
     }
 
@@ -146,7 +148,7 @@ public class UserDatabaseStore extends UserDataStore
     public void setMetadata(Map<String, String> metadata)
     {
         this.clearMetadata();
-        //TODO batch set meta
+        this.mdm.setMetadata(this.attachment.getHolder().key,this.worldID,metadata);
         super.setMetadata(metadata);
     }
 
@@ -154,7 +156,7 @@ public class UserDatabaseStore extends UserDataStore
     public void setAssignedRoles(Set<Role> roles)
     {
         this.clearAssignedRoles();
-        // TODO batch set parents
+        rm.setAssigned(this.attachment.getHolder().key, this.worldID, roles);
         super.setAssignedRoles(roles);
     }
 
