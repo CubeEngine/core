@@ -150,7 +150,7 @@ public class CubeCommandMap extends SimpleCommandMap
     {
         if (!CubeEngine.isMainThread())
         {
-            throw new IllegalStateException("Commands my only be called synchronously!");
+            throw new IllegalStateException("Commands may only be called synchronously!");
         }
         commandLine = StringUtils.trimLeft(commandLine);
         if (commandLine.isEmpty())
@@ -189,7 +189,7 @@ public class CubeCommandMap extends SimpleCommandMap
                 }
                 if (sender instanceof ConsoleCommandSender)
                 {
-                    this.lastCommandOffers.put(":console", matches);
+                    this.lastCommandOffers.put(de.cubeisland.cubeengine.core.command.sender.ConsoleCommandSender.NAME, matches);
                 }
                 else
                 {

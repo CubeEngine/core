@@ -40,7 +40,7 @@ public final class AliasCommand extends CubeCommand
 
     public CubeCommand getTarget()
     {
-        return target;
+        return this.target;
     }
 
     public String[] getPrefix()
