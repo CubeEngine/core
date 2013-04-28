@@ -153,7 +153,6 @@ public class CubeCommandMap extends SimpleCommandMap
 
         try
         {
-            // TODO we might catch errors here instead of on CubeCommand
             command.execute(sender, label, args);
         }
         catch (CommandException e)
