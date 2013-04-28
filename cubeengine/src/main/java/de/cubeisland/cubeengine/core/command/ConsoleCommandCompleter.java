@@ -17,107 +17,52 @@
  */
 package de.cubeisland.cubeengine.core.command;
 
-import de.cubeisland.cubeengine.core.bukkit.BukkitCore;
-import de.cubeisland.cubeengine.core.bukkit.CubeCommandMap;
-import org.bukkit.command.Command;
-import org.bukkit.command.ConsoleCommandSender;
-import org.bukkit.craftbukkit.libs.jline.console.completer.Completer;
-import org.bukkit.entity.Player;
-
-import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
-import java.util.Locale;
 
-import static de.cubeisland.cubeengine.core.logger.LogLevel.ERROR;
-import static de.cubeisland.cubeengine.core.util.StringUtils.explode;
-import static de.cubeisland.cubeengine.core.util.StringUtils.startsWithIgnoreCase;
+import org.bukkit.craftbukkit.libs.jline.console.completer.Completer;
+
+import org.bukkit.Server;
+import org.bukkit.command.CommandMap;
+
+import de.cubeisland.cubeengine.core.bukkit.BukkitCore;
+import de.cubeisland.cubeengine.core.bukkit.BukkitUtils;
 
 public class ConsoleCommandCompleter implements Completer
 {
-    private final BukkitCore core;
-    private final CubeCommandMap commandMap;
+    private final Server server;
+    private final CommandMap commandMap;
 
-    public ConsoleCommandCompleter(BukkitCore core, CubeCommandMap commandMap)
+    public ConsoleCommandCompleter(BukkitCore core)
     {
-        this.core = core;
-        this.commandMap = commandMap;
+        this.server = core.getServer();
+        this.commandMap = BukkitUtils.getCommandMap(this.server);
     }
 
     @Override
     public int complete(String buffer, int cursor, List<CharSequence> candidates)
     {
-        try
+        Collection<String> bukkitCandidates = this.commandMap.tabComplete(this.server.getConsoleSender(), buffer);
+        if (bukkitCandidates == null)
         {
-            if (buffer.isEmpty())
+            return cursor;
+        }
+
+        int cursorDiff;
+        if (buffer.indexOf(' ') == -1)
+        {
+            cursorDiff = buffer.length();
+            for (String entry : bukkitCandidates)
             {
-                List<String> offer = this.commandMap.getLastOfferFor(":console");
-                if (offer != null)
-                {
-                    candidates.addAll(offer);
-                }
-                return cursor;
-            }
-
-            String[] args = explode(" ", buffer);
-            if (args.length == 1)
-            {
-                String token = args[0].toLowerCase(Locale.ENGLISH);
-                Command command = this.commandMap.getCommand(token);
-                if (command != null)
-                {
-                    return cursor;
-                }
-
-                for (String label : this.commandMap.getKnownCommands().keySet())
-                {
-                    if (label.toLowerCase(Locale.ENGLISH).startsWith(token))
-                    {
-                        candidates.add(label);
-                    }
-                }
-                return cursor - token.length();
-            }
-            else
-            {
-                String label = args[0].toLowerCase(Locale.ENGLISH);
-                Command command = this.commandMap.getCommand(label);
-                if (!(command instanceof CubeCommand))
-                {
-                    args = buffer.split(" ");
-                }
-                if (command != null)
-                {
-                    final ConsoleCommandSender sender = this.core.getServer().getConsoleSender();
-                    List<String> result = command.tabComplete(sender, label, Arrays.copyOfRange(args, 1, args.length));
-
-                    if (!result.isEmpty())
-                    {
-                        candidates.addAll(result);
-                    }
-                    else
-                    {
-                        final String token = args[args.length - 1].toLowerCase(Locale.ENGLISH);
-                        for (Player player : sender.getServer().getOnlinePlayers())
-                        {
-                            String name = player.getName();
-                            if (startsWithIgnoreCase(name, token))
-                            {
-                                candidates.add(name);
-                            }
-                        }
-                    }
-
-                    if (candidates.size() > 0)
-                    {
-                        return cursor - args[args.length - 1].length();
-                    }
-                }
+                candidates.add(entry.substring(1));
             }
         }
-        catch (Exception e)
+        else
         {
-            this.core.getLog().log(ERROR, "An error occurred while completing your command line!", e);
+            cursorDiff = buffer.length() - buffer.lastIndexOf(' ') - 1;
+            candidates.addAll(bukkitCandidates);
         }
-        return cursor;
+
+        return cursor - cursorDiff;
     }
 }

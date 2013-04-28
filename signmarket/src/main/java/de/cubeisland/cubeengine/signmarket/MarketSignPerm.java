@@ -17,27 +17,19 @@
  */
 package de.cubeisland.cubeengine.signmarket;
 
-import de.cubeisland.cubeengine.core.module.Module;
-import de.cubeisland.cubeengine.core.permission.PermDefault;
 import de.cubeisland.cubeengine.core.permission.Permission;
 import de.cubeisland.cubeengine.core.permission.PermissionContainer;
 
-import org.bukkit.permissions.Permissible;
-
-import java.util.Locale;
-
-import static de.cubeisland.cubeengine.core.permission.PermDefault.OP;
-
-public class MarketSignPerm extends PermissionContainer
+public class MarketSignPerm extends PermissionContainer<Signmarket>
 {
-    public MarketSignPerm(Module module)
+    public MarketSignPerm(Signmarket module)
     {
         super(module);
+        this.bindToModule(SIGN);
         this.registerAllPermissions();
     }
 
-    private static final Permission SIGNMARKET = Permission.BASE.createAbstractChild("signmarket");
-    private static final Permission SIGN = SIGNMARKET.createAbstractChild("sign");
+    private static final Permission SIGN = Permission.createAbstractPermission("sign");
 
     private static final Permission SIGN_DESTROY = SIGN.createAbstractChild("destroy");
     public static final Permission SIGN_DESTROY_OWN = SIGN_DESTROY.createChild("own");

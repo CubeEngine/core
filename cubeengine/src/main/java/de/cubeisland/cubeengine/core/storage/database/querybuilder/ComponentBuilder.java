@@ -206,4 +206,13 @@ public interface ComponentBuilder<This extends ComponentBuilder>
      * @return
      */
     public This fieldsInBrackets(String[] fields);
+
+    /**
+     * Adds fields separated by ,
+     * e.g.: `field1`, `field2`, `field3`
+     *
+     * @param fields
+     * @return
+     */
+    public This fields(String... fields);
 }

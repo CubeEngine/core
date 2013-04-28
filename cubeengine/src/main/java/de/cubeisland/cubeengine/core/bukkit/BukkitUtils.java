@@ -152,7 +152,7 @@ public class BukkitUtils
         return ((CraftServer)server).getServer().reader;
     }
 
-    static CommandMap getCommandMap(final Server server)
+    public static CommandMap getCommandMap(final Server server)
     {
         return ((CraftServer)server).getCommandMap();
     }

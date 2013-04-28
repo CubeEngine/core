@@ -17,22 +17,27 @@
  */
 package de.cubeisland.cubeengine.fun;
 
+import java.util.concurrent.TimeUnit;
+
 import de.cubeisland.cubeengine.core.command.CommandManager;
 import de.cubeisland.cubeengine.core.command.reflected.ReflectedCommand;
 import de.cubeisland.cubeengine.core.module.Module;
+import de.cubeisland.cubeengine.core.util.Profiler;
 import de.cubeisland.cubeengine.fun.commands.*;
 
 public class Fun extends Module
 {
     private FunConfiguration config;
-    private FunPerm perm;
 
     @Override
     public void onEnable()
     {
+        Profiler.startProfiling("funEnable");
+        System.out.print(Profiler.getCurrentDelta("funEnable", TimeUnit.MILLISECONDS) + "ms - Drop Resource");
         this.getCore().getFileManager().dropResources(FunResource.values());
-        this.perm = new FunPerm(this);
-
+        System.out.print(Profiler.getCurrentDelta("funEnable", TimeUnit.MILLISECONDS) + "ms - register perms");
+        new FunPerm(this);
+        System.out.print(Profiler.getCurrentDelta("funEnable", TimeUnit.MILLISECONDS) + "ms - register Commands");
         final CommandManager cm = this.getCore().getCommandManager();
         cm.registerCommands(this, new ThrowCommands(this), ReflectedCommand.class);
         cm.registerCommands(this, new NukeCommand(this), ReflectedCommand.class);
@@ -40,12 +45,7 @@ public class Fun extends Module
         cm.registerCommands(this, new DiscoCommand(this), ReflectedCommand.class);
         cm.registerCommands(this, new InvasionCommand(this), ReflectedCommand.class);
         cm.registerCommands(this, new RocketCommand(this), ReflectedCommand.class);
-    }
-
-    @Override
-    public void onDisable()
-    {
-        this.perm.cleanup();
+        System.out.print(Profiler.getCurrentDelta("funEnable", TimeUnit.MILLISECONDS) + "ms - done");
     }
 
     public FunConfiguration getConfig()

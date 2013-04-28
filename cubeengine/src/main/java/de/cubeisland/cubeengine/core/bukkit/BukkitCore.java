@@ -256,7 +256,6 @@ public final class BukkitCore extends JavaPlugin implements Core
     {
         this.logger.log(DEBUG, "utils cleanup");
         BukkitUtils.cleanup();
-        this.corePerms.cleanup();
 
         if (this.packetEventManager != null)
         {

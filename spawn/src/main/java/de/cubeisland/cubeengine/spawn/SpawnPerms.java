@@ -17,18 +17,18 @@
  */
 package de.cubeisland.cubeengine.spawn;
 
-import de.cubeisland.cubeengine.core.module.Module;
 import de.cubeisland.cubeengine.core.permission.Permission;
 import de.cubeisland.cubeengine.core.permission.PermissionContainer;
 
-public class SpawnPerms extends PermissionContainer
+public class SpawnPerms extends PermissionContainer<Spawn>
 {
-    public SpawnPerms(Module module)
+    public SpawnPerms(Spawn module)
     {
         super(module);
+        this.bindToModule(COMMAND);
         this.registerAllPermissions();
     }
-    private static final Permission COMMAND = Permission.BASE.createAbstractChild("spawn").createAbstractChild("command");
+    private static final Permission COMMAND = Permission.createAbstractPermission("command");
 
     private static final Permission COMMAND_SPAWN = COMMAND.createAbstractChild("spawn");
     /**

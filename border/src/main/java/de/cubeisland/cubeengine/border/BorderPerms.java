@@ -17,23 +17,17 @@
  */
 package de.cubeisland.cubeengine.border;
 
-import de.cubeisland.cubeengine.core.module.Module;
-import de.cubeisland.cubeengine.core.permission.PermDefault;
 import de.cubeisland.cubeengine.core.permission.Permission;
 import de.cubeisland.cubeengine.core.permission.PermissionContainer;
 
-import org.bukkit.permissions.Permissible;
-
-import java.util.Locale;
-
-public class BorderPerms extends PermissionContainer
+public class BorderPerms extends PermissionContainer<Border>
 {
-    public BorderPerms(Module module)
+    public BorderPerms(Border module)
     {
         super(module);
+        this.bindToModule(BYPASS);
         this.registerAllPermissions();
     }
 
-    private static final Permission BORDER = Permission.BASE.createAbstractChild("border");
-    public static final Permission BYPASS = BORDER.createChild("bypass");
+    public static final Permission BYPASS = Permission.createPermission("bypass");
 }

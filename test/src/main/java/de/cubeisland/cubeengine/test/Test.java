@@ -18,6 +18,7 @@
 package de.cubeisland.cubeengine.test;
 
 import java.io.File;
+import java.io.IOException;
 import java.sql.Date;
 import java.sql.SQLException;
 import java.util.Calendar;
@@ -34,6 +35,7 @@ import org.bukkit.craftbukkit.v1_5_R2.CraftServer;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 
+import de.cubeisland.cubeengine.core.Core;
 import de.cubeisland.cubeengine.core.CubeEngine;
 import de.cubeisland.cubeengine.core.bukkit.BukkitCore;
 import de.cubeisland.cubeengine.core.bukkit.PlayerLanguageReceivedEvent;
@@ -63,6 +65,7 @@ public class Test extends Module
     public static List<String> aListOfPlayers;
     public Basics basicsModule;
     private Timer timer;
+    private FIFOInterface fifo;
 
     @Override
     public void onEnable()
@@ -110,10 +113,24 @@ public class Test extends Module
 
         timer = new Timer("keepAliveTimer");
         timer.schedule(new KeepAliveTimer(), 2 * 1000, 2 * 1000);
+
+        this.fifo = new FIFOInterface(this.getCore(), this.getFolder(), Core.CHARSET);
+        try
+        {
+            this.fifo.start();
+        }
+        catch (IOException e)
+        {
+            this.getLog().log(ERROR, "Failed to start the FIFO interface!", e);
+        }
     }
 
     public void initializeDatabase() throws SQLException
     {
+        if (this.fifo != null)
+        {
+            this.fifo.stop();
+        }
         Database db = this.getCore().getDB();
         try
         {

@@ -24,10 +24,9 @@ import de.cubeisland.cubeengine.core.storage.database.Database;
 import de.cubeisland.cubeengine.core.storage.database.querybuilder.QueryBuilder;
 import de.cubeisland.cubeengine.core.user.User;
 
+import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 import de.cubeisland.cubeengine.travel.Travel;
 
@@ -38,12 +37,14 @@ public class InviteManager extends TwoKeyStorage<Long, Long, TeleportInvite>
     private static final int REVISION = 2;
     private final Travel module;
     private Collection<TeleportInvite> invites;
+    private final Map<TeleportPoint, Set<String>> cachedInvites;
 
     public InviteManager(Database database, Travel module)
     {
         super(database, TeleportInvite.class, REVISION);
         this.initialize();
         this.module = module;
+        this.cachedInvites = new HashMap<TeleportPoint, Set<String>>();
         this.invites = this.getAll();
     }
 
@@ -104,15 +105,36 @@ public class InviteManager extends TwoKeyStorage<Long, Long, TeleportInvite>
      */
     public Set<String> getInvited(TeleportPoint tPP)
     {
+        if (this.cachedInvites.containsKey(tPP))
+        {
+            return this.cachedInvites.get(tPP);
+        }
         Set<String> invitedUsers = new HashSet<String>();
+        Set<Long> keys = new HashSet<Long>();
         for (TeleportInvite tpI : getInvites(tPP))
         {
-            User user = CubeEngine.getUserManager().getUser(tpI.userKey);
-            if (user != null)
+            keys.add(tpI.userKey);
+        }
+        if (keys.isEmpty())
+        {
+            return invitedUsers;
+        }
+        try
+        {
+            ResultSet names = database.query(database.getQueryBuilder().select("player").from("user").where().field("key").in()
+                                   .valuesInBrackets(keys.toArray()).end().end());
+            while (names.next())
             {
-                invitedUsers.add(user.getName());
+                invitedUsers.add(names.getString("player"));
             }
         }
+        catch (SQLException ex)
+        {
+            module.getLog().log(LogLevel.WARNING, "Something wrong happened while getting usernames for some users");
+            module.getLog().log(LogLevel.WARNING, "The error message was: {0}", ex.getMessage());
+            module.getLog().log(LogLevel.DEBUG, "This is the stack: ", ex);
+        }
+        this.cachedInvites.put(tPP, invitedUsers);
         return invitedUsers;
     }
 

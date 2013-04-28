@@ -17,10 +17,14 @@
  */
 package de.cubeisland.cubeengine.core.util;
 
-import de.cubeisland.cubeengine.core.user.User;
 import org.bukkit.Location;
 import org.bukkit.block.BlockFace;
+import org.bukkit.material.MaterialData;
+import org.bukkit.material.Step;
+import org.bukkit.material.WoodenStep;
 import org.bukkit.util.Vector;
+
+import de.cubeisland.cubeengine.core.user.User;
 
 public class LocationUtil
 {
@@ -47,11 +51,19 @@ public class LocationUtil
             {
                 return null;
             }
-            if (passed && loc.getBlock().getTypeId() == 0)
+            if (passed && (!loc.getBlock().getType().isSolid()))
             {
-                if (loc.getBlock().getRelative(BlockFace.UP).getTypeId() != 0)
+                if (loc.distanceSquared(locBeginWall) < 1.5) continue;
+                MaterialData topData = loc.getBlock().getRelative(BlockFace.UP).getState().getData();
+                boolean onHalf = false;
+                if (topData.getItemType().isSolid())
                 {
-                    if (loc.getBlock().getRelative(BlockFace.DOWN).getTypeId() == 0)
+                    MaterialData botData = loc.getBlock().getRelative(BlockFace.DOWN).getState().getData();
+                    if ((topData instanceof Step || topData instanceof WoodenStep) && (botData instanceof Step || botData instanceof WoodenStep) && isInvertedStep(topData) && !isInvertedStep(botData))
+                    {
+                        onHalf = true;
+                    }
+                    else if (!loc.getBlock().getRelative(BlockFace.DOWN).getType().isSolid())
                     {
                         loc.add(0, -1, 0);
                     }
@@ -61,7 +73,7 @@ public class LocationUtil
                     }
                 }
                 loc.setX(loc.getBlockX() + 0.5);
-                loc.setY(loc.getBlockY());
+                loc.setY(loc.getBlockY() - (onHalf ? 1.5 : 1));
                 loc.setZ(loc.getBlockZ() + 0.5);
                 loc.setYaw(userLocation.getYaw());
                 loc.setPitch(userLocation.getPitch());
@@ -88,5 +100,10 @@ public class LocationUtil
                 }
             }
         }
+    }
+
+    public static boolean isInvertedStep(MaterialData stepData)
+    {
+        return (stepData.getData() & 0x8) == 0x8;
     }
 }

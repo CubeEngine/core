@@ -70,26 +70,35 @@ public class TeleportListener implements Listener
     {
         if (event.getPlayer().getItemInHand().getType().equals(Material.COMPASS))
         {
-            if (event.useItemInHand().equals(Event.Result.DENY) || event.useInteractedBlock().equals(Event.Result.DENY))
+            if (event.useItemInHand().equals(Event.Result.DENY))
+            {
                 return;
+            }
             event.setUseItemInHand(Event.Result.DENY);
-            event.setUseInteractedBlock(Event.Result.DENY);
             switch (event.getAction())
             {
                 case LEFT_CLICK_AIR:
                 case LEFT_CLICK_BLOCK:
                     if (BasicsPerm.COMPASS_JUMPTO_LEFT.isAuthorized(event.getPlayer()))
                     {
-                        Block block = event.getPlayer().getTargetBlock(null, this.basics.getConfiguration().jumpToMaxRange);
-                        if (block.getTypeId() != 0)
+                        User user = this.basics.getCore().getUserManager().getExactUser(event.getPlayer());
+                        Location loc;
+                        if (event.getClickedBlock() != null && event.getClickedBlock().getType().isSolid())
                         {
-                            User user = this.basics.getCore().getUserManager().getExactUser(event.getPlayer());
-                            Location loc = block.getLocation().add(0.5, 1, 0.5);
-
-                            user.safeTeleport(loc, PlayerTeleportEvent.TeleportCause.PLUGIN, true);
-                            user.sendTranslated("&ePoof!");
-                            event.setCancelled(true);
+                            loc = event.getClickedBlock().getLocation().add(0.5, 0, 0.5);
                         }
+                        else
+                        {
+                            Block block = event.getPlayer().getTargetBlock(null, this.basics.getConfiguration().jumpToMaxRange);
+                            if (block.getTypeId() != 0)
+                            {
+                                loc = block.getLocation().add(0.5, 0, 0.5);
+                            }
+                            else return;
+                        }
+                        user.safeTeleport(loc, PlayerTeleportEvent.TeleportCause.PLUGIN, true);
+                        user.sendTranslated("&ePoof!");
+                        event.setCancelled(true);
                     }
                     return;
                 case RIGHT_CLICK_AIR:

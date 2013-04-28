@@ -17,29 +17,23 @@
  */
 package de.cubeisland.cubeengine.conomy;
 
-import de.cubeisland.cubeengine.core.module.Module;
-import de.cubeisland.cubeengine.core.permission.PermDefault;
 import de.cubeisland.cubeengine.core.permission.Permission;
 import de.cubeisland.cubeengine.core.permission.PermissionContainer;
 
-import org.bukkit.permissions.Permissible;
-
-import java.util.Locale;
-
-import static de.cubeisland.cubeengine.core.permission.PermDefault.OP;
-
-public class ConomyPermissions extends PermissionContainer
+public class ConomyPermissions extends PermissionContainer<Conomy>
 {
-    public ConomyPermissions(Module module)
+    public ConomyPermissions(Conomy module)
     {
         super(module);
+        this.bindToModule(ACCOUNT,COMMAND_PAY_FORCE);
+        this.registerAllPermissions();
     }
 
-    private static final Permission CONOMY = Permission.BASE.createAbstractChild("conomy");
-    private static final Permission ACCOUNT = CONOMY.createAbstractChild("account");
+    private static final Permission ACCOUNT = Permission.createAbstractPermission("account");
 
     public static final Permission ACCOUNT_ALLOWUNDERMIN = ACCOUNT.createChild("allowundermin");
     public static final Permission ACCOUNT_SHOWHIDDEN = ACCOUNT.createChild("showhidden");
 
-    public static final Permission COMMAND_PAY_FORCE = CONOMY.createChild("command.pay.force");
+    private static final Permission COMMAND = Permission.createAbstractPermission("command");
+    public static final Permission COMMAND_PAY_FORCE = COMMAND.createAbstractChild("pay").createChild("force");
 }

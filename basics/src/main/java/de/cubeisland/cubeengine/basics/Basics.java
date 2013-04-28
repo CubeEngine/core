@@ -57,7 +57,6 @@ import de.cubeisland.cubeengine.basics.command.teleport.SpawnCommands;
 import de.cubeisland.cubeengine.basics.command.teleport.TeleportCommands;
 import de.cubeisland.cubeengine.basics.command.teleport.TeleportListener;
 import de.cubeisland.cubeengine.basics.command.teleport.TeleportRequestCommands;
-import de.cubeisland.cubeengine.basics.command.teleport.TpWorldPermissions;
 import de.cubeisland.cubeengine.basics.storage.BasicUserManager;
 import de.cubeisland.cubeengine.basics.storage.IgnoreListManager;
 
@@ -71,8 +70,6 @@ public class Basics extends Module
     private IgnoreListManager ignoreListManager;
     private KitManager kitManager;
     private LagTimer lagTimer;
-    private BasicsPerm perm;
-    private TpWorldPermissions tpPerm;
 
     @Override
     public void onEnable()
@@ -88,7 +85,8 @@ public class Basics extends Module
         this.mailManager = new MailManager(db, this.basicUM);
         this.getLog().log(LogLevel.DEBUG,Profiler.getCurrentDelta("basicsEnable", TimeUnit.MILLISECONDS) + "ms - IgnoreList.Manager");
         this.ignoreListManager = new IgnoreListManager(db);
-        this.perm = new BasicsPerm(this);
+        this.getLog().log(LogLevel.DEBUG,Profiler.getCurrentDelta("basicsEnable", TimeUnit.MILLISECONDS) + "ms - Basics.Permission");
+        new BasicsPerm(this);
         this.getCore().getUserManager().addDefaultAttachment(BasicsAttachment.class, this);
 
         em.registerListener(this, new ColoredSigns());
@@ -100,6 +98,7 @@ public class Basics extends Module
         cm.registerCommands(this, new ListCommand(this), ReflectedCommand.class);
         cm.registerCommand(new MailCommand(this));
         cm.registerCommands(this, new PlayerCommands(this), ReflectedCommand.class);
+        this.getLog().log(LogLevel.DEBUG,Profiler.getCurrentDelta("basicsEnable", TimeUnit.MILLISECONDS) + "ms - General-Listener");
         em.registerListener(this, new GeneralsListener(this));
         em.registerListener(this, new MuteListener(this));
         this.getLog().log(LogLevel.DEBUG,Profiler.getCurrentDelta("basicsEnable", TimeUnit.MILLISECONDS) + "ms - Moderation-Commands");
@@ -129,9 +128,10 @@ public class Basics extends Module
         cm.registerCommands(this, new SpawnCommands(this), ReflectedCommand.class);
         cm.registerCommands(this, new TeleportCommands(this), ReflectedCommand.class);
         cm.registerCommands(this, new TeleportRequestCommands(this), ReflectedCommand.class);
+        this.getLog().log(LogLevel.DEBUG,Profiler.getCurrentDelta("basicsEnable", TimeUnit.MILLISECONDS) + "ms - Teleport/Fly-Listener");
         em.registerListener(this, new TeleportListener(this));
         em.registerListener(this, new FlyListener());
-        this.tpPerm = new TpWorldPermissions(this); // per world permissions
+
         this.lagTimer = new LagTimer(this);
 
         cm.registerCommands(this,  new DoorCommand(this), ReflectedCommand.class );
@@ -148,13 +148,6 @@ public class Basics extends Module
          *
          * help -> Display ALL availiable cmd
          */
-    }
-
-    @Override
-    public void onDisable()
-    {
-        this.perm.cleanup();
-        this.tpPerm.cleanup();
     }
 
     public BasicsConfiguration getConfiguration()

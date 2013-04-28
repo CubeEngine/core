@@ -32,7 +32,6 @@ import org.bukkit.command.Command;
 import org.bukkit.entity.Player;
 
 import de.cubeisland.cubeengine.core.Core;
-import de.cubeisland.cubeengine.core.CubeEngine;
 import de.cubeisland.cubeengine.core.command.exception.IncorrectUsageException;
 import de.cubeisland.cubeengine.core.command.exception.MissingParameterException;
 import de.cubeisland.cubeengine.core.command.exception.PermissionDeniedException;
@@ -428,7 +427,7 @@ public abstract class CubeCommand extends Command
         }
         else if (bukkitSender instanceof Player)
         {
-            return CubeEngine.getUserManager().getExactUser((Player)bukkitSender);
+            return core.getUserManager().getExactUser((Player)bukkitSender);
         }
         else if (bukkitSender instanceof org.bukkit.command.ConsoleCommandSender)
         {
@@ -455,10 +454,22 @@ public abstract class CubeCommand extends Command
     @Override
     public final boolean execute(org.bukkit.command.CommandSender bukkitSender, String label, String[] args)
     {
-        return this.execute(wrapSender(this.getModule().getCore(), bukkitSender), args, label, new Stack<String>());
+        CommandSender sender = wrapSender(this.getModule().getCore(), bukkitSender);
+        this.getModule().getCore().getCommandManager().logExecution(sender, this, args);
+        return this.execute(sender, args, label, new Stack<String>());
     }
 
-    private boolean execute(CommandSender sender, String[] args, String label, Stack<String> labels)
+    /**
+     * This method should only ever be overwritten in really special cases!
+     * One example for this: the AliasCommand
+     *
+     * @param sender the CE command server
+     * @param args the args array
+     * @param label the command label
+     * @param labels the label stack
+     * @return true on success
+     */
+    protected boolean execute(CommandSender sender, String[] args, String label, Stack<String> labels)
     {
         try
         {
@@ -529,7 +540,10 @@ public abstract class CubeCommand extends Command
                 completer = child;
             }
         }
-        List<String> result = completer.tabComplete(wrapSender(this.getModule().getCore(), bukkitSender), alias, args);
+        CommandSender sender = wrapSender(this.getModule().getCore(), bukkitSender);
+
+        this.getModule().getCore().getCommandManager().logTabCompletion(sender, this, args);
+        List<String> result = completer.tabComplete(sender, alias, args);
         if (result == null)
         {
             result = completer.tabCompleteFallback(bukkitSender, alias, args);

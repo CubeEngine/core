@@ -17,18 +17,27 @@
  */
 package de.cubeisland.cubeengine.core.util.matcher;
 
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.EnumSet;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeMap;
+
+import org.bukkit.Material;
+import org.bukkit.inventory.ItemStack;
+
 import de.cubeisland.cubeengine.core.CoreResource;
 import de.cubeisland.cubeengine.core.CubeEngine;
 import de.cubeisland.cubeengine.core.filesystem.FileUtil;
 import de.cubeisland.cubeengine.core.logger.LogLevel;
+
 import gnu.trove.map.hash.THashMap;
 import gnu.trove.map.hash.TShortObjectHashMap;
-import org.bukkit.Material;
-import org.bukkit.inventory.ItemStack;
-
-import java.io.File;
-import java.io.IOException;
-import java.util.*;
 
 /**
  * This Matcher provides methods to match Material or Items.
@@ -66,6 +75,11 @@ public class MaterialMatcher
         this.items = new THashMap<String, ImmutableItemStack>();
         this.itemnames = new THashMap<Material, TShortObjectHashMap<String>>();
         this.bukkitnames = new THashMap<String, ImmutableItemStack>();
+        // Read Bukkit names
+        for (Material mat : Material.values())
+        {
+            this.bukkitnames.put(mat.name(), new ImmutableItemStack(mat));
+        }
         TreeMap<String, TreeMap<Short, List<String>>> readItems = this.readItems();
         for (String item : readItems.keySet())
         {
@@ -74,11 +88,7 @@ public class MaterialMatcher
                 this.registerItem(item, data, readItems.get(item).get(data));
             }
         }
-        // Read Bukkit names
-        for (Material mat : Material.values())
-        {
-            this.bukkitnames.put(mat.name(), new ImmutableItemStack(mat, 0, (short)0));
-        }
+
     }
 
     /**
@@ -103,7 +113,15 @@ public class MaterialMatcher
                 this.itemnames.put(material, dataMap);
             }
             dataMap.put(data, names.get(0));
-            ImmutableItemStack item = new ImmutableItemStack(material, 0, data);
+            ImmutableItemStack item;
+            if (data == 0)
+            {
+                item = this.bukkitnames.get(material.name());
+            }
+            else
+            {
+                item = new ImmutableItemStack(material, data);
+            }
             for (String name : names)
             {
                 this.items.put(name.toLowerCase(Locale.ENGLISH), item);
@@ -111,7 +129,7 @@ public class MaterialMatcher
         }
         catch (IllegalArgumentException ex)
         {
-            CubeEngine.getLog().warning("Unkown Material: " + materialName);
+            CubeEngine.getLog().warning("Unknown Material: " + materialName);
             return;
         }
     }
@@ -413,11 +431,16 @@ public class MaterialMatcher
         return itemName;
     }
 
-    private static final class ImmutableItemStack extends ItemStack
+    private final class ImmutableItemStack extends ItemStack
     {
-        private ImmutableItemStack(Material type, int amount, short damage)
+        private ImmutableItemStack(Material type, short damage)
         {
-            super(type, amount, damage);
+            super(type, 0, damage);
+        }
+
+        private ImmutableItemStack(Material type)
+        {
+            super(type, 0);
         }
     }
 }

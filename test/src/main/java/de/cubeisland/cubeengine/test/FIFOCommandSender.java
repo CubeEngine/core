@@ -15,18 +15,30 @@
  * You should have received a copy of the GNU General Public License
  * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-package de.cubeisland.cubeengine.border;
+package de.cubeisland.cubeengine.test;
 
-import de.cubeisland.cubeengine.core.module.Module;
+import de.cubeisland.cubeengine.core.bukkit.BukkitCore;
+import de.cubeisland.cubeengine.core.command.sender.ConsoleCommandSender;
 
-public class Border extends Module
+public class FIFOCommandSender extends ConsoleCommandSender
 {
-    protected BorderConfig config;
+    private final FIFOInterface fifo;
+
+    public FIFOCommandSender(FIFOInterface fifo, BukkitCore core)
+    {
+        super(core);
+        this.fifo = fifo;
+    }
+
+    public FIFOInterface getFifo()
+    {
+        return fifo;
+    }
 
     @Override
-    public void onEnable()
+    public void sendMessage(String message)
     {
-        new BorderPerms(this);
-        this.getCore().getEventManager().registerListener(this, new BorderListener(this));
+        super.sendMessage(message);
+        fifo.writeMessage(message);
     }
 }

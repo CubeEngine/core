@@ -37,10 +37,13 @@ import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
+import org.bukkit.block.BlockState;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Spider;
 import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
+import org.bukkit.material.Step;
+import org.bukkit.material.WoodenStep;
 import org.bukkit.permissions.Permission;
 import org.bukkit.permissions.PermissionAttachment;
 import org.bukkit.permissions.PermissionAttachmentInfo;
@@ -66,6 +69,7 @@ import de.cubeisland.cubeengine.core.storage.database.DatabaseConstructor;
 import de.cubeisland.cubeengine.core.storage.database.Index;
 import de.cubeisland.cubeengine.core.storage.database.SingleKeyEntity;
 import de.cubeisland.cubeengine.core.util.ChatFormat;
+import de.cubeisland.cubeengine.core.util.LocationUtil;
 import de.cubeisland.cubeengine.core.util.convert.ConversionException;
 
 import gnu.trove.map.hash.THashMap;
@@ -73,6 +77,7 @@ import gnu.trove.set.hash.THashSet;
 
 import static de.cubeisland.cubeengine.core.logger.LogLevel.DEBUG;
 import static de.cubeisland.cubeengine.core.storage.database.Index.IndexType.UNIQUE;
+import static de.cubeisland.cubeengine.core.util.LocationUtil.isInvertedStep;
 
 /**
  * A CubeEngine User (can exist offline too).
@@ -104,9 +109,9 @@ public class User extends UserBase implements Model<Long>, CommandSender, Attach
     @DatabaseConstructor
     User(List<Object> args) throws ConversionException
     {
-        super(Bukkit.getOfflinePlayer((String)args.get(1)));
+        super((String)args.get(1));
         this.key = (Long)args.get(0);
-        this.player = this.offlinePlayer.getName();
+        this.player = this.getOfflinePlayer().getName();
         this.nogc = (Boolean)args.get(2);
         this.lastseen = (Timestamp)args.get(3);
         this.firstseen = (Timestamp)args.get(3);
@@ -115,11 +120,11 @@ public class User extends UserBase implements Model<Long>, CommandSender, Attach
         this.core = CubeEngine.getCore();
     }
 
-    User(Core core, Long key, OfflinePlayer player)
+    User(BukkitCore core, Long key, String playerName)
     {
-        super(player);
+        super(playerName);
         this.key = key;
-        this.player = player.getName();
+        this.player = playerName;
         this.lastseen = new Timestamp(System.currentTimeMillis());
         this.firstseen = this.lastseen;
         this.passwd = new byte[0];
@@ -127,14 +132,14 @@ public class User extends UserBase implements Model<Long>, CommandSender, Attach
         this.core = core;
     }
 
-    User(Core core, OfflinePlayer player)
+    User(BukkitCore core, OfflinePlayer player)
     {
-        this(core, NO_ID, player);
+        this(core, NO_ID, player.getName());
     }
 
     User(BukkitCore core, String name)
     {
-        this(core, NO_ID, core.getServer().getOfflinePlayer(name));
+        this(core, NO_ID, name);
     }
 
     public Core getCore()
@@ -230,14 +235,6 @@ public class User extends UserBase implements Model<Long>, CommandSender, Attach
         }
     }
 
-    /**
-     * @return the OfflinePlayer
-     */
-    public OfflinePlayer getOfflinePlayer()
-    {
-        return this.offlinePlayer;
-    }
-
     @Override
     public Long getId()
     {
@@ -298,7 +295,7 @@ public class User extends UserBase implements Model<Long>, CommandSender, Attach
             return this.locale;
         }
         Language language = null;
-        Player onlinePlayer = this.offlinePlayer.getPlayer();
+        Player onlinePlayer = this.getOfflinePlayer().getPlayer();
         if (onlinePlayer != null)
         {
             language = this.core.getI18n().getLanguage(
@@ -322,7 +319,7 @@ public class User extends UserBase implements Model<Long>, CommandSender, Attach
 
     public int getPing()
     {
-        Player onlinePlayer = this.offlinePlayer.getPlayer();
+        Player onlinePlayer = this.getOfflinePlayer().getPlayer();
         if (onlinePlayer == null)
         {
             return BukkitUtils.getPing(onlinePlayer);
@@ -348,6 +345,20 @@ public class User extends UserBase implements Model<Long>, CommandSender, Attach
         Location checkLocation = location.clone().add(0, 1, 0);
         while (location.getBlock().getType().isSolid() || checkLocation.getBlock().getType().isSolid())
         {
+            if (!checkLocation.getBlock().getType().isSolid())
+            {
+                BlockState block = location.getBlock().getState();
+                BlockState upperBlock = checkLocation.getBlock().getRelative(BlockFace.UP).getState();
+                if ((block.getData() instanceof Step || block.getData() instanceof  WoodenStep)
+                    && (upperBlock.getData() instanceof Step || upperBlock.getData() instanceof  WoodenStep))
+                {
+                    if (!isInvertedStep(block.getData()) && isInvertedStep(upperBlock.getData()))
+                    {
+                        location.add(0,0.5,0);
+                        break;
+                    }
+                }
+            }
             location.add(0, 1, 0);
             checkLocation.add(0, 1, 0);
         }
@@ -360,15 +371,23 @@ public class User extends UserBase implements Model<Long>, CommandSender, Attach
             }
         }
         checkLocation = location.clone().add(0, -1, 0);
-        if (checkLocation.getBlock().getType() == Material.STATIONARY_LAVA || checkLocation.getBlock().getType() == Material.LAVA)
+        Block blockBelow = checkLocation.getBlock();
+        if (blockBelow.getType() == Material.STATIONARY_LAVA || blockBelow.getType() == Material.LAVA)
         {
             location = location.getWorld().getHighestBlockAt(location).getLocation().add(0, 1, 0); // If would fall in lava tp on highest position.
             // If there is still lava then you shall burn!
         }
-        if (location.getBlock().getRelative(BlockFace.DOWN).getType().equals(Material.FENCE)
-                || location.getBlock().getRelative(BlockFace.DOWN).getType().equals(Material.NETHER_FENCE))
+        if (blockBelow.getType().equals(Material.FENCE)
+         || blockBelow.getType().equals(Material.NETHER_FENCE))
         {
-            location.add(0, 2, 0);
+            location.add(0, 0.5, 0);
+        }
+        if (blockBelow.getType().equals(Material.STEP) || blockBelow.getType().equals(Material.WOOD_STEP))
+        {
+            if (!LocationUtil.isInvertedStep(blockBelow.getState().getData()))
+            {
+                location.setY(location.getBlockY() - 0.5);
+            }
         }
         if (keepDirection)
         {
@@ -509,7 +528,7 @@ public class User extends UserBase implements Model<Long>, CommandSender, Attach
      */
     public TreeSet<Entity> getTargets(int distance)
     {
-        if (this.offlinePlayer.isOnline())
+        if (this.getOfflinePlayer().isOnline())
         {
             final Location blockLoc = new Location(null, 0, 0, 0);
             final Location entityLoc = new Location(null, 0, 0, 0);
@@ -562,7 +581,7 @@ public class User extends UserBase implements Model<Long>, CommandSender, Attach
         }
         else if (o instanceof OfflinePlayer)
         {
-            return this.offlinePlayer.equals(o);
+            return this.getOfflinePlayer().equals(o);
         }
         else if (o instanceof CommandSender)
         {
@@ -579,7 +598,7 @@ public class User extends UserBase implements Model<Long>, CommandSender, Attach
     @Override
     public int hashCode()
     {
-        return this.offlinePlayer.hashCode();
+        return this.getOfflinePlayer().hashCode();
     }
 
     private InetSocketAddress address = null;

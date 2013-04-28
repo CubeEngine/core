@@ -18,10 +18,14 @@
 package de.cubeisland.cubeengine.travel.storage;
 
 import de.cubeisland.cubeengine.core.CubeEngine;
+import de.cubeisland.cubeengine.core.permission.PermDefault;
+import de.cubeisland.cubeengine.core.permission.Permission;
 import de.cubeisland.cubeengine.core.user.User;
 
+import de.cubeisland.cubeengine.travel.Travel;
 import org.bukkit.Location;
 
+import java.util.Locale;
 import java.util.Set;
 
 public class Warp
@@ -29,14 +33,20 @@ public class Warp
     private final TeleportPoint parent;
     private final TelePointManager telePointManager;
     private final InviteManager inviteManager;
+    private final Permission permission;
     private Set<String> invited;
 
-    public Warp(TeleportPoint teleportPoint, TelePointManager telePointManager, InviteManager inviteManager)
+    public Warp(TeleportPoint teleportPoint, TelePointManager telePointManager, InviteManager inviteManager, Travel module)
     {
         this.parent = teleportPoint;
         this.telePointManager = telePointManager;
         this.inviteManager = inviteManager;
-        this.invited = inviteManager.getInvited(parent);
+        this.permission = module.getBasePermission().
+                createAbstractChild("warps").
+                createAbstractChild("access").
+                createChild(parent.name.toLowerCase(Locale.ENGLISH), this.parent.visibility
+                        .equals(TeleportPoint.Visibility.PRIVATE) ? PermDefault.OP : PermDefault.TRUE);
+        module.getCore().getPermissionManager().registerPermission(module, this.permission);
     }
 
     /**
@@ -44,7 +54,9 @@ public class Warp
      */
     public void update()
     {
-        parent.ownerKey = parent.owner.getId();
+        parent.ownerKey = parent.getOwner().getId();
+        parent.ownerName = parent.getOwner().getName();
+        parent.owner = null;
         parent.x = parent.location.getX();
         parent.y = parent.location.getY();
         parent.z = parent.location.getZ();
@@ -58,31 +70,43 @@ public class Warp
 
     public Location getLocation()
     {
-        return parent.location;
+        return parent.getLocation();
     }
 
     public void setLocation(Location location)
     {
-        parent.location = location;
+        parent.x = location.getX();
+        parent.y = location.getY();
+        parent.z = location.getZ();
+        parent.pitch = location.getPitch();
+        parent.yaw = location.getYaw();
+        parent.worldKey = CubeEngine.getCore().getWorldManager().getWorldId(location.getWorld());
+        parent.location = null;
     }
 
     public User getOwner()
     {
-        return parent.owner;
+        return parent.getOwner();
     }
 
     public void setOwner(User owner)
     {
-        parent.owner = owner;
+        parent.ownerKey = owner.getId();
+        parent.ownerName = owner.getName();
+        parent.owner = null;
     }
 
     public boolean isOwner(User user)
     {
-        return parent.owner == user;
+        return parent.getOwner().equals(user);
     }
 
     public void invite(User user)
     {
+        if (this.invited == null)
+        {
+            this.invited = inviteManager.getInvited(parent);
+        }
         this.invited.add(user.getName());
         telePointManager.putWarpToUser(this, user);
         inviteManager.store(new TeleportInvite(parent.key, user.getId()));
@@ -90,14 +114,18 @@ public class Warp
 
     public void unInvite(User user)
     {
-        this.invited.remove(user);
+        if (this.invited == null)
+        {
+            this.invited = inviteManager.getInvited(parent);
+        }
+        this.invited.remove(user.getName());
         telePointManager.removeWarpFromUser(this, user);
         inviteManager.updateInvited(parent, this.invited);
     }
 
     public boolean isInvited(User user)
     {
-        return this.invited.contains(user) || this.isPublic();
+        return this.getInvited().contains(user.getName()) || this.isPublic();
     }
 
     public TeleportPoint.Visibility getVisibility()
@@ -158,7 +186,7 @@ public class Warp
         }
         else
         {
-            return this.getOwner().getName() + ":" + this.getName();
+            return parent.ownerName + ":" + this.getName();
         }
     }
 
@@ -184,6 +212,10 @@ public class Warp
 
     public Set<String> getInvited()
     {
+        if (this.invited == null)
+        {
+            this.invited = inviteManager.getInvited(parent);
+        }
         return this.invited;
     }
 }
