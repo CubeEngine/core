@@ -46,8 +46,7 @@ public class WorldRoleProvider extends RoleProvider
 
     public WorldRoleProvider(Roles module, RolesManager manager, long worldId)
     {
-        super(module, manager, worldId);
-        this.mirrorConfig = new RoleMirror(this.module, worldId);
+        this(module,manager, new RoleMirror(module, worldId),worldId);
     }
 
     public void reloadRoles()

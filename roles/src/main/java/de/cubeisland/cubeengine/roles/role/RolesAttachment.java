@@ -214,15 +214,9 @@ public class RolesAttachment extends UserAttachment
             this.currentMetaData = resolvedData.getResolvedMetadata();
 
             this.getModule().getLog().log(LogLevel.DEBUG, user.getName()+ ": resolved UserData set!");
-            System.out.print("Resolved:");
             for (Role assignedRole : this.getResolvedData(user.getWorldId()).assignedRoles)
             {
                 this.getModule().getLog().log(LogLevel.DEBUG, " - " + assignedRole.getName());
-            }
-            System.out.print("Raw:");
-            for (String s : this.getRawData(this.getHolder().getWorldId()).getRawAssignedRoles())
-            {
-                System.out.print(" - " + s);
             }
         }
         // else user is offline ignore

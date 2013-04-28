@@ -21,6 +21,8 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
 
+import de.cubeisland.cubeengine.roles.Roles;
+
 import gnu.trove.map.hash.THashMap;
 import gnu.trove.set.hash.THashSet;
 
@@ -60,12 +62,6 @@ public class UserDataStore implements RawDataStore
     @Override
     public Set<Role> getAssignedRoles()
     {
-        // TODO remove
-        System.out.print(this.attachment.getHolder().getName() + "roles: ");
-        for (Role assignedRole : this.attachment.getResolvedData(this.worldID).assignedRoles)
-        {
-            System.out.print(" - " + assignedRole.getName());
-        }
         return Collections.unmodifiableSet(this.attachment.getResolvedData(this.worldID).assignedRoles);
     }
 
@@ -113,8 +109,6 @@ public class UserDataStore implements RawDataStore
         }
         if (this.roles.add(roleName))
         {
-            System.out.print(this.attachment.getHolder().getName() + " assign: " + role.getName());
-            this.getAssignedRoles(); // TODO remove
             this.makeDirty();
             return true;
         }
@@ -131,8 +125,6 @@ public class UserDataStore implements RawDataStore
         }
         if (this.roles.remove(roleName))
         {
-            System.out.print(this.attachment.getHolder().getName() + " remove: " + role.getName());
-            this.getAssignedRoles(); // TODO remove
             this.makeDirty();
             return true;
         }
@@ -211,5 +203,10 @@ public class UserDataStore implements RawDataStore
     protected void makeDirty()
     {
         this.attachment.makeDirty(worldID);
+    }
+
+    public long getMainWorldID()
+    {
+        return ((Roles)this.attachment.getModule()).getRolesManager().getProvider(worldID).getMainWorldId();
     }
 }

@@ -18,7 +18,6 @@
 package de.cubeisland.cubeengine.roles.role;
 
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
 
 import de.cubeisland.cubeengine.core.util.Triplet;
@@ -48,25 +47,9 @@ public class UserDatabaseStore extends UserDataStore
 
     protected void loadFromDatabase()
     {
-        System.out.print(this.attachment.getHolder().getName() + ": Getting from database");
-        this.roles = this.rm.getRolesByUserInWorld(this.getUserID(),this.worldID);
-        System.out.print("Roles");
-        for (String role : this.roles)
-        {
-            System.out.print(" - " + role);
-        }
-        this.permissions = this.pm.getPermissionsByUserInWorld(this.getUserID(),this.worldID);
-        System.out.print("Perms");
-        for (Entry<String, Boolean> entry : this.permissions.entrySet())
-        {
-            System.out.print(entry.getKey() + ": " + entry.getValue());
-        }
-        System.out.print("Metadata");
-        this.metadata = this.mdm.getMetadataByUserInWorld(this.getUserID(),this.worldID);
-        for (Entry<String, String> entry : this.metadata.entrySet())
-        {
-            System.out.print(entry.getKey() + ": " + entry.getValue());
-        }
+        this.roles = this.rm.getRolesByUserInWorld(this.getUserID(),this.getMainWorldID());
+        this.permissions = this.pm.getPermissionsByUserInWorld(this.getUserID(),this.getMainWorldID()); // TODO mirrors
+        this.metadata = this.mdm.getMetadataByUserInWorld(this.getUserID(),this.getMainWorldID()); //TODO mirrors
     }
 
     @Override
