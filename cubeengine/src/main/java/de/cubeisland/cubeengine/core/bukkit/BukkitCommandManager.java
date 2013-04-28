@@ -38,9 +38,9 @@ import de.cubeisland.cubeengine.core.command.AliasCommand;
 import de.cubeisland.cubeengine.core.command.CommandFactory;
 import de.cubeisland.cubeengine.core.command.CommandHolder;
 import de.cubeisland.cubeengine.core.command.CommandManager;
+import de.cubeisland.cubeengine.core.command.CommandSender;
 import de.cubeisland.cubeengine.core.command.ConsoleCommandCompleter;
 import de.cubeisland.cubeengine.core.command.CubeCommand;
-import de.cubeisland.cubeengine.core.command.CommandSender;
 import de.cubeisland.cubeengine.core.command.sender.ConsoleCommandSender;
 import de.cubeisland.cubeengine.core.logger.CubeFileHandler;
 import de.cubeisland.cubeengine.core.logger.CubeLogger;
@@ -125,16 +125,16 @@ public class BukkitCommandManager implements CommandManager
     {
         Command command;
         CubeCommand cubeCommand;
-        Iterator<Command> iter = this.knownCommands.values().iterator();
-        while (iter.hasNext())
+        Iterator<Command> it = this.knownCommands.values().iterator();
+        while (it.hasNext())
         {
-            command = iter.next();
+            command = it.next();
             if (command instanceof CubeCommand)
             {
                 cubeCommand = (CubeCommand)command;
                 if (cubeCommand.getModule() == module)
                 {
-                    iter.remove();
+                    it.remove();
                     command.unregister(this.commandMap);
                     cubeCommand.onRemove();
                 }

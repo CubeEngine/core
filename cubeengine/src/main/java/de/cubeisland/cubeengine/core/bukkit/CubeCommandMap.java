@@ -95,10 +95,8 @@ public class CubeCommandMap extends SimpleCommandMap
     @Override
     public boolean dispatch(CommandSender sender, String commandLine) throws CommandException
     {
-        if (!CubeEngine.isMainThread())
-        {
-            throw new IllegalStateException("Commands may only be called synchronously!");
-        }
+        assert CubeEngine.isMainThread(): "Commands may only be called synchronously!";
+
         commandLine = StringUtils.trimLeft(commandLine);
         if (commandLine.isEmpty())
         {
@@ -121,18 +119,14 @@ public class CubeCommandMap extends SimpleCommandMap
             List<String> matches = new LinkedList<String>(Match.string().getBestMatches(label, this.knownCommands.keySet(), 1));
             if (matches.size() > 0 && matches.size() <= this.core.getConfiguration().commandOffers)
             {
-                Collections.sort(matches, String.CASE_INSENSITIVE_ORDER);
                 if (matches.size() == 1)
                 {
                     sender.sendMessage(this.core.getI18n().translate(language, "&cCouldn't find &e/%s&c. Did you mean &a/%s&c?", label, matches.iterator().next()));
                 }
                 else
                 {
+                    Collections.sort(matches, String.CASE_INSENSITIVE_ORDER);
                     sender.sendMessage(this.core.getI18n().translate(language, "&eDid you mean one of these: &a%s &e?", "/" + StringUtils.implode(", /", matches)));
-                }
-                if (matches.size() > this.core.getConfiguration().commandTabCompleteOffers)
-                {
-                    matches = matches.subList(0, this.core.getConfiguration().commandTabCompleteOffers);
                 }
             }
             else
