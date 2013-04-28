@@ -5,6 +5,7 @@
     <groupId>de.cubeisland.engine</groupId>
     <artifactId>parent</artifactId>
     <version>1.0.0</version>
+    <relativePath>../parent/pom.xml</relativePath>
   </parent>
 
   <artifactId>roles</artifactId>

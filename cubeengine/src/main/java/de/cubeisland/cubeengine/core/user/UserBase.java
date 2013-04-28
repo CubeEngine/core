@@ -77,6 +77,7 @@ import org.bukkit.permissions.PermissionAttachmentInfo;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
+import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.util.Vector;
 
 /**
@@ -91,7 +92,7 @@ public class UserBase implements Player
     {
         this.playerName = name;
     }
-    
+
     public OfflinePlayer getOfflinePlayer()
     {
         return Bukkit.getOfflinePlayer(playerName);
@@ -1513,7 +1514,8 @@ public class UserBase implements Player
             NBTTagCompound data = this.getData();
             if (data != null)
             {
-                return this.getServer().getWorld(new UUID(data.getLong("WorldUUIDMost"), data.getLong("WorldUUIDLeast")));
+                return this.getServer()
+                           .getWorld(new UUID(data.getLong("WorldUUIDMost"), data.getLong("WorldUUIDLeast")));
             }
         }
         return null;
@@ -2401,12 +2403,12 @@ public class UserBase implements Player
     }
 
     @Override
-    public void setPlayerWeather( WeatherType wt )
+    public void setPlayerWeather(WeatherType wt)
     {
         final Player player = this.getOfflinePlayer().getPlayer();
-        if(player != null)
+        if (player != null)
         {
-            player.setPlayerWeather( wt );
+            player.setPlayerWeather(wt);
         }
     }
 
@@ -2414,7 +2416,7 @@ public class UserBase implements Player
     public WeatherType getPlayerWeather()
     {
         final Player player = this.getOfflinePlayer().getPlayer();
-        if(player != null)
+        if (player != null)
         {
             return player.getPlayerWeather();
         }
@@ -2425,9 +2427,30 @@ public class UserBase implements Player
     public void resetPlayerWeather()
     {
         final Player player = this.getOfflinePlayer().getPlayer();
-        if(player != null)
+        if (player != null)
         {
             player.resetPlayerWeather();
+        }
+    }
+
+    @Override
+    public Scoreboard getScoreboard()
+    {
+        final Player player = this.getOfflinePlayer().getPlayer();
+        if (player != null)
+        {
+            return player.getScoreboard();
+        }
+        return null;
+    }
+
+    @Override
+    public void setScoreboard(Scoreboard scoreboard) throws IllegalArgumentException, IllegalStateException
+    {
+        final Player player = this.getOfflinePlayer().getPlayer();
+        if (player != null)
+        {
+            player.setScoreboard(scoreboard);
         }
     }
 }
