@@ -17,11 +17,8 @@
  */
 package de.cubeisland.cubeengine.core.command;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Locale;
-import java.util.Set;
 
 import de.cubeisland.cubeengine.core.command.parameterized.ParameterizedCommand;
 import de.cubeisland.cubeengine.core.command.parameterized.ParameterizedContextFactory;
@@ -30,7 +27,6 @@ import de.cubeisland.cubeengine.core.module.Module;
 import de.cubeisland.cubeengine.core.util.ChatFormat;
 
 import static de.cubeisland.cubeengine.core.logger.LogLevel.WARNING;
-import static de.cubeisland.cubeengine.core.util.StringUtils.startsWithIgnoreCase;
 
 /**
  *
@@ -118,30 +114,6 @@ public abstract class ContainerCommand extends ParameterizedCommand implements C
 
         context.sendMessage(" ");
         context.sendTranslated("&7Detailed help: &9%s", "http://engine.cubeisland.de/commands/" + this.implodeCommandParentNames("/"));
-    }
-
-    @Override
-    public List<String> tabComplete(CommandSender sender, String label, String[] args)
-    {
-        if (args.length == 1 && !(!args[0].isEmpty() && args[0].charAt(0) == '-'))
-        {
-            List<String> actions = new ArrayList<String>();
-            String token = args[0].toLowerCase(Locale.ENGLISH);
-
-            Set<CubeCommand> names = this.getChildren();
-            names.removeAll(this.childrenAliases);
-            for (CubeCommand child : names)
-            {
-                if (startsWithIgnoreCase(child.getName(), token) && child.testPermissionSilent(sender))
-                {
-                    actions.add(child.getName());
-                }
-            }
-            Collections.sort(actions);
-
-            return actions;
-        }
-        return super.tabComplete(sender, label, args);
     }
 
     private class ChildDelegation

@@ -17,6 +17,7 @@
  */
 package de.cubeisland.cubeengine.core.command;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -24,9 +25,11 @@ import org.bukkit.craftbukkit.libs.jline.console.completer.Completer;
 
 import org.bukkit.Server;
 import org.bukkit.command.CommandMap;
+import org.bukkit.entity.Player;
 
 import de.cubeisland.cubeengine.core.bukkit.BukkitCore;
 import de.cubeisland.cubeengine.core.bukkit.BukkitUtils;
+import de.cubeisland.cubeengine.core.util.StringUtils;
 
 public class ConsoleCommandCompleter implements Completer
 {
@@ -42,10 +45,19 @@ public class ConsoleCommandCompleter implements Completer
     @Override
     public int complete(String buffer, int cursor, List<CharSequence> candidates)
     {
-        Collection<String> bukkitCandidates = this.commandMap.tabComplete(this.server.getConsoleSender(), buffer);
+        Collection <String> bukkitCandidates = this.commandMap.tabComplete(this.server.getConsoleSender(), buffer);
         if (bukkitCandidates == null)
         {
-            return cursor;
+            String token = StringUtils.getLastPart(buffer, " ");
+            Player[] onlinePlayers = this.server.getOnlinePlayers();
+            bukkitCandidates = new ArrayList<String>(onlinePlayers.length);
+            for (Player player : onlinePlayers)
+            {
+                if (StringUtils.endsWithIgnoreCase(player.getName(), token))
+                {
+                    bukkitCandidates.add(player.getName());
+                }
+            }
         }
 
         int cursorDiff;

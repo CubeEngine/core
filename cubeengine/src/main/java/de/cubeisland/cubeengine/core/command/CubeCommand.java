@@ -35,6 +35,7 @@ import de.cubeisland.cubeengine.core.Core;
 import de.cubeisland.cubeengine.core.command.exception.IncorrectUsageException;
 import de.cubeisland.cubeengine.core.command.exception.MissingParameterException;
 import de.cubeisland.cubeengine.core.command.exception.PermissionDeniedException;
+import de.cubeisland.cubeengine.core.command.parameterized.ParameterizedCommand;
 import de.cubeisland.cubeengine.core.command.sender.BlockCommandSender;
 import de.cubeisland.cubeengine.core.command.sender.WrappedCommandSender;
 import de.cubeisland.cubeengine.core.module.Module;
@@ -48,6 +49,7 @@ import gnu.trove.set.hash.THashSet;
 import org.apache.commons.lang.Validate;
 
 import static de.cubeisland.cubeengine.core.logger.LogLevel.ERROR;
+import static de.cubeisland.cubeengine.core.util.StringUtils.startsWithIgnoreCase;
 
 /**
  * This class is the base for all of our commands
@@ -558,6 +560,24 @@ public abstract class CubeCommand extends Command
 
     public List<String> tabComplete(CommandSender sender, String label, String[] args)
     {
+        if (this.hasChildren() && args.length == 1 && !((this instanceof ParameterizedCommand) && !args[0].isEmpty() && args[0].charAt(0) == '-'))
+        {
+            List<String> actions = new ArrayList<String>();
+            String token = args[0].toLowerCase(Locale.ENGLISH);
+
+            Set<CubeCommand> names = this.getChildren();
+            names.removeAll(this.childrenAliases);
+            for (CubeCommand child : names)
+            {
+                if (startsWithIgnoreCase(child.getName(), token) && child.testPermissionSilent(sender))
+                {
+                    actions.add(child.getName());
+                }
+            }
+            Collections.sort(actions, String.CASE_INSENSITIVE_ORDER);
+
+            return actions;
+        }
         return null;
     }
 

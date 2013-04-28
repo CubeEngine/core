@@ -17,8 +17,6 @@
  */
 package de.cubeisland.cubeengine.core.util;
 
-import de.cubeisland.cubeengine.core.util.convert.ConversionException;
-
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.util.ArrayList;
@@ -30,6 +28,8 @@ import java.util.StringTokenizer;
 import java.util.regex.MatchResult;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import de.cubeisland.cubeengine.core.util.convert.ConversionException;
 
 /**
  * This class contains some utillities to work with Strings.
@@ -422,6 +422,16 @@ public final class StringUtils
             matcher.reset(string);
         }
         return string;
+    }
+
+    public static String getLastPart(String string, String separator)
+    {
+        int lastSepPos = string.indexOf(separator);
+        if (lastSepPos == -1)
+        {
+            return string;
+        }
+        return string.substring(lastSepPos + 1);
     }
 
     public static interface ReplaceCallback
