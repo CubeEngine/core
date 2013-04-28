@@ -204,7 +204,7 @@ public class RolesAttachment extends UserAttachment
                 this.getModule().getLog().warning("Role-permissions not applied! Server is running in unsecured offline-mode!");
                 return;
             }
-            this.getModule().getLog().log(LogLevel.DEBUG, user.getName()+ ": resolved UserData set!");
+
             if (this.getRawData(user.getWorldId()).getRawAssignedRoles().isEmpty())
             {
                 this.getRawData(user.getWorldId()).setAssignedRoles(((Roles)this.getModule()).getRolesManager().getProvider(user.getWorldId()).getDefaultRoles());
@@ -212,6 +212,18 @@ public class RolesAttachment extends UserAttachment
             ResolvedDataStore resolvedData = this.getResolvedData();
             user.setPermission(resolvedData.getResolvedPermissions());
             this.currentMetaData = resolvedData.getResolvedMetadata();
+
+            this.getModule().getLog().log(LogLevel.DEBUG, user.getName()+ ": resolved UserData set!");
+            System.out.print("Resolved:");
+            for (Role assignedRole : this.getResolvedData(user.getWorldId()).assignedRoles)
+            {
+                this.getModule().getLog().log(LogLevel.DEBUG, " - " + assignedRole.getName());
+            }
+            System.out.print("Raw:");
+            for (String s : this.getRawData(this.getHolder().getWorldId()).getRawAssignedRoles())
+            {
+                System.out.print(" - " + s);
+            }
         }
         // else user is offline ignore
     }

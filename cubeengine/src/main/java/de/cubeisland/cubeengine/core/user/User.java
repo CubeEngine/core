@@ -515,9 +515,16 @@ public class User extends UserBase implements Model<Long>, CommandSender, Attach
         BukkitUtils.setInvulnerable(this, state);
     }
 
-    public long getWorldId()
+    public Long getWorldId()
     {
-        return this.getCore().getWorldManager().getWorldId(this.getWorld());
+        try
+        {
+            return this.getCore().getWorldManager().getWorldId(this.getWorld());
+        }
+        catch (IllegalArgumentException ex)
+        {
+            return null;
+        }
     }
 
     /**

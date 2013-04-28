@@ -79,6 +79,10 @@ public class WorldManager
 
     public synchronized long getWorldId(World world)
     {
+        if (world == null)
+        {
+            throw new IllegalArgumentException("the world given is null!");
+        }
         WorldModel model = this.worlds.get(world);
         if (model == null)
         {

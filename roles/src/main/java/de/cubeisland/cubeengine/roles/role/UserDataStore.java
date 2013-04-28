@@ -60,6 +60,12 @@ public class UserDataStore implements RawDataStore
     @Override
     public Set<Role> getAssignedRoles()
     {
+        // TODO remove
+        System.out.print(this.attachment.getHolder().getName() + "roles: ");
+        for (Role assignedRole : this.attachment.getResolvedData(this.worldID).assignedRoles)
+        {
+            System.out.print(" - " + assignedRole.getName());
+        }
         return Collections.unmodifiableSet(this.attachment.getResolvedData(this.worldID).assignedRoles);
     }
 
@@ -107,6 +113,8 @@ public class UserDataStore implements RawDataStore
         }
         if (this.roles.add(roleName))
         {
+            System.out.print(this.attachment.getHolder().getName() + " assign: " + role.getName());
+            this.getAssignedRoles(); // TODO remove
             this.makeDirty();
             return true;
         }
@@ -123,6 +131,8 @@ public class UserDataStore implements RawDataStore
         }
         if (this.roles.remove(roleName))
         {
+            System.out.print(this.attachment.getHolder().getName() + " remove: " + role.getName());
+            this.getAssignedRoles(); // TODO remove
             this.makeDirty();
             return true;
         }
