@@ -52,6 +52,10 @@ public class WorldRoleProvider extends RoleProvider
     public void reloadRoles()
     {
         Set<String> defaultRoles = this.module.getConfiguration().defaultRoles.get(mirrorConfig.mainWorld);
+        if (defaultRoles == null)
+        {
+            defaultRoles = new HashSet<String>();
+        }
         for (RoleConfig config : this.configs.values())
         {
             Role role = new Role(this, config);
