@@ -44,6 +44,12 @@ public class WorldRoleProvider extends RoleProvider
         this.basePerm = module.getBasePermission().createAbstractChild("world").createAbstractChild(mirror.mainWorld);
     }
 
+    public WorldRoleProvider(Roles module, RolesManager manager, long worldId)
+    {
+        super(module, manager, worldId);
+        this.mirrorConfig = new RoleMirror(this.module, worldId);
+    }
+
     public void reloadRoles()
     {
         Set<String> defaultRoles = this.module.getConfiguration().defaultRoles.get(mirrorConfig.mainWorld);
@@ -63,12 +69,6 @@ public class WorldRoleProvider extends RoleProvider
         }
     }
 
-
-    public WorldRoleProvider(Roles module, RolesManager manager, long worldId)
-    {
-        super(module, manager, worldId);
-        this.mirrorConfig = new RoleMirror(this.module, worldId);
-    }
 
     public TLongObjectHashMap<Triplet<Boolean, Boolean, Boolean>> getWorldMirrors()
     {
