@@ -20,6 +20,7 @@ package de.cubeisland.cubeengine.powersigns.signtype;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
+import org.bukkit.block.BlockState;
 import org.bukkit.block.Sign;
 import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
 
@@ -147,8 +148,14 @@ public class LiftSign extends SignType<LiftSign,LiftSignInfo>
     public LiftSignInfo createInfo(PowerSignModel model)
     {
         Location location = new Location(this.module.getCore().getWorldManager().getWorld(model.world),model.x,model.y,model.z);
-        Sign sign = (Sign)location.getBlock().getState(); //TODO when there is no sign
-        return this.createInfo(model.owner_id,location,sign.getLine(0),sign.getLine(1),sign.getLine(2),sign.getLine(3));
+        BlockState state = location.getBlock().getState();
+        if (state instanceof Sign)
+        {
+            Sign sign = (Sign)(location.getBlock().getState());
+            return this.createInfo(model.owner_id,location,sign.getLine(0),sign.getLine(1),sign.getLine(2),sign.getLine(3));
+        }
+        this.module.getLog().warning("Expected sign not found at "+state.getX()+":"+state.getY()+":"+state.getZ() + " in "+ state.getWorld().getName());
+        return null;
     }
 
     public class LiftSignInfo extends SignTypeInfo<LiftSign>

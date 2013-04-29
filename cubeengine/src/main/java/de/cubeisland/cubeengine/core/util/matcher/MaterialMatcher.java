@@ -359,6 +359,8 @@ public class MaterialMatcher
         }
         catch (NumberFormatException ignored)
         {}
+        Material material = Material.getMaterial(name);
+        if (material != null) return material;
         ItemStack item = this.itemStack(s);
         if (item != null)
         {

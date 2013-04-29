@@ -69,6 +69,10 @@ public class SignManager implements Listener
         {
             SignType signType = this.registerdSignTypes.get(powerSignModel.PSID);
             SignTypeInfo info = signType.createInfo(powerSignModel);
+            if (info == null)
+            {
+                continue;
+            }
             PowerSign powerSign = new PowerSign(signType,info);
             this.loadedPowerSigns.put(powerSign.getLocation(),powerSign);
         }

@@ -29,6 +29,7 @@ import java.lang.reflect.Type;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import de.cubeisland.cubeengine.core.config.Configuration;
 import de.cubeisland.cubeengine.core.config.InvalidConfigurationException;
@@ -43,6 +44,7 @@ import de.cubeisland.cubeengine.core.config.node.NullNode;
 import de.cubeisland.cubeengine.core.config.node.StringNode;
 import de.cubeisland.cubeengine.core.util.StringUtils;
 import de.cubeisland.cubeengine.core.util.convert.Convert;
+import de.cubeisland.cubeengine.core.util.converter.generic.MapConverter;
 
 import gnu.trove.map.hash.THashMap;
 
@@ -255,35 +257,31 @@ public class CodecContainer<ConfigCodec extends ConfigurationCodec>
                                 throw new InvalidConfigurationException("Invalid Node for Map-Configurations at " + path +
                                         "\nConfig:" + config.getClass());
                             }
-                            Map<Object, Configuration> mapConfigs = (Map<Object, Configuration>)field.get(config);
-                            for (Map.Entry<Object, Configuration> entry : mapConfigs.entrySet())
+                            Class<? extends Configuration> clazz = (Class<? extends Configuration>)((ParameterizedType)type).getActualTypeArguments()[1];
+                            Map<Object, Configuration> configs = MapConverter.getMapFor((ParameterizedType)type);
+                            for (Entry<String, Node> entry : loadFrom_Map.getMappedNodes().entrySet())
                             {
                                 Node keyNode = Convert.toNode(entry.getKey());
-                                if (keyNode instanceof StringNode)
+                                Node valueNode = loadFrom_Map.getNodeAt(entry.getKey(), codec.PATH_SEPARATOR);
+                                Object key = Convert.fromNode(keyNode,((ParameterizedType)type).getActualTypeArguments()[0]);
+                                Configuration value;
+                                if (valueNode instanceof NullNode)
                                 {
-                                    Node valueNode = loadFrom_Map.getNodeAt(((StringNode)keyNode).getValue(), codec.PATH_SEPARATOR);
-                                    if (valueNode instanceof NullNode)
-                                    {
-                                        valueNode = MapNode.emptyMap();
-                                        loadFrom_Map.setNode((StringNode)keyNode, valueNode);
-                                    }
-                                    if (valueNode instanceof MapNode)
-                                    {
-                                        new CodecContainer(codec).dumpIntoFields(entry.getValue(), (MapNode)valueNode);
-                                    }
-                                    else
-                                    {
-                                        throw new InvalidConfigurationException("Invalid Value-Node for Map of Configuration at " + path +
-                                                "\nConfig:" + config.getClass() +
-                                                "\nSubConfig:" + entry.getValue().getClass());
-                                    }
+                                    value = clazz.newInstance();
+
+                                }
+                                else if (valueNode instanceof MapNode)
+                                {
+                                    new CodecContainer(codec).dumpIntoFields(value = clazz.newInstance(), (MapNode)valueNode);
                                 }
                                 else
                                 {
-                                    throw new InvalidConfigurationException("Invalid Key-Node for Map of Configuration at " + path +
-                                            "\nConfig:" + config.getClass() +
-                                            "\nSubConfig:" + entry.getValue().getClass());
+                                    throw new InvalidConfigurationException("Invalid Value-Node for Map of Configuration at " + path +
+                                                            "\nConfig:" + config.getClass() +
+                                                            "\nSubConfig:" + clazz);
                                 }
+                                configs.put(key,value);
+                                field.set(config,configs);
                             }
                             continue;
                     }

@@ -37,6 +37,7 @@
     <module>test</module>
     <module>spawn</module>
     <module>powersigns</module>
+    <module>itemrepair</module>
   </modules>
 
   <properties>

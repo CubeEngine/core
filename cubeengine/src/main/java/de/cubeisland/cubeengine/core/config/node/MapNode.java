@@ -17,14 +17,15 @@
  */
 package de.cubeisland.cubeengine.core.config.node;
 
-import de.cubeisland.cubeengine.core.CubeEngine;
-import de.cubeisland.cubeengine.core.util.convert.Convert;
-import gnu.trove.map.hash.THashMap;
-
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
+
+import de.cubeisland.cubeengine.core.CubeEngine;
+import de.cubeisland.cubeengine.core.util.convert.Convert;
+
+import gnu.trove.map.hash.THashMap;
 
 public class MapNode extends ParentNode
 {
@@ -39,11 +40,11 @@ public class MapNode extends ParentNode
      *
      * @param map the map to convert into Nodes
      */
-    public MapNode(Map<Object, Object> map)
+    public MapNode(Map<?, ?> map)
     {
         if (map != null)
         {
-            for (Map.Entry<Object, Object> entry : map.entrySet())
+            for (Map.Entry<?, ?> entry : map.entrySet())
             {
 
                 Node node = Convert.wrapIntoNode(entry.getValue());
