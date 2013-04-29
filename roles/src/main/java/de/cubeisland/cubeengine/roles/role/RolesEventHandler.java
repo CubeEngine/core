@@ -76,7 +76,7 @@ public class RolesEventHandler implements Listener
         if (event.getResult().equals(Result.ALLOWED)) // only if allowed to join
         {
             final RolesAttachment rolesAttachment = this.rolesManager.getRolesAttachment(event.getPlayer());
-            rolesAttachment.getResolvedData(); // Pre-calculate
+            rolesAttachment.getResolvedData(this.module.getCore().getWorldManager().getWorldId(event.getPlayer().getWorld())); // Pre-calculate
             this.module.getCore().getTaskManager().scheduleSyncDelayedTask(this.module, new Runnable()
             {
                 @Override
