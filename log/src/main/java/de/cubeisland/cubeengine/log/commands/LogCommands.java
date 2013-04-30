@@ -37,7 +37,7 @@ import de.cubeisland.cubeengine.log.LogAttachment;
 public class LogCommands extends ContainerCommand
 {
     public static final String toolName = ChatFormat.parseFormats("&9Logging-ToolBlock");
-    //TODO additional lore lines for changing logging mode
+
     private Log module;
 
     public LogCommands(Log module)
@@ -65,75 +65,123 @@ public class LogCommands extends ContainerCommand
     //TODO decide toolItmes
     //TODO loghand (cmd hand) -> toggles general lookup with bare hands
 
-    @Alias(names = "lb")
-    @Command(desc = "Gives you a block to check logs with.",
-    usage = "[log-type]", max = 2)
-    public void block(CommandContext context)
-        //TODO tabcompleter for logBlockTypes
+    private Material matchType(String type, boolean block)// or item
     {
-        Material blockMaterial = Material.BEDROCK;
-        if (context.hasArg(0))
+        if (type == null)
         {
-            String match = Match.string().matchString(context.getString(0),"chest","container","player","kills","block");
-            if (match.equals("chest") || match.equals("container"))
+            if (block) return Material.BEDROCK;
+            return Material.BOOK;
+        }
+        String match = Match.string().matchString(type,"chest","player","kills","block");
+        if (match == null)
+        {
+            return null;
+        }
+        if (match.equals("chest") || match.equals("container"))
+        {
+            if (block) return Material.CHEST;
+            return Material.CLAY_BRICK;
+        }
+        if (match.equals("player"))
+        {
+            if (block) return Material.PUMPKIN;
+            return Material.CLAY_BALL;
+        }
+        if (match.equals("kills"))
+        {
+            if (block) return Material.SOUL_SAND;
+            return Material.BONE;
+        }
+        if (match.equals("block"))
+        {
+            if (block) return Material.LOG;
+            return Material.NETHER_BRICK_ITEM;
+        }
+        return null;
+    }
+
+    private void findLogTool(User user, Material material)
+    {
+        ItemStack found = null;
+        for (ItemStack item : user.getInventory().getContents())
+        {
+            if (item != null && item.getType().equals(material) && item.hasItemMeta() && item.getItemMeta().hasDisplayName() && item.getItemMeta().getDisplayName().equals(toolName))
             {
-                  blockMaterial = Material.CHEST;
-            }
-            else if (match.equals("player"))
-            {
-                blockMaterial = Material.PUMPKIN;
-            }
-            else if (match.equals("kills"))
-            {
-                blockMaterial = Material.SOUL_SAND;
-            }
-            else if (match.equals("block"))
-            {
-                blockMaterial = Material.LOG;
+                found = item;
+                break;
             }
         }
-        //TODO show possible blocks in help
-        // chest/container : player : kills : block
-        if (context.getSender() instanceof User)
+        if (found == null)
         {
-            User user = (User) context.getSender();
-            ItemStack found = null;
-            for (ItemStack item : user.getInventory().getContents())
-            {
-                if (item != null && item.getType().equals(blockMaterial) && item.hasItemMeta() && item.getItemMeta().hasDisplayName() && item.getItemMeta().getDisplayName().equals(toolName))
-                {
-                    found = item;
-                    break;
-                }
-            }
-            if (found == null)
-            {
-                found = new ItemStack(blockMaterial,1);
-                ItemMeta meta = found.getItemMeta();
-                meta.setDisplayName(toolName);
-                meta.setLore(Arrays.asList("created by "+user.getName()));
-                found.setItemMeta(meta);
-                ItemStack oldItemInHand = user.getItemInHand();
-                user.setItemInHand(found);
-                HashMap<Integer,ItemStack> tooMuch = user.getInventory().addItem(oldItemInHand);
-                for (ItemStack item : tooMuch.values())
-                {
-                    user.getWorld().dropItemNaturally(user.getLocation(),item);
-                }
-                user.updateInventory();
-                context.sendTranslated("&aReceived a new Log-Block!");
-                LogAttachment logAttachment = user.attachOrGet(LogAttachment.class,this.module);
-                logAttachment.createNewLookup(blockMaterial);
-
-                return;
-            }
-            user.getInventory().removeItem(found);
+            found = new ItemStack(material,1);
+            ItemMeta meta = found.getItemMeta();
+            meta.setDisplayName(toolName);
+            meta.setLore(Arrays.asList("created by "+user.getName()));
+            found.setItemMeta(meta);
             ItemStack oldItemInHand = user.getItemInHand();
             user.setItemInHand(found);
-            user.getInventory().addItem(oldItemInHand);
+            HashMap<Integer,ItemStack> tooMuch = user.getInventory().addItem(oldItemInHand);
+            for (ItemStack item : tooMuch.values())
+            {
+                user.getWorld().dropItemNaturally(user.getLocation(),item);
+            }
             user.updateInventory();
-            context.sendTranslated("&aFound a Log-Block in your inventory!");
-            //TODO if found on hotbar setHeldItemSlot
+            user.sendTranslated("&aReceived a new Log-Block!");
+            LogAttachment logAttachment = user.attachOrGet(LogAttachment.class,this.module);
+            logAttachment.createNewLookup(material);
+
+            return;
+        }
+        user.getInventory().removeItem(found);
+        ItemStack oldItemInHand = user.getItemInHand();
+        user.setItemInHand(found);
+        user.getInventory().addItem(oldItemInHand);
+        user.updateInventory();
+        user.sendTranslated("&aFound a Log-Block in your inventory!");
+        //TODO if found on hotbar setHeldItemSlot
+    }
+
+    @Alias(names = "lb")
+    @Command(desc = "Gives you a block to check logs with.",
+             usage = "[log-type]", max = 2)
+    public void block(CommandContext context)
+    {
+        //TODO tabcompleter for logBlockTypes
+        //TODO show possible blocks in help
+        if (context.getSender() instanceof User)
+        {
+            Material blockMaterial = this.matchType(context.getString(0),true);
+            if (blockMaterial == null)
+            {
+                context.sendTranslated("&6%s&c is not a valid log-type.&e Use chest, container, player, block or kills instead!",context.getString(0));
+                return;
+            }
+            User user = (User) context.getSender();
+            this.findLogTool(user,blockMaterial);
+        }
+        else
+        {
+            context.sendTranslated("&cWhy don't you check in your log-file? You won't need a block there!");
+        }
+    }
+
+    @Alias(names = "lt")
+    @Command(desc = "Gives you a item to check logs with.",
+             usage = "[log-type]", max = 2)
+    public void tool(CommandContext context)
+    {
+        //TODO tabcompleter for logBlockTypes
+        //TODO show possible blocks in help
+        if (context.getSender() instanceof User)
+        {
+            Material blockMaterial = this.matchType(context.getString(0),false);
+            if (blockMaterial == null)
+            {
+                context.sendTranslated("&6%s&c is not a valid log-type.&e Use chest, container, player, block or kills instead!",context.getString(0));
+                return;
+            }
+            User user = (User) context.getSender();
+            this.findLogTool(user,blockMaterial);
         }
         else
         {
