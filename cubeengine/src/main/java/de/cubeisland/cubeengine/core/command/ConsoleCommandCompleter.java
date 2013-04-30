@@ -45,36 +45,21 @@ public class ConsoleCommandCompleter implements Completer
     @Override
     public int complete(String buffer, int cursor, List<CharSequence> candidates)
     {
-        Collection <String> bukkitCandidates = this.commandMap.tabComplete(this.server.getConsoleSender(), buffer);
-        if (bukkitCandidates == null)
+        List<String> offers = this.commandMap.tabComplete(this.server.getConsoleSender(), buffer);
+        if (offers == null)
         {
-            String token = StringUtils.getLastPart(buffer, " ");
-            Player[] onlinePlayers = this.server.getOnlinePlayers();
-            bukkitCandidates = new ArrayList<String>(onlinePlayers.length);
-            for (Player player : onlinePlayers)
-            {
-                if (StringUtils.endsWithIgnoreCase(player.getName(), token))
-                {
-                    bukkitCandidates.add(player.getName());
-                }
-            }
+            return cursor;
         }
+        candidates.addAll(offers);
 
-        int cursorDiff;
-        if (buffer.indexOf(' ') == -1)
+        final int lastSpace = buffer.lastIndexOf(' ');
+        if (lastSpace == -1)
         {
-            cursorDiff = buffer.length();
-            for (String entry : bukkitCandidates)
-            {
-                candidates.add(entry.substring(1));
-            }
+            return cursor - buffer.length();
         }
         else
         {
-            cursorDiff = buffer.length() - buffer.lastIndexOf(' ') - 1;
-            candidates.addAll(bukkitCandidates);
+            return cursor - (buffer.length() - lastSpace - 1);
         }
-
-        return cursor - cursorDiff;
     }
 }
