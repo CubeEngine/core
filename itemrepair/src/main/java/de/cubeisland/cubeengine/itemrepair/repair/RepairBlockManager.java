@@ -31,7 +31,6 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
 import de.cubeisland.cubeengine.core.logger.LogLevel;
-import de.cubeisland.cubeengine.core.permission.Permission;
 import de.cubeisland.cubeengine.itemrepair.Itemrepair;
 import de.cubeisland.cubeengine.itemrepair.material.RepairItemContainer;
 import de.cubeisland.cubeengine.itemrepair.repair.blocks.RepairBlock;
@@ -44,7 +43,6 @@ public class RepairBlockManager
     private Map<Material, RepairBlock> repairBlocks;
     private Map<Block, Material> blockMap;
     private RepairBlockPersister persister;
-    private final Permission parentPermission;
 
     protected final Itemrepair module;
     private RepairItemContainer itemProvider;
@@ -58,18 +56,11 @@ public class RepairBlockManager
         for (Entry<String, RepairBlockConfig> entry : module.getConfig().repairBlockConfigs.entrySet())
         {
             RepairBlock repairBlock = new RepairBlock(module,this,entry.getKey(),entry.getValue());
-            this.repairBlocks.put(repairBlock.getMaterial(),repairBlock);
+            this.addRepairBlock(repairBlock);
         }
-
         this.blockMap = new HashMap<Block, Material>();
-
         this.persister = new RepairBlockPersister(module);
-
-
         this.loadBlocks();
-
-        this.parentPermission =  this.module.getBasePermission().createChild("allblocks");
-        // TODO register perm
     }
 
     /**
@@ -113,34 +104,11 @@ public class RepairBlockManager
      */
     public RepairBlockManager addRepairBlock(RepairBlock block)
     {
-        this.parentPermission.attach(block.getPermission());
-        // TODO register perm
+        this.module.getCore().getPermissionManager().registerPermission(this.module, block.getPermission());
         this.repairBlocks.put(block.getMaterial(), block);
         this.module.getLog().log(LogLevel.DEBUG, "Added a repair block: " + block.getName() + " on ID: " + block
             .getMaterial());
         return this;
-    }
-
-    /**
-     * Returns a repair block by its material's ID
-     *
-     * @param materialId the material ID
-     * @return the repair block
-     */
-    public RepairBlock getRepairBlock(int materialId)
-    {
-        return this.getRepairBlock(Material.getMaterial(materialId));
-    }
-
-    /**
-     * Returns a repair block by its material's name
-     *
-     * @param materialName the name of the material
-     * @return the repair block
-     */
-    public RepairBlock getRepairBlock(String materialName)
-    {
-        return this.getRepairBlock(Material.getMaterial(materialName));
     }
 
     /**
