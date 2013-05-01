@@ -184,7 +184,7 @@ public class MailCommand extends ContainerCommand
             alreadySend.add(user.key);
         }
         final User sendingUser = sender;
-        this.basics.getCore().getTaskManager().getExecutorService().submit(new Runnable()
+        this.basics.getCore().getTaskManager().runAsynchronousTaskDelayed(this.getModule(),new Runnable()
         {
             public void run() // Async sending to all Users ever
             {
@@ -196,7 +196,7 @@ public class MailCommand extends ContainerCommand
                     }
                 }
             }
-        });
+        },0);
         context.sendTranslated("&aMail send to everyone!");
     }
 

@@ -81,7 +81,7 @@ public class PlayerCommands
         basics.getCore().getEventManager().registerListener(basics, this.afkListener);
         if (autoAfk > 0)
         {
-            basics.getCore().getTaskManager().scheduleSyncRepeatingTask(basics, this.afkListener, 20, afkCheck / 50); // this is in ticks so /50
+            basics.getCore().getTaskManager().runTimer(basics, this.afkListener, 20, afkCheck / 50); // this is in ticks so /50
         }
     }
 

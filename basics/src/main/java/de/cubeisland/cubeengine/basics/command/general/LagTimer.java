@@ -29,7 +29,7 @@ public class LagTimer implements Runnable
 
     public LagTimer(Basics module) {
         this.module = module;
-        module.getCore().getTaskManager().scheduleSyncRepeatingTask(module, this, 0, 20); //start timer
+        module.getCore().getTaskManager().runTimer(module, this, 0, 20); //start timer
     }
 
     @Override

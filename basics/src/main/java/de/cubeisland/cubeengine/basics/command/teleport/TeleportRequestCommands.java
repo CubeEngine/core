@@ -67,7 +67,7 @@ public class TeleportRequestCommands
         if (waitTime > 0)
         {
             final User sendingUser = sender;
-            final int taskID = context.getCore().getTaskManager().scheduleSyncDelayedTask(this.basics, new Runnable()
+            final int taskID = context.getCore().getTaskManager().runTaskDelayed(this.basics, new Runnable()
             {
                 public void run()
                 {
@@ -107,7 +107,7 @@ public class TeleportRequestCommands
             if (waitTime > 0)
             {
                 final User sendingUser = sender;
-                final int taskID = context.getCore().getTaskManager().scheduleSyncDelayedTask(this.basics, new Runnable()
+                final int taskID = context.getCore().getTaskManager().runTaskDelayed(this.basics, new Runnable()
                 {
                     public void run()
                     {

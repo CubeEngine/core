@@ -429,7 +429,7 @@ public class TimeControlCommands
             this.worlds.put(world.getName(), world.getTime());
             if (this.taskid == -1)
             {
-                this.taskid = taskmgr.scheduleSyncRepeatingTask(basics, this, 10, 10);
+                this.taskid = taskmgr.runTimer(basics, this, 10, 10);
             }
         }
 
