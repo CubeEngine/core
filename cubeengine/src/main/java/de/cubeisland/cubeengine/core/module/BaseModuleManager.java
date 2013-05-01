@@ -478,21 +478,58 @@ public abstract class BaseModuleManager implements ModuleManager
         this.logger.log(DEBUG, Profiler.getCurrentDelta("unload-" + module.getId(), TimeUnit.MILLISECONDS)+ "ms - Before GC ");
         System.gc();
         System.gc();
-        this.logger.log(DEBUG, "Unloading '" + module.getName() + "' took {0} milliseconds!", Profiler.endProfiling("unload-" + module.getId(), TimeUnit.MILLISECONDS));
+        this.logger.log(DEBUG, "Unloading '" + module.getName() + "' took {0} milliseconds!", Profiler
+            .endProfiling("unload-" + module.getId(), TimeUnit.MILLISECONDS));
     }
 
-    public void reloadModule(Module module)
+    @Override
+    public void reloadModule(Module module) throws ModuleException
     {
-        module.reload();
+        this.reloadModule(module, false);
+    }
+
+    @Override
+    public void reloadModule(Module module, boolean fromFile) throws ModuleException
+    {
+        if (fromFile)
+        {
+            this.unloadModule(module);
+            this.loadModule(module.getInfo().getFile());
+        }
+        else
+        {
+            if (module instanceof Reloadable)
+            {
+                ((Reloadable)module).reload();
+            }
+            else
+            {
+                this.logger.log(NOTICE, "The module ''{0}'' is not natively reloadable, falling back to disabling and re-enabling.", module.getName());
+                this.disableModule(module);
+                this.enableModule(module);
+            }
+        }
     }
 
     public int reloadModules()
     {
+        return this.reloadModules(false);
+    }
+
+    public int reloadModules(boolean fromFile)
+    {
         int modules = 0;
-        Iterator<Module> iter = this.getModules().iterator();
-        while (iter.hasNext())
+        for (Module module : this.getModules())
         {
-            iter.next().reload();
+            try
+            {
+                this.reloadModule(module);
+            }
+            catch (ModuleException e)
+            {
+                this.logger.log(ERROR, "Failed to reload ''{0}''", module.getName());
+                this.logger.log(ERROR, e.getLocalizedMessage(), e);
+            }
             ++modules;
         }
         return modules;
@@ -514,11 +551,11 @@ public abstract class BaseModuleManager implements ModuleManager
      */
     public void unloadModules()
     {
-        Iterator<Map.Entry<String, Module>> iter = this.modules.entrySet().iterator();
-        while (iter.hasNext())
+        Iterator<Map.Entry<String, Module>> it = this.modules.entrySet().iterator();
+        while (it.hasNext())
         {
-            this.unloadModule(iter.next().getValue());
-            iter.remove();
+            this.unloadModule(it.next().getValue());
+            it.remove();
         }
         this.modules.clear();
     }

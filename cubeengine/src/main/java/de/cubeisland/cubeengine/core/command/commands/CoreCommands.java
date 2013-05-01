@@ -40,11 +40,15 @@ import de.cubeisland.cubeengine.core.command.parameterized.ParameterizedContext;
 import de.cubeisland.cubeengine.core.command.reflected.Command;
 import de.cubeisland.cubeengine.core.command.sender.ConsoleCommandSender;
 import de.cubeisland.cubeengine.core.logger.LogLevel;
+import de.cubeisland.cubeengine.core.module.Module;
+import de.cubeisland.cubeengine.core.module.ModuleManager;
+import de.cubeisland.cubeengine.core.module.exception.ModuleException;
 import de.cubeisland.cubeengine.core.permission.PermDefault;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.user.UserManager;
 import de.cubeisland.cubeengine.core.util.Profiler;
 
+import static de.cubeisland.cubeengine.core.logger.LogLevel.ERROR;
 import static java.util.Arrays.asList;
 
 public class CoreCommands extends ContainerCommand
@@ -74,13 +78,12 @@ public class CoreCommands extends ContainerCommand
         context.sendTranslated("&aCubeEngine-Reload completed in &6%d&ams!",time);
     }
 
-    @Command(desc = "Reloads all of the modules!")
-    public void reloadmodules(CommandContext context)
+    @Command(desc = "Reloads all of the modules!", usage = "[-f]", flags = @Flag(name = "f", longName = "file"))
+    public void reloadmodules(ParameterizedContext context)
     {
         context.sendTranslated("&aReloading all modules! This may take some time...");
         Profiler.startProfiling("modulesReload");
-        this.core.getModuleManager().unloadModules();
-        this.core.getModuleManager().loadModules(this.core.getFileManager().getModulesDir());
+        context.getCore().getModuleManager().reloadModules(context.hasFlag("f"));
         long time = Profiler.endProfiling("modulesReload", TimeUnit.MILLISECONDS);
         context.sendTranslated("&aModules-Reload completed in &6%d&ams!",time);
     }

@@ -191,12 +191,6 @@ public abstract class Module
     public void onDisable()
     {}
 
-    /**
-     * This method should be overridden to do reloading
-     */
-    public void reload()
-    {}
-
     @Override
     public int hashCode()
     {

@@ -23,6 +23,7 @@ import de.cubeisland.cubeengine.core.module.exception.IncompatibleDependencyExce
 import de.cubeisland.cubeengine.core.module.exception.InvalidModuleException;
 import de.cubeisland.cubeengine.core.module.exception.MissingDependencyException;
 import de.cubeisland.cubeengine.core.module.exception.MissingPluginDependencyException;
+import de.cubeisland.cubeengine.core.module.exception.ModuleException;
 import de.cubeisland.cubeengine.core.util.Cleanable;
 
 import java.io.File;
@@ -110,7 +111,16 @@ public interface ModuleManager extends Cleanable
      *
      * @param module the module to reload
      */
-    void reloadModule(Module module);
+    void reloadModule(Module module) throws ModuleException;
+
+    /**
+     * Reloads the given module
+     *
+     * @param module the module to reload
+     * @param fromFile whether to reload the module from file
+     * @throws RuntimeException when loading the module from file fails
+     */
+    void reloadModule(Module module, boolean fromFile) throws ModuleException;
 
     /**
      * Reloads all modules
@@ -118,6 +128,14 @@ public interface ModuleManager extends Cleanable
      * @return the number of reloaded modules
      */
     int reloadModules();
+
+    /**
+     * Reloads all modules
+     *
+     * @param fromFile whether to reload the modules from file
+     * @return the number of reloaded modules
+     */
+    int reloadModules(boolean fromFile);
 
     /**
      * This method disables all modules

@@ -28,6 +28,7 @@ import de.cubeisland.cubeengine.core.module.exception.IncompatibleDependencyExce
 import de.cubeisland.cubeengine.core.module.exception.InvalidModuleException;
 import de.cubeisland.cubeengine.core.module.exception.MissingDependencyException;
 import de.cubeisland.cubeengine.core.module.exception.MissingPluginDependencyException;
+import de.cubeisland.cubeengine.core.module.exception.ModuleException;
 import de.cubeisland.cubeengine.core.util.StringUtils;
 
 public class TestModuleManager implements ModuleManager
@@ -95,13 +96,40 @@ public class TestModuleManager implements ModuleManager
     {}
 
     @Override
-    public void reloadModule(Module module)
+    public void reloadModule(Module module) throws ModuleException
     {
-        module.reload();
+        this.reloadModule(module, false);
+    }
+
+        @Override
+    public void reloadModule(Module module, boolean fromFile) throws ModuleException
+    {
+        if (fromFile)
+        {
+
+        }
+        else
+        {
+            if (module instanceof Reloadable)
+            {
+                ((Reloadable)module).reload();
+            }
+            else
+            {
+                this.disableModule(module);
+                this.enableModule(module);
+            }
+        }
     }
 
     @Override
     public int reloadModules()
+    {
+        return this.reloadModules(false);
+    }
+
+        @Override
+    public int reloadModules(boolean fromFile)
     {
         return 0;
     }
