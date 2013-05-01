@@ -34,7 +34,8 @@ public abstract class AsyncResult implements CommandResult
             public void run()
             {
                 AsyncResult.this.asyncMain(context);
-                context.getCore().getTaskManager().scheduleSyncDelayedTask(context.getCommand().getModule(), new Runnable() {
+                context.getCore().getTaskManager().runTask(context.getCommand().getModule(), new Runnable()
+                {
                     @Override
                     public void run()
                     {

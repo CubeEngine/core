@@ -77,7 +77,7 @@ public class RolesEventHandler implements Listener
         {
             final RolesAttachment rolesAttachment = this.rolesManager.getRolesAttachment(event.getPlayer());
             rolesAttachment.getResolvedData(this.module.getCore().getWorldManager().getWorldId(event.getPlayer().getWorld())); // Pre-calculate
-            this.module.getCore().getTaskManager().scheduleSyncDelayedTask(this.module, new Runnable()
+            this.module.getCore().getTaskManager().runTask(this.module, new Runnable()
             {
                 @Override
                 public void run()

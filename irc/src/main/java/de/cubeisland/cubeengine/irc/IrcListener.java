@@ -47,7 +47,7 @@ public class IrcListener implements Listener
     @EventHandler(priority = EventPriority.MONITOR)
     public void onQuit(final PlayerQuitEvent event)
     {
-        this.taskmgr.scheduleAsyncDelayedTask(this.irc, new Runnable()
+        this.taskmgr.runAsynchronousTask(this.irc, new Runnable()
         {
             @Override
             public void run()

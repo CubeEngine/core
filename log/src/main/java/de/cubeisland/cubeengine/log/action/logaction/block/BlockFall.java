@@ -94,12 +94,14 @@ public class BlockFall extends BlockActionType
     public void preplanBlockFall(final Location location, Entity player, BlockActionType reason)
     {
         plannedFall.put(location, new Pair<Entity, BlockActionType>(player, reason));
-        BlockFall.this.logModule.getCore().getTaskManager().scheduleSyncDelayedTask(logModule, new Runnable() {
+        BlockFall.this.logModule.getCore().getTaskManager().runTaskDelayed(logModule, new Runnable()
+        {
             @Override
-            public void run() {
+            public void run()
+            {
                 BlockFall.this.plannedFall.remove(location);
             }
-        },3);
+        }, 3);
     }
 
     @Override

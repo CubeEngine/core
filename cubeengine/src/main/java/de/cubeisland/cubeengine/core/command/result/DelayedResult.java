@@ -37,7 +37,9 @@ public abstract class DelayedResult implements CommandResult
     @Override
     public void show(final CommandContext context)
     {
-        final int taskId = context.getCore().getTaskManager().scheduleSyncDelayedTask(context.getCommand().getModule(), new Runnable() {
+        final int taskId = context.getCore().getTaskManager().runTaskDelayed(context.getCommand()
+                                                                                    .getModule(), new Runnable()
+        {
             @Override
             public void run()
             {

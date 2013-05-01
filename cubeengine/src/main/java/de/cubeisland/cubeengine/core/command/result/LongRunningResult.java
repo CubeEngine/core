@@ -28,7 +28,7 @@ public abstract class LongRunningResult implements CommandResult
     @Override
     public void show(final CommandContext context)
     {
-        this.taskId = context.getCore().getTaskManager().scheduleSyncRepeatingTask(context.getCommand().getModule(), new Runnable()
+        this.taskId = context.getCore().getTaskManager().runTimer(context.getCommand().getModule(), new Runnable()
         {
             @Override
             public void run()
@@ -36,7 +36,8 @@ public abstract class LongRunningResult implements CommandResult
                 LongRunningResult.this.run(context);
                 if (LongRunningResult.this.isDone)
                 {
-                    context.getCore().getTaskManager().cancelTask(context.getCommand().getModule(), LongRunningResult.this.taskId);
+                    context.getCore().getTaskManager()
+                           .cancelTask(context.getCommand().getModule(), LongRunningResult.this.taskId);
                 }
             }
         }, 0, 1);

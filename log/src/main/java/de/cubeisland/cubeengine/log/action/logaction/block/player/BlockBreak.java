@@ -189,9 +189,11 @@ public class BlockBreak extends BlockActionType
         if (!clearPlanned)
         {
             clearPlanned = true;
-            BlockBreak.this.logModule.getCore().getTaskManager().scheduleSyncDelayedTask(logModule, new Runnable() {
+            BlockBreak.this.logModule.getCore().getTaskManager().runTask(logModule, new Runnable()
+            {
                 @Override
-                public void run() {
+                public void run()
+                {
                     clearPlanned = false;
                     BlockBreak.this.plannedPyhsics.clear();
                 }

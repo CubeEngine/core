@@ -30,7 +30,6 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.vehicle.VehicleCreateEvent;
 
 import de.cubeisland.cubeengine.core.user.User;
-import de.cubeisland.cubeengine.log.Log;
 import de.cubeisland.cubeengine.log.action.logaction.SimpleLogActionType;
 import de.cubeisland.cubeengine.log.storage.LogEntry;
 
@@ -87,9 +86,11 @@ public class VehiclePlace extends SimpleLogActionType
         if (!clearPlanned)
         {
             clearPlanned = true;
-            VehiclePlace.this.logModule.getCore().getTaskManager().scheduleSyncDelayedTask(logModule, new Runnable() {
+            VehiclePlace.this.logModule.getCore().getTaskManager().runTask(logModule, new Runnable()
+            {
                 @Override
-                public void run() {
+                public void run()
+                {
                     clearPlanned = false;
                     VehiclePlace.this.plannedVehiclePlace.clear();
                 }

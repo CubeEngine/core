@@ -123,7 +123,7 @@ public class RocketCommand
 
                 if (taskId == -1)
                 {
-                    this.taskId = module.getCore().getTaskManager().scheduleSyncRepeatingTask(module, this, 0, 2);
+                    this.taskId = module.getCore().getTaskManager().runTimer(module, this, 0, 2);
                 }
             }
         }
@@ -220,14 +220,14 @@ public class RocketCommand
 
                     if (instance.getNumberOfAirBlocksUnderFeet() == 0 && instance.getDown())
                     {
-                        module.getCore().getTaskManager().scheduleSyncDelayedTask(module, new Runnable()
+                        module.getCore().getTaskManager().runTaskDelayed(module, new Runnable()
+                        {
+                            @Override
+                            public void run()
                             {
-                                @Override
-                                public void run()
-                                {
-                                    removeInstance(user);
-                                }
-                            }, 1);
+                                removeInstance(user);
+                            }
+                        }, 1);
                     }
 
                     if (instance.getNumberOfAirBlocksUnderFeet() < instance.getHeight() && instance.getNumberOfAirBlocksOverHead() > 2 && !instance.getDown())

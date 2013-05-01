@@ -134,9 +134,11 @@ public class HangingBreak extends BlockActionType
         if (!clearPlanned)
         {
             clearPlanned = true;
-            HangingBreak.this.logModule.getCore().getTaskManager().scheduleSyncDelayedTask(logModule, new Runnable() {
+            HangingBreak.this.logModule.getCore().getTaskManager().runTask(logModule, new Runnable()
+            {
                 @Override
-                public void run() {
+                public void run()
+                {
                     clearPlanned = false;
                     HangingBreak.this.plannedHangingBreak.clear();
                 }

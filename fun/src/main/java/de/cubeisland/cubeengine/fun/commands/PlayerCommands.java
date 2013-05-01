@@ -356,7 +356,8 @@ public class PlayerCommands
 
             this.location = location;
 
-            module.getCore().getTaskManager().scheduleSyncDelayedTask(module, new Runnable() {
+            module.getCore().getTaskManager().runTaskDelayed(module, new Runnable()
+            {
                 @Override
                 public void run()
                 {

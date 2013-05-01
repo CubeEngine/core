@@ -169,7 +169,7 @@ public final class BukkitCore extends JavaPlugin implements Core
         this.apiServer.configure(Configuration.load(ApiConfig.class, new File(this.fileManager.getDataFolder(), "webapi.yml")));
 
         // depends on: core config, server
-        this.taskManager = new TaskManager(this, new CubeThreadFactory("CubeEngine"), config.executorThreads, this.getServer().getScheduler());
+        this.taskManager = new TaskManager(this, new CubeThreadFactory("CubeEngine"), this.getServer().getScheduler());
 
         if (this.config.userWebapi)
         {
@@ -322,20 +322,8 @@ public final class BukkitCore extends JavaPlugin implements Core
         if (this.taskManager != null)
         {
             this.logger.log(DEBUG, "task manager cleanup");
-            try
-            {
-                this.taskManager.getExecutorService().shutdown();
-                this.taskManager.getExecutorService().awaitTermination(this.config.executorTermination, TimeUnit.SECONDS);
-                this.taskManager.getExecutorService().shutdownNow();
-            }
-            catch (InterruptedException ex)
-            {
-                this.logger.log(ERROR, "Could not execute all pending tasks", ex);
-            }
-            finally
-            {
-                this.taskManager = null;
-            }
+            this.taskManager.clean();
+            this.taskManager = null;
         }
 
         CubeEngine.clean();

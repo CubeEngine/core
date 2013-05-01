@@ -18,50 +18,36 @@
 package de.cubeisland.cubeengine.core.bukkit;
 
 import de.cubeisland.cubeengine.core.Core;
-import de.cubeisland.cubeengine.core.CubeEngine;
 import de.cubeisland.cubeengine.core.module.Module;
+import de.cubeisland.cubeengine.core.util.Cleanable;
+
 import gnu.trove.iterator.TIntIterator;
 import gnu.trove.set.TIntSet;
 import gnu.trove.set.hash.TIntHashSet;
-import org.apache.commons.lang.Validate;
+
 import org.bukkit.scheduler.BukkitScheduler;
 
 import java.util.Map;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Future;
-import java.util.concurrent.RejectedExecutionHandler;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.ThreadFactory;
-import java.util.concurrent.ThreadPoolExecutor;
-
-import static de.cubeisland.cubeengine.core.logger.LogLevel.DEBUG;
 
 /**
- * This class provides methods to register and unregister tasks and the global
+ * This class provides methods to register and cancel tasks and the global
  * ScheduledExecutorService is provided by this class.
  */
-public class TaskManager
+public class TaskManager implements Cleanable
 {
     private final BukkitCore corePlugin;
-    private final ScheduledExecutorService executorService;
     private final BukkitScheduler bukkitScheduler;
     private final Map<Module, TIntSet> moduleTasks;
     private final ThreadFactory threadFactory;
 
-    public TaskManager(Core core, ThreadFactory threadFactory, int threadPoolSize, BukkitScheduler bukkitScheduler)
+    public TaskManager(Core core, ThreadFactory threadFactory, BukkitScheduler bukkitScheduler)
     {
         this.corePlugin = (BukkitCore)core;
         this.threadFactory = threadFactory;
-        this.executorService = new ScheduledThreadPoolExecutor(threadPoolSize, this.threadFactory, new RejectedExecutionHandler()
-        {
-            @Override
-            public void rejectedExecution(Runnable r, ThreadPoolExecutor executor)
-            {
-                CubeEngine.getLog().log(DEBUG, "Task " + r.getClass().getName() + " got rejected!");
-            }
-        });
         this.bukkitScheduler = bukkitScheduler;
         this.moduleTasks = new ConcurrentHashMap<Module, TIntSet>();
     }
@@ -82,23 +68,25 @@ public class TaskManager
     }
 
     /**
-     * Returns the global ScheduledExecutorService
-     *
-     * @return the global ScheduledExecutorService
-     */
-    public ScheduledExecutorService getExecutorService()
-    {
-        return this.executorService;
-    }
-
-    /**
      * Returns the thread factory used by the CubeEngine to create its threads
      *
      * @return a ThreadFactory implementation
      */
     public ThreadFactory getThreadFactory()
     {
-        return threadFactory;
+        return this.threadFactory;
+    }
+
+    /**
+     * Schedules a delayed task for a module
+     *
+     * @param module   the module
+     * @param runnable the task
+     * @return the ID of the task
+     */
+    public int runTask(Module module, Runnable runnable)
+    {
+        return this.runTaskDelayed(module, runnable, 0);
     }
 
     /**
@@ -109,10 +97,10 @@ public class TaskManager
      * @param delay    the delay in ticks
      * @return the ID of the task
      */
-    public int scheduleSyncDelayedTask(Module module, Runnable runnable, long delay)
+    public int runTaskDelayed(Module module, Runnable runnable, long delay)
     {
-        Validate.notNull(module, "The module must not be null!");
-        Validate.notNull(runnable, "The runnable must not be null!");
+        assert module != null: "The module must not be null!";
+        assert runnable != null: "The runnable must not be null!";
 
         final TIntSet tasks = this.getModuleIDs(module);
         final Task task = new Task(runnable, tasks);
@@ -126,18 +114,6 @@ public class TaskManager
     }
 
     /**
-     * Schedules a delayed task for a module
-     *
-     * @param module   the module
-     * @param runnable the task
-     * @return the ID of the task
-     */
-    public int scheduleSyncDelayedTask(Module module, Runnable runnable)
-    {
-        return this.scheduleSyncDelayedTask(module, runnable, 0);
-    }
-
-    /**
      * Schedules a repeating task for a module with the given delay and interval
      *
      * @param module   the module
@@ -146,10 +122,10 @@ public class TaskManager
      * @param interval the interval in ticks
      * @return the ID of the task
      */
-    public int scheduleSyncRepeatingTask(Module module, Runnable runnable, long delay, long interval)
+    public int runTimer(Module module, Runnable runnable, long delay, long interval)
     {
-        Validate.notNull(module, "The module must not be null!");
-        Validate.notNull(runnable, "The runnable must not be null!");
+        assert module != null: "The module must not be null!";
+        assert runnable != null: "The runnable must not be null!";
 
         final TIntSet tasks = this.getModuleIDs(module);
         final Task task = new Task(runnable, tasks);
@@ -163,18 +139,29 @@ public class TaskManager
     }
 
     /**
-     * Schedules a asynchonous delayed task for a module with the given delay
+     * Schedules a asynchronous delayed task for a module
+     *
+     * @param module   the module
+     * @param runnable the task
+     * @return the ID of the task
+     */
+    public int runAsynchronousTask(Module module, Runnable runnable)
+    {
+        return this.runAsynchronousTaskDelayed(module, runnable, 0);
+    }
+
+    /**
+     * Schedules a asynchronous delayed task for a module with the given delay
      *
      * @param module   the module
      * @param runnable the task
      * @param delay    the delay in ticks
      * @return the ID of the task
      */
-    @SuppressWarnings("deprecation")
-    public int scheduleAsyncDelayedTask(Module module, Runnable runnable, long delay)
+    public int runAsynchronousTaskDelayed(Module module, Runnable runnable, long delay)
     {
-        Validate.notNull(module, "The module must not be null!");
-        Validate.notNull(runnable, "The runnable must not be null!");
+        assert module != null: "The module must not be null!";
+        assert runnable != null: "The runnable must not be null!";
 
         final TIntSet tasks = this.getModuleIDs(module);
         final Task task = new Task(runnable, tasks);
@@ -188,19 +175,7 @@ public class TaskManager
     }
 
     /**
-     * Schedules a asynchonous delayed task for a module
-     *
-     * @param module   the module
-     * @param runnable the task
-     * @return the ID of the task
-     */
-    public int scheduleAsyncDelayedTask(Module module, Runnable runnable)
-    {
-        return this.scheduleAsyncDelayedTask(module, runnable, 0);
-    }
-
-    /**
-     * Schedules a asynchonous repeating task for a module with the given delay and interval
+     * Schedules a asynchronous repeating task for a module with the given delay and interval
      *
      * @param module   the module
      * @param runnable the task
@@ -208,11 +183,10 @@ public class TaskManager
      * @param interval the interval in ticks
      * @return the ID of the task
      */
-    @SuppressWarnings("deprecation")
-    public int scheduleAsyncRepeatingTask(Module module, Runnable runnable, long delay, long interval)
+    public int runAsynchronousTimer(Module module, Runnable runnable, long delay, long interval)
     {
-        Validate.notNull(module, "The module must not be null!");
-        Validate.notNull(runnable, "The runnable must not be null!");
+        assert module != null: "The module must not be null!";
+        assert runnable != null: "The runnable must not be null!";
 
         final TIntSet tasks = this.getModuleIDs(module);
         final Task task = new Task(runnable, tasks);
@@ -234,6 +208,7 @@ public class TaskManager
      */
     public <T> Future<T> callSyncMethod(Callable<T> callable)
     {
+        assert callable != null: "The callable must not be null!";
         return this.bukkitScheduler.callSyncMethod(this.corePlugin, callable);
     }
 
@@ -286,6 +261,12 @@ public class TaskManager
     public boolean isQueued(int taskID)
     {
         return this.bukkitScheduler.isQueued(taskID);
+    }
+
+    @Override
+    public void clean()
+    {
+
     }
 
     private class Task implements Runnable

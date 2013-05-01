@@ -241,7 +241,7 @@ public class ThrowCommands
                 this.user.sendTranslated("&aStarted throwing!");
                 this.user.sendTranslated("&aYou will keep throwing until you run this command again.");
             }
-            this.taskId = fun.getCore().getTaskManager().scheduleSyncRepeatingTask(fun, this, 0, this.interval);
+            this.taskId = fun.getCore().getTaskManager().runTimer(fun, this, 0, this.interval);
             return this.taskId != -1;
         }
 
@@ -361,7 +361,8 @@ public class ThrowCommands
         {
             if (this.entities.contains(entity) && this.removal != entity)
             {
-                fun.getCore().getTaskManager().scheduleSyncDelayedTask(fun, new Runnable() {
+                fun.getCore().getTaskManager().runTask(fun, new Runnable()
+                {
                     @Override
                     public void run()
                     {

@@ -128,7 +128,7 @@ public class DiscoCommand
         public boolean start()
         {
             this.originalTime = this.world.getTime();
-            this.taskID = module.getCore().getTaskManager().scheduleSyncRepeatingTask(module, this, 0, this.interval);
+            this.taskID = module.getCore().getTaskManager().runTimer(module, this, 0, this.interval);
             return this.taskID != -1;
         }
 

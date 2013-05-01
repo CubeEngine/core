@@ -202,15 +202,14 @@ public class QueryManager
             lookup.setQueryResults(results);
             if (user != null && user.isOnline())
             {
-                module.getCore().getTaskManager().scheduleSyncDelayedTask(module,
-                  new Runnable()
-                  {
-                      @Override
-                      public void run()
-                      {
-                          lookup.show(user);
-                      }
-                  });
+                module.getCore().getTaskManager().runTask(module, new Runnable()
+                {
+                    @Override
+                    public void run()
+                    {
+                        lookup.show(user);
+                    }
+                });
             }
         }
         catch (SQLException e)

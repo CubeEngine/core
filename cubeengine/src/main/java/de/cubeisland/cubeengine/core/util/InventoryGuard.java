@@ -221,7 +221,7 @@ public class InventoryGuard implements Listener
     {
         for (Runnable runner : this.onChange)
         {
-            this.module.getCore().getTaskManager().scheduleSyncDelayedTask(this.module,runner);
+            this.module.getCore().getTaskManager().runTask(this.module, runner);
         }
     }
 
