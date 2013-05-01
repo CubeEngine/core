@@ -94,6 +94,7 @@ public class RolesAttachment extends UserAttachment
                     if (role == null)
                     {
                         System.out.print("WARNING NULL-Role! "+ roleName);
+                        continue;
                     }
                     assignedRoles.add(role);
                 }
