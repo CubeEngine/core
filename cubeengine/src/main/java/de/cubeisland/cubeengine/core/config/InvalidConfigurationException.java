@@ -17,6 +17,9 @@
  */
 package de.cubeisland.cubeengine.core.config;
 
+import java.io.File;
+import java.lang.reflect.Field;
+
 /**
  * This exception is thrown when a configuration is invalid.
  */
@@ -32,5 +35,17 @@ public class InvalidConfigurationException extends RuntimeException
     public InvalidConfigurationException(String msg, Throwable t)
     {
         super(msg, t);
+    }
+
+    public static InvalidConfigurationException of(String msg, File file, String path, Class<? extends Configuration> clazz, Field field , Throwable t)
+    {
+        if (file == null)
+        {
+            msg += "\nFile: " + file.getAbsolutePath();
+        }
+        msg += "\nPath: " + path;
+        msg += "\nConfig: " + clazz.toString();
+        msg += "\nField: " + field.getName();
+        return new InvalidConfigurationException(msg,t);
     }
 }

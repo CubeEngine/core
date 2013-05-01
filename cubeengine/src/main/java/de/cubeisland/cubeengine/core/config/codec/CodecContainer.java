@@ -389,16 +389,16 @@ public class CodecContainer<ConfigCodec extends ConfigurationCodec>
         {}
         for (Field field : configClass.getFields())
         {
-            try
+            if (this.isConfigField(field))
             {
-                if (this.isConfigField(field))
+                if (!advanced && field.getAnnotation(Option.class).advanced())
                 {
-                    if (!advanced && field.getAnnotation(Option.class).advanced())
-                    {
-                        continue;
-                    }
+                    continue;
+                }
+                String path = field.getAnnotation(Option.class).value().replace(".", codec.PATH_SEPARATOR);
+                try
+                {
                     Object fieldValue = field.get(config);
-                    String path = field.getAnnotation(Option.class).value().replace(".", codec.PATH_SEPARATOR);
                     if (field.isAnnotationPresent(Comment.class))
                     {
                         Comment comment = field.getAnnotation(Comment.class);
@@ -407,57 +407,57 @@ public class CodecContainer<ConfigCodec extends ConfigurationCodec>
                     int fieldType = this.getFieldType(field);
                     switch (fieldType)
                     {
-                        case NORMAL_FIELD:
-                            Node fieldValueNode = Convert.toNode(fieldValue);
-                            baseNode.setNodeAt(path, codec.PATH_SEPARATOR, fieldValueNode);
-                            continue;
-                        case CONFIG_FIELD:
-                            CodecContainer subContainer = new CodecContainer(this, path); // Create new container
-                            subContainer.fillFromFields((Configuration)fieldValue,
-                                    (MapNode)baseNode.getNodeAt(path, codec.PATH_SEPARATOR));
-                            continue;
-                        case COLLECTION_CONFIG_FIELD:
-                            ListNode listNode = ListNode.emptyList();
-                            baseNode.setNodeAt(path, codec.PATH_SEPARATOR, listNode);
-                            int pos = 0;
-                            for (Configuration subConfig : (Collection<Configuration>)fieldValue)
+                    case NORMAL_FIELD:
+                        Node fieldValueNode = Convert.toNode(fieldValue);
+                        baseNode.setNodeAt(path, codec.PATH_SEPARATOR, fieldValueNode);
+                        continue;
+                    case CONFIG_FIELD:
+                        CodecContainer subContainer = new CodecContainer(this, path); // Create new container
+                        subContainer.fillFromFields((Configuration)fieldValue,
+                                                    (MapNode)baseNode.getNodeAt(path, codec.PATH_SEPARATOR));
+                        continue;
+                    case COLLECTION_CONFIG_FIELD:
+                        ListNode listNode = ListNode.emptyList();
+                        baseNode.setNodeAt(path, codec.PATH_SEPARATOR, listNode);
+                        int pos = 0;
+                        for (Configuration subConfig : (Collection<Configuration>)fieldValue)
+                        {
+                            MapNode configNode = MapNode.emptyMap();
+                            listNode.addNode(configNode);
+                            new CodecContainer(this, path + codec.PATH_SEPARATOR + "[" + pos++).fillFromFields(subConfig, configNode);
+                        }
+                        continue;
+                    case MAP_CONFIG_FIELD:
+                        MapNode mapNode = MapNode.emptyMap();
+                        baseNode.setNodeAt(path, codec.PATH_SEPARATOR, mapNode);
+                        Map<Object, Configuration> fieldMap = (Map<Object, Configuration>)fieldValue;
+                        for (Map.Entry<Object, Configuration> entry : fieldMap.entrySet())
+                        {
+                            Node keyNode = Convert.toNode(entry.getKey());
+                            if (keyNode instanceof StringNode)
                             {
                                 MapNode configNode = MapNode.emptyMap();
-                                listNode.addNode(configNode);
-                                new CodecContainer(this, path + codec.PATH_SEPARATOR + "[" + pos++).fillFromFields(subConfig, configNode);
+                                mapNode.setNode((StringNode)keyNode, configNode);
+                                new CodecContainer(this, path + codec.PATH_SEPARATOR + ((StringNode)keyNode).getValue())
+                                    .fillFromFields(entry.getValue(), configNode);
                             }
-                            continue;
-                        case MAP_CONFIG_FIELD:
-                            MapNode mapNode = MapNode.emptyMap();
-                            baseNode.setNodeAt(path, codec.PATH_SEPARATOR, mapNode);
-                            Map<Object, Configuration> fieldMap = (Map<Object, Configuration>)fieldValue;
-                            for (Map.Entry<Object, Configuration> entry : fieldMap.entrySet())
+                            else
                             {
-                                Node keyNode = Convert.toNode(entry.getKey());
-                                if (keyNode instanceof StringNode)
-                                {
-                                    MapNode configNode = MapNode.emptyMap();
-                                    mapNode.setNode((StringNode)keyNode, configNode);
-                                    new CodecContainer(this, path + codec.PATH_SEPARATOR + ((StringNode)keyNode).getValue())
-                                            .fillFromFields(entry.getValue(), configNode);
-                                }
-                                else
-                                {
-                                    throw new InvalidConfigurationException("Invalid Key-Node for Map of Configuration at " + path +
-                                            "\nConfig:" + config.getClass());
-                                }
+                                throw new InvalidConfigurationException("Invalid Key-Node for Map of Configuration at " + path +
+                                                                            "\nConfig:" + config.getClass());
                             }
-                            continue;
+                        }
+                        continue;
                     }
                 }
+                catch (Exception e)
+                {
+                    throw InvalidConfigurationException.of(
+                        "Error while dumping loaded config into fields!" ,
+                        config.getFile(), path, config.getClass(), field, e);
+                }
             }
-            catch (Exception e)
-            {
-                throw new InvalidConfigurationException(
-                        "Error while dumping loaded config into fields!" +
-                                "\ncurrent config: " + config.getClass().toString() +
-                                "\ncurent field:" + field.getName(), e);
-            }
+
         }
     }
 }
