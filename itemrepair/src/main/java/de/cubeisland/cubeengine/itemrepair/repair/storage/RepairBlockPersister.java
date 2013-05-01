@@ -40,7 +40,7 @@ public class RepairBlockPersister extends SingleKeyStorage<Long,RepairBlockModel
 
     public void deleteByBlock(Block block)
     {
-        RepairBlockModel repairBlockModel = this.models.get(block);
+        RepairBlockModel repairBlockModel = this.models.remove(block);
         if (repairBlockModel != null)
         {
             this.delete(repairBlockModel);
@@ -60,5 +60,11 @@ public class RepairBlockPersister extends SingleKeyStorage<Long,RepairBlockModel
             this.models.put(repairBlockModel.getBlock(this.module.getCore().getWorldManager()),repairBlockModel);
         }
         return all;
+    }
+
+    public void storeBlock(Block block, RepairBlockModel repairBlockModel)
+    {
+        this.store(repairBlockModel);
+        this.models.put(block,repairBlockModel);
     }
 }

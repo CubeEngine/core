@@ -163,7 +163,7 @@ public class RepairBlockManager
             if (this.repairBlocks.containsKey(material))
             {
                 this.blockMap.put(block, material);
-                this.persister.store(new RepairBlockModel(block, this.module.getCore().getWorldManager()));
+                this.persister.storeBlock(block,new RepairBlockModel(block, this.module.getCore().getWorldManager()));
                 return true;
             }
         }
