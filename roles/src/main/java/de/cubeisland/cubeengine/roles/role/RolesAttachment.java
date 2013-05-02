@@ -80,7 +80,8 @@ public class RolesAttachment extends UserAttachment
                 Role role = provider.getRole(roleName);
                 if (role == null)
                 {
-                    System.out.print("WARNING NULL-Role! "+ roleName);
+                    this.getModule().getLog().warning("NULL-Role! "+ roleName);
+                    continue;
                 }
                 assignedRoles.add(role);
             }
@@ -93,7 +94,7 @@ public class RolesAttachment extends UserAttachment
                     Role role = provider.getRole(roleName);
                     if (role == null)
                     {
-                        System.out.print("WARNING NULL-Role! "+ roleName);
+                        this.getModule().getLog().warning("NULL-Role! "+ roleName);
                         continue;
                     }
                     assignedRoles.add(role);
