@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.sql.Timestamp;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.TreeSet;
 
 import org.bukkit.Material;
 import org.bukkit.World;
@@ -52,7 +53,7 @@ public class LogEntry implements Comparable<LogEntry>
     public final Integer newData;
     public final JsonNode additional;
 
-    private Set<LogEntry> attached = new HashSet<LogEntry>();
+    private TreeSet<LogEntry> attached = new TreeSet<LogEntry>();
 
     public LogEntry(Log module, long entryID, Timestamp timestamp, int action, long worldId, int x, int y, int z,
                     long causer, String block, Long data, String newBlock, Integer newData, String additionalData)
@@ -92,7 +93,7 @@ public class LogEntry implements Comparable<LogEntry>
     @Override
     public int compareTo(LogEntry o)
     {
-        return (int)(this.entryID - o.entryID); // correct order ?
+        return (int)(this.entryID - o.entryID);
     }
 
     public void attach(LogEntry next)
@@ -193,7 +194,7 @@ public class LogEntry implements Comparable<LogEntry>
         return this.timestamp;
     }
 
-    public Set<LogEntry> getAttached()
+    public TreeSet<LogEntry> getAttached()
     {
         return attached;
     }
@@ -218,5 +219,13 @@ public class LogEntry implements Comparable<LogEntry>
         return ContainerType.ofName(this.block);
     }
 
+    public Long getData()
+    {
+        return data;
+    }
 
+    public Integer getNewData()
+    {
+        return newData;
+    }
 }

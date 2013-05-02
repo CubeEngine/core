@@ -20,10 +20,13 @@ package de.cubeisland.cubeengine.log.action.logaction.block.interaction;
 import java.util.EnumSet;
 
 import org.bukkit.World;
+import org.bukkit.material.Diode;
 
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.log.action.logaction.block.BlockActionType;
 import de.cubeisland.cubeengine.log.storage.LogEntry;
+
+import com.sk89q.jchronic.repeaters.Repeater;
 
 import static de.cubeisland.cubeengine.log.action.ActionType.Category.BLOCK;
 import static de.cubeisland.cubeengine.log.action.ActionType.Category.PLAYER;
@@ -50,12 +53,24 @@ public class NoteBlockChange extends BlockActionType
     @Override
     protected void showLogEntry(User user, LogEntry logEntry, String time, String loc)
     {
-        int clicks = logEntry.getNewBlock().data;
-        user.sendTranslated("%s&2%s &aset the noteblock to &6%d&a clicks%s&a!",
-                            time, logEntry.getCauserUser().getDisplayName(), clicks,loc);
-        // TODO attach (show the actual change no change -> fiddled around but did not change anything)
+        Long oldClicks = logEntry.getData();
+        Integer newClicks = logEntry.getNewData();
+        if (logEntry.hasAttached())
+        {
+            LogEntry last = logEntry.getAttached().last();
+            newClicks = last.getNewData();
+        }
+        if (oldClicks.intValue() == newClicks)
+        {
+            user.sendTranslated("%s&2&s &afiddled around with the noteblock but did not change anything%s%a!",
+                                time,logEntry.getCauserUser().getDisplayName(),loc);
+        }
+        else
+        {
+            user.sendTranslated("%s&2%s &aset the noteblock to &6%d&a clicks%s&a!",
+                                time, logEntry.getCauserUser().getDisplayName(), newClicks,loc);
+        }
     }
-
 
     @Override
     public boolean isActive(World world)

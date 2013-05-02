@@ -49,10 +49,23 @@ public class RepeaterChange extends BlockActionType
     @Override
     protected void showLogEntry(User user, LogEntry logEntry, String time, String loc)
     {
-        int delay = (logEntry.getNewBlock().data >> 2) + 1;
-        user.sendTranslated("%s&2%s &aset the repeater to &6%d &aticks delay%s&a!",
-                            time,logEntry.getCauserUser().getDisplayName(), delay,loc);
-        // TODO attach (show the actual change no change -> fiddled around but did not change anything)
+        Long oldTicks = (logEntry.getData() >> 2) +1;
+        Integer newTicks = (logEntry.getNewData() >> 2) +1;
+        if (logEntry.hasAttached())
+        {
+            LogEntry last = logEntry.getAttached().last();
+            newTicks = (last.getNewData() >> 2) +1;
+        }
+        if (oldTicks.intValue() == newTicks)
+        {
+            user.sendTranslated("%s&2&s &afiddled around with the repeater but did not change anything%s%a!",
+                                time,logEntry.getCauserUser().getDisplayName(),loc);
+        }
+        else
+        {
+            user.sendTranslated("%s&2%s &aset the repeater to &6%d&a ticks delay%s&a!",
+                                time, logEntry.getCauserUser().getDisplayName(), newTicks,loc);
+        }
     }
 
     @Override
