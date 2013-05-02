@@ -17,14 +17,11 @@
  */
 package de.cubeisland.cubeengine.basics.command.moderation.spawnmob;
 
-import de.cubeisland.cubeengine.basics.Basics;
-import de.cubeisland.cubeengine.basics.BasicsConfiguration;
-import de.cubeisland.cubeengine.core.command.CommandContext;
-import de.cubeisland.cubeengine.core.command.exception.IncorrectUsageException;
-import de.cubeisland.cubeengine.core.command.reflected.Command;
-import de.cubeisland.cubeengine.core.user.User;
-import de.cubeisland.cubeengine.core.util.StringUtils;
-import de.cubeisland.cubeengine.core.util.matcher.Match;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Locale;
+
 import org.bukkit.DyeColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -36,10 +33,14 @@ import org.bukkit.entity.Villager;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Vector;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Locale;
+import de.cubeisland.cubeengine.core.command.CommandContext;
+import de.cubeisland.cubeengine.core.command.exception.IncorrectUsageException;
+import de.cubeisland.cubeengine.core.command.reflected.Command;
+import de.cubeisland.cubeengine.core.user.User;
+import de.cubeisland.cubeengine.core.util.StringUtils;
+import de.cubeisland.cubeengine.core.util.matcher.Match;
+import de.cubeisland.cubeengine.basics.Basics;
+import de.cubeisland.cubeengine.basics.BasicsConfiguration;
 
 /**
  * The /spawnmob command.
@@ -224,7 +225,7 @@ public class SpawnMobCommand
             }
             else if ("baby".equals(match))
             {
-                if (!EntityDataChanger.BABY.applyTo(entity,true))
+                if (!EntityDataChanger.BABYAGEABLE.applyTo(entity,true))
                 {
                     context.sendTranslated("&eThis entity can not be a baby! Can you?");
                 }
@@ -238,7 +239,7 @@ public class SpawnMobCommand
             }
             else if ("angry".equals(match))
             {
-                if (!EntityDataChanger.ANGRY.applyTo(entity,true))
+                if (!EntityDataChanger.ANGRYWOLF.applyTo(entity,true) || !EntityDataChanger.ANGRYPIGZOMBIE.applyTo(entity,true))
                 {
                     context.sendTranslated("&eOnly Wolfs or PigZombies can be aggro!");
                 }
@@ -257,7 +258,7 @@ public class SpawnMobCommand
             }
             else if ("sitting".equals(match))
             {
-                if (!EntityDataChanger.SITTING.applyTo(entity,true))
+                if (!EntityDataChanger.SITTINGOCELOT.applyTo(entity,true) || !EntityDataChanger.SITTINGWOLF.applyTo(entity,true))
                 {
                     context.sendTranslated("&eOnly a wolfs and ocelots can sit!");
                 }

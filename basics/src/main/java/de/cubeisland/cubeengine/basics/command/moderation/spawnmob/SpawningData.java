@@ -17,13 +17,14 @@
  */
 package de.cubeisland.cubeengine.basics.command.moderation.spawnmob;
 
-import de.cubeisland.cubeengine.core.user.User;
+import java.util.HashMap;
+import java.util.Map;
+
 import org.bukkit.Location;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 
-import java.util.HashMap;
-import java.util.Map;
+import de.cubeisland.cubeengine.core.user.User;
 
 public class SpawningData
 {
@@ -49,6 +50,7 @@ public class SpawningData
 
     public <E,T> void add(EntityDataChanger<E,T> changer, T value)
     {
+        // TODO check if assignable
         this.data.put(changer,value);
     }
 

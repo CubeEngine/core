@@ -17,15 +17,31 @@
  */
 package de.cubeisland.cubeengine.basics.command.moderation.spawnmob;
 
-import gnu.trove.set.hash.THashSet;
 import org.bukkit.DyeColor;
-import org.bukkit.entity.*;
+import org.bukkit.entity.Ageable;
+import org.bukkit.entity.AnimalTamer;
+import org.bukkit.entity.Creeper;
+import org.bukkit.entity.Enderman;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Ocelot;
+import org.bukkit.entity.Ocelot.Type;
+import org.bukkit.entity.Pig;
+import org.bukkit.entity.PigZombie;
+import org.bukkit.entity.Sheep;
+import org.bukkit.entity.Skeleton;
+import org.bukkit.entity.Skeleton.SkeletonType;
+import org.bukkit.entity.Slime;
+import org.bukkit.entity.Tameable;
+import org.bukkit.entity.Villager;
+import org.bukkit.entity.Wolf;
+import org.bukkit.entity.Zombie;
 import org.bukkit.inventory.ItemStack;
 
 public class EntityDataChanger<E,T>
 {
-    private THashSet<Class> classes = new THashSet<Class>();
-    private EntityChanger changer;
+    private Class<E> clazz;
+    private EntityChanger<E,T> changer;
 
     public static final EntityDataChanger<Pig,Boolean> PIGSADDLE =
             new EntityDataChanger<Pig,Boolean>(Pig.class,
@@ -36,40 +52,50 @@ public class EntityDataChanger<E,T>
                         }
                     });
 
-    public static  final EntityDataChanger<Entity,Boolean> BABY =
-            new EntityDataChanger<Entity,Boolean>(Ageable.class,Zombie.class,
-                    new EntityChanger<Entity,Boolean>() {
+    public static final EntityDataChanger<Ageable,Boolean> BABYAGEABLE =
+            new EntityDataChanger<Ageable,Boolean>(Ageable.class,
+                    new EntityChanger<Ageable,Boolean>() {
                         @Override
-                        public void applyEntity(Entity entity, Boolean value) {
-                            if (entity instanceof Zombie)
+                        public void applyEntity(Ageable entity, Boolean value) {
+                            if (value)
                             {
-                                ((Zombie) entity).setBaby(value);
+                                entity.setBaby();
                             }
-                            else if (entity instanceof Ageable)
+                            else
                             {
-                                if (value)
-                                    ((Ageable) entity).setBaby();
-                                else
-                                    ((Ageable) entity).setAdult();
+                                entity.setAdult();
                             }
                         }
                     });
-    public static  final EntityDataChanger<Entity,Boolean> ANGRY =
-            new EntityDataChanger<Entity,Boolean>(Wolf.class,PigZombie.class,
-                    new EntityChanger<Entity,Boolean>() {
+
+    public static final EntityDataChanger<Zombie,Boolean> BABYZOMBIE =
+        new EntityDataChanger<Zombie,Boolean>(Zombie.class,
+                      new EntityChanger<Zombie,Boolean>() {
+                          @Override
+                          public void applyEntity(Zombie entity, Boolean value) {
+                              entity.setBaby(value);
+                          }
+                      });
+
+    public static  final EntityDataChanger<Wolf,Boolean> ANGRYWOLF =
+            new EntityDataChanger<Wolf,Boolean>(Wolf.class,
+                    new EntityChanger<Wolf,Boolean>() {
                         @Override
-                        public void applyEntity(Entity entity, Boolean value) {
-                            if (entity instanceof Wolf)
-                            {
-                                ((Wolf) entity).setAngry(true);
-                            }
-                            else if (entity instanceof PigZombie)
-                            {
-                                ((PigZombie) entity).setAngry(true);
-                            }
+                        public void applyEntity(Wolf entity, Boolean value) {
+                            entity.setAngry(value);
                         }
                     });
-    public static  final EntityDataChanger<Creeper,Boolean> POWERED =
+
+    public static  final EntityDataChanger<PigZombie,Boolean> ANGRYPIGZOMBIE =
+        new EntityDataChanger<PigZombie,Boolean>(PigZombie.class,
+                          new EntityChanger<PigZombie,Boolean>() {
+                              @Override
+                              public void applyEntity(PigZombie entity, Boolean value) {
+                                  entity.setAngry(value);
+                              }
+                          });
+
+    public static final EntityDataChanger<Creeper,Boolean> POWERED =
             new EntityDataChanger<Creeper,Boolean>(Creeper.class,
                     new EntityChanger<Creeper,Boolean>() {
                         @Override
@@ -77,21 +103,24 @@ public class EntityDataChanger<E,T>
                             entity.setPowered(value);
                         }
                     });
-    public static  final EntityDataChanger<Entity,Boolean> SITTING =
-            new EntityDataChanger<Entity,Boolean>(Wolf.class,Ocelot.class,
-                    new EntityChanger<Entity,Boolean>() {
+
+    public static final EntityDataChanger<Wolf,Boolean> SITTINGWOLF =
+            new EntityDataChanger<Wolf,Boolean>(Wolf.class,
+                    new EntityChanger<Wolf,Boolean>() {
                         @Override
-                        public void applyEntity(Entity entity, Boolean value) {
-                            if (entity instanceof Wolf)
-                            {
-                                ((Wolf) entity).setSitting(true);
-                            }
-                            else if (entity instanceof Ocelot)
-                            {
-                                ((Ocelot) entity).setSitting(true);
-                            }
+                        public void applyEntity(Wolf entity, Boolean value) {
+                            entity.setSitting(value);
                         }
                     });
+
+    public static final EntityDataChanger<Ocelot,Boolean> SITTINGOCELOT =
+        new EntityDataChanger<Ocelot,Boolean>(Ocelot.class,
+                  new EntityChanger<Ocelot,Boolean>() {
+                      @Override
+                      public void applyEntity(Ocelot entity, Boolean value) {
+                          entity.setSitting(value);
+                      }
+                  });
 
     public static  final EntityDataChanger<Tameable,AnimalTamer> TAME =
             new EntityDataChanger<Tameable,AnimalTamer>(Tameable.class,
@@ -159,7 +188,7 @@ public class EntityDataChanger<E,T>
                     });
 
     public static final EntityDataChanger<Zombie,Boolean> VILLAGER_ZOMBIE =
-            new EntityDataChanger<Zombie,Boolean>(LivingEntity.class,
+            new EntityDataChanger<Zombie,Boolean>(Zombie.class,
                     new EntityChanger<Zombie,Boolean>() {
                         @Override
                         public void applyEntity(Zombie entity, Boolean value) {
@@ -211,41 +240,54 @@ public class EntityDataChanger<E,T>
                         }
                     });
 
-    //TODO wolf collarColor
-    //TODO skeleton type
-    //TODO sheared sheeps
-    //TODO catType
+    public static final EntityDataChanger<Wolf,DyeColor> WOLF_COLLAR =
+        new EntityDataChanger<Wolf,DyeColor>(Wolf.class,
+                      new EntityChanger<Wolf,DyeColor>() {
+                          @Override
+                          public void applyEntity(Wolf entity, DyeColor value) {
+                              entity.setCollarColor(value);
+                          }
+                      });
 
-    private EntityDataChanger(Class clazz, EntityChanger<E,T> changer)
+    public static final EntityDataChanger<Skeleton,SkeletonType> SKELETON_TYPE =
+        new EntityDataChanger<Skeleton,SkeletonType>(Skeleton.class,
+                 new EntityChanger<Skeleton,SkeletonType>() {
+                     @Override
+                     public void applyEntity(Skeleton entity, SkeletonType value) {
+                         entity.setSkeletonType(value);
+                     }
+                 });
+
+    public static final EntityDataChanger<Ocelot,Type> CAT_TYPE =
+        new EntityDataChanger<Ocelot,Type>(Ocelot.class,
+                 new EntityChanger<Ocelot,Type>() {
+                     @Override
+                     public void applyEntity(Ocelot entity, Type value) {
+                         entity.setCatType(value);
+                     }
+                 });
+
+    public static final EntityDataChanger<Sheep,Boolean> SHEEP_SHEARED =
+        new EntityDataChanger<Sheep,Boolean>(Sheep.class,
+                 new EntityChanger<Sheep,Boolean>() {
+                     @Override
+                     public void applyEntity(Sheep entity, Boolean value) {
+                         entity.setSheared(value);
+                     }
+                 });
+
+    private EntityDataChanger(Class<E> clazz, EntityChanger<E,T> changer)
     {
-        classes.add(clazz);
+        this.clazz = clazz;
         this.changer = changer;
     }
 
-    private EntityDataChanger(Class clazz1, Class clazz2, EntityChanger<E,T> changer)
-    {
-        classes.add(clazz1);
-        classes.add(clazz2);
-        this.changer = changer;
-    }
-
-    public boolean isAssignable(Entity entity)
-    {
-        for (Class clazz : classes)
-        {
-            if (clazz.isAssignableFrom(entity.getClass()))
-            {
-                return true;
-            }
-        }
-        return false;
-    }
-
+    @SuppressWarnings("unchecked")
     public boolean applyTo(Entity entity, T value)
     {
-        if (this.isAssignable(entity))
+        if (clazz.isAssignableFrom(entity.getClass()))
         {
-            this.changer.applyEntity(entity, value);
+            this.changer.applyEntity((E)entity, value);
             return true;
         }
         return false;

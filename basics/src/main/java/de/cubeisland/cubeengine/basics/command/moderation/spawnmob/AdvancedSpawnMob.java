@@ -108,12 +108,13 @@ public class AdvancedSpawnMob extends ConversationCommand
             }
             else
             {
-                context.sendTranslated("&6%s &cis not a living Entity!", Match.entity().getNameFor(entityType));
+                context.sendTranslated("&6%s&c is not a living Entity!", Match.entity().getNameFor(entityType));
             }
         }
         if (context.hasFlag("baby"))
         {
-            spawningData.add(EntityDataChanger.BABY, true);
+            spawningData.add(EntityDataChanger.BABYAGEABLE, true);
+            spawningData.add(EntityDataChanger.BABYZOMBIE, true);
         }
         if (context.hasFlag("charged"))
         {
@@ -125,11 +126,13 @@ public class AdvancedSpawnMob extends ConversationCommand
         }
         if (context.hasFlag("angry"))
         {
-            spawningData.add(EntityDataChanger.ANGRY, true);
+            spawningData.add(EntityDataChanger.ANGRYPIGZOMBIE, true);
+            spawningData.add(EntityDataChanger.ANGRYWOLF, true);
         }
         if (context.hasFlag("sitting"))
         {
-            spawningData.add(EntityDataChanger.SITTING, true);
+            spawningData.add(EntityDataChanger.SITTINGOCELOT, true);
+            spawningData.add(EntityDataChanger.SITTINGWOLF, true);
         }
         if (context.hasFlag("tame"))
         {

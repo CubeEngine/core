@@ -17,6 +17,9 @@
  */
 package de.cubeisland.cubeengine.core.config.codec;
 
+import java.io.File;
+import java.io.InputStream;
+
 import de.cubeisland.cubeengine.core.config.Configuration;
 import de.cubeisland.cubeengine.core.config.InvalidConfigurationException;
 import de.cubeisland.cubeengine.core.config.annotations.Revision;
@@ -24,9 +27,6 @@ import de.cubeisland.cubeengine.core.config.annotations.Updater;
 import de.cubeisland.cubeengine.core.config.node.IntNode;
 import de.cubeisland.cubeengine.core.config.node.MapNode;
 import de.cubeisland.cubeengine.core.config.node.Node;
-
-import java.io.File;
-import java.io.InputStream;
 
 /**
  * This abstract Codec can be implemented to read and write configurations.
@@ -48,7 +48,7 @@ public abstract class ConfigurationCodec<Config extends Configuration>
      */
     public void load(Config config, InputStream is) throws InstantiationException, IllegalAccessException
     {
-        CodecContainer container = new CodecContainer(this);
+        CodecContainer container = new CodecContainer<ConfigurationCodec>(this);
         container.fillFromInputStream(is);
         Revision a_revision = config.getClass().getAnnotation(Revision.class);
         if (a_revision != null)
@@ -95,7 +95,7 @@ public abstract class ConfigurationCodec<Config extends Configuration>
             {
                 throw new IllegalStateException("Tried to save config without File.");
             }
-            CodecContainer container = new CodecContainer(this);
+            CodecContainer container = new CodecContainer<ConfigurationCodec>(this);
             container.values = MapNode.emptyMap();
             Revision a_revision = config.getClass().getAnnotation(Revision.class);
             if (a_revision != null)

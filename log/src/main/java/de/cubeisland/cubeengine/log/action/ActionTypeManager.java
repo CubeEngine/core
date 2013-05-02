@@ -255,6 +255,7 @@ public class ActionTypeManager
         return this;
     }
 
+    @SuppressWarnings("unchecked")
     public <AT extends ActionType> AT getActionType(Class<AT> actionTypeClass)
     {
         return (AT)this.registeredActionTypes.get(actionTypeClass);
