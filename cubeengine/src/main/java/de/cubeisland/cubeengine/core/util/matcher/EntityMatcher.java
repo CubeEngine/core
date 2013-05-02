@@ -22,7 +22,9 @@ import de.cubeisland.cubeengine.core.CubeEngine;
 import de.cubeisland.cubeengine.core.util.AliasMapFormat;
 import de.cubeisland.cubeengine.core.logger.LogLevel;
 import gnu.trove.map.hash.THashMap;
-import net.minecraft.server.v1_5_R2.EntityTypes;
+
+import net.minecraft.server.NPC;
+import net.minecraft.server.v1_5_R3.EntityTypes;
 import org.bukkit.entity.*;
 
 import java.io.File;

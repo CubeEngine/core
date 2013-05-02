@@ -13,6 +13,7 @@
   </properties>
 
   <modules>
+    <module>parent</module>
     <module>cubeengine</module>
     <module>fly</module>
     <module>conomy</module>

@@ -20,8 +20,8 @@ package de.cubeisland.cubeengine.core.bukkit;
 import de.cubeisland.cubeengine.core.CubeEngine;
 import de.cubeisland.cubeengine.core.TestCore;
 import junit.framework.TestCase;
-import net.minecraft.server.v1_5_R2.Connection;
-import net.minecraft.server.v1_5_R2.Packet;
+import net.minecraft.server.v1_5_R3.Connection;
+import net.minecraft.server.v1_5_R3.Packet;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;

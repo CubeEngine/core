@@ -24,19 +24,19 @@ import java.util.Locale;
 import java.util.logging.Filter;
 import java.util.logging.Logger;
 
-import net.minecraft.server.v1_5_R2.DedicatedPlayerList;
-import net.minecraft.server.v1_5_R2.EntityPlayer;
-import net.minecraft.server.v1_5_R2.Item;
-import net.minecraft.server.v1_5_R2.LocaleLanguage;
-import net.minecraft.server.v1_5_R2.PlayerConnection;
-import net.minecraft.server.v1_5_R2.RecipesFurnace;
-import net.minecraft.server.v1_5_R2.ServerConnection;
-import net.minecraft.server.v1_5_R2.TileEntityFurnace;
+import net.minecraft.server.v1_5_R3.DedicatedPlayerList;
+import net.minecraft.server.v1_5_R3.EntityPlayer;
+import net.minecraft.server.v1_5_R3.Item;
+import net.minecraft.server.v1_5_R3.LocaleLanguage;
+import net.minecraft.server.v1_5_R3.PlayerConnection;
+import net.minecraft.server.v1_5_R3.RecipesFurnace;
+import net.minecraft.server.v1_5_R3.ServerConnection;
+import net.minecraft.server.v1_5_R3.TileEntityFurnace;
 import org.bukkit.craftbukkit.libs.jline.console.ConsoleReader;
-import org.bukkit.craftbukkit.v1_5_R2.CraftServer;
-import org.bukkit.craftbukkit.v1_5_R2.entity.CraftPlayer;
-import org.bukkit.craftbukkit.v1_5_R2.help.SimpleHelpMap;
-import org.bukkit.craftbukkit.v1_5_R2.inventory.CraftItemStack;
+import org.bukkit.craftbukkit.v1_5_R3.CraftServer;
+import org.bukkit.craftbukkit.v1_5_R3.entity.CraftPlayer;
+import org.bukkit.craftbukkit.v1_5_R3.help.SimpleHelpMap;
+import org.bukkit.craftbukkit.v1_5_R3.inventory.CraftItemStack;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -407,13 +407,13 @@ public class BukkitUtils
         resetCommandLogging();
     }
 
-    public static net.minecraft.server.v1_5_R2.ItemStack getNmsItemStack(ItemStack item)
+    public static net.minecraft.server.v1_5_R3.ItemStack getNmsItemStack(ItemStack item)
     {
         if (item instanceof CraftItemStack)
         {
             try
             {
-                return (net.minecraft.server.v1_5_R2.ItemStack)handle.get(item);
+                return (net.minecraft.server.v1_5_R3.ItemStack)handle.get(item);
             }
             catch (Exception ignored)
             {}
@@ -455,14 +455,14 @@ public class BukkitUtils
     public static boolean isFuel(ItemStack item)
     {
         // Create an NMS item stack
-        net.minecraft.server.v1_5_R2.ItemStack nmss = CraftItemStack.asNMSCopy(item);
+        net.minecraft.server.v1_5_R3.ItemStack nmss = CraftItemStack.asNMSCopy(item);
         // Use the NMS TileEntityFurnace to check if the item being clicked is a fuel
         return TileEntityFurnace.isFuel(nmss);
     }
 
     public static boolean isSmeltable(ItemStack item)
     {
-        net.minecraft.server.v1_5_R2.ItemStack nmss = CraftItemStack.asNMSCopy(item);
+        net.minecraft.server.v1_5_R3.ItemStack nmss = CraftItemStack.asNMSCopy(item);
         // If the result of that item being cooked is null, it is not cookable
         return RecipesFurnace.getInstance().getResult(nmss.getItem().id) != null;
     }
