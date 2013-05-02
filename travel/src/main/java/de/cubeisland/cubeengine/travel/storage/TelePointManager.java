@@ -918,7 +918,7 @@ public class TelePointManager extends SingleKeyStorage<Long, TeleportPoint>
                 TeleportPoint point = this.get(invite.teleportPoint);
                 if (point.type == TeleportPoint.Type.HOME)
                 {
-                    Home home = this.homes.get(point.owner.getName() + ":" + point.name);
+                    Home home = this.homes.get(point.ownerName + ":" + point.name);
                     if (home != null)
                     {
                         if ((home.isPublic() && (mask & PUBLIC) == PUBLIC) || (!home
@@ -1021,7 +1021,7 @@ public class TelePointManager extends SingleKeyStorage<Long, TeleportPoint>
                 TeleportPoint point = this.get(invite.teleportPoint);
                 if (point.type == TeleportPoint.Type.HOME)
                 {
-                    Warp warp = this.warps.get(point.owner.getName() + ":" + point.name);
+                    Warp warp = this.warps.get(point.ownerName + ":" + point.name);
                     if (warp != null)
                     {
                         if ((warp.isPublic() && (mask & PUBLIC) == PUBLIC) || (!warp
