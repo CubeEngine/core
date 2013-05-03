@@ -23,6 +23,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStreamWriter;
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
@@ -42,7 +43,6 @@ import de.cubeisland.cubeengine.core.config.node.MapNode;
 import de.cubeisland.cubeengine.core.config.node.Node;
 import de.cubeisland.cubeengine.core.config.node.NullNode;
 import de.cubeisland.cubeengine.core.config.node.StringNode;
-import de.cubeisland.cubeengine.core.util.StringUtils;
 import de.cubeisland.cubeengine.core.util.convert.Convert;
 import de.cubeisland.cubeengine.core.util.converter.generic.MapConverter;
 
@@ -52,7 +52,7 @@ import gnu.trove.map.hash.THashMap;
  * This class temporarily holds the values/comments of the configuration to
  * save or load them.
  */
-public class CodecContainer<ConfigCodec extends ConfigurationCodec>
+public abstract class CodecContainer<Container extends CodecContainer, ConfigCodec extends ConfigurationCodec>
 {
     public MapNode values;
     public Map<String, String> comments;
@@ -62,11 +62,19 @@ public class CodecContainer<ConfigCodec extends ConfigurationCodec>
 
     protected ConfigCodec codec;
 
+    private Class<Container> clazz;
+
+    private CodecContainer()
+    {
+        this.clazz = (Class<Container>)this.getClass();
+    }
+
     /**
      * Container for normal Configuration
      */
     public CodecContainer(ConfigCodec codec)
     {
+        this();
         this.comments = new THashMap<String, String>();
         this.codec = codec;
     }
@@ -76,11 +84,62 @@ public class CodecContainer<ConfigCodec extends ConfigurationCodec>
      *
      * @param superContainer
      */
-    public CodecContainer(CodecContainer<ConfigCodec> superContainer, String parentPath)
+    protected CodecContainer(CodecContainer<Container,ConfigCodec> superContainer, String parentPath)
     {
+        this();
         this.codec = superContainer.codec;
         this.superContainer = superContainer;
         this.parentPath = parentPath;
+    }
+
+    public Container createContainer()
+    {
+        try
+        {
+            Container codecContainer = clazz.getConstructor(this.codec.getClass()).newInstance(this.codec);
+            return codecContainer;
+        }
+        catch (NoSuchMethodException e)
+        {
+            throw new IllegalStateException("Invalid CodecContainer!");
+        }
+        catch (InvocationTargetException e)
+        {
+            throw new IllegalStateException("Invalid CodecContainer!");
+        }
+        catch (InstantiationException e)
+        {
+            throw new IllegalStateException("Invalid CodecContainer!");
+        }
+        catch (IllegalAccessException e)
+        {
+            throw new IllegalStateException("Invalid CodecContainer!");
+        }
+    }
+
+    public Container createSubContainer(String parentPath)
+    {
+        try
+        {
+            Container codecContainer = clazz.getConstructor(this.getClass(),String.class).newInstance(this,parentPath);
+            return codecContainer;
+        }
+        catch (NoSuchMethodException e)
+        {
+            throw new IllegalStateException("Invalid CodecContainer!");
+        }
+        catch (InvocationTargetException e)
+        {
+            throw new IllegalStateException("Invalid CodecContainer!");
+        }
+        catch (InstantiationException e)
+        {
+            throw new IllegalStateException("Invalid CodecContainer!");
+        }
+        catch (IllegalAccessException e)
+        {
+            throw new IllegalStateException("Invalid CodecContainer!");
+        }
     }
 
     /**
@@ -191,7 +250,7 @@ public class CodecContainer<ConfigCodec extends ConfigurationCodec>
                                         "\nConfig:" + config.getClass() +
                                         "\nSubConfig:" + singleSubConfig.getClass());
                             }
-                            new CodecContainer(codec).dumpIntoFields(singleSubConfig, loadFrom_singleConfig);
+                            this.createContainer().dumpIntoFields(singleSubConfig, loadFrom_singleConfig);
                             continue;
                         case COLLECTION_CONFIG_FIELD:
                             ListNode loadFrom_List;
@@ -231,7 +290,7 @@ public class CodecContainer<ConfigCodec extends ConfigurationCodec>
                                 }
                                 if (loadFrom_listElem instanceof MapNode)
                                 {
-                                    new CodecContainer(codec).dumpIntoFields(subConfig, (MapNode)loadFrom_listElem);
+                                    this.createContainer().dumpIntoFields(subConfig, (MapNode)loadFrom_listElem);
                                 }
                                 else
                                 {
@@ -272,7 +331,7 @@ public class CodecContainer<ConfigCodec extends ConfigurationCodec>
                                 }
                                 else if (valueNode instanceof MapNode)
                                 {
-                                    new CodecContainer(codec).dumpIntoFields(value = clazz.newInstance(), (MapNode)valueNode);
+                                    this.createContainer().dumpIntoFields(value = clazz.newInstance(), (MapNode)valueNode);
                                 }
                                 else
                                 {
@@ -306,31 +365,17 @@ public class CodecContainer<ConfigCodec extends ConfigurationCodec>
     protected void saveIntoFile(Configuration config, File file) throws IOException
     {
         OutputStreamWriter writer = new OutputStreamWriter(new FileOutputStream(file), "UTF-8");
-        writer.append(this.dumpIntoString(config));
+        this.writeConfigToStream(writer, config);
         writer.flush();
         writer.close();
     }
 
     /**
-     * Converts the values into a String to save
+     * Fills the outputstream with data to save
      *
      * @return the converted map
      */
-    private String dumpIntoString(Configuration config)
-    {
-        StringBuilder sb = new StringBuilder();
-        if (config.head() != null)
-        {
-            sb.append("# ").append(StringUtils.implode("\n# ", config.head())).append(codec.LINE_BREAK).append(codec.LINE_BREAK);
-        }
-        codec.first = true;
-        sb.append(codec.convertMap(this, values, 0, false).trim()).append("\n");
-        if (config.tail() != null)
-        {
-            sb.append("# ").append(StringUtils.implode("\n# ", config.tail()));
-        }
-        return sb.toString();
-    }
+    protected abstract void writeConfigToStream(OutputStreamWriter writer, Configuration config) throws IOException;
 
     /**
      * Adds a comment to be saved
@@ -412,7 +457,7 @@ public class CodecContainer<ConfigCodec extends ConfigurationCodec>
                         baseNode.setNodeAt(path, codec.PATH_SEPARATOR, fieldValueNode);
                         continue;
                     case CONFIG_FIELD:
-                        CodecContainer subContainer = new CodecContainer(this, path); // Create new container
+                        CodecContainer subContainer = this.createSubContainer(path); // Create new container
                         subContainer.fillFromFields((Configuration)fieldValue,
                                                     (MapNode)baseNode.getNodeAt(path, codec.PATH_SEPARATOR));
                         continue;
@@ -424,7 +469,7 @@ public class CodecContainer<ConfigCodec extends ConfigurationCodec>
                         {
                             MapNode configNode = MapNode.emptyMap();
                             listNode.addNode(configNode);
-                            new CodecContainer(this, path + codec.PATH_SEPARATOR + "[" + pos++).fillFromFields(subConfig, configNode);
+                            this.createSubContainer(path + codec.PATH_SEPARATOR + "[" + pos++).fillFromFields(subConfig, configNode);
                         }
                         continue;
                     case MAP_CONFIG_FIELD:
@@ -438,7 +483,7 @@ public class CodecContainer<ConfigCodec extends ConfigurationCodec>
                             {
                                 MapNode configNode = MapNode.emptyMap();
                                 mapNode.setNode((StringNode)keyNode, configNode);
-                                new CodecContainer(this, path + codec.PATH_SEPARATOR + ((StringNode)keyNode).getValue())
+                                this.createSubContainer(path + codec.PATH_SEPARATOR + ((StringNode)keyNode).getValue())
                                     .fillFromFields(entry.getValue(), configNode);
                             }
                             else

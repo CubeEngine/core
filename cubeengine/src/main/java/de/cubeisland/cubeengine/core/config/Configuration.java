@@ -29,6 +29,7 @@ import java.util.Map;
 import de.cubeisland.cubeengine.core.CubeEngine;
 import de.cubeisland.cubeengine.core.config.annotations.Codec;
 import de.cubeisland.cubeengine.core.config.codec.ConfigurationCodec;
+import de.cubeisland.cubeengine.core.config.codec.NBTCodec;
 import de.cubeisland.cubeengine.core.config.codec.YamlCodec;
 import de.cubeisland.cubeengine.core.logger.LogLevel;
 import de.cubeisland.cubeengine.core.module.Module;
@@ -51,6 +52,7 @@ public abstract class Configuration<ConfigCodec extends ConfigurationCodec>
     static
     {
         registerCodec(new YamlCodec(), "yml", "yaml");
+        registerCodec(new NBTCodec(), "dat");
     }
 
     public Configuration()

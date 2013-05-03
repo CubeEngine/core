@@ -17,6 +17,9 @@
  */
 package de.cubeisland.cubeengine.core.config.codec;
 
+import java.io.File;
+import java.io.InputStream;
+
 import de.cubeisland.cubeengine.core.config.InvalidConfigurationException;
 import de.cubeisland.cubeengine.core.config.MultiConfiguration;
 import de.cubeisland.cubeengine.core.config.annotations.Revision;
@@ -24,13 +27,10 @@ import de.cubeisland.cubeengine.core.config.annotations.Updater;
 import de.cubeisland.cubeengine.core.config.node.IntNode;
 import de.cubeisland.cubeengine.core.config.node.MapNode;
 
-import java.io.File;
-import java.io.InputStream;
-
 /**
  * This abstract Codec can be implemented to read and write configurations that allow child-configs
  */
-public abstract class MultiConfigurationCodec<Config extends MultiConfiguration> extends ConfigurationCodec<Config>
+public abstract class MultiConfigurationCodec<Container extends MultiCodecContainer, Config extends MultiConfiguration> extends ConfigurationCodec<Container, Config>
 {
     public void saveChildConfig(Config parentConfig, Config config, File file)
     {
@@ -40,7 +40,7 @@ public abstract class MultiConfigurationCodec<Config extends MultiConfiguration>
             {
                 throw new IllegalStateException("Tried to save config without File.");
             }
-            MultiCodecContainer container = new MultiCodecContainer(this);
+            MultiCodecContainer container = this.createCodecContainer();
             Revision a_revision = config.getClass().getAnnotation(Revision.class);
             container.values = MapNode.emptyMap();
             if (a_revision != null)
@@ -64,7 +64,7 @@ public abstract class MultiConfigurationCodec<Config extends MultiConfiguration>
      */
     public void loadChildConfig(MultiConfiguration config, InputStream is) throws InstantiationException, IllegalAccessException
     {
-        MultiCodecContainer container = new MultiCodecContainer(this);
+        MultiCodecContainer container = this.createCodecContainer();
         container.fillFromInputStream(is);
         Revision a_revision = config.getClass().getAnnotation(Revision.class);
         if (a_revision != null)

@@ -17,15 +17,23 @@
  */
 package de.cubeisland.cubeengine.core.config.codec;
 
-import de.cubeisland.cubeengine.core.CubeEngine;
-import de.cubeisland.cubeengine.core.config.node.*;
-import de.cubeisland.cubeengine.core.logger.LogLevel;
-import de.cubeisland.cubeengine.core.util.convert.Convert;
-import org.yaml.snakeyaml.Yaml;
-
+import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStreamWriter;
 import java.util.Map;
 import java.util.Map.Entry;
+
+import de.cubeisland.cubeengine.core.CubeEngine;
+import de.cubeisland.cubeengine.core.config.node.IntNode;
+import de.cubeisland.cubeengine.core.config.node.ListNode;
+import de.cubeisland.cubeengine.core.config.node.MapNode;
+import de.cubeisland.cubeengine.core.config.node.Node;
+import de.cubeisland.cubeengine.core.config.node.NullNode;
+import de.cubeisland.cubeengine.core.config.node.StringNode;
+import de.cubeisland.cubeengine.core.logger.LogLevel;
+import de.cubeisland.cubeengine.core.util.convert.Convert;
+
+import org.yaml.snakeyaml.Yaml;
 
 /**
  * This class acts as a codec for yaml-configurations.
@@ -33,6 +41,8 @@ import java.util.Map.Entry;
 public class YamlCodec extends MultiConfigurationCodec
 {
     private final Yaml yaml;
+
+    private volatile boolean mapEnd = false;
 
     public YamlCodec()
     {
@@ -89,9 +99,24 @@ public class YamlCodec extends MultiConfigurationCodec
     }
 
     @Override
-    @SuppressWarnings("unchecked")
-    public String convertValue(CodecContainer container, Node value, int off, boolean inCollection)
+    public void convertMap(OutputStreamWriter writer, CodecContainer container, MapNode values) throws IOException
     {
+        mapEnd = false;
+        this.convertMap(writer, container, values, 0, false);
+    }
+
+    /**
+     * Serializes a single value
+     *
+     * @param container the codec-container
+     * @param value the value at given path
+     * @param off the current offset
+     * @param inCollection
+     * @return
+     */
+    private void convertValue(OutputStreamWriter writer, CodecContainer container, Node value, int off, boolean inCollection) throws IOException
+    {
+        mapEnd = false;
         StringBuilder sb = new StringBuilder();
         String offset = this.offset(off);
         if (!(value instanceof NullNode)) // null-Node ?
@@ -112,19 +137,15 @@ public class YamlCodec extends MultiConfigurationCodec
                 {
                     sb.append(string);
                 }
+                writer.append(sb.toString());
             }
             else if (value instanceof MapNode) // Map-Node ? -> redirect
             {
                 first = true;
-                if (!inCollection)
-                {
-                    sb.append(LINE_BREAK);
-                }
-                sb.append(this.convertMap(container, ((MapNode)value), off + 1, inCollection));
-                if (!sb.toString().endsWith(LINE_BREAK + LINE_BREAK))
-                {
-                    sb.append(LINE_BREAK);
-                }
+                sb.append(LINE_BREAK);
+                writer.append(sb.toString());
+                this.convertMap(writer, container, ((MapNode)value), off + 1, inCollection);
+                return;
             }
             else if (value instanceof ListNode) // List-Node? -> list the nodes
             {
@@ -132,60 +153,67 @@ public class YamlCodec extends MultiConfigurationCodec
                 {
                     sb.append("[]").toString();
                 }
+                writer.append(sb.toString());
+                writer.append(LINE_BREAK);
                 for (Node listedNode : ((ListNode)value).getListedNodes()) //Convert Collection
                 {
-                    if (!sb.toString().endsWith(LINE_BREAK + LINE_BREAK))
+                    if (mapEnd)
                     {
-                        sb.append(LINE_BREAK);
+                        writer.append(LINE_BREAK);
                     }
-                    sb.append(offset).append(OFFSET).append("- ");
+                    writer.append(offset).append(OFFSET).append("- ");
                     if (listedNode instanceof MapNode)
                     {
                         first = true;
-                        sb.append(this.convertMap(container, (MapNode)listedNode, off + 2, true));
-                        if (!sb.toString().endsWith(LINE_BREAK + LINE_BREAK))
-                        {
-                            sb.append(LINE_BREAK);
-                        }
+                        this.convertMap(writer, container, (MapNode)listedNode, off + 2, true);
                     }
                     else
                     {
-                        sb.append(this.convertValue(container, listedNode, off + 1, true));
+                        this.convertValue(writer, container, listedNode, off + 1, true);
                     }
                 }
+                mapEnd = true;
+                first = false;
+                return;
             }
             else
             {
-                sb.append(value.unwrap());
+                writer.append(value.unwrap());
             }
         }
         this.first = false;
-        if (!inCollection)
-        {
-            if (!sb.toString().endsWith(LINE_BREAK + LINE_BREAK))
-            {
-                sb.append(LINE_BREAK);
-            }
-        }
-        return sb.toString();
+        writer.append(LINE_BREAK);
     }
 
-    @Override
-    public String convertMap(CodecContainer container, MapNode values, int off, boolean inCollection)
+    /**
+     * Serializes the values in the map
+     *
+     * @param container the codec-container
+     * @param values the values at given path
+     * @param off the current offset
+     * @param inCollection
+     * @return  the serialized value
+     */
+    private void convertMap(OutputStreamWriter writer, CodecContainer container, MapNode values, int off, boolean inCollection) throws IOException
     {
-        StringBuilder sb = new StringBuilder();
         Map<String, Node> map = values.getMappedNodes();
         if (map.isEmpty())
         {
-            return sb.append(this.offset(off)).append("{}").toString();
+            writer.append(this.offset(off)).append("{}").append(LINE_BREAK);
+            return;
         }
         for (Entry<String, Node> entry : map.entrySet())
         {
+            if (mapEnd && !inCollection)
+            {
+                writer.append(LINE_BREAK);
+            }
+            StringBuilder sb = new StringBuilder();
             String path = entry.getValue().getPath(PATH_SEPARATOR);
             String comment = this.buildComment(container, path, off);
             if (!comment.isEmpty())
             {
-                if (!first && !sb.toString().endsWith(LINE_BREAK + LINE_BREAK)) // if not already one line free
+                if (!first) // if not already one line free
                 {
                     sb.append(LINE_BREAK); // add free line before comment
                 }
@@ -197,11 +225,11 @@ public class YamlCodec extends MultiConfigurationCodec
                 sb.append(this.offset(off)); // Map in collection first does not get offset
             }
             sb.append(values.getOriginalKey(Node.getSubKey(path, PATH_SEPARATOR))).append(": ");
-            sb.append(this.convertValue(container, entry.getValue(), off, false));
-
+            writer.append(sb.toString());
+            this.convertValue(writer, container, entry.getValue(), off, false);
         }
+        mapEnd = true;
         first = true;
-        return sb.toString();
     }
 
     @Override
@@ -222,5 +250,11 @@ public class YamlCodec extends MultiConfigurationCodec
     public String getExtension()
     {
         return "yml";
+    }
+
+    @Override
+    protected CodecContainer createCodecContainer()
+    {
+        return new YamlCodecContainer(this);
     }
 }

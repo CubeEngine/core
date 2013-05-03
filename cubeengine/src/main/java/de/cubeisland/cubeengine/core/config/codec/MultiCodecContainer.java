@@ -17,17 +17,6 @@
  */
 package de.cubeisland.cubeengine.core.config.codec;
 
-import de.cubeisland.cubeengine.core.config.InvalidConfigurationException;
-import de.cubeisland.cubeengine.core.config.MultiConfiguration;
-import de.cubeisland.cubeengine.core.config.annotations.Comment;
-import de.cubeisland.cubeengine.core.config.annotations.MapComment;
-import de.cubeisland.cubeengine.core.config.annotations.MapComments;
-import de.cubeisland.cubeengine.core.config.annotations.Option;
-import de.cubeisland.cubeengine.core.config.node.*;
-import de.cubeisland.cubeengine.core.util.convert.Convert;
-import de.cubeisland.cubeengine.core.util.converter.generic.CollectionConverter;
-import de.cubeisland.cubeengine.core.util.converter.generic.MapConverter;
-
 import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
@@ -35,13 +24,28 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.Map;
 
-public class MultiCodecContainer<ConfigCodec extends MultiConfigurationCodec> extends CodecContainer<ConfigCodec>
+import de.cubeisland.cubeengine.core.config.InvalidConfigurationException;
+import de.cubeisland.cubeengine.core.config.MultiConfiguration;
+import de.cubeisland.cubeengine.core.config.annotations.Comment;
+import de.cubeisland.cubeengine.core.config.annotations.MapComment;
+import de.cubeisland.cubeengine.core.config.annotations.MapComments;
+import de.cubeisland.cubeengine.core.config.annotations.Option;
+import de.cubeisland.cubeengine.core.config.node.ListNode;
+import de.cubeisland.cubeengine.core.config.node.MapNode;
+import de.cubeisland.cubeengine.core.config.node.Node;
+import de.cubeisland.cubeengine.core.config.node.NullNode;
+import de.cubeisland.cubeengine.core.config.node.StringNode;
+import de.cubeisland.cubeengine.core.util.convert.Convert;
+import de.cubeisland.cubeengine.core.util.converter.generic.CollectionConverter;
+import de.cubeisland.cubeengine.core.util.converter.generic.MapConverter;
+
+public abstract class MultiCodecContainer<Container extends MultiCodecContainer, ConfigCodec extends MultiConfigurationCodec> extends CodecContainer<Container, ConfigCodec>
 {
     public MultiCodecContainer(ConfigCodec codec) {
         super(codec);
     }
 
-    public MultiCodecContainer(CodecContainer<ConfigCodec> superContainer, String parentPath) {
+    public MultiCodecContainer(CodecContainer<Container,ConfigCodec> superContainer, String parentPath) {
         super(superContainer, parentPath);
     }
 
@@ -113,7 +117,7 @@ public class MultiCodecContainer<ConfigCodec extends MultiConfigurationCodec> ex
                                         "\nConfig:" + config.getClass() +
                                         "\nSubConfig:" + singleSubConfig.getClass());
                             }
-                            new MultiCodecContainer(codec).dumpIntoFields(singleSubConfig, loadFrom_singleConfig,(MultiConfiguration)field.get(parentConfig));
+                            createContainer().dumpIntoFields(singleSubConfig, loadFrom_singleConfig,(MultiConfiguration)field.get(parentConfig));
                             continue;
                         case COLLECTION_CONFIG_FIELD:
                             ListNode loadFrom_List;
@@ -160,7 +164,7 @@ public class MultiCodecContainer<ConfigCodec extends MultiConfigurationCodec> ex
                                 }
                                 if (loadFrom_listElem instanceof MapNode)
                                 {
-                                    new MultiCodecContainer(codec).dumpIntoFields(subConfig, (MapNode)loadFrom_listElem, parentConfig_Iterator.next());
+                                    this.createContainer().dumpIntoFields(subConfig, (MapNode)loadFrom_listElem, parentConfig_Iterator.next());
                                 }
                                 else
                                 {
@@ -206,7 +210,7 @@ public class MultiCodecContainer<ConfigCodec extends MultiConfigurationCodec> ex
                                     }
                                     if (valueNode instanceof MapNode)
                                     {
-                                        new MultiCodecContainer(codec).dumpIntoFields(entry.getValue(), (MapNode)valueNode,
+                                        this.createContainer().dumpIntoFields(entry.getValue(), (MapNode)valueNode,
                                                 parentMapConfigs.get(entry.getKey()));
                                     }
                                     else
@@ -303,7 +307,7 @@ public class MultiCodecContainer<ConfigCodec extends MultiConfigurationCodec> ex
                             baseNode.setNodeAt(path, codec.PATH_SEPARATOR, fieldValueNode);
                             continue;
                         case CONFIG_FIELD:
-                            MultiCodecContainer subContainer = new MultiCodecContainer(this, path); // Create new container
+                            MultiCodecContainer subContainer = this.createSubContainer(path); // Create new container
                             subContainer.fillFromFields((MultiConfiguration)field.get(parentConfig),
                                     (MultiConfiguration)fieldValue,
                                     (MapNode)baseNode.getNodeAt(path, codec.PATH_SEPARATOR));
@@ -323,7 +327,7 @@ public class MultiCodecContainer<ConfigCodec extends MultiConfigurationCodec> ex
                                 {
                                     MapNode configNode = MapNode.emptyMap();
                                     mapNode.setNode((StringNode)keyNode, configNode);
-                                    new MultiCodecContainer(this, path + codec.PATH_SEPARATOR + ((StringNode)keyNode).getValue())
+                                    this.createSubContainer(path + codec.PATH_SEPARATOR + ((StringNode)keyNode).getValue())
                                             .fillFromFields(parentEntry.getValue(), childFieldMap.get(parentEntry.getKey()), configNode);
                                 }
                                 else

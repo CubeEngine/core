@@ -18,7 +18,9 @@
 package de.cubeisland.cubeengine.core.config.codec;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStreamWriter;
 
 import de.cubeisland.cubeengine.core.config.Configuration;
 import de.cubeisland.cubeengine.core.config.InvalidConfigurationException;
@@ -26,12 +28,11 @@ import de.cubeisland.cubeengine.core.config.annotations.Revision;
 import de.cubeisland.cubeengine.core.config.annotations.Updater;
 import de.cubeisland.cubeengine.core.config.node.IntNode;
 import de.cubeisland.cubeengine.core.config.node.MapNode;
-import de.cubeisland.cubeengine.core.config.node.Node;
 
 /**
  * This abstract Codec can be implemented to read and write configurations.
  */
-public abstract class ConfigurationCodec<Config extends Configuration>
+public abstract class ConfigurationCodec<Container extends CodecContainer,Config extends Configuration>
 {
     protected String COMMENT_PREFIX;
     protected String OFFSET;
@@ -48,7 +49,7 @@ public abstract class ConfigurationCodec<Config extends Configuration>
      */
     public void load(Config config, InputStream is) throws InstantiationException, IllegalAccessException
     {
-        CodecContainer container = new CodecContainer<ConfigurationCodec>(this);
+        CodecContainer container = this.createCodecContainer();
         container.fillFromInputStream(is);
         Revision a_revision = config.getClass().getAnnotation(Revision.class);
         if (a_revision != null)
@@ -64,6 +65,8 @@ public abstract class ConfigurationCodec<Config extends Configuration>
         }
         container.dumpIntoFields(config, container.values);
     }
+
+    protected abstract Container createCodecContainer();
 
     /**
      * Returns the offset as String
@@ -95,7 +98,7 @@ public abstract class ConfigurationCodec<Config extends Configuration>
             {
                 throw new IllegalStateException("Tried to save config without File.");
             }
-            CodecContainer container = new CodecContainer<ConfigurationCodec>(this);
+            CodecContainer container = this.createCodecContainer();
             container.values = MapNode.emptyMap();
             Revision a_revision = config.getClass().getAnnotation(Revision.class);
             if (a_revision != null)
@@ -114,24 +117,12 @@ public abstract class ConfigurationCodec<Config extends Configuration>
     /**
      * Serializes the values in the map
      *
-     * @param container the codec-container
-     * @param values the values at given path
-     * @param off the current offset
-     * @param inCollection
-     * @return  the serialized value
+     * @param writer the Output to write into
+     * @param container the codeccontainer
+     * @param values the values
      */
-    public abstract String convertMap(CodecContainer container, MapNode values, int off, boolean inCollection);
+    public abstract void convertMap(OutputStreamWriter writer, Container container, MapNode values) throws IOException;
 
-    /**
-     * Serializes a single value
-     *
-     * @param container the codec-container
-     * @param value the value at given path
-     * @param off the current offset
-     * @param inCollection
-     * @return
-     */
-    public abstract String convertValue(CodecContainer container, Node value, int off, boolean inCollection);
 
     /**
      * Builds a the comment for given path

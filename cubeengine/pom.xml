@@ -15,6 +15,13 @@
     <externalPackage>${project.parent.groupId}.${project.artifactId}.external</externalPackage>
   </properties>
 
+  <repositories>
+    <repository>
+      <id>spout-repo</id>
+      <url>http://repo.spout.org/</url>
+    </repository>
+  </repositories>
+
   <dependencies>
     <dependency>
       <groupId>com.ibm.icu</groupId>
@@ -102,6 +109,11 @@
       <groupId>org.mcstats.bukkit</groupId>
       <artifactId>metrics</artifactId>
       <version>R6</version>
+    </dependency>
+    <dependency>
+      <groupId>org.spout</groupId>
+      <artifactId>simplenbt</artifactId>
+      <version>1.0.5-SNAPSHOT</version>
     </dependency>
   </dependencies>
 
