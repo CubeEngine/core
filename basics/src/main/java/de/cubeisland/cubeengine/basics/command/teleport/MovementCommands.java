@@ -224,34 +224,44 @@ public class MovementCommands
         if (context.getSender() instanceof User)
         {
             User sender = (User)context.getSender();
-            Location loc;
             boolean backPerm = BasicsPerm.COMMAND_BACK.isAuthorized(sender);
+            boolean safe = !context.hasFlag("u");
             if (BasicsPerm.COMMAND_BACK_ONDEATH.isAuthorized(sender))
             {
-                loc = sender.get(BasicsAttachment.class).getDeathLocation();
+                Location loc = sender.get(BasicsAttachment.class).getDeathLocation();
                 if (!backPerm && loc == null)
                 {
                     context.sendTranslated("&cNo death point found!");
                     return;
                 }
+                if (loc != null)
+                {
+                    if (TeleportCommands.teleport(sender, loc, safe, true, true))
+                    {
+                        sender.sendTranslated("&aTeleported to your death point!");
+                    }
+                    else
+                    {
+                        sender.get(BasicsAttachment.class).setDeathLocation(loc);
+                    }
+                    return;
+                }
             }
             if (backPerm)
             {
-                loc = sender.get(BasicsAttachment.class).getLastLocation();
+                Location loc = sender.get(BasicsAttachment.class).getLastLocation();
                 if (loc == null)
                 {
                     context.sendTranslated("&cYou never teleported!");
                     return;
                 }
-            }
-            else
-            {
-                context.sendTranslated("&cYou are not allowed to teleport back!");
+                if (TeleportCommands.teleport(sender, loc, safe, true, true))
+                {
+                    sender.sendTranslated("&aTeleported to your last location!");
+                }
                 return;
             }
-            boolean safe = !context.hasFlag("u");
-            if (TeleportCommands.teleport(sender, loc, safe, true, true))
-                sender.sendTranslated("&aTeleported to your last location!");
+            context.sendTranslated("&cYou are not allowed to teleport back!");
             return;
         }
         context.sendTranslated("&cUnfortunatly teleporting is still not implemented in the game &6'Life'&c!");

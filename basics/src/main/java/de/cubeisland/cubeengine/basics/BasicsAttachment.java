@@ -17,13 +17,14 @@
  */
 package de.cubeisland.cubeengine.basics;
 
-import de.cubeisland.cubeengine.basics.storage.BasicUser;
-import de.cubeisland.cubeengine.core.user.UserAttachment;
+import java.util.HashMap;
+import java.util.Map;
+
 import org.bukkit.Location;
 import org.bukkit.inventory.ItemStack;
 
-import java.util.HashMap;
-import java.util.Map;
+import de.cubeisland.cubeengine.core.user.UserAttachment;
+import de.cubeisland.cubeengine.basics.storage.BasicUser;
 
 public class BasicsAttachment extends UserAttachment
 {
@@ -175,6 +176,6 @@ public class BasicsAttachment extends UserAttachment
     {
         Location loc = deathLocation;
         deathLocation = null;
-        return deathLocation;
+        return loc;
     }
 }
