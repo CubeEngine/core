@@ -38,6 +38,7 @@
     <module>spawn</module>
     <module>powersigns</module>
     <module>itemrepair</module>
+    <module>creeperball</module>
   </modules>
 
   <properties>
