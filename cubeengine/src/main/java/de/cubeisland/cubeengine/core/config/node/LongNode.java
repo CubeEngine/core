@@ -17,7 +17,7 @@
  */
 package de.cubeisland.cubeengine.core.config.node;
 
-public class LongNode extends Node
+public class LongNode extends Node<Long>
 {
     private long value;
 
@@ -26,7 +26,8 @@ public class LongNode extends Node
         this.value = value;
     }
 
-    public long getValue()
+    @Override
+    public Long getValue()
     {
         return value;
     }

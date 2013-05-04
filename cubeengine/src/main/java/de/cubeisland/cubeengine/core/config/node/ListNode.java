@@ -17,15 +17,15 @@
  */
 package de.cubeisland.cubeengine.core.config.node;
 
-import de.cubeisland.cubeengine.core.util.convert.Convert;
-
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
-public class ListNode extends ParentNode
-{
+import de.cubeisland.cubeengine.core.util.convert.Convert;
 
+public class ListNode extends ParentNode<List<Node>>
+{
     private ArrayList<Node> listedNodes = new ArrayList<Node>();
 
     public ListNode(Iterable list)
@@ -60,6 +60,12 @@ public class ListNode extends ParentNode
     public ArrayList<Node> getListedNodes()
     {
         return listedNodes;
+    }
+
+    @Override
+    public List<Node> getValue()
+    {
+        return this.getListedNodes();
     }
 
     public static ListNode emptyList()

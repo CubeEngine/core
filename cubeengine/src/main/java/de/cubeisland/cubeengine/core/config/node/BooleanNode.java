@@ -17,7 +17,7 @@
  */
 package de.cubeisland.cubeengine.core.config.node;
 
-public class BooleanNode extends Node
+public class BooleanNode extends Node<Boolean>
 {
     private boolean bool;
 
@@ -26,9 +26,9 @@ public class BooleanNode extends Node
         this.bool = bool;
     }
 
-    public boolean getValue()
+    @Override
+    public Boolean getValue()
     {
-
         return this.bool;
     }
 

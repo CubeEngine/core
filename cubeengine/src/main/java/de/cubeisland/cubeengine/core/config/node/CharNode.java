@@ -17,7 +17,7 @@
  */
 package de.cubeisland.cubeengine.core.config.node;
 
-public class CharNode extends Node
+public class CharNode extends Node<Character>
 {
     private char value;
 
@@ -26,7 +26,8 @@ public class CharNode extends Node
         this.value = value;
     }
 
-    public char getValue()
+    @Override
+    public Character getValue()
     {
         return value;
     }

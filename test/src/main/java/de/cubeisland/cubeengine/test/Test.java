@@ -123,6 +123,7 @@ public class Test extends Module
         {
             this.getLog().log(ERROR, "Failed to start the FIFO interface!", e);
         }
+        Configuration.load(NbtConfig.class,new File(this.getFolder(),"nbtconfig.dat"));
     }
 
     public void initializeDatabase() throws SQLException

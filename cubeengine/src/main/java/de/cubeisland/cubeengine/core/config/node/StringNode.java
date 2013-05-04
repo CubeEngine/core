@@ -17,9 +17,8 @@
  */
 package de.cubeisland.cubeengine.core.config.node;
 
-public class StringNode extends Node
+public class StringNode extends Node<String>
 {
-
     private String value;
 
     public StringNode(String string)
@@ -28,6 +27,7 @@ public class StringNode extends Node
 
     }
 
+    @Override
     public String getValue()
     {
         return value;
