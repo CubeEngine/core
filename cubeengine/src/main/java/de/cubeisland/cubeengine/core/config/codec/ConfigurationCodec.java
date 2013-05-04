@@ -18,9 +18,7 @@
 package de.cubeisland.cubeengine.core.config.codec;
 
 import java.io.File;
-import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStreamWriter;
 
 import de.cubeisland.cubeengine.core.config.Configuration;
 import de.cubeisland.cubeengine.core.config.InvalidConfigurationException;
@@ -34,12 +32,7 @@ import de.cubeisland.cubeengine.core.config.node.MapNode;
  */
 public abstract class ConfigurationCodec<Container extends CodecContainer,Config extends Configuration>
 {
-    protected String COMMENT_PREFIX;
-    protected String OFFSET;
-    protected String LINE_BREAK;
-    protected String QUOTE;
     protected final String PATH_SEPARATOR = ":";
-    protected boolean first;
 
     /**
      * Loads in the given configuration using the InputStream
@@ -66,23 +59,12 @@ public abstract class ConfigurationCodec<Container extends CodecContainer,Config
         container.dumpIntoFields(config, container.values);
     }
 
-    protected abstract Container createCodecContainer();
-
     /**
-     * Returns the offset as String
+     * Creates a new CodecContainer for this Codec
      *
-     * @param offset the offset
-     * @return the offset
+     * @return
      */
-    protected String offset(int offset)
-    {
-        StringBuilder off = new StringBuilder("");
-        for (int i = 0; i < offset; ++i)
-        {
-            off.append(OFFSET);
-        }
-        return off.toString();
-    }
+    protected abstract Container createCodecContainer();
 
     /**
      * Saves the configuration into given file
@@ -113,26 +95,6 @@ public abstract class ConfigurationCodec<Container extends CodecContainer,Config
             throw new InvalidConfigurationException("Error while saving Configuration!", ex);
         }
     }
-
-    /**
-     * Serializes the values in the map
-     *
-     * @param writer the Output to write into
-     * @param container the codeccontainer
-     * @param values the values
-     */
-    public abstract void convertMap(OutputStreamWriter writer, Container container, MapNode values) throws IOException;
-
-
-    /**
-     * Builds a the comment for given path
-     *
-     * @param path the path
-     * @param off the current offset
-     * @return the comment
-     */
-    public abstract String buildComment(CodecContainer container, String path, int off);
-
     /**
      * Returns the FileExtension as String
      *

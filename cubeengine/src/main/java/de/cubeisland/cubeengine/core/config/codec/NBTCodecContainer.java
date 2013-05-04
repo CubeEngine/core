@@ -1,7 +1,7 @@
 package de.cubeisland.cubeengine.core.config.codec;
 
 import java.io.IOException;
-import java.io.OutputStreamWriter;
+import java.io.OutputStream;
 
 import de.cubeisland.cubeengine.core.config.Configuration;
 
@@ -18,8 +18,7 @@ public class NBTCodecContainer extends CodecContainer<NBTCodecContainer,NBTCodec
     }
 
     @Override
-    protected void writeConfigToStream(OutputStreamWriter writer, Configuration config) throws IOException
+    protected void writeConfigToStream(OutputStream stream, Configuration config) throws IOException
     {
-
     }
 }

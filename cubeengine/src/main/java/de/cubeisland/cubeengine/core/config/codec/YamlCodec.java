@@ -38,21 +38,22 @@ import org.yaml.snakeyaml.Yaml;
 /**
  * This class acts as a codec for yaml-configurations.
  */
-public class YamlCodec extends MultiConfigurationCodec
+public class YamlCodec extends MultiConfigurationCodec implements CommentableCodec<YamlCodecContainer>
 {
+    protected String COMMENT_PREFIX = "# ";
+    protected String OFFSET = "  ";
+    protected String LINE_BREAK = "\n";
+    protected String QUOTE = "'";
+
     private final Yaml yaml;
 
-    private volatile boolean mapEnd = false;
+    private volatile boolean mapEnd;
+    private volatile boolean first;
 
     public YamlCodec()
     {
         super();
         this.yaml = new Yaml();
-
-        COMMENT_PREFIX = "# ";
-        OFFSET = "  ";
-        LINE_BREAK = "\n";
-        QUOTE = "'";
     }
 
     @Override
@@ -98,11 +99,17 @@ public class YamlCodec extends MultiConfigurationCodec
                 || s.matches("[0-9]+:[0-9]+")) || s.isEmpty() || s.equals("*");
     }
 
-    @Override
-    public void convertMap(OutputStreamWriter writer, CodecContainer container, MapNode values) throws IOException
+    /**
+     * Serializes the values in the map
+     *
+     * @param writer the Output to write into
+     * @param container the codeccontainer
+     */
+    public void convertMap(OutputStreamWriter writer, YamlCodecContainer container) throws IOException
     {
+        first = true;
         mapEnd = false;
-        this.convertMap(writer, container, values, 0, false);
+        this.convertMap(writer, container, container.values, 0, false);
     }
 
     /**
@@ -114,7 +121,7 @@ public class YamlCodec extends MultiConfigurationCodec
      * @param inCollection
      * @return
      */
-    private void convertValue(OutputStreamWriter writer, CodecContainer container, Node value, int off, boolean inCollection) throws IOException
+    private void convertValue(OutputStreamWriter writer, YamlCodecContainer container, Node value, int off, boolean inCollection) throws IOException
     {
         mapEnd = false;
         StringBuilder sb = new StringBuilder();
@@ -194,7 +201,7 @@ public class YamlCodec extends MultiConfigurationCodec
      * @param inCollection
      * @return  the serialized value
      */
-    private void convertMap(OutputStreamWriter writer, CodecContainer container, MapNode values, int off, boolean inCollection) throws IOException
+    private void convertMap(OutputStreamWriter writer, YamlCodecContainer container, MapNode values, int off, boolean inCollection) throws IOException
     {
         Map<String, Node> map = values.getMappedNodes();
         if (map.isEmpty())
@@ -233,7 +240,7 @@ public class YamlCodec extends MultiConfigurationCodec
     }
 
     @Override
-    public String buildComment(CodecContainer container, String path, int off)
+    public String buildComment(YamlCodecContainer container, String path, int off)
     {
         String comment = container.getComment(path);
         if (comment == null)
@@ -256,5 +263,21 @@ public class YamlCodec extends MultiConfigurationCodec
     protected CodecContainer createCodecContainer()
     {
         return new YamlCodecContainer(this);
+    }
+
+    /**
+     * Returns the offset as String
+     *
+     * @param offset the offset
+     * @return the offset
+     */
+    protected String offset(int offset)
+    {
+        StringBuilder off = new StringBuilder("");
+        for (int i = 0; i < offset; ++i)
+        {
+            off.append(OFFSET);
+        }
+        return off.toString();
     }
 }

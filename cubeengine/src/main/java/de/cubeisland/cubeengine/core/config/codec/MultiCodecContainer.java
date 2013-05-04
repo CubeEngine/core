@@ -24,11 +24,9 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.Map;
 
+import de.cubeisland.cubeengine.core.config.Configuration;
 import de.cubeisland.cubeengine.core.config.InvalidConfigurationException;
 import de.cubeisland.cubeengine.core.config.MultiConfiguration;
-import de.cubeisland.cubeengine.core.config.annotations.Comment;
-import de.cubeisland.cubeengine.core.config.annotations.MapComment;
-import de.cubeisland.cubeengine.core.config.annotations.MapComments;
 import de.cubeisland.cubeengine.core.config.annotations.Option;
 import de.cubeisland.cubeengine.core.config.node.ListNode;
 import de.cubeisland.cubeengine.core.config.node.MapNode;
@@ -45,7 +43,7 @@ public abstract class MultiCodecContainer<Container extends MultiCodecContainer,
         super(codec);
     }
 
-    public MultiCodecContainer(CodecContainer<Container,ConfigCodec> superContainer, String parentPath) {
+    public MultiCodecContainer(Container superContainer, String parentPath) {
         super(superContainer, parentPath);
     }
 
@@ -164,7 +162,8 @@ public abstract class MultiCodecContainer<Container extends MultiCodecContainer,
                                 }
                                 if (loadFrom_listElem instanceof MapNode)
                                 {
-                                    this.createContainer().dumpIntoFields(subConfig, (MapNode)loadFrom_listElem, parentConfig_Iterator.next());
+                                    this.createContainer().dumpIntoFields(subConfig, (MapNode)loadFrom_listElem, parentConfig_Iterator
+                                        .next());
                                 }
                                 else
                                 {
@@ -210,8 +209,9 @@ public abstract class MultiCodecContainer<Container extends MultiCodecContainer,
                                     }
                                     if (valueNode instanceof MapNode)
                                     {
-                                        this.createContainer().dumpIntoFields(entry.getValue(), (MapNode)valueNode,
-                                                parentMapConfigs.get(entry.getKey()));
+                                        this.createContainer().dumpIntoFields(entry
+                                                                                  .getValue(), (MapNode)valueNode, parentMapConfigs
+                                                                                  .get(entry.getKey()));
                                     }
                                     else
                                     {
@@ -263,14 +263,6 @@ public abstract class MultiCodecContainer<Container extends MultiCodecContainer,
             return;
         }
         Class<C> configClass = (Class<C>) config.getClass();
-        if (configClass.isAnnotationPresent(MapComments.class))
-        {
-            MapComment[] mapComments = configClass.getAnnotation(MapComments.class).value();
-            for (MapComment comment : mapComments)
-            {
-                this.addComment(comment.path().replace(".", codec.PATH_SEPARATOR), comment.text());
-            }
-        }
         boolean advanced = true;
         try
         // to get a boolean advanced field (if not found ignore)
@@ -284,70 +276,70 @@ public abstract class MultiCodecContainer<Container extends MultiCodecContainer,
         {
             if (config.isInheritedField(field))
                 continue;
-            try
+            if (this.isConfigField(field))
             {
-                if (this.isConfigField(field))
+                if (!advanced && field.getAnnotation(Option.class).advanced())
                 {
-                    if (!advanced && field.getAnnotation(Option.class).advanced())
-                    {
-                        continue;
-                    }
-                    Object fieldValue = field.get(config);
-                    String path = field.getAnnotation(Option.class).value().replace(".", codec.PATH_SEPARATOR);
-                    if (field.isAnnotationPresent(Comment.class))
-                    {
-                        Comment comment = field.getAnnotation(Comment.class);
-                        this.addComment(path, comment.value());
-                    }
-                    int fieldType = this.getFieldType(field);
-                    switch (fieldType)
-                    {
-                        case NORMAL_FIELD:
-                            Node fieldValueNode = Convert.toNode(fieldValue);
-                            baseNode.setNodeAt(path, codec.PATH_SEPARATOR, fieldValueNode);
-                            continue;
-                        case CONFIG_FIELD:
-                            MultiCodecContainer subContainer = this.createSubContainer(path); // Create new container
-                            subContainer.fillFromFields((MultiConfiguration)field.get(parentConfig),
-                                    (MultiConfiguration)fieldValue,
-                                    (MapNode)baseNode.getNodeAt(path, codec.PATH_SEPARATOR));
-                            continue;
-                        case COLLECTION_CONFIG_FIELD:
-                            throw new InvalidConfigurationException("ChildConfigs are not allowed for Configurations in Collections" +
-                                    "\nConfig:" + config.getClass());
-                        case MAP_CONFIG_FIELD:
-                            MapNode mapNode = MapNode.emptyMap();
-                            baseNode.setNodeAt(path, codec.PATH_SEPARATOR, mapNode);
-                            Map<Object, MultiConfiguration> parentFieldMap = (Map<Object, MultiConfiguration>)field.get(parentConfig);
-                            Map<Object, MultiConfiguration> childFieldMap = MapConverter.getMapFor((ParameterizedType)field.getGenericType());
-                            for (Map.Entry<Object, MultiConfiguration> parentEntry : parentFieldMap.entrySet())
-                            {
-                                Node keyNode = Convert.toNode(parentEntry.getKey());
-                                if (keyNode instanceof StringNode)
-                                {
-                                    MapNode configNode = MapNode.emptyMap();
-                                    mapNode.setNode((StringNode)keyNode, configNode);
-                                    this.createSubContainer(path + codec.PATH_SEPARATOR + ((StringNode)keyNode).getValue())
-                                            .fillFromFields(parentEntry.getValue(), childFieldMap.get(parentEntry.getKey()), configNode);
-                                }
-                                else
-                                {
-                                    throw new InvalidConfigurationException("Invalid Key-Node for Map of Configuration at " + path +
-                                            "\nConfig:" + config.getClass());
-                                }
-                            }
-                            continue;
-                    }
+                    continue;
                 }
-            }
-            catch (Exception e)
-            {
-                throw new InvalidConfigurationException(
-                        "Error while dumping loaded config into fields!" +
-                                "\ncurrent config: " + config.getClass().toString() +
-                                "\ncurent field:" + field.getName(), e);
+                String path = field.getAnnotation(Option.class).value().replace(".", codec.PATH_SEPARATOR);
+                this.fillFromField(field,parentConfig,config,baseNode,path);
             }
         }
         baseNode.cleanUpEmptyNodes();
+    }
+
+    protected void fillFromField(Field field, Configuration parentConfig, Configuration config, MapNode baseNode, String path)
+    {
+        try
+        {
+            Object fieldValue = field.get(config);
+            int fieldType = this.getFieldType(field);
+            switch (fieldType)
+            {
+            case NORMAL_FIELD:
+                Node fieldValueNode = Convert.toNode(fieldValue);
+                baseNode.setNodeAt(path, codec.PATH_SEPARATOR, fieldValueNode);
+                return;
+            case CONFIG_FIELD:
+                MultiCodecContainer subContainer = this.createSubContainer(path); // Create new container
+                subContainer.fillFromFields((MultiConfiguration)field.get(parentConfig),
+                                            (MultiConfiguration)fieldValue,
+                                            (MapNode)baseNode.getNodeAt(path, codec.PATH_SEPARATOR));
+                return;
+            case COLLECTION_CONFIG_FIELD:
+                throw new InvalidConfigurationException("ChildConfigs are not allowed for Configurations in Collections" +
+                                                            "\nConfig:" + config.getClass());
+            case MAP_CONFIG_FIELD:
+                MapNode mapNode = MapNode.emptyMap();
+                baseNode.setNodeAt(path, codec.PATH_SEPARATOR, mapNode);
+                Map<Object, MultiConfiguration> parentFieldMap = (Map<Object, MultiConfiguration>)field.get(parentConfig);
+                Map<Object, MultiConfiguration> childFieldMap = MapConverter.getMapFor((ParameterizedType)field.getGenericType());
+                for (Map.Entry<Object, MultiConfiguration> parentEntry : parentFieldMap.entrySet())
+                {
+                    Node keyNode = Convert.toNode(parentEntry.getKey());
+                    if (keyNode instanceof StringNode)
+                    {
+                        MapNode configNode = MapNode.emptyMap();
+                        mapNode.setNode((StringNode)keyNode, configNode);
+                        this.createSubContainer(path + codec.PATH_SEPARATOR + ((StringNode)keyNode).getValue())
+                            .fillFromFields(parentEntry.getValue(), childFieldMap
+                                .get(parentEntry.getKey()), configNode);
+                    }
+                    else
+                    {
+                        throw new InvalidConfigurationException("Invalid Key-Node for Map of Configuration at " + path +
+                                                                    "\nConfig:" + config.getClass());
+                    }
+                }
+            }
+        }
+        catch (Exception e)
+        {
+            throw new InvalidConfigurationException(
+                "Error while dumping loaded config into fields!" +
+                    "\ncurrent config: " + config.getClass().toString() +
+                    "\ncurent field:" + field.getName(), e);
+        }
     }
 }
