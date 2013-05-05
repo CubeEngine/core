@@ -8,7 +8,7 @@ import de.cubeisland.cubeengine.core.config.annotations.Comment;
 import de.cubeisland.cubeengine.core.config.annotations.DefaultConfig;
 import de.cubeisland.cubeengine.core.config.annotations.Option;
 
-@Codec("yml")
+@Codec("nbt")
 @DefaultConfig
 public class CreeperballConfig extends Configuration
 {

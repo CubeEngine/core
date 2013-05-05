@@ -17,17 +17,17 @@
  */
 package de.cubeisland.cubeengine.core.util.converter.generic;
 
-import de.cubeisland.cubeengine.core.config.node.MapNode;
-import de.cubeisland.cubeengine.core.config.node.Node;
-import de.cubeisland.cubeengine.core.config.node.StringNode;
-import de.cubeisland.cubeengine.core.util.convert.ConversionException;
-import de.cubeisland.cubeengine.core.util.convert.Convert;
-
 import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.LinkedHashMap;
 import java.util.Map;
+
+import de.cubeisland.cubeengine.core.config.node.MapNode;
+import de.cubeisland.cubeengine.core.config.node.Node;
+import de.cubeisland.cubeengine.core.config.node.StringNode;
+import de.cubeisland.cubeengine.core.util.convert.ConversionException;
+import de.cubeisland.cubeengine.core.util.convert.Convert;
 
 public class MapConverter
 {
@@ -54,7 +54,7 @@ public class MapConverter
             }
             else
             {
-                throw new ConversionException("Map-Key did not serialize into a StringNode!");
+                result.setNode(StringNode.of(keyNode.unwrap()),Convert.toNode(map.get(key)));
             }
         }
         return result;

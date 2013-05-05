@@ -32,6 +32,7 @@ import net.minecraft.server.v1_5_R2.EntityPlayer;
 import net.minecraft.server.v1_5_R2.Packet0KeepAlive;
 import org.bukkit.craftbukkit.v1_5_R2.CraftServer;
 
+import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 
@@ -41,13 +42,18 @@ import de.cubeisland.cubeengine.core.bukkit.BukkitCore;
 import de.cubeisland.cubeengine.core.bukkit.PlayerLanguageReceivedEvent;
 import de.cubeisland.cubeengine.core.command.reflected.ReflectedCommand;
 import de.cubeisland.cubeengine.core.config.Configuration;
+import de.cubeisland.cubeengine.core.config.node.Node;
 import de.cubeisland.cubeengine.core.filesystem.FileUtil;
 import de.cubeisland.cubeengine.core.logger.CubeFileHandler;
 import de.cubeisland.cubeengine.core.logger.LogLevel;
 import de.cubeisland.cubeengine.core.module.Module;
 import de.cubeisland.cubeengine.core.storage.database.Database;
 import de.cubeisland.cubeengine.core.user.UserManager;
+import de.cubeisland.cubeengine.core.util.clipboard.CuboidBlockClipboard;
+import de.cubeisland.cubeengine.core.util.convert.ConversionException;
+import de.cubeisland.cubeengine.core.util.convert.Convert;
 import de.cubeisland.cubeengine.core.util.matcher.Match;
+import de.cubeisland.cubeengine.core.util.math.BlockVector3;
 import de.cubeisland.cubeengine.basics.Basics;
 import de.cubeisland.cubeengine.test.commands.TestCommands;
 import de.cubeisland.cubeengine.test.database.TestManager;
@@ -124,6 +130,22 @@ public class Test extends Module
             this.getLog().log(ERROR, "Failed to start the FIFO interface!", e);
         }
         Configuration.load(NbtConfig.class,new File(this.getFolder(),"nbtconfig.dat"));
+        this.testClipboard();
+    }
+
+    private void testClipboard()
+    {
+        BlockVector3 v1 = new BlockVector3(-657, 63, 521);
+        try
+        {
+            Node node = new CuboidBlockClipboard(Bukkit.getWorld("world"),v1,v1).toNode();
+            node.toString();
+            Convert.fromNode(node,CuboidBlockClipboard.class);
+        }
+        catch (ConversionException e)
+        {
+            throw new IllegalStateException(e);
+        }
     }
 
     public void initializeDatabase() throws SQLException
