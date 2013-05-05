@@ -140,7 +140,8 @@ public class Test extends Module
         {
             Node node = new CuboidBlockClipboard(Bukkit.getWorld("world"),v1,v1).toNode();
             node.toString();
-            Convert.fromNode(node,CuboidBlockClipboard.class);
+            CuboidBlockClipboard o = Convert.fromNode(node, CuboidBlockClipboard.class);
+            o.applyToWorld(Bukkit.getWorld("world"),v1.add(new BlockVector3(0,2,0)));
         }
         catch (ConversionException e)
         {
