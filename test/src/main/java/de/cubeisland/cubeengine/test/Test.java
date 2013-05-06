@@ -138,10 +138,11 @@ public class Test extends Module
         BlockVector3 v1 = new BlockVector3(-657, 63, 521);
         try
         {
-            Node node = new CuboidBlockClipboard(Bukkit.getWorld("world"),v1,v1).toNode();
-            node.toString();
+            //Node node = new CuboidBlockClipboard(v1,Bukkit.getWorld("world"),v1,v1.add(new BlockVector3(0,2,-1))).toNode();
+            Node node = new CuboidBlockClipboard(v1,Bukkit.getWorld("world"),v1,v1).toNode();
             CuboidBlockClipboard o = Convert.fromNode(node, CuboidBlockClipboard.class);
-            o.applyToWorld(Bukkit.getWorld("world"),v1.add(new BlockVector3(0,2,0)));
+            //o.applyToWorld(Bukkit.getWorld("world"),v1.add(new BlockVector3(0,2,0)));
+            o.applyToWorld(Bukkit.getWorld("world"),v1);
         }
         catch (ConversionException e)
         {

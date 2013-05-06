@@ -54,6 +54,7 @@ public class CuboidBlockClipboard
 
     private final BlockData[][][] data;
     private final BlockVector3 size;
+    private final BlockVector3 relative;
 
     /**
      * Creates a Clipboard containing all BlockData in between pos1 and pos2 in the given world
@@ -62,27 +63,30 @@ public class CuboidBlockClipboard
      * @param pos1 origin and position with lowest x,y and z coordinates
      * @param pos2 position with highest x,y and z coordinates
      */
-    public CuboidBlockClipboard(World world, BlockVector3 pos1, BlockVector3 pos2)
+    public CuboidBlockClipboard(BlockVector3 relative, World world, BlockVector3 pos1, BlockVector3 pos2)
     {
-        this.size = pos1.subtract(pos2).add(new BlockVector3(1,1,1));
+        BlockVector3 minimum = new BlockVector3(pos1.x < pos2.x ? pos1.x : pos2.x, pos1.y < pos2.y ? pos1.y : pos2.y, pos1.z < pos2.z ? pos1.z : pos2.z);
+        BlockVector3 maximum = new BlockVector3(pos1.x > pos2.x ? pos1.x : pos2.x, pos1.y > pos2.y ? pos1.y : pos2.y, pos1.z > pos2.z ? pos1.z : pos2.z);
+        this.relative = minimum.subtract(relative);
+        this.size = maximum.subtract(minimum).add(new BlockVector3(1,1,1));
         this.data = new BlockData[this.size.x][this.size.y][this.size.z];
-
-        for (int x = 0; x < size.x; ++x)
+        for (int x = 0; x < this.size.x; ++x)
         {
-            for (int y = 0; y < size.y; ++y)
+            for (int y = 0; y < this.size.y; ++y)
             {
-                for (int z = 0; z < size.z; ++z)
+                for (int z = 0; z < this.size.z; ++z)
                 {
-                    data[x][y][z] = new BlockData(world.getBlockAt(x+pos1.x,y+pos1.y,z+ pos1.z),pos1);
+                    data[x][y][z] = new BlockData(world.getBlockAt(x+minimum.x,y+minimum.y,z+ minimum.z),minimum);
                 }
             }
         }
     }
 
-    public CuboidBlockClipboard(BlockVector3 size)
+    public CuboidBlockClipboard(BlockVector3 size, BlockVector3 relative)
     {
-        this.size = size;
+        this.size = new BlockVector3(Math.abs(size.x),Math.abs(size.y),Math.abs(size.z));
         this.data = new BlockData[this.size.x][this.size.y][this.size.z];
+        this.relative = relative;
     }
 
     private Map<Byte,Material> mappedMaterials;
@@ -93,6 +97,14 @@ public class CuboidBlockClipboard
         result.setExactNode("width",new IntNode(this.size.x));
         result.setExactNode("height",new IntNode(this.size.y));
         result.setExactNode("length",new IntNode(this.size.z));
+        if (this.relative != null)
+        {
+            MapNode relative = MapNode.emptyMap();
+            result.setExactNode("relative",relative);
+            relative.setExactNode("x",new IntNode(this.relative.x));
+            relative.setExactNode("y",new IntNode(this.relative.y));
+            relative.setExactNode("z",new IntNode(this.relative.z));
+        }
         ListNode tileEntities = ListNode.emptyList();
         result.setExactNode("tileentities",tileEntities);
         Map<Material,Byte> materials = new HashMap<Material, Byte>();
@@ -171,7 +183,16 @@ public class CuboidBlockClipboard
                         }
                     }
                 }
-                CuboidBlockClipboard result = new CuboidBlockClipboard(new BlockVector3(width, height, length));
+                BlockVector3 relative = null;
+                if (mappedNodes.containsKey("relative"))
+                {
+                    MapNode relativeMap = (MapNode)mappedNodes.get("relative");
+                    int x = (Integer)relativeMap.getMappedNodes().get("x").getValue();
+                    int y = (Integer)relativeMap.getMappedNodes().get("y").getValue();
+                    int z = (Integer)relativeMap.getMappedNodes().get("z").getValue();
+                    relative = new BlockVector3(x,y,z);
+                }
+                CuboidBlockClipboard result = new CuboidBlockClipboard(new BlockVector3(width, height, length),relative);
                 int i = 0;
                 for (int y = 0; y < height; ++y)
                 {
@@ -201,6 +222,7 @@ public class CuboidBlockClipboard
 
     public void applyToWorld(World world, BlockVector3 relative)
     {
+        relative = relative.add(this.relative);
         for (int y = 0; y < this.size.y; ++y)
         {
             for (int z = 0; z < this.size.z; ++z)
@@ -208,14 +230,16 @@ public class CuboidBlockClipboard
                 for (int x = 0; x < this.size.x; ++x)
                 {
                     BlockData blockData = this.data[x][y][z];
-                    BlockState state = world.getBlockAt(relative.x + x, relative.y + y, relative.z + z).getState();
+                    BlockState state = world.getBlockAt(relative.x + x,
+                                                        relative.y + y,
+                                                        relative.z + z).getState();
                     state.setType(blockData.material);
                     state.setRawData(blockData.data);
                     state.update(true,false);
                     if (blockData.nbt != null)
                     {
-                        NBTUtils.setTileEntityNBTAt(state.getLocation(),blockData.getRelativeNbtData(relative));
-                        ;
+                        NBTUtils.setTileEntityNBTAt(state.getLocation(),
+                                blockData.getRelativeNbtData(relative));
                     }
                 }
             }
@@ -233,9 +257,12 @@ public class CuboidBlockClipboard
             this.material = block.getType();
             this.data = block.getData();
             this.nbt = NBTUtils.getTileEntityNBTAt(block.getLocation());
-            nbt.set("x",new NBTTagInt("x",block.getX() - relative.x));
-            nbt.set("y",new NBTTagInt("y",block.getY() - relative.y));
-            nbt.set("z",new NBTTagInt("z",block.getZ() - relative.z));
+            if (nbt != null)
+            {
+                nbt.set("x",new NBTTagInt("x",block.getX() - relative.x));
+                nbt.set("y",new NBTTagInt("y",block.getY() - relative.y));
+                nbt.set("z",new NBTTagInt("z",block.getZ() - relative.z));
+            }
         }
 
         public NBTTagCompound getRelativeNbtData(BlockVector3 relative)
