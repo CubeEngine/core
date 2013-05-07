@@ -133,7 +133,7 @@ public class CubeCommandMap extends SimpleCommandMap
             {
                 sender.sendMessage(this.core.getI18n().translate(language, "&cI couldn't find any command for &e/%s &c...", label));
             }
-            return false;
+            return true;
         }
 
         String[] args = null;
