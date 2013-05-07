@@ -27,7 +27,7 @@
       <artifactId>mysql-connector-java</artifactId>
       <version>5.1.24</version>
       <type>jar</type>
-      <scope>compile</scope>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>io.netty</groupId>
@@ -98,7 +98,7 @@
       <artifactId>minecraft-server</artifactId>
       <version>${minecraftVersion}</version>
       <type>jar</type>
-      <scope>provided</scope>
+      <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>org.mcstats.bukkit</groupId>
@@ -149,6 +149,68 @@
     </resources>
 
     <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-shade-plugin</artifactId>
+        <configuration>
+          <artifactSet>
+            <excludes>
+              <exclude>org.bukkit:*</exclude>
+            </excludes>
+          </artifactSet>
+          <filters>
+            <filter>
+              <artifact>*:*</artifact>
+              <excludes>
+                <exclude>lib/**</exclude>
+                <exclude>templates/**</exclude>
+                <exclude>META-INF/native/**</exclude>
+                <exclude>**/*.java</exclude>
+              </excludes>
+            </filter>
+          </filters>
+          <relocations>
+            <!--
+            <relocation>
+              <pattern>gnu.trove</pattern>
+              <shadedPattern>${externalPackage}.trove</shadedPattern>
+            </relocation>
+            <relocation>
+              <pattern>com.fasterxml.jackson</pattern>
+              <shadedPattern>${externalPackage}.jackson</shadedPattern>
+            </relocation>
+            <relocation>
+              <pattern>org.apache.commons.lang</pattern>
+              <shadedPattern>${externalPackage}.apachecommons</shadedPattern>
+            </relocation>
+            -->
+            <relocation>
+              <pattern>io.netty</pattern>
+              <shadedPattern>${externalPackage}.netty</shadedPattern>
+            </relocation>
+            <relocation>
+              <pattern>org.yaml.snakeyaml</pattern>
+              <shadedPattern>${externalPackage}.snakeyaml</shadedPattern>
+            </relocation>
+            <relocation>
+              <pattern>org.fusesource</pattern>
+              <shadedPattern>${externalPackage}.jansi</shadedPattern>
+            </relocation>
+            <relocation>
+              <pattern>org.mcstats</pattern>
+              <shadedPattern>${externalPackage}.mcstats</shadedPattern>
+            </relocation>
+            <relocation>
+              <pattern>com.ibm.icu</pattern>
+              <shadedPattern>${externalPackage}.icu</shadedPattern>
+            </relocation>
+            <relocation>
+              <pattern>org.ocpsoft.prettytime</pattern>
+              <shadedPattern>${externalPackage}.prettytime</shadedPattern>
+            </relocation>
+          </relocations>
+        </configuration>
+      </plugin>
     </plugins>
   </build>
 </project>

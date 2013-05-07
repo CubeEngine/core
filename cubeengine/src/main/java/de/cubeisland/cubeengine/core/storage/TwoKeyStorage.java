@@ -30,7 +30,6 @@ import de.cubeisland.cubeengine.core.storage.database.Index;
 import de.cubeisland.cubeengine.core.storage.database.TwoKeyEntity;
 import de.cubeisland.cubeengine.core.storage.database.querybuilder.QueryBuilder;
 import de.cubeisland.cubeengine.core.storage.database.querybuilder.TableBuilder;
-import de.cubeisland.cubeengine.core.util.Callback;
 import de.cubeisland.cubeengine.core.util.Pair;
 
 public class TwoKeyStorage<Key_f, Key_s, M extends TwoKeyModel<Key_f, Key_s>> extends AbstractStorage<Pair<Key_f, Key_s>, M, TwoKeyEntity>
@@ -228,11 +227,6 @@ public class TwoKeyStorage<Key_f, Key_s, M extends TwoKeyModel<Key_f, Key_s>> ex
             {
                 this.database.preparedExecute(this.modelClass, "store", values.toArray());
             }
-
-            for (Callback cb : this.createCallbacks)
-            {
-                cb.call(model.getId());
-            }
         }
         catch (SQLException ex)
         {
@@ -271,10 +265,6 @@ public class TwoKeyStorage<Key_f, Key_s, M extends TwoKeyModel<Key_f, Key_s>> ex
             {
                 this.database.preparedExecute(this.modelClass, "update", values.toArray());
             }
-            for (Callback cb : this.updateCallbacks)
-            {
-                cb.call(model.getId());
-            }
         }
         catch (SQLException ex)
         {
@@ -308,10 +298,6 @@ public class TwoKeyStorage<Key_f, Key_s, M extends TwoKeyModel<Key_f, Key_s>> ex
             {
                 this.database.preparedExecute(this.modelClass, "merge", values.toArray());
             }
-            for (Callback cb : this.updateCallbacks)
-            {
-                cb.call(model.getId());
-            }
         }
         catch (SQLException ex)
         {
@@ -335,10 +321,6 @@ public class TwoKeyStorage<Key_f, Key_s, M extends TwoKeyModel<Key_f, Key_s>> ex
             else
             {
                 this.database.preparedExecute(this.modelClass, "delete", key.getLeft(), key.getRight());
-            }
-            for (Callback cb : this.deleteCallbacks)
-            {
-                cb.call(key);
             }
         }
         catch (SQLException ex)

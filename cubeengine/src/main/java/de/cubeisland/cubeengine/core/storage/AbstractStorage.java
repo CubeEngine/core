@@ -32,7 +32,6 @@ import de.cubeisland.cubeengine.core.storage.database.Database;
 import de.cubeisland.cubeengine.core.storage.database.DatabaseConstructor;
 import de.cubeisland.cubeengine.core.storage.database.DatabaseUpdater;
 import de.cubeisland.cubeengine.core.storage.database.querybuilder.QueryBuilder;
-import de.cubeisland.cubeengine.core.util.Callback;
 
 import gnu.trove.map.hash.TIntObjectHashMap;
 
@@ -52,10 +51,6 @@ public abstract class AbstractStorage<K, M extends Model<K>, T> implements Stora
     protected Map<String, Field> reverseFieldNames;
     protected Map<Field, Attribute> attributeAnnotations; // coresponding attribute-annotation
     protected String[] allFields;
-    //Callbacks:
-    protected Collection<Callback> createCallbacks = new ArrayList<Callback>();
-    protected Collection<Callback> deleteCallbacks = new ArrayList<Callback>();
-    protected Collection<Callback> updateCallbacks = new ArrayList<Callback>();
     //Updaters:
     public final int revision;
     protected TIntObjectHashMap<DatabaseUpdater> updaters;
@@ -175,23 +170,6 @@ public abstract class AbstractStorage<K, M extends Model<K>, T> implements Stora
         QueryBuilder builder = this.database.getQueryBuilder();
         this.database.storeStatement(this.modelClass, "clear", builder.truncateTable(this.tableName).end());
         this.database.storeStatement(this.modelClass, "getall", builder.select().wildcard().from(this.tableName).end().end());
-    }
-
-    @Override
-    public void subscribe(SubscribeType type, Callback callback)
-    {
-        switch (type)
-        {
-            case CREATE:
-                this.createCallbacks.add(callback);
-                break;
-            case DELETE:
-                this.deleteCallbacks.add(callback);
-                break;
-            case UPDATE:
-                this.updateCallbacks.add(callback);
-                break;
-        }
     }
 
     @Override
