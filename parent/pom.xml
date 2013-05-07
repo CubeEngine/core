@@ -237,6 +237,10 @@
         <groupId>de.cubeisland.maven.plugins</groupId>
         <artifactId>githead-maven-plugin</artifactId>
       </plugin>
+      <plugin>
+        <groupId>com.mycila.maven-license-plugin</groupId>
+        <artifactId>maven-license-plugin</artifactId>
+      </plugin>
     </plugins>
 
     <pluginManagement>
@@ -370,7 +374,7 @@
           <artifactId>maven-license-plugin</artifactId>
           <version>1.10.b1</version>
           <configuration>
-            <header>${projectBase}/header.txt</header>
+            <header>../header.txt</header>
             <strictCheck>true</strictCheck>
             <aggregate>true</aggregate>
             <includes>
