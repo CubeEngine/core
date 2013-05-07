@@ -25,16 +25,16 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
-import net.minecraft.server.v1_5_R2.EntityPlayer;
-import net.minecraft.server.v1_5_R2.NBTTagCompound;
-import net.minecraft.server.v1_5_R2.NBTTagDouble;
-import net.minecraft.server.v1_5_R2.NBTTagFloat;
-import net.minecraft.server.v1_5_R2.NBTTagList;
-import net.minecraft.server.v1_5_R2.PlayerInteractManager;
-import net.minecraft.server.v1_5_R2.WorldNBTStorage;
-import net.minecraft.server.v1_5_R2.WorldServer;
-import org.bukkit.craftbukkit.v1_5_R2.CraftServer;
-import org.bukkit.craftbukkit.v1_5_R2.CraftWorld;
+import net.minecraft.server.v1_5_R3.EntityPlayer;
+import net.minecraft.server.v1_5_R3.NBTTagCompound;
+import net.minecraft.server.v1_5_R3.NBTTagDouble;
+import net.minecraft.server.v1_5_R3.NBTTagFloat;
+import net.minecraft.server.v1_5_R3.NBTTagList;
+import net.minecraft.server.v1_5_R3.PlayerInteractManager;
+import net.minecraft.server.v1_5_R3.WorldNBTStorage;
+import net.minecraft.server.v1_5_R3.WorldServer;
+import org.bukkit.craftbukkit.v1_5_R3.CraftServer;
+import org.bukkit.craftbukkit.v1_5_R3.CraftWorld;
 
 import org.bukkit.Achievement;
 import org.bukkit.Bukkit;
@@ -77,6 +77,7 @@ import org.bukkit.permissions.PermissionAttachmentInfo;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
+import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.util.Vector;
 
 /**
@@ -91,7 +92,7 @@ public class UserBase implements Player
     {
         this.playerName = name;
     }
-    
+
     public OfflinePlayer getOfflinePlayer()
     {
         return Bukkit.getOfflinePlayer(playerName);
@@ -1513,7 +1514,8 @@ public class UserBase implements Player
             NBTTagCompound data = this.getData();
             if (data != null)
             {
-                return this.getServer().getWorld(new UUID(data.getLong("WorldUUIDMost"), data.getLong("WorldUUIDLeast")));
+                return this.getServer()
+                           .getWorld(new UUID(data.getLong("WorldUUIDMost"), data.getLong("WorldUUIDLeast")));
             }
         }
         return null;
@@ -2401,12 +2403,12 @@ public class UserBase implements Player
     }
 
     @Override
-    public void setPlayerWeather( WeatherType wt )
+    public void setPlayerWeather(WeatherType wt)
     {
         final Player player = this.getOfflinePlayer().getPlayer();
-        if(player != null)
+        if (player != null)
         {
-            player.setPlayerWeather( wt );
+            player.setPlayerWeather(wt);
         }
     }
 
@@ -2414,7 +2416,7 @@ public class UserBase implements Player
     public WeatherType getPlayerWeather()
     {
         final Player player = this.getOfflinePlayer().getPlayer();
-        if(player != null)
+        if (player != null)
         {
             return player.getPlayerWeather();
         }
@@ -2425,9 +2427,30 @@ public class UserBase implements Player
     public void resetPlayerWeather()
     {
         final Player player = this.getOfflinePlayer().getPlayer();
-        if(player != null)
+        if (player != null)
         {
             player.resetPlayerWeather();
+        }
+    }
+
+    @Override
+    public Scoreboard getScoreboard()
+    {
+        final Player player = this.getOfflinePlayer().getPlayer();
+        if (player != null)
+        {
+            return player.getScoreboard();
+        }
+        return null;
+    }
+
+    @Override
+    public void setScoreboard(Scoreboard scoreboard) throws IllegalArgumentException, IllegalStateException
+    {
+        final Player player = this.getOfflinePlayer().getPlayer();
+        if (player != null)
+        {
+            player.setScoreboard(scoreboard);
         }
     }
 }
