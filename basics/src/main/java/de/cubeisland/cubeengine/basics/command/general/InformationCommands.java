@@ -18,6 +18,8 @@
 package de.cubeisland.cubeengine.basics.command.general;
 
 import java.lang.management.ManagementFactory;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.LinkedHashMap;
@@ -347,13 +349,25 @@ public class InformationCommands
     public void lag(CommandContext context)
     {
         //Uptime:
-        Duration dura = new Duration(new Date(ManagementFactory.getRuntimeMXBean().getStartTime()).getTime(), System.currentTimeMillis());
-        context.sendTranslated("&6Uptime: &a%s", dura.format("%www %ddd %hhh %mmm %sss"));
+        context.sendTranslated("&a[&cCubeEngine-Basics&a]");
+        DateFormat df = SimpleDateFormat.getDateTimeInstance(DateFormat.DEFAULT, DateFormat.DEFAULT,
+                     context.getSender().getLocale());
+        Date start = new Date(ManagementFactory.getRuntimeMXBean().getStartTime());
+        Duration dura = new Duration(start.getTime(), System.currentTimeMillis());
+        context.sendTranslated("&aServer is running since &6%s", df.format(start));
+        context.sendTranslated("&aUptime: &6%s", dura.format("%www %ddd %hhh %mmm %sss"));
         //TPS:
         float tps = this.basics.getLagTimer().getAverageTPS();
-        String color = tps == 20 ? "&a" : tps > 17 ? "&e" : tps > 10 ? "&c" : "&4";
+        String color = tps == 20 ? "&2" : tps > 17 ? "&e" : tps > 10 ? "&c" : "&4";
         color = ChatFormat.parseFormats(color);
-        context.sendTranslated("&6Current TPS: %s%.1f", color, tps);
+        context.sendTranslated("&aCurrent TPS: %s%.1f", color, tps);
+        Pair<Long, Float> lowestTPS = this.basics.getLagTimer().getLowestTPS();
+        if (lowestTPS.getRight() != 20)
+        {
+            color = tps > 17 ? "&e" : tps > 10 ? "&c" : "&4";
+            Date date = new Date(lowestTPS.getLeft());
+            context.sendTranslated("&aLowest TPS was %s%.1f &f(&a%s&f)",color,lowestTPS.getRight(),df.format(date));
+        }
         //Memory
         long memUse = ManagementFactory.getMemoryMXBean().getHeapMemoryUsage().getUsed() / 1048576;
         long memCom = ManagementFactory.getMemoryMXBean().getHeapMemoryUsage().getCommitted() / 1048576;
@@ -377,18 +391,18 @@ public class InformationCommands
         }
         else
         {
-            memused = "&a";
+            memused = "&2";
         }
         memused += memUse;
         memused = ChatFormat.parseFormats(memused);
-        context.sendTranslated("&6Memory Usage: %s&f/&e%d&f/&e%d MB", memused, memCom, memMax);
+        context.sendTranslated("&aMemory Usage: %s&f/&6%d&f/&6%d &aMB", memused, memCom, memMax);
         //Worlds with loaded Chunks / Entities
         for (World world : Bukkit.getServer().getWorlds())
         {
             String type = world.getEnvironment().name();
             int loadedChunks = world.getLoadedChunks().length;
             int entities = world.getEntities().size();
-            context.sendTranslated("&6%s &e(&2%s&e)&6: &e%d &6chunks &e%d &6entities", world.getName(), type, loadedChunks, entities);
+            context.sendTranslated("&a%s &e(&2%s&e)&a: &6%d &achunks &6%d &aentities", world.getName(), type, loadedChunks, entities);
         }
     }
 
