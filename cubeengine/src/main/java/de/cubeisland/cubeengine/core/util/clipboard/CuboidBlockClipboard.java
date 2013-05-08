@@ -54,7 +54,7 @@ public class CuboidBlockClipboard
 
     private final BlockData[][][] data;
     private final BlockVector3 size;
-    private final BlockVector3 relative;
+    private BlockVector3 relative;
 
     /**
      * Creates a Clipboard containing all BlockData in between pos1 and pos2 in the given world
@@ -63,11 +63,11 @@ public class CuboidBlockClipboard
      * @param pos1 origin and position with lowest x,y and z coordinates
      * @param pos2 position with highest x,y and z coordinates
      */
-    public CuboidBlockClipboard(BlockVector3 relative, World world, BlockVector3 pos1, BlockVector3 pos2)
+    public CuboidBlockClipboard(BlockVector3 relativeBlock, World world, BlockVector3 pos1, BlockVector3 pos2)
     {
         BlockVector3 minimum = new BlockVector3(pos1.x < pos2.x ? pos1.x : pos2.x, pos1.y < pos2.y ? pos1.y : pos2.y, pos1.z < pos2.z ? pos1.z : pos2.z);
         BlockVector3 maximum = new BlockVector3(pos1.x > pos2.x ? pos1.x : pos2.x, pos1.y > pos2.y ? pos1.y : pos2.y, pos1.z > pos2.z ? pos1.z : pos2.z);
-        this.relative = minimum.subtract(relative);
+        this.relative = minimum.subtract(relativeBlock);
         this.size = maximum.subtract(minimum).add(new BlockVector3(1,1,1));
         this.data = new BlockData[this.size.x][this.size.y][this.size.z];
         for (int x = 0; x < this.size.x; ++x)
@@ -86,6 +86,11 @@ public class CuboidBlockClipboard
     {
         this.size = new BlockVector3(Math.abs(size.x),Math.abs(size.y),Math.abs(size.z));
         this.data = new BlockData[this.size.x][this.size.y][this.size.z];
+        this.relative = relative;
+    }
+
+    public void setRelativeVector(BlockVector3 relative)
+    {
         this.relative = relative;
     }
 

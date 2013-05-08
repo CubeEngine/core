@@ -17,6 +17,8 @@
  */
 package de.cubeisland.cubeengine.creeperball;
 
+import javax.swing.event.ListSelectionListener;
+
 import de.cubeisland.cubeengine.core.command.CommandContext;
 import de.cubeisland.cubeengine.core.command.ContainerCommand;
 import de.cubeisland.cubeengine.core.command.reflected.Command;
@@ -26,6 +28,7 @@ import de.cubeisland.cubeengine.core.user.User;
 public class CreeperBallCommands extends ContainerCommand
 {
     private User setupUser;
+    private SelectionListener listener;
 
     public CreeperBallCommands(Module module)
     {
