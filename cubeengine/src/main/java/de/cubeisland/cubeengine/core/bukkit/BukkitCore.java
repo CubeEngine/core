@@ -22,7 +22,7 @@ import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 
-import net.minecraft.server.v1_5_R2.Packet204LocaleAndViewDistance;
+import net.minecraft.server.v1_5_R3.Packet204LocaleAndViewDistance;
 
 import org.bukkit.Server;
 import org.bukkit.plugin.PluginManager;

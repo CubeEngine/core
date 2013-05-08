@@ -30,7 +30,6 @@ import de.cubeisland.cubeengine.core.storage.database.Index;
 import de.cubeisland.cubeengine.core.storage.database.TripletKeyEntity;
 import de.cubeisland.cubeengine.core.storage.database.querybuilder.QueryBuilder;
 import de.cubeisland.cubeengine.core.storage.database.querybuilder.TableBuilder;
-import de.cubeisland.cubeengine.core.util.Callback;
 import de.cubeisland.cubeengine.core.util.Triplet;
 
 public class TripletKeyStorage<Key_f, Key_s, Key_t, M extends TripletKeyModel<Key_f, Key_s, Key_t>> extends AbstractStorage<Triplet<Key_f, Key_s, Key_t>, M, TripletKeyEntity>
@@ -236,11 +235,6 @@ public class TripletKeyStorage<Key_f, Key_s, Key_t, M extends TripletKeyModel<Ke
             {
                 this.database.preparedExecute(this.modelClass, "store", values.toArray());
             }
-
-            for (Callback cb : this.createCallbacks)
-            {
-                cb.call(model.getId());
-            }
         }
         catch (SQLException ex)
         {
@@ -280,10 +274,6 @@ public class TripletKeyStorage<Key_f, Key_s, Key_t, M extends TripletKeyModel<Ke
             {
                 this.database.preparedExecute(this.modelClass, "update", values.toArray());
             }
-            for (Callback cb : this.updateCallbacks)
-            {
-                cb.call(model.getId());
-            }
         }
         catch (SQLException ex)
         {
@@ -317,10 +307,6 @@ public class TripletKeyStorage<Key_f, Key_s, Key_t, M extends TripletKeyModel<Ke
             {
                 this.database.preparedExecute(this.modelClass, "merge", values.toArray());
             }
-            for (Callback cb : this.updateCallbacks)
-            {
-                cb.call(model.getId());
-            }
         }
         catch (SQLException ex)
         {
@@ -344,10 +330,6 @@ public class TripletKeyStorage<Key_f, Key_s, Key_t, M extends TripletKeyModel<Ke
             else
             {
                 this.database.preparedExecute(this.modelClass, "delete", key.getFirst(), key.getSecond(), key.getThird());
-            }
-            for (Callback cb : this.deleteCallbacks)
-            {
-                cb.call(key);
             }
         }
         catch (SQLException ex)

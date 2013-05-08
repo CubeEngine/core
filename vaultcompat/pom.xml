@@ -1,19 +1,17 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <parent>
-    <artifactId>cubeengine-aggregator</artifactId>
-    <groupId>de.cubeisland</groupId>
-    <version>1.0.0-SNAPSHOT</version>
-  </parent>
   <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>de.cubeisland.engine</groupId>
+    <artifactId>parent</artifactId>
+    <version>1.0.0</version>
+    <relativePath>../parent/pom.xml</relativePath>
+  </parent>
 
   <name>Vault-Compat</name>
   <artifactId>vaultcompat</artifactId>
-  <description>This module adds vault compatibility to Conomy</description>
-
-  <properties>
-    <projectBase>${project.parent.basedir}</projectBase>
-  </properties>
+  <version>1.0.0-SNAPSHOT</version>
+  <description>This module adds vault compatibility to the Conomy module</description>
 
   <repositories>
     <repository>
@@ -26,27 +24,34 @@
     <dependency>
       <groupId>${project.parent.groupId}</groupId>
       <artifactId>cubeengine</artifactId>
-      <version>${project.parent.version}</version>
     </dependency>
     <dependency>
       <groupId>${project.parent.groupId}</groupId>
       <artifactId>conomy</artifactId>
-      <version>${project.parent.version}</version>
+      <version>1.0.0-SNAPSHOT</version>
+      <type>jar</type>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>${project.parent.groupId}</groupId>
       <artifactId>chat</artifactId>
-      <version>${project.parent.version}</version>
+      <version>1.0.0-SNAPSHOT</version>
+      <type>jar</type>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>${project.parent.groupId}</groupId>
       <artifactId>roles</artifactId>
-      <version>${project.parent.version}</version>
+      <version>1.0.0-SNAPSHOT</version>
+      <type>jar</type>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>net.milkbowl.vault</groupId>
       <artifactId>Vault</artifactId>
       <version>1.2.24-SNAPSHOT</version>
+      <type>jar</type>
+      <scope>provided</scope>
     </dependency>
   </dependencies>
 </project>

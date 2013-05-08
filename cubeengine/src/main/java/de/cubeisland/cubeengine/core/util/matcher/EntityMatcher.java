@@ -17,17 +17,28 @@
  */
 package de.cubeisland.cubeengine.core.util.matcher;
 
-import de.cubeisland.cubeengine.core.CoreResource;
-import de.cubeisland.cubeengine.core.CubeEngine;
-import de.cubeisland.cubeengine.core.util.AliasMapFormat;
-import de.cubeisland.cubeengine.core.logger.LogLevel;
-import gnu.trove.map.hash.THashMap;
-import net.minecraft.server.v1_5_R2.EntityTypes;
-import org.bukkit.entity.*;
-
 import java.io.File;
 import java.io.IOException;
-import java.util.*;
+import java.util.EnumMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.TreeMap;
+
+import net.minecraft.server.v1_5_R3.EntityTypes;
+import net.minecraft.server.v1_5_R3.NPC;
+
+import org.bukkit.entity.Animals;
+import org.bukkit.entity.EntityType;
+import org.bukkit.entity.Monster;
+import org.bukkit.entity.Projectile;
+
+import de.cubeisland.cubeengine.core.CoreResource;
+import de.cubeisland.cubeengine.core.CubeEngine;
+import de.cubeisland.cubeengine.core.logger.LogLevel;
+import de.cubeisland.cubeengine.core.util.AliasMapFormat;
+
+import gnu.trove.map.hash.THashMap;
 
 /**
  * This Matcher provides methods to match Entities.
@@ -58,8 +69,7 @@ public class EntityMatcher
             }
             catch (IllegalArgumentException ex)
             {
-                CubeEngine.getLog().warning("Unkown EntityType:" + key);
-                continue;
+                CubeEngine.getLog().warning("Unknown EntityType:" + key);
             }
         }
     }

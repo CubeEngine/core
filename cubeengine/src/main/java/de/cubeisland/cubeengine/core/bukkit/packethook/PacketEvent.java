@@ -17,7 +17,7 @@
  */
 package de.cubeisland.cubeengine.core.bukkit.packethook;
 
-import net.minecraft.server.v1_5_R2.Packet;
+import net.minecraft.server.v1_5_R3.Packet;
 import org.bukkit.entity.Player;
 
 public abstract class PacketEvent

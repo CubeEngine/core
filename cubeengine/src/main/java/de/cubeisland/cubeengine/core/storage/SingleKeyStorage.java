@@ -30,7 +30,6 @@ import de.cubeisland.cubeengine.core.storage.database.Index;
 import de.cubeisland.cubeengine.core.storage.database.SingleKeyEntity;
 import de.cubeisland.cubeengine.core.storage.database.querybuilder.QueryBuilder;
 import de.cubeisland.cubeengine.core.storage.database.querybuilder.TableBuilder;
-import de.cubeisland.cubeengine.core.util.Callback;
 
 /**
  * Storage-Implementation for single Integer-Key-Models
@@ -262,10 +261,6 @@ public class SingleKeyStorage<Key_f, M extends Model<Key_f>> extends AbstractSto
                     this.database.preparedExecute(this.modelClass, "store", values.toArray());
                 }
             }
-            for (Callback cb : this.createCallbacks)
-            {
-                cb.call(model.getId());
-            }
         }
         catch (SQLException ex)
         {
@@ -299,10 +294,6 @@ public class SingleKeyStorage<Key_f, M extends Model<Key_f>> extends AbstractSto
             {
                 this.database.preparedExecute(this.modelClass, "update", values.toArray());
             }
-            for (Callback cb : this.updateCallbacks)
-            {
-                cb.call(model.getId());
-            }
         }
         catch (SQLException ex)
         {
@@ -332,10 +323,6 @@ public class SingleKeyStorage<Key_f, M extends Model<Key_f>> extends AbstractSto
             {
                 this.database.preparedExecute(this.modelClass, "merge", values.toArray());
             }
-            for (Callback cb : this.updateCallbacks)
-            {
-                cb.call(model.getId());
-            }
         }
         catch (SQLException ex)
         {
@@ -359,10 +346,6 @@ public class SingleKeyStorage<Key_f, M extends Model<Key_f>> extends AbstractSto
             else
             {
                 this.database.preparedExecute(this.modelClass, "delete", key);
-            }
-            for (Callback cb : this.deleteCallbacks)
-            {
-                cb.call(key);
             }
         }
         catch (SQLException ex)

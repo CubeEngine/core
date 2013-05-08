@@ -17,9 +17,9 @@
  */
 package de.cubeisland.cubeengine.core.storage;
 
-import de.cubeisland.cubeengine.core.storage.database.DatabaseUpdater;
-import de.cubeisland.cubeengine.core.util.Callback;
 import java.util.Collection;
+
+import de.cubeisland.cubeengine.core.storage.database.DatabaseUpdater;
 
 /**
  * This interface provides basic access-methods for accessing the model V with a Key K
@@ -123,14 +123,6 @@ public interface Storage<K, M extends Model<K>>
      * Clears the Table
      */
     public void clear();
-
-    /**
-     * Subscribes for given SubscribeType
-     *
-     * @param type     the SubscribeType
-     * @param callback the Callback
-     */
-    public void subscribe(SubscribeType type, Callback callback);
 
     /**
      * Check if DatabaseStructure needs to be updated and update
