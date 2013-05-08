@@ -21,12 +21,21 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Map.Entry;
 
-import net.minecraft.server.v1_5_R2.*;
-import net.minecraft.server.v1_5_R2.NBTTagByte;
-import net.minecraft.server.v1_5_R2.NBTTagCompound;
-import net.minecraft.server.v1_5_R2.NBTTagEnd;
-import net.minecraft.server.v1_5_R2.TileEntity;
-import org.bukkit.craftbukkit.v1_5_R2.CraftWorld;
+import net.minecraft.server.v1_5_R3.NBTBase;
+import net.minecraft.server.v1_5_R3.NBTTagByte;
+import net.minecraft.server.v1_5_R3.NBTTagByteArray;
+import net.minecraft.server.v1_5_R3.NBTTagCompound;
+import net.minecraft.server.v1_5_R3.NBTTagDouble;
+import net.minecraft.server.v1_5_R3.NBTTagEnd;
+import net.minecraft.server.v1_5_R3.NBTTagFloat;
+import net.minecraft.server.v1_5_R3.NBTTagInt;
+import net.minecraft.server.v1_5_R3.NBTTagIntArray;
+import net.minecraft.server.v1_5_R3.NBTTagList;
+import net.minecraft.server.v1_5_R3.NBTTagLong;
+import net.minecraft.server.v1_5_R3.NBTTagShort;
+import net.minecraft.server.v1_5_R3.NBTTagString;
+import net.minecraft.server.v1_5_R3.TileEntity;
+import org.bukkit.craftbukkit.v1_5_R3.CraftWorld;
 
 import org.bukkit.Location;
 

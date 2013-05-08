@@ -23,8 +23,8 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import net.minecraft.server.v1_5_R2.NBTTagCompound;
-import net.minecraft.server.v1_5_R2.NBTTagInt;
+import net.minecraft.server.v1_5_R3.NBTTagCompound;
+import net.minecraft.server.v1_5_R3.NBTTagInt;
 
 import org.bukkit.Material;
 import org.bukkit.World;
