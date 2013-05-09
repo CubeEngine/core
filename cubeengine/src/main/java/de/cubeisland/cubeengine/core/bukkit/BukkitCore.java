@@ -19,7 +19,6 @@ package de.cubeisland.cubeengine.core.bukkit;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 
 import net.minecraft.server.v1_5_R3.Packet204LocaleAndViewDistance;

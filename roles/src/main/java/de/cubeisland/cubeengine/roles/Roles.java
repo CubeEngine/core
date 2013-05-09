@@ -69,8 +69,14 @@ public class Roles extends Module
         Module basicsModule = this.getCore().getModuleManager().getModule("basics");
         if (basicsModule != null)
         {
-            this.getCore().getEventManager().registerListener(basicsModule,new BasicsOnlinePlayerList(this));
+            this.getCore().getEventManager().registerListener(this, new BasicsOnlinePlayerList(this));
         }
+    }
+
+    @Override
+    public void onDisable()
+    {
+        this.getCore().getEventManager().removeListeners(this);
     }
 
     public RolesConfig getConfiguration()
