@@ -27,6 +27,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import java.util.TreeMap;
+import java.util.concurrent.TimeUnit;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -364,9 +365,14 @@ public class InformationCommands
         Pair<Long, Float> lowestTPS = this.basics.getLagTimer().getLowestTPS();
         if (lowestTPS.getRight() != 20)
         {
-            color = tps > 17 ? "&e" : tps > 10 ? "&c" : "&4";
+            color = ChatFormat.parseFormats(tps > 17 ? "&e" : tps > 10 ? "&c" : "&4");
             Date date = new Date(lowestTPS.getLeft());
             context.sendTranslated("&aLowest TPS was %s%.1f &f(&a%s&f)",color,lowestTPS.getRight(),df.format(date));
+            long timeSinceLastLowTPS = System.currentTimeMillis() - this.basics.getLagTimer().getLastLowTPS();
+            if (tps == 20 && TimeUnit.MINUTES.convert(timeSinceLastLowTPS,TimeUnit.MILLISECONDS) < 1)
+            {
+                context.sendTranslated("&cTPS was low in the last minute!");
+            }
         }
         //Memory
         long memUse = ManagementFactory.getMemoryMXBean().getHeapMemoryUsage().getUsed() / 1048576;

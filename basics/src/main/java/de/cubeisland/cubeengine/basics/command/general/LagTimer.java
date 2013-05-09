@@ -32,6 +32,8 @@ public class LagTimer implements Runnable
     private long lowestTPSTime = 0;
     private boolean reached20 = false;
 
+    private long lastLowTps = 0;
+
     public LagTimer(Basics module) {
         this.module = module;
         module.getCore().getTaskManager().runTimer(module, this, 0, 20); //start timer
@@ -55,10 +57,14 @@ public class LagTimer implements Runnable
         {
             if (tps == 20) this.reached20 = true;
             tpsHistory.add(tps);
-            if (reached20 && tps < lowestTPS)
+            if (reached20 && tps < 20)
             {
-                lowestTPS = tps;
-                this.lowestTPSTime = currentTick;
+                if (tps < lowestTPS)
+                {
+                    lowestTPS = tps;
+                    this.lowestTPSTime = currentTick;
+                }
+                this.lastLowTps = currentTick;
             }
         }
         lastTick = currentTick;
@@ -80,6 +86,11 @@ public class LagTimer implements Runnable
     public Pair<Long,Float> getLowestTPS()
     {
         return new Pair<Long, Float>(this.lowestTPSTime,this.lowestTPS);
+    }
+
+    public long getLastLowTPS()
+    {
+        return this.lastLowTps;
     }
 
     public void resetLowestTPS()
