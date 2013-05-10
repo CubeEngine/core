@@ -138,7 +138,6 @@ public class ModuleLoader
             {
                 if (Configuration.class.isAssignableFrom(field.getType()))
                 {
-
                     Class<? extends Configuration> configClass = (Class<? extends Configuration>)field.getType();
                     if (configClass.isAnnotationPresent(DefaultConfig.class))
                     {

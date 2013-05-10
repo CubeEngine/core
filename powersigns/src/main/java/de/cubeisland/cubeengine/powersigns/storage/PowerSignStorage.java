@@ -29,7 +29,7 @@ import org.bukkit.World;
 import de.cubeisland.cubeengine.core.storage.SingleKeyStorage;
 import de.cubeisland.cubeengine.core.storage.StorageException;
 import de.cubeisland.cubeengine.core.storage.database.querybuilder.SelectBuilder;
-import de.cubeisland.cubeengine.core.storage.world.WorldManager;
+import de.cubeisland.cubeengine.core.world.WorldManager;
 import de.cubeisland.cubeengine.powersigns.Powersigns;
 
 public class PowerSignStorage extends SingleKeyStorage<Long,PowerSignModel>

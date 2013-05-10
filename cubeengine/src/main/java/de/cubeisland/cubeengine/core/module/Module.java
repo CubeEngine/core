@@ -174,21 +174,27 @@ public abstract class Module
     {}
 
     /**
-     * This method gets called right after the module initialization
+     * This method gets called right after the module initialization.
      */
     public void onLoad()
     {}
 
     /**
-     * This method gets called when the module got enabled
+     * This method gets called when the module got enabled.
      */
     public void onEnable()
     {}
 
     /**
-     * This method gets called when the module got disabled
+     * This method gets called when the module got disabled.
      */
     public void onDisable()
+    {}
+
+    /**
+     * This method gets called when the server startup is done.
+     */
+    public void onStartupFinished()
     {}
 
     @Override

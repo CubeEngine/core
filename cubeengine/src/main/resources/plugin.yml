@@ -3,6 +3,6 @@ version: "${project.version}"
 main: "de.cubeisland.cubeengine.core.bukkit.BukkitCore"
 website: "${project.parent.url}"
 description: "${project.parent.description}"
-load: STARTUP
+#load: STARTUP
 authors:
   - "Cube Island"
