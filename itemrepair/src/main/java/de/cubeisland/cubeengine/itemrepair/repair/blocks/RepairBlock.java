@@ -35,7 +35,7 @@ import org.bukkit.inventory.PlayerInventory;
 import de.cubeisland.cubeengine.core.permission.Permission;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.conomy.Conomy;
-import de.cubeisland.cubeengine.conomy.account.Account;
+import de.cubeisland.cubeengine.conomy.account.Account_old;
 import de.cubeisland.cubeengine.conomy.currency.Currency;
 import de.cubeisland.cubeengine.itemrepair.Itemrepair;
 import de.cubeisland.cubeengine.itemrepair.material.BaseMaterial;
@@ -152,7 +152,7 @@ public class RepairBlock
 
     public void withdrawPlayer(User user, long amount)
     {
-        Account userAccount = getEconomy().getAccountsManager().getAccount(user);
+        Account_old userAccount = getEconomy().getAccountsManager().getAccount(user);
         userAccount.transaction(null,-amount);
         // TODO bankAccounts
             /*

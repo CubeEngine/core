@@ -31,7 +31,7 @@ import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.util.StringUtils;
 import de.cubeisland.cubeengine.conomy.Conomy;
 import de.cubeisland.cubeengine.conomy.ConomyPermissions;
-import de.cubeisland.cubeengine.conomy.account.Account;
+import de.cubeisland.cubeengine.conomy.account.Account_old;
 import de.cubeisland.cubeengine.conomy.account.storage.AccountModel;
 import de.cubeisland.cubeengine.conomy.currency.Currency;
 
@@ -95,8 +95,8 @@ public class MoneyCommand extends ContainerCommand
         }
         if (context.hasFlag("a"))
         {
-            Collection<Account> accs = this.module.getAccountsManager().getAccounts(user);
-            for (Account acc : accs)
+            Collection<Account_old> accs = this.module.getAccountsManager().getAccounts(user);
+            for (Account_old acc : accs)
             {
                 if (!acc.isHidden() || showHidden)
                     context.sendTranslated("&2%s's &a%s-Balance: &6%s", user.getName(), acc.getCurrency().getName(), acc.getCurrency().formatLong(acc.getBalance()));
@@ -104,7 +104,7 @@ public class MoneyCommand extends ContainerCommand
         }
         else
         {
-            Account acc;
+            Account_old acc;
             if (context.hasParam("in"))
             {
                 Currency currency = this.module.getCurrencyManager().getCurrencyByName(context.getString("in"));
@@ -243,7 +243,7 @@ public class MoneyCommand extends ContainerCommand
             }
             sender = (User)context.getSender();
         }
-        Account source = this.module.getAccountsManager().getAccount(sender, currency);
+        Account_old source = this.module.getAccountsManager().getAccount(sender, currency);
         if (source == null)
         {
             context.sendTranslated("&2%s &cdoes not have an account for &6%s&c!",
@@ -259,7 +259,7 @@ public class MoneyCommand extends ContainerCommand
                 context.sendTranslated("&cUser %s not found!", context.getString(0));
                 continue;
             }
-            Account target = this.module.getAccountsManager().getAccount(user, currency);
+            Account_old target = this.module.getAccountsManager().getAccount(user, currency);
             if (target == null)
             {
                 context.sendTranslated("&2%s &cdoes not have an account for &6%s&c!",

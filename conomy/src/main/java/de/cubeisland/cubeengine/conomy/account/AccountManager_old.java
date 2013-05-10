@@ -38,16 +38,16 @@ import de.cubeisland.cubeengine.conomy.currency.CurrencyManager;
 import gnu.trove.map.hash.THashMap;
 import gnu.trove.map.hash.TLongObjectHashMap;
 
-public class AccountManager
+public class AccountManager_old
 {
     private final AccountStorage accountStorage;
     private final CurrencyManager currencyManager;
     private final Conomy module;
-    private THashMap<String, THashMap<Currency, Account>> bankaccounts = new THashMap<String, THashMap<Currency, Account>>();
-    private TLongObjectHashMap<THashMap<Currency, Account>> useraccounts = new TLongObjectHashMap<THashMap<Currency, Account>>();
+    private THashMap<String, THashMap<Currency, Account_old>> bankaccounts = new THashMap<String, THashMap<Currency, Account_old>>();
+    private TLongObjectHashMap<THashMap<Currency, Account_old>> useraccounts = new TLongObjectHashMap<THashMap<Currency, Account_old>>();
     private Logger transactionLogger;
 
-    public AccountManager(Conomy module)
+    public AccountManager_old(Conomy module)
     {
         final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
@@ -99,7 +99,7 @@ public class AccountManager
      * @param user the user
      * @return the user's account
      */
-    public Account getAccount(User user)
+    public Account_old getAccount(User user)
     {
         return this.getAccount(user, this.module.getCurrencyManager().getMainCurrency());
     }
@@ -111,7 +111,7 @@ public class AccountManager
      * @param currency the currency
      * @return the user's account
      */
-    public Account getAccount(User user, Currency currency)
+    public Account_old getAccount(User user, Currency currency)
     {
         if (user == null)
             return null;
@@ -125,7 +125,7 @@ public class AccountManager
      * @param name the banks name
      * @return the bank's account
      */
-    public Account getAccount(String name)
+    public Account_old getAccount(String name)
     {
         return this.getAccount(name, this.getMainCurrency());
     }
@@ -137,7 +137,7 @@ public class AccountManager
      * @param currency the currency
      * @return the bank's account
      */
-    public Account getAccount(String name, Currency currency)
+    public Account_old getAccount(String name, Currency currency)
     {
         this.bankAccountExists(name, currency); // TODO this is confusing
         return this.bankaccounts.get(name).get(currency);
@@ -212,7 +212,7 @@ public class AccountManager
      * @param user the user
      * @return the new account
      */
-    public Account createNewAccount(User user)
+    public Account_old createNewAccount(User user)
     {
         //TODO log creation
         return this.createNewAccount(user, this.getMainCurrency());
@@ -225,7 +225,7 @@ public class AccountManager
      * @param currency the currency
      * @return the new account
      */
-    public Account createNewAccount(User user, Currency currency)
+    public Account_old createNewAccount(User user, Currency currency)
     {
         if (this.userAccountExists(user, currency))
         {
@@ -242,11 +242,11 @@ public class AccountManager
      * @param currency
      * @return
      */
-    private Account createNewAccountNoCheck(User user, Currency currency)
+    private Account_old createNewAccountNoCheck(User user, Currency currency)
     {
         AccountModel model = new AccountModel(user.key, null, currency.getName(), currency.getDefaultBalance(), false);
         this.accountStorage.store(model);
-        Account account = new Account(this, currency, model);
+        Account_old account = new Account_old(this, currency, model);
         this.useraccounts.get(user.key).put(currency, account);
         if (this.module.getConfig().enableLogging)
         {
@@ -263,7 +263,7 @@ public class AccountManager
      * @param name the bank-name
      * @return the new account
      */
-    public Account createNewAccount(String name)
+    public Account_old createNewAccount(String name)
     {
         return this.createNewAccount(name, this.getMainCurrency());
     }
@@ -275,7 +275,7 @@ public class AccountManager
      * @param currency the currency
      * @return the new account
      */
-    public Account createNewAccount(String name, Currency currency)
+    public Account_old createNewAccount(String name, Currency currency)
     {
         if (this.bankAccountExists(name, currency))
         {
@@ -284,11 +284,11 @@ public class AccountManager
         return this.createNewAccountNoCheck(name, currency);
     }
 
-    private Account createNewAccountNoCheck(String name, Currency currency)
+    private Account_old createNewAccountNoCheck(String name, Currency currency)
     {
         AccountModel model = new AccountModel(null, name, currency.getName(), currency.getDefaultBalance(), false);
         this.accountStorage.store(model);
-        Account account = new Account(this, currency, model);
+        Account_old account = new Account_old(this, currency, model);
         this.bankaccounts.get(name).put(currency, account);
         if (this.module.getConfig().enableLogging)
         {
@@ -302,11 +302,11 @@ public class AccountManager
     private void loadUserAccounts(User user)
     {
         Collection<AccountModel> models = this.accountStorage.loadAccounts(user.key);
-        this.useraccounts.put(user.key, new THashMap<Currency, Account>());
+        this.useraccounts.put(user.key, new THashMap<Currency, Account_old>());
         for (AccountModel model : models)
         {
             Currency currency = this.currencyManager.getCurrencyByName(model.currencyName);
-            Account account = new Account(this, currency, model);
+            Account_old account = new Account_old(this, currency, model);
             this.useraccounts.get(user.key).put(currency, account);
         }
         if (user.hasPlayedBefore() || user.isOnline()) // only if user has played on the server create missing accounts
@@ -324,11 +324,11 @@ public class AccountManager
     private void loadBankAccounts(String name)
     {
         Collection<AccountModel> models = this.accountStorage.loadAccounts(name);
-        this.bankaccounts.put(name, new THashMap<Currency, Account>());
+        this.bankaccounts.put(name, new THashMap<Currency, Account_old>());
         for (AccountModel model : models)
         {
             Currency currency = this.currencyManager.getCurrencyByName(model.currencyName);
-            Account account = new Account(this, currency, model);
+            Account_old account = new Account_old(this, currency, model);
             this.bankaccounts.get(name).put(currency, account);
         }
     }
@@ -339,7 +339,7 @@ public class AccountManager
      * @param user the user
      * @return the account or null if
      */
-    public Collection<Account> getAccounts(User user)
+    public Collection<Account_old> getAccounts(User user)
     {
         this.loadUserAccounts(user);
         return this.useraccounts.get(user.key).values();
@@ -354,7 +354,7 @@ public class AccountManager
      * @return true if the transaction was successful
      * @throws IllegalArgumentException when currencies are not convertible
      */
-    public boolean transaction(Account source, Account target, Long amount) throws IllegalArgumentException
+    public boolean transaction(Account_old source, Account_old target, Long amount) throws IllegalArgumentException
     {
         if (target == null)
         {
@@ -389,7 +389,7 @@ public class AccountManager
             for (User user : this.module.getCore().getUserManager().getOnlineUsers())
             {
                 this.userAccountExists(user);
-                Account acc = this.useraccounts.get(user.key).get(currency);
+                Account_old acc = this.useraccounts.get(user.key).get(currency);
                 if (acc != null)
                 {
                     acc.transaction(null, amount);
@@ -399,7 +399,7 @@ public class AccountManager
         else
         {
             this.accountStorage.transactAll(currency, amount);
-            this.useraccounts = new TLongObjectHashMap<THashMap<Currency, Account>>();
+            this.useraccounts = new TLongObjectHashMap<THashMap<Currency, Account_old>>();
         }
     }
 
@@ -417,7 +417,7 @@ public class AccountManager
             for (User user : this.module.getCore().getUserManager().getOnlineUsers())
             {
                 this.userAccountExists(user);
-                Account acc = this.useraccounts.get(user.key).get(currency);
+                Account_old acc = this.useraccounts.get(user.key).get(currency);
                 if (acc != null)
                 {
                     acc.set(amount);
@@ -427,7 +427,7 @@ public class AccountManager
         else
         {
             this.accountStorage.setAll(currency, amount);
-            this.useraccounts = new TLongObjectHashMap<THashMap<Currency, Account>>();
+            this.useraccounts = new TLongObjectHashMap<THashMap<Currency, Account_old>>();
         }
     }
 }

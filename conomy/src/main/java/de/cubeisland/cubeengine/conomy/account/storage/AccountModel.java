@@ -47,6 +47,8 @@ public class AccountModel implements Model<Long>
     public long value;
     @Attribute(type = AttrType.BOOLEAN)
     public boolean hidden = false;
+    // TODO world
+    public Long world;
 
     @Override
     public Long getId()

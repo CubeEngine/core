@@ -1,175 +1,63 @@
-/**
- * This file is part of CubeEngine.
- * CubeEngine is licensed under the GNU General Public License Version 3.
- *
- * CubeEngine is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * CubeEngine is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
- */
 package de.cubeisland.cubeengine.conomy.account;
 
-import de.cubeisland.cubeengine.conomy.ConomyPermissions;
+import org.bukkit.World;
+
+import de.cubeisland.cubeengine.conomy.Conomy;
 import de.cubeisland.cubeengine.conomy.account.storage.AccountModel;
-import de.cubeisland.cubeengine.conomy.currency.Currency;
-import de.cubeisland.cubeengine.core.CubeEngine;
-import de.cubeisland.cubeengine.core.user.User;
+import de.cubeisland.cubeengine.conomy.currency.Currency.CurrencyType;
 
-public class Account
+public abstract class Account<Owner>
 {
-    private User user;
+    private final Conomy module;
+
+    private Owner owner;
+    private World world;
     private AccountModel model;
-    private final Currency currency;
-    private final AccountManager manager;
 
-    public Account(AccountManager manager, Currency currency, AccountModel model)
+    private final CurrencyType currencyType;
+
+
+
+    public Account(Conomy module, CurrencyType currencyType)
     {
-        this.manager = manager;
-        this.currency = currency;
-        this.model = model;
-        this.user = model.user_id == null ? null : CubeEngine.getUserManager().getUser(model.user_id);
+        this.module = module;
+        this.currencyType = currencyType;
     }
 
-    public User getUser()
+    public Owner getOwner()
     {
-        return user;
+        return this.owner;
     }
 
-    public boolean isUserAccount()
+    public CurrencyType getCurrencyType()
     {
-        return user != null;
+        return this.currencyType;
     }
 
-    public long getBalance()
-    {
-        return this.model.value;
-    }
+    public abstract String getName();
 
-    public Currency getCurrency()
+    // TODO perhaps Object that contains detailed informations like Vaults ConomyResponse???
+    public static boolean transaction(Account from, Account to, double amount, boolean force)
     {
-        return currency;
-    }
-
-    private void updateModel()
-    {
-        this.manager.getStorage().update(this.model);
-    }
-
-    /**
-     * Transfers given amount of money from the source-account to this one.
-     *
-     * @param source the source-account (can be null)
-     * @param amount the amount to transfer (can be negative) in this accounts
-     * currency
-     * @throws IllegalArgumentException when currencies are not convertible
-     * @return the new balance
-     */
-    public long transaction(Account source, long amount) throws IllegalArgumentException
-    {
-        if (source != null)
+        if (from.getCurrencyType().equals(to.getCurrencyType()))
         {
-            if (!source.currency.equals(this.currency))
+            if (!force)
             {
-                if (!this.currency.canConvert(source.currency))
+                if (from.has(amount))
                 {
-                    throw new IllegalArgumentException("Cannot convert " + source.currency.getName() + " into " + this.currency.getName());
-                }
-                long sourceAmount = source.currency.convert(this.currency, amount);
-                source.model.value -= sourceAmount;
-            }
-            else
-            {
-                source.model.value -= amount;
-            }
-            source.updateModel();
-        }
-        this.model.value += amount;
-        this.updateModel();
-        return this.model.value;
-    }
 
-    /**
-     * Resets the balance to the defined default value.
-     */
-    public void resetToDefault()
-    {
-        this.model.value = this.currency.getDefaultBalance();
-        this.updateModel();
-    }
-
-    /**
-     * Sets the balance to the specified amount.
-     *
-     * @param amount the amount to set
-     */
-    public void set(long amount)
-    {
-        this.model.value = amount;
-        this.updateModel();
-    }
-
-    /**
-     * Scales the balance with the given factor (always rounding down if
-     * necessary)
-     *
-     * @param factor the factor to scale with
-     * @return the new balance
-     */
-    public long scale(double factor)
-    {
-        this.model.value = (long)(factor * this.model.value);
-        this.updateModel();
-        return this.model.value;
-    }
-
-    public boolean isHidden()
-    {
-        return this.model.hidden;
-    }
-
-    public void setHidden(boolean hidden)
-    {
-        this.model.hidden = hidden;
-    }
-
-    public boolean canAfford(long amount)
-    {
-        if (this.isUserAccount())
-        {
-            if (!ConomyPermissions.ACCOUNT_ALLOWUNDERMIN.isAuthorized(this.user))
-            {
-                if (this.getBalance() - amount < this.getCurrency().getMinMoney())
-                {
-                    return false;
                 }
             }
-            return true; // Has perm or money
+            from.withdraw(amount);
+            to.deposit(amount);
         }
-        else
-        {
-            return true; //TODO bank-accs later
-        }
+        return false;
     }
 
-    @Override
-    public String toString()
-    {
-        if (this.isUserAccount())
-        {
-            return "USER:" + this.user.getName();
-        }
-        else
-        {
-            return "BANK:" + this.model.name;
-        }
+    public abstract void deposit(double amount);
 
-    }
+    public abstract void withdraw(double amount);
+
+    public abstract boolean has(double amount);
+
 }

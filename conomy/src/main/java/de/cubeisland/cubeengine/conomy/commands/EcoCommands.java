@@ -26,7 +26,7 @@ import de.cubeisland.cubeengine.core.command.reflected.Command;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.util.StringUtils;
 import de.cubeisland.cubeengine.conomy.Conomy;
-import de.cubeisland.cubeengine.conomy.account.Account;
+import de.cubeisland.cubeengine.conomy.account.Account_old;
 import de.cubeisland.cubeengine.conomy.currency.Currency;
 
 public class EcoCommands extends ContainerCommand
@@ -92,7 +92,7 @@ public class EcoCommands extends ContainerCommand
                     context.sendTranslated("&cUser %s not found!", context.getString(0));
                     continue;
                 }
-                Account target = this.module.getAccountsManager().getAccount(user, currency);
+                Account_old target = this.module.getAccountsManager().getAccount(user, currency);
                 if (target == null)
                 {
                     context.sendTranslated("&2%s &cdoes not have an account for &6%s&c!",
@@ -162,7 +162,7 @@ public class EcoCommands extends ContainerCommand
                     context.sendTranslated("&cUser %s not found!", context.getString(0));
                     return;
                 }
-                Account target = this.module.getAccountsManager().getAccount(user, currency);
+                Account_old target = this.module.getAccountsManager().getAccount(user, currency);
                 if (target == null)
                 {
                     context.sendTranslated("&2%s &cdoes not have an account for &6%s&c!",
@@ -223,7 +223,7 @@ public class EcoCommands extends ContainerCommand
                     context.sendTranslated("&cUser %s not found!", context.getString(0));
                     return;
                 }
-                Account target = this.module.getAccountsManager().getAccount(user, currency);
+                Account_old target = this.module.getAccountsManager().getAccount(user, currency);
                 if (target == null)
                 {
                     context.sendTranslated("&2%s &cdoes not have an account for &6%s&c!",
@@ -291,7 +291,7 @@ public class EcoCommands extends ContainerCommand
                     context.sendTranslated("&cUser %s not found!", context.getString(0));
                     return;
                 }
-                Account target = this.module.getAccountsManager().getAccount(user, currency);
+                Account_old target = this.module.getAccountsManager().getAccount(user, currency);
                 if (target == null)
                 {
                     context.sendTranslated("&2%s &cdoes not have an account for &6%s&c!",
@@ -340,7 +340,7 @@ public class EcoCommands extends ContainerCommand
                 context.sendTranslated("&cUser %s not found!", context.getString(0));
                 return;
             }
-            Account target = this.module.getAccountsManager().getAccount(user, currency);
+            Account_old target = this.module.getAccountsManager().getAccount(user, currency);
             if (target == null)
             {
                 context.sendTranslated("&2%s &cdoes not have an account for &6%s&c!",
@@ -390,7 +390,7 @@ public class EcoCommands extends ContainerCommand
                 context.sendTranslated("&cUser %s not found!", context.getString(0));
                 return;
             }
-            Account target = this.module.getAccountsManager().getAccount(user, currency);
+            Account_old target = this.module.getAccountsManager().getAccount(user, currency);
             if (target == null)
             {
                 context.sendTranslated("&2%s &cdoes not have an account for &6%s&c!",

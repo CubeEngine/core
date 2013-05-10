@@ -23,7 +23,7 @@ import org.bukkit.event.Listener;
 import de.cubeisland.cubeengine.core.module.Module;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.conomy.Conomy;
-import de.cubeisland.cubeengine.conomy.account.Account;
+import de.cubeisland.cubeengine.conomy.account.Account_old;
 
 import com.vexsoftware.votifier.model.VotifierEvent;
 
@@ -42,6 +42,6 @@ public class Vote extends Module implements Listener
     {
         final com.vexsoftware.votifier.model.Vote vote = event.getVote();
         final User user = this.getCore().getUserManager().getUser(vote.getUsername());
-        final Account account = this.conomy.getAccountsManager().getAccount(user);
+        final Account_old account = this.conomy.getAccountsManager().getAccount(user);
     }
 }

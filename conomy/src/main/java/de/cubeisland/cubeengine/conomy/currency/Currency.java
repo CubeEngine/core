@@ -371,4 +371,9 @@ public class Currency
         }
         return amount *= rate;
     }
+
+    public enum CurrencyType
+    {
+        NORMAL, EXP, ITEM;
+    }
 }

@@ -20,7 +20,7 @@ package de.cubeisland.cubeengine.vaultcompat;
 import java.util.List;
 
 import de.cubeisland.cubeengine.conomy.Conomy;
-import de.cubeisland.cubeengine.conomy.account.Account;
+import de.cubeisland.cubeengine.conomy.account.Account_old;
 
 import net.milkbowl.vault.economy.Economy;
 import net.milkbowl.vault.economy.EconomyResponse;
@@ -93,7 +93,7 @@ public class VaultConomyService implements Economy
     @Override
     public double getBalance(String s)
     {
-        Account acc = this.conomy.getAccountsManager().getAccount(s);
+        Account_old acc = this.conomy.getAccountsManager().getAccount(s);
         if (acc != null)
         {
             return acc.getBalance() * 1.0;

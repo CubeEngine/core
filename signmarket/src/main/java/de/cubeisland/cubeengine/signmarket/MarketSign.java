@@ -37,7 +37,7 @@ import de.cubeisland.cubeengine.core.util.InventoryGuardFactory;
 import de.cubeisland.cubeengine.core.util.RomanNumbers;
 import de.cubeisland.cubeengine.core.util.matcher.Match;
 import de.cubeisland.cubeengine.conomy.Conomy;
-import de.cubeisland.cubeengine.conomy.account.Account;
+import de.cubeisland.cubeengine.conomy.account.Account_old;
 import de.cubeisland.cubeengine.conomy.currency.Currency;
 import de.cubeisland.cubeengine.signmarket.storage.SignMarketBlockModel;
 import de.cubeisland.cubeengine.signmarket.storage.SignMarketItemModel;
@@ -762,8 +762,8 @@ public class MarketSign
                     user.sendTranslated("&cYou cannot afford the price of these items!");
                     return;
                 }
-                Account userAccount = this.conomy.getAccountsManager().getAccount(user, this.getCurrency());
-                Account ownerAccount = this.conomy.getAccountsManager().getAccount(this.getOwner(), this.getCurrency());
+                Account_old userAccount = this.conomy.getAccountsManager().getAccount(user, this.getCurrency());
+                Account_old ownerAccount = this.conomy.getAccountsManager().getAccount(this.getOwner(), this.getCurrency());
                 ItemStack item = this.getItem().clone();
                 item.setAmount(this.getAmount());
                 if (checkForPlace(user.getInventory(), item.clone()))
@@ -810,8 +810,8 @@ public class MarketSign
             ItemStack item = this.getItem().clone();
             item.setAmount(this.getAmount());
 
-            Account userAccount = this.conomy.getAccountsManager().getAccount(user, this.getCurrency());
-            Account ownerAccount = this.conomy.getAccountsManager().getAccount(this.getOwner(), this.getCurrency());
+            Account_old userAccount = this.conomy.getAccountsManager().getAccount(user, this.getCurrency());
+            Account_old ownerAccount = this.conomy.getAccountsManager().getAccount(this.getOwner(), this.getCurrency());
             this.conomy.getAccountsManager().transaction(ownerAccount, userAccount, this.getPrice());
             user.getInventory().removeItem(item);
             if (this.hasStock())

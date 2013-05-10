@@ -23,7 +23,7 @@ import de.cubeisland.cubeengine.core.command.CommandManager;
 import de.cubeisland.cubeengine.core.module.Module;
 import de.cubeisland.cubeengine.core.util.Profiler;
 import de.cubeisland.cubeengine.core.util.convert.Convert;
-import de.cubeisland.cubeengine.conomy.account.AccountManager;
+import de.cubeisland.cubeengine.conomy.account.AccountManager_old;
 import de.cubeisland.cubeengine.conomy.account.storage.AccountStorage;
 import de.cubeisland.cubeengine.conomy.commands.EcoCommands;
 import de.cubeisland.cubeengine.conomy.commands.MoneyCommand;
@@ -37,7 +37,7 @@ import de.cubeisland.cubeengine.conomy.currency.CurrencyManager;
 public class Conomy extends Module
 {
     private ConomyConfiguration config;
-    private AccountManager accountsManager;
+    private AccountManager_old accountsManager;
     private AccountStorage accountsStorage;
     private CurrencyManager currencyManager;
 
@@ -61,7 +61,7 @@ public class Conomy extends Module
         System.out.print(Profiler.getCurrentDelta("conomyEnable", TimeUnit.MILLISECONDS) + "ms - AccountStorage");
         this.accountsStorage = new AccountStorage(this.getCore().getDB());
         System.out.print(Profiler.getCurrentDelta("conomyEnable", TimeUnit.MILLISECONDS) + "ms - AccountManager");
-        this.accountsManager = new AccountManager(this); // Needs cManager / aStorage
+        this.accountsManager = new AccountManager_old(this); // Needs cManager / aStorage
         System.out.print(Profiler.getCurrentDelta("conomyEnable", TimeUnit.MILLISECONDS) + "ms - register Commands");
         final CommandManager cm = this.getCore().getCommandManager();
         cm.registerCommand(new MoneyCommand(this));
@@ -69,7 +69,7 @@ public class Conomy extends Module
         System.out.print(Profiler.getCurrentDelta("conomyEnable", TimeUnit.MILLISECONDS) + "ms - done");
     }
 
-    public AccountManager getAccountsManager()
+    public AccountManager_old getAccountsManager()
     {
         return this.accountsManager;
     }
