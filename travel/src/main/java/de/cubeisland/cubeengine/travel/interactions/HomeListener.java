@@ -48,7 +48,7 @@ public class HomeListener implements Listener
             Material block = event.getClickedBlock().getType();
             if (block == Material.BED_BLOCK || block == Material.BED)
             {
-                User user = module.getCore().getUserManager().getUser(event.getPlayer());
+                User user = module.getCore().getUserManager().getUser(event.getPlayer().getName());
                 if (user.isSneaking())
                 {
                     if (tpManager.hasHome("home", user))

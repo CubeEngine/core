@@ -78,7 +78,7 @@ public class Chat extends Module implements Listener
 
         if (roles != null)
         {
-            User user = this.getCore().getUserManager().getExactUser(player);
+            User user = this.getCore().getUserManager().getExactUser(player.getName());
             RolesAttachment rolesAttachment = user.get(RolesAttachment.class);
             if (rolesAttachment == null)
             {

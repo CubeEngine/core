@@ -129,7 +129,7 @@ public class SignManager implements Listener
             {
                 return; //not valid -> ignore
             }
-            User user = this.module.getCore().getUserManager().getExactUser(event.getPlayer());
+            User user = this.module.getCore().getUserManager().getExactUser(event.getPlayer().getName());
             PowerSign powerSign = new PowerSign(signType,event.getBlock().getLocation(),user,event.getLines());
             this.loadedPowerSigns.put(powerSign.getLocation(),powerSign);
             powerSign.updateSignText();
@@ -145,13 +145,13 @@ public class SignManager implements Listener
         if (event.getClickedBlock() == null
             || event.getClickedBlock().getType().equals(Material.AIR)
             || !(event.getClickedBlock().getType().equals(Material.WALL_SIGN)
-            || event.getClickedBlock().equals(Material.SIGN_POST)))
+            || event.getClickedBlock().getType() == Material.SIGN_POST))
         {
             return;
         }
         Location location = event.getClickedBlock().getLocation();
         PowerSign powerSign = this.loadedPowerSigns.get(location);
-        User user = this.module.getCore().getUserManager().getExactUser(event.getPlayer());
+        User user = this.module.getCore().getUserManager().getExactUser(event.getPlayer().getName());
         if (powerSign == null)
         {
             String psid = getPSID(location);

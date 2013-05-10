@@ -42,7 +42,7 @@ public class ShoutListener implements Listener
     @EventHandler(priority = EventPriority.MONITOR)
     public void onLanguageReceived(PlayerLanguageReceivedEvent event)
     {
-        User user = this.module.getCore().getUserManager().getExactUser(event.getPlayer());
+        User user = this.module.getCore().getUserManager().getExactUser(event.getPlayer().getName());
 
         if (this.module.getCore().isDebug())
         {

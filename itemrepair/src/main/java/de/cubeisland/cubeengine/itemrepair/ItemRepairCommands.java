@@ -111,7 +111,7 @@ public class ItemRepairCommands extends ContainerCommand implements Listener
     @EventHandler(priority = EventPriority.LOWEST)
     public void onAdd(PlayerInteractEvent event)
     {
-        final User user = this.module.getCore().getUserManager().getExactUser(event.getPlayer());
+        final User user = this.module.getCore().getUserManager().getExactUser(event.getPlayer().getName());
         if (this.addRequests.contains(user.getName()))
         {
             if (event.getAction() == Action.RIGHT_CLICK_BLOCK)
@@ -144,7 +144,7 @@ public class ItemRepairCommands extends ContainerCommand implements Listener
     @EventHandler(priority = EventPriority.LOWEST)
     public void onRemove(PlayerInteractEvent event)
     {
-        final User user = this.module.getCore().getUserManager().getExactUser(event.getPlayer());
+        final User user = this.module.getCore().getUserManager().getExactUser(event.getPlayer().getName());
         if (this.removeRequests.contains(user.getName()))
         {
             if (event.getAction() == Action.RIGHT_CLICK_BLOCK)

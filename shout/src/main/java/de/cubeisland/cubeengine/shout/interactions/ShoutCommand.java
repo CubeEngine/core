@@ -68,7 +68,7 @@ public class ShoutCommand
 
         for (Player player : players)
         {
-            User u = this.module.getCore().getUserManager().getExactUser(player);
+            User u = this.module.getCore().getUserManager().getExactUser(player.getName());
             String[] message = announcement.getMessage(u.getLocale());
             if (message != null)
             {

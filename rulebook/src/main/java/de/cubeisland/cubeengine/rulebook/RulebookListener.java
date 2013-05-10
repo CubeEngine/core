@@ -17,6 +17,8 @@
  */
 package de.cubeisland.cubeengine.rulebook;
 
+import java.util.Locale;
+
 import org.bukkit.Material;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -26,7 +28,6 @@ import de.cubeisland.cubeengine.core.bukkit.PlayerLanguageReceivedEvent;
 import de.cubeisland.cubeengine.core.i18n.Language;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.rulebook.bookManagement.RulebookManager;
-import java.util.Locale;
 
 class RulebookListener implements Listener
 {
@@ -43,7 +44,7 @@ class RulebookListener implements Listener
     @EventHandler
     public void onPlayerLanguageReceived(PlayerLanguageReceivedEvent event)
     {
-        User user = this.module.getCore().getUserManager().getExactUser(event.getPlayer());
+        User user = this.module.getCore().getUserManager().getExactUser(event.getPlayer().getName());
         if(!user.hasPlayedBefore() && !this.rulebookManager.getLocales().isEmpty())
         {
             Language language = this.rulebookManager.getLanguage(event.getLanguage());

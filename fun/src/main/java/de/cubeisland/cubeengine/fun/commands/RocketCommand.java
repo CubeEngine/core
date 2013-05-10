@@ -185,7 +185,7 @@ public class RocketCommand
         {
             if (event.getEntity() instanceof Player && event.getCause() == EntityDamageEvent.DamageCause.FALL)
             {
-                User user = this.userManager.getExactUser((Player)event.getEntity());
+                User user = this.userManager.getExactUser(((Player)event.getEntity()).getName());
                 if (user == null)
                 {
                     return;

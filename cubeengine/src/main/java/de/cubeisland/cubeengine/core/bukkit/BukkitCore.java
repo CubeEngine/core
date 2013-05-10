@@ -70,7 +70,7 @@ public final class BukkitCore extends JavaPlugin implements Core
     private Version version;
     private Database database;
     private BukkitPermissionManager permissionManager;
-    private UserManager userManager;
+    private BukkitUserManager userManager;
     private FileManager fileManager;
     private BukkitModuleManager moduleManager;
     private I18n i18n;
@@ -184,7 +184,7 @@ public final class BukkitCore extends JavaPlugin implements Core
         this.eventRegistration = new EventManager(this);
 
         // depends on: executor, database, Server, core config and event registration
-        this.userManager = new UserManager(this);
+        this.userManager = new BukkitUserManager(this);
 
         // depends on: file manager, core config
         this.i18n = new I18n(this);
@@ -231,6 +231,7 @@ public final class BukkitCore extends JavaPlugin implements Core
     @Override
     public void onEnable()
     {
+        this.userManager.init();
         this.worldManager.loadWorlds();
 
         if (this.config.preventSpamKick)

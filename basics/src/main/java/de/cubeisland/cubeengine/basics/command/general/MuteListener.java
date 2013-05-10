@@ -43,7 +43,7 @@ public class MuteListener implements Listener
         if (!event.getMessage().startsWith("/"))
         {
             // muted?
-            User sender = this.basics.getCore().getUserManager().getExactUser(event.getPlayer());
+            User sender = this.basics.getCore().getUserManager().getExactUser(event.getPlayer().getName());
             if (sender != null)
             {
                 BasicUser bUser = this.basics.getBasicUserManager().getBasicUser(sender);
@@ -57,7 +57,7 @@ public class MuteListener implements Listener
             ArrayList<Player> ignore = new ArrayList<Player>();
             for (Player player : event.getRecipients())
             {
-                User user = this.basics.getCore().getUserManager().getExactUser(player);
+                User user = this.basics.getCore().getUserManager().getExactUser(player.getName());
                 if (this.basics.getIgnoreListManager().checkIgnore(user, sender))
                 {
                     ignore.add(player);

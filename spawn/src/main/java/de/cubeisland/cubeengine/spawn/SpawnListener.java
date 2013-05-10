@@ -51,7 +51,7 @@ public class SpawnListener implements Listener
     {
         if (!event.getPlayer().hasPlayedBefore())
         {
-            User user = um.getExactUser(event.getPlayer());
+            User user = um.getExactUser(event.getPlayer().getName());
             RolesAttachment rolesAttachment = user.get(RolesAttachment.class);
             if (rolesAttachment == null)
             {
@@ -77,7 +77,7 @@ public class SpawnListener implements Listener
     {
         if (!event.isBedSpawn())
         {
-            User user = um.getExactUser(event.getPlayer());
+            User user = um.getExactUser(event.getPlayer().getName());
             RolesAttachment rolesAttachment = user.get(RolesAttachment.class);
             if (rolesAttachment == null)
             {
