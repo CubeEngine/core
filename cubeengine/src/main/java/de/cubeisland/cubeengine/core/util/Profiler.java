@@ -46,7 +46,7 @@ public class Profiler
     public static long getCurrentDelta(String id)
     {
         final long nanos = System.nanoTime();
-        Validate.notNull(id, "The ID must not be null!");
+        assert id != null: "The ID must not be null!";
         synchronized (startTimes)
         {
             if (!startTimes.containsKey(id))
@@ -65,7 +65,7 @@ public class Profiler
     public static long endProfiling(String id)
     {
         final long delta = System.nanoTime();
-        Validate.notNull(id, "The ID must not be null!");
+        assert id != null: "The ID must not be null!";
         synchronized (startTimes)
         {
             return delta - startTimes.remove(id);

@@ -27,11 +27,10 @@ import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Random;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
-
-import org.bukkit.OfflinePlayer;
 
 import de.cubeisland.cubeengine.core.Core;
 import de.cubeisland.cubeengine.core.command.CommandSender;
@@ -40,11 +39,11 @@ import de.cubeisland.cubeengine.core.logger.LogLevel;
 import de.cubeisland.cubeengine.core.module.Module;
 import de.cubeisland.cubeengine.core.permission.Permission;
 import de.cubeisland.cubeengine.core.util.ChatFormat;
+import de.cubeisland.cubeengine.core.util.StringUtils;
 import de.cubeisland.cubeengine.core.util.Triplet;
 
 import gnu.trove.map.hash.TLongObjectHashMap;
 import gnu.trove.set.hash.THashSet;
-import org.apache.commons.lang.RandomStringUtils;
 
 /**
  * This Manager provides methods to access the Users and saving/loading from
@@ -60,6 +59,7 @@ public abstract class AbstractUserManager implements UserManager
     protected String salt;
     protected final MessageDigest messageDigest;
     protected Set<Long> allKeys;
+    private Random random;
 
     public AbstractUserManager(final Core core)
     {
@@ -71,6 +71,7 @@ public abstract class AbstractUserManager implements UserManager
 
         this.defaultAttachments = new THashSet<DefaultAttachment>();
 
+        this.random = new Random();
         this.loadSalt();
 
         try
@@ -127,12 +128,6 @@ public abstract class AbstractUserManager implements UserManager
         this.storage.resetAllPasswords();
     }
 
-    /**
-     * Removes the user permanently. Data cannot be restored later on
-     *
-     * @param user the User
-     * @return fluent interface
-     */
     public void removeUser(final User user)
     {
         this.storage.delete(user); //this is async
@@ -144,31 +139,6 @@ public abstract class AbstractUserManager implements UserManager
         return this.getUser(name, true);
     }
 
-    /**
-     * Gets a User by Offlineplayer (creates new User if not found)
-     *
-     * @param player the player
-     * @return the User
-     */
-    public User getExactUser(OfflinePlayer player)
-    {
-        if (player == null)
-        {
-            return null;
-        }
-        if (player instanceof User)
-        {
-            return (User)player;
-        }
-        return this.getExactUser(player.getName());
-    }
-
-    /**
-     * Gets a User by CommandSender (creates new User if not found)
-     *
-     * @param sender the sender
-     * @return the User OR null if sender is not a Player
-     */
     public User getExactUser(CommandSender sender)
     {
         if (sender == null)
@@ -177,17 +147,11 @@ public abstract class AbstractUserManager implements UserManager
         }
         if (sender instanceof User)
         {
-            return this.getExactUser((OfflinePlayer)sender);
+            return this.getExactUser(sender.getName());
         }
         return null;
     }
 
-    /**
-     * Gets a User by Key in DB
-     *
-     * @param key the key to get the user by
-     * @return the user or null if not found
-     */
     public synchronized User getUser(long key)
     {
         User user = this.cachedUsers.get(key);
@@ -281,11 +245,6 @@ public abstract class AbstractUserManager implements UserManager
         user.detachAll();
     }
 
-    /**
-     * Returns all the users that are currently online
-     *
-     * @return a unmodifiable List of players
-     */
     public synchronized Set<User> getOnlineUsers()
     {
         return new THashSet<User>(this.onlineUsers);
@@ -296,12 +255,6 @@ public abstract class AbstractUserManager implements UserManager
         return new THashSet<User>(this.cachedUsers.values());
     }
 
-    /**
-     * Finds an online User
-     *
-     * @param name the name
-     * @return a online User
-     */
     public User findOnlineUser(String name)
     {
         User user = this.findUser(name);
@@ -363,7 +316,7 @@ public abstract class AbstractUserManager implements UserManager
             {
                 try
                 {
-                    this.salt = RandomStringUtils.randomAscii(32);
+                    this.salt = StringUtils.randomString(this.random, 32);
                     FileWriter fileWriter = new FileWriter(file);
                     fileWriter.write(this.salt);
                     fileWriter.close();

@@ -203,9 +203,9 @@ public abstract class AbstractDatabase implements Database
     @Override
     public void storeStatement(Class owner, String name, String statement) throws SQLException
     {
-        Validate.notNull(owner, "The owner must not be null!");
-        Validate.notNull(name, "The name must not be null!");
-        Validate.notNull(statement, "The statement must not be null!");
+        assert owner != null: "The owner must not be null!";
+        assert name != null: "The name must not be null!";
+        assert statement != null: "The statement must not be null!";
 
         this.statements.put(owner.getName() + "_" + name.toLowerCase(Locale.ENGLISH), statement);
     }
@@ -223,8 +223,8 @@ public abstract class AbstractDatabase implements Database
     @Override
     public PreparedStatement getStoredStatement(Class owner, String name)
     {
-        Validate.notNull(owner, "The owner must not be null!");
-        Validate.notNull(name, "The name must not be null!");
+        assert owner != null: "The owner must not be null!";
+        assert name != null: "The name must not be null!";
 
         name = owner.getName() + "_" + name.toLowerCase(Locale.ENGLISH);
         PreparedStatement statement = this.preparedStatements.get(name);

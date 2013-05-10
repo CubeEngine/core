@@ -17,8 +17,6 @@
  */
 package de.cubeisland.cubeengine.core.webapi;
 
-import org.apache.commons.lang.Validate;
-
 import java.util.List;
 import java.util.Map;
 
@@ -50,7 +48,7 @@ public class Parameters
     @SuppressWarnings("unchecked")
     public <T> T get(String name, int index, T def)
     {
-        Validate.notNull(def, "The default value must not be null!");
+        assert def != null: "The default value must not be null!";
 
         T value = def;
         value = (T)this.get(name, index, def.getClass());

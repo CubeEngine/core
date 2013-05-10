@@ -136,7 +136,7 @@ public abstract class Configuration<ConfigCodec extends ConfigurationCodec>
      */
     public final void setFile(File file)
     {
-        Validate.notNull(file, "The file must not be null!");
+        assert file != null: "The file must not be null!";
         this.file = file;
     }
 

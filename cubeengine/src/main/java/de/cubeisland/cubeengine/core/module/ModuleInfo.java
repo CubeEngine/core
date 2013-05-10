@@ -82,8 +82,8 @@ public class ModuleInfo
 
     public ModuleInfo(File file, ModuleConfig config)
     {
-        Validate.notNull(config, "The module configuration failed to loaded!");
-        Validate.notNull(config.name, "The module doesn't seem to have a name.");
+        assert config != null: "The module configuration failed to loaded!";
+        assert config.name != null: "The module doesn't seem to have a name.";
 
         this.name = config.name.trim();
         Validate.notEmpty(this.name, "The module name seems to be empty.");

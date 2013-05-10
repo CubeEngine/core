@@ -170,7 +170,7 @@ public class ModuleLoader
      */
     void unloadModule(Module module)
     {
-        Validate.notNull(module, "The module must not be null!");
+        assert module != null: "The module must not be null!";
 
         ModuleClassLoader classLoader = this.classLoaders.remove(module.getId());
         if (classLoader != null)
@@ -189,7 +189,7 @@ public class ModuleLoader
      */
     public synchronized ModuleInfo loadModuleInfo(File file) throws InvalidModuleException
     {
-        Validate.notNull(file, "The file most not be null!");
+        assert file != null: "The file most not be null!";
 
         if (!file.exists())
         {
@@ -335,7 +335,7 @@ public class ModuleLoader
      */
     public void registerLibraryClassPath(File file) throws MalformedURLException
     {
-        Validate.notNull(file, "The file must not be null!");
+        assert file != null: "The file must not be null!";
 
         this.registerLibraryClassPath(file.toURI().toURL());
     }
@@ -347,7 +347,7 @@ public class ModuleLoader
      */
     public void registerLibraryClassPath(URL url)
     {
-        Validate.notNull(url, "The url must not be null!");
+        assert url != null: "The url must not be null!";
 
         this.libClassLoader.addURL(url);
     }

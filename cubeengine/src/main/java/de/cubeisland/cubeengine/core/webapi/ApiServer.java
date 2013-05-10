@@ -108,7 +108,7 @@ public class ApiServer
 
     public void configure(final ApiConfig config)
     {
-        Validate.notNull(config, "The config must not be null!");
+        assert config != null: "The config must not be null!";
 
         try
         {
@@ -199,7 +199,7 @@ public class ApiServer
 
     public void registerApiHandlers(final ApiHolder holder)
     {
-        Validate.notNull(holder, "The API holder must not be null!");
+        assert holder != null: "The API holder must not be null!";
 
         String route;
         Action actionAnnotation;
@@ -266,7 +266,7 @@ public class ApiServer
      */
     public void setBindAddress(InetAddress address)
     {
-        Validate.notNull(address, "The address must not be null!");
+        assert address != null: "The address must not be null!";
 
         this.bindAddress.set(address);
     }
@@ -431,7 +431,7 @@ public class ApiServer
 
     public void setWhitelist(Set<String> newWhitelist)
     {
-        Validate.notNull(newWhitelist, "The whitelist must not be null!");
+        assert newWhitelist != null: "The whitelist must not be null!";
         Validate.noNullElements(newWhitelist, "The whitelist must not contain null values!");
 
         this.whitelist.clear();
@@ -513,7 +513,7 @@ public class ApiServer
 
     public void setBlacklist(Set<String> newBlacklist)
     {
-        Validate.notNull(newBlacklist, "The blacklist must not be null!");
+        assert newBlacklist != null: "The blacklist must not be null!";
         Validate.noNullElements(newBlacklist, "The blacklist must not contain null values!");
 
         this.blacklist.clear();
@@ -603,8 +603,8 @@ public class ApiServer
 
     public void subscribe(String event, ApiRequestHandler requestHandler)
     {
-        Validate.notNull(event, "The event name must not be null!");
-        Validate.notNull(requestHandler, "The request handler must not be null!");
+        assert event != null: "The event name must not be null!";
+        assert requestHandler != null: "The request handler must not be null!";
         event = event.toLowerCase(Locale.ENGLISH);
 
         List<ApiRequestHandler> subscribedHandlers = this.subscriptions.get(event);
@@ -617,8 +617,8 @@ public class ApiServer
 
     public void unsubscribe(String event, ApiRequestHandler requestHandler)
     {
-        Validate.notNull(event, "The event name must not be null!");
-        Validate.notNull(requestHandler, "The request handler must not be null!");
+        assert event != null: "The event name must not be null!";
+        assert requestHandler != null: "The request handler must not be null!";
         event = event.toLowerCase(Locale.ENGLISH);
 
         List<ApiRequestHandler> subscribedHandlers = this.subscriptions.get(event);
@@ -634,7 +634,7 @@ public class ApiServer
 
     public void unsubscribe(String event)
     {
-        Validate.notNull(event, "The event name must not be null!");
+        assert event != null: "The event name must not be null!";
         event = event.toLowerCase(Locale.ENGLISH);
 
         this.subscriptions.remove(event);
@@ -642,7 +642,7 @@ public class ApiServer
 
     public void unsubscribe(ApiRequestHandler handler)
     {
-        Validate.notNull(handler, "The event name must not be null!");
+        assert handler != null: "The event name must not be null!";
 
         Iterator<Map.Entry<String, List<ApiRequestHandler>>> iter = this.subscriptions.entrySet().iterator();
 
@@ -668,7 +668,7 @@ public class ApiServer
 
     public void fireEvent(String event, Map<String, Object> data)
     {
-        Validate.notNull(event, "The event name must not be null!");
+        assert event != null: "The event name must not be null!";
         event = event.toLowerCase(Locale.ENGLISH);
 
         List<ApiRequestHandler> subscribedHandlers = this.subscriptions.get(event);

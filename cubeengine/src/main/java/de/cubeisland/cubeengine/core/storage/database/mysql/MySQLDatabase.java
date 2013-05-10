@@ -100,7 +100,7 @@ public class MySQLDatabase extends AbstractDatabase
     @Override
     public String prepareTableName(String name)
     {
-        Validate.notNull(name, "The name must not be null!");
+        assert name != null: "The name must not be null!";
 
         return NAME_QUOTE + this.tablePrefix + name + NAME_QUOTE;
     }
@@ -108,7 +108,7 @@ public class MySQLDatabase extends AbstractDatabase
     @Override
     public String prepareFieldName(String name)
     {
-        Validate.notNull(name, "The name must not be null!");
+        assert name != null: "The name must not be null!";
 
         int dotOffset = name.indexOf('.');
         if (dotOffset >= 0)

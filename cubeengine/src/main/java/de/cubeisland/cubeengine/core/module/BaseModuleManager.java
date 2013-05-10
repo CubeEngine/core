@@ -114,7 +114,7 @@ public abstract class BaseModuleManager implements ModuleManager
      */
     public synchronized Module loadModule(File moduleFile) throws InvalidModuleException, CircularDependencyException, MissingDependencyException, IncompatibleDependencyException, IncompatibleCoreException, MissingPluginDependencyException
     {
-        Validate.notNull(moduleFile, "The file must not be null!");
+        assert moduleFile != null: "The file must not be null!";
         if (!moduleFile.isFile())
         {
             throw new IllegalArgumentException("The given File is does not exist is not a normal file!");
@@ -148,7 +148,7 @@ public abstract class BaseModuleManager implements ModuleManager
      */
     public synchronized void loadModules(File directory)
     {
-        Validate.notNull(directory, "The directory must not be null!");
+        assert directory != null: "The directory must not be null!";
         if (!directory.isDirectory())
         {
             throw new IllegalArgumentException("The given File is no directory!");
@@ -332,15 +332,10 @@ public abstract class BaseModuleManager implements ModuleManager
             }
         }
 
-        if (this.enableModule(module))
-        {
-            this.modules.put(module.getId(), module);
-            this.classMap.put(module.getClass(), module);
+        this.modules.put(module.getId(), module);
+        this.classMap.put(module.getClass(), module);
 
-            return module;
-        }
-
-        return null;
+        return module;
     }
 
     /**

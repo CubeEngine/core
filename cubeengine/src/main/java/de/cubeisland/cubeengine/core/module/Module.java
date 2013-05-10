@@ -221,7 +221,7 @@ public abstract class Module
      */
     public InputStream getResource(String path)
     {
-        Validate.notNull(path, "The path must not be null!");
+        assert path != null: "The path must not be null!";
         return this.getClass().getResourceAsStream(path);
     }
 
