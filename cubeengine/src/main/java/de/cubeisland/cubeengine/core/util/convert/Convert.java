@@ -27,15 +27,11 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.OfflinePlayer;
 import org.bukkit.World;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemStack;
 
-import de.cubeisland.cubeengine.core.Core;
-import de.cubeisland.cubeengine.core.CubeEngine;
 import de.cubeisland.cubeengine.core.config.node.BooleanNode;
 import de.cubeisland.cubeengine.core.config.node.ByteNode;
 import de.cubeisland.cubeengine.core.config.node.CharNode;
@@ -51,6 +47,7 @@ import de.cubeisland.cubeengine.core.config.node.ShortNode;
 import de.cubeisland.cubeengine.core.config.node.StringNode;
 import de.cubeisland.cubeengine.core.logger.CubeLevel;
 import de.cubeisland.cubeengine.core.user.User;
+import de.cubeisland.cubeengine.core.util.Version;
 import de.cubeisland.cubeengine.core.util.convert.converter.BooleanConverter;
 import de.cubeisland.cubeengine.core.util.convert.converter.ByteConverter;
 import de.cubeisland.cubeengine.core.util.convert.converter.CubeLevelConverter;
@@ -62,13 +59,12 @@ import de.cubeisland.cubeengine.core.util.convert.converter.FloatConverter;
 import de.cubeisland.cubeengine.core.util.convert.converter.IntegerConverter;
 import de.cubeisland.cubeengine.core.util.convert.converter.ItemStackConverter;
 import de.cubeisland.cubeengine.core.util.convert.converter.LocaleConverter;
-import de.cubeisland.cubeengine.core.util.convert.converter.LocationConverter;
 import de.cubeisland.cubeengine.core.util.convert.converter.LongConverter;
 import de.cubeisland.cubeengine.core.util.convert.converter.MaterialConverter;
-import de.cubeisland.cubeengine.core.util.convert.converter.PlayerConverter;
 import de.cubeisland.cubeengine.core.util.convert.converter.ShortConverter;
 import de.cubeisland.cubeengine.core.util.convert.converter.StringConverter;
 import de.cubeisland.cubeengine.core.util.convert.converter.UserConverter;
+import de.cubeisland.cubeengine.core.util.convert.converter.VersionConverter;
 import de.cubeisland.cubeengine.core.util.convert.converter.WorldConverter;
 import de.cubeisland.cubeengine.core.util.converter.generic.ArrayConverter;
 import de.cubeisland.cubeengine.core.util.converter.generic.CollectionConverter;
@@ -87,11 +83,8 @@ public class Convert
 
     static
     {
-        Core core = CubeEngine.getCore();
         Converter<?> converter;
 
-        registerConverter(OfflinePlayer.class, new PlayerConverter(core));
-        registerConverter(Location.class, new LocationConverter(core));
         registerConverter(Integer.class, converter = new IntegerConverter());
         registerConverter(int.class, converter);
         registerConverter(Short.class, converter = new ShortConverter());
@@ -116,6 +109,7 @@ public class Convert
         registerConverter(String.class, new StringConverter());
         registerConverter(Duration.class, new DurationConverter());
         registerConverter(Locale.class, new LocaleConverter());
+        registerConverter(Version.class, new VersionConverter());
     }
 
     /**
@@ -133,7 +127,7 @@ public class Convert
         CONVERTERS.put(clazz, converter);
     }
 
-    public static void unregisterConverter(Class clazz)
+    public static void removeConverter(Class clazz)
     {
         Iterator<Map.Entry<Class, Converter>> iter = CONVERTERS.entrySet().iterator();
 
@@ -146,6 +140,11 @@ public class Convert
                 iter.remove();
             }
         }
+    }
+
+    public static void removeConverters()
+    {
+        CONVERTERS.clear();
     }
 
     /**

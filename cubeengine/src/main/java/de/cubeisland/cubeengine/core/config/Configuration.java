@@ -269,9 +269,9 @@ public abstract class Configuration<ConfigCodec extends ConfigurationCodec>
         {
             if (e instanceof ReaderException)
             {//TODO abstract...
-                throw new InvalidConfigurationException("Failed to parse the YAML configuration. Try encoding it as UTF-8 or validate on yamllint.com", e);
+                throw new InvalidConfigurationException("Failed to parse the YAML configuration. Try encoding it as UTF-8 or validate on yamllint.com" + (file != null ? " File: " + file.getAbsoluteFile() : ""), e);
             }
-            throw new InvalidConfigurationException("Error while loading a Configuration!", e);
+            throw new InvalidConfigurationException("Error while loading a configuration!" + (file != null ? " File: " + file.getAbsoluteFile() : ""), e);
         }
     }
 

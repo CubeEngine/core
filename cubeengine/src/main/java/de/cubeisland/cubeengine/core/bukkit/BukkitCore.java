@@ -22,6 +22,8 @@ import java.io.IOException;
 import java.util.Locale;
 import java.util.logging.Level;
 
+import org.bukkit.Location;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.Server;
 import org.bukkit.generator.ChunkGenerator;
 import org.bukkit.plugin.PluginManager;
@@ -40,7 +42,6 @@ import de.cubeisland.cubeengine.core.command.commands.VanillaCommands.WhitelistC
 import de.cubeisland.cubeengine.core.command.reflected.ReflectedCommandFactory;
 import de.cubeisland.cubeengine.core.command.reflected.readable.ReadableCommandFactory;
 import de.cubeisland.cubeengine.core.config.Configuration;
-import de.cubeisland.cubeengine.core.config.codec.YamlCodec;
 import de.cubeisland.cubeengine.core.filesystem.FileManager;
 import de.cubeisland.cubeengine.core.i18n.I18n;
 import de.cubeisland.cubeengine.core.logger.CubeFileHandler;
@@ -54,6 +55,9 @@ import de.cubeisland.cubeengine.core.user.UserManager;
 import de.cubeisland.cubeengine.core.util.InventoryGuardFactory;
 import de.cubeisland.cubeengine.core.util.Profiler;
 import de.cubeisland.cubeengine.core.util.Version;
+import de.cubeisland.cubeengine.core.util.convert.Convert;
+import de.cubeisland.cubeengine.core.util.convert.converter.LocationConverter;
+import de.cubeisland.cubeengine.core.util.convert.converter.PlayerConverter;
 import de.cubeisland.cubeengine.core.util.matcher.Match;
 import de.cubeisland.cubeengine.core.util.worker.CubeThreadFactory;
 import de.cubeisland.cubeengine.core.webapi.ApiConfig;
@@ -94,6 +98,9 @@ public final class BukkitCore extends JavaPlugin implements Core
     @Override
     public void onLoad()
     {
+        this.initConverters();
+        CubeEngine.initialize(this);
+
         this.version = Version.fromString(this.getDescription().getVersion());
         this.pluginConfig = Configuration.load(PluginConfig.class, this.getResource("plugin.yml"));
         this.sourceVersion = this.pluginConfig.sourceVersion;
@@ -111,8 +118,6 @@ public final class BukkitCore extends JavaPlugin implements Core
         // TODO RemoteHandler is not yet implemented this.logger.addHandler(new RemoteHandler(LogLevel.ERROR, this));
 
         this.banManager = new BukkitBanManager(this);
-
-        CubeEngine.initialize(this);
 
         try
         {
@@ -332,8 +337,15 @@ public final class BukkitCore extends JavaPlugin implements Core
             this.taskManager = null;
         }
 
+        Convert.removeConverters();
         CubeEngine.clean();
         Profiler.clean();
+    }
+
+    private void initConverters()
+    {
+        Convert.registerConverter(OfflinePlayer.class, new PlayerConverter(this));
+        Convert.registerConverter(Location.class, new LocationConverter(this));
     }
 
     @Override

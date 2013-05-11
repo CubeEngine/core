@@ -108,7 +108,7 @@ public class ModuleClassLoader extends URLClassLoader
         while (iter.hasNext())
         {
             clazz = iter.next().getValue();
-            Convert.unregisterConverter(clazz);
+            Convert.removeConverter(clazz);
             ArgumentReader.unregisterReader(clazz);
             this.moduleLoader.getCore().getCommandManager().removeCommandFactory(clazz);
             iter.remove();
