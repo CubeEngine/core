@@ -25,6 +25,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 
+import de.cubeisland.cubeengine.core.config.Configuration;
 import de.cubeisland.cubeengine.core.module.Module;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.util.ChatFormat;
@@ -41,6 +42,7 @@ public class Chat extends Module implements Listener
     @Override
     public void onEnable()
     {
+        this.config = Configuration.load(ChatConfig.class, this);
         new ChatPerm(this);
         this.getCore().getEventManager().registerListener(this, this);
         this.format = this.config.format;

@@ -23,7 +23,6 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
-import java.util.Locale;
 import java.util.Map;
 
 import de.cubeisland.cubeengine.core.CubeEngine;
@@ -234,12 +233,12 @@ public abstract class Configuration<ConfigCodec extends ConfigurationCodec>
      */
     public static <T extends Configuration> T load(Class<T> clazz, Module module)
     {
-        Codec codecAnnotation = clazz.getAnnotation(Codec.class);
+        Codec codecAnnotation = findCodec(clazz);
         if (codecAnnotation == null)
         {
             throw new InvalidConfigurationException("No codec specified for " + clazz.getName());
         }
-        return load(clazz, new File(module.getFolder(), module.getName().toLowerCase(Locale.ENGLISH) + "." + codecAnnotation.value()));
+        return load(clazz, new File(module.getFolder(), "config." + codecAnnotation.value()));
     }
 
     /**

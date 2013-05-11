@@ -25,7 +25,6 @@ import org.bukkit.event.player.PlayerChangedWorldEvent;
 import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.event.player.PlayerLoginEvent.Result;
 
-import de.cubeisland.cubeengine.core.module.event.FinishedLoadModulesEvent;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.user.UserAuthorizedEvent;
 import de.cubeisland.cubeengine.roles.Roles;
@@ -86,12 +85,6 @@ public class RolesEventHandler implements Listener
                 }
             });
         }
-    }
-
-    @EventHandler
-    public void onAllModulesLoaded(FinishedLoadModulesEvent event)
-    {
-        this.rolesManager.recalculateAllRoles();
     }
 
     @EventHandler

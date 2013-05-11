@@ -27,7 +27,6 @@ import org.bukkit.plugin.PluginManager;
 
 import de.cubeisland.cubeengine.core.module.BaseModuleManager;
 import de.cubeisland.cubeengine.core.module.Module;
-import de.cubeisland.cubeengine.core.module.event.FinishedLoadModulesEvent;
 import de.cubeisland.cubeengine.core.module.exception.CircularDependencyException;
 import de.cubeisland.cubeengine.core.module.exception.IncompatibleCoreException;
 import de.cubeisland.cubeengine.core.module.exception.IncompatibleDependencyException;
@@ -35,14 +34,43 @@ import de.cubeisland.cubeengine.core.module.exception.InvalidModuleException;
 import de.cubeisland.cubeengine.core.module.exception.MissingDependencyException;
 import de.cubeisland.cubeengine.core.module.exception.MissingPluginDependencyException;
 
+import static java.util.logging.Level.WARNING;
+
 public class BukkitModuleManager extends BaseModuleManager
 {
+    private final BukkitCore core;
     private final PluginManager pluginManager;
 
     public BukkitModuleManager(BukkitCore core, ClassLoader parentClassLoader)
     {
         super(core, parentClassLoader);
         this.pluginManager = core.getServer().getPluginManager();
+        this.core = core;
+    }
+
+    void init()
+    {
+        this.core.getServer().getScheduler().runTask(this.core, new Runnable()
+        {
+            @Override
+            public void run()
+            {
+                synchronized (BukkitModuleManager.this)
+                {
+                    for (Module module : getModules())
+                    {
+                        try
+                        {
+                            module.onStartupFinished();
+                        }
+                        catch (Exception e)
+                        {
+                            module.getLog().log(WARNING, "An uncaught exception occurred during onFinishLoading(): " + e.getMessage(), e);
+                        }
+                    }
+                }
+            }
+        });
     }
 
     @Override
@@ -54,17 +82,16 @@ public class BukkitModuleManager extends BaseModuleManager
     }
 
     @Override
-    public synchronized void loadModules(File directory)
+    public void loadModules(File directory)
     {
         super.loadModules(directory);
         BukkitUtils.reloadHelpMap();
-        this.pluginManager.callEvent(new FinishedLoadModulesEvent(this.core));
     }
 
     @Override
-    public void enableModules(boolean worldGenerators)
+    public void enableModules()
     {
-        super.enableModules(worldGenerators);
+        super.enableModules();
         BukkitUtils.reloadHelpMap();
     }
 

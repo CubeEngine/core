@@ -70,7 +70,8 @@ public class Test extends Module
     @Override
     public void onEnable()
     {
-        config.loadChild(new File(this.getFolder(), "childConfig.yml"));
+        this.config = Configuration.load(TestConfig.class, this);
+        this.config.loadChild(new File(this.getFolder(), "childConfig.yml"));
         Configuration.load(TestConfig2.class, new File(this.getFolder(), "updateConfig.yml"));
         this.getCore().getFileManager().dropResources(TestRecource.values());
         this.uM = this.getCore().getUserManager();
@@ -108,11 +109,11 @@ public class Test extends Module
             }
         });
 
-        this.getLog().log(LogLevel.DEBUG, "Basics-Module: {0}", String.valueOf(basicsModule));
+        this.getLog().log(LogLevel.DEBUG, "Basics-Module: {0}", String.valueOf(this.basicsModule));
         this.getLog().log(LogLevel.DEBUG, "BukkitCore-Plugin: {0}", String.valueOf(this.getCore()));
 
-        timer = new Timer("keepAliveTimer");
-        timer.schedule(new KeepAliveTimer(), 2 * 1000, 2 * 1000);
+        this.timer = new Timer("keepAliveTimer");
+        this.timer.schedule(new KeepAliveTimer(), 2 * 1000, 2 * 1000);
 
         this.fifo = new FIFOInterface(this.getCore(), this.getFolder(), Core.CHARSET);
         try
@@ -138,7 +139,7 @@ public class Test extends Module
         }
         catch (Exception ignore)
         {}
-        manager = new TestManager(db);
+        this.manager = new TestManager(db);
 
     }
 

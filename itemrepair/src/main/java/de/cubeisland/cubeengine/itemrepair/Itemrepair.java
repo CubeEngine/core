@@ -17,6 +17,7 @@
  */
 package de.cubeisland.cubeengine.itemrepair;
 
+import de.cubeisland.cubeengine.core.config.Configuration;
 import de.cubeisland.cubeengine.core.module.Module;
 import de.cubeisland.cubeengine.conomy.Conomy;
 import de.cubeisland.cubeengine.itemrepair.repair.RepairBlockManager;
@@ -30,6 +31,7 @@ public class Itemrepair extends Module
     @Override
     public void onEnable()
     {
+        this.config = Configuration.load(ItemrepairConfig.class, this);
         this.repairBlockManager = new RepairBlockManager(this);
         this.getCore().getEventManager().registerListener(this, new ItemRepairListener(this));
         this.getCore().getCommandManager().registerCommand(new ItemRepairCommands(this));

@@ -44,7 +44,6 @@ public class ModuleInfo
     private final Version version;
     private final String sourceVersion;
     private final Version minCoreVersion;
-    private final boolean providesWorldGenerator;
     private final Map<String, Version> dependencies;
     private final Map<String, Version> softDependencies;
     private final Set<String> pluginDependencies;
@@ -67,7 +66,6 @@ public class ModuleInfo
         this.version = core.getVersion();
         this.sourceVersion = core.getSourceVersion();
         this.minCoreVersion = core.getVersion();
-        this.providesWorldGenerator = false;
         this.dependencies = Collections.emptyMap();
         this.softDependencies = this.dependencies;
         this.pluginDependencies = Collections.emptySet();
@@ -102,7 +100,6 @@ public class ModuleInfo
         this.version = config.version;
         this.sourceVersion = config.sourceVersion;
         this.minCoreVersion = config.minCoreRevision;
-        this.providesWorldGenerator = config.provideWorldGenerator;
 
         int delimOffset;
         Version version;
@@ -195,13 +192,23 @@ public class ModuleInfo
     }
 
     /**
-     * Gets the module's revision
+     * Gets the module's version
      *
-     * @return the revision
+     * @return the version
      */
     public Version getVersion()
     {
         return this.version;
+    }
+
+    /**
+     * Gets the module's source version
+     *
+     * @return the source version string
+     */
+    public String getSourceVersion()
+    {
+        return sourceVersion;
     }
 
     /**
@@ -222,17 +229,6 @@ public class ModuleInfo
     public Version getMinimumCoreVersion()
     {
         return this.minCoreVersion;
-    }
-
-    /**
-     * Returns whether the module provides world generators
-     * if true, this module is not allowed to depend on other module
-     *
-     * @return true if the module provides world generators
-     */
-    public boolean providesWorldGenerator()
-    {
-        return this.providesWorldGenerator;
     }
 
     /**
@@ -289,10 +285,6 @@ public class ModuleInfo
         {
             return false;
         }
-        if (providesWorldGenerator != that.providesWorldGenerator)
-        {
-            return false;
-        }
         if (!version.equals(that.version))
         {
             return false;
@@ -342,7 +334,6 @@ public class ModuleInfo
         result = 31 * result + version.hashCode();
         result = 31 * result + (description != null ? description.hashCode() : 0);
         result = 31 * result + minCoreVersion.hashCode();
-        result = 31 * result + (providesWorldGenerator ? 1 : 0);
         result = 31 * result + dependencies.hashCode();
         result = 31 * result + softDependencies.hashCode();
         result = 31 * result + pluginDependencies.hashCode();

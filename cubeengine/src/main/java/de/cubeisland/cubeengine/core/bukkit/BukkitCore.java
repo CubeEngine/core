@@ -51,7 +51,6 @@ import de.cubeisland.cubeengine.core.module.Module;
 import de.cubeisland.cubeengine.core.storage.TableManager;
 import de.cubeisland.cubeengine.core.storage.database.Database;
 import de.cubeisland.cubeengine.core.storage.database.DatabaseFactory;
-import de.cubeisland.cubeengine.core.user.UserManager;
 import de.cubeisland.cubeengine.core.util.InventoryGuardFactory;
 import de.cubeisland.cubeengine.core.util.Profiler;
 import de.cubeisland.cubeengine.core.util.Version;
@@ -63,7 +62,6 @@ import de.cubeisland.cubeengine.core.util.worker.CubeThreadFactory;
 import de.cubeisland.cubeengine.core.webapi.ApiConfig;
 import de.cubeisland.cubeengine.core.webapi.ApiServer;
 import de.cubeisland.cubeengine.core.webapi.exception.ApiStartupException;
-import de.cubeisland.cubeengine.core.world.WorldManager;
 
 import static de.cubeisland.cubeengine.core.logger.LogLevel.*;
 
@@ -251,6 +249,9 @@ public final class BukkitCore extends JavaPlugin implements Core
 
         this.getServer().getPluginManager().registerEvents(new CoreListener(this), this);
 
+        this.moduleManager.init();
+        this.moduleManager.enableModules();
+
 
 
 //        this.getServer().getScheduler().scheduleSyncDelayedTask(this, new Runnable()
@@ -396,7 +397,7 @@ public final class BukkitCore extends JavaPlugin implements Core
     }
 
     @Override
-    public UserManager getUserManager()
+    public BukkitUserManager getUserManager()
     {
         return this.userManager;
     }
@@ -468,7 +469,7 @@ public final class BukkitCore extends JavaPlugin implements Core
     }
 
     @Override
-    public WorldManager getWorldManager()
+    public BukkitWorldManager getWorldManager()
     {
         return this.worldManager;
     }

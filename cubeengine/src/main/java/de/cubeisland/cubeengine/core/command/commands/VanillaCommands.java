@@ -31,6 +31,7 @@ import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 
+import de.cubeisland.cubeengine.core.Core;
 import de.cubeisland.cubeengine.core.CorePerms;
 import de.cubeisland.cubeengine.core.bukkit.BukkitCore;
 import de.cubeisland.cubeengine.core.bukkit.BukkitUtils;
@@ -355,9 +356,7 @@ public class VanillaCommands implements CommandHolder
         }
     }
 
-    @Command(desc = "Displays the version of the server or a given plugin", usage = "[plugin]", flags = {
-        @Flag(name = "s", longName = "source")
-    }, max = 1)
+    @Command(desc = "Displays the version of the server or a given plugin", usage = "[plugin]", flags = @Flag(name = "s", longName = "source"), max = 1)
     public void version(ParameterizedContext context)
     {
         Server server = this.core.getServer();
@@ -380,12 +379,12 @@ public class VanillaCommands implements CommandHolder
                 context.sendMessage(" ");
                 context.sendTranslated("&nPlugin information:");
                 context.sendMessage(" ");
-                if (context.hasFlag("s") && plugin.getName().equals("CubeEngine"))
+                if (plugin instanceof Core && context.hasFlag("s"))
                 {
-                    String sourceVersion = this.core.getSourceVersion();
+                    String sourceVersion = ((Core)plugin).getSourceVersion();
                     context.sendTranslated("Source Version: %s", sourceVersion);
-                    String commit = sourceVersion.substring(sourceVersion.lastIndexOf('-'), sourceVersion.length()-32);
-                    context.sendTranslated("Source link: %s", SOURCE_LINK+commit);
+                    String commit = sourceVersion.substring(sourceVersion.lastIndexOf('-'));
+                    context.sendTranslated("Source link: %s", SOURCE_LINK + commit);
                 }
                 context.sendTranslated("Description: &6%s", plugin.getDescription().getDescription());
                 context.sendTranslated("Website: &6%s", plugin.getDescription().getWebsite());
