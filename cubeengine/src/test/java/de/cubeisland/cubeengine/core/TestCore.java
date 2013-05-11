@@ -50,6 +50,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 public class TestCore implements Core
 {
     private final Version version = Version.ONE;
+    private final String sourceVersion = "master-aaaaaaaa";
     private final Logger logger = Logger.getAnonymousLogger();
     private ObjectMapper jsonObjectMapper = null;
     private CoreConfiguration config = null;
@@ -64,6 +65,12 @@ public class TestCore implements Core
     public Version getVersion()
     {
         return this.version;
+    }
+
+    @Override
+    public String getSourceVersion()
+    {
+        return this.sourceVersion;
     }
 
     @Override

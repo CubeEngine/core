@@ -43,6 +43,7 @@ import de.cubeisland.cubeengine.core.command.commands.VanillaCommands.WhitelistC
 import de.cubeisland.cubeengine.core.command.reflected.ReflectedCommandFactory;
 import de.cubeisland.cubeengine.core.command.reflected.readable.ReadableCommandFactory;
 import de.cubeisland.cubeengine.core.config.Configuration;
+import de.cubeisland.cubeengine.core.config.codec.YamlCodec;
 import de.cubeisland.cubeengine.core.filesystem.FileManager;
 import de.cubeisland.cubeengine.core.i18n.I18n;
 import de.cubeisland.cubeengine.core.logger.CubeFileHandler;
@@ -70,6 +71,7 @@ import static de.cubeisland.cubeengine.core.logger.LogLevel.*;
 public final class BukkitCore extends JavaPlugin implements Core
 {
     private Version version;
+    private String sourceVersion;
     private Database database;
     private BukkitPermissionManager permissionManager;
     private UserManager userManager;
@@ -94,6 +96,8 @@ public final class BukkitCore extends JavaPlugin implements Core
     public void onEnable()
     {
         this.version = Version.fromString(this.getDescription().getVersion());
+        this.sourceVersion = org.bukkit.configuration.file.YamlConfiguration.loadConfiguration(
+                this.getResource("plugin.yml")).getString("source-version");
         final Server server = this.getServer();
         final PluginManager pm = server.getPluginManager();
         if (!BukkitUtils.isCompatible())
@@ -334,6 +338,12 @@ public final class BukkitCore extends JavaPlugin implements Core
     public Version getVersion()
     {
         return this.version;
+    }
+
+    @Override
+    public String getSourceVersion()
+    {
+        return this.sourceVersion;
     }
 
     @Override

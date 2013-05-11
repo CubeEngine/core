@@ -35,10 +35,12 @@ public class ModuleConfig extends Configuration
     public String main;
     @Option("name")
     public String name;
-    @Option("version")
-    public Version version = Version.ONE;
     @Option("description")
     public String description;
+    @Option("version")
+    public Version version = Version.ONE;
+    @Option("source-version")
+    public String sourceVersion;
     @Option("core-version")
     public Version minCoreRevision = Version.ZERO;
     @Option("world-generator")

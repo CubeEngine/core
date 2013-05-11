@@ -40,8 +40,9 @@ public class ModuleInfo
     private final String main;
     private final String id;
     private final String name;
-    private final Version version;
     private final String description;
+    private final Version version;
+    private final String sourceVersion;
     private final Version minCoreVersion;
     private final boolean providesWorldGenerator;
     private final Map<String, Version> dependencies;
@@ -62,8 +63,9 @@ public class ModuleInfo
         }
         this.id = CoreModule.ID;
         this.name = CoreModule.NAME;
-        this.version = core.getVersion();
         this.description = "This is the core meta module.";
+        this.version = core.getVersion();
+        this.sourceVersion = core.getSourceVersion();
         this.minCoreVersion = core.getVersion();
         this.providesWorldGenerator = false;
         this.dependencies = Collections.emptyMap();
@@ -96,9 +98,9 @@ public class ModuleInfo
             config.main = "de.cubeisland.cubeengine." + this.id + "." + this.id.substring(0, 1).toUpperCase(Locale.US) + this.id.substring(1);
         }
         this.main = config.main;
-
-        this.version = config.version;
         this.description = config.description;
+        this.version = config.version;
+        this.sourceVersion = config.sourceVersion;
         this.minCoreVersion = config.minCoreRevision;
         this.providesWorldGenerator = config.provideWorldGenerator;
 
