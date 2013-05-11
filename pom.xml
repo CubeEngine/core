@@ -30,7 +30,6 @@
     <module>border</module>
     <module>signmarket</module>
     <module>travel</module>
-    <module>vaultcompat</module>
     <module>vote</module>
     <module>test</module>
     <module>spawn</module>

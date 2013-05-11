@@ -54,6 +54,13 @@ public interface Core
     Version getVersion();
 
     /**
+     * Returns the source version used to build the core
+     *
+     * @return the source version
+     */
+    String getSourceVersion();
+
+    /**
      * The method returns the database
      *
      * @return the database instance
