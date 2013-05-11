@@ -79,6 +79,7 @@ public final class BukkitCore extends JavaPlugin implements Core
     private BukkitModuleManager moduleManager;
     private I18n i18n;
     private BukkitCoreConfiguration config;
+    private PluginConfig pluginConfig;
     private CubeLogger logger;
     private EventManager eventRegistration;
     private BukkitCommandManager commandManager;
@@ -96,8 +97,8 @@ public final class BukkitCore extends JavaPlugin implements Core
     public void onEnable()
     {
         this.version = Version.fromString(this.getDescription().getVersion());
-        this.sourceVersion = org.bukkit.configuration.file.YamlConfiguration.loadConfiguration(
-                this.getResource("plugin.yml")).getString("source-version");
+        this.pluginConfig = Configuration.load(PluginConfig.class, this.getResource("plugin.yml"));
+        this.sourceVersion = this.pluginConfig.sourceVersion;
         final Server server = this.getServer();
         final PluginManager pm = server.getPluginManager();
         if (!BukkitUtils.isCompatible())

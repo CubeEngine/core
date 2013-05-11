@@ -356,7 +356,7 @@ public class VanillaCommands implements CommandHolder
     }
 
     @Command(desc = "Displays the version of the server or a given plugin", usage = "[plugin]", flags = {
-        @Flag(name = "source", longName = "source-version")
+        @Flag(name = "s", longName = "source")
     }, max = 1)
     public void version(ParameterizedContext context)
     {
@@ -380,7 +380,7 @@ public class VanillaCommands implements CommandHolder
                 context.sendMessage(" ");
                 context.sendTranslated("&nPlugin information:");
                 context.sendMessage(" ");
-                if (context.hasFlag("source") && plugin.getName().equals("CubeEngine"))
+                if (context.hasFlag("s") && plugin.getName().equals("CubeEngine"))
                 {
                     String sourceVersion = this.core.getSourceVersion();
                     context.sendTranslated("Source Version: %s", sourceVersion);
@@ -410,6 +410,13 @@ public class VanillaCommands implements CommandHolder
             context.sendTranslated("&eBukkit API&r Version: &9%s", server.getBukkitVersion());
             context.sendMessage(" ");
             context.sendTranslated("Expanded and improved by &aCubeEngine&r revision &9%s", context.getCore().getVersion());
+            if (context.hasFlag("s"))
+            {
+                String sourceVersion = this.core.getSourceVersion();
+                context.sendTranslated("Source Version: %s", sourceVersion);
+                String commit = sourceVersion.substring(sourceVersion.lastIndexOf('-'), sourceVersion.length()-32);
+                context.sendTranslated("Source link: %s", SOURCE_LINK+commit);
+            }
         }
     }
 
