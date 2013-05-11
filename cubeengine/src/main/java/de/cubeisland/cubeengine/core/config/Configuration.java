@@ -33,7 +33,6 @@ import de.cubeisland.cubeengine.core.config.codec.YamlCodec;
 import de.cubeisland.cubeengine.core.logger.LogLevel;
 import de.cubeisland.cubeengine.core.module.Module;
 
-import org.apache.commons.lang.Validate;
 import org.yaml.snakeyaml.reader.ReaderException;
 
 import static java.util.logging.Level.SEVERE;
@@ -189,6 +188,7 @@ public abstract class Configuration<ConfigCodec extends ConfigurationCodec>
      * @return the Codec
      * @throws IllegalStateException if no Codec is found for given FileExtension
      */
+    @SuppressWarnings("unchecked")
     public static <Codec extends ConfigurationCodec> Codec resolveCodec(String fileExtension)
     {
         if (fileExtension == null)
@@ -198,7 +198,7 @@ public abstract class Configuration<ConfigCodec extends ConfigurationCodec>
         ConfigurationCodec codec = codecs.get(fileExtension);
         if (codec == null)
         {
-            throw new InvalidConfigurationException("No Codec known for the file-extension ." + fileExtension);
+            throw new InvalidConfigurationException("No codec known for the file-extension '." + fileExtension + "'");
         }
         return (Codec) codec;
     }
@@ -353,7 +353,7 @@ public abstract class Configuration<ConfigCodec extends ConfigurationCodec>
         }
         if (codecAnnotation == null)
         {
-            throw new InvalidConfigurationException("Missing codec-annotation for configuration: "+ clazz);
+            throw new InvalidConfigurationException("Missing codec-annotation for configuration: " + clazz);
         }
         return codecAnnotation;
     }
