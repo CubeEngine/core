@@ -74,7 +74,6 @@ public final class BukkitCore extends JavaPlugin implements Core
     private BukkitModuleManager moduleManager;
     private I18n i18n;
     private BukkitCoreConfiguration config;
-    private PluginConfig pluginConfig;
     private CubeLogger logger;
     private EventManager eventRegistration;
     private BukkitCommandManager commandManager;
@@ -369,12 +368,6 @@ public final class BukkitCore extends JavaPlugin implements Core
     public String getSourceVersion()
     {
         return this.moduleManager.getCoreModule().getInfo().getSourceVersion();
-    }
-
-    @Override
-    public String getSourceLink()
-    {
-        return this.moduleManager.getCoreModule().getInfo().getSourceLink();
     }
 
     @Override

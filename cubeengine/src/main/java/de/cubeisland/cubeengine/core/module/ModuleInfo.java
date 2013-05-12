@@ -37,8 +37,6 @@ import org.apache.commons.lang.Validate;
  */
 public class ModuleInfo
 {
-    private static final String SOURCE_LINK = "https://github.com/CubeEngineDev/CubeEngine/tree/";
-
     private static final char DEP_VERSION_DELIM = '/';
     private final File file;
     private final String main;
@@ -346,10 +344,5 @@ public class ModuleInfo
         result = 31 * result + pluginDependencies.hashCode();
         result = 31 * result + loadAfter.hashCode();
         return result;
-    }
-
-    public String getSourceLink()
-    {
-        return this.SOURCE_LINK + this.sourceVersion.substring(sourceVersion.lastIndexOf('-'), sourceVersion.length()-32);
     }
 }

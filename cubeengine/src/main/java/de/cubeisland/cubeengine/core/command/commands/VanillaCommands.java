@@ -381,7 +381,10 @@ public class VanillaCommands implements CommandHolder
                 if (plugin instanceof Core && context.hasFlag("s"))
                 {
                     context.sendTranslated("Source Version: %s", ((Core)plugin).getSourceVersion());
-                    context.sendTranslated("Source link: %s", ((Core)plugin).getSourceLink());
+                    context.sendTranslated("Source link: %s", ModuleCommands.getSourceLink(((Core)plugin)
+                                                                                               .getModuleManager()
+                                                                                               .getCoreModule()
+                                                                                               .getInfo()));
                 }
                 context.sendTranslated("Description: &6%s", plugin.getDescription().getDescription());
                 context.sendTranslated("Website: &6%s", plugin.getDescription().getWebsite());
@@ -409,7 +412,8 @@ public class VanillaCommands implements CommandHolder
             if (context.hasFlag("s"))
             {
                 context.sendTranslated("Source Version: %s", this.core.getSourceVersion());
-                context.sendTranslated("Source link: %s", this.core.getSourceLink());
+                context.sendTranslated("Source link: %s",
+                                       ModuleCommands.getSourceLink(core.getModuleManager().getCoreModule().getInfo()));
             }
         }
     }

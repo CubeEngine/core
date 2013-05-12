@@ -45,6 +45,8 @@ import static de.cubeisland.cubeengine.core.logger.LogLevel.ERROR;
 
 public class ModuleCommands extends ContainerCommand
 {
+    private static final String SOURCE_LINK = "https://github.com/CubeEngineDev/CubeEngine/tree/";
+
     private final ModuleManager mm;
 
     public ModuleCommands(ModuleManager mm)
@@ -215,7 +217,7 @@ public class ModuleCommands extends ContainerCommand
         if (context.hasFlag("s"))
         {
             context.sendTranslated("Source Version: %s", moduleInfo.getSourceVersion());
-            context.sendTranslated("Source link: %s", moduleInfo.getSourceLink());
+            context.sendTranslated("Source link: %s", getSourceLink(moduleInfo));
         }
 
         Map<String, Version> dependencies = moduleInfo.getDependencies();
@@ -247,4 +249,10 @@ public class ModuleCommands extends ContainerCommand
         }
     }
 
+    protected static String getSourceLink(ModuleInfo moduleInfo)
+    {
+        String sourceVersion = moduleInfo.getSourceVersion();
+        String commit = sourceVersion.substring(sourceVersion.lastIndexOf('-'), sourceVersion.length());
+        return SOURCE_LINK + commit;
+    }
 }

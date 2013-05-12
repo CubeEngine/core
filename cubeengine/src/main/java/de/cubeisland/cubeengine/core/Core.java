@@ -61,12 +61,6 @@ public interface Core
     String getSourceVersion();
 
     /**
-     * Get a link to the github source page corresponding to the current source version
-     * @return the link
-     */
-    String getSourceLink();
-
-    /**
      * The method returns the database
      *
      * @return the database instance

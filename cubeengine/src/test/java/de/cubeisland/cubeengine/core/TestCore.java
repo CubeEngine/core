@@ -74,12 +74,6 @@ public class TestCore implements Core
     }
 
     @Override
-    public String getSourceLink()
-    {
-        return "";
-    }
-
-    @Override
     public ApiServer getApiServer()
     {
         throw new UnsupportedOperationException("Not supported yet.");
