@@ -383,7 +383,7 @@ public class VanillaCommands implements CommandHolder
                 {
                     String sourceVersion = ((Core)plugin).getSourceVersion();
                     context.sendTranslated("Source Version: %s", sourceVersion);
-                    String commit = sourceVersion.substring(sourceVersion.lastIndexOf('-'));
+                    String commit = sourceVersion.substring(sourceVersion.lastIndexOf('-') + 1, sourceVersion.length() - 32);
                     context.sendTranslated("Source link: %s", SOURCE_LINK + commit);
                 }
                 context.sendTranslated("Description: &6%s", plugin.getDescription().getDescription());
@@ -413,8 +413,8 @@ public class VanillaCommands implements CommandHolder
             {
                 String sourceVersion = this.core.getSourceVersion();
                 context.sendTranslated("Source Version: %s", sourceVersion);
-                String commit = sourceVersion.substring(sourceVersion.lastIndexOf('-'), sourceVersion.length()-32);
-                context.sendTranslated("Source link: %s", SOURCE_LINK+commit);
+                String commit = sourceVersion.substring(sourceVersion.lastIndexOf('-') + 1, sourceVersion.length() - 32);
+                context.sendTranslated("Source link: %s", SOURCE_LINK + commit);
             }
         }
     }
