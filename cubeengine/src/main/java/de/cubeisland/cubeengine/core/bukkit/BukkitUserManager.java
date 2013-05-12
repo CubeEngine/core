@@ -51,8 +51,8 @@ import static de.cubeisland.cubeengine.core.logger.LogLevel.WARNING;
 public class BukkitUserManager extends AbstractUserManager
 {
     private final BukkitCore core;
-    protected final ScheduledExecutorService nativeScheduler;
-    protected final TObjectIntMap<String> scheduledForRemoval;
+    protected ScheduledExecutorService nativeScheduler;
+    protected TObjectIntMap<String> scheduledForRemoval;
 
     public BukkitUserManager(BukkitCore core)
     {
@@ -112,7 +112,7 @@ public class BukkitUserManager extends AbstractUserManager
 
     public void shutdown()
     {
-        this.clean();
+        super.shutdown();
 
         this.scheduledForRemoval.forEachEntry(new TObjectIntProcedure<String>() {
             @Override
@@ -122,17 +122,23 @@ public class BukkitUserManager extends AbstractUserManager
                 return true;
             }
         });
+        this.scheduledForRemoval.clear();
+        this.scheduledForRemoval = null;
 
-        this.cachedUsers.clear();
-        this.removeDefaultAttachments();
         this.nativeScheduler.shutdown();
         try
         {
-            this.nativeScheduler.awaitTermination(2, TimeUnit.SECONDS);
-            this.nativeScheduler.shutdownNow();
+            this.nativeScheduler.awaitTermination(5, TimeUnit.SECONDS);
         }
         catch (InterruptedException ignored)
-        {}
+        {
+            Thread.currentThread().interrupt();
+        }
+        finally
+        {
+            this.nativeScheduler.shutdownNow();
+            this.nativeScheduler = null;
+        }
     }
 
 

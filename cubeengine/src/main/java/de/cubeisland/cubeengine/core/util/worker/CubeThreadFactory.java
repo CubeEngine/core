@@ -17,10 +17,10 @@
  */
 package de.cubeisland.cubeengine.core.util.worker;
 
-import de.cubeisland.cubeengine.core.CubeEngine;
-
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.atomic.AtomicInteger;
+
+import de.cubeisland.cubeengine.core.CubeEngine;
 
 import static de.cubeisland.cubeengine.core.logger.LogLevel.DEBUG;
 
@@ -28,6 +28,7 @@ public class CubeThreadFactory implements ThreadFactory
 {
     private final AtomicInteger counter;
     private final ThreadGroup group;
+    private final String basePackage;
 
     public CubeThreadFactory(String name)
     {
@@ -38,13 +39,49 @@ public class CubeThreadFactory implements ThreadFactory
     {
         this.group = group;
         this.counter = new AtomicInteger(0);
+
+        String[] packageParts = this.getClass().getPackage().getName().split("\\.");
+        this.basePackage = packageParts[0] + '.' + packageParts[1] + '.' + packageParts[2];
+    }
+
+    private String getCaller()
+    {
+        StackTraceElement[] stacktrace = Thread.currentThread().getStackTrace();
+        for (int i = 3; i < stacktrace.length; ++i)
+        {
+            if (stacktrace[i].getClassName().startsWith(this.basePackage))
+            {
+                return stacktrace[i].getClassName() + '.' + stacktrace[i].getMethodName() + "()#" + stacktrace[i].getLineNumber();
+            }
+        }
+        return null;
     }
 
     @Override
     public Thread newThread(Runnable r)
     {
-        final String name = "CubeEngine - Thread #" + this.counter.incrementAndGet();
+        String name = "CubeEngine - Thread #" + this.counter.incrementAndGet();
+        final String caller = this.getCaller();
+        if (caller != null)
+        {
+            name += " - " + caller;
+        }
         CubeEngine.getLog().log(DEBUG, "Creating thread: {0}", name);
-        return new Thread(this.group, r, name);
+        return new CubeThread(this.group, r, name);
+    }
+
+    private final class CubeThread extends Thread
+    {
+        private CubeThread(ThreadGroup group, Runnable target, String name)
+        {
+            super(group, target, name);
+        }
+
+        @Override
+        public void interrupt()
+        {
+            super.interrupt();
+            CubeEngine.getLog().log(DEBUG, "Interrupted thread: {0}", this.getName()); // TODO remove CubeEngine
+        }
     }
 }

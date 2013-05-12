@@ -52,13 +52,12 @@ import gnu.trove.set.hash.THashSet;
 public abstract class AbstractUserManager implements UserManager
 {
     private final Core core;
-    protected final UserStorage storage;
-    protected final List<User> onlineUsers;
-    protected final ConcurrentHashMap<Object, User> cachedUsers;
-    protected final Set<DefaultAttachment> defaultAttachments;
+    protected UserStorage storage;
+    protected List<User> onlineUsers;
+    protected ConcurrentHashMap<Object, User> cachedUsers;
+    protected Set<DefaultAttachment> defaultAttachments;
     protected String salt;
-    protected final MessageDigest messageDigest;
-    protected Set<Long> allKeys;
+    protected MessageDigest messageDigest;
     private Random random;
 
     public AbstractUserManager(final Core core)
@@ -452,6 +451,29 @@ public abstract class AbstractUserManager implements UserManager
     {
         this.removeDefaultAttachments(module);
         this.detachAllOf(module);
+    }
+
+    @Override
+    public void shutdown()
+    {
+        this.clean();
+        this.storage = null;
+
+        this.onlineUsers.clear();
+        this.onlineUsers = null;
+
+        this.cachedUsers.clear();
+        this.cachedUsers = null;
+
+        this.removeDefaultAttachments();
+        this.defaultAttachments.clear();
+        this.defaultAttachments = null;
+
+        this.salt = null;
+
+        this.messageDigest = null;
+
+        this.random = null;
     }
 
     @Override
