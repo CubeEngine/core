@@ -27,11 +27,14 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.World;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemStack;
 
+import de.cubeisland.cubeengine.core.Core;
 import de.cubeisland.cubeengine.core.config.node.BooleanNode;
 import de.cubeisland.cubeengine.core.config.node.ByteNode;
 import de.cubeisland.cubeengine.core.config.node.CharNode;
@@ -59,16 +62,18 @@ import de.cubeisland.cubeengine.core.util.convert.converter.FloatConverter;
 import de.cubeisland.cubeengine.core.util.convert.converter.IntegerConverter;
 import de.cubeisland.cubeengine.core.util.convert.converter.ItemStackConverter;
 import de.cubeisland.cubeengine.core.util.convert.converter.LocaleConverter;
+import de.cubeisland.cubeengine.core.util.convert.converter.LocationConverter;
 import de.cubeisland.cubeengine.core.util.convert.converter.LongConverter;
 import de.cubeisland.cubeengine.core.util.convert.converter.MaterialConverter;
+import de.cubeisland.cubeengine.core.util.convert.converter.PlayerConverter;
 import de.cubeisland.cubeengine.core.util.convert.converter.ShortConverter;
 import de.cubeisland.cubeengine.core.util.convert.converter.StringConverter;
 import de.cubeisland.cubeengine.core.util.convert.converter.UserConverter;
 import de.cubeisland.cubeengine.core.util.convert.converter.VersionConverter;
 import de.cubeisland.cubeengine.core.util.convert.converter.WorldConverter;
-import de.cubeisland.cubeengine.core.util.converter.generic.ArrayConverter;
-import de.cubeisland.cubeengine.core.util.converter.generic.CollectionConverter;
-import de.cubeisland.cubeengine.core.util.converter.generic.MapConverter;
+import de.cubeisland.cubeengine.core.util.convert.converter.generic.ArrayConverter;
+import de.cubeisland.cubeengine.core.util.convert.converter.generic.CollectionConverter;
+import de.cubeisland.cubeengine.core.util.convert.converter.generic.MapConverter;
 import de.cubeisland.cubeengine.core.util.time.Duration;
 
 /**
@@ -76,13 +81,23 @@ import de.cubeisland.cubeengine.core.util.time.Duration;
  */
 public class Convert
 {
-    private final static Map<Class, Converter> CONVERTERS = new ConcurrentHashMap<Class, Converter>();
-    private final static MapConverter MAP_CONVERTER = new MapConverter();
-    private final static ArrayConverter ARRAY_CONVERTER = new ArrayConverter();
-    private final static CollectionConverter COLLECTION_CONVERTER = new CollectionConverter();
+    private static Map<Class, Converter> converters;
+    private static MapConverter mapConverter;
+    private static ArrayConverter arrayConverter;
+    private static CollectionConverter collectionConverter;
 
-    static
+    public synchronized static void init(Core core)
     {
+        if (converters != null)
+        {
+            return;
+        }
+
+        converters = new ConcurrentHashMap<Class, Converter>();
+        mapConverter = new MapConverter();
+        arrayConverter = new ArrayConverter();
+        collectionConverter = new CollectionConverter();
+
         Converter<?> converter;
 
         registerConverter(Integer.class, converter = new IntegerConverter());
@@ -110,6 +125,17 @@ public class Convert
         registerConverter(Duration.class, new DurationConverter());
         registerConverter(Locale.class, new LocaleConverter());
         registerConverter(Version.class, new VersionConverter());
+        registerConverter(OfflinePlayer.class, new PlayerConverter(core));
+        registerConverter(Location.class, new LocationConverter(core));
+    }
+
+    public synchronized static void cleanup()
+    {
+        removeConverters();
+        converters = null;
+        mapConverter = null;
+        arrayConverter = null;
+        collectionConverter = null;
     }
 
     /**
@@ -124,12 +150,12 @@ public class Convert
         {
             return;
         }
-        CONVERTERS.put(clazz, converter);
+        converters.put(clazz, converter);
     }
 
     public static void removeConverter(Class clazz)
     {
-        Iterator<Map.Entry<Class, Converter>> iter = CONVERTERS.entrySet().iterator();
+        Iterator<Map.Entry<Class, Converter>> iter = converters.entrySet().iterator();
 
         Map.Entry<Class, Converter> entry;
         while (iter.hasNext())
@@ -144,7 +170,7 @@ public class Convert
 
     public static void removeConverters()
     {
-        CONVERTERS.clear();
+        converters.clear();
     }
 
     /**
@@ -160,10 +186,10 @@ public class Convert
         {
             return null;
         }
-        Converter converter = CONVERTERS.get(objectClass);
+        Converter converter = converters.get(objectClass);
         if (converter == null)
         {
-            for (Map.Entry<Class, Converter> entry : CONVERTERS.entrySet())
+            for (Map.Entry<Class, Converter> entry : converters.entrySet())
             {
                 if (entry.getKey().isAssignableFrom(objectClass))
                 {
@@ -261,15 +287,15 @@ public class Convert
         }
         if (object.getClass().isArray())
         {
-            return ARRAY_CONVERTER.toNode((Object[])object);
+            return arrayConverter.toNode((Object[])object);
         }
         else if (object instanceof Collection)
         {
-            return COLLECTION_CONVERTER.toNode((Collection)object);
+            return collectionConverter.toNode((Collection)object);
         }
         else if (object instanceof Map)
         {
-            return MAP_CONVERTER.toNode((Map)object);
+            return mapConverter.toNode((Map)object);
         }
         Converter<T> converter = (Converter<T>)matchConverter(object.getClass());
         return converter.toNode(object);
@@ -292,7 +318,7 @@ public class Convert
             {
                 if (node instanceof ListNode)
                 {
-                    return (T)ARRAY_CONVERTER.fromNode((Class<T[]>)type, (ListNode)node);
+                    return (T)arrayConverter.fromNode((Class<T[]>)type, (ListNode)node);
                 }
                 else
                 {
@@ -314,7 +340,7 @@ public class Convert
                 {
                     if (node instanceof ListNode)
                     {
-                        return (T)COLLECTION_CONVERTER.fromNode(ptype, (ListNode)node);
+                        return (T)collectionConverter.fromNode(ptype, (ListNode)node);
                     }
                     else
                     {
@@ -326,7 +352,7 @@ public class Convert
                 {
                     if (node instanceof MapNode)
                     {
-                        return (T)MAP_CONVERTER.fromNode(ptype, (MapNode)node);
+                        return (T)mapConverter.fromNode(ptype, (MapNode)node);
                     }
                     else
                     {

@@ -84,6 +84,18 @@ public class BukkitWorldManager extends AbstractWorldManager
     }
 
     @Override
+    public boolean unloadWorld(String worldName, boolean save)
+    {
+        return this.server.unloadWorld(worldName, save);
+    }
+
+    @Override
+    public boolean unloadWorld(World world, boolean save)
+    {
+        return this.server.unloadWorld(world, save);
+    }
+
+    @Override
     public Set<World> getWorlds()
     {
         assert CubeEngine.isMainThread() : "Must be executed from main thread!";

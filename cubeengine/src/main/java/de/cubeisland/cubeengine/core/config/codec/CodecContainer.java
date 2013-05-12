@@ -44,7 +44,7 @@ import de.cubeisland.cubeengine.core.config.node.NullNode;
 import de.cubeisland.cubeengine.core.config.node.StringNode;
 import de.cubeisland.cubeengine.core.util.StringUtils;
 import de.cubeisland.cubeengine.core.util.convert.Convert;
-import de.cubeisland.cubeengine.core.util.converter.generic.MapConverter;
+import de.cubeisland.cubeengine.core.util.convert.converter.generic.MapConverter;
 
 import gnu.trove.map.hash.THashMap;
 

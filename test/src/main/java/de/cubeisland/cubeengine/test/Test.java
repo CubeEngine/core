@@ -19,6 +19,7 @@ package de.cubeisland.cubeengine.test;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.FileSystem;
 import java.sql.Date;
 import java.sql.SQLException;
 import java.util.Calendar;
@@ -32,6 +33,11 @@ import net.minecraft.server.v1_5_R3.EntityPlayer;
 import net.minecraft.server.v1_5_R3.Packet0KeepAlive;
 import org.bukkit.craftbukkit.v1_5_R3.CraftServer;
 
+import org.bukkit.Server;
+import org.bukkit.World;
+import org.bukkit.World.Environment;
+import org.bukkit.WorldCreator;
+import org.bukkit.WorldType;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 
@@ -41,6 +47,7 @@ import de.cubeisland.cubeengine.core.bukkit.BukkitCore;
 import de.cubeisland.cubeengine.core.bukkit.PlayerLanguageReceivedEvent;
 import de.cubeisland.cubeengine.core.command.reflected.ReflectedCommand;
 import de.cubeisland.cubeengine.core.config.Configuration;
+import de.cubeisland.cubeengine.core.filesystem.FileManager;
 import de.cubeisland.cubeengine.core.filesystem.FileUtil;
 import de.cubeisland.cubeengine.core.logger.CubeFileHandler;
 import de.cubeisland.cubeengine.core.logger.LogLevel;
@@ -56,6 +63,7 @@ import de.cubeisland.cubeengine.test.l18n.TestRecource;
 
 import static de.cubeisland.cubeengine.core.logger.LogLevel.DEBUG;
 import static de.cubeisland.cubeengine.core.logger.LogLevel.ERROR;
+import static de.cubeisland.cubeengine.core.logger.LogLevel.WARNING;
 
 public class Test extends Module
 {
@@ -66,6 +74,22 @@ public class Test extends Module
     public Basics basicsModule;
     private Timer timer;
     private FIFOInterface fifo;
+
+    @Override
+    public void onLoad()
+    {
+        this.getCore().getWorldManager().registerGenerator(this, "test", new TestGenerator());
+    }
+
+    @Override
+    public void onStartupFinished()
+    {
+        Server server = ((BukkitCore)this.getCore()).getServer();
+        World world = server.createWorld(WorldCreator.name("test123").generator("CubeEngine:test:test")
+                                             .generateStructures(false).type(WorldType.FLAT)
+                                             .environment(Environment.NORMAL).seed(1231));
+
+    }
 
     @Override
     public void onEnable()
@@ -147,6 +171,15 @@ public class Test extends Module
     public void onDisable()
     {
         this.timer.cancel();
+        try
+        {
+            this.getCore().getWorldManager().unloadWorld("test123", false);
+            FileManager.deleteRecursive(new File("test123"));
+        }
+        catch (IOException e)
+        {
+            this.getLog().log(WARNING, "Failed to delete the test world 'test123'!", e);
+        }
         this.timer = null;
     }
 

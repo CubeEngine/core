@@ -22,8 +22,6 @@ import java.io.IOException;
 import java.util.Locale;
 import java.util.logging.Level;
 
-import org.bukkit.Location;
-import org.bukkit.OfflinePlayer;
 import org.bukkit.Server;
 import org.bukkit.generator.ChunkGenerator;
 import org.bukkit.plugin.PluginManager;
@@ -55,8 +53,6 @@ import de.cubeisland.cubeengine.core.util.InventoryGuardFactory;
 import de.cubeisland.cubeengine.core.util.Profiler;
 import de.cubeisland.cubeengine.core.util.Version;
 import de.cubeisland.cubeengine.core.util.convert.Convert;
-import de.cubeisland.cubeengine.core.util.convert.converter.LocationConverter;
-import de.cubeisland.cubeengine.core.util.convert.converter.PlayerConverter;
 import de.cubeisland.cubeengine.core.util.matcher.Match;
 import de.cubeisland.cubeengine.core.util.worker.CubeThreadFactory;
 import de.cubeisland.cubeengine.core.webapi.ApiConfig;
@@ -96,7 +92,7 @@ public final class BukkitCore extends JavaPlugin implements Core
     @Override
     public void onLoad()
     {
-        this.initConverters();
+        Convert.init(this);
         CubeEngine.initialize(this);
 
         this.version = Version.fromString(this.getDescription().getVersion());
@@ -338,15 +334,9 @@ public final class BukkitCore extends JavaPlugin implements Core
             this.taskManager = null;
         }
 
-        Convert.removeConverters();
         CubeEngine.clean();
+        Convert.cleanup();
         Profiler.clean();
-    }
-
-    private void initConverters()
-    {
-        Convert.registerConverter(OfflinePlayer.class, new PlayerConverter(this));
-        Convert.registerConverter(Location.class, new LocationConverter(this));
     }
 
     @Override

@@ -20,7 +20,6 @@ package de.cubeisland.cubeengine.basics.command.teleport;
 import java.util.Map;
 import java.util.Set;
 
-import org.bukkit.Bukkit;
 import org.bukkit.World;
 
 import de.cubeisland.cubeengine.core.module.Module;
@@ -43,11 +42,19 @@ public class TpWorldPermissions extends PermissionContainer
     public TpWorldPermissions(Module module)
     {
         super(module);
-        for (final World world : Bukkit.getWorlds())
+        for (final World world : module.getCore().getWorldManager().getWorlds())
         {
-            permissions.put(world.getName(), COMMAND_TPWORLD.createChild(world.getName()));
+            initWorldPermission(world.getName());
         }
-        this.registerAllPermissions();
+        this.registerAllPermissions(); // TODO permissions should be registered by initWorldPermission()
+    }
+
+    // TODO register the permission
+    private static Permission initWorldPermission(String world)
+    {
+        Permission perm = COMMAND_TPWORLD.createChild(world);
+        permissions.put(world, perm);
+        return perm;
     }
 
     @Override
@@ -58,7 +65,12 @@ public class TpWorldPermissions extends PermissionContainer
 
     public static Permission getPermission(String world)
     {
-        return permissions.get(world);
+        Permission perm = permissions.get(world);
+        if (perm == null)
+        {
+            perm = initWorldPermission(world);
+        }
+        return perm;
     }
 
 }

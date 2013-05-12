@@ -34,6 +34,8 @@ public interface WorldManager extends Cleanable
     World getWorld(long id);
     World getWorld(String name);
     World getWorld(UUID uid);
+    boolean unloadWorld(String worldName, boolean save);
+    boolean unloadWorld(World world, boolean save);
     Set<World> getWorlds();
     void registerGenerator(Module module, String id, ChunkGenerator generator);
     ChunkGenerator getGenerator(Module module, String id);

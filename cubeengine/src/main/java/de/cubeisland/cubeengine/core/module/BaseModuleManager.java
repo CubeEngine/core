@@ -23,7 +23,6 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
@@ -48,6 +47,7 @@ import de.cubeisland.cubeengine.core.util.Profiler;
 import de.cubeisland.cubeengine.core.util.Version;
 
 import gnu.trove.map.hash.THashMap;
+import gnu.trove.set.hash.THashSet;
 
 import static de.cubeisland.cubeengine.core.logger.LogLevel.*;
 
@@ -483,11 +483,9 @@ public abstract class BaseModuleManager implements ModuleManager
 
     public synchronized void unloadModules()
     {
-        Iterator<Map.Entry<String, Module>> it = this.modules.entrySet().iterator();
-        while (it.hasNext())
+        for (Module module : new THashSet<Module>(this.modules.values()))
         {
-            this.unloadModule(it.next().getValue());
-            it.remove();
+            this.unloadModule(module);
         }
         this.modules.clear();
     }
