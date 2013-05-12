@@ -17,36 +17,28 @@
  */
 package de.cubeisland.cubeengine.core.command.commands;
 
-import de.cubeisland.cubeengine.core.command.parameterized.Flag;
-import de.cubeisland.cubeengine.core.command.parameterized.ParameterizedContext;
-import de.cubeisland.cubeengine.core.command.reflected.Alias;
-import de.cubeisland.cubeengine.core.command.CommandContext;
-import de.cubeisland.cubeengine.core.command.ContainerCommand;
-import de.cubeisland.cubeengine.core.command.reflected.Command;
-import de.cubeisland.cubeengine.core.module.Module;
-import de.cubeisland.cubeengine.core.module.ModuleInfo;
-import de.cubeisland.cubeengine.core.module.ModuleManager;
-import de.cubeisland.cubeengine.core.module.exception.CircularDependencyException;
-import de.cubeisland.cubeengine.core.module.exception.IncompatibleCoreException;
-import de.cubeisland.cubeengine.core.module.exception.IncompatibleDependencyException;
-import de.cubeisland.cubeengine.core.module.exception.InvalidModuleException;
-import de.cubeisland.cubeengine.core.module.exception.MissingDependencyException;
-import de.cubeisland.cubeengine.core.module.exception.MissingPluginDependencyException;
-import de.cubeisland.cubeengine.core.module.exception.ModuleException;
-import de.cubeisland.cubeengine.core.util.ChatFormat;
-import de.cubeisland.cubeengine.core.util.Version;
-
 import java.io.File;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
 
+import de.cubeisland.cubeengine.core.command.CommandContext;
+import de.cubeisland.cubeengine.core.command.ContainerCommand;
+import de.cubeisland.cubeengine.core.command.parameterized.Flag;
+import de.cubeisland.cubeengine.core.command.parameterized.ParameterizedContext;
+import de.cubeisland.cubeengine.core.command.reflected.Alias;
+import de.cubeisland.cubeengine.core.command.reflected.Command;
+import de.cubeisland.cubeengine.core.module.Module;
+import de.cubeisland.cubeengine.core.module.ModuleInfo;
+import de.cubeisland.cubeengine.core.module.ModuleManager;
+import de.cubeisland.cubeengine.core.module.exception.ModuleException;
+import de.cubeisland.cubeengine.core.util.ChatFormat;
+import de.cubeisland.cubeengine.core.util.Version;
+
 import static de.cubeisland.cubeengine.core.logger.LogLevel.ERROR;
 
 public class ModuleCommands extends ContainerCommand
 {
-    private static final String SOURCE_LINK = "https://github.com/CubeEngineDev/CubeEngine/tree/";
-
     private final ModuleManager mm;
 
     public ModuleCommands(ModuleManager mm)
@@ -214,11 +206,7 @@ public class ModuleCommands extends ContainerCommand
         context.sendTranslated("Name: %s", moduleInfo.getName());
         context.sendTranslated("Description: %s", moduleInfo.getDescription());
         context.sendTranslated("Version: %s", moduleInfo.getVersion());
-        if (context.hasFlag("s"))
-        {
-            context.sendTranslated("Source Version: %s", moduleInfo.getSourceVersion());
-            context.sendTranslated("Source link: %s", getSourceLink(moduleInfo));
-        }
+        VanillaCommands.showSourceVersion(context, moduleInfo.getSourceVersion());
 
         Map<String, Version> dependencies = moduleInfo.getDependencies();
         Map<String, Version> softDependencies = moduleInfo.getSoftDependencies();
@@ -247,12 +235,5 @@ public class ModuleCommands extends ContainerCommand
                 context.sendMessage("   - " + dependency);
             }
         }
-    }
-
-    protected static String getSourceLink(ModuleInfo moduleInfo)
-    {
-        String sourceVersion = moduleInfo.getSourceVersion();
-        String commit = sourceVersion.substring(sourceVersion.lastIndexOf('-'), sourceVersion.length());
-        return SOURCE_LINK + commit;
     }
 }

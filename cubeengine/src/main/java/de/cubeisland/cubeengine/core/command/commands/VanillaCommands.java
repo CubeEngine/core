@@ -378,13 +378,9 @@ public class VanillaCommands implements CommandHolder
                 context.sendMessage(" ");
                 context.sendTranslated("&nPlugin information:");
                 context.sendMessage(" ");
-                if (plugin instanceof Core && context.hasFlag("s"))
+                if (plugin instanceof Core)
                 {
-                    context.sendTranslated("Source Version: %s", ((Core)plugin).getSourceVersion());
-                    context.sendTranslated("Source link: %s", ModuleCommands.getSourceLink(((Core)plugin)
-                                                                                               .getModuleManager()
-                                                                                               .getCoreModule()
-                                                                                               .getInfo()));
+                    showSourceVersion(context, core.getSourceVersion());
                 }
                 context.sendTranslated("Description: &6%s", plugin.getDescription().getDescription());
                 context.sendTranslated("Website: &6%s", plugin.getDescription().getWebsite());
@@ -409,12 +405,18 @@ public class VanillaCommands implements CommandHolder
             context.sendTranslated("&eBukkit API&r Version: &9%s", server.getBukkitVersion());
             context.sendMessage(" ");
             context.sendTranslated("Expanded and improved by &aCubeEngine&r revision &9%s", context.getCore().getVersion());
-            if (context.hasFlag("s"))
-            {
-                context.sendTranslated("Source Version: %s", this.core.getSourceVersion());
-                context.sendTranslated("Source link: %s",
-                                       ModuleCommands.getSourceLink(core.getModuleManager().getCoreModule().getInfo()));
-            }
+            showSourceVersion(context, core.getSourceVersion());
+        }
+    }
+
+    private static final String SOURCE_LINK = "https://github.com/CubeEngineDev/CubeEngine/tree/";
+    protected static void showSourceVersion(ParameterizedContext context, String sourceVersion)
+    {
+        if (context.hasFlag("s"))
+        {
+            final String commit = sourceVersion.substring(sourceVersion.lastIndexOf('-') + 1, sourceVersion.length() - 32);
+            context.sendTranslated("Source Version: %s", sourceVersion);
+            context.sendTranslated("Source link: %s", SOURCE_LINK + commit);
         }
     }
 
