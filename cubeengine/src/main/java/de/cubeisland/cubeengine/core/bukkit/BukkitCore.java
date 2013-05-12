@@ -67,7 +67,6 @@ import static de.cubeisland.cubeengine.core.logger.LogLevel.*;
 public final class BukkitCore extends JavaPlugin implements Core
 {
     private Version version;
-    private String sourceVersion;
     private Database database;
     private BukkitPermissionManager permissionManager;
     private BukkitUserManager userManager;
@@ -96,8 +95,6 @@ public final class BukkitCore extends JavaPlugin implements Core
         CubeEngine.initialize(this);
 
         this.version = Version.fromString(this.getDescription().getVersion());
-        this.pluginConfig = Configuration.load(PluginConfig.class, this.getResource("plugin.yml"));
-        this.sourceVersion = this.pluginConfig.sourceVersion;
         final Server server = this.getServer();
         final PluginManager pm = server.getPluginManager();
         if (!BukkitUtils.isCompatible())
@@ -371,7 +368,13 @@ public final class BukkitCore extends JavaPlugin implements Core
     @Override
     public String getSourceVersion()
     {
-        return this.sourceVersion;
+        return this.moduleManager.getCoreModule().getInfo().getSourceVersion();
+    }
+
+    @Override
+    public String getSourceLink()
+    {
+        return this.moduleManager.getCoreModule().getInfo().getSourceLink();
     }
 
     @Override

@@ -70,7 +70,13 @@ public class TestCore implements Core
     @Override
     public String getSourceVersion()
     {
-        return this.sourceVersion;
+        return "";
+    }
+
+    @Override
+    public String getSourceLink()
+    {
+        return "";
     }
 
     @Override

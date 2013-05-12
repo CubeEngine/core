@@ -45,8 +45,6 @@ import static de.cubeisland.cubeengine.core.logger.LogLevel.ERROR;
 
 public class ModuleCommands extends ContainerCommand
 {
-    private static final String SOURCE_LINK = "https://github.com/CubeEngineDev/CubeEngine/tree/";
-
     private final ModuleManager mm;
 
     public ModuleCommands(ModuleManager mm)
@@ -216,18 +214,16 @@ public class ModuleCommands extends ContainerCommand
         context.sendTranslated("Version: %s", moduleInfo.getVersion());
         if (context.hasFlag("s"))
         {
-            String sourceVersion = moduleInfo.getSourceVersion();
-            context.sendTranslated("Source Version: %s", sourceVersion);
-            String commit = sourceVersion.substring(sourceVersion.lastIndexOf('-'), sourceVersion.length()-32);
-            context.sendTranslated("Source link: %s", SOURCE_LINK+commit);
+            context.sendTranslated("Source Version: %s", moduleInfo.getSourceVersion());
+            context.sendTranslated("Source link: %s", moduleInfo.getSourceLink());
         }
 
         Map<String, Version> dependencies = moduleInfo.getDependencies();
         Map<String, Version> softDependencies = moduleInfo.getSoftDependencies();
-        Set<String> loadAfter = moduleInfo.getLoadAfter();
+        Set<String> pluginDependencies = moduleInfo.getPluginDependencies();
         if (!dependencies.isEmpty())
         {
-            context.sendTranslated("Dependencies:");
+            context.sendTranslated("Module dependencies:");
             for (String dependency : dependencies.keySet())
             {
                 context.sendMessage("   - " + dependency);
@@ -235,16 +231,16 @@ public class ModuleCommands extends ContainerCommand
         }
         if (!softDependencies.isEmpty())
         {
-            context.sendTranslated("Soft dependencies:");
+            context.sendTranslated("Module soft-dependencies:");
             for (String dependency : softDependencies.keySet())
             {
                 context.sendMessage("   - " + dependency);
             }
         }
-        if (!loadAfter.isEmpty())
+        if (!pluginDependencies.isEmpty())
         {
-            context.sendTranslated("Load after:");
-            for (String dependency : loadAfter)
+            context.sendTranslated("Plugin dependencies:");
+            for (String dependency : pluginDependencies)
             {
                 context.sendMessage("   - " + dependency);
             }

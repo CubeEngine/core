@@ -26,6 +26,8 @@ import java.util.Set;
 
 import de.cubeisland.cubeengine.core.Core;
 import de.cubeisland.cubeengine.core.bukkit.BukkitCore;
+import de.cubeisland.cubeengine.core.bukkit.PluginConfig;
+import de.cubeisland.cubeengine.core.config.Configuration;
 import de.cubeisland.cubeengine.core.util.Version;
 
 import org.apache.commons.lang.Validate;
@@ -35,6 +37,8 @@ import org.apache.commons.lang.Validate;
  */
 public class ModuleInfo
 {
+    private static final String SOURCE_LINK = "https://github.com/CubeEngineDev/CubeEngine/tree/";
+
     private static final char DEP_VERSION_DELIM = '/';
     private final File file;
     private final String main;
@@ -55,16 +59,19 @@ public class ModuleInfo
         if (core instanceof BukkitCore)
         {
             this.main = ((BukkitCore)core).getDescription().getMain();
+            PluginConfig pluginConfig = Configuration.load(PluginConfig.class, ((BukkitCore)core)
+                .getResource("plugin.yml"));
+            this.sourceVersion = pluginConfig.sourceVersion;
         }
         else
         {
             this.main = "";
+            this.sourceVersion = "uknown-abcdefgh";
         }
         this.id = CoreModule.ID;
         this.name = CoreModule.NAME;
         this.description = "This is the core meta module.";
         this.version = core.getVersion();
-        this.sourceVersion = core.getSourceVersion();
         this.minCoreVersion = core.getVersion();
         this.dependencies = Collections.emptyMap();
         this.softDependencies = this.dependencies;
@@ -339,5 +346,10 @@ public class ModuleInfo
         result = 31 * result + pluginDependencies.hashCode();
         result = 31 * result + loadAfter.hashCode();
         return result;
+    }
+
+    public String getSourceLink()
+    {
+        return this.SOURCE_LINK + this.sourceVersion.substring(sourceVersion.lastIndexOf('-'), sourceVersion.length()-32);
     }
 }
