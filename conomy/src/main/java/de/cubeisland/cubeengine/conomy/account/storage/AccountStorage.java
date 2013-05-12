@@ -190,4 +190,14 @@ public class AccountStorage extends SingleKeyStorage<Long, AccountModel>
             throw new IllegalStateException("Error while updating database", ex);
         }
     }
+
+    public AccountModel getBankAccount(String name)
+    {
+        return null; // TODO get bankacc /w BankName from db
+    }
+
+    public AccountModel getUserAccount(long userID)
+    {
+        return null; // TODO get useracc /w UserID from db
+    }
 }

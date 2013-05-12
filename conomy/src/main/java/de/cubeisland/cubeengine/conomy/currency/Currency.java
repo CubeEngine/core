@@ -41,10 +41,17 @@ public class Currency
     private CurrencyManager manager;
     private long defaultBalance;
     private long minMoney = 0;
+    private long minBankMoney = 0; // TODO get from config
+
     private String decimalSeperator;
     private Pattern pattern2 = Pattern.compile("[^a-zA-Z]+");
     private Pattern pattern1;
     private TObjectDoubleHashMap<Currency> conversionRates = new TObjectDoubleHashMap<Currency>();
+
+    private int fractionalDigits; // TODO get from config
+    private CurrencyType type; // TODO get from config
+    private long defaultBankBalance; // TODO get from config
+
 
     public Currency(CurrencyManager manager, String name, CurrencyConfiguration config)
     {
@@ -370,6 +377,26 @@ public class Currency
             throw new IllegalArgumentException("Currency not conversible! " + currency.getName() + " & " + this.getName());
         }
         return amount *= rate;
+    }
+
+    public int fractionalDigitsFactor()
+    {
+        return this.fractionalDigits;
+    }
+
+    public CurrencyType getType()
+    {
+        return type;
+    }
+
+    public long getMinBankMoney()
+    {
+        return minBankMoney;
+    }
+
+    public long getDefaultBankBalance()
+    {
+        return defaultBankBalance;
     }
 
     public enum CurrencyType
