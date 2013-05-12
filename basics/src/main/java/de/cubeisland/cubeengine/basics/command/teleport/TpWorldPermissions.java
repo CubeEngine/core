@@ -22,6 +22,7 @@ import java.util.Set;
 
 import org.bukkit.World;
 
+import de.cubeisland.cubeengine.core.CubeEngine;
 import de.cubeisland.cubeengine.core.module.Module;
 import de.cubeisland.cubeengine.core.permission.Permission;
 import de.cubeisland.cubeengine.core.permission.PermissionContainer;
@@ -38,22 +39,23 @@ public class TpWorldPermissions extends PermissionContainer
 {
     private static final Permission COMMAND_TPWORLD = COMMAND.createAbstractChild("tpworld");
     private static Map<String, Permission> permissions = new THashMap<String, Permission>();
+    private static Module module;
 
     public TpWorldPermissions(Module module)
     {
         super(module);
+        TpWorldPermissions.module = module;
         for (final World world : module.getCore().getWorldManager().getWorlds())
         {
             initWorldPermission(world.getName());
         }
-        this.registerAllPermissions(); // TODO permissions should be registered by initWorldPermission()
     }
 
-    // TODO register the permission
     private static Permission initWorldPermission(String world)
     {
         Permission perm = COMMAND_TPWORLD.createChild(world);
         permissions.put(world, perm);
+        module.getCore().getPermissionManager().registerPermission(module,perm);
         return perm;
     }
 
@@ -72,5 +74,4 @@ public class TpWorldPermissions extends PermissionContainer
         }
         return perm;
     }
-
 }
