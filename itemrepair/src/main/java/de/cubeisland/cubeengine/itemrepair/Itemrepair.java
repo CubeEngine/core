@@ -18,6 +18,7 @@
 package de.cubeisland.cubeengine.itemrepair;
 
 import de.cubeisland.cubeengine.core.config.Configuration;
+import de.cubeisland.cubeengine.core.module.Inject;
 import de.cubeisland.cubeengine.core.module.Module;
 import de.cubeisland.cubeengine.conomy.Conomy;
 import de.cubeisland.cubeengine.itemrepair.repair.RepairBlockManager;
@@ -25,7 +26,7 @@ import de.cubeisland.cubeengine.itemrepair.repair.RepairBlockManager;
 public class Itemrepair extends Module
 {
     private ItemrepairConfig config;
-    private Conomy conomy;
+    @Inject private Conomy conomy;
     public RepairBlockManager repairBlockManager;
 
     @Override

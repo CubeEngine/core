@@ -15,17 +15,17 @@
  * You should have received a copy of the GNU General Public License
  * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-package de.cubeisland.cubeengine.writer;
+package de.cubeisland.cubeengine.core.module;
 
-import de.cubeisland.cubeengine.core.command.reflected.ReflectedCommand;
-import de.cubeisland.cubeengine.core.module.Module;
+import java.lang.annotation.Documented;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
-public class Writer extends Module
+@Documented
+@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.FIELD)
+public @interface Inject
 {
-    @Override
-    public void onEnable()
-    {
-        this.getCore().getFileManager().dropResources(WriterResource.values());
-        this.getCore().getCommandManager().registerCommands(this, new EditCommand(), ReflectedCommand.class);
-    }
 }

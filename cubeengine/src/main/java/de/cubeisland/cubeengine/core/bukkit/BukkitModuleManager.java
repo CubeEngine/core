@@ -28,6 +28,7 @@ import org.bukkit.plugin.PluginManager;
 
 import de.cubeisland.cubeengine.core.logger.LogLevel;
 import de.cubeisland.cubeengine.core.module.BaseModuleManager;
+import de.cubeisland.cubeengine.core.module.Inject;
 import de.cubeisland.cubeengine.core.module.Module;
 import de.cubeisland.cubeengine.core.module.ModuleInfo;
 import de.cubeisland.cubeengine.core.module.exception.CircularDependencyException;
@@ -88,7 +89,7 @@ public class BukkitModuleManager extends BaseModuleManager
             for (Field field : fields)
             {
                 fieldType = field.getType();
-                if (Plugin.class.isAssignableFrom(fieldType))
+                if (Plugin.class.isAssignableFrom(fieldType) && field.isAnnotationPresent(Inject.class))
                 {
                     Plugin plugin = pluginClassMap.get(fieldType);
                     if (plugin == null)

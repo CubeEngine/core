@@ -263,7 +263,7 @@ public abstract class BaseModuleManager implements ModuleManager
         for (Field field : fields)
         {
             fieldType = field.getType();
-            if (Module.class.isAssignableFrom(fieldType))
+            if (Module.class.isAssignableFrom(fieldType) && field.isAnnotationPresent(Inject.class))
             {
                 injectedModule = this.classMap.get((Class<? extends Module>)fieldType);
                 if (injectedModule == null)

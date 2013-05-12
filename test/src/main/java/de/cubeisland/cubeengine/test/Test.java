@@ -51,6 +51,7 @@ import de.cubeisland.cubeengine.core.filesystem.FileManager;
 import de.cubeisland.cubeengine.core.filesystem.FileUtil;
 import de.cubeisland.cubeengine.core.logger.CubeFileHandler;
 import de.cubeisland.cubeengine.core.logger.LogLevel;
+import de.cubeisland.cubeengine.core.module.Inject;
 import de.cubeisland.cubeengine.core.module.Module;
 import de.cubeisland.cubeengine.core.storage.database.Database;
 import de.cubeisland.cubeengine.core.user.UserManager;
@@ -71,7 +72,7 @@ public class Test extends Module
     public UserManager uM;
     protected TestConfig config;
     public static List<String> aListOfPlayers;
-    public Basics basicsModule;
+    @Inject public Basics basicsModule;
     private Timer timer;
     private FIFOInterface fifo;
 

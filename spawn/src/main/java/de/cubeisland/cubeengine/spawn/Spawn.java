@@ -19,13 +19,14 @@ package de.cubeisland.cubeengine.spawn;
 
 import de.cubeisland.cubeengine.core.command.reflected.ReflectedCommand;
 import de.cubeisland.cubeengine.core.config.Configuration;
+import de.cubeisland.cubeengine.core.module.Inject;
 import de.cubeisland.cubeengine.core.module.Module;
 import de.cubeisland.cubeengine.roles.Roles;
 
 public class Spawn extends Module
 {
     private SpawnConfig config;
-    private Roles roles;
+    @Inject private Roles roles;
 
     @Override
     public void onEnable()
