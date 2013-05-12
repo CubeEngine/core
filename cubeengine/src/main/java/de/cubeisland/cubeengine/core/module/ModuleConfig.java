@@ -43,8 +43,6 @@ public class ModuleConfig extends Configuration
     public String sourceVersion;
     @Option("core-version")
     public Version minCoreRevision = Version.ZERO;
-    @Option("world-generator")
-    public boolean provideWorldGenerator = false;
     @Option("dependencies")
     public Set<String> dependencies = new HashSet<String>(0);
     @Option("soft-dependencies")

@@ -52,7 +52,7 @@ public class TeleportCommands
 
     public static boolean teleport(User user, Location loc, boolean safe, boolean force, boolean keepDirection)
     {
-        if (!force && !user.getWorld().equals(loc.getWorld()) // TODO NPE!
+        if (!force && !user.getWorld().equals(loc.getWorld()) // TODO NPE!  // I think this is fixed? @Faithcaio validate this
                 && !TpWorldPermissions.getPermission(loc.getWorld().getName()).isAuthorized(user))
         {
             //TODO this feels not correct
@@ -207,7 +207,7 @@ public class TeleportCommands
                 noTp.add(player.getName());
                 continue;
             }
-            teleport(user.getCore().getUserManager().getExactUser(player), user.getLocation(), safe, force, true);
+            teleport(user.getCore().getUserManager().getExactUser(player.getName()), user.getLocation(), safe, force, true);
         }
         context.getCore().getUserManager().broadcastMessage("&aTeleporting everyone to %s", user.getName());
         if (!noTp.isEmpty())
@@ -292,7 +292,7 @@ public class TeleportCommands
                 continue;
             }
             boolean safe = !context.hasFlag("u");
-            teleport(sender.getCore().getUserManager().getExactUser(player), sender.getLocation(), safe, force, true);
+            teleport(sender.getCore().getUserManager().getExactUser(player.getName()), sender.getLocation(), safe, force, true);
         }
         context.sendTranslated("&aYou teleported everyone to you!");
         context.getCore().getUserManager().broadcastMessage("&aTeleporting everyone to %s", sender.getName());

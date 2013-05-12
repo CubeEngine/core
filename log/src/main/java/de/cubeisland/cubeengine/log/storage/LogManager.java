@@ -22,11 +22,10 @@ import java.sql.Timestamp;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
 
-import de.cubeisland.cubeengine.core.bukkit.EventManager;
+import de.cubeisland.cubeengine.core.bukkit.BukkitCore;
 import de.cubeisland.cubeengine.core.config.Configuration;
 import de.cubeisland.cubeengine.core.storage.database.querybuilder.SelectBuilder;
 import de.cubeisland.cubeengine.core.user.User;
@@ -40,7 +39,8 @@ public class LogManager
     public final ObjectMapper mapper;
     private final Log module;
 
-    private LoggingConfiguration globalConfig;
+    private final LoggingConfiguration globalConfig;
+    private final File worldsFolder;
     private Map<World, LoggingConfiguration> worldConfigs = new HashMap<World, LoggingConfiguration>();
 
     private final QueryManager queryManager;
@@ -49,22 +49,36 @@ public class LogManager
     {
         this.module = module;
         this.mapper = new ObjectMapper();
-        File file = new File(module.getFolder(), "worlds");
-        file.mkdir();
-        this.globalConfig = Configuration.load(LoggingConfiguration.class, new File(module.getFolder(), "globalconfig.yml"));
-        for (World world : Bukkit.getServer().getWorlds())
+        this.worldsFolder = new File(module.getFolder(), "worlds");
+        if (!this.worldsFolder.exists() && !this.worldsFolder.mkdir())
         {
-            file = new File(module.getFolder(), "worlds" + File.separator + world.getName());
-            file.mkdir();
-            this.worldConfigs.put(world, (LoggingConfiguration)globalConfig.loadChild(new File(file, "config.yml")));
+            throw new RuntimeException("Couldn't create the worlds folder: " + this.worldsFolder
+                .getAbsolutePath()); // TODO change to a specific exception
+        }
+        else
+        {
+            this.globalConfig = Configuration.load(LoggingConfiguration.class, new File(module
+                                                                                            .getFolder(), "globalconfig.yml")); // TODO rename to global.yml
+            for (World world : ((BukkitCore)module.getCore()).getServer().getWorlds())
+            {
+                this.initWorldConfig(world);
+            }
         }
 
-
-        final EventManager em = module.getCore().getEventManager();
-
         this.queryManager = new QueryManager(module);
+    }
 
-
+    private LoggingConfiguration initWorldConfig(World world)
+    {
+        File worldFolder = new File(this.worldsFolder, world.getName());
+        if (!worldFolder.exists() && !worldFolder.mkdir())
+        {
+            throw new RuntimeException("Failed to create the world folder for " + world
+                .getName()); // TODO change to a specific exception
+        }
+        LoggingConfiguration config = this.globalConfig.loadChild(new File(worldFolder, "config.yml"));
+        this.worldConfigs.put(world, config);
+        return config;
     }
 
     private void buildWorldAndLocation(SelectBuilder builder, World world, Location loc1, Location loc2)
@@ -76,16 +90,15 @@ public class LogManager
             {
                 if (loc2 == null) // single location
                 {
-                    builder.and().field("x").isEqual().value(loc1.getBlockX())
-                            .and().field("y").isEqual().value(loc1.getBlockY())
-                            .and().field("z").isEqual().value(loc1.getBlockZ());
+                    builder.and().field("x").isEqual().value(loc1.getBlockX()).and().field("y").isEqual()
+                           .value(loc1.getBlockY()).and().field("z").isEqual().value(loc1.getBlockZ());
                 }
                 else
                 // range of locations
                 {
-                    builder.and().field("x").between(loc1.getBlockX(), loc2.getBlockX())
-                            .and().field("y").between(loc1.getBlockY(), loc2.getBlockY())
-                            .and().field("z").between(loc1.getBlockZ(), loc2.getBlockZ());
+                    builder.and().field("x").between(loc1.getBlockX(), loc2.getBlockX()).and().field("y")
+                           .between(loc1.getBlockY(), loc2.getBlockY()).and().field("z")
+                           .between(loc1.getBlockZ(), loc2.getBlockZ());
                 }
             }
             builder.and();
@@ -102,7 +115,8 @@ public class LogManager
         this.queryManager.disable();
     }
 
-    public int getQueueSize() {
+    public int getQueueSize()
+    {
         return this.queryManager.queuedLogs.size();
     }
 
@@ -111,9 +125,18 @@ public class LogManager
         this.queryManager.prepareLookupQuery(lookup.clone(), user);
     }
 
-    public LoggingConfiguration getConfig(World world) {
-        if (world == null) return globalConfig;
-        return this.worldConfigs.get(world);
+    public LoggingConfiguration getConfig(World world)
+    {
+        if (world == null)
+        {
+            return this.globalConfig;
+        }
+        LoggingConfiguration config = this.worldConfigs.get(world);
+        if (config == null)
+        {
+            config = this.initWorldConfig(world);
+        }
+        return config;
     }
 
     public void queueLog(QueuedLog log)
@@ -123,6 +146,6 @@ public class LogManager
 
     public QueryManager getQueryManager()
     {
-        return queryManager;
+        return this.queryManager;
     }
 }

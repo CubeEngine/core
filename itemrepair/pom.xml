@@ -17,7 +17,6 @@
     <projectBase>${project.parent.basedir}</projectBase>
   </properties>
 
-
   <dependencies>
     <dependency>
         <groupId>${project.parent.groupId}</groupId>

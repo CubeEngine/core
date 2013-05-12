@@ -39,14 +39,13 @@ import de.cubeisland.cubeengine.core.CubeEngine;
 import de.cubeisland.cubeengine.core.logger.CubeFileHandler;
 import de.cubeisland.cubeengine.core.logger.CubeLogger;
 import de.cubeisland.cubeengine.core.module.Module;
+import de.cubeisland.cubeengine.core.permission.PermDefault;
 import de.cubeisland.cubeengine.core.permission.Permission;
 import de.cubeisland.cubeengine.core.permission.PermissionManager;
-import de.cubeisland.cubeengine.core.permission.PermDefault;
 import de.cubeisland.cubeengine.core.util.StringUtils;
 
 import gnu.trove.map.hash.THashMap;
 import gnu.trove.set.hash.THashSet;
-import org.apache.commons.lang.Validate;
 
 import static de.cubeisland.cubeengine.core.logger.LogLevel.*;
 import static de.cubeisland.cubeengine.core.permission.Permission.BASE;
@@ -134,13 +133,10 @@ public class BukkitPermissionManager implements PermissionManager
     @Override
     public org.bukkit.permissions.Permission registerPermission(Module module, String perm, PermDefault permDefault, String parent, Set<String> bundles)
     {
-        if (!CubeEngine.isMainThread())
-        {
-            throw new IllegalStateException("Permissions may only be registered from the main thread!");
-        }
-        Validate.notNull(module, "The module must not be null!");
-        Validate.notNull(perm, "The permission must not be null!");
-        Validate.notNull(permDefault, "The permission default must not be null!");
+        assert CubeEngine.isMainThread(): "Permissions may only be registered from the main thread!";
+        assert module != null: "The module must not be null!";
+        assert perm != null: "The permission must not be null!";
+        assert permDefault != null: "The permission default must not be null!";
 
         if (perm.equals(CUBEENGINE_WILDCARD.getName()))
         {
@@ -231,9 +227,9 @@ public class BukkitPermissionManager implements PermissionManager
 
     public void removePermission(Module module, String perm)
     {
-        Validate.notNull(module, "The module must not be null!");
-        Validate.notNull(perm, "The permission must not be null!");
-        Validate.isTrue(!perm.equals(CUBEENGINE_WILDCARD.getName()), "The CubeEngine wildcard permission must not be unregistered!");
+        assert module != null: "The module must not be null!";
+        assert perm != null: "The permission must not be null!";
+        assert !perm.equals(CUBEENGINE_WILDCARD.getName()): "The CubeEngine wildcard permission must not be unregistered!"; 
 
         Set<String> perms = this.modulePermissionMap.get(module);
         if (perms != null && perms.remove(perm))
@@ -248,7 +244,7 @@ public class BukkitPermissionManager implements PermissionManager
 
     public void removePermissions(Module module)
     {
-        Validate.notNull(module, "The module must not be null!");
+        assert module != null: "The module must not be null!";
 
         Set<String> removedPerms = this.modulePermissionMap.remove(module);
         if (removedPerms != null)

@@ -54,7 +54,7 @@ public class FileManager implements Cleanable
     public FileManager(Core core, File dataFolder) throws IOException
     {
         this.logger = core.getLog();
-        Validate.notNull(dataFolder, "The CubeEngine plugin folder must not be null!");
+        assert dataFolder != null: "The CubeEngine plugin folder must not be null!";
         if (!dataFolder.exists())
         {
             if (!dataFolder.mkdirs())
@@ -360,7 +360,7 @@ public class FileManager implements Cleanable
      */
     public File getResourceFile(Resource resource)
     {
-        Validate.notNull(resource, "The resource must not be null!");
+        assert resource != null: "The resource must not be null!";
 
         File file = this.dropResource(resource.getClass(), getSaneSource(resource), resource.getTarget(), false);
         this.fileSources.put(file, resource);
@@ -374,7 +374,7 @@ public class FileManager implements Cleanable
      */
     public void dropResources(Resource[] resources)
     {
-        Validate.notNull(resources, "The resources must not be null!");
+        assert resources != null: "The resources must not be null!";
 
         for (Resource resource : resources)
         {
@@ -393,8 +393,8 @@ public class FileManager implements Cleanable
      */
     public File dropResource(Class clazz, String resPath, String filePath, boolean overwrite)
     {
-        Validate.notNull(filePath, "The file path must not be null!");
-        Validate.notNull(resPath, "The resource path must not be null!");
+        assert filePath != null: "The file path must not be null!";
+        assert resPath != null: "The resource path must not be null!";
 
         if (filePath.startsWith("/"))
         {
@@ -414,9 +414,9 @@ public class FileManager implements Cleanable
      */
     public File dropResource(Class clazz, String resPath, File file, boolean overwrite)
     {
-        Validate.notNull(clazz, "The class must not be null!");
-        Validate.notNull(resPath, "The resource path must not be null!");
-        Validate.notNull(file, "The file must not be null!");
+        assert clazz != null: "The class must not be null!";
+        assert resPath != null: "The resource path must not be null!";
+        assert file != null: "The file must not be null!";
         if (file.exists() && !file.isFile())
         {
             throw new IllegalArgumentException("The given file exists, but is no file!");

@@ -15,29 +15,18 @@
  * You should have received a copy of the GNU General Public License
  * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-package de.cubeisland.cubeengine.core.module.event;
+package de.cubeisland.cubeengine.core.world;
 
-import de.cubeisland.cubeengine.core.Core;
-import de.cubeisland.cubeengine.core.bukkit.CubeEvent;
-import org.bukkit.event.HandlerList;
+import de.cubeisland.cubeengine.core.storage.SingleKeyStorage;
+import de.cubeisland.cubeengine.core.storage.database.Database;
 
-public class FinishedLoadModulesEvent extends CubeEvent
+public class WorldStorage extends SingleKeyStorage<Long, WorldModel>
 {
-    private static final HandlerList handlers = new HandlerList();
+    private static final int REVISION = 3;
 
-    public FinishedLoadModulesEvent(Core core)
+    public WorldStorage(Database database)
     {
-        super(core);
-    }
-
-    @Override
-    public HandlerList getHandlers()
-    {
-        return handlers;
-    }
-
-    public static HandlerList getHandlerList()
-    {
-        return handlers;
+        super(database, WorldModel.class, REVISION);
+        this.initialize();
     }
 }

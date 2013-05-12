@@ -15,15 +15,16 @@
  * You should have received a copy of the GNU General Public License
  * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-package de.cubeisland.cubeengine.core.util.converter.generic;
+package de.cubeisland.cubeengine.core.util.convert.converter.generic;
+
+import java.lang.reflect.Array;
+import java.util.Collection;
+import java.util.LinkedList;
 
 import de.cubeisland.cubeengine.core.config.node.ListNode;
 import de.cubeisland.cubeengine.core.config.node.Node;
 import de.cubeisland.cubeengine.core.util.convert.ConversionException;
 import de.cubeisland.cubeengine.core.util.convert.Convert;
-import java.lang.reflect.Array;
-import java.util.Collection;
-import java.util.LinkedList;
 
 public class ArrayConverter
 {

@@ -74,7 +74,7 @@ public class MySQLMergeBuilder extends MySQLComponentBuilder<MergeBuilder>
             throw new IllegalStateException("No insert cols specified!");
         }
         Validate.notEmpty(updateCols, "You have to specify at least one col to update!");
-        Validate.isTrue(this.insertCols.length >= updateCols.length, "More update cols than insert cols specified!");
+        assert this.insertCols.length >= updateCols.length: "More update cols than insert cols specified!";
 
         String col = this.database.prepareFieldName(updateCols[0]);
         this.query.append(" ON DUPLICATE KEY UPDATE ").append(col).append("=VALUES(").append(col).append(')');
@@ -91,7 +91,7 @@ public class MySQLMergeBuilder extends MySQLComponentBuilder<MergeBuilder>
     @Override
     public QueryBuilder end()
     {
-        Validate.isTrue(this.updateColsSpecified, "You have to specify which cols to update!");
+        assert this.updateColsSpecified: "You have to specify which cols to update!";
         this.insertCols = null;
         return super.end();
     }

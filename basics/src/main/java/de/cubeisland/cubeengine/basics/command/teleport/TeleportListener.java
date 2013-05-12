@@ -45,7 +45,7 @@ public class TeleportListener implements Listener
     @EventHandler
     public void onTeleport(PlayerTeleportEvent event)
     {
-        User user = basics.getCore().getUserManager().getExactUser(event.getPlayer());
+        User user = basics.getCore().getUserManager().getExactUser(event.getPlayer().getName());
         switch (event.getCause())
         {
             case COMMAND:
@@ -58,7 +58,7 @@ public class TeleportListener implements Listener
     @EventHandler
     public void onDeath(PlayerDeathEvent event)
     {
-        User user = this.basics.getCore().getUserManager().getExactUser(event.getEntity());
+        User user = this.basics.getCore().getUserManager().getExactUser(event.getEntity().getName());
         if (BasicsPerm.COMMAND_BACK_ONDEATH.isAuthorized(user))
         {
             user.get(BasicsAttachment.class).setDeathLocation(user.getLocation());
@@ -81,7 +81,7 @@ public class TeleportListener implements Listener
                 case LEFT_CLICK_BLOCK:
                     if (BasicsPerm.COMPASS_JUMPTO_LEFT.isAuthorized(event.getPlayer()))
                     {
-                        User user = this.basics.getCore().getUserManager().getExactUser(event.getPlayer());
+                        User user = this.basics.getCore().getUserManager().getExactUser(event.getPlayer().getName());
                         Location loc;
                         if (event.getClickedBlock() != null && event.getClickedBlock().getType().isSolid())
                         {
@@ -105,7 +105,7 @@ public class TeleportListener implements Listener
                 case RIGHT_CLICK_BLOCK:
                     if (BasicsPerm.COMPASS_JUMPTO_RIGHT.isAuthorized(event.getPlayer()))
                     {
-                        User user = this.basics.getCore().getUserManager().getExactUser(event.getPlayer());
+                        User user = this.basics.getCore().getUserManager().getExactUser(event.getPlayer().getName());
                         Location loc = LocationUtil.getBlockBehindWall(user, this.basics.getConfiguration().jumpThruMaxRange,
                                 this.basics.getConfiguration().jumpThruMaxWallThickness);
                         if (loc == null)

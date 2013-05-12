@@ -17,6 +17,7 @@
  */
 package de.cubeisland.cubeengine.powersigns;
 
+import de.cubeisland.cubeengine.core.config.Configuration;
 import de.cubeisland.cubeengine.core.module.Module;
 
 public class Powersigns extends Module
@@ -27,6 +28,7 @@ public class Powersigns extends Module
     @Override
     public void onEnable()
     {
+        this.config = Configuration.load(PowersignsConfig.class, this);
         this.signManager = new SignManager(this);
         this.signManager.init();
     }

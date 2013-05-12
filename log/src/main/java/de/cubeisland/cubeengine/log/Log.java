@@ -18,6 +18,7 @@
 package de.cubeisland.cubeengine.log;
 
 import de.cubeisland.cubeengine.core.command.CommandManager;
+import de.cubeisland.cubeengine.core.config.Configuration;
 import de.cubeisland.cubeengine.core.module.Module;
 import de.cubeisland.cubeengine.core.util.convert.Convert;
 import de.cubeisland.cubeengine.log.action.ActionTypeManager;
@@ -42,7 +43,7 @@ public class Log extends Module
     @Override
     public void onEnable()
     {
-
+        this.config = Configuration.load(LogConfiguration.class, this);
         Convert.registerConverter(ContainerType.class, new ContainerTypeConverter());
         //        TODO when sending logs to player
         //        if same player and block type do not use 1 line for each block

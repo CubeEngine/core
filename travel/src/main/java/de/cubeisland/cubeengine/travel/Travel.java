@@ -21,6 +21,7 @@ import java.util.concurrent.TimeUnit;
 
 import de.cubeisland.cubeengine.core.bukkit.EventManager;
 import de.cubeisland.cubeengine.core.command.CommandManager;
+import de.cubeisland.cubeengine.core.config.Configuration;
 import de.cubeisland.cubeengine.core.module.Module;
 import de.cubeisland.cubeengine.core.util.Profiler;
 import de.cubeisland.cubeengine.travel.interactions.*;
@@ -38,6 +39,7 @@ public class Travel extends Module
     public void onEnable()
     {
         Profiler.startProfiling("travelEnable");
+        this.config = Configuration.load(TravelConfig.class, this);
         System.out.print(Profiler.getCurrentDelta("travelEnable", TimeUnit.MILLISECONDS) + "ms - TelePointManager");
         this.telePointManager = new TelePointManager(this);
         System.out.print(Profiler.getCurrentDelta("travelEnable", TimeUnit.MILLISECONDS) + "ms - InviteManager");

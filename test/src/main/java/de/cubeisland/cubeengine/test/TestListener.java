@@ -17,11 +17,12 @@
  */
 package de.cubeisland.cubeengine.test;
 
-import de.cubeisland.cubeengine.core.CubeEngine;
-import de.cubeisland.cubeengine.core.user.User;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
+
+import de.cubeisland.cubeengine.core.CubeEngine;
+import de.cubeisland.cubeengine.core.user.User;
 
 public class TestListener implements Listener
 {
@@ -43,7 +44,7 @@ public class TestListener implements Listener
 
     private void testI18n(AsyncPlayerChatEvent event)
     {
-        User user = CubeEngine.getUserManager().getExactUser(event.getPlayer());
+        User user = CubeEngine.getUserManager().getExactUser(event.getPlayer().getName());
         user.sendTranslated("Your language is: %s", user.getLocale());
         user.sendTranslated("english TEST");
         user.sendTranslated("&1color &2Test");

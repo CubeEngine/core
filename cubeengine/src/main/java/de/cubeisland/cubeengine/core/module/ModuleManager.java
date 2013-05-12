@@ -17,6 +17,9 @@
  */
 package de.cubeisland.cubeengine.core.module;
 
+import java.io.File;
+import java.util.Collection;
+
 import de.cubeisland.cubeengine.core.module.exception.CircularDependencyException;
 import de.cubeisland.cubeengine.core.module.exception.IncompatibleCoreException;
 import de.cubeisland.cubeengine.core.module.exception.IncompatibleDependencyException;
@@ -25,9 +28,6 @@ import de.cubeisland.cubeengine.core.module.exception.MissingDependencyException
 import de.cubeisland.cubeengine.core.module.exception.MissingPluginDependencyException;
 import de.cubeisland.cubeengine.core.module.exception.ModuleException;
 import de.cubeisland.cubeengine.core.util.Cleanable;
-
-import java.io.File;
-import java.util.*;
 
 /**
  * This class manages the modules.
@@ -76,16 +76,9 @@ public interface ModuleManager extends Cleanable
     boolean enableModule(Module module);
 
     /**
-     * This method enables all modules that provide world generators
-     */
-    void enableWorldGeneratorModules();
-
-    /**
      * This method enables all modules or at least all that don't provide world generators
-     *
-     * @param worldGenerators whether to also load the world generator-providing modules
      */
-    void enableModules(boolean worldGenerators);
+    void enableModules();
 
     /**
      * This method disables a module

@@ -58,7 +58,7 @@ public class ItemRepairListener implements Listener
     @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
     public void onPlayerInteract(PlayerInteractEvent event)
     {
-        User user = this.module.getCore().getUserManager().getExactUser(event.getPlayer());
+        User user = this.module.getCore().getUserManager().getExactUser(event.getPlayer().getName());
         final Block block = event.getClickedBlock();
         if (block == null)
         {
@@ -126,7 +126,7 @@ public class ItemRepairListener implements Listener
     {
         if (event.getAction() != Action.PHYSICAL)
         {
-            final User user = this.module.getCore().getUserManager().getExactUser(event.getPlayer());
+            final User user = this.module.getCore().getUserManager().getExactUser(event.getPlayer().getName());
             if (this.repairRequests.containsKey(user.getName()))
             {
                 user.sendTranslated("&eThe repair has been cancelled!");

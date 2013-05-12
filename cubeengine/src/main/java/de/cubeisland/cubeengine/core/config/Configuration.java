@@ -23,7 +23,6 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
-import java.util.Locale;
 import java.util.Map;
 
 import de.cubeisland.cubeengine.core.CubeEngine;
@@ -33,7 +32,6 @@ import de.cubeisland.cubeengine.core.config.codec.YamlCodec;
 import de.cubeisland.cubeengine.core.logger.LogLevel;
 import de.cubeisland.cubeengine.core.module.Module;
 
-import org.apache.commons.lang.Validate;
 import org.yaml.snakeyaml.reader.ReaderException;
 
 import static java.util.logging.Level.SEVERE;
@@ -136,7 +134,7 @@ public abstract class Configuration<ConfigCodec extends ConfigurationCodec>
      */
     public final void setFile(File file)
     {
-        Validate.notNull(file, "The file must not be null!");
+        assert file != null: "The file must not be null!";
         this.file = file;
     }
 
@@ -189,6 +187,7 @@ public abstract class Configuration<ConfigCodec extends ConfigurationCodec>
      * @return the Codec
      * @throws IllegalStateException if no Codec is found for given FileExtension
      */
+    @SuppressWarnings("unchecked")
     public static <Codec extends ConfigurationCodec> Codec resolveCodec(String fileExtension)
     {
         if (fileExtension == null)
@@ -198,7 +197,7 @@ public abstract class Configuration<ConfigCodec extends ConfigurationCodec>
         ConfigurationCodec codec = codecs.get(fileExtension);
         if (codec == null)
         {
-            throw new InvalidConfigurationException("No Codec known for the file-extension ." + fileExtension);
+            throw new InvalidConfigurationException("No codec known for the file-extension '." + fileExtension + "'");
         }
         return (Codec) codec;
     }
@@ -234,12 +233,12 @@ public abstract class Configuration<ConfigCodec extends ConfigurationCodec>
      */
     public static <T extends Configuration> T load(Class<T> clazz, Module module)
     {
-        Codec codecAnnotation = clazz.getAnnotation(Codec.class);
+        Codec codecAnnotation = findCodec(clazz);
         if (codecAnnotation == null)
         {
             throw new InvalidConfigurationException("No codec specified for " + clazz.getName());
         }
-        return load(clazz, new File(module.getFolder(), module.getName().toLowerCase(Locale.ENGLISH) + "." + codecAnnotation.value()));
+        return load(clazz, new File(module.getFolder(), "config." + codecAnnotation.value()));
     }
 
     /**
@@ -269,9 +268,9 @@ public abstract class Configuration<ConfigCodec extends ConfigurationCodec>
         {
             if (e instanceof ReaderException)
             {//TODO abstract...
-                throw new InvalidConfigurationException("Failed to parse the YAML configuration. Try encoding it as UTF-8 or validate on yamllint.com", e);
+                throw new InvalidConfigurationException("Failed to parse the YAML configuration. Try encoding it as UTF-8 or validate on yamllint.com" + (file != null ? " File: " + file.getAbsoluteFile() : ""), e);
             }
-            throw new InvalidConfigurationException("Error while loading a Configuration!", e);
+            throw new InvalidConfigurationException("Error while loading a configuration!" + (file != null ? " File: " + file.getAbsoluteFile() : ""), e);
         }
     }
 
@@ -353,7 +352,7 @@ public abstract class Configuration<ConfigCodec extends ConfigurationCodec>
         }
         if (codecAnnotation == null)
         {
-            throw new InvalidConfigurationException("Missing codec-annotation for configuration: "+ clazz);
+            throw new InvalidConfigurationException("Missing codec-annotation for configuration: " + clazz);
         }
         return codecAnnotation;
     }

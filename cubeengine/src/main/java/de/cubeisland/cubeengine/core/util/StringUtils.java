@@ -24,6 +24,7 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import java.util.StringTokenizer;
 import java.util.regex.MatchResult;
 import java.util.regex.Matcher;
@@ -432,6 +433,26 @@ public final class StringUtils
             return string;
         }
         return string.substring(lastSepPos + 1);
+    }
+
+    public static String randomString(Random random, int length)
+    {
+        return randomString(random, length, "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQESRUVWXYZ0123456789");
+    }
+
+    public static String randomString(Random random, int length, String charset)
+    {
+        assert length > 0: "The length must be creater than zero!";
+
+        int upperLimit = charset.length();
+        StringBuilder sb = new StringBuilder();
+
+        for (; length > 0; --length)
+        {
+            sb.append(charset.charAt(random.nextInt(upperLimit)));
+        }
+
+        return sb.toString();
     }
 
     public static interface ReplaceCallback

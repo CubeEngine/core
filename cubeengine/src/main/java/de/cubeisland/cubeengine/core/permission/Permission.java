@@ -36,82 +36,83 @@ public class Permission
     private Permission parent = null;
     private Set<Permission> children = null;
 
-    public final boolean canRegister;
+    private final boolean registrable;
 
-    public static final Permission BASE = createAbstractPermission("cubeengine",FALSE);
+    public static final Permission BASE = createAbstractPermission("cubeengine", FALSE);
 
-    public static final Permission createAbstractPermission(String name)
+    public static Permission createAbstractPermission(String name)
     {
-        return new Permission(false,name,OP);
+        return new Permission(false, name, OP);
     }
 
-    public static final Permission createAbstractPermission(String name, PermDefault def)
+    public static Permission createAbstractPermission(String name, PermDefault def)
     {
-        return new Permission(false,name,def);
+        return new Permission(false, name, def);
     }
 
-    public static final Permission createPermission(String name)
+    public static Permission createPermission(String name)
     {
-        return new Permission(true,name,OP);
+        return new Permission(true, name, OP);
     }
 
-    public static final Permission createPermission(String name, PermDefault def)
+    public static Permission createPermission(String name, PermDefault def)
     {
-        return new Permission(true,name,def);
+        return new Permission(true, name, def);
     }
 
     /**
      * Creates a new permission
      *
-     * @param canRegister false to make an abstract permission that will not register
-     * @param parentName
-     * @param name
+     * @param registrable false to make an abstract permission that will not register
      */
-    private Permission(boolean canRegister, String parentName, String name, PermDefault def)
+    private Permission(boolean registrable, String parentName, String name, PermDefault def)
     {
         this.permission = parentName.toLowerCase() + "." + name.toLowerCase();
-        this.canRegister = canRegister;
+        this.registrable = registrable;
         this.def = def;
     }
 
     /**
      * Creates a new permission
      *
-     * @param canRegister false to make an abstract permission that will not register
-     * @param name
+     * @param registrable false to make an abstract permission that will not register
      */
-    private Permission(boolean canRegister, String name, PermDefault def)
+    private Permission(boolean registrable, String name, PermDefault def)
     {
         this.permission = name.toLowerCase();
-        this.canRegister = canRegister;
+        this.registrable = registrable;
         this.def = def;
+    }
+
+    public boolean isRegistrable()
+    {
+        return registrable;
     }
 
     protected Permission(String name)
     {
-       this(name,OP);
+        this(name, OP);
     }
 
     protected Permission(String name, PermDefault def)
     {
-        this(true,name,def);
+        this(true, name, def);
     }
 
     protected Permission(String parentName, String name, PermDefault def)
     {
-        this(true,parentName,name,def);
+        this(true, parentName, name, def);
     }
 
     protected Permission(String parentName, String name)
     {
-        this(parentName,name,OP);
+        this(parentName, name, OP);
     }
 
     /**
      * Adds this permission to given bundle-permission.
      * This will not affect any name of the permissions.
      *
-     * @param bundlePermission
      * @return fluent interface
      */
     public Permission attachTo(Permission bundlePermission)
@@ -124,7 +125,6 @@ public class Permission
      * Adds given permissions to this bundle-permission to form a bundle.
      * This will not affect any name of the permissions.
      *
-     * @param toAttach
      * @return fluent interface
      */
     public Permission attach(Permission... toAttach)
@@ -140,7 +140,6 @@ public class Permission
      * Sets this permission as child of given parent-permission.
      * The child-permission and all its children will prepend the parents-permission
      *
-     * @param parentPermission
      * @return fluent interface
      */
     public Permission setAsChildOf(Permission parentPermission)
@@ -166,7 +165,6 @@ public class Permission
      * Sets the given permission as child of this parent-permission.
      * The child-permission and all its children will prepend the parents-permission
      *
-     * @param childPerms
      * @return fluent interface
      */
     public Permission addChildren(Permission... childPerms)
@@ -180,8 +178,6 @@ public class Permission
 
     /**
      * Prepends given string to this permission and all child permissions
-     *
-     * @param s
      */
     private void prepend(String s)
     {
@@ -197,21 +193,15 @@ public class Permission
 
     /**
      * Creates a child-permission
-     *
-     * @param name
-     * @return
      */
     public Permission createChild(String name)
     {
-        return this.createChild(name , OP);
+        return this.createChild(name, OP);
     }
 
     /**
      * Creates an independent abstract permission that begins with the path of this permission.
      * This permission will not be registered.
-     *
-     * @param name
-     * @return
      */
     public Permission createAbstract(String name)
     {
@@ -222,9 +212,6 @@ public class Permission
      * Creates an abstract child-permission.
      * This permission will not be registered.
      * A wildcard permission however will be registered if needed.
-     *
-     * @param name
-     * @return
      */
     public Permission createAbstractChild(String name)
     {
@@ -241,9 +228,6 @@ public class Permission
 
     /**
      * Creates an independent permission that begins with the path of this permission
-     *
-     * @param name
-     * @return
      */
     public Permission createNew(String name)
     {
@@ -252,27 +236,19 @@ public class Permission
 
     /**
      * Creates an independent permission that begins with the path of this permission
-     *
-     * @param name
-     * @param def
-     * @return
      */
     public Permission createNew(String name, PermDefault def)
     {
-        Permission newPermission = new Permission(this.permission,name,def);
+        Permission newPermission = new Permission(this.permission, name, def);
         return newPermission;
     }
 
     /**
      * Creates a child-permission
-     *
-     * @param name
-     * @param def
-     * @return
      */
     public Permission createChild(String name, PermDefault def)
     {
-        Permission newPermission = new Permission(this.permission,name,def);
+        Permission newPermission = new Permission(this.permission, name, def);
         newPermission.parent = this;
         if (!this.hasChildren())
         {

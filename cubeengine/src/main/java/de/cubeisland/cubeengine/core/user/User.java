@@ -120,7 +120,7 @@ public class User extends UserBase implements Model<Long>, CommandSender, Attach
         this.core = CubeEngine.getCore();
     }
 
-    User(BukkitCore core, Long key, String playerName)
+    User(Core core, Long key, String playerName)
     {
         super(playerName);
         this.key = key;
@@ -132,12 +132,12 @@ public class User extends UserBase implements Model<Long>, CommandSender, Attach
         this.core = core;
     }
 
-    User(BukkitCore core, OfflinePlayer player)
+    User(Core core, OfflinePlayer player)
     {
         this(core, NO_ID, player.getName());
     }
 
-    User(BukkitCore core, String name)
+    User(Core core, String name)
     {
         this(core, NO_ID, name);
     }

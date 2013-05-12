@@ -64,7 +64,6 @@ import de.cubeisland.cubeengine.core.i18n.I18n;
 import de.cubeisland.cubeengine.core.i18n.Language;
 import de.cubeisland.cubeengine.core.user.User;
 
-import org.apache.commons.lang.Validate;
 import sun.misc.Signal;
 import sun.misc.SignalHandler;
 
@@ -177,7 +176,7 @@ public class BukkitUtils
 
     static SimpleCommandMap swapCommandMap(SimpleCommandMap commandMap)
     {
-        Validate.notNull(commandMap, "The command map must not be null!");
+        assert commandMap != null: "The command map must not be null!";
 
         final Server server = Bukkit.getServer();
         final PluginManager pm = Bukkit.getPluginManager();

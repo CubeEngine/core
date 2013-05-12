@@ -21,7 +21,6 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.BlockState;
 import org.bukkit.block.BrewingStand;
-import org.bukkit.block.Chest;
 import org.bukkit.block.DoubleChest;
 import org.bukkit.block.Furnace;
 import org.bukkit.entity.Entity;
@@ -33,7 +32,6 @@ import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryMoveItemEvent;
 import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.inventory.BrewerInventory;
-import org.bukkit.inventory.DoubleChestInventory;
 import org.bukkit.inventory.FurnaceInventory;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
@@ -79,7 +77,7 @@ public class ContainerActionType extends ActionTypeContainer
     {
         if (event.getPlayer() instanceof Player)
         {
-            User user = this.um.getExactUser((Player)event.getPlayer());
+            User user = this.um.getExactUser(event.getPlayer().getName());
             TObjectIntHashMap<ItemData> itemDataMap = this.inventoryChanges.get(user.key);
             if (itemDataMap != null)
             {
@@ -140,7 +138,7 @@ public class ContainerActionType extends ActionTypeContainer
                 ContainerType type = new ContainerType(event.getInventory().getHolder());
                 if (!config.CONTAINER_ignore.contains(type))
                 {
-                    User user = this.um.getExactUser((Player)event.getPlayer());
+                    User user = this.um.getExactUser(event.getPlayer().getName());
                     this.inventoryChanges.put(user.key,new TObjectIntHashMap<ItemData>());
                 }
             }
@@ -156,7 +154,7 @@ public class ContainerActionType extends ActionTypeContainer
         }
         if (event.getWhoClicked() instanceof Player)
         {
-            final User user = this.um.getExactUser((Player)event.getWhoClicked());
+            final User user = this.um.getExactUser(event.getWhoClicked().getName());
             if (!this.inventoryChanges.containsKey(user.key)) return;
             Inventory inventory = event.getInventory();
             InventoryHolder holder = inventory.getHolder();

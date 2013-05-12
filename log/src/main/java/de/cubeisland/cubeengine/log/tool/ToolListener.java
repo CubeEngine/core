@@ -54,7 +54,7 @@ public class ToolListener implements Listener
             {
                 return;
             }
-            User user = this.module.getCore().getUserManager().getUser(event.getPlayer());
+            User user = this.module.getCore().getUserManager().getUser(event.getPlayer().getName());
             Lookup lookup = user.attachOrGet(LogAttachment.class,this.module).getLookup(item.getType());
             if (lookup == null)
             {

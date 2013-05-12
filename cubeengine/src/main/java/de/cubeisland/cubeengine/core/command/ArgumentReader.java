@@ -66,7 +66,7 @@ public abstract class ArgumentReader<T>
 
     public static <T> void registerReader(ArgumentReader<T> reader)
     {
-        Validate.notNull(reader, "Reader is null! Cannot register!");
+        assert reader != null: "Reader is null! Cannot register!";
         registerReader(reader.getType(), reader);
     }
 

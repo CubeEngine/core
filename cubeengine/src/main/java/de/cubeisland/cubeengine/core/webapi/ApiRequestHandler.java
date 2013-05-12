@@ -17,30 +17,45 @@
  */
 package de.cubeisland.cubeengine.core.webapi;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import java.io.IOException;
+import java.net.InetSocketAddress;
+import java.nio.charset.Charset;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.logging.FileHandler;
+import java.util.logging.Logger;
+
 import de.cubeisland.cubeengine.core.CubeEngine;
 import de.cubeisland.cubeengine.core.logger.CubeLogger;
 import de.cubeisland.cubeengine.core.webapi.exception.ApiRequestException;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundMessageHandlerAdapter;
-import io.netty.handler.codec.http.*;
-import io.netty.handler.codec.http.websocketx.*;
-import java.io.IOException;
-import java.net.InetSocketAddress;
-import java.nio.charset.Charset;
-import java.util.*;
-import java.util.logging.FileHandler;
-import java.util.logging.Logger;
+import io.netty.handler.codec.http.DefaultFullHttpResponse;
+import io.netty.handler.codec.http.FullHttpRequest;
+import io.netty.handler.codec.http.FullHttpResponse;
+import io.netty.handler.codec.http.HttpHeaders;
+import io.netty.handler.codec.http.HttpVersion;
+import io.netty.handler.codec.http.QueryStringDecoder;
+import io.netty.handler.codec.http.websocketx.CloseWebSocketFrame;
+import io.netty.handler.codec.http.websocketx.PingWebSocketFrame;
+import io.netty.handler.codec.http.websocketx.PongWebSocketFrame;
+import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
+import io.netty.handler.codec.http.websocketx.WebSocketFrame;
+import io.netty.handler.codec.http.websocketx.WebSocketServerHandshaker;
+import io.netty.handler.codec.http.websocketx.WebSocketServerHandshakerFactory;
 
 import static de.cubeisland.cubeengine.core.logger.LogLevel.*;
 import static de.cubeisland.cubeengine.core.webapi.RequestError.*;
-import static io.netty.handler.codec.http.HttpHeaders.Names.*;
+import static io.netty.handler.codec.http.HttpHeaders.Names.CONTENT_TYPE;
+import static io.netty.handler.codec.http.HttpHeaders.Names.HOST;
 
 /**
  * This class handles all requests
@@ -142,7 +157,7 @@ public class ApiRequestHandler extends ChannelInboundMessageHandlerAdapter<Objec
             if (this.handshaker == null)
             {
                 this.logger.log(INFO, "client is incompatible!");
-                handshakerFactory.sendUnsupportedWebSocketVersionResponse(context.channel());
+                WebSocketServerHandshakerFactory.sendUnsupportedWebSocketVersionResponse(context.channel());
             }
             else
             {
@@ -174,7 +189,7 @@ public class ApiRequestHandler extends ChannelInboundMessageHandlerAdapter<Objec
         }
 
         JsonNode data = null;
-        ByteBuf requestContent = request.data();
+        ByteBuf requestContent = request.content();
         if (requestContent != Unpooled.EMPTY_BUFFER)
         {
             try
@@ -220,7 +235,7 @@ public class ApiRequestHandler extends ChannelInboundMessageHandlerAdapter<Objec
         else if (frame instanceof PingWebSocketFrame)
         {
             this.logger.log(INFO, "recevied ping frame");
-            context.write(new PongWebSocketFrame(frame.data()));
+            context.write(new PongWebSocketFrame(frame.content()));
         }
         else if (frame instanceof TextWebSocketFrame)
         {
@@ -296,9 +311,9 @@ public class ApiRequestHandler extends ChannelInboundMessageHandlerAdapter<Objec
             {
                 handler.execute(request, response);
             }
-            catch (ApiRequestException e)
+            catch (ApiRequestException ignored)
             {}
-            catch (Throwable t)
+            catch (Throwable ignored) // TODO change to exception
             {}
         }
         else if ("subscribe".equals(command))

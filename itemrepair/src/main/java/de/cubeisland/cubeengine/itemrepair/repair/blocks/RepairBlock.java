@@ -179,7 +179,8 @@ public class RepairBlock
 
     public RepairRequest requestRepair(Inventory inventory)
     {
-        User user = this.module.getCore().getUserManager().getUser((Player)inventory.getHolder());
+        // TODO it's unsafe to assume it's a player here
+        User user = this.module.getCore().getUserManager().getUser(((Player)inventory.getHolder()).getName());
         Map<Integer, ItemStack> items = this.itemProvider.getRepairableItems(inventory);
         if (items.size() > 0)
         {
@@ -227,7 +228,7 @@ public class RepairBlock
     {
         Double price = request.getPrice();
         Inventory inventory = request.getInventory();
-        User user = this.module.getCore().getUserManager().getExactUser((Player)inventory.getHolder());
+        User user = this.module.getCore().getUserManager().getExactUser(((Player)inventory.getHolder()).getName());
         Currency currency = this.getEconomy().getCurrencyManager().getMainCurrency();
         if (checkBalance(user, price))
         {

@@ -134,7 +134,7 @@ public class KickBanCommands
             context.sendTranslated("&2%s&6 has never played on this server before! Use the -force flag to ban him anyways.", player.getName());
             return;
         }
-        User user = context.getCore().getUserManager().getExactUser(player);
+        User user = context.getCore().getUserManager().getExactUser(player.getName());
         if (context.hasFlag("ip"))
         {
             String reason =  this.getReasonFrom(context, 1, user, BasicsPerm.COMMAND_BAN_NOREASON, true);
@@ -218,7 +218,7 @@ public class KickBanCommands
     public void unban(CommandContext context)
     {
         OfflinePlayer offlinePlayer = context.getSender().getServer().getOfflinePlayer(context.getString(0));
-        User user = this.um.getUser(offlinePlayer);
+        User user = this.um.getUser(offlinePlayer.getName());
         if (!this.banManager.isBanned(user))
         {
             context.sendTranslated("&2%s &cis not banned!", offlinePlayer.getName());
@@ -295,7 +295,7 @@ public class KickBanCommands
             context.sendTranslated("&2%s&6 has never played on this server before! Use the -force flag to ban him anyways.", player.getName());
             return;
         }
-        User user = context.getCore().getUserManager().getExactUser(player);
+        User user = context.getCore().getUserManager().getExactUser(player.getName());
         String reason = this.getReasonFrom(context, 2, user, BasicsPerm.COMMAND_TEMPBAN_NOREASON, false);
         if (reason == null) return;
         if (this.banManager.isBanned(user))

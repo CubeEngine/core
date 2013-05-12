@@ -25,7 +25,7 @@ import de.cubeisland.cubeengine.core.storage.database.AttrType;
 import de.cubeisland.cubeengine.core.storage.database.Attribute;
 import de.cubeisland.cubeengine.core.storage.database.Index;
 import de.cubeisland.cubeengine.core.storage.database.SingleKeyEntity;
-import de.cubeisland.cubeengine.core.storage.world.WorldManager;
+import de.cubeisland.cubeengine.core.world.WorldManager;
 
 import static de.cubeisland.cubeengine.core.storage.database.Index.IndexType.FOREIGN_KEY;
 import static de.cubeisland.cubeengine.core.storage.database.Index.IndexType.UNIQUE;
