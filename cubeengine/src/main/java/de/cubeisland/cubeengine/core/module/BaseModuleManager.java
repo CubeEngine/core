@@ -30,8 +30,6 @@ import java.util.Stack;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
 
-import org.bukkit.plugin.Plugin;
-
 import de.cubeisland.cubeengine.core.Core;
 import de.cubeisland.cubeengine.core.filesystem.FileExtentionFilter;
 import de.cubeisland.cubeengine.core.module.event.ModuleDisabledEvent;
@@ -186,9 +184,8 @@ public abstract class BaseModuleManager implements ModuleManager
         return this.loadModule(name, moduleInfos, new Stack<String>());
     }
 
-    protected abstract void validatePluginDependencies(Set<String> plugins) throws MissingPluginDependencyException;
-
-    protected abstract Map<Class, Object> getPluginClassMap();
+    protected void validateModuleInfo(ModuleInfo info) throws MissingPluginDependencyException
+    {}
 
     @SuppressWarnings("unchecked")
     protected Module loadModule(String name, Map<String, ModuleInfo> moduleInfos, Stack<String> loadStack) throws CircularDependencyException, MissingDependencyException, InvalidModuleException, IncompatibleDependencyException, IncompatibleCoreException, MissingPluginDependencyException
@@ -211,7 +208,7 @@ public abstract class BaseModuleManager implements ModuleManager
         }
         loadStack.push(name);
 
-        this.validatePluginDependencies(info.getPluginDependencies());
+        this.validateModuleInfo(info);
 
         for (String loadAfterModule : info.getLoadAfter())
         {
@@ -251,7 +248,6 @@ public abstract class BaseModuleManager implements ModuleManager
         module = this.loader.loadModule(info);
         loadStack.pop();
 
-        Map<Class, Object> pluginClassMap = this.getPluginClassMap();
         Version requiredVersion;
         Module injectedModule;
         Class fieldType;
@@ -294,26 +290,6 @@ public abstract class BaseModuleManager implements ModuleManager
                 catch (Exception e)
                 {
                     module.getLog().log(WARNING, "Failed to inject a dependency: {0}", injectedModule.getName());
-                }
-            }
-            else
-            {
-                if (Plugin.class.isAssignableFrom(fieldType))
-                {
-                    Object plugin = pluginClassMap.get(fieldType);
-                    if (plugin == null)
-                    {
-                        continue;
-                    }
-                    field.setAccessible(true);
-                    try
-                    {
-                        field.set(module, plugin);
-                    }
-                    catch (Exception e)
-                    {
-                        module.getLog().log(WARNING, "Failed to inject a plugin dependency: {0}", String.valueOf(plugin));
-                    }
                 }
             }
         }
