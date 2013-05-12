@@ -19,7 +19,6 @@ package de.cubeisland.cubeengine.test;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.FileSystem;
 import java.sql.Date;
 import java.sql.SQLException;
 import java.util.Calendar;
@@ -41,7 +40,6 @@ import org.bukkit.WorldType;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 
-import de.cubeisland.cubeengine.core.Core;
 import de.cubeisland.cubeengine.core.CubeEngine;
 import de.cubeisland.cubeengine.core.bukkit.BukkitCore;
 import de.cubeisland.cubeengine.core.bukkit.PlayerLanguageReceivedEvent;
@@ -74,7 +72,6 @@ public class Test extends Module
     public static List<String> aListOfPlayers;
     @Inject public Basics basicsModule;
     private Timer timer;
-    private FIFOInterface fifo;
 
     @Override
     public void onLoad()
@@ -139,24 +136,10 @@ public class Test extends Module
 
         this.timer = new Timer("keepAliveTimer");
         this.timer.schedule(new KeepAliveTimer(), 2 * 1000, 2 * 1000);
-
-        this.fifo = new FIFOInterface(this.getCore(), this.getFolder(), Core.CHARSET);
-        try
-        {
-            this.fifo.start();
-        }
-        catch (IOException e)
-        {
-            this.getLog().log(ERROR, "Failed to start the FIFO interface!", e);
-        }
     }
 
     public void initializeDatabase() throws SQLException
     {
-        if (this.fifo != null)
-        {
-            this.fifo.stop();
-        }
         Database db = this.getCore().getDB();
         try
         {
@@ -174,8 +157,14 @@ public class Test extends Module
         this.timer.cancel();
         try
         {
-            this.getCore().getWorldManager().unloadWorld("test123", false);
-            FileManager.deleteRecursive(new File("test123"));
+            if (this.getCore().getWorldManager().unloadWorld("test123", false))
+            {
+                FileManager.deleteRecursive(new File("test123"));
+            }
+            else
+            {
+                this.getLog().log(WARNING, "Failed to unload the test world 'test123', skipping deletion.");
+            }
         }
         catch (IOException e)
         {
