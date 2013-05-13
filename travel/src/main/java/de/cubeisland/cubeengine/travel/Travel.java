@@ -56,9 +56,6 @@ public class Travel extends Module
         final EventManager em = this.getCore().getEventManager();
         em.registerListener(this, new HomeListener(this));
         System.out.print(Profiler.getCurrentDelta("travelEnable", TimeUnit.MILLISECONDS) + "ms - done");
-
-        //TODO enabling Travel sometimes takes over 40 sec!!!
-        //Do not cache the Users!
     }
 
     public TravelConfig getConfig()
