@@ -17,7 +17,6 @@
  */
 package de.cubeisland.cubeengine.core.bukkit;
 
-import java.io.File;
 import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.Map;
@@ -113,25 +112,11 @@ public class BukkitModuleManager extends BaseModuleManager
         {
             module.getLog().log(LogLevel.WARNING, "Failed to get the fields of the main class: " + e.getLocalizedMessage(), e);
         }
-        BukkitUtils.reloadHelpMap();
         return module;
     }
 
     @Override
-    public void loadModules(File directory)
-    {
-        super.loadModules(directory);
-        BukkitUtils.reloadHelpMap();
-    }
-
-    @Override
-    public void enableModules()
-    {
-        super.enableModules();
-        BukkitUtils.reloadHelpMap();
-    }
-
-    protected void validatePluginDependencies(ModuleInfo info) throws MissingPluginDependencyException
+    protected void validateModuleInfo(ModuleInfo info) throws MissingPluginDependencyException
     {
         for (String plugin : info.getPluginDependencies())
         {
@@ -151,20 +136,5 @@ public class BukkitModuleManager extends BaseModuleManager
             pluginClassMap.put(plugin.getClass(), plugin);
         }
         return pluginClassMap;
-    }
-
-    @Override
-    public void disableModule(Module module)
-    {
-        super.disableModule(module);
-        BukkitUtils.reloadHelpMap();
-    }
-
-    @Override
-    public boolean enableModule(Module module)
-    {
-        boolean result = super.enableModule(module);
-        BukkitUtils.reloadHelpMap();
-        return result;
     }
 }

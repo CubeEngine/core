@@ -35,7 +35,6 @@ import net.minecraft.server.v1_5_R3.TileEntityFurnace;
 import org.bukkit.craftbukkit.libs.jline.console.ConsoleReader;
 import org.bukkit.craftbukkit.v1_5_R3.CraftServer;
 import org.bukkit.craftbukkit.v1_5_R3.entity.CraftPlayer;
-import org.bukkit.craftbukkit.v1_5_R3.help.SimpleHelpMap;
 import org.bukkit.craftbukkit.v1_5_R3.inventory.CraftItemStack;
 
 import org.bukkit.Bukkit;
@@ -56,7 +55,6 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.PluginManager;
-import org.bukkit.plugin.SimplePluginManager;
 
 import de.cubeisland.cubeengine.core.CubeEngine;
 import de.cubeisland.cubeengine.core.command.CubeCommand;
@@ -67,40 +65,41 @@ import de.cubeisland.cubeengine.core.user.User;
 import sun.misc.Signal;
 import sun.misc.SignalHandler;
 
-import static de.cubeisland.cubeengine.core.logger.LogLevel.DEBUG;
-import static de.cubeisland.cubeengine.core.logger.LogLevel.NOTICE;
+import static de.cubeisland.cubeengine.core.logger.LogLevel.*;
 
 /**
  * This class contains various methods to access bukkit-related stuff.
  */
 public class BukkitUtils
 {
-    private static boolean hackSucceeded = false;
-    private static final Field LOCALE_STRING_FIELD = findFirstField(String.class, LocaleLanguage.class);
-    private static final Field NSH_LIST_FIELD = findFirstField(List.class, ServerConnection.class);
-    private static Field handle;
+    private static Field localeStringField;
+    private static Field playerConnectionListField = findFirstField(List.class, ServerConnection.class);
 
-    static
+    static boolean init(BukkitCore core)
     {
-        if (LOCALE_STRING_FIELD != null && NSH_LIST_FIELD != null)
-        {
-            hackSucceeded = true;
-        }
         try
         {
-            handle = CraftItemStack.class.getDeclaredField("handle");
-            handle.setAccessible(true);
+            localeStringField = findFirstField(String.class, LocaleLanguage.class);
+            localeStringField.setAccessible(true);
+
+            playerConnectionListField = findFirstField(List.class, ServerConnection.class);
+            playerConnectionListField.setAccessible(true);
         }
-        catch (Exception ignored)
-        {}
+        catch (Exception e)
+        {
+            core.getLog().log(ERROR, "Failed to initialize the required hacks!", e);
+            return false;
+        }
+        return true;
     }
 
     private BukkitUtils()
     {}
 
-    public static boolean isCompatible()
+    public static boolean isCompatible(BukkitCore core)
     {
-        return (hackSucceeded && CraftServer.class == Bukkit.getServer().getClass() && SimplePluginManager.class == Bukkit.getPluginManager().getClass() && SimpleHelpMap.class == Bukkit.getHelpMap().getClass());
+        String serverClassName = core.getServer().getClass().getName();
+        return (serverClassName.startsWith("org.bukkit.craftbukkit.") && serverClassName.endsWith(".CraftServer"));
     }
 
     public static Locale getLocaleFromSender(I18n i18n, CommandSender sender)
@@ -133,7 +132,7 @@ public class BukkitUtils
         {
             try
             {
-                final String localeString = (String)LOCALE_STRING_FIELD.get(((CraftPlayer)player).getHandle().getLocale());
+                final String localeString = (String)localeStringField.get(((CraftPlayer)player).getHandle().getLocale());
                 final Language lang = i18n.getLanguage(I18n.stringToLocale(localeString));
                 if (lang != null)
                 {
@@ -228,8 +227,6 @@ public class BukkitUtils
                 }
                 current.register(command.getLabel(), prefix, command);
             }
-
-            reloadHelpMap();
         }
     }
 
@@ -323,7 +320,7 @@ public class BukkitUtils
     @SuppressWarnings("unchecked")
     private static void swapPlayerNetServerHandler(EntityPlayer player, PlayerConnection newHandler)
     {
-        if (NSH_LIST_FIELD == null)
+        if (playerConnectionListField == null)
         {
             return;
         }
@@ -336,7 +333,7 @@ public class BukkitUtils
                 newHandler.a(loc.getX(), loc.getY(), loc.getZ(), loc.getYaw(), loc.getPitch());
 
                 ServerConnection sc = player.server.ae();
-                ((List<PlayerConnection>)NSH_LIST_FIELD.get(sc)).remove(oldHandler);
+                ((List<PlayerConnection>)playerConnectionListField.get(sc)).remove(oldHandler);
                 sc.a(newHandler);
                 CubeEngine.getLog().log(DEBUG, "Replaced the NetServerHandler of player ''{0}''", player.getName());
                 oldHandler.disconnected = true;
@@ -354,15 +351,6 @@ public class BukkitUtils
         final EntityPlayer entity = ((CraftPlayer)player).getHandle();
 
         swapPlayerNetServerHandler(entity, new PlayerConnection(entity.server, entity.playerConnection.networkManager, entity));
-    }
-
-    public static void reloadHelpMap()
-    {
-        SimpleHelpMap helpMap = (SimpleHelpMap)Bukkit.getHelpMap();
-
-        helpMap.clear();
-        helpMap.initializeGeneralTopics();
-        helpMap.initializeCommands();
     }
 
     public static boolean isInvulnerable(Player player)
@@ -404,20 +392,6 @@ public class BukkitUtils
 
         resetCommandMap();
         resetCommandLogging();
-    }
-
-    public static net.minecraft.server.v1_5_R3.ItemStack getNmsItemStack(ItemStack item)
-    {
-        if (item instanceof CraftItemStack)
-        {
-            try
-            {
-                return (net.minecraft.server.v1_5_R3.ItemStack)handle.get(item);
-            }
-            catch (Exception ignored)
-            {}
-        }
-        return null;
     }
 
     public static void setOnlineMode(boolean mode)

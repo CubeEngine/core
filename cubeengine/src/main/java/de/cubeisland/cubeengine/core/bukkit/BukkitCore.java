@@ -90,18 +90,22 @@ public final class BukkitCore extends JavaPlugin implements Core
     @Override
     public void onLoad()
     {
-        Convert.init(this);
-        CubeEngine.initialize(this);
-
-        this.version = Version.fromString(this.getDescription().getVersion());
         final Server server = this.getServer();
         final PluginManager pm = server.getPluginManager();
-        if (!BukkitUtils.isCompatible())
+
+        if (!BukkitUtils.isCompatible(this) && !BukkitUtils.init(this))
         {
             this.getLogger().log(ERROR, "Your Bukkit server is incompatible with this CubeEngine version.");
             pm.disablePlugin(this);
             return;
         }
+
+        Convert.init(this);
+
+        this.version = Version.fromString(this.getDescription().getVersion());
+
+        CubeEngine.initialize(this);
+
 
         this.logger = new CubeLogger("Core", this.getLogger());
         this.logger.setLevel(Level.ALL);

@@ -267,12 +267,6 @@ public class BukkitCommandManager implements CommandManager
 
             this.registerCommands(command.getModule(), (CommandHolder)command, newParents);
         }
-
-        // if the module is already enabled we have to reload the help map
-        if (command.getModule().isEnabled())
-        {
-            BukkitUtils.reloadHelpMap();
-        }
     }
 
     public void registerCommands(Module module, CommandHolder commandHolder, String... parents)
