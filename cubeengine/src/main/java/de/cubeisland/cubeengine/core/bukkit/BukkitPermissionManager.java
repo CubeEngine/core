@@ -85,7 +85,7 @@ public class BukkitPermissionManager implements PermissionManager
         }
         catch (Exception ex)
         {
-            core.getLog().severe("Could not get Maps for Permissions!");
+            core.getLog().log(NOTICE, "Couldn't access the permission manager internals for fast permission registration, falling back to normal registration.");
             this.startup = false;
         }
         this.wildcards = new THashMap<String, org.bukkit.permissions.Permission>(0);
