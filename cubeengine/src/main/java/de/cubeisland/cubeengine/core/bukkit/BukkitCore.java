@@ -243,8 +243,7 @@ public final class BukkitCore extends JavaPlugin implements Core
 
         this.moduleManager.init();
         this.moduleManager.enableModules();
-
-
+        this.permissionManager.calculatePermissions();
 
 //        this.getServer().getScheduler().scheduleSyncDelayedTask(this, new Runnable()
 //        {

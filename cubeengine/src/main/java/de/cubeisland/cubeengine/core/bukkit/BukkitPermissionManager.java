@@ -19,6 +19,7 @@ package de.cubeisland.cubeengine.core.bukkit;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Field;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Iterator;
@@ -32,8 +33,10 @@ import java.util.logging.Level;
 import java.util.logging.LogRecord;
 import java.util.logging.Logger;
 
+import org.bukkit.permissions.Permissible;
 import org.bukkit.permissions.PermissionDefault;
 import org.bukkit.plugin.PluginManager;
+import org.bukkit.plugin.SimplePluginManager;
 
 import de.cubeisland.cubeengine.core.CubeEngine;
 import de.cubeisland.cubeengine.core.logger.CubeFileHandler;
@@ -58,9 +61,33 @@ public class BukkitPermissionManager implements PermissionManager
     private final Map<Module, Set<String>> modulePermissionMap;
     private final Logger logger;
 
+    private boolean startup;
+    private Map<String, org.bukkit.permissions.Permission> permissions;
+    private Set<org.bukkit.permissions.Permission> defaultPermTrue;
+    private Set<org.bukkit.permissions.Permission> defaultPermFalse;
+
+    @SuppressWarnings("unchecked")
     public BukkitPermissionManager(BukkitCore core)
     {
+        this.startup = true;
         this.pm = core.getServer().getPluginManager();
+        try
+        {
+            Field field = SimplePluginManager.class.getDeclaredField("permissions");
+            field.setAccessible(true);
+            this.permissions = (Map<String, org.bukkit.permissions.Permission>)field.get(this.pm);
+            field = SimplePluginManager.class.getDeclaredField("defaultPerms");
+            field.setAccessible(true);
+            Map<Boolean,Set<org.bukkit.permissions.Permission>> defaultPerms =
+                (Map<Boolean, Set<org.bukkit.permissions.Permission>>)field.get(this.pm);
+            this.defaultPermTrue = defaultPerms.get(true);
+            this.defaultPermFalse =  defaultPerms.get(false);
+        }
+        catch (Exception ex)
+        {
+            core.getLog().severe("Could not get Maps for Permissions!");
+            this.startup = false;
+        }
         this.wildcards = new THashMap<String, org.bukkit.permissions.Permission>(0);
         this.modulePermissionMap = new THashMap<Module, Set<String>>(0);
         this.logger = new CubeLogger("permissions");
@@ -93,7 +120,22 @@ public class BukkitPermissionManager implements PermissionManager
     {
         try
         {
-            this.pm.addPermission(permission);
+            if (this.startup)
+            {
+                this.permissions.put(permission.getName().toLowerCase(), permission);
+                if ((permission.getDefault() == PermissionDefault.OP) || (permission.getDefault() == PermissionDefault.TRUE))
+                {
+                    this.defaultPermTrue.add(permission);
+                }
+                if ((permission.getDefault() == PermissionDefault.NOT_OP) || (permission.getDefault() == PermissionDefault.TRUE))
+                {
+                    this.defaultPermFalse.add(permission);
+                }
+            }
+            else
+            {
+                this.pm.addPermission(permission);
+            }
             if (permission.getName().endsWith("*"))
             {
                 this.wildcards.put(permission.getName(), permission);
@@ -307,5 +349,18 @@ public class BukkitPermissionManager implements PermissionManager
         this.removePermissions();
         this.wildcards.clear();
         this.modulePermissionMap.clear();
+    }
+
+    void calculatePermissions()
+    {
+        for (Permissible permissible : this.pm.getDefaultPermSubscriptions(true))
+        {
+            permissible.recalculatePermissions();
+        }
+        for (Permissible permissible : this.pm.getDefaultPermSubscriptions(false))
+        {
+            permissible.recalculatePermissions();
+        }
+        this.startup = false;
     }
 }
