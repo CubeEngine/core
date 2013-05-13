@@ -189,13 +189,13 @@ public final class BukkitCore extends JavaPlugin implements Core
         // depends on: file manager, core config
         this.i18n = new I18n(this);
 
+        // depends on: database
+        this.moduleManager = new BukkitModuleManager(this, this.getClassLoader());
+
         // depends on: server
         this.commandManager = new BukkitCommandManager(this);
         this.commandManager.registerCommandFactory(new ReflectedCommandFactory());
         this.commandManager.registerCommandFactory(new ReadableCommandFactory());
-
-        // depends on: database
-        this.moduleManager = new BukkitModuleManager(this, this.getClassLoader());
 
         // depends on: plugin manager, module manager
         this.permissionManager = new BukkitPermissionManager(this);
