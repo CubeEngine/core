@@ -40,7 +40,7 @@ public class WarpAdminCommand extends ContainerCommand
 
     public WarpAdminCommand(Travel module)
     {
-        super(module, "admin", "Teleport to another users home");
+        super(module, "admin", "Teleport to a warp");
         this.module = module;
         this.tpManager = module.getTelepointManager();
         this.acceptEntries = new HashMap<String, Pair<Long, ParameterizedContext>>();
