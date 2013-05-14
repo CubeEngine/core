@@ -47,34 +47,4 @@ public class ItemBankAccount extends BankAccount
         }
         return true;
     }
-
-    @Override
-    public void deposit(double amount)
-    {
-        //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    @Override
-    public void withdraw(double amount)
-    {
-        //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    @Override
-    public void set(double amount)
-    {
-        //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    @Override
-    public void scale(float factor)
-    {
-        //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    @Override
-    public boolean has(double amount)
-    {
-        return false;  //To change body of implemented methods use File | Settings | File Templates.
-    }
 }
