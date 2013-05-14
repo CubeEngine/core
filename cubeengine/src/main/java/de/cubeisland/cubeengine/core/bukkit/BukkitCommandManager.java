@@ -111,7 +111,7 @@ public class BukkitCommandManager implements CommandManager
             core.getLog().log(WARNING, "Failed to create the command log!", e);
         }
 
-        this.confirmManager = new ConfirmManager(core);
+        this.confirmManager = new ConfirmManager(this, core);
     }
 
     /**
