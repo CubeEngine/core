@@ -30,7 +30,7 @@ import de.cubeisland.cubeengine.core.util.time.Duration;
 
 public class ConfirmManager
 {
-    private static final Duration CONFIRM_TIMEOUT = new Duration(30000);
+    private static final int CONFIRM_TIMEOUT = 600; // 30 seconds
     private final Map<CommandSender, ConfirmResult> pendingConfirmations;
     private final Map<CommandSender, Pair<Module, Integer>> confirmationTimeoutTasks;
     private final Core core;
@@ -58,7 +58,7 @@ public class ConfirmManager
         this.pendingConfirmations.put(sender, confirmResult);
         this.confirmationTimeoutTasks.put(sender, new Pair<Module, Integer>(module, this.core.getTaskManager()
                                                                                              .runTaskDelayed(module, new ConfirmationTimeoutTask(sender),
-                                                                                                             CONFIRM_TIMEOUT.toTicks())));
+                                                                                                             CONFIRM_TIMEOUT)));
     }
 
     /**
