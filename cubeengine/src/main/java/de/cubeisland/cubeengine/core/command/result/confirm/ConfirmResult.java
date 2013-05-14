@@ -47,7 +47,7 @@ public class ConfirmResult implements CommandResult
     @Override
     public void show(CommandContext context)
     {
-        context.getCore().getCommandManager().registerConfirmResult(this, this.module, sender);
+        context.getCore().getCommandManager().getConfirmManager().registerConfirmResult(this, this.module, sender);
         context.sendTranslated(message, context.getCommand().getName());
     }
 

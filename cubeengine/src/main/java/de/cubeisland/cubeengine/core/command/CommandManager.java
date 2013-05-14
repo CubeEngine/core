@@ -17,6 +17,7 @@
  */
 package de.cubeisland.cubeengine.core.command;
 
+import de.cubeisland.cubeengine.core.command.result.confirm.ConfirmManager;
 import de.cubeisland.cubeengine.core.command.result.confirm.ConfirmResult;
 import de.cubeisland.cubeengine.core.command.sender.ConsoleCommandSender;
 import de.cubeisland.cubeengine.core.module.Module;
@@ -43,9 +44,5 @@ public interface CommandManager extends Cleanable
     void logExecution(CommandSender sender, CubeCommand cubeCommand, String[] args);
     void logTabCompletion(CommandSender sender, CubeCommand cubeCommand, String[] args);
 
-    boolean hasPendingConfirmation(CommandSender sender);
-
-    ConfirmResult getPendingConfirmation(CommandSender sender);
-
-    void registerConfirmResult(ConfirmResult confirmResult, Module module, CommandSender sender);
+    ConfirmManager getConfirmManager();
 }

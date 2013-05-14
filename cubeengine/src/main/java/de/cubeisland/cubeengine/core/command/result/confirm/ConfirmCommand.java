@@ -18,7 +18,6 @@
 package de.cubeisland.cubeengine.core.command.result.confirm;
 
 import de.cubeisland.cubeengine.core.command.CommandContext;
-import de.cubeisland.cubeengine.core.command.CommandManager;
 import de.cubeisland.cubeengine.core.command.CommandResult;
 import de.cubeisland.cubeengine.core.command.ContextFactory;
 import de.cubeisland.cubeengine.core.command.CubeCommand;
@@ -27,22 +26,22 @@ import de.cubeisland.cubeengine.core.module.Module;
 
 public class ConfirmCommand extends CubeCommand
 {
-    private final CommandManager commandManager;
+    private final ConfirmManager confirmManager;
 
-    public ConfirmCommand(Module module, ContextFactory contextFactory, CommandManager commandManager)
+    public ConfirmCommand(Module module, ContextFactory contextFactory, ConfirmManager confirmManager)
     {
         super(module, "confirm", "Confirm a command", contextFactory);
-        this.commandManager = commandManager;
+        this.confirmManager = confirmManager;
     }
 
     @Override
     public CommandResult run(CommandContext context) throws Exception
     {
-        if (!commandManager.hasPendingConfirmation(context.getSender()))
+        if (!confirmManager.hasPendingConfirmation(context.getSender()))
         {
             context.sendTranslated("You don't have any pending confirmations!");
         }
-        commandManager.getPendingConfirmation(context.getSender()).run();
+        confirmManager.getPendingConfirmation(context.getSender()).run();
         return null;
     }
 

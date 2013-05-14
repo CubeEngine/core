@@ -46,6 +46,7 @@ import de.cubeisland.cubeengine.core.command.CommandSender;
 import de.cubeisland.cubeengine.core.command.ConsoleCommandCompleter;
 import de.cubeisland.cubeengine.core.command.CubeCommand;
 import de.cubeisland.cubeengine.core.command.result.confirm.ConfirmCommand;
+import de.cubeisland.cubeengine.core.command.result.confirm.ConfirmManager;
 import de.cubeisland.cubeengine.core.command.result.confirm.ConfirmResult;
 import de.cubeisland.cubeengine.core.command.sender.ConsoleCommandSender;
 import de.cubeisland.cubeengine.core.logger.CubeFileHandler;
@@ -62,9 +63,6 @@ import static de.cubeisland.cubeengine.core.logger.LogLevel.WARNING;
 
 public class BukkitCommandManager implements CommandManager
 {
-    private static final Duration CONFIRM_TIMEOUT = new Duration(30000);
-    private final Map<CommandSender, ConfirmResult> pendingConfirmations;
-    private final Map<CommandSender, Pair<Module, Integer>> confirmationTimeoutTasks;
     private final Server server;
     private final BukkitCore core;
     final CubeCommandMap commandMap;
@@ -73,6 +71,7 @@ public class BukkitCommandManager implements CommandManager
     private final ConsoleCommandCompleter completer;
     private final ConsoleCommandSender consoleSender;
     private final Logger commandLogger;
+    private final ConfirmManager confirmManager;
 
     public BukkitCommandManager(BukkitCore core)
     {
@@ -88,10 +87,7 @@ public class BukkitCommandManager implements CommandManager
         this.completer = new ConsoleCommandCompleter(core);
         BukkitUtils.getConsoleReader(this.server).addCompleter(completer);
 
-        this.pendingConfirmations = new HashMap<CommandSender, ConfirmResult>();
-        confirmationTimeoutTasks = new HashMap<CommandSender, Pair<Module, Integer>>();
-        this.registerCommand(new ConfirmCommand(core.getModuleManager().getCoreModule(),
-                                                new BasicContextFactory(new ArgBounds(0,0)), this));
+
 
         this.commandLogger = new CubeLogger("commands");
         try
@@ -114,6 +110,8 @@ public class BukkitCommandManager implements CommandManager
         {
             core.getLog().log(WARNING, "Failed to create the command log!", e);
         }
+
+        this.confirmManager = new ConfirmManager(core);
     }
 
     /**
@@ -365,43 +363,8 @@ public class BukkitCommandManager implements CommandManager
     }
 
     @Override
-    public void registerConfirmResult(ConfirmResult confirmResult, Module module, CommandSender sender)
+    public ConfirmManager getConfirmManager()
     {
-        this.pendingConfirmations.put(sender, confirmResult);
-        this.confirmationTimeoutTasks.put(sender, new Pair<Module, Integer>(module, this.core.getTaskManager()
-                                                           .runTaskDelayed(module, new ConfirmationTimeoutTask(sender), CONFIRM_TIMEOUT
-                                                               .toTicks())));
-    }
-
-    @Override
-    public boolean hasPendingConfirmation(CommandSender sender)
-    {
-        return pendingConfirmations.containsKey(sender);
-    }
-
-    @Override
-    public ConfirmResult getPendingConfirmation(CommandSender sender)
-    {
-        Pair<Module, Integer> pair = this.confirmationTimeoutTasks.get(sender);
-        this.core.getTaskManager().cancelTask(pair.getLeft(), pair.getRight());
-        return pendingConfirmations.get(sender);
-    }
-
-    private class ConfirmationTimeoutTask implements Runnable
-    {
-
-        private final CommandSender sender;
-
-        private ConfirmationTimeoutTask(CommandSender sender)
-        {
-            this.sender = sender;
-        }
-
-        @Override
-        public void run()
-        {
-            sender.sendTranslated("Your confirmation timed out....");
-            pendingConfirmations.remove(sender);
-        }
+        return this.confirmManager;
     }
 }
