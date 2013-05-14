@@ -41,7 +41,6 @@ import de.cubeisland.cubeengine.travel.storage.TeleportPoint;
 
 public class HomeAdminCommand extends ContainerCommand
 {
-    private final Map<String, Pair<Long, ParameterizedContext>> acceptEntries;
     private final TelePointManager tpManager;
     private final Travel module;
 
@@ -50,7 +49,6 @@ public class HomeAdminCommand extends ContainerCommand
         super(module, "admin", "Teleport to another users home");
         this.module = module;
         this.tpManager = module.getTelepointManager();
-        this.acceptEntries = new HashMap<String, Pair<Long, ParameterizedContext>>();
 
         this.setUsage("[User] [Home]");
         this.getContextFactory().setArgBounds(new ArgBounds(0, 2));
@@ -127,25 +125,25 @@ public class HomeAdminCommand extends ContainerCommand
                 if (context.hasFlag("pub"))
                 {
                     context
-                        .sendTranslated("&eAre you sure you want to delete all public homes ever created by &2%s", context
+                        .sendTranslated("&eAre you sure you want to delete all public homes ever created by &2%s?", context
                             .getString(0));
                     context
-                        .sendTranslated("&eTo delete all the public homes, do: &6\"/home admin accept\" &ebefore 30 secunds");
+                        .sendTranslated("&eTo delete all the public homes, do: &6\"/confirm\" &ebefore 30 secunds");
                 }
                 else if (context.hasFlag("priv"))
                 {
                     context
-                        .sendTranslated("&eAre you sure you want to delete all private homes ever created by &2%s", context
+                        .sendTranslated("&eAre you sure you want to delete all private homes ever created by &2%s?", context
                             .getString(0));
                     context
-                        .sendTranslated("&eTo delete all the private homes, do: &6\"/home admin accept\" &ebefore 30 secunds");
+                        .sendTranslated("&eTo delete all the private homes, do: &6\"/confirm\" &ebefore 30 secunds");
                 }
                 else
                 {
-                    context.sendTranslated("&eAre you sure you want to delete all homes ever created by &2%s", context
+                    context.sendTranslated("&eAre you sure you want to delete all homes ever created by &2%s?", context
                         .getString(0));
                     context
-                        .sendTranslated("&eTo delete all the homes, do: &6\"/home admin accept\" &ebefore 30 secunds");
+                        .sendTranslated("&eTo delete all the homes, do: &6\"/confirm\" &ebefore 30 secunds");
                 }
             }
         }
@@ -156,20 +154,20 @@ public class HomeAdminCommand extends ContainerCommand
                 context
                     .sendTranslated("&eAre you sure you want to delete all public homes ever created on this server!?");
                 context
-                    .sendTranslated("&eTo delete all the public homes of every user, do: &6\"/home admin accept\" &ebefore 30 secunds");
+                    .sendTranslated("&eTo delete all the public homes of every user, do: &6\"/confirm\" &ebefore 30 secunds");
             }
             else if (context.hasFlag("priv"))
             {
                 context
                     .sendTranslated("&eAre you sure you want to delete all private homes ever created on this server?");
                 context
-                    .sendTranslated("&eTo delete all the private homes of every user, do: &6\"/home admin accept\" &ebefore 30 secunds");
+                    .sendTranslated("&eTo delete all the private homes of every user, do: &6\"/confirm\" &ebefore 30 secunds");
             }
             else
             {
                 context.sendTranslated("&eAre you sure you want to delete all homes ever created on this server!?");
                 context
-                    .sendTranslated("&eTo delete all the homes of every user, do: &6\"/home admin accept\" &ebefore 30 secunds");
+                    .sendTranslated("&eTo delete all the homes of every user, do: &6\"/confirm\" &ebefore 30 secunds");
             }
         }
         return new ConfirmResult(new Runnable()
@@ -270,12 +268,11 @@ public class HomeAdminCommand extends ContainerCommand
     }
 
     @Command(names = {
-        "private"
+        "private", "makeprivate"
     }, permDefault =  PermDefault.OP, desc = "Make a users home private", min = 1, max = 1, usage = " owner:home")
     public void makePrivate(CommandContext context)
     {
-        User user = CubeEngine.getUserManager().getUser(context.getString(0), false);
-        Home home = null;
+        Home home;
         home = tpManager.getHome(context.getString(0));
         if (home == null)
         {
@@ -292,12 +289,11 @@ public class HomeAdminCommand extends ContainerCommand
     }
 
     @Command(names = {
-        "public"
+        "public", "makepublic"
     }, permDefault =  PermDefault.OP, desc = "Make a users home public", min = 1, max = 1, usage = " owner:home")
     public void makePublic(CommandContext context)
     {
-        User user = CubeEngine.getUserManager().getUser(context.getString(0), false);
-        Home home = null;
+        Home home;
         home = tpManager.getHome(context.getString(0));
         if (home == null)
         {

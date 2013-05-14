@@ -52,6 +52,7 @@ public class Travel extends Module
         cm.registerCommand(new HomeCommand(this));
         cm.registerCommand(new HomeAdminCommand(this), "home");
         cm.registerCommand(new WarpCommand(this));
+        cm.registerCommand(new WarpAdminCommand(this), "warp");
         System.out.print(Profiler.getCurrentDelta("travelEnable", TimeUnit.MILLISECONDS) + "ms - register listener");
         final EventManager em = this.getCore().getEventManager();
         em.registerListener(this, new HomeListener(this));

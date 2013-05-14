@@ -24,16 +24,21 @@ import de.cubeisland.cubeengine.core.command.ArgBounds;
 import de.cubeisland.cubeengine.core.command.CommandContext;
 import de.cubeisland.cubeengine.core.command.CommandResult;
 import de.cubeisland.cubeengine.core.command.ContainerCommand;
+import de.cubeisland.cubeengine.core.command.parameterized.Flag;
 import de.cubeisland.cubeengine.core.command.parameterized.ParameterizedContext;
+import de.cubeisland.cubeengine.core.command.reflected.Alias;
+import de.cubeisland.cubeengine.core.command.reflected.Command;
+import de.cubeisland.cubeengine.core.command.result.confirm.ConfirmResult;
+import de.cubeisland.cubeengine.core.permission.PermDefault;
+import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.util.Pair;
 import de.cubeisland.cubeengine.travel.Travel;
 import de.cubeisland.cubeengine.travel.storage.TelePointManager;
+import de.cubeisland.cubeengine.travel.storage.TeleportPoint;
+import de.cubeisland.cubeengine.travel.storage.Warp;
 
 public class WarpAdminCommand extends ContainerCommand
 {
-    private static final Long ACCEPT_TIMEOUT = 20000l;
-
-    private final Map<String, Pair<Long, ParameterizedContext>> acceptEntries;
     private final TelePointManager tpManager;
     private final Travel module;
 
@@ -43,9 +48,8 @@ public class WarpAdminCommand extends ContainerCommand
         super(module, "admin", "Teleport to a warp");
         this.module = module;
         this.tpManager = module.getTelepointManager();
-        this.acceptEntries = new HashMap<String, Pair<Long, ParameterizedContext>>();
 
-        this.setUsage("[User] [Home]");
+        this.setUsage("[User] [warp]");
         this.getContextFactory().setArgBounds(new ArgBounds(0, 2));
     }
 
@@ -54,5 +58,151 @@ public class WarpAdminCommand extends ContainerCommand
     {
 
         return null;
+    }
+
+    @Alias(names = {
+        "clearwarps"
+    })
+    @Command(desc = "Clear all warps (of an user)", flags = {
+        @Flag(name = "pub", longName = "public"),
+        @Flag(name = "priv", longName = "Private")
+    }, permDefault =  PermDefault.OP, max = 1, usage = " <user> <-public> <-Private>")
+    public ConfirmResult clear(final ParameterizedContext context)
+    {
+        if (context.getArgCount() > 0)
+        {
+            if (module.getCore().getUserManager().getUser(context.getString(0), false) == null)
+            {
+                context.sendTranslated("&2%s &cIsn't an user on this server", context.getString(0));
+                return null;
+            }
+            else
+            {
+                if (context.hasFlag("pub"))
+                {
+                    context
+                        .sendTranslated("&eAre you sure you want to delete all public warps ever created by &2%s?", context
+                            .getString(0));
+                    context
+                        .sendTranslated("&eTo delete all the public warps, do: &6\"/confirm\" &ebefore 30 secunds");
+                }
+                else if (context.hasFlag("priv"))
+                {
+                    context
+                        .sendTranslated("&eAre you sure you want to delete all private warps ever created by &2%s?", context
+                            .getString(0));
+                    context
+                        .sendTranslated("&eTo delete all the private warps, do: &6\"/confirm\" &ebefore 30 secunds");
+                }
+                else
+                {
+                    context.sendTranslated("&eAre you sure you want to delete all warps ever created by &2%s?", context
+                        .getString(0));
+                    context
+                        .sendTranslated("&eTo delete all the warps, do: &6\"/confirm\" &ebefore 30 secunds");
+                }
+            }
+        }
+        else
+        {
+            if (context.hasFlag("pub"))
+            {
+                context
+                    .sendTranslated("&eAre you sure you want to delete all public warps ever created on this server!?");
+                context
+                    .sendTranslated("&eTo delete all the public warps of every user, do: &6\"/confirm\" &ebefore 30 secunds");
+            }
+            else if (context.hasFlag("priv"))
+            {
+                context
+                    .sendTranslated("&eAre you sure you want to delete all private warps ever created on this server?");
+                context
+                    .sendTranslated("&eTo delete all the private warps of every user, do: &6\"/confirm\" &ebefore 30 secunds");
+            }
+            else
+            {
+                context.sendTranslated("&eAre you sure you want to delete all warps ever created on this server!?");
+                context
+                    .sendTranslated("&eTo delete all the warps of every user, do: &6\"/confirm\" &ebefore 30 secunds");
+            }
+        }
+        return new ConfirmResult(new Runnable()
+        {
+            @Override
+            public void run()
+            {
+                if (context.getArgCount() == 0)
+                { // No user
+                    int mask = context.getFlagCount() == 0 ? tpManager.ALL : 0;
+                    if (context.hasFlag("pub"))
+                    {
+                        mask |= tpManager.PUBLIC;
+                    }
+                    if (context.hasFlag("priv"))
+                    {
+                        mask |= tpManager.PRIVATE;
+                    }
+                    tpManager.deleteWarps(mask);
+                    context.sendTranslated("&eThe warps are now deleted");
+                }
+                else
+                {
+                    User user = context.getUser(0);
+                    int mask = context.getFlagCount() == 0 ? tpManager.ALL : 0;
+                    if (context.hasFlag("pub"))
+                    {
+                        mask |= tpManager.PUBLIC;
+                    }
+                    if (context.hasFlag("priv"))
+                    {
+                        mask |= tpManager.PRIVATE;
+                    }
+                    tpManager.deleteWarps(user, mask);
+                    context.sendTranslated("&eThe warps are now deleted");
+                }
+            }
+        }, context);
+    }
+
+    @Command(names = {
+        "private", "makeprivate"
+    }, permDefault =  PermDefault.OP, desc = "Make a users warp private", min = 1, max = 1, usage = " owner:home")
+    public void makePrivate(CommandContext context)
+    {
+        Warp warp;
+        warp = tpManager.getWarp(context.getString(0));
+        if (warp == null)
+        {
+            context.sendTranslated("&cCouldn't find &6%s", context.getString(0));
+            return;
+        }
+        if (!warp.isPublic())
+        {
+            context.sendTranslated("&6%s &cis already private!", context.getString(0));
+            return;
+        }
+        warp.setVisibility(TeleportPoint.Visibility.PRIVATE);
+        context.sendTranslated("&6%s &ais now private", context.getString(0));
+    }
+
+    @Command(names = {
+        "public"
+    }, permDefault =  PermDefault.OP, desc = "Make a users warp public", min = 1, max = 1, usage = " owner:home")
+    public void makePublic(CommandContext context)
+    {
+        Warp warp;
+        warp = tpManager.getWarp(context.getString(0));
+        if (warp == null)
+        {
+            context.sendTranslated("&cCouldn't find &6%s", context.getString(0));
+            return;
+        }
+        if (warp.isPublic())
+        {
+            context.sendTranslated("&6%s &cis already public!", context.getString(0));
+            return;
+        }
+        warp.setVisibility(TeleportPoint.Visibility.PUBLIC);
+        context.sendTranslated("&6%s &cis now public", context.getString(0));
     }
 }
