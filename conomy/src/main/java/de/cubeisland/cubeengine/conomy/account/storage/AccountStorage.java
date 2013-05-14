@@ -28,7 +28,7 @@ import de.cubeisland.cubeengine.core.storage.SingleKeyStorage;
 import de.cubeisland.cubeengine.core.storage.StorageException;
 import de.cubeisland.cubeengine.core.storage.database.Database;
 import de.cubeisland.cubeengine.core.storage.database.querybuilder.QueryBuilder;
-import de.cubeisland.cubeengine.conomy.currency.Currency;
+import de.cubeisland.cubeengine.conomy.Currency;
 
 public class AccountStorage extends SingleKeyStorage<Long, AccountModel>
 {

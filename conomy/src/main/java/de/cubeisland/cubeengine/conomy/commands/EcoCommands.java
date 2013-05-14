@@ -27,7 +27,7 @@ import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.util.StringUtils;
 import de.cubeisland.cubeengine.conomy.Conomy;
 import de.cubeisland.cubeengine.conomy.account.Account_old;
-import de.cubeisland.cubeengine.conomy.currency.Currency;
+import de.cubeisland.cubeengine.conomy.Currency;
 
 public class EcoCommands extends ContainerCommand
 {

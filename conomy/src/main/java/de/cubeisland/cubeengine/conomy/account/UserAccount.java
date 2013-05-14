@@ -4,36 +4,25 @@ import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.user.UserAttachment;
 import de.cubeisland.cubeengine.conomy.Conomy;
 import de.cubeisland.cubeengine.conomy.account.storage.AccountModel;
-import de.cubeisland.cubeengine.conomy.currency.Currency;
-import de.cubeisland.cubeengine.conomy.currency.Currency.CurrencyType;
+import de.cubeisland.cubeengine.conomy.Currency;
+import de.cubeisland.cubeengine.conomy.Currency.CurrencyType;
 
 public abstract class UserAccount extends UserAttachment implements Account
 {
     private Currency currency;
     protected AccountModel model;
     private boolean isInit = false;
-
-    @Override
-    public boolean transaction(Account from, Account to, double amount, boolean force)
-    {
-        if (from.getCurrencyType().equals(to.getCurrencyType()))
-        {
-            if (!force)
-            {
-                if (from.has(amount))
-                {
-
-                }
-            }
-            from.withdraw(amount);
-            to.deposit(amount);
-        }
-        return false;
-    }
+    protected AccountManager manager;
 
     public User getUser()
     {
         return this.getHolder();
+    }
+
+    @Override
+    public boolean transactionTo(Account to, double amount, boolean force)
+    {
+        return this.manager.transaction(this,to,amount,force);
     }
 
     @Override
@@ -48,8 +37,9 @@ public abstract class UserAccount extends UserAttachment implements Account
         return this.getModule();
     }
 
-    protected void init(Currency currency, AccountModel model)
+    protected void init(AccountManager manager, Currency currency, AccountModel model)
     {
+        this.manager = manager;
         this.currency = currency;
         this.model = model;
         this.isInit = true;
@@ -64,5 +54,48 @@ public abstract class UserAccount extends UserAttachment implements Account
     public boolean isInitialized()
     {
         return this.isInit;
+    }
+
+    protected void update()
+    {
+        this.manager.storage.update(this.model);
+    }
+
+    @Override
+    public String getName()
+    {
+        return this.getHolder().getName();
+    }
+
+    @Override
+    public boolean reset()
+    {
+        this.set(this.currency.getDefaultBalance());
+        return true; // TODO override if not possible!!!
+    }
+
+    @Override
+    public boolean isHidden()
+    {
+        return this.model.hidden;
+    }
+
+    @Override
+    public void setHidden(boolean hidden)
+    {
+        this.model.hidden = hidden;
+        this.update();
+    }
+
+    @Override
+    public boolean scale(float factor)
+    {
+        return this.set(this.balance() * factor);
+    }
+
+    @Override
+    public double balance()
+    {
+        return this.model.value / this.currency.fractionalDigitsFactor();
     }
 }

@@ -38,7 +38,7 @@ import de.cubeisland.cubeengine.core.command.parameterized.CommandParameter;
 import de.cubeisland.cubeengine.core.command.parameterized.ParameterizedContext;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.conomy.Conomy;
-import de.cubeisland.cubeengine.conomy.currency.Currency;
+import de.cubeisland.cubeengine.conomy.Currency;
 
 import gnu.trove.map.hash.TLongObjectHashMap;
 

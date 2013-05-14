@@ -1,26 +1,106 @@
 package de.cubeisland.cubeengine.conomy.account;
 
-import de.cubeisland.cubeengine.conomy.currency.Currency;
-import de.cubeisland.cubeengine.conomy.currency.Currency.CurrencyType;
+import de.cubeisland.cubeengine.conomy.Currency;
+import de.cubeisland.cubeengine.conomy.Currency.CurrencyType;
 
 public interface Account
 {
+    /**
+     * Returns the name of this account
+     *
+     * @return
+     */
     public String getName();
 
-    // TODO perhaps Object that contains detailed informations like Vaults ConomyResponse???
-    boolean transaction(Account from, Account to, double amount, boolean force);
+    /**
+     * Performs a transaction from this account to another.
+     *
+     * @param to the account to transfer to
+     * @param amount the amount to transfer
+     * @param force if true do not check if balance would go under minimum
+     * @return true if the transaction was successful
+     */
+    boolean transactionTo(Account to, double amount, boolean force);
 
-    void deposit(double amount);
+    /**
+     * Adds the specified amount into this account
+     *
+     * @param amount the amount to add
+     * @return true if the amount was added successfully
+     */
+    boolean deposit(double amount);
 
-    void withdraw(double amount);
+    /**
+     * Removes the specified amount from this account
+     *
+     * @param amount the amount to remove
+     * @return true if the amount was removed successfully
+     */
+    boolean withdraw(double amount);
 
-    void set(double amount);
+    /**
+     * Sets this account to the specified balance
+     *
+     * @param amount the new balance to set
+     * @return false when not supported
+     */
+    boolean set(double amount);
 
-    void scale(float factor);
+    /**
+     * Scales the balance of this account with the specified factor.
+     *
+     * @param factor the factor to scale with
+     * @return false when not supported
+     */
+    boolean scale(float factor);
 
+    /**
+     * Returns whether this account can afford the specified amount
+     *
+     * @param amount the amount to check for
+     * @return true if the account has sufficient balance
+     */
     boolean has(double amount);
 
+    /**
+     * Returns the currency-type of this account. Accounts with different CurrencyType cannot perform transactions
+     *
+     * @return the currency-type
+     */
     CurrencyType getCurrencyType();
 
+    /**
+     * Returns the currency of this account.
+     *
+     * @return the currency
+     */
     Currency getCurrency();
+
+    /**
+     * Resets the balance of this account to the default-balance specified in the configuration
+     *
+     * @return false when not supported
+     */
+    boolean reset(); // returns false when not supported
+
+    /**
+     * Returns the hidden state of this account
+     *
+     * @return true if the account is hidden
+     */
+    boolean isHidden();
+
+    /**
+     * Sets the hidden state of this account
+     *
+     * @param hidden true to hide this account
+     */
+    void setHidden(boolean hidden);
+
+    /**
+     * Returns the current balance
+     *
+     * @return
+     */
+    double balance();
 }

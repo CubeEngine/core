@@ -15,42 +15,57 @@
  * You should have received a copy of the GNU General Public License
  * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-package de.cubeisland.cubeengine.conomy.config;
+package de.cubeisland.cubeengine.conomy;
 
 import java.io.File;
-import java.util.LinkedHashMap;
-import java.util.Map;
 
 import de.cubeisland.cubeengine.core.config.Configuration;
 import de.cubeisland.cubeengine.core.config.annotations.Codec;
 import de.cubeisland.cubeengine.core.config.annotations.Comment;
 import de.cubeisland.cubeengine.core.config.annotations.DefaultConfig;
 import de.cubeisland.cubeengine.core.config.annotations.Option;
+import de.cubeisland.cubeengine.conomy.Currency.CurrencyType;
 
 @Codec("yml")
 @DefaultConfig
 public class ConomyConfiguration extends Configuration
 {
-    @Comment("Keep in mind subcurrencies have to be ordered in order of their value beginning with the highest.")
-    @Option("currencies")
-    public LinkedHashMap<String, CurrencyConfiguration> currencies = new LinkedHashMap<String, CurrencyConfiguration>();
-    @Option("relations")
-    public LinkedHashMap<String, Map<String, Double>> relations = new LinkedHashMap<String, Map<String, Double>>();
+    @Option("currency.symbol")
+    public String symbol = "€";
+    @Option("currency.symbol-plural")
+    public String symbolPlural = "€";
+    @Option("currency.name")
+    public String name = "Euro";
+    @Option("currency.name-plural")
+    public String namePlural = "Euros";
+
+    @Option("default.user.balance")
+    public double defaultBalance = 1000;
+    @Option("default.user.minimum-balance")
+    public double minimumBalance = 0;
+
+    @Option("default.bank.balance")
+    public double defaultBankBalance = 0;
+    @Option("default.bank.minimum-balance")
+    public double minimumBankBalance = 0;
+    @Comment("The Number of fractional-digits.\n" +
+                 "e.g.: 1.00€ -> 2")
+    @Option("currency.fractional-digits")
+    public int fractionalDigits = 2;
+
     @Option("enable-logging")
     public boolean enableLogging = true;
+    @Comment("Possible currency Types are: NORMAL, ITEM, EXP")
+    @Option("currency.type")
+    public CurrencyType currencyType = CurrencyType.NORMAL;
 
     @Override
     public void onLoaded(File loadFrom)
     {
-        // Create a default currency when none given
-        if (currencies == null || currencies.isEmpty())
+        // TODO enforce options
+        if (currencyType == CurrencyType.ITEM)
         {
-            this.currencies = new LinkedHashMap<String, CurrencyConfiguration>();
-            LinkedHashMap<String, SubCurrencyConfig> subcurrencies = new LinkedHashMap<String, SubCurrencyConfig>();
-            subcurrencies.put("Euro", new SubCurrencyConfig("Euros","€","€", 1));
-            subcurrencies.put("Cent", new SubCurrencyConfig("Cents","c","c", 100));
-            CurrencyConfiguration subConfig = new CurrencyConfiguration(subcurrencies, "%-%€ #€ %c #c", "%-%€,%c2#€", 10000,0,",",".");
-            this.currencies.put("Euro", subConfig);
+            this.minimumBalance = 0;
         }
     }
 }

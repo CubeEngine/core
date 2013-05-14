@@ -38,7 +38,7 @@ import de.cubeisland.cubeengine.core.util.RomanNumbers;
 import de.cubeisland.cubeengine.core.util.matcher.Match;
 import de.cubeisland.cubeengine.conomy.Conomy;
 import de.cubeisland.cubeengine.conomy.account.Account_old;
-import de.cubeisland.cubeengine.conomy.currency.Currency;
+import de.cubeisland.cubeengine.conomy.Currency;
 import de.cubeisland.cubeengine.signmarket.storage.SignMarketBlockModel;
 import de.cubeisland.cubeengine.signmarket.storage.SignMarketItemModel;
 

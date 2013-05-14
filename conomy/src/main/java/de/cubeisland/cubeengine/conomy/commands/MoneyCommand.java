@@ -33,7 +33,7 @@ import de.cubeisland.cubeengine.conomy.Conomy;
 import de.cubeisland.cubeengine.conomy.ConomyPermissions;
 import de.cubeisland.cubeengine.conomy.account.Account_old;
 import de.cubeisland.cubeengine.conomy.account.storage.AccountModel;
-import de.cubeisland.cubeengine.conomy.currency.Currency;
+import de.cubeisland.cubeengine.conomy.Currency;
 
 public class MoneyCommand extends ContainerCommand
 {

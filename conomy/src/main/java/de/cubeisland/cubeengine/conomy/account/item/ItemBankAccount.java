@@ -1,18 +1,50 @@
 package de.cubeisland.cubeengine.conomy.account.item;
 
+import de.cubeisland.cubeengine.conomy.account.AccountManager;
 import de.cubeisland.cubeengine.conomy.account.BankAccount;
-import de.cubeisland.cubeengine.conomy.account.UserAccount;
 import de.cubeisland.cubeengine.conomy.account.storage.AccountModel;
 import de.cubeisland.cubeengine.conomy.account.storage.AccountStorage;
-import de.cubeisland.cubeengine.conomy.currency.Currency;
+import de.cubeisland.cubeengine.conomy.Currency;
 
 public class ItemBankAccount extends BankAccount
 {
-    private AccountStorage storage;
-
-    public ItemBankAccount(String name, Currency currency, AccountModel model, AccountStorage storage)
+    public ItemBankAccount(AccountManager manager, Currency currency, AccountModel model)
     {
-        super(name, currency, model);
-        this.storage = storage;
+        super(manager, currency, model);
+    }
+
+    @Override
+    public boolean deposit(double amount)
+    {
+        this.model.value += amount;
+        this.update();
+        return true;
+    }
+
+    @Override
+    public boolean withdraw(double amount)
+    {
+        this.model.value -= amount;
+        this.update();
+        return true;
+    }
+
+    @Override
+    public boolean set(double amount)
+    {
+        this.model.value = (int)amount;
+        this.update();
+        return true;
+    }
+
+    @Override
+    public boolean has(double amount)
+    {
+        if ((this.model.value - amount * this.getCurrency().fractionalDigitsFactor())
+            < this.getCurrency().getMinBankMoney())
+        {
+            return false;
+        }
+        return true;
     }
 }

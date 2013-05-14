@@ -1,14 +1,9 @@
 package de.cubeisland.cubeengine.conomy.account.normal;
 
 import de.cubeisland.cubeengine.conomy.account.UserAccount;
-import de.cubeisland.cubeengine.conomy.account.storage.AccountModel;
-import de.cubeisland.cubeengine.conomy.account.storage.AccountStorage;
-import de.cubeisland.cubeengine.conomy.currency.Currency;
 
 public class NormalUserAccount extends UserAccount
 {
-    private AccountStorage storage;
-
     @Override
     public String getName()
     {
@@ -16,17 +11,19 @@ public class NormalUserAccount extends UserAccount
     }
 
     @Override
-    public void deposit(double amount)
+    public boolean deposit(double amount)
     {
         this.model.value += amount * this.getCurrency().fractionalDigitsFactor();
-        storage.update(model);
+        this.update();
+        return true;
     }
 
     @Override
-    public void withdraw(double amount)
+    public boolean withdraw(double amount)
     {
         this.model.value -= amount * this.getCurrency().fractionalDigitsFactor();
-        storage.update(model);
+        this.update();
+        return true;
     }
 
     @Override
@@ -43,23 +40,11 @@ public class NormalUserAccount extends UserAccount
         return true;
     }
 
-    public void init(Currency currency, AccountModel model, AccountStorage storage)
-    {
-        super.init(currency, model);
-        this.storage = storage;
-    }
-
     @Override
-    public void set(double amount)
+    public boolean set(double amount)
     {
         this.model.value = (long)(amount * this.getCurrency().fractionalDigitsFactor());
-        storage.update(model);
-    }
-
-    @Override
-    public void scale(float factor)
-    {
-        this.model.value *= factor;
-        storage.update(model);
+        this.update();
+        return true;
     }
 }

@@ -1,18 +1,18 @@
 package de.cubeisland.cubeengine.conomy.account;
 
 import de.cubeisland.cubeengine.conomy.account.storage.AccountModel;
-import de.cubeisland.cubeengine.conomy.currency.Currency;
-import de.cubeisland.cubeengine.conomy.currency.Currency.CurrencyType;
+import de.cubeisland.cubeengine.conomy.Currency;
+import de.cubeisland.cubeengine.conomy.Currency.CurrencyType;
 
 public abstract class BankAccount implements Account
 {
-    private String name;
     private Currency currency;
     protected AccountModel model;
+    private AccountManager manager;
 
-    protected BankAccount(String name, Currency currency, AccountModel model)
+    protected BankAccount(AccountManager manager, Currency currency, AccountModel model)
     {
-        this.name = name;
+        this.manager = manager;
         this.currency = currency;
         this.model = model;
     }
@@ -32,24 +32,49 @@ public abstract class BankAccount implements Account
     @Override
     public String getName()
     {
-        return this.name;
+        return this.model.name;
     }
 
     @Override
-    public boolean transaction(Account from, Account to, double amount, boolean force)
+    public boolean transactionTo(Account to, double amount, boolean force)
     {
-        if (from.getCurrencyType().equals(to.getCurrencyType()))
-        {
-            if (!force)
-            {
-                if (from.has(amount))
-                {
+        return this.manager.transaction(this,to,amount,force);
+    }
 
-                }
-            }
-            from.withdraw(amount);
-            to.deposit(amount);
-        }
-        return false;
+    protected void update()
+    {
+        this.manager.storage.update(this.model);
+    }
+
+
+    @Override
+    public boolean isHidden()
+    {
+        return this.model.hidden;
+    }
+
+    @Override
+    public void setHidden(boolean hidden)
+    {
+        this.model.hidden = hidden;
+        this.update();
+    }
+
+    @Override
+    public boolean scale(float factor)
+    {
+        return this.set(this.balance() * factor);
+    }
+
+    @Override
+    public double balance()
+    {
+        return this.model.value / this.currency.fractionalDigitsFactor();
+    }
+
+    @Override
+    public boolean reset()
+    {
+        return this.set(this.currency.getDefaultBankBalance());
     }
 }

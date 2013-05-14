@@ -27,7 +27,6 @@ import de.cubeisland.cubeengine.conomy.account.AccountManager_old;
 import de.cubeisland.cubeengine.conomy.account.storage.AccountStorage;
 import de.cubeisland.cubeengine.conomy.commands.EcoCommands;
 import de.cubeisland.cubeengine.conomy.commands.MoneyCommand;
-import de.cubeisland.cubeengine.conomy.config.ConomyConfiguration;
 import de.cubeisland.cubeengine.conomy.config.CurrencyConfiguration;
 import de.cubeisland.cubeengine.conomy.config.CurrencyConfigurationConverter;
 import de.cubeisland.cubeengine.conomy.config.SubCurrencyConfig;

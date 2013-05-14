@@ -36,7 +36,7 @@ import de.cubeisland.cubeengine.core.permission.Permission;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.conomy.Conomy;
 import de.cubeisland.cubeengine.conomy.account.Account_old;
-import de.cubeisland.cubeengine.conomy.currency.Currency;
+import de.cubeisland.cubeengine.conomy.Currency;
 import de.cubeisland.cubeengine.itemrepair.Itemrepair;
 import de.cubeisland.cubeengine.itemrepair.material.BaseMaterial;
 import de.cubeisland.cubeengine.itemrepair.material.BaseMaterialContainer;

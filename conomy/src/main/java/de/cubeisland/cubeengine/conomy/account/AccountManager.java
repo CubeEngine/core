@@ -1,7 +1,15 @@
 package de.cubeisland.cubeengine.conomy.account;
 
+import java.io.File;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Map;
+import java.util.logging.Formatter;
+import java.util.logging.LogRecord;
 
+import de.cubeisland.cubeengine.core.logger.CubeFileHandler;
+import de.cubeisland.cubeengine.core.logger.CubeLogger;
+import de.cubeisland.cubeengine.core.logger.LogLevel;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.conomy.Conomy;
 import de.cubeisland.cubeengine.conomy.account.exp.ExpBankAccount;
@@ -12,15 +20,14 @@ import de.cubeisland.cubeengine.conomy.account.normal.NormalBankAccount;
 import de.cubeisland.cubeengine.conomy.account.normal.NormalUserAccount;
 import de.cubeisland.cubeengine.conomy.account.storage.AccountModel;
 import de.cubeisland.cubeengine.conomy.account.storage.AccountStorage;
-import de.cubeisland.cubeengine.conomy.currency.Currency;
-import de.cubeisland.cubeengine.conomy.currency.CurrencyManager;
+import de.cubeisland.cubeengine.conomy.Currency;
+
+import gnu.trove.map.hash.THashMap;
 
 public class AccountManager
 {
     private final Conomy module;
-    private final AccountStorage accountStorage;
-    private final CurrencyManager currencyManager;
-
+    protected final AccountStorage storage;
     private Map<String,BankAccount> bankaccounts;
 
     /**
@@ -28,11 +35,40 @@ public class AccountManager
      */
     private Currency currency;
 
+    private final CubeLogger transactionLogger;
+
     public AccountManager(Conomy module)
     {
         this.module = module;
-        this.accountStorage = new AccountStorage(module.getCore().getDB());
-        this.currencyManager = new CurrencyManager(module,module.getConfig());
+        this.storage = new AccountStorage(module.getCore().getDB());
+        this.currency = new Currency(this, module.getConfig());
+        this.bankaccounts = new THashMap<String, BankAccount>();
+
+        this.transactionLogger = new CubeLogger("conomy_transactions");
+        if (this.module.getConfig().enableLogging)
+        {
+            try
+            {
+                final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                CubeFileHandler handler = new CubeFileHandler(LogLevel.ALL,
+                                                              new File(this.module.getCore().getFileManager().getLogDir(), "conomy_transactions").toString());
+                this.transactionLogger.addHandler(handler);
+                handler.setFormatter(new Formatter() {
+                    @Override
+                    public String format(LogRecord record)
+                    {
+                        StringBuilder sb = new StringBuilder();
+                        sb.append(dateFormat.format(new Date(record.getMillis())))
+                          .append(" ").append(record.getMessage());
+                        return sb.toString();
+                    }
+                });
+            }
+            catch (Exception ex)
+            {
+                throw new IllegalStateException("Could not create handler for transaction-logger", ex);
+            }
+        }
     }
 
     public Account getBankAccount(String name, boolean create)
@@ -40,23 +76,24 @@ public class AccountManager
         BankAccount bankAccount = this.bankaccounts.get(name);
         if (bankAccount == null)
         {
-            AccountModel model = this.accountStorage.getBankAccount(name);
+            AccountModel model = this.storage.getBankAccount(name);
             if (model == null)
             {
                 if (!create) return null;
-                new AccountModel(null,name,this.currency.getType().name(),this.currency.getDefaultBankBalance(),false);
-                // TODO create new BankAccount / Model
+                model = new AccountModel(null,name,this.currency.getType().name(),(int) (this.currency.getDefaultBankBalance() * this.currency.fractionalDigitsFactor()),false);
+                this.storage.store(model);
+                // TODO log Acc-creation
             }
             switch (currency.getType())
             {
-            case NORMAL:
-                bankAccount = new NormalBankAccount(name,currency,model,accountStorage);
-                break;
-            case EXP:
-                bankAccount = new ExpBankAccount(name,currency,model,accountStorage);
-                break;
-            case ITEM:
-                bankAccount = new ItemBankAccount(name,currency,model,accountStorage);
+                case NORMAL:
+                    bankAccount = new NormalBankAccount(this, currency,model);
+                    break;
+                case EXP:
+                    bankAccount = new ExpBankAccount(this, currency,model);
+                    break;
+                case ITEM:
+                    bankAccount = new ItemBankAccount(this, currency,model);
             }
             this.bankaccounts.put(name,bankAccount);
         }
@@ -69,6 +106,7 @@ public class AccountManager
         UserAccount userAccount = null;
         switch (currency.getType())
         {
+            // TODO EXP and ITEM do not have database backend!!!
             case NORMAL:
                 userAccount = user.attachOrGet(NormalUserAccount.class, module);
                 break;
@@ -80,13 +118,15 @@ public class AccountManager
         }
         if (!userAccount.isInitialized())
         {
-            AccountModel model = this.accountStorage.getUserAccount(user.key);
+            AccountModel model = this.storage.getUserAccount(user.key);
             if (model == null)
             {
                 if (!create) return null;
-                // TODO create new AccountModul + store
+                model = new AccountModel(user.key,null,this.currency.getType().name(),(int) (this.currency.getDefaultBalance() * this.currency.fractionalDigitsFactor()),false);
+                this.storage.store(model);
+                // TODO log Acc-creation
             }
-            userAccount.init(currency,model);
+            userAccount.init(this, currency, model);
         }
         return userAccount;
     }
@@ -105,5 +145,52 @@ public class AccountManager
     {
         Account acc = this.getUserAccount(name,false);
         return acc != null;
+    }
+
+    public void setAllOnline(double value)
+    {
+        // TODO
+    }
+
+    public void transactionAllOnline(double value)
+    {
+        // TODO
+    }
+
+    public void scaleAllOnline(float factor)
+    {
+        // TODO
+    }
+
+    public void setAll(boolean userAcc, boolean bankAcc, double value)
+    {
+        // TODO
+    }
+
+    public void scaleAll(boolean userAcc, boolean bankAcc, float factor)
+    {
+        // TODO
+    }
+
+    public void transactionAll(boolean userAcc, boolean bankAcc, double value)
+    {
+        // TODO
+    }
+
+    public boolean transaction(Account from, Account to, double amount, boolean force)
+    {
+        if (from.getCurrencyType().equals(to.getCurrencyType()))
+        {
+            if (!force)
+            {
+                if (!from.has(amount))
+                {
+                    return false;
+                }
+            }
+            from.withdraw(amount);
+            to.deposit(amount);
+        }
+        return true;
     }
 }
