@@ -17,11 +17,22 @@
  */
 package de.cubeisland.cubeengine.core.command.result.paginated;
 
+import java.util.List;
+
 import de.cubeisland.cubeengine.core.command.CommandContext;
 import de.cubeisland.cubeengine.core.command.CommandResult;
 
 public class PaginatedResult implements CommandResult
 {
+    private final CommandContext context;
+    private final List<Object> lines;
+
+    public PaginatedResult(CommandContext context, List<Object> lines)
+    {
+        this.context = context;
+        this.lines = lines;
+    }
+
     @Override
     public void show(CommandContext context)
     {
