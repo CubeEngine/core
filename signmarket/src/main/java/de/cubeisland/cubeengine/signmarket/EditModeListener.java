@@ -61,7 +61,7 @@ public class EditModeListener extends ConversationCommand
                 .addFlag(new CommandFlag("sell","sell"))
                 .addFlag(new CommandFlag("admin","admin"))
                 .addFlag(new CommandFlag("user","user"))
-                .addFlag(new CommandFlag("stock","stock"))
+                .addFlag(new CommandFlag("stock", "stock"))
                 .addParameter(new CommandParameter("demand", Integer.class))
                 .addParameter(new CommandParameter("owner", User.class))
                 .addParameter(new CommandParameter("price", String.class))
@@ -69,7 +69,6 @@ public class EditModeListener extends ConversationCommand
                 .addParameter(new CommandParameter("item", ItemStack.class))
                 .addParameter(new CommandParameter("setstock",Integer.class))
                 .addParameter(new CommandParameter("size",Integer.class))
-                .addParameter(new CommandParameter("currency",String.class))
         ;
     }
 //TODO itemblacklist?
@@ -322,41 +321,27 @@ public class EditModeListener extends ConversationCommand
                 context.sendTranslated("&cYou are not allowed to set the stock!");
             }
         }
-        if (context.hasParam("currency"))
-        {
-            Currency currency = this.conomy.getCurrencyManager().getCurrencyByName(context.getString("currency"));
-            if (currency == null)
-            {
-                context.sendTranslated("&cInvalid currency: %s!", context.getString("currency"));
-            }
-            else
-            {
-                marketSign.setCurrency(currency);
-            }
-        }
-
         if (context.hasParam("price"))
         {
             Currency currency = marketSign.getCurrency();
             if (currency == null)
             {
-                currency = this.conomy.getCurrencyManager().getMainCurrency();
+                currency = this.conomy.getManager().getCurrency();
                 marketSign.setCurrency(currency);
-                context.sendTranslated("&aCurrency set to default!");
             }
-            Long price = currency.parse(context.getString("price"));
-            if (price == null)
+            Double dPrice = currency.parse(context.getString("price"));
+            if (dPrice == null)
             {
-                user.sendTranslated("&cInvalid price for currency!");
+                user.sendTranslated("&cInvalid price!");
                 marketSign.setPrice(0);
             }
-            else if (price < 0)
+            else if (dPrice < 0)
             {
                 user.sendTranslated("&cA negative price!? Are you serious?");
             }
             else
             {
-                marketSign.setPrice(price);
+                marketSign.setPrice((long)(dPrice * currency.fractionalDigitsFactor()));
             }
         }
         if (context.hasParam("amount"))

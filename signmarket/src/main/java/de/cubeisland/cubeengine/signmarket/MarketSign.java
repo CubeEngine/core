@@ -37,8 +37,8 @@ import de.cubeisland.cubeengine.core.util.InventoryGuardFactory;
 import de.cubeisland.cubeengine.core.util.RomanNumbers;
 import de.cubeisland.cubeengine.core.util.matcher.Match;
 import de.cubeisland.cubeengine.conomy.Conomy;
-import de.cubeisland.cubeengine.conomy.account.Account_old;
 import de.cubeisland.cubeengine.conomy.Currency;
+import de.cubeisland.cubeengine.conomy.account.Account;
 import de.cubeisland.cubeengine.signmarket.storage.SignMarketBlockModel;
 import de.cubeisland.cubeengine.signmarket.storage.SignMarketItemModel;
 
@@ -580,9 +580,9 @@ public class MarketSign
         }
         if (this.allowBuyIfEmpty())
         {
-            return "&o"+this.getCurrency().formatShort(this.getPrice());
+            return "&o"+this.getCurrency().format(this.getPrice());
         }
-        return this.getCurrency().formatShort(this.getPrice());
+        return this.getCurrency().format(this.getPrice());
     }
 
     @SuppressWarnings("deprecation")
@@ -762,26 +762,30 @@ public class MarketSign
                     user.sendTranslated("&cYou cannot afford the price of these items!");
                     return;
                 }
-                Account_old userAccount = this.conomy.getAccountsManager().getAccount(user, this.getCurrency());
-                Account_old ownerAccount = this.conomy.getAccountsManager().getAccount(this.getOwner(), this.getCurrency());
+                Account userAccount = this.conomy.getManager().getUserAccount(user.getName(), true);
+                Account ownerAccount = this.conomy.getManager().getUserAccount(this.getOwner().getName(), true);
                 ItemStack item = this.getItem().clone();
                 item.setAmount(this.getAmount());
                 if (checkForPlace(user.getInventory(), item.clone()))
                 {
                     String price = this.parsePrice();
-                    this.conomy.getAccountsManager().transaction(userAccount, ownerAccount, this.getPrice());
-                    if (this.hasStock())
+                    if (userAccount.transactionTo(ownerAccount, this.getPrice() / this.getCurrency().fractionalDigitsFactor(), false))
                     {
-                        this.setStock(this.getStock() - this.getAmount());
-                        if (this.getStock() < 0)
+                        if (this.hasStock())
                         {
-                            this.setStock(0);
+                            this.setStock(this.getStock() - this.getAmount());
+                            if (this.getStock() < 0)
+                            {
+                                this.setStock(0);
+                            }
+                            this.saveToDatabase();
                         }
-                        this.saveToDatabase();
+                        user.getInventory().addItem(item);
+                        user.updateInventory();
+                        user.sendTranslated("&aYou bought &6%dx %s &afor &6%s&a.", this.getAmount(), Match.material().getNameFor(this.getItem()), price);
+                        return;
                     }
-                    user.getInventory().addItem(item);
-                    user.updateInventory();
-                    user.sendTranslated("&aYou bought &6%dx %s &afor &6%s&a.", this.getAmount(), Match.material().getNameFor(this.getItem()), price);
+                    user.sendTranslated("&cOops! Something went wrong!");
                     return;
                 }
                 user.sendTranslated("&cYou do not have enough space for these items!");
@@ -810,17 +814,23 @@ public class MarketSign
             ItemStack item = this.getItem().clone();
             item.setAmount(this.getAmount());
 
-            Account_old userAccount = this.conomy.getAccountsManager().getAccount(user, this.getCurrency());
-            Account_old ownerAccount = this.conomy.getAccountsManager().getAccount(this.getOwner(), this.getCurrency());
-            this.conomy.getAccountsManager().transaction(ownerAccount, userAccount, this.getPrice());
-            user.getInventory().removeItem(item);
-            if (this.hasStock())
+            Account userAccount = this.conomy.getManager().getUserAccount(user.getName(), true);
+            Account ownerAccount = this.conomy.getManager().getUserAccount(this.getOwner().getName(), true);
+            if (ownerAccount.transactionTo(userAccount, this.getPrice() / this.getCurrency().fractionalDigitsFactor(), false))
             {
-                this.setStock(this.getStock() + this.getAmount());
-                this.saveToDatabase();
-            } // else admin sign -> no change
-            user.updateInventory();
-            user.sendTranslated("&aYou sold &6%dx %s &afor &6%s&a.", this.getAmount(), Match.material().getNameFor(this.getItem()), this.parsePrice());
+                user.getInventory().removeItem(item);
+                if (this.hasStock())
+                {
+                    this.setStock(this.getStock() + this.getAmount());
+                    this.saveToDatabase();
+                } // else admin sign -> no change
+                user.updateInventory();
+                user.sendTranslated("&aYou sold &6%dx %s &afor &6%s&a.", this.getAmount(), Match.material().getNameFor(this.getItem()), this.parsePrice());
+            }
+            else
+            {
+                user.sendTranslated("&cOops! Something went wrong!");
+            }
         }
     }
 
@@ -1072,7 +1082,8 @@ public class MarketSign
         {
             return true;
         }
-        return this.conomy.getAccountsManager().getAccount(user, this.getCurrency()).canAfford(this.getPrice());
+        return this.conomy.getManager().getUserAccount(user.getName(), true).has(this.getPrice() / this.getCurrency()
+                                                                                                       .fractionalDigitsFactor());
     }
 
     public Inventory getInventory()
@@ -1155,7 +1166,7 @@ public class MarketSign
     {
         if (this.currency == null)
         {
-            this.currency = this.conomy.getCurrencyManager().getCurrencyByName(this.blockInfo.currency);
+            this.currency = this.conomy.getManager().getCurrency();
         }
         return this.currency;
     }

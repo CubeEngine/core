@@ -35,8 +35,8 @@ import org.bukkit.inventory.PlayerInventory;
 import de.cubeisland.cubeengine.core.permission.Permission;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.conomy.Conomy;
-import de.cubeisland.cubeengine.conomy.account.Account_old;
 import de.cubeisland.cubeengine.conomy.Currency;
+import de.cubeisland.cubeengine.conomy.account.Account;
 import de.cubeisland.cubeengine.itemrepair.Itemrepair;
 import de.cubeisland.cubeengine.itemrepair.material.BaseMaterial;
 import de.cubeisland.cubeengine.itemrepair.material.BaseMaterialContainer;
@@ -152,8 +152,9 @@ public class RepairBlock
 
     public void withdrawPlayer(User user, long amount)
     {
-        Account_old userAccount = getEconomy().getAccountsManager().getAccount(user);
-        userAccount.transaction(null,-amount);
+        Account userAccount = getEconomy().getManager().getUserAccount(user.getName(), true);
+        userAccount.transactionTo(null,amount / getEconomy().getManager().getCurrency().fractionalDigitsFactor(), false);
+        // TODO what if this returns false
         // TODO bankAccounts
             /*
             String account = this.plugin.getServerBank();
@@ -174,7 +175,7 @@ public class RepairBlock
 
     public boolean checkBalance(User user, Double price)
     {
-        return getEconomy().getAccountsManager().getAccount(user).canAfford(price.longValue());
+        return getEconomy().getManager().getUserAccount(user.getName(), true).has(price.longValue());
     }
 
     public RepairRequest requestRepair(Inventory inventory)
@@ -184,7 +185,8 @@ public class RepairBlock
         if (items.size() > 0)
         {
             Double price = calculatePrice(items.values());
-            Currency currency = getEconomy().getCurrencyManager().getMainCurrency();
+            Currency currency = getEconomy().getManager().getCurrency();
+            String format = currency.format(price / currency.fractionalDigitsFactor());
             if (this.config.breakPercentage > 0)
             {
                 user.sendTranslated("&cItems will break with a chance of &6%.2f%%",this.config.breakPercentage);
@@ -200,19 +202,19 @@ public class RepairBlock
             if (this.config.costPercentage > 100)
             {
                 user.sendTranslated("&eThe repair would cost &b%s &e(&4+%.2f%%&e)",
-                        currency.formatShort(price.longValue()), this.config.costPercentage - 100);
+                        format, this.config.costPercentage - 100);
             }
             else if (this.config.costPercentage < 100)
             {
                 user.sendTranslated("&eThe repair would cost &b%s &e(&2-%.2f%%&e)",
-                                    currency.formatShort(price.longValue()), 100 - this.config.costPercentage);
+                                    format, 100 - this.config.costPercentage);
             }
             else
             {
-                user.sendTranslated("&eThe repair would cost &b%s", currency.formatShort(price.longValue()));
+                user.sendTranslated("&eThe repair would cost &b%s", format);
             }
-            user.sendTranslated("&eYou currently have &b%s", currency
-                .formatShort(getEconomy().getAccountsManager().getAccount(user).getBalance()));
+            user.sendTranslated("&eYou currently have &b%s", currency.format(
+                getEconomy().getManager().getUserAccount(user.getName(), true).balance()));
             user.sendTranslated("&bLeftclick&a again to repair all your damaged items.");
             return new RepairRequest(this, inventory, items, price);
         }
@@ -228,7 +230,7 @@ public class RepairBlock
         Double price = request.getPrice();
         Inventory inventory = request.getInventory();
         User user = this.module.getCore().getUserManager().getExactUser((Player)inventory.getHolder());
-        Currency currency = this.getEconomy().getCurrencyManager().getMainCurrency();
+        Currency currency = this.getEconomy().getManager().getCurrency();
         if (checkBalance(user, price))
         {
             withdrawPlayer(user, price.longValue());
@@ -292,7 +294,7 @@ public class RepairBlock
                 user.sendTranslated("&cYou feel that some of your items lost their magical power!");
                 user.playEffect(user.getLocation(), Effect.GHAST_SHRIEK, 0);
             }
-            user.sendTranslated("&aYou paid &b%s&a to repair your items!",currency.formatShort(price.longValue()));
+            user.sendTranslated("&aYou paid &b%s&a to repair your items!",currency.format(price.longValue() / currency.fractionalDigitsFactor()));
             if (this.config.costPercentage > 100)
             {
                 user.sendTranslated("&aThats %.2f%% of the normal price!", this.config.costPercentage);
