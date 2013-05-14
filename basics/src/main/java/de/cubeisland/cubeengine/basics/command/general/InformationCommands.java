@@ -53,6 +53,7 @@ import de.cubeisland.cubeengine.core.util.matcher.Match;
 import de.cubeisland.cubeengine.core.util.math.MathHelper;
 import de.cubeisland.cubeengine.core.util.time.Duration;
 import de.cubeisland.cubeengine.basics.Basics;
+import de.cubeisland.cubeengine.basics.BasicsPerm;
 
 public class InformationCommands
 {
@@ -346,9 +347,23 @@ public class InformationCommands
         }
     }
 
-    @Command(desc = "Displays chunk, memory, and world information.", max = 0)
-    public void lag(CommandContext context)
+    @Command(desc = "Displays chunk, memory, and world information.", max = 0
+        , flags = @Flag(longName = "reset" , name = "r"))
+    public void lag(ParameterizedContext context)
     {
+        if (context.hasFlag("r"))
+        {
+            if (BasicsPerm.COMMAND_LAG_RESET.isAuthorized(context.getSender()))
+            {
+                this.basics.getLagTimer().resetLowestTPS();
+                context.sendTranslated("&aResetted lowest TPS!");
+            }
+            else
+            {
+                context.sendTranslated("&cYou are not allowed to do this!");
+            }
+            return;
+        }
         //Uptime:
         context.sendTranslated("&a[&cCubeEngine-Basics&a]");
         DateFormat df = SimpleDateFormat.getDateTimeInstance(DateFormat.DEFAULT, DateFormat.DEFAULT,
