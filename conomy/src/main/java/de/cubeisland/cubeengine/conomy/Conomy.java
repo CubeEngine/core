@@ -20,6 +20,7 @@ package de.cubeisland.cubeengine.conomy;
 import java.util.concurrent.TimeUnit;
 
 import de.cubeisland.cubeengine.core.command.CommandManager;
+import de.cubeisland.cubeengine.core.config.Configuration;
 import de.cubeisland.cubeengine.core.module.Module;
 import de.cubeisland.cubeengine.core.util.Profiler;
 import de.cubeisland.cubeengine.core.util.convert.Convert;
@@ -52,6 +53,7 @@ public class Conomy extends Module
     public void onEnable()
     {
         Profiler.startProfiling("conomyEnable");
+        this.config = Configuration.load(ConomyConfiguration.class, this);
         System.out.print(Profiler.getCurrentDelta("conomyEnable", TimeUnit.MILLISECONDS) + "ms - perms");
         new ConomyPermissions(this);
         System.out.print(Profiler.getCurrentDelta("conomyEnable", TimeUnit.MILLISECONDS) + "ms - CurrencyManager");

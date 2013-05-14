@@ -15,13 +15,14 @@
  * You should have received a copy of the GNU General Public License
  * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-package de.cubeisland.cubeengine.core.storage.world;
+package de.cubeisland.cubeengine.core.world;
+
+import org.bukkit.World;
 
 import de.cubeisland.cubeengine.core.storage.Model;
 import de.cubeisland.cubeengine.core.storage.database.AttrType;
 import de.cubeisland.cubeengine.core.storage.database.Attribute;
 import de.cubeisland.cubeengine.core.storage.database.SingleKeyEntity;
-import org.bukkit.World;
 
 @SingleKeyEntity(tableName = "worlds", primaryKey = "key", autoIncrement = true)
 public class WorldModel implements Model<Long>

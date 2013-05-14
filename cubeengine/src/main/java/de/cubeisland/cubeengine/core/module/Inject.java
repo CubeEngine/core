@@ -15,30 +15,17 @@
  * You should have received a copy of the GNU General Public License
  * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-package de.cubeisland.cubeengine.test;
+package de.cubeisland.cubeengine.core.module;
 
-import de.cubeisland.cubeengine.core.bukkit.BukkitCore;
-import de.cubeisland.cubeengine.core.command.sender.ConsoleCommandSender;
+import java.lang.annotation.Documented;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
-public class FIFOCommandSender extends ConsoleCommandSender
+@Documented
+@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.FIELD)
+public @interface Inject
 {
-    private final FIFOInterface fifo;
-
-    public FIFOCommandSender(FIFOInterface fifo, BukkitCore core)
-    {
-        super(core);
-        this.fifo = fifo;
-    }
-
-    public FIFOInterface getFifo()
-    {
-        return fifo;
-    }
-
-    @Override
-    public void sendMessage(String message)
-    {
-        super.sendMessage(message);
-        fifo.writeMessage(message);
-    }
 }

@@ -28,7 +28,7 @@ import org.bukkit.World;
 import org.bukkit.entity.Player;
 
 import de.cubeisland.cubeengine.core.logger.LogLevel;
-import de.cubeisland.cubeengine.core.storage.world.WorldManager;
+import de.cubeisland.cubeengine.core.world.WorldManager;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.util.Profiler;
 import de.cubeisland.cubeengine.core.util.Triplet;
@@ -246,7 +246,7 @@ public class RolesManager
         }
         else
         {
-            user = this.module.getCore().getUserManager().getExactUser(player);
+            user = this.module.getCore().getUserManager().getExactUser(player.getName());
         }
         return user.attachOrGet(RolesAttachment.class, this.module);
     }

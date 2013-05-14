@@ -33,19 +33,25 @@ import net.minecraft.server.v1_5_R3.Packet0KeepAlive;
 import org.bukkit.craftbukkit.v1_5_R3.CraftServer;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Server;
+import org.bukkit.World;
+import org.bukkit.World.Environment;
+import org.bukkit.WorldCreator;
+import org.bukkit.WorldType;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 
-import de.cubeisland.cubeengine.core.Core;
 import de.cubeisland.cubeengine.core.CubeEngine;
 import de.cubeisland.cubeengine.core.bukkit.BukkitCore;
 import de.cubeisland.cubeengine.core.bukkit.PlayerLanguageReceivedEvent;
 import de.cubeisland.cubeengine.core.command.reflected.ReflectedCommand;
 import de.cubeisland.cubeengine.core.config.Configuration;
 import de.cubeisland.cubeengine.core.config.node.Node;
+import de.cubeisland.cubeengine.core.filesystem.FileManager;
 import de.cubeisland.cubeengine.core.filesystem.FileUtil;
 import de.cubeisland.cubeengine.core.logger.CubeFileHandler;
 import de.cubeisland.cubeengine.core.logger.LogLevel;
+import de.cubeisland.cubeengine.core.module.Inject;
 import de.cubeisland.cubeengine.core.module.Module;
 import de.cubeisland.cubeengine.core.storage.database.Database;
 import de.cubeisland.cubeengine.core.user.UserManager;
@@ -60,8 +66,7 @@ import de.cubeisland.cubeengine.test.database.TestManager;
 import de.cubeisland.cubeengine.test.database.TestModel;
 import de.cubeisland.cubeengine.test.l18n.TestRecource;
 
-import static de.cubeisland.cubeengine.core.logger.LogLevel.DEBUG;
-import static de.cubeisland.cubeengine.core.logger.LogLevel.ERROR;
+import static de.cubeisland.cubeengine.core.logger.LogLevel.*;
 
 public class Test extends Module
 {
@@ -69,14 +74,30 @@ public class Test extends Module
     public UserManager uM;
     protected TestConfig config;
     public static List<String> aListOfPlayers;
-    public Basics basicsModule;
+    @Inject public Basics basicsModule;
     private Timer timer;
-    private FIFOInterface fifo;
+
+    @Override
+    public void onLoad()
+    {
+        this.getCore().getWorldManager().registerGenerator(this, "test", new TestGenerator());
+    }
+
+    @Override
+    public void onStartupFinished()
+    {
+        Server server = ((BukkitCore)this.getCore()).getServer();
+        World world = server.createWorld(WorldCreator.name("test123").generator("CubeEngine:test:test")
+                                             .generateStructures(false).type(WorldType.FLAT)
+                                             .environment(Environment.NORMAL).seed(1231));
+
+    }
 
     @Override
     public void onEnable()
     {
-        config.loadChild(new File(this.getFolder(), "childConfig.yml"));
+        this.config = Configuration.load(TestConfig.class, this);
+        this.config.loadChild(new File(this.getFolder(), "childConfig.yml"));
         Configuration.load(TestConfig2.class, new File(this.getFolder(), "updateConfig.yml"));
         this.getCore().getFileManager().dropResources(TestRecource.values());
         this.uM = this.getCore().getUserManager();
@@ -114,21 +135,12 @@ public class Test extends Module
             }
         });
 
-        this.getLog().log(LogLevel.DEBUG, "Basics-Module: {0}", String.valueOf(basicsModule));
+        this.getLog().log(LogLevel.DEBUG, "Basics-Module: {0}", String.valueOf(this.basicsModule));
         this.getLog().log(LogLevel.DEBUG, "BukkitCore-Plugin: {0}", String.valueOf(this.getCore()));
 
         timer = new Timer("keepAliveTimer");
         timer.schedule(new KeepAliveTimer(), 2 * 1000, 2 * 1000);
 
-        this.fifo = new FIFOInterface(this.getCore(), this.getFolder(), Core.CHARSET);
-        try
-        {
-            this.fifo.start();
-        }
-        catch (IOException e)
-        {
-            this.getLog().log(ERROR, "Failed to start the FIFO interface!", e);
-        }
         Configuration.load(NbtConfig.class,new File(this.getFolder(),"nbtconfig.dat"));
         this.testClipboard();
     }
@@ -152,10 +164,6 @@ public class Test extends Module
 
     public void initializeDatabase() throws SQLException
     {
-        if (this.fifo != null)
-        {
-            this.fifo.stop();
-        }
         Database db = this.getCore().getDB();
         try
         {
@@ -163,7 +171,7 @@ public class Test extends Module
         }
         catch (Exception ignore)
         {}
-        manager = new TestManager(db);
+        this.manager = new TestManager(db);
 
     }
 
@@ -171,6 +179,21 @@ public class Test extends Module
     public void onDisable()
     {
         this.timer.cancel();
+        try
+        {
+            if (this.getCore().getWorldManager().unloadWorld("test123", false))
+            {
+                FileManager.deleteRecursive(new File("test123"));
+            }
+            else
+            {
+                this.getLog().log(WARNING, "Failed to unload the test world 'test123', skipping deletion.");
+            }
+        }
+        catch (IOException e)
+        {
+            this.getLog().log(WARNING, "Failed to delete the test world 'test123'!", e);
+        }
         this.timer = null;
     }
 

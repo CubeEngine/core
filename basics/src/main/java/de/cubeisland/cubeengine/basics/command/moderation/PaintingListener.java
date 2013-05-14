@@ -49,7 +49,7 @@ public class PaintingListener implements Listener
     {
         if(event.getRightClicked().getType() == EntityType.PAINTING)
         {
-            User user = this.module.getCore().getUserManager().getExactUser( event.getPlayer());
+            User user = this.module.getCore().getUserManager().getExactUser(event.getPlayer().getName());
 
             if(!BasicsPerm.CHANGEPAINTING.isAuthorized( user ))
             {
@@ -81,7 +81,7 @@ public class PaintingListener implements Listener
             
             if(painting != null)
             {
-                User user = this.module.getCore().getUserManager().getExactUser( event.getPlayer());
+                User user = this.module.getCore().getUserManager().getExactUser(event.getPlayer().getName());
                 final int maxDistanceSquared = this.module.getConfiguration().maxChangePaintingDistance * this.module.getConfiguration().maxChangePaintingDistance;
                 
                 if( painting.getLocation().toVector().distanceSquared( user.getLocation().toVector()) >  maxDistanceSquared)

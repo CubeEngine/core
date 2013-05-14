@@ -17,14 +17,20 @@
  */
 package de.cubeisland.cubeengine.core.bukkit.packethook;
 
-import de.cubeisland.cubeengine.core.util.Cleanable;
-import gnu.trove.map.hash.TIntObjectHashMap;
-import net.minecraft.server.v1_5_R3.Packet;
-import org.bukkit.entity.Player;
-
 import java.util.LinkedList;
 import java.util.List;
 import java.util.logging.Logger;
+
+import net.minecraft.server.v1_5_R3.Packet;
+import net.minecraft.server.v1_5_R3.Packet204LocaleAndViewDistance;
+
+import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
+
+import de.cubeisland.cubeengine.core.bukkit.PlayerLanguageReceivedEvent;
+import de.cubeisland.cubeengine.core.util.Cleanable;
+
+import gnu.trove.map.hash.TIntObjectHashMap;
 
 import static de.cubeisland.cubeengine.core.logger.LogLevel.DEBUG;
 
@@ -39,6 +45,14 @@ public class PacketEventManager implements Cleanable
         this.logger = logger;
         this.receivedListeners = new TIntObjectHashMap<List<PacketReceivedListener>>();
         this.sentListeners = new TIntObjectHashMap<List<PacketSentListener>>();
+        this.addReceivedListener(204, new PacketReceivedListener()
+        {
+            @Override
+            public void handle(PacketReceivedEvent event)
+            {
+                Bukkit.getPluginManager().callEvent(new PlayerLanguageReceivedEvent(event.getPlayer(), ((Packet204LocaleAndViewDistance)event.getPacket()).d()));
+            }
+        });
     }
 
     public void addReceivedListener(int packetId, PacketReceivedListener listener)

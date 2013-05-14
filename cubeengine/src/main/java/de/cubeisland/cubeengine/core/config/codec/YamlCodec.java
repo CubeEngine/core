@@ -82,7 +82,7 @@ public class YamlCodec extends MultiConfigurationCodec implements CommentableCod
                 }
                 else
                 {
-                    CubeEngine.getLog().log(LogLevel.WARNING, "Invalid revision in a configuration!");
+                    CubeEngine.getLog().log(LogLevel.WARNING, "Invalid revision in a configuration! Value: " + String.valueOf(revisionNode));
                 }
             }
         }

@@ -44,16 +44,13 @@ public abstract class ConfigurationCodec<Container extends CodecContainer,Config
     {
         CodecContainer container = this.createCodecContainer();
         container.fillFromInputStream(is);
-        Revision a_revision = config.getClass().getAnnotation(Revision.class);
-        if (a_revision != null)
+        Revision revisionAnnotation = config.getClass().getAnnotation(Revision.class);
+        if (revisionAnnotation != null && revisionAnnotation.value() > container.revision)
         {
             if (config.getClass().isAnnotationPresent(Updater.class))
             {
-                if (a_revision.value() > container.revision)
-                {
-                    Updater updater = config.getClass().getAnnotation(Updater.class);
-                    updater.value().newInstance().update(container.values, container.revision);
-                }
+                Updater updater = config.getClass().getAnnotation(Updater.class);
+                updater.value().newInstance().update(container.values, container.revision);
             }
         }
         container.dumpIntoFields(config, container.values);

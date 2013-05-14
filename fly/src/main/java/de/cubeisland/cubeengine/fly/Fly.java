@@ -17,6 +17,7 @@
  */
 package de.cubeisland.cubeengine.fly;
 
+import de.cubeisland.cubeengine.core.config.Configuration;
 import de.cubeisland.cubeengine.core.module.Module;
 
 public class Fly extends Module
@@ -26,6 +27,7 @@ public class Fly extends Module
     @Override
     public void onEnable()
     {
+        this.config = Configuration.load(FlyConfig.class, this);
         if (this.config.flyfeather)
         {
             this.getCore().getEventManager().registerListener(this, new FlyListener(this));

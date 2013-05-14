@@ -17,17 +17,19 @@
  */
 package de.cubeisland.cubeengine.core.bukkit;
 
-import java.io.File;
+import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
+import java.util.Stack;
 
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
 
+import de.cubeisland.cubeengine.core.logger.LogLevel;
 import de.cubeisland.cubeengine.core.module.BaseModuleManager;
+import de.cubeisland.cubeengine.core.module.Inject;
 import de.cubeisland.cubeengine.core.module.Module;
-import de.cubeisland.cubeengine.core.module.event.FinishedLoadModulesEvent;
+import de.cubeisland.cubeengine.core.module.ModuleInfo;
 import de.cubeisland.cubeengine.core.module.exception.CircularDependencyException;
 import de.cubeisland.cubeengine.core.module.exception.IncompatibleCoreException;
 import de.cubeisland.cubeengine.core.module.exception.IncompatibleDependencyException;
@@ -35,43 +37,88 @@ import de.cubeisland.cubeengine.core.module.exception.InvalidModuleException;
 import de.cubeisland.cubeengine.core.module.exception.MissingDependencyException;
 import de.cubeisland.cubeengine.core.module.exception.MissingPluginDependencyException;
 
+import static java.util.logging.Level.WARNING;
+
 public class BukkitModuleManager extends BaseModuleManager
 {
+    private final BukkitCore core;
     private final PluginManager pluginManager;
 
     public BukkitModuleManager(BukkitCore core, ClassLoader parentClassLoader)
     {
         super(core, parentClassLoader);
         this.pluginManager = core.getServer().getPluginManager();
+        this.core = core;
+    }
+
+    void init()
+    {
+        this.core.getServer().getScheduler().runTask(this.core, new Runnable()
+        {
+            @Override
+            public void run()
+            {
+                synchronized (BukkitModuleManager.this)
+                {
+                    for (Module module : getModules())
+                    {
+                        try
+                        {
+                            module.onStartupFinished();
+                        }
+                        catch (Exception e)
+                        {
+                            module.getLog().log(WARNING, "An uncaught exception occurred during onFinishLoading(): " + e.getMessage(), e);
+                        }
+                    }
+                }
+            }
+        });
     }
 
     @Override
-    public synchronized Module loadModule(File moduleFile) throws InvalidModuleException, CircularDependencyException, MissingDependencyException, IncompatibleDependencyException, IncompatibleCoreException, MissingPluginDependencyException
+    protected Module loadModule(String name, Map<String, ModuleInfo> moduleInfos, Stack<String> loadStack) throws CircularDependencyException, MissingDependencyException, InvalidModuleException, IncompatibleDependencyException, IncompatibleCoreException, MissingPluginDependencyException
     {
-        Module module = super.loadModule(moduleFile);
-        BukkitUtils.reloadHelpMap();
+        Module module = super.loadModule(name, moduleInfos, loadStack);
+        try
+        {
+            Field[] fields = module.getClass().getDeclaredFields();
+            Map<Class<?>, Plugin> pluginClassMap = this.getPluginClassMap();
+            Class<?> fieldType;
+            for (Field field : fields)
+            {
+                fieldType = field.getType();
+                if (Plugin.class.isAssignableFrom(fieldType) && field.isAnnotationPresent(Inject.class))
+                {
+                    Plugin plugin = pluginClassMap.get(fieldType);
+                    if (plugin == null)
+                    {
+                        continue;
+                    }
+                    this.pluginManager.enablePlugin(plugin); // what their about dependencies?
+                    field.setAccessible(true);
+                    try
+                    {
+                        field.set(module, plugin);
+                    }
+                    catch (Exception e)
+                    {
+                        module.getLog().log(LogLevel.WARNING, "Failed to inject a plugin dependency: {0}", String.valueOf(plugin));
+                    }
+                }
+            }
+        }
+        catch (NoClassDefFoundError e)
+        {
+            module.getLog().log(LogLevel.WARNING, "Failed to get the fields of the main class: " + e.getLocalizedMessage(), e);
+        }
         return module;
     }
 
     @Override
-    public synchronized void loadModules(File directory)
+    protected void validateModuleInfo(ModuleInfo info) throws MissingPluginDependencyException
     {
-        super.loadModules(directory);
-        BukkitUtils.reloadHelpMap();
-        this.pluginManager.callEvent(new FinishedLoadModulesEvent(this.core));
-    }
-
-    @Override
-    public void enableModules(boolean worldGenerators)
-    {
-        super.enableModules(worldGenerators);
-        BukkitUtils.reloadHelpMap();
-    }
-
-    @Override
-    protected void validatePluginDependencies(Set<String> plugins) throws MissingPluginDependencyException
-    {
-        for (String plugin : plugins)
+        for (String plugin : info.getPluginDependencies())
         {
             if (this.pluginManager.getPlugin(plugin) == null)
             {
@@ -80,30 +127,14 @@ public class BukkitModuleManager extends BaseModuleManager
         }
     }
 
-    @Override
-    protected Map<Class, Object> getPluginClassMap()
+    protected Map<Class<?>, Plugin> getPluginClassMap()
     {
         Plugin[] plugins = this.pluginManager.getPlugins();
-        Map<Class, Object> pluginClassMap = new HashMap<Class, Object>(plugins.length);
+        Map<Class<?>, Plugin> pluginClassMap = new HashMap<Class<?>, Plugin>(plugins.length);
         for (Plugin plugin : plugins)
         {
             pluginClassMap.put(plugin.getClass(), plugin);
         }
         return pluginClassMap;
-    }
-
-    @Override
-    public void disableModule(Module module)
-    {
-        super.disableModule(module);
-        BukkitUtils.reloadHelpMap();
-    }
-
-    @Override
-    public boolean enableModule(Module module)
-    {
-        boolean result = super.enableModule(module);
-        BukkitUtils.reloadHelpMap();
-        return result;
     }
 }

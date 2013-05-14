@@ -44,8 +44,8 @@ public class AliasMapFormat
 
     public static boolean parseStringList(List<String> input, TreeMap<String, List<String>> map, boolean update) throws IOException
     {
-        Validate.notNull(input, "Invalid input! File or Reader was null!");
-        Validate.notNull(map, "Map to parse into was null!");
+        assert input != null: "Invalid input! File or Reader was null!";
+        assert map != null: "Map to parse into was null!";
         boolean updated = false;
         ArrayList<String> names = new ArrayList<String>();
         for (String line : input)

@@ -280,6 +280,10 @@ public class TelePointManager extends SingleKeyStorage<Long, TeleportPoint>
         }
 
         HomeAttachment attachment = user.attachOrGet(HomeAttachment.class, this.module);
+        if ((name.equals("home") || name.equals(user.getName())) && this.homes.containsKey(user.getName()+":home"))
+        {
+            return this.homes.get(user.getName()+":home");
+        }
         if (attachment.hasHome(name))
         {
             return attachment.getHome(name);

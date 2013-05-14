@@ -20,9 +20,9 @@ package de.cubeisland.cubeengine.basics.command.teleport;
 import java.util.Map;
 import java.util.Set;
 
-import org.bukkit.Bukkit;
 import org.bukkit.World;
 
+import de.cubeisland.cubeengine.core.CubeEngine;
 import de.cubeisland.cubeengine.core.module.Module;
 import de.cubeisland.cubeengine.core.permission.Permission;
 import de.cubeisland.cubeengine.core.permission.PermissionContainer;
@@ -39,15 +39,24 @@ public class TpWorldPermissions extends PermissionContainer
 {
     private static final Permission COMMAND_TPWORLD = COMMAND.createAbstractChild("tpworld");
     private static Map<String, Permission> permissions = new THashMap<String, Permission>();
+    private static Module module;
 
     public TpWorldPermissions(Module module)
     {
         super(module);
-        for (final World world : Bukkit.getWorlds())
+        TpWorldPermissions.module = module;
+        for (final World world : module.getCore().getWorldManager().getWorlds())
         {
-            permissions.put(world.getName(), COMMAND_TPWORLD.createChild(world.getName()));
+            initWorldPermission(world.getName());
         }
-        this.registerAllPermissions();
+    }
+
+    private static Permission initWorldPermission(String world)
+    {
+        Permission perm = COMMAND_TPWORLD.createChild(world);
+        permissions.put(world, perm);
+        module.getCore().getPermissionManager().registerPermission(module,perm);
+        return perm;
     }
 
     @Override
@@ -58,7 +67,11 @@ public class TpWorldPermissions extends PermissionContainer
 
     public static Permission getPermission(String world)
     {
-        return permissions.get(world);
+        Permission perm = permissions.get(world);
+        if (perm == null)
+        {
+            perm = initWorldPermission(world);
+        }
+        return perm;
     }
-
 }

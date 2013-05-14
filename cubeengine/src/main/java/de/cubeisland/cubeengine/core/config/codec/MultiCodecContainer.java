@@ -34,8 +34,8 @@ import de.cubeisland.cubeengine.core.config.node.Node;
 import de.cubeisland.cubeengine.core.config.node.NullNode;
 import de.cubeisland.cubeengine.core.config.node.StringNode;
 import de.cubeisland.cubeengine.core.util.convert.Convert;
-import de.cubeisland.cubeengine.core.util.converter.generic.CollectionConverter;
-import de.cubeisland.cubeengine.core.util.converter.generic.MapConverter;
+import de.cubeisland.cubeengine.core.util.convert.converter.generic.CollectionConverter;
+import de.cubeisland.cubeengine.core.util.convert.converter.generic.MapConverter;
 
 public abstract class MultiCodecContainer<Container extends MultiCodecContainer, ConfigCodec extends MultiConfigurationCodec> extends CodecContainer<Container, ConfigCodec>
 {
@@ -134,7 +134,8 @@ public abstract class MultiCodecContainer<Container extends MultiCodecContainer,
                                         "\nConfig:" + config.getClass());
                             }
                             Collection<MultiConfiguration> parentSubConfigs = (Collection<MultiConfiguration>)field.get(parentConfig);
-                            Collection<MultiConfiguration> subConfigs = CollectionConverter.getCollectionFor((ParameterizedType) type);
+                            Collection<MultiConfiguration> subConfigs = CollectionConverter
+                                .getCollectionFor((ParameterizedType)type);
                             for (MultiConfiguration configuration : parentSubConfigs)
                             {
                                 subConfigs.add(configuration.getClass().newInstance());
@@ -189,7 +190,7 @@ public abstract class MultiCodecContainer<Container extends MultiCodecContainer,
                                 throw new InvalidConfigurationException("Invalid Node for Map-Configurations at " + path +
                                         "\nConfig:" + config.getClass());
                             }
-                            Map<Object, MultiConfiguration> mapConfigs = MapConverter.getMapFor((ParameterizedType) type);
+                            Map<Object, MultiConfiguration> mapConfigs = MapConverter.getMapFor((ParameterizedType)type);
                             Map<Object, MultiConfiguration> parentMapConfigs = (Map<Object, MultiConfiguration>)field.get(parentConfig);
                             for (Map.Entry<Object, MultiConfiguration> entry : parentMapConfigs.entrySet())
                             {

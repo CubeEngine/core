@@ -17,6 +17,7 @@
  */
 package de.cubeisland.cubeengine.irc;
 
+import de.cubeisland.cubeengine.core.config.Configuration;
 import de.cubeisland.cubeengine.core.module.Module;
 
 /**
@@ -30,6 +31,7 @@ public class Irc extends Module
     @Override
     public void onEnable()
     {
+        this.config = Configuration.load(IrcConfig.class, this);
     //        this.mgr = new BotManager(this.config);
     //        this.registerListener(new IrcListener(this));
     //        this.mgr.connect();

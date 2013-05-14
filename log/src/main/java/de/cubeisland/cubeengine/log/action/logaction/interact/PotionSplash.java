@@ -94,7 +94,7 @@ public class PotionSplash extends SimpleLogActionType
             {
                 if (livingEntity instanceof Player)
                 {
-                    User user = um.getExactUser((Player)livingEntity);
+                    User user = um.getExactUser(((Player)livingEntity).getName());
                     affected.add(user.key);
                     continue;
                 }

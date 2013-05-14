@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-package de.cubeisland.cubeengine.core.util.converter.generic;
+package de.cubeisland.cubeengine.core.util.convert.converter.generic;
 
 import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;

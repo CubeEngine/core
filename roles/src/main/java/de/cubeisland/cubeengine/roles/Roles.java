@@ -18,6 +18,7 @@
 package de.cubeisland.cubeengine.roles;
 
 import de.cubeisland.cubeengine.core.command.CommandManager;
+import de.cubeisland.cubeengine.core.config.Configuration;
 import de.cubeisland.cubeengine.core.module.Module;
 import de.cubeisland.cubeengine.core.util.convert.Convert;
 import de.cubeisland.cubeengine.roles.commands.ManagementCommands;
@@ -51,6 +52,7 @@ public class Roles extends Module
     @Override
     public void onEnable()
     {
+        this.config = Configuration.load(RolesConfig.class, this);
         this.getCore().getUserManager().addDefaultAttachment(RolesAttachment.class, this);
 
         this.rolesManager = new RolesManager(this);
@@ -65,12 +67,24 @@ public class Roles extends Module
         cm.registerCommand(new ManagementCommands(this), "roles");
 
         this.getCore().getEventManager().registerListener(this, new RolesEventHandler(this));
-        //init on FinishedLoadModulesEvent
+
         Module basicsModule = this.getCore().getModuleManager().getModule("basics");
         if (basicsModule != null)
         {
-            this.getCore().getEventManager().registerListener(basicsModule,new BasicsOnlinePlayerList(this));
+            this.getCore().getEventManager().registerListener(this, new BasicsOnlinePlayerList(this));
         }
+    }
+
+    @Override
+    public void onStartupFinished()
+    {
+        this.rolesManager.recalculateAllRoles();
+    }
+
+    @Override
+    public void onDisable()
+    {
+        this.getCore().getEventManager().removeListeners(this);
     }
 
     public RolesConfig getConfiguration()

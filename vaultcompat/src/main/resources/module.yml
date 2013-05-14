@@ -1,9 +1,0 @@
-name: ${project.name}
-revision: ${project.version}
-description: ${project.description}
-plugin-dependencies:
-- Vault
-soft-dependencies:
-- Conomy
-- Chat
-- Roles

@@ -52,7 +52,7 @@ public class BorderListener implements Listener
         }
         if (!this.isChunkInRange(event.getTo().getChunk()))
         {
-            this.um.getExactUser(event.getPlayer()).sendTranslated("&cYou've reached the border!");
+            this.um.getExactUser(event.getPlayer().getName()).sendTranslated("&cYou've reached the border!");
             event.setCancelled(true);
             event.setTo(event.getFrom().getWorld().getSpawnLocation());
         }

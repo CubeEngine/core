@@ -49,8 +49,8 @@ public class DatabaseFactory
      */
     public static Database loadDatabase(String name, File configFile)
     {
-        Validate.notNull(name, "The name must not be null!");
-        Validate.notNull(configFile, "The config file must not be null!");
+        assert name != null: "The name must not be null!";
+        assert configFile != null: "The config file must not be null!";
 
         Class<? extends DatabaseConfiguration> configClazz = databases.get(name.toLowerCase(Locale.ENGLISH));
         if (configClazz != null)

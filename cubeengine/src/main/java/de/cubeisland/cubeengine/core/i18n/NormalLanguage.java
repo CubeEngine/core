@@ -42,9 +42,9 @@ public class NormalLanguage implements Cleanable, Language
 
     public NormalLanguage(Core core, LocaleConfig config, File languageDir, Language parent)
     {
-        Validate.notNull(config.locale, "The code must not be null!");
-        Validate.notNull(config.name, "The name must not be null!");
-        Validate.notNull(config.localName, "The local name must not be null!");
+        assert config.locale != null: "The code must not be null!";
+        assert config.name != null: "The name must not be null!";
+        assert config.localName != null: "The local name must not be null!";
 
         this.core = core;
 

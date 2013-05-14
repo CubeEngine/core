@@ -20,18 +20,15 @@ package de.cubeisland.cubeengine.core.module;
 import java.io.File;
 import java.io.FileFilter;
 import java.lang.reflect.Field;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.Stack;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
-
-import org.bukkit.plugin.Plugin;
 
 import de.cubeisland.cubeengine.core.Core;
 import de.cubeisland.cubeengine.core.filesystem.FileExtentionFilter;
@@ -48,7 +45,7 @@ import de.cubeisland.cubeengine.core.util.Profiler;
 import de.cubeisland.cubeengine.core.util.Version;
 
 import gnu.trove.map.hash.THashMap;
-import org.apache.commons.lang.Validate;
+import gnu.trove.set.hash.THashSet;
 
 import static de.cubeisland.cubeengine.core.logger.LogLevel.*;
 
@@ -67,14 +64,14 @@ public abstract class BaseModuleManager implements ModuleManager
         this.core = core;
         this.logger = core.getLog();
         this.loader = new ModuleLoader(core, parentClassLoader);
-        this.modules = new ConcurrentHashMap<String, Module>();
-        this.moduleInfos = new ConcurrentHashMap<String, ModuleInfo>();
+        this.modules = new THashMap<String, Module>();
+        this.moduleInfos = new THashMap<String, ModuleInfo>();
         this.classMap = new THashMap<Class<? extends Module>, Module>();
         this.coreModule = new CoreModule();
         this.coreModule.initialize(core, new ModuleInfo(core), core.getFileManager().getDataFolder(), core.getLog(), null, null);
     }
 
-    public Module getModule(String name)
+    public synchronized Module getModule(String name)
     {
         if (name == null)
         {
@@ -84,37 +81,20 @@ public abstract class BaseModuleManager implements ModuleManager
     }
 
     @Override
-    public <T extends Module> T getModule(Class<T> mainClass)
+    @SuppressWarnings("unchecked")
+    public synchronized <T extends Module> T getModule(Class<T> mainClass)
     {
         return (T)this.classMap.get(mainClass);
     }
 
-    /**
-     * This method returns a collection of the modules
-     *
-     * @return the modules
-     */
-    public Collection<Module> getModules()
+    public synchronized Collection<Module> getModules()
     {
-        return this.modules.values();
+        return new ArrayList<Module>(this.modules.values());
     }
 
-    /**
-     * Loads a module
-     *
-     * @param moduleFile the file to load the module from
-     * @return the loaded module
-     *
-     * @throws InvalidModuleException           if the file is not a valid module
-     * @throws CircularDependencyException      if the module defines a circular dependencies
-     * @throws MissingDependencyException       if the module has a missing dependency
-     * @throws IncompatibleDependencyException  if the module needs a newer dependency
-     * @throws IncompatibleCoreException        if the module depends on a newer core
-     * @throws MissingPluginDependencyException if the module depends on a missing plugin
-     */
     public synchronized Module loadModule(File moduleFile) throws InvalidModuleException, CircularDependencyException, MissingDependencyException, IncompatibleDependencyException, IncompatibleCoreException, MissingPluginDependencyException
     {
-        Validate.notNull(moduleFile, "The file must not be null!");
+        assert moduleFile != null: "The file must not be null!";
         if (!moduleFile.isFile())
         {
             throw new IllegalArgumentException("The given File is does not exist is not a normal file!");
@@ -141,14 +121,9 @@ public abstract class BaseModuleManager implements ModuleManager
         return module;
     }
 
-    /**
-     * This method loads all modules from a directory
-     *
-     * @param directory the directory to load from
-     */
     public synchronized void loadModules(File directory)
     {
-        Validate.notNull(directory, "The directory must not be null!");
+        assert directory != null: "The directory must not be null!";
         if (!directory.isDirectory())
         {
             throw new IllegalArgumentException("The given File is no directory!");
@@ -183,8 +158,8 @@ public abstract class BaseModuleManager implements ModuleManager
                 this.logger.log(ERROR, e.getLocalizedMessage(), e);
             }
         }
-
-        for (String moduleName : this.moduleInfos.keySet())
+        Collection<String> moduleNames = new HashSet<String>(this.moduleInfos.keySet());
+        for (String moduleName : moduleNames)
         {
             try
             {
@@ -209,9 +184,8 @@ public abstract class BaseModuleManager implements ModuleManager
         return this.loadModule(name, moduleInfos, new Stack<String>());
     }
 
-    protected abstract void validatePluginDependencies(Set<String> plugins) throws MissingPluginDependencyException;
-
-    protected abstract Map<Class, Object> getPluginClassMap();
+    protected void validateModuleInfo(ModuleInfo info) throws MissingPluginDependencyException
+    {}
 
     @SuppressWarnings("unchecked")
     protected Module loadModule(String name, Map<String, ModuleInfo> moduleInfos, Stack<String> loadStack) throws CircularDependencyException, MissingDependencyException, InvalidModuleException, IncompatibleDependencyException, IncompatibleCoreException, MissingPluginDependencyException
@@ -234,7 +208,7 @@ public abstract class BaseModuleManager implements ModuleManager
         }
         loadStack.push(name);
 
-        this.validatePluginDependencies(info.getPluginDependencies());
+        this.validateModuleInfo(info);
 
         for (String loadAfterModule : info.getLoadAfter())
         {
@@ -274,14 +248,22 @@ public abstract class BaseModuleManager implements ModuleManager
         module = this.loader.loadModule(info);
         loadStack.pop();
 
-        Map<Class, Object> pluginClassMap = this.getPluginClassMap();
         Version requiredVersion;
         Module injectedModule;
         Class fieldType;
-        for (Field field : module.getClass().getDeclaredFields())
+        Field[] fields = new Field[0];
+        try
+        {
+            fields = module.getClass().getDeclaredFields();
+        }
+        catch (NoClassDefFoundError e)
+        {
+            module.getLog().log(WARNING, "Failed to get the fields of the main class: " + e.getLocalizedMessage(), e);
+        }
+        for (Field field : fields)
         {
             fieldType = field.getType();
-            if (Module.class.isAssignableFrom(fieldType))
+            if (Module.class.isAssignableFrom(fieldType) && field.isAnnotationPresent(Inject.class))
             {
                 injectedModule = this.classMap.get((Class<? extends Module>)fieldType);
                 if (injectedModule == null)
@@ -310,45 +292,14 @@ public abstract class BaseModuleManager implements ModuleManager
                     module.getLog().log(WARNING, "Failed to inject a dependency: {0}", injectedModule.getName());
                 }
             }
-            else
-            {
-                if (Plugin.class.isAssignableFrom(fieldType))
-                {
-                    Object plugin = pluginClassMap.get(fieldType);
-                    if (plugin == null)
-                    {
-                        continue;
-                    }
-                    field.setAccessible(true);
-                    try
-                    {
-                        field.set(module, plugin);
-                    }
-                    catch (Exception e)
-                    {
-                        module.getLog().log(WARNING, "Failed to inject a plugin dependency: {0}", String.valueOf(plugin));
-                    }
-                }
-            }
         }
 
-        if (this.enableModule(module))
-        {
-            this.modules.put(module.getId(), module);
-            this.classMap.put(module.getClass(), module);
+        this.modules.put(module.getId(), module);
+        this.classMap.put(module.getClass(), module);
 
-            return module;
-        }
-
-        return null;
+        return module;
     }
 
-    /**
-     * Enables a module
-     *
-     * @param module the module
-     * @return true if it succeeded
-     */
     public synchronized boolean enableModule(Module module)
     {
         module.getLog().log(INFO, "Enabling version {0}...", module.getVersion());
@@ -367,41 +318,14 @@ public abstract class BaseModuleManager implements ModuleManager
         return result;
     }
 
-    /**
-     * This method enables all modules that provide world generators
-     */
-    public void enableWorldGeneratorModules()
+    public synchronized void enableModules()
     {
         for (Module module : this.modules.values())
         {
-            if (module.getInfo().providesWorldGenerator())
-            {
-                this.enableModule(module);
-            }
+            this.enableModule(module);
         }
     }
 
-    /**
-     * This method enables all modules or at least all that don't provide world generators
-     *
-     * @param worldGenerators whether to also load the world generator-providing modules
-     */
-    public void enableModules(boolean worldGenerators)
-    {
-        for (Module module : this.modules.values())
-        {
-            if (!module.getInfo().providesWorldGenerator() || worldGenerators)
-            {
-                this.enableModule(module);
-            }
-        }
-    }
-
-    /**
-     * This method disables a module
-     *
-     * @param module the module
-     */
     public synchronized void disableModule(Module module)
     {
         Profiler.startProfiling("disable-module");
@@ -417,17 +341,7 @@ public abstract class BaseModuleManager implements ModuleManager
         module.getLog().log(INFO, "Module disabled within {0} microseconds", Profiler.endProfiling("disable-module", TimeUnit.MICROSECONDS));
     }
 
-    /**
-     * This method tries to unload a module be removing as many references as possible.
-     * this means:
-     * - disable all modules that depend in the given module
-     * - disable the module
-     * - remove its ClassLoader and all the reference to it
-     * - remove the module from the module map
-     *
-     * @param module the module to unload
-     */
-    public void unloadModule(Module module)
+    public synchronized void unloadModule(Module module)
     {
         if (this.modules.remove(module.getId()) == null)
         {
@@ -483,13 +397,13 @@ public abstract class BaseModuleManager implements ModuleManager
     }
 
     @Override
-    public void reloadModule(Module module) throws ModuleException
+    public synchronized void reloadModule(Module module) throws ModuleException
     {
         this.reloadModule(module, false);
     }
 
     @Override
-    public void reloadModule(Module module, boolean fromFile) throws ModuleException
+    public synchronized void reloadModule(Module module, boolean fromFile) throws ModuleException
     {
         if (fromFile)
         {
@@ -511,12 +425,12 @@ public abstract class BaseModuleManager implements ModuleManager
         }
     }
 
-    public int reloadModules()
+    public synchronized int reloadModules()
     {
         return this.reloadModules(false);
     }
 
-    public int reloadModules(boolean fromFile)
+    public synchronized int reloadModules(boolean fromFile)
     {
         int modules = 0;
         for (Module module : this.getModules())
@@ -535,10 +449,7 @@ public abstract class BaseModuleManager implements ModuleManager
         return modules;
     }
 
-    /**
-     * This method disables all modules
-     */
-    public void disableModules()
+    public synchronized void disableModules()
     {
         for (Module module : this.modules.values())
         {
@@ -546,22 +457,17 @@ public abstract class BaseModuleManager implements ModuleManager
         }
     }
 
-    /**
-     * This method disables all modules
-     */
-    public void unloadModules()
+    public synchronized void unloadModules()
     {
-        Iterator<Map.Entry<String, Module>> it = this.modules.entrySet().iterator();
-        while (it.hasNext())
+        for (Module module : new THashSet<Module>(this.modules.values()))
         {
-            this.unloadModule(it.next().getValue());
-            it.remove();
+            this.unloadModule(module);
         }
         this.modules.clear();
     }
 
     @Override
-    public void clean()
+    public synchronized void clean()
     {
         this.logger.log(DEBUG, "Unload modules...");
         Profiler.startProfiling("unload-modules");
@@ -573,11 +479,6 @@ public abstract class BaseModuleManager implements ModuleManager
         this.loader.shutdown();
     }
 
-    /**
-     * Returns a dummy module
-     *
-     * @return the singleton instance of the dummy CoreModule
-     */
     public CoreModule getCoreModule()
     {
         return this.coreModule;

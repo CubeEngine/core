@@ -22,6 +22,7 @@ import de.cubeisland.cubeengine.core.permission.PermDefault;
 import de.cubeisland.cubeengine.core.permission.Permission;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.travel.Travel;
+import de.cubeisland.cubeengine.travel.storage.TeleportPoint.Visibility;
 
 import org.bukkit.Location;
 
@@ -43,12 +44,17 @@ public class Home
         this.module = module;
         this.telePointManager = telePointManager;
         this.inviteManager = inviteManager;
-        this.permission = module.getBasePermission().
-                createAbstractChild("homes").
-                createAbstractChild("access").
-                createChild(parent.name.toLowerCase(Locale.ENGLISH), this.parent.visibility
-                        .equals(TeleportPoint.Visibility.PRIVATE) ? PermDefault.OP : PermDefault.TRUE);
-        module.getCore().getPermissionManager().registerPermission(module, this.permission);
+        if (teleportPoint.visibility == Visibility.PUBLIC)
+        {
+            this.permission = module.getBasePermission().
+                createAbstractChild("warps").createAbstractChild("access").
+                                        createChild(parent.name.toLowerCase(Locale.ENGLISH), PermDefault.TRUE);
+            module.getCore().getPermissionManager().registerPermission(module, this.permission);
+        }
+        else
+        {
+            this.permission = null;
+        }
     }
 
     /**
@@ -180,7 +186,7 @@ public class Home
 
     public boolean canAccess(User user)
     {
-        return this.isInvited(user) || this.isOwner(user) || this.isPublic();
+        return this.isPublic() ? this.permission.isAuthorized(user) : (this.isInvited(user) || this.isOwner(user));
     }
 
     public String getStorageName()

@@ -19,6 +19,7 @@ package de.cubeisland.cubeengine.basics.command.general;
 
 import java.util.LinkedList;
 
+import de.cubeisland.cubeengine.core.util.Pair;
 import de.cubeisland.cubeengine.basics.Basics;
 
 public class LagTimer implements Runnable
@@ -26,6 +27,12 @@ public class LagTimer implements Runnable
     private long lastTick = System.currentTimeMillis();
     private final LinkedList<Float> tpsHistory = new LinkedList<Float>();
     private final Basics module;
+
+    private float lowestTPS = 20;
+    private long lowestTPSTime = 0;
+    private boolean reached20 = false;
+
+    private long lastLowTps = 0;
 
     public LagTimer(Basics module) {
         this.module = module;
@@ -48,7 +55,17 @@ public class LagTimer implements Runnable
         final float tps = 20f / timeSpent;
         if (tps <= 20)
         {
+            if (tps == 20) this.reached20 = true;
             tpsHistory.add(tps);
+            if (reached20 && tps < 20)
+            {
+                if (tps < lowestTPS)
+                {
+                    lowestTPS = tps;
+                    this.lowestTPSTime = currentTick;
+                }
+                this.lastLowTps = currentTick;
+            }
         }
         lastTick = currentTick;
     }
@@ -64,5 +81,21 @@ public class LagTimer implements Runnable
             }
         }
         return ticks / tpsHistory.size();
+    }
+
+    public Pair<Long,Float> getLowestTPS()
+    {
+        return new Pair<Long, Float>(this.lowestTPSTime,this.lowestTPS);
+    }
+
+    public long getLastLowTPS()
+    {
+        return this.lastLowTps;
+    }
+
+    public void resetLowestTPS()
+    {
+        this.lowestTPSTime = 0;
+        this.lowestTPS = 20;
     }
 }

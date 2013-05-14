@@ -28,8 +28,4 @@ public class Writer extends Module
         this.getCore().getFileManager().dropResources(WriterResource.values());
         this.getCore().getCommandManager().registerCommands(this, new EditCommand(), ReflectedCommand.class);
     }
-
-    @Override
-    public void onDisable()
-    {}
 }

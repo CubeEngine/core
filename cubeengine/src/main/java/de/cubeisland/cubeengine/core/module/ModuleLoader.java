@@ -20,7 +20,6 @@ package de.cubeisland.cubeengine.core.module;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.lang.reflect.Field;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.HashMap;
@@ -31,8 +30,6 @@ import java.util.jar.JarFile;
 
 import de.cubeisland.cubeengine.core.Core;
 import de.cubeisland.cubeengine.core.config.Configuration;
-import de.cubeisland.cubeengine.core.config.annotations.Codec;
-import de.cubeisland.cubeengine.core.config.annotations.DefaultConfig;
 import de.cubeisland.cubeengine.core.filesystem.FileManager;
 import de.cubeisland.cubeengine.core.module.event.ModuleLoadedEvent;
 import de.cubeisland.cubeengine.core.module.exception.IncompatibleCoreException;
@@ -42,7 +39,6 @@ import de.cubeisland.cubeengine.core.module.exception.MissingDependencyException
 import de.cubeisland.cubeengine.core.storage.Registry;
 
 import gnu.trove.set.hash.THashSet;
-import org.apache.commons.lang.Validate;
 
 /**
  * This class is used to load modules and provide a centralized place for class
@@ -133,24 +129,6 @@ public class ModuleLoader
             Module module = moduleClass.getConstructor().newInstance();
 
             module.initialize(this.core, info, new File(info.getFile().getParentFile(), name), new ModuleLogger(this.core, info), this, classLoader);
-
-            for (Field field : moduleClass.getDeclaredFields())
-            {
-                if (Configuration.class.isAssignableFrom(field.getType()))
-                {
-
-                    Class<? extends Configuration> configClass = (Class<? extends Configuration>)field.getType();
-                    if (configClass.isAnnotationPresent(DefaultConfig.class))
-                    {
-                        String filename = configClass.getAnnotation(DefaultConfig.class).name();
-                        Codec codecAnnotation = Configuration.findCodec((Class<? extends Configuration>) field.getType());
-                        filename += '.' + codecAnnotation.value();
-                        field.setAccessible(true);
-                        field.set(module, Configuration.load(configClass, new File(module.getFolder(), filename)));
-                    }
-                }
-            }
-
             module.onLoad();
 
             this.core.getEventManager().fireEvent(new ModuleLoadedEvent(this.core, module));
@@ -171,7 +149,7 @@ public class ModuleLoader
      */
     void unloadModule(Module module)
     {
-        Validate.notNull(module, "The module must not be null!");
+        assert module != null: "The module must not be null!";
 
         ModuleClassLoader classLoader = this.classLoaders.remove(module.getId());
         if (classLoader != null)
@@ -190,7 +168,7 @@ public class ModuleLoader
      */
     public synchronized ModuleInfo loadModuleInfo(File file) throws InvalidModuleException
     {
-        Validate.notNull(file, "The file most not be null!");
+        assert file != null: "The file most not be null!";
 
         if (!file.exists())
         {
@@ -336,7 +314,7 @@ public class ModuleLoader
      */
     public void registerLibraryClassPath(File file) throws MalformedURLException
     {
-        Validate.notNull(file, "The file must not be null!");
+        assert file != null: "The file must not be null!";
 
         this.registerLibraryClassPath(file.toURI().toURL());
     }
@@ -348,7 +326,7 @@ public class ModuleLoader
      */
     public void registerLibraryClassPath(URL url)
     {
-        Validate.notNull(url, "The url must not be null!");
+        assert url != null: "The url must not be null!";
 
         this.libClassLoader.addURL(url);
     }

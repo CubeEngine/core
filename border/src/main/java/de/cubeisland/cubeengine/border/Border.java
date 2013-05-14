@@ -17,6 +17,7 @@
  */
 package de.cubeisland.cubeengine.border;
 
+import de.cubeisland.cubeengine.core.config.Configuration;
 import de.cubeisland.cubeengine.core.module.Module;
 
 public class Border extends Module
@@ -26,6 +27,7 @@ public class Border extends Module
     @Override
     public void onEnable()
     {
+        this.config = Configuration.load(BorderConfig.class, this);
         new BorderPerms(this);
         this.getCore().getEventManager().registerListener(this, new BorderListener(this));
     }

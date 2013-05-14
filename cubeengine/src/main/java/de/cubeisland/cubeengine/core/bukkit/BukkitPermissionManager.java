@@ -19,6 +19,7 @@ package de.cubeisland.cubeengine.core.bukkit;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Field;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Iterator;
@@ -32,21 +33,22 @@ import java.util.logging.Level;
 import java.util.logging.LogRecord;
 import java.util.logging.Logger;
 
+import org.bukkit.permissions.Permissible;
 import org.bukkit.permissions.PermissionDefault;
 import org.bukkit.plugin.PluginManager;
+import org.bukkit.plugin.SimplePluginManager;
 
 import de.cubeisland.cubeengine.core.CubeEngine;
 import de.cubeisland.cubeengine.core.logger.CubeFileHandler;
 import de.cubeisland.cubeengine.core.logger.CubeLogger;
 import de.cubeisland.cubeengine.core.module.Module;
+import de.cubeisland.cubeengine.core.permission.PermDefault;
 import de.cubeisland.cubeengine.core.permission.Permission;
 import de.cubeisland.cubeengine.core.permission.PermissionManager;
-import de.cubeisland.cubeengine.core.permission.PermDefault;
 import de.cubeisland.cubeengine.core.util.StringUtils;
 
 import gnu.trove.map.hash.THashMap;
 import gnu.trove.set.hash.THashSet;
-import org.apache.commons.lang.Validate;
 
 import static de.cubeisland.cubeengine.core.logger.LogLevel.*;
 import static de.cubeisland.cubeengine.core.permission.Permission.BASE;
@@ -59,9 +61,33 @@ public class BukkitPermissionManager implements PermissionManager
     private final Map<Module, Set<String>> modulePermissionMap;
     private final Logger logger;
 
+    private boolean startup;
+    private Map<String, org.bukkit.permissions.Permission> permissions;
+    private Set<org.bukkit.permissions.Permission> defaultPermTrue;
+    private Set<org.bukkit.permissions.Permission> defaultPermFalse;
+
+    @SuppressWarnings("unchecked")
     public BukkitPermissionManager(BukkitCore core)
     {
+        this.startup = true;
         this.pm = core.getServer().getPluginManager();
+        try
+        {
+            Field field = SimplePluginManager.class.getDeclaredField("permissions");
+            field.setAccessible(true);
+            this.permissions = (Map<String, org.bukkit.permissions.Permission>)field.get(this.pm);
+            field = SimplePluginManager.class.getDeclaredField("defaultPerms");
+            field.setAccessible(true);
+            Map<Boolean,Set<org.bukkit.permissions.Permission>> defaultPerms =
+                (Map<Boolean, Set<org.bukkit.permissions.Permission>>)field.get(this.pm);
+            this.defaultPermTrue = defaultPerms.get(true);
+            this.defaultPermFalse =  defaultPerms.get(false);
+        }
+        catch (Exception ex)
+        {
+            core.getLog().log(NOTICE, "Couldn't access the permission manager internals for fast permission registration, falling back to normal registration.");
+            this.startup = false;
+        }
         this.wildcards = new THashMap<String, org.bukkit.permissions.Permission>(0);
         this.modulePermissionMap = new THashMap<Module, Set<String>>(0);
         this.logger = new CubeLogger("permissions");
@@ -94,7 +120,22 @@ public class BukkitPermissionManager implements PermissionManager
     {
         try
         {
-            this.pm.addPermission(permission);
+            if (this.startup)
+            {
+                this.permissions.put(permission.getName().toLowerCase(), permission);
+                if ((permission.getDefault() == PermissionDefault.OP) || (permission.getDefault() == PermissionDefault.TRUE))
+                {
+                    this.defaultPermTrue.add(permission);
+                }
+                if ((permission.getDefault() == PermissionDefault.NOT_OP) || (permission.getDefault() == PermissionDefault.TRUE))
+                {
+                    this.defaultPermFalse.add(permission);
+                }
+            }
+            else
+            {
+                this.pm.addPermission(permission);
+            }
             if (permission.getName().endsWith("*"))
             {
                 this.wildcards.put(permission.getName(), permission);
@@ -134,13 +175,10 @@ public class BukkitPermissionManager implements PermissionManager
     @Override
     public org.bukkit.permissions.Permission registerPermission(Module module, String perm, PermDefault permDefault, String parent, Set<String> bundles)
     {
-        if (!CubeEngine.isMainThread())
-        {
-            throw new IllegalStateException("Permissions may only be registered from the main thread!");
-        }
-        Validate.notNull(module, "The module must not be null!");
-        Validate.notNull(perm, "The permission must not be null!");
-        Validate.notNull(permDefault, "The permission default must not be null!");
+        assert CubeEngine.isMainThread(): "Permissions may only be registered from the main thread!";
+        assert module != null: "The module must not be null!";
+        assert perm != null: "The permission must not be null!";
+        assert permDefault != null: "The permission default must not be null!";
 
         if (perm.equals(CUBEENGINE_WILDCARD.getName()))
         {
@@ -231,9 +269,9 @@ public class BukkitPermissionManager implements PermissionManager
 
     public void removePermission(Module module, String perm)
     {
-        Validate.notNull(module, "The module must not be null!");
-        Validate.notNull(perm, "The permission must not be null!");
-        Validate.isTrue(!perm.equals(CUBEENGINE_WILDCARD.getName()), "The CubeEngine wildcard permission must not be unregistered!");
+        assert module != null: "The module must not be null!";
+        assert perm != null: "The permission must not be null!";
+        assert !perm.equals(CUBEENGINE_WILDCARD.getName()): "The CubeEngine wildcard permission must not be unregistered!"; 
 
         Set<String> perms = this.modulePermissionMap.get(module);
         if (perms != null && perms.remove(perm))
@@ -248,7 +286,7 @@ public class BukkitPermissionManager implements PermissionManager
 
     public void removePermissions(Module module)
     {
-        Validate.notNull(module, "The module must not be null!");
+        assert module != null: "The module must not be null!";
 
         Set<String> removedPerms = this.modulePermissionMap.remove(module);
         if (removedPerms != null)
@@ -311,5 +349,18 @@ public class BukkitPermissionManager implements PermissionManager
         this.removePermissions();
         this.wildcards.clear();
         this.modulePermissionMap.clear();
+    }
+
+    void calculatePermissions()
+    {
+        for (Permissible permissible : this.pm.getDefaultPermSubscriptions(true))
+        {
+            permissible.recalculatePermissions();
+        }
+        for (Permissible permissible : this.pm.getDefaultPermSubscriptions(false))
+        {
+            permissible.recalculatePermissions();
+        }
+        this.startup = false;
     }
 }

@@ -19,12 +19,6 @@ package de.cubeisland.cubeengine.fly;
 
 import java.util.HashMap;
 
-import de.cubeisland.cubeengine.core.CubeEngine;
-import de.cubeisland.cubeengine.core.permission.Permission;
-import de.cubeisland.cubeengine.core.permission.PermissionContainer;
-import de.cubeisland.cubeengine.core.user.User;
-import de.cubeisland.cubeengine.core.user.UserManager;
-import de.cubeisland.cubeengine.core.util.Task;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -36,6 +30,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Vector;
 
 import de.cubeisland.cubeengine.core.CubeEngine;
+import de.cubeisland.cubeengine.core.permission.Permission;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.user.UserManager;
 import de.cubeisland.cubeengine.core.util.Task;
@@ -69,7 +64,7 @@ public class FlyListener implements Listener
         {
             return;
         }
-        User user = usermanager.getExactUser(player);
+        User user = usermanager.getExactUser(player.getName());
         if (user == null)//User does not exist
         {
             return;

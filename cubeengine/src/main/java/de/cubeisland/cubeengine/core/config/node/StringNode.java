@@ -48,4 +48,10 @@ public class StringNode extends Node<String>
     {
         return new StringNode(string);
     }
+
+    @Override
+    public String toString()
+    {
+        return this.getValue();
+    }
 }

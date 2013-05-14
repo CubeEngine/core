@@ -30,7 +30,7 @@ import de.cubeisland.cubeengine.core.module.ModuleManager;
 import de.cubeisland.cubeengine.core.permission.PermissionManager;
 import de.cubeisland.cubeengine.core.storage.TableManager;
 import de.cubeisland.cubeengine.core.storage.database.Database;
-import de.cubeisland.cubeengine.core.storage.world.WorldManager;
+import de.cubeisland.cubeengine.core.world.WorldManager;
 import de.cubeisland.cubeengine.core.user.UserManager;
 import de.cubeisland.cubeengine.core.util.InventoryGuardFactory;
 import de.cubeisland.cubeengine.core.util.Version;
@@ -52,6 +52,13 @@ public interface Core
      * @return the version
      */
     Version getVersion();
+
+    /**
+     * Returns the source version used to build the core
+     *
+     * @return the source version
+     */
+    String getSourceVersion();
 
     /**
      * The method returns the database

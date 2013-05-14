@@ -19,12 +19,11 @@ package de.cubeisland.cubeengine.core.bukkit;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.concurrent.TimeUnit;
+import java.util.Locale;
 import java.util.logging.Level;
 
-import net.minecraft.server.v1_5_R3.Packet204LocaleAndViewDistance;
-
 import org.bukkit.Server;
+import org.bukkit.generator.ChunkGenerator;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -34,8 +33,6 @@ import de.cubeisland.cubeengine.core.CoreResource;
 import de.cubeisland.cubeengine.core.CubeEngine;
 import de.cubeisland.cubeengine.core.bukkit.metrics.MetricsInitializer;
 import de.cubeisland.cubeengine.core.bukkit.packethook.PacketEventManager;
-import de.cubeisland.cubeengine.core.bukkit.packethook.PacketReceivedEvent;
-import de.cubeisland.cubeengine.core.bukkit.packethook.PacketReceivedListener;
 import de.cubeisland.cubeengine.core.command.commands.CoreCommands;
 import de.cubeisland.cubeengine.core.command.commands.ModuleCommands;
 import de.cubeisland.cubeengine.core.command.commands.VanillaCommands;
@@ -48,14 +45,14 @@ import de.cubeisland.cubeengine.core.i18n.I18n;
 import de.cubeisland.cubeengine.core.logger.CubeFileHandler;
 import de.cubeisland.cubeengine.core.logger.CubeLogger;
 import de.cubeisland.cubeengine.core.logger.LogLevel;
+import de.cubeisland.cubeengine.core.module.Module;
 import de.cubeisland.cubeengine.core.storage.TableManager;
 import de.cubeisland.cubeengine.core.storage.database.Database;
 import de.cubeisland.cubeengine.core.storage.database.DatabaseFactory;
-import de.cubeisland.cubeengine.core.storage.world.WorldManager;
-import de.cubeisland.cubeengine.core.user.UserManager;
 import de.cubeisland.cubeengine.core.util.InventoryGuardFactory;
 import de.cubeisland.cubeengine.core.util.Profiler;
 import de.cubeisland.cubeengine.core.util.Version;
+import de.cubeisland.cubeengine.core.util.convert.Convert;
 import de.cubeisland.cubeengine.core.util.matcher.Match;
 import de.cubeisland.cubeengine.core.util.worker.CubeThreadFactory;
 import de.cubeisland.cubeengine.core.webapi.ApiConfig;
@@ -72,7 +69,7 @@ public final class BukkitCore extends JavaPlugin implements Core
     private Version version;
     private Database database;
     private BukkitPermissionManager permissionManager;
-    private UserManager userManager;
+    private BukkitUserManager userManager;
     private FileManager fileManager;
     private BukkitModuleManager moduleManager;
     private I18n i18n;
@@ -83,7 +80,7 @@ public final class BukkitCore extends JavaPlugin implements Core
     private TaskManager taskManager;
     private TableManager tableManager;
     private ApiServer apiServer;
-    private WorldManager worldManager;
+    private BukkitWorldManager worldManager;
     private Match matcherManager;
     private InventoryGuardFactory inventoryGuard;
     private PacketEventManager packetEventManager;
@@ -91,25 +88,30 @@ public final class BukkitCore extends JavaPlugin implements Core
     private BukkitBanManager banManager;
 
     @Override
-    public void onEnable()
+    public void onLoad()
     {
-        this.version = Version.fromString(this.getDescription().getVersion());
         final Server server = this.getServer();
         final PluginManager pm = server.getPluginManager();
-        if (!BukkitUtils.isCompatible())
+
+        if (!BukkitUtils.isCompatible(this) && !BukkitUtils.init(this))
         {
             this.getLogger().log(ERROR, "Your Bukkit server is incompatible with this CubeEngine version.");
             pm.disablePlugin(this);
             return;
         }
 
+        Convert.init(this);
+
+        this.version = Version.fromString(this.getDescription().getVersion());
+
+        CubeEngine.initialize(this);
+
+
         this.logger = new CubeLogger("Core", this.getLogger());
         this.logger.setLevel(Level.ALL);
         // TODO RemoteHandler is not yet implemented this.logger.addHandler(new RemoteHandler(LogLevel.ERROR, this));
 
         this.banManager = new BukkitBanManager(this);
-
-        CubeEngine.initialize(this);
 
         try
         {
@@ -134,24 +136,12 @@ public final class BukkitCore extends JavaPlugin implements Core
             BukkitUtils.disableCommandLogging();
         }
 
-        if (this.config.preventSpamKick)
-        {
-            pm.registerEvents(new PreventSpamKickListener(), this);
-        }
-
         if (this.config.catchSystemSignals)
         {
             BukkitUtils.setSignalHandlers(this);
         }
 
         this.packetEventManager = new PacketEventManager(this.logger);
-        this.packetEventManager.addReceivedListener(204, new PacketReceivedListener() {
-            @Override
-            public void handle(PacketReceivedEvent event)
-            {
-                pm.callEvent(new PlayerLanguageReceivedEvent(event.getPlayer(), ((Packet204LocaleAndViewDistance)event.getPacket()).d()));
-            }
-        });
         //TODO this is not working atm BukkitUtils.registerPacketHookInjector(this);
 
         try
@@ -184,7 +174,7 @@ public final class BukkitCore extends JavaPlugin implements Core
         }
 
         // depends on: core config, file manager, task manager
-        this.database = DatabaseFactory.loadDatabase(this.config.database, new File(fileManager.getDataFolder(), "database.yml"));
+        this.database = DatabaseFactory.loadDatabase(this.config.database, new File(this.fileManager.getDataFolder(), "database.yml"));
         if (this.database == null)
         {
             this.logger.log(ERROR, "Could not connect to the database type ''{0}''", this.config.database);
@@ -198,20 +188,18 @@ public final class BukkitCore extends JavaPlugin implements Core
         this.eventRegistration = new EventManager(this);
 
         // depends on: executor, database, Server, core config and event registration
-        this.userManager = new UserManager(this);
-
-        pm.registerEvents(new CoreListener(this), this);
+        this.userManager = new BukkitUserManager(this);
 
         // depends on: file manager, core config
         this.i18n = new I18n(this);
+
+        // depends on: database
+        this.moduleManager = new BukkitModuleManager(this, this.getClassLoader());
 
         // depends on: server
         this.commandManager = new BukkitCommandManager(this);
         this.commandManager.registerCommandFactory(new ReflectedCommandFactory());
         this.commandManager.registerCommandFactory(new ReadableCommandFactory());
-
-        // depends on: database
-        this.moduleManager = new BukkitModuleManager(this, this.getClassLoader());
 
         // depends on: plugin manager, module manager
         this.permissionManager = new BukkitPermissionManager(this);
@@ -230,25 +218,44 @@ public final class BukkitCore extends JavaPlugin implements Core
         this.matcherManager = new Match();
         this.inventoryGuard = new InventoryGuardFactory(this);
 
-        server.getScheduler().scheduleSyncDelayedTask(this, new Runnable()
+        // depends on loaded worlds
+        this.worldManager = new BukkitWorldManager(BukkitCore.this);
+
+        MetricsInitializer metricsInit = new MetricsInitializer(BukkitCore.this);
+
+        // depends on: file manager
+        this.moduleManager.loadModules(this.fileManager.getModulesDir());
+
+        metricsInit.start();
+
+        // depends on: finished loading modules
+        this.userManager.clean();
+    }
+
+    @Override
+    public void onEnable()
+    {
+        this.userManager.init();
+        this.worldManager.loadWorlds();
+
+        if (this.config.preventSpamKick)
         {
-            @Override
-            public void run()
-            {
-                // depends on loaded worlds
-                worldManager = new WorldManager(BukkitCore.this);
+            this.getServer().getPluginManager().registerEvents(new PreventSpamKickListener(), this);
+        }
 
-                MetricsInitializer metricsInit = new MetricsInitializer(BukkitCore.this);
+        this.getServer().getPluginManager().registerEvents(new CoreListener(this), this);
 
-                // depends on: file manager
-                moduleManager.loadModules(fileManager.getModulesDir());
+        this.moduleManager.init();
+        this.moduleManager.enableModules();
+        this.permissionManager.calculatePermissions();
 
-                metricsInit.start();
-
-                // depends on: finished loading modules
-                userManager.clean();
-            }
-        });
+//        this.getServer().getScheduler().scheduleSyncDelayedTask(this, new Runnable()
+//        {
+//            @Override
+//            public void run()
+//            {
+//            }
+//        });
     }
 
     @Override
@@ -327,13 +334,43 @@ public final class BukkitCore extends JavaPlugin implements Core
         }
 
         CubeEngine.clean();
+        Convert.cleanup();
         Profiler.clean();
+    }
+
+    @Override
+    public ChunkGenerator getDefaultWorldGenerator(String worldName, String id)
+    {
+        if (id == null)
+        {
+            return null;
+        }
+        String[] parts = id.split(":", 2);
+        if (parts.length < 2)
+        {
+            this.getLog().log(WARNING, "CubeEngine was specified as a world generator, you have to specify a module!");
+            return null;
+        }
+        Module module = this.getModuleManager().getModule(parts[0]);
+        if (module == null)
+        {
+            this.getLog().log(WARNING, "The module {0} wasn't found!");
+            return null;
+        }
+
+        return this.getWorldManager().getGenerator(module, parts[1].toLowerCase(Locale.ENGLISH));
     }
 
     @Override
     public Version getVersion()
     {
         return this.version;
+    }
+
+    @Override
+    public String getSourceVersion()
+    {
+        return this.moduleManager.getCoreModule().getInfo().getSourceVersion();
     }
 
     @Override
@@ -349,9 +386,9 @@ public final class BukkitCore extends JavaPlugin implements Core
     }
 
     @Override
-    public UserManager getUserManager()
+    public BukkitUserManager getUserManager()
     {
-        return userManager;
+        return this.userManager;
     }
 
     @Override
@@ -399,7 +436,7 @@ public final class BukkitCore extends JavaPlugin implements Core
     @Override
     public TaskManager getTaskManager()
     {
-        return taskManager;
+        return this.taskManager;
     }
 
     @Override
@@ -421,7 +458,7 @@ public final class BukkitCore extends JavaPlugin implements Core
     }
 
     @Override
-    public WorldManager getWorldManager()
+    public BukkitWorldManager getWorldManager()
     {
         return this.worldManager;
     }

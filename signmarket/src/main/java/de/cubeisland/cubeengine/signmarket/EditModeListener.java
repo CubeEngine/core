@@ -458,7 +458,7 @@ public class EditModeListener extends ConversationCommand
             return;
         if (event.getPlayer().isSneaking())
             return;
-        User user = this.getModule().getCore().getUserManager().getExactUser(event.getPlayer());
+        User user = this.getModule().getCore().getUserManager().getExactUser(event.getPlayer().getName());
         if (!this.hasUser(user))
         {
             return;
@@ -550,7 +550,7 @@ public class EditModeListener extends ConversationCommand
     {
         if (event.getBlockPlaced().getState() instanceof Sign)
         {
-            User user = this.getModule().getCore().getUserManager().getExactUser(event.getPlayer());
+            User user = this.getModule().getCore().getUserManager().getExactUser(event.getPlayer().getName());
             if (this.hasUser(user))
             {
                 if (!MarketSignPerm.SIGN_CREATE.isAuthorized(user))
@@ -570,7 +570,7 @@ public class EditModeListener extends ConversationCommand
     @EventHandler
     public void onSignChange(SignChangeEvent event)
     {
-        User user = this.getModule().getCore().getUserManager().getExactUser(event.getPlayer());
+        User user = this.getModule().getCore().getUserManager().getExactUser(event.getPlayer().getName());
         if (this.hasUser(user))
         {
             Location loc = event.getBlock().getLocation();
