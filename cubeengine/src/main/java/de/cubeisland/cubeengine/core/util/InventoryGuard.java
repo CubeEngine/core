@@ -120,7 +120,7 @@ public class InventoryGuard implements Listener
                 && event.getInventory().getHolder().getInventory().equals(this.inventory)))
                 && event.getPlayer() instanceof Player)
         {
-            User user = this.module.getCore().getUserManager().getExactUser((Player)event.getPlayer());
+            User user = this.module.getCore().getUserManager().getExactUser(event.getPlayer().getName());
             if (user != null && this.users.contains(user))
             {
                 this.users.remove(user);
@@ -145,7 +145,7 @@ public class InventoryGuard implements Listener
                     && event.getInventory().getHolder().getInventory().equals(this.inventory)))
             && event.getWhoClicked() instanceof Player)
         {
-            User user = this.module.getCore().getUserManager().getExactUser((Player)event.getWhoClicked());
+            User user = this.module.getCore().getUserManager().getExactUser(event.getWhoClicked().getName());
             if (user != null && this.users.contains(user))
             {
                 if (event.getSlot() == -999)

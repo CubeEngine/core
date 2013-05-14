@@ -21,6 +21,7 @@ import java.util.concurrent.TimeUnit;
 
 import de.cubeisland.cubeengine.core.command.CommandManager;
 import de.cubeisland.cubeengine.core.command.reflected.ReflectedCommand;
+import de.cubeisland.cubeengine.core.config.Configuration;
 import de.cubeisland.cubeengine.core.module.Module;
 import de.cubeisland.cubeengine.core.util.Profiler;
 import de.cubeisland.cubeengine.fun.commands.*;
@@ -33,6 +34,7 @@ public class Fun extends Module
     public void onEnable()
     {
         Profiler.startProfiling("funEnable");
+        this.config = Configuration.load(FunConfiguration.class, this);
         System.out.print(Profiler.getCurrentDelta("funEnable", TimeUnit.MILLISECONDS) + "ms - Drop Resource");
         this.getCore().getFileManager().dropResources(FunResource.values());
         System.out.print(Profiler.getCurrentDelta("funEnable", TimeUnit.MILLISECONDS) + "ms - register perms");

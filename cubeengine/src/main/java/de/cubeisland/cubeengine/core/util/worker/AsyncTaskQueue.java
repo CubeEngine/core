@@ -55,7 +55,7 @@ public class AsyncTaskQueue implements TaskQueue
         {
             return;
         }
-        Validate.notNull(runnable, "The task must not be null!");
+        assert runnable != null: "The task must not be null!";
 
         this.taskQueue.offer(runnable);
         this.start();

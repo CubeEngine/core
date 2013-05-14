@@ -17,20 +17,21 @@
  */
 package de.cubeisland.cubeengine.core.bukkit;
 
-import de.cubeisland.cubeengine.core.Core;
-import de.cubeisland.cubeengine.core.module.Module;
-import gnu.trove.set.hash.THashSet;
-import org.apache.commons.lang.Validate;
-import org.bukkit.event.Event;
-import org.bukkit.event.HandlerList;
-import org.bukkit.event.Listener;
-import org.bukkit.plugin.PluginManager;
-
 import java.util.Iterator;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
+
+import org.bukkit.event.Event;
+import org.bukkit.event.HandlerList;
+import org.bukkit.event.Listener;
+import org.bukkit.plugin.PluginManager;
+
+import de.cubeisland.cubeengine.core.Core;
+import de.cubeisland.cubeengine.core.module.Module;
+
+import gnu.trove.set.hash.THashSet;
 
 /**
  * This class manages all Event-(Un-)Registration and fires Events.
@@ -77,8 +78,8 @@ public class EventManager
      */
     public EventManager removeListener(Module module, Listener listener)
     {
-        Validate.notNull(module, "The module must not be null!");
-        Validate.notNull(listener, "The listener must not be null!");
+        assert module != null: "The module must not be null!";
+        assert listener != null: "The listener must not be null!";
 
         Set<Listener> listeners = this.listenerMap.get(module);
         if (listeners != null && listeners.remove(listener))
@@ -96,7 +97,7 @@ public class EventManager
      */
     public EventManager removeListeners(Module module)
     {
-        Validate.notNull(module, "The module must not be null!");
+        assert module != null: "The module must not be null!";
 
         Set<Listener> listeners = this.listenerMap.remove(module);
         if (listeners != null)

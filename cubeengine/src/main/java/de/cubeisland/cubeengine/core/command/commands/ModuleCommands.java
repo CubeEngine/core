@@ -17,25 +17,23 @@
  */
 package de.cubeisland.cubeengine.core.command.commands;
 
+import java.io.File;
+import java.util.Collection;
+import java.util.Map;
+import java.util.Set;
+
+import de.cubeisland.cubeengine.core.command.CommandContext;
+import de.cubeisland.cubeengine.core.command.ContainerCommand;
 import de.cubeisland.cubeengine.core.command.parameterized.Flag;
 import de.cubeisland.cubeengine.core.command.parameterized.ParameterizedContext;
 import de.cubeisland.cubeengine.core.command.reflected.Alias;
-import de.cubeisland.cubeengine.core.command.CommandContext;
-import de.cubeisland.cubeengine.core.command.ContainerCommand;
 import de.cubeisland.cubeengine.core.command.reflected.Command;
 import de.cubeisland.cubeengine.core.module.Module;
+import de.cubeisland.cubeengine.core.module.ModuleInfo;
 import de.cubeisland.cubeengine.core.module.ModuleManager;
-import de.cubeisland.cubeengine.core.module.exception.CircularDependencyException;
-import de.cubeisland.cubeengine.core.module.exception.IncompatibleCoreException;
-import de.cubeisland.cubeengine.core.module.exception.IncompatibleDependencyException;
-import de.cubeisland.cubeengine.core.module.exception.InvalidModuleException;
-import de.cubeisland.cubeengine.core.module.exception.MissingDependencyException;
-import de.cubeisland.cubeengine.core.module.exception.MissingPluginDependencyException;
 import de.cubeisland.cubeengine.core.module.exception.ModuleException;
 import de.cubeisland.cubeengine.core.util.ChatFormat;
-
-import java.io.File;
-import java.util.Collection;
+import de.cubeisland.cubeengine.core.util.Version;
 
 import static de.cubeisland.cubeengine.core.logger.LogLevel.ERROR;
 
@@ -190,6 +188,52 @@ public class ModuleCommands extends ContainerCommand
             context.sendTranslated("&cThe module failed to load! Check the server log for info.");
             context.getCore().getLog().log(ERROR, "Failed to load a module from file: {0}", moduleFile.getPath());
             context.getCore().getLog().log(ERROR, e.getLocalizedMessage(), e);
+        }
+    }
+
+    @Command(desc = "Get info about a module", flags = {
+        @Flag(name = "s", longName = "source")
+    }, usage = "<module> [-s]", min = 1, max = 1)
+    public void info(ParameterizedContext context)
+    {
+        Module module = this.mm.getModule(context.getString(0));
+        if (module == null)
+        {
+            context.sendTranslated("The given module could not be found!");
+            return;
+        }
+        ModuleInfo moduleInfo = module.getInfo();
+        context.sendTranslated("Name: %s", moduleInfo.getName());
+        context.sendTranslated("Description: %s", moduleInfo.getDescription());
+        context.sendTranslated("Version: %s", moduleInfo.getVersion());
+        VanillaCommands.showSourceVersion(context, moduleInfo.getSourceVersion());
+
+        Map<String, Version> dependencies = moduleInfo.getDependencies();
+        Map<String, Version> softDependencies = moduleInfo.getSoftDependencies();
+        Set<String> pluginDependencies = moduleInfo.getPluginDependencies();
+        if (!dependencies.isEmpty())
+        {
+            context.sendTranslated("Module dependencies:");
+            for (String dependency : dependencies.keySet())
+            {
+                context.sendMessage("   - " + dependency);
+            }
+        }
+        if (!softDependencies.isEmpty())
+        {
+            context.sendTranslated("Module soft-dependencies:");
+            for (String dependency : softDependencies.keySet())
+            {
+                context.sendMessage("   - " + dependency);
+            }
+        }
+        if (!pluginDependencies.isEmpty())
+        {
+            context.sendTranslated("Plugin dependencies:");
+            for (String dependency : pluginDependencies)
+            {
+                context.sendMessage("   - " + dependency);
+            }
         }
     }
 }

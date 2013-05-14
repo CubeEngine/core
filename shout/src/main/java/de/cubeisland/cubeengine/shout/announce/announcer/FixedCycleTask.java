@@ -19,7 +19,6 @@ package de.cubeisland.cubeengine.shout.announce.announcer;
 
 import java.util.Locale;
 import java.util.Queue;
-import java.util.concurrent.Callable;
 
 import org.bukkit.Bukkit;
 import org.bukkit.World;
@@ -65,7 +64,7 @@ public class FixedCycleTask implements Runnable
                 {
                     for (Player player : world.getPlayers())
                     {
-                        User user = module.getCore().getUserManager().getUser(player);
+                        User user = module.getCore().getUserManager().getUser(player.getName());
                         module.getCore().getTaskManager().callSyncMethod(
                             new SenderTask(announcement.getMessage(user.getLocale()), new CleanReceiver(user)));
                     }

@@ -22,6 +22,7 @@ import java.util.concurrent.TimeUnit;
 import de.cubeisland.cubeengine.core.bukkit.EventManager;
 import de.cubeisland.cubeengine.core.command.CommandManager;
 import de.cubeisland.cubeengine.core.command.reflected.ReflectedCommand;
+import de.cubeisland.cubeengine.core.config.Configuration;
 import de.cubeisland.cubeengine.core.logger.LogLevel;
 import de.cubeisland.cubeengine.core.module.Module;
 import de.cubeisland.cubeengine.core.storage.database.Database;
@@ -75,6 +76,7 @@ public class Basics extends Module
     public void onEnable()
     {
         Profiler.startProfiling("basicsEnable");
+        this.config = Configuration.load(BasicsConfiguration.class, this);
 		final Database db = this.getCore().getDB();
         final CommandManager cm = this.getCore().getCommandManager();
         final EventManager em = this.getCore().getEventManager();
@@ -120,7 +122,7 @@ public class Basics extends Module
         Convert.registerConverter(KitItem.class, new KitItemConverter());
 
         this.kitManager = new KitManager(this);
-        kitManager.loadKits();
+        this.kitManager.loadKits();
         this.kitGivenManager = new KitsGivenManager(db);
         this.getLog().log(LogLevel.DEBUG,Profiler.getCurrentDelta("basicsEnable", TimeUnit.MILLISECONDS) + "ms - Teleport-Commands");
         //Teleport:
@@ -167,19 +169,19 @@ public class Basics extends Module
 
     public KitsGivenManager getKitGivenManager()
     {
-        return kitGivenManager;
+        return this.kitGivenManager;
     }
 
     public IgnoreListManager getIgnoreListManager()
     {
-        return ignoreListManager;
+        return this.ignoreListManager;
     }
 
     public KitManager getKitManager() {
-        return kitManager;
+        return this.kitManager;
     }
 
     public LagTimer getLagTimer() {
-        return lagTimer;
+        return this.lagTimer;
     }
 }

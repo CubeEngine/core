@@ -67,7 +67,7 @@ public final class ApiResponse
      */
     public ApiResponse setHeader(String name, String value)
     {
-        Validate.notNull(name, "name must not be null!");
+        assert name != null: "name must not be null!";
 
         if (value == null)
         {
@@ -84,8 +84,8 @@ public final class ApiResponse
 
     public ApiResponse addHeader(String name, String value)
     {
-        Validate.notNull(name, "The name must not be null!");
-        Validate.notNull(value, "The value must not be null!");
+        assert name != null: "The name must not be null!";
+        assert value != null: "The value must not be null!";
 
         List<String> values = this.headers.get(name);
         if (values == null)

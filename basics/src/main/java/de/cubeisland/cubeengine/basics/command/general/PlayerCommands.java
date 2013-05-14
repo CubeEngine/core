@@ -444,7 +444,7 @@ public class PlayerCommands
                 }
                 if (entity instanceof Player)
                 {
-                    user = this.um.getExactUser((Player)entity);
+                    user = this.um.getExactUser(((Player)entity).getName());
                     break;
                 }
             }

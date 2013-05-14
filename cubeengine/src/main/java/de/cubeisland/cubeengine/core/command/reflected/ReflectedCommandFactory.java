@@ -104,7 +104,7 @@ public class ReflectedCommandFactory<T extends CubeCommand> implements CommandFa
             String[] paramAliases;
             if (names.length > 1)
             {
-                paramAliases = Arrays.copyOfRange(names, 1, names.length - 1);
+                paramAliases = Arrays.copyOfRange(names, 1, names.length);
             }
             else
             {

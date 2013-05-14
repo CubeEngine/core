@@ -31,6 +31,7 @@ import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 
+import de.cubeisland.cubeengine.core.Core;
 import de.cubeisland.cubeengine.core.CorePerms;
 import de.cubeisland.cubeengine.core.bukkit.BukkitCore;
 import de.cubeisland.cubeengine.core.bukkit.BukkitUtils;
@@ -354,8 +355,8 @@ public class VanillaCommands implements CommandHolder
         }
     }
 
-    @Command(desc = "Displays the version of the server or a given plugin", usage = "[plugin]", max = 1)
-    public void version(CommandContext context)
+    @Command(desc = "Displays the version of the server or a given plugin", usage = "[plugin]", flags = @Flag(name = "s", longName = "source"), max = 1)
+    public void version(ParameterizedContext context)
     {
         Server server = this.core.getServer();
         if (context.hasArgs())
@@ -377,6 +378,10 @@ public class VanillaCommands implements CommandHolder
                 context.sendMessage(" ");
                 context.sendTranslated("&nPlugin information:");
                 context.sendMessage(" ");
+                if (plugin instanceof Core)
+                {
+                    showSourceVersion(context, core.getSourceVersion());
+                }
                 context.sendTranslated("Description: &6%s", plugin.getDescription().getDescription());
                 context.sendTranslated("Website: &6%s", plugin.getDescription().getWebsite());
                 context.sendTranslated("Authors:");
@@ -400,6 +405,18 @@ public class VanillaCommands implements CommandHolder
             context.sendTranslated("&eBukkit API&r Version: &9%s", server.getBukkitVersion());
             context.sendMessage(" ");
             context.sendTranslated("Expanded and improved by &aCubeEngine&r revision &9%s", context.getCore().getVersion());
+            showSourceVersion(context, core.getSourceVersion());
+        }
+    }
+
+    private static final String SOURCE_LINK = "https://github.com/CubeEngineDev/CubeEngine/tree/";
+    protected static void showSourceVersion(ParameterizedContext context, String sourceVersion)
+    {
+        if (context.hasFlag("s"))
+        {
+            final String commit = sourceVersion.substring(sourceVersion.lastIndexOf('-') + 1, sourceVersion.length() - 32);
+            context.sendTranslated("Source Version: %s", sourceVersion);
+            context.sendTranslated("Source link: %s", SOURCE_LINK + commit);
         }
     }
 

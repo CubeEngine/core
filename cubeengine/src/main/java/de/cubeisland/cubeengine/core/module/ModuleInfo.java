@@ -26,6 +26,8 @@ import java.util.Set;
 
 import de.cubeisland.cubeengine.core.Core;
 import de.cubeisland.cubeengine.core.bukkit.BukkitCore;
+import de.cubeisland.cubeengine.core.bukkit.PluginConfig;
+import de.cubeisland.cubeengine.core.config.Configuration;
 import de.cubeisland.cubeengine.core.util.Version;
 
 import org.apache.commons.lang.Validate;
@@ -40,10 +42,10 @@ public class ModuleInfo
     private final String main;
     private final String id;
     private final String name;
-    private final Version version;
     private final String description;
+    private final Version version;
+    private final String sourceVersion;
     private final Version minCoreVersion;
-    private final boolean providesWorldGenerator;
     private final Map<String, Version> dependencies;
     private final Map<String, Version> softDependencies;
     private final Set<String> pluginDependencies;
@@ -55,17 +57,20 @@ public class ModuleInfo
         if (core instanceof BukkitCore)
         {
             this.main = ((BukkitCore)core).getDescription().getMain();
+            PluginConfig pluginConfig = Configuration.load(PluginConfig.class, ((BukkitCore)core)
+                .getResource("plugin.yml"));
+            this.sourceVersion = pluginConfig.sourceVersion;
         }
         else
         {
             this.main = "";
+            this.sourceVersion = "uknown-abcdefgh";
         }
         this.id = CoreModule.ID;
         this.name = CoreModule.NAME;
-        this.version = core.getVersion();
         this.description = "This is the core meta module.";
+        this.version = core.getVersion();
         this.minCoreVersion = core.getVersion();
-        this.providesWorldGenerator = false;
         this.dependencies = Collections.emptyMap();
         this.softDependencies = this.dependencies;
         this.pluginDependencies = Collections.emptySet();
@@ -82,8 +87,8 @@ public class ModuleInfo
 
     public ModuleInfo(File file, ModuleConfig config)
     {
-        Validate.notNull(config, "The module configuration failed to loaded!");
-        Validate.notNull(config.name, "The module doesn't seem to have a name.");
+        assert config != null: "The module configuration failed to loaded!";
+        assert config.name != null: "The module doesn't seem to have a name.";
 
         this.name = config.name.trim();
         Validate.notEmpty(this.name, "The module name seems to be empty.");
@@ -96,11 +101,10 @@ public class ModuleInfo
             config.main = "de.cubeisland.cubeengine." + this.id + "." + this.id.substring(0, 1).toUpperCase(Locale.US) + this.id.substring(1);
         }
         this.main = config.main;
-
-        this.version = config.version;
         this.description = config.description;
+        this.version = config.version;
+        this.sourceVersion = config.sourceVersion;
         this.minCoreVersion = config.minCoreRevision;
-        this.providesWorldGenerator = config.provideWorldGenerator;
 
         int delimOffset;
         Version version;
@@ -193,13 +197,23 @@ public class ModuleInfo
     }
 
     /**
-     * Gets the module's revision
+     * Gets the module's version
      *
-     * @return the revision
+     * @return the version
      */
     public Version getVersion()
     {
         return this.version;
+    }
+
+    /**
+     * Gets the module's source version
+     *
+     * @return the source version string
+     */
+    public String getSourceVersion()
+    {
+        return sourceVersion;
     }
 
     /**
@@ -220,17 +234,6 @@ public class ModuleInfo
     public Version getMinimumCoreVersion()
     {
         return this.minCoreVersion;
-    }
-
-    /**
-     * Returns whether the module provides world generators
-     * if true, this module is not allowed to depend on other module
-     *
-     * @return true if the module provides world generators
-     */
-    public boolean providesWorldGenerator()
-    {
-        return this.providesWorldGenerator;
     }
 
     /**
@@ -287,10 +290,6 @@ public class ModuleInfo
         {
             return false;
         }
-        if (providesWorldGenerator != that.providesWorldGenerator)
-        {
-            return false;
-        }
         if (!version.equals(that.version))
         {
             return false;
@@ -340,7 +339,6 @@ public class ModuleInfo
         result = 31 * result + version.hashCode();
         result = 31 * result + (description != null ? description.hashCode() : 0);
         result = 31 * result + minCoreVersion.hashCode();
-        result = 31 * result + (providesWorldGenerator ? 1 : 0);
         result = 31 * result + dependencies.hashCode();
         result = 31 * result + softDependencies.hashCode();
         result = 31 * result + pluginDependencies.hashCode();

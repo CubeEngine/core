@@ -25,8 +25,8 @@ import de.cubeisland.cubeengine.core.config.annotations.MapComments;
 import de.cubeisland.cubeengine.core.config.annotations.Option;
 import de.cubeisland.cubeengine.core.config.node.*;
 import de.cubeisland.cubeengine.core.util.convert.Convert;
-import de.cubeisland.cubeengine.core.util.converter.generic.CollectionConverter;
-import de.cubeisland.cubeengine.core.util.converter.generic.MapConverter;
+import de.cubeisland.cubeengine.core.util.convert.converter.generic.CollectionConverter;
+import de.cubeisland.cubeengine.core.util.convert.converter.generic.MapConverter;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;

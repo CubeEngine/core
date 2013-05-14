@@ -30,6 +30,8 @@ import static de.cubeisland.cubeengine.core.permission.PermDefault.FALSE;
 
 public class BasicsPerm extends PermissionContainer<Basics>
 {
+
+
     public BasicsPerm(Basics module)
     {
         super(module);
@@ -45,6 +47,8 @@ public class BasicsPerm extends PermissionContainer<Basics>
     public static final Permission COMMAND = Permission.createAbstractPermission("command");
 
     public static final Permission COMMAND_ENCHANT_UNSAFE = COMMAND.createAbstractChild("enchant").createChild("unsafe");
+
+    public static final Permission COMMAND_LAG_RESET = COMMAND.createAbstractChild("lag").createChild("reset");
 
     /**
      * Allows to create items that are blacklisted

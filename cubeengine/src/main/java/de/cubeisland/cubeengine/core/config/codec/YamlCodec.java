@@ -17,15 +17,21 @@
  */
 package de.cubeisland.cubeengine.core.config.codec;
 
-import de.cubeisland.cubeengine.core.CubeEngine;
-import de.cubeisland.cubeengine.core.config.node.*;
-import de.cubeisland.cubeengine.core.logger.LogLevel;
-import de.cubeisland.cubeengine.core.util.convert.Convert;
-import org.yaml.snakeyaml.Yaml;
-
 import java.io.InputStream;
 import java.util.Map;
 import java.util.Map.Entry;
+
+import de.cubeisland.cubeengine.core.CubeEngine;
+import de.cubeisland.cubeengine.core.config.node.IntNode;
+import de.cubeisland.cubeengine.core.config.node.ListNode;
+import de.cubeisland.cubeengine.core.config.node.MapNode;
+import de.cubeisland.cubeengine.core.config.node.Node;
+import de.cubeisland.cubeengine.core.config.node.NullNode;
+import de.cubeisland.cubeengine.core.config.node.StringNode;
+import de.cubeisland.cubeengine.core.logger.LogLevel;
+import de.cubeisland.cubeengine.core.util.convert.Convert;
+
+import org.yaml.snakeyaml.Yaml;
 
 /**
  * This class acts as a codec for yaml-configurations.
@@ -71,7 +77,7 @@ public class YamlCodec extends MultiConfigurationCodec
                 }
                 else
                 {
-                    CubeEngine.getLog().log(LogLevel.WARNING, "Invalid revision in a configuration!");
+                    CubeEngine.getLog().log(LogLevel.WARNING, "Invalid revision in a configuration! Value: " + String.valueOf(revisionNode));
                 }
             }
         }

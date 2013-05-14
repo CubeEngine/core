@@ -34,7 +34,7 @@ import de.cubeisland.cubeengine.core.module.TestModuleManager;
 import de.cubeisland.cubeengine.core.permission.PermissionManager;
 import de.cubeisland.cubeengine.core.storage.TableManager;
 import de.cubeisland.cubeengine.core.storage.database.Database;
-import de.cubeisland.cubeengine.core.storage.world.WorldManager;
+import de.cubeisland.cubeengine.core.world.WorldManager;
 import de.cubeisland.cubeengine.core.user.UserManager;
 import de.cubeisland.cubeengine.core.util.InventoryGuardFactory;
 import de.cubeisland.cubeengine.core.util.Version;
@@ -50,6 +50,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 public class TestCore implements Core
 {
     private final Version version = Version.ONE;
+    private final String sourceVersion = "master-aaaaaaaa";
     private final Logger logger = Logger.getAnonymousLogger();
     private ObjectMapper jsonObjectMapper = null;
     private CoreConfiguration config = null;
@@ -64,6 +65,12 @@ public class TestCore implements Core
     public Version getVersion()
     {
         return this.version;
+    }
+
+    @Override
+    public String getSourceVersion()
+    {
+        return "";
     }
 
     @Override

@@ -17,16 +17,16 @@
  */
 package de.cubeisland.cubeengine.core.util.convert.converter;
 
-import de.cubeisland.cubeengine.core.CubeEngine;
+import java.util.UUID;
+
+import org.bukkit.Bukkit;
+import org.bukkit.World;
+
 import de.cubeisland.cubeengine.core.config.node.Node;
 import de.cubeisland.cubeengine.core.config.node.StringNode;
 import de.cubeisland.cubeengine.core.util.convert.ConversionException;
 import de.cubeisland.cubeengine.core.util.convert.Convert;
 import de.cubeisland.cubeengine.core.util.convert.Converter;
-import org.bukkit.Bukkit;
-import org.bukkit.World;
-
-import java.util.UUID;
 
 public class WorldConverter implements Converter<World>
 {
@@ -57,8 +57,8 @@ public class WorldConverter implements Converter<World>
             {
                 return world;
             }
+            throw new ConversionException("Could not convert to a world: World not found!");
         }
-        throw new ConversionException("Could not convert to User!");
-
+        throw new ConversionException("Could not convert to a world: The given node is not a string");
     }
 }

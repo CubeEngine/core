@@ -21,6 +21,7 @@ import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -35,17 +36,25 @@ import org.bukkit.command.Command;
 import org.bukkit.command.SimpleCommandMap;
 
 import de.cubeisland.cubeengine.core.command.AliasCommand;
+import de.cubeisland.cubeengine.core.command.ArgBounds;
+import de.cubeisland.cubeengine.core.command.BasicContextFactory;
+import de.cubeisland.cubeengine.core.command.CommandContext;
 import de.cubeisland.cubeengine.core.command.CommandFactory;
 import de.cubeisland.cubeengine.core.command.CommandHolder;
 import de.cubeisland.cubeengine.core.command.CommandManager;
 import de.cubeisland.cubeengine.core.command.CommandSender;
 import de.cubeisland.cubeengine.core.command.ConsoleCommandCompleter;
 import de.cubeisland.cubeengine.core.command.CubeCommand;
+import de.cubeisland.cubeengine.core.command.result.confirm.ConfirmCommand;
+import de.cubeisland.cubeengine.core.command.result.confirm.ConfirmManager;
+import de.cubeisland.cubeengine.core.command.result.confirm.ConfirmResult;
 import de.cubeisland.cubeengine.core.command.sender.ConsoleCommandSender;
 import de.cubeisland.cubeengine.core.logger.CubeFileHandler;
 import de.cubeisland.cubeengine.core.logger.CubeLogger;
 import de.cubeisland.cubeengine.core.module.Module;
+import de.cubeisland.cubeengine.core.util.Pair;
 import de.cubeisland.cubeengine.core.util.StringUtils;
+import de.cubeisland.cubeengine.core.util.time.Duration;
 
 import gnu.trove.map.hash.THashMap;
 
@@ -55,15 +64,18 @@ import static de.cubeisland.cubeengine.core.logger.LogLevel.WARNING;
 public class BukkitCommandManager implements CommandManager
 {
     private final Server server;
+    private final BukkitCore core;
     final CubeCommandMap commandMap;
     private final Map<String, Command> knownCommands;
     private final Map<Class<? extends CubeCommand>, CommandFactory> commandFactories;
     private final ConsoleCommandCompleter completer;
     private final ConsoleCommandSender consoleSender;
     private final Logger commandLogger;
+    private final ConfirmManager confirmManager;
 
     public BukkitCommandManager(BukkitCore core)
     {
+        this.core = core;
         this.server = core.getServer();
         SimpleCommandMap oldMap = (SimpleCommandMap)BukkitUtils.getCommandMap(this.server);
         this.commandMap = new CubeCommandMap(core, this.server, oldMap);
@@ -74,6 +86,8 @@ public class BukkitCommandManager implements CommandManager
 
         this.completer = new ConsoleCommandCompleter(core);
         BukkitUtils.getConsoleReader(this.server).addCompleter(completer);
+
+
 
         this.commandLogger = new CubeLogger("commands");
         try
@@ -96,6 +110,8 @@ public class BukkitCommandManager implements CommandManager
         {
             core.getLog().log(WARNING, "Failed to create the command log!", e);
         }
+
+        this.confirmManager = new ConfirmManager(core);
     }
 
     /**
@@ -249,12 +265,6 @@ public class BukkitCommandManager implements CommandManager
 
             this.registerCommands(command.getModule(), (CommandHolder)command, newParents);
         }
-
-        // if the module is already enabled we have to reload the help map
-        if (command.getModule().isEnabled())
-        {
-            BukkitUtils.reloadHelpMap();
-        }
     }
 
     public void registerCommands(Module module, CommandHolder commandHolder, String... parents)
@@ -350,5 +360,11 @@ public class BukkitCommandManager implements CommandManager
         {
             this.commandLogger.log(INFO, "complete " + sender.getName() + ' ' + command.getName() + ' ' + StringUtils.implode(" ", args));
         }
+    }
+
+    @Override
+    public ConfirmManager getConfirmManager()
+    {
+        return this.confirmManager;
     }
 }

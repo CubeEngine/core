@@ -19,6 +19,7 @@ package de.cubeisland.cubeengine.guests;
 
 import java.io.File;
 
+import de.cubeisland.cubeengine.core.config.Configuration;
 import de.cubeisland.cubeengine.core.logger.LogLevel;
 import de.cubeisland.cubeengine.core.module.Module;
 import de.cubeisland.cubeengine.guests.prevention.PreventionManager;
@@ -90,6 +91,7 @@ public class Guests extends Module
     @Override
     public void onEnable()
     {
+        this.config = Configuration.load(GuestsConfig.class, this);
         this.dataFolder = this.getFolder();
         this.preventionConfigFolder = new File(this.dataFolder, "preventions");
 

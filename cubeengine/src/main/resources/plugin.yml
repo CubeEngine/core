@@ -1,8 +1,12 @@
 name: "${project.name}"
 version: "${project.version}"
+source-version: "${githead.branch}-${githead.commit}"
 main: "de.cubeisland.cubeengine.core.bukkit.BukkitCore"
 website: "${project.parent.url}"
 description: "${project.parent.description}"
-load: STARTUP
+author: "CubeEngineDev"
 authors:
-  - "Cube Island"
+  - "quick_wango"
+  - "Faithcaio"
+  - "totokaka"
+  - "boeserwolf91"

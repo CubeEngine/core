@@ -17,12 +17,6 @@
  */
 package de.cubeisland.cubeengine.core.user;
 
-import de.cubeisland.cubeengine.core.Core;
-import de.cubeisland.cubeengine.core.storage.SingleKeyStorage;
-import de.cubeisland.cubeengine.core.storage.StorageException;
-import de.cubeisland.cubeengine.core.storage.database.querybuilder.ComponentBuilder;
-import de.cubeisland.cubeengine.core.util.StringUtils;
-
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
@@ -30,10 +24,16 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 
+import de.cubeisland.cubeengine.core.Core;
+import de.cubeisland.cubeengine.core.storage.SingleKeyStorage;
+import de.cubeisland.cubeengine.core.storage.StorageException;
+import de.cubeisland.cubeengine.core.storage.database.querybuilder.ComponentBuilder;
+import de.cubeisland.cubeengine.core.util.StringUtils;
+
 import static de.cubeisland.cubeengine.core.storage.database.querybuilder.ComponentBuilder.EQUAL;
 import static de.cubeisland.cubeengine.core.storage.database.querybuilder.ComponentBuilder.LESS;
 
-class UserStorage extends SingleKeyStorage<Long, User>
+public class UserStorage extends SingleKeyStorage<Long, User>
 {
     private static final int REVISION = 1;
     private final Core core;
@@ -85,7 +85,7 @@ class UserStorage extends SingleKeyStorage<Long, User>
      * @param playerName the name
      * @return the User OR null if not found
      */
-    protected User loadUser(String playerName)
+    public User loadUser(String playerName)
     {
         User loadedModel = null;
         try

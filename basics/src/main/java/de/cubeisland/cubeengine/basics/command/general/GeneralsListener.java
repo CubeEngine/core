@@ -62,7 +62,7 @@ public class GeneralsListener implements Listener
     @EventHandler
     public void blockplace(final BlockPlaceEvent event)
     {
-        User user = basics.getCore().getUserManager().getExactUser(event.getPlayer());
+        User user = basics.getCore().getUserManager().getExactUser(event.getPlayer().getName());
         if (user.get(BasicsAttachment.class).hasUnlimitedItems())
         {
             ItemStack itemInHand = event.getPlayer().getItemInHand();
@@ -103,7 +103,7 @@ public class GeneralsListener implements Listener
     @EventHandler
     public void onAfterJoin(AfterJoinEvent event)
     {
-        User user = basics.getCore().getUserManager().getExactUser(event.getPlayer());
+        User user = basics.getCore().getUserManager().getExactUser(event.getPlayer().getName());
         int amount = basics.getMailManager().countMail(user);
         if (amount > 0)
         {
@@ -124,7 +124,7 @@ public class GeneralsListener implements Listener
             Tameable tamed = (Tameable) event.getRightClicked();
             if (tamed.getOwner() != null && !event.getPlayer().equals(tamed.getOwner()))
             {
-                User clicker = this.basics.getCore().getUserManager().getExactUser(event.getPlayer());
+                User clicker = this.basics.getCore().getUserManager().getExactUser(event.getPlayer().getName());
                 clicker.sendTranslated("&aThis &6%s &abelongs to &2%s&a!", Match.entity().getNameFor(event.getRightClicked().getType()),tamed.getOwner().getName());
             }
         }

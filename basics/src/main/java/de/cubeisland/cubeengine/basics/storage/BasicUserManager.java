@@ -41,7 +41,7 @@ public class BasicUserManager extends SingleKeyStorage<Long, BasicUser>
 
     public BasicUser getBasicUser(Player player)
     {
-        return this.getBasicUser(this.core.getUserManager().getExactUser(player));
+        return this.getBasicUser(this.core.getUserManager().getExactUser(player.getName()));
     }
 
     public BasicUser getBasicUser(User user)

@@ -26,6 +26,7 @@ import de.cubeisland.cubeengine.core.command.ArgBounds;
 import de.cubeisland.cubeengine.core.command.CommandContext;
 import de.cubeisland.cubeengine.core.command.CommandResult;
 import de.cubeisland.cubeengine.core.command.ContainerCommand;
+import de.cubeisland.cubeengine.core.command.result.confirm.ConfirmResult;
 import de.cubeisland.cubeengine.core.command.parameterized.Flag;
 import de.cubeisland.cubeengine.core.command.parameterized.ParameterizedContext;
 import de.cubeisland.cubeengine.core.command.reflected.Alias;
@@ -40,8 +41,6 @@ import de.cubeisland.cubeengine.travel.storage.TeleportPoint;
 
 public class HomeAdminCommand extends ContainerCommand
 {
-    private static final Long ACCEPT_TIMEOUT = 20000l;
-
     private final Map<String, Pair<Long, ParameterizedContext>> acceptEntries;
     private final TelePointManager tpManager;
     private final Travel module;
@@ -114,14 +113,14 @@ public class HomeAdminCommand extends ContainerCommand
         @Flag(name = "pub", longName = "public"),
         @Flag(name = "priv", longName = "Private")
     }, permDefault =  PermDefault.OP, max = 1, usage = " <user> <-public> <-Private>")
-    public void clear(ParameterizedContext context)
+    public ConfirmResult clear(final ParameterizedContext context)
     {
         if (context.getArgCount() > 0)
         {
             if (CubeEngine.getUserManager().getUser(context.getString(0), false) == null)
             {
                 context.sendTranslated("&2%s &cIsn't an user on this server", context.getString(0));
-                return;
+                return null;
             }
             else
             {
@@ -131,7 +130,7 @@ public class HomeAdminCommand extends ContainerCommand
                         .sendTranslated("&eAre you sure you want to delete all public homes ever created by &2%s", context
                             .getString(0));
                     context
-                        .sendTranslated("&eTo delete all the public homes, do: &6\"/home admin accept\" &ebefore 20 secunds");
+                        .sendTranslated("&eTo delete all the public homes, do: &6\"/home admin accept\" &ebefore 30 secunds");
                 }
                 else if (context.hasFlag("priv"))
                 {
@@ -139,14 +138,14 @@ public class HomeAdminCommand extends ContainerCommand
                         .sendTranslated("&eAre you sure you want to delete all private homes ever created by &2%s", context
                             .getString(0));
                     context
-                        .sendTranslated("&eTo delete all the private homes, do: &6\"/home admin accept\" &ebefore 20 secunds");
+                        .sendTranslated("&eTo delete all the private homes, do: &6\"/home admin accept\" &ebefore 30 secunds");
                 }
                 else
                 {
                     context.sendTranslated("&eAre you sure you want to delete all homes ever created by &2%s", context
                         .getString(0));
                     context
-                        .sendTranslated("&eTo delete all the homes, do: &6\"/home admin accept\" &ebefore 20 secunds");
+                        .sendTranslated("&eTo delete all the homes, do: &6\"/home admin accept\" &ebefore 30 secunds");
                 }
             }
         }
@@ -157,72 +156,58 @@ public class HomeAdminCommand extends ContainerCommand
                 context
                     .sendTranslated("&eAre you sure you want to delete all public homes ever created on this server!?");
                 context
-                    .sendTranslated("&eTo delete all the public homes of every user, do: &6\"/home admin accept\" &ebefore 20 secunds");
+                    .sendTranslated("&eTo delete all the public homes of every user, do: &6\"/home admin accept\" &ebefore 30 secunds");
             }
             else if (context.hasFlag("priv"))
             {
                 context
                     .sendTranslated("&eAre you sure you want to delete all private homes ever created on this server?");
                 context
-                    .sendTranslated("&eTo delete all the private homes of every user, do: &6\"/home admin accept\" &ebefore 20 secunds");
+                    .sendTranslated("&eTo delete all the private homes of every user, do: &6\"/home admin accept\" &ebefore 30 secunds");
             }
             else
             {
                 context.sendTranslated("&eAre you sure you want to delete all homes ever created on this server!?");
                 context
-                    .sendTranslated("&eTo delete all the homes of every user, do: &6\"/home admin accept\" &ebefore 20 secunds");
+                    .sendTranslated("&eTo delete all the homes of every user, do: &6\"/home admin accept\" &ebefore 30 secunds");
             }
         }
-        acceptEntries.put(context.getSender().getName(), new Pair<Long, ParameterizedContext>(System
-                                                                                                  .currentTimeMillis(), context));
-    }
-
-    @Alias(names = {"accept"})
-    @Command(desc = "accept your previous interactions", permDefault =  PermDefault.OP,  min = 0, max = 0)
-    public void accept(ParameterizedContext context)
-    {
-        if (this.acceptEntries.containsKey(context.getSender().getName()))
+        return new ConfirmResult(new Runnable()
         {
-            if (this.acceptEntries.get(context.getSender().getName()).getLeft() + ACCEPT_TIMEOUT > System
-                .currentTimeMillis())
+            @Override
+            public void run()
             {
-                ParameterizedContext usedContext = this.acceptEntries.get(context.getSender().getName()).getRight();
-                if (usedContext.getCommand().getName().equals("clear"))
-                {
-                    if (usedContext.getArgCount() == 0)
-                    { // No user
-                        int mask = usedContext.getFlagCount() == 0 ? tpManager.ALL : 0;
-                        if (context.hasFlag("pub"))
-                        {
-                            mask |= tpManager.PUBLIC;
-                        }
-                        if (context.hasFlag("priv"))
-                        {
-                            mask |= tpManager.PRIVATE;
-                        }
-                        tpManager.deleteHomes(mask);
-                        context.sendTranslated("&eThe homes are now deleted");
-                    }
-                    else
+                if (context.getArgCount() == 0)
+                { // No user
+                    int mask = context.getFlagCount() == 0 ? tpManager.ALL : 0;
+                    if (context.hasFlag("pub"))
                     {
-                        User user = usedContext.getUser(0);
-                        int mask = usedContext.getFlagCount() == 0 ? tpManager.ALL : 0;
-                        if (context.hasFlag("pub"))
-                        {
-                            mask |= tpManager.PUBLIC;
-                        }
-                        if (context.hasFlag("priv"))
-                        {
-                            mask |= tpManager.PRIVATE;
-                        }
-                        tpManager.deleteHomes(user, mask);
-                        context.sendTranslated("&eThe homes are now deleted");
+                        mask |= tpManager.PUBLIC;
                     }
+                    if (context.hasFlag("priv"))
+                    {
+                        mask |= tpManager.PRIVATE;
+                    }
+                    tpManager.deleteHomes(mask);
+                    context.sendTranslated("&eThe homes are now deleted");
                 }
-                return;
+                else
+                {
+                    User user = context.getUser(0);
+                    int mask = context.getFlagCount() == 0 ? tpManager.ALL : 0;
+                    if (context.hasFlag("pub"))
+                    {
+                        mask |= tpManager.PUBLIC;
+                    }
+                    if (context.hasFlag("priv"))
+                    {
+                        mask |= tpManager.PRIVATE;
+                    }
+                    tpManager.deleteHomes(user, mask);
+                    context.sendTranslated("&eThe homes are now deleted");
+                }
             }
-        }
-        context.sendTranslated("&cYou have nothing to accept");
+        }, context);
     }
 
     @Command(desc = "List all (public) homes", flags = {
@@ -326,15 +311,5 @@ public class HomeAdminCommand extends ContainerCommand
         }
         home.setVisibility(TeleportPoint.Visibility.PUBLIC);
         context.sendTranslated("&6%s &cis now public", context.getString(0));
-    }
-
-    private class AcceptEntry
-    {
-        private CommandContext context;
-
-        public AcceptEntry(CommandContext context)
-        {
-            this.context = context;
-        }
     }
 }

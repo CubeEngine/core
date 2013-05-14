@@ -335,7 +335,7 @@ public abstract class CubeCommand extends Command
      */
     public void addChild(CubeCommand command)
     {
-        Validate.notNull(command, "The command must not be null!");
+        assert command != null: "The command must not be null!";
 
         if (this == command)
         {
@@ -429,7 +429,7 @@ public abstract class CubeCommand extends Command
         }
         else if (bukkitSender instanceof Player)
         {
-            return core.getUserManager().getExactUser((Player)bukkitSender);
+            return core.getUserManager().getExactUser(bukkitSender.getName());
         }
         else if (bukkitSender instanceof org.bukkit.command.ConsoleCommandSender)
         {

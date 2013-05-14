@@ -20,6 +20,7 @@ package de.cubeisland.cubeengine.vote;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 
+import de.cubeisland.cubeengine.core.module.Inject;
 import de.cubeisland.cubeengine.core.module.Module;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.conomy.Conomy;
@@ -29,7 +30,7 @@ import com.vexsoftware.votifier.model.VotifierEvent;
 
 public class Vote extends Module implements Listener
 {
-    private Conomy conomy;
+    @Inject private Conomy conomy;
 
     @Override
     public void onEnable()

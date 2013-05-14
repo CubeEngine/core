@@ -26,7 +26,8 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
 
-import de.cubeisland.cubeengine.core.storage.world.WorldManager;
+import de.cubeisland.cubeengine.core.module.Inject;
+import de.cubeisland.cubeengine.core.world.WorldManager;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.user.UserManager;
 import de.cubeisland.cubeengine.core.util.StringUtils;
@@ -35,7 +36,7 @@ import de.cubeisland.cubeengine.roles.role.RolesAttachment;
 
 public class SpawnListener implements Listener
 {
-    private final Roles roles;
+    @Inject private final Roles roles;
     private WorldManager wm;
     private UserManager um;
 
@@ -51,7 +52,7 @@ public class SpawnListener implements Listener
     {
         if (!event.getPlayer().hasPlayedBefore())
         {
-            User user = um.getExactUser(event.getPlayer());
+            User user = um.getExactUser(event.getPlayer().getName());
             RolesAttachment rolesAttachment = user.get(RolesAttachment.class);
             if (rolesAttachment == null)
             {
@@ -77,7 +78,7 @@ public class SpawnListener implements Listener
     {
         if (!event.isBedSpawn())
         {
-            User user = um.getExactUser(event.getPlayer());
+            User user = um.getExactUser(event.getPlayer().getName());
             RolesAttachment rolesAttachment = user.get(RolesAttachment.class);
             if (rolesAttachment == null)
             {

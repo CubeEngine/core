@@ -80,11 +80,7 @@ public class TestModuleManager implements ModuleManager
     }
 
     @Override
-    public void enableWorldGeneratorModules()
-    {}
-
-    @Override
-    public void enableModules(boolean worldGenerators)
+    public void enableModules()
     {}
 
     @Override

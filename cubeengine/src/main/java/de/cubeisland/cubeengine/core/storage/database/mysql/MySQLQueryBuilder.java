@@ -173,7 +173,7 @@ public class MySQLQueryBuilder implements QueryBuilder
     @Override
     public MySQLQueryBuilder truncateTable(String table)
     {
-        Validate.notNull(table, "No table specified!");
+        assert table != null: "No table specified!";
 
         this.init();
         this.query.append("TRUNCATE TABLE ").append(this.database.prepareTableName(table));

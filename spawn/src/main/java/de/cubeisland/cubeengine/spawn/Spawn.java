@@ -18,17 +18,20 @@
 package de.cubeisland.cubeengine.spawn;
 
 import de.cubeisland.cubeengine.core.command.reflected.ReflectedCommand;
+import de.cubeisland.cubeengine.core.config.Configuration;
+import de.cubeisland.cubeengine.core.module.Inject;
 import de.cubeisland.cubeengine.core.module.Module;
 import de.cubeisland.cubeengine.roles.Roles;
 
 public class Spawn extends Module
 {
     private SpawnConfig config;
-    private Roles roles;
+    @Inject private Roles roles;
 
     @Override
     public void onEnable()
     {
+        this.config = Configuration.load(SpawnConfig.class, this);
         this.getCore().getEventManager().registerListener(this,new SpawnListener(roles));
         this.getCore().getCommandManager().registerCommands(this,new SpawnCommands(roles,this), ReflectedCommand.class);
         new SpawnPerms(this); // PermContainer registers itself

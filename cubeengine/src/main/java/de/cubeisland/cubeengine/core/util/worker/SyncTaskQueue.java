@@ -67,7 +67,7 @@ public class SyncTaskQueue implements TaskQueue
         {
             return;
         }
-        Validate.notNull(runnable, "The runnable must not be null!");
+        assert runnable != null: "The runnable must not be null!";
 
         this.taskQueue.offer(runnable);
         this.start();

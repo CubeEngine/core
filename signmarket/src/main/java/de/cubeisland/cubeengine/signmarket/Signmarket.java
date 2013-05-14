@@ -19,13 +19,15 @@ package de.cubeisland.cubeengine.signmarket;
 
 import java.util.concurrent.TimeUnit;
 
+import de.cubeisland.cubeengine.core.config.Configuration;
+import de.cubeisland.cubeengine.core.module.Inject;
 import de.cubeisland.cubeengine.core.module.Module;
 import de.cubeisland.cubeengine.core.util.Profiler;
 import de.cubeisland.cubeengine.conomy.Conomy;
 
 public class Signmarket extends Module
 {
-    private Conomy conomy;
+    @Inject private Conomy conomy;
     private MarketSignFactory marketSignFactory;
     private SignMarketConfig config;
     private EditModeListener editModeListener;
@@ -34,6 +36,7 @@ public class Signmarket extends Module
     public void onEnable()
     {
         Profiler.startProfiling("marketSignEnable");
+        this.config = Configuration.load(SignMarketConfig.class, this);
         System.out.print(Profiler.getCurrentDelta("marketSignEnable", TimeUnit.MILLISECONDS) + "ms - MarketSignFactory");
         this.marketSignFactory = new MarketSignFactory(this, this.conomy);
         System.out.print(Profiler.getCurrentDelta("marketSignEnable", TimeUnit.MILLISECONDS) + "ms - MarketSignFactory-loadAllSigns");
