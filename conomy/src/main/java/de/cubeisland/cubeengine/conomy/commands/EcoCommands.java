@@ -20,65 +20,55 @@ package de.cubeisland.cubeengine.conomy.commands;
 import de.cubeisland.cubeengine.core.command.CommandContext;
 import de.cubeisland.cubeengine.core.command.ContainerCommand;
 import de.cubeisland.cubeengine.core.command.parameterized.Flag;
-import de.cubeisland.cubeengine.core.command.parameterized.Param;
 import de.cubeisland.cubeengine.core.command.parameterized.ParameterizedContext;
 import de.cubeisland.cubeengine.core.command.reflected.Command;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.util.StringUtils;
 import de.cubeisland.cubeengine.conomy.Conomy;
-import de.cubeisland.cubeengine.conomy.account.Account_old;
 import de.cubeisland.cubeengine.conomy.Currency;
+import de.cubeisland.cubeengine.conomy.account.Account;
+import de.cubeisland.cubeengine.conomy.account.AccountManager;
 
 public class EcoCommands extends ContainerCommand
 {
     private Conomy module;
+    private AccountManager manager;
+    private Currency currency;
 
     public EcoCommands(Conomy module)
     {
         super(module, "eco", "Administrative commands for Conomy.");
         this.module = module;
+        this.manager = module.getManager();
+        this.currency = manager.getCurrency();
     }
 
-    @Command(names = {
-    "give", "grant"
-    }, desc = "Gives money to given user or all [online] users", usage = "<player>|* [-o] <amount> [in <currency>]", flags = @Flag(longName = "online", name = "o"), params = @Param(names = {
-    "in", "c", "currency"
-    }, type = String.class), min = 2, max = 2)
+    @Command(names = {"give", "grant"},
+             desc = "Gives money to given user or all [online] users",
+             usage = "<player>|* <amount> [-o]",
+             flags = @Flag(longName = "online", name = "o"),
+             min = 2, max = 2)
     public void give(ParameterizedContext context)
     {
-        Currency currency;
         String amountString = context.getString(1);
-        if (context.hasParam("in"))
-        {
-            currency = this.module.getCurrencyManager().getCurrencyByName(context.getString("in"));
-            if (currency == null)
-            {
-                context.sendTranslated("&cCurrency %s not found!", context.getString("in"));
-                return;
-            }
-        }
-        else
-        // try to match if fail default
-        {
-            currency = this.module.getCurrencyManager().matchCurrency(amountString, true).iterator().next(); // can never be empty
-        }
-        Long amount = currency.parse(amountString);
+        Double amount = this.manager.getCurrency().parse(amountString);
         if (amount == null)
         {
-            context.sendTranslated("&cCould not parse amount!");
+            context.sendTranslated("&cCould not parse amount! %s", amountString);
             return;
         }
+        String format = currency.format(amount);
         if (context.getString(0).equalsIgnoreCase("*"))
         {
             if (context.hasFlag("o"))
             {
-                this.module.getAccountsManager().transactAll(currency, amount, true);
-                context.sendTranslated("&aYou gave &6%s &ato every online user!", currency.formatLong(amount));
+                this.manager.transactionAllOnline(amount);
+                context.sendTranslated("&aYou gave &6%s&a to every online user!", format);
             }
             else
             {
-                this.module.getAccountsManager().transactAll(currency, amount, false);
-                context.sendTranslated("&aYou gave &6%s &ato every user!", currency.formatLong(amount));
+                this.manager.transactionAll(true, false, amount);
+                context.sendTranslated("&aYou gave &6%s &ato every user!", format);
             }
         }
         else
@@ -92,63 +82,54 @@ public class EcoCommands extends ContainerCommand
                     context.sendTranslated("&cUser %s not found!", context.getString(0));
                     continue;
                 }
-                Account_old target = this.module.getAccountsManager().getAccount(user, currency);
+                Account target = this.manager.getUserAccount(user.getName(), false);
                 if (target == null)
                 {
-                    context.sendTranslated("&2%s &cdoes not have an account for &6%s&c!",
-                                           user.getName(), currency.getName());
+                    context.sendTranslated("&2%s &cdoes not have an account!", user.getName());
                     continue;
                 }
-                this.module.getAccountsManager().transaction(null, target, amount);
-                context.sendTranslated("&aYou gave &6%s &ato &2%s&a!", currency.formatLong(amount), user.getName());
-                if (!context.getSender().getName().equals(user.getName()))
+                if (this.manager.transaction(null, target, amount, true))
                 {
-                    user.sendTranslated("&aYou were granted &6%s&a.", currency.formatLong(amount));
+                    context.sendTranslated("&aYou gave &6%s&a to &2%s&a!", format, user.getName());
+                    if (!context.getSender().getName().equals(user.getName()))
+                    {
+                        user.sendTranslated("&aYou were granted &6%s&a.", format);
+                    }
+                }
+                else
+                {
+                    context.sendTranslated("&cCould not give the money to &2&s&c!", user.getName());
                 }
             }
         }
     }
 
-    @Command(names = {
-    "take", "remove"
-    }, desc = "Takes money from given user", usage = "<player>|* [-o] <amount> [in <currency>]", flags = @Flag(longName = "online", name = "o"), params = @Param(names = {
-    "in", "c", "currency"
-    }, type = String.class), min = 1, max = 2)
+    @Command(names = {"take", "remove"},
+             desc = "Takes money from given user",
+             usage = "<player>|* <amount> [-o]",
+             flags = @Flag(longName = "online", name = "o"),
+             min = 1, max = 2)
     public void take(ParameterizedContext context)
     {
-        Currency currency;
         String amountString = context.getString(1);
-        if (context.hasParam("in"))
-        {
-            currency = this.module.getCurrencyManager().getCurrencyByName(context.getString("in"));
-            if (currency == null)
-            {
-                context.sendTranslated("&cCurrency %s not found!", context.getString("in"));
-                return;
-            }
-        }
-        else
-        // try to match if fail default
-        {
-            currency = this.module.getCurrencyManager().matchCurrency(amountString, true).iterator().next(); // can never be empty
-        }
-        Long amount = currency.parse(amountString);
+        Double amount = currency.parse(amountString);
         if (amount == null)
         {
             context.sendTranslated("&cCould not parse amount!");
             return;
         }
+        String format = currency.format(amount);
         if (context.getString(0).equalsIgnoreCase("*"))
         {
             if (context.hasFlag("o"))
             {
-                this.module.getAccountsManager().transactAll(currency, -amount, true);
-                context.sendTranslated("&aYou took &6%s &afrom every online euser!", currency.formatLong(amount));
+                this.manager.transactionAllOnline(-amount);
+                context.sendTranslated("&aYou took &6%s&a from every online user!", format);
             }
             else
             {
-                this.module.getAccountsManager().transactAll(currency, -amount, false);
-                context.sendTranslated("&aYou took &6%s &afrom every user!", currency.formatLong(amount));
+                this.manager.transactionAll(true, false, -amount);
+                context.sendTranslated("&aYou took &6%s&a from every user!", format);
             }
         }
         else
@@ -162,53 +143,38 @@ public class EcoCommands extends ContainerCommand
                     context.sendTranslated("&cUser %s not found!", context.getString(0));
                     return;
                 }
-                Account_old target = this.module.getAccountsManager().getAccount(user, currency);
+                Account target = this.manager.getUserAccount(user.getName(), false);
                 if (target == null)
                 {
-                    context.sendTranslated("&2%s &cdoes not have an account for &6%s&c!",
-                                           user.getName(), currency.getName());
+                    context.sendTranslated("&2%s &cdoes not have an account!", user.getName());
                     return;
                 }
-                this.module.getAccountsManager().transaction(null, target, -amount);
-                context.sendTranslated("&aYou took &6%s &afrom &2%s&a!", currency.formatLong(amount), user.getName());
+                this.manager.transaction(target, null, amount, true);
+                context.sendTranslated("&aYou took &6%s &afrom &2%s&a!", format, user.getName());
                 if (!context.getSender().getName().equals(user.getName()))
                 {
-                    user.sendTranslated("&eWithdrawed &6%s &efrom your account.", currency.formatLong(amount));
+                    user.sendTranslated("&eWithdrawed &6%s &efrom your account.", format);
                 }
             }
         }
     }
 
-    @Command(desc = "Reset the money from given user", usage = "<player>|* [-o] [in <currency>]", flags = @Flag(longName = "online", name = "o"), params = @Param(names = {
-    "in", "c", "currency"
-    }, type = String.class), min = 1, max = 1)
+    @Command(desc = "Reset the money from given user",
+             usage = "<player>|* [-o]",
+             flags = @Flag(longName = "online", name = "o"),
+             min = 1, max = 1)
     public void reset(ParameterizedContext context)
     {
-        Currency currency;
-        if (context.hasParam("in"))
-        {
-            currency = this.module.getCurrencyManager().getCurrencyByName(context.getString("in"));
-            if (currency == null)
-            {
-                context.sendTranslated("&cCurrency %s not found!", context.getString("in"));
-                return;
-            }
-        }
-        else
-        // default
-        {
-            currency = this.module.getCurrencyManager().getMainCurrency();
-        }
         if (context.getString(0).equalsIgnoreCase("*"))
         {
             if (context.hasFlag("o"))
             {
-                this.module.getAccountsManager().setAll(currency, currency.getDefaultBalance(), true);
+                this.manager.setAllOnline(this.currency.getDefaultBalance());
                 context.sendTranslated("&aYou resetted every online user account!");
             }
             else
             {
-                this.module.getAccountsManager().setAll(currency, currency.getDefaultBalance(), false);
+                this.manager.setAll(true, false, this.currency.getDefaultBalance());
                 context.sendTranslated("&aYou resetted every user account!");
             }
         }
@@ -223,61 +189,55 @@ public class EcoCommands extends ContainerCommand
                     context.sendTranslated("&cUser %s not found!", context.getString(0));
                     return;
                 }
-                Account_old target = this.module.getAccountsManager().getAccount(user, currency);
+                Account target = this.manager.getUserAccount(user.getName(), false);
                 if (target == null)
                 {
                     context.sendTranslated("&2%s &cdoes not have an account for &6%s&c!",
                                            user.getName(), currency.getName());
                     return;
                 }
-                target.resetToDefault();
-                context.sendTranslated("&2%s &aaccount reset to &6%s&a!", user.getName(), currency.formatLong(target.getBalance()));
-                if (!context.getSender().getName().equals(user.getName()))
+                if (target.reset())
                 {
-                    user.sendTranslated("&eYour balance got resetted to &6%s&e.", currency.formatLong(target.getBalance()));
+                    String format = this.currency.format(this.currency.getDefaultBalance());
+                    context.sendTranslated("&2%s &aaccount reset to &6%s&a!", user.getName(), format);
+                    if (!context.getSender().getName().equals(user.getName()))
+                    {
+                        user.sendTranslated("&eYour balance got resetted to &6%s&e.", format);
+                    }
+                }
+                else
+                {
+                    context.sendTranslated("&cCould not reset the players balance!");
                 }
             }
         }
     }
 
-    @Command(desc = "Sets the money from given user", usage = "<player>|* [-o] <amount> [in <currency>]", flags = @Flag(longName = "online", name = "o"), params = @Param(names = {
-    "in", "c", "currency"
-    }, type = String.class), min = 1, max = 2)
+    @Command(desc = "Sets the money from given user",
+             usage = "<player>|* <amount> [-o]",
+             flags = @Flag(longName = "online", name = "o"),
+             min = 2, max = 2)
     public void set(ParameterizedContext context)
     {
-        Currency currency;
         String amountString = context.getString(1);
-        if (context.hasParam("in"))
-        {
-            currency = this.module.getCurrencyManager().getCurrencyByName(context.getString("in"));
-            if (currency == null)
-            {
-                context.sendTranslated("&cCurrency %s not found!", context.getString("in"));
-                return;
-            }
-        }
-        else
-        // try to match if fail default
-        {
-            currency = this.module.getCurrencyManager().matchCurrency(amountString, true).iterator().next(); // can never be empty
-        }
-        Long amount = currency.parse(amountString);
+        Double amount = currency.parse(amountString);
         if (amount == null)
         {
             context.sendTranslated("&cCould not parse amount!");
             return;
         }
+        String format = this.currency.format(amount);
         if (context.getString(0).equalsIgnoreCase("*"))
         {
             if (context.hasFlag("o"))
             {
-                this.module.getAccountsManager().setAll(currency, currency.getDefaultBalance(), true);
-                context.sendTranslated("&aYou have set every online user account to &6%s&a!", currency.formatLong(amount));
+                this.manager.setAllOnline(amount);
+                context.sendTranslated("&aYou have set every online user account to &6%s&a!", format);
             }
             else
             {
-                this.module.getAccountsManager().setAll(currency, currency.getDefaultBalance(), false);
-                context.sendTranslated("&aYou have set every user account to &6%s&a!", currency.formatLong(amount));
+                this.manager.setAll(true, false, amount);
+                context.sendTranslated("&aYou have set every user account to &6%s&a!", format);
             }
         }
         else
@@ -291,7 +251,7 @@ public class EcoCommands extends ContainerCommand
                     context.sendTranslated("&cUser %s not found!", context.getString(0));
                     return;
                 }
-                Account_old target = this.module.getAccountsManager().getAccount(user, currency);
+                Account target = this.manager.getUserAccount(user.getName(), false);
                 if (target == null)
                 {
                     context.sendTranslated("&2%s &cdoes not have an account for &6%s&c!",
@@ -299,10 +259,10 @@ public class EcoCommands extends ContainerCommand
                     return;
                 }
                 target.set(amount);
-                context.sendTranslated("&2%s &aaccount set to &6%s&a!", user.getName(), currency.formatLong(amount));
+                context.sendTranslated("&2%s &aaccount set to &6%s&a!", user.getName(), format);
                 if (!context.getSender().getName().equals(user.getName()))
                 {
-                    user.sendTranslated("&eYour balance got set to &6%s&e.", currency.formatLong(amount));
+                    user.sendTranslated("&eYour balance got set to &6%s&e.", format);
                 }
             }
         }
@@ -311,26 +271,12 @@ public class EcoCommands extends ContainerCommand
     public void scale(CommandContext context)//TODO
     {}
 
-    @Command(desc = "Hides the account of given player", usage = "<player> [in <currency>]", params = @Param(names = {
-    "in", "c", "currency"
-    }, type = String.class), min = 1, max = 2)
+    @Command(desc = "Hides the account of given player",
+             usage = "<player>",
+             min = 1, max = 1)
     public void hide(ParameterizedContext context)
     {
-        Currency currency;
-        if (context.hasParam("in"))
-        {
-            currency = this.module.getCurrencyManager().getCurrencyByName(context.getString("in"));
-            if (currency == null)
-            {
-                context.sendTranslated("&cCurrency %s not found!", context.getString("in"));
-                return;
-            }
-        }
-        else
-        // default
-        {
-            currency = this.module.getCurrencyManager().getMainCurrency();
-        }
+        // TODO *
         String[] users = StringUtils.explode(",", context.getString(0));
         for (String userString : users)
         {
@@ -340,47 +286,31 @@ public class EcoCommands extends ContainerCommand
                 context.sendTranslated("&cUser %s not found!", context.getString(0));
                 return;
             }
-            Account_old target = this.module.getAccountsManager().getAccount(user, currency);
+            Account target = this.manager.getUserAccount(user.getName(), false);
             if (target == null)
             {
-                context.sendTranslated("&2%s &cdoes not have an account for &6%s&c!",
-                                       user.getName(), currency.getName());
+                context.sendTranslated("&2%s&c does not have an account!", user.getName());
                 return;
             }
             boolean isHidden = target.isHidden();
-
             if (isHidden)
             {
-                context.sendTranslated("&2%s's %eaccount in &6%s &eis already hidden!", user.getName(), currency.getName());
+                context.sendTranslated("&2%s's&e account is already hidden!", user.getName());
             }
             else
             {
                 target.setHidden(true);
-                context.sendTranslated("&2%s's %aaccount in &6%s &ais now hidden!", user.getName(), currency.getName());
+                context.sendTranslated("&2%s's&a account is now hidden!", user.getName());
             }
         }
     }
 
-    @Command(desc = "Unhides the account of given player", usage = "<player> [in <currency>]", params = @Param(names = {
-    "in", "c", "currency"
-    }, type = String.class), min = 1, max = 2)
+    @Command(desc = "Unhides the account of given player",
+             usage = "<player>",
+             min = 1, max = 1)
     public void unhide(ParameterizedContext context)
     {
-        Currency currency;
-        if (context.hasParam("in"))
-        {
-            currency = this.module.getCurrencyManager().getCurrencyByName(context.getString("in"));
-            if (currency == null)
-            {
-                context.sendTranslated("&cCurrency %s not found!", context.getString("in"));
-                return;
-            }
-        }
-        else
-        // default
-        {
-            currency = this.module.getCurrencyManager().getMainCurrency();
-        }
+    // TODO *
         String[] users = StringUtils.explode(",", context.getString(0));
         for (String userString : users)
         {
@@ -390,11 +320,10 @@ public class EcoCommands extends ContainerCommand
                 context.sendTranslated("&cUser %s not found!", context.getString(0));
                 return;
             }
-            Account_old target = this.module.getAccountsManager().getAccount(user, currency);
+            Account target = this.manager.getUserAccount(user.getName(), false);
             if (target == null)
             {
-                context.sendTranslated("&2%s &cdoes not have an account for &6%s&c!",
-                                       user.getName(), currency.getName());
+                context.sendTranslated("&2%s &cdoes not have an account!",user.getName());
                 return;
             }
             boolean isHidden = target.isHidden();
@@ -402,11 +331,11 @@ public class EcoCommands extends ContainerCommand
             if (isHidden)
             {
                 target.setHidden(false);
-                context.sendTranslated("&2%s's %aaccount in &6%s &ais no longer hidden!", user.getName(), currency.getName());
+                context.sendTranslated("&2%s's&a account is no longer hidden!", user.getName());
             }
             else
             {
-                context.sendTranslated("&2%s's %eaccount in &6%s &ewas not hidden!", user.getName(), currency.getName());
+                context.sendTranslated("&2%s's&e account was not hidden!", user.getName());
             }
         }
     }

@@ -55,13 +55,11 @@ public class AccountStorage extends SingleKeyStorage<Long, AccountModel>
                         where().field("name").isEqual().value().end().end());
             this.database.storeStatement(modelClass, "getTopBalance",
                     builder.select().cols(allFields).from(this.tableName).
-                        where().field("currencyName").isEqual().value().
-                            and().field("hidden").isEqual().value(false).
+                        where().field("hidden").isEqual().value(false).
                         orderBy("value").desc().limit().offset().end().end());
             this.database.storeStatement(modelClass, "getTopBalanceWithHidden",
                     builder.select().cols(allFields).from(this.tableName).
-                            where().field("currencyName").isEqual().value().
-                            orderBy("value").desc().limit().offset().end().end());
+                        orderBy("value").desc().limit().offset().end().end());
             this.database.storeStatement(modelClass, "setAllUser",
                     builder.update(this.tableName).set("value").
                         where().field("currencyName").isEqual().value().
@@ -132,18 +130,21 @@ public class AccountStorage extends SingleKeyStorage<Long, AccountModel>
         }
     }
 
-    public Collection<AccountModel> getTopAccounts(Currency currency, int fromRank, int toRank, boolean showHidden)
+    // TODO only get User
+    // TODO add to get TopBank
+    // TODO add to get TopBank&User
+    public Collection<AccountModel> getTopAccounts(int fromRank, int toRank, boolean showHidden)
     {
         try
         {
             ResultSet resultSet;
             if (showHidden)
             {
-                resultSet = this.database.preparedQuery(modelClass, "getTopBalanceWithHidden", currency.getName().toLowerCase(), toRank + 1 - fromRank, fromRank - 1);
+                resultSet = this.database.preparedQuery(modelClass, "getTopBalanceWithHidden", toRank + 1 - fromRank, fromRank - 1);
             }
             else
             {
-                resultSet = this.database.preparedQuery(modelClass, "getTopBalance", currency.getName().toLowerCase(), toRank + 1  - fromRank, fromRank - 1);
+                resultSet = this.database.preparedQuery(modelClass, "getTopBalance", toRank + 1  - fromRank, fromRank - 1);
             }
             LinkedList<AccountModel> list = new LinkedList<AccountModel>();
             while (resultSet.next())

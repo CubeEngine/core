@@ -2,6 +2,7 @@ package de.cubeisland.cubeengine.conomy.account;
 
 import java.io.File;
 import java.text.SimpleDateFormat;
+import java.util.Collection;
 import java.util.Date;
 import java.util.Map;
 import java.util.logging.Formatter;
@@ -192,5 +193,15 @@ public class AccountManager
             to.deposit(amount);
         }
         return true;
+    }
+
+    public Currency getCurrency()
+    {
+        return currency;
+    }
+
+    public Collection<AccountModel> getTopUserAccounts(int fromRank, int toRank, boolean showHidden)
+    {
+        return this.storage.getTopAccounts(fromRank, toRank, showHidden);
     }
 }
