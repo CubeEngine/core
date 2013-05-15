@@ -158,8 +158,8 @@ public abstract class BaseModuleManager implements ModuleManager
                 this.logger.log(ERROR, e.getLocalizedMessage(), e);
             }
         }
-
-        for (String moduleName : this.moduleInfos.keySet())
+        Collection<String> moduleNames = new HashSet<String>(this.moduleInfos.keySet());
+        for (String moduleName : moduleNames)
         {
             try
             {

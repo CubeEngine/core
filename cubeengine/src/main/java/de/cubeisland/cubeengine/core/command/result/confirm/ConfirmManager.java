@@ -23,6 +23,7 @@ import java.util.Map;
 import de.cubeisland.cubeengine.core.Core;
 import de.cubeisland.cubeengine.core.command.ArgBounds;
 import de.cubeisland.cubeengine.core.command.BasicContextFactory;
+import de.cubeisland.cubeengine.core.command.CommandManager;
 import de.cubeisland.cubeengine.core.command.CommandSender;
 import de.cubeisland.cubeengine.core.module.Module;
 import de.cubeisland.cubeengine.core.util.Pair;
@@ -30,17 +31,17 @@ import de.cubeisland.cubeengine.core.util.time.Duration;
 
 public class ConfirmManager
 {
-    private static final Duration CONFIRM_TIMEOUT = new Duration(30000);
+    private static final int CONFIRM_TIMEOUT = 600; // 30 seconds
     private final Map<CommandSender, ConfirmResult> pendingConfirmations;
     private final Map<CommandSender, Pair<Module, Integer>> confirmationTimeoutTasks;
     private final Core core;
 
-    public ConfirmManager(Core core)
+    public ConfirmManager(CommandManager commandManager, Core core)
     {
         this.pendingConfirmations = new HashMap<CommandSender, ConfirmResult>();
         confirmationTimeoutTasks = new HashMap<CommandSender, Pair<Module, Integer>>();
         this.core = core;
-        core.getCommandManager().registerCommand(new ConfirmCommand(core.getModuleManager().getCoreModule(),
+        commandManager.registerCommand(new ConfirmCommand(core.getModuleManager().getCoreModule(),
                                                                     new BasicContextFactory(new ArgBounds(0, 0)), this));
     }
 
@@ -58,7 +59,7 @@ public class ConfirmManager
         this.pendingConfirmations.put(sender, confirmResult);
         this.confirmationTimeoutTasks.put(sender, new Pair<Module, Integer>(module, this.core.getTaskManager()
                                                                                              .runTaskDelayed(module, new ConfirmationTimeoutTask(sender),
-                                                                                                             CONFIRM_TIMEOUT.toTicks())));
+                                                                                                             CONFIRM_TIMEOUT)));
     }
 
     /**
