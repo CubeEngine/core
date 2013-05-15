@@ -17,10 +17,10 @@
  */
 package de.cubeisland.cubeengine.core.command.result.confirm;
 
+import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.Map;
 import java.util.Queue;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
 
 import de.cubeisland.cubeengine.core.Core;
 import de.cubeisland.cubeengine.core.command.ArgBounds;
@@ -33,15 +33,15 @@ import de.cubeisland.cubeengine.core.util.Pair;
 public class ConfirmManager
 {
     private static final int CONFIRM_TIMEOUT = 600; // 30 seconds
-    private final ConcurrentMap<CommandSender, Queue<ConfirmResult>> pendingConfirmations;
-    private final ConcurrentHashMap<CommandSender, Queue<Pair<Module, Integer>>> confirmationTimeoutTasks;
+    private final Map<CommandSender, Queue<ConfirmResult>> pendingConfirmations;
+    private final Map<CommandSender, Queue<Pair<Module, Integer>>> confirmationTimeoutTasks;
     private final Core core;
 
     public ConfirmManager(CommandManager commandManager, Core core)
     {
         this.core = core;
-        this.pendingConfirmations = new ConcurrentHashMap<CommandSender, Queue<ConfirmResult>>();
-        confirmationTimeoutTasks = new ConcurrentHashMap<CommandSender, Queue<Pair<Module, Integer>>>();
+        this.pendingConfirmations = new HashMap<CommandSender, Queue<ConfirmResult>>();
+        confirmationTimeoutTasks = new HashMap<CommandSender, Queue<Pair<Module, Integer>>>();
         commandManager.registerCommand(new ConfirmCommand(core.getModuleManager()
                                                               .getCoreModule(), new BasicContextFactory(new ArgBounds(0, 0)), this));
     }
