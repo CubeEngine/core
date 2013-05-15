@@ -17,8 +17,10 @@
  */
 package de.cubeisland.cubeengine.core.command.result.confirm;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.LinkedList;
+import java.util.Queue;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
 import de.cubeisland.cubeengine.core.Core;
 import de.cubeisland.cubeengine.core.command.ArgBounds;
@@ -27,22 +29,21 @@ import de.cubeisland.cubeengine.core.command.CommandManager;
 import de.cubeisland.cubeengine.core.command.CommandSender;
 import de.cubeisland.cubeengine.core.module.Module;
 import de.cubeisland.cubeengine.core.util.Pair;
-import de.cubeisland.cubeengine.core.util.time.Duration;
 
 public class ConfirmManager
 {
     private static final int CONFIRM_TIMEOUT = 600; // 30 seconds
-    private final Map<CommandSender, ConfirmResult> pendingConfirmations;
-    private final Map<CommandSender, Pair<Module, Integer>> confirmationTimeoutTasks;
+    private final ConcurrentMap<CommandSender, Queue<ConfirmResult>> pendingConfirmations;
+    private final ConcurrentHashMap<CommandSender, Queue<Pair<Module, Integer>>> confirmationTimeoutTasks;
     private final Core core;
 
     public ConfirmManager(CommandManager commandManager, Core core)
     {
-        this.pendingConfirmations = new HashMap<CommandSender, ConfirmResult>();
-        confirmationTimeoutTasks = new HashMap<CommandSender, Pair<Module, Integer>>();
         this.core = core;
-        commandManager.registerCommand(new ConfirmCommand(core.getModuleManager().getCoreModule(),
-                                                                    new BasicContextFactory(new ArgBounds(0, 0)), this));
+        this.pendingConfirmations = new ConcurrentHashMap<CommandSender, Queue<ConfirmResult>>();
+        confirmationTimeoutTasks = new ConcurrentHashMap<CommandSender, Queue<Pair<Module, Integer>>>();
+        commandManager.registerCommand(new ConfirmCommand(core.getModuleManager()
+                                                              .getCoreModule(), new BasicContextFactory(new ArgBounds(0, 0)), this));
     }
 
     /**
@@ -54,12 +55,24 @@ public class ConfirmManager
      * @param module The module the ConfirmResult is registered to
      * @param sender The user that need to confirm something
      */
-    public void registerConfirmResult(ConfirmResult confirmResult, Module module, CommandSender sender)
+    public synchronized void registerConfirmation(ConfirmResult confirmResult, Module module, CommandSender sender)
     {
-        this.pendingConfirmations.put(sender, confirmResult);
-        this.confirmationTimeoutTasks.put(sender, new Pair<Module, Integer>(module, this.core.getTaskManager()
-                                                                                             .runTaskDelayed(module, new ConfirmationTimeoutTask(sender),
-                                                                                                             CONFIRM_TIMEOUT)));
+        Queue<ConfirmResult> pendingConfirmations = this.pendingConfirmations.get(sender);
+        if (pendingConfirmations == null)
+        {
+            pendingConfirmations = new LinkedList<ConfirmResult>();
+        }
+        pendingConfirmations.add(confirmResult);
+        this.pendingConfirmations.put(sender, pendingConfirmations);
+
+        Queue<Pair<Module, Integer>> confirmationTimeoutTasks = this.confirmationTimeoutTasks.get(sender);
+        if (confirmationTimeoutTasks == null)
+        {
+            confirmationTimeoutTasks = new LinkedList<Pair<Module, Integer>>();
+        }
+        confirmationTimeoutTasks.add(new Pair<Module, Integer>(module, this.core.getTaskManager()
+                                                                                .runTaskDelayed(module, new ConfirmationTimeoutTask(sender), CONFIRM_TIMEOUT)));
+        this.confirmationTimeoutTasks.put(sender, confirmationTimeoutTasks);
     }
 
     /**
@@ -67,9 +80,15 @@ public class ConfirmManager
      * @param sender
      * @return
      */
-    public boolean hasPendingConfirmation(CommandSender sender)
+    public synchronized int countPendingConfirmations(CommandSender sender)
     {
-        return pendingConfirmations.containsKey(sender);
+        assert sender != null;
+        Queue<ConfirmResult> pendingConfirmations = this.pendingConfirmations.get(sender);
+        if (pendingConfirmations == null)
+        {
+            return 0;
+        }
+        return pendingConfirmations.size();
     }
 
     /**
@@ -78,15 +97,33 @@ public class ConfirmManager
      * @param sender
      * @return
      */
-    public ConfirmResult getPendingConfirmation(CommandSender sender)
+    public synchronized ConfirmResult getLastPendingConfirmation(CommandSender sender)
     {
-        Pair<Module, Integer> pair = this.confirmationTimeoutTasks.get(sender);
+        if (countPendingConfirmations(sender) < 1)
+        {
+            return null;
+        }
+
+        Queue<Pair<Module, Integer>> confirmationTimeoutTasks = this.confirmationTimeoutTasks.get(sender);
+        if (confirmationTimeoutTasks == null)
+        {
+            confirmationTimeoutTasks = new LinkedList<Pair<Module, Integer>>();
+        }
+        Pair<Module, Integer> pair = confirmationTimeoutTasks.poll();
+        this.confirmationTimeoutTasks.put(sender, confirmationTimeoutTasks);
         this.core.getTaskManager().cancelTask(pair.getLeft(), pair.getRight());
-        return pendingConfirmations.get(sender);
+
+        Queue<ConfirmResult> pendingConfirmations = this.pendingConfirmations.get(sender);
+        if (pendingConfirmations == null)
+        {
+            pendingConfirmations = new LinkedList<ConfirmResult>();
+        }
+        this.pendingConfirmations.put(sender, pendingConfirmations);
+        return pendingConfirmations.poll();
     }
 
     /**
-     * Class to remove tasks that have timed out, and notify the COmmandSender
+     * Class to remove tasks that have timed out, and notify the CommandSender
      */
     private class ConfirmationTimeoutTask implements Runnable
     {
@@ -101,7 +138,7 @@ public class ConfirmManager
         @Override
         public void run()
         {
-            sender.sendTranslated("Your confirmation timed out....");
+            sender.sendTranslated("&cYour confirmation timed out....");
             pendingConfirmations.remove(sender);
         }
     }

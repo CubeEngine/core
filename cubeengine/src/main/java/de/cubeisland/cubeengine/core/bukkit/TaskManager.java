@@ -90,7 +90,7 @@ public class TaskManager implements Cleanable
     }
 
     /**
-     * Schedules a delayed task for a module with the given delay
+     * Schedules a delayed task for a module with the given delay on the main server thread
      *
      * @param module   the module
      * @param runnable the task
