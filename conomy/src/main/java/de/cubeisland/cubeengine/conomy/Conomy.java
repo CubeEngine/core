@@ -20,6 +20,9 @@ package de.cubeisland.cubeengine.conomy;
 import de.cubeisland.cubeengine.core.command.CommandManager;
 import de.cubeisland.cubeengine.core.config.Configuration;
 import de.cubeisland.cubeengine.core.module.Module;
+import de.cubeisland.cubeengine.core.util.convert.Convert;
+import de.cubeisland.cubeengine.conomy.Currency.CurrencyType;
+import de.cubeisland.cubeengine.conomy.Currency.CurrencyTypeConverter;
 import de.cubeisland.cubeengine.conomy.account.AccountManager;
 import de.cubeisland.cubeengine.conomy.commands.EcoCommands;
 import de.cubeisland.cubeengine.conomy.commands.MoneyCommand;
@@ -33,8 +36,9 @@ public class Conomy extends Module
     @Override
     public void onEnable()
     {
-        this.manager = new AccountManager(this);
+        Convert.registerConverter(CurrencyType.class, new CurrencyTypeConverter());
         this.config = Configuration.load(ConomyConfiguration.class, this);
+        this.manager = new AccountManager(this);
         new ConomyPermissions(this);
         final CommandManager cm = this.getCore().getCommandManager();
         cm.registerCommand(new MoneyCommand(this));

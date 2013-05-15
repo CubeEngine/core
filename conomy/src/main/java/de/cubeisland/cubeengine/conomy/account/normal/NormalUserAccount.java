@@ -1,5 +1,6 @@
 package de.cubeisland.cubeengine.conomy.account.normal;
 
+import de.cubeisland.cubeengine.conomy.ConomyPermissions;
 import de.cubeisland.cubeengine.conomy.account.UserAccount;
 
 public class NormalUserAccount extends UserAccount
@@ -29,7 +30,7 @@ public class NormalUserAccount extends UserAccount
     @Override
     public boolean has(double amount)
     {
-        if (false)// TODO permission to get under min
+        if (ConomyPermissions.ACCOUNT_ALLOWUNDERMIN.isAuthorized(this.getHolder()))
         {
             return true;
         }

@@ -28,7 +28,6 @@ import de.cubeisland.cubeengine.core.storage.SingleKeyStorage;
 import de.cubeisland.cubeengine.core.storage.StorageException;
 import de.cubeisland.cubeengine.core.storage.database.Database;
 import de.cubeisland.cubeengine.core.storage.database.querybuilder.QueryBuilder;
-import de.cubeisland.cubeengine.conomy.Currency;
 
 public class AccountStorage extends SingleKeyStorage<Long, AccountModel>
 {
@@ -62,13 +61,11 @@ public class AccountStorage extends SingleKeyStorage<Long, AccountModel>
                         orderBy("value").desc().limit().offset().end().end());
             this.database.storeStatement(modelClass, "setAllUser",
                     builder.update(this.tableName).set("value").
-                        where().field("currencyName").isEqual().value().
-                        and().not().field("user_id").isEqual().value(null).end().end());
+                        where().not().field("user_id").isEqual().value(null).end().end());
 
             this.database.storeStatement(modelClass, "transactAllUser",
                     builder.update(this.tableName).set("value").beginFunction("+").field("value").endFunction().
-                        where().field("currencyName").isEqual().value().
-                        and().not().field("user_id").isEqual().value(null).end().end());
+                        where().not().field("user_id").isEqual().value(null).end().end());
         }
         catch (SQLException e)
         {
@@ -76,61 +73,6 @@ public class AccountStorage extends SingleKeyStorage<Long, AccountModel>
         }
     }
 
-    public Collection<AccountModel> loadAccounts(Long userId)
-    {
-        try
-        {
-            ResultSet resulsSet = this.database.preparedQuery(modelClass, "getByUserID", userId);
-            ArrayList<AccountModel> accs = new ArrayList<AccountModel>();
-            while (resulsSet.next())
-            {
-                AccountModel loadedModel = this.modelClass.newInstance();
-                for (Field field : this.fieldNames.keySet())
-                {
-                    field.set(loadedModel, resulsSet.getObject(this.fieldNames.get(field)));
-                }
-                accs.add(loadedModel);
-            }
-            return accs;
-        }
-        catch (SQLException ex)
-        {
-            throw new IllegalStateException("Error while reading from Database", ex);
-        }
-        catch (Exception ex)
-        {
-            throw new IllegalStateException("Error while creating fresh Model from Database", ex);
-        }
-    }
-
-    public Collection<AccountModel> loadAccounts(String name)
-    {
-        try
-        {
-            ResultSet resulsSet = this.database.preparedQuery(modelClass, "getByAccountName", name);
-            ArrayList<AccountModel> accs = new ArrayList<AccountModel>();
-            while (resulsSet.next())
-            {
-                AccountModel loadedModel = this.modelClass.newInstance();
-                for (Field field : this.fieldNames.keySet())
-                {
-                    field.set(loadedModel, resulsSet.getObject(this.fieldNames.get(field)));
-                }
-                accs.add(loadedModel);
-            }
-            return accs;
-        }
-        catch (SQLException ex)
-        {
-            throw new IllegalStateException("Error while reading from Database", ex);
-        }
-        catch (Exception ex)
-        {
-            throw new IllegalStateException("Error while creating fresh Model from Database", ex);
-        }
-    }
-
-    // TODO only get User
     // TODO add to get TopBank
     // TODO add to get TopBank&User
     public Collection<AccountModel> getTopAccounts(int fromRank, int toRank, boolean showHidden)
@@ -168,11 +110,11 @@ public class AccountStorage extends SingleKeyStorage<Long, AccountModel>
         }
     }
 
-    public void transactAll(Currency currency, long amount)
+    public void transactAll(long amount)
     {
         try
         {
-            this.database.preparedUpdate(modelClass, "transactAllUser", amount, currency.getName());
+            this.database.preparedUpdate(modelClass, "transactAllUser", amount);
         }
         catch (SQLException ex)
         {
@@ -180,11 +122,11 @@ public class AccountStorage extends SingleKeyStorage<Long, AccountModel>
         }
     }
 
-    public void setAll(Currency currency, long amount)
+    public void setAll(long amount)
     {
         try
         {
-            this.database.preparedUpdate(modelClass, "setAllUser", amount, currency.getName());
+            this.database.preparedUpdate(modelClass, "setAllUser", amount);
         }
         catch (SQLException ex)
         {
@@ -194,11 +136,34 @@ public class AccountStorage extends SingleKeyStorage<Long, AccountModel>
 
     public AccountModel getBankAccount(String name)
     {
+
         return null; // TODO get bankacc /w BankName from db
     }
 
     public AccountModel getUserAccount(long userID)
     {
-        return null; // TODO get useracc /w UserID from db
+        try
+        {
+            ResultSet resulsSet = this.database.preparedQuery(modelClass, "getByUserID", userID);
+            ArrayList<AccountModel> accs = new ArrayList<AccountModel>();
+            if (resulsSet.next())
+            {
+                AccountModel loadedModel = this.modelClass.newInstance();
+                for (Field field : this.fieldNames.keySet())
+                {
+                    field.set(loadedModel, resulsSet.getObject(this.fieldNames.get(field)));
+                }
+                return loadedModel;
+            }
+            return null;
+        }
+        catch (SQLException ex)
+        {
+            throw new IllegalStateException("Error while reading from Database", ex);
+        }
+        catch (Exception ex)
+        {
+            throw new IllegalStateException("Error while creating fresh Model from Database", ex);
+        }
     }
 }

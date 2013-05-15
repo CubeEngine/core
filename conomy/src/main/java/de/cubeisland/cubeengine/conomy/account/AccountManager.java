@@ -81,7 +81,7 @@ public class AccountManager
             if (model == null)
             {
                 if (!create) return null;
-                model = new AccountModel(null,name,this.currency.getType().name(),(int) (this.currency.getDefaultBankBalance() * this.currency.fractionalDigitsFactor()),false);
+                model = new AccountModel(null,name,(int) (this.currency.getDefaultBankBalance() * this.currency.fractionalDigitsFactor()),false);
                 this.storage.store(model);
                 // TODO log Acc-creation
             }
@@ -123,7 +123,7 @@ public class AccountManager
             if (model == null)
             {
                 if (!create) return null;
-                model = new AccountModel(user.key,null,this.currency.getType().name(),(int) (this.currency.getDefaultBalance() * this.currency.fractionalDigitsFactor()),false);
+                model = new AccountModel(user.key,null,(int) (this.currency.getDefaultBalance() * this.currency.fractionalDigitsFactor()),false);
                 this.storage.store(model);
                 // TODO log Acc-creation
             }
