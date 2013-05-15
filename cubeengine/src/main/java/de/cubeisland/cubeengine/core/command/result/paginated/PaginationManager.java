@@ -17,6 +17,35 @@
  */
 package de.cubeisland.cubeengine.core.command.result.paginated;
 
+import java.util.Arrays;
+import java.util.List;
+
+import de.cubeisland.cubeengine.core.command.CommandSender;
+
 public class PaginationManager
 {
+    public static final String HEADER = "----------Page %d----------";
+    public static final String FOOTER = "--/prev - Page %d - /next--";
+    public static final String CARET = " - ";
+    public static final int LINES_PER_PAGE = 5;
+
+    public List<String> getPage(CommandSender sender, int page)
+    {
+         return Arrays.asList("-");
+    }
+
+    public List<String> getNextPage(CommandSender sender)
+    {
+        return getPage(sender, 1);
+    }
+
+    public List<String> getPrevPage(CommandSender sender)
+    {
+        return getPage(sender, 0);
+    }
+
+    public boolean hasResult(CommandSender sender)
+    {
+        return false;
+    }
 }

@@ -31,6 +31,8 @@ public class PaginatedResult implements CommandResult
     {
         this.context = context;
         this.lines = lines;
+
+        context.getCommand().getModule().getCore().getCommandManager().getPaginationManager();
     }
 
     @Override

@@ -19,6 +19,7 @@ package de.cubeisland.cubeengine.core.command;
 
 import de.cubeisland.cubeengine.core.command.result.confirm.ConfirmManager;
 import de.cubeisland.cubeengine.core.command.result.confirm.ConfirmResult;
+import de.cubeisland.cubeengine.core.command.result.paginated.PaginationManager;
 import de.cubeisland.cubeengine.core.command.sender.ConsoleCommandSender;
 import de.cubeisland.cubeengine.core.module.Module;
 import de.cubeisland.cubeengine.core.util.Cleanable;
@@ -45,4 +46,6 @@ public interface CommandManager extends Cleanable
     void logTabCompletion(CommandSender sender, CubeCommand cubeCommand, String[] args);
 
     ConfirmManager getConfirmManager();
+
+    PaginationManager getPaginationManager();
 }

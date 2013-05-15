@@ -17,18 +17,47 @@
  */
 package de.cubeisland.cubeengine.core.command.result.paginated;
 
+import de.cubeisland.cubeengine.core.command.CommandContext;
 import de.cubeisland.cubeengine.core.command.CommandHolder;
 import de.cubeisland.cubeengine.core.command.CubeCommand;
 import de.cubeisland.cubeengine.core.command.reflected.ReflectedCommand;
 
 public class PaginationCommands implements CommandHolder
 {
+    private PaginationManager pgManager;
+
     public Class<? extends CubeCommand> getCommandType()
     {
         return ReflectedCommand.class;
     }
 
-    // Next command
+    public void next(CommandContext context)
+    {
+        if (!this.pgManager.hasResult(context.getSender()))
+        {
+            context.sendTranslated("&cYou don't have any results to show!");
+            return;
+        }
+        context.sendTranslated(PaginationManager.HEADER);
+        for (String line : pgManager.getNextPage(context.getSender()))
+        {
+            context.sendMessage(line);
+        }
+        context.sendTranslated(PaginationManager.FOOTER);
+    }
 
-    // Prev and Previous command
+    public void prev(CommandContext context)
+    {
+        if (!this.pgManager.hasResult(context.getSender()))
+        {
+            context.sendTranslated("&cYou don't have any results to show!");
+            return;
+        }
+        context.sendTranslated(PaginationManager.HEADER);
+        for (String line : pgManager.getPrevPage(context.getSender()))
+        {
+            context.sendMessage(line);
+        }
+        context.sendTranslated(PaginationManager.FOOTER);
+    }
 }
