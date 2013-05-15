@@ -41,7 +41,7 @@ public class Currency
         this.manager = manager;
         this.config = config;
         //this.pattern1 = Pattern.compile("^-*[\\d,]+$");
-        this.fractionalDigitsFactor = (int)Math.pow(this.config.fractionalDigits,10);
+        this.fractionalDigitsFactor = (int)Math.pow(10, this.config.fractionalDigits);
     }
 
     public String getName()

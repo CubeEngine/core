@@ -580,9 +580,9 @@ public class MarketSign
         }
         if (this.allowBuyIfEmpty())
         {
-            return "&o"+this.getCurrency().format(this.getPrice());
+            return "&o"+this.getCurrency().format(this.getPrice() / this.getCurrency().fractionalDigitsFactor());
         }
-        return this.getCurrency().format(this.getPrice());
+        return this.getCurrency().format(this.getPrice() / this.getCurrency().fractionalDigitsFactor());
     }
 
     @SuppressWarnings("deprecation")
@@ -763,7 +763,7 @@ public class MarketSign
                     return;
                 }
                 Account userAccount = this.conomy.getManager().getUserAccount(user.getName(), true);
-                Account ownerAccount = this.conomy.getManager().getUserAccount(this.getOwner().getName(), true);
+                Account ownerAccount = this.getOwner() != null ? this.conomy.getManager().getUserAccount(this.getOwner().getName(), true) : null;
                 ItemStack item = this.getItem().clone();
                 item.setAmount(this.getAmount());
                 if (checkForPlace(user.getInventory(), item.clone()))
@@ -815,8 +815,8 @@ public class MarketSign
             item.setAmount(this.getAmount());
 
             Account userAccount = this.conomy.getManager().getUserAccount(user.getName(), true);
-            Account ownerAccount = this.conomy.getManager().getUserAccount(this.getOwner().getName(), true);
-            if (ownerAccount.transactionTo(userAccount, this.getPrice() / this.getCurrency().fractionalDigitsFactor(), false))
+            Account ownerAccount = this.getOwner() != null ? this.conomy.getManager().getUserAccount(this.getOwner().getName(), true) : null;
+            if (this.conomy.getManager().transaction(ownerAccount, userAccount, this.getPrice() / this.getCurrency().fractionalDigitsFactor(), false))
             {
                 user.getInventory().removeItem(item);
                 if (this.hasStock())
@@ -868,12 +868,6 @@ public class MarketSign
         {
             if (user != null)
                 user.sendTranslated("&cNo item given!");
-            result = false;
-        }
-        if (this.blockInfo.currency == null)
-        {
-            if (user != null)
-                user.sendTranslated("&cNo currency given!");
             result = false;
         }
         return result;
@@ -1214,7 +1208,6 @@ public class MarketSign
     public void setCurrency(Currency currency)
     {
         this.currency = currency;
-        this.blockInfo.currency = currency.getName();
     }
 
     public boolean isInEditMode()

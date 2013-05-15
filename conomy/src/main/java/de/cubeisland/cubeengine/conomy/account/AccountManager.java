@@ -180,17 +180,27 @@ public class AccountManager
 
     public boolean transaction(Account from, Account to, double amount, boolean force)
     {
-        if (from.getCurrencyType().equals(to.getCurrencyType()))
+        if (to == null && from == null)
         {
-            if (!force)
+            throw new IllegalStateException("Both accounts are null!");
+        }
+        if (from == null || to == null || from.getCurrencyType().equals(to.getCurrencyType()))
+        {
+            if (from != null && !force)
             {
                 if (!from.has(amount))
                 {
                     return false;
                 }
             }
-            from.withdraw(amount);
-            to.deposit(amount);
+            if (from != null)
+            {
+                from.withdraw(amount);
+            }
+            if (to != null)
+            {
+                to.deposit(amount);
+            }
         }
         return true;
     }
