@@ -71,7 +71,7 @@ public abstract class UserAccount extends UserAttachment implements Account
     public boolean reset()
     {
         this.set(this.currency.getDefaultBalance());
-        return true; // TODO override if not possible!!!
+        return true; // TODO override if not possible!!! (for other currencyTypes than NORMAL)
     }
 
     @Override

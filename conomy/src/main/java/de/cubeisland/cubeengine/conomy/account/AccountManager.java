@@ -214,4 +214,15 @@ public class AccountManager
     {
         return this.storage.getTopAccounts(fromRank, toRank, showHidden);
     }
+
+    public void hideAll()
+    {
+        // TODO
+
+    }
+
+    public void unhideAll()
+    {
+        // TODO
+    }
 }

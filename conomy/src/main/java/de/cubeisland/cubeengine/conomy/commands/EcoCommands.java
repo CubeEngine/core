@@ -21,6 +21,7 @@ import de.cubeisland.cubeengine.core.command.CommandContext;
 import de.cubeisland.cubeengine.core.command.ContainerCommand;
 import de.cubeisland.cubeengine.core.command.parameterized.Flag;
 import de.cubeisland.cubeengine.core.command.parameterized.ParameterizedContext;
+import de.cubeisland.cubeengine.core.command.readers.FloatReader;
 import de.cubeisland.cubeengine.core.command.reflected.Command;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.util.StringUtils;
@@ -268,15 +269,51 @@ public class EcoCommands extends ContainerCommand
         }
     }
 
-    public void scale(CommandContext context)//TODO
-    {}
+    @Command(desc = "Scales the money from given users",
+             usage = "<player>|* <factor>",
+             min = 2, max = 2)
+    public void scale(CommandContext context)//TODO online flag ??
+    {
+        Float factor = context.getArg(1, Float.class, null);
+        if (factor == null)
+        {
+            context.sendTranslated("&cInvalid factor: &6%s",context.getString(1));
+            return;
+        }
+        if (context.getString(0).equals("*"))
+        {
+            this.manager.scaleAll(true, false, factor);
+            return;
+        }
+        String[] users = StringUtils.explode(",", context.getString(0));
+        for (String userString : users)
+        {
+            User user = this.module.getCore().getUserManager().findUser(userString);
+            if (user == null)
+            {
+                context.sendTranslated("&cUser %s not found!", context.getString(0));
+                return;
+            }
+            Account account = this.manager.getUserAccount(user.getName(), false);
+            if (account == null)
+            {
+                context.sendTranslated("&2%s&c does not have an account!", user.getName());
+                return;
+            }
+            account.scale(factor);
+        }
+    }
 
     @Command(desc = "Hides the account of given player",
-             usage = "<player>",
+             usage = "<player>|*",
              min = 1, max = 1)
     public void hide(ParameterizedContext context)
     {
-        // TODO *
+        if (context.getString(0).equals("*"))
+        {
+            this.manager.hideAll();
+            return;
+        }
         String[] users = StringUtils.explode(",", context.getString(0));
         for (String userString : users)
         {
@@ -306,11 +343,15 @@ public class EcoCommands extends ContainerCommand
     }
 
     @Command(desc = "Unhides the account of given player",
-             usage = "<player>",
+             usage = "<player>|*",
              min = 1, max = 1)
     public void unhide(ParameterizedContext context)
     {
-    // TODO *
+        if (context.getString(0).equals("*"))
+        {
+            this.manager.unhideAll();
+            return;
+        }
         String[] users = StringUtils.explode(",", context.getString(0));
         for (String userString : users)
         {
