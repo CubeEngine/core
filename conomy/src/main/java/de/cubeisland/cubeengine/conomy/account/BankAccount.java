@@ -1,32 +1,16 @@
 package de.cubeisland.cubeengine.conomy.account;
 
 import de.cubeisland.cubeengine.conomy.account.storage.AccountModel;
-import de.cubeisland.cubeengine.conomy.Currency;
-import de.cubeisland.cubeengine.conomy.Currency.CurrencyType;
 
-public abstract class BankAccount implements Account
+public class BankAccount implements Account
 {
-    private Currency currency;
     protected AccountModel model;
-    private AccountManager manager;
+    private ConomyManager manager;
 
-    protected BankAccount(AccountManager manager, Currency currency, AccountModel model)
+    protected BankAccount(ConomyManager manager, AccountModel model)
     {
         this.manager = manager;
-        this.currency = currency;
         this.model = model;
-    }
-
-    @Override
-    public Currency getCurrency()
-    {
-        return this.currency;
-    }
-
-    @Override
-    public CurrencyType getCurrencyType()
-    {
-        return this.currency.getType();
     }
 
     @Override
@@ -46,7 +30,6 @@ public abstract class BankAccount implements Account
         this.manager.storage.update(this.model);
     }
 
-
     @Override
     public boolean isHidden()
     {
@@ -61,20 +44,55 @@ public abstract class BankAccount implements Account
     }
 
     @Override
-    public boolean scale(float factor)
+    public double balance()
     {
-        return this.set(this.balance() * factor);
+        return this.model.value / this.manager.fractionalDigitsFactor();
     }
 
     @Override
-    public double balance()
+    public boolean scale(float factor)
     {
-        return this.model.value / this.currency.fractionalDigitsFactor();
+        boolean b = this.set(this.balance() * factor);
+        this.manager.logger.info("SCALE Bank:" + this.getName() + " " + factor + " :: " + this.balance());
+        return b;
     }
 
     @Override
     public boolean reset()
     {
-        return this.set(this.currency.getDefaultBankBalance());
+        return this.set(this.manager.getDefaultBankBalance());
+    }
+
+    @Override
+    public boolean deposit(double amount)
+    {
+        this.model.value += amount * this.manager.fractionalDigitsFactor();
+        this.update();
+        this.manager.logger.info("DEPOSIT Bank:" + this.getName() + " " + amount + " :: " + this.balance());
+        return true;
+    }
+
+    @Override
+    public boolean withdraw(double amount)
+    {
+        this.model.value -= amount * this.manager.fractionalDigitsFactor();
+        this.update();
+        this.manager.logger.info("WITHDRAW Bank:" + this.getName() + " " + amount + " :: " + this.balance());
+        return true;
+    }
+
+    @Override
+    public boolean has(double amount)
+    {
+        return (this.model.value - amount * this.manager.fractionalDigitsFactor()) >= this.manager.getMinimumBankBalance();
+    }
+
+    @Override
+    public boolean set(double amount)
+    {
+        this.model.value = (long)(amount * this.manager.fractionalDigitsFactor());
+        this.update();
+        this.manager.logger.info("SET Bank:" + this.getName() + " " + amount + " :: " + amount);
+        return true;
     }
 }

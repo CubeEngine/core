@@ -20,10 +20,7 @@ package de.cubeisland.cubeengine.conomy;
 import de.cubeisland.cubeengine.core.command.CommandManager;
 import de.cubeisland.cubeengine.core.config.Configuration;
 import de.cubeisland.cubeengine.core.module.Module;
-import de.cubeisland.cubeengine.core.util.convert.Convert;
-import de.cubeisland.cubeengine.conomy.Currency.CurrencyType;
-import de.cubeisland.cubeengine.conomy.Currency.CurrencyTypeConverter;
-import de.cubeisland.cubeengine.conomy.account.AccountManager;
+import de.cubeisland.cubeengine.conomy.account.ConomyManager;
 import de.cubeisland.cubeengine.conomy.commands.EcoCommands;
 import de.cubeisland.cubeengine.conomy.commands.MoneyCommand;
 
@@ -31,14 +28,13 @@ public class Conomy extends Module
 {
     private ConomyConfiguration config;
     //TODO Roles support (e.g. allow all user of a role to access a bank)
-    private AccountManager manager;
+    private ConomyManager manager;
 
     @Override
     public void onEnable()
     {
-        Convert.registerConverter(CurrencyType.class, new CurrencyTypeConverter());
         this.config = Configuration.load(ConomyConfiguration.class, this);
-        this.manager = new AccountManager(this);
+        this.manager = new ConomyManager(this);
         new ConomyPermissions(this);
         final CommandManager cm = this.getCore().getCommandManager();
         cm.registerCommand(new MoneyCommand(this));
@@ -50,7 +46,7 @@ public class Conomy extends Module
         return this.config;
     }
 
-    public AccountManager getManager()
+    public ConomyManager getManager()
     {
         return manager;
     }

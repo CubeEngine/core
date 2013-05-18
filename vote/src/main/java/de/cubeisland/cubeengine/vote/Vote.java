@@ -43,7 +43,7 @@ public class Vote extends Module implements Listener
     {
         final com.vexsoftware.votifier.model.Vote vote = event.getVote();
         final User user = this.getCore().getUserManager().getUser(vote.getUsername());
-        final Account account = this.conomy.getManager().getUserAccount(user.getName(),true);
+        final Account account = this.conomy.getManager().getUserAccount(user, true);
         // TODO
     }
 }

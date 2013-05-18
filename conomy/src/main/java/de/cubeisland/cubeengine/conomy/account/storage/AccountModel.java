@@ -28,7 +28,7 @@ import static de.cubeisland.cubeengine.core.storage.database.Index.IndexType.UNI
 
 @SingleKeyEntity(tableName = "accounts", primaryKey = "key", autoIncrement = true, indices = {
     @Index(value = FOREIGN_KEY, fields = "user_id", f_table = "user", f_field = "key"),
-    @Index(value = UNIQUE, fields = // prevent multiple accounts for a user/bank in the same currency
+    @Index(value = UNIQUE, fields =
     {
         "user_id", "name"
     })
@@ -45,8 +45,6 @@ public class AccountModel implements Model<Long>
     public long value;
     @Attribute(type = AttrType.BOOLEAN)
     public boolean hidden = false;
-    // TODO world
-    public Long world;
 
     @Override
     public Long getId()

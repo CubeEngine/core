@@ -31,23 +31,21 @@ import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.util.StringUtils;
 import de.cubeisland.cubeengine.conomy.Conomy;
 import de.cubeisland.cubeengine.conomy.ConomyPermissions;
-import de.cubeisland.cubeengine.conomy.Currency;
 import de.cubeisland.cubeengine.conomy.account.Account;
-import de.cubeisland.cubeengine.conomy.account.AccountManager;
+import de.cubeisland.cubeengine.conomy.account.ConomyManager;
+import de.cubeisland.cubeengine.conomy.account.UserAccount;
 import de.cubeisland.cubeengine.conomy.account.storage.AccountModel;
 
 public class MoneyCommand extends ContainerCommand
 {
     private Conomy module;
-    private AccountManager manager;
-    private Currency currency;
+    private ConomyManager manager;
 
     public MoneyCommand(Conomy module)
     {
         super(module, "money", "Manages your money.");
         this.module = module;
         this.manager = module.getManager();
-        this.currency = this.manager.getCurrency();
     }
 
     @Override
@@ -57,16 +55,16 @@ public class MoneyCommand extends ContainerCommand
         {
             return super.run(context);
         }
-        else
-        {
-            this.balance((ParameterizedContext)context);
-            return null;
-        }
+        this.balance((ParameterizedContext)context);
+        return null;
+    }
+    
+    private UserAccount getUserAccount(User user)
+    {
+        return this.manager.getUserAccount(user, this.module.getConfig().autocreateUserAcc);
     }
 
-    @Alias(names = {
-        "balance", "moneybalance"
-    })
+    @Alias(names = {"balance", "moneybalance", "pmoney"})
     @Command(desc = "Shows your balance",
              usage = "[player]",
              flags = @Flag(longName = "showHidden", name = "f"),
@@ -88,17 +86,17 @@ public class MoneyCommand extends ContainerCommand
         {
             if (!(context.getSender() instanceof User))
             {
-                context.sendTranslated("&cYou are out of money! Better go work than typing silly commands in the console.");
+                context.sendTranslated("&cIf you are out of money, better go work than typing silly commands in the console.");
                 return;
             }
             user = (User)context.getSender();
         }
-        Account account = this.manager.getUserAccount(user.getName(), false);
+        Account account = this.getUserAccount(user);
         if (account != null)
         {
             if (!account.isHidden() || showHidden)
             {
-                context.sendTranslated("&2%s's &aBalance: &6%s", user.getName(), currency.format(account.balance()));
+                context.sendTranslated("&2%s's &aBalance: &6%s", user.getName(), manager.format(account.balance()));
                 return;
             }
         }
@@ -137,7 +135,7 @@ public class MoneyCommand extends ContainerCommand
                 return;
             }
         }
-        Collection<AccountModel> models = this.manager.getTopUserAccounts(fromRank, toRank, showHidden);
+        Collection<AccountModel> models = this.manager.getTopAccounts(true, false, fromRank, toRank, showHidden);
         int i = fromRank;
         if (fromRank == 1)
         {
@@ -150,13 +148,11 @@ public class MoneyCommand extends ContainerCommand
         for (AccountModel account : models)
         {
             context.sendTranslated("&a%d &f- &2%s&f: &6%s", i++,
-                    this.module.getCore().getUserManager().getUser(account.user_id).getName(), currency.format(account.value / currency.fractionalDigitsFactor()));
+                    this.module.getCore().getUserManager().getUser(account.user_id).getName(), manager.format(account.value / manager.fractionalDigitsFactor()));
         }
     }
 
-    @Alias(names = {
-        "pay"
-    })
+    @Alias(names = {"pay"})
     @Command(names = {"pay", "give"},
              desc = "Transfer the given amount to another account.",
              usage = "<player> [as <player>] <amount>",
@@ -166,13 +162,13 @@ public class MoneyCommand extends ContainerCommand
     public void pay(ParameterizedContext context)
     {
         String amountString = context.getString(1);
-        Double amount = currency.parse(amountString);
+        Double amount = manager.parse(amountString);
         if (amount == null)
         {
             context.sendTranslated("&cCould not parse amount!");
             return;
         }
-        String format = currency.format(amount);
+        String format = manager.format(amount);
         User sender;
         boolean asSomeOneElse = false;
         if (context.hasParam("as"))
@@ -194,11 +190,11 @@ public class MoneyCommand extends ContainerCommand
             }
             sender = (User)context.getSender();
         }
-        Account source = this.manager.getUserAccount(sender.getName(), false);
+        Account source = this.manager.getUserAccount(sender, false);
         if (source == null)
         {
-            context.sendTranslated("&2%s &cdoes not have an account for &6%s&c!",
-                                   sender.getName(), currency.getName());
+            context.sendTranslated("&2%s &cdoes not have an account!",
+                                   sender.getName());
             return;
         }
         String[] users = StringUtils.explode(",", context.getString(0));
@@ -210,11 +206,11 @@ public class MoneyCommand extends ContainerCommand
                 context.sendTranslated("&cUser %s not found!", context.getString(0));
                 continue;
             }
-            Account target = this.manager.getUserAccount(user.getName(), false);
+            Account target = this.manager.getUserAccount(user, false);
             if (target == null)
             {
-                context.sendTranslated("&2%s &cdoes not have an account for &6%s&c!",
-                                       sender.getName(), currency.getName());
+                context.sendTranslated("&2%s &cdoes not have an account!",
+                                       sender.getName());
                 continue;
             }
             if (!(context.hasFlag("f") && ConomyPermissions.COMMAND_PAY_FORCE.isAuthorized(context.getSender()))) //force allowed

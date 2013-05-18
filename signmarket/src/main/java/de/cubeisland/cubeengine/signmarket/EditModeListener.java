@@ -38,7 +38,6 @@ import de.cubeisland.cubeengine.core.command.parameterized.CommandParameter;
 import de.cubeisland.cubeengine.core.command.parameterized.ParameterizedContext;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.conomy.Conomy;
-import de.cubeisland.cubeengine.conomy.Currency;
 
 import gnu.trove.map.hash.TLongObjectHashMap;
 
@@ -323,13 +322,7 @@ public class EditModeListener extends ConversationCommand
         }
         if (context.hasParam("price"))
         {
-            Currency currency = marketSign.getCurrency();
-            if (currency == null)
-            {
-                currency = this.conomy.getManager().getCurrency();
-                marketSign.setCurrency(currency);
-            }
-            Double dPrice = currency.parse(context.getString("price"));
+            Double dPrice = marketSign.conomy.parse(context.getString("price"));
             if (dPrice == null)
             {
                 user.sendTranslated("&cInvalid price!");
@@ -341,7 +334,7 @@ public class EditModeListener extends ConversationCommand
             }
             else
             {
-                marketSign.setPrice((long)(dPrice * currency.fractionalDigitsFactor()));
+                marketSign.setPrice((long)(dPrice * marketSign.conomy.fractionalDigitsFactor()));
             }
         }
         if (context.hasParam("amount"))

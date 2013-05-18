@@ -1,8 +1,5 @@
 package de.cubeisland.cubeengine.conomy.account;
 
-import de.cubeisland.cubeengine.conomy.Currency;
-import de.cubeisland.cubeengine.conomy.Currency.CurrencyType;
-
 public interface Account
 {
     /**
@@ -61,20 +58,6 @@ public interface Account
      * @return true if the account has sufficient balance
      */
     boolean has(double amount);
-
-    /**
-     * Returns the currency-type of this account. Accounts with different CurrencyType cannot perform transactions
-     *
-     * @return the currency-type
-     */
-    CurrencyType getCurrencyType();
-
-    /**
-     * Returns the currency of this account.
-     *
-     * @return the currency
-     */
-    Currency getCurrency();
 
     /**
      * Resets the balance of this account to the default-balance specified in the configuration

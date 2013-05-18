@@ -19,29 +19,22 @@ package de.cubeisland.cubeengine.conomy;
 
 import java.util.Locale;
 
-import de.cubeisland.cubeengine.core.config.node.Node;
-import de.cubeisland.cubeengine.core.config.node.StringNode;
-import de.cubeisland.cubeengine.core.util.convert.ConversionException;
-import de.cubeisland.cubeengine.core.util.convert.Converter;
-import de.cubeisland.cubeengine.conomy.account.AccountManager;
+import de.cubeisland.cubeengine.conomy.account.ConomyManager;
 
 public class Currency
 {
-    //private Pattern pattern2 = Pattern.compile("[^a-zA-Z]+");
-    //private Pattern pattern1;
 
     private final ConomyConfiguration config;
 
-    private int fractionalDigitsFactor;
-    private final AccountManager manager;
 
+    private final ConomyManager manager;
 
-    public Currency(AccountManager manager, ConomyConfiguration config)
+    public Currency(ConomyManager manager, ConomyConfiguration config)
     {
         this.manager = manager;
         this.config = config;
-        //this.pattern1 = Pattern.compile("^-*[\\d,]+$");
-        this.fractionalDigitsFactor = (int)Math.pow(10, this.config.fractionalDigits);
+
+
     }
 
     public String getName()
@@ -82,15 +75,7 @@ public class Currency
         return this.config.minimumBalance;
     }
 
-    public int fractionalDigitsFactor()
-    {
-        return this.fractionalDigitsFactor;
-    }
 
-    public CurrencyType getType()
-    {
-        return this.config.currencyType;
-    }
 
     public double getMinBankMoney()
     {
@@ -100,32 +85,5 @@ public class Currency
     public double getDefaultBankBalance()
     {
         return this.config.defaultBankBalance;
-    }
-
-    public enum CurrencyType
-    {
-        NORMAL, EXP, ITEM;
-    }
-
-    public static class CurrencyTypeConverter implements Converter<CurrencyType>
-    {
-        @Override
-        public Node toNode(CurrencyType object) throws ConversionException
-        {
-            return StringNode.of(object.name());
-        }
-
-        @Override
-        public CurrencyType fromNode(Node node) throws ConversionException
-        {
-            try
-            {
-                return CurrencyType.valueOf(node.unwrap().toUpperCase());
-            }
-            catch (IllegalArgumentException ex)
-            {
-                throw new ConversionException("Could not convert " + node.unwrap() + " to a currencyType");
-            }
-        }
     }
 }

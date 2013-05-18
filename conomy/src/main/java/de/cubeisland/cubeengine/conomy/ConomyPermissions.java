@@ -25,7 +25,7 @@ public class ConomyPermissions extends PermissionContainer<Conomy>
     public ConomyPermissions(Conomy module)
     {
         super(module);
-        this.bindToModule(ACCOUNT,COMMAND_PAY_FORCE);
+        this.bindToModule(ACCOUNT,COMMAND);
         this.registerAllPermissions();
     }
 
@@ -36,4 +36,8 @@ public class ConomyPermissions extends PermissionContainer<Conomy>
 
     private static final Permission COMMAND = Permission.createAbstractPermission("command");
     public static final Permission COMMAND_PAY_FORCE = COMMAND.createAbstractChild("pay").createChild("force");
+
+    private static final Permission COMMAND_ECO_CREATE = COMMAND.createAbstractChild("eco").createAbstractChild("create");
+    public static final Permission ECO_CREATE_OTHER = COMMAND_ECO_CREATE.createChild("other");
+    public static final Permission ECO_CREATE_FORCE = COMMAND_ECO_CREATE.createChild("force");
 }

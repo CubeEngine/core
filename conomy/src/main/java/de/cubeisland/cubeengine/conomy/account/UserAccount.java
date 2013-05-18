@@ -3,16 +3,15 @@ package de.cubeisland.cubeengine.conomy.account;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.user.UserAttachment;
 import de.cubeisland.cubeengine.conomy.Conomy;
+import de.cubeisland.cubeengine.conomy.ConomyPermissions;
 import de.cubeisland.cubeengine.conomy.account.storage.AccountModel;
-import de.cubeisland.cubeengine.conomy.Currency;
-import de.cubeisland.cubeengine.conomy.Currency.CurrencyType;
 
-public abstract class UserAccount extends UserAttachment implements Account
+public class UserAccount extends UserAttachment implements Account
 {
-    private Currency currency;
-    protected AccountModel model;
     private boolean isInit = false;
-    protected AccountManager manager;
+
+    protected AccountModel model;
+    protected ConomyManager manager;
 
     public User getUser()
     {
@@ -20,45 +19,26 @@ public abstract class UserAccount extends UserAttachment implements Account
     }
 
     @Override
-    public boolean transactionTo(Account to, double amount, boolean force)
-    {
-        return this.manager.transaction(this,to,amount,force);
-    }
-
-    @Override
-    public CurrencyType getCurrencyType()
-    {
-        return this.getCurrency().getType();
-    }
-
-    @Override
     public Conomy getModule()
     {
-        return this.getModule();
+        return (Conomy)super.getModule();
     }
 
-    protected void init(AccountManager manager, Currency currency, AccountModel model)
+    protected void init(ConomyManager manager, AccountModel model)
     {
         this.manager = manager;
-        this.currency = currency;
         this.model = model;
         this.isInit = true;
-    }
-
-    @Override
-    public Currency getCurrency()
-    {
-        return this.currency;
-    }
-
-    public boolean isInitialized()
-    {
-        return this.isInit;
     }
 
     protected void update()
     {
         this.manager.storage.update(this.model);
+    }
+
+    public boolean isInitialized()
+    {
+        return this.isInit;
     }
 
     @Override
@@ -68,10 +48,16 @@ public abstract class UserAccount extends UserAttachment implements Account
     }
 
     @Override
+    public boolean transactionTo(Account to, double amount, boolean force)
+    {
+        return this.manager.transaction(this,to,amount,force);
+    }
+
+    @Override
     public boolean reset()
     {
-        this.set(this.currency.getDefaultBalance());
-        return true; // TODO override if not possible!!! (for other currencyTypes than NORMAL)
+        this.set(this.manager.getDefaultBalance());
+        return true;
     }
 
     @Override
@@ -88,14 +74,57 @@ public abstract class UserAccount extends UserAttachment implements Account
     }
 
     @Override
-    public boolean scale(float factor)
+    public double balance()
     {
-        return this.set(this.balance() * factor);
+        return this.model.value / this.manager.fractionalDigitsFactor();
     }
 
     @Override
-    public double balance()
+    public boolean has(double amount)
     {
-        return this.model.value / this.currency.fractionalDigitsFactor();
+        if (ConomyPermissions.ACCOUNT_ALLOWUNDERMIN.isAuthorized(this.getHolder()))
+        {
+            return true;
+        }
+        if ((this.model.value - amount * this.manager.fractionalDigitsFactor()) < this.manager.getMinimumBalance())
+        {
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public boolean scale(float factor)
+    {
+        boolean b = this.set(this.balance() * factor);
+        this.manager.logger.info("SCALE User:" + this.getName() + " " + factor + " :: " + this.balance());
+        return b;
+    }
+
+    @Override
+    public boolean deposit(double amount)
+    {
+        this.model.value += amount * this.manager.fractionalDigitsFactor();
+        this.update();
+        this.manager.logger.info("DEPOSIT User:" + this.getName() + " " + amount + " :: " + this.balance());
+        return true;
+    }
+
+    @Override
+    public boolean withdraw(double amount)
+    {
+        this.model.value -= amount * this.manager.fractionalDigitsFactor();
+        this.update();
+        this.manager.logger.info("WITHDRAW User:" + this.getName() + " " + amount + " :: " + this.balance());
+        return true;
+    }
+
+    @Override
+    public boolean set(double amount)
+    {
+        this.model.value = (long)(amount * this.manager.fractionalDigitsFactor());
+        this.update();
+        this.manager.logger.info("SET User:" + this.getName() + " " + amount + " :: " + amount);
+        return true;
     }
 }

@@ -39,6 +39,7 @@ import de.cubeisland.cubeengine.core.util.matcher.Match;
 import de.cubeisland.cubeengine.conomy.Conomy;
 import de.cubeisland.cubeengine.conomy.Currency;
 import de.cubeisland.cubeengine.conomy.account.Account;
+import de.cubeisland.cubeengine.conomy.account.ConomyManager;
 import de.cubeisland.cubeengine.signmarket.storage.SignMarketBlockModel;
 import de.cubeisland.cubeengine.signmarket.storage.SignMarketItemModel;
 
@@ -50,7 +51,7 @@ public class MarketSign
 {
     private final MarketSignFactory msFactory;
     private final Signmarket module;
-    private final Conomy conomy;
+    protected final ConomyManager conomy;
     private SignMarketItemModel itemInfo;
     private SignMarketBlockModel blockInfo;
 
@@ -74,7 +75,7 @@ public class MarketSign
     public MarketSign(Signmarket module, Conomy conomy, SignMarketItemModel itemModel, SignMarketBlockModel blockModel)
     {
         this.module = module;
-        this.conomy = conomy;
+        this.conomy = conomy.getManager();
         this.blockInfo = blockModel;
         this.setItemInfo(itemModel);
         this.msFactory = module.getMarketSignFactory();
@@ -566,8 +567,7 @@ public class MarketSign
 
     private String parsePrice()
     {
-        Currency currency = this.getCurrency();
-        if (currency == null || this.blockInfo.price == 0)
+        if (this.blockInfo.price == 0)
         {
             if (this.isInEditMode())
             {
@@ -580,9 +580,9 @@ public class MarketSign
         }
         if (this.allowBuyIfEmpty())
         {
-            return "&o"+this.getCurrency().format(this.getPrice() / this.getCurrency().fractionalDigitsFactor());
+            return "&o"+this.conomy.format(this.getPrice() / this.conomy.fractionalDigitsFactor());
         }
-        return this.getCurrency().format(this.getPrice() / this.getCurrency().fractionalDigitsFactor());
+        return this.conomy.format(this.getPrice() / this.conomy.fractionalDigitsFactor());
     }
 
     @SuppressWarnings("deprecation")
@@ -762,14 +762,14 @@ public class MarketSign
                     user.sendTranslated("&cYou cannot afford the price of these items!");
                     return;
                 }
-                Account userAccount = this.conomy.getManager().getUserAccount(user.getName(), true);
-                Account ownerAccount = this.getOwner() != null ? this.conomy.getManager().getUserAccount(this.getOwner().getName(), true) : null;
+                Account userAccount = this.conomy.getUserAccount(user, true);
+                Account ownerAccount = this.getOwner() != null ? this.conomy.getUserAccount(this.getOwner(), true) : null;
                 ItemStack item = this.getItem().clone();
                 item.setAmount(this.getAmount());
                 if (checkForPlace(user.getInventory(), item.clone()))
                 {
                     String price = this.parsePrice();
-                    if (userAccount.transactionTo(ownerAccount, this.getPrice() / this.getCurrency().fractionalDigitsFactor(), false))
+                    if (userAccount.transactionTo(ownerAccount, this.getPrice() / this.conomy.fractionalDigitsFactor(), false))
                     {
                         if (this.hasStock())
                         {
@@ -814,9 +814,9 @@ public class MarketSign
             ItemStack item = this.getItem().clone();
             item.setAmount(this.getAmount());
 
-            Account userAccount = this.conomy.getManager().getUserAccount(user.getName(), true);
-            Account ownerAccount = this.getOwner() != null ? this.conomy.getManager().getUserAccount(this.getOwner().getName(), true) : null;
-            if (this.conomy.getManager().transaction(ownerAccount, userAccount, this.getPrice() / this.getCurrency().fractionalDigitsFactor(), false))
+            Account userAccount = this.conomy.getUserAccount(user, true);
+            Account ownerAccount = this.getOwner() != null ? this.conomy.getUserAccount(this.getOwner(), true) : null;
+            if (this.conomy.transaction(ownerAccount, userAccount, this.getPrice() / this.conomy.fractionalDigitsFactor(), false))
             {
                 user.getInventory().removeItem(item);
                 if (this.hasStock())
@@ -1072,12 +1072,12 @@ public class MarketSign
 
     private boolean canAfford(User user)
     {
-        if (user == null || this.getCurrency() == null || this.getPrice() == 0)
+        if (user == null || this.getPrice() == 0)
         {
             return true;
         }
-        return this.conomy.getManager().getUserAccount(user.getName(), true).has(this.getPrice() / this.getCurrency()
-                                                                                                       .fractionalDigitsFactor());
+        return this.conomy.getUserAccount(user, true).has(this.getPrice() / this.conomy
+                                                                                                    .fractionalDigitsFactor());
     }
 
     public Inventory getInventory()
@@ -1154,15 +1154,6 @@ public class MarketSign
     public Integer getDemand()
     {
         return this.blockInfo.demand;
-    }
-
-    public Currency getCurrency()
-    {
-        if (this.currency == null)
-        {
-            this.currency = this.conomy.getManager().getCurrency();
-        }
-        return this.currency;
     }
 
     public long getPrice()

@@ -21,27 +21,24 @@ import de.cubeisland.cubeengine.core.command.CommandContext;
 import de.cubeisland.cubeengine.core.command.ContainerCommand;
 import de.cubeisland.cubeengine.core.command.parameterized.Flag;
 import de.cubeisland.cubeengine.core.command.parameterized.ParameterizedContext;
-import de.cubeisland.cubeengine.core.command.readers.FloatReader;
 import de.cubeisland.cubeengine.core.command.reflected.Command;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.util.StringUtils;
 import de.cubeisland.cubeengine.conomy.Conomy;
-import de.cubeisland.cubeengine.conomy.Currency;
+import de.cubeisland.cubeengine.conomy.ConomyPermissions;
 import de.cubeisland.cubeengine.conomy.account.Account;
-import de.cubeisland.cubeengine.conomy.account.AccountManager;
+import de.cubeisland.cubeengine.conomy.account.ConomyManager;
 
 public class EcoCommands extends ContainerCommand
 {
     private Conomy module;
-    private AccountManager manager;
-    private Currency currency;
+    private ConomyManager manager;
 
     public EcoCommands(Conomy module)
     {
         super(module, "eco", "Administrative commands for Conomy.");
         this.module = module;
         this.manager = module.getManager();
-        this.currency = manager.getCurrency();
     }
 
     @Command(names = {"give", "grant"},
@@ -52,24 +49,30 @@ public class EcoCommands extends ContainerCommand
     public void give(ParameterizedContext context)
     {
         String amountString = context.getString(1);
-        Double amount = this.manager.getCurrency().parse(amountString);
+        Double amount = this.manager.parse(amountString);
         if (amount == null)
         {
             context.sendTranslated("&cCould not parse amount! %s", amountString);
             return;
         }
-        String format = currency.format(amount);
+        String format = manager.format(amount);
         if (context.getString(0).equalsIgnoreCase("*"))
         {
             if (context.hasFlag("o"))
             {
-                this.manager.transactionAllOnline(amount);
-                context.sendTranslated("&aYou gave &6%s&a to every online user!", format);
+                if (this.manager.transactionAllOnline(amount))
+                {
+                    context.sendTranslated("&aYou gave &6%s&a to every online user!", format);
+                }
+                else
+                {
+                    context.sendTranslated("&cPlease try again!");
+                }
             }
             else
             {
                 this.manager.transactionAll(true, false, amount);
-                context.sendTranslated("&aYou gave &6%s &ato every user!", format);
+                context.sendTranslated("&aYou gave &6%s&a to every user!", format);
             }
         }
         else
@@ -83,7 +86,7 @@ public class EcoCommands extends ContainerCommand
                     context.sendTranslated("&cUser %s not found!", context.getString(0));
                     continue;
                 }
-                Account target = this.manager.getUserAccount(user.getName(), false);
+                Account target = this.manager.getUserAccount(user, false);
                 if (target == null)
                 {
                     context.sendTranslated("&2%s &cdoes not have an account!", user.getName());
@@ -113,19 +116,25 @@ public class EcoCommands extends ContainerCommand
     public void take(ParameterizedContext context)
     {
         String amountString = context.getString(1);
-        Double amount = currency.parse(amountString);
+        Double amount = manager.parse(amountString);
         if (amount == null)
         {
             context.sendTranslated("&cCould not parse amount!");
             return;
         }
-        String format = currency.format(amount);
+        String format = manager.format(amount);
         if (context.getString(0).equalsIgnoreCase("*"))
         {
             if (context.hasFlag("o"))
             {
-                this.manager.transactionAllOnline(-amount);
-                context.sendTranslated("&aYou took &6%s&a from every online user!", format);
+                if (this.manager.transactionAllOnline(-amount))
+                {
+                    context.sendTranslated("&aYou took &6%s&a from every online user!", format);
+                }
+                else
+                {
+                    context.sendTranslated("&cPlease try again!");
+                }
             }
             else
             {
@@ -144,7 +153,7 @@ public class EcoCommands extends ContainerCommand
                     context.sendTranslated("&cUser %s not found!", context.getString(0));
                     return;
                 }
-                Account target = this.manager.getUserAccount(user.getName(), false);
+                Account target = this.manager.getUserAccount(user, false);
                 if (target == null)
                 {
                     context.sendTranslated("&2%s &cdoes not have an account!", user.getName());
@@ -170,12 +179,18 @@ public class EcoCommands extends ContainerCommand
         {
             if (context.hasFlag("o"))
             {
-                this.manager.setAllOnline(this.currency.getDefaultBalance());
-                context.sendTranslated("&aYou resetted every online user account!");
+                if (this.manager.setAllOnline(this.manager.getDefaultBalance()))
+                {
+                    context.sendTranslated("&aYou resetted every online user account!");
+                }
+                else
+                {
+                    context.sendTranslated("&cPlease try again!");
+                }
             }
             else
             {
-                this.manager.setAll(true, false, this.currency.getDefaultBalance());
+                this.manager.setAll(true, false, this.manager.getDefaultBalance());
                 context.sendTranslated("&aYou resetted every user account!");
             }
         }
@@ -190,16 +205,16 @@ public class EcoCommands extends ContainerCommand
                     context.sendTranslated("&cUser %s not found!", context.getString(0));
                     return;
                 }
-                Account target = this.manager.getUserAccount(user.getName(), false);
+                Account target = this.manager.getUserAccount(user, false);
                 if (target == null)
                 {
-                    context.sendTranslated("&2%s &cdoes not have an account for &6%s&c!",
-                                           user.getName(), currency.getName());
+                    context.sendTranslated("&2%s &cdoes not have an account!",
+                                           user.getName());
                     return;
                 }
                 if (target.reset())
                 {
-                    String format = this.currency.format(this.currency.getDefaultBalance());
+                    String format = this.manager.format(this.manager.getDefaultBalance());
                     context.sendTranslated("&2%s &aaccount reset to &6%s&a!", user.getName(), format);
                     if (!context.getSender().getName().equals(user.getName()))
                     {
@@ -221,19 +236,25 @@ public class EcoCommands extends ContainerCommand
     public void set(ParameterizedContext context)
     {
         String amountString = context.getString(1);
-        Double amount = currency.parse(amountString);
+        Double amount = manager.parse(amountString);
         if (amount == null)
         {
             context.sendTranslated("&cCould not parse amount!");
             return;
         }
-        String format = this.currency.format(amount);
+        String format = this.manager.format(amount);
         if (context.getString(0).equalsIgnoreCase("*"))
         {
             if (context.hasFlag("o"))
             {
-                this.manager.setAllOnline(amount);
-                context.sendTranslated("&aYou have set every online user account to &6%s&a!", format);
+                if (this.manager.setAllOnline(amount))
+                {
+                    context.sendTranslated("&aYou have set every online user account to &6%s&a!", format);
+                }
+                else
+                {
+                    context.sendTranslated("&cPlease try again!");
+                }
             }
             else
             {
@@ -252,11 +273,11 @@ public class EcoCommands extends ContainerCommand
                     context.sendTranslated("&cUser %s not found!", context.getString(0));
                     return;
                 }
-                Account target = this.manager.getUserAccount(user.getName(), false);
+                Account target = this.manager.getUserAccount(user, false);
                 if (target == null)
                 {
-                    context.sendTranslated("&2%s &cdoes not have an account for &6%s&c!",
-                                           user.getName(), currency.getName());
+                    context.sendTranslated("&2%s &cdoes not have an account!",
+                                           user.getName());
                     return;
                 }
                 target.set(amount);
@@ -270,9 +291,10 @@ public class EcoCommands extends ContainerCommand
     }
 
     @Command(desc = "Scales the money from given users",
-             usage = "<player>|* <factor>",
+             usage = "<player>|* <factor> [-o]",
+             flags = @Flag(longName = "online", name = "o"),
              min = 2, max = 2)
-    public void scale(CommandContext context)//TODO online flag ??
+    public void scale(ParameterizedContext context)
     {
         Float factor = context.getArg(1, Float.class, null);
         if (factor == null)
@@ -282,7 +304,22 @@ public class EcoCommands extends ContainerCommand
         }
         if (context.getString(0).equals("*"))
         {
-            this.manager.scaleAll(true, false, factor);
+            if (context.hasFlag("o"))
+            {
+                if (this.manager.scaleAllOnline(factor))
+                {
+                    context.sendTranslated("&aScaled the balance of every online user by &6%f&a!", factor);
+                }
+                else
+                {
+                    context.sendTranslated("&cPlease try again!");
+                }
+            }
+            else
+            {
+                this.manager.scaleAll(true, false, factor);
+                context.sendTranslated("&aScaled the balance of every user by &6%f&a!", factor);
+            }
             return;
         }
         String[] users = StringUtils.explode(",", context.getString(0));
@@ -294,13 +331,14 @@ public class EcoCommands extends ContainerCommand
                 context.sendTranslated("&cUser %s not found!", context.getString(0));
                 return;
             }
-            Account account = this.manager.getUserAccount(user.getName(), false);
+            Account account = this.manager.getUserAccount(user, false);
             if (account == null)
             {
                 context.sendTranslated("&2%s&c does not have an account!", user.getName());
                 return;
             }
             account.scale(factor);
+            context.sendTranslated("&aScaled the balance of &2%s&a by &6%f&a!", user.getName(), factor);
         }
     }
 
@@ -311,7 +349,7 @@ public class EcoCommands extends ContainerCommand
     {
         if (context.getString(0).equals("*"))
         {
-            this.manager.hideAll();
+            this.manager.hideAll(true, false);
             return;
         }
         String[] users = StringUtils.explode(",", context.getString(0));
@@ -323,7 +361,7 @@ public class EcoCommands extends ContainerCommand
                 context.sendTranslated("&cUser %s not found!", context.getString(0));
                 return;
             }
-            Account target = this.manager.getUserAccount(user.getName(), false);
+            Account target = this.manager.getUserAccount(user, false);
             if (target == null)
             {
                 context.sendTranslated("&2%s&c does not have an account!", user.getName());
@@ -349,7 +387,7 @@ public class EcoCommands extends ContainerCommand
     {
         if (context.getString(0).equals("*"))
         {
-            this.manager.unhideAll();
+            this.manager.unhideAll(true, false);
             return;
         }
         String[] users = StringUtils.explode(",", context.getString(0));
@@ -361,7 +399,7 @@ public class EcoCommands extends ContainerCommand
                 context.sendTranslated("&cUser %s not found!", context.getString(0));
                 return;
             }
-            Account target = this.manager.getUserAccount(user.getName(), false);
+            Account target = this.manager.getUserAccount(user, false);
             if (target == null)
             {
                 context.sendTranslated("&2%s &cdoes not have an account!",user.getName());
@@ -378,6 +416,83 @@ public class EcoCommands extends ContainerCommand
             {
                 context.sendTranslated("&2%s's&e account was not hidden!", user.getName());
             }
+        }
+    }
+
+    @Command(desc = "Deletes a users account.",
+             usage = "<player>",
+             min = 1, max = 1)
+    public void delete(CommandContext context)
+    {
+        User user = context.getUser(0);
+        if (user == null)
+        {
+            context.sendTranslated("&cUser %s not found!", context.getString(0));
+            return;
+        }
+        if (this.manager.deleteUserAccount(user))
+        {
+            context.sendTranslated("&aDeleted the account of &2%s", user.getName());
+        }
+        else
+        {
+            context.sendTranslated("&2%s&e did not have an account to delete!", user.getName());
+        }
+    }
+
+    @Command(desc = "Creates a new user-account",
+             usage = "[player]",
+             flags = @Flag(longName = "force", name = "f"),
+             min = 0, max = 1)
+    public void create(ParameterizedContext context)
+    {
+        if (context.hasArg(0))
+        {
+            if (!ConomyPermissions.ECO_CREATE_OTHER.isAuthorized(context.getSender()))
+            {
+                context.sendTranslated("&cYou are not allowed to create account for other users!");
+                return;
+            }
+            User user = context.getUser(0);
+            if (user == null)
+            {
+                if (ConomyPermissions.ECO_CREATE_FORCE.isAuthorized(context.getSender()))
+                {
+                    if (!context.hasFlag("f"))
+                    {
+                        context.sendTranslated("&2%s&e has never played on this server!", context.getString(0));
+                        context.sendTranslated("&aUse the -force flag to create the account anyways.");
+                        return;
+                    }
+                    else
+                    {
+                        user = this.module.getCore().getUserManager().getUser(context.getString(0), true);
+                    }
+                }
+                else
+                {
+                    context.sendTranslated("&cUser %s not found!", context.getString(0));
+                    return;
+                }
+            }
+            if (this.manager.getUserAccount(user, false) != null)
+            {
+                context.sendTranslated("&2%s&a already had an account!", user.getName());
+                return;
+            }
+            this.manager.getUserAccount(user, true);
+            context.sendTranslated("&aCreated account for &2%s&a!", user.getName());
+        }
+        else if (context.getSender() instanceof User)
+        {
+            User sender = (User)context.getSender();
+            if (this.manager.getUserAccount(sender, false) != null)
+            {
+                context.sendTranslated("You already had an account!");
+                return;
+            }
+            this.manager.getUserAccount(sender, true);
+            context.sendTranslated("&aYour account got created!");
         }
     }
 }

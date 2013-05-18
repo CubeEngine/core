@@ -24,7 +24,6 @@ import de.cubeisland.cubeengine.core.config.annotations.Codec;
 import de.cubeisland.cubeengine.core.config.annotations.Comment;
 import de.cubeisland.cubeengine.core.config.annotations.DefaultConfig;
 import de.cubeisland.cubeengine.core.config.annotations.Option;
-import de.cubeisland.cubeengine.conomy.Currency.CurrencyType;
 
 @Codec("yml")
 @DefaultConfig
@@ -43,6 +42,9 @@ public class ConomyConfiguration extends Configuration
     public double defaultBalance = 1000;
     @Option("default.user.minimum-balance")
     public double minimumBalance = 0;
+    @Comment("Automatically creates the UserAccount when trying to access it")
+    @Option("default.user.auto-create-account")
+    public boolean autocreateUserAcc = true;
 
     @Option("default.bank.balance")
     public double defaultBankBalance = 0;
@@ -55,17 +57,18 @@ public class ConomyConfiguration extends Configuration
 
     @Option("enable-logging")
     public boolean enableLogging = true;
-    @Comment("Possible currency Types are: NORMAL, ITEM, EXP")
-    @Option("currency.type")
-    public CurrencyType currencyType = CurrencyType.NORMAL;
+
+    private int fractionalDigitsFactor;
 
     @Override
     public void onLoaded(File loadFrom)
     {
-        // TODO enforce options
-        if (currencyType == CurrencyType.ITEM)
-        {
-            this.minimumBalance = 0;
-        }
+        this.fractionalDigitsFactor = (int)Math.pow(10, this.fractionalDigits);
     }
+
+    public int fractionalDigitsFactor()
+    {
+        return this.fractionalDigitsFactor;
+    }
+
 }
