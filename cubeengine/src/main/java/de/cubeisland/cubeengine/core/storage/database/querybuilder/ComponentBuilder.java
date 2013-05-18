@@ -19,6 +19,7 @@ package de.cubeisland.cubeengine.core.storage.database.querybuilder;
 
 public interface ComponentBuilder<This extends ComponentBuilder>
 {
+    public static final int IS = 0;
     public static final int EQUAL = 1;
     public static final int NOT_EQUAL = 2;
     public static final int LESS = 3;
