@@ -1,13 +1,34 @@
 package de.cubeisland.cubeengine.conomy.account;
 
-public interface Account
+import de.cubeisland.cubeengine.conomy.account.storage.AccountModel;
+
+public abstract class Account
 {
+    protected ConomyManager manager;
+    AccountModel model; // package private!
+
+    public Account(ConomyManager manager, AccountModel model)
+    {
+        this.manager = manager;
+        this.model = model;
+    }
+
     /**
      * Returns the name of this account
      *
      * @return
      */
-    public String getName();
+    public abstract String getName();
+
+    protected abstract void log(String action, Object value);
+
+    /**
+     * Updates the account in the database
+     */
+    protected void update()
+    {
+        this.manager.storage.update(this.model);
+    }
 
     /**
      * Performs a transaction from this account to another.
@@ -17,39 +38,101 @@ public interface Account
      * @param force if true do not check if balance would go under minimum
      * @return true if the transaction was successful
      */
-    boolean transactionTo(Account to, double amount, boolean force);
+    public boolean transactionTo(Account to, double amount, boolean force)
+    {
+        return this.manager.transaction(this,to,amount,force);
+    }
+
+    private void set0(long amount)
+    {
+        this.model.value = amount;
+        this.update();
+    }
 
     /**
      * Adds the specified amount into this account
      *
      * @param amount the amount to add
-     * @return true if the amount was added successfully
      */
-    boolean deposit(double amount);
+    public void deposit(double amount)
+    {
+        this.set0(this.model.value + (long)(amount * this.manager.fractionalDigitsFactor()));
+        this.log("DEPOSIT", amount);
+
+    }
 
     /**
      * Removes the specified amount from this account
      *
      * @param amount the amount to remove
-     * @return true if the amount was removed successfully
      */
-    boolean withdraw(double amount);
+    public void withdraw(double amount)
+    {
+        this.set0(this.model.value - (long)(amount * this.manager.fractionalDigitsFactor()));
+        this.log("WITHDRAW" , amount);
+    }
 
     /**
      * Sets this account to the specified balance
      *
      * @param amount the new balance to set
-     * @return false when not supported
      */
-    boolean set(double amount);
+    public void set(double amount)
+    {
+        this.set0((long)(amount * this.manager.fractionalDigitsFactor()));
+        this.log("SET" , "");
+    }
 
     /**
      * Scales the balance of this account with the specified factor.
      *
      * @param factor the factor to scale with
-     * @return false when not supported
      */
-    boolean scale(float factor);
+    public void scale(float factor)
+    {
+        this.set0((long)(this.model.value * factor));
+        this.log("SCALE" , factor);
+    }
+
+    /**
+     * Resets the balance of this account to the default-balance specified in the configuration
+     */
+    public void reset()
+    {
+        this.set0((long)(this.getDefaultBalance() * this.manager.fractionalDigitsFactor()));
+        this.log("RESET" , "");
+    }
+
+    /**
+     * Returns the hidden state of this account
+     *
+     * @return true if the account is hidden
+     */
+    public boolean isHidden()
+    {
+        return this.model.hidden;
+    }
+
+    /**
+     * Sets the hidden state of this account
+     *
+     * @param hidden true to hide this account
+     */
+    public void setHidden(boolean hidden)
+    {
+        this.model.hidden = hidden;
+        this.update();
+        this.log(hidden ? "HIDE" : "UNHIDE", "");
+    }
+    /**
+     * Returns the current balance
+     *
+     * @return the current balance
+     */
+    public double balance()
+    {
+        return this.model.value / this.manager.fractionalDigitsFactor();
+    }
 
     /**
      * Returns whether this account can afford the specified amount
@@ -57,33 +140,8 @@ public interface Account
      * @param amount the amount to check for
      * @return true if the account has sufficient balance
      */
-    boolean has(double amount);
+    public abstract boolean has(double amount);
 
-    /**
-     * Resets the balance of this account to the default-balance specified in the configuration
-     *
-     * @return false when not supported
-     */
-    boolean reset(); // returns false when not supported
-
-    /**
-     * Returns the hidden state of this account
-     *
-     * @return true if the account is hidden
-     */
-    boolean isHidden();
-
-    /**
-     * Sets the hidden state of this account
-     *
-     * @param hidden true to hide this account
-     */
-    void setHidden(boolean hidden);
-
-    /**
-     * Returns the current balance
-     *
-     * @return
-     */
-    double balance();
+    public abstract double getDefaultBalance();
+    public abstract double getMinBalance();
 }

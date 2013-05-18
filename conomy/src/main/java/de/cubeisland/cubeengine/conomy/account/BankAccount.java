@@ -2,15 +2,11 @@ package de.cubeisland.cubeengine.conomy.account;
 
 import de.cubeisland.cubeengine.conomy.account.storage.AccountModel;
 
-public class BankAccount implements Account
+public class BankAccount extends Account
 {
-    protected AccountModel model;
-    private ConomyManager manager;
-
     protected BankAccount(ConomyManager manager, AccountModel model)
     {
-        this.manager = manager;
-        this.model = model;
+        super(manager, model);
     }
 
     @Override
@@ -20,65 +16,17 @@ public class BankAccount implements Account
     }
 
     @Override
-    public boolean transactionTo(Account to, double amount, boolean force)
+    protected void log(String action, Object value)
     {
-        return this.manager.transaction(this,to,amount,force);
+        this.manager.logger.info(action + " Bank:" + this.getName() + " " + value + " :: " + this.balance());
     }
 
-    protected void update()
+    /**
+     * Deletes this BankAccount
+     */
+    public void delete()
     {
-        this.manager.storage.update(this.model);
-    }
-
-    @Override
-    public boolean isHidden()
-    {
-        return this.model.hidden;
-    }
-
-    @Override
-    public void setHidden(boolean hidden)
-    {
-        this.model.hidden = hidden;
-        this.update();
-    }
-
-    @Override
-    public double balance()
-    {
-        return this.model.value / this.manager.fractionalDigitsFactor();
-    }
-
-    @Override
-    public boolean scale(float factor)
-    {
-        boolean b = this.set(this.balance() * factor);
-        this.manager.logger.info("SCALE Bank:" + this.getName() + " " + factor + " :: " + this.balance());
-        return b;
-    }
-
-    @Override
-    public boolean reset()
-    {
-        return this.set(this.manager.getDefaultBankBalance());
-    }
-
-    @Override
-    public boolean deposit(double amount)
-    {
-        this.model.value += amount * this.manager.fractionalDigitsFactor();
-        this.update();
-        this.manager.logger.info("DEPOSIT Bank:" + this.getName() + " " + amount + " :: " + this.balance());
-        return true;
-    }
-
-    @Override
-    public boolean withdraw(double amount)
-    {
-        this.model.value -= amount * this.manager.fractionalDigitsFactor();
-        this.update();
-        this.manager.logger.info("WITHDRAW Bank:" + this.getName() + " " + amount + " :: " + this.balance());
-        return true;
+        this.manager.deleteBankAccount(this.getName());
     }
 
     @Override
@@ -88,11 +36,14 @@ public class BankAccount implements Account
     }
 
     @Override
-    public boolean set(double amount)
+    public double getDefaultBalance()
     {
-        this.model.value = (long)(amount * this.manager.fractionalDigitsFactor());
-        this.update();
-        this.manager.logger.info("SET Bank:" + this.getName() + " " + amount + " :: " + amount);
-        return true;
+        return this.manager.getDefaultBankBalance();
+    }
+
+    @Override
+    public double getMinBalance()
+    {
+        return this.manager.getMinimumBankBalance();
     }
 }

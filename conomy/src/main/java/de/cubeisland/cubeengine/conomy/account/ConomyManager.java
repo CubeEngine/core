@@ -26,9 +26,8 @@ public class ConomyManager
     private final Conomy module;
     protected final AccountStorage storage;
     private Map<String,BankAccount> bankaccounts;
-
     protected final CubeLogger logger;
-    private final ConomyConfiguration config;
+    protected final ConomyConfiguration config;
 
     public ConomyManager(Conomy module)
     {
@@ -91,25 +90,13 @@ public class ConomyManager
 
     public UserAccount getUserAccount(User user, boolean create)
     {
-        UserAccount userAccount = user.attachOrGet(UserAccount.class, module);
-        if (!userAccount.isInitialized())
+        AccountAttachment attachment = user.attachOrGet(AccountAttachment.class, module);
+        if (attachment.getAccount() == null)
         {
-            AccountModel model = this.storage.getUserAccount(user.key);
-            if (model == null)
-            {
-                if (!create) return null;
-                model = new AccountModel(user.key,null,(int) (this.config.defaultBalance * this.config.fractionalDigitsFactor()),false);
-                this.storage.store(model);
-                userAccount.init(this, model);
-                this.logger.info("NEW User:" + user.getName() + " :: " + userAccount.balance());
-            }
-            else
-            {
-                userAccount.init(this, model);
-                this.logger.info("LOAD User:" + user.getName() + " :: " + userAccount.balance());
-            }
+            if (!create) return null;
+            attachment.createAccount();
         }
-        return userAccount;
+        return attachment.getAccount();
     }
 
     public UserAccount getUserAccount(String playerName, boolean create)
@@ -208,6 +195,7 @@ public class ConomyManager
     {
         final long longValue = (long)(value * this.config.fractionalDigitsFactor());
         this.storage.setAll(userAcc, bankAcc, longValue);
+        this.logger.info("SET-ALL " + (userAcc && bankAcc ? "User/Bank " : userAcc ? "User " : "Bank ") + value);
         // update all loaded accounts...
         if (userAcc)
         {
@@ -232,6 +220,7 @@ public class ConomyManager
     public void scaleAll(boolean userAcc, boolean bankAcc, float factor)
     {
         this.storage.scaleAll(userAcc, bankAcc, factor);
+        this.logger.info("SCALE-ALL " + (userAcc && bankAcc ? "User/Bank " : userAcc ? "User " : "Bank ") + factor);
         // update all loaded accounts...
         if (userAcc)
         {
@@ -257,6 +246,7 @@ public class ConomyManager
     {
         final long longValue = (long)(value * this.config.fractionalDigitsFactor());
         this.storage.transactAll(userAcc, bankAcc, longValue);
+        this.logger.info("TRANSACTION-ALL " + (userAcc && bankAcc ? "User/Bank " : userAcc ? "User " : "Bank ") + value);
         // update all loaded accounts...
         if (userAcc)
         {
@@ -330,7 +320,19 @@ public class ConomyManager
             return false;
         }
         this.storage.delete(account.model);
-        user.detach(account.getClass());
+        user.detach(AccountAttachment.class);
+        return true;
+    }
+
+    public boolean deleteBankAccount(String name)
+    {
+        BankAccount bankAccount = this.bankaccounts.get(name);
+        if (bankAccount == null)
+        {
+            return false;
+        }
+        this.storage.delete(bankAccount.model);
+        this.bankaccounts.remove(name);
         return true;
     }
 

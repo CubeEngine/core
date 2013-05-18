@@ -37,7 +37,6 @@ import de.cubeisland.cubeengine.core.util.InventoryGuardFactory;
 import de.cubeisland.cubeengine.core.util.RomanNumbers;
 import de.cubeisland.cubeengine.core.util.matcher.Match;
 import de.cubeisland.cubeengine.conomy.Conomy;
-import de.cubeisland.cubeengine.conomy.Currency;
 import de.cubeisland.cubeengine.conomy.account.Account;
 import de.cubeisland.cubeengine.conomy.account.ConomyManager;
 import de.cubeisland.cubeengine.signmarket.storage.SignMarketBlockModel;
@@ -57,7 +56,6 @@ public class MarketSign
 
     private TLongLongHashMap breakingSign = new TLongLongHashMap();
 
-    private Currency currency;
     private boolean editMode;
     public boolean syncOnMe = false;
 
@@ -1194,11 +1192,6 @@ public class MarketSign
     public void setDemand(Integer demand)
     {
         this.blockInfo.demand = demand;
-    }
-
-    public void setCurrency(Currency currency)
-    {
-        this.currency = currency;
     }
 
     public boolean isInEditMode()

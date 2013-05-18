@@ -212,18 +212,12 @@ public class EcoCommands extends ContainerCommand
                                            user.getName());
                     return;
                 }
-                if (target.reset())
+                target.reset();
+                String format = this.manager.format(this.manager.getDefaultBalance());
+                context.sendTranslated("&2%s &aaccount reset to &6%s&a!", user.getName(), format);
+                if (!context.getSender().getName().equals(user.getName()))
                 {
-                    String format = this.manager.format(this.manager.getDefaultBalance());
-                    context.sendTranslated("&2%s &aaccount reset to &6%s&a!", user.getName(), format);
-                    if (!context.getSender().getName().equals(user.getName()))
-                    {
-                        user.sendTranslated("&eYour balance got resetted to &6%s&e.", format);
-                    }
-                }
-                else
-                {
-                    context.sendTranslated("&cCould not reset the players balance!");
+                    user.sendTranslated("&eYour balance got resetted to &6%s&e.", format);
                 }
             }
         }
