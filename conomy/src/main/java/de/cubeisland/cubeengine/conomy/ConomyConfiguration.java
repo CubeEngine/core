@@ -50,6 +50,9 @@ public class ConomyConfiguration extends Configuration
     public double defaultBankBalance = 0;
     @Option("default.bank.minimum-balance")
     public double minimumBankBalance = 0;
+    @Option("default.bank.need-invite")
+    public boolean bankNeedInvite = false;
+
     @Comment("The Number of fractional-digits.\n" +
                  "e.g.: 1.00€ -> 2")
     @Option("currency.fractional-digits")
@@ -59,6 +62,7 @@ public class ConomyConfiguration extends Configuration
     public boolean enableLogging = true;
 
     private int fractionalDigitsFactor;
+
 
     @Override
     public void onLoaded(File loadFrom)

@@ -21,6 +21,7 @@ import de.cubeisland.cubeengine.core.command.CommandManager;
 import de.cubeisland.cubeengine.core.config.Configuration;
 import de.cubeisland.cubeengine.core.module.Module;
 import de.cubeisland.cubeengine.conomy.account.ConomyManager;
+import de.cubeisland.cubeengine.conomy.commands.BankCommands;
 import de.cubeisland.cubeengine.conomy.commands.EcoCommands;
 import de.cubeisland.cubeengine.conomy.commands.MoneyCommand;
 
@@ -39,6 +40,7 @@ public class Conomy extends Module
         final CommandManager cm = this.getCore().getCommandManager();
         cm.registerCommand(new MoneyCommand(this));
         cm.registerCommand(new EcoCommands(this));
+        cm.registerCommand(new BankCommands(this));
     }
 
     public ConomyConfiguration getConfig()

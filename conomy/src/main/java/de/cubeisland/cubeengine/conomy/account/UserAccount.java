@@ -36,7 +36,7 @@ public class UserAccount extends Account
     @Override
     public boolean has(double amount)
     {
-        if (ConomyPermissions.ACCOUNT_ALLOWUNDERMIN.isAuthorized(this.attachment.getHolder()))
+        if (ConomyPermissions.USER_ALLOWUNDERMIN.isAuthorized(this.attachment.getHolder()))
         {
             return true;
         }

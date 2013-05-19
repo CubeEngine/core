@@ -72,7 +72,7 @@ public class MoneyCommand extends ContainerCommand
     public void balance(ParameterizedContext context)
     {
         User user;
-        boolean showHidden = context.hasFlag("f") && ConomyPermissions.ACCOUNT_SHOWHIDDEN.isAuthorized(context.getSender());
+        boolean showHidden = context.hasFlag("f") && ConomyPermissions.USER_SHOWHIDDEN.isAuthorized(context.getSender());
         if (context.hasArg(0))
         {
             user = context.getUser(0);
@@ -112,7 +112,7 @@ public class MoneyCommand extends ContainerCommand
         boolean showHidden = context.hasFlag("f");
         if (showHidden)
         {
-            if (!ConomyPermissions.ACCOUNT_SHOWHIDDEN.isAuthorized(context.getSender()))
+            if (!ConomyPermissions.USER_SHOWHIDDEN.isAuthorized(context.getSender()))
                 showHidden = false;
         }
         int fromRank = 1;
@@ -173,6 +173,11 @@ public class MoneyCommand extends ContainerCommand
         boolean asSomeOneElse = false;
         if (context.hasParam("as"))
         {
+            if (!ConomyPermissions.COMMAND_PAY_ASOTHER.isAuthorized(context.getSender()))
+            {
+                context.sendTranslated("&cYou are not allowed to pay money as someone else!");
+                return;
+            }
             sender = context.getUser("as");
             if (sender == null)
             {
@@ -213,7 +218,7 @@ public class MoneyCommand extends ContainerCommand
                                        sender.getName());
                 continue;
             }
-            if (!(context.hasFlag("f") && ConomyPermissions.COMMAND_PAY_FORCE.isAuthorized(context.getSender()))) //force allowed
+            if (!(context.hasFlag("f") && ConomyPermissions.COMMAND_MONEY_PAY_FORCE.isAuthorized(context.getSender()))) //force allowed
             {
                 if (!source.has(amount))
                 {

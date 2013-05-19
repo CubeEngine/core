@@ -41,6 +41,8 @@ public class EcoCommands extends ContainerCommand
         this.manager = module.getManager();
     }
 
+    // TODO as subCmd  /eco bank = /ecob
+
     @Command(names = {"give", "grant"},
              desc = "Gives money to given user or all [online] users",
              usage = "<player>|* <amount> [-o]",

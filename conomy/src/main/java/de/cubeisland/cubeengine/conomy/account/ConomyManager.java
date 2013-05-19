@@ -4,6 +4,7 @@ import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
@@ -18,14 +19,19 @@ import de.cubeisland.cubeengine.conomy.Conomy;
 import de.cubeisland.cubeengine.conomy.ConomyConfiguration;
 import de.cubeisland.cubeengine.conomy.account.storage.AccountModel;
 import de.cubeisland.cubeengine.conomy.account.storage.AccountStorage;
+import de.cubeisland.cubeengine.conomy.account.storage.BankAccessStorage;
 
 import gnu.trove.map.hash.THashMap;
 
 public class ConomyManager
 {
-    private final Conomy module;
+    protected final Conomy module;
     protected final AccountStorage storage;
+    protected final BankAccessStorage bankAccessStorage;
+
     private Map<String,BankAccount> bankaccounts;
+    private Map<Long,BankAccount> bankaccountsID;
+
     protected final CubeLogger logger;
     protected final ConomyConfiguration config;
 
@@ -33,8 +39,11 @@ public class ConomyManager
     {
         this.module = module;
         this.storage = new AccountStorage(module.getCore().getDB());
+        this.bankAccessStorage = new BankAccessStorage(module.getCore().getDB());
+
         this.config = module.getConfig();
         this.bankaccounts = new THashMap<String, BankAccount>();
+        this.bankaccountsID = new THashMap<Long, BankAccount>();
 
         this.logger = new CubeLogger("conomy_transactions");
         if (this.module.getConfig().enableLogging)
@@ -72,18 +81,18 @@ public class ConomyManager
             if (model == null)
             {
                 if (!create) return null;
-                model = new AccountModel(null,name,(int) (this.config.defaultBankBalance * this.config.fractionalDigitsFactor()),false);
+                model = new AccountModel(null,name,(int) (this.config.defaultBankBalance * this.config.fractionalDigitsFactor()),false,this.config.bankNeedInvite);
                 this.storage.store(model);
                 bankAccount = new BankAccount(this, model);
-                this.bankaccounts.put(name,bankAccount);
                 this.logger.info("NEW Bank:" + name + " :: " + bankAccount.balance());
             }
             else
             {
                 bankAccount = new BankAccount(this, model);
-                this.bankaccounts.put(name,bankAccount);
                 this.logger.info("LOAD Bank:" + name + " :: " + bankAccount.balance());
             }
+            this.bankaccounts.put(name,bankAccount);
+            this.bankaccountsID.put(bankAccount.model.key, bankAccount);
         }
         return bankAccount;
     }
@@ -333,6 +342,7 @@ public class ConomyManager
         }
         this.storage.delete(bankAccount.model);
         this.bankaccounts.remove(name);
+        this.bankaccountsID.remove(bankAccount.model.key);
         return true;
     }
 
@@ -385,5 +395,24 @@ public class ConomyManager
     public double getMinimumBalance()
     {
         return this.config.minimumBalance;
+    }
+
+    public Set<BankAccount> getBankAccounts(User user)
+    {
+        Set<Long> accountIds = this.bankAccessStorage.getBankAccounts(user);
+        Set<BankAccount> accounts = new HashSet<BankAccount>();
+        for (Long accountId : accountIds)
+        {
+            BankAccount acc = this.bankaccountsID.get(accountId);
+            if (acc == null)
+            {
+                AccountModel model = this.storage.get(accountId);
+                acc = new BankAccount(this, model);
+                this.bankaccountsID.put(accountId, acc);
+                this.bankaccounts.put(acc.getName(), acc);
+            }
+            accounts.add(acc);
+        }
+        return accounts;
     }
 }

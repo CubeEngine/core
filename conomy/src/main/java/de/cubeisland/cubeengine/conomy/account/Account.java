@@ -110,7 +110,7 @@ public abstract class Account
      */
     public boolean isHidden()
     {
-        return this.model.hidden;
+        return this.model.isHidden();
     }
 
     /**
@@ -120,7 +120,7 @@ public abstract class Account
      */
     public void setHidden(boolean hidden)
     {
-        this.model.hidden = hidden;
+        this.model.setHidden(hidden);
         this.update();
         this.log(hidden ? "HIDE" : "UNHIDE", "");
     }
@@ -131,7 +131,7 @@ public abstract class Account
      */
     public double balance()
     {
-        return this.model.value / this.manager.fractionalDigitsFactor();
+        return (double)this.model.value / this.manager.fractionalDigitsFactor();
     }
 
     /**

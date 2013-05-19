@@ -22,6 +22,10 @@ import de.cubeisland.cubeengine.core.permission.PermissionContainer;
 
 public class ConomyPermissions extends PermissionContainer<Conomy>
 {
+
+
+
+
     public ConomyPermissions(Conomy module)
     {
         super(module);
@@ -30,12 +34,32 @@ public class ConomyPermissions extends PermissionContainer<Conomy>
     }
 
     private static final Permission ACCOUNT = Permission.createAbstractPermission("account");
+    private static final Permission ACCOUNT_USER = ACCOUNT.createAbstractChild("user");
 
-    public static final Permission ACCOUNT_ALLOWUNDERMIN = ACCOUNT.createChild("allowundermin");
-    public static final Permission ACCOUNT_SHOWHIDDEN = ACCOUNT.createChild("showhidden");
+    public static final Permission USER_ALLOWUNDERMIN = ACCOUNT_USER.createChild("allow-under-min");
+    public static final Permission USER_SHOWHIDDEN = ACCOUNT_USER.createChild("show-hidden");
+
+    private static final Permission ACCOUNT_BANK = ACCOUNT.createAbstractChild("bank");
+
+    public static final Permission BANK_SHOWHIDDEN = ACCOUNT_BANK.createChild("show-hidden");
+
+    private static final Permission BANK_DELETE = ACCOUNT_BANK.createAbstractChild("delete");
+    public static final Permission BANK_DELETE_OWN = BANK_DELETE.createChild("own");
+    public static final Permission BANK_DELETE_OTHER = BANK_DELETE.createChild("other");
+
 
     private static final Permission COMMAND = Permission.createAbstractPermission("command");
-    public static final Permission COMMAND_PAY_FORCE = COMMAND.createAbstractChild("pay").createChild("force");
+    private static final Permission COMMAND_MONEY_PAY = COMMAND.createAbstractChild("money").createAbstractChild("pay");
+    public static final Permission COMMAND_MONEY_PAY_FORCE = COMMAND_MONEY_PAY.createChild("force");
+    public static Permission COMMAND_PAY_ASOTHER = COMMAND_MONEY_PAY.createChild("as-other");
+
+    private static final Permission COMMAND_BANK =  COMMAND.createAbstractChild("bank");
+    public static final Permission COMMAND_BANK_INVITE_FORCE = COMMAND_BANK.createAbstractChild("invite").createChild("force");
+
+    public static Permission COMMAND_BANK_JOIN_OTHER = COMMAND_BANK.createAbstractChild("join").createChild("other");
+    public static Permission COMMAND_BANK_LEAVE_OTHER = COMMAND_BANK.createAbstractChild("leave").createChild("other");
+
+    public static Permission COMMAND_BANK_SETOWNER_FORCE = COMMAND_BANK.createAbstractChild("setowner").createChild("force");
 
     private static final Permission COMMAND_ECO_CREATE = COMMAND.createAbstractChild("eco").createAbstractChild("create");
     public static final Permission ECO_CREATE_OTHER = COMMAND_ECO_CREATE.createChild("other");
