@@ -218,4 +218,9 @@ public class BankAccount extends Account
     {
         this.model.setNeedsInvite(set);
     }
+
+    public boolean rename(String newName)
+    {
+        return this.manager.renameBank(this, newName);
+    }
 }

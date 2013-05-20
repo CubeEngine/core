@@ -47,12 +47,10 @@ public class BankCommands extends ContainerCommand
              usage = "[name]",
              flags = @Flag(longName = "showHidden", name = "f"),
              max = 1)
-    public void balance(CommandContext context) //Show all banks of given player
+    public void balance(ParameterizedContext context)
     {
         if (context.hasArg(0))
         {
-            // TODO hidden
-            // TODO show if hidden but member
             BankAccount bankAccount = this.manager.getBankAccount(context.getString(0), false);
             if (bankAccount == null)
             {
@@ -60,6 +58,15 @@ public class BankCommands extends ContainerCommand
             }
             else
             {
+                boolean showHidden = context.hasFlag("f") && ConomyPermissions.COMMAND_BANK_BALANCE_SHOWHIDDEN.isAuthorized(context.getSender());
+                if (!showHidden && bankAccount.isHidden())
+                {
+                    if (context.getSender() instanceof User && !bankAccount.hasAccess((User)context.getSender()))
+                    {
+                        context.sendTranslated("&cThere is no bank-account named &6%s&c!", context.getString(0));
+                        return;
+                    }
+                }
                 context.sendTranslated("&aBank &6%s&a Balance: &6%s", bankAccount.getName(), this.manager.format(bankAccount.balance()));
             }
         }
@@ -85,7 +92,7 @@ public class BankCommands extends ContainerCommand
              usage = "<user> [bank]",
              flags = @Flag(longName = "force", name = "f"),
              max = 2, min = 1)
-    public void invite(ParameterizedContext context) //Invite a player to a bank
+    public void invite(ParameterizedContext context)
     {
         User user = context.getUser(0);
         if (user == null)
@@ -143,9 +150,9 @@ public class BankCommands extends ContainerCommand
 
     @Command(desc = "Joins a bank",
              usage = "<bank> [user]",
-             // TODO force
+             flags = @Flag(longName = "force", name = "f"),
              max = 2, min = 1)
-    public void join(CommandContext context) //Join a bank |  <bank> [player]
+    public void join(ParameterizedContext context)
     {
         User user;
         boolean other = false;
@@ -199,7 +206,8 @@ public class BankCommands extends ContainerCommand
             context.sendTranslated("&cYou are already member of this bank!");
             return;
         }
-        if (account.needsInvite() && !account.isInvited(user))
+        boolean force = context.hasFlag("f") && ConomyPermissions.COMMAND_BANK_JOIN_FORCE.isAuthorized(context.getSender());
+        if (!force || (account.needsInvite() && !account.isInvited(user)))
         {
             if (other)
             {
@@ -316,11 +324,49 @@ public class BankCommands extends ContainerCommand
         }
     }
 
-    public void delete(CommandContext context)//Deletes a bank and all its data 
-    {} // TODO
+    @Command(desc = "Deletes a bank",
+             usage = "<name>",
+             max = 1, min = 1)
+    public void delete(CommandContext context)
+    {
+        BankAccount account = this.getBankAccount(context.getString(0));
+        if (account == null)
+        {
+            context.sendTranslated("&cThere is no bank-account named &6%s&c!", context.getString(0));
+            return;
+        }
+        account.delete();
+        context.sendTranslated("&aYou deleted the bank &6%s&a!", account.getName());
+    }
 
-    public void rename(CommandContext context)//renames bank
-    {}// TODO
+    @Command(desc = "Renames a bank",
+             usage = "<name> <new name>",
+             flags = @Flag(longName = "force", name = "f"),
+             max = 2, min = 2)
+    public void rename(ParameterizedContext context)
+    {
+        BankAccount account = this.getBankAccount(context.getString(0));
+        if (account == null)
+        {
+            context.sendTranslated("&cThere is no bank-account named &6%s&c!", context.getString(0));
+            return;
+        }
+        boolean force = context.hasFlag("f") && ConomyPermissions.COMMAND_BANK_RENAME_FORCE.isAuthorized(context.getSender());
+        if (!force && context.getSender() instanceof User)
+        {
+            if (!account.isOwner((User)context.getSender()))
+            {
+                context.sendTranslated("&cYou need to be owner of a bank to rename it!");
+                return;
+            }
+        }
+        if (account.rename(context.getString(1)))
+        {
+            context.sendTranslated("&aBank renamed!");
+            return;
+        }
+        context.sendTranslated("&cThere is already a bank names &6%s&c!", context.getString(1));
+    }
 
     @Command(desc = "Sets given user as owner for a bank",
              usage = "<bank-name> <user>",
@@ -357,6 +403,9 @@ public class BankCommands extends ContainerCommand
 
     public void listmembers(CommandContext context)//list all members with their rank
     {}// TODO
+
+    // TODO bank Info cmd
+    // Owners Members Invites Balance Hidden
 
     @Command(desc = "Deposits given amount of money into the bank",
              usage = "<bank-name> <amount>",
@@ -397,7 +446,6 @@ public class BankCommands extends ContainerCommand
         }
         context.sendTranslated("&cYou cannot deposit into a bank as console!");
     }
-
 
     @Command(desc = "Withdraws given amount of money from the bank",
              usage = "<bank-name> <amount>",
@@ -505,7 +553,6 @@ public class BankCommands extends ContainerCommand
                 context.sendTranslated("&aTranfered &6%s&a from &6%s&a to &6&s&a! New Balance: &6%s",
                                        this.manager.format(amount), account.getName(), target.getName(), this.manager.format(account.balance()));
             }
-
             return;
         }
         context.sendTranslated("&cThe bank does not hold enough money to spend that much!");

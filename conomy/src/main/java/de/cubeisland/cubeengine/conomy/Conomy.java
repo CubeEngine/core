@@ -28,7 +28,6 @@ import de.cubeisland.cubeengine.conomy.commands.MoneyCommand;
 public class Conomy extends Module
 {
     private ConomyConfiguration config;
-    //TODO Roles support (e.g. allow all user of a role to access a bank)
     private ConomyManager manager;
 
     @Override

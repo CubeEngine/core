@@ -420,4 +420,15 @@ public class ConomyManager
     {
         return this.config.autocreateUserAcc;
     }
+
+    public boolean renameBank(BankAccount bankAccount, String newName)
+    {
+        BankAccount acc = this.getBankAccount(newName, false);
+        if (acc != null) return false; // Account name exists!
+        this.bankaccounts.remove(bankAccount.getName());
+        bankAccount.model.name = newName;
+        bankAccount.update();
+        this.bankaccounts.put(newName, bankAccount);
+        return true;
+    }
 }
