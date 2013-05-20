@@ -415,4 +415,9 @@ public class ConomyManager
         }
         return accounts;
     }
+
+    public boolean getAutoCreateUserAccount()
+    {
+        return this.config.autocreateUserAcc;
+    }
 }

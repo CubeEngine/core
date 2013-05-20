@@ -61,6 +61,10 @@ public class ConomyPermissions extends PermissionContainer<Conomy>
 
     public static Permission COMMAND_BANK_SETOWNER_FORCE = COMMAND_BANK.createAbstractChild("setowner").createChild("force");
 
+    public static Permission COMMAND_BANK_DEPOSIT_FORCE = COMMAND_BANK.createAbstractChild("deposit").createChild("force");
+    public static Permission COMMAND_BANK_WITHDRAW_FORCE = COMMAND_BANK.createAbstractChild("withdraw").createChild("force");
+    public static Permission COMMAND_BANK_PAY_FORCE  = COMMAND_BANK.createAbstractChild("pay").createChild("force");
+
     private static final Permission COMMAND_ECO_CREATE = COMMAND.createAbstractChild("eco").createAbstractChild("create");
     public static final Permission ECO_CREATE_OTHER = COMMAND_ECO_CREATE.createChild("other");
     public static final Permission ECO_CREATE_FORCE = COMMAND_ECO_CREATE.createChild("force");

@@ -28,8 +28,10 @@ import de.cubeisland.cubeengine.core.command.reflected.Command;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.conomy.Conomy;
 import de.cubeisland.cubeengine.conomy.ConomyPermissions;
+import de.cubeisland.cubeengine.conomy.account.Account;
 import de.cubeisland.cubeengine.conomy.account.BankAccount;
 import de.cubeisland.cubeengine.conomy.account.ConomyManager;
+import de.cubeisland.cubeengine.conomy.account.UserAccount;
 
 public class BankCommands extends ContainerCommand
 {
@@ -287,6 +289,7 @@ public class BankCommands extends ContainerCommand
         }
     }
 
+
     public void uninvite(CommandContext context)
     {
         // TODO reject invite / uninvite
@@ -355,14 +358,158 @@ public class BankCommands extends ContainerCommand
     public void listmembers(CommandContext context)//list all members with their rank
     {}// TODO
 
-    public void deposit(CommandContext context)//puts your money into the bank
-    {}// TODO
+    @Command(desc = "Deposits given amount of money into the bank",
+             usage = "<bank-name> <amount>",
+             flags = @Flag(longName = "force", name = "f"),
+             max = 2, min = 2)
+    public void deposit(ParameterizedContext context)
+    {
+        if (context.getSender() instanceof User)
+        {
+            BankAccount account = this.getBankAccount(context.getString(0));
+            if (account == null)
+            {
+                context.sendTranslated("&cThere is no bank-account named &6%s&c!", context.getString(0));
+                return;
+            }
+            Double amount = context.getArg(1, Double.class, null);
+            if (amount == null)
+            {
+                context.sendTranslated("&6%s&c is not a valid amount!", context.getString(1));
+                return;
+            }
+            UserAccount userAccount = this.manager.getUserAccount((User)context.getSender(), this.manager
+                .getAutoCreateUserAccount());
+            if (userAccount == null)
+            {
+                context.sendTranslated("&cYou do not have an account!");
+                return;
+            }
+            boolean force = context.hasFlag("f") && ConomyPermissions.COMMAND_BANK_DEPOSIT_FORCE.isAuthorized(context.getSender());
+            if (userAccount.transactionTo(account, amount, force))
+            {
+                context.sendTranslated("&aDeposited &6%s&a into &6%s&a! New Balance: &6%s",
+                           this.manager.format(amount), account.getName(), this.manager.format(account.balance()));
+                return;
+            }
+            context.sendTranslated("&cYou cannot afford to spend that much!");
+            return;
+        }
+        context.sendTranslated("&cYou cannot deposit into a bank as console!");
+    }
 
-    public void withdraw(CommandContext context)//takes money from the bank
-    {}// TODO
 
-    public void pay(CommandContext context)//pay AS bank to a player or other bank <name> [-bank]
-    {}// TODO
+    @Command(desc = "Withdraws given amount of money from the bank",
+             usage = "<bank-name> <amount>",
+             flags = @Flag(longName = "force", name = "f"),
+             max = 2, min = 2)
+    public void withdraw(ParameterizedContext context)//takes money from the bank
+    {
+        if (context.getSender() instanceof User)
+        {
+            BankAccount account = this.getBankAccount(context.getString(0));
+            if (account == null)
+            {
+                context.sendTranslated("&cThere is no bank-account named &6%s&c!", context.getString(0));
+                return;
+            }
+            if (!account.isOwner((User)context.getSender()))
+            {
+                context.sendMessage("&cOnly owners of the bank are allowed to withdraw from it!");
+                return;
+            }
+            Double amount = context.getArg(1, Double.class, null);
+            if (amount == null)
+            {
+                context.sendTranslated("&6%s&c is not a valid amount!", context.getString(1));
+                return;
+            }
+            UserAccount userAccount = this.manager.getUserAccount((User)context.getSender(), this.manager.getAutoCreateUserAccount());
+            if (userAccount == null)
+            {
+                context.sendTranslated("&cYou do not have an account!");
+                return;
+            }
+            boolean force = context.hasFlag("f") && ConomyPermissions.COMMAND_BANK_WITHDRAW_FORCE.isAuthorized(context.getSender());
+            if (account.transactionTo(userAccount, amount, force))
+            {
+                context.sendTranslated("&aWithdrawn &6%s&a from &6%s&a! New Balance: &6%s",
+                                       this.manager.format(amount), account.getName(), this.manager.format(account.balance()));
+                return;
+            }
+            context.sendTranslated("&cThe bank does not hold enough money to spend that much!");
+            return;
+        }
+        context.sendTranslated("&cYou cannot withdraw from a bank as console!");
+    }
+
+    @Command(desc = "Pays given amount of money as bank to another account",
+             usage = "<bank-name> <target-account> <amount> [-bank]",
+             flags = {@Flag(longName = "force", name = "f"),
+                      @Flag(longName = "bank", name = "b")},
+             max = 3, min = 2)
+    public void pay(ParameterizedContext context)//pay AS bank to a player or other bank <name> [-bank]
+    {
+        BankAccount account = this.getBankAccount(context.getString(0));
+        if (account == null)
+        {
+            context.sendTranslated("&cThere is no bank-account named &6%s&c!", context.getString(0));
+            return;
+        }
+        if (!account.isOwner((User)context.getSender()))
+        {
+            context.sendMessage("&cOnly owners of the bank are allowed to spend the money from it!");
+            return;
+        }
+        Account target;
+        if (context.hasFlag("b"))
+        {
+            User user = context.getUser(1);
+            if (user == null)
+            {
+                context.sendTranslated("&cUser &2%s&c not found!", context.getString(1));
+                return;
+            }
+            target = this.manager.getUserAccount(user, this.manager.getAutoCreateUserAccount());
+            if (target == null)
+            {
+                context.sendTranslated("&2%s&c has no account!", user.getName());
+                return;
+            }
+        }
+        else
+        {
+            target = this.manager.getBankAccount(context.getString(1), false);
+            if (target == null)
+            {
+                context.sendTranslated("&cThere is no bank-account named &6%s&c!", context.getString(1));
+                return;
+            }
+        }
+        Double amount = context.getArg(2, Double.class, null);
+        if (amount == null)
+        {
+            context.sendTranslated("&6%s&c is not a valid amount!", context.getString(1));
+            return;
+        }
+        boolean force = context.hasFlag("f") && ConomyPermissions.COMMAND_BANK_PAY_FORCE.isAuthorized(context.getSender());
+        if (account.transactionTo(target, amount, force))
+        {
+            if (context.hasFlag("b"))
+            {
+                context.sendTranslated("&aTranfered &6%s&a from &6%s&a to &2&s&a! New Balance: &6%s",
+                                       this.manager.format(amount), account.getName(), target.getName(), this.manager.format(account.balance()));
+            }
+            else
+            {
+                context.sendTranslated("&aTranfered &6%s&a from &6%s&a to &6&s&a! New Balance: &6%s",
+                                       this.manager.format(amount), account.getName(), target.getName(), this.manager.format(account.balance()));
+            }
+
+            return;
+        }
+        context.sendTranslated("&cThe bank does not hold enough money to spend that much!");
+    }
 
     private BankAccount getBankAccount(String name)
     {
