@@ -58,7 +58,6 @@ public class PlayerCommand extends SimpleLogActionType
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onPlayerCommandPreprocess(PlayerCommandPreprocessEvent event)
     {
-        //TODO attach same cmd
         if (event.getMessage().trim().isEmpty()) return;
         if (this.isActive(event.getPlayer().getWorld()))
         {
@@ -71,9 +70,18 @@ public class PlayerCommand extends SimpleLogActionType
     @Override
     protected void showLogEntry(User user, LogEntry logEntry, String time, String loc)
     {
-        user.sendTranslated("&2%s&a used the command &f\"&6%s&f\"&a!",
-                            logEntry.getCauserUser().getDisplayName(),
-                            logEntry.getAdditional().iterator().next().asText());
+        if (logEntry.hasAttached())
+        {
+            user.sendTranslated("%s&2%s&a used the command &f\"&6%s&f\" &6%d&a times!%s",
+                                time, logEntry.getCauserUser().getDisplayName(),
+                                logEntry.getAdditional().iterator().next().asText(), logEntry.getAttached().size()+1, loc);
+        }
+        else
+        {
+            user.sendTranslated("%s&2%s&a used the command &f\"&6%s&f\"&a!%s",
+                                time, logEntry.getCauserUser().getDisplayName(),
+                                logEntry.getAdditional().iterator().next().asText(), loc);
+        }
     }
 
     @Override

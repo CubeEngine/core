@@ -18,6 +18,7 @@
 package de.cubeisland.cubeengine.log;
 
 import de.cubeisland.cubeengine.core.command.CommandManager;
+import de.cubeisland.cubeengine.core.command.reflected.ReflectedCommand;
 import de.cubeisland.cubeengine.core.config.Configuration;
 import de.cubeisland.cubeengine.core.module.Module;
 import de.cubeisland.cubeengine.core.util.convert.Convert;
@@ -57,7 +58,7 @@ public class Log extends Module
         this.actionTypeManager.registerLogActionTypes();
 
         final CommandManager cm = this.getCore().getCommandManager();
-        cm.registerCommand(new LookupCommands(this));
+        cm.registerCommands(this, new LookupCommands(this), ReflectedCommand.class);
         cm.registerCommand(new LogCommands(this));
 
         try

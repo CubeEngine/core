@@ -18,30 +18,41 @@
 package de.cubeisland.cubeengine.log.commands;
 
 import java.util.Date;
+import java.util.concurrent.TimeUnit;
 
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.World;
+import org.bukkit.entity.EntityType;
 
 import de.cubeisland.cubeengine.core.command.CommandContext;
-import de.cubeisland.cubeengine.core.command.ContainerCommand;
 import de.cubeisland.cubeengine.core.command.parameterized.Flag;
 import de.cubeisland.cubeengine.core.command.parameterized.Param;
 import de.cubeisland.cubeengine.core.command.parameterized.ParameterizedContext;
 import de.cubeisland.cubeengine.core.command.reflected.Command;
+import de.cubeisland.cubeengine.core.user.User;
+import de.cubeisland.cubeengine.core.util.StringUtils;
+import de.cubeisland.cubeengine.core.util.matcher.Match;
 import de.cubeisland.cubeengine.log.Log;
+import de.cubeisland.cubeengine.log.LogAttachment;
+import de.cubeisland.cubeengine.log.action.ActionType;
+import de.cubeisland.cubeengine.log.action.ActionTypeManager;
+import de.cubeisland.cubeengine.log.storage.BlockData;
+import de.cubeisland.cubeengine.log.storage.Lookup;
+import de.cubeisland.cubeengine.log.storage.QueryParameter;
 
-public class LookupCommands extends ContainerCommand
+public class LookupCommands
 {
     private final Log module;
+    private ActionTypeManager actionTypeManager;
 
     public LookupCommands(Log module)
     {
-        super(module, "lookup", "Searches in the database for needed informations.");
         this.module = module;
+        this.actionTypeManager = module.getActionTypeManager();
     }
 
-    @Command(desc = "Displays all possible parameters.")
-    public void params(CommandContext context)
+    private void params(CommandContext context)
     {
         context.sendTranslated("&6Lookup&f/&6Rollback&f/&6Restore&f-&6Parameters:");
         context.sendMessage("");
@@ -76,9 +87,8 @@ public class LookupCommands extends ContainerCommand
         return null;
     }
 
-    @Command(names = {
-        "block", "blocklog"
-    }, desc = "Changes regarding blocks", usage = "", flags = {
+    @Command(
+        desc = "Changes regarding blocks", usage = "", flags = {
         @Flag(longName = "coordinates", name = "coords"),
         @Flag(longName = "detailed", name = "det"),
         @Flag(longName = "descending", name = "desc") //sort in descending order (default ascending)
@@ -93,9 +103,243 @@ public class LookupCommands extends ContainerCommand
         @Param(names = {"before"},type = Date.class),
         @Param(names = {"world","w","in"}, type = World.class),
         @Param(names = {"limit"},type = Integer.class),
-    })
+    }, min = 0, max = 1)
     public void lookup(ParameterizedContext context)
     {
-        context.sendMessage("LOOKUP IS NOT IMPLEMENTED YET");
+        if (context.hasArg(0))
+        {
+            if (context.getString(0).equalsIgnoreCase("params"))
+            {
+                this.params(context);
+            }
+        }
+        else if (context.getSender() instanceof User)
+        {
+            User user = (User)context.getSender();
+            LogAttachment attachment = user.attachOrGet(LogAttachment.class,this.module);
+            attachment.clearLookups(); // TODO only clear cmdlookup
+            Lookup lookup = attachment.getCommandLookup();
+            if (lookup == null)
+            {
+                user.sendTranslated("&cInvalid LoggingTool-Block!");
+                return;
+            }
+            QueryParameter params = lookup.getQueryParameter();
+            if (context.hasParam("limit"))
+            {
+                Integer limit = context.getParam("limit", null);
+                if (limit == null)
+                {
+                    return;
+                }
+                params.setLimit(limit);
+            }
+            if (context.hasParam("action"))
+            {
+                if (!this.readActions(params, context.getString("action"), user))
+                {
+                    return;
+                }
+            }
+            if (context.hasParam("radius"))
+            {
+                String radiusString = context.getString("radius");
+                if (radiusString.equalsIgnoreCase("selection")|| radiusString.equalsIgnoreCase("sel"))
+                {
+                    // TODO set selection
+                }
+                else if (radiusString.equalsIgnoreCase("global") || radiusString.equalsIgnoreCase("g"))
+                {
+                    params.setWorld(user.getWorld());
+                }
+                else
+                {
+                    User radiusUser = null;
+                    Integer radius;
+                    if (radiusString.contains(":"))
+                    {
+                        radiusUser = this.module.getCore().getUserManager().findUser(radiusString.substring(0,radiusString.indexOf(":")));
+                        if (radiusUser == null)
+                        {
+                            context.sendTranslated("&cInvalid radius/location selection");
+                            context.sendTranslated("&aThe radius parameter can be: <radius> | selection | global | <player>[:<radius>]");
+                            return;
+                        }
+                        radiusString = radiusString.substring(radiusString.indexOf(":")+1);
+                    }
+                    try
+                    {
+                        radius = Integer.parseInt(radiusString);
+                        if (radiusUser == null)
+                        {
+                            radiusUser = user;
+                        }
+                        params.setLocationRadius(radiusUser.getLocation(), radius);
+                    }
+                    catch (NumberFormatException ex)
+                    {
+                        radiusUser = this.module.getCore().getUserManager().findUser(radiusString);
+                        if (radiusUser == null)
+                        {
+                            context.sendTranslated("&cInvalid radius/location selection");
+                            context.sendTranslated("&aThe radius parameter can be: <radius> | selection | global | <player>[:<radius>]");
+                            return;
+                        }
+                        params.setWorld(radiusUser.getWorld());
+                    }
+                }
+            }
+            if (context.hasParam("user"))
+            {
+                String[] users = StringUtils.explode(",", context.getString("user"));
+                for (String name : users)
+                {
+                    boolean negate = name.startsWith("!");
+                    if (negate)
+                    {
+                        name = name.substring(1);
+                    }
+                    User u = this.module.getCore().getUserManager().getUser(name, false);
+                    if (u == null)
+                    {
+                        context.sendTranslated("&cUser &2%s&c not found!", name);
+                        return;
+                    }
+                    if (negate)
+                    {
+                        params.excludeUser(u.key);
+                    }
+                    else
+                    {
+                        params.includeUser(u.key);
+                    }
+                }
+            }
+            if (context.hasParam("block"))
+            {
+                String[] names = StringUtils.explode(",", context.getString("block"));
+                for (String name : names)
+                {
+                    boolean negate = name.startsWith("!");
+                    if (negate)
+                    {
+                        name = name.substring(1);
+                    }
+                    Byte data = null;
+                    if (name.contains(":"))
+                    {
+                        String sub = name.substring(name.indexOf(":")+1);
+                        try
+                        {
+                            data = Byte.parseByte(sub);
+                        }
+                        catch (NumberFormatException ex)
+                        {
+                            context.sendTranslated("&cInvalid BlockData: &6%s", sub);
+                            return;
+                        }
+                        name = name.substring(0,name.indexOf(":"));
+                    }
+                    Material material = Match.material().material(name);
+                    if (material == null)
+                    {
+                        context.sendTranslated("&cUnkown Material: &6%s", name);
+                        return;
+                    }
+                    BlockData blockData = new BlockData(material, data);
+                    if (negate)
+                    {
+                        params.excludeBlock(blockData);
+                    }
+                    else
+                    {
+                        params.includeBlock(blockData);
+                    }
+                }
+            }
+            if (context.hasParam("entity"))
+            {
+                String[] names = StringUtils.explode(",", context.getString("entity"));
+                for (String name : names)
+                {
+                    boolean negate = name.startsWith("!");
+                    if (negate)
+                    {
+                        name = name.substring(1);
+                    }
+                    EntityType entityType = Match.entity().living(name);
+                    if (entityType == null)
+                    {
+                        context.sendTranslated("&cUnknown EntityType: &6%s", name);
+                        return;
+                    }
+                    if (negate)
+                    {
+                        params.excludeEntity(entityType);
+                    }
+                    else
+                    {
+                        params.includeEntity(entityType);
+                    }
+                }
+            }
+            // TODO time
+            if (context.hasParam("since"))
+            {
+
+            }
+            if (context.hasParam("before"))
+            {
+
+            }
+            params.since(System.currentTimeMillis() - TimeUnit.DAYS.toMillis(30L)); // defaulted to last 30 days
+            // TODO time
+            if (context.hasParam("world"))
+            {
+                if (context.hasParam("radius"))
+                {
+                    context.sendTranslated("&cYou cannot define a radius or selection and a world.");
+                }
+                else
+                {
+                    World world = user.getServer().getWorld(context.getString("world"));
+                    if (world == null)
+                    {
+                        context.sendTranslated("&cUnkown world: &6%s", context.getString("world"));
+                        return;
+                    }
+                    params.setWorld(world);
+                }
+            }
+            this.module.getLogManager().fillLookupAndShow(lookup, user);
+        }
+    }
+
+    private boolean readActions(QueryParameter params, String input, User user)
+    {
+        String[] inputs = StringUtils.explode(",", input);
+        for (String actionString : inputs)
+        {
+            boolean negate = actionString.startsWith("!");
+            if (negate)
+            {
+                actionString = actionString.substring(1);
+            }
+            ActionType actionType = this.actionTypeManager.getActionType(actionString);
+            if (actionType == null)
+            {
+                user.sendTranslated("&cUnkown action-type: &6%s",actionString);
+                return false;
+            }
+            if (negate)
+            {
+                params.excludeAction(actionType);
+            }
+            else
+            {
+                params.includeAction(actionType);
+            }
+        }
+        return true;
     }
 }

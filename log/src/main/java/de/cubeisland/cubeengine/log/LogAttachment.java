@@ -31,7 +31,7 @@ public class LogAttachment extends UserAttachment
     private Lookup killLookup; // lookup with soulsand block
     private Lookup playerLookup; // lookup with pumpkin block
     private Lookup blockLookup; // lookup with woodlog block
-    private Lookup commandLookup; // lookup with command //TODO
+    private Lookup commandLookup; // lookup with command
 
     public void clearLookups()
     {
@@ -126,6 +126,16 @@ public class LogAttachment extends UserAttachment
             return this.createNewLookup(blockMaterial);
         }
         return lookup;
+    }
+
+    public Lookup getCommandLookup()
+    {
+        if (commandLookup == null)
+        {
+            this.commandLookup = Lookup.general((Log)this.getModule());
+        }
+        this.lastLookup = commandLookup;
+        return commandLookup;
     }
 }
 

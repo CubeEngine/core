@@ -29,11 +29,13 @@ public class QueryResults
 
     public void show(User user, QueryParameter parameter)
     {
+        user.updateInventory();
         if (this.logEntries.isEmpty())
         {
             parameter.showNoLogsFound(user);
             return;
         }
+        System.out.print("Showing " + this.logEntries.size() + " logentries to " + user.getName());
         user.sendTranslated("&aFound %d logs:", this.logEntries.size());
         Iterator<LogEntry> entries = this.logEntries.iterator();
         // compressing data: //TODO add if it should be compressed or not

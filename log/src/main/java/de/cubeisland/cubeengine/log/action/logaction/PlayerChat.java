@@ -71,9 +71,18 @@ public class PlayerChat extends SimpleLogActionType
     @Override
     protected void showLogEntry(User user, LogEntry logEntry, String time, String loc)
     {
-        user.sendTranslated("%s&2%s&a chatted the following%s&a: &f\"&6%s&f\"",
-                            time,logEntry.getCauserUser().getDisplayName(), loc,
-                            logEntry.getAdditional().iterator().next().asText());
+        if (logEntry.hasAttached())
+        {
+            user.sendTranslated("%s&2%s&a chatted the following &6%d&a times%s: &f\"&6%s&f\"",
+                                time,logEntry.getCauserUser().getDisplayName(), logEntry.getAttached().size()+1, loc,
+                                logEntry.getAdditional().iterator().next().asText());
+        }
+        else
+        {
+            user.sendTranslated("%s&2%s&a chatted the following%s&a: &f\"&6%s&f\"",
+                                time,logEntry.getCauserUser().getDisplayName(), loc,
+                                logEntry.getAdditional().iterator().next().asText());
+        }
     }
 
 

@@ -51,7 +51,7 @@ public class EndermanPickup  extends BlockActionType
     protected void showLogEntry(User user, LogEntry logEntry, String time, String loc)
     {
         user.sendTranslated("%s&6%s &agot picked up by an enderman%s!",
-                            logEntry.getOldBlock());
+                            time, logEntry.getOldBlock().toString(), loc);
     }
 
     @Override

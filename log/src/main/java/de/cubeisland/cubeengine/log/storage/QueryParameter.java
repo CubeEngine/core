@@ -19,10 +19,12 @@ package de.cubeisland.cubeengine.log.storage;
 
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.CopyOnWriteArraySet;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.bukkit.Location;
+import org.bukkit.World;
 import org.bukkit.entity.EntityType;
 
 import de.cubeisland.cubeengine.core.user.User;
@@ -44,23 +46,21 @@ public class QueryParameter implements Cloneable
     Integer radius; //TODO
     Set<Location> singleBlockLocations;
     // The actions to look for
-    Set<ActionType> actions = new CopyOnWriteArraySet<ActionType>();
-    volatile boolean includeActions = true;
+    Map<ActionType, Boolean> actions = new ConcurrentHashMap<ActionType, Boolean>();
     // Users
-    Set<Long> users = new CopyOnWriteArraySet<Long>();
-    volatile boolean includeUsers = true;
+    Map<Long, Boolean> users = new ConcurrentHashMap<Long, Boolean>();
     // Entity
-    Set<Integer> entities = new CopyOnWriteArraySet<Integer>();
-    volatile boolean includeEntity = true;
+    Map<Integer, Boolean> entities = new ConcurrentHashMap<Integer, Boolean>();
     // Blocks
-    Set<BlockData> blocks = new CopyOnWriteArraySet<BlockData>();
-    volatile boolean includeBlocks = true;
+    Map<BlockData, Boolean> blocks = new ConcurrentHashMap<BlockData, Boolean>();
 
     boolean compress = true;
     boolean showDate = false;
     boolean showLoc = false;
     boolean showID = false;
     private String locationString;
+
+    private int limit = -1; // -1 is no limit
 
     public QueryParameter(Log module)
     {
@@ -74,6 +74,12 @@ public class QueryParameter implements Cloneable
         location2 = null;
         singleBlockLocations = null;
         radius = null;
+    }
+
+    public void setWorld(World world)
+    {
+        this.resetLocations();
+        this.worldID = module.getCore().getWorldManager().getWorldId(world);
     }
 
     public void setSingleLocations(Location... locations)
@@ -129,32 +135,20 @@ public class QueryParameter implements Cloneable
     public void setActions(Set<ActionType> actions, boolean include)
     {
         this.actions.clear();
-        this.actions.addAll(actions);
-        this.includeActions = include;
+        for (ActionType action : actions)
+        {
+            this.actions.put(action, include);
+        }
     }
 
     public void includeAction(ActionType action)
     {
-        if (this.includeActions)
-        {
-            this.actions.add(action);
-        }
-        else
-        {
-            this.actions.remove(action);
-        }
+        this.actions.put(action, true);
     }
 
     public void excludeAction(ActionType action)
     {
-        if (this.includeActions)
-        {
-            this.actions.remove(action);
-        }
-        else
-        {
-            this.actions.add(action);
-        }
+        this.actions.put(action, false);
     }
 
     public void clearActions()
@@ -165,32 +159,20 @@ public class QueryParameter implements Cloneable
     public void setUsers(Set<Long> users, boolean include)
     {
         this.users.clear();
-        this.users.addAll(users);
-        this.includeUsers = include;
+        for (Long user : users)
+        {
+            this.users.put(user, include);
+        }
     }
 
     public void includeUser(Long userId)
     {
-        if (this.includeUsers)
-        {
-            this.users.add(userId);
-        }
-        else
-        {
-            this.users.remove(userId);
-        }
+        this.users.put(userId, true);
     }
 
     public void excludeUser(Long userId)
     {
-        if (this.includeUsers)
-        {
-            this.users.remove(userId);
-        }
-        else
-        {
-            this.users.add(userId);
-        }
+        this.users.put(userId, false);
     }
 
     public void clearUsers()
@@ -201,35 +183,20 @@ public class QueryParameter implements Cloneable
     public void setEntities(Set<EntityType> entities, boolean include)
     {
         this.entities.clear();
-        this.includeEntity = include;
         for (EntityType entityType : entities)
         {
-            this.entities.add(-entityType.getTypeId());
+            this.entities.put(-entityType.getTypeId(), include);
         }
     }
 
     public void includeEntity(EntityType type)
     {
-        if (this.includeEntity)
-        {
-            this.entities.add(-type.getTypeId());
-        }
-        else
-        {
-            this.entities.remove(-type.getTypeId());
-        }
+        this.entities.put(-type.getTypeId(), true);
     }
 
     public void excludeEntity(EntityType type)
     {
-        if (this.includeEntity)
-        {
-            this.entities.remove(-type.getTypeId());
-        }
-        else
-        {
-            this.entities.add(-type.getTypeId());
-        }
+        this.entities.put(-type.getTypeId(), false);
     }
 
     public void clearEntities()
@@ -237,35 +204,23 @@ public class QueryParameter implements Cloneable
         users.clear();
     }
 
-    public void setBlocks(Set<BlockData> entities, boolean include)
+    public void setBlocks(Set<BlockData> blockDatas, boolean include)
     {
         this.blocks.clear();
-        this.blocks.addAll(entities);
-        this.includeBlocks = include;
+        for (BlockData blockData : blockDatas)
+        {
+            this.blocks.put(blockData, include);
+        }
     }
 
     public void includeBlock(BlockData data)
     {
-        if (this.includeBlocks)
-        {
-            this.blocks.add(data);
-        }
-        else
-        {
-            this.blocks.remove(data);
-        }
+        this.blocks.put(data, true);
     }
 
     public void excludeBlock(BlockData data)
     {
-        if (this.includeBlocks)
-        {
-            this.blocks.remove(data);
-        }
-        else
-        {
-            this.blocks.add(data);
-        }
+        this.blocks.put(data, false);
     }
 
     public void clearBlocks()
@@ -318,14 +273,10 @@ public class QueryParameter implements Cloneable
         params.location2 = location2;
         params.radius = radius;
         params.singleBlockLocations = singleBlockLocations;
-        params.actions = new CopyOnWriteArraySet<ActionType>(actions);
-        params.includeActions = includeActions;
-        params.users = new CopyOnWriteArraySet<Long>(users);
-        params.includeUsers = includeUsers;
-        params.entities = new CopyOnWriteArraySet<Integer>(entities);
-        params.includeEntity = includeEntity;
-        params.blocks = new CopyOnWriteArraySet<BlockData>(blocks);
-        params.includeBlocks = includeBlocks;
+        params.actions = new ConcurrentHashMap<ActionType, Boolean>(actions);
+        params.users = new ConcurrentHashMap<Long, Boolean>(users);
+        params.entities = new ConcurrentHashMap<Integer, Boolean>(entities);
+        params.blocks = new ConcurrentHashMap<BlockData, Boolean>(blocks);
         params.compress = compress;
         params.showDate = showDate;
         params.showLoc = showLoc;
@@ -336,5 +287,24 @@ public class QueryParameter implements Cloneable
     public boolean hasTime()
     {
         return from_since != null || to_before != null;
+    }
+
+    public int getLimit()
+    {
+        return limit;
+    }
+
+    public void setLimit(int limit)
+    {
+        this.limit = limit;
+    }
+
+    public boolean includeActions()
+    {
+        for (Boolean include : this.actions.values())
+        {
+            if (include) return true; // if one is included exclusion do not matter
+        }
+        return false; // all excluded
     }
 }

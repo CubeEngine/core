@@ -24,6 +24,7 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.CountDownLatch;
@@ -331,14 +332,18 @@ public class QueryManager
         if (!params.actions.isEmpty())
         {
             selectBuilder.beginSub().field("action");
-            if (!params.includeActions)
+            boolean include = params.includeActions();
+            if (!include)
             {
                 selectBuilder.not();
             }
             selectBuilder.in().valuesInBrackets(params.actions.size()).endSub();
-            for (ActionType type : params.actions)
+            for (Entry<ActionType,Boolean> type : params.actions.entrySet())
             {
-                dataToInsert.add(type.getID());
+                if (!include || type.getValue()) // all exclude OR only include
+                {
+                    dataToInsert.add(type.getKey().getID());
+                }
             }
             needAnd = true;
         }
@@ -409,6 +414,7 @@ public class QueryManager
             selectBuilder.endSub();
             needAnd = true;
         }
+        // TODO finish queryParams
         String sql = selectBuilder.end().end();
         System.out.print(user.getName() + ": Lookup queued!");
         this.queuedLookups.offer(new QueuedSqlParams(lookup,user,sql,dataToInsert));

@@ -24,6 +24,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import de.cubeisland.cubeengine.core.logger.LogLevel;
 import de.cubeisland.cubeengine.core.util.ChatFormat;
 import de.cubeisland.cubeengine.core.util.StringUtils;
+import de.cubeisland.cubeengine.core.util.matcher.Match;
 import de.cubeisland.cubeengine.log.Log;
 import de.cubeisland.cubeengine.log.action.logaction.CraftItem;
 import de.cubeisland.cubeengine.log.action.logaction.EnchantItem;
@@ -126,10 +127,12 @@ import gnu.trove.map.hash.TLongObjectHashMap;
 public class ActionTypeManager
 {
     private Map<Class<? extends ActionType>,ActionType> registeredActionTypes = new ConcurrentHashMap<Class<? extends ActionType>, ActionType>();
+    private Map<String, ActionType> actionTypesByName = new ConcurrentHashMap<String, ActionType>();
     private TLongObjectHashMap<ActionType> registeredIds = new TLongObjectHashMap<ActionType>();
     private final Log module;
 
     private Map<String,Long> actionIDs;
+
 
     public ActionTypeManager(Log module)
     {
@@ -248,10 +251,14 @@ public class ActionTypeManager
             }
             actionType.setID(actionTypeId);
         }
-        registeredIds.put(actionType.getID(),actionType);
-        registeredActionTypes.put(actionType.getClass(),actionType);
+        registeredIds.put(actionType.getID(), actionType);
+        registeredActionTypes.put(actionType.getClass(), actionType);
+        actionTypesByName.put(actionType.getName(), actionType);
         actionType.initialize(module);
-        this.module.getLog().log(LogLevel.DEBUG,"ActionType registered: " + actionType.getID() + " " + actionType.getName());
+        if (actionType.getID() != -1)
+        {
+            this.module.getLog().log(LogLevel.DEBUG,"ActionType registered: " + actionType.getID() + " " + actionType.getName());
+        }
         return this;
     }
 
@@ -274,5 +281,11 @@ public class ActionTypeManager
             actionTypes.add(actionType.getName().replace("-","&f-&7"));
         }
         return ChatFormat.parseFormats("&7&o"+StringUtils.implode("&f, &7&o",actionTypes));
+    }
+
+    public ActionType getActionType(String actionString)
+    {
+        String match = Match.string().matchString(actionString, this.actionTypesByName.keySet());
+        return match == null ? null : this.actionTypesByName.get(match);
     }
 }
