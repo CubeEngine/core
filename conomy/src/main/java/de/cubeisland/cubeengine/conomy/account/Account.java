@@ -20,7 +20,11 @@ public abstract class Account
      */
     public abstract String getName();
 
-    protected abstract void log(String action, Object value);
+    /**
+     * Logs an action for this account formatted like this:
+     * <p>{@code action} accountName {@code value} :: current balance
+     */
+    public abstract void log(String action, Object value);
 
     /**
      * Updates the account in the database
