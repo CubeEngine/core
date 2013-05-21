@@ -73,15 +73,16 @@ public class PlayerChat extends SimpleLogActionType
     {
         if (logEntry.hasAttached())
         {
-            user.sendTranslated("%s&2%s&a chatted the following &6%d&a times%s: &f\"&6%s&f\"",
-                                time,logEntry.getCauserUser().getDisplayName(), logEntry.getAttached().size()+1, loc,
-                                logEntry.getAdditional().iterator().next().asText());
+            user.sendTranslated("%s&2%s&a chatted &f\"&6%s&f\" &6x%d%s",
+                                time,logEntry.getCauserUser().getDisplayName(),
+                                logEntry.getAdditional().iterator().next().asText(),
+                                logEntry.getAttached().size()+1, loc);
         }
         else
         {
-            user.sendTranslated("%s&2%s&a chatted the following%s&a: &f\"&6%s&f\"",
-                                time,logEntry.getCauserUser().getDisplayName(), loc,
-                                logEntry.getAdditional().iterator().next().asText());
+            user.sendTranslated("%s&2%s&a chatted &f\"&6%s&f\"%s&a",
+                                time,logEntry.getCauserUser().getDisplayName(),
+                                logEntry.getAdditional().iterator().next().asText(), loc);
         }
     }
 

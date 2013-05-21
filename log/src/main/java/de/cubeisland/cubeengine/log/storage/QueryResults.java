@@ -35,8 +35,13 @@ public class QueryResults
             parameter.showNoLogsFound(user);
             return;
         }
-        System.out.print("Showing " + this.logEntries.size() + " logentries to " + user.getName());
-        user.sendTranslated("&aFound %d logs:", this.logEntries.size());
+        System.out.print("Showing " + this.logEntries.size() + " logentries (limit:" + parameter.getLimit() + ")to " + user.getName());
+        int limit = parameter.getLimit();
+        if (limit == -1)
+        {
+            limit = this.logEntries.size();
+        }
+        user.sendTranslated("&aFound %d distinct logs!", this.logEntries.size());
         Iterator<LogEntry> entries = this.logEntries.iterator();
         // compressing data: //TODO add if it should be compressed or not
         LogEntry entry = entries.next();
@@ -55,10 +60,18 @@ public class QueryResults
                 compressedEntries.add(entry);
             }
         }
+        if (compressedEntries.size() < this.logEntries.size())
+        {
+            limit = compressedEntries.size();
+            user.sendTranslated("&aCompressed into %d logs!", compressedEntries.size());
+        }
+        user.sendTranslated("&aShowing %d most recent logs:", limit);
         //TODO pages
+        int i = 0;
         for (LogEntry logEntry : compressedEntries)
         {
             logEntry.actionType.showLogEntry(user,parameter,logEntry);
+            if (limit < i++) return;
         }
     }
 

@@ -414,6 +414,21 @@ public class QueryManager
             selectBuilder.endSub();
             needAnd = true;
         }
+        if (!params.blocks.isEmpty())
+        {
+            if (needAnd)
+            {
+                selectBuilder.and();
+            }
+            selectBuilder.beginSub();
+            // make sure there is data for blocks first
+            selectBuilder.not().beginSub().field("block").is(0).value(null).or()
+                         .field("data").is(0).value(null).or()
+                         .field("newBlock").is(0).value(null).or()
+                         .field("newData").is(0).value(null).endSub();
+            selectBuilder.endSub();
+            needAnd = true;
+        }
         // TODO finish queryParams
         String sql = selectBuilder.end().end();
         System.out.print(user.getName() + ": Lookup queued!");

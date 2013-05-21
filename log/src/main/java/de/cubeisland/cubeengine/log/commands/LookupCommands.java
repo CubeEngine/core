@@ -134,6 +134,10 @@ public class LookupCommands
                 }
                 params.setLimit(limit);
             }
+            else
+            {
+                params.setLimit(70); // default 70
+            }
             if (context.hasParam("action"))
             {
                 if (!this.readActions(params, context.getString("action"), user))

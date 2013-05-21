@@ -58,38 +58,38 @@ public abstract class LogActionType extends ActionType implements Listener
                 {
                     xMax = entry.location.x;
                 }
-                if (entry.location.x < yMin)
+                if (entry.location.y < yMin)
                 {
-                    yMin = entry.location.x;
+                    yMin = entry.location.y;
                 }
-                else if (entry.location.x > yMax)
+                else if (entry.location.y > yMax)
                 {
-                    yMax = entry.location.x;
+                    yMax = entry.location.y;
                 }
-                if (entry.location.x < zMin)
+                if (entry.location.z < zMin)
                 {
-                    zMin = entry.location.x;
+                    zMin = entry.location.z;
                 }
-                else if (entry.location.x > zMax)
+                else if (entry.location.z > zMax)
                 {
-                    zMax = entry.location.x;
+                    zMax = entry.location.z;
                 }
             }
             if (xMax == xMin && yMax == yMin && zMax == zMin)
             {
-                loc = " &aat &3%d&f:&3%d&f:&3%d&a in &3%s";
-                loc = String.format(loc,xMax,yMax,zMax,logEntry.world.getName());
+                loc = "&a at &3%s&f:&3%d&f:&3%d&f:&3%d&a";
+                loc = String.format(loc,logEntry.world.getName(),xMax,yMax,zMax);
             }
             else
             {
-                loc = " &ain between &3%d&f:&3%d&f:&3%d&a and &3%d&f:&3%d&f:&3%d&a in &3%s";
+                loc = "&a in between &3%d&f:&3%d&f:&3%d&a and &3%d&f:&3%d&f:&3%d&a in &3%s";
                 loc = String.format(loc,xMin, yMin, zMin, xMax,yMax,zMax,logEntry.world.getName());
             }
         }
         else
         {
-            loc = " &aat &3%d&f:&3%d&f:&3%d&a in &3%s";
-            loc = String.format(loc,logEntry.location.x,logEntry.location.y,logEntry.location.z,logEntry.world.getName());
+            loc = "&a at &3%s&f:&3%d&f:&3%d&f:&3%d&a";
+            loc = String.format(loc,logEntry.world.getName(),logEntry.location.x,logEntry.location.y,logEntry.location.z);
         }
         this.showLogEntry(user,logEntry,time,loc);
     }

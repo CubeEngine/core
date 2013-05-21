@@ -58,9 +58,7 @@ public class QueryParameter implements Cloneable
     boolean showDate = false;
     boolean showLoc = false;
     boolean showID = false;
-    private String locationString;
-
-    private int limit = -1; // -1 is no limit
+    int limit = -1; // -1 is no limit
 
     public QueryParameter(Log module)
     {
@@ -241,9 +239,9 @@ public class QueryParameter implements Cloneable
             }
             else if (radius == null)
             {
-                user.sendTranslated("&eNo logs found at &3%d&f:&3%d&f:&3%d&e in &3%s&e!",
-                                    this.location1.x, this.location1.y, this.location1.z,
-                                    this.module.getCore().getWorldManager().getWorld(worldID).getName());
+                user.sendTranslated("&eNo logs found at &3%s&f:&3%d&f:&3%d&f:&3%d&e!",
+                                    this.module.getCore().getWorldManager().getWorld(worldID).getName(),
+                                    this.location1.x, this.location1.y, this.location1.z);
             }
             else if (user.getLocation().equals(location1))
             {
@@ -281,6 +279,7 @@ public class QueryParameter implements Cloneable
         params.showDate = showDate;
         params.showLoc = showLoc;
         params.showID = showID;
+        params.limit = limit;
         return params;
     }
 
