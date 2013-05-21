@@ -54,6 +54,9 @@ public class LookupCommands
 
     private void params(CommandContext context)
     {
+        context.sendTranslated("&6Registered ActionTypes:");
+        context.sendMessage(this.module.getActionTypeManager().getActionTypesAsString());
+        context.sendMessage("");
         context.sendTranslated("&6Lookup&f/&6Rollback&f/&6Restore&f-&6Parameters:");
         context.sendMessage("");
         context.sendTranslated(" &f-&6 action &7<actionType> &flike &3block-break &f(See full list below)");
@@ -66,9 +69,6 @@ public class LookupCommands
         context.sendTranslated(" &f-&6 world &7<world>&f default is your current world");
         context.sendMessage("");
         context.sendTranslated("Use &6!&f to exclude the parameters instead of including them.");
-        context.sendMessage("");
-        context.sendTranslated("&6Registered ActionTypes:");
-        context.sendMessage(this.module.getActionTypeManager().getActionTypesAsString());
     }
 
     /**

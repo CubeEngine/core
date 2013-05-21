@@ -45,26 +45,29 @@ public class QueryResults
         Iterator<LogEntry> entries = this.logEntries.iterator();
         // compressing data: //TODO add if it should be compressed or not
         LogEntry entry = entries.next();
-        LinkedHashSet<LogEntry> compressedEntries = new LinkedHashSet<LogEntry>();
+        LogEntry lastAttach = entry;
+        LinkedHashSet <LogEntry> compressedEntries = new LinkedHashSet<LogEntry>();
         compressedEntries.add(entry); // add first entry
         while (entries.hasNext())
         {
             LogEntry next = entries.next();
-            if (entry.isSimilar(next)) // can be compressed ?
+            if (lastAttach.isSimilar(next)) // can be compressed ?
             {
                 entry.attach(next);
+                lastAttach = next;
             }
             else // no more compression -> move on to next entry
             {
                 entry = next;
+                lastAttach = entry;
                 compressedEntries.add(entry);
             }
         }
         if (compressedEntries.size() < this.logEntries.size())
         {
-            limit = compressedEntries.size();
             user.sendTranslated("&aCompressed into %d logs!", compressedEntries.size());
         }
+        limit = compressedEntries.size();
         user.sendTranslated("&aShowing %d most recent logs:", limit);
         //TODO pages
         int i = 0;

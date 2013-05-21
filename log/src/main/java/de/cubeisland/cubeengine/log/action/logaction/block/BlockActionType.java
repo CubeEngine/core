@@ -17,6 +17,8 @@
  */
 package de.cubeisland.cubeengine.log.action.logaction.block;
 
+import java.util.concurrent.TimeUnit;
+
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
@@ -209,7 +211,7 @@ public abstract class BlockActionType extends LogActionType
         {
             if (logEntry.block.equals(other.block))
             {
-                return true;
+                return nearTimeFrame(logEntry,other);
             }
             else
             {
@@ -217,18 +219,24 @@ public abstract class BlockActionType extends LogActionType
                 {
                     if (other.block.equals("LAVA") || other.block.equals("STATIONARY_LAVA"))
                     {
-                        return true;
+                        return nearTimeFrame(logEntry,other);
                     }
                 }
                 else if (logEntry.block.equals("WATER") || logEntry.block.equals("STATIONARY_WATER"))
                 {
                     if (other.block.equals("WATER") || other.block.equals("STATIONARY_WATER"))
                     {
-                        return true;
+                        return nearTimeFrame(logEntry,other);
                     }
                 }
             }
         }
         return false;
+    }
+
+    private boolean nearTimeFrame(LogEntry logEntry, LogEntry other)
+    {
+        return logEntry.causer >= 0 || Math
+            .abs(TimeUnit.MILLISECONDS.toSeconds(logEntry.timestamp.getTime() - other.timestamp.getTime())) < 5;
     }
 }

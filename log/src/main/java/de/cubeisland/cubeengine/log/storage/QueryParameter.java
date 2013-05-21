@@ -306,4 +306,22 @@ public class QueryParameter implements Cloneable
         }
         return false; // all excluded
     }
+
+    public boolean includeBlocks()
+    {
+        for (Boolean include : this.blocks.values())
+        {
+            if (include) return true; // if one is included exclusion do not matter
+        }
+        return false; // all excluded
+    }
+
+    public boolean includeUsers()
+    {
+        for (Boolean include : this.users.values())
+        {
+            if (include) return true; // if one is included exclusion do not matter
+        }
+        return false; // all excluded
+    }
 }

@@ -37,7 +37,7 @@ public abstract class LogActionType extends ActionType implements Listener
     public void showLogEntry(User user, QueryParameter params, LogEntry logEntry)
     {
         //TODO time OR time-frame if attached
-        String time = logEntry.timestamp.toString() + " - ";
+        String time = "&7"+ logEntry.timestamp.toString() + " - ";
         //TODO location OR area if attached
         String loc = "";
         if (logEntry.hasAttached())
@@ -77,18 +77,18 @@ public abstract class LogActionType extends ActionType implements Listener
             }
             if (xMax == xMin && yMax == yMin && zMax == zMin)
             {
-                loc = "&a at &3%s&f:&3%d&f:&3%d&f:&3%d&a";
+                loc = "\n&a   at &3%s&f:&3%d&f:&3%d&f:&3%d&a";
                 loc = String.format(loc,logEntry.world.getName(),xMax,yMax,zMax);
             }
             else
             {
-                loc = "&a in between &3%d&f:&3%d&f:&3%d&a and &3%d&f:&3%d&f:&3%d&a in &3%s";
+                loc = "\n&a   in between &3%d&f:&3%d&f:&3%d&a and &3%d&f:&3%d&f:&3%d&a in &3%s";
                 loc = String.format(loc,xMin, yMin, zMin, xMax,yMax,zMax,logEntry.world.getName());
             }
         }
         else
         {
-            loc = "&a at &3%s&f:&3%d&f:&3%d&f:&3%d&a";
+            loc = "\n&a   at &3%s&f:&3%d&f:&3%d&f:&3%d&a";
             loc = String.format(loc,logEntry.world.getName(),logEntry.location.x,logEntry.location.y,logEntry.location.z);
         }
         this.showLogEntry(user,logEntry,time,loc);

@@ -48,6 +48,8 @@ import de.cubeisland.cubeengine.log.action.ActionType;
 
 import gnu.trove.map.hash.THashMap;
 
+import static de.cubeisland.cubeengine.core.storage.database.querybuilder.ComponentBuilder.IS;
+
 public class QueryManager
 {
     private final Database database;
@@ -422,16 +424,72 @@ public class QueryManager
             }
             selectBuilder.beginSub();
             // make sure there is data for blocks first
-            selectBuilder.not().beginSub().field("block").is(0).value(null).or()
-                         .field("data").is(0).value(null).or()
-                         .field("newBlock").is(0).value(null).or()
-                         .field("newData").is(0).value(null).endSub();
+            selectBuilder.not().beginSub().field("block").is(IS).value(null).or()
+                         .field("data").is(IS).value(null).or()
+                         .field("newBlock").is(IS).value(null).or()
+                         .field("newData").is(IS).value(null).endSub();
+            // Start filter blocks:
+            selectBuilder.and();
+            boolean include = params.includeBlocks();
+            if (!include)
+            {
+                selectBuilder.not();
+            }
+            selectBuilder.beginSub();
+            boolean or = false;
+            for (Entry<BlockData,Boolean> data : params.blocks.entrySet())
+            {
+                if (!include || data.getValue()) // all exclude OR only include
+                {
+                    if (or)
+                    {
+                        selectBuilder.or();
+                    }
+                    selectBuilder.beginSub();
+                    selectBuilder.field("block").isEqual().value(data.getKey().material.name()).or().field("newBlock").isEqual().value(data.getKey().material.name());
+                    if (data.getKey().data != null)
+                    {
+                        selectBuilder.and().beginSub().field("data").isEqual().value(data.getKey().data).or().field("newData").isEqual().value(data.getKey().data).endSub();
+                    }
+                    selectBuilder.endSub();
+                    or = true;
+                }
+            }
+            selectBuilder.endSub().endSub();
+            needAnd = true;
+        }
+        if (!params.users.isEmpty())
+        {
+            if (needAnd)
+            {
+                selectBuilder.and();
+            }
+            // Start filter users:
+            boolean include = params.includeUsers();
+            if (!include)
+            {
+                selectBuilder.not();
+            }
+            selectBuilder.beginSub();
+            boolean or = false;
+            for (Entry<Long,Boolean> data : params.users.entrySet())
+            {
+                if (!include || data.getValue()) // all exclude OR only include
+                {
+                    if (or)
+                    {
+                        selectBuilder.or();
+                    }
+                    selectBuilder.field("causer").isEqual().value(data.getKey());
+                    or = true;
+                }
+            }
             selectBuilder.endSub();
             needAnd = true;
         }
         // TODO finish queryParams
         String sql = selectBuilder.end().end();
-        System.out.print(user.getName() + ": Lookup queued!");
+        System.out.print(user.getName() + ": Lookup queued!\n" +sql);
         this.queuedLookups.offer(new QueuedSqlParams(lookup,user,sql,dataToInsert));
         if (this.futureLookup == null || this.futureLookup.isDone())
         {

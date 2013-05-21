@@ -69,7 +69,7 @@ public class KillActionType extends ActionTypeContainer
     public void onEntityDeath(EntityDeathEvent event)
     {
         LivingEntity killed = event.getEntity();
-        if (!event.getDrops().isEmpty())
+        if (!event.getDrops().isEmpty()) // TODO log drops later
         {
             ItemDrop itemDrop = this.manager.getActionType(ItemDrop.class);
             if (itemDrop.isActive(event.getEntity().getWorld()))
@@ -82,7 +82,6 @@ public class KillActionType extends ActionTypeContainer
             }
         }
         Location location = event.getEntity().getLocation();
-
         SimpleLogActionType actionType;
         if (killed instanceof Player)
         {
@@ -198,21 +197,24 @@ public class KillActionType extends ActionTypeContainer
     {
         if (logEntry.hasCauserUser())
         {
-            user.sendTranslated("&6%s &agot slaughtered by &2%s&a!",
+            user.sendTranslated("%s&6%s &agot slaughtered by &2%s&a%s!",
+                                time,
                                 logEntry.getEntityFromData(),
-                                logEntry.getCauserUser().getDisplayName());
+                                logEntry.getCauserUser().getDisplayName(),loc);
         }
         else if (logEntry.hasCauserEntity())
         {
-            user.sendTranslated("&6%s &acould not escape &6%s&a!",
+            user.sendTranslated("%s&6%s &acould not escape &6%s&a%s!",
+                                time,
                                 logEntry.getEntityFromData(),
-                                logEntry.getCauserEntity());
+                                logEntry.getCauserEntity(), loc);
         }
         else // something else
         {
-            user.sendTranslated("&6%s &adied! &f(&6%s&f)",
-                                logEntry.getEntityFromData(),
-                                "CAUSE"); //TODO get cause from json
+            user.sendTranslated("%s&6%s &adied%s! &f(&6%s&f)",
+                                time,
+                                logEntry.getEntityFromData(),loc,
+                                logEntry.getAdditional().get("dmgC").toString());
         }
     }
 
