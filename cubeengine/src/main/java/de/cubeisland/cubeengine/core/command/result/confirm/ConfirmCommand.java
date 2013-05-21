@@ -37,17 +37,25 @@ public class ConfirmCommand extends CubeCommand
     @Override
     public CommandResult run(CommandContext context) throws Exception
     {
-        if (!confirmManager.hasPendingConfirmation(context.getSender()))
+        int pendingConfirmations = confirmManager.countPendingConfirmations(context.getSender());
+        if (pendingConfirmations < 1)
         {
-            context.sendTranslated("You don't have any pending confirmations!");
+            context.sendTranslated("&cYou don't have any pending confirmations!");
+            return null;
         }
-        confirmManager.getPendingConfirmation(context.getSender()).run();
+        confirmManager.getLastPendingConfirmation(context.getSender()).run();
+        pendingConfirmations = confirmManager.countPendingConfirmations(context.getSender());
+        if (pendingConfirmations > 0)
+        {
+            context.sendTranslated("&eYou now have &6%d &epending confirmations", pendingConfirmations);
+        }
         return null;
     }
 
     @Override
     public void help(HelpContext context) throws Exception
     {
+        context.sendMessage(this.getDescription());
         context.sendTranslated("Usage: %s", this.getUsage(context));
     }
 }

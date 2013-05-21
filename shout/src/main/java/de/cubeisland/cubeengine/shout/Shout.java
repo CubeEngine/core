@@ -47,7 +47,7 @@ public class Shout extends Module
     {
         this.config = Configuration.load(ShoutConfiguration.class, this);
         this.announcementFolder = this.getFolder();
-        this.getCore().getFileManager().dropResources(ShoutResource.values());
+        // The resources don't exist anymore this.getCore().getFileManager().dropResources(ShoutResource.values());
 
         if (this.getCore().getModuleManager().getModule(Roles.class) == null)
         {
