@@ -27,21 +27,23 @@ public class QueryResults
 {
     private TreeSet<LogEntry> logEntries = new TreeSet<LogEntry>();
 
-    public void show(User user, QueryParameter parameter)
+    public void show(User user, QueryParameter parameter, int page)
     {
         user.updateInventory();
+
         if (this.logEntries.isEmpty())
         {
             parameter.showNoLogsFound(user);
             return;
         }
-        System.out.print("Showing " + this.logEntries.size() + " logentries (limit:" + parameter.getLimit() + ")to " + user.getName());
-        int limit = parameter.getLimit();
-        if (limit == -1)
+        System.out.print("Showing " + this.logEntries.size() + " logentries (limit:" + parameter.getPageLimit() + ")to " + user.getName());
+        int pageLimit = parameter.getPageLimit();
+        if (pageLimit == -1)
         {
-            limit = this.logEntries.size();
+            pageLimit = this.logEntries.size();
         }
-        user.sendTranslated("&aFound %d distinct logs!", this.logEntries.size());
+        int totalPages = (this.logEntries.size()+pageLimit-1) / pageLimit; // rounded up
+        user.sendTranslated("&6%d&a distinct logs (&6%d&a pages)", this.logEntries.size(), totalPages);
         Iterator<LogEntry> entries = this.logEntries.iterator();
         // compressing data: //TODO add if it should be compressed or not
         LogEntry entry = entries.next();
@@ -65,16 +67,34 @@ public class QueryResults
         }
         if (compressedEntries.size() < this.logEntries.size())
         {
-            user.sendTranslated("&aCompressed into %d logs!", compressedEntries.size());
+            totalPages = (compressedEntries.size()+pageLimit-1) / pageLimit; // rounded up
+            user.sendTranslated("&aCompressed into &6%d&a logs! (&6%d&a pages)", compressedEntries.size(), totalPages);
         }
-        limit = compressedEntries.size();
-        user.sendTranslated("&aShowing %d most recent logs:", limit);
-        //TODO pages
+        if (page > totalPages)
+        {
+            return;
+        }
+        if (page == 1)
+        {
+            user.sendTranslated("&aShowing %d most recent logs:", pageLimit);
+        }
+        else
+        {
+            user.sendTranslated("&aShowing %d logs (Page %d):", pageLimit, page);
+        }
         int i = 0;
+        int cpage = 1;
         for (LogEntry logEntry : compressedEntries)
         {
-            logEntry.actionType.showLogEntry(user,parameter,logEntry);
-            if (limit < i++) return;
+            if (cpage == page)
+            {
+                logEntry.actionType.showLogEntry(user,parameter,logEntry);
+            }
+            i++;
+            if (i % pageLimit == 0)
+            {
+                cpage++;
+            }
         }
     }
 

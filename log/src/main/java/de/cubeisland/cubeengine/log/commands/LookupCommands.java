@@ -67,6 +67,7 @@ public class LookupCommands
         context.sendTranslated(" &f-&6 since &7<time>&f default is 3 days");
         context.sendTranslated(" &f-&6 before &7<time>");
         context.sendTranslated(" &f-&6 world &7<world>&f default is your current world");
+        // TODO pagelimit
         context.sendMessage("");
         context.sendTranslated("Use &6!&f to exclude the parameters instead of including them.");
     }
@@ -102,7 +103,9 @@ public class LookupCommands
         @Param(names = {"since","time","t"},type = Date.class), // if not given default since 3d
         @Param(names = {"before"},type = Date.class),
         @Param(names = {"world","w","in"}, type = World.class),
-        @Param(names = {"limit"},type = Integer.class),
+        @Param(names = {"limit","pagelimit"},type = Integer.class),
+
+        @Param(names = {"page"},type = Integer.class),
     }, min = 0, max = 1)
     public void lookup(ParameterizedContext context)
     {
@@ -117,27 +120,43 @@ public class LookupCommands
         {
             User user = (User)context.getSender();
             LogAttachment attachment = user.attachOrGet(LogAttachment.class,this.module);
-            attachment.clearLookups(); // TODO only clear cmdlookup
             Lookup lookup = attachment.getCommandLookup();
-            if (lookup == null)
-            {
-                user.sendTranslated("&cInvalid LoggingTool-Block!");
-                return;
-            }
-            QueryParameter params = lookup.getQueryParameter();
+            Integer limit;
             if (context.hasParam("limit"))
             {
-                Integer limit = context.getParam("limit", null);
+                limit = context.getParam("limit", null);
                 if (limit == null)
                 {
                     return;
                 }
-                params.setLimit(limit);
             }
             else
             {
-                params.setLimit(70); // default 70
+                limit = lookup.queried() ? lookup.getQueryParameter().getPageLimit() : 10;
             }
+            if (context.hasParam("page"))
+            {
+                if (lookup.queried())
+                {
+                    Integer page = context.getParam("page",null);
+                    if (page == null)
+                    {
+                        context.sendTranslated("&cInvalid page!");
+                        return;
+                    }
+                    lookup.getQueryParameter().setPageLimit(limit);
+                    lookup.show(user, page);
+                }
+                else
+                {
+                    context.sendTranslated("&cYou have to do a query first!");
+                }
+                return;
+            }
+            attachment.clearLookups(); // TODO only clear cmdlookup
+            lookup = attachment.getCommandLookup();
+            QueryParameter params = lookup.getQueryParameter();
+            params.setPageLimit(limit);
             if (context.hasParam("action"))
             {
                 if (!this.readActions(params, context.getString("action"), user))

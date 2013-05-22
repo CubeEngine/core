@@ -210,7 +210,7 @@ public class QueryManager
                     @Override
                     public void run()
                     {
-                        lookup.show(user);
+                        lookup.show(user, 1);
                     }
                 });
             }

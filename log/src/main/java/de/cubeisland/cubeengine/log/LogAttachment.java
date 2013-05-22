@@ -137,5 +137,10 @@ public class LogAttachment extends UserAttachment
         this.lastLookup = commandLookup;
         return commandLookup;
     }
+
+    public void setCommandLookup(Lookup commandLookup)
+    {
+        this.commandLookup = commandLookup;
+    }
 }
 

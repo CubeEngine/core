@@ -21,6 +21,7 @@ import java.util.HashSet;
 
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.log.Log;
+import de.cubeisland.cubeengine.log.LogAttachment;
 import de.cubeisland.cubeengine.log.action.ActionType;
 import de.cubeisland.cubeengine.log.action.ActionType.Category;
 
@@ -92,9 +93,11 @@ public class Lookup implements Cloneable
         return lookup;
     }
 
-    public void show(User user)
+    public void show(User user, int page)
     {
-        this.queryResults.show(user,queryParameter);
+        this.queryResults.show(user,queryParameter,page);
+        LogAttachment attachment = user.attachOrGet(LogAttachment.class, this.module);
+        attachment.setCommandLookup(this);
     }
 
     public void setQueryResults(QueryResults queryResults)
@@ -113,5 +116,10 @@ public class Lookup implements Cloneable
         Lookup lookup = new Lookup(module);
         lookup.queryParameter = queryParameter.clone();
         return lookup;
+    }
+
+    public boolean queried()
+    {
+        return this.queryResults != null;
     }
 }
