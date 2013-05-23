@@ -55,8 +55,10 @@ public class ConomyPermissions extends PermissionContainer<Conomy>
 
     public static final Permission COMMAND_BANK_INVITE_FORCE = COMMAND_BANK.createAbstractChild("invite").createChild("force");
 
-    public static Permission COMMAND_BANK_JOIN_FORCE = COMMAND_BANK.createAbstractChild("join").createChild("force");
-    public static Permission COMMAND_BANK_JOIN_OTHER = COMMAND_BANK.createAbstractChild("join").createChild("other");
+    private static Permission COMMAND_BANK_JOIN = COMMAND_BANK.createAbstractChild("join");
+
+    public static Permission COMMAND_BANK_JOIN_FORCE = COMMAND_BANK_JOIN.createChild("force");
+    public static Permission COMMAND_BANK_JOIN_OTHER = COMMAND_BANK_JOIN.createChild("other");
     public static Permission COMMAND_BANK_LEAVE_OTHER = COMMAND_BANK.createAbstractChild("leave").createChild("other");
     public static Permission COMMAND_BANK_RENAME_FORCE = COMMAND_BANK.createAbstractChild("rename").createChild("force");
 
