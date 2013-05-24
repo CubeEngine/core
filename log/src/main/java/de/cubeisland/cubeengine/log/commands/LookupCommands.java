@@ -169,7 +169,21 @@ public class LookupCommands
                 String radiusString = context.getString("radius");
                 if (radiusString.equalsIgnoreCase("selection")|| radiusString.equalsIgnoreCase("sel"))
                 {
-                    // TODO set selection
+                    LogAttachment logAttachment = user.attachOrGet(LogAttachment.class, this.module);
+                    if (!logAttachment.applySelection(params))
+                    {
+                        context.sendTranslated("&cYou have to select a region first!");
+                        if (module.hasWorldEdit())
+                        {
+                            context.sendTranslated("&eUse worldedit to select a cuboid region!");
+                        }
+                        else
+                        {
+                            context.sendTranslated("&eUse this selection wand."); // TODO give selectionwand for CE
+                            LogCommands.giveSelectionTool(user);
+                        }
+                        return;
+                    }
                 }
                 else if (radiusString.equalsIgnoreCase("global") || radiusString.equalsIgnoreCase("g"))
                 {
@@ -214,96 +228,23 @@ public class LookupCommands
             }
             if (context.hasParam("user"))
             {
-                String[] users = StringUtils.explode(",", context.getString("user"));
-                for (String name : users)
+                if (this.readUser(params, context.getString("user"), user))
                 {
-                    boolean negate = name.startsWith("!");
-                    if (negate)
-                    {
-                        name = name.substring(1);
-                    }
-                    User u = this.module.getCore().getUserManager().getUser(name, false);
-                    if (u == null)
-                    {
-                        context.sendTranslated("&cUser &2%s&c not found!", name);
-                        return;
-                    }
-                    if (negate)
-                    {
-                        params.excludeUser(u.key);
-                    }
-                    else
-                    {
-                        params.includeUser(u.key);
-                    }
+                    return;
                 }
             }
             if (context.hasParam("block"))
             {
-                String[] names = StringUtils.explode(",", context.getString("block"));
-                for (String name : names)
+                if (this.readBlocks(params, context.getString("block"), user))
                 {
-                    boolean negate = name.startsWith("!");
-                    if (negate)
-                    {
-                        name = name.substring(1);
-                    }
-                    Byte data = null;
-                    if (name.contains(":"))
-                    {
-                        String sub = name.substring(name.indexOf(":")+1);
-                        try
-                        {
-                            data = Byte.parseByte(sub);
-                        }
-                        catch (NumberFormatException ex)
-                        {
-                            context.sendTranslated("&cInvalid BlockData: &6%s", sub);
-                            return;
-                        }
-                        name = name.substring(0,name.indexOf(":"));
-                    }
-                    Material material = Match.material().material(name);
-                    if (material == null)
-                    {
-                        context.sendTranslated("&cUnkown Material: &6%s", name);
-                        return;
-                    }
-                    BlockData blockData = new BlockData(material, data);
-                    if (negate)
-                    {
-                        params.excludeBlock(blockData);
-                    }
-                    else
-                    {
-                        params.includeBlock(blockData);
-                    }
+                    return;
                 }
             }
             if (context.hasParam("entity"))
             {
-                String[] names = StringUtils.explode(",", context.getString("entity"));
-                for (String name : names)
+                if (this.readEntities(params, context.getString("entity"), user))
                 {
-                    boolean negate = name.startsWith("!");
-                    if (negate)
-                    {
-                        name = name.substring(1);
-                    }
-                    EntityType entityType = Match.entity().living(name);
-                    if (entityType == null)
-                    {
-                        context.sendTranslated("&cUnknown EntityType: &6%s", name);
-                        return;
-                    }
-                    if (negate)
-                    {
-                        params.excludeEntity(entityType);
-                    }
-                    else
-                    {
-                        params.includeEntity(entityType);
-                    }
+                    return;
                 }
             }
             // TODO time
@@ -337,6 +278,107 @@ public class LookupCommands
             this.module.getLogManager().fillLookupAndShow(lookup, user);
         }
     }
+
+    private boolean readUser(QueryParameter params, String userString, User user)
+    {
+        String[] users = StringUtils.explode(",", userString);
+        for (String name : users)
+        {
+            boolean negate = name.startsWith("!");
+            if (negate)
+            {
+                name = name.substring(1);
+            }
+            User u = this.module.getCore().getUserManager().getUser(name, false);
+            if (u == null)
+            {
+                user.sendTranslated("&cUser &2%s&c not found!", name);
+                return false;
+            }
+            if (negate)
+            {
+                params.excludeUser(u.key);
+            }
+            else
+            {
+                params.includeUser(u.key);
+            }
+        }
+        return true;
+    }
+
+    private boolean readBlocks(QueryParameter params, String block, User user)
+    {
+        String[] names = StringUtils.explode(",", block);
+        for (String name : names)
+        {
+            boolean negate = name.startsWith("!");
+            if (negate)
+            {
+                name = name.substring(1);
+            }
+            Byte data = null;
+            if (name.contains(":"))
+            {
+                String sub = name.substring(name.indexOf(":")+1);
+                try
+                {
+                    data = Byte.parseByte(sub);
+                }
+                catch (NumberFormatException ex)
+                {
+                    user.sendTranslated("&cInvalid BlockData: &6%s", sub);
+                    return false;
+                }
+                name = name.substring(0,name.indexOf(":"));
+            }
+            Material material = Match.material().material(name);
+            if (material == null)
+            {
+                user.sendTranslated("&cUnknown Material: &6%s", name);
+                return false;
+            }
+            BlockData blockData = new BlockData(material, data);
+            if (negate)
+            {
+                params.excludeBlock(blockData);
+            }
+            else
+            {
+                params.includeBlock(blockData);
+            }
+        }
+        return true;
+    }
+
+    private boolean readEntities(QueryParameter params, String entity, User user)
+    {
+        String[] names = StringUtils.explode(",", entity);
+        for (String name : names)
+        {
+            boolean negate = name.startsWith("!");
+            if (negate)
+            {
+                name = name.substring(1);
+            }
+            EntityType entityType = Match.entity().living(name);
+            if (entityType == null)
+            {
+                user.sendTranslated("&cUnknown EntityType: &6%s", name);
+                return false;
+            }
+            if (negate)
+            {
+                params.excludeEntity(entityType);
+            }
+            else
+            {
+                params.includeEntity(entityType);
+            }
+        }
+        return true;
+    }
+
 
     private boolean readActions(QueryParameter params, String input, User user)
     {

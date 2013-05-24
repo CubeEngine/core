@@ -48,13 +48,36 @@ public class ToolListener implements Listener
     {
         if (event.getClickedBlock() != null)
         {
+            User user = this.module.getCore().getUserManager().getUser(event.getPlayer().getName());
             ItemStack item = event.getPlayer().getItemInHand();
-            if (!item.hasItemMeta() || !item.getItemMeta().hasDisplayName() ||
-                    !item.getItemMeta().getDisplayName().equals(LogCommands.toolName))
+            if (item.hasItemMeta() && item.getItemMeta().hasDisplayName())
+            {
+                if (!item.getItemMeta().getDisplayName().equals(LogCommands.toolName))
+                {
+                    if (item.getItemMeta().getDisplayName().equals(LogCommands.selectorToolName))
+                    {
+                        LogAttachment logAttachment = user.attachOrGet(LogAttachment.class, this.module);
+                        Location clicked = event.getClickedBlock().getLocation();
+                        if (event.getAction().equals(Action.LEFT_CLICK_BLOCK))
+                        {
+                            logAttachment.setSelectionPos1(clicked);
+                            user.sendTranslated("&aFirst Position selected!");
+                        }
+                        else
+                        {
+                            logAttachment.setSelectionPos2(clicked);
+                            user.sendTranslated("&aSecond Position selected!");
+                        }
+                        event.setCancelled(true);
+                        event.setUseItemInHand(Result.DENY);
+                    }
+                    return;
+                }
+            }
+            else
             {
                 return;
             }
-            User user = this.module.getCore().getUserManager().getUser(event.getPlayer().getName());
             Lookup lookup = user.attachOrGet(LogAttachment.class,this.module).getLookup(item.getType());
             if (lookup == null)
             {

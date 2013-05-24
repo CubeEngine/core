@@ -40,6 +40,7 @@ public class Log extends Module
     private LogConfiguration config;
     private ObjectMapper objectMapper = null;
     private ActionTypeManager actionTypeManager;
+    private boolean worldEditFound = false;
 
     @Override
     public void onEnable()
@@ -65,6 +66,7 @@ public class Log extends Module
         {
             Class.forName("com.sk89q.worldedit.WorldEdit");
             LogEditSessionFactory.initialize(WorldEdit.getInstance(), this);
+            worldEditFound = true;
         }
         catch (ClassNotFoundException ignored)
         {
@@ -103,5 +105,10 @@ public class Log extends Module
     public ActionTypeManager getActionTypeManager()
     {
         return actionTypeManager;
+    }
+
+    public boolean hasWorldEdit()
+    {
+        return this.worldEditFound;
     }
 }

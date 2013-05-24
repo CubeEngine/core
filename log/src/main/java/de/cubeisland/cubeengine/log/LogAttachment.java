@@ -17,10 +17,19 @@
  */
 package de.cubeisland.cubeengine.log;
 
+import org.bukkit.Location;
 import org.bukkit.Material;
 
 import de.cubeisland.cubeengine.core.user.UserAttachment;
 import de.cubeisland.cubeengine.log.storage.Lookup;
+import de.cubeisland.cubeengine.log.storage.QueryParameter;
+
+import com.sk89q.worldedit.LocalSession;
+import com.sk89q.worldedit.Vector;
+import com.sk89q.worldedit.WorldEdit;
+import com.sk89q.worldedit.bukkit.BukkitUtil;
+import com.sk89q.worldedit.regions.CuboidRegion;
+import com.sk89q.worldedit.regions.RegionSelector;
 
 public class LogAttachment extends UserAttachment
 {
@@ -141,6 +150,69 @@ public class LogAttachment extends UserAttachment
     public void setCommandLookup(Lookup commandLookup)
     {
         this.commandLookup = commandLookup;
+    }
+
+    private Log module;
+
+    private Location location1;
+    private Location location2;
+
+    public boolean hasSelection()
+    {
+        if (this.module.hasWorldEdit())
+        {
+            LocalSession session = WorldEdit.getInstance().getSession(this.getHolder().getName());
+            RegionSelector selector = session.getRegionSelector(BukkitUtil.getLocalWorld(this.getHolder().getWorld()));
+            try
+            {
+                if (selector.getRegion() instanceof CuboidRegion)
+                {
+                    Vector pos1 = ((CuboidRegion)selector.getRegion()).getPos1();
+                    Vector pos2 = ((CuboidRegion)selector.getRegion()).getPos2();
+                    this.location1 = new Location(this.getHolder().getWorld(), pos1.getX(), pos1.getY(), pos1.getZ());
+                    this.location2 = new Location(this.getHolder().getWorld(), pos2.getX(), pos2.getY(), pos2.getZ());
+                    return true;
+                }
+            }
+            catch (Exception ignored)
+            {}
+            return false;
+        }
+        else
+        {
+            return location1 != null && location2 != null && location1.getWorld() == location2.getWorld();
+        }
+    }
+
+    public boolean applySelection(QueryParameter parameter)
+    {
+        if (hasSelection())
+        {
+            parameter.setLocationRange(location1, location2);
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public void onAttach()
+    {
+        if (this.getModule() instanceof Log)
+        {
+            this.module = (Log)this.getModule();
+            return;
+        }
+        throw new IllegalArgumentException("Only Log is allowed as module for LogAttachments!");
+    }
+
+    public void setSelectionPos1(Location clicked)
+    {
+        this.location1 = clicked;
+    }
+
+    public void setSelectionPos2(Location clicked)
+    {
+        this.location2 = clicked;
     }
 }
 

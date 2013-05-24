@@ -390,10 +390,13 @@ public class QueryManager
                 if (params.location2 != null)// has area
                 {
                     BlockVector3 loc2 = params.location2;
+                    boolean locX = loc1.x < loc2.x;
+                    boolean locY = loc1.y < loc2.y;
+                    boolean locZ = loc1.z < loc2.z;
                     selectBuilder.and().beginSub()
-                        .field("x").between(loc1.x,loc2.x)
-                        .and().field("y").between(loc1.y,loc2.y)
-                        .and().field("z").between(loc1.z,loc2.z)
+                        .field("x").between(locX ? loc1.x : loc2.x, locX ? loc2.x : loc1.x)
+                        .and().field("y").between(locY ? loc1.y : loc2.y, locY ? loc2.y : loc1.y)
+                        .and().field("z").between(locZ ? loc1.z : loc2.z, locZ ? loc2.z : loc1.z)
                         .endSub();
                 }
                 else if (params.radius == null)// has single location

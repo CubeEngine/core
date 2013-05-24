@@ -37,6 +37,7 @@ import de.cubeisland.cubeengine.log.LogAttachment;
 public class LogCommands extends ContainerCommand
 {
     public static final String toolName = ChatFormat.parseFormats("&9Logging-ToolBlock");
+    public static final String selectorToolName = ChatFormat.parseFormats("&9Selector-Tool");
 
     private Log module;
 
@@ -187,5 +188,51 @@ public class LogCommands extends ContainerCommand
         {
             context.sendTranslated("&cWhy don't you check in your log-file? You won't need a block there!");
         }
+    }
+
+    public static void giveSelectionTool(User user)
+    {
+        ItemStack found = null;
+        for (ItemStack item : user.getInventory().getContents())
+        {
+            if (item != null && item.getType().equals(Material.WOOD_AXE)
+                && item.hasItemMeta() && item.getItemMeta().hasDisplayName() && item.getItemMeta().getDisplayName().equals(selectorToolName))
+            {
+                found = item;
+                break;
+            }
+        }
+        if (found == null)
+        {
+            found = new ItemStack(Material.WOOD_AXE,1);
+            ItemMeta meta = found.getItemMeta();
+            meta.setDisplayName(selectorToolName);
+            meta.setLore(Arrays.asList("created by "+user.getName()));
+            found.setItemMeta(meta);
+            ItemStack oldItemInHand = user.getItemInHand();
+            user.setItemInHand(found);
+            HashMap<Integer,ItemStack> tooMuch = user.getInventory().addItem(oldItemInHand);
+            for (ItemStack item : tooMuch.values())
+            {
+                user.getWorld().dropItemNaturally(user.getLocation(),item);
+            }
+            user.updateInventory();
+            user.sendTranslated("&aReceived a new Region-Selector Tool");
+            return;
+        }
+        user.getInventory().removeItem(found);
+        ItemStack oldItemInHand = user.getItemInHand();
+        user.setItemInHand(found);
+        user.getInventory().addItem(oldItemInHand);
+        user.updateInventory();
+        user.sendTranslated("&aFound a Region-Selector Tool in your inventory!");
+        //TODO if found on hotbar setHeldItemSlot
+    }
+
+    // TODO give selectionTool
+    public void selectionTool(CommandContext context)
+    {
+
+        // if worldEdit give WE wand else give OUR wand
     }
 }
