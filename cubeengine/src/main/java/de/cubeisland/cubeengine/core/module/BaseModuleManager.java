@@ -23,6 +23,7 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
@@ -64,7 +65,7 @@ public abstract class BaseModuleManager implements ModuleManager
         this.core = core;
         this.logger = core.getLog();
         this.loader = new ModuleLoader(core, parentClassLoader);
-        this.modules = new THashMap<String, Module>();
+        this.modules = new LinkedHashMap<String, Module>();
         this.moduleInfos = new THashMap<String, ModuleInfo>();
         this.classMap = new THashMap<Class<? extends Module>, Module>();
         this.coreModule = new CoreModule();

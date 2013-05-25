@@ -281,7 +281,7 @@ public class RepairBlock
             if (itemsBroken)
             {
                 user.sendTranslated("&cYou broke some of your items when repairing!");
-                user.playSound(user.getLocation(),Sound.ITEM_BREAK,1,0);
+                user.playSound(user.getLocation(),Sound.ANVIL_BREAK,1,0);
             }
             if (repairFail)
             {
