@@ -19,10 +19,9 @@ package de.cubeisland.cubeengine.log.storage;
 
 import java.io.IOException;
 import java.sql.Timestamp;
-import java.util.HashSet;
-import java.util.Set;
 import java.util.TreeSet;
 
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.entity.EntityType;
@@ -227,5 +226,25 @@ public class LogEntry implements Comparable<LogEntry>
     public Integer getNewData()
     {
         return newData;
+    }
+
+    public boolean rollback(User user, boolean force)
+    {
+        if (this.actionType.canRollback())
+        {
+            return this.actionType.rollback(this, force);
+        }
+        return false;
+    }
+
+    public boolean redo(User user)
+    {
+       // TODO
+        return false;
+    }
+
+    public Location getLocation()
+    {
+        return new Location(this.world, this.location.x, this.location.y, this.location.z);
     }
 }

@@ -145,6 +145,15 @@ public abstract class ActionType
         return this.actionTypeID;
     }
 
+    public boolean rollback(LogEntry logEntry, boolean force)
+    {
+        if (this.canRollback())
+        {
+            throw new UnsupportedOperationException("Not yet implemented! " + logEntry.actionType.getName());
+        }
+        return false;
+    }
+
     public static enum Category
     {
         ALL,

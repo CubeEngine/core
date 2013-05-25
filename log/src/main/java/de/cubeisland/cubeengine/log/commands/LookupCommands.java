@@ -89,7 +89,7 @@ public class LookupCommands
     }
 
     @Command(
-        desc = "Changes regarding blocks", usage = "", flags = {
+        desc = "Queries a lookup in the database", usage = "", flags = {
         @Flag(longName = "coordinates", name = "coords"),
         @Flag(longName = "detailed", name = "det"),
         @Flag(longName = "descending", name = "desc") //sort in descending order (default ascending)
@@ -228,21 +228,21 @@ public class LookupCommands
             }
             if (context.hasParam("user"))
             {
-                if (this.readUser(params, context.getString("user"), user))
+                if (!this.readUser(params, context.getString("user"), user))
                 {
                     return;
                 }
             }
             if (context.hasParam("block"))
             {
-                if (this.readBlocks(params, context.getString("block"), user))
+                if (!this.readBlocks(params, context.getString("block"), user))
                 {
                     return;
                 }
             }
             if (context.hasParam("entity"))
             {
-                if (this.readEntities(params, context.getString("entity"), user))
+                if (!this.readEntities(params, context.getString("entity"), user))
                 {
                     return;
                 }
@@ -276,6 +276,156 @@ public class LookupCommands
                 }
             }
             this.module.getLogManager().fillLookupAndShow(lookup, user);
+        }
+    }
+
+    @Command(
+        desc = "Performs a rollback", usage = "",
+        params = {
+            @Param(names = {"action","a"}),// !!must have tabcompleter for all register actionTypes
+            @Param(names = {"radius","r"}),//<radius> OR selection|sel OR global|g OR player|p:<radius>
+            @Param(names = {"user","player","p"}),
+            @Param(names = {"block","b"}),
+            @Param(names = {"entity","e"}),
+            @Param(names = {"since","time","t"},type = Date.class), // if not given default since 3d
+            @Param(names = {"before"},type = Date.class),
+            @Param(names = {"world","w","in"}, type = World.class),
+        }, min = 0, max = 1)
+    public void rollback(ParameterizedContext context)
+    {
+        if (context.hasArg(0))
+        {
+            if (context.getString(0).equalsIgnoreCase("params"))
+            {
+                this.params(context);
+            }
+        }
+        else if (context.getSender() instanceof User)
+        {
+            User user = (User)context.getSender();
+            LogAttachment attachment = user.attachOrGet(LogAttachment.class,this.module);
+            attachment.clearLookups(); // TODO only clear cmdlookup
+            Lookup lookup = attachment.getCommandLookup();
+            QueryParameter params = lookup.getQueryParameter();
+            if (context.hasParam("action"))
+            {
+                if (!this.readActions(params, context.getString("action"), user))
+                {
+                    return;
+                }
+            }
+            if (context.hasParam("radius"))
+            {
+                String radiusString = context.getString("radius");
+                if (radiusString.equalsIgnoreCase("selection")|| radiusString.equalsIgnoreCase("sel"))
+                {
+                    LogAttachment logAttachment = user.attachOrGet(LogAttachment.class, this.module);
+                    if (!logAttachment.applySelection(params))
+                    {
+                        context.sendTranslated("&cYou have to select a region first!");
+                        if (module.hasWorldEdit())
+                        {
+                            context.sendTranslated("&eUse worldedit to select a cuboid region!");
+                        }
+                        else
+                        {
+                            context.sendTranslated("&eUse this selection wand."); // TODO give selectionwand for CE
+                            LogCommands.giveSelectionTool(user);
+                        }
+                        return;
+                    }
+                }
+                else if (radiusString.equalsIgnoreCase("global") || radiusString.equalsIgnoreCase("g"))
+                {
+                    params.setWorld(user.getWorld());
+                }
+                else
+                {
+                    User radiusUser = null;
+                    Integer radius;
+                    if (radiusString.contains(":"))
+                    {
+                        radiusUser = this.module.getCore().getUserManager().findUser(radiusString.substring(0,radiusString.indexOf(":")));
+                        if (radiusUser == null)
+                        {
+                            context.sendTranslated("&cInvalid radius/location selection");
+                            context.sendTranslated("&aThe radius parameter can be: <radius> | selection | global | <player>[:<radius>]");
+                            return;
+                        }
+                        radiusString = radiusString.substring(radiusString.indexOf(":")+1);
+                    }
+                    try
+                    {
+                        radius = Integer.parseInt(radiusString);
+                        if (radiusUser == null)
+                        {
+                            radiusUser = user;
+                        }
+                        params.setLocationRadius(radiusUser.getLocation(), radius);
+                    }
+                    catch (NumberFormatException ex)
+                    {
+                        radiusUser = this.module.getCore().getUserManager().findUser(radiusString);
+                        if (radiusUser == null)
+                        {
+                            context.sendTranslated("&cInvalid radius/location selection");
+                            context.sendTranslated("&aThe radius parameter can be: <radius> | selection | global | <player>[:<radius>]");
+                            return;
+                        }
+                        params.setWorld(radiusUser.getWorld());
+                    }
+                }
+            }
+            if (context.hasParam("user"))
+            {
+                if (!this.readUser(params, context.getString("user"), user))
+                {
+                    return;
+                }
+            }
+            if (context.hasParam("block"))
+            {
+                if (!this.readBlocks(params, context.getString("block"), user))
+                {
+                    return;
+                }
+            }
+            if (context.hasParam("entity"))
+            {
+                if (!this.readEntities(params, context.getString("entity"), user))
+                {
+                    return;
+                }
+            }
+            // TODO time
+            if (context.hasParam("since"))
+            {
+
+            }
+            if (context.hasParam("before"))
+            {
+
+            }
+            params.since(System.currentTimeMillis() - TimeUnit.DAYS.toMillis(30L)); // defaulted to last 30 days
+            // TODO time
+            if (context.hasParam("world"))
+            {
+                if (context.hasParam("radius"))
+                {
+                    context.sendTranslated("&cYou cannot define a radius or selection and a world.");
+                }
+                else
+                {
+                    World world = user.getServer().getWorld(context.getString("world"));
+                    if (world == null)
+                    {
+                        context.sendTranslated("&cUnkown world: &6%s", context.getString("world"));
+                        return;
+                    }
+                    params.setWorld(world);
+                }
+            }
+            this.module.getLogManager().fillLookupAndRollback(lookup, user);
         }
     }
 
@@ -407,4 +557,6 @@ public class LookupCommands
         }
         return true;
     }
+
+
 }

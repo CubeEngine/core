@@ -31,6 +31,7 @@ import de.cubeisland.cubeengine.core.storage.database.querybuilder.SelectBuilder
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.log.Log;
 import de.cubeisland.cubeengine.log.LoggingConfiguration;
+import de.cubeisland.cubeengine.log.storage.QueryManager.QueryAction;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -122,7 +123,12 @@ public class LogManager
 
     public void fillLookupAndShow(Lookup lookup, User user)
     {
-        this.queryManager.prepareLookupQuery(lookup.clone(), user);
+        this.queryManager.prepareLookupQuery(lookup.clone(), user, QueryAction.SHOW);
+    }
+
+    public void fillLookupAndRollback(Lookup lookup, User user)
+    {
+        this.queryManager.prepareLookupQuery(lookup.clone(), user, QueryAction.ROLLBACK);
     }
 
     public LoggingConfiguration getConfig(World world)

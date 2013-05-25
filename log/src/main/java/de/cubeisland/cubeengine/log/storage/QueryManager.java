@@ -175,6 +175,7 @@ public class QueryManager
                 return;
             }
             QueuedSqlParams poll = this.queuedLookups.poll();
+            final QueryAction queryAction = poll.action;
             final Lookup lookup = poll.lookup;
             final User user = poll.user;
             PreparedStatement stmt = this.database.prepareStatement(poll.sql);
@@ -203,6 +204,7 @@ public class QueryManager
                 results.addResult(logEntry);
             }
             lookup.setQueryResults(results);
+
             if (user != null && user.isOnline())
             {
                 module.getCore().getTaskManager().runTask(module, new Runnable()
@@ -210,7 +212,16 @@ public class QueryManager
                     @Override
                     public void run()
                     {
-                        lookup.show(user, 1);
+                        switch (queryAction)
+                        {
+                            case SHOW:
+                                lookup.show(user, 1);
+                                   return;
+                            case ROLLBACK:
+                                lookup.rollback(user);
+                                return;
+                            case REDO:
+                        }
                     }
                 });
             }
@@ -320,7 +331,12 @@ public class QueryManager
         }
     }
 
-    public void prepareLookupQuery(final Lookup lookup, final User user)
+    public enum QueryAction
+    {
+        SHOW, ROLLBACK, REDO;
+    }
+
+    public void prepareLookupQuery(final Lookup lookup, final User user, QueryAction action)
     {
         final QueryParameter params = lookup.getQueryParameter();
         SelectBuilder selectBuilder =
@@ -493,7 +509,7 @@ public class QueryManager
         // TODO finish queryParams
         String sql = selectBuilder.end().end();
         System.out.print(user.getName() + ": Lookup queued!\n" +sql);
-        this.queuedLookups.offer(new QueuedSqlParams(lookup,user,sql,dataToInsert));
+        this.queuedLookups.offer(new QueuedSqlParams(lookup,user,sql,dataToInsert, action));
         if (this.futureLookup == null || this.futureLookup.isDone())
         {
             this.futureLookup = lookupExecutor.submit(lookupRunner);
@@ -548,13 +564,15 @@ public class QueryManager
         public final String sql;
         public final ArrayList sqlData;
         private final User user;
+        public final QueryAction action;
 
-        public QueuedSqlParams(Lookup lookup, User user, String sql, ArrayList sqlData)
+        public QueuedSqlParams(Lookup lookup, User user, String sql, ArrayList sqlData, QueryAction action)
         {
             this.lookup = lookup;
             this.sql = sql;
             this.sqlData = sqlData;
             this.user = user;
+            this.action = action;
         }
 
 

@@ -25,8 +25,12 @@ import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.BlockState;
+import org.bukkit.block.Jukebox;
+import org.bukkit.block.NoteBlock;
+import org.bukkit.block.Sign;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Hanging;
+import org.bukkit.material.Attachable;
 import org.bukkit.material.Bed;
 
 import de.cubeisland.cubeengine.core.util.BlockUtil;
@@ -34,6 +38,8 @@ import de.cubeisland.cubeengine.log.action.LogActionType;
 import de.cubeisland.cubeengine.log.action.logaction.block.player.BlockBreak;
 import de.cubeisland.cubeengine.log.action.logaction.block.player.HangingBreak;
 import de.cubeisland.cubeengine.log.storage.LogEntry;
+
+import com.fasterxml.jackson.databind.node.ArrayNode;
 
 public abstract class BlockActionType extends LogActionType
 {
@@ -144,11 +150,15 @@ public abstract class BlockActionType extends LogActionType
                 return blockState.getBlock().getRelative(BlockFace.DOWN).getState();
             }
         }
-        else if (blockState instanceof Bed)
+        else if (blockState.getData() instanceof Bed)
         {
-            if (((Bed)blockState).isHeadOfBed())
+            Bed bed = (Bed)blockState.getData();
+            if (bed.isHeadOfBed())
             {
+                 // TODO this is not logging correctly WHY????
                 return blockState.getBlock().getRelative(((Bed)blockState).getFacing().getOppositeFace()).getState();
+                // The actual headBlock seems to be missing and the feet becomes head
+                // block broken by event is the feetBlock but being a head block
             }
         }
         return blockState;
@@ -238,5 +248,67 @@ public abstract class BlockActionType extends LogActionType
     {
         return logEntry.causer >= 0 || Math
             .abs(TimeUnit.MILLISECONDS.toSeconds(logEntry.timestamp.getTime() - other.timestamp.getTime())) < 5;
+    }
+
+    @Override
+    public boolean rollback(LogEntry logEntry, boolean force)
+    {
+        de.cubeisland.cubeengine.log.storage.BlockData oldBlock = logEntry.getOldBlock();
+        Block block = logEntry.getLocation().getBlock();
+        BlockState state = block.getState();
+        state.setType(oldBlock.material);
+        state.setRawData(oldBlock.data);
+        if (!force && (state.getData() instanceof Attachable || BlockUtil.isDetachableFromBelow(oldBlock.material)))
+        {
+            return false;
+        }
+        state.update(true,false);
+        switch (oldBlock.material)
+        {
+            case SIGN_POST:
+            case WALL_SIGN:
+                Sign sign = (Sign)block.getState();
+                ArrayNode oldSign = (ArrayNode)logEntry.getAdditional().get("sign");
+                if (oldSign == null)
+                {
+                    oldSign = (ArrayNode)logEntry.getAdditional().get("oldSign");
+                }
+                sign.setLine(0,oldSign.get(0).textValue());
+                sign.setLine(1,oldSign.get(1).textValue());
+                sign.setLine(2,oldSign.get(2).textValue());
+                sign.setLine(3,oldSign.get(3).textValue());
+                sign.update();
+                break;
+            case NOTE_BLOCK:
+                NoteBlock noteBlock = (NoteBlock)block.getState();
+                noteBlock.setRawNote(oldBlock.data);
+                noteBlock.update();
+                break;
+            case JUKEBOX:
+                String playing = logEntry.getAdditional().get("playing").textValue();
+                Material mat = Material.getMaterial(playing);
+                Jukebox jukebox = (Jukebox)block.getState();
+                jukebox.setPlaying(mat);;
+                jukebox.update();
+                break;
+            case BED_BLOCK:
+                Bed bed = (Bed)block.getState().getData();
+                BlockState headBed = block.getRelative(bed.getFacing()).getState();
+                headBed.setType(Material.BED_BLOCK);
+                Bed bedhead = (Bed)headBed.getData();
+                bedhead.setHeadOfBed(true);
+                bedhead.setFacingDirection(bed.getFacing());
+                headBed.update(true);
+                break;
+            case IRON_DOOR_BLOCK:
+            case WOODEN_DOOR:
+                BlockState topDoor = block.getRelative(BlockFace.UP).getState();
+                topDoor.setType(state.getType());
+                topDoor.setRawData((byte)8);
+                topDoor.update(true);
+                break;
+        // TODO inventoryHolders
+        }
+        return true;
     }
 }

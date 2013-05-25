@@ -95,7 +95,7 @@ public class BlockBreak extends BlockActionType
         else if (blockState instanceof Sign)
         {
             json = this.om.createObjectNode();
-            ArrayNode sign = json.putArray("sign");
+            ArrayNode sign = json.putArray("oldSign");
             for (String line :  ((Sign)blockState).getLines())
             {
                 sign.add(line);
@@ -157,7 +157,6 @@ public class BlockBreak extends BlockActionType
                 return;
             }
             blockAttachedTo = event.getBlock().getRelative(BlockFace.DOWN);
-
         }
         if (blockAttachedTo == null) return;
         if (!blockAttachedTo.getType().isSolid())
@@ -223,12 +222,9 @@ public class BlockBreak extends BlockActionType
         }
     }
 
-
     @Override
     public boolean isActive(World world)
     {
         return this.lm.getConfig(world).BLOCK_BREAK_enable;
     }
-
-
 }

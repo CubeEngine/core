@@ -19,6 +19,7 @@ package de.cubeisland.cubeengine.log.storage;
 
 import java.util.Iterator;
 import java.util.LinkedHashSet;
+import java.util.Set;
 import java.util.TreeSet;
 
 import de.cubeisland.cubeengine.core.user.User;
@@ -101,5 +102,29 @@ public class QueryResults
     public void addResult(LogEntry logEntry)
     {
         this.logEntries.add(logEntry);
+    }
+
+    public void rollback(User user)
+    {
+        // TODO do this properly ...
+        Set<LogEntry> rollbackRound2 = new TreeSet<LogEntry>();
+        for (LogEntry logEntry : this.logEntries.descendingSet())
+        {
+            if (logEntry.actionType.canRollback())
+            {
+                // Can Rollback
+                if (!logEntry.rollback(user, false)) // Rollback failed (cannot set yet (torches etc)) try again later
+                {
+                    rollbackRound2.add(logEntry);
+                }
+            }
+        }
+        for (LogEntry logEntry : rollbackRound2)
+        {
+            if (!logEntry.rollback(user, true))
+            {
+                System.out.print("Could not Rollback!");
+            }
+        }
     }
 }

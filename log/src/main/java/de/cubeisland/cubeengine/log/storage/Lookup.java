@@ -95,9 +95,9 @@ public class Lookup implements Cloneable
 
     public void show(User user, int page)
     {
-        this.queryResults.show(user,queryParameter,page);
         LogAttachment attachment = user.attachOrGet(LogAttachment.class, this.module);
         attachment.setCommandLookup(this);
+        this.queryResults.show(user,queryParameter,page);
     }
 
     public void setQueryResults(QueryResults queryResults)
@@ -121,5 +121,12 @@ public class Lookup implements Cloneable
     public boolean queried()
     {
         return this.queryResults != null;
+    }
+
+    public void rollback(User user)
+    {
+        LogAttachment attachment = user.attachOrGet(LogAttachment.class, this.module);
+        attachment.setCommandLookup(this);
+        this.queryResults.rollback(user);
     }
 }
