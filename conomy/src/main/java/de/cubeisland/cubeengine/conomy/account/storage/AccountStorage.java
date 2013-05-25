@@ -24,18 +24,28 @@ import java.util.Collection;
 import java.util.LinkedList;
 
 import de.cubeisland.cubeengine.core.storage.SingleKeyStorage;
+import de.cubeisland.cubeengine.core.storage.database.AttrType;
 import de.cubeisland.cubeengine.core.storage.database.Database;
+import de.cubeisland.cubeengine.core.storage.database.DatabaseUpdater;
 import de.cubeisland.cubeengine.core.storage.database.querybuilder.QueryBuilder;
 
 import static de.cubeisland.cubeengine.core.storage.database.querybuilder.ComponentBuilder.IS;
 
 public class AccountStorage extends SingleKeyStorage<Long, AccountModel>
 {
-    private static final int REVISION = 1;
-
-    public AccountStorage(Database database)
+    public AccountStorage(final Database database)
     {
-        super(database, AccountModel.class, REVISION);
+        super(database, AccountModel.class, 2);
+        this.registerUpdater(new DatabaseUpdater()
+        {
+            @Override
+            public void update(Database database) throws SQLException
+            {
+                QueryBuilder builder = database.getQueryBuilder();
+                database.execute(builder.alterTable(tableName).drop("currencyName").end().end());
+                database.execute(builder.alterTable(tableName).change("hidden", "mask",AttrType.TINYINT).end().end());
+            }
+        },1);
         this.initialize();
     }
 
