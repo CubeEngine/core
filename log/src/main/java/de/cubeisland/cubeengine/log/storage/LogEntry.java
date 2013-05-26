@@ -243,8 +243,14 @@ public class LogEntry implements Comparable<LogEntry>
         return false;
     }
 
+    private Location bukkitLoc = null;
+
     public Location getLocation()
     {
-        return new Location(this.world, this.location.x, this.location.y, this.location.z);
+        if (bukkitLoc == null)
+        {
+            bukkitLoc = new Location(this.world, this.location.x, this.location.y, this.location.z);
+        }
+        return bukkitLoc;
     }
 }

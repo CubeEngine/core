@@ -21,7 +21,9 @@ import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.Iterator;
 
+import org.bukkit.Material;
 import org.bukkit.World;
+import org.bukkit.block.Block;
 import org.bukkit.block.Sign;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -132,4 +134,32 @@ public class SignChange extends BlockActionType
     {
         return this.lm.getConfig(world).SIGN_CHANGE_enable;
     }
+
+    @Override
+    public boolean rollback(LogEntry logEntry, boolean force)
+    {
+        if (!force) // Signs have to be attached first!
+        {
+            return false;
+        }
+        de.cubeisland.cubeengine.log.storage.BlockData oldBlock = logEntry.getOldBlock();
+        Block block = logEntry.getLocation().getBlock();
+        if (block.getType().equals(Material.WALL_SIGN) || block.getType().equals(Material.SIGN_POST))
+        {
+            Sign sign = (Sign)block.getState();
+            ArrayNode oldSign = (ArrayNode)logEntry.getAdditional().get("oldSign");
+            if (oldSign == null)
+            {
+                oldSign = (ArrayNode)logEntry.getAdditional().get("sign"); // For old logs saving oldSign wrongly as sign
+            }
+            sign.setLine(0,oldSign.get(0).textValue());
+            sign.setLine(1,oldSign.get(1).textValue());
+            sign.setLine(2,oldSign.get(2).textValue());
+            sign.setLine(3,oldSign.get(3).textValue());
+            sign.update();
+            return true;
+        }
+        return false; // No sign at Position!
+    }
+    // TODO redo overwrite
 }

@@ -89,13 +89,8 @@ public abstract class BlockActionType extends LogActionType
             return false;
         }
         Material mat = Material.getMaterial(block);
-        if (this.lm.getConfig(world).placeNoLogging.contains(mat))
-        {
-            return true;
-        }
-        return false;
+        return this.lm.getConfig(world).placeNoLogging.contains(mat);
     }
-
 
     public void logBlockChange(Location location, Entity causer, Material oldBlock, Material newBlock, String additional)
     {
@@ -143,7 +138,7 @@ public abstract class BlockActionType extends LogActionType
      */
     public final BlockState adjustBlockForDoubleBlocks(BlockState blockState)
     {
-        if (blockState.getType().equals(Material.WOOD_DOOR) || blockState.getType().equals(Material.IRON_DOOR_BLOCK))
+        if (blockState.getType().equals(Material.WOODEN_DOOR) || blockState.getType().equals(Material.IRON_DOOR_BLOCK))
         {
             if (blockState.getRawData() == 8 || blockState.getRawData() == 9)
             {
@@ -155,10 +150,7 @@ public abstract class BlockActionType extends LogActionType
             Bed bed = (Bed)blockState.getData();
             if (bed.isHeadOfBed())
             {
-                 // TODO this is not logging correctly WHY????
-                return blockState.getBlock().getRelative(((Bed)blockState).getFacing().getOppositeFace()).getState();
-                // The actual headBlock seems to be missing and the feet becomes head
-                // block broken by event is the feetBlock but being a head block
+                return blockState.getBlock().getRelative(bed.getFacing().getOppositeFace()).getState();
             }
         }
         return blockState;
@@ -179,7 +171,12 @@ public abstract class BlockActionType extends LogActionType
             }
             for (Block block : BlockUtil.getDetachableBlocksOnTop(blockState.getBlock()))
             {
-                blockBreak.preplanBlockPhyiscs(block.getLocation(), player, this);
+                if (block.getData() < 8
+                    || !(block.getType().equals(Material.WOODEN_DOOR)
+                      || block.getType().equals(Material.IRON_DOOR_BLOCK))) // ignore upper door halfs
+                {
+                    blockBreak.preplanBlockPhyiscs(block.getLocation(), player, this);
+                }
             }
         }
         HangingBreak hangingBreak = this.manager.getActionType(HangingBreak.class);
@@ -261,6 +258,26 @@ public abstract class BlockActionType extends LogActionType
         if (!force && (state.getData() instanceof Attachable || BlockUtil.isDetachableFromBelow(oldBlock.material)))
         {
             return false;
+        }
+        switch (block.getType()) // TODO remove other parts of beds / doors
+        {
+            case BED_BLOCK:
+                // TODO remove head too
+                Bed bed = (Bed)block.getState().getData();
+                Block headBed = block.getRelative(bed.getFacing());
+                BlockState headState = headBed.getState();
+                headState.setType(Material.AIR);
+                headState.update(true, false);
+                break;
+            case WOODEN_DOOR:
+            case IRON_DOOR_BLOCK:
+                Block topDoor = block.getRelative(BlockFace.UP);
+                if (topDoor.getType().equals(block.getType()))
+                {
+                    BlockState topState = topDoor.getState();
+                    topState.setType(Material.AIR);
+                    topState.update(true, false);
+                }
         }
         state.update(true,false);
         switch (oldBlock.material)

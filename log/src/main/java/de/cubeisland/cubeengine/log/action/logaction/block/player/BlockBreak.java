@@ -118,6 +118,7 @@ public class BlockBreak extends BlockActionType
         else
         {
             blockState = this.adjustBlockForDoubleBlocks(blockState); // WOOD_DOOR IRON_DOOR OR BED_BLOCK
+            blockData = BlockData.of(blockState);
         }
         this.logBlockChange(blockState.getLocation(),event.getPlayer(),blockData,AIR,json == null ? null : json.toString());
         if (blockState.getType().equals(OBSIDIAN)) // portal?

@@ -66,7 +66,7 @@ public class PlayerQuit extends SimpleLogActionType
     @Override
     protected void showLogEntry(User user, LogEntry logEntry, String time, String loc)
     {
-        user.sendTranslated("%s&2%s&a leaved the server%s&a!",
+        user.sendTranslated("%s&2%s&a left the server%s&a!",
                             time,logEntry.getCauserUser().getDisplayName(),loc);
     }
 

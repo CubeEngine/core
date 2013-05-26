@@ -17,12 +17,19 @@
  */
 package de.cubeisland.cubeengine.log.storage;
 
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
+import java.util.LinkedList;
+import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
+import org.bukkit.Location;
+
 import de.cubeisland.cubeengine.core.user.User;
+import de.cubeisland.cubeengine.log.action.logaction.block.BlockActionType;
+import de.cubeisland.cubeengine.log.action.logaction.block.player.SignChange;
 
 public class QueryResults
 {
@@ -106,23 +113,68 @@ public class QueryResults
 
     public void rollback(User user)
     {
-        // TODO do this properly ...
-        Set<LogEntry> rollbackRound2 = new TreeSet<LogEntry>();
+        // Find the oldest entry at a location
+        Map<Location,LogEntry> finalBlock = new HashMap<Location, LogEntry>();
+        Map<Location,LinkedList<LogEntry>> blockChanges = new HashMap<Location, LinkedList<LogEntry>>();
+        TreeSet<LogEntry> filteredLogs = new TreeSet<LogEntry>();
         for (LogEntry logEntry : this.logEntries.descendingSet())
         {
-            if (logEntry.actionType.canRollback())
+            if (logEntry.actionType.canRollback()) // can rollback
             {
-                // Can Rollback
-                if (!logEntry.rollback(user, false)) // Rollback failed (cannot set yet (torches etc)) try again later
+                if (logEntry.actionType instanceof BlockActionType) // If blockaction ignore
                 {
-                    rollbackRound2.add(logEntry);
+                    // TODO chest changes and other that can be stacked into one location
+                    if (logEntry.actionType instanceof SignChange)
+                    {
+                        LinkedList<LogEntry> changes = blockChanges.get(logEntry.getLocation());
+                        if (changes == null)
+                        {
+                            changes = new LinkedList<LogEntry>();
+                            blockChanges.put(logEntry.getLocation(), changes);
+                        }
+                        changes.add(logEntry);
+                    }
+                    else
+                    {
+                        blockChanges.remove(logEntry.getLocation()); // Clear blockChanges when new final block
+                        finalBlock.put(logEntry.getLocation(), logEntry);
+                    }
+                }
+                else
+                {
+                    filteredLogs.add(logEntry); // Not a block change at the location -> do rollback
                 }
             }
         }
-        for (LogEntry logEntry : rollbackRound2)
+        for (LinkedList<LogEntry> entries : blockChanges.values())
+        {
+            // TODO interface of ActionType if logs are "stackable"
+            // similar to is Attachable
+            if (entries.getLast().actionType instanceof SignChange)
+            {
+                filteredLogs.add(entries.getLast());
+            }
+            else
+            {
+                filteredLogs.addAll(entries); // TODO filter correctly (container changes stack together)
+            }
+        }
+        filteredLogs.addAll(finalBlock.values());
+        Set<LogEntry> rollbackRound2 = new LinkedHashSet<LogEntry>();
+        for (LogEntry logEntry : filteredLogs.descendingSet()) // Rollback normal blocks
+        {
+            // Can Rollback
+            if (!logEntry.rollback(user, false)) // Rollback failed (cannot set yet (torches etc)) try again later
+            {
+                rollbackRound2.add(logEntry);
+            }
+        }
+        for (LogEntry logEntry : rollbackRound2) // Rollback attached blocks
         {
             if (!logEntry.rollback(user, true))
             {
+                user.sendTranslated("&cCould not Rollback:");
+                logEntry.actionType.showLogEntry(user, null, logEntry);
                 System.out.print("Could not Rollback!");
             }
         }
