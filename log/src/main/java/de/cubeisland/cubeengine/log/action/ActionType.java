@@ -31,6 +31,7 @@ import org.bukkit.entity.Player;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.user.UserManager;
 import de.cubeisland.cubeengine.log.Log;
+import de.cubeisland.cubeengine.log.LogAttachment;
 import de.cubeisland.cubeengine.log.storage.LogEntry;
 import de.cubeisland.cubeengine.log.storage.LogManager;
 import de.cubeisland.cubeengine.log.storage.QueryParameter;
@@ -145,7 +146,7 @@ public abstract class ActionType
         return this.actionTypeID;
     }
 
-    public boolean rollback(LogEntry logEntry, boolean force)
+    public boolean rollback(LogAttachment attachment, LogEntry logEntry, boolean force, boolean preview)
     {
         if (this.canRollback())
         {

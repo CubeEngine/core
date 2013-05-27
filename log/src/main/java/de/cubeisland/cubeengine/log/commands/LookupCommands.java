@@ -281,6 +281,7 @@ public class LookupCommands
 
     @Command(
         desc = "Performs a rollback", usage = "",
+        flags = @Flag(longName = "preview", name = "pre"),
         params = {
             @Param(names = {"action","a"}),// !!must have tabcompleter for all register actionTypes
             @Param(names = {"radius","r"}),//<radius> OR selection|sel OR global|g OR player|p:<radius>
@@ -302,6 +303,11 @@ public class LookupCommands
         }
         else if (context.getSender() instanceof User)
         {
+            if (!context.hasParams())
+            {
+                context.sendTranslated("&cYou need to define parameters to rollback!");
+                return;
+            }
             User user = (User)context.getSender();
             LogAttachment attachment = user.attachOrGet(LogAttachment.class,this.module);
             attachment.clearLookups(); // TODO only clear cmdlookup
@@ -329,7 +335,7 @@ public class LookupCommands
                         }
                         else
                         {
-                            context.sendTranslated("&eUse this selection wand."); // TODO give selectionwand for CE
+                            context.sendTranslated("&eUse this selection wand.");
                             LogCommands.giveSelectionTool(user);
                         }
                         return;
@@ -425,7 +431,14 @@ public class LookupCommands
                     params.setWorld(world);
                 }
             }
-            this.module.getLogManager().fillLookupAndRollback(lookup, user);
+            if (context.hasFlag("pre"))
+            {
+                this.module.getLogManager().fillLookupAndPreviewRollback(lookup, user);
+            }
+            else
+            {
+                this.module.getLogManager().fillLookupAndRollback(lookup, user);
+            }
         }
     }
 

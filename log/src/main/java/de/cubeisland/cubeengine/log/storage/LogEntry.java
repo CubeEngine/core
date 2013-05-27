@@ -30,6 +30,7 @@ import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.user.UserManager;
 import de.cubeisland.cubeengine.core.util.math.BlockVector3;
 import de.cubeisland.cubeengine.log.Log;
+import de.cubeisland.cubeengine.log.LogAttachment;
 import de.cubeisland.cubeengine.log.action.ActionType;
 import de.cubeisland.cubeengine.log.action.logaction.container.ContainerType;
 
@@ -228,13 +229,9 @@ public class LogEntry implements Comparable<LogEntry>
         return newData;
     }
 
-    public boolean rollback(User user, boolean force)
+    public boolean rollback(LogAttachment attachment, boolean force, boolean preview)
     {
-        if (this.actionType.canRollback())
-        {
-            return this.actionType.rollback(this, force);
-        }
-        return false;
+        return this.actionType.canRollback() && this.actionType.rollback(attachment, this, force, preview);
     }
 
     public boolean redo(User user)

@@ -19,6 +19,7 @@ package de.cubeisland.cubeengine.log;
 
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.block.BlockState;
 
 import de.cubeisland.cubeengine.core.user.UserAttachment;
 import de.cubeisland.cubeengine.log.storage.Lookup;
@@ -213,6 +214,27 @@ public class LogAttachment extends UserAttachment
     public void setSelectionPos2(Location clicked)
     {
         this.location2 = clicked;
+    }
+
+    private Preview preview;
+
+    public void addToPreview(BlockState state)
+    {
+        if (preview == null)
+        {
+            this.createNewPreview();
+        }
+        preview.add(state);
+    }
+
+    public void createNewPreview()
+    {
+        this.preview = new Preview();
+    }
+
+    public void sendPreview()
+    {
+        this.preview.send(this.getHolder());
     }
 }
 

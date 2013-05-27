@@ -218,9 +218,13 @@ public class QueryManager
                                 lookup.show(user, 1);
                                    return;
                             case ROLLBACK:
-                                lookup.rollback(user);
+                                lookup.rollback(user, false);
                                 return;
-                            case REDO:
+                            case ROLLBACK_PREVIEW:
+                                lookup.rollback(user, true);
+                                return;
+                            case REDO: // TODO
+                            case REDO_PREVIEW: // TODO
                         }
                     }
                 });
@@ -333,7 +337,7 @@ public class QueryManager
 
     public enum QueryAction
     {
-        SHOW, ROLLBACK, REDO;
+        SHOW, ROLLBACK, REDO, ROLLBACK_PREVIEW, REDO_PREVIEW;
     }
 
     public void prepareLookupQuery(final Lookup lookup, final User user, QueryAction action)

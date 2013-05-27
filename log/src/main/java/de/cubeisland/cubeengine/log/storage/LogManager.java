@@ -131,6 +131,11 @@ public class LogManager
         this.queryManager.prepareLookupQuery(lookup.clone(), user, QueryAction.ROLLBACK);
     }
 
+    public void fillLookupAndPreviewRollback(Lookup lookup, User user)
+    {
+        this.queryManager.prepareLookupQuery(lookup.clone(), user, QueryAction.ROLLBACK_PREVIEW);
+    }
+
     public LoggingConfiguration getConfig(World world)
     {
         if (world == null)

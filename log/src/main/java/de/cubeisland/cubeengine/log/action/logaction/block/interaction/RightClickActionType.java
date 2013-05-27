@@ -236,15 +236,16 @@ public class RightClickActionType extends ActionTypeContainer
                 RepeaterChange repeaterChange = this.manager.getActionType(RepeaterChange.class);
                 if (repeaterChange.isActive(state.getWorld()))
                 {
-                    Diode diode = (Diode) event.getClickedBlock().getState().getData();
+                    BlockData oldData= BlockData.of(state);
+                    Diode diode = (Diode) state.getData();
                     Integer delay = diode.getDelay() + 1;
                     if (delay == 5)
                     {
                         delay = 1;
                     }
+                    diode.setDelay(delay);
                     BlockData newData = BlockData.of(state);
-                    newData.data = delay.byteValue();
-                    repeaterChange.logBlockChange(location,event.getPlayer(),BlockData.of(state),newData,null);
+                    repeaterChange.logBlockChange(location,event.getPlayer(),oldData,newData,null);
                 }
                 break;
             default:

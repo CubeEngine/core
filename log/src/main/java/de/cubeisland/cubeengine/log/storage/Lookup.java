@@ -123,10 +123,11 @@ public class Lookup implements Cloneable
         return this.queryResults != null;
     }
 
-    public void rollback(User user)
+    public void rollback(User user, boolean preview)
     {
         LogAttachment attachment = user.attachOrGet(LogAttachment.class, this.module);
         attachment.setCommandLookup(this);
-        this.queryResults.rollback(user);
+        this.queryResults.rollback(attachment, preview);
+        attachment.sendPreview();
     }
 }

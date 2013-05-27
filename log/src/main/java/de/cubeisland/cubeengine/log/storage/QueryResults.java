@@ -28,6 +28,7 @@ import java.util.TreeSet;
 import org.bukkit.Location;
 
 import de.cubeisland.cubeengine.core.user.User;
+import de.cubeisland.cubeengine.log.LogAttachment;
 import de.cubeisland.cubeengine.log.action.logaction.block.BlockActionType;
 import de.cubeisland.cubeengine.log.action.logaction.block.player.SignChange;
 
@@ -111,7 +112,7 @@ public class QueryResults
         this.logEntries.add(logEntry);
     }
 
-    public void rollback(User user)
+    public void rollback(LogAttachment attachment, boolean preview)
     {
         // Find the oldest entry at a location
         Map<Location,LogEntry> finalBlock = new HashMap<Location, LogEntry>();
@@ -160,21 +161,21 @@ public class QueryResults
             }
         }
         filteredLogs.addAll(finalBlock.values());
-        Set<LogEntry> rollbackRound2 = new LinkedHashSet<LogEntry>();
+        Set <LogEntry> rollbackRound2 = new LinkedHashSet<LogEntry>();
         for (LogEntry logEntry : filteredLogs.descendingSet()) // Rollback normal blocks
         {
             // Can Rollback
-            if (!logEntry.rollback(user, false)) // Rollback failed (cannot set yet (torches etc)) try again later
+            if (!logEntry.rollback(attachment, false, preview)) // Rollback failed (cannot set yet (torches etc)) try again later
             {
                 rollbackRound2.add(logEntry);
             }
         }
         for (LogEntry logEntry : rollbackRound2) // Rollback attached blocks
         {
-            if (!logEntry.rollback(user, true))
+            if (!logEntry.rollback(attachment, true, preview))
             {
-                user.sendTranslated("&cCould not Rollback:");
-                logEntry.actionType.showLogEntry(user, null, logEntry);
+                attachment.getHolder().sendTranslated("&cCould not Rollback:");
+                logEntry.actionType.showLogEntry(attachment.getHolder(), null, logEntry);
                 System.out.print("Could not Rollback!");
             }
         }
