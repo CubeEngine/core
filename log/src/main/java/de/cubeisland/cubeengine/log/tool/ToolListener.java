@@ -46,6 +46,7 @@ public class ToolListener implements Listener
     @EventHandler
     public void onClick(PlayerInteractEvent event)
     {
+        if (event.getAction().equals(Action.PHYSICAL)) return;
         if (event.getClickedBlock() != null)
         {
             User user = this.module.getCore().getUserManager().getUser(event.getPlayer().getName());

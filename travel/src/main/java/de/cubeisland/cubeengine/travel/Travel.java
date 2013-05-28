@@ -56,7 +56,7 @@ public class Travel extends Module
         System.out.print(Profiler.getCurrentDelta("travelEnable", TimeUnit.MILLISECONDS) + "ms - register listener");
         final EventManager em = this.getCore().getEventManager();
         em.registerListener(this, new HomeListener(this));
-        System.out.print(Profiler.getCurrentDelta("travelEnable", TimeUnit.MILLISECONDS) + "ms - done");
+        System.out.print(Profiler.endProfiling("travelEnable", TimeUnit.MILLISECONDS) + "ms - done");
     }
 
     public TravelConfig getConfig()

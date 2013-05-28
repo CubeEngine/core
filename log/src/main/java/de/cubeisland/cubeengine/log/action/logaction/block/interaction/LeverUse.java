@@ -57,7 +57,7 @@ public class LeverUse extends BlockActionType
         }
         else
         {
-            user.sendTranslated("&s&2%s &adeactivated the lever%s&a!",
+            user.sendTranslated("%s&2%s &adeactivated the lever%s&a!",
                                 time, logEntry.getCauserUser().getDisplayName(),loc);
         }
     }

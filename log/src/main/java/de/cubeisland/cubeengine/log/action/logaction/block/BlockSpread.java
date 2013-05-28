@@ -67,7 +67,7 @@ public class BlockSpread extends BlockActionType
     protected void showLogEntry(User user, LogEntry logEntry, String time, String loc)
     {
         user.sendTranslated("%s&6%s&a spreaded%s&a!",
-                            logEntry.getNewBlock(),time,loc);
+                            time, logEntry.getNewBlock(),loc);
     }
 
 

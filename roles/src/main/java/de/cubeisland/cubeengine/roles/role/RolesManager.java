@@ -177,7 +177,12 @@ public class RolesManager
 
     public WorldRoleProvider getProvider(long worldId)
     {
-        return this.worldRoleProviders.get(worldId);
+        WorldRoleProvider worldRoleProvider = this.worldRoleProviders.get(worldId);
+        if (worldRoleProvider == null)
+        {
+            // TODO
+        }
+        return worldRoleProvider;
     }
 
     public <Provider extends RoleProvider> Provider getProvider(World world)
