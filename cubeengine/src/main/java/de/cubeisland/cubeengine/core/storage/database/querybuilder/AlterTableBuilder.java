@@ -157,4 +157,14 @@ public interface AlterTableBuilder extends ComponentBuilder<AlterTableBuilder>
      * @return fluent interface
      */
     public AlterTableBuilder modify(String field, AttrType type);
+
+    /**
+     * Changed a field from the table
+     *
+     * @param field the current Name
+     * @param newName the new Name
+     * @param type the new type (ignored if null)
+     * @return fluent interface
+     */
+    public AlterTableBuilder change(String field, String newName, AttrType type);
 }

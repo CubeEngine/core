@@ -28,10 +28,7 @@ import static de.cubeisland.cubeengine.core.storage.database.Index.IndexType.UNI
 
 @SingleKeyEntity(tableName = "accounts", primaryKey = "key", autoIncrement = true, indices = {
     @Index(value = FOREIGN_KEY, fields = "user_id", f_table = "user", f_field = "key"),
-    @Index(value = UNIQUE, fields = // prevent multiple accounts for a user/bank in the same currency
-    {
-        "user_id", "name", "currencyName"
-    })
+    @Index(value = UNIQUE, fields = { "user_id", "name"})
 })
 public class AccountModel implements Model<Long>
 {
@@ -41,12 +38,10 @@ public class AccountModel implements Model<Long>
     public Long user_id;
     @Attribute(type = AttrType.VARCHAR, length = 64, notnull = false)
     public String name;
-    @Attribute(type = AttrType.VARCHAR, length = 64)
-    public String currencyName;
     @Attribute(type = AttrType.BIGINT)
     public long value;
-    @Attribute(type = AttrType.BOOLEAN)
-    public boolean hidden = false;
+    @Attribute(type = AttrType.TINYINT)
+    public int mask = 0;
 
     @Override
     public Long getId()
@@ -63,12 +58,52 @@ public class AccountModel implements Model<Long>
     public AccountModel()
     {}
 
-    public AccountModel(Long user_id, String name, String currencyName, long balance, boolean hidden)
+    public AccountModel(Long user_id, String name, long balance, boolean hidden, boolean needsInvite)
     {
         this.user_id = user_id;
         this.name = name;
-        this.currencyName = currencyName.toLowerCase();
         this.value = balance;
-        this.hidden = hidden;
+        this.mask = (byte)((hidden ? 1 : 0) + (needsInvite ? 2 : 0));
+    }
+
+
+    public AccountModel(Long user_id, String name, long balance, boolean hidden)
+    {
+        this(user_id, name, balance, hidden, false);
+    }
+
+
+    public boolean needsInvite()
+    {
+        return (this.mask & 2) == 2;
+    }
+
+    public boolean isHidden()
+    {
+        return (this.mask & 1) == 1;
+    }
+
+    public void setNeedsInvite(boolean set)
+    {
+        if (set)
+        {
+            this.mask |= 2;
+        }
+        else
+        {
+            this.mask &= ~2;
+        }
+    }
+
+    public void setHidden(boolean set)
+    {
+        if (set)
+        {
+            this.mask |= 1;
+        }
+        else
+        {
+            this.mask &= ~1;
+        }
     }
 }
