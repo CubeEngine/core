@@ -31,10 +31,17 @@ import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.log.LogAttachment;
 import de.cubeisland.cubeengine.log.action.logaction.block.BlockActionType;
 import de.cubeisland.cubeengine.log.action.logaction.block.player.SignChange;
+import de.cubeisland.cubeengine.log.action.logaction.kill.MonsterDeath;
 
 public class QueryResults
 {
+    private Lookup lookup;
     private TreeSet<LogEntry> logEntries = new TreeSet<LogEntry>();
+
+    public QueryResults(Lookup lookup)
+    {
+        this.lookup = lookup;
+    }
 
     public void show(User user, QueryParameter parameter, int page)
     {
@@ -122,6 +129,10 @@ public class QueryResults
         {
             if (logEntry.actionType.canRollback()) // can rollback
             {
+                if (logEntry.actionType instanceof MonsterDeath && !this.lookup.getQueryParameter().containsAction(logEntry.actionType))
+                {
+                    continue;
+                }
                 if (logEntry.actionType instanceof BlockActionType) // If blockaction ignore
                 {
                     // TODO chest changes and other that can be stacked into one location

@@ -36,9 +36,8 @@ public class TntExplode extends BlockActionType
     @Override
     protected EnumSet<Category> getCategories()
     {
-        return EnumSet.of(BLOCK, PLAYER);
+        return EnumSet.of(EXPLOSION, BLOCK, PLAYER);
     }
-
 
     @Override
     public String getName()

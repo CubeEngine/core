@@ -25,6 +25,7 @@ import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.log.action.logaction.SimpleLogActionType;
 import de.cubeisland.cubeengine.log.storage.LogEntry;
 
+import static de.cubeisland.cubeengine.log.action.ActionType.Category.BUCKET;
 import static de.cubeisland.cubeengine.log.action.ActionType.Category.ENTITY;
 import static de.cubeisland.cubeengine.log.action.ActionType.Category.PLAYER;
 
@@ -37,7 +38,7 @@ public class MilkFill extends SimpleLogActionType
     @Override
     protected EnumSet<Category> getCategories()
     {
-        return EnumSet.of(PLAYER, ENTITY);
+        return EnumSet.of(BUCKET, PLAYER, ENTITY);
     }
 
     @Override

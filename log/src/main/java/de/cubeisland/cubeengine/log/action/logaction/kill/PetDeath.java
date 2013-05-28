@@ -23,6 +23,7 @@ import org.bukkit.World;
 
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.util.matcher.Match;
+import de.cubeisland.cubeengine.log.LogAttachment;
 import de.cubeisland.cubeengine.log.action.logaction.SimpleLogActionType;
 import de.cubeisland.cubeengine.log.storage.EntityData;
 import de.cubeisland.cubeengine.log.storage.LogEntry;
@@ -92,11 +93,15 @@ public class PetDeath extends SimpleLogActionType
         return KillActionType.isSimilarSubAction(logEntry,other);
     }
 
-
     @Override
     public boolean isActive(World world)
     {
         return this.lm.getConfig(world).PET_DEATH_enable;
     }
 
+    @Override
+    public boolean rollback(LogAttachment attachment, LogEntry logEntry, boolean force, boolean preview)
+    {
+        return KillActionType.rollbackDeath(attachment, logEntry, force, preview);
+    }
 }

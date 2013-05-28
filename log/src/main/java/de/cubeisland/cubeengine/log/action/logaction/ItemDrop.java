@@ -45,12 +45,11 @@ import static org.bukkit.Material.AIR;
  * {@link de.cubeisland.cubeengine.log.action.logaction.block.player.BlockBreak BlockBreak} when breaking inventory-holders</p>
  */
 public class ItemDrop extends SimpleLogActionType
-
 {
     @Override
     protected EnumSet<Category> getCategories()
     {
-        return EnumSet.of(PLAYER,ITEM);
+        return EnumSet.of(PLAYER, ITEM);
     }
 
     @Override

@@ -36,7 +36,7 @@ public class SheepEat extends BlockActionType
     @Override
     protected EnumSet<Category> getCategories()
     {
-        return EnumSet.of(BLOCK, ENTITY);
+        return EnumSet.of(BLOCK, BLOCK_ENTITY);
     }
 
     @Override

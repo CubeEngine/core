@@ -29,8 +29,7 @@ import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.log.action.logaction.block.BlockActionType;
 import de.cubeisland.cubeengine.log.storage.LogEntry;
 
-import static de.cubeisland.cubeengine.log.action.ActionType.Category.BLOCK;
-import static de.cubeisland.cubeengine.log.action.ActionType.Category.ENVIRONEMENT;
+import static de.cubeisland.cubeengine.log.action.ActionType.Category.*;
 
 /**
  * Fire spreading
@@ -41,7 +40,7 @@ public class FireSpread extends BlockActionType
     @Override
     protected EnumSet<Category> getCategories()
     {
-        return EnumSet.of(BLOCK, ENVIRONEMENT);
+        return EnumSet.of(FIRE, IGNITE, BLOCK, ENVIRONEMENT);
     }
 
     @Override

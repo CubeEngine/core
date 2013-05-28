@@ -26,18 +26,18 @@ import de.cubeisland.cubeengine.log.action.logaction.SimpleLogActionType;
 import de.cubeisland.cubeengine.log.storage.LogEntry;
 
 import static de.cubeisland.cubeengine.log.action.ActionType.Category.ENTITY;
+import static de.cubeisland.cubeengine.log.action.ActionType.Category.SPAWN;
 
 /**
  * natural spawning
  * <p>Events: {@link EntitySpawnActionType}</p>
  */
 public class NaturalSpawn extends SimpleLogActionType
-
 {
     @Override
     protected EnumSet<Category> getCategories()
     {
-        return EnumSet.of(ENTITY);
+        return EnumSet.of(SPAWN, ENTITY);
     }
 
     @Override

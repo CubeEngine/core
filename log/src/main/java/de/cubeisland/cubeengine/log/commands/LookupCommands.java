@@ -18,6 +18,7 @@
 package de.cubeisland.cubeengine.log.commands;
 
 import java.util.Date;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 import org.bukkit.Location;
@@ -553,19 +554,25 @@ public class LookupCommands
             {
                 actionString = actionString.substring(1);
             }
-            ActionType actionType = this.actionTypeManager.getActionType(actionString);
-            if (actionType == null)
+            Set<ActionType> actionTypes = this.actionTypeManager.getActionType(actionString);
+            if (actionTypes == null)
             {
                 user.sendTranslated("&cUnkown action-type: &6%s",actionString);
                 return false;
             }
             if (negate)
             {
-                params.excludeAction(actionType);
+                for (ActionType actionType : actionTypes)
+                {
+                    params.excludeAction(actionType);
+                }
             }
             else
             {
-                params.includeAction(actionType);
+                for (ActionType actionType : actionTypes)
+                {
+                    params.includeAction(actionType);
+                }
             }
         }
         return true;

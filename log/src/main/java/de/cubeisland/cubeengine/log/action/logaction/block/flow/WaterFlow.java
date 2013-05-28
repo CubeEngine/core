@@ -47,7 +47,7 @@ public class WaterFlow extends BlockActionType
     @Override
     protected EnumSet<Category> getCategories()
     {
-        return EnumSet.of(BLOCK, ENVIRONEMENT);
+        return EnumSet.of(BLOCK, ENVIRONEMENT, FLOW);
     }
 
     @Override

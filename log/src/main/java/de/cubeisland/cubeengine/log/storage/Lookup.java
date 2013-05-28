@@ -128,6 +128,9 @@ public class Lookup implements Cloneable
         LogAttachment attachment = user.attachOrGet(LogAttachment.class, this.module);
         attachment.setCommandLookup(this);
         this.queryResults.rollback(attachment, preview);
-        attachment.sendPreview();
+        if (preview)
+        {
+            attachment.sendPreview();
+        }
     }
 }

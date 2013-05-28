@@ -17,7 +17,9 @@
  */
 package de.cubeisland.cubeengine.log.action;
 
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeSet;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -26,6 +28,7 @@ import de.cubeisland.cubeengine.core.util.ChatFormat;
 import de.cubeisland.cubeengine.core.util.StringUtils;
 import de.cubeisland.cubeengine.core.util.matcher.Match;
 import de.cubeisland.cubeengine.log.Log;
+import de.cubeisland.cubeengine.log.action.ActionType.Category;
 import de.cubeisland.cubeengine.log.action.logaction.CraftItem;
 import de.cubeisland.cubeengine.log.action.logaction.EnchantItem;
 import de.cubeisland.cubeengine.log.action.logaction.ItemDrop;
@@ -283,9 +286,21 @@ public class ActionTypeManager
         return ChatFormat.parseFormats("&7&o"+StringUtils.implode("&f, &7&o",actionTypes));
     }
 
-    public ActionType getActionType(String actionString)
+    public Set<ActionType> getActionType(String actionString)
     {
-        String match = Match.string().matchString(actionString, this.actionTypesByName.keySet());
-        return match == null ? null : this.actionTypesByName.get(match);
+        Category category = Category.match(actionString);
+        if (category == null)
+        {
+            String match = Match.string().matchString(actionString, this.actionTypesByName.keySet());
+            if (match == null) return null;
+            HashSet<ActionType> actionTypes = new HashSet<ActionType>();
+            actionTypes.add(this.actionTypesByName.get(match));
+            return actionTypes;
+        }
+        else
+        {
+            return category.getActionTypes();
+        }
+
     }
 }

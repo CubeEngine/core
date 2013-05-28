@@ -30,6 +30,7 @@ import de.cubeisland.cubeengine.log.storage.LogEntry;
 
 import static de.cubeisland.cubeengine.log.action.ActionType.Category.ENTITY;
 import static de.cubeisland.cubeengine.log.action.ActionType.Category.PLAYER;
+import static de.cubeisland.cubeengine.log.action.ActionType.Category.VEHICLE;
 
 /**
  * Entering vehicles
@@ -40,7 +41,7 @@ public class VehicleEnter extends SimpleLogActionType
     @Override
     protected EnumSet<Category> getCategories()
     {
-        return EnumSet.of(PLAYER, ENTITY);
+        return EnumSet.of(VEHICLE, PLAYER, ENTITY);
     }
 
     @Override
@@ -48,7 +49,6 @@ public class VehicleEnter extends SimpleLogActionType
     {
         return false;
     }
-
 
     @Override
     public String getName()

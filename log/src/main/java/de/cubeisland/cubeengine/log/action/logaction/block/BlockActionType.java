@@ -307,22 +307,25 @@ public abstract class BlockActionType extends LogActionType
         case SIGN_POST:
         case WALL_SIGN:
             Sign sign = (Sign)block.getState();
-            ArrayNode oldSign = (ArrayNode)logEntry.getAdditional().get("oldSign");
-            if (oldSign == null)
+            if (logEntry.getAdditional() != null)
             {
-                oldSign = (ArrayNode)logEntry.getAdditional().get("sign");
-            }
-            sign.setLine(0,oldSign.get(0).textValue());
-            sign.setLine(1,oldSign.get(1).textValue());
-            sign.setLine(2,oldSign.get(2).textValue());
-            sign.setLine(3,oldSign.get(3).textValue());
-            if (preview)
-            {
-                attachment.addToPreview(sign);
-            }
-            else
-            {
-                sign.update();
+                ArrayNode oldSign = (ArrayNode)logEntry.getAdditional().get("oldSign");
+                if (oldSign == null)
+                {
+                    oldSign = (ArrayNode)logEntry.getAdditional().get("sign");
+                }
+                sign.setLine(0,oldSign.get(0).textValue());
+                sign.setLine(1,oldSign.get(1).textValue());
+                sign.setLine(2,oldSign.get(2).textValue());
+                sign.setLine(3,oldSign.get(3).textValue());
+                if (preview)
+                {
+                    attachment.addToPreview(sign);
+                }
+                else
+                {
+                    sign.update();
+                }
             }
             break;
         case NOTE_BLOCK:

@@ -33,7 +33,6 @@ import static de.cubeisland.cubeengine.log.action.ActionType.Category.*;
  * <p>Events: {@link ContainerActionType}
  */
 public class ItemRemove extends SimpleLogActionType
-
 {
     @Override
     protected EnumSet<Category> getCategories()

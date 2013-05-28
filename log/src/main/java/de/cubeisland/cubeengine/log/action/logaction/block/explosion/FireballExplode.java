@@ -36,9 +36,8 @@ public class FireballExplode extends BlockActionType
     @Override
     protected EnumSet<Category> getCategories()
     {
-        return EnumSet.of(BLOCK, ENTITY, PLAYER);
+        return EnumSet.of(BLOCK, BLOCK_ENTITY, EXPLOSION, PLAYER);
     }
-
 
     @Override
     public String getName()

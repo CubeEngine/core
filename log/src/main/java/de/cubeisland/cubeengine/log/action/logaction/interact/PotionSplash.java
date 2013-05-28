@@ -48,7 +48,7 @@ public class PotionSplash extends SimpleLogActionType
     @Override
     protected EnumSet<Category> getCategories()
     {
-        return EnumSet.of(PLAYER, ENTITY,ITEM);
+        return EnumSet.of(PLAYER, ENTITY, ITEM);
     }
 
     @Override

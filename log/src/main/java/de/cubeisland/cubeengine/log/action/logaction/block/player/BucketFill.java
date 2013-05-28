@@ -32,6 +32,7 @@ import de.cubeisland.cubeengine.log.action.logaction.interact.MilkFill;
 import de.cubeisland.cubeengine.log.storage.LogEntry;
 
 import static de.cubeisland.cubeengine.log.action.ActionType.Category.BLOCK;
+import static de.cubeisland.cubeengine.log.action.ActionType.Category.BUCKET;
 import static de.cubeisland.cubeengine.log.action.ActionType.Category.PLAYER;
 import static org.bukkit.Material.AIR;
 
@@ -46,12 +47,12 @@ public class BucketFill extends BlockActionType
     @Override
     protected EnumSet<Category> getCategories()
     {
-        return EnumSet.of(BLOCK, PLAYER);
+        return EnumSet.of(BUCKET, BLOCK, PLAYER);
     }
     @Override
     public String getName()
     {
-        return  "bucket-fill";
+        return "bucket-fill";
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)

@@ -34,7 +34,6 @@ import static de.cubeisland.cubeengine.log.action.ActionType.Category.PLAYER;
  * <p>Events: {@link RightClickActionType}</p>
  */
 public class PlateStep extends BlockActionType
-
 {
     @Override
     protected EnumSet<Category> getCategories()

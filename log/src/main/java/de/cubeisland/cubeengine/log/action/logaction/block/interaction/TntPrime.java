@@ -26,6 +26,7 @@ import de.cubeisland.cubeengine.log.action.logaction.block.BlockActionType;
 import de.cubeisland.cubeengine.log.storage.LogEntry;
 
 import static de.cubeisland.cubeengine.log.action.ActionType.Category.BLOCK;
+import static de.cubeisland.cubeengine.log.action.ActionType.Category.EXPLOSION;
 import static de.cubeisland.cubeengine.log.action.ActionType.Category.PLAYER;
 
 /**
@@ -37,7 +38,7 @@ public class TntPrime extends BlockActionType
     @Override
     protected EnumSet<Category> getCategories()
     {
-        return EnumSet.of(BLOCK, PLAYER);
+        return EnumSet.of(EXPLOSION, BLOCK, PLAYER);
     }
 
     @Override

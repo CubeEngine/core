@@ -37,7 +37,6 @@ import static org.bukkit.Material.AIR;
  */
 public class LeafDecay extends BlockActionType
 {
-
     @Override
     protected EnumSet<Category> getCategories()
     {

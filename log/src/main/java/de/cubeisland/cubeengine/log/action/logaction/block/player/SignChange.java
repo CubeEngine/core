@@ -51,6 +51,7 @@ public class SignChange extends BlockActionType
     {
         return EnumSet.of(BLOCK, PLAYER);
     }
+
     @Override
     public String getName()
     {

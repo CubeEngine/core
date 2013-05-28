@@ -21,6 +21,7 @@ import org.bukkit.Location;
 import org.bukkit.entity.Animals;
 import org.bukkit.entity.EnderDragon;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Ghast;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Monster;
@@ -38,6 +39,7 @@ import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.inventory.ItemStack;
 
 import de.cubeisland.cubeengine.core.user.User;
+import de.cubeisland.cubeengine.log.LogAttachment;
 import de.cubeisland.cubeengine.log.action.logaction.ActionTypeContainer;
 import de.cubeisland.cubeengine.log.action.logaction.ItemDrop;
 import de.cubeisland.cubeengine.log.action.logaction.SimpleLogActionType;
@@ -223,5 +225,17 @@ public class KillActionType extends ActionTypeContainer
         return logEntry.causer == other.causer
             && logEntry.data == other.data
             && logEntry.world == other.world;
+    }
+
+    public static boolean rollbackDeath(LogAttachment attachment, LogEntry logEntry, boolean force, boolean preview)
+    {
+        if (!preview)
+        {
+            Location location = logEntry.getLocation();
+            int id = (int)-logEntry.getData();
+            EntityType entityType = EntityType.fromId(id);
+            Entity entity = location.getWorld().spawnEntity(location, entityType);
+        }
+        return true;
     }
 }

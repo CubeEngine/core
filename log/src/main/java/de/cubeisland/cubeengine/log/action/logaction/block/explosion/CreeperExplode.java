@@ -36,7 +36,7 @@ public class CreeperExplode extends BlockActionType
     @Override
     protected EnumSet<Category> getCategories()
     {
-        return EnumSet.of(BLOCK, ENTITY, PLAYER);
+        return EnumSet.of(EXPLOSION, BLOCK, BLOCK_ENTITY, PLAYER);
     }
 
     @Override

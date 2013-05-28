@@ -26,7 +26,7 @@ import de.cubeisland.cubeengine.log.action.logaction.block.BlockActionType;
 import de.cubeisland.cubeengine.log.storage.LogEntry;
 
 import static de.cubeisland.cubeengine.log.action.ActionType.Category.BLOCK;
-import static de.cubeisland.cubeengine.log.action.ActionType.Category.ENTITY;
+import static de.cubeisland.cubeengine.log.action.ActionType.Category.BLOCK_ENTITY;
 
 /**
  * Enderman picking up blocks.
@@ -37,15 +37,16 @@ public class EndermanPickup  extends BlockActionType
     @Override
     protected EnumSet<Category> getCategories()
     {
-        return EnumSet.of(BLOCK, ENTITY);
+        return EnumSet.of(BLOCK, BLOCK_ENTITY);
     }
+
+    private final String[] names = {"enderman"};
 
     @Override
     public String getName()
     {
         return "enderman-pickup";
     }
-
 
     @Override
     protected void showLogEntry(User user, LogEntry logEntry, String time, String loc)

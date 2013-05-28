@@ -184,7 +184,7 @@ public class QueryManager
                 stmt.setObject(i+1, poll.sqlData.get(i));
             }
             ResultSet resultSet = stmt.executeQuery();
-            QueryResults results = new QueryResults();
+            QueryResults results = new QueryResults(lookup);
             while (resultSet.next())
             {
                 long entryID = resultSet.getLong("id");

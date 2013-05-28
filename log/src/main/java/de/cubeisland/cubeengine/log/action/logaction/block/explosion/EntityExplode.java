@@ -36,7 +36,7 @@ public class EntityExplode extends BlockActionType
     @Override
     protected EnumSet<Category> getCategories()
     {
-        return EnumSet.of(BLOCK, ENTITY);
+        return EnumSet.of(EXPLOSION, BLOCK, BLOCK_ENTITY);
     }
 
 

@@ -324,4 +324,11 @@ public class QueryParameter implements Cloneable
         }
         return false; // all excluded
     }
+
+    public boolean containsAction(ActionType actionType)
+    {
+        Boolean set = this.actions.get(actionType);
+        if (set == null) return false;
+        return set;
+    }
 }

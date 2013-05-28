@@ -50,12 +50,12 @@ import static org.bukkit.Material.*;
  */
 public class HangingBreak extends BlockActionType
 {
+    // TODO Hanging place Item into frame stuff!!!
     @Override
     protected EnumSet<Category> getCategories()
     {
         return EnumSet.of(BLOCK, PLAYER);
     }
-
 
     @Override
     public String getName()
