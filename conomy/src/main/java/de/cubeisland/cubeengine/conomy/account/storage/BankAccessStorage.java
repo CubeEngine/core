@@ -1,0 +1,77 @@
+package de.cubeisland.cubeengine.conomy.account.storage;
+
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.HashSet;
+import java.util.Set;
+
+import de.cubeisland.cubeengine.core.storage.SingleKeyStorage;
+import de.cubeisland.cubeengine.core.storage.StorageException;
+import de.cubeisland.cubeengine.core.storage.database.Database;
+import de.cubeisland.cubeengine.core.storage.database.querybuilder.QueryBuilder;
+import de.cubeisland.cubeengine.core.user.User;
+
+public class BankAccessStorage extends SingleKeyStorage<Long, BankAccessModel>
+{
+    private static final int REVISION = 1;
+
+    public BankAccessStorage(Database database)
+    {
+        super(database, BankAccessModel.class, REVISION);
+        this.initialize();
+    }
+
+    @Override
+    protected void prepareStatements() throws SQLException
+    {
+        super.prepareStatements();
+        QueryBuilder builder = this.database.getQueryBuilder();
+        this.database.storeStatement(this.modelClass, "getBankAccess", builder.select(allFields).from(this.tableName)
+                                                                              .where().field("accountId").isEqual()
+                                                                              .value().end().end());
+        this.database.storeStatement(this.modelClass, "getUserAccess", builder.select("accountId").from(this.tableName)
+                                                                              .where().field("userId").isEqual()
+                                                                              .value().end().end());
+
+    }
+
+    public Set<BankAccessModel> getBankAccess(AccountModel model)
+    {
+        try
+        {
+            ResultSet resultSet = this.database.preparedQuery(this.modelClass, "getBankAccess", model.key);
+            Set<BankAccessModel> result = new HashSet<BankAccessModel>();
+            while (resultSet.next())
+            {
+                long id = resultSet.getLong("id");
+                long userId = resultSet.getLong("userId");
+                long accountId = resultSet.getLong("accountId");
+                byte accountType = resultSet.getByte("accessLevel");
+                result.add(new BankAccessModel(id, userId, accountId, accountType, model.name));
+            }
+            return result;
+        }
+        catch (SQLException ex)
+        {
+            throw new StorageException("Could not get BankAccess-Data from Database!", ex, this.database.getStoredStatement(this.modelClass, "getBankAccess"));
+        }
+    }
+
+    public Set<Long> getBankAccounts(User user)
+    {
+        try
+        {
+            ResultSet resultSet = this.database.preparedQuery(this.modelClass, "getUserAccess", user.key);
+            Set<Long> result = new HashSet<Long>();
+            while (resultSet.next())
+            {
+                result.add(resultSet.getLong("accountId"));
+            }
+            return result;
+        }
+        catch (SQLException ex)
+        {
+            throw new StorageException("Could not get BankAccess-Data from Database!", ex, this.database.getStoredStatement(this.modelClass, "getUserAccess"));
+        }
+    }
+}

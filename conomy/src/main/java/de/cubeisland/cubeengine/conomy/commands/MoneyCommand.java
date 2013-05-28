@@ -32,17 +32,20 @@ import de.cubeisland.cubeengine.core.util.StringUtils;
 import de.cubeisland.cubeengine.conomy.Conomy;
 import de.cubeisland.cubeengine.conomy.ConomyPermissions;
 import de.cubeisland.cubeengine.conomy.account.Account;
+import de.cubeisland.cubeengine.conomy.account.ConomyManager;
+import de.cubeisland.cubeengine.conomy.account.UserAccount;
 import de.cubeisland.cubeengine.conomy.account.storage.AccountModel;
-import de.cubeisland.cubeengine.conomy.currency.Currency;
 
 public class MoneyCommand extends ContainerCommand
 {
     private Conomy module;
+    private ConomyManager manager;
 
     public MoneyCommand(Conomy module)
     {
         super(module, "money", "Manages your money.");
         this.module = module;
+        this.manager = module.getManager();
     }
 
     @Override
@@ -52,29 +55,24 @@ public class MoneyCommand extends ContainerCommand
         {
             return super.run(context);
         }
-        else
-        {
-            this.balance((ParameterizedContext)context);
-            return null;
-        }
+        this.balance((ParameterizedContext)context);
+        return null;
+    }
+    
+    private UserAccount getUserAccount(User user)
+    {
+        return this.manager.getUserAccount(user, this.module.getConfig().autocreateUserAcc);
     }
 
-    @Alias(names = {
-        "balance", "moneybalance"
-    })
-    @Command(desc = "Shows your balance", usage = "[player] [in <currency>]|[-a]", flags = {
-    @Flag(longName = "all", name = "a"),
-            @Flag(longName = "showHidden", name = "f")
-    }, params = @Param(names = "in", type = String.class), max = 1)
+    @Alias(names = {"balance", "moneybalance", "pmoney"})
+    @Command(desc = "Shows your balance",
+             usage = "[player]",
+             flags = @Flag(longName = "showHidden", name = "f"),
+             max = 1)
     public void balance(ParameterizedContext context)
     {
         User user;
-        boolean showHidden = context.hasFlag("f");
-        if (showHidden)
-        {
-            if (!ConomyPermissions.ACCOUNT_SHOWHIDDEN.isAuthorized(context.getSender()))
-                showHidden = false;
-        }
+        boolean showHidden = context.hasFlag("f") && ConomyPermissions.USER_SHOWHIDDEN.isAuthorized(context.getSender());
         if (context.hasArg(0))
         {
             user = context.getUser(0);
@@ -88,57 +86,33 @@ public class MoneyCommand extends ContainerCommand
         {
             if (!(context.getSender() instanceof User))
             {
-                context.sendTranslated("&cYou are out of money! Better go work than typing silly commands in the console.");
+                context.sendTranslated("&cIf you are out of money, better go work than typing silly commands in the console.");
                 return;
             }
             user = (User)context.getSender();
         }
-        if (context.hasFlag("a"))
+        Account account = this.getUserAccount(user);
+        if (account != null)
         {
-            Collection<Account> accs = this.module.getAccountsManager().getAccounts(user);
-            for (Account acc : accs)
+            if (!account.isHidden() || showHidden)
             {
-                if (!acc.isHidden() || showHidden)
-                    context.sendTranslated("&2%s's &a%s-Balance: &6%s", user.getName(), acc.getCurrency().getName(), acc.getCurrency().formatLong(acc.getBalance()));
+                context.sendTranslated("&2%s's &aBalance: &6%s", user.getName(), manager.format(account.balance()));
+                return;
             }
         }
-        else
-        {
-            Account acc;
-            if (context.hasParam("in"))
-            {
-                Currency currency = this.module.getCurrencyManager().getCurrencyByName(context.getString("in"));
-                if (currency == null)
-                {
-                    context.sendTranslated("&cCurrency %s not found!", context.getString("in"));
-                    return;
-                }
-                acc = this.module.getAccountsManager().getAccount(user, currency);
-            }
-            else
-            {
-                acc = this.module.getAccountsManager().getAccount(user);
-            }
-            if (!acc.isHidden() || showHidden)
-                context.sendTranslated("&2%s's &aBalance: &6%s", user.getName(), acc.getCurrency().formatLong(acc.getBalance()));
-            else
-                context.sendTranslated("&cNo account found for &2%s&c!", user.getName());
-        }
+        context.sendTranslated("&cNo account found for &2%s&c!", user.getName());
     }
 
-    @Alias(names = {
-        "toplist", "balancetop"
-    })
+    @Alias(names = {"toplist", "balancetop", "topmoney"})
     @Command(desc = "Shows the players with the highest balance.",
-             usage = "[[fromRank]-ToRank] [in <currency>]", max = 1,
-             params = @Param(names = "in", type = String.class),
+             usage = "[[fromRank]-ToRank]", max = 1,
              flags = @Flag(longName = "showhidden", name = "f"))
     public void top(ParameterizedContext context)
     {
         boolean showHidden = context.hasFlag("f");
         if (showHidden)
         {
-            if (!ConomyPermissions.ACCOUNT_SHOWHIDDEN.isAuthorized(context.getSender()))
+            if (!ConomyPermissions.USER_SHOWHIDDEN.isAuthorized(context.getSender()))
                 showHidden = false;
         }
         int fromRank = 1;
@@ -161,18 +135,7 @@ public class MoneyCommand extends ContainerCommand
                 return;
             }
         }
-        Collection<AccountModel> models;
-        Currency currency = this.module.getAccountsManager().getMainCurrency();
-        if (context.hasParam("in"))
-        {
-            currency = this.module.getCurrencyManager().getCurrencyByName(context.getString("in"));
-            if (currency == null)
-            {
-                context.sendTranslated("&cCurrency %s not found!", context.getString("in"));
-                return;
-            }
-        }
-        models = this.module.getAccountsStorage().getTopAccounts(currency, fromRank, toRank, showHidden);
+        Collection<AccountModel> models = this.manager.getTopAccounts(true, false, fromRank, toRank, showHidden);
         int i = fromRank;
         if (fromRank == 1)
         {
@@ -185,47 +148,36 @@ public class MoneyCommand extends ContainerCommand
         for (AccountModel account : models)
         {
             context.sendTranslated("&a%d &f- &2%s&f: &6%s", i++,
-                    this.module.getCore().getUserManager().getUser(account.user_id).getName(), currency.formatLong(account.value));
+                    this.module.getCore().getUserManager().getUser(account.user_id).getName(), manager.format(account.value / manager.fractionalDigitsFactor()));
         }
     }
 
-    @Alias(names = {
-        "pay"
-    })
-    @Command(names = {
-        "pay", "give"
-    }, desc = "Transfer the given amount to another account.", usage = "<player> [as <player>] <amount>", params = {
-        @Param(names = "as", type = User.class),
-        @Param(names = "in", type = String.class)
-    }, flags = @Flag(longName = "force", name = "f"), min = 2, max = 2)
+    @Alias(names = {"pay"})
+    @Command(names = {"pay", "give"},
+             desc = "Transfer the given amount to another account.",
+             usage = "<player> [as <player>] <amount>",
+             params = @Param(names = "as", type = User.class),
+             flags = @Flag(longName = "force", name = "f"),
+             min = 2, max = 2)
     public void pay(ParameterizedContext context)
     {
-        Currency currency;
         String amountString = context.getString(1);
-        if (context.hasParam("in"))
-        {
-            currency = this.module.getCurrencyManager().getCurrencyByName(context.getString("in"));
-            if (currency == null)
-            {
-                context.sendTranslated("&cCurrency %s not found!", context.getString("in"));
-                return;
-            }
-        }
-        else
-        {
-            currency = this.module.getCurrencyManager().matchCurrency(amountString);
-        }
-        Long amount = currency.parse(amountString);
+        Double amount = manager.parse(amountString);
         if (amount == null)
         {
             context.sendTranslated("&cCould not parse amount!");
             return;
         }
-        String formattedAmount = currency.formatLong(amount);
+        String format = manager.format(amount);
         User sender;
         boolean asSomeOneElse = false;
         if (context.hasParam("as"))
         {
+            if (!ConomyPermissions.COMMAND_PAY_ASOTHER.isAuthorized(context.getSender()))
+            {
+                context.sendTranslated("&cYou are not allowed to pay money as someone else!");
+                return;
+            }
             sender = context.getUser("as");
             if (sender == null)
             {
@@ -243,11 +195,11 @@ public class MoneyCommand extends ContainerCommand
             }
             sender = (User)context.getSender();
         }
-        Account source = this.module.getAccountsManager().getAccount(sender, currency);
+        Account source = this.manager.getUserAccount(sender, false);
         if (source == null)
         {
-            context.sendTranslated("&2%s &cdoes not have an account for &6%s&c!",
-                                   sender.getName(), currency.getName());
+            context.sendTranslated("&2%s &cdoes not have an account!",
+                                   sender.getName());
             return;
         }
         String[] users = StringUtils.explode(",", context.getString(0));
@@ -259,39 +211,43 @@ public class MoneyCommand extends ContainerCommand
                 context.sendTranslated("&cUser %s not found!", context.getString(0));
                 continue;
             }
-            Account target = this.module.getAccountsManager().getAccount(user, currency);
+            Account target = this.manager.getUserAccount(user, false);
             if (target == null)
             {
-                context.sendTranslated("&2%s &cdoes not have an account for &6%s&c!",
-                                       sender.getName(), currency.getName());
+                context.sendTranslated("&2%s &cdoes not have an account!",
+                                       sender.getName());
                 continue;
             }
-            if (!(context.hasFlag("f") && ConomyPermissions.COMMAND_PAY_FORCE.isAuthorized(context.getSender()))) //force allowed
+            if (!(context.hasFlag("f") && ConomyPermissions.COMMAND_MONEY_PAY_FORCE.isAuthorized(context.getSender()))) //force allowed
             {
-                if (!source.canAfford(amount))
+                if (!source.has(amount))
                 {
                     if (asSomeOneElse)
                     {
-                        context.sendTranslated("&2%s &ccannot afford &6%s&c!", sender.getName(), currency.formatLong(amount));
+                        context.sendTranslated("&2%s&c cannot afford &6%s&c!", sender.getName(), format);
                     }
                     else
                     {
-                        context.sendTranslated("&cYou cannot afford &6%s&c!", currency.formatLong(amount));
+                        context.sendTranslated("&cYou cannot afford &6%s&c!", format);
                     }
                     return;
                 }
             }
-            if (this.module.getAccountsManager().transaction(source, target, amount))
+            if (this.manager.transaction(source, target, amount, false))
             {
                 if (asSomeOneElse)
                 {
-                    context.sendTranslated("&6%s &atransfered from &2%s's &ato &2%s's &aaccount!", formattedAmount, sender.getName(), user.getName());
+                    context.sendTranslated("&6%s&a transferred from &2%s's&a to &2%s's&a account!", format, sender.getName(), user.getName());
                 }
                 else
                 {
-                    context.sendTranslated("&6%s &atransfered to &2%s's &aaccount!", formattedAmount, user.getName());
+                    context.sendTranslated("&6%s&a transferred to &2%s's&a account!", format, user.getName());
                 }
-                user.sendTranslated("&2%s &ajust send you &6%s!", sender.getName(), formattedAmount);
+                user.sendTranslated("&2%s&a just payed you &6%s!", sender.getName(), format);
+            }
+            else
+            {
+                context.sendTranslated("&cThe Transaction was not successful!");
             }
         }
     }

@@ -17,6 +17,8 @@
  */
 package de.cubeisland.cubeengine.signmarket.storage;
 
+import org.bukkit.Location;
+
 import de.cubeisland.cubeengine.core.CubeEngine;
 import de.cubeisland.cubeengine.core.storage.Model;
 import de.cubeisland.cubeengine.core.storage.database.AttrType;
@@ -24,7 +26,6 @@ import de.cubeisland.cubeengine.core.storage.database.Attribute;
 import de.cubeisland.cubeengine.core.storage.database.Index;
 import de.cubeisland.cubeengine.core.storage.database.SingleKeyEntity;
 import de.cubeisland.cubeengine.core.user.User;
-import org.bukkit.Location;
 
 @SingleKeyEntity(autoIncrement = true, primaryKey = "key", tableName = "signmarketblocks", indices = {
         @Index(value = Index.IndexType.FOREIGN_KEY, fields = "world", f_field = "key", f_table = "worlds", onDelete = "CASCADE"),
@@ -61,8 +62,6 @@ public class SignMarketBlockModel implements Model<Long>
 
     @Attribute(type = AttrType.INT, unsigned = true)
     public long price;
-    @Attribute(type = AttrType.VARCHAR, length = 64)
-    public String currency;
 
     // Helper-methods:
     private Location location;
@@ -82,7 +81,6 @@ public class SignMarketBlockModel implements Model<Long>
         this.amount = blockInfo.amount;
         this.demand = blockInfo.demand;
         this.price = blockInfo.price;
-        this.currency = blockInfo.currency;
     }
 
 
