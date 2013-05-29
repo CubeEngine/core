@@ -53,7 +53,7 @@ public abstract class AbstractWorldManager implements WorldManager
         WorldModel model = this.worlds.get(world.getName());
         if (model == null)
         {
-            model = this.storage.get(world.getUID());
+            model = this.storage.get(world);
             if (model == null)
             {
                 model = new WorldModel(world);
