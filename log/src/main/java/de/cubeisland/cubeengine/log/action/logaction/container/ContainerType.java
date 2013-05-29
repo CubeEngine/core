@@ -17,6 +17,7 @@
  */
 package de.cubeisland.cubeengine.log.action.logaction.container;
 
+import org.bukkit.Material;
 import org.bukkit.block.BrewingStand;
 import org.bukkit.block.Chest;
 import org.bukkit.block.Dispenser;
@@ -31,14 +32,6 @@ import de.cubeisland.cubeengine.core.util.matcher.Match;
 
 public class ContainerType
 {
-    private static final String STORAGE_MINECART = "storage-minecart";
-    private static final String CHEST = "chest";
-    private static final String FURNACE = "furnace";
-    private static final String DISPENSER = "dispenser";
-    private static final String DROPPER = "dropper";
-    private static final String HOPPER = "hopper";
-    private static final String BREWING_STAND = "brewing-stand";
-
     public final String name;
 
     private ContainerType(String name)
@@ -48,7 +41,15 @@ public class ContainerType
 
     public static ContainerType ofName(String name)
     {
-        String match = Match.string().matchString(name,STORAGE_MINECART,CHEST,FURNACE,DISPENSER,DROPPER,HOPPER,BREWING_STAND);
+        String match = Match.string().matchString(name, 
+              Material.STORAGE_MINECART.name(), 
+              Material.CHEST.name(),
+              Material.FURNACE.name(),
+              Material.DISPENSER.name(),
+              Material.DROPPER.name(),
+              Material.HOPPER.name(),
+              Material.BREWING_STAND.name()
+              );// TODO HopperMinecart??
         if (match == null)
         {
             return null;
@@ -60,35 +61,35 @@ public class ContainerType
     {
         if (holder instanceof StorageMinecart)
         {
-            this.name = STORAGE_MINECART;
+            this.name = Material.STORAGE_MINECART.name();
         }
         else if (holder instanceof DoubleChest)
         {
-            this.name = CHEST;
+            this.name = Material.CHEST.name();
         }
         else if (holder instanceof Chest)
         {
-            this.name = CHEST;
+            this.name = Material.CHEST.name();
         }
         else if (holder instanceof Furnace)
         {
-            this.name = FURNACE;
+            this.name = Material.FURNACE.name();
         }
         else if (holder instanceof Dispenser)
         {
-            this.name = DISPENSER;
+            this.name = Material.DISPENSER.name();
         }
         else if (holder instanceof BrewingStand)
         {
-            this.name = BREWING_STAND;
+            this.name = Material.BREWING_STAND.name();
         }
         else if (holder instanceof Dropper)
         {
-            this.name = DROPPER;
+            this.name = Material.DROPPER.name();
         }
         else if (holder instanceof Hopper)
         {
-            this.name = HOPPER;
+            this.name = Material.HOPPER.name();
         }
         else
         {
@@ -100,6 +101,13 @@ public class ContainerType
     public String toString()
     {
         return name;
+    }
+
+    public static Material getMaterial(String material)
+    {
+        material = material.replace("-", "_"); // For old names saved in db
+        material = material.toUpperCase(); // For old names saved in db
+        return Material.matchMaterial(material);
     }
 
     @Override
@@ -128,6 +136,11 @@ public class ContainerType
     public int hashCode()
     {
         return name != null ? name.hashCode() : 0;
+    }
+
+    public Material getMaterial()
+    {
+        return getMaterial(this.name);
     }
 }
 

@@ -170,7 +170,7 @@ public class RepairBlock
             */
     }
 
-    public boolean checkBalance(User user, Double price)
+    public boolean checkBalance(User user, double price)
     {
         return conomyManager.getUserAccount(user, true).has((long)(price / conomyManager.fractionalDigitsFactor()));
     }
@@ -224,12 +224,12 @@ public class RepairBlock
 
     public void repair(RepairRequest request)
     {
-        Double price = request.getPrice();
+        double price = request.getPrice();
         Inventory inventory = request.getInventory();
         User user = this.module.getCore().getUserManager().getExactUser(((Player)inventory.getHolder()).getName());
         if (checkBalance(user, price))
         {
-            withdrawPlayer(user, price.longValue());
+            withdrawPlayer(user, (long)price);
             boolean itemsBroken = false;
             boolean repairFail = false;
             boolean looseEnch = false;
@@ -290,7 +290,7 @@ public class RepairBlock
                 user.sendTranslated("&cYou feel that some of your items lost their magical power!");
                 user.playEffect(user.getLocation(), Effect.GHAST_SHRIEK, 0);
             }
-            user.sendTranslated("&aYou paid &b%s&a to repair your items!",conomyManager.format(price.longValue() / conomyManager.fractionalDigitsFactor()));
+            user.sendTranslated("&aYou paid &b%s&a to repair your items!",conomyManager.format(price / conomyManager.fractionalDigitsFactor()));
             if (this.config.costPercentage > 100)
             {
                 user.sendTranslated("&aThats %.2f%% of the normal price!", this.config.costPercentage);

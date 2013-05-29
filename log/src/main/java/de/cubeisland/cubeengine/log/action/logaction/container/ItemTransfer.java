@@ -22,7 +22,6 @@ import java.util.EnumSet;
 import org.bukkit.World;
 
 import de.cubeisland.cubeengine.core.user.User;
-import de.cubeisland.cubeengine.log.Log;
 import de.cubeisland.cubeengine.log.action.logaction.SimpleLogActionType;
 import de.cubeisland.cubeengine.log.storage.LogEntry;
 
@@ -64,4 +63,6 @@ public class ItemTransfer extends SimpleLogActionType
     {
         return this.lm.getConfig(world).ITEM_TRANSFER_enable;
     }
+
+    // TODO rollback
 }

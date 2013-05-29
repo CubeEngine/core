@@ -87,6 +87,7 @@ public class ContainerActionType extends ActionTypeContainer
                 {
                     int amount = itemDataMap.get(itemData);
                     if (amount == 0) continue;
+                    itemData.amount = amount;
                     String additional = itemData.serialize(this.om);
                     SimpleLogActionType actionType;
                     if (amount < 0)
