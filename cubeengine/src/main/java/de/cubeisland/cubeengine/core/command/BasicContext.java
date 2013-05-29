@@ -17,11 +17,11 @@
  */
 package de.cubeisland.cubeengine.core.command;
 
-import de.cubeisland.cubeengine.core.Core;
-import de.cubeisland.cubeengine.core.user.User;
-
 import java.util.LinkedList;
 import java.util.Stack;
+
+import de.cubeisland.cubeengine.core.Core;
+import de.cubeisland.cubeengine.core.user.User;
 
 public class BasicContext implements CommandContext
 {
@@ -120,7 +120,7 @@ public class BasicContext implements CommandContext
     {
         try
         {
-            return ArgumentReader.read(type, this.args.get(index));
+            return ArgumentReader.read(type, this.args.get(index), this.getSender());
         }
         catch (Exception e)
         {

@@ -80,7 +80,7 @@ public class ConversationContextFactory extends ParameterizedContextFactory
                         offset++;
                         StringBuilder paramValue = new StringBuilder();
                         offset += readString(paramValue, commandLine, offset);
-                        params.put(param.getName(), ArgumentReader.read(param.getType(), paramValue.toString()));
+                        params.put(param.getName(), ArgumentReader.read(param.getType(), paramValue.toString(), sender));
                     }
                     catch (InvalidArgumentException ex)
                     {

@@ -17,21 +17,26 @@
  */
 package de.cubeisland.cubeengine.core.command.readers;
 
-import de.cubeisland.cubeengine.core.command.ArgumentReader;
-import de.cubeisland.cubeengine.core.command.exception.InvalidArgumentException;
-import org.bukkit.Bukkit;
+import java.util.Locale;
+
 import org.bukkit.World;
 
-public class WorldReader extends ArgumentReader<World>
+import de.cubeisland.cubeengine.core.Core;
+import de.cubeisland.cubeengine.core.command.ArgumentReader;
+import de.cubeisland.cubeengine.core.command.exception.InvalidArgumentException;
+
+public class WorldReader extends ArgumentReader
 {
-    public WorldReader()
+    private final Core core;
+
+    public WorldReader(Core core)
     {
-        super(World.class);
+        this.core = core;
     }
 
     @Override
-    public World read(String arg) throws InvalidArgumentException
+    public World read(String arg, Locale locale) throws InvalidArgumentException
     {
-        return Bukkit.getWorld(arg);
+        return this.core.getWorldManager().getWorld(arg);
     }
 }

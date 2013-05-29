@@ -33,6 +33,7 @@ import de.cubeisland.cubeengine.core.CoreResource;
 import de.cubeisland.cubeengine.core.CubeEngine;
 import de.cubeisland.cubeengine.core.bukkit.metrics.MetricsInitializer;
 import de.cubeisland.cubeengine.core.bukkit.packethook.PacketEventManager;
+import de.cubeisland.cubeengine.core.command.ArgumentReader;
 import de.cubeisland.cubeengine.core.command.commands.CoreCommands;
 import de.cubeisland.cubeengine.core.command.commands.ModuleCommands;
 import de.cubeisland.cubeengine.core.command.commands.VanillaCommands;
@@ -105,7 +106,6 @@ public final class BukkitCore extends JavaPlugin implements Core
         this.version = Version.fromString(this.getDescription().getVersion());
 
         CubeEngine.initialize(this);
-
 
         this.logger = new CubeLogger("Core", this.getLogger());
         this.logger.setLevel(Level.ALL);
@@ -196,6 +196,9 @@ public final class BukkitCore extends JavaPlugin implements Core
         // depends on: database
         this.moduleManager = new BukkitModuleManager(this, this.getClassLoader());
 
+        // depends on: user manager, world manager
+        ArgumentReader.init(this);
+
         // depends on: server
         this.commandManager = new BukkitCommandManager(this);
         this.commandManager.registerCommandFactory(new ReflectedCommandFactory());
@@ -248,14 +251,6 @@ public final class BukkitCore extends JavaPlugin implements Core
         this.moduleManager.init();
         this.moduleManager.enableModules();
         this.permissionManager.calculatePermissions();
-
-//        this.getServer().getScheduler().scheduleSyncDelayedTask(this, new Runnable()
-//        {
-//            @Override
-//            public void run()
-//            {
-//            }
-//        });
     }
 
     @Override

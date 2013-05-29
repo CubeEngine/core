@@ -19,17 +19,22 @@ package de.cubeisland.cubeengine.core.command.readers;
 
 import java.util.Locale;
 
-import org.bukkit.entity.Villager;
-
 import de.cubeisland.cubeengine.core.command.ArgumentReader;
 import de.cubeisland.cubeengine.core.command.exception.InvalidArgumentException;
-import de.cubeisland.cubeengine.core.util.matcher.Match;
 
-public class ProfessionReader extends ArgumentReader
+public class DoubleReader extends ArgumentReader
 {
     @Override
-    public Villager.Profession read(String arg, Locale locale) throws InvalidArgumentException
+    public Double read(String arg, Locale locale) throws InvalidArgumentException
     {
-        return Match.profession().profession(arg);
+        String num = arg.replaceFirst("\\D", ".").replaceAll("[^\\d\\.]]", "");
+        try
+        {
+            return Double.parseDouble(num);
+        }
+        catch (NumberFormatException e)
+        {
+            throw new InvalidArgumentException("Could not parse " + arg + " to Float!");
+        }
     }
 }

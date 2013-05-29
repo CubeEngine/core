@@ -17,69 +17,87 @@
  */
 package de.cubeisland.cubeengine.core.command;
 
-import de.cubeisland.cubeengine.core.command.exception.InvalidArgumentException;
-import de.cubeisland.cubeengine.core.command.readers.*;
-import org.apache.commons.lang.Validate;
-
 import java.util.Iterator;
+import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-public abstract class ArgumentReader<T>
+import org.bukkit.DyeColor;
+import org.bukkit.OfflinePlayer;
+import org.bukkit.World;
+import org.bukkit.enchantments.Enchantment;
+import org.bukkit.entity.EntityType;
+import org.bukkit.entity.Villager.Profession;
+import org.bukkit.inventory.ItemStack;
+
+import de.cubeisland.cubeengine.core.Core;
+import de.cubeisland.cubeengine.core.command.exception.InvalidArgumentException;
+import de.cubeisland.cubeengine.core.command.readers.BooleanReader;
+import de.cubeisland.cubeengine.core.command.readers.ByteReader;
+import de.cubeisland.cubeengine.core.command.readers.DoubleReader;
+import de.cubeisland.cubeengine.core.command.readers.DyeColorReader;
+import de.cubeisland.cubeengine.core.command.readers.EnchantmentReader;
+import de.cubeisland.cubeengine.core.command.readers.EntityTypeReader;
+import de.cubeisland.cubeengine.core.command.readers.FloatReader;
+import de.cubeisland.cubeengine.core.command.readers.IntReader;
+import de.cubeisland.cubeengine.core.command.readers.ItemStackReader;
+import de.cubeisland.cubeengine.core.command.readers.LongReader;
+import de.cubeisland.cubeengine.core.command.readers.OfflinePlayerReader;
+import de.cubeisland.cubeengine.core.command.readers.ProfessionReader;
+import de.cubeisland.cubeengine.core.command.readers.ShortReader;
+import de.cubeisland.cubeengine.core.command.readers.StringReader;
+import de.cubeisland.cubeengine.core.command.readers.UserReader;
+import de.cubeisland.cubeengine.core.command.readers.WorldReader;
+import de.cubeisland.cubeengine.core.user.User;
+
+public abstract class ArgumentReader
 {
-    private static final Map<Class, ArgumentReader> READERS = new ConcurrentHashMap<Class, ArgumentReader>();
-
-    static
-    {
-        registerReader(new EnchantmentReader());
-        registerReader(new FloatReader());
-        registerReader(new IntReader());
-        registerReader(new ItemStackReader());
-        registerReader(new LongReader());
-        registerReader(new StringReader());
-        registerReader(new UserReader());
-        registerReader(new WorldReader());
-        registerReader(new EntityTypeReader());
-        registerReader(new DyeColorReader());
-        registerReader(new ProfessionReader());
-        registerReader(new OfflinePlayerReader());
-    }
-
-    private final Class<T> type;
-
-    public ArgumentReader(Class<T> type)
-    {
-        this.type = type;
-    }
+    private static final Map<Class<?>, ArgumentReader> READERS = new ConcurrentHashMap<Class<?>, ArgumentReader>();
 
     /**
      *
+     *
      * @param arg an string
+     * @param locale
      * @return the number of arguments paired with the value that got read from the input array
      */
-    public abstract T read(String arg) throws InvalidArgumentException;
+    public abstract Object read(String arg, Locale locale) throws InvalidArgumentException;
 
-    public Class<T> getType()
+    public static void init(Core core)
     {
-        return this.type;
+        registerReader(new BooleanReader(core), Boolean.class, boolean.class);
+        registerReader(new ByteReader(), Byte.class, byte.class);
+        registerReader(new ShortReader(), Short.class, short.class);
+        registerReader(new IntReader(), Integer.class, int.class);
+        registerReader(new LongReader(), Long.class, long.class);
+        registerReader(new FloatReader(), Float.class, float.class);
+        registerReader(new DoubleReader(), Double.class, double.class);
+        registerReader(new StringReader(), String.class);
+        registerReader(new EnchantmentReader(), Enchantment.class);
+        registerReader(new ItemStackReader(), ItemStack.class);
+        registerReader(new UserReader(core), User.class);
+        registerReader(new WorldReader(core), World.class);
+        registerReader(new EntityTypeReader(), EntityType.class);
+        registerReader(new DyeColorReader(), DyeColor.class);
+        registerReader(new ProfessionReader(), Profession.class);
+        registerReader(new OfflinePlayerReader(core), OfflinePlayer.class);
     }
 
-    public static <T> void registerReader(ArgumentReader<T> reader)
+    public static void registerReader(ArgumentReader reader, Class<?>... classes)
     {
-        assert reader != null: "Reader is null! Cannot register!";
-        registerReader(reader.getType(), reader);
+        assert classes.length > 0: "At least one class must be specified!";
+
+        for (Class c : classes)
+        {
+            READERS.put(c, reader);
+        }
     }
 
-    public static <T> void registerReader(Class clazz, ArgumentReader<T> reader)
+    public static void removeReader(Class clazz)
     {
-        READERS.put(clazz, reader);
-    }
+        Iterator<Map.Entry<Class<?>, ArgumentReader>> iter = READERS.entrySet().iterator();
 
-    public static void unregisterReader(Class clazz)
-    {
-        Iterator<Map.Entry<Class, ArgumentReader>> iter = READERS.entrySet().iterator();
-
-        Map.Entry<Class, ArgumentReader> entry;
+        Map.Entry<Class<?>, ArgumentReader> entry;
         while (iter.hasNext())
         {
             entry = iter.next();
@@ -90,10 +108,15 @@ public abstract class ArgumentReader<T>
         }
     }
 
-    @SuppressWarnings("unchecked")
-    public static <T> T read(Class<T> clazz, String string) throws InvalidArgumentException
+    public static <T> T read(Class<T> clazz, String string, CommandSender sender) throws InvalidArgumentException
     {
-        ArgumentReader<T> reader = READERS.get(clazz);
+        return read(clazz, string, sender.getLocale());
+    }
+
+    @SuppressWarnings("unchecked")
+    public static <T> T read(Class<T> clazz, String string, Locale locale) throws InvalidArgumentException
+    {
+        ArgumentReader reader = READERS.get(clazz);
         if (reader == null)
         {
             for (Class argClazz : READERS.keySet())
@@ -101,7 +124,7 @@ public abstract class ArgumentReader<T>
                 if (clazz.isAssignableFrom(argClazz))
                 {
                     reader = READERS.get(argClazz);
-                    registerReader(clazz, reader);
+                    registerReader(reader, clazz);
                 }
             }
         }
@@ -109,6 +132,6 @@ public abstract class ArgumentReader<T>
         {
             throw new IllegalStateException("No reader found for " + clazz.getName() + "!");
         }
-        return reader.read(string);
+        return (T)reader.read(string, locale);
     }
 }

@@ -17,18 +17,15 @@
  */
 package de.cubeisland.cubeengine.core.command.readers;
 
+import java.util.Locale;
+
 import de.cubeisland.cubeengine.core.command.ArgumentReader;
 import de.cubeisland.cubeengine.core.command.exception.InvalidArgumentException;
 
-public class FloatReader extends ArgumentReader<Float>
+public class FloatReader extends ArgumentReader
 {
-    public FloatReader()
-    {
-        super(Float.class);
-    }
-
     @Override
-    public Float read(String arg) throws InvalidArgumentException
+    public Float read(String arg, Locale locale) throws InvalidArgumentException
     {
         String num = arg.replaceFirst("\\D", ".").replaceAll("[^\\d\\.]]", "");
         try

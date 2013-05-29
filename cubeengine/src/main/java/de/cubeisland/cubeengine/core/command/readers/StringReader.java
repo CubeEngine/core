@@ -17,19 +17,15 @@
  */
 package de.cubeisland.cubeengine.core.command.readers;
 
+import java.util.Locale;
+
 import de.cubeisland.cubeengine.core.command.ArgumentReader;
 import de.cubeisland.cubeengine.core.command.exception.InvalidArgumentException;
 
-public final class StringReader extends ArgumentReader<String>
+public final class StringReader extends ArgumentReader
 {
-
-    public StringReader()
-    {
-        super(String.class);
-    }
-
     @Override
-    public String read(String arg) throws InvalidArgumentException
+    public String read(String arg, Locale locale) throws InvalidArgumentException
     {
         return arg;
     }

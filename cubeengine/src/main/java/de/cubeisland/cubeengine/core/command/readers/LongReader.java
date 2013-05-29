@@ -17,18 +17,15 @@
  */
 package de.cubeisland.cubeengine.core.command.readers;
 
+import java.util.Locale;
+
 import de.cubeisland.cubeengine.core.command.ArgumentReader;
 import de.cubeisland.cubeengine.core.command.exception.InvalidArgumentException;
 
-public class LongReader extends ArgumentReader<Long>
+public class LongReader extends ArgumentReader
 {
-    public LongReader()
-    {
-        super(Long.class);
-    }
-
     @Override
-    public Long read(String arg) throws InvalidArgumentException
+    public Long read(String arg, Locale locale) throws InvalidArgumentException
     {
         String num = arg.replace(',', '.').replace(".", "");
         try
