@@ -65,7 +65,7 @@ public class AccountStorage extends SingleKeyStorage<Long, AccountModel>
         // Get Top-Accounts (ignore hidden) VALUES: user, bank, limit, offset
         this.database.storeStatement(modelClass, "getTop",
                                      builder.select().cols(allFields).from(this.tableName).
-                                        where().field("hidden").isEqual().value(false).
+                                        where().field("mask").isEqual().value(0).or().field("mask").isEqual().value(2).
                                           and().beginSub().field("name").is(IS).value(null).isEqual().value().
                                          or().field("user_id").is(IS).value(null).isEqual().value().endSub().
                                      orderBy("value").desc().limit().offset().end().end());
@@ -96,7 +96,12 @@ public class AccountStorage extends SingleKeyStorage<Long, AccountModel>
                                 .end().end());
         // Sets all accounts to a hidden-state
         this.database.storeStatement(modelClass, "setAllHidden",
-                                     builder.update(this.tableName).set("hidden").
+                                     builder.update(this.tableName).set("mask").beginFunction("|").field("mask").endFunction().
+                                         where().field("name").is(IS).value(null).isEqual().value().
+                                                or().field("user_id").is(IS).value(null).isEqual().value()
+                                            .end().end());
+        this.database.storeStatement(modelClass, "unsetAllHidden",
+                                     builder.update(this.tableName).set("mask").beginFunction("& ~").field("mask").endFunction().
                                          where().field("name").is(IS).value(null).isEqual().value().
                                                 or().field("user_id").is(IS).value(null).isEqual().value()
                                             .end().end());
@@ -229,7 +234,14 @@ public class AccountStorage extends SingleKeyStorage<Long, AccountModel>
     {
         try
         {
-            this.database.preparedUpdate(modelClass, "setAllHidden", set, user, bank);
+            if (set)
+            {
+                this.database.preparedUpdate(modelClass, "setAllHidden", 1, user, bank);
+            }
+            else
+            {
+                this.database.preparedUpdate(modelClass, "unsetAllHidden", 1, user, bank);
+            }
         }
         catch (SQLException ex)
         {

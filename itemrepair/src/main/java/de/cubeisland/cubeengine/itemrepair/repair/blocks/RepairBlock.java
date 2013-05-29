@@ -172,7 +172,7 @@ public class RepairBlock
 
     public boolean checkBalance(User user, Double price)
     {
-        return conomyManager.getUserAccount(user, true).has(price.longValue());
+        return conomyManager.getUserAccount(user, true).has((long)(price / conomyManager.fractionalDigitsFactor()));
     }
 
     public RepairRequest requestRepair(Inventory inventory)
