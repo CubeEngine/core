@@ -60,9 +60,7 @@ import de.cubeisland.cubeengine.test.database.TestManager;
 import de.cubeisland.cubeengine.test.database.TestModel;
 import de.cubeisland.cubeengine.test.l18n.TestRecource;
 
-import static de.cubeisland.cubeengine.core.logger.LogLevel.DEBUG;
-import static de.cubeisland.cubeengine.core.logger.LogLevel.ERROR;
-import static de.cubeisland.cubeengine.core.logger.LogLevel.WARNING;
+import static de.cubeisland.cubeengine.core.logger.LogLevel.*;
 
 public class Test extends Module
 {
@@ -148,7 +146,6 @@ public class Test extends Module
         catch (Exception ignore)
         {}
         this.manager = new TestManager(db);
-
     }
 
     @Override

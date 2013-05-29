@@ -185,6 +185,7 @@ public class RolesManager
         return worldRoleProvider;
     }
 
+    @SuppressWarnings("unchecked")
     public <Provider extends RoleProvider> Provider getProvider(World world)
     {
         if (world == null)

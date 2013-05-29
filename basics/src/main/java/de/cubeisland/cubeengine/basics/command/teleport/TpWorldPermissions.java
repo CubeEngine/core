@@ -22,10 +22,10 @@ import java.util.Set;
 
 import org.bukkit.World;
 
-import de.cubeisland.cubeengine.core.CubeEngine;
 import de.cubeisland.cubeengine.core.module.Module;
 import de.cubeisland.cubeengine.core.permission.Permission;
 import de.cubeisland.cubeengine.core.permission.PermissionContainer;
+import de.cubeisland.cubeengine.basics.Basics;
 
 import gnu.trove.map.hash.THashMap;
 import gnu.trove.set.hash.THashSet;
@@ -35,13 +35,13 @@ import static de.cubeisland.cubeengine.basics.BasicsPerm.COMMAND;
 /**
  * Dynamically registered Permissions for each world.
  */
-public class TpWorldPermissions extends PermissionContainer
+public class TpWorldPermissions extends PermissionContainer<Basics>
 {
     private static final Permission COMMAND_TPWORLD = COMMAND.createAbstractChild("tpworld");
     private static Map<String, Permission> permissions = new THashMap<String, Permission>();
     private static Module module;
 
-    public TpWorldPermissions(Module module)
+    public TpWorldPermissions(Basics module)
     {
         super(module);
         TpWorldPermissions.module = module;
