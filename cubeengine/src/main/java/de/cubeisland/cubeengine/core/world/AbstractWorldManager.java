@@ -58,9 +58,9 @@ public abstract class AbstractWorldManager implements WorldManager
             {
                 model = new WorldModel(world);
                 this.storage.store(model);
-                this.worlds.put(world.getName(), model);
-                this.worldIds.put(model.key, world);
             }
+            this.worlds.put(world.getName(), model);
+            this.worldIds.put(model.key, world);
         }
         return model.key;
     }
