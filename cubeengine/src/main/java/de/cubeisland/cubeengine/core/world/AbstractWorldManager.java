@@ -53,10 +53,14 @@ public abstract class AbstractWorldManager implements WorldManager
         WorldModel model = this.worlds.get(world.getName());
         if (model == null)
         {
-            model = new WorldModel(world);
-            this.storage.store(model);
-            this.worlds.put(world.getName(), model);
-            this.worldIds.put(model.key, world);
+            model = this.storage.get(world.getUID());
+            if (model == null)
+            {
+                model = new WorldModel(world);
+                this.storage.store(model);
+                this.worlds.put(world.getName(), model);
+                this.worldIds.put(model.key, world);
+            }
         }
         return model.key;
     }
@@ -64,7 +68,13 @@ public abstract class AbstractWorldManager implements WorldManager
     public synchronized Long getWorldId(String name)
     {
         WorldModel model = this.worlds.get(name);
-        return model == null ? null : model.key;
+        if (model == null)
+        {
+            World world = this.getWorld(name);
+            if (world == null) return null;
+            return this.getWorldId(world);
+        }
+        return model.key;
     }
 
     public synchronized long[] getAllWorldIds()
