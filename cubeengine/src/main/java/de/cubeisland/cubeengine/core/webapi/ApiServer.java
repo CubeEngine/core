@@ -17,15 +17,6 @@
  */
 package de.cubeisland.cubeengine.core.webapi;
 
-import de.cubeisland.cubeengine.core.Core;
-import de.cubeisland.cubeengine.core.module.Module;
-import de.cubeisland.cubeengine.core.webapi.exception.ApiStartupException;
-import io.netty.bootstrap.ServerBootstrap;
-import io.netty.channel.Channel;
-import io.netty.channel.nio.NioEventLoopGroup;
-import io.netty.channel.socket.nio.NioServerSocketChannel;
-import org.apache.commons.lang.Validate;
-
 import java.lang.reflect.Method;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
@@ -39,10 +30,22 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.CopyOnWriteArraySet;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.logging.Logger;
+
+import de.cubeisland.cubeengine.core.Core;
+import de.cubeisland.cubeengine.core.module.Module;
+import de.cubeisland.cubeengine.core.webapi.exception.ApiStartupException;
+
+import io.netty.bootstrap.ServerBootstrap;
+import io.netty.channel.Channel;
+import io.netty.channel.EventLoopGroup;
+import io.netty.channel.nio.NioEventLoopGroup;
+import io.netty.channel.socket.nio.NioServerSocketChannel;
+import org.apache.commons.lang.Validate;
 
 import static java.util.logging.Level.WARNING;
 
@@ -62,6 +65,7 @@ public class ApiServer
     private final AtomicReference<InetAddress> bindAddress;
     private final AtomicInteger port;
     private final AtomicReference<ServerBootstrap> bootstrap;
+    private final AtomicReference<EventLoopGroup> eventLoopGroup;
     private final AtomicReference<Channel> channel;
     private final AtomicInteger maxThreads;
     private final Set<String> disabledRoutes;
@@ -77,6 +81,7 @@ public class ApiServer
         this.core = core;
         this.logger = core.getLog();
         this.bootstrap = new AtomicReference<ServerBootstrap>(null);
+        this.eventLoopGroup = new AtomicReference<EventLoopGroup>(null);
         this.channel = new AtomicReference<Channel>(null);
         this.bindAddress = new AtomicReference<InetAddress>(null);
         this.maxThreads = new AtomicInteger(2);
@@ -146,7 +151,9 @@ public class ApiServer
 
             try
             {
-                serverBootstrap.group(new NioEventLoopGroup(this.maxThreads.get()))
+                this.eventLoopGroup.set(new NioEventLoopGroup(this.maxThreads.get(), this.core.getTaskManager()
+                                                                                              .getThreadFactory()));
+                serverBootstrap.group(this.eventLoopGroup.get())
                     .channel(NioServerSocketChannel.class)
                     .childHandler(new ApiServerInitializer(this.core, this))
                     .localAddress(this.bindAddress.get(), this.port.get());
@@ -156,7 +163,9 @@ public class ApiServer
             }
             catch (Exception e)
             {
-                serverBootstrap.shutdown();
+                this.bootstrap.set(null);
+                this.channel.set(null);
+                this.eventLoopGroup.getAndSet(null).shutdownGracefully(2, 5, TimeUnit.SECONDS);
                 throw new ApiStartupException("The API server failed to start!", e);
             }
         }
@@ -172,8 +181,9 @@ public class ApiServer
     {
         if (this.isRunning())
         {
-            ServerBootstrap serverBootstrap = this.bootstrap.getAndSet(null);
-            serverBootstrap.shutdown();
+            this.bootstrap.set(null);
+            this.channel.set(null);
+            this.eventLoopGroup.getAndSet(null).shutdownGracefully(2, 5, TimeUnit.SECONDS);
         }
         return this;
     }

@@ -43,6 +43,7 @@ public class QueryResults
         this.lookup = lookup;
     }
 
+    @SuppressWarnings("deprecation")
     public void show(User user, QueryParameter parameter, int page)
     {
         user.updateInventory();

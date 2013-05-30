@@ -17,6 +17,9 @@
  */
 package de.cubeisland.cubeengine.roles.config;
 
+import java.util.LinkedHashMap;
+import java.util.Map;
+
 import de.cubeisland.cubeengine.core.config.node.ListNode;
 import de.cubeisland.cubeengine.core.config.node.MapNode;
 import de.cubeisland.cubeengine.core.config.node.Node;
@@ -24,9 +27,6 @@ import de.cubeisland.cubeengine.core.config.node.StringNode;
 import de.cubeisland.cubeengine.core.util.convert.ConversionException;
 import de.cubeisland.cubeengine.core.util.convert.Converter;
 import de.cubeisland.cubeengine.roles.Roles;
-
-import java.util.LinkedHashMap;
-import java.util.Map;
 
 public class PermissionTreeConverter implements Converter<PermissionTree>
 {
@@ -59,6 +59,7 @@ public class PermissionTreeConverter implements Converter<PermissionTree>
             }
             else
             {
+                @SuppressWarnings("unchecked")
                 Map<String, Object> baseValueMap = (Map<String, Object>)entry.getValue();
                 ListNode values = this.organizeTree(baseValueMap);
                 MapNode subMap = MapNode.emptyMap();
@@ -105,6 +106,7 @@ public class PermissionTreeConverter implements Converter<PermissionTree>
             map.put(" " + path, value);
             return;
         }
+        @SuppressWarnings("unchecked")
         Map<String, Object> subMap = (Map<String, Object>)map.get(base); // this should never give an exception if it does something went wrong!
         if (subMap == null) // sub map not yet existant?
         {

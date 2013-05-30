@@ -154,6 +154,7 @@ public class User extends UserBase implements Model<Long>, CommandSender, Attach
         {
             A attachment = type.newInstance();
             attachment.attachTo(module, this);
+            @SuppressWarnings("unchecked")
             A oldAttachment = (A) this.attachments.put(type, attachment);
             if (oldAttachment != null)
             {

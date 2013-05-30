@@ -101,6 +101,7 @@ public class LogCommands extends ContainerCommand
         return null;
     }
 
+    @SuppressWarnings("deprecation")
     private void findLogTool(User user, Material material)
     {
         ItemStack found = null;
@@ -190,6 +191,7 @@ public class LogCommands extends ContainerCommand
         }
     }
 
+    @SuppressWarnings("deprecation")
     public static void giveSelectionTool(User user)
     {
         ItemStack found = null;
