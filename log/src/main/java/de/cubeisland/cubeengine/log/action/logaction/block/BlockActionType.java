@@ -244,8 +244,8 @@ public abstract class BlockActionType extends LogActionType
 
     private boolean nearTimeFrame(LogEntry logEntry, LogEntry other)
     {
-        return logEntry.causer >= 0 || Math
-            .abs(TimeUnit.MILLISECONDS.toSeconds(logEntry.timestamp.getTime() - other.timestamp.getTime())) < 5;
+        return logEntry.causer >= 0 &&
+        Math.abs(TimeUnit.MILLISECONDS.toSeconds(logEntry.timestamp.getTime() - other.timestamp.getTime())) < 5;
     }
 
     @Override

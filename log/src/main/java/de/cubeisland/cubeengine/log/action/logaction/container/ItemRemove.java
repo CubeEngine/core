@@ -60,7 +60,7 @@ public class ItemRemove extends SimpleLogActionType
         // TODO attached
         user.sendTranslated("%s&2%s&a took &6%d %s&a out of &6%s%s&a!",
                             time, logEntry.getCauserUser().getDisplayName(),
-                            itemData.amount,itemData,
+                            -itemData.amount,itemData,
                             logEntry.getContainerTypeFromBlock(),loc);
     }
     @Override
