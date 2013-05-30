@@ -24,6 +24,7 @@ import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.material.Attachable;
+import org.bukkit.material.MaterialData;
 
 /**
  * Provides Utils for blocks in Bukkit.
@@ -150,5 +151,10 @@ public class BlockUtil
             }
         }
         return false;
+    }
+
+    public static boolean isInvertedStep(MaterialData stepData)
+    {
+        return (stepData.getData() & 0x8) == 0x8;
     }
 }

@@ -69,7 +69,6 @@ import de.cubeisland.cubeengine.core.storage.database.DatabaseConstructor;
 import de.cubeisland.cubeengine.core.storage.database.Index;
 import de.cubeisland.cubeengine.core.storage.database.SingleKeyEntity;
 import de.cubeisland.cubeengine.core.util.ChatFormat;
-import de.cubeisland.cubeengine.core.util.LocationUtil;
 import de.cubeisland.cubeengine.core.util.convert.ConversionException;
 
 import gnu.trove.map.hash.THashMap;
@@ -77,7 +76,7 @@ import gnu.trove.set.hash.THashSet;
 
 import static de.cubeisland.cubeengine.core.logger.LogLevel.DEBUG;
 import static de.cubeisland.cubeengine.core.storage.database.Index.IndexType.UNIQUE;
-import static de.cubeisland.cubeengine.core.util.LocationUtil.isInvertedStep;
+import static de.cubeisland.cubeengine.core.util.BlockUtil.isInvertedStep;
 
 /**
  * A CubeEngine User (can exist offline too).
@@ -385,7 +384,7 @@ public class User extends UserBase implements Model<Long>, CommandSender, Attach
         }
         if (blockBelow.getType().equals(Material.STEP) || blockBelow.getType().equals(Material.WOOD_STEP))
         {
-            if (!LocationUtil.isInvertedStep(blockBelow.getState().getData()))
+            if (!isInvertedStep(blockBelow.getState().getData()))
             {
                 location.setY(location.getBlockY() - 0.5);
             }
