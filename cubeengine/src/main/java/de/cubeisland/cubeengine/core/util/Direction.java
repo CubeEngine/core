@@ -19,14 +19,15 @@ package de.cubeisland.cubeengine.core.util;
 
 public enum Direction
 {
-    N(23),
-    NE(68),
-    E(113),
-    SE(158),
-    S(203),
-    SW(248),
-    W(293),
-    NW(338), ;
+    North(23),
+    NorthEast(68),
+    East(113),
+    SouthEast(158),
+    South(203),
+    SouthWest(248),
+    West(293),
+    NorthWest(338);
+    
     private final int dir;
 
     private Direction(int dir)
@@ -43,6 +44,6 @@ public enum Direction
                 return direction;
             }
         }
-        return Direction.N;
+        return Direction.North;
     }
 }
