@@ -27,7 +27,7 @@ public enum Direction
     SouthWest(248),
     West(293),
     NorthWest(338);
-    
+
     private final int dir;
 
     private Direction(int dir)
