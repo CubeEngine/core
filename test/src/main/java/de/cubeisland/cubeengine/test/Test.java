@@ -32,7 +32,6 @@ import net.minecraft.server.v1_5_R3.EntityPlayer;
 import net.minecraft.server.v1_5_R3.Packet0KeepAlive;
 import org.bukkit.craftbukkit.v1_5_R3.CraftServer;
 
-import org.bukkit.Server;
 import org.bukkit.World;
 import org.bukkit.World.Environment;
 import org.bukkit.WorldCreator;
@@ -45,7 +44,6 @@ import de.cubeisland.cubeengine.core.bukkit.BukkitCore;
 import de.cubeisland.cubeengine.core.bukkit.PlayerLanguageReceivedEvent;
 import de.cubeisland.cubeengine.core.command.reflected.ReflectedCommand;
 import de.cubeisland.cubeengine.core.config.Configuration;
-import de.cubeisland.cubeengine.core.filesystem.FileManager;
 import de.cubeisland.cubeengine.core.filesystem.FileUtil;
 import de.cubeisland.cubeengine.core.logger.CubeFileHandler;
 import de.cubeisland.cubeengine.core.logger.LogLevel;
@@ -60,10 +58,13 @@ import de.cubeisland.cubeengine.test.database.TestManager;
 import de.cubeisland.cubeengine.test.database.TestModel;
 import de.cubeisland.cubeengine.test.l18n.TestRecource;
 
-import static de.cubeisland.cubeengine.core.logger.LogLevel.*;
+import static de.cubeisland.cubeengine.core.logger.LogLevel.DEBUG;
+import static de.cubeisland.cubeengine.core.logger.LogLevel.ERROR;
+import static de.cubeisland.cubeengine.core.logger.LogLevel.NOTICE;
 
 public class Test extends Module
 {
+    public static final String TEST_WORLD_NAME = "test123";
     public TestManager manager;
     public UserManager uM;
     protected TestConfig config;
@@ -80,11 +81,18 @@ public class Test extends Module
     @Override
     public void onStartupFinished()
     {
-        Server server = ((BukkitCore)this.getCore()).getServer();
-        World world = server.createWorld(WorldCreator.name("test123").generator("CubeEngine:test:test")
-                                             .generateStructures(false).type(WorldType.FLAT)
-                                             .environment(Environment.NORMAL).seed(1231));
-
+        World world = getCore().getWorldManager().createWorld(WorldCreator.name(TEST_WORLD_NAME)
+                                                                          .generator("CubeEngine:test:test")
+                                                                          .generateStructures(false)
+                                                                          .type(WorldType.FLAT)
+                                                                          .environment(Environment.NORMAL).seed(1231));
+        if (world != null)
+        {
+            world.setAmbientSpawnLimit(0);
+            world.setAnimalSpawnLimit(0);
+            world.setMonsterSpawnLimit(0);
+            world.setSpawnFlags(false, false);
+        }
     }
 
     @Override
@@ -154,19 +162,13 @@ public class Test extends Module
         this.timer.cancel();
         try
         {
-            if (this.getCore().getWorldManager().unloadWorld("test123", false))
-            {
-                FileManager.deleteRecursive(new File("test123"));
-            }
-            else
-            {
-                this.getLog().log(WARNING, "Failed to unload the test world 'test123', skipping deletion.");
-            }
+            this.getCore().getWorldManager().deleteWorld(TEST_WORLD_NAME);
         }
         catch (IOException e)
         {
-            this.getLog().log(WARNING, "Failed to delete the test world 'test123'!", e);
+            this.getLog().log(NOTICE, "Failed to delete the test world!", e);
         }
+
         this.timer = null;
     }
 

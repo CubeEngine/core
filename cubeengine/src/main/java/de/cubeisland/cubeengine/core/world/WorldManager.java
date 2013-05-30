@@ -17,10 +17,12 @@
  */
 package de.cubeisland.cubeengine.core.world;
 
+import java.io.IOException;
 import java.util.Set;
 import java.util.UUID;
 
 import org.bukkit.World;
+import org.bukkit.WorldCreator;
 import org.bukkit.generator.ChunkGenerator;
 
 import de.cubeisland.cubeengine.core.module.Module;
@@ -28,6 +30,7 @@ import de.cubeisland.cubeengine.core.util.Cleanable;
 
 public interface WorldManager extends Cleanable
 {
+    World createWorld(WorldCreator creator);
     long getWorldId(World world);
     Long getWorldId(String name);
     long[] getAllWorldIds();
@@ -36,6 +39,8 @@ public interface WorldManager extends Cleanable
     World getWorld(UUID uid);
     boolean unloadWorld(String worldName, boolean save);
     boolean unloadWorld(World world, boolean save);
+    boolean deleteWorld(String worldName) throws IOException;
+    boolean deleteWorld(World world) throws IOException;
     Set<World> getWorlds();
     void registerGenerator(Module module, String id, ChunkGenerator generator);
     ChunkGenerator getGenerator(Module module, String id);

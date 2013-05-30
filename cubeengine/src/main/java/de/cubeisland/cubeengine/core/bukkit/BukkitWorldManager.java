@@ -17,15 +17,20 @@
  */
 package de.cubeisland.cubeengine.core.bukkit;
 
+import java.io.IOException;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
+import net.minecraft.server.v1_5_R3.RegionFileCache;
+
 import org.bukkit.Server;
 import org.bukkit.World;
+import org.bukkit.WorldCreator;
 
 import de.cubeisland.cubeengine.core.CubeEngine;
+import de.cubeisland.cubeengine.core.filesystem.FileManager;
 import de.cubeisland.cubeengine.core.world.AbstractWorldManager;
 import de.cubeisland.cubeengine.core.world.WorldModel;
 
@@ -67,6 +72,13 @@ public class BukkitWorldManager extends AbstractWorldManager
         }
     }
 
+    public World createWorld(WorldCreator creator)
+    {
+        assert CubeEngine.isMainThread() : "Must be executed from main thread!";
+
+        return this.server.createWorld(creator);
+    }
+
     @Override
     public World getWorld(String name)
     {
@@ -84,15 +96,30 @@ public class BukkitWorldManager extends AbstractWorldManager
     }
 
     @Override
-    public boolean unloadWorld(String worldName, boolean save)
+    public boolean unloadWorld(World world, boolean save)
     {
-        return this.server.unloadWorld(worldName, save);
+        assert CubeEngine.isMainThread() : "Must be executed from main thread!";
+        boolean success = this.server.unloadWorld(world, save);
+        if (success && !save)
+        {
+            RegionFileCache.a();
+        }
+        return success;
     }
 
     @Override
-    public boolean unloadWorld(World world, boolean save)
+    public boolean deleteWorld(World world) throws IOException
     {
-        return this.server.unloadWorld(world, save);
+        if (world == null)
+        {
+            return false;
+        }
+        if (!this.unloadWorld(world, false))
+        {
+            return false;
+        }
+        FileManager.deleteRecursive(world.getWorldFolder());
+        return true;
     }
 
     @Override

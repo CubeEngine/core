@@ -45,7 +45,7 @@ public class FlowActionType extends ActionTypeContainer
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onBlockFromTo(final BlockFromToEvent event)
     {
-        // TODO CE-344 Lava currently impossible to log sometimes
+        // TODO CE-117 Lava currently impossible to log sometimes
         BlockState toBlock = event.getToBlock().getState();
         final boolean canFlow = toBlock.getType().equals(AIR) || isNonFluidProofBlock(toBlock.getType());
         if (!canFlow)
