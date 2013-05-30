@@ -51,8 +51,8 @@ public class FixedCycleTask implements Runnable
         {
             for (User user : module.getCore().getUserManager().getOnlineUsers())
             {
-                module.getCore().getTaskManager().callSyncMethod(
-                    new SenderTask(announcement.getMessage(user.getLocale()), new CleanReceiver(user)));
+                module.getCore().getTaskManager().callSync(new SenderTask(announcement
+                                                                              .getMessage(user.getLocale()), new CleanReceiver(user)));
             }
         }
         else
@@ -65,8 +65,8 @@ public class FixedCycleTask implements Runnable
                     for (Player player : world.getPlayers())
                     {
                         User user = module.getCore().getUserManager().getUser(player.getName());
-                        module.getCore().getTaskManager().callSyncMethod(
-                            new SenderTask(announcement.getMessage(user.getLocale()), new CleanReceiver(user)));
+                        module.getCore().getTaskManager().callSync(new SenderTask(announcement
+                                                                                      .getMessage(user.getLocale()), new CleanReceiver(user)));
                     }
                 }
             }

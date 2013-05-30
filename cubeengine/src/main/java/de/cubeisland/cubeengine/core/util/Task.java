@@ -17,7 +17,7 @@
  */
 package de.cubeisland.cubeengine.core.util;
 
-import de.cubeisland.cubeengine.core.bukkit.TaskManager;
+import de.cubeisland.cubeengine.core.task.TaskManager;
 import de.cubeisland.cubeengine.core.module.Module;
 
 /**

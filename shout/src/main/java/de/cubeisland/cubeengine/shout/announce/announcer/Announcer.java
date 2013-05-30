@@ -24,7 +24,7 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-import de.cubeisland.cubeengine.core.bukkit.TaskManager;
+import de.cubeisland.cubeengine.core.task.TaskManager;
 
 /**
  * Class to manage dynamicTasks based on the system time.

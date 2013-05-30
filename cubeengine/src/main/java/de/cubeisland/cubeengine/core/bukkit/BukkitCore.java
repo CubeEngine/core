@@ -78,7 +78,7 @@ public final class BukkitCore extends JavaPlugin implements Core
     private CubeLogger logger;
     private EventManager eventRegistration;
     private BukkitCommandManager commandManager;
-    private TaskManager taskManager;
+    private BukkitTaskManager taskManager;
     private TableManager tableManager;
     private ApiServer apiServer;
     private BukkitWorldManager worldManager;
@@ -159,7 +159,7 @@ public final class BukkitCore extends JavaPlugin implements Core
         this.apiServer.configure(Configuration.load(ApiConfig.class, new File(this.fileManager.getDataFolder(), "webapi.yml")));
 
         // depends on: core config, server
-        this.taskManager = new TaskManager(this, new CubeThreadFactory("CubeEngine"), this.getServer().getScheduler());
+        this.taskManager = new BukkitTaskManager(this, new CubeThreadFactory("CubeEngine"), this.getServer().getScheduler());
 
         if (this.config.userWebapi)
         {
@@ -429,7 +429,7 @@ public final class BukkitCore extends JavaPlugin implements Core
     }
 
     @Override
-    public TaskManager getTaskManager()
+    public BukkitTaskManager getTaskManager()
     {
         return this.taskManager;
     }
