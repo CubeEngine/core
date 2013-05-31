@@ -62,9 +62,18 @@ public class EntityForm extends BlockActionType
     @Override
     protected void showLogEntry(User user, LogEntry logEntry, String time, String loc)
     {
-        user.sendTranslated("%s&6%s &aformed &6%s%s&a!",
-                            time,logEntry.getCauserEntity(),
-                            logEntry.getNewBlock(),loc);
+        if (logEntry.hasAttached())
+        {
+            user.sendTranslated("%s&6%s &aformed &6%s&6 x%d%s&a!",
+                                time,logEntry.getCauserEntity(),
+                                logEntry.getNewBlock(), logEntry.getAttached().size() +1, loc);
+        }
+        else
+        {
+            user.sendTranslated("%s&6%s &aformed &6%s%s&a!",
+                                time, logEntry.getCauserEntity(),
+                                logEntry.getNewBlock(), loc);
+        }
     }
 
 

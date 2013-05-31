@@ -53,8 +53,8 @@ public class QueryResults
             parameter.showNoLogsFound(user);
             return;
         }
-        System.out.print("Showing " + this.logEntries.size() + " logentries (limit:" + parameter.getPageLimit() + ")to " + user.getName());
-        int pageLimit = parameter.getPageLimit();
+        System.out.print("Showing " + this.logEntries.size() + " logentries (limit:" + parameter.getPerPageLimit() + ")to " + user.getName());
+        int pageLimit = parameter.getPerPageLimit();
         if (pageLimit == -1)
         {
             pageLimit = this.logEntries.size();
@@ -65,7 +65,7 @@ public class QueryResults
         // compressing data: //TODO add if it should be compressed or not
         LogEntry entry = entries.next();
         LogEntry lastAttach = entry;
-        LinkedHashSet <LogEntry> compressedEntries = new LinkedHashSet<LogEntry>();
+        TreeSet<LogEntry> compressedEntries = new TreeSet<LogEntry>();
         compressedEntries.add(entry); // add first entry
         while (entries.hasNext())
         {
@@ -101,7 +101,7 @@ public class QueryResults
         }
         int i = 0;
         int cpage = 1;
-        for (LogEntry logEntry : compressedEntries)
+        for (LogEntry logEntry : compressedEntries.descendingSet())
         {
             if (cpage == page)
             {

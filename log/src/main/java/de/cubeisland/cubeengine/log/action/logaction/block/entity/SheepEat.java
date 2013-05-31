@@ -49,7 +49,14 @@ public class SheepEat extends BlockActionType
     @Override
     protected void showLogEntry(User user, LogEntry logEntry, String time, String loc)
     {
-        user.sendTranslated("%s&aA sheep ate all the grass%s&a!",time,loc);
+        if (logEntry.hasAttached())
+        {
+            user.sendTranslated("%s&aA sheep ate all the grass%s&6 x%d&a!",time, logEntry.getAttached().size()+1, loc);
+        }
+        else
+        {
+            user.sendTranslated("%s&aA sheep ate all the grass%s&a!",time,loc);
+        }
     }
 
     @Override

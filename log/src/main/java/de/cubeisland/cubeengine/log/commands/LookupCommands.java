@@ -68,7 +68,7 @@ public class LookupCommands
         context.sendTranslated(" &f-&6 since &7<time>&f default is 3 days");
         context.sendTranslated(" &f-&6 before &7<time>");
         context.sendTranslated(" &f-&6 world &7<world>&f default is your current world");
-        // TODO pagelimit
+
         context.sendMessage("");
         context.sendTranslated("Use &6!&f to exclude the parameters instead of including them.");
     }
@@ -133,7 +133,7 @@ public class LookupCommands
             }
             else
             {
-                limit = lookup.queried() ? lookup.getQueryParameter().getPageLimit() : 10;
+                limit = lookup.queried() ? lookup.getQueryParameter().getPerPageLimit() : 8;
             }
             if (context.hasParam("page"))
             {
@@ -145,7 +145,7 @@ public class LookupCommands
                         context.sendTranslated("&cInvalid page!");
                         return;
                     }
-                    lookup.getQueryParameter().setPageLimit(limit);
+                    lookup.getQueryParameter().setPerPageLimit(limit);
                     lookup.show(user, page);
                 }
                 else
@@ -157,7 +157,7 @@ public class LookupCommands
             attachment.clearLookups(); // TODO only clear cmdlookup
             lookup = attachment.getCommandLookup();
             QueryParameter params = lookup.getQueryParameter();
-            params.setPageLimit(limit);
+            params.setPerPageLimit(limit);
             if (context.hasParam("action"))
             {
                 if (!this.readActions(params, context.getString("action"), user))
@@ -412,6 +412,10 @@ public class LookupCommands
             if (context.hasParam("before"))
             {
 
+            }
+            else
+            {
+                params.since(System.currentTimeMillis() - TimeUnit.DAYS.toMillis(3));
             }
             params.since(System.currentTimeMillis() - TimeUnit.DAYS.toMillis(30L)); // defaulted to last 30 days
             // TODO time

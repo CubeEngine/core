@@ -91,6 +91,7 @@ public class ToolListener implements Listener
             lookup.getQueryParameter().setSingleLocations(loc);
             //-----------
             lookup.getQueryParameter().since(System.currentTimeMillis() - TimeUnit.DAYS.toMillis(30)); //TODO this in block creation
+            lookup.getQueryParameter().setPerPageLimit(8);
             //-----------
             this.module.getLogManager().fillLookupAndShow(lookup,user);
             event.setCancelled(true);

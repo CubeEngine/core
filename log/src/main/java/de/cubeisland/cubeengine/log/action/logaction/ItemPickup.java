@@ -71,7 +71,11 @@ public class ItemPickup extends SimpleLogActionType
         int amount;
         if (logEntry.hasAttached())
         {
-            amount = 42; //TODO
+            amount = logEntry.getItemData().amount;
+            for (LogEntry entry : logEntry.getAttached())
+            {
+                amount += entry.getItemData().amount;
+            }
         }
         else
         {

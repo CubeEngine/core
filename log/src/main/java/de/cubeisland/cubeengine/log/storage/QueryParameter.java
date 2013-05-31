@@ -58,7 +58,7 @@ public class QueryParameter implements Cloneable
     boolean showDate = false;
     boolean showLoc = false;
     boolean showID = false;
-    int pageLimit = -1; // -1 is no limit
+    int perPageLimit = -1; // -1 is no limit
 
     public QueryParameter(Log module)
     {
@@ -279,7 +279,7 @@ public class QueryParameter implements Cloneable
         params.showDate = showDate;
         params.showLoc = showLoc;
         params.showID = showID;
-        params.pageLimit = pageLimit;
+        params.perPageLimit = perPageLimit;
         return params;
     }
 
@@ -288,14 +288,14 @@ public class QueryParameter implements Cloneable
         return from_since != null || to_before != null;
     }
 
-    public int getPageLimit()
+    public int getPerPageLimit()
     {
-        return pageLimit;
+        return perPageLimit;
     }
 
-    public void setPageLimit(int pageLimit)
+    public void setPerPageLimit(int perPageLimit)
     {
-        this.pageLimit = pageLimit;
+        this.perPageLimit = perPageLimit;
     }
 
     public boolean includeActions()
