@@ -350,7 +350,8 @@ public class User extends UserBase implements Model<Long>, CommandSender, Attach
             BlockState block = location.getBlock().getState();
             BlockState block1Up = checkLocation.getBlock().getState();
             // signpost OR plates ...
-            if (BlockUtil.isNonObstructingSolidBlock(block.getType()) && BlockUtil.isNonObstructingSolidBlock(block1Up.getType()))
+            if ((!block.getType().isSolid() || BlockUtil.isNonObstructingSolidBlock(block.getType()))
+            && (!block1Up.getType().isSolid() || BlockUtil.isNonObstructingSolidBlock(block1Up.getType())))
             {
                 break;
             }

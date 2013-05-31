@@ -17,9 +17,9 @@
  */
 package de.cubeisland.cubeengine.core.bukkit;
 
-import org.bukkit.Material;
-
 import java.util.EnumSet;
+
+import org.bukkit.Material;
 
 import static org.bukkit.Material.*;
 
@@ -56,6 +56,6 @@ public class BlockUtil
 
     public static boolean isNonObstructingSolidBlock(Material material)
     {
-        return NON_OBSTRUCTING_SOLID_BLOCKS.contains(material); 
+        return NON_OBSTRUCTING_SOLID_BLOCKS.contains(material);
     }
 }
