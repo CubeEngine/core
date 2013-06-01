@@ -106,12 +106,7 @@ public class BukkitCommandManager implements CommandManager
         this.confirmManager = new ConfirmManager(this, core);
     }
 
-    /**
-     * Removes a command by its name
-     *
-     * @param name the name of the command to remove
-     */
-    public void removeCommands(String name)
+    public void removeCommand(String name)
     {
         Command command = this.knownCommands.remove(name.toLowerCase());
         if (command != null)
@@ -124,11 +119,6 @@ public class BukkitCommandManager implements CommandManager
         }
     }
 
-    /**
-     * Removes all commands of a module
-     *
-     * @param module the module
-     */
     public void removeCommands(Module module)
     {
         Command command;
@@ -177,9 +167,6 @@ public class BukkitCommandManager implements CommandManager
         }
     }
 
-    /**
-     * Removes all commands of the CubeEngine
-     */
     public void removeCommands()
     {
         Iterator<Map.Entry<String, Command>> iter = this.knownCommands.entrySet().iterator();
@@ -195,9 +182,6 @@ public class BukkitCommandManager implements CommandManager
         }
     }
 
-    /**
-     * Clears the server's command map (unregisters all commands)
-     */
     public void clean()
     {
         this.removeCommands();
@@ -206,12 +190,6 @@ public class BukkitCommandManager implements CommandManager
         BukkitUtils.getConsoleReader(this.server).removeCompleter(this.completer);
     }
 
-    /**
-     * Registers a command
-     *
-     * @param command the command to register
-     * @param parents the path under which the command should be registered
-     */
     public void registerCommand(CubeCommand command, String... parents)
     {
         if (command.getParent() != null)
@@ -264,13 +242,6 @@ public class BukkitCommandManager implements CommandManager
         this.registerCommands(module, commandHolder, commandHolder.getCommandType(), parents);
     }
 
-    /**
-     * Registers all methods annotated as a command in the given command holder object
-     *
-     * @param module        the module to register them for
-     * @param commandHolder the command holder containing the commands
-     * @param parents       the path under which the command should be registered
-     */
     @SuppressWarnings("unchecked")
     public void registerCommands(Module module, Object commandHolder, Class<? extends CubeCommand> commandType, String... parents)
     {
@@ -309,12 +280,6 @@ public class BukkitCommandManager implements CommandManager
         }
     }
 
-    /**
-     * Gets a CubeCommand by its name
-     *
-     * @param name the name
-     * @return the CubeCommand instance or null if not found
-     */
     public CubeCommand getCommand(String name)
     {
         Command command = this.knownCommands.get(name);

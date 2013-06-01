@@ -27,18 +27,57 @@ import de.cubeisland.cubeengine.core.util.Cleanable;
  */
 public interface CommandManager extends Cleanable
 {
+    /**
+     * Registers a command
+     *
+     * @param command the command to register
+     * @param parents the path under which the command should be registered
+     */
     void registerCommand(CubeCommand command, String... parents);
     void registerCommands(Module module, CommandHolder commandHolder, String... parents);
+
+    /**
+     * Registers all methods annotated as a command in the given command holder object
+     *
+     * @param module        the module to register them for
+     * @param commandHolder the command holder containing the commands
+     * @param parents       the path under which the command should be registered
+     */
     void registerCommands(Module module, Object commandHolder, Class<? extends CubeCommand> commandType, String... parents);
+
+    /**
+     * Gets a CubeCommand by its name
+     *
+     * @param name the name
+     * @return the CubeCommand instance or null if not found
+     */
+    CubeCommand getCommand(String name);
+
+    /**
+     * Removes a command by its name
+     *
+     * @param name the name of the command to remove
+     */
+    void removeCommand(String name);
+
+    /**
+     * Removes all commands of a module
+     *
+     * @param module the module
+     */
+    void removeCommands(Module module);
+
+    /**
+     * Removes all commands of the CubeEngine
+     */
+    void removeCommands();
+
+    boolean runCommand(CommandSender sender, String commandLine);
+    ConsoleCommandSender getConsoleSender();
+
     <T extends CubeCommand> void registerCommandFactory(CommandFactory<T> factory);
     CommandFactory getCommandFactory(Class<? extends CubeCommand> type);
-    void removeCommandFactory(Class clazz);
-    CubeCommand getCommand(String name);
-    void removeCommands(String name);
-    void removeCommands(Module module);
-    boolean runCommand(CommandSender sender, String commandLine);
-    void removeCommands();
-    ConsoleCommandSender getConsoleSender();
+    void removeCommandFactory(Class type);
 
     void logExecution(CommandSender sender, CubeCommand cubeCommand, String[] args);
     void logTabCompletion(CommandSender sender, CubeCommand cubeCommand, String[] args);
