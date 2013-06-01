@@ -19,10 +19,16 @@ package de.cubeisland.cubeengine.core.bukkit;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Locale;
 import java.util.logging.Level;
 
 import org.bukkit.Server;
+import org.bukkit.command.CommandMap;
+import org.bukkit.command.SimpleCommandMap;
 import org.bukkit.generator.ChunkGenerator;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -31,6 +37,10 @@ import de.cubeisland.cubeengine.core.Core;
 import de.cubeisland.cubeengine.core.CorePerms;
 import de.cubeisland.cubeengine.core.CoreResource;
 import de.cubeisland.cubeengine.core.CubeEngine;
+import de.cubeisland.cubeengine.core.bukkit.command.CommandBackend;
+import de.cubeisland.cubeengine.core.bukkit.command.CubeCommandBackend;
+import de.cubeisland.cubeengine.core.bukkit.command.FallbackCommandBackend;
+import de.cubeisland.cubeengine.core.bukkit.command.SimpleCommandBackend;
 import de.cubeisland.cubeengine.core.bukkit.metrics.MetricsInitializer;
 import de.cubeisland.cubeengine.core.bukkit.packethook.PacketEventManager;
 import de.cubeisland.cubeengine.core.command.ArgumentReader;
@@ -61,6 +71,8 @@ import de.cubeisland.cubeengine.core.webapi.ApiServer;
 import de.cubeisland.cubeengine.core.webapi.exception.ApiStartupException;
 
 import static de.cubeisland.cubeengine.core.logger.LogLevel.*;
+import static de.cubeisland.cubeengine.core.util.ReflectionUtils.findFirstField;
+import static de.cubeisland.cubeengine.core.util.ReflectionUtils.getFieldValue;
 
 /**
  * This represents the Bukkit-JavaPlugin that gets loaded and implements the Core
@@ -88,6 +100,8 @@ public final class BukkitCore extends JavaPlugin implements Core
     private CorePerms corePerms;
     private BukkitBanManager banManager;
 
+    private List<Runnable> initHooks;
+
     @Override
     public void onLoad()
     {
@@ -101,11 +115,13 @@ public final class BukkitCore extends JavaPlugin implements Core
             return;
         }
 
-        Convert.init(this);
 
         this.version = Version.fromString(this.getDescription().getVersion());
 
         CubeEngine.initialize(this);
+        Convert.init(this);
+
+        this.initHooks = Collections.synchronizedList(new LinkedList<Runnable>());
 
         this.logger = new CubeLogger("Core", this.getLogger());
         this.logger.setLevel(Level.ALL);
@@ -200,7 +216,21 @@ public final class BukkitCore extends JavaPlugin implements Core
         ArgumentReader.init(this);
 
         // depends on: server
-        this.commandManager = new BukkitCommandManager(this);
+        SimpleCommandMap commandMap = getFieldValue(server, findFirstField(server, CommandMap.class), SimpleCommandMap.class);
+        CommandBackend commandBackend;
+        if (commandMap.getClass() == SimpleCommandMap.class)
+        {
+            commandBackend = new CubeCommandBackend(this);
+        }
+        else if (SimpleCommandMap.class.isAssignableFrom(commandMap.getClass()))
+        {
+            commandBackend = new SimpleCommandBackend(this, commandMap);
+        }
+        else
+        {
+            commandBackend = new FallbackCommandBackend(this);
+        }
+        this.commandManager = new BukkitCommandManager(this, commandBackend);
         this.commandManager.registerCommandFactory(new ReflectedCommandFactory());
         this.commandManager.registerCommandFactory(new ReadableCommandFactory());
 
@@ -239,8 +269,19 @@ public final class BukkitCore extends JavaPlugin implements Core
     @Override
     public void onEnable()
     {
-        this.userManager.init();
-        this.worldManager.loadWorlds();
+        Iterator<Runnable> it = this.initHooks.iterator();
+        while (it.hasNext())
+        {
+            try
+            {
+                it.next().run();
+            }
+            catch (Exception e)
+            {
+                this.getLog().log(ERROR, "An error occurred during startup: " + e.getLocalizedMessage(), e);
+            }
+            it.remove();
+        }
 
         if (this.config.preventSpamKick)
         {
@@ -332,6 +373,13 @@ public final class BukkitCore extends JavaPlugin implements Core
         CubeEngine.clean();
         Convert.cleanup();
         Profiler.clean();
+    }
+
+    public void addInitHook(Runnable runnable)
+    {
+        assert runnable != null: "The runnble must nto be null!";
+
+        this.initHooks.add(runnable);
     }
 
     @Override

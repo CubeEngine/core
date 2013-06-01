@@ -330,16 +330,22 @@ public abstract class BaseModuleManager implements ModuleManager
     public synchronized void disableModule(Module module)
     {
         Profiler.startProfiling("disable-module");
-        module.disable();
-        this.core.getUserManager().cleanup(module);
-        this.core.getEventManager().removeListeners(module);
-        this.core.getPermissionManager().removePermissions(module);
-        this.core.getTaskManager().cancelTasks(module);
-        this.core.getCommandManager().removeCommands(module);
-        this.core.getApiServer().unregisterApiHandlers(module);
+        try
+        {
+            module.disable();
+            this.core.getUserManager().cleanup(module);
+            this.core.getEventManager().removeListeners(module);
+            this.core.getPermissionManager().removePermissions(module);
+            this.core.getTaskManager().cancelTasks(module);
+            this.core.getCommandManager().removeCommands(module);
+            this.core.getApiServer().unregisterApiHandlers(module);
 
-        this.core.getEventManager().fireEvent(new ModuleDisabledEvent(this.core, module));
-        module.getLog().log(INFO, "Module disabled within {0} microseconds", Profiler.endProfiling("disable-module", TimeUnit.MICROSECONDS));
+            this.core.getEventManager().fireEvent(new ModuleDisabledEvent(this.core, module));
+        }
+        finally
+        {
+            module.getLog().log(INFO, "Module disabled within {0} microseconds", Profiler.endProfiling("disable-module", TimeUnit.MICROSECONDS));
+        }
     }
 
     public synchronized void unloadModule(Module module)

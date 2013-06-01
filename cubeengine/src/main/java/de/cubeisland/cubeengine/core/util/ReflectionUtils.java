@@ -26,7 +26,8 @@ public class ReflectionUtils
         Field field = null;
         try
         {
-            clazz.getDeclaredField(name);
+            field = clazz.getDeclaredField(name);
+            field.setAccessible(true);
         }
         catch (Exception ignored)
         {}
@@ -67,5 +68,40 @@ public class ReflectionUtils
         {}
 
         return value;
+    }
+
+    public static Field findFirstField(Object holder, Class type)
+    {
+        return findFirstField(holder.getClass(), type);
+    }
+
+    public static Field findFirstField(Class holder, Class<?> type)
+    {
+        return findFirstField(holder, type, 0);
+    }
+
+    public static Field findFirstField(Object holder, Class<?> type, int superLevels)
+    {
+        return findFirstField(holder.getClass(), type, superLevels);
+    }
+
+    public static Field findFirstField(Class holder, Class<?> type, int superLevels)
+    {
+        assert superLevels >= 0: "The super levels must be positive!";
+
+        do
+        {
+            for (Field field : holder.getDeclaredFields())
+            {
+                if (type.isAssignableFrom(field.getType()))
+                {
+                    field.setAccessible(true);
+                    return field;
+                }
+            }
+        }
+        while ((holder = holder.getSuperclass()) != null && superLevels-- > 0);
+
+        return null;
     }
 }

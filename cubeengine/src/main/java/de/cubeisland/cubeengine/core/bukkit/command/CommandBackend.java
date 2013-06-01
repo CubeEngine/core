@@ -15,39 +15,21 @@
  * You should have received a copy of the GNU General Public License
  * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-package de.cubeisland.cubeengine.core.ban;
+package de.cubeisland.cubeengine.core.bukkit.command;
 
-import java.net.InetAddress;
-import java.util.Set;
+import org.bukkit.command.Command;
 
-import de.cubeisland.cubeengine.core.user.User;
+import de.cubeisland.cubeengine.core.command.CommandSender;
+import de.cubeisland.cubeengine.core.command.CubeCommand;
+import de.cubeisland.cubeengine.core.module.Module;
 
-public interface BanManager
+public interface CommandBackend
 {
-    void addBan(Ban ban);
-
-    UserBan getUserBan(String name);
-
-    UserBan getUserBan(User user);
-    IpBan getIpBan(InetAddress address);
-
-    boolean removeUserBan(String name);
-
-    boolean removeUserBan(User user);
-
-    boolean removeIpBan(InetAddress address);
-
-    boolean isUserBanned(String name);
-
-    boolean isUserBanned(User user);
-
-    boolean isIpBanned(InetAddress address);
-
-    Set<UserBan> getUserBans();
-
-    Set<IpBan> getIpBans();
-
-    Set<Ban> getBans();
-
-    void reloadBans();
+    void registerCommand(CubeCommand command);
+    Command getCommand(String name);
+    boolean dispatchCommand(CommandSender sender, String commandLine);
+    void removeCommand(String name, boolean completely);
+    void removeCommands(Module module);
+    void removeCommands();
+    void shutdown();
 }

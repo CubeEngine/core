@@ -334,4 +334,11 @@ public class KickBanCommands
         }
         return false;
     }
+
+    @Command(desc = "Reloads the ban lists")
+    public void reloadbans(CommandContext context)
+    {
+        this.banManager.reloadBans();
+        context.sendTranslated("&aReloaded the ban lists successfully!");
+    }
 }

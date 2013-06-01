@@ -148,6 +148,7 @@ public class BukkitBanManager implements BanManager
         return this.ipBans.isBanned(address.toString());
     }
 
+    @Override
     @SuppressWarnings("unchecked")
     public Set<IpBan> getIpBans()
     {
@@ -169,6 +170,7 @@ public class BukkitBanManager implements BanManager
         return bans;
     }
 
+    @Override
     @SuppressWarnings("unchecked")
     public Set<UserBan> getUserBans()
     {
@@ -182,11 +184,22 @@ public class BukkitBanManager implements BanManager
         return bans;
     }
 
+    @Override
     public Set<Ban> getBans()
     {
         Set<Ban> bans = new THashSet<Ban>();
         bans.addAll(this.getIpBans());
         bans.addAll(this.getUserBans());
         return bans;
+    }
+
+    @Override
+    public synchronized void reloadBans()
+    {
+        this.nameBans.getEntries().clear();
+        this.nameBans.load();
+
+        this.ipBans.getEntries().clear();
+        this.ipBans.load();
     }
 }

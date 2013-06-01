@@ -93,17 +93,51 @@ public abstract class ArgumentReader
         }
     }
 
-    public static void removeReader(Class clazz)
+    public static ArgumentReader getReader(Class<?> type)
     {
-        Iterator<Map.Entry<Class<?>, ArgumentReader>> iter = READERS.entrySet().iterator();
+        return READERS.get(type);
+    }
+
+    public static ArgumentReader resolveReader(Class<?> type)
+    {
+        ArgumentReader reader = getReader(type);
+        if (reader == null)
+        {
+            Class<?> next;
+            Iterator<Class<?>> it = READERS.keySet().iterator();
+            while (it.hasNext())
+            {
+                next = it.next();
+                if (type.isAssignableFrom(next))
+                {
+                    reader = READERS.get(next);
+                    if (reader != null)
+                    {
+                        registerReader(reader, type);
+                        break;
+                    }
+                }
+            }
+        }
+        return reader;
+    }
+
+    public static boolean hasReader(Class<?> type)
+    {
+        return resolveReader(type) != null;
+    }
+
+    public static void removeReader(Class type)
+    {
+        Iterator<Map.Entry<Class<?>, ArgumentReader>> it = READERS.entrySet().iterator();
 
         Map.Entry<Class<?>, ArgumentReader> entry;
-        while (iter.hasNext())
+        while (it.hasNext())
         {
-            entry = iter.next();
-            if (entry.getKey() == clazz || entry.getValue().getClass() == clazz)
+            entry = it.next();
+            if (entry.getKey() == type || entry.getValue().getClass() == type)
             {
-                iter.remove();
+                it.remove();
             }
         }
     }
@@ -114,23 +148,12 @@ public abstract class ArgumentReader
     }
 
     @SuppressWarnings("unchecked")
-    public static <T> T read(Class<T> clazz, String string, Locale locale) throws InvalidArgumentException
+    public static <T> T read(Class<T> type, String string, Locale locale) throws InvalidArgumentException
     {
-        ArgumentReader reader = READERS.get(clazz);
+        ArgumentReader reader = resolveReader(type);
         if (reader == null)
         {
-            for (Class argClazz : READERS.keySet())
-            {
-                if (clazz.isAssignableFrom(argClazz))
-                {
-                    reader = READERS.get(argClazz);
-                    registerReader(reader, clazz);
-                }
-            }
-        }
-        if (reader == null)
-        {
-            throw new IllegalStateException("No reader found for " + clazz.getName() + "!");
+            throw new IllegalStateException("No reader found for " + type.getName() + "!");
         }
         return (T)reader.read(string, locale);
     }

@@ -40,36 +40,43 @@ public class BukkitWorldManager extends AbstractWorldManager
 {
     private final Server server;
 
-    public BukkitWorldManager(BukkitCore core)
+    public BukkitWorldManager(final BukkitCore core)
     {
         super(core);
         this.server = core.getServer();
+
+        core.addInitHook(new Runnable() {
+            @Override
+            public void run()
+            {
+                Collection<WorldModel> models = storage.getAll();
+                List<World> loadedWorlds = server.getWorlds();
+                for (WorldModel model : models)
+                {
+                    World world = server.getWorld(UUID.fromString(model.worldUUID));
+                    if (loadedWorlds.contains(world))
+                    {
+                        loadedWorlds.remove(world);
+                        worlds.put(world.getName(), model);
+                        worldIds.put(model.key, world);
+                    }
+                }
+                if (!loadedWorlds.isEmpty()) // new worlds?
+                {
+                    for (World world : loadedWorlds)
+                    {
+                        WorldModel model = new WorldModel(world);
+                        storage.store(model);
+                        worlds.put(world.getName(), model);
+                        worldIds.put(model.key, world);
+                    }
+                }
+            }
+        });
     }
 
     void loadWorlds()
     {
-        Collection<WorldModel> models = this.storage.getAll();
-        List<World> loadedWorlds = this.server.getWorlds();
-        for (WorldModel model : models)
-        {
-            World world = this.server.getWorld(UUID.fromString(model.worldUUID));
-            if (loadedWorlds.contains(world))
-            {
-                loadedWorlds.remove(world);
-                this.worlds.put(world.getName(), model);
-                this.worldIds.put(model.key, world);
-            }
-        }
-        if (!loadedWorlds.isEmpty()) // new worlds?
-        {
-            for (World world : loadedWorlds)
-            {
-                WorldModel model = new WorldModel(world);
-                this.storage.store(model);
-                this.worlds.put(world.getName(), model);
-                this.worldIds.put(model.key, world);
-            }
-        }
     }
 
     public World createWorld(WorldCreator creator)

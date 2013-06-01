@@ -46,7 +46,6 @@ import de.cubeisland.cubeengine.core.util.StringUtils;
 
 import gnu.trove.map.hash.THashMap;
 import gnu.trove.set.hash.THashSet;
-import org.apache.commons.lang.Validate;
 
 import static de.cubeisland.cubeengine.core.logger.LogLevel.ERROR;
 import static de.cubeisland.cubeengine.core.util.StringUtils.startsWithIgnoreCase;
@@ -283,7 +282,10 @@ public abstract class CubeCommand extends Command
      */
     public String getUsage(CommandSender sender)
     {
-        return "/" + this.implodeCommandParentNames(" ") + " " + replaceSemiOptionalArgs(sender, sender.translate(super.getUsage()));
+        StringBuilder usage = new StringBuilder(sender instanceof User ? "/" : "")
+            .append(this.implodeCommandParentNames(" ")).append(' ')
+            .append(replaceSemiOptionalArgs(sender, sender.translate(super.getUsage())));
+        return usage.toString();
     }
 
     /**
@@ -296,7 +298,10 @@ public abstract class CubeCommand extends Command
     public String getUsage(CommandContext context)
     {
         final CommandSender sender = context.getSender();
-        return "/" + StringUtils.implode(" ", context.getLabels()) + " " + replaceSemiOptionalArgs(sender, sender.translate(super.getUsage()));
+        StringBuilder usage = new StringBuilder(sender instanceof User ? "/" : "")
+            .append(StringUtils.implode(" ", context.getLabels())).append(' ')
+            .append(replaceSemiOptionalArgs(sender, sender.translate(super.getUsage())));
+        return usage.toString();
     }
 
     /**
@@ -309,7 +314,11 @@ public abstract class CubeCommand extends Command
      */
     public String getUsage(CommandSender sender, List<String> parentLabels)
     {
-        return "/" + StringUtils.implode(" ", parentLabels) + " " + this.getName() + " " + sender.translate(super.getUsage());
+        StringBuilder usage = new StringBuilder(sender instanceof User ? "/" : "");
+        usage.append(StringUtils.implode(" ", parentLabels)).append(' ')
+            .append(this.getName()).append(' ')
+            .append(sender.translate(super.getUsage()));
+        return usage.toString();
     }
 
     /**
@@ -407,13 +416,13 @@ public abstract class CubeCommand extends Command
     public void removeChild(String name)
     {
         CubeCommand cmd = this.getChild(name);
-        Iterator<Map.Entry<String, CubeCommand>> iter = this.children.entrySet().iterator();
+        Iterator<Map.Entry<String, CubeCommand>> it = this.children.entrySet().iterator();
 
-        while (iter.hasNext())
+        while (it.hasNext())
         {
-            if (iter.next().getValue() == cmd)
+            if (it.next().getValue() == cmd)
             {
-                iter.remove();
+                it.remove();
             }
         }
         this.childrenAliases.removeAll(cmd.getAliases());

@@ -57,8 +57,9 @@ public interface CommandManager extends Cleanable
      * Removes a command by its name
      *
      * @param name the name of the command to remove
+     * @param completely whether to remove all the aliases as well
      */
-    void removeCommand(String name);
+    void removeCommand(String name, boolean completely);
 
     /**
      * Removes all commands of a module

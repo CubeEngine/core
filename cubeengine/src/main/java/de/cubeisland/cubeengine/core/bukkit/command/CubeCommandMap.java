@@ -15,39 +15,37 @@
  * You should have received a copy of the GNU General Public License
  * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-package de.cubeisland.cubeengine.core.bukkit;
+package de.cubeisland.cubeengine.core.bukkit.command;
 
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 
-import org.bukkit.Server;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandException;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.SimpleCommandMap;
 
 import de.cubeisland.cubeengine.core.Core;
-import de.cubeisland.cubeengine.core.CubeEngine;
+import de.cubeisland.cubeengine.core.bukkit.BukkitCore;
+import de.cubeisland.cubeengine.core.bukkit.BukkitUtils;
 import de.cubeisland.cubeengine.core.command.CubeCommand;
 import de.cubeisland.cubeengine.core.util.StringUtils;
 import de.cubeisland.cubeengine.core.util.matcher.Match;
 
 /**
  * This CommandMap extends the SimpleCommandMap to add some functionality:
- * - an accessor for the known command map
  * - typo correction for the command lookup via edit distance
  */
 public class CubeCommandMap extends SimpleCommandMap
 {
     private final Core core;
 
-    public CubeCommandMap(Core core, Server server, SimpleCommandMap oldMap)
+    public CubeCommandMap(BukkitCore core, SimpleCommandMap oldMap)
     {
-        super(server);
+        super(core.getServer());
         this.core = core;
         for (Command command : oldMap.getCommands())
         {
@@ -56,24 +54,9 @@ public class CubeCommandMap extends SimpleCommandMap
         }
     }
 
-    /**
-     * Returns a map of the known commands
-     *
-     * @return the known commands
-     */
-    public Map<String, Command> getKnownCommands()
-    {
-        return this.knownCommands;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public boolean dispatch(CommandSender sender, String commandLine) throws CommandException
     {
-        assert CubeEngine.isMainThread(): "Commands may only be called synchronously!";
-
         commandLine = StringUtils.trimLeft(commandLine);
         if (commandLine.isEmpty())
         {
