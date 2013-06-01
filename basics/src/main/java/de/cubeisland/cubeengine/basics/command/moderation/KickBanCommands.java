@@ -116,6 +116,7 @@ public class KickBanCommands
         context.getCore().getUserManager().broadcastMessage("&2%s &4was kicked from the server!", BasicsPerm.KICK_RECEIVEMESSAGE, user.getName());
     }
 
+    // TODO refactor me place @Faithcaio!!!
     @Command(names = {
     "ban", "kickban"
     }, desc = "Bans a player permanently on your server.", min = 1, max = NO_MAX,
@@ -142,7 +143,7 @@ public class KickBanCommands
             if (user.getAddress() != null)
             {
                 InetAddress ipAdress = user.getAddress().getAddress();
-                if (this.banManager.isBanned(ipAdress))
+                if (this.banManager.isIpBanned(ipAdress))
                 {
                     context.sendTranslated("&2%s&c is already ip-banned!", player.getName());
                     return;
@@ -168,7 +169,7 @@ public class KickBanCommands
         {
             String reason = this.getReasonFrom(context, 1, user, BasicsPerm.COMMAND_BAN_NOREASON, false);
             if (reason == null) return;
-            if (this.banManager.isBanned(user))
+            if (this.banManager.isUserBanned(user))
             {
                 context.sendTranslated("&2%s&c is already banned!", player.getName());
                 return;
@@ -217,15 +218,14 @@ public class KickBanCommands
     }, desc = "Unbans a previously banned player.", min = 1, max = 1, usage = "<player>")
     public void unban(CommandContext context)
     {
-        OfflinePlayer offlinePlayer = context.getSender().getServer().getOfflinePlayer(context.getString(0));
-        User user = this.um.getUser(offlinePlayer.getName());
-        if (!this.banManager.isBanned(user))
+        String userName = context.getString(0);
+        if (!this.banManager.isUserBanned(userName))
         {
-            context.sendTranslated("&2%s &cis not banned!", offlinePlayer.getName());
+            context.sendTranslated("&2%s &cis not banned, maybe you misspelled his name?", userName);
             return;
         }
-        this.banManager.removeBan(user);
-        context.sendTranslated("&aYou unbanned &2%s&a!", offlinePlayer.getName());
+        this.banManager.removeUserBan(userName);
+        context.sendTranslated("&aYou unbanned &2%s&a!", userName);
     }
 
     @Command(names = {
@@ -233,11 +233,11 @@ public class KickBanCommands
     }, desc = "Bans the IP from this server.", min = 1, max = 2, usage = "<IP address> [reason]")
     public void ipban(CommandContext context)
     {
-        String ipadress = context.getString(0);
+        String ipaddress = context.getString(0);
         try
         {
-            InetAddress address = InetAddress.getByName(ipadress);
-            if (this.banManager.isBanned(address))
+            InetAddress address = InetAddress.getByName(ipaddress);
+            if (this.banManager.isIpBanned(address))
             {
                 context.sendTranslated("&eThe IP &6%s&e is already banned!", address.getHostAddress());
                 return;
@@ -248,7 +248,7 @@ public class KickBanCommands
             context.sendTranslated("&cYou banned the IP &6%s &cfrom your server!", address.getHostAddress());
             for (User user : context.getCore().getUserManager().getOnlineUsers())
             {
-                if (user.getAddress() != null && user.getAddress().getAddress().getHostAddress().equals(ipadress))
+                if (user.getAddress() != null && user.getAddress().getAddress().getHostAddress().equals(ipaddress))
                 {
                     user.kickPlayer(reason == null ? user.translate("&cYou were ip-banned from this server!") : reason);
                 }
@@ -256,7 +256,7 @@ public class KickBanCommands
         }
         catch (UnknownHostException e)
         {
-            context.sendTranslated("&6%s&c is not a valid IP-address!", ipadress);
+            context.sendTranslated("&6%s&c is not a valid IP-address!", ipaddress);
         }
     }
 
@@ -269,7 +269,7 @@ public class KickBanCommands
         try
         {
             InetAddress address = InetAddress.getByName(ipadress);
-            this.banManager.removeBan(address);
+            this.banManager.removeIpBan(address);
             context.sendTranslated("&aYou unbanned the IP &6%s&a!", address.getHostAddress());
         }
         catch (UnknownHostException e)
@@ -278,6 +278,7 @@ public class KickBanCommands
         }
     }
 
+    // TODO refactor me place @Faithcaio!!!
     @Command(names = {"tempban","tban"},
              desc = "Bans a player for a given time.",
              min = 2, max = 3,
@@ -298,7 +299,7 @@ public class KickBanCommands
         User user = context.getCore().getUserManager().getExactUser(player.getName());
         String reason = this.getReasonFrom(context, 2, user, BasicsPerm.COMMAND_TEMPBAN_NOREASON, false);
         if (reason == null) return;
-        if (this.banManager.isBanned(user))
+        if (this.banManager.isUserBanned(player.getName()))
         {
             context.sendTranslated("&2%s&c is already banned!", player.getName());
             return;
@@ -314,7 +315,6 @@ public class KickBanCommands
         catch (ConversionException ex)
         {
             context.sendTranslated("&cInvalid time value! &eExamples: 1d 12h 5m");
-            return;
         }
     }
 
@@ -324,13 +324,13 @@ public class KickBanCommands
         {
             if (this.module.getConfiguration().disallowBanIfOfflineMode)
             {
-                context.sendTranslated("&cBanning players by name is not allowed in offline-mode!"
-                                           + "\n&eYou can change this in your Basics-Configuration.");
+                context.sendTranslated("&cBanning players by name is not allowed in offline-mode!\n"
+                                     + "&eYou can change this in your Basics-Configuration.");
                 return true;
             }
-            context.sendTranslated("&eThe server is running in &4OFFLINE-mode&e. "
-                                       + "\nPlayers could change their username with a cracked client!\n"
-                                       + "&aYou can IP-ban to prevent banning a real player in that case.");
+            context.sendTranslated("&eThe server is running in &4OFFLINE-mode&e.\n"
+                                 + "Players could change their username with a cracked client!\n"
+                                 + "&aYou can IP-ban to prevent banning a real player in that case.");
         }
         return false;
     }

@@ -71,20 +71,28 @@ public class BukkitBanManager implements BanManager
     }
 
     @Override
-    public UserBan getBan(User user)
+    public UserBan getUserBan(User user)
     {
         assert user != null: "The user must not be null!";
 
-        BanEntry entry = (BanEntry)this.nameBans.getEntries().get(user.getName());
+        return this.getUserBan(user.getName());
+
+    }
+
+    @Override
+    public UserBan getUserBan(String name)
+    {
+
+        BanEntry entry = (BanEntry)this.nameBans.getEntries().get(name);
         if (entry != null)
         {
-            return new UserBan(user.getName(), entry.getSource(), entry.getReason(), entry.getCreated(), entry.getExpires());
+            return new UserBan(name, entry.getSource(), entry.getReason(), entry.getCreated(), entry.getExpires());
         }
         return null;
     }
 
     @Override
-    public IpBan getBan(InetAddress address)
+    public IpBan getIpBan(InetAddress address)
     {
         assert address != null: "The address must not be null!";
 
@@ -97,16 +105,22 @@ public class BukkitBanManager implements BanManager
     }
 
     @Override
-    public boolean removeBan(User user)
+    public boolean removeUserBan(User user)
     {
         assert user != null: "The user must not be null!";
 
-        this.nameBans.remove(user.getName());
+        return this.removeUserBan(user.getName());
+    }
+
+    @Override
+    public boolean removeUserBan(String name)
+    {
+        this.nameBans.remove(name);
         return true;
     }
 
     @Override
-    public boolean removeBan(InetAddress address)
+    public boolean removeIpBan(InetAddress address)
     {
         assert address != null: "The address must not be null!";
 
@@ -115,13 +129,21 @@ public class BukkitBanManager implements BanManager
     }
 
     @Override
-    public boolean isBanned(User user)
+    public boolean isUserBanned(User user)
     {
-        return this.nameBans.isBanned(user.getName());
+        assert user != null: "The user must not be null!";
+
+        return this.isUserBanned(user.getName());
     }
 
     @Override
-    public boolean isBanned(InetAddress address)
+    public boolean isUserBanned(String name)
+    {
+        return this.nameBans.isBanned(name);
+    }
+
+    @Override
+    public boolean isIpBanned(InetAddress address)
     {
         return this.ipBans.isBanned(address.toString());
     }

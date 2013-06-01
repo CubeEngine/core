@@ -26,17 +26,22 @@ public interface BanManager
 {
     void addBan(Ban ban);
 
-    UserBan getBan(User user);
+    UserBan getUserBan(String name);
 
-    IpBan getBan(InetAddress address);
+    UserBan getUserBan(User user);
+    IpBan getIpBan(InetAddress address);
 
-    boolean removeBan(User user);
+    boolean removeUserBan(String name);
 
-    boolean removeBan(InetAddress address);
+    boolean removeUserBan(User user);
 
-    boolean isBanned(User user);
+    boolean removeIpBan(InetAddress address);
 
-    boolean isBanned(InetAddress address);
+    boolean isUserBanned(String name);
+
+    boolean isUserBanned(User user);
+
+    boolean isIpBanned(InetAddress address);
 
     Set<UserBan> getUserBans();
 
