@@ -200,21 +200,19 @@ public class RolesAttachment extends UserAttachment
         User user = this.getHolder();
         if (user.isOnline())
         {
+            if (this.getRawData(user.getWorldId()).getRawAssignedRoles().isEmpty())
+            {
+                this.getRawData(user.getWorldId()).setAssignedRoles(((Roles)this.getModule()).getRolesManager().getProvider(user.getWorldId()).getDefaultRoles());
+            }
+            ResolvedDataStore resolvedData = this.getResolvedData();
+            this.currentMetaData = resolvedData.getResolvedMetadata();
             if (!Bukkit.getServer().getOnlineMode() && ((Roles)this.getModule()).getConfiguration().doNotAssignPermIfOffline && !user.isLoggedIn())
             {
                 user.sendTranslated("&cThe server is currently running in offline-mode. Permissions will not be applied until logging in! Contact an Administrator if you think this is an error.");
                 this.getModule().getLog().warning("Role-permissions not applied! Server is running in unsecured offline-mode!");
                 return;
             }
-
-            if (this.getRawData(user.getWorldId()).getRawAssignedRoles().isEmpty())
-            {
-                this.getRawData(user.getWorldId()).setAssignedRoles(((Roles)this.getModule()).getRolesManager().getProvider(user.getWorldId()).getDefaultRoles());
-            }
-            ResolvedDataStore resolvedData = this.getResolvedData();
             user.setPermission(resolvedData.getResolvedPermissions());
-            this.currentMetaData = resolvedData.getResolvedMetadata();
-
             this.getModule().getLog().log(LogLevel.DEBUG, user.getName()+ ": resolved UserData set!");
             for (Role assignedRole : this.getResolvedData(user.getWorldId()).assignedRoles)
             {
