@@ -39,7 +39,6 @@ import de.cubeisland.cubeengine.core.command.CommandFactory;
 import de.cubeisland.cubeengine.core.command.CommandHolder;
 import de.cubeisland.cubeengine.core.command.CommandManager;
 import de.cubeisland.cubeengine.core.command.CommandSender;
-import de.cubeisland.cubeengine.core.command.ConsoleCommandCompleter;
 import de.cubeisland.cubeengine.core.command.CubeCommand;
 import de.cubeisland.cubeengine.core.command.result.confirm.ConfirmManager;
 import de.cubeisland.cubeengine.core.command.sender.ConsoleCommandSender;
@@ -57,10 +56,9 @@ public class BukkitCommandManager implements CommandManager
 {
     private final Server server;
     private final BukkitCore core;
-    final CubeCommandMap commandMap;
+    private final CubeCommandMap commandMap;
     private final Map<String, Command> knownCommands;
     private final Map<Class<? extends CubeCommand>, CommandFactory> commandFactories;
-    private final ConsoleCommandCompleter completer;
     private final ConsoleCommandSender consoleSender;
     private final Logger commandLogger;
     private final ConfirmManager confirmManager;
@@ -75,9 +73,6 @@ public class BukkitCommandManager implements CommandManager
         this.commandFactories = new THashMap<Class<? extends CubeCommand>, CommandFactory>();
         BukkitUtils.swapCommandMap(this.commandMap);
         this.consoleSender = new ConsoleCommandSender(core);
-
-        this.completer = new ConsoleCommandCompleter(core);
-        BukkitUtils.getConsoleReader(this.server).addCompleter(completer);
 
 
 
@@ -187,7 +182,6 @@ public class BukkitCommandManager implements CommandManager
         this.removeCommands();
         this.commandMap.clearCommands();
         this.commandFactories.clear();
-        BukkitUtils.getConsoleReader(this.server).removeCompleter(this.completer);
     }
 
     public void registerCommand(CubeCommand command, String... parents)

@@ -207,6 +207,7 @@ public final class BukkitCore extends JavaPlugin implements Core
         // depends on: plugin manager, module manager
         this.permissionManager = new BukkitPermissionManager(this);
 
+        // depends on: core module
         this.corePerms = new CorePerms(this.getModuleManager().getCoreModule());
 
         // depends on: server, module manager
