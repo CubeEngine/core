@@ -17,7 +17,6 @@
  */
 package de.cubeisland.cubeengine.log.commands;
 
-import java.util.Date;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
@@ -33,6 +32,7 @@ import de.cubeisland.cubeengine.core.command.parameterized.ParameterizedContext;
 import de.cubeisland.cubeengine.core.command.reflected.Command;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.util.StringUtils;
+import de.cubeisland.cubeengine.core.util.convert.ConversionException;
 import de.cubeisland.cubeengine.core.util.matcher.Match;
 import de.cubeisland.cubeengine.log.Log;
 import de.cubeisland.cubeengine.log.LogAttachment;
@@ -101,8 +101,8 @@ public class LookupCommands
         @Param(names = {"user","player","p"}),
         @Param(names = {"block","b"}),
         @Param(names = {"entity","e"}),
-        @Param(names = {"since","time","t"},type = Date.class), // if not given default since 3d
-        @Param(names = {"before"},type = Date.class),
+        @Param(names = {"since","time","t"}), // if not given default since 3d
+        @Param(names = {"before"}),
         @Param(names = {"world","w","in"}, type = World.class),
         @Param(names = {"limit","pagelimit"},type = Integer.class),
 
@@ -248,17 +248,29 @@ public class LookupCommands
                     return;
                 }
             }
-            // TODO time
-            if (context.hasParam("since"))
+            // TODO date too
+            try
             {
-
+                if (context.hasParam("since"))
+                {
+                    long since = StringUtils.convertTimeToMillis(context.getString("since"));
+                    params.since(System.currentTimeMillis() - since);
+                }
+                else
+                {
+                    params.since(System.currentTimeMillis() - TimeUnit.DAYS.toMillis(30L)); // defaulted to last 30 days
+                }
+                if (context.hasParam("before"))
+                {
+                    long before =StringUtils.convertTimeToMillis(context.getString("since"));
+                    params.before(System.currentTimeMillis() - before);
+                }
             }
-            if (context.hasParam("before"))
+            catch (ConversionException e)
             {
-
+                context.sendTranslated("&6%s&c is not a valid time value!", context.getString("since"));
+                return;
             }
-            params.since(System.currentTimeMillis() - TimeUnit.DAYS.toMillis(30L)); // defaulted to last 30 days
-            // TODO time
             if (context.hasParam("world"))
             {
                 if (context.hasParam("radius"))
@@ -289,8 +301,8 @@ public class LookupCommands
             @Param(names = {"user","player","p"}),
             @Param(names = {"block","b"}),
             @Param(names = {"entity","e"}),
-            @Param(names = {"since","time","t"},type = Date.class), // if not given default since 3d
-            @Param(names = {"before"},type = Date.class),
+            @Param(names = {"since","time","t"}), // if not given default since 3d
+            @Param(names = {"before"}),
             @Param(names = {"world","w","in"}, type = World.class),
         }, min = 0, max = 1)
     public void rollback(ParameterizedContext context)
@@ -404,21 +416,29 @@ public class LookupCommands
                     return;
                 }
             }
-            // TODO time
-            if (context.hasParam("since"))
+            // TODO date too
+            try
             {
-
+                if (context.hasParam("since"))
+                {
+                    long since = StringUtils.convertTimeToMillis(context.getString("since"));
+                    params.since(System.currentTimeMillis() - since);
+                }
+                else
+                {
+                    params.since(System.currentTimeMillis() - TimeUnit.DAYS.toMillis(30L)); // defaulted to last 30 days
+                }
+                if (context.hasParam("before"))
+                {
+                    long before =StringUtils.convertTimeToMillis(context.getString("since"));
+                    params.before(System.currentTimeMillis() - before);
+                }
             }
-            if (context.hasParam("before"))
+            catch (ConversionException e)
             {
-
+                context.sendTranslated("&6%s&c is not a valid time value!", context.getString("since"));
+                return;
             }
-            else
-            {
-                params.since(System.currentTimeMillis() - TimeUnit.DAYS.toMillis(3));
-            }
-            params.since(System.currentTimeMillis() - TimeUnit.DAYS.toMillis(30L)); // defaulted to last 30 days
-            // TODO time
             if (context.hasParam("world"))
             {
                 if (context.hasParam("radius"))
