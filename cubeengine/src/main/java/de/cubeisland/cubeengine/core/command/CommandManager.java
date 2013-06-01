@@ -18,7 +18,6 @@
 package de.cubeisland.cubeengine.core.command;
 
 import de.cubeisland.cubeengine.core.command.result.confirm.ConfirmManager;
-import de.cubeisland.cubeengine.core.command.result.confirm.ConfirmResult;
 import de.cubeisland.cubeengine.core.command.sender.ConsoleCommandSender;
 import de.cubeisland.cubeengine.core.module.Module;
 import de.cubeisland.cubeengine.core.util.Cleanable;
@@ -31,7 +30,7 @@ public interface CommandManager extends Cleanable
     void registerCommand(CubeCommand command, String... parents);
     void registerCommands(Module module, CommandHolder commandHolder, String... parents);
     void registerCommands(Module module, Object commandHolder, Class<? extends CubeCommand> commandType, String... parents);
-    void registerCommandFactory(CommandFactory factory);
+    <T extends CubeCommand> void registerCommandFactory(CommandFactory<T> factory);
     CommandFactory getCommandFactory(Class<? extends CubeCommand> type);
     void removeCommandFactory(Class clazz);
     CubeCommand getCommand(String name);

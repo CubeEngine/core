@@ -21,7 +21,6 @@ import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -36,25 +35,18 @@ import org.bukkit.command.Command;
 import org.bukkit.command.SimpleCommandMap;
 
 import de.cubeisland.cubeengine.core.command.AliasCommand;
-import de.cubeisland.cubeengine.core.command.ArgBounds;
-import de.cubeisland.cubeengine.core.command.BasicContextFactory;
-import de.cubeisland.cubeengine.core.command.CommandContext;
 import de.cubeisland.cubeengine.core.command.CommandFactory;
 import de.cubeisland.cubeengine.core.command.CommandHolder;
 import de.cubeisland.cubeengine.core.command.CommandManager;
 import de.cubeisland.cubeengine.core.command.CommandSender;
 import de.cubeisland.cubeengine.core.command.ConsoleCommandCompleter;
 import de.cubeisland.cubeengine.core.command.CubeCommand;
-import de.cubeisland.cubeengine.core.command.result.confirm.ConfirmCommand;
 import de.cubeisland.cubeengine.core.command.result.confirm.ConfirmManager;
-import de.cubeisland.cubeengine.core.command.result.confirm.ConfirmResult;
 import de.cubeisland.cubeengine.core.command.sender.ConsoleCommandSender;
 import de.cubeisland.cubeengine.core.logger.CubeFileHandler;
 import de.cubeisland.cubeengine.core.logger.CubeLogger;
 import de.cubeisland.cubeengine.core.module.Module;
-import de.cubeisland.cubeengine.core.util.Pair;
 import de.cubeisland.cubeengine.core.util.StringUtils;
-import de.cubeisland.cubeengine.core.util.time.Duration;
 
 import gnu.trove.map.hash.THashMap;
 
@@ -293,7 +285,7 @@ public class BukkitCommandManager implements CommandManager
         }
     }
 
-    public void registerCommandFactory(CommandFactory factory)
+    public <T extends CubeCommand> void registerCommandFactory(CommandFactory<T> factory)
     {
         this.commandFactories.put(factory.getCommandType(), factory);
     }
@@ -307,12 +299,12 @@ public class BukkitCommandManager implements CommandManager
     {
         this.commandFactories.remove(clazz);
 
-        Iterator<Entry<Class<? extends CubeCommand>, CommandFactory>> iter = this.commandFactories.entrySet().iterator();
-        while (iter.hasNext())
+        Iterator<Entry<Class<? extends CubeCommand>, CommandFactory>> it = this.commandFactories.entrySet().iterator();
+        while (it.hasNext())
         {
-            if (iter.next().getValue().getClass() == clazz)
+            if (it.next().getValue().getClass() == clazz)
             {
-                iter.remove();
+                it.remove();
             }
         }
     }

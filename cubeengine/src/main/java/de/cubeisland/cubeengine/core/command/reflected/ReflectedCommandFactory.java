@@ -46,6 +46,7 @@ import static de.cubeisland.cubeengine.core.util.Misc.arr;
 
 public class ReflectedCommandFactory<T extends CubeCommand> implements CommandFactory<T>
 {
+    @SuppressWarnings("unchecked")
     public Class<T> getCommandType()
     {
         return (Class<T>)ReflectedCommand.class;
