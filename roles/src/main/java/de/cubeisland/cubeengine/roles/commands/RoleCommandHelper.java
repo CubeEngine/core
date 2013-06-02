@@ -74,8 +74,8 @@ public abstract class RoleCommandHelper extends ContainerCommand
             {
                 if (ManagementCommands.curWorldIdOfConsole == null)
                 {
-                    context.sendTranslated("&ePlease provide a world.");
-                    context.sendTranslated("&aYou can define a world with &6/roles admin defaultworld <world>");
+                    context.sendTranslated("&cYou have to provide a world with &6[in <world]&c!");
+                    context.sendTranslated("&eOr you can define a default-world with &6/roles admin defaultworld <world>");
                     return null;
                 }
                 world = this.worldManager.getWorld(ManagementCommands.curWorldIdOfConsole);

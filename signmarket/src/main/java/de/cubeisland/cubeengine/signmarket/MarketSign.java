@@ -578,9 +578,9 @@ public class MarketSign
         }
         if (this.allowBuyIfEmpty())
         {
-            return "&o"+this.conomy.format(this.getPrice() / this.conomy.fractionalDigitsFactor());
+            return "&o"+this.conomy.format(this.getPrice());
         }
-        return this.conomy.format(this.getPrice() / this.conomy.fractionalDigitsFactor());
+        return this.conomy.format(this.getPrice());
     }
 
     @SuppressWarnings("deprecation")
@@ -767,7 +767,7 @@ public class MarketSign
                 if (checkForPlace(user.getInventory(), item.clone()))
                 {
                     String price = this.parsePrice();
-                    if (userAccount.transactionTo(ownerAccount, this.getPrice() / this.conomy.fractionalDigitsFactor(), false))
+                    if (userAccount.transactionTo(ownerAccount, this.getPrice(), false))
                     {
                         if (this.hasStock())
                         {
@@ -814,7 +814,7 @@ public class MarketSign
 
             Account userAccount = this.conomy.getUserAccount(user, true);
             Account ownerAccount = this.getOwner() != null ? this.conomy.getUserAccount(this.getOwner(), true) : null;
-            if (this.conomy.transaction(ownerAccount, userAccount, this.getPrice() / this.conomy.fractionalDigitsFactor(), false))
+            if (this.conomy.transaction(ownerAccount, userAccount, this.getPrice(), false))
             {
                 user.getInventory().removeItem(item);
                 if (this.hasStock())
@@ -1074,8 +1074,7 @@ public class MarketSign
         {
             return true;
         }
-        return this.conomy.getUserAccount(user, true).has(this.getPrice() / this.conomy
-                                                                                                    .fractionalDigitsFactor());
+        return this.conomy.getUserAccount(user, true).has(this.getPrice());
     }
 
     public Inventory getInventory()
@@ -1154,13 +1153,13 @@ public class MarketSign
         return this.blockInfo.demand;
     }
 
-    public long getPrice()
+    public double getPrice()
     {
         if (this.allowBuyIfEmpty())
         {
-            return (long) (this.module.getConfig().factorIfAdminSignIsEmpty * this.blockInfo.price);
+            return (double)(this.module.getConfig().factorIfAdminSignIsEmpty * this.blockInfo.price) / this.conomy.fractionalDigitsFactor();
         }
-        return this.blockInfo.price;
+        return (double) this.blockInfo.price / this.conomy.fractionalDigitsFactor();
     }
 
     public boolean isAdminSign() {
