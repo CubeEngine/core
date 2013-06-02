@@ -393,15 +393,7 @@ public class VanillaCommands implements CommandHolder
         }
         else
         {
-            if (server.getName().equalsIgnoreCase("craftbukkit"))
-            {
-                context.sendTranslated("This server is unfortunately running &c%s&r in version &9%s", server.getName(), server.getVersion());
-                context.sendTranslated("&kTrololol EvilSeph&r!");
-            }
-            else
-            {
-                context.sendTranslated("This server is running &e%s&r in version &9%s", server.getName(), server.getVersion());
-            }
+            context.sendTranslated("This server is running &e%s&r in version &9%s", server.getName(), server.getVersion());
             context.sendTranslated("&eBukkit API&r Version: &9%s", server.getBukkitVersion());
             context.sendMessage(" ");
             context.sendTranslated("Expanded and improved by &aCubeEngine&r revision &9%s", context.getCore().getVersion());
