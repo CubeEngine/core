@@ -60,6 +60,13 @@ public class SimpleCommandBackend implements CommandBackend
     {
         assert command.getDescription() != null && !command.getDescription().isEmpty(): command.getName() + " doesn't have a description!";
 
+        Command old = this.getCommand(command.getName());
+        if (old != null && !(old instanceof CubeCommand))
+        {
+            // CE commands are more important :P
+            this.removeCommand(old.getLabel(), false);
+        }
+
         this.commandMap.register(command.getModule().getId(), command);
         command.onRegister();
     }

@@ -38,7 +38,6 @@ import static de.cubeisland.cubeengine.core.util.ReflectionUtils.getFieldValue;
 
 public class CubeCommandBackend extends SimpleCommandBackend
 {
-
     public CubeCommandBackend(BukkitCore core)
     {
         super(core, swapCommandMap(core, null));

@@ -224,12 +224,15 @@ public final class BukkitCore extends JavaPlugin implements Core
         }
         else if (SimpleCommandMap.class.isAssignableFrom(commandMap.getClass()))
         {
+            this.getLog().log(NOTICE, "The server you are using is not fully compatible, some advanced command features will be disabled.");
             commandBackend = new SimpleCommandBackend(this, commandMap);
         }
         else
         {
+            this.getLog().log(WARNING, "We encountered a serious compatibility issues, however basic command features should still work. Please report this issue to the developers!");
             commandBackend = new FallbackCommandBackend(this);
         }
+        this.getLog().log(DEBUG, "Chosen command backend: " + commandBackend.getClass().getName());
         this.commandManager = new BukkitCommandManager(this, commandBackend);
         this.commandManager.registerCommandFactory(new ReflectedCommandFactory());
         this.commandManager.registerCommandFactory(new ReadableCommandFactory());
