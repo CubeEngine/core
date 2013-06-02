@@ -56,11 +56,8 @@ import de.cubeisland.cubeengine.basics.Basics;
 import de.cubeisland.cubeengine.test.commands.TestCommands;
 import de.cubeisland.cubeengine.test.database.TestManager;
 import de.cubeisland.cubeengine.test.database.TestModel;
-import de.cubeisland.cubeengine.test.l18n.TestRecource;
 
-import static de.cubeisland.cubeengine.core.logger.LogLevel.DEBUG;
-import static de.cubeisland.cubeengine.core.logger.LogLevel.ERROR;
-import static de.cubeisland.cubeengine.core.logger.LogLevel.NOTICE;
+import static de.cubeisland.cubeengine.core.logger.LogLevel.*;
 
 public class Test extends Module
 {
@@ -101,7 +98,7 @@ public class Test extends Module
         this.config = Configuration.load(TestConfig.class, this);
         this.config.loadChild(new File(this.getFolder(), "childConfig.yml"));
         Configuration.load(TestConfig2.class, new File(this.getFolder(), "updateConfig.yml"));
-        this.getCore().getFileManager().dropResources(TestRecource.values());
+        // this.getCore().getFileManager().dropResources(TestRecource.values());
         this.uM = this.getCore().getUserManager();
         try
         {

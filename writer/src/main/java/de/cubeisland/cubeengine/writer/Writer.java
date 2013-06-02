@@ -25,7 +25,7 @@ public class Writer extends Module
     @Override
     public void onEnable()
     {
-        this.getCore().getFileManager().dropResources(WriterResource.values());
+        // this.getCore().getFileManager().dropResources(WriterResource.values());
         this.getCore().getCommandManager().registerCommands(this, new EditCommand(), ReflectedCommand.class);
     }
 }
