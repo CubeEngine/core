@@ -225,6 +225,7 @@ public final class BukkitCore extends JavaPlugin implements Core
         else if (SimpleCommandMap.class.isAssignableFrom(commandMap.getClass()))
         {
             this.getLog().log(NOTICE, "The server you are using is not fully compatible, some advanced command features will be disabled.");
+            this.getLog().log(DEBUG, "The type of the command map: {0}", commandMap.getClass().getName());
             commandBackend = new SimpleCommandBackend(this, commandMap);
         }
         else
