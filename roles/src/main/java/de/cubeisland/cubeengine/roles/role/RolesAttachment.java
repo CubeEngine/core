@@ -50,8 +50,8 @@ public class RolesAttachment extends UserAttachment
     private Map<String, String> currentMetaData;
 
     private Long workingWorldID = null;
-    private RolesManager manager;
-    private RolesConfig config;
+    protected RolesManager manager;
+    protected RolesConfig config;
 
     /**
      * Gets the resolved data-store.
@@ -278,6 +278,20 @@ public class RolesAttachment extends UserAttachment
             }
         }
         return dominantRole;
+    }
+
+    /**
+     * Removes the assigned default roles from the temporary roles
+     *
+     * @param worldId
+     */
+    public void removeDefaultRoles(long worldId)
+    {
+        RawDataStore temporaryRawData = this.getTemporaryRawData(worldId);
+        for (Role role : this.manager.getProvider(worldId).getDefaultRoles())
+        {
+            temporaryRawData.removeRole(role);
+        }
     }
 
     public void setWorkingWorldId(Long workingWorldId)

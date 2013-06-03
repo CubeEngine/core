@@ -107,7 +107,7 @@ public class AssignedRoleManager extends TripletKeyStorage<Long, Long, String, A
 
     public void delete(long userid, String roleName, long worldId)
     {
-        this.deleteByKey(new Triplet<Long, Long, String>(userid, worldId, roleName));
+        this.deleteByKey(new Triplet<Long, Long, String>(userid, worldId, roleName), false);
     }
 
     public void clearByUserAndWorld(long userid, long worldId)

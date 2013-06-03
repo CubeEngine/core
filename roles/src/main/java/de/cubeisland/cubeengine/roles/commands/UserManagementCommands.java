@@ -140,6 +140,7 @@ public class UserManagementCommands extends UserCommandHelper
         if (world == null) return;
         long worldId = this.getModule().getCore().getWorldManager().getWorldId(world);
         RolesAttachment attachment = this.manager.getRolesAttachment(user);
+        attachment.getRawData(worldId).clearAssignedRoles();
         Set<Role> defaultRoles = this.manager.getProvider(worldId).getDefaultRoles();
         attachment.getTemporaryRawData(worldId).setAssignedRoles(defaultRoles);
         attachment.apply();
