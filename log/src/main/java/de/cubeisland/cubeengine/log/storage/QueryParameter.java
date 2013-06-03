@@ -54,12 +54,6 @@ public class QueryParameter implements Cloneable
     // Blocks
     Map<BlockData, Boolean> blocks = new ConcurrentHashMap<BlockData, Boolean>();
 
-    boolean compress = true;
-    boolean showDate = false;
-    boolean showLoc = false;
-    boolean showID = false;
-    int perPageLimit = -1; // -1 is no limit
-
     public QueryParameter(Log module)
     {
         this.module = module;
@@ -275,27 +269,12 @@ public class QueryParameter implements Cloneable
         params.users = new ConcurrentHashMap<Long, Boolean>(users);
         params.entities = new ConcurrentHashMap<Integer, Boolean>(entities);
         params.blocks = new ConcurrentHashMap<BlockData, Boolean>(blocks);
-        params.compress = compress;
-        params.showDate = showDate;
-        params.showLoc = showLoc;
-        params.showID = showID;
-        params.perPageLimit = perPageLimit;
         return params;
     }
 
     public boolean hasTime()
     {
         return from_since != null || to_before != null;
-    }
-
-    public int getPerPageLimit()
-    {
-        return perPageLimit;
-    }
-
-    public void setPerPageLimit(int perPageLimit)
-    {
-        this.perPageLimit = perPageLimit;
     }
 
     public boolean includeActions()

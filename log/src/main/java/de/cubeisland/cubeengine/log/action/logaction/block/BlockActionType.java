@@ -242,7 +242,7 @@ public abstract class BlockActionType extends LogActionType
         return false;
     }
 
-    private boolean nearTimeFrame(LogEntry logEntry, LogEntry other)
+    protected boolean nearTimeFrame(LogEntry logEntry, LogEntry other)
     {
         return logEntry.causer <= 0 ||
             Math.abs(TimeUnit.MILLISECONDS.toSeconds(logEntry.timestamp.getTime() - other.timestamp.getTime())) < 5;

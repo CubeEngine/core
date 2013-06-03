@@ -41,6 +41,7 @@ import de.cubeisland.cubeengine.log.action.ActionTypeManager;
 import de.cubeisland.cubeengine.log.storage.BlockData;
 import de.cubeisland.cubeengine.log.storage.Lookup;
 import de.cubeisland.cubeengine.log.storage.QueryParameter;
+import de.cubeisland.cubeengine.log.storage.ShowParameter;
 
 public class LookupCommands
 {
@@ -90,10 +91,13 @@ public class LookupCommands
     }
 
     @Command(
-        desc = "Queries a lookup in the database", usage = "", flags = {
+        desc = "Queries a lookup in the database\n    Show availiable parameters with &6/lookup params",
+        usage = "[show] [parameters]",
+    flags = {
         @Flag(longName = "coordinates", name = "coords"),
         @Flag(longName = "detailed", name = "det"),
-        @Flag(longName = "descending", name = "desc") //sort in descending order (default ascending)
+        @Flag(longName = "nodate", name = "nd"),
+        @Flag(longName = "descending", name = "desc") //sort in descending order (default ascending) //TODO implement
     },
     params = {
         @Param(names = {"action","a"}),// !!must have tabcompleter for all register actionTypes
@@ -104,36 +108,56 @@ public class LookupCommands
         @Param(names = {"since","time","t"}), // if not given default since 3d
         @Param(names = {"before"}),
         @Param(names = {"world","w","in"}, type = World.class),
-        @Param(names = {"limit","pagelimit"},type = Integer.class),
 
+        @Param(names = {"limit","pagelimit"},type = Integer.class),
         @Param(names = {"page"},type = Integer.class),
     }, min = 0, max = 1)
+    // TODO param to limit query results (default ~10k) ?
     public void lookup(ParameterizedContext context)
     {
-        if (context.hasArg(0))
+        if (context.hasArg(0) && context.getString(0).equalsIgnoreCase("params"))
         {
-            if (context.getString(0).equalsIgnoreCase("params"))
-            {
-                this.params(context);
-            }
+            this.params(context);
         }
         else if (context.getSender() instanceof User)
         {
+            ShowParameter show = new ShowParameter();
             User user = (User)context.getSender();
             LogAttachment attachment = user.attachOrGet(LogAttachment.class,this.module);
             Lookup lookup = attachment.getCommandLookup();
-            Integer limit;
+            show.showCoords = context.hasFlag("coords");
+            show.showDate = !context.hasFlag("nd");
+            show.compress = !context.hasFlag("det");
             if (context.hasParam("limit"))
             {
-                limit = context.getParam("limit", null);
+                Integer limit = context.getParam("limit", null);
                 if (limit == null)
                 {
                     return;
                 }
+                if (limit > 100)
+                {
+                    context.sendTranslated("&eYour page-limit is to high! Showing 100 logs per page.");
+                    limit = 100;
+                }
+                show.pagelimit = limit;
             }
-            else
+            if (context.hasArg(0))
             {
-                limit = lookup.queried() ? lookup.getQueryParameter().getPerPageLimit() : 8;
+                if (context.getString(0).equalsIgnoreCase("show"))
+                {
+                    if (lookup.queried())
+                    {
+                        attachment.queueShowParameter(show);
+                        lookup.show(user);
+                    }
+                    else
+                    {
+                        context.sendTranslated("&cYou have to do a query first!");
+                    }
+                    return;
+                }
+                return;
             }
             if (context.hasParam("page"))
             {
@@ -145,8 +169,9 @@ public class LookupCommands
                         context.sendTranslated("&cInvalid page!");
                         return;
                     }
-                    lookup.getQueryParameter().setPerPageLimit(limit);
-                    lookup.show(user, page);
+                    show.page = page;
+                    attachment.queueShowParameter(show);
+                    lookup.show(user);
                 }
                 else
                 {
@@ -157,7 +182,6 @@ public class LookupCommands
             attachment.clearLookups(); // TODO only clear cmdlookup
             lookup = attachment.getCommandLookup();
             QueryParameter params = lookup.getQueryParameter();
-            params.setPerPageLimit(limit);
             if (context.hasParam("action"))
             {
                 if (!this.readActions(params, context.getString("action"), user))
@@ -258,11 +282,11 @@ public class LookupCommands
                 }
                 else
                 {
-                    params.since(System.currentTimeMillis() - TimeUnit.DAYS.toMillis(30L)); // defaulted to last 30 days
+                    params.since(System.currentTimeMillis() - TimeUnit.DAYS.toMillis(30)); // defaulted to last 30 days
                 }
                 if (context.hasParam("before"))
                 {
-                    long before =StringUtils.convertTimeToMillis(context.getString("since"));
+                    long before = StringUtils.convertTimeToMillis(context.getString("since"));
                     params.before(System.currentTimeMillis() - before);
                 }
             }
@@ -288,6 +312,7 @@ public class LookupCommands
                     params.setWorld(world);
                 }
             }
+            attachment.queueShowParameter(show);
             this.module.getLogManager().fillLookupAndShow(lookup, user);
         }
     }

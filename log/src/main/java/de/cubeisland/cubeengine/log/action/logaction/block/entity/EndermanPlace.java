@@ -25,7 +25,8 @@ import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.log.action.logaction.block.BlockActionType;
 import de.cubeisland.cubeengine.log.storage.LogEntry;
 
-import static de.cubeisland.cubeengine.log.action.ActionType.Category.*;
+import static de.cubeisland.cubeengine.log.action.ActionType.Category.BLOCK;
+import static de.cubeisland.cubeengine.log.action.ActionType.Category.BLOCK_ENTITY;
 
 /**
  * Enderman placing blocks.
@@ -51,13 +52,13 @@ public class EndermanPlace extends BlockActionType
     {
         if (logEntry.hasAttached())
         {
-            user.sendTranslated("%s&aEnderman placed &6%s&6 x%d%s!",
-                                time, logEntry.getOldBlock().toString(), logEntry.getAttached().size()+1, loc);
+            user.sendTranslated("%s&6Enderman &aplaced &6%s&6 x%d%s!",
+                time, logEntry.getOldBlock().toString(), logEntry.getAttached().size()+1, loc);
         }
         else
         {
-            user.sendTranslated("%s&aEnderman placed &6%s%s!",
-                                time, logEntry.getOldBlock().toString(), loc);
+            user.sendTranslated("%s&6Enderman &aplaced &6%s%s!",
+                time, logEntry.getOldBlock().toString(), loc);
         }
     }
 

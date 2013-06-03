@@ -44,7 +44,7 @@ public class QueryResults
     }
 
     @SuppressWarnings("deprecation")
-    public void show(User user, QueryParameter parameter, int page)
+    public void show(User user, QueryParameter parameter, ShowParameter show)
     {
         user.updateInventory();
 
@@ -53,65 +53,87 @@ public class QueryResults
             parameter.showNoLogsFound(user);
             return;
         }
-        System.out.print("Showing " + this.logEntries.size() + " logentries (limit:" + parameter.getPerPageLimit() + ")to " + user.getName());
-        int pageLimit = parameter.getPerPageLimit();
-        if (pageLimit == -1)
+        System.out.print("Showing " + this.logEntries.size() + " logentries to " + user.getName());
+        if (show.pagelimit == -1)
         {
-            pageLimit = this.logEntries.size();
+            show.pagelimit = this.logEntries.size();
         }
-        int totalPages = (this.logEntries.size()+pageLimit-1) / pageLimit; // rounded up
+        int totalPages = (this.logEntries.size()+show.pagelimit-1) / show.pagelimit; // rounded up
         user.sendTranslated("&6%d&a distinct logs (&6%d&a pages)", this.logEntries.size(), totalPages);
         Iterator<LogEntry> entries = this.logEntries.iterator();
-        // compressing data: //TODO add if it should be compressed or not
         LogEntry entry = entries.next();
         LogEntry lastAttach = entry;
         TreeSet<LogEntry> compressedEntries = new TreeSet<LogEntry>();
-        compressedEntries.add(entry); // add first entry
-        while (entries.hasNext())
+        if (show.compress)
         {
-            LogEntry next = entries.next();
-            if (lastAttach.isSimilar(next)) // can be compressed ?
+            compressedEntries.add(entry); // add first entry
+            while (entries.hasNext())
             {
-                entry.attach(next);
-                lastAttach = next;
+                LogEntry next = entries.next();
+                if (lastAttach.isSimilar(next)) // can be compressed ?
+                {
+                    entry.attach(next);
+                    lastAttach = next;
+                }
+                else // no more compression -> move on to next entry
+                {
+                    entry = next;
+                    lastAttach = entry;
+                    compressedEntries.add(entry);
+                }
             }
-            else // no more compression -> move on to next entry
+            if (compressedEntries.size() < this.logEntries.size())
             {
-                entry = next;
-                lastAttach = entry;
-                compressedEntries.add(entry);
+                totalPages = (compressedEntries.size()+show.pagelimit-1) / show.pagelimit; // rounded up
+                if (totalPages > 1)
+                {
+                    user.sendTranslated("&aCompressed into &6%d&a logs! (&6%d&a pages)", compressedEntries.size(), totalPages);
+                }
+                else
+                {
+                    user.sendTranslated("&aCompressed into &6%d&a logs!", compressedEntries.size());
+                }
             }
-        }
-        if (compressedEntries.size() < this.logEntries.size())
-        {
-            totalPages = (compressedEntries.size()+pageLimit-1) / pageLimit; // rounded up
-            user.sendTranslated("&aCompressed into &6%d&a logs! (&6%d&a pages)", compressedEntries.size(), totalPages);
-        }
-        if (page > totalPages)
-        {
-            return;
-        }
-        if (page == 1)
-        {
-            user.sendTranslated("&aShowing %d most recent logs:", pageLimit);
         }
         else
         {
-            user.sendTranslated("&aShowing %d logs (Page %d):", pageLimit, page);
+            compressedEntries.addAll(this.logEntries);
+        }
+        if (show.page > totalPages)
+        {
+            return;
+        }
+        int showing = show.pagelimit;
+        if (showing > compressedEntries.size())
+        {
+            showing = compressedEntries.size();
+        }
+        else if (compressedEntries.size() - (show.page * show.pagelimit) < show.pagelimit)
+        {
+            showing = compressedEntries.size() - (show.page * show.pagelimit);
+        }
+        if (show.page == 1)
+        {
+            user.sendTranslated("&aShowing %d most recent logs:", showing);
+        }
+        else
+        {
+            user.sendTranslated("&aShowing %d logs (Page %d):", showing, show.page);
         }
         int i = 0;
         int cpage = 1;
         for (LogEntry logEntry : compressedEntries.descendingSet())
         {
-            if (cpage == page)
+            if (cpage == show.page)
             {
-                logEntry.actionType.showLogEntry(user,parameter,logEntry);
+                logEntry.actionType.showLogEntry(user,parameter,logEntry, show);
             }
             i++;
-            if (i % pageLimit == 0)
+            if (i % show.pagelimit == 0)
             {
                 cpage++;
             }
+            logEntry.clearAttached();
         }
     }
 
@@ -182,12 +204,13 @@ public class QueryResults
                 rollbackRound2.add(logEntry);
             }
         }
+        ShowParameter show = new ShowParameter();
         for (LogEntry logEntry : rollbackRound2) // Rollback attached blocks
         {
             if (!logEntry.rollback(attachment, true, preview))
             {
                 attachment.getHolder().sendTranslated("&cCould not Rollback:");
-                logEntry.actionType.showLogEntry(attachment.getHolder(), null, logEntry);
+                logEntry.actionType.showLogEntry(attachment.getHolder(), null, logEntry, show);
                 System.out.print("Could not Rollback!");
             }
         }

@@ -18,15 +18,13 @@
 package de.cubeisland.cubeengine.log.action.logaction.block.interaction;
 
 import java.util.EnumSet;
+import java.util.concurrent.TimeUnit;
 
 import org.bukkit.World;
-import org.bukkit.material.Diode;
 
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.log.action.logaction.block.BlockActionType;
 import de.cubeisland.cubeengine.log.storage.LogEntry;
-
-import com.sk89q.jchronic.repeaters.Repeater;
 
 import static de.cubeisland.cubeengine.log.action.ActionType.Category.BLOCK;
 import static de.cubeisland.cubeengine.log.action.ActionType.Category.PLAYER;
@@ -76,5 +74,11 @@ public class NoteBlockChange extends BlockActionType
     public boolean isActive(World world)
     {
         return this.lm.getConfig(world).NOTEBLOCK_CHANGE_enable;
+    }
+
+    @Override
+    protected boolean nearTimeFrame(LogEntry logEntry, LogEntry other)
+    {
+        return Math.abs(TimeUnit.MILLISECONDS.toMinutes(logEntry.timestamp.getTime() - other.timestamp.getTime())) < 2;
     }
 }

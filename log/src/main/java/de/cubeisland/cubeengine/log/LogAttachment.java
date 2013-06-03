@@ -17,6 +17,9 @@
  */
 package de.cubeisland.cubeengine.log;
 
+import java.util.LinkedList;
+import java.util.Queue;
+
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.BlockState;
@@ -24,6 +27,7 @@ import org.bukkit.block.BlockState;
 import de.cubeisland.cubeengine.core.user.UserAttachment;
 import de.cubeisland.cubeengine.log.storage.Lookup;
 import de.cubeisland.cubeengine.log.storage.QueryParameter;
+import de.cubeisland.cubeengine.log.storage.ShowParameter;
 
 import com.sk89q.worldedit.LocalSession;
 import com.sk89q.worldedit.Vector;
@@ -42,6 +46,7 @@ public class LogAttachment extends UserAttachment
     private Lookup playerLookup; // lookup with pumpkin block
     private Lookup blockLookup; // lookup with woodlog block
     private Lookup commandLookup; // lookup with command
+    private Queue<ShowParameter> showParameters = new LinkedList<ShowParameter>();
 
     public void clearLookups()
     {
@@ -235,6 +240,16 @@ public class LogAttachment extends UserAttachment
     public void sendPreview()
     {
         this.preview.send(this.getHolder());
+    }
+
+    public ShowParameter getShowParameter()
+    {
+        return showParameters.poll();
+    }
+
+    public void queueShowParameter(ShowParameter show)
+    {
+        this.showParameters.add(show);
     }
 }
 

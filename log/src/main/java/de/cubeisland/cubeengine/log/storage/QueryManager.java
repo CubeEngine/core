@@ -215,7 +215,7 @@ public class QueryManager
                         switch (queryAction)
                         {
                             case SHOW:
-                                lookup.show(user, 1);
+                                lookup.show(user);
                                    return;
                             case ROLLBACK:
                                 lookup.rollback(user, false);

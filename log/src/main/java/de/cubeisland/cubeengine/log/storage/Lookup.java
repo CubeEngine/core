@@ -93,11 +93,11 @@ public class Lookup implements Cloneable
         return lookup;
     }
 
-    public void show(User user, int page)
+    public void show(User user)
     {
         LogAttachment attachment = user.attachOrGet(LogAttachment.class, this.module);
         attachment.setCommandLookup(this);
-        this.queryResults.show(user,queryParameter,page);
+        this.queryResults.show(user,queryParameter,attachment.getShowParameter());
     }
 
     public void setQueryResults(QueryResults queryResults)

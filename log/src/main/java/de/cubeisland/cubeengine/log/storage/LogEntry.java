@@ -250,4 +250,9 @@ public class LogEntry implements Comparable<LogEntry>
         }
         return bukkitLoc;
     }
+
+    public void clearAttached()
+    {
+        this.attached.clear();
+    }
 }

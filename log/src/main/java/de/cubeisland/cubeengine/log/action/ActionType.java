@@ -38,6 +38,7 @@ import de.cubeisland.cubeengine.log.storage.LogEntry;
 import de.cubeisland.cubeengine.log.storage.LogManager;
 import de.cubeisland.cubeengine.log.storage.QueryParameter;
 import de.cubeisland.cubeengine.log.storage.QueuedLog;
+import de.cubeisland.cubeengine.log.storage.ShowParameter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -126,8 +127,9 @@ public abstract class ActionType
      * @param user
      * @param params
      * @param logEntry
+     * @param show
      */
-    public abstract void showLogEntry(User user, QueryParameter params, LogEntry logEntry);
+    public abstract void showLogEntry(User user, QueryParameter params, LogEntry logEntry, ShowParameter show);
 
     /**
      * Returns true if the given log-entries can be put together to minimize output

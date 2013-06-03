@@ -33,6 +33,7 @@ import de.cubeisland.cubeengine.log.Log;
 import de.cubeisland.cubeengine.log.LogAttachment;
 import de.cubeisland.cubeengine.log.commands.LogCommands;
 import de.cubeisland.cubeengine.log.storage.Lookup;
+import de.cubeisland.cubeengine.log.storage.ShowParameter;
 
 public class ToolListener implements Listener
 {
@@ -79,7 +80,8 @@ public class ToolListener implements Listener
             {
                 return;
             }
-            Lookup lookup = user.attachOrGet(LogAttachment.class,this.module).getLookup(item.getType());
+            LogAttachment attachment = user.attachOrGet(LogAttachment.class,this.module);
+            Lookup lookup = attachment.getLookup(item.getType());
             if (lookup == null)
             {
                 user.sendTranslated("&cInvalid LoggingTool-Block!");
@@ -91,9 +93,11 @@ public class ToolListener implements Listener
             lookup.getQueryParameter().setSingleLocations(loc);
             //-----------
             lookup.getQueryParameter().since(System.currentTimeMillis() - TimeUnit.DAYS.toMillis(30)); //TODO this in block creation
-            lookup.getQueryParameter().setPerPageLimit(8);
             //-----------
-            this.module.getLogManager().fillLookupAndShow(lookup,user);
+            ShowParameter show = new ShowParameter();
+            show.showCoords = false;
+            attachment.queueShowParameter(show);
+            this.module.getLogManager().fillLookupAndShow(lookup, user);
             event.setCancelled(true);
             event.setUseItemInHand(Result.DENY);
             event.setUseInteractedBlock(Result.DENY);
