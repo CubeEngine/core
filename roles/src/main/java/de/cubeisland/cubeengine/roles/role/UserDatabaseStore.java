@@ -38,7 +38,7 @@ public class UserDatabaseStore extends UserDataStore
 
     public UserDatabaseStore(RolesAttachment attachment, long worldID, RolesManager manager)
     {
-        super(attachment,worldID);
+        super(attachment, worldID);
         this.rm = manager.rm;
         this.mdm = manager.mdm;
         this.pm = manager.pm;

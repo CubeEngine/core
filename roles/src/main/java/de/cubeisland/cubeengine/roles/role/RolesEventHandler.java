@@ -92,7 +92,7 @@ public class RolesEventHandler implements Listener
     {
         RolesAttachment rolesAttachment = this.rolesManager.getRolesAttachment(event.getUser());
         rolesAttachment.flushResolvedData();
-        rolesAttachment.getResolvedData(); // Pre-calculate
+        rolesAttachment.getCurrentResolvedData(); // Pre-calculate
         rolesAttachment.apply();
     }
 }
