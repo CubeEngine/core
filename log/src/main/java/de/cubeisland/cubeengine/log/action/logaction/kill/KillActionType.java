@@ -17,7 +17,9 @@
  */
 package de.cubeisland.cubeengine.log.action.logaction.kill;
 
+import org.bukkit.DyeColor;
 import org.bukkit.Location;
+import org.bukkit.entity.Ageable;
 import org.bukkit.entity.Animals;
 import org.bukkit.entity.EnderDragon;
 import org.bukkit.entity.Entity;
@@ -25,12 +27,16 @@ import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Ghast;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Monster;
+import org.bukkit.entity.Ocelot;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
+import org.bukkit.entity.Sheep;
 import org.bukkit.entity.Skeleton;
 import org.bukkit.entity.Tameable;
 import org.bukkit.entity.Villager;
+import org.bukkit.entity.Villager.Profession;
 import org.bukkit.entity.Wither;
+import org.bukkit.entity.Wolf;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
@@ -38,6 +44,7 @@ import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.inventory.ItemStack;
 
+import de.cubeisland.cubeengine.core.CubeEngine;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.log.LogAttachment;
 import de.cubeisland.cubeengine.log.action.logaction.ActionTypeContainer;
@@ -45,6 +52,8 @@ import de.cubeisland.cubeengine.log.action.logaction.ItemDrop;
 import de.cubeisland.cubeengine.log.action.logaction.SimpleLogActionType;
 import de.cubeisland.cubeengine.log.storage.ItemData;
 import de.cubeisland.cubeengine.log.storage.LogEntry;
+
+import com.fasterxml.jackson.databind.JsonNode;
 
 import static org.bukkit.event.entity.EntityDamageEvent.DamageCause.PROJECTILE;
 
@@ -235,7 +244,55 @@ public class KillActionType extends ActionTypeContainer
             int id = (int)-logEntry.getData();
             EntityType entityType = EntityType.fromId(id);
             Entity entity = location.getWorld().spawnEntity(location, entityType);
+            applySerializedData(entity, logEntry.getAdditional());
         }
         return true;
+    }
+
+    private static void applySerializedData(Entity entity, JsonNode json)
+    {
+        if (entity instanceof Ageable)
+        {
+            if (json.get("isAdult").asBoolean())
+            {
+                ((Ageable)entity).setAdult();
+            }
+            else
+            {
+                ((Ageable)entity).setBaby();
+            }
+        }
+        if (entity instanceof Ocelot)
+        {
+            ((Ocelot)entity).setSitting(json.get("isSit").asBoolean());
+        }
+        if (entity instanceof Wolf)
+        {
+            ((Wolf)entity).setSitting(json.get("isSit").asBoolean());
+            DyeColor color = DyeColor.valueOf(json.get("color").asText());
+            ((Wolf)entity).setCollarColor(color);
+        }
+        if (entity instanceof Sheep)
+        {
+            DyeColor color = DyeColor.valueOf(json.get("color").asText());
+            ((Sheep)entity).setColor(color);
+        }
+        if (entity instanceof Villager)
+        {
+            Profession profession = Profession.valueOf(json.get("prof").asText());
+            ((Villager)entity).setProfession(profession);
+        }
+        if (entity instanceof Tameable && ((Tameable) entity).isTamed())
+        {
+            JsonNode owner = json.get("owner");
+            if (owner != null)
+            {
+                User user = CubeEngine.getUserManager().getUser(owner.asText(), false);
+                if (user != null)
+                {
+                    ((Tameable)entity).setOwner(user);
+                }
+            }
+        }
     }
 }
