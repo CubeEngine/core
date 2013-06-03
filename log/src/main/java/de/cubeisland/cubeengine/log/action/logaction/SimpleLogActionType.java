@@ -43,7 +43,7 @@ public abstract class SimpleLogActionType extends LogActionType
 
     public void logSimple(Location location, Entity causer, Entity data, String additional)
     {
-        this.queueLog(location,causer,null,-1L * data.getType().getTypeId(), null,null,additional);
+        this.queueLog(location, causer, null, -1L * data.getType().getTypeId(), null, null, additional);
     }
 
     public String serializeData(EntityDamageEvent.DamageCause cause, Entity entity, DyeColor newColor)
@@ -93,6 +93,7 @@ public abstract class SimpleLogActionType extends LogActionType
         {
             json.put("nColor", newColor.name());
         }
+        json.put("UUID", entity.getUniqueId().toString()); // TODO this makes rollback for dying etc possible
         return json.toString();
     }
 

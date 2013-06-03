@@ -76,10 +76,8 @@ public class KillActionType extends ActionTypeContainer
         super("KILL");
     }
 
-    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
-    public void onEntityDeath(EntityDeathEvent event)
+    private void logDeathDrops(EntityDeathEvent event)
     {
-        LivingEntity killed = event.getEntity();
         if (!event.getDrops().isEmpty()) // TODO log drops later
         {
             ItemDrop itemDrop = this.manager.getActionType(ItemDrop.class);
@@ -88,10 +86,16 @@ public class KillActionType extends ActionTypeContainer
                 for (ItemStack itemStack : event.getDrops())
                 {
                     String itemData = new ItemData(itemStack).serialize(this.om);
-                    itemDrop.logSimple(killed,itemData);
+                    itemDrop.logSimple(event.getEntity(),itemData);
                 }
             }
         }
+    }
+
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    public void onEntityDeath(EntityDeathEvent event)
+    {
+        LivingEntity killed = event.getEntity();
         Location location = event.getEntity().getLocation();
         SimpleLogActionType actionType;
         if (killed instanceof Player)
@@ -128,6 +132,7 @@ public class KillActionType extends ActionTypeContainer
         EntityDamageEvent dmgEvent = killed.getLastDamageCause();
         if (dmgEvent == null)
         {
+            this.logDeathDrops(event);
             return; // should not happen anymore (but i'll leave it in to prevent NPE)
         }
         String additionalData = actionType.serializeData(dmgEvent.getCause(), killed,null);
@@ -142,6 +147,7 @@ public class KillActionType extends ActionTypeContainer
                 {
                     if (false) //TODO player is Killer
                     {
+                        this.logDeathDrops(event);
                         return;
                     }
                 }
@@ -149,6 +155,7 @@ public class KillActionType extends ActionTypeContainer
                 {
                     if (false) //TODO monster is Killer
                     {
+                        this.logDeathDrops(event);
                         return;
                     }
                 }
@@ -156,12 +163,14 @@ public class KillActionType extends ActionTypeContainer
                 {
                     if (false) //TODO boss is Killer
                     {
+                        this.logDeathDrops(event);
                         return;
                     }
                 }
                 else // Projectile shot by Dispenser
                 {
                     System.out.print("Unknown Shooter: "+ ((Projectile) damager).getShooter());
+                    this.logDeathDrops(event);
                     return;
                 }
             }
@@ -171,6 +180,7 @@ public class KillActionType extends ActionTypeContainer
                 {
                     if (false) //TODO player is Killer
                     {
+                        this.logDeathDrops(event);
                         return;
                     }
                 }
@@ -178,6 +188,7 @@ public class KillActionType extends ActionTypeContainer
                 {
                     if (false) //TODO boss is Killer
                     {
+                        this.logDeathDrops(event);
                         return;
                     }
                 }
@@ -185,6 +196,7 @@ public class KillActionType extends ActionTypeContainer
                 {
                     if (false) //TODO monster is Killer
                     {
+                        this.logDeathDrops(event);
                         return;
                     }
                 }
@@ -195,11 +207,13 @@ public class KillActionType extends ActionTypeContainer
         {
             if (false) //TODO environement is Killer
             {
+                this.logDeathDrops(event);
                 return;
             }
             causer = null;
         }
         actionType.logSimple(location,causer,killed,additionalData);
+        this.logDeathDrops(event);
     }
 
 
