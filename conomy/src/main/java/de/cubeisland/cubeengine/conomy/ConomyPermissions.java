@@ -39,11 +39,7 @@ public class ConomyPermissions extends PermissionContainer<Conomy>
     public static final Permission USER_ALLOWUNDERMIN = ACCOUNT_USER.createChild("allow-under-min");
     public static final Permission USER_SHOWHIDDEN = ACCOUNT_USER.createChild("show-hidden");
 
-    private static final Permission ACCOUNT_BANK = ACCOUNT.createAbstractChild("bank");
 
-    private static final Permission BANK_DELETE = ACCOUNT_BANK.createAbstractChild("delete");
-    public static final Permission BANK_DELETE_OWN = BANK_DELETE.createChild("own");
-    public static final Permission BANK_DELETE_OTHER = BANK_DELETE.createChild("other");
 
     private static final Permission COMMAND = Permission.createAbstractPermission("command");
     private static final Permission COMMAND_MONEY_PAY = COMMAND.createAbstractChild("money").createAbstractChild("pay");
@@ -67,6 +63,10 @@ public class ConomyPermissions extends PermissionContainer<Conomy>
     public static Permission COMMAND_BANK_DEPOSIT_FORCE = COMMAND_BANK.createAbstractChild("deposit").createChild("force");
     public static Permission COMMAND_BANK_WITHDRAW_FORCE = COMMAND_BANK.createAbstractChild("withdraw").createChild("force");
     public static Permission COMMAND_BANK_PAY_FORCE  = COMMAND_BANK.createAbstractChild("pay").createChild("force");
+
+    private static Permission COMMAND_BANK_DELETE = COMMAND_BANK.createAbstractChild("delete");
+    public static final Permission COMMAND_BANK_DELETE_OWN = COMMAND_BANK_DELETE.createChild("own");// TODO use me
+    public static final Permission COMMAND_BANK_DELETE_OTHER = COMMAND_BANK_DELETE.createChild("other"); // TODO use me
 
     private static final Permission COMMAND_ECO_CREATE = COMMAND.createAbstractChild("eco").createAbstractChild("create");
     public static final Permission ECO_CREATE_OTHER = COMMAND_ECO_CREATE.createChild("other");

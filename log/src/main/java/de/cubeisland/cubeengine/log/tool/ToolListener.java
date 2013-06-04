@@ -44,6 +44,7 @@ public class ToolListener implements Listener
         this.module = module;
     }
 
+    // TODO permissions for the tools
     @EventHandler
     public void onClick(PlayerInteractEvent event)
     {
