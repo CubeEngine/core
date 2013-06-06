@@ -98,12 +98,12 @@ public class BlockShift extends BlockActionType
     {
         if (logEntry.hasAttached())
         {
-            user.sendTranslated("%s&6%s&a got moved away by a Piston &6%d times%s&a!",
+            user.sendTranslated("%s&6%s&a got moved away by a Piston &6%d times%s&a",
                     time,logEntry.getOldBlock(),logEntry.getAttached().size(),loc);
         }
         else
         {
-            user.sendTranslated("%s&6%s&a got moved away by a Piston%s&a!",
+            user.sendTranslated("%s&6%s&a got moved away by a Piston%s&a",
                                 time,logEntry.getOldBlock(),loc);
         }
     }

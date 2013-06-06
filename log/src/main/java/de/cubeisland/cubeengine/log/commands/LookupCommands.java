@@ -38,7 +38,7 @@ import de.cubeisland.cubeengine.log.Log;
 import de.cubeisland.cubeengine.log.LogAttachment;
 import de.cubeisland.cubeengine.log.action.ActionType;
 import de.cubeisland.cubeengine.log.action.ActionTypeManager;
-import de.cubeisland.cubeengine.log.storage.BlockData;
+import de.cubeisland.cubeengine.log.storage.ImmutableBlockData;
 import de.cubeisland.cubeengine.log.storage.Lookup;
 import de.cubeisland.cubeengine.log.storage.QueryParameter;
 import de.cubeisland.cubeengine.log.storage.ShowParameter;
@@ -115,202 +115,33 @@ public class LookupCommands
     // TODO param to limit query results (default ~10k) ?
     public void lookup(ParameterizedContext context)
     {
+        // TODO show all selected params of last lookup
         if (context.hasArg(0) && context.getString(0).equalsIgnoreCase("params"))
         {
             this.params(context);
         }
         else if (context.getSender() instanceof User)
         {
-            ShowParameter show = new ShowParameter();
             User user = (User)context.getSender();
             LogAttachment attachment = user.attachOrGet(LogAttachment.class,this.module);
-            Lookup lookup = attachment.getCommandLookup();
-            show.showCoords = context.hasFlag("coords");
-            show.showDate = !context.hasFlag("nd");
-            show.compress = !context.hasFlag("det");
-            if (context.hasParam("limit"))
+            ShowParameter show = attachment.getLastShowParameter(); // gets last OR new Showparameter
+            Lookup lookup = attachment.getLastLookup();
+            if (!this.fillShowOptions(attachment, lookup, show, context)) // /lookup show / page <page>
             {
-                Integer limit = context.getParam("limit", null);
-                if (limit == null)
-                {
-                    return;
-                }
-                if (limit > 100)
-                {
-                    context.sendTranslated("&eYour page-limit is to high! Showing 100 logs per page.");
-                    limit = 100;
-                }
-                show.pagelimit = limit;
-            }
-            if (context.hasArg(0))
-            {
-                if (context.getString(0).equalsIgnoreCase("show"))
-                {
-                    if (lookup.queried())
-                    {
-                        attachment.queueShowParameter(show);
-                        lookup.show(user);
-                    }
-                    else
-                    {
-                        context.sendTranslated("&cYou have to do a query first!");
-                    }
-                    return;
-                }
                 return;
             }
-            if (context.hasParam("page"))
-            {
-                if (lookup.queried())
-                {
-                    Integer page = context.getParam("page",null);
-                    if (page == null)
-                    {
-                        context.sendTranslated("&cInvalid page!");
-                        return;
-                    }
-                    show.page = page;
-                    attachment.queueShowParameter(show);
-                    lookup.show(user);
-                }
-                else
-                {
-                    context.sendTranslated("&cYou have to do a query first!");
-                }
-                return;
-            }
-            attachment.clearLookups(); // TODO only clear cmdlookup
-            lookup = attachment.getCommandLookup();
+            lookup = attachment.createNewCommandLookup();
             QueryParameter params = lookup.getQueryParameter();
-            if (context.hasParam("action"))
+            if (! (this.readActions(params, context.getString("action"), user)
+            && this.readRadius(params, context.getString("radius"), user)
+            && this.readUser(params, context.getString("user"), user)
+            && this.readBlocks(params, context.getString("block"), user)
+            && this.readEntities(params, context.getString("entity"), user)
+            && this.readWorld(params, context.getString("world"), context.hasParam("radius"), user)
+            && this.readTimeSince(params, context.getString("since"), user)
+            && this.readTimeBefore(params, context.getString("before"), user)))
             {
-                if (!this.readActions(params, context.getString("action"), user))
-                {
-                    return;
-                }
-            }
-            if (context.hasParam("radius"))
-            {
-                String radiusString = context.getString("radius");
-                if (radiusString.equalsIgnoreCase("selection")|| radiusString.equalsIgnoreCase("sel"))
-                {
-                    LogAttachment logAttachment = user.attachOrGet(LogAttachment.class, this.module);
-                    if (!logAttachment.applySelection(params))
-                    {
-                        context.sendTranslated("&cYou have to select a region first!");
-                        if (module.hasWorldEdit())
-                        {
-                            context.sendTranslated("&eUse worldedit to select a cuboid region!");
-                        }
-                        else
-                        {
-                            context.sendTranslated("&eUse this selection wand."); // TODO give selectionwand for CE
-                            LogCommands.giveSelectionTool(user);
-                        }
-                        return;
-                    }
-                }
-                else if (radiusString.equalsIgnoreCase("global") || radiusString.equalsIgnoreCase("g"))
-                {
-                    params.setWorld(user.getWorld());
-                }
-                else
-                {
-                    User radiusUser = null;
-                    Integer radius;
-                    if (radiusString.contains(":"))
-                    {
-                        radiusUser = this.module.getCore().getUserManager().findUser(radiusString.substring(0,radiusString.indexOf(":")));
-                        if (radiusUser == null)
-                        {
-                            context.sendTranslated("&cInvalid radius/location selection");
-                            context.sendTranslated("&aThe radius parameter can be: <radius> | selection | global | <player>[:<radius>]");
-                            return;
-                        }
-                        radiusString = radiusString.substring(radiusString.indexOf(":")+1);
-                    }
-                    try
-                    {
-                        radius = Integer.parseInt(radiusString);
-                        if (radiusUser == null)
-                        {
-                            radiusUser = user;
-                        }
-                        params.setLocationRadius(radiusUser.getLocation(), radius);
-                    }
-                    catch (NumberFormatException ex)
-                    {
-                        radiusUser = this.module.getCore().getUserManager().findUser(radiusString);
-                        if (radiusUser == null)
-                        {
-                            context.sendTranslated("&cInvalid radius/location selection");
-                            context.sendTranslated("&aThe radius parameter can be: <radius> | selection | global | <player>[:<radius>]");
-                            return;
-                        }
-                        params.setWorld(radiusUser.getWorld());
-                    }
-                }
-            }
-            if (context.hasParam("user"))
-            {
-                if (!this.readUser(params, context.getString("user"), user))
-                {
-                    return;
-                }
-            }
-            if (context.hasParam("block"))
-            {
-                if (!this.readBlocks(params, context.getString("block"), user))
-                {
-                    return;
-                }
-            }
-            if (context.hasParam("entity"))
-            {
-                if (!this.readEntities(params, context.getString("entity"), user))
-                {
-                    return;
-                }
-            }
-            // TODO date too
-            try
-            {
-                if (context.hasParam("since"))
-                {
-                    long since = StringUtils.convertTimeToMillis(context.getString("since"));
-                    params.since(System.currentTimeMillis() - since);
-                }
-                else
-                {
-                    params.since(System.currentTimeMillis() - TimeUnit.DAYS.toMillis(30)); // defaulted to last 30 days
-                }
-                if (context.hasParam("before"))
-                {
-                    long before = StringUtils.convertTimeToMillis(context.getString("since"));
-                    params.before(System.currentTimeMillis() - before);
-                }
-            }
-            catch (ConversionException e)
-            {
-                context.sendTranslated("&6%s&c is not a valid time value!", context.getString("since"));
                 return;
-            }
-            if (context.hasParam("world"))
-            {
-                if (context.hasParam("radius"))
-                {
-                    context.sendTranslated("&cYou cannot define a radius or selection and a world.");
-                }
-                else
-                {
-                    World world = user.getServer().getWorld(context.getString("world"));
-                    if (world == null)
-                    {
-                        context.sendTranslated("&cUnkown world: &6%s", context.getString("world"));
-                        return;
-                    }
-                    params.setWorld(world);
-                }
             }
             attachment.queueShowParameter(show);
             this.module.getLogManager().fillLookupAndShow(lookup, user);
@@ -348,138 +179,18 @@ public class LookupCommands
             }
             User user = (User)context.getSender();
             LogAttachment attachment = user.attachOrGet(LogAttachment.class,this.module);
-            attachment.clearLookups(); // TODO only clear cmdlookup
-            Lookup lookup = attachment.getCommandLookup();
+            Lookup lookup = attachment.createNewCommandLookup();
             QueryParameter params = lookup.getQueryParameter();
-            if (context.hasParam("action"))
+            if (! (this.readActions(params, context.getString("action"), user)
+                && this.readRadius(params, context.getString("radius"), user)
+                && this.readUser(params, context.getString("user"), user)
+                && this.readBlocks(params, context.getString("block"), user)
+                && this.readEntities(params, context.getString("entity"), user)
+                && this.readWorld(params, context.getString("world"), context.hasParam("radius"), user)
+                && this.readTimeSince(params, context.getString("since"), user)
+                && this.readTimeBefore(params, context.getString("before"), user)))
             {
-                if (!this.readActions(params, context.getString("action"), user))
-                {
-                    return;
-                }
-            }
-            if (context.hasParam("radius"))
-            {
-                String radiusString = context.getString("radius");
-                if (radiusString.equalsIgnoreCase("selection")|| radiusString.equalsIgnoreCase("sel"))
-                {
-                    LogAttachment logAttachment = user.attachOrGet(LogAttachment.class, this.module);
-                    if (!logAttachment.applySelection(params))
-                    {
-                        context.sendTranslated("&cYou have to select a region first!");
-                        if (module.hasWorldEdit())
-                        {
-                            context.sendTranslated("&eUse worldedit to select a cuboid region!");
-                        }
-                        else
-                        {
-                            context.sendTranslated("&eUse this selection wand.");
-                            LogCommands.giveSelectionTool(user);
-                        }
-                        return;
-                    }
-                }
-                else if (radiusString.equalsIgnoreCase("global") || radiusString.equalsIgnoreCase("g"))
-                {
-                    params.setWorld(user.getWorld());
-                }
-                else
-                {
-                    User radiusUser = null;
-                    Integer radius;
-                    if (radiusString.contains(":"))
-                    {
-                        radiusUser = this.module.getCore().getUserManager().findUser(radiusString.substring(0,radiusString.indexOf(":")));
-                        if (radiusUser == null)
-                        {
-                            context.sendTranslated("&cInvalid radius/location selection");
-                            context.sendTranslated("&aThe radius parameter can be: <radius> | selection | global | <player>[:<radius>]");
-                            return;
-                        }
-                        radiusString = radiusString.substring(radiusString.indexOf(":")+1);
-                    }
-                    try
-                    {
-                        radius = Integer.parseInt(radiusString);
-                        if (radiusUser == null)
-                        {
-                            radiusUser = user;
-                        }
-                        params.setLocationRadius(radiusUser.getLocation(), radius);
-                    }
-                    catch (NumberFormatException ex)
-                    {
-                        radiusUser = this.module.getCore().getUserManager().findUser(radiusString);
-                        if (radiusUser == null)
-                        {
-                            context.sendTranslated("&cInvalid radius/location selection");
-                            context.sendTranslated("&aThe radius parameter can be: <radius> | selection | global | <player>[:<radius>]");
-                            return;
-                        }
-                        params.setWorld(radiusUser.getWorld());
-                    }
-                }
-            }
-            if (context.hasParam("user"))
-            {
-                if (!this.readUser(params, context.getString("user"), user))
-                {
-                    return;
-                }
-            }
-            if (context.hasParam("block"))
-            {
-                if (!this.readBlocks(params, context.getString("block"), user))
-                {
-                    return;
-                }
-            }
-            if (context.hasParam("entity"))
-            {
-                if (!this.readEntities(params, context.getString("entity"), user))
-                {
-                    return;
-                }
-            }
-            // TODO date too
-            try
-            {
-                if (context.hasParam("since"))
-                {
-                    long since = StringUtils.convertTimeToMillis(context.getString("since"));
-                    params.since(System.currentTimeMillis() - since);
-                }
-                else
-                {
-                    params.since(System.currentTimeMillis() - TimeUnit.DAYS.toMillis(30L)); // defaulted to last 30 days
-                }
-                if (context.hasParam("before"))
-                {
-                    long before =StringUtils.convertTimeToMillis(context.getString("since"));
-                    params.before(System.currentTimeMillis() - before);
-                }
-            }
-            catch (ConversionException e)
-            {
-                context.sendTranslated("&6%s&c is not a valid time value!", context.getString("since"));
                 return;
-            }
-            if (context.hasParam("world"))
-            {
-                if (context.hasParam("radius"))
-                {
-                    context.sendTranslated("&cYou cannot define a radius or selection and a world.");
-                }
-                else
-                {
-                    World world = user.getServer().getWorld(context.getString("world"));
-                    if (world == null)
-                    {
-                        context.sendTranslated("&cUnkown world: &6%s", context.getString("world"));
-                        return;
-                    }
-                    params.setWorld(world);
-                }
             }
             if (context.hasFlag("pre"))
             {
@@ -492,8 +203,188 @@ public class LookupCommands
         }
     }
 
+    private boolean readTimeBefore(QueryParameter params, String beforeString, User user)
+    {
+        try
+        { // TODO date too
+            if (beforeString == null) return true;
+            long before = StringUtils.convertTimeToMillis(beforeString);
+            params.before(System.currentTimeMillis() - before);
+            return true;
+        }
+        catch (ConversionException e)
+        {
+            user.sendTranslated("&6%s&c is not a valid time value!", beforeString);
+            return false;
+        }
+    }
+
+    private boolean readTimeSince(QueryParameter params, String sinceString, User user)
+    {
+        try
+        {
+            if (sinceString != null)
+            { // TODO date too
+                long since = StringUtils.convertTimeToMillis(sinceString);
+                params.since(System.currentTimeMillis() - since);
+            }
+            else
+            {
+                params.since(System.currentTimeMillis() - TimeUnit.DAYS.toMillis(30)); // defaulted to last 30 days
+            }
+            return true;
+        }
+        catch (ConversionException e)
+        {
+            user.sendTranslated("&6%s&c is not a valid time value!", sinceString);
+            return false;
+        }
+    }
+
+    private boolean readWorld(QueryParameter params, String worldString, boolean hasRadius, User user)
+    {
+        if (worldString == null) return true;
+        if (hasRadius)
+        {
+            user.sendTranslated("&cYou cannot define a radius or selection and a world.");
+            return false;
+        }
+        World world = user.getServer().getWorld(worldString);
+        if (world == null)
+        {
+            user.sendTranslated("&cUnkown world: &6%s", worldString);
+            return false;
+        }
+        params.setWorld(world);
+        return true;
+    }
+
+    private boolean readRadius(QueryParameter params, String radiusString, User user)
+    {
+        if (radiusString == null) return true;
+        if (radiusString.equalsIgnoreCase("selection")|| radiusString.equalsIgnoreCase("sel"))
+        {
+            LogAttachment logAttachment = user.attachOrGet(LogAttachment.class, this.module);
+            if (!logAttachment.applySelection(params))
+            {
+                user.sendTranslated("&cYou have to select a region first!");
+                if (module.hasWorldEdit())
+                {
+                    user.sendTranslated("&eUse worldedit to select a cuboid region!");
+                }
+                else
+                {
+                    user.sendTranslated("&eUse this selection wand."); // TODO give selectionwand for CE
+                    LogCommands.giveSelectionTool(user);
+                }
+                return false;
+            }
+        }
+        else if (radiusString.equalsIgnoreCase("global") || radiusString.equalsIgnoreCase("g"))
+        {
+            params.setWorld(user.getWorld());
+        }
+        else
+        {
+            User radiusUser = null;
+            Integer radius;
+            if (radiusString.contains(":"))
+            {
+                radiusUser = this.module.getCore().getUserManager().findUser(radiusString.substring(0,radiusString.indexOf(":")));
+                if (radiusUser == null)
+                {
+                    user.sendTranslated("&cInvalid radius/location selection");
+                    user.sendTranslated("&aThe radius parameter can be: <radius> | selection | global | <player>[:<radius>]");
+                    return false;
+                }
+                radiusString = radiusString.substring(radiusString.indexOf(":")+1);
+            }
+            try
+            {
+                radius = Integer.parseInt(radiusString);
+                if (radiusUser == null)
+                {
+                    radiusUser = user;
+                }
+                params.setLocationRadius(radiusUser.getLocation(), radius);
+            }
+            catch (NumberFormatException ex)
+            {
+                radiusUser = this.module.getCore().getUserManager().findUser(radiusString);
+                if (radiusUser == null)
+                {
+                    user.sendTranslated("&cInvalid radius/location selection");
+                    user.sendTranslated("&aThe radius parameter can be: <radius> | selection | global | <player>[:<radius>]");
+                    return false;
+                }
+                params.setWorld(radiusUser.getWorld());
+            }
+        }
+        return true;
+    }
+
+    private boolean fillShowOptions(LogAttachment attachment, Lookup lookup, ShowParameter show, ParameterizedContext context)
+    {
+        show.showCoords = context.hasFlag("coords");
+        show.showDate = !context.hasFlag("nd");
+        show.compress = !context.hasFlag("det");
+        if (context.hasParam("limit"))
+        {
+            Integer limit = context.getParam("limit", null);
+            if (limit == null)
+            {
+                return false;
+            }
+            if (limit > 100)
+            {
+                context.sendTranslated("&eYour page-limit is to high! Showing 100 logs per page.");
+                limit = 100;
+            }
+            show.pagelimit = limit;
+        }
+        if (context.hasArg(0))
+        {
+            if (context.getString(0).equalsIgnoreCase("show"))
+            {
+                if (lookup != null && lookup.queried())
+                {
+                    attachment.queueShowParameter(show);
+                    lookup.show(attachment.getHolder());
+                }
+                else
+                {
+                    context.sendTranslated("&cYou have to do a query first!");
+                }
+                return false;
+            }
+            return false;
+        }
+        if (context.hasParam("page"))
+        {
+            if (lookup != null && lookup.queried())
+            {
+                Integer page = context.getParam("page",null);
+                if (page == null)
+                {
+                    context.sendTranslated("&cInvalid page!");
+                    return false;
+                }
+                show.page = page;
+                attachment.queueShowParameter(show);
+                lookup.show(attachment.getHolder());
+            }
+            else
+            {
+                context.sendTranslated("&cYou have to do a query first!");
+            }
+            return false;
+        }
+        return true;
+    }
+
     private boolean readUser(QueryParameter params, String userString, User user)
     {
+        if (userString == null) return true;
         String[] users = StringUtils.explode(",", userString);
         for (String name : users)
         {
@@ -522,6 +413,7 @@ public class LookupCommands
 
     private boolean readBlocks(QueryParameter params, String block, User user)
     {
+        if (block == null) return true;
         String[] names = StringUtils.explode(",", block);
         for (String name : names)
         {
@@ -551,7 +443,7 @@ public class LookupCommands
                 user.sendTranslated("&cUnknown Material: &6%s", name);
                 return false;
             }
-            BlockData blockData = new BlockData(material, data);
+            ImmutableBlockData blockData = new ImmutableBlockData(material, data);
             if (negate)
             {
                 params.excludeBlock(blockData);
@@ -566,6 +458,7 @@ public class LookupCommands
 
     private boolean readEntities(QueryParameter params, String entity, User user)
     {
+        if (entity == null) return true;
         String[] names = StringUtils.explode(",", entity);
         for (String name : names)
         {
@@ -595,6 +488,7 @@ public class LookupCommands
 
     private boolean readActions(QueryParameter params, String input, User user)
     {
+        if (input == null) return true;
         String[] inputs = StringUtils.explode(",", input);
         for (String actionString : inputs)
         {

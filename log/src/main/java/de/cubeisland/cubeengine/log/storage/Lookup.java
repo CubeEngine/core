@@ -18,6 +18,7 @@
 package de.cubeisland.cubeengine.log.storage;
 
 import java.util.HashSet;
+import java.util.concurrent.TimeUnit;
 
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.log.Log;
@@ -47,6 +48,7 @@ public class Lookup implements Cloneable
         Lookup lookup = new Lookup(module);
         lookup.queryParameter = new QueryParameter(module);
         lookup.queryParameter.setActions(new HashSet<ActionType>(), false); // exclude none
+        lookup.queryParameter.since(System.currentTimeMillis() - TimeUnit.DAYS.toMillis(30));
         return lookup;
     }
     /**
@@ -57,6 +59,7 @@ public class Lookup implements Cloneable
         Lookup lookup = new Lookup(module);
         lookup.queryParameter = new QueryParameter(module);
         lookup.queryParameter.setActions(Category.INVENTORY.getActionTypes(), true); // include inv
+        lookup.queryParameter.since(System.currentTimeMillis() - TimeUnit.DAYS.toMillis(30));
         return lookup;
     }
 
@@ -67,7 +70,8 @@ public class Lookup implements Cloneable
     {
         Lookup lookup = new Lookup(module);
         lookup.queryParameter = new QueryParameter(module);
-        lookup.queryParameter.setActions(Category.KILL.getActionTypes(), true); // include kils
+        lookup.queryParameter.setActions(Category.KILL.getActionTypes(), true); // include kills
+        lookup.queryParameter.since(System.currentTimeMillis() - TimeUnit.DAYS.toMillis(30));
         return lookup;
     }
 
@@ -79,6 +83,7 @@ public class Lookup implements Cloneable
         Lookup lookup = new Lookup(module);
         lookup.queryParameter = new QueryParameter(module);
         lookup.queryParameter.setActions(Category.PLAYER.getActionTypes(), true); // include player
+        lookup.queryParameter.since(System.currentTimeMillis() - TimeUnit.DAYS.toMillis(30));
         return lookup;
     }
 
@@ -90,6 +95,7 @@ public class Lookup implements Cloneable
         Lookup lookup = new Lookup(module);
         lookup.queryParameter = new QueryParameter(module);
         lookup.queryParameter.setActions(Category.BLOCK.getActionTypes(), true); // include block
+        lookup.queryParameter.since(System.currentTimeMillis() - TimeUnit.DAYS.toMillis(30));
         return lookup;
     }
 

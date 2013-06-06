@@ -52,7 +52,7 @@ public class QueryParameter implements Cloneable
     // Entity
     Map<Integer, Boolean> entities = new ConcurrentHashMap<Integer, Boolean>();
     // Blocks
-    Map<BlockData, Boolean> blocks = new ConcurrentHashMap<BlockData, Boolean>();
+    Map<ImmutableBlockData, Boolean> blocks = new ConcurrentHashMap<ImmutableBlockData, Boolean>();
 
     public QueryParameter(Log module)
     {
@@ -196,21 +196,21 @@ public class QueryParameter implements Cloneable
         users.clear();
     }
 
-    public void setBlocks(Set<BlockData> blockDatas, boolean include)
+    public void setBlocks(Set<ImmutableBlockData> blockDatas, boolean include)
     {
         this.blocks.clear();
-        for (BlockData blockData : blockDatas)
+        for (ImmutableBlockData blockData : blockDatas)
         {
             this.blocks.put(blockData, include);
         }
     }
 
-    public void includeBlock(BlockData data)
+    public void includeBlock(ImmutableBlockData data)
     {
         this.blocks.put(data, true);
     }
 
-    public void excludeBlock(BlockData data)
+    public void excludeBlock(ImmutableBlockData data)
     {
         this.blocks.put(data, false);
     }
@@ -268,7 +268,7 @@ public class QueryParameter implements Cloneable
         params.actions = new ConcurrentHashMap<ActionType, Boolean>(actions);
         params.users = new ConcurrentHashMap<Long, Boolean>(users);
         params.entities = new ConcurrentHashMap<Integer, Boolean>(entities);
-        params.blocks = new ConcurrentHashMap<BlockData, Boolean>(blocks);
+        params.blocks = new ConcurrentHashMap<ImmutableBlockData, Boolean>(blocks);
         return params;
     }
 

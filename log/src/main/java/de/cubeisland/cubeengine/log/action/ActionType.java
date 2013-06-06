@@ -138,7 +138,10 @@ public abstract class ActionType
      * @param other
      * @return
      */
-    public abstract boolean isSimilar(LogEntry logEntry, LogEntry other);
+    public boolean isSimilar(LogEntry logEntry, LogEntry other)
+    {
+        return logEntry.actionType == other.actionType;
+    }
 
     public void setID(long id)
     {

@@ -38,6 +38,7 @@ import de.cubeisland.cubeengine.log.LogAttachment;
 import de.cubeisland.cubeengine.log.action.LogActionType;
 import de.cubeisland.cubeengine.log.action.logaction.block.player.BlockBreak;
 import de.cubeisland.cubeengine.log.action.logaction.block.player.HangingBreak;
+import de.cubeisland.cubeengine.log.storage.ImmutableBlockData;
 import de.cubeisland.cubeengine.log.storage.LogEntry;
 
 import com.fasterxml.jackson.databind.node.ArrayNode;
@@ -212,6 +213,7 @@ public abstract class BlockActionType extends LogActionType
     @Override
     public boolean isSimilar(LogEntry logEntry, LogEntry other)
     {
+        if (!super.isSimilar(logEntry, other)) return false;
         if ((logEntry.newBlock == other.newBlock || logEntry.newBlock.equals(other.newBlock))
             && logEntry.world == other.world
             && logEntry.causer == other.causer
@@ -251,7 +253,7 @@ public abstract class BlockActionType extends LogActionType
     @Override
     public boolean rollback(LogAttachment attachment, LogEntry logEntry, boolean force, boolean preview)
     {
-        de.cubeisland.cubeengine.log.storage.BlockData oldBlock = logEntry.getOldBlock();
+        ImmutableBlockData oldBlock = logEntry.getOldBlock();
         Block block = logEntry.getLocation().getBlock();
         BlockState state = block.getState();
         state.setType(oldBlock.material);

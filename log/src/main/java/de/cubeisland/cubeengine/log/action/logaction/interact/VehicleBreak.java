@@ -95,7 +95,7 @@ public class VehicleBreak extends SimpleLogActionType
     @Override
     protected void showLogEntry(User user, LogEntry logEntry, String time, String loc)
     {
-        user.sendTranslated("%s&2%s&a broke a &6%s%s&a!",
+        user.sendTranslated("%s&2%s&a broke a &6%s%s",
                             time, logEntry.getCauserUser() == null ?
                             logEntry.getCauserEntity() :
                             logEntry.getCauserUser().getDisplayName(),
@@ -105,6 +105,7 @@ public class VehicleBreak extends SimpleLogActionType
     @Override
     public boolean isSimilar(LogEntry logEntry, LogEntry other)
     {
+        if (!super.isSimilar(logEntry, other)) return false;
         return logEntry.world == other.world
             && logEntry.causer == other.causer
             && logEntry.data == other.data;

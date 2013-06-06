@@ -47,6 +47,7 @@ public class LogAttachment extends UserAttachment
     private Lookup blockLookup; // lookup with woodlog block
     private Lookup commandLookup; // lookup with command
     private Queue<ShowParameter> showParameters = new LinkedList<ShowParameter>();
+    private ShowParameter lastShowParameter;
 
     public void clearLookups()
     {
@@ -94,6 +95,23 @@ public class LogAttachment extends UserAttachment
         return this.playerLookup;
     }
 
+    public Lookup createNewCommandLookup()
+    {
+        this.commandLookup = Lookup.general((Log)this.getModule());
+        lastLookup = commandLookup;
+        return this.commandLookup;
+    }
+
+    public Lookup getCommandLookup()
+    {
+        if (commandLookup == null)
+        {
+            return this.createNewCommandLookup();
+        }
+        this.lastLookup = commandLookup;
+        return commandLookup;
+    }
+
     public Lookup createNewLookup(Material blockMaterial)
     {
         switch (blockMaterial)
@@ -109,7 +127,7 @@ public class LogAttachment extends UserAttachment
             case LOG:
                 return this.createNewBlockLookup();
             default:
-                return null; //TODO command lookup
+                return null;
         }
     }
 
@@ -143,15 +161,6 @@ public class LogAttachment extends UserAttachment
         return lookup;
     }
 
-    public Lookup getCommandLookup()
-    {
-        if (commandLookup == null)
-        {
-            this.commandLookup = Lookup.general((Log)this.getModule());
-        }
-        this.lastLookup = commandLookup;
-        return commandLookup;
-    }
 
     public void setCommandLookup(Lookup commandLookup)
     {
@@ -244,12 +253,31 @@ public class LogAttachment extends UserAttachment
 
     public ShowParameter getShowParameter()
     {
-        return showParameters.poll();
+        this.lastShowParameter = showParameters.poll();
+        if (this.lastShowParameter == null)
+        {
+            return new ShowParameter();
+        }
+        return this.lastShowParameter;
     }
 
     public void queueShowParameter(ShowParameter show)
     {
         this.showParameters.add(show);
+    }
+
+    public ShowParameter getLastShowParameter()
+    {
+        if (this.lastShowParameter == null)
+        {
+            this.lastShowParameter = new ShowParameter();
+        }
+        return lastShowParameter;
+    }
+
+    public Lookup getLastLookup()
+    {
+        return this.lastLookup;
     }
 }
 

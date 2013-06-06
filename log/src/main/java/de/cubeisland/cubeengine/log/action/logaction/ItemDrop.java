@@ -125,13 +125,13 @@ public class ItemDrop extends SimpleLogActionType
         {
             if (logEntry.block != null)
             {
-                user.sendTranslated("%s&2%s&a let drop &6%d %s&a from &6%s%s&a!",
+                user.sendTranslated("%s&2%s&a let drop &6%d %s&a from &6%s%s",
                                     time, logEntry.getCauserUser().getDisplayName(),
                                     amount, logEntry.getItemData(),logEntry.getContainerTypeFromBlock(),loc);
             }
             else
             {
-                user.sendTranslated("%s&2%s&a dropped &6%d %s%s!",
+                user.sendTranslated("%s&2%s&a dropped &6%d %s%s",
                                     time, logEntry.getCauserUser().getDisplayName(),
                                     amount, logEntry.getItemData(),loc);
             }
@@ -159,6 +159,7 @@ public class ItemDrop extends SimpleLogActionType
     @Override
     public boolean isSimilar(LogEntry logEntry, LogEntry other)
     {
+        if (!super.isSimilar(logEntry, other)) return false;
         return logEntry.world == other.world
             && logEntry.causer == other.causer
             && logEntry.getItemData().equals(other.getItemData());

@@ -101,6 +101,7 @@ public class PlayerChat extends SimpleLogActionType
     @Override
     public boolean isSimilar(LogEntry logEntry, LogEntry other)
     {
+        if (!super.isSimilar(logEntry, other)) return false;
         return logEntry.causer == other.causer &&
         Math.abs(TimeUnit.MILLISECONDS.toSeconds(logEntry.timestamp.getTime() - other.timestamp.getTime())) < 15
             && logEntry.additional.iterator().next().asText().equals(other.additional.iterator().next().asText());

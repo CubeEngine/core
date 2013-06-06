@@ -66,15 +66,15 @@ public class PlayerQuit extends SimpleLogActionType
     @Override
     protected void showLogEntry(User user, LogEntry logEntry, String time, String loc)
     {
-        user.sendTranslated("%s&2%s&a left the server%s&a!",
+        user.sendTranslated("%s&2%s&a left the server%s",
                             time,logEntry.getCauserUser().getDisplayName(),loc);
     }
 
     @Override
     public boolean isSimilar(LogEntry logEntry, LogEntry other)
     {
+        if (!super.isSimilar(logEntry, other)) return false;
         return logEntry.world == other.world
-            && logEntry.location.equals(other.location)
             && logEntry.causer == other.causer;
     }
 

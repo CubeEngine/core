@@ -28,12 +28,11 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.world.StructureGrowEvent;
 
 import de.cubeisland.cubeengine.core.user.User;
-import de.cubeisland.cubeengine.log.Log;
 import de.cubeisland.cubeengine.log.action.logaction.block.player.PlayerGrow;
 import de.cubeisland.cubeengine.log.storage.LogEntry;
 
-import static de.cubeisland.cubeengine.log.action.ActionType.Category.*;
-import static de.cubeisland.cubeengine.log.action.ActionType.Category.ITEM;
+import static de.cubeisland.cubeengine.log.action.ActionType.Category.BLOCK;
+import static de.cubeisland.cubeengine.log.action.ActionType.Category.ENVIRONEMENT;
 
 /**
  * Trees or mushrooms growing
@@ -91,20 +90,20 @@ public class NaturalGrow extends BlockActionType
         if (logEntry.hasAttached())
         {
             int amount = logEntry.getAttached().size()+1;
-            user.sendTranslated("%s&6%dx %s &agrew naturally%s&a!",
+            user.sendTranslated("%s&6%dx %s &agrew naturally%s&a",
                                 time,amount,logEntry.getNewBlock(),loc);
         }
         else
         {
             if (logEntry.hasReplacedBlock())
             {
-                user.sendTranslated("%s&6%s &agrew naturally into &6%s%s&a!",
+                user.sendTranslated("%s&6%s &agrew naturally into &6%s%s&a",
                                     time,logEntry.getNewBlock(),
                                     logEntry.getOldBlock(),loc);
             }
             else
             {
-                user.sendTranslated("%s&6%s &agrew naturally%s!",
+                user.sendTranslated("%s&6%s &agrew naturally%s",
                                     time,logEntry.getNewBlock(),loc);
             }
         }

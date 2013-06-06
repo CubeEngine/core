@@ -47,13 +47,6 @@ public class Log extends Module
     {
         this.config = Configuration.load(LogConfiguration.class, this);
         Convert.registerConverter(ContainerType.class, new ContainerTypeConverter());
-        //        TODO when sending logs to player
-        //        if same player and block type do not use 1 line for each block
-        //        but instead something like this:
-        //        <Player> BlockBreak <BlockType> x<times> at <cuboid> 
-        // perhaps make possible to select this cuboid to rollback later
-        //flag to ignore what block
-        //possibility to select the region containing the last search results
         this.logManager = new LogManager(this);
         this.actionTypeManager = new ActionTypeManager(this);
         this.actionTypeManager.registerLogActionTypes();

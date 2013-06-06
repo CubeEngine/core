@@ -70,7 +70,7 @@ public class BlockBurn extends BlockActionType
     @Override
     protected void showLogEntry(User user, LogEntry logEntry, String time, String loc)
     {
-        user.sendTranslated("%s&6%s &awent up into flames%s!",
+        user.sendTranslated("%s&6%s &awent up into flames%s",
                             time,
                             logEntry.getOldBlock(),
                             loc);

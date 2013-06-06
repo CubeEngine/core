@@ -502,8 +502,9 @@ public class PlayerCommands
         long lastPlayed = user.getLastPlayed();
         if (System.currentTimeMillis() - lastPlayed > 7 * 24 * 60 * 60 * 1000) // If greater than 7 days show distance not date
         {
-            context.sendTranslated("&2%s &eis offline since %2$td.%2$tm.%2$tY %2$tk:%2$tM", user.getName(), lastPlayed); //dd.MM.yyyy HH:mm
-            //TODO USE JAVA  DATETIME FORMATTER
+            Date date = new Date(lastPlayed);
+            DateFormat format = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT, user.getLocale());
+            context.sendTranslated("&2%s&e is offline since %s", user.getName(), format.format(date));
             return;
         }
         context.sendTranslated("&2%s&e was last seen &6%s &eago.", user.getName(),
@@ -647,7 +648,7 @@ public class PlayerCommands
             context.sendTranslated("&eAFK: &atrue");
         }
         DateFormat dateFormat = SimpleDateFormat.getDateTimeInstance(SHORT, SHORT, Locale.ENGLISH);
-        context.sendTranslated("&eFirst played: &6%s", dateFormat.format(new Date(user.getFirstPlayed()))); //TODO locale
+        context.sendTranslated("&eFirst played: &6%s", dateFormat.format(new Date(user.getFirstPlayed())));
         //TODO banned (to when if temp)
     }
 

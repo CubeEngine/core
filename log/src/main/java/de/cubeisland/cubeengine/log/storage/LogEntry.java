@@ -103,10 +103,6 @@ public class LogEntry implements Comparable<LogEntry>
 
     public boolean isSimilar(LogEntry other)
     {
-        if (this.actionType != other.actionType)
-        {
-            return false;
-        }
         return this.actionType.isSimilar(this,other);
     }
 
@@ -124,19 +120,19 @@ public class LogEntry implements Comparable<LogEntry>
         return null;
     }
 
-    public BlockData getOldBlock()
+    public ImmutableBlockData getOldBlock()
     {
-        return new BlockData(Material.getMaterial(this.block),this.data.byteValue());
+        return new ImmutableBlockData(Material.getMaterial(this.block),this.data.byteValue());
     }
 
-    public BlockData getNewBlock()
+    public ImmutableBlockData getNewBlock()
     {
-        return new BlockData(Material.getMaterial(this.newBlock),this.newData.byteValue());
+        return new ImmutableBlockData(Material.getMaterial(this.newBlock),this.newData.byteValue());
     }
 
-    public BlockData getMaterialFromNewBlock()
+    public ImmutableBlockData getMaterialFromNewBlock()
     {
-        return new BlockData(Material.getMaterial(this.newBlock),(byte)0);
+        return new ImmutableBlockData(Material.getMaterial(this.newBlock),(byte)0);
     }
 
     public EntityData getCauserEntity()

@@ -220,31 +220,69 @@ public class KillActionType extends ActionTypeContainer
 
     static void showSubActionLogEntry(User user, LogEntry logEntry, String time, String loc)
     {
+        int amount = 1;
+        if (logEntry.hasAttached())
+        {
+            amount += logEntry.getAttached().size();
+        }
         if (logEntry.hasCauserUser())
         {
-            user.sendTranslated("%s&6%s &agot slaughtered by &2%s&a%s!",
-                                time,
-                                logEntry.getEntityFromData(),
-                                logEntry.getCauserUser().getDisplayName(),loc);
+            if (amount == 1)
+            {
+                user.sendTranslated("%s&6%s &agot slaughtered by &2%s%s",
+                                    time,
+                                    logEntry.getEntityFromData(),
+                                    logEntry.getCauserUser().getDisplayName(),loc);
+            }
+            else
+            {
+                user.sendTranslated("%s&6%dx %s &agot slaughtered by &2%s%s",
+                                    time, amount,
+                                    logEntry.getEntityFromData(),
+                                    logEntry.getCauserUser().getDisplayName(),
+                                    loc);
+            }
         }
         else if (logEntry.hasCauserEntity())
         {
-            user.sendTranslated("%s&6%s &acould not escape &6%s&a%s!",
-                                time,
-                                logEntry.getEntityFromData(),
-                                logEntry.getCauserEntity(), loc);
+            if (amount == 1)
+            {
+                user.sendTranslated("%s&6%s &acould not escape &6%s%s",
+                                    time,
+                                    logEntry.getEntityFromData(),
+                                    logEntry.getCauserEntity(), loc);
+            }
+            else
+            {
+                user.sendTranslated("%s&6%dx %s &acould not escape &6%s%s",
+                                    time, amount,
+                                    logEntry.getEntityFromData(),
+                                    logEntry.getCauserEntity(), loc);
+            }
+
         }
         else // something else
         {
-            user.sendTranslated("%s&6%s &adied%s! &f(&6%s&f)",
-                                time,
-                                logEntry.getEntityFromData(),loc,
-                                logEntry.getAdditional().get("dmgC").toString());
+            if (amount == 1)
+            {
+                user.sendTranslated("%s&6%s &adied%s &f(&6%s&f)",
+                                    time,
+                                    logEntry.getEntityFromData(), loc,
+                                    logEntry.getAdditional().get("dmgC").toString());
+            }
+            else
+            {
+                user.sendTranslated("%s&6%dx %s &adied%s &f(&6%s&f)",
+                                    time,amount,
+                                    logEntry.getEntityFromData(),loc,
+                                    logEntry.getAdditional().get("dmgC").toString());
+            }
         }
     }
 
     public static boolean isSimilarSubAction(LogEntry logEntry, LogEntry other)
     {
+        if (logEntry.actionType != other.actionType) return false;
         return logEntry.causer == other.causer
             && logEntry.data == other.data
             && logEntry.world == other.world;

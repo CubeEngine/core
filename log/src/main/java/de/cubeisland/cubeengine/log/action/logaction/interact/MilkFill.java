@@ -56,6 +56,7 @@ public class MilkFill extends SimpleLogActionType
     @Override
     public boolean isSimilar(LogEntry logEntry, LogEntry other)
     {
+        if (!super.isSimilar(logEntry, other)) return false;
         return logEntry.causer == other.causer
             && logEntry.world == other.world;
     }
@@ -63,7 +64,7 @@ public class MilkFill extends SimpleLogActionType
     @Override
     protected void showLogEntry(User user, LogEntry logEntry, String time, String loc)
     {
-        user.sendTranslated("%s&2%s &amilked a cow%s&a!",
+        user.sendTranslated("%s&2%s &amilked a cow%s",
                             time, logEntry.getCauserUser().getDisplayName(),loc);
     }
 

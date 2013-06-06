@@ -460,7 +460,7 @@ public class QueryManager
             }
             selectBuilder.beginSub();
             boolean or = false;
-            for (Entry<BlockData,Boolean> data : params.blocks.entrySet())
+            for (Entry<ImmutableBlockData,Boolean> data : params.blocks.entrySet())
             {
                 if (!include || data.getValue()) // all exclude OR only include
                 {

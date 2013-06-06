@@ -207,7 +207,7 @@ public class BlockBreak extends BlockActionType
         if (logEntry.hasAttached())
         {
             int amount = 1+logEntry.getAttached().size();
-            user.sendTranslated("%s&2%s &abroke &6%dx %s&a%s!",
+            user.sendTranslated("%s&2%s &abroke &6%dx %s&a%s",
                                 time,
                                 logEntry.getCauserUser().getDisplayName(),
                                 amount,
@@ -215,7 +215,7 @@ public class BlockBreak extends BlockActionType
                                 loc);
         }
         else {
-            user.sendTranslated("%s&2%s &abroke &6%s&a%s!",
+            user.sendTranslated("%s&2%s &abroke &6%s&a%s",
                                 time,
                                 logEntry.getCauserUser().getDisplayName(),
                                 logEntry.getOldBlock(),

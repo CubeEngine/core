@@ -39,6 +39,9 @@ public class LogCommands extends ContainerCommand
     public static final String toolName = ChatFormat.parseFormats("&9Logging-ToolBlock");
     public static final String selectorToolName = ChatFormat.parseFormats("&9Selector-Tool");
 
+    // TODO command to show current params on a lookup-tool
+    // TODO command to change params on a lookup-tool (only further limiting)
+
     private Log module;
 
     public LogCommands(Log module)

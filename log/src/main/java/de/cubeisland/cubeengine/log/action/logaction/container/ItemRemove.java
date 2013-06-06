@@ -57,11 +57,34 @@ public class ItemRemove extends SimpleLogActionType
     protected void showLogEntry(User user, LogEntry logEntry, String time, String loc)
     {
         ItemData itemData= logEntry.getItemData();
-        // TODO attached
-        user.sendTranslated("%s&2%s&a took &6%d %s&a out of &6%s%s&a!",
-                            time, logEntry.getCauserUser().getDisplayName(),
-                            -itemData.amount,itemData,
-                            logEntry.getContainerTypeFromBlock(),loc);
+        int amount = itemData.amount;
+        if (logEntry.hasAttached())
+        {
+            for (LogEntry entry : logEntry.getAttached())
+            {
+                amount += entry.getItemData().amount;
+            }
+        }
+        if (amount > 0)
+        {
+            user.sendTranslated("%s&2%s&a placed &6%d %s&a into &6%s%s",
+                                time, logEntry.getCauserUser().getName(),
+                                amount,itemData,
+                                logEntry.getContainerTypeFromBlock(),loc);
+        }
+        else if (amount < 0)
+        {
+            user.sendTranslated("%s&2%s&a took &6%d %s&a out of &6%s%s",
+                                time, logEntry.getCauserUser().getName(),
+                                -amount,itemData,
+                                logEntry.getContainerTypeFromBlock(),loc);
+        }
+        else
+        {
+            user.sendTranslated("%s&2%s&a did not change the amount of &6%s&a in &6%s%s",
+                                time , logEntry.getCauserUser().getName(), itemData,
+                                logEntry.getContainerTypeFromBlock(), loc);
+        }
     }
     @Override
     public boolean isSimilar(LogEntry logEntry, LogEntry other)

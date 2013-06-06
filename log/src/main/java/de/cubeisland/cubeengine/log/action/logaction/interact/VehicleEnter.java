@@ -70,13 +70,13 @@ public class VehicleEnter extends SimpleLogActionType
     {
         if (logEntry.getCauserUser() == null)
         {
-            user.sendTranslated("%s&6%s &aentered a &6%s%s&a!",
+            user.sendTranslated("%s&6%s &aentered a &6%s%s",
                                 time,logEntry.getCauserEntity(),
                                 logEntry.getEntityFromData(),loc);
         }
         else
         {
-            user.sendTranslated("%s&2%s &aentered a &6%s%s&a!",
+            user.sendTranslated("%s&2%s &aentered a &6%s%s",
                                 time,logEntry.getCauserUser().getDisplayName(),
                                 logEntry.getEntityFromData(),loc);
         }
@@ -84,6 +84,7 @@ public class VehicleEnter extends SimpleLogActionType
     @Override
     public boolean isSimilar(LogEntry logEntry, LogEntry other)
     {
+        if (!super.isSimilar(logEntry, other)) return false;
         return logEntry.world == other.world
             && logEntry.causer == other.causer
             && logEntry.data == other.data;

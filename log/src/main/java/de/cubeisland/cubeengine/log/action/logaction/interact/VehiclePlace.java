@@ -102,7 +102,7 @@ public class VehiclePlace extends SimpleLogActionType
     @Override
     protected void showLogEntry(User user, LogEntry logEntry, String time, String loc)
     {
-        user.sendTranslated("%s&2%s &aplaced a &6%s%s&a!",
+        user.sendTranslated("%s&2%s &aplaced a &6%s%s",
                             time,logEntry.getCauserUser().getDisplayName(),
                             logEntry.getEntityFromData(),loc);
     }
@@ -111,6 +111,7 @@ public class VehiclePlace extends SimpleLogActionType
     @Override
     public boolean isSimilar(LogEntry logEntry, LogEntry other)
     {
+        if (!super.isSimilar(logEntry, other)) return false;
         return logEntry.world == other.world
             && logEntry.causer == other.causer
             && logEntry.data == other.data;

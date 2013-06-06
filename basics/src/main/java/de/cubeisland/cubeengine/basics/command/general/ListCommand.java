@@ -47,7 +47,6 @@ public class ListCommand
     @Command(desc = "Displays all the online players.")
     public void list(CommandContext context)
     {
-        // TODO CE-94 list sorting by roles
         Set<User> users = context.getCore().getUserManager().getOnlineUsers();
         if (users.isEmpty())
         {

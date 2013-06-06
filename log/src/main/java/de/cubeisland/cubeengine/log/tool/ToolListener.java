@@ -17,8 +17,6 @@
  */
 package de.cubeisland.cubeengine.log.tool;
 
-import java.util.concurrent.TimeUnit;
-
 import org.bukkit.Location;
 import org.bukkit.event.Event.Result;
 import org.bukkit.event.EventHandler;
@@ -92,9 +90,7 @@ public class ToolListener implements Listener
                     ? event.getClickedBlock().getLocation()
                     : event.getClickedBlock().getRelative(event.getBlockFace()).getLocation();
             lookup.getQueryParameter().setSingleLocations(loc);
-            //-----------
-            lookup.getQueryParameter().since(System.currentTimeMillis() - TimeUnit.DAYS.toMillis(30)); //TODO this in block creation
-            //-----------
+
             ShowParameter show = new ShowParameter();
             show.showCoords = false;
             attachment.queueShowParameter(show);

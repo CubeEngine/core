@@ -75,7 +75,7 @@ public class EnchantItem extends SimpleLogActionType
     @Override
     protected void showLogEntry(User user, LogEntry logEntry, String time, String loc)
     {
-        user.sendTranslated("%s&2%s&a enchanted &6%s%s&a!",
+        user.sendTranslated("%s&2%s&a enchanted &6%s%s",
                            time, logEntry.getCauserUser().getDisplayName(),
                             logEntry.getItemData(),loc);//TODO list enchantments
     }

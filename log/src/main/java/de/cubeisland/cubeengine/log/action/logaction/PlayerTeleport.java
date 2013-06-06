@@ -88,7 +88,7 @@ public class PlayerTeleport extends SimpleLogActionType
         String world = this.logModule.getCore().getWorldManager().getWorld(json.get("world").asInt()).getName();
         if (json.get("dir").asText().equals("from"))
         {
-            user.sendTranslated("%s&2%s&a teleported from &6%d&f:&6%d&f:&6%d&a in &6%s%s!",
+            user.sendTranslated("%s&2%s&a teleported from &6%d&f:&6%d&f:&6%d&a in &6%s%s",
                                 time,logEntry.getCauserUser().getDisplayName(),
                                 json.get("x").asInt(),json.get("y").asInt(),json.get("z").asInt(),
                                 world, loc);
@@ -106,9 +106,8 @@ public class PlayerTeleport extends SimpleLogActionType
     @Override
     public boolean isSimilar(LogEntry logEntry, LogEntry other)
     {
-        return false;
+        return false; // TODO
     }
-
 
     @Override
     public boolean isActive(World world)
