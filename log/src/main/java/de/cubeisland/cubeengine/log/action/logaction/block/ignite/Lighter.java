@@ -48,7 +48,7 @@ public class Lighter extends BlockActionType
     @Override
     protected void showLogEntry(User user, LogEntry logEntry, String time, String loc)
     {
-        user.sendTranslated("%s&2%s &aset fire%s&a!",
+        user.sendTranslated("%s&2%s &aset fire%s",
                             time, logEntry.getCauserUser().getDisplayName(),loc);
     }
 

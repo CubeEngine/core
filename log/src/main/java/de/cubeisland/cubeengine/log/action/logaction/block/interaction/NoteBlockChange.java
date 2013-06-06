@@ -60,12 +60,12 @@ public class NoteBlockChange extends BlockActionType
         }
         if (oldClicks.intValue() == newClicks)
         {
-            user.sendTranslated("%s&2&s &afiddled around with the noteblock but did not change anything%s%a!",
+            user.sendTranslated("%s&2&s &afiddled around with the noteblock but did not change anything%s",
                                 time,logEntry.getCauserUser().getDisplayName(),loc);
         }
         else
         {
-            user.sendTranslated("%s&2%s &aset the noteblock to &6%d&a clicks%s&a!",
+            user.sendTranslated("%s&2%s &aset the noteblock to &6%d&a clicks%s",
                                 time, logEntry.getCauserUser().getDisplayName(), newClicks,loc);
         }
     }

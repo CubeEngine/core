@@ -113,6 +113,7 @@ public class LookupCommands
         @Param(names = {"page"},type = Integer.class),
     }, min = 0, max = 1)
     // TODO param to limit query results (default ~10k) ?
+    // TODO param for filter / chat / command / signtexts
     public void lookup(ParameterizedContext context)
     {
         // TODO show all selected params of last lookup

@@ -115,13 +115,13 @@ public class SignChange extends BlockActionType
         String delim = ChatFormat.parseFormats("&7 | &f");
         if (oldEmpty)
         {
-            user.sendTranslated("%s&2%s &awrote &7[&f%s&7]&a on a sign%s&a",
+            user.sendTranslated("%s&2%s &awrote &7[&f%s&7]&a on a sign%s",
                                 time,logEntry.getCauserUser().getDisplayName(),
                                 StringUtils.implode(delim, newLines),loc);
         }
         else
         {
-            user.sendTranslated("%s&2%s &awrote &7[&f%s&7]&a on a sign%s&a \nThe old signtext was &7[&f%s&7]",
+            user.sendTranslated("%s&2%s &awrote &7[&f%s&7]&a on a sign%s \n&aThe old signtext was &7[&f%s&7]",
                                 time, logEntry.getCauserUser().getDisplayName(),
                                 StringUtils.implode(delim,newLines), loc,
                                 StringUtils.implode(delim,oldLines));

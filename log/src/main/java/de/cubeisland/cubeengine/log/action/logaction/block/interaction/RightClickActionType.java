@@ -102,7 +102,7 @@ public class RightClickActionType extends ActionTypeContainer
             case FENCE_GATE:
                 DoorUse doorUse = this.manager.getActionType(DoorUse.class);
                 if (doorUse.isActive(state.getWorld()))
-                { // TODO on rollback care the newData state is not correct!
+                {
                     state = doorUse.adjustBlockForDoubleBlocks(state);
                     doorUse.logBlockChange(location,event.getPlayer(), BlockData.of(state),BlockData.of(state),null);
                 }
@@ -290,8 +290,18 @@ public class RightClickActionType extends ActionTypeContainer
                 if (cropTrample.isActive(event.getClickedBlock().getWorld()))
                 {
                     BlockState cropState = event.getClickedBlock().getRelative(BlockFace.UP).getState();
-                    cropTrample.logBlockChange(cropState.getLocation(),event.getPlayer(),BlockData.of(cropState),AIR,null);
-                    //TODO log the destroyed soil too / and not the crops if there are no crops
+                    switch (cropState.getType())
+                    {
+                        case CROPS:
+                        case GRASS:
+                        case MELON_STEM:
+                        case PUMPKIN_STEM:
+                        case SAPLING:
+                        case CARROT:
+                        case POTATO:
+                            cropTrample.logBlockChange(cropState.getLocation(),event.getPlayer(),BlockData.of(cropState),AIR,null);
+                    }
+                    cropTrample.logBlockChange(event.getClickedBlock().getLocation(), event.getPlayer(), BlockData.of(event.getClickedBlock().getState()),DIRT,null);
                 }
                 break;
             case WOOD_PLATE:

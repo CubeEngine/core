@@ -53,13 +53,13 @@ public class PlayerDeath extends SimpleLogActionType
     {
         if (logEntry.hasCauserUser())
         {
-            user.sendTranslated("&2%s &agot slaughtered by &2%s&a!",
+            user.sendTranslated("&2%s &agot slaughtered by &2%s",
                                 logEntry.getUserFromData().getDisplayName(),
                                 logEntry.getCauserUser().getDisplayName());
         }
         else if (logEntry.hasCauserEntity())
         {
-            user.sendTranslated("&2%s &acould not escape &6%s&a!",
+            user.sendTranslated("&2%s &acould not escape &6%s",
                                 logEntry.getUserFromData().getDisplayName(),
                                 logEntry.getCauserEntity());
         }
@@ -67,7 +67,7 @@ public class PlayerDeath extends SimpleLogActionType
         {
             JsonNode json = logEntry.getAdditional();
             DamageCause dmgC = DamageCause.valueOf(json.get("dmgC").asText());
-            user.sendTranslated("&2%s &adied! &f(&6%s&f)",//TODO NPE
+            user.sendTranslated("&2%s &adied &f(&6%s&f)",//TODO NPE
                                 logEntry.getUserFromData().getDisplayName(),
                                 dmgC.name());//TODO get pretty name for dmgC
         }

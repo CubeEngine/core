@@ -66,7 +66,7 @@ public class EntityBreak extends BlockActionType
     @Override
     protected void showLogEntry(User user, LogEntry logEntry, String time, String loc)
     {
-        user.sendTranslated("%s&aA &6%s &adestroyed &6%s&a%s!",
+        user.sendTranslated("%s&aA &6%s &adestroyed &6%s%s",
                             time,
                             logEntry.getCauserEntity(),
                             logEntry.getOldBlock(),

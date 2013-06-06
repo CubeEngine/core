@@ -53,7 +53,7 @@ public class PlayerGrow extends BlockActionType
         if (logEntry.hasAttached())
         {
             int amount = logEntry.getAttached().size()+1;
-            user.sendTranslated("%s&2%s let grow &6%d %s%s&a",
+            user.sendTranslated("%s&2%s let grow &6%d %s%s",
                                 time,logEntry.getCauserUser().getDisplayName(),
                                 amount,logEntry.getNewBlock(),loc);
         }
@@ -61,14 +61,14 @@ public class PlayerGrow extends BlockActionType
         {
             if (logEntry.hasReplacedBlock())
             {
-                user.sendTranslated("%s&2%s let grow &6%s&a into &6%s%s&a",
+                user.sendTranslated("%s&2%s let grow &6%s&a into &6%s%s",
                                     time,logEntry.getCauserUser().getDisplayName(),
                                     logEntry.getNewBlock(),
                                     logEntry.getOldBlock(),loc);
             }
             else
             {
-                user.sendTranslated("%s&2%s let grow &6%s%s&a",
+                user.sendTranslated("%s&2%s let grow &6%s%s",
                                     time,logEntry.getCauserUser().getDisplayName(),
                                     logEntry.getNewBlock(),loc);
             }

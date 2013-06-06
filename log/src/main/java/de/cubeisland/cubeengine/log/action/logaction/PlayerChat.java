@@ -91,7 +91,7 @@ public class PlayerChat extends SimpleLogActionType
         }
         else
         {
-            user.sendTranslated("%s&2%s&a chatted &f\"&6%s&f\"%s&a",
+            user.sendTranslated("%s&2%s&a chatted &f\"&6%s&f\"%s",
                                 time,logEntry.getCauserUser().getDisplayName(),
                                 logEntry.getAdditional().iterator().next().asText(), loc);
         }

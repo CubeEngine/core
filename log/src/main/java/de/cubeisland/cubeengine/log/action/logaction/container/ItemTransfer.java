@@ -48,7 +48,7 @@ public class ItemTransfer extends SimpleLogActionType
     @Override
     protected void showLogEntry(User user, LogEntry logEntry, String time, String loc)
     {
-        user.sendTranslated("%s&6%s&a got moved out of &6%s%s&a",
+        user.sendTranslated("%s&6%s&a got moved out of &6%s%s",
                             time,logEntry.getItemData(),
                             logEntry.getContainerTypeFromBlock(),loc);
     }

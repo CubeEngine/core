@@ -53,13 +53,13 @@ public class WitherExplode extends BlockActionType
             int amount = logEntry.getAttached().size()+1;
             if (logEntry.hasCauserUser())
             {
-                user.sendTranslated("%s&aA Wither hunting down &2%s &ablasted away &6%dx %s&a%s!",
+                user.sendTranslated("%s&aA Wither hunting down &2%s &ablasted away &6%dx %s%s",
                                     time, logEntry.getCauserUser().getDisplayName(), amount,
                                     logEntry.getOldBlock(),loc);
             }
             else
             {
-                user.sendTranslated("%s&6%dx %s&a got destroyed in a Wither-Explosion%s!",
+                user.sendTranslated("%s&6%dx %s&a got destroyed in a Wither-Explosion%s",
                                     time, amount,
                                     logEntry.getOldBlock(),loc);
             }
@@ -68,13 +68,13 @@ public class WitherExplode extends BlockActionType
         {
             if (logEntry.hasCauserUser())
             {
-                user.sendTranslated("%s&aA Wither hunting down &2%s &ablasted away &6%s&a%s!",
+                user.sendTranslated("%s&aA Wither hunting down &2%s &ablasted away &6%s%s",
                                     time, logEntry.getCauserUser().getDisplayName(),
                                     logEntry.getOldBlock(),loc);
             }
             else
             {
-                user.sendTranslated("%s&6%s&a got destroyed in a Wither-Explosion%s!",
+                user.sendTranslated("%s&6%s&a got destroyed in a Wither-Explosion%s",
                                     time,logEntry.getOldBlock(),loc);
             }
         }

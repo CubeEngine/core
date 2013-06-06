@@ -51,11 +51,11 @@ public class SheepEat extends BlockActionType
     {
         if (logEntry.hasAttached())
         {
-            user.sendTranslated("%s&aA sheep ate all the grass%s&6 x%d&a!",time, logEntry.getAttached().size()+1, loc);
+            user.sendTranslated("%s&aA sheep ate all the grass%s&6 x%d",time, logEntry.getAttached().size()+1, loc);
         }
         else
         {
-            user.sendTranslated("%s&aA sheep ate all the grass%s&a!",time,loc);
+            user.sendTranslated("%s&aA sheep ate all the grass%s",time,loc);
         }
     }
 

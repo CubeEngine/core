@@ -49,7 +49,7 @@ public class BonemealUse extends BlockActionType
     @Override
     protected void showLogEntry(User user, LogEntry logEntry, String time, String loc)
     {
-        user.sendTranslated("&2%s &aused bonemeal on &6%s&a!",
+        user.sendTranslated("&2%s &aused bonemeal on &6%s",
                             logEntry.getCauserUser().getDisplayName(),
                             logEntry.getOldBlock());
     }

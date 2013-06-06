@@ -59,12 +59,12 @@ public class RepeaterChange extends BlockActionType
         }
         if (logEntry.hasAttached() && oldTicks.intValue() == newTicks)
         {
-            user.sendTranslated("%s&2%s &afiddled around with the repeater but did not change anything%s&a!",
+            user.sendTranslated("%s&2%s &afiddled around with the repeater but did not change anything%s",
                                 time,logEntry.getCauserUser().getDisplayName(),loc);
         }
         else
         {
-            user.sendTranslated("%s&2%s &aset the repeater to &6%d&a ticks delay%s&a!",
+            user.sendTranslated("%s&2%s &aset the repeater to &6%d&a ticks delay%s",
                                 time, logEntry.getCauserUser().getDisplayName(), newTicks,loc);
         }
     }

@@ -48,25 +48,25 @@ public class WorldEditActionType extends BlockActionType
     {
         if (logEntry.getNewBlock().material.equals(Material.AIR))
         {
-            user.sendTranslated("&2%s &aused worldedit to remove &6%s&a!",
+            user.sendTranslated("%s&2%s &aused worldedit to remove &6%s%s",
+                                time,
                                 logEntry.getCauserUser().getDisplayName(),
-                                logEntry.getOldBlock());
+                                logEntry.getOldBlock(), loc);
         }
         else if (logEntry.getOldBlock().material.equals(Material.AIR))
         {
-            user.sendTranslated("&2%s &aused worldedit to place &6%s&a!",
-                                logEntry.getCauserUser().getDisplayName(),
-                                logEntry.getNewBlock());
+            user.sendTranslated("%s&2%s &aused worldedit to place &6%s%s",
+                                time, logEntry.getCauserUser().getDisplayName(),
+                                logEntry.getNewBlock(), loc);
         }
         else
         {
-            user.sendTranslated("&2%s &aused worldedit to replace &6%s&a with &6%s&a!",
-                                logEntry.getCauserUser().getDisplayName(),
+            user.sendTranslated("%s&2%s &aused worldedit to replace &6%s&a with &6%s%s",
+                                time, logEntry.getCauserUser().getDisplayName(),
                                 logEntry.getOldBlock(),
-                                logEntry.getNewBlock());
+                                logEntry.getNewBlock(), loc);
         }
     }
-
 
     @Override
     public boolean isActive(World world)

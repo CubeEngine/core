@@ -52,12 +52,12 @@ public class LeverUse extends BlockActionType
     {
         if ((logEntry.getNewBlock().data & 0x8) == 0x8)
         {
-            user.sendTranslated("%s&2%s &aactivated the lever%s&a!",
+            user.sendTranslated("%s&2%s &aactivated the lever%s",
                                 time, logEntry.getCauserUser().getDisplayName(),loc);
         }
         else
         {
-            user.sendTranslated("%s&2%s &adeactivated the lever%s&a!",
+            user.sendTranslated("%s&2%s &adeactivated the lever%s",
                                 time, logEntry.getCauserUser().getDisplayName(),loc);
         }
     }

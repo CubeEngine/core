@@ -19,6 +19,8 @@ package de.cubeisland.cubeengine.log.action.logaction.block.interaction;
 
 import java.util.EnumSet;
 
+import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.World;
 
 import de.cubeisland.cubeengine.core.user.User;
@@ -51,16 +53,48 @@ public class CropTrample extends BlockActionType
     @Override
     protected void showLogEntry(User user, LogEntry logEntry, String time, String loc)
     {
-        // TODO attached log only show the crop trampled down then
-        user.sendTranslated("&2%s &atrampeled down &6%s&a!",
-                            logEntry.getCauserUser().getDisplayName(),
-                            logEntry.getOldBlock());
+        if (logEntry.hasAttached())
+        {
+            if (logEntry.getOldBlock().material.equals(Material.SOIL))
+            {
+                logEntry = logEntry.getAttached().first(); // replacing SOIL log with the crop log as the destroyed SOIL is implied
+            }
+        }
+        user.sendTranslated("%s&2%s &atrampeled down &6%s%s",
+                            time, logEntry.getCauserUser().getDisplayName(),
+                            logEntry.getOldBlock(), loc);
     }
-
 
     @Override
     public boolean isActive(World world)
     {
         return this.lm.getConfig(world).CROP_TRAMPLE_enable;
+    }
+
+    @Override
+    public boolean isSimilar(LogEntry logEntry, LogEntry other)
+    {
+        if (logEntry.actionType == other.actionType
+            && logEntry.world == other.world
+            && logEntry.causer == other.causer
+            && logEntry.additional == other.additional
+            && nearTimeFrame(logEntry, other))
+        {
+            Location loc1 = logEntry.getLocation();
+            Location loc2 = other.getLocation();
+            if (loc1.getX() == loc2.getX() && loc1.getZ() == loc2.getZ()
+                && Math.abs(loc1.getBlockY() - loc2.getBlockY()) == 1)
+            {
+                return true;
+            }
+         }
+        return false;
+
+    }
+
+    @Override
+    protected boolean nearTimeFrame(LogEntry logEntry, LogEntry other)
+    {
+        return Math.abs(logEntry.timestamp.getTime() - other.timestamp.getTime()) < 50;
     }
 }

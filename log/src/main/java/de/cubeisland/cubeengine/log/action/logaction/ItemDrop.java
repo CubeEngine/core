@@ -140,14 +140,14 @@ public class ItemDrop extends SimpleLogActionType
         {
             if (logEntry.block != null)
             {
-                user.sendTranslated("%s&6%s&a let drop %d &6%s&a from &6%s%s&a!",
+                user.sendTranslated("%s&6%s&a let drop %d &6%s&a from &6%s%s",
                                     time, logEntry.getCauserEntity(),
                                     amount, logEntry.getItemData(),
                                     logEntry.getContainerTypeFromBlock(),loc);
             }
             else
             {
-                user.sendTranslated("%s&6%s&a dropped %d &6%s%s!",
+                user.sendTranslated("%s&6%s&a dropped %d &6%s%s",
                                     time, logEntry.getCauserEntity(),
                                     amount, logEntry.getItemData(),loc);
             }

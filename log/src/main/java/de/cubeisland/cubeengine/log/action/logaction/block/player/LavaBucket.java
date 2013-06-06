@@ -56,7 +56,7 @@ public class LavaBucket  extends BlockActionType
         }
         else
         {
-            user.sendTranslated("&2%s &aemptied a lava-bucket1",
+            user.sendTranslated("&2%s &aemptied a lava-bucket",
                                 logEntry.getCauserUser().getDisplayName());
         }
     }
