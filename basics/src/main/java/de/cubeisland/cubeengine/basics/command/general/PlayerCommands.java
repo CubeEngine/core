@@ -620,7 +620,7 @@ public class PlayerCommands
             Location loc = user.getLocation();
             if (loc != null)
             {
-                context.sendTranslated("&ePosition: &2%d&f:&2%d&f:&2%d &ein &6%s", loc.getBlockX(), loc.getBlockY(), loc.getBlockZ(), loc.getWorld().getName());
+                context.sendTranslated("&ePosition: &2%d&f:&2%d&f:&2%d&e in &6%s", loc.getBlockX(), loc.getBlockY(), loc.getBlockZ(), loc.getWorld().getName());
             }
             if (user.getAddress() != null)
             {
@@ -664,17 +664,17 @@ public class PlayerCommands
             DateFormat format = DateFormat.getDateTimeInstance(SHORT, SHORT, context.getSender().getLocale());
             if (userBan.getExpires() == null)
             {
-                context.sendTranslated("&2%s got banned from this server %s for ever",
+                context.sendTranslated("&2%s&e got banned from this server &f(&6%s&f) &efor ever",
                        user.getName(), format.format(userBan.getCreated()));
             }
             else
             {
-                context.sendTranslated("&2%s got banned from this server %s",
+                context.sendTranslated("&2%s&e got banned from this server &f(&6%s&f)",
                        user.getName(), format.format(userBan.getCreated()));
-                context.sendTranslated("until %s", format.format(userBan.getExpires()));
+                context.sendTranslated("&euntil &6%s", format.format(userBan.getExpires()));
             }
-            context.sendTranslated("&eby %s", userBan.getSource());
-            context.sendTranslated("&eReason: %s", userBan.getReason());
+            context.sendTranslated("&eby &2%s", userBan.getSource());
+            context.sendTranslated("&eReason: &6%s", userBan.getReason());
 
         }
     }
@@ -715,7 +715,7 @@ public class PlayerCommands
             if (other)
             {
                 user.sendTranslated("&aYou are now invincible!");
-                context.sendTranslated("&2%s &ais now invincible!", user.getName());
+                context.sendTranslated("&2%s&a is now invincible!", user.getName());
                 return;
             }
             context.sendTranslated("&aYou are now invincible!");
@@ -724,7 +724,7 @@ public class PlayerCommands
         if (other)
         {
             user.sendTranslated("&eYou are no longer invincible!");
-            context.sendTranslated("&2%s &eis no longer invincible!", user.getName());
+            context.sendTranslated("&2%s&e is no longer invincible!", user.getName());
             return;
         }
         context.sendTranslated("&eYou are no longer invincible!");
