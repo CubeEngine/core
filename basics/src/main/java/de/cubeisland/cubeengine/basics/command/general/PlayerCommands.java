@@ -32,6 +32,7 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageEvent;
 
+import de.cubeisland.cubeengine.core.ban.UserBan;
 import de.cubeisland.cubeengine.core.command.CommandContext;
 import de.cubeisland.cubeengine.core.command.CommandSender;
 import de.cubeisland.cubeengine.core.command.parameterized.Flag;
@@ -55,12 +56,12 @@ import static java.text.DateFormat.SHORT;
 public class PlayerCommands
 {
     private UserManager um;
-    private Basics basics;
+    private Basics module;
     private AfkListener afkListener;
 
     public PlayerCommands(Basics basics)
     {
-        this.basics = basics;
+        this.module = basics;
         this.um = basics.getCore().getUserManager();
         final long autoAfk;
         final long afkCheck;
@@ -463,7 +464,7 @@ public class PlayerCommands
     {
         if (!force)
         {
-            if (BasicsPerm.COMMAND_KILL_PREVENT.isAuthorized(user) || this.basics.getBasicUserManager().getBasicUser(user).godMode)
+            if (BasicsPerm.COMMAND_KILL_PREVENT.isAuthorized(user) || this.module.getBasicUserManager().getBasicUser(user).godMode)
             {
                 context.sendTranslated("&cYou cannot kill &2%s&c!", user.getDisplayName());
                 return false;
@@ -531,7 +532,7 @@ public class PlayerCommands
             user.chat(sb.toString());
             return;
         }
-        this.basics.getCore().getCommandManager().runCommand(user,sb.toString());
+        this.module.getCore().getCommandManager().runCommand(user,sb.toString());
     }
 
     @Command(desc = "Kills yourself", max = 0)
@@ -597,59 +598,85 @@ public class PlayerCommands
     @Command(desc = "Displays informations from a player!", usage = "<player>", min = 1, max = 1)
     public void whois(CommandContext context)
     {
-        //TODO CE-311 additional informations
-        //offline-player-location (will probably need nbt)
         User user = context.getUser(0);
         if (user == null)
         {
             context.sendTranslated("User not found!");
             return;
         }
-        context.sendTranslated("&eNickname: &2%s", user.getName());
-        context.sendTranslated("&eLife: &2%d&f/&2%d", user.getHealth(), user.getMaxHealth());
-        context.sendTranslated("&eHunger: &2%d&f/&220 &f(&2%d&f/&2%d&f)", user.getFoodLevel(), (int)user.getSaturation(), user.getFoodLevel());
-        context.sendTranslated("&eLevel: &2%d &f+ &2%d%%", user.getLevel(), (int)(user.getExp() * 100));
-        Location loc = user.getLocation();
-        if (loc != null)
+        if (!user.isOnline())
         {
-            context.sendTranslated("&ePosition: &2%d&f:&2%d&f:&2%d &ein &6%s", loc.getBlockX(), loc.getBlockY(), loc.getBlockZ(), loc.getWorld().getName());
-        }
-        if (user.getAddress() != null)
-        {
-            context.sendTranslated("&eIP: &2%s", user.getAddress().getAddress().getHostAddress());
-        }
-        if (user.getGameMode() != null)
-        {
-            context.sendTranslated("&eGamemode: &2%s", user.getGameMode().toString());
-        }
-        if (user.getAllowFlight())
-        {
-            context.sendTranslated("&eFlymode: &atrue &f(%s)", user.isFlying() ? "flying" : "not flying");
+            context.sendTranslated("&eNickname: &2%s&e &f(&eoffline&f)", user.getName());
         }
         else
         {
-            context.sendTranslated("&eFlymode: &cfalse");
+            context.sendTranslated("&eNickname: &2%s", user.getName());
         }
-        if (user.isOp())
+        if (user.hasPlayedBefore() || user.isOnline())
         {
-            context.sendTranslated("&eOP: &atrue");
+            context.sendTranslated("&eLife: &2%d&f/&2%d", user.getHealth(), user.getMaxHealth());
+            context.sendTranslated("&eHunger: &2%d&f/&220 &f(&2%d&f/&2%d&f)", user.getFoodLevel(), (int)user.getSaturation(), user.getFoodLevel());
+            context.sendTranslated("&eLevel: &2%d &f+ &2%d%%", user.getLevel(), (int)(user.getExp() * 100));
+            Location loc = user.getLocation();
+            if (loc != null)
+            {
+                context.sendTranslated("&ePosition: &2%d&f:&2%d&f:&2%d &ein &6%s", loc.getBlockX(), loc.getBlockY(), loc.getBlockZ(), loc.getWorld().getName());
+            }
+            if (user.getAddress() != null)
+            {
+                context.sendTranslated("&eIP: &2%s", user.getAddress().getAddress().getHostAddress());
+            }
+            if (user.getGameMode() != null)
+            {
+                context.sendTranslated("&eGamemode: &2%s", user.getGameMode().toString());
+            }
+            if (user.getAllowFlight())
+            {
+                context.sendTranslated("&eFlymode: &atrue &f(%s)", user.isFlying() ? "flying" : "not flying");
+            }
+            else
+            {
+                context.sendTranslated("&eFlymode: &cfalse");
+            }
+            if (user.isOp())
+            {
+                context.sendTranslated("&eOP: &atrue");
+            }
+            Timestamp muted = this.module.getBasicUserManager().getBasicUser(user).muted;
+            if (muted != null && muted.getTime() > System.currentTimeMillis())
+            {
+                context.sendTranslated("&eMuted: &ctrue"); //TODO show time
+            }
+            if (user.getGameMode() != GameMode.CREATIVE)
+            {
+                context.sendTranslated("&eGodMode: &2%s", user.isInvulnerable() ? ChatFormat.BRIGHT_GREEN + "true" : ChatFormat.RED + "false");
+            }
+            if (user.get(BasicsAttachment.class).isAfk())
+            {
+                context.sendTranslated("&eAFK: &atrue");
+            }
+            DateFormat dateFormat = SimpleDateFormat.getDateTimeInstance(SHORT, SHORT, Locale.ENGLISH);
+            context.sendTranslated("&eFirst played: &6%s", dateFormat.format(new Date(user.getFirstPlayed())));
         }
-        Timestamp muted = this.basics.getBasicUserManager().getBasicUser(user).muted;
-        if (muted != null && muted.getTime() > System.currentTimeMillis())
+        if (this.module.getCore().getBanManager().isUserBanned(user.getName()))
         {
-            context.sendTranslated("&eMuted: &ctrue"); //TODO show time
+            UserBan userBan = this.module.getCore().getBanManager().getUserBan(user.getName());
+            DateFormat format = DateFormat.getDateTimeInstance(SHORT, SHORT, context.getSender().getLocale());
+            if (userBan.getExpires() == null)
+            {
+                context.sendTranslated("&2%s got banned from this server %s for ever",
+                       user.getName(), format.format(userBan.getCreated()));
+            }
+            else
+            {
+                context.sendTranslated("&2%s got banned from this server %s",
+                       user.getName(), format.format(userBan.getCreated()));
+                context.sendTranslated("until %s", format.format(userBan.getExpires()));
+            }
+            context.sendTranslated("&eby %s", userBan.getSource());
+            context.sendTranslated("&eReason: %s", userBan.getReason());
+
         }
-        if (user.getGameMode() != GameMode.CREATIVE)
-        {
-            context.sendTranslated("&eGodMode: &2%s", user.isInvulnerable() ? ChatFormat.BRIGHT_GREEN + "true" : ChatFormat.RED + "false");
-        }
-        if (user.get(BasicsAttachment.class).isAfk())
-        {
-            context.sendTranslated("&eAFK: &atrue");
-        }
-        DateFormat dateFormat = SimpleDateFormat.getDateTimeInstance(SHORT, SHORT, Locale.ENGLISH);
-        context.sendTranslated("&eFirst played: &6%s", dateFormat.format(new Date(user.getFirstPlayed())));
-        //TODO banned (to when if temp)
     }
 
     @Command(desc = "Toggles the god-mode!", usage = "[player]", max = 1)
@@ -681,7 +708,7 @@ public class PlayerCommands
             context.sendTranslated("&aYou are god already!");
             return;
         }
-        BasicUser bUser = this.basics.getBasicUserManager().getBasicUser(user);
+        BasicUser bUser = this.module.getBasicUserManager().getBasicUser(user);
         bUser.godMode = !bUser.godMode;
         if (bUser.godMode)
         {
