@@ -35,6 +35,7 @@
     <module>spawn</module>
     <module>powersigns</module>
     <module>itemrepair</module>
+    <module>hideme</module>
   </modules>
 
   <build>
