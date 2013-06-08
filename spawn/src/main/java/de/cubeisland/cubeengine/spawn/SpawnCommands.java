@@ -54,8 +54,7 @@ public class SpawnCommands
         manager = roles.getRolesManager();
     }
 
-    @Command(desc = "Changes the global respawnpoint", usage = "[role] [<x> <y> <z>] [world]", max = 4)
-    //TODO set global spawn from console
+    @Command(desc = "Changes the respawnpoint", usage = "[role] [<x> <y> <z>] [world]", max = 4)
     public void setSpawn(CommandContext context)
     {
         User sender = null;
@@ -83,6 +82,7 @@ public class SpawnCommands
             if (sender == null)
             {
                 context.sendTranslated("&cIf not used ingame you have to specify a world and coordinates!");
+                context.sendTranslated("&eUse &6\"global\"&e instead of the role-name to set the default spawn.");
                 return;
             }
             world = sender.getWorld();
@@ -103,6 +103,7 @@ public class SpawnCommands
             if (sender == null)
             {
                 context.sendTranslated("&cIf not used ingame you have to specify a world and coordinates!");
+                context.sendTranslated("&eUse &6\"global\"&e instead of the role-name to set the default spawn.");
                 return;
             }
             final Location loc = sender.getLocation();
@@ -112,13 +113,16 @@ public class SpawnCommands
             yaw = loc.getYaw();
             pitch = loc.getPitch();
         }
-
         if (context.hasArg(0))
         {
             Role role = manager.getProvider(world).getRole(context.getString(0));
             if (role == null)
             {
-               context.sendTranslated("&cCould not find the role &6%s&c in &6%s&c!",context.getString(0),world.getName());
+                if (!context.getString(0).equalsIgnoreCase("global"))
+                {
+                    context.sendTranslated("&cCould not find the role &6%s&c in &6%s&c!",context.getString(0),world.getName());
+                    return;
+                }
             }
             else
             {
@@ -132,13 +136,11 @@ public class SpawnCommands
                 role.setMetadata("rolespawn", StringUtils.implode(":", locStrings));
                 role.saveToConfig();
                 manager.getProvider(world).recalculateRoles();
+                return;
             }
         }
-        else
-        {
-            world.setSpawnLocation(x, y, z);
-            context.sendTranslated("&aThe spawn in &6%s&a is now set to &eX:&6%d &eY:&6%d &eZ:&6%d", world.getName(), x, y, z);
-        }
+        world.setSpawnLocation(x, y, z);
+        context.sendTranslated("&aThe spawn in &6%s&a is now set to &eX:&6%d &eY:&6%d &eZ:&6%d", world.getName(), x, y, z);
     }
 
     @Command(desc = "Teleport directly to the worlds spawn.", usage = "[player] [world <world>] [role <role>]", max = 2,
