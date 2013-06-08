@@ -660,22 +660,18 @@ public class PlayerCommands
         }
         if (this.module.getCore().getBanManager().isUserBanned(user.getName()))
         {
-            UserBan userBan = this.module.getCore().getBanManager().getUserBan(user.getName());
+            UserBan ban = this.module.getCore().getBanManager().getUserBan(user.getName());
+            String expires;
             DateFormat format = DateFormat.getDateTimeInstance(SHORT, SHORT, context.getSender().getLocale());
-            if (userBan.getExpires() == null)
+            if (ban.getExpires() != null)
             {
-                context.sendTranslated("&2%s&e got banned from this server &f(&6%s&f) &efor ever",
-                       user.getName(), format.format(userBan.getCreated()));
+                expires = format.format(ban.getExpires());
             }
             else
             {
-                context.sendTranslated("&2%s&e got banned from this server &f(&6%s&f)",
-                       user.getName(), format.format(userBan.getCreated()));
-                context.sendTranslated("&euntil &6%s", format.format(userBan.getExpires()));
+                expires = context.getSender().translate("for ever");
             }
-            context.sendTranslated("&eby &2%s", userBan.getSource());
-            context.sendTranslated("&eReason: &6%s", userBan.getReason());
-
+            context.sendTranslated("&eBanned by &2%s&e on &6%s&e: &6%s&e (&6%s&f)", ban.getSource(), format.format(ban.getCreated()), ban.getReason(), expires);
         }
     }
 
