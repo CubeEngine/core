@@ -102,7 +102,7 @@ public class Lookup implements Cloneable
     public void show(User user)
     {
         LogAttachment attachment = user.attachOrGet(LogAttachment.class, this.module);
-        attachment.setCommandLookup(this);
+        attachment.setLastLookup(this);
         this.queryResults.show(user,queryParameter,attachment.getShowParameter());
     }
 
@@ -132,7 +132,7 @@ public class Lookup implements Cloneable
     public void rollback(User user, boolean preview)
     {
         LogAttachment attachment = user.attachOrGet(LogAttachment.class, this.module);
-        attachment.setCommandLookup(this);
+        attachment.setLastLookup(this);
         this.queryResults.rollback(attachment, preview);
         if (preview)
         {
