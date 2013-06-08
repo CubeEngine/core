@@ -19,6 +19,7 @@ package de.cubeisland.cubeengine.roles;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -29,8 +30,6 @@ import de.cubeisland.cubeengine.basics.command.general.DisplayOnlinePlayerListEv
 import de.cubeisland.cubeengine.roles.role.Role;
 import de.cubeisland.cubeengine.roles.role.RolesAttachment;
 import de.cubeisland.cubeengine.roles.role.RolesManager;
-
-import gnu.trove.map.hash.THashMap;
 
 public class BasicsOnlinePlayerList implements Listener
 {
@@ -47,7 +46,7 @@ public class BasicsOnlinePlayerList implements Listener
     public void onOnlinePlayerList(DisplayOnlinePlayerListEvent event)
     {
         String noRole = ChatFormat.parseFormats("&7No Role");
-        THashMap<String,List<User>> grouped = event.getGrouped();
+        Map<String,List<User>> grouped = event.getGrouped();
         grouped.clear();
         for (User user : event.getDefaultList())
         {
