@@ -18,6 +18,7 @@
 package de.cubeisland.cubeengine.basics.command.general;
 
 import java.util.List;
+import java.util.Map;
 
 import org.bukkit.command.CommandSender;
 import org.bukkit.event.Cancellable;
@@ -25,18 +26,16 @@ import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 
 import de.cubeisland.cubeengine.core.user.User;
-import de.cubeisland.cubeengine.basics.Basics;
 
 import gnu.trove.map.hash.THashMap;
 
 public class DisplayOnlinePlayerListEvent extends Event implements Cancellable
 {
-    private final Basics basics;
-    private THashMap<User, String> userStrings = new THashMap<User, String>();
-    private THashMap<String, List<User>> grouped = new THashMap<String, List<User>>();
+    private Map<User, String> userStrings;
+    private Map<String, List<User>> grouped;
     private static final HandlerList handlers = new HandlerList();
     private final CommandSender sender;
-    private boolean cancelled = false;
+    private boolean cancelled;
 
     private List<User> defaultList;
 
@@ -51,13 +50,15 @@ public class DisplayOnlinePlayerListEvent extends Event implements Cancellable
         return handlers;
     }
 
-    public DisplayOnlinePlayerListEvent(Basics basics, CommandSender sender, THashMap<User, String> userStrings, List<User> defaultList)
+    public DisplayOnlinePlayerListEvent(CommandSender sender, THashMap<User, String> userStrings, List<User> defaultList)
     {
-        this.basics = basics;
         this.sender = sender;
+        this.userStrings = new THashMap<User, String>();
         this.userStrings = userStrings;
+        grouped = new THashMap<String, List<User>>();
         this.grouped.put("&6Players",defaultList);
         this.defaultList = defaultList;
+        cancelled = false;
     }
 
     @Override
@@ -72,25 +73,17 @@ public class DisplayOnlinePlayerListEvent extends Event implements Cancellable
         this.cancelled = bln;
     }
 
-    /**
-     * @return the basics
-     */
-    public Basics getBasics()
-    {
-        return basics;
-    }
-
-    public THashMap<User, String> getUserStrings()
+    public Map<User, String> getUserStrings()
     {
         return userStrings;
     }
 
-    public THashMap<String, List<User>> getGrouped()
+    public Map<String, List<User>> getGrouped()
     {
         return grouped;
     }
 
-    public CommandSender getCommandSender()
+    public CommandSender getSender()
     {
         return this.sender;
     }
