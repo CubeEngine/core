@@ -65,8 +65,6 @@ public class LogCommands extends ContainerCommand
     }
 
     //TODO add rollback tool
-    //TODO logtool (cmd: tool)
-    //TODO decide toolItmes
     //TODO loghand (cmd hand) -> toggles general lookup with bare hands
 
     private Material matchType(String type, boolean block)// or item
@@ -131,7 +129,7 @@ public class LogCommands extends ContainerCommand
                 user.getWorld().dropItemNaturally(user.getLocation(),item);
             }
             user.updateInventory();
-            user.sendTranslated("&aReceived a new Log-Block!");
+            user.sendTranslated("&aReceived a new Log-Tool!");
             LogAttachment logAttachment = user.attachOrGet(LogAttachment.class,this.module);
             logAttachment.createNewLookup(material);
 
@@ -142,17 +140,20 @@ public class LogCommands extends ContainerCommand
         user.setItemInHand(found);
         user.getInventory().addItem(oldItemInHand);
         user.updateInventory();
-        user.sendTranslated("&aFound a Log-Block in your inventory!");
-        //TODO if found on hotbar setHeldItemSlot
+        user.sendTranslated("&aFound a Log-Tool in your inventory!");
     }
 
     @Alias(names = "lb")
-    @Command(desc = "Gives you a block to check logs with.",
+    @Command(desc = "Gives you a block to check logs with." +
+             "no log-type: Shows everything\n" +
+                 "chest: Shows chest-interactions only\n" +
+                 "player: Shows player-interacions only\n" +
+                 "kills: Shows kill-interactions only\n" +
+                 "block: Shows block-changes only",
              usage = "[log-type]", max = 2)
     public void block(CommandContext context)
     {
-        //TODO tabcompleter for logBlockTypes
-        //TODO show possible blocks in help
+        //TODO tabcompleter for logBlockTypes (waiting for CE-389)
         if (context.getSender() instanceof User)
         {
             Material blockMaterial = this.matchType(context.getString(0),true);
@@ -162,7 +163,7 @@ public class LogCommands extends ContainerCommand
                 return;
             }
             User user = (User) context.getSender();
-            this.findLogTool(user,blockMaterial);
+            this.findLogTool(user, blockMaterial);
         }
         else
         {
@@ -171,12 +172,16 @@ public class LogCommands extends ContainerCommand
     }
 
     @Alias(names = "lt")
-    @Command(desc = "Gives you a item to check logs with.",
+    @Command(desc = "Gives you a item to check logs with.\n" +
+        "no log-type: Shows everything\n" +
+        "chest: Shows chest-interactions only\n" +
+        "player: Shows player-interacions only\n" +
+        "kills: Shows kill-interactions only\n" +
+        "block: Shows block-changes only",
              usage = "[log-type]", max = 2)
     public void tool(CommandContext context)
     {
-        //TODO tabcompleter for logBlockTypes
-        //TODO show possible blocks in help
+        //TODO tabcompleter for logToolTypes (waiting for CE-389)
         if (context.getSender() instanceof User)
         {
             Material blockMaterial = this.matchType(context.getString(0),false);
@@ -231,13 +236,19 @@ public class LogCommands extends ContainerCommand
         user.getInventory().addItem(oldItemInHand);
         user.updateInventory();
         user.sendTranslated("&aFound a Region-Selector Tool in your inventory!");
-        //TODO if found on hotbar setHeldItemSlot
     }
 
-    // TODO give selectionTool
+    @Command(desc = "Gives you a item to select a region with.")
     public void selectionTool(CommandContext context)
     {
-
+        if (context.getSender() instanceof User)
+        {
+            giveSelectionTool((User)context.getSender());
+        }
+        else
+        {
+            context.sendTranslated("&cYou cannot hold a selection tool!");
+        }
         // if worldEdit give WE wand else give OUR wand
     }
 }

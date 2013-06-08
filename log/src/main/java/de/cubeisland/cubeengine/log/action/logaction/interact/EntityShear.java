@@ -63,10 +63,6 @@ public class EntityShear extends SimpleLogActionType
             this.logSimple(event.getEntity().getLocation(),event.getPlayer(),event.getEntity(),
                            this.serializeData(null, event.getEntity(),null));
         }
-        else
-        {
-            System.out.print("Sheared something unknown: "+event.getEntity()); //TODO remove
-        }
     }
 
     @Override

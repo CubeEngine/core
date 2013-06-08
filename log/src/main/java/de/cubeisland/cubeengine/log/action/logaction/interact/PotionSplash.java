@@ -18,6 +18,7 @@
 package de.cubeisland.cubeengine.log.action.logaction.interact;
 
 import java.util.EnumSet;
+import java.util.Iterator;
 
 import org.bukkit.World;
 import org.bukkit.entity.LivingEntity;
@@ -28,9 +29,11 @@ import org.bukkit.event.entity.PotionSplashEvent;
 import org.bukkit.potion.PotionEffect;
 
 import de.cubeisland.cubeengine.core.user.User;
+import de.cubeisland.cubeengine.core.util.ChatFormat;
 import de.cubeisland.cubeengine.log.action.logaction.SimpleLogActionType;
 import de.cubeisland.cubeengine.log.storage.LogEntry;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import gnu.trove.set.hash.TShortHashSet;
@@ -80,7 +83,6 @@ public class PotionSplash extends SimpleLogActionType
         for (PotionEffect potionEffect : event.getPotion().getEffects())
         {
             ArrayNode effect = effects.addArray();
-            effects.add(effect);
             effect.add(potionEffect.getType().getName());
             effect.add(potionEffect.getAmplifier());
             effect.add(potionEffect.getDuration());
@@ -106,13 +108,30 @@ public class PotionSplash extends SimpleLogActionType
                 }
             }
         }
+        System.out.print(json.toString());
         return json.toString();
     }
 
     @Override
     protected void showLogEntry(User user, LogEntry logEntry, String time, String loc)
     {
-        user.sendMessage("Potion stuff happened!");//TODO
+        String effects;
+        Iterator<JsonNode> it = logEntry.additional.get("effects").elements();
+        effects = "&6"+it.next().iterator().next().asText();
+        while (it.hasNext())
+        {
+            JsonNode next = it.next();
+            effects += "&f, &6";
+            effects += next.iterator().next().asText();
+        }
+        effects = ChatFormat.parseFormats(effects);
+        int amountAffected = 0;
+        if (logEntry.additional.get("amount") != null)
+        {
+            amountAffected = logEntry.additional.get("amount").asInt();
+        }
+        user.sendTranslated("%s&2%s&a used a &6splash potion&a &f(%s&f)&a onto &6%d&a entities%s", time, logEntry
+            .getCauserUser().getName(), effects, amountAffected, loc);
     }
 
     @Override

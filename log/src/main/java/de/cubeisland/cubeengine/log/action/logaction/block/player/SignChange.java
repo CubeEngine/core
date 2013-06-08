@@ -66,7 +66,7 @@ public class SignChange extends BlockActionType
             String[] oldLines = ((Sign)event.getBlock().getState()).getLines();
             ObjectNode json = this.om.createObjectNode();
             ArrayNode sign = json.putArray("sign");
-            ArrayNode oldSign = json.putArray("oldSign"); //TODO debug this is not saved correctly
+            ArrayNode oldSign = json.putArray("oldSign");
             boolean isEmpty = true;
             boolean wasEmpty = true;
             for (String line : event.getLines())

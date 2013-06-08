@@ -41,7 +41,7 @@ public abstract class LogActionType extends ActionType implements Listener
         if (show.showDate)
         {
             time = "&7"+ logEntry.timestamp.toString() + " - ";
-            //TODO time OR time-frame if attached
+            //TODO time-frame if attached
         }
         String loc = "";
         if (show.showCoords)

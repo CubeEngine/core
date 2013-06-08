@@ -180,7 +180,12 @@ public class RolesManager
         WorldRoleProvider worldRoleProvider = this.worldRoleProviders.get(worldId);
         if (worldRoleProvider == null)
         {
-            // TODO
+            if (this.wm.getWorld(worldId) != null) // make sure world exists
+            {
+                this.createMissingWorldRoleProviders();
+                worldRoleProvider = this.worldRoleProviders.get(worldId);
+            }
+            // else return null;
         }
         return worldRoleProvider;
     }

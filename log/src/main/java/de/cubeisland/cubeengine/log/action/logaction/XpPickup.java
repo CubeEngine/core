@@ -69,8 +69,14 @@ public class XpPickup extends SimpleLogActionType
     @Override
     protected void showLogEntry(User user, LogEntry logEntry, String time, String loc)
     {
-        //TODO attached count total amount
         int amount = logEntry.getAdditional().iterator().next().asInt();
+        if (logEntry.hasAttached())
+        {
+            for (LogEntry entry : logEntry.getAttached())
+            {
+                amount += entry.getAdditional().iterator().next().asInt();
+            }
+        }
         user.sendTranslated("%s&2%s&a earned &6%d experience%s",
                             time, logEntry.getCauserUser().getDisplayName(), amount,loc);
     }

@@ -158,11 +158,13 @@ public class RightClickActionType extends ActionTypeContainer
             case POTATO:
                 if (itemInHand.getType().equals(Material.INK_SACK) && itemInHand.getDurability() == 15)
                 {
+                    // TODO THIS IS BULLSHIT I need an event for bonemealUse...
                     BonemealUse bonemealUse = this.manager.getActionType(BonemealUse.class);
                     if (bonemealUse.isActive(state.getWorld()))
                     {
                         BlockData newBlockData = BlockData.of(state);
                         //TODO adjust growth stage
+                        //TODO do not log if fully grown
                         bonemealUse.logBlockChange(location, event.getPlayer(),BlockData.of(state),newBlockData,null);
                     }
                 }

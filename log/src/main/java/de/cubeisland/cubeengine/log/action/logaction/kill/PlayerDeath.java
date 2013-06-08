@@ -67,8 +67,8 @@ public class PlayerDeath extends SimpleLogActionType
         {
             JsonNode json = logEntry.getAdditional();
             DamageCause dmgC = DamageCause.valueOf(json.get("dmgC").asText());
-            user.sendTranslated("&2%s &adied &f(&6%s&f)",//TODO NPE
-                                logEntry.getUserFromData().getDisplayName(),
+            user.sendTranslated("&2%s &adied &f(&6%s&f)",//TODO NPE why??? does it still happen
+                                logEntry.getUserFromData().getName(),
                                 dmgC.name());//TODO get pretty name for dmgC
         }
     }

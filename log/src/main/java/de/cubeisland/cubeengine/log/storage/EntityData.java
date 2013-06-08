@@ -34,6 +34,6 @@ public class EntityData
     @Override
     public String toString()
     {
-        return entityType.name(); //TODO
+        return entityType.name(); //TODO pretty name
     }
 }

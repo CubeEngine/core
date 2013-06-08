@@ -54,7 +54,7 @@ public class PetDeath extends SimpleLogActionType
     @Override
     protected void showLogEntry(User user, LogEntry logEntry, String time, String loc)
     {
-        EntityData killed =  logEntry.getEntityFromData();
+        EntityData killed = logEntry.getEntityFromData();
         if (Match.entity().isTameable(killed.entityType))
         {
             JsonNode json = logEntry.getAdditional();

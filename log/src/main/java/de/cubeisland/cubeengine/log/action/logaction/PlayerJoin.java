@@ -74,9 +74,16 @@ public class PlayerJoin extends SimpleLogActionType
     @Override
     protected void showLogEntry(User user, LogEntry logEntry, String time, String loc)
     {
-        //TODO attach multiple join at same loc
-        user.sendTranslated("%s&2%s&a joined the server%s",
-                            time, logEntry.getCauserUser().getDisplayName(),loc);
+        if (logEntry.hasAttached())
+        {
+            user.sendTranslated("%s&2%s&a joined the server &6x%d%s",
+                                time,logEntry.getCauserUser().getDisplayName(),logEntry.getAttached().size() +1 , loc);
+        }
+        else
+        {
+            user.sendTranslated("%s&2%s&a joined the server%s",
+                                time, logEntry.getCauserUser().getDisplayName(),loc);
+        }
         //TODO ip if known
     }
 

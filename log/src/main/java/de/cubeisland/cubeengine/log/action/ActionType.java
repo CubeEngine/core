@@ -157,6 +157,7 @@ public abstract class ActionType
     {
         if (this.canRollback())
         {
+            attachment.getHolder().sendTranslated("&4Encountered an unimplemented LogAction-Rollback: &6%s", logEntry.actionType.getName());
             throw new UnsupportedOperationException("Not yet implemented! " + logEntry.actionType.getName());
         }
         return false;

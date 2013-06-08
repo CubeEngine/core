@@ -49,9 +49,18 @@ public class BonemealUse extends BlockActionType
     @Override
     protected void showLogEntry(User user, LogEntry logEntry, String time, String loc)
     {
-        user.sendTranslated("&2%s &aused bonemeal on &6%s",
-                            logEntry.getCauserUser().getDisplayName(),
-                            logEntry.getOldBlock());
+        if (logEntry.hasAttached())
+        {
+            user.sendTranslated("%s&2%s &aused bonemeal on &6%s x%d%s",
+                                time, logEntry.getCauserUser().getDisplayName(),
+                                logEntry.getOldBlock(), logEntry.getAttached().size() +1 , loc);
+        }
+        else
+        {
+            user.sendTranslated("%s&2%s &aused bonemeal on &6%s%s",
+                                time, logEntry.getCauserUser().getDisplayName(),
+                                logEntry.getOldBlock(), loc);
+        }
     }
 
     @Override

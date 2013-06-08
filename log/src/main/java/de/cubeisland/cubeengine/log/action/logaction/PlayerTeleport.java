@@ -85,28 +85,68 @@ public class PlayerTeleport extends SimpleLogActionType
     protected void showLogEntry(User user, LogEntry logEntry, String time, String loc)
     {
         JsonNode json = logEntry.additional;
-        String world = this.logModule.getCore().getWorldManager().getWorld(json.get("world").asInt()).getName();
-        if (json.get("dir").asText().equals("from"))
+        World world = this.logModule.getCore().getWorldManager().getWorld(json.get("world").asLong());
+        if (logEntry.hasAttached())
         {
-            user.sendTranslated("%s&2%s&a teleported from &6%d&f:&6%d&f:&6%d&a in &6%s%s",
-                                time,logEntry.getCauserUser().getDisplayName(),
-                                json.get("x").asInt(),json.get("y").asInt(),json.get("z").asInt(),
-                                world, loc);
+            Location locFrom = logEntry.getLocation();
+            Location locTo = new Location(world,0,0,0);
+            locTo.setX(json.get("x").asInt());
+            locTo.setY(json.get("y").asInt());
+            locTo.setZ(json.get("z").asInt());
+            if (json.get("dir").asText().equals("from"))
+            {
+                Location temp = locTo;
+                locTo = locFrom;
+                locFrom = temp;
+            }
+            user.sendTranslated("%s&2%s&a teleported from &6%d&f:&6%d&f:&6%d&a in &6%s&a to &6%d&f:&6%d&f:&6%d&a in &6%s",
+                                time, logEntry.getCauserUser().getName(),
+                                locFrom.getBlockX(), locFrom.getBlockY(), locFrom.getBlockZ(), locFrom.getWorld().getName(),
+                                locTo.getBlockX(), locTo.getBlockY(), locTo.getBlockZ(), locTo.getWorld().getName());
         }
         else
         {
+            if (json.get("dir").asText().equals("from"))
+            {
+                user.sendTranslated("%s&2%s&a teleported from &6%d&f:&6%d&f:&6%d&a in &6%s",
+                                    time,logEntry.getCauserUser().getName(),
+                                    json.get("x").asInt(),json.get("y").asInt(),json.get("z").asInt(),
+                                    world.getName(), loc);
+            }
+            else
+            {
 
-            user.sendTranslated("%s&2%s&a teleported to &6%d&f:&6%d&f:&6%d&a in &6%s%s!",
-                                time,logEntry.getCauserUser().getDisplayName(),
-                                json.get("x").asInt(),json.get("y").asInt(),json.get("z").asInt(),
-                                world, loc);
+                user.sendTranslated("%s&2%s&a teleported to &6%d&f:&6%d&f:&6%d&a in &6%s%s!",
+                                    time,logEntry.getCauserUser().getDisplayName(),
+                                    json.get("x").asInt(),json.get("y").asInt(),json.get("z").asInt(),
+                                    world.getName(), loc);
+            }
         }
     }
 
     @Override
     public boolean isSimilar(LogEntry logEntry, LogEntry other)
     {
-        return false; // TODO
+        if (super.isSimilar(logEntry, other) && logEntry.causer == other.causer &&
+            Math.abs(logEntry.timestamp.getTime() - other.timestamp.getTime()) < 5)
+        {
+            if (logEntry.getAdditional().get("dir").asText().equals(other.getAdditional().get("dir").asText()))
+            {
+                return false;
+            }
+            int x = logEntry.getAdditional().get("x").asInt();
+            int y = logEntry.getAdditional().get("y").asInt();
+            int z = logEntry.getAdditional().get("z").asInt();
+            long worldID = logEntry.getAdditional().get("world").asLong();
+            if (x == other.location.x
+                && y == other.location.y
+                && z == other.location.z
+                && worldID == this.logModule.getCore().getWorldManager().getWorldId(other.world))
+            {
+                return true;
+            }
+        }
+        return false;
     }
 
     @Override

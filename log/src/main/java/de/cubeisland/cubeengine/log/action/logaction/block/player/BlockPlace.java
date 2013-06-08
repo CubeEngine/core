@@ -75,7 +75,7 @@ public class BlockPlace extends BlockActionType
                 BlockFall blockFall = this.manager.getActionType(BlockFall.class);
                 if (blockFall.isActive(location.getWorld()))
                 {
-                    blockFall.preplanBlockFall(location.clone(), event.getPlayer(), this); // TODO this does not seem to work
+                    blockFall.preplanBlockFall(location.clone(), event.getPlayer(), this); // TODO this does not seem to work (check me)
                 }
             }
         }

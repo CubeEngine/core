@@ -83,7 +83,7 @@ public class EnchantItem extends SimpleLogActionType
     @Override
     public boolean isSimilar(LogEntry logEntry, LogEntry other)
     {
-        return false; //TODO how to attach if?
+        return false;
     }
 
 
