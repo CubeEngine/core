@@ -265,7 +265,7 @@ public class RightClickActionType extends ActionTypeContainer
             }
             else if (itemInHand.getType().equals(Material.FIREWORK))
             {
-                System.out.print(itemInHand);//TODO remove
+                //System.out.print(itemInHand);//TODO remove
                 FireworkUse fireworkUse = this.manager.getActionType(FireworkUse.class);
                 if (fireworkUse.isActive(state.getWorld()))
                 { //TODO perhaps serialize itemdata?

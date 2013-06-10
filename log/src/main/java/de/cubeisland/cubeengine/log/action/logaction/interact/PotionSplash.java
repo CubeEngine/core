@@ -71,6 +71,11 @@ public class PotionSplash extends SimpleLogActionType
         if (this.isActive(event.getPotion().getWorld()))
         {
             LivingEntity livingEntity = event.getPotion().getShooter();
+            if (livingEntity == null)
+            {
+                // TODO dispener?
+                return;
+            }
             String additionalData = this.serializePotionLog(event);
             this.logSimple(livingEntity,additionalData);
         }

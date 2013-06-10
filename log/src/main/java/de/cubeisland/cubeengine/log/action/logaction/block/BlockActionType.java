@@ -308,7 +308,7 @@ public abstract class BlockActionType extends LogActionType
         {
         case SIGN_POST:
         case WALL_SIGN:
-            Sign sign = (Sign)block.getState();
+            Sign sign = (Sign)block.getState(); // TODO ClassCastException here WHY?
             if (logEntry.getAdditional() != null)
             {
                 ArrayNode oldSign = (ArrayNode)logEntry.getAdditional().get("oldSign");
