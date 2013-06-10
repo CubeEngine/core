@@ -165,7 +165,8 @@ public class ContainerActionType extends ActionTypeContainer
             //System.out.print("Cursor: "+ cursorItem + " | Inventory: "+ inventoryItem);
             //System.out.print((event.getRawSlot() < event.getView().getTopInventory().getSize() ? "TOP " : "BOT ")
             //+ (event.isShiftClick() ? "SHIFT-" : "") + (event.isRightClick() ? "RIGHT" : "LEFT"));
-            if (inventoryItem.getType().equals(Material.AIR) && cursorItem.getType().equals(Material.AIR))
+            if ((inventoryItem == null || inventoryItem.getType().equals(Material.AIR))
+               && (cursorItem == null || cursorItem.getType().equals(Material.AIR)))
             {
                 return; // nothing to log
             }
