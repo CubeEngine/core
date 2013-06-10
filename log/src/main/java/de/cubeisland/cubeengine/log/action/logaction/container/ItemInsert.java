@@ -138,4 +138,10 @@ public class ItemInsert extends SimpleLogActionType
     {
         return true;
     }
+
+    @Override
+    public boolean isBlockBound()
+    {
+        return true;
+    }
 }

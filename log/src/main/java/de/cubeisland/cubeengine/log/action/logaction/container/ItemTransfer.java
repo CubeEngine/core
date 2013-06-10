@@ -64,5 +64,15 @@ public class ItemTransfer extends SimpleLogActionType
         return this.lm.getConfig(world).ITEM_TRANSFER_enable;
     }
 
-    // TODO rollback
+    @Override
+    public boolean canRollback()
+    {
+        return false; // TODO implement rollback
+    }
+
+    @Override
+    public boolean isBlockBound()
+    {
+        return true;
+    }
 }

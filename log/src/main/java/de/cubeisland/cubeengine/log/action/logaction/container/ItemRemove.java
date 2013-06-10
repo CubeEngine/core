@@ -140,4 +140,10 @@ public class ItemRemove extends SimpleLogActionType
     {
         return true;
     }
+
+    @Override
+    public boolean isBlockBound()
+    {
+        return true;
+    }
 }

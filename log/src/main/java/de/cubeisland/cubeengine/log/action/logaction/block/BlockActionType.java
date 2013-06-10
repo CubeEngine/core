@@ -314,7 +314,7 @@ public abstract class BlockActionType extends LogActionType
                 ArrayNode oldSign = (ArrayNode)logEntry.getAdditional().get("oldSign");
                 if (oldSign == null)
                 {
-                    oldSign = (ArrayNode)logEntry.getAdditional().get("sign");
+                    oldSign = (ArrayNode)logEntry.getAdditional().get("sign"); // This is for old database
                 }
                 sign.setLine(0,oldSign.get(0).textValue());
                 sign.setLine(1,oldSign.get(1).textValue());
@@ -388,6 +388,18 @@ public abstract class BlockActionType extends LogActionType
             break;
         // TODO inventoryHolders
         }
+        return true;
+    }
+
+    @Override
+    public boolean isStackable()
+    {
+        return false;
+    }
+
+    @Override
+    public boolean isBlockBound()
+    {
         return true;
     }
 }

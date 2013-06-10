@@ -30,8 +30,6 @@ import org.bukkit.Location;
 
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.log.LogAttachment;
-import de.cubeisland.cubeengine.log.action.logaction.block.BlockActionType;
-import de.cubeisland.cubeengine.log.action.logaction.block.player.SignChange;
 import de.cubeisland.cubeengine.log.action.logaction.kill.MonsterDeath;
 
 public class QueryResults
@@ -164,12 +162,11 @@ public class QueryResults
             {
                 if (logEntry.actionType instanceof MonsterDeath && !this.lookup.getQueryParameter().containsAction(logEntry.actionType))
                 {
-                    continue;
+                    continue; // ignoring Monster-respawning when not explicitly wanted
                 }
-                if (logEntry.actionType instanceof BlockActionType) // If blockaction ignore
+                if (logEntry.actionType.isBlockBound())
                 {
-                    // TODO chest changes and other that can be stacked into one location
-                    if (logEntry.actionType instanceof SignChange)
+                    if (logEntry.actionType.isStackable())
                     {
                         LinkedList<LogEntry> changes = blockChanges.get(logEntry.getLocation());
                         if (changes == null)
@@ -191,30 +188,23 @@ public class QueryResults
                 }
             }
         }
+        // Finished filtering! Merge back together...
         for (LinkedList<LogEntry> entries : blockChanges.values())
         {
-            // TODO interface of ActionType if logs are "stackable"
-            // similar to is Attachable
-            if (entries.getLast().actionType instanceof SignChange)
-            {
-                filteredLogs.add(entries.getLast());
-            }
-            else
-            {
-                filteredLogs.addAll(entries); // TODO filter correctly (container changes stack together)
-            }
+            filteredLogs.addAll(entries);
         }
         filteredLogs.addAll(finalBlock.values());
+        // Start Rollback 1st Round
         Set <LogEntry> rollbackRound2 = new LinkedHashSet<LogEntry>();
         for (LogEntry logEntry : filteredLogs.descendingSet()) // Rollback normal blocks
         {
-            // Can Rollback
             if (!logEntry.rollback(attachment, false, preview)) // Rollback failed (cannot set yet (torches etc)) try again later
             {
                 rollbackRound2.add(logEntry);
             }
         }
         ShowParameter show = new ShowParameter();
+        // Start Rollback 2nd Round (Attachables etc.)
         for (LogEntry logEntry : rollbackRound2) // Rollback attached blocks
         {
             if (!logEntry.rollback(attachment, true, preview))

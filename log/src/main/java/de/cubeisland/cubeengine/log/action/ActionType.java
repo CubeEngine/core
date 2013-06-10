@@ -163,6 +163,31 @@ public abstract class ActionType
         return false;
     }
 
+    /**
+     * Returns whether this actionType can have more than one changes at a single location.
+     * <p>e.g.: Block-Changes like block-break or block-place will return false
+     * <p>Container-Transactions, mob-spawns or kills will return true
+     * <p>default is true override to change this!</p>
+     *
+     * @return true if this log-action can stack
+     */
+    public boolean isStackable()
+    {
+        return true;
+    }
+
+    /**
+     * Returns whether this actionType is referring to a specific Block not a location
+     * <p>This is mostly true for block-changes and container-transactions
+     * <p>default is false override to change this!</p>
+     *
+     * @return true if this log-action is block-bound
+     */
+    public boolean isBlockBound()
+    {
+        return false;
+    }
+
     public static enum Category
     {
         ALL("all"),
