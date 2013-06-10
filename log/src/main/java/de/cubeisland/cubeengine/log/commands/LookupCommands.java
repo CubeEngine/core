@@ -329,6 +329,7 @@ public class LookupCommands
         show.showCoords = context.hasFlag("coords");
         show.showDate = !context.hasFlag("nd");
         show.compress = !context.hasFlag("det");
+        show.reverseOrder = !context.hasFlag("desc");
         if (context.hasParam("limit"))
         {
             Integer limit = context.getParam("limit", null);

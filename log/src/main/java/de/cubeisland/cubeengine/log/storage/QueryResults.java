@@ -22,6 +22,7 @@ import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.Map;
+import java.util.NavigableSet;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -122,7 +123,16 @@ public class QueryResults
         }
         int i = 0;
         int cpage = 1;
-        for (LogEntry logEntry : compressedEntries.descendingSet())
+        NavigableSet<LogEntry> navigableSet;
+        if (show.reverseOrder)
+        {
+            navigableSet = compressedEntries;
+        }
+        else
+        {
+            navigableSet = compressedEntries.descendingSet();
+        }
+        for (LogEntry logEntry : navigableSet)
         {
             if (cpage == show.page)
             {
