@@ -43,7 +43,7 @@ public class QueryParameter implements Cloneable
     volatile Long worldID;
     volatile BlockVector3 location1;
     volatile BlockVector3 location2;
-    Integer radius; //TODO
+    Integer radius;
     Set<Location> singleBlockLocations;
     // The actions to look for
     Map<ActionType, Boolean> actions = new ConcurrentHashMap<ActionType, Boolean>();

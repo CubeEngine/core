@@ -106,7 +106,7 @@ public class ItemInsert extends SimpleLogActionType
         Material material = logEntry.getContainerTypeFromBlock().getMaterial();
         if (material.equals(Material.STORAGE_MINECART))
         {
-            // TODO MinecartInventoryHolders
+            // TODO MinecartInventoryHolders  // would need UUID
         }
         else
         {
@@ -131,7 +131,7 @@ public class ItemInsert extends SimpleLogActionType
         }
         return false;
     }
-    // TODO furnace Minecart different event?
+    // TODO furnace Minecart different event? / couldnt rollback that
 
     @Override
     public boolean canRollback()

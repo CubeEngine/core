@@ -114,6 +114,7 @@ public class ItemRemove extends SimpleLogActionType
             {
                 ItemData itemData = logEntry.getItemData();
                 InventoryHolder holder = (InventoryHolder)block;
+                itemData.amount = -itemData.amount;
                 HashMap<Integer,ItemStack> couldNotRemove = holder.getInventory().addItem(itemData.toItemStack());
                 if (!couldNotRemove.isEmpty())
                 {
