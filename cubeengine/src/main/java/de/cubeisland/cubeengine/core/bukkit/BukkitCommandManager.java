@@ -24,11 +24,6 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.logging.FileHandler;
-import java.util.logging.Formatter;
-import java.util.logging.Level;
-import java.util.logging.LogRecord;
-import java.util.logging.Logger;
 
 import org.bukkit.Server;
 import org.bukkit.command.Command;
@@ -43,12 +38,17 @@ import de.cubeisland.cubeengine.core.command.CommandSender;
 import de.cubeisland.cubeengine.core.command.CubeCommand;
 import de.cubeisland.cubeengine.core.command.result.confirm.ConfirmManager;
 import de.cubeisland.cubeengine.core.command.sender.ConsoleCommandSender;
-import de.cubeisland.cubeengine.core.logger.CubeFileHandler;
-import de.cubeisland.cubeengine.core.logger.CubeLogger;
 import de.cubeisland.cubeengine.core.module.Module;
 import de.cubeisland.cubeengine.core.util.StringUtils;
 
+import ch.qos.logback.classic.Logger;
+import ch.qos.logback.classic.LoggerContext;
+import ch.qos.logback.classic.PatternLayout;
+import ch.qos.logback.classic.spi.ILoggingEvent;
+import ch.qos.logback.core.FileAppender;
 import gnu.trove.map.hash.THashMap;
+import org.slf4j.ILoggerFactory;
+import org.slf4j.LoggerFactory;
 
 import static de.cubeisland.cubeengine.core.logger.LogLevel.INFO;
 import static de.cubeisland.cubeengine.core.logger.LogLevel.WARNING;
@@ -71,24 +71,22 @@ public class BukkitCommandManager implements CommandManager
         this.commandBackend = commandBackend;
         this.commandFactories = new THashMap<Class<? extends CubeCommand>, CommandFactory>();
 
-        this.commandLogger = new CubeLogger("commands");
+        this.commandLogger = (Logger) LoggerFactory.getLogger("cubeengine.commands");
         try
         {
-            FileHandler handler = new CubeFileHandler(Level.ALL, new File(core.getFileManager().getLogDir(), this.commandLogger.getName()).getPath());
-            handler.setFormatter(new Formatter() {
-                private final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-
-                @Override
-                public String format(LogRecord record)
-                {
-                    StringBuilder sb = new StringBuilder(this.dateFormat.format(new Date(record.getMillis())));
-                    sb.append(' ').append(record.getMessage()).append('\n');
-                    return sb.toString();
-                }
-            });
-            this.commandLogger.addHandler(handler);
+            LoggerContext context = (LoggerContext) LoggerFactory.getILoggerFactory();
+            FileAppender<ILoggingEvent> fileAppender = new FileAppender<ILoggingEvent>();
+            fileAppender.setFile(new File(core.getFileManager().getLogDir(), this.commandLogger.getName()).getPath());
+            PatternLayout pl = new PatternLayout();
+            pl.setPattern("%date{yyyy-MM-dd HH:mm:ss} %m%n");
+            pl.setContext(context);
+            pl.start();
+            fileAppender.setLayout(pl);
+            fileAppender.setContext(context);
+            fileAppender.start();
+            commandLogger.addAppender(fileAppender);
         }
-        catch (IOException e)
+        catch (Exception e)
         {
             core.getLog().log(WARNING, "Failed to create the command log!", e);
         }
@@ -235,7 +233,7 @@ public class BukkitCommandManager implements CommandManager
     {
         if (command.isLoggable())
         {
-            this.commandLogger.log(INFO, "execute " + sender.getName() + ' ' + command.getName() + ' ' + StringUtils.implode(" ", args));
+            this.commandLogger.info("execute {} {} {}", sender.getName(), command.getName(), StringUtils.implode(" ", args));
         }
     }
 
@@ -244,7 +242,7 @@ public class BukkitCommandManager implements CommandManager
     {
         if (command.isLoggable())
         {
-            this.commandLogger.log(INFO, "complete " + sender.getName() + ' ' + command.getName() + ' ' + StringUtils.implode(" ", args));
+            this.commandLogger.info("complete {} {} {}", sender.getName(), command.getName(), StringUtils.implode(" ", args));
         }
     }
 

@@ -28,15 +28,20 @@ import java.util.Set;
 import java.util.logging.Formatter;
 import java.util.logging.LogRecord;
 
-import de.cubeisland.cubeengine.core.logger.CubeFileHandler;
-import de.cubeisland.cubeengine.core.logger.CubeLogger;
-import de.cubeisland.cubeengine.core.logger.LogLevel;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.conomy.Conomy;
 import de.cubeisland.cubeengine.conomy.ConomyConfiguration;
 import de.cubeisland.cubeengine.conomy.account.storage.AccountModel;
 import de.cubeisland.cubeengine.conomy.account.storage.AccountStorage;
 import de.cubeisland.cubeengine.conomy.account.storage.BankAccessStorage;
+
+import ch.qos.logback.classic.Logger;
+import ch.qos.logback.classic.LoggerContext;
+import ch.qos.logback.classic.PatternLayout;
+import ch.qos.logback.classic.spi.ILoggingEvent;
+import ch.qos.logback.classic.spi.LoggingEvent;
+import ch.qos.logback.core.FileAppender;
+import org.slf4j.LoggerFactory;
 
 import gnu.trove.map.hash.THashMap;
 
@@ -49,7 +54,7 @@ public class ConomyManager
     private Map<String,BankAccount> bankaccounts;
     private Map<Long,BankAccount> bankaccountsID;
 
-    protected final CubeLogger logger;
+    protected final Logger logger;
     protected final ConomyConfiguration config;
 
     public ConomyManager(Conomy module)
@@ -62,25 +67,22 @@ public class ConomyManager
         this.bankaccounts = new THashMap<String, BankAccount>();
         this.bankaccountsID = new THashMap<Long, BankAccount>();
 
-        this.logger = new CubeLogger("conomy_transactions");
+        this.logger =  (Logger) LoggerFactory.getLogger("cubeengine.conomy.transactions");
         if (this.module.getConfig().enableLogging)
         {
             try
             {
-                final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-                CubeFileHandler handler = new CubeFileHandler(LogLevel.ALL,
-                                                              new File(this.module.getCore().getFileManager().getLogDir(), "conomy_transactions").toString());
-                this.logger.addHandler(handler);
-                handler.setFormatter(new Formatter() {
-                    @Override
-                    public String format(LogRecord record)
-                    {
-                        StringBuilder sb = new StringBuilder();
-                        sb.append(dateFormat.format(new Date(record.getMillis())))
-                          .append(" ").append(record.getMessage()).append("\n");
-                        return sb.toString();
-                    }
-                });
+                LoggerContext context = (LoggerContext) LoggerFactory.getILoggerFactory();
+                FileAppender<ILoggingEvent> fileAppender = new FileAppender<ILoggingEvent>();
+                fileAppender.setFile(new File(this.module.getCore().getFileManager().getLogDir(), "conomy_transactions").toString());
+                PatternLayout pl = new PatternLayout();
+                pl.setPattern("%date{yyyy-MM-dd HH:mm:ss} %m%n");
+                pl.setContext(context);
+                pl.start();
+                fileAppender.setLayout(pl);
+                fileAppender.setContext(context);
+                fileAppender.start();
+                logger.addAppender(fileAppender);
             }
             catch (Exception ex)
             {

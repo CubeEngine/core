@@ -17,18 +17,22 @@
  */
 package de.cubeisland.cubeengine.core.webapi;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.nio.charset.Charset;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.FileHandler;
-import java.util.logging.Logger;
 
 import de.cubeisland.cubeengine.core.CubeEngine;
-import de.cubeisland.cubeengine.core.logger.CubeLogger;
 import de.cubeisland.cubeengine.core.webapi.exception.ApiRequestException;
 
+import ch.qos.logback.classic.Logger;
+import ch.qos.logback.classic.LoggerContext;
+import ch.qos.logback.classic.PatternLayout;
+import ch.qos.logback.classic.spi.ILoggingEvent;
+import ch.qos.logback.core.FileAppender;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -51,6 +55,7 @@ import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
 import io.netty.handler.codec.http.websocketx.WebSocketFrame;
 import io.netty.handler.codec.http.websocketx.WebSocketServerHandshaker;
 import io.netty.handler.codec.http.websocketx.WebSocketServerHandshakerFactory;
+import org.slf4j.LoggerFactory;
 
 import static de.cubeisland.cubeengine.core.logger.LogLevel.*;
 import static de.cubeisland.cubeengine.core.webapi.RequestError.*;
@@ -75,12 +80,17 @@ public class ApiRequestHandler extends ChannelInboundMessageHandlerAdapter<Objec
     {
         this.server = server;
         this.objectMapper = mapper;
-        this.logger = new CubeLogger("webapi");
+        this.logger = (Logger)LoggerFactory.getLogger("cubeengine.webapi");
         try
         {
-            this.logger.addHandler(new FileHandler("webapi.log"));
+            LoggerContext context = (LoggerContext) LoggerFactory.getILoggerFactory();
+            FileAppender<ILoggingEvent> fileAppender = new FileAppender<ILoggingEvent>();
+            fileAppender.setContext(context);
+            fileAppender.setFile("webapi.log");
+            fileAppender.start();
+            logger.addAppender(fileAppender);
         }
-        catch (IOException e)
+        catch (Exception e)
         {
             CubeEngine.getLog().log(ERROR, "Failed to initialize the file handler for the web api log!", e);
         }
@@ -90,32 +100,32 @@ public class ApiRequestHandler extends ChannelInboundMessageHandlerAdapter<Objec
     public void exceptionCaught(ChannelHandlerContext context, Throwable t)
     {
         this.error(context, UNKNOWN_ERROR);
-        this.logger.log(ERROR, "An error occurred while processing an API request: " + t.getMessage(), t);
+        this.logger.error("An error occurred while processing an API request: " + t.getMessage(), t);
     }
 
     @Override
     public void messageReceived(ChannelHandlerContext context, Object message) throws Exception
     {
-        this.logger.log(INFO, "{0} connected...", ((InetSocketAddress)context.channel().remoteAddress()).getAddress().getHostAddress());
+        this.logger.info("{0} connected...", ((InetSocketAddress)context.channel().remoteAddress()).getAddress().getHostAddress());
         if (!this.server.isAddressAccepted((InetSocketAddress)context.channel().remoteAddress()))
         {
-            this.logger.log(INFO, "Access denied!");
+            this.logger.info("Access denied!");
             context.channel().close();
         }
 
         if (message instanceof FullHttpRequest)
         {
-            this.logger.log(INFO, "this is a HTTP request...");
+            this.logger.info("this is a HTTP request...");
             this.handleHttpRequest(context, (FullHttpRequest)message);
         }
         else if (message instanceof WebSocketFrame)
         {
-            this.logger.log(INFO, "oh a websocket frame!");
+            this.logger.info("oh a websocket frame!");
             this.handleWebSocketFrame(context, (WebSocketFrame)message);
         }
         else
         {
-            this.logger.log(INFO, "dafuq!?");
+            this.logger.info("dafuq!?");
             context.close();
         }
     }
@@ -125,7 +135,7 @@ public class ApiRequestHandler extends ChannelInboundMessageHandlerAdapter<Objec
         if (request.getDecoderResult().isFailure())
         {
             this.error(context, UNKNOWN_ERROR);
-            this.logger.log(INFO, "the decoder failed on this request...", request.getDecoderResult().cause());
+            this.logger.info("the decoder failed on this request...", request.getDecoderResult().cause());
             return;
         }
 
@@ -151,17 +161,17 @@ public class ApiRequestHandler extends ChannelInboundMessageHandlerAdapter<Objec
         // is this request intended to initialize a websockets connection?
         if ("websocket".equals(path))
         {
-            this.logger.log(INFO, "received a websocket request...");
+            this.logger.info("received a websocket request...");
             WebSocketServerHandshakerFactory handshakerFactory = new WebSocketServerHandshakerFactory("ws://" + request.headers().get(HOST) + "/" + this.WEBSOCKET_ROUTE, null, false);
             this.handshaker = handshakerFactory.newHandshaker(request);
             if (this.handshaker == null)
             {
-                this.logger.log(INFO, "client is incompatible!");
+                this.logger.info("client is incompatible!");
                 WebSocketServerHandshakerFactory.sendUnsupportedWebSocketVersionResponse(context.channel());
             }
             else
             {
-                this.logger.log(INFO, "handshaking now...");
+                this.logger.info("handshaking now...");
                 this.handshaker.handshake(context.channel(), request).addListener(new ChannelFutureListener()
                 {
                     @Override
@@ -169,11 +179,11 @@ public class ApiRequestHandler extends ChannelInboundMessageHandlerAdapter<Objec
                     {
                         if (future.isSuccess())
                         {
-                            logger.log(INFO, "Success!");
+                            logger.info("Success!");
                         }
                         else
                         {
-                            logger.log(INFO, "Failed!");
+                            logger.info("Failed!");
                         }
                     }
                 });
@@ -198,7 +208,7 @@ public class ApiRequestHandler extends ChannelInboundMessageHandlerAdapter<Objec
             }
             catch (Exception e)
             {
-                this.logger.log(DEBUG, "Failed to parse the request body!", e);
+                this.logger.debug("Failed to parse the request body!", e);
                 this.error(context, MALFORMED_DATA);
                 return;
             }
@@ -228,23 +238,23 @@ public class ApiRequestHandler extends ChannelInboundMessageHandlerAdapter<Objec
     {
         if (frame instanceof CloseWebSocketFrame)
         {
-            this.logger.log(INFO, "recevied close frame");
+            this.logger.info("recevied close frame");
             this.server.unsubscribe(this);
             this.handshaker.close(context.channel(), (CloseWebSocketFrame)frame);
         }
         else if (frame instanceof PingWebSocketFrame)
         {
-            this.logger.log(INFO, "recevied ping frame");
+            this.logger.info("recevied ping frame");
             context.write(new PongWebSocketFrame(frame.content()));
         }
         else if (frame instanceof TextWebSocketFrame)
         {
-            this.logger.log(INFO, "recevied text frame");
+            this.logger.info("recevied text frame");
             this.handleTextWebSocketFrame(context, (TextWebSocketFrame)frame);
         }
         else
         {
-            this.logger.log(INFO, "recevied unknown incompatible frame");
+            this.logger.info("recevied unknown incompatible frame");
             context.close();
         }
     }
@@ -256,7 +266,7 @@ public class ApiRequestHandler extends ChannelInboundMessageHandlerAdapter<Objec
         int newLinePos = content.indexOf('\n');
         if (newLinePos == -1)
         {
-            this.logger.log(INFO, "the frame data didn't contain a newline !");
+            this.logger.info("the frame data didn't contain a newline !");
             // TODO error response
             return;
         }
@@ -386,7 +396,7 @@ public class ApiRequestHandler extends ChannelInboundMessageHandlerAdapter<Objec
             }
             catch (JsonProcessingException e)
             {
-                this.logger.log(ERROR, "Failed to generate the JSON code for a response!", e);
+                this.logger.error("Failed to generate the JSON code for a response!", e);
                 return "null";
             }
         }

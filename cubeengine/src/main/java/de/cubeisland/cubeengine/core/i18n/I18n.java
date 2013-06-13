@@ -25,22 +25,24 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.Stack;
-import java.util.logging.Logger;
 
 import de.cubeisland.cubeengine.core.Core;
 import de.cubeisland.cubeengine.core.config.Configuration;
 import de.cubeisland.cubeengine.core.filesystem.FileExtentionFilter;
 import de.cubeisland.cubeengine.core.filesystem.FileManager;
 import de.cubeisland.cubeengine.core.filesystem.gettext.MessageCatalogFactory;
-import de.cubeisland.cubeengine.core.logger.CubeFileHandler;
-import de.cubeisland.cubeengine.core.logger.CubeLogger;
-import de.cubeisland.cubeengine.core.logger.LogLevel;
 import de.cubeisland.cubeengine.core.util.Cleanable;
 import de.cubeisland.cubeengine.core.util.Misc;
 import de.cubeisland.cubeengine.core.util.matcher.Match;
 
+import ch.qos.logback.classic.Logger;
+import ch.qos.logback.classic.LoggerContext;
+import ch.qos.logback.classic.PatternLayout;
+import ch.qos.logback.classic.spi.ILoggingEvent;
+import ch.qos.logback.core.FileAppender;
 import gnu.trove.map.hash.THashMap;
 import gnu.trove.set.hash.THashSet;
+import org.slf4j.LoggerFactory;
 
 import static de.cubeisland.cubeengine.core.logger.LogLevel.ERROR;
 import static de.cubeisland.cubeengine.core.logger.LogLevel.WARNING;
@@ -62,7 +64,7 @@ public class I18n implements Cleanable
     public I18n(Core core)
     {
         this.core = core;
-        this.logger = new CubeLogger("language");
+        this.logger = (Logger) LoggerFactory.getLogger("cubeengine.language");
         this.languages = new THashMap<Locale, Language>();
         this.languageLookupMap = new THashMap<String, Language>();
         this.sourceLanguage = new SourceLanguage();
@@ -85,9 +87,19 @@ public class I18n implements Cleanable
         }
         try
         {
-            this.logger.addHandler(new CubeFileHandler(LogLevel.ALL, new File(fm.getLogDir(), "missing-translations").getPath()));
+            LoggerContext context = (LoggerContext) LoggerFactory.getILoggerFactory();
+            FileAppender<ILoggingEvent> fileAppender = new FileAppender<ILoggingEvent>();
+            fileAppender.setFile(new File(fm.getLogDir(), "missing-translations").getPath());
+            PatternLayout pl = new PatternLayout();
+            pl.setPattern("%date{yyyy-MM-dd HH:mm:ss} [%-5level] %m%n");
+            pl.setContext(context);
+            pl.start();
+            fileAppender.setLayout(pl);
+            fileAppender.setContext(context);
+            fileAppender.start();
+            logger.addAppender(fileAppender);
         }
-        catch (IOException e)
+        catch (Exception e)
         {
             core.getLog().log(ERROR, e.getLocalizedMessage(), e);
         }
@@ -136,7 +148,7 @@ public class I18n implements Cleanable
             }
             else
             {
-                this.logger.log(ERROR, "The language ''{0}'' has an invalid configuration!", file.getName());
+                this.logger.error("The language ''{}'' has an invalid configuration!", file.getName());
             }
         }
 
@@ -155,7 +167,7 @@ public class I18n implements Cleanable
         }
         if (loadStack.contains(config.locale))
         {
-            this.logger.log(ERROR, "The language ''{0}'' caused a circular dependency!", loadStack.peek());
+            this.logger.error("The language ''{}'' caused a circular dependency!", loadStack.peek());
             return null;
         }
         Language language = null;
@@ -195,9 +207,7 @@ public class I18n implements Cleanable
         }
         catch (IllegalArgumentException e)
         {
-            this.logger.log(ERROR, "Failed to load the language ''{0}'': {1}", new Object[]{
-                config.locale, e.getLocalizedMessage()
-            });
+            this.logger.error("Failed to load the language ''{}'': {}", config.locale, e.getLocalizedMessage());
         }
         return null;
     }
@@ -244,7 +254,7 @@ public class I18n implements Cleanable
 
     private void logMissingTranslation(Locale locale, String message)
     {
-        this.logger.log(LogLevel.INFO, String.format("\"%s\" \"%s\"", localeToString(locale), message));
+        this.logger.info(String.format("\"%s\" \"%s\"", localeToString(locale), message));
     }
 
     /**
@@ -301,7 +311,8 @@ public class I18n implements Cleanable
             }
             else
             {
-                this.logger.log(WARNING, "The configured default language {0} was not found! Falling back to the source language...", this.defaultLocale.getDisplayName());
+                this.logger.warn("The configured default language {} was not found! Falling back to the source language...", this
+                    .defaultLocale.getDisplayName());
                 locale = this.defaultLocale = this.sourceLanguage.getLocale();
             }
             if (translation == null)

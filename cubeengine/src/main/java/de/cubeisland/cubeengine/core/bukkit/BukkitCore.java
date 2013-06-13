@@ -123,6 +123,7 @@ public final class BukkitCore extends JavaPlugin implements Core
 
         this.initHooks = Collections.synchronizedList(new LinkedList<Runnable>());
 
+        // TODO logback!
         this.logger = new CubeLogger("Core", this.getLogger());
         this.logger.setLevel(Level.ALL);
         // TODO RemoteHandler is not yet implemented this.logger.addHandler(new RemoteHandler(LogLevel.ERROR, this));
