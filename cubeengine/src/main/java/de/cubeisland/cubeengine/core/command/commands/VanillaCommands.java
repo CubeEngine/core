@@ -242,7 +242,7 @@ public class VanillaCommands implements CommandHolder
             onlineUser.sendTranslated("&eUser &2%s &ehas been opped by &2%s&e!", offlinePlayer.getName(), context.getSender().getName());
         }
 
-        this.core.getLog().log(NOTICE, "Player {0} has been opped by {1}", arr(offlinePlayer.getName(), context.getSender().getName()));
+        this.core.getLog().warn("Player {} has been opped by {}", arr(offlinePlayer.getName(), context.getSender().getName()));
     }
 
     @Command(
@@ -293,7 +293,7 @@ public class VanillaCommands implements CommandHolder
             onlineUser.sendTranslated("&eUser &2%s&a has been opped by &2%s&a!", offlinePlayer.getName(), context.getSender().getName());
         }
 
-        this.core.getLog().log(NOTICE, "Player {0} has been deopped by {1}", arr(offlinePlayer.getName(), context.getSender().getName()));
+        this.core.getLog().warn("Player {} has been deopped by {}", arr(offlinePlayer.getName(), context.getSender().getName()));
     }
 
     @Command(desc = "Lists all loaded plugins")

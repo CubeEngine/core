@@ -146,6 +146,7 @@
         <filtering>true</filtering>
         <includes>
           <include>plugin.yml</include>
+          <include>logback.xml</include>
         </includes>
       </resource>
       <resource>

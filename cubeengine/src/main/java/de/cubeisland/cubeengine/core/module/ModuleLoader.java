@@ -128,7 +128,7 @@ public class ModuleLoader
             Class<? extends Module> moduleClass = Class.forName(info.getMain(), true, classLoader).asSubclass(Module.class);
             Module module = moduleClass.getConstructor().newInstance();
 
-            module.initialize(this.core, info, new File(info.getFile().getParentFile(), name), new ModuleLogger(this.core, info), this, classLoader);
+            module.initialize(this.core, info, new File(info.getFile().getParentFile(), name), this, classLoader);
             module.onLoad();
 
             this.core.getEventManager().fireEvent(new ModuleLoadedEvent(this.core, module));

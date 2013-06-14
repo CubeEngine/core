@@ -38,7 +38,6 @@ import java.util.Map;
 import java.util.Queue;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.logging.Logger;
 
 import de.cubeisland.cubeengine.core.config.Configuration;
 import de.cubeisland.cubeengine.core.filesystem.FileExtentionFilter;
@@ -57,6 +56,7 @@ import de.cubeisland.cubeengine.shout.announce.receiver.Receiver;
 import de.cubeisland.cubeengine.shout.announce.receiver.UserReceiver;
 
 import org.apache.commons.lang.Validate;
+import org.slf4j.Logger;
 
 import static de.cubeisland.cubeengine.core.filesystem.FileExtentionFilter.TXT;
 import static de.cubeisland.cubeengine.core.logger.LogLevel.*;
@@ -319,7 +319,7 @@ public class AnnouncementManager
         File[] files = announcementFolder.listFiles();
         if (files == null)
         {
-            this.logger.log(ERROR, "Reading the announcement folder failed! No dynamicAnnouncements will be loaded");
+            this.logger.error("Reading the announcement folder failed! No dynamicAnnouncements will be loaded");
             return;
         }
 
@@ -347,20 +347,20 @@ public class AnnouncementManager
                 }
                 catch (ShoutException e)
                 {
-                    this.logger.log(DEBUG, "An announcement that looked like the MOTD failed to load.", e);
+                    this.logger.debug("An announcement that looked like the MOTD failed to load.", e);
                 }
             }
             if (folder.isDirectory())
             {
-                this.logger.log(DEBUG, "Loading announcement {0}", folder.getName());
+                this.logger.debug("Loading announcement {0}", folder.getName());
                 try
                 {
                     this.addAnnouncement(this.loadAnnouncement(folder));
                 }
                 catch (ShoutException ex)
                 {
-                    this.logger.log(WARNING, "There was an error loading the announcement: {0}", folder.getName());
-                    this.logger.log(DEBUG, "The error message was: ", ex);
+                    this.logger.warn("There was an error loading the announcement: {0}", folder.getName());
+                    this.logger.debug("The error message was: ", ex);
                 }
             }
         }
@@ -450,12 +450,12 @@ public class AnnouncementManager
             }
         }
 
-        this.logger.log(DEBUG, "Languages: {0}", messages.keySet().toString());
-        this.logger.log(DEBUG, "Worlds: {0}", config.worlds);
-        this.logger.log(DEBUG, "Delay(in milliseconds): {0}", delay);
-        this.logger.log(DEBUG, "Permission: {0}", config.permNode);
-        this.logger.log(DEBUG, "Group: {0}", config.group);
-        this.logger.log(DEBUG, "FixedCycle: {0}", config.fixedCycle);
+        this.logger.debug("Languages: {0}", messages.keySet().toString());
+        this.logger.debug("Worlds: {0}", config.worlds);
+        this.logger.debug("Delay(in milliseconds): {0}", delay);
+        this.logger.debug("Permission: {0}", config.permNode);
+        this.logger.debug("Group: {0}", config.group);
+        this.logger.debug("FixedCycle: {0}", config.fixedCycle);
 
         try
         {

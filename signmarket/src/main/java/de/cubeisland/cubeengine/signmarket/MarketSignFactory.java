@@ -55,7 +55,7 @@ public class MarketSignFactory
             SignMarketItemModel itemModel = this.signMarketItemManager.getInfoModel(blockModel.itemKey);
             if (itemModel == null)
             {
-                this.module.getLog().warning("Inconsistent Data! BlockInfo without Marketsigninfo!");
+                this.module.getLog().warn("Inconsistent Data! BlockInfo without Marketsigninfo!");
                 continue;
             }
             MarketSign marketSign = new MarketSign(module, this.conomy, itemModel, blockModel);
@@ -80,7 +80,7 @@ public class MarketSignFactory
         MarketSign marketSign = this.getSignAt(location);
         if (marketSign != null)
         {
-            this.module.getLog().warning("Tried to create sign at occupied position!");
+            this.module.getLog().warn("Tried to create sign at occupied position!");
             return marketSign;
         }
         marketSign = new MarketSign(this.module, conomy, location);

@@ -19,7 +19,6 @@ package de.cubeisland.cubeengine.core.module;
 
 import java.io.File;
 import java.io.InputStream;
-import java.util.logging.Logger;
 
 import de.cubeisland.cubeengine.core.Core;
 import de.cubeisland.cubeengine.core.permission.Permission;
@@ -28,6 +27,8 @@ import de.cubeisland.cubeengine.core.storage.SimpleModuleRegistry;
 import de.cubeisland.cubeengine.core.util.Version;
 
 import org.apache.commons.lang.Validate;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import static de.cubeisland.cubeengine.core.logger.LogLevel.ERROR;
 import static de.cubeisland.cubeengine.core.logger.LogLevel.WARNING;
@@ -48,7 +49,7 @@ public abstract class Module
     private boolean enabled;
     private Permission modulePermission;
 
-    final void initialize(Core core, ModuleInfo info, File folder, Logger log, ModuleLoader loader, ClassLoader classLoader)
+    final void initialize(Core core, ModuleInfo info, File folder, ModuleLoader loader, ClassLoader classLoader)
     {
         if (!this.initialized)
         {
@@ -60,7 +61,8 @@ public abstract class Module
             this.folder = folder;
             this.enabled = false;
 
-            this.log = log;
+            // Each module should provide a logback.xml file in their jars
+            this.log = LoggerFactory.getLogger("cubeengine."+info.getName().toLowerCase());
         }
     }
 
@@ -251,7 +253,7 @@ public abstract class Module
             }
             catch (Throwable t)
             {
-                this.getLog().log(ERROR, t.getClass().getSimpleName() + " while enabling: " + t.getLocalizedMessage(), t);
+                this.getLog().error(t.getClass().getSimpleName() + " while enabling: " + t.getLocalizedMessage(), t);
             }
         }
         return this.enabled;
@@ -275,7 +277,7 @@ public abstract class Module
             }
             catch (Throwable t)
             {
-                this.getLog().log(WARNING, t.getClass().getSimpleName() + " while disabling: " + t.getLocalizedMessage(), t);
+                this.getLog().warn(t.getClass().getSimpleName() + " while disabling: " + t.getLocalizedMessage(), t);
             }
             this.enabled = false;
         }

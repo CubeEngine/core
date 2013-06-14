@@ -26,15 +26,15 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
-import java.util.logging.Logger;
 
 import de.cubeisland.cubeengine.core.Core;
 import de.cubeisland.cubeengine.core.CubeEngine;
 import de.cubeisland.cubeengine.core.logger.LogLevel;
 import de.cubeisland.cubeengine.core.util.Cleanable;
 
+import org.slf4j.Logger;
+
 import static de.cubeisland.cubeengine.core.CubeEngine.runsOnWindows;
-import static de.cubeisland.cubeengine.core.logger.LogLevel.*;
 
 /**
  * Manages all the configurations of the CubeEngine.
@@ -74,7 +74,7 @@ public class FileManager implements Cleanable
         final File linkSource = new File(System.getProperty("user.dir", "."), CubeEngine.class.getSimpleName());
         if (!isSymLink(linkSource) && !createSymLink(linkSource, this.dataFolder))
         {
-            logger.log(NOTICE, "Linking to the CubeEngine directory failed! This can be ignored.");
+            logger.warn("Linking to the CubeEngine directory failed! This can be ignored.");
         }
 
         this.languageDir = new File(this.dataFolder, "language");
@@ -118,7 +118,7 @@ public class FileManager implements Cleanable
         }
         if (!hideFile(this.tempDir))
         {
-            logger.log(NOTICE, "Hiding the temp folder failed! This can be ignored!");
+            logger.warn("Hiding the temp folder failed! This can be ignored!");
         }
 
         this.fileSources = new ConcurrentHashMap<File, Resource>();
@@ -239,11 +239,11 @@ public class FileManager implements Cleanable
 
     public void clearTempDir()
     {
-        logger.log(INFO, "Clearing the temporary folder ''{0}''...", this.tempDir.getAbsolutePath());
+        logger.info("Clearing the temporary folder ''{}''...", this.tempDir.getAbsolutePath());
         File[] files = this.tempDir.listFiles();
         if (files == null)
         {
-            logger.log(NOTICE, "Failed to list the temp folder for");
+            logger.warn("Failed to list the temp folder for");
             return;
         }
         for (File file : files)
@@ -254,10 +254,10 @@ public class FileManager implements Cleanable
             }
             catch (IOException e)
             {
-                logger.log(NOTICE, "Failed to remove the file ''{0}''", file.getAbsolutePath());
+                logger.warn("Failed to remove the file ''{}''", file.getAbsolutePath());
             }
         }
-        logger.log(INFO, "Temporary folder cleared!");
+        logger.info("Temporary folder cleared!");
     }
 
     public static void deleteRecursive(File file) throws IOException
@@ -332,7 +332,7 @@ public class FileManager implements Cleanable
             }
             catch (IOException e)
             {
-                CubeEngine.getLog().log(WARNING, "Failed to close a file stream!", e);
+                CubeEngine.getLog().warn("Failed to close a file stream!", e);
             }
 
             try
@@ -341,7 +341,7 @@ public class FileManager implements Cleanable
             }
             catch (IOException e)
             {
-                CubeEngine.getLog().log(WARNING, "Failed to close a file stream!", e);
+                CubeEngine.getLog().warn("Failed to close a file stream!", e);
             }
         }
         return false;
@@ -475,7 +475,7 @@ public class FileManager implements Cleanable
             }
             catch (IOException e)
             {
-                logger.log(LogLevel.ERROR, e.getMessage(), e);
+                logger.error(e.getMessage(), e);
             }
             finally
             {

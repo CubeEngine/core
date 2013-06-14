@@ -72,24 +72,7 @@ public class BukkitCommandManager implements CommandManager
         this.commandFactories = new THashMap<Class<? extends CubeCommand>, CommandFactory>();
 
         this.commandLogger = (Logger) LoggerFactory.getLogger("cubeengine.commands");
-        try
-        {
-            LoggerContext context = (LoggerContext) LoggerFactory.getILoggerFactory();
-            FileAppender<ILoggingEvent> fileAppender = new FileAppender<ILoggingEvent>();
-            fileAppender.setFile(new File(core.getFileManager().getLogDir(), this.commandLogger.getName()).getPath());
-            PatternLayout pl = new PatternLayout();
-            pl.setPattern("%date{yyyy-MM-dd HH:mm:ss} %m%n");
-            pl.setContext(context);
-            pl.start();
-            fileAppender.setLayout(pl);
-            fileAppender.setContext(context);
-            fileAppender.start();
-            commandLogger.addAppender(fileAppender);
-        }
-        catch (Exception e)
-        {
-            core.getLog().log(WARNING, "Failed to create the command log!", e);
-        }
+        // TODO
 
         this.confirmManager = new ConfirmManager(this, core);
     }
@@ -233,7 +216,7 @@ public class BukkitCommandManager implements CommandManager
     {
         if (command.isLoggable())
         {
-            this.commandLogger.info("execute {} {} {}", sender.getName(), command.getName(), StringUtils.implode(" ", args));
+            this.commandLogger.info("execute {} {} {}", new String[]{sender.getName(), command.getName(), StringUtils.implode(" ", args)});
         }
     }
 
@@ -242,7 +225,7 @@ public class BukkitCommandManager implements CommandManager
     {
         if (command.isLoggable())
         {
-            this.commandLogger.info("complete {} {} {}", sender.getName(), command.getName(), StringUtils.implode(" ", args));
+            this.commandLogger.info("complete {} {} {}", new String[]{sender.getName(), command.getName(), StringUtils.implode(" ", args)});
         }
     }
 

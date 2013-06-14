@@ -260,7 +260,7 @@ public class ActionTypeManager
         actionType.initialize(module);
         if (actionType.getID() != -1)
         {
-            this.module.getLog().log(LogLevel.DEBUG,"ActionType registered: " + actionType.getID() + " " + actionType.getName());
+            this.module.getLog().debug("ActionType registered: " + actionType.getID() + " " + actionType.getName());
         }
         return this;
     }

@@ -100,7 +100,7 @@ public interface Core
      *
      * @return the engine logger
      */
-    Logger getLog();
+    org.slf4j.Logger getLog();
 
     /**
      * This method returns the module manager

@@ -47,7 +47,7 @@ public class StringMatcher
     {
         if (maxDistance < 1)
         {
-            CubeEngine.getLog().log(LogLevel.WARNING, "Checking EditDistance lower than 1!", new Throwable());
+            CubeEngine.getLog().warn("Checking EditDistance lower than 1!", new Throwable());
             return new TreeMap<String, Integer>();
         }
         THashMap<String, Integer> matches = new THashMap<String, Integer>();
@@ -88,7 +88,7 @@ public class StringMatcher
         }
         if (in.contains(search))
         {
-            CubeEngine.getLog().log(LogLevel.DEBUG, "Direct Match FOUND: " + search);
+            CubeEngine.getLog().debug("Direct Match FOUND: " + search);
             return search; // Direct Match
         }
         Map<String, Integer> firstEditDistanceCheck = this.getMatches(search, in, firstEditDistance, ignoreCase);
@@ -100,11 +100,11 @@ public class StringMatcher
                 double curPercentage = (entry.getKey().length() - entry.getValue()) * 100 / entry.getKey().length();
                 if (curPercentage >= firstMinPercentCorrect)
                 {
-                    CubeEngine.getLog().log(LogLevel.DEBUG, "1stDist FOUND: " + firstEditDistanceCheck.keySet().iterator().next() +
+                    CubeEngine.getLog().debug("1stDist FOUND: " + firstEditDistanceCheck.keySet().iterator().next() +
                             " for " + search + " (D:" + firstEditDistanceCheck.values().iterator().next() + "|" + curPercentage + "%)");
                     return entry.getKey();
                 }
-                CubeEngine.getLog().log(LogLevel.DEBUG, "1stDist TO WEAK: " + firstEditDistanceCheck.keySet().iterator().next() +
+                CubeEngine.getLog().debug("1stDist TO WEAK: " + firstEditDistanceCheck.keySet().iterator().next() +
                         " for " + search + " (D:" + firstEditDistanceCheck.values().iterator().next() + "|" + curPercentage + "%)");
             }
         }
@@ -134,14 +134,14 @@ public class StringMatcher
                     double curPercentCorrect = searchStringLength * 100 / inList.length();
                     if (currentIndex < bestIndex && curPercentCorrect >= indexMinPercentCorrect) // Compare to last match
                     {
-                        CubeEngine.getLog().log(LogLevel.DEBUG, "Index: FOUND " + inList + " for " + search + " (I:" + currentIndex + "|" + (int)curPercentCorrect + "%)");
+                        CubeEngine.getLog().debug("Index: FOUND " + inList + " for " + search + " (I:" + currentIndex + "|" + (int)curPercentCorrect + "%)");
                         bestIndex = currentIndex;
                         bestPercentCorrect = curPercentCorrect;
                         bestMatch = inList;
                     }
                     else if (currentIndex == bestIndex && curPercentCorrect >= bestPercentCorrect)
                     {
-                        CubeEngine.getLog().log(LogLevel.DEBUG, "Index: FOUND " + inList + " for " + search + " (I:" + currentIndex + "|" + (int)curPercentCorrect + "%)");
+                        CubeEngine.getLog().debug("Index: FOUND " + inList + " for " + search + " (I:" + currentIndex + "|" + (int)curPercentCorrect + "%)");
                         bestPercentCorrect = curPercentCorrect;
                         bestMatch = inList;
                     }
@@ -168,7 +168,7 @@ public class StringMatcher
                 double curPercentCorrect = (searchStringLength - currentDistance) * 100 / inList.length();
                 if (currentDistance < bestDistance && curPercentCorrect >= secondMinPercentCorrect) // Found light Typo at start of String
                 {
-                    CubeEngine.getLog().log(LogLevel.DEBUG, "2nDist: Found " + inList + "|" + subString + " for " + search
+                    CubeEngine.getLog().debug("2nDist: Found " + inList + "|" + subString + " for " + search
                             + " (D:" + currentDistance + "|" + (int)curPercentCorrect + "%)");
                     bestDistance = currentDistance;
                     bestMatch = inList;
@@ -176,7 +176,7 @@ public class StringMatcher
                 }
                 else if (currentDistance == bestDistance && bestPercentCorrect <= curPercentCorrect)
                 {
-                    CubeEngine.getLog().log(LogLevel.DEBUG, "2nDist: Found " + inList + "|" + subString + " for " + search
+                    CubeEngine.getLog().debug("2nDist: Found " + inList + "|" + subString + " for " + search
                             + " (D:" + currentDistance + "|" + (int)curPercentCorrect + "%)");
                     bestMatch = inList;
                     bestPercentCorrect = curPercentCorrect;

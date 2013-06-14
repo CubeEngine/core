@@ -40,7 +40,7 @@ public class GlobalRoleProvider extends RoleProvider
     @Override
     public void recalculateRoles()
     {
-        this.module.getLog().log(DEBUG, "Calculating global Roles...");
+        this.module.getLog().debug("Calculating global Roles...");
         super.recalculateRoles();
     }
 

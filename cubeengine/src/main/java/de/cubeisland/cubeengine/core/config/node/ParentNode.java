@@ -86,8 +86,8 @@ public abstract class ParentNode extends Node
             }
             else if (!(baseNode instanceof ParentNode))
             {
-                CubeEngine.getCore().getLog().warning("Could not resolve path (" + path + ") for " + baseNode);
-                CubeEngine.getCore().getLog().warning("Is your configuration outdated?");
+                CubeEngine.getCore().getLog().warn("Could not resolve path (" + path + ") for " + baseNode);
+                CubeEngine.getCore().getLog().warn("Is your configuration outdated?");
                 return null;
             }
             return ((ParentNode)baseNode).getNodeAt(subPath, pathSeparator);
@@ -148,7 +148,7 @@ public abstract class ParentNode extends Node
     @Override
     public String unwrap()
     {
-        CubeEngine.getLog().log(Level.WARNING,"Unexpected parent-node data! Is the config up to date?");
+        CubeEngine.getLog().warn("Unexpected parent-node data! Is the config up to date?");
         return null;
     }
 

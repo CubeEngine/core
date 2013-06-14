@@ -19,7 +19,6 @@ package de.cubeisland.cubeengine.core;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.logging.Logger;
 
 import de.cubeisland.cubeengine.core.ban.BanManager;
 import de.cubeisland.cubeengine.core.bukkit.EventManager;
@@ -43,6 +42,8 @@ import de.cubeisland.cubeengine.core.util.matcher.Match;
 import de.cubeisland.cubeengine.core.webapi.ApiServer;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -52,7 +53,7 @@ public class TestCore implements Core
 {
     private final Version version = Version.ONE;
     private final String sourceVersion = "master-aaaaaaaa";
-    private final Logger logger = Logger.getAnonymousLogger();
+    private final Logger logger = LoggerFactory.getLogger("null");
     private ObjectMapper jsonObjectMapper = null;
     private CoreConfiguration config = null;
     private FileManager fileManager = null;
@@ -98,7 +99,7 @@ public class TestCore implements Core
     }
 
     @Override
-    public Logger getLog()
+    public org.slf4j.Logger getLog()
     {
         return this.logger;
     }

@@ -34,7 +34,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
-import java.util.logging.Logger;
 
 import de.cubeisland.cubeengine.core.Core;
 import de.cubeisland.cubeengine.core.module.Module;
@@ -46,6 +45,7 @@ import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import org.apache.commons.lang.Validate;
+import org.slf4j.Logger;
 
 import static java.util.logging.Level.WARNING;
 
@@ -91,7 +91,7 @@ public class ApiServer
         }
         catch (UnknownHostException ignored)
         {
-            this.logger.log(WARNING, "Failed to get the localhost!");
+            this.logger.warn("Failed to get the localhost!");
         }
         this.port = new AtomicInteger(6561);
         this.maxContentLength = new AtomicInteger(1048576);
@@ -121,7 +121,7 @@ public class ApiServer
         }
         catch (UnknownHostException ignored)
         {
-            this.logger.log(WARNING, "Failed to resolve the host {0}, ignoring the value...");
+            this.logger.warn("Failed to resolve the host {}, ignoring the value...");
         }
         this.setPort(config.port);
         this.setMaxThreads(config.maxThreads);

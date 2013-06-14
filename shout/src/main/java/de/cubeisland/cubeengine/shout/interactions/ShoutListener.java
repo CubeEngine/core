@@ -46,7 +46,7 @@ public class ShoutListener implements Listener
 
         if (this.module.getCore().isDebug())
         {
-            this.module.getLog().log(LogLevel.DEBUG, "Loading user: {0}", user.getName());
+            this.module.getLog().debug("Loading user: {0}", user.getName());
         }
         this.am.initializeUser(user);
     }

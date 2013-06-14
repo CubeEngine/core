@@ -47,7 +47,7 @@ public final class MetricsInitializer
             }
             catch (IOException e)
             {
-                this.core.getLog().log(NOTICE, "The initialization of metrics failed!");
+                this.core.getLog().warn("The initialization of metrics failed!");
             }
             this.initializeGraphs();
         }

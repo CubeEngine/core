@@ -1,0 +1,73 @@
+<configuration>
+  <!-- File appenders-->
+  <appender name="commands-file" class="ch.qos.logback.core.FileAppender">
+    <file>commands.log</file>
+    <encoder>
+      <pattern>%date{yyyy-MM-dd HH:mm:ss} %msg%n</pattern>
+    </encoder>
+  </appender>
+  <appender name="permissions-file" class="ch.qos.logback.core.FileAppender">
+    <file>permissions.log</file>
+    <encoder>
+      <pattern>%date{yyyy-MM-dd HH:mm:ss} %msg%n</pattern>
+    </encoder>
+  </appender>
+  <appender name="language-file" class="ch.qos.logback.core.FileAppender">
+    <file>missing-translations.log</file>
+    <encoder>
+      <pattern>%date{yyyy-MM-dd HH:mm:ss} [%level] %msg%n</pattern>
+    </encoder>
+  </appender>
+  <appender name="webapi-file" class="ch.qos.logback.core.FileAppender">
+    <file>webapi.log</file>
+    <encoder>
+      <pattern>%date{yyyy-MM-dd HH:mm:ss} [%level] %msg%n</pattern>
+    </encoder>
+  </appender>
+  <appender name="core-file" class="ch.qos.logback.core.FileAppender">
+    <file>core.log</file>
+    <encoder>
+      <pattern>%date{yyyy-MM-dd HH:mm:ss} [%level] %msg%n</pattern>
+    </encoder>
+  </appender>
+
+  <!-- Console appenders -->
+  <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+    <encoder>
+      <pattern>%date{HH:mm:ss} [%level] %msg%n</pattern>
+    </encoder>
+  </appender>
+  <appender name="cubeengine-console" class="ch.qos.logback.core.ConsoleAppender">
+    <encoder>
+      <pattern>%date{HH:mm:ss} [%level] [CubeEngine] %msg%n</pattern>
+    </encoder>
+  </appender>
+
+  <logger name="cubeengine.commands" level="debug">
+    <appender-ref ref="commands-file" />
+  </logger>
+
+  <logger name="cubeengine.permissions" level="debug" additivity="false">
+    <appender-ref ref="permissions-file" />
+  </logger>
+
+  <logger name="cubeengine.language" level="debug">
+    <appender-ref ref="language-file" />
+  </logger>
+
+  <logger name="cubeengine.webapi" level="debug">
+    <appender-ref ref="webapi-file" />
+  </logger>
+
+  <logger name="cubeengine.core">
+    <appender-ref ref="core-file" />
+  </logger>
+
+  <logger name="cubeengine" level="info" additivity="false">
+    <appender-ref ref="cubeengine-console" />
+  </logger>
+
+  <root level="debug">
+    <appender-ref ref="STDOUT" />
+  </root>
+</configuration>

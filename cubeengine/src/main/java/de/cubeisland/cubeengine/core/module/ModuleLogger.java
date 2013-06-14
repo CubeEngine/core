@@ -35,9 +35,9 @@ public class ModuleLogger extends CubeLogger
 
     public ModuleLogger(Core core, ModuleInfo info)
     {
-        super(info.getName(), core.getLog());
+        super(info.getName(), null);// TODO core.getLog());
         this.prefix = "[" + info.getName() + "] ";
-        this.setLevel(core.getLog().getLevel());
+        // TODO this.setLevel(core.getLog().getLevel());
         try
         {
             this.addHandler(new CubeFileHandler(LogLevel.ALL, new File(core.getFileManager().getLogDir(), info.getName().toLowerCase(Locale.ENGLISH)).toString()));

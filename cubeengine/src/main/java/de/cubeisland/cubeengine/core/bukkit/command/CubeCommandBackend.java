@@ -70,7 +70,7 @@ public class CubeCommandBackend extends SimpleCommandBackend
             }
             catch (Exception e)
             {
-                CubeEngine.getLog().log(DEBUG, e.getLocalizedMessage(), e);
+                CubeEngine.getLog().debug(e.getLocalizedMessage(), e);
             }
         }
         return newCommandMAp;

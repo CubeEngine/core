@@ -146,7 +146,7 @@ public class QueryManager
                 try {
                     doEmptyLogs(batchSize);
                 } catch (Exception ex) {
-                    QueryManager.this.module.getLog().log(LogLevel.ERROR, "Error while logging!", ex);
+                    QueryManager.this.module.getLog().error("Error while logging!", ex);
                 }
             }
         };
@@ -159,7 +159,7 @@ public class QueryManager
                 try {
                     doQueryLookup();
                 } catch (Exception ex) {
-                    QueryManager.this.module.getLog().log(LogLevel.ERROR, "Error while lookup!", ex);
+                    QueryManager.this.module.getLog().error("Error while lookup!", ex);
                 }
             }
         };
@@ -289,12 +289,12 @@ public class QueryManager
             }
             if (logSize > 50)
             {
-                this.module.getLog().log(LogLevel.DEBUG,
+                this.module.getLog().debug(
                                          logSize + " logged in: " + TimeUnit.NANOSECONDS.toMillis(nanos) +
                                              "ms | remaining logs: " + queuedLogs.size());
-                this.module.getLog().log(LogLevel.DEBUG,
+                this.module.getLog().debug(
                                          "Average logtime per log: " + TimeUnit.NANOSECONDS.toMicros(timeSpend / logsLogged)+ " micros");
-                this.module.getLog().log(LogLevel.DEBUG,
+                this.module.getLog().debug(
                                          "Average logtime per log in full load: " + TimeUnit.NANOSECONDS.toMicros(timeSpendFullLoad / logsLoggedFullLoad)+" micros");
             }
             if (!queuedLogs.isEmpty())
@@ -330,7 +330,7 @@ public class QueryManager
             try {
                 latch.await();
             } catch (InterruptedException e) {
-                this.module.getLog().log(LogLevel.WARNING,"Error while waiting!",e);
+                this.module.getLog().warn("Error while waiting!",e);
             }
         }
     }

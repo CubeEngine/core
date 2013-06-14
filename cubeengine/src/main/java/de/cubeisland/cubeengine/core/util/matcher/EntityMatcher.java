@@ -69,7 +69,7 @@ public class EntityMatcher
             }
             catch (IllegalArgumentException ex)
             {
-                CubeEngine.getLog().warning("Unknown EntityType:" + key);
+                CubeEngine.getLog().warn("Unknown EntityType:" + key);
             }
         }
     }
@@ -88,7 +88,7 @@ public class EntityMatcher
             AliasMapFormat.parseStringList(file, entityList, false);
             if (AliasMapFormat.parseStringList(CubeEngine.getFileManager().getSourceOf(file), entityList, true))
             {
-                CubeEngine.getLog().log(LogLevel.NOTICE, "Updated entities.txt");
+                CubeEngine.getLog().warn("Updated entities.txt");
                 AliasMapFormat.parseAndSaveStringListMap(entityList, file);
             }
             return entityList;

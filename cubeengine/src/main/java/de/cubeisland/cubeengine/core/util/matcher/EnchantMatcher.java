@@ -57,7 +57,7 @@ public class EnchantMatcher
             Enchantment ench = this.bukkitnames.get(bukkitName);
             if (ench == null)
             {
-                CubeEngine.getLog().warning("Unkown Enchantment: " + bukkitName);
+                CubeEngine.getLog().warn("Unkown Enchantment: " + bukkitName);
                 continue;
             }
             this.registerEnchantment(ench, enchs.get(bukkitName));
@@ -98,7 +98,7 @@ public class EnchantMatcher
             AliasMapFormat.parseStringList(file, enchantments, false);
             if (AliasMapFormat.parseStringList(CubeEngine.getFileManager().getSourceOf(file), enchantments, true))
             {
-                CubeEngine.getLog().log(LogLevel.NOTICE, "Updated enchantments.txt");
+                CubeEngine.getLog().warn("Updated enchantments.txt");
                 AliasMapFormat.parseAndSaveStringListMap(enchantments, file);
             }
             return enchantments;

@@ -84,30 +84,13 @@ public class BukkitPermissionManager implements PermissionManager
         }
         catch (Exception ex)
         {
-            core.getLog().log(NOTICE, "Couldn't access the permission manager internals for fast permission registration, falling back to normal registration.");
+            core.getLog().warn("Couldn't access the permission manager internals for fast permission registration, falling back to normal registration.");
             this.startup = false;
         }
         this.wildcards = new THashMap<String, org.bukkit.permissions.Permission>(0);
         this.modulePermissionMap = new THashMap<Module, Set<String>>(0);
         this.logger = (Logger) LoggerFactory.getLogger("cubeengine.permissions");
-        try
-        {
-            LoggerContext context = (LoggerContext) LoggerFactory.getILoggerFactory();
-            FileAppender<ILoggingEvent> fileAppender = new FileAppender<ILoggingEvent>();
-            fileAppender.setFile(new File(core.getFileManager().getLogDir(), this.logger.getName()).getPath());
-            PatternLayout pl = new PatternLayout();
-            pl.setPattern("%date{yyyy-MM-dd HH:mm:ss} %m%n");
-            pl.setContext(context);
-            pl.start();
-            fileAppender.setLayout(pl);
-            fileAppender.setContext(context);
-            fileAppender.start();
-            logger.addAppender(fileAppender);
-        }
-        catch (Exception e)
-        {
-            core.getLog().log(ERROR, "Failed to create the permission log");
-        }
+        // TODO
 
         this.registerBukkitPermission(CUBEENGINE_WILDCARD);
     }

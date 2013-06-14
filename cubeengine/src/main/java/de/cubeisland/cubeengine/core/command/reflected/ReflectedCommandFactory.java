@@ -62,7 +62,7 @@ public class ReflectedCommandFactory<T extends CubeCommand> implements CommandFa
         Class<?>[] methodParams = method.getParameterTypes();
         if (methodParams.length != 1 || !CommandContext.class.isAssignableFrom(methodParams[0]))
         {
-            module.getLog().log(LogLevel.WARNING, "The method ''{0}.{1}'' does not match the required method signature: public void {2}(CommandContext context)", arr(holder.getClass().getSimpleName(), method.getName(), method.getName()));
+            module.getLog().warn("The method ''{}.{}'' does not match the required method signature: public void {}(CommandContext context)", arr(holder.getClass().getSimpleName(), method.getName(), method.getName()));
             return false;
         }
         return true;
@@ -124,7 +124,7 @@ public class ReflectedCommandFactory<T extends CubeCommand> implements CommandFa
                 }
                 catch (Exception e)
                 {
-                    module.getLog().log(ERROR, "Failed to create the completer '" + completerClass.getName() + "'", e);
+                    module.getLog().error("Failed to create the completer '" + completerClass.getName() + "'", e);
                 }
             }
 
@@ -133,7 +133,7 @@ public class ReflectedCommandFactory<T extends CubeCommand> implements CommandFa
 
         if (annotation.max() > NO_MAX && annotation.max() < annotation.min())
         {
-            module.getLog().log(ERROR, "{0}.{1}: The the maximum args must not be less than the minimum", arr(holder.getClass().getSimpleName(), method.getName()));
+            module.getLog().error("{}.{}: The the maximum args must not be less than the minimum", arr(holder.getClass().getSimpleName(), method.getName()));
             return null;
         }
         ReflectedCommand cmd = new ReflectedCommand(

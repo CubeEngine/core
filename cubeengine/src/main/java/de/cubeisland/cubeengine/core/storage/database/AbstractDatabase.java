@@ -92,7 +92,7 @@ public abstract class AbstractDatabase implements Database
                 }
                 catch (SQLException e)
                 {
-                    CubeEngine.getLog().log(ERROR, "An asynchronous query failed!", e);
+                    CubeEngine.getLog().error("An asynchronous query failed!", e);
                 }
             }
         });
@@ -119,7 +119,7 @@ public abstract class AbstractDatabase implements Database
                 }
                 catch (SQLException e)
                 {
-                    CubeEngine.getLog().log(ERROR, "An asynchronous query failed!", e);
+                    CubeEngine.getLog().error("An asynchronous query failed!", e);
                 }
             }
         });
@@ -152,7 +152,7 @@ public abstract class AbstractDatabase implements Database
                 }
                 catch (SQLException e)
                 {
-                    CubeEngine.getLog().log(ERROR, "An asynchronous query failed!", e);
+                    CubeEngine.getLog().error("An asynchronous query failed!", e);
                 }
             }
         });
@@ -180,7 +180,7 @@ public abstract class AbstractDatabase implements Database
                 }
                 catch (SQLException e)
                 {
-                    CubeEngine.getLog().log(ERROR, "An asynchronous query failed!", e);
+                    CubeEngine.getLog().error("An asynchronous query failed!", e);
                 }
             }
         });
@@ -243,7 +243,7 @@ public abstract class AbstractDatabase implements Database
                 }
                 catch (SQLException e)
                 {
-                    CubeEngine.getLog().log(ERROR, "A statement could not be prepared!", e);
+                    CubeEngine.getLog().error("A statement could not be prepared!", e);
                 }
             }
         }

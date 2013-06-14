@@ -80,7 +80,7 @@ public class KitManager
         }
         catch (Exception ex)
         {
-            module.getLog().log(LogLevel.WARNING, "Could not load the kit configuration!", ex);
+            module.getLog().warn("Could not load the kit configuration!", ex);
         }
     }
 

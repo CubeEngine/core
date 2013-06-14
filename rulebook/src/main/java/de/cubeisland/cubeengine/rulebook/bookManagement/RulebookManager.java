@@ -56,7 +56,7 @@ public final class RulebookManager
             }
             catch(IOException ex)
             {
-                this.module.getLog().log(LogLevel.ERROR, "Can't read the file {0}", book.getName());
+                this.module.getLog().error("Can't read the file {0}", book.getName());
             }
         }
     }
@@ -164,7 +164,7 @@ public final class RulebookManager
             }
             catch(IOException ex)
             {
-                this.module.getLog().log(LogLevel.ERROR, "Error by creating the book");
+                this.module.getLog().error("Error by creating the book");
             }
         }
     }

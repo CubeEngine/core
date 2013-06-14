@@ -105,7 +105,7 @@ public abstract class Configuration<ConfigCodec extends ConfigurationCodec>
         }
         catch (Exception e)
         {
-            CubeEngine.getLog().log(SEVERE, "Failed to load the configuration " + this.file.getPath(), e);
+            CubeEngine.getLog().error("Failed to load the configuration " + this.file.getPath(), e);
         }
     }
 
@@ -308,7 +308,7 @@ public abstract class Configuration<ConfigCodec extends ConfigurationCodec>
         }
         catch (FileNotFoundException e)
         {
-            CubeEngine.getLog().log(LogLevel.NOTICE, "{0} not found! Creating new config from default...", file.getName());
+            CubeEngine.getLog().warn("{} not found! Creating new config from default...", file.getName());
         }
         T config = load(clazz, inputStream, file); //loading config from InputSream or Default
 

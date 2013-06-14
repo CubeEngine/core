@@ -35,6 +35,6 @@ public class ErrorResult implements CommandResult
     public void show(CommandContext context)
     {
         context.sendTranslated("&cAn error occurred while running this command!");
-        CubeEngine.getLog().log(LogLevel.DEBUG, "Stack trace: ", this.exception);
+        CubeEngine.getLog().debug("Stack trace: ", this.exception);
     }
 }

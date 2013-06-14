@@ -81,19 +81,7 @@ public class ApiRequestHandler extends ChannelInboundMessageHandlerAdapter<Objec
         this.server = server;
         this.objectMapper = mapper;
         this.logger = (Logger)LoggerFactory.getLogger("cubeengine.webapi");
-        try
-        {
-            LoggerContext context = (LoggerContext) LoggerFactory.getILoggerFactory();
-            FileAppender<ILoggingEvent> fileAppender = new FileAppender<ILoggingEvent>();
-            fileAppender.setContext(context);
-            fileAppender.setFile("webapi.log");
-            fileAppender.start();
-            logger.addAppender(fileAppender);
-        }
-        catch (Exception e)
-        {
-            CubeEngine.getLog().log(ERROR, "Failed to initialize the file handler for the web api log!", e);
-        }
+        // TODO
     }
 
     @Override
@@ -106,7 +94,7 @@ public class ApiRequestHandler extends ChannelInboundMessageHandlerAdapter<Objec
     @Override
     public void messageReceived(ChannelHandlerContext context, Object message) throws Exception
     {
-        this.logger.info("{0} connected...", ((InetSocketAddress)context.channel().remoteAddress()).getAddress().getHostAddress());
+        this.logger.info("{} connected...", ((InetSocketAddress)context.channel().remoteAddress()).getAddress().getHostAddress());
         if (!this.server.isAddressAccepted((InetSocketAddress)context.channel().remoteAddress()))
         {
             this.logger.info("Access denied!");

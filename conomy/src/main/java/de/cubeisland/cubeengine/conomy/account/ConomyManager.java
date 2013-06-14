@@ -68,26 +68,9 @@ public class ConomyManager
         this.bankaccountsID = new THashMap<Long, BankAccount>();
 
         this.logger =  (Logger) LoggerFactory.getLogger("cubeengine.conomy.transactions");
-        if (this.module.getConfig().enableLogging)
+        if (!this.module.getConfig().enableLogging)
         {
-            try
-            {
-                LoggerContext context = (LoggerContext) LoggerFactory.getILoggerFactory();
-                FileAppender<ILoggingEvent> fileAppender = new FileAppender<ILoggingEvent>();
-                fileAppender.setFile(new File(this.module.getCore().getFileManager().getLogDir(), "conomy_transactions").toString());
-                PatternLayout pl = new PatternLayout();
-                pl.setPattern("%date{yyyy-MM-dd HH:mm:ss} %m%n");
-                pl.setContext(context);
-                pl.start();
-                fileAppender.setLayout(pl);
-                fileAppender.setContext(context);
-                fileAppender.start();
-                logger.addAppender(fileAppender);
-            }
-            catch (Exception ex)
-            {
-                throw new IllegalStateException("Could not create handler for transaction-logger", ex);
-            }
+            logger.getAppender("conomy.transactions-file").stop();
         }
     }
 

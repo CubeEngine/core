@@ -1051,7 +1051,7 @@ public class MarketSign
         else
         {
             //TODO perhaps if AIR and attachable set sign
-            this.module.getLog().warning("Market-Sign is not a sign-block! " + this.getLocation());
+            this.module.getLog().warn("Market-Sign is not a sign-block! " + this.getLocation());
         }
     }
 

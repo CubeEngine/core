@@ -81,29 +81,29 @@ public class Basics extends Module
         final CommandManager cm = this.getCore().getCommandManager();
         final EventManager em = this.getCore().getEventManager();
 
-        this.getLog().log(LogLevel.DEBUG,Profiler.getCurrentDelta("basicsEnable", TimeUnit.MILLISECONDS) + "ms - BU-Manager");
+        this.getLog().debug(Profiler.getCurrentDelta("basicsEnable", TimeUnit.MILLISECONDS) + "ms - BU-Manager");
         this.basicUM = new BasicUserManager(this);
-        this.getLog().log(LogLevel.DEBUG,Profiler.getCurrentDelta("basicsEnable", TimeUnit.MILLISECONDS) + "ms - Mail.Manager");
+        this.getLog().debug(Profiler.getCurrentDelta("basicsEnable", TimeUnit.MILLISECONDS) + "ms - Mail.Manager");
         this.mailManager = new MailManager(db, this.basicUM);
-        this.getLog().log(LogLevel.DEBUG,Profiler.getCurrentDelta("basicsEnable", TimeUnit.MILLISECONDS) + "ms - IgnoreList.Manager");
+        this.getLog().debug(Profiler.getCurrentDelta("basicsEnable", TimeUnit.MILLISECONDS) + "ms - IgnoreList.Manager");
         this.ignoreListManager = new IgnoreListManager(db);
-        this.getLog().log(LogLevel.DEBUG,Profiler.getCurrentDelta("basicsEnable", TimeUnit.MILLISECONDS) + "ms - Basics.Permission");
+        this.getLog().debug(Profiler.getCurrentDelta("basicsEnable", TimeUnit.MILLISECONDS) + "ms - Basics.Permission");
         new BasicsPerm(this);
         this.getCore().getUserManager().addDefaultAttachment(BasicsAttachment.class, this);
 
         em.registerListener(this, new ColoredSigns());
 
-        this.getLog().log(LogLevel.DEBUG,Profiler.getCurrentDelta("basicsEnable", TimeUnit.MILLISECONDS) + "ms - General-Commands");
+        this.getLog().debug(Profiler.getCurrentDelta("basicsEnable", TimeUnit.MILLISECONDS) + "ms - General-Commands");
         //General:
         cm.registerCommands(this, new ChatCommands(this), ReflectedCommand.class);
         cm.registerCommands(this, new InformationCommands(this), ReflectedCommand.class);
         cm.registerCommands(this, new ListCommand(this), ReflectedCommand.class);
         cm.registerCommand(new MailCommand(this));
         cm.registerCommands(this, new PlayerCommands(this), ReflectedCommand.class);
-        this.getLog().log(LogLevel.DEBUG,Profiler.getCurrentDelta("basicsEnable", TimeUnit.MILLISECONDS) + "ms - General-Listener");
+        this.getLog().debug(Profiler.getCurrentDelta("basicsEnable", TimeUnit.MILLISECONDS) + "ms - General-Listener");
         em.registerListener(this, new GeneralsListener(this));
         em.registerListener(this, new MuteListener(this));
-        this.getLog().log(LogLevel.DEBUG,Profiler.getCurrentDelta("basicsEnable", TimeUnit.MILLISECONDS) + "ms - Moderation-Commands");
+        this.getLog().debug(Profiler.getCurrentDelta("basicsEnable", TimeUnit.MILLISECONDS) + "ms - Moderation-Commands");
         //Moderation:
         cm.registerCommands(this, new InventoryCommands(this), ReflectedCommand.class);
         cm.registerCommands(this, new ItemCommands(this), ReflectedCommand.class);
@@ -118,19 +118,19 @@ public class Basics extends Module
         
         em.registerListener(this, new PaintingListener(this));
 
-        this.getLog().log(LogLevel.DEBUG,Profiler.getCurrentDelta("basicsEnable", TimeUnit.MILLISECONDS) + "ms - Kits");
+        this.getLog().debug(Profiler.getCurrentDelta("basicsEnable", TimeUnit.MILLISECONDS) + "ms - Kits");
         Convert.registerConverter(KitItem.class, new KitItemConverter());
 
         this.kitManager = new KitManager(this);
         this.kitManager.loadKits();
         this.kitGivenManager = new KitsGivenManager(db);
-        this.getLog().log(LogLevel.DEBUG,Profiler.getCurrentDelta("basicsEnable", TimeUnit.MILLISECONDS) + "ms - Teleport-Commands");
+        this.getLog().debug(Profiler.getCurrentDelta("basicsEnable", TimeUnit.MILLISECONDS) + "ms - Teleport-Commands");
         //Teleport:
         cm.registerCommands(this, new MovementCommands(this), ReflectedCommand.class);
         cm.registerCommands(this, new SpawnCommands(this), ReflectedCommand.class);
         cm.registerCommands(this, new TeleportCommands(this), ReflectedCommand.class);
         cm.registerCommands(this, new TeleportRequestCommands(this), ReflectedCommand.class);
-        this.getLog().log(LogLevel.DEBUG,Profiler.getCurrentDelta("basicsEnable", TimeUnit.MILLISECONDS) + "ms - Teleport/Fly-Listener");
+        this.getLog().debug(Profiler.getCurrentDelta("basicsEnable", TimeUnit.MILLISECONDS) + "ms - Teleport/Fly-Listener");
         em.registerListener(this, new TeleportListener(this));
         em.registerListener(this, new FlyListener());
 
@@ -138,7 +138,7 @@ public class Basics extends Module
 
         cm.registerCommands(this,  new DoorCommand(this), ReflectedCommand.class );
 
-        this.getLog().log(LogLevel.DEBUG,Profiler.endProfiling("basicsEnable", TimeUnit.MILLISECONDS) + "ms - done");
+        this.getLog().debug(Profiler.endProfiling("basicsEnable", TimeUnit.MILLISECONDS) + "ms - done");
         
         /**
          * * //commands TODO

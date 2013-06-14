@@ -107,15 +107,15 @@ public class Test extends Module
         }
         catch (Exception ex)
         {
-            this.getLog().log(ERROR, "Error while Enabling the TestModule", ex);
+            this.getLog().error("Error while Enabling the TestModule", ex);
         }
         try
         {
-            this.getLog().addHandler(new CubeFileHandler(LogLevel.ALL, new File(this.getCore().getFileManager().getLogDir(), "test").toString()));
+            //TODO logback! this.getLog().addHandler(new CubeFileHandler(LogLevel.ALL, new File(this.getCore().getFileManager().getLogDir(), "test").toString()));
         }
         catch (Exception ex)
         {
-            this.getLog().log(ERROR, "Error while adding the FileHandler", ex);
+            this.getLog().error("Error while adding the FileHandler", ex);
         }
         this.getCore().getEventManager().registerListener(this, new TestListener(this));
 
@@ -134,8 +134,8 @@ public class Test extends Module
             }
         });
 
-        this.getLog().log(LogLevel.DEBUG, "Basics-Module: {0}", String.valueOf(this.basicsModule));
-        this.getLog().log(LogLevel.DEBUG, "BukkitCore-Plugin: {0}", String.valueOf(this.getCore()));
+        this.getLog().debug("Basics-Module: {0}", String.valueOf(this.basicsModule));
+        this.getLog().debug("BukkitCore-Plugin: {0}", String.valueOf(this.getCore()));
 
         this.timer = new Timer("keepAliveTimer");
         this.timer.schedule(new KeepAliveTimer(), 2 * 1000, 2 * 1000);
@@ -163,7 +163,7 @@ public class Test extends Module
         }
         catch (IOException e)
         {
-            this.getLog().log(NOTICE, "Failed to delete the test world!", e);
+            this.getLog().warn("Failed to delete the test world!", e);
         }
 
         this.timer = null;
@@ -204,32 +204,32 @@ public class Test extends Module
 
     public void testl18n()
     {
-        this.getLog().log(DEBUG, CubeEngine.getCore().getI18n().
+        this.getLog().debug(CubeEngine.getCore().getI18n().
             translate("de_DE", "test", "english TEST"));
-        this.getLog().log(DEBUG, CubeEngine.getCore().getI18n().
+        this.getLog().debug(CubeEngine.getCore().getI18n().
             translate("fr_FR", "test", "english TEST"));
     }
 
     private void testMatchers()
     {
-        this.getLog().log(DEBUG, String.valueOf(Match.enchant().enchantment("infinity")));
-        this.getLog().log(DEBUG, String.valueOf(Match.enchant().enchantment("infini")));
-        this.getLog().log(DEBUG, String.valueOf(Match.enchant().enchantment("hablablubb")) + " is null");
-        this.getLog().log(DEBUG, String.valueOf(Match.enchant().enchantment("protect")));
-        this.getLog().log(DEBUG, String.valueOf(Match.material().itemStack("stone").serialize()));
-        this.getLog().log(DEBUG, String.valueOf(Match.material().itemStack("stoned").serialize()));
-        this.getLog().log(DEBUG, String.valueOf(Match.material().itemStack("hablablubb")) + " is null");
-        this.getLog().log(DEBUG, String.valueOf(Match.material().itemStack("wool:red").serialize()));
-        this.getLog().log(DEBUG, String.valueOf(Match.material().itemStack("35").serialize()));
-        this.getLog().log(DEBUG, String.valueOf(Match.material().itemStack("35:15").serialize()));
-        this.getLog().log(DEBUG, String.valueOf(Match.material().itemStack("35:red").serialize()));
-        this.getLog().log(DEBUG, String.valueOf(Match.material().itemStack("wood:birch").serialize()));
-        this.getLog().log(DEBUG, String.valueOf(Match.material().itemStack("leves:pine").serialize()));
-        this.getLog().log(DEBUG, String.valueOf(Match.material().itemStack("spawnegg:pig").serialize()));
-        this.getLog().log(DEBUG, String.valueOf(Match.entity().any("pig")));
-        this.getLog().log(DEBUG, String.valueOf(Match.entity().monster("zombi")));
-        this.getLog().log(DEBUG, String.valueOf(Match.entity().friendlyMob("shep")));
-        this.getLog().log(DEBUG, String.valueOf(Match.entity().friendlyMob("ghast")) + " is null");
+        this.getLog().debug(String.valueOf(Match.enchant().enchantment("infinity")));
+        this.getLog().debug(String.valueOf(Match.enchant().enchantment("infini")));
+        this.getLog().debug(String.valueOf(Match.enchant().enchantment("hablablubb")) + " is null");
+        this.getLog().debug(String.valueOf(Match.enchant().enchantment("protect")));
+        this.getLog().debug(String.valueOf(Match.material().itemStack("stone").serialize()));
+        this.getLog().debug(String.valueOf(Match.material().itemStack("stoned").serialize()));
+        this.getLog().debug(String.valueOf(Match.material().itemStack("hablablubb")) + " is null");
+        this.getLog().debug(String.valueOf(Match.material().itemStack("wool:red").serialize()));
+        this.getLog().debug(String.valueOf(Match.material().itemStack("35").serialize()));
+        this.getLog().debug(String.valueOf(Match.material().itemStack("35:15").serialize()));
+        this.getLog().debug(String.valueOf(Match.material().itemStack("35:red").serialize()));
+        this.getLog().debug(String.valueOf(Match.material().itemStack("wood:birch").serialize()));
+        this.getLog().debug(String.valueOf(Match.material().itemStack("leves:pine").serialize()));
+        this.getLog().debug(String.valueOf(Match.material().itemStack("spawnegg:pig").serialize()));
+        this.getLog().debug(String.valueOf(Match.entity().any("pig")));
+        this.getLog().debug(String.valueOf(Match.entity().monster("zombi")));
+        this.getLog().debug(String.valueOf(Match.entity().friendlyMob("shep")));
+        this.getLog().debug(String.valueOf(Match.entity().friendlyMob("ghast")) + " is null");
     }
 
     private void testsomeUtils()
@@ -240,7 +240,7 @@ public class Test extends Module
         }
         catch (Exception ex)
         {
-            this.getLog().log(ERROR, "Error in testsomeutils", ex);
+            this.getLog().error("Error in testsomeutils", ex);
         }
     }
 

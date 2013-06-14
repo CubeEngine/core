@@ -24,8 +24,8 @@ import de.cubeisland.cubeengine.core.config.annotations.Codec;
 import de.cubeisland.cubeengine.core.config.annotations.Comment;
 import de.cubeisland.cubeengine.core.config.annotations.Option;
 import de.cubeisland.cubeengine.core.config.annotations.Revision;
-import de.cubeisland.cubeengine.core.logger.CubeLevel;
-import de.cubeisland.cubeengine.core.logger.LogLevel;
+
+import ch.qos.logback.classic.Level;
 
 /**
  * This Configuration holds all basic settings for CubeEngine.
@@ -72,8 +72,8 @@ public class CoreConfiguration extends Configuration
     public String database = "mysql";
 
     @Option("logging.Level")
-    @Comment("Logging into Console \nALL > DEBUG > INFO > NOTICE > WARNING > ERROR > OFF")
-    public CubeLevel loggingLevel = LogLevel.NOTICE;
+    @Comment("Logging into Console \nALL > DEBUG > INFO > WARN > ERROR > OFF")
+    public Level loggingLevel = Level.INFO;
 
     @Option("logging.log-commands")
     @Comment("Whether to log commands executed by players.")

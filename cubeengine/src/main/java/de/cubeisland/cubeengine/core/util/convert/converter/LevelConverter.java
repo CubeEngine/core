@@ -22,23 +22,23 @@ import de.cubeisland.cubeengine.core.config.node.StringNode;
 import de.cubeisland.cubeengine.core.util.convert.ConversionException;
 import de.cubeisland.cubeengine.core.util.convert.Convert;
 import de.cubeisland.cubeengine.core.util.convert.Converter;
-import de.cubeisland.cubeengine.core.logger.CubeLevel;
-import de.cubeisland.cubeengine.core.logger.LogLevel;
 
-public class CubeLevelConverter implements Converter<CubeLevel>
+import ch.qos.logback.classic.Level;
+
+public class LevelConverter implements Converter<Level>
 {
     @Override
-    public Node toNode(CubeLevel object) throws ConversionException
+    public Node toNode(Level object) throws ConversionException
     {
         return Convert.wrapIntoNode(object.toString());
     }
 
     @Override
-    public CubeLevel fromNode(Node node) throws ConversionException
+    public Level fromNode(Node node) throws ConversionException
     {
         if (node instanceof StringNode)
         {
-            CubeLevel lv = LogLevel.parse(((StringNode)node).getValue());
+            Level lv = Level.valueOf(node.toString());
             if (lv == null)
             {
                 throw new ConversionException("Unknown LogLevel. " + ((StringNode)node).getValue());

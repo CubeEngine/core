@@ -80,7 +80,7 @@ public class BukkitUtils
         }
         catch (Exception e)
         {
-            core.getLog().log(ERROR, "Failed to initialize the required hacks!", e);
+            core.getLog().error("Failed to initialize the required hacks!", e);
             return false;
         }
         return true;
@@ -248,14 +248,14 @@ public class BukkitUtils
                 ServerConnection sc = player.server.ae();
                 ((List<PlayerConnection>)playerConnectionListField.get(sc)).remove(oldHandler);
                 sc.a(newHandler);
-                CubeEngine.getLog().log(DEBUG, "Replaced the NetServerHandler of player ''{0}''", player.getName());
+                CubeEngine.getLog().debug("Replaced the NetServerHandler of player ''{}''", player.getName());
                 oldHandler.disconnected = true;
             }
         }
         catch (Exception e)
         {
             player.playerConnection = oldHandler;
-            CubeEngine.getLog().log(DEBUG, e.getLocalizedMessage(), e);
+            CubeEngine.getLog().debug(e.getLocalizedMessage(), e);
         }
     }
 
@@ -372,15 +372,15 @@ public class BukkitUtils
                     final long time = System.currentTimeMillis();
                     if (time - this.lastReceived <= 5000)
                     {
-                        core.getLog().log(NOTICE, "Shutting down the server now!");
+                        core.getLog().warn("Shutting down the server now!");
                         core.getServer().shutdown();
                         this.lastReceived = -1;
                     }
                     else
                     {
                         this.lastReceived = time;
-                        core.getLog().log(NOTICE, "You can't copy content from the console using CTRL-C!");
-                        core.getLog().log(NOTICE, "If you really want shutdown the server use the stop command or press CTRL-C again within 5 seconds!");
+                        core.getLog().warn("You can't copy content from the console using CTRL-C!");
+                        core.getLog().warn("If you really want shutdown the server use the stop command or press CTRL-C again within 5 seconds!");
                     }
                 }
             });
@@ -396,9 +396,9 @@ public class BukkitUtils
                         if (!this.reloading)
                         {
                             this.reloading = true;
-                            core.getLog().log(NOTICE, "Reloading the server!");
+                            core.getLog().warn("Reloading the server!");
                             core.getServer().reload();
-                            core.getLog().log(NOTICE, "Done reloading the server!");
+                            core.getLog().info("Done reloading the server!");
                             this.reloading = false;
                         }
                     }
@@ -406,7 +406,7 @@ public class BukkitUtils
             }
             catch (IllegalArgumentException e)
             {
-                core.getLog().log(NOTICE, "You're OS does not support the HUP signal! This can be ignored.");
+                core.getLog().warn("You're OS does not support the HUP signal! This can be ignored.");
             }
         }
         catch (ClassNotFoundException ignored)

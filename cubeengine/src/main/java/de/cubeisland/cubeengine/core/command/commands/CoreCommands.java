@@ -20,7 +20,6 @@ package de.cubeisland.cubeengine.core.command.commands;
 import java.util.Date;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
-import java.util.logging.Level;
 
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.PluginManager;
@@ -39,14 +38,13 @@ import de.cubeisland.cubeengine.core.command.parameterized.Flag;
 import de.cubeisland.cubeengine.core.command.parameterized.ParameterizedContext;
 import de.cubeisland.cubeengine.core.command.reflected.Command;
 import de.cubeisland.cubeengine.core.command.sender.ConsoleCommandSender;
-import de.cubeisland.cubeengine.core.logger.LogLevel;
-import de.cubeisland.cubeengine.core.module.Module;
-import de.cubeisland.cubeengine.core.module.ModuleManager;
-import de.cubeisland.cubeengine.core.module.exception.ModuleException;
 import de.cubeisland.cubeengine.core.permission.PermDefault;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.user.UserManager;
 import de.cubeisland.cubeengine.core.util.Profiler;
+
+import ch.qos.logback.classic.Level;
+import ch.qos.logback.classic.Logger;
 
 import static de.cubeisland.cubeengine.core.logger.LogLevel.ERROR;
 import static java.util.Arrays.asList;
@@ -269,10 +267,10 @@ public class CoreCommands extends ContainerCommand
     {
         if (context.hasArgs())
         {
-            Level level = LogLevel.parse(context.getString(0));
+            Level level = Level.valueOf(context.getString(0));
             if (level != null)
             {
-                context.getCore().getLog().setLevel(level);
+                ((Logger)context.getCore().getLog()).setLevel(level);
                 context.sendTranslated("&aNew log level successfully set!");
             }
             else
@@ -282,7 +280,7 @@ public class CoreCommands extends ContainerCommand
         }
         else
         {
-            context.sendTranslated("&eThe current log level: &a%s", context.getCore().getLog().getLevel().getLocalizedName());
+            context.sendTranslated("&eThe current log level: &a%s", ((Logger)context.getCore().getLog()).getLevel().toString());
         }
     }
 }

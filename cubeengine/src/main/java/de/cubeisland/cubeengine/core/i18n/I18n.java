@@ -65,6 +65,7 @@ public class I18n implements Cleanable
     {
         this.core = core;
         this.logger = (Logger) LoggerFactory.getLogger("cubeengine.language");
+        // TODO
         this.languages = new THashMap<Locale, Language>();
         this.languageLookupMap = new THashMap<String, Language>();
         this.sourceLanguage = new SourceLanguage();
@@ -84,24 +85,6 @@ public class I18n implements Cleanable
         {
             Locale.setDefault(this.sourceLanguage.getLocale());
             core.getConfiguration().defaultLocale = Locale.getDefault();
-        }
-        try
-        {
-            LoggerContext context = (LoggerContext) LoggerFactory.getILoggerFactory();
-            FileAppender<ILoggingEvent> fileAppender = new FileAppender<ILoggingEvent>();
-            fileAppender.setFile(new File(fm.getLogDir(), "missing-translations").getPath());
-            PatternLayout pl = new PatternLayout();
-            pl.setPattern("%date{yyyy-MM-dd HH:mm:ss} [%-5level] %m%n");
-            pl.setContext(context);
-            pl.start();
-            fileAppender.setLayout(pl);
-            fileAppender.setContext(context);
-            fileAppender.start();
-            logger.addAppender(fileAppender);
-        }
-        catch (Exception e)
-        {
-            core.getLog().log(ERROR, e.getLocalizedMessage(), e);
         }
     }
 

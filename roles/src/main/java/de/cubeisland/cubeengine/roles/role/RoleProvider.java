@@ -114,7 +114,7 @@ public abstract class RoleProvider
                 this.configs.put(config.roleName.toLowerCase(), config);
             }
         }
-        this.module.getLog().log(DEBUG, this.getFolder().getName()+ ": " + i + " role-configs read!");
+        this.module.getLog().debug(this.getFolder().getName()+ ": " + i + " role-configs read!");
     }
 
     /**
@@ -166,7 +166,7 @@ public abstract class RoleProvider
                     Role parentRole = this.getRole(parentName);
                     if (parentRole == null) // Dependency Missing?
                     {
-                        this.module.getLog().log(LogLevel.WARNING, "ParentRole missing for \"" + role.getName() + "\"\nUnknown role: " + parentName);
+                        this.module.getLog().warn("ParentRole missing for \"" + role.getName() + "\"\nUnknown role: " + parentName);
                     }
                     this.calculateRole(parentRole,roleStack);
                 }
@@ -187,12 +187,12 @@ public abstract class RoleProvider
                 data.calculate(parentRoles);
                 role.resolvedData = data;
                 roleStack.pop();
-                this.module.getLog().log(DEBUG, "   - " + role.getName() + " calculated!");
+                this.module.getLog().debug("   - " + role.getName() + " calculated!");
                 return role;
             }
             catch (CircularRoleDependencyException ex)
             {
-                this.module.getLog().log(LogLevel.WARNING, ex.getMessage());
+                this.module.getLog().warn(ex.getMessage());
                 return null;
             }
         }

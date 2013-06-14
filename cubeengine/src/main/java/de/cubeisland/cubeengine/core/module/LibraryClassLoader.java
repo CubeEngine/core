@@ -57,7 +57,7 @@ public class LibraryClassLoader extends URLClassLoader
         }
         catch (Exception ignored)
         {
-            CubeEngine.getLog().log(WARNING, "Failed to close the library class loader");
+            CubeEngine.getLog().warn("Failed to close the library class loader");
         }
     }
 }

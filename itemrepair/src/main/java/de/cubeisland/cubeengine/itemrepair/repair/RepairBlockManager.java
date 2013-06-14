@@ -81,14 +81,14 @@ public class RepairBlockManager
                 }
                 else
                 {
-                    this.module.getLog().warning("Deleting saved RepairBlock that is no longer a RepairBlock at " +
+                    this.module.getLog().warn("Deleting saved RepairBlock that is no longer a RepairBlock at " +
                              + block.getX() + ":" + block.getY() + ":" + block.getZ() + " in " + block.getWorld().getName());
                     // TODO delete
                 }
             }
             else
             {
-                this.module.getLog().warning("Deleting saved RepairBlock that does not correspond to block at " +
+                this.module.getLog().warn("Deleting saved RepairBlock that does not correspond to block at " +
                              + block.getX() + ":" + block.getY() + ":" + block.getZ() + " in " + block.getWorld().getName());
                 // TODO delete
             }
@@ -106,7 +106,7 @@ public class RepairBlockManager
     {
         this.module.getCore().getPermissionManager().registerPermission(this.module, block.getPermission());
         this.repairBlocks.put(block.getMaterial(), block);
-        this.module.getLog().log(LogLevel.DEBUG, "Added a repair block: " + block.getName() + " on ID: " + block
+        this.module.getLog().debug("Added a repair block: " + block.getName() + " on ID: " + block
             .getMaterial());
         return this;
     }

@@ -83,7 +83,7 @@ public class RolesAttachment extends UserAttachment
                 Role role = provider.getRole(roleName);
                 if (role == null)
                 {
-                    this.getModule().getLog().warning("NULL-Role! "+ roleName);
+                    this.getModule().getLog().warn("NULL-Role! "+ roleName);
                     continue;
                 }
                 assignedRoles.add(role);
@@ -97,7 +97,7 @@ public class RolesAttachment extends UserAttachment
                     Role role = provider.getRole(roleName);
                     if (role == null)
                     {
-                        this.getModule().getLog().warning("NULL-Role! "+ roleName);
+                        this.getModule().getLog().warn("NULL-Role! "+ roleName);
                         continue;
                     }
                     assignedRoles.add(role);
@@ -234,14 +234,14 @@ public class RolesAttachment extends UserAttachment
                     user.sendTranslated("&cThe server is currently running in offline-mode. Permissions will not be applied until logging in! Contact an Administrator if you think this is an error.");
                     offlineMsgReceived = true;
                 }
-                this.getModule().getLog().warning("Role-permissions not applied! Server is running in unsecured offline-mode!");
+                this.getModule().getLog().warn("Role-permissions not applied! Server is running in unsecured offline-mode!");
                 return;
             }
             user.setPermission(resolvedData.getResolvedPermissions());
-            this.getModule().getLog().log(LogLevel.DEBUG, "Calculating Roles of Player " + user.getName()+ "...");
+            this.getModule().getLog().debug("Calculating Roles of Player " + user.getName()+ "...");
             for (Role assignedRole : resolvedData.assignedRoles)
             {
-                this.getModule().getLog().log(LogLevel.DEBUG, " - " + assignedRole.getName());
+                this.getModule().getLog().debug(" - " + assignedRole.getName());
             }
         }
         // else user is offline ignore

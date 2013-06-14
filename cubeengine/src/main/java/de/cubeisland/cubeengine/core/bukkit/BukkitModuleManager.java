@@ -68,7 +68,7 @@ public class BukkitModuleManager extends BaseModuleManager
                         }
                         catch (Exception e)
                         {
-                            module.getLog().log(WARNING, "An uncaught exception occurred during onFinishLoading(): " + e.getMessage(), e);
+                            module.getLog().warn("An uncaught exception occurred during onFinishLoading(): " + e.getMessage(), e);
                         }
                     }
                 }
@@ -103,14 +103,14 @@ public class BukkitModuleManager extends BaseModuleManager
                     }
                     catch (Exception e)
                     {
-                        module.getLog().log(LogLevel.WARNING, "Failed to inject a plugin dependency: {0}", String.valueOf(plugin));
+                        module.getLog().warn("Failed to inject a plugin dependency: {}", String.valueOf(plugin));
                     }
                 }
             }
         }
         catch (NoClassDefFoundError e)
         {
-            module.getLog().log(LogLevel.WARNING, "Failed to get the fields of the main class: " + e.getLocalizedMessage(), e);
+            module.getLog().warn("Failed to get the fields of the main class: " + e.getLocalizedMessage(), e);
         }
         return module;
     }

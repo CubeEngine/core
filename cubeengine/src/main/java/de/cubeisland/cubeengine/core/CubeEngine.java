@@ -123,7 +123,7 @@ public final class CubeEngine
      *
      * @return the Logger
      */
-    public static Logger getLog()
+    public static org.slf4j.Logger getLog()
     {
         return core.getLog();
     }
