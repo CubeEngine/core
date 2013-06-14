@@ -17,4 +17,4 @@ http://bugs.engine.cubeisland.de
 IRC
 ---
 
-[#cubeengine on EsperNet](http://webchat.esper.net/?channels=cubeengine&nick=)
+[#cubeengine on EsperNet](https://webchat.esper.net/?channels=cubeengine&nick=)
