@@ -17,8 +17,6 @@
  */
 package de.cubeisland.cubeengine.log.tool;
 
-import java.util.concurrent.TimeUnit;
-
 import org.bukkit.Location;
 import org.bukkit.event.Event.Result;
 import org.bukkit.event.EventHandler;
@@ -33,6 +31,7 @@ import de.cubeisland.cubeengine.log.Log;
 import de.cubeisland.cubeengine.log.LogAttachment;
 import de.cubeisland.cubeengine.log.commands.LogCommands;
 import de.cubeisland.cubeengine.log.storage.Lookup;
+import de.cubeisland.cubeengine.log.storage.ShowParameter;
 
 public class ToolListener implements Listener
 {
@@ -43,19 +42,45 @@ public class ToolListener implements Listener
         this.module = module;
     }
 
+    // TODO permissions for the tools
     @EventHandler
     public void onClick(PlayerInteractEvent event)
     {
+        if (event.getAction().equals(Action.PHYSICAL)) return;
         if (event.getClickedBlock() != null)
         {
+            User user = this.module.getCore().getUserManager().getUser(event.getPlayer().getName());
             ItemStack item = event.getPlayer().getItemInHand();
-            if (!item.hasItemMeta() || !item.getItemMeta().hasDisplayName() ||
-                    !item.getItemMeta().getDisplayName().equals(LogCommands.toolName))
+            if (item.hasItemMeta() && item.getItemMeta().hasDisplayName())
+            {
+                if (!item.getItemMeta().getDisplayName().equals(LogCommands.toolName))
+                {
+                    if (item.getItemMeta().getDisplayName().equals(LogCommands.selectorToolName))
+                    {
+                        LogAttachment logAttachment = user.attachOrGet(LogAttachment.class, this.module);
+                        Location clicked = event.getClickedBlock().getLocation();
+                        if (event.getAction().equals(Action.LEFT_CLICK_BLOCK))
+                        {
+                            logAttachment.setSelectionPos1(clicked);
+                            user.sendTranslated("&aFirst Position selected!");
+                        }
+                        else
+                        {
+                            logAttachment.setSelectionPos2(clicked);
+                            user.sendTranslated("&aSecond Position selected!");
+                        }
+                        event.setCancelled(true);
+                        event.setUseItemInHand(Result.DENY);
+                    }
+                    return;
+                }
+            }
+            else
             {
                 return;
             }
-            User user = this.module.getCore().getUserManager().getUser(event.getPlayer().getName());
-            Lookup lookup = user.attachOrGet(LogAttachment.class,this.module).getLookup(item.getType());
+            LogAttachment attachment = user.attachOrGet(LogAttachment.class,this.module);
+            Lookup lookup = attachment.getLookup(item.getType());
             if (lookup == null)
             {
                 user.sendTranslated("&cInvalid LoggingTool-Block!");
@@ -65,10 +90,11 @@ public class ToolListener implements Listener
                     ? event.getClickedBlock().getLocation()
                     : event.getClickedBlock().getRelative(event.getBlockFace()).getLocation();
             lookup.getQueryParameter().setSingleLocations(loc);
-            //-----------
-            lookup.getQueryParameter().since(System.currentTimeMillis() - TimeUnit.DAYS.toMillis(7)); // 7 days default //TODO this in block creation
-            //-----------
-            this.module.getLogManager().fillLookupAndShow(lookup,user);
+
+            ShowParameter show = new ShowParameter();
+            show.showCoords = false;
+            attachment.queueShowParameter(show);
+            this.module.getLogManager().fillLookupAndShow(lookup, user);
             event.setCancelled(true);
             event.setUseItemInHand(Result.DENY);
             event.setUseInteractedBlock(Result.DENY);

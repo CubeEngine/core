@@ -20,7 +20,9 @@ package de.cubeisland.cubeengine.log.action;
 import java.sql.Timestamp;
 import java.util.Collections;
 import java.util.EnumSet;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 import org.bukkit.Location;
@@ -31,10 +33,12 @@ import org.bukkit.entity.Player;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.user.UserManager;
 import de.cubeisland.cubeengine.log.Log;
+import de.cubeisland.cubeengine.log.LogAttachment;
 import de.cubeisland.cubeengine.log.storage.LogEntry;
 import de.cubeisland.cubeengine.log.storage.LogManager;
 import de.cubeisland.cubeengine.log.storage.QueryParameter;
 import de.cubeisland.cubeengine.log.storage.QueuedLog;
+import de.cubeisland.cubeengine.log.storage.ShowParameter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -123,8 +127,9 @@ public abstract class ActionType
      * @param user
      * @param params
      * @param logEntry
+     * @param show
      */
-    public abstract void showLogEntry(User user, QueryParameter params, LogEntry logEntry);
+    public abstract void showLogEntry(User user, QueryParameter params, LogEntry logEntry, ShowParameter show);
 
     /**
      * Returns true if the given log-entries can be put together to minimize output
@@ -133,7 +138,10 @@ public abstract class ActionType
      * @param other
      * @return
      */
-    public abstract boolean isSimilar(LogEntry logEntry, LogEntry other);
+    public boolean isSimilar(LogEntry logEntry, LogEntry other)
+    {
+        return logEntry.actionType == other.actionType;
+    }
 
     public void setID(long id)
     {
@@ -145,18 +153,128 @@ public abstract class ActionType
         return this.actionTypeID;
     }
 
+    public boolean rollback(LogAttachment attachment, LogEntry logEntry, boolean force, boolean preview)
+    {
+        if (this.canRollback())
+        {
+            attachment.getHolder().sendTranslated("&4Encountered an unimplemented LogAction-Rollback: &6%s", logEntry.actionType.getName());
+            throw new UnsupportedOperationException("Not yet implemented! " + logEntry.actionType.getName());
+        }
+        return false;
+    }
+
+    /**
+     * Returns whether this actionType can have more than one changes at a single location.
+     * <p>e.g.: Block-Changes like block-break or block-place will return false
+     * <p>Container-Transactions, mob-spawns or kills will return true
+     * <p>default is true override to change this!</p>
+     *
+     * @return true if this log-action can stack
+     */
+    public boolean isStackable()
+    {
+        return true;
+    }
+
+    /**
+     * Returns whether this actionType is referring to a specific Block not a location
+     * <p>This is mostly true for block-changes and container-transactions
+     * <p>default is false override to change this!</p>
+     *
+     * @return true if this log-action is block-bound
+     */
+    public boolean isBlockBound()
+    {
+        return false;
+    }
+
     public static enum Category
     {
-        ALL,
-        PLAYER,
-        BLOCK,
-        ITEM,
-        INVENTORY,
-        ENTITY,
-        ENVIRONEMENT,
-        KILL;
+        ALL("all"),
+        /**
+         * All actions with a possible player involved
+         */
+        PLAYER("player"),
+        /**
+         * All actions with a block involved
+         */
+        BLOCK("block"),
+        /**
+         * All actions with ItemStacks involved
+         */
+        ITEM("item"),
+        /**
+         * All actions with inventories involved
+         */
+        INVENTORY("inventory"),
+        /**
+         * All actions with entities excluding block changes by an entity
+         */
+        ENTITY("entity"),
+        /**
+         * All block actions with a possible living entity as causer
+         */
+        BLOCK_ENTITY("block-entity"),
+        /**
+         * possibly environmental actions such as grass growing naturally etc.
+         */
+        ENVIRONEMENT("environement"),
+        /**
+         * All actions of the death of an living entity or player
+         */
+        KILL("kill"),
+        /**
+         * All block-actions involving an explosion (tnt-prime too)
+         */
+        EXPLOSION("explosion"),
+        /**
+         * All actions involving lava or water flows
+         */
+        FLOW("flow"),
+        /**
+         * All actions involving fire ignition/spread
+         */
+        IGNITE("ignite"),
+        /**
+         * All actions involving fire excluding blocks indirectly broken by block-burns
+         */
+        FIRE("fire"),
+        /**
+         * All actions involving buckets
+         */
+        BUCKET("bucket"),
+        /**
+         * lava-bucket AND water-bucket
+         */
+        BUCKET_EMPTY("bucket-empty"),
+        /**
+         * All actions involving vehicles
+         */
+        VEHICLE("vehicle"),
+        /**
+         * All actions involving
+         */
+        SPAWN("spawn"),
+        ;
+
+        private static Map<String, Category> categories = new HashMap<String, Category>();
+
+        static
+        {
+            for (Category category : Category.values())
+            {
+                categories.put(category.name, category);
+            }
+        }
 
         private HashSet<ActionType> actionTypes = new HashSet<ActionType>();
+
+        public final String name;
+
+        private Category(String name)
+        {
+            this.name = name;
+        }
 
         public void registerActionType(ActionType actionType)
         {
@@ -166,6 +284,11 @@ public abstract class ActionType
         public Set<ActionType> getActionTypes()
         {
             return Collections.unmodifiableSet(actionTypes);
+        }
+
+        public static Category match(String actionString)
+        {
+            return categories.get(actionString);
         }
     }
 }

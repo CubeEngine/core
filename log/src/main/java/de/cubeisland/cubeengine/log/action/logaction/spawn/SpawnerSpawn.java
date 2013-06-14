@@ -26,18 +26,18 @@ import de.cubeisland.cubeengine.log.action.logaction.SimpleLogActionType;
 import de.cubeisland.cubeengine.log.storage.LogEntry;
 
 import static de.cubeisland.cubeengine.log.action.ActionType.Category.ENTITY;
+import static de.cubeisland.cubeengine.log.action.ActionType.Category.SPAWN;
 
 /**
  * spawner spawning
  * <p>Events: {@link EntitySpawnActionType}</p>
  */
 public class SpawnerSpawn extends SimpleLogActionType
-
 {
     @Override
     protected EnumSet<Category> getCategories()
     {
-        return EnumSet.of(ENTITY);
+        return EnumSet.of(SPAWN, ENTITY);
     }
 
     @Override
@@ -55,12 +55,13 @@ public class SpawnerSpawn extends SimpleLogActionType
     @Override
     protected void showLogEntry(User user, LogEntry logEntry, String time, String loc)
     {
-        user.sendTranslated("%s&6%s &aspawned from a spawner%s!",
+        user.sendTranslated("%s&6%s &aspawned from a spawner%s",
                             time,logEntry.getCauserEntity(),loc);
     }
     @Override
     public boolean isSimilar(LogEntry logEntry, LogEntry other)
     {
+        if (!super.isSimilar(logEntry, other)) return false;
         return logEntry.causer == other.causer
             && logEntry.world == other.world
             && logEntry.location.equals(other.location);

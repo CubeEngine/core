@@ -18,6 +18,7 @@
 package de.cubeisland.cubeengine.log.action.logaction;
 
 import java.util.EnumSet;
+import java.util.concurrent.TimeUnit;
 
 import org.bukkit.World;
 import org.bukkit.event.EventHandler;
@@ -58,7 +59,6 @@ public class PlayerChat extends SimpleLogActionType
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onPlayerChat(AsyncPlayerChatEvent event)
     {
-        //TODO attach spamming same msg
         if (event.getMessage().trim().isEmpty()) return;
         if (this.isActive(event.getPlayer().getWorld()))
         {
@@ -71,16 +71,39 @@ public class PlayerChat extends SimpleLogActionType
     @Override
     protected void showLogEntry(User user, LogEntry logEntry, String time, String loc)
     {
-        user.sendTranslated("%s&2%s&a chatted the following%s&a: &f\"&6%s&f\"",
-                            time,logEntry.getCauserUser().getDisplayName(), loc,
-                            logEntry.getAdditional().iterator().next().asText());
+        // TODO "actionType" spam
+        if (logEntry.hasAttached())
+        {
+            if (logEntry.getAttached().size() >= 4)
+            {
+                user.sendTranslated("%s&2%s&a spammed &f\"&6%s&f\" &6x%d%s",
+                                    time,logEntry.getCauserUser().getDisplayName(),
+                                    logEntry.getAdditional().iterator().next().asText(),
+                                    logEntry.getAttached().size()+1, loc);
+            }
+            else
+            {
+                user.sendTranslated("%s&2%s&a chatted &f\"&6%s&f\" &6x%d%s",
+                                    time,logEntry.getCauserUser().getDisplayName(),
+                                    logEntry.getAdditional().iterator().next().asText(),
+                                    logEntry.getAttached().size()+1, loc);
+            }
+        }
+        else
+        {
+            user.sendTranslated("%s&2%s&a chatted &f\"&6%s&f\"%s",
+                                time,logEntry.getCauserUser().getDisplayName(),
+                                logEntry.getAdditional().iterator().next().asText(), loc);
+        }
     }
 
 
     @Override
     public boolean isSimilar(LogEntry logEntry, LogEntry other)
     {
-        return logEntry.causer == other.causer
+        if (!super.isSimilar(logEntry, other)) return false;
+        return logEntry.causer == other.causer &&
+        Math.abs(TimeUnit.MILLISECONDS.toSeconds(logEntry.timestamp.getTime() - other.timestamp.getTime())) < 30
             && logEntry.additional.iterator().next().asText().equals(other.additional.iterator().next().asText());
     }
 

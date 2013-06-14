@@ -36,7 +36,7 @@ public class SheepEat extends BlockActionType
     @Override
     protected EnumSet<Category> getCategories()
     {
-        return EnumSet.of(BLOCK, ENTITY);
+        return EnumSet.of(BLOCK, BLOCK_ENTITY);
     }
 
     @Override
@@ -49,7 +49,14 @@ public class SheepEat extends BlockActionType
     @Override
     protected void showLogEntry(User user, LogEntry logEntry, String time, String loc)
     {
-        user.sendTranslated("%s&aA sheep ate all the grass%s&a!",time,loc);
+        if (logEntry.hasAttached())
+        {
+            user.sendTranslated("%s&aA sheep ate all the grass%s&6 x%d",time, logEntry.getAttached().size()+1, loc);
+        }
+        else
+        {
+            user.sendTranslated("%s&aA sheep ate all the grass%s",time,loc);
+        }
     }
 
     @Override

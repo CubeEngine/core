@@ -33,6 +33,7 @@ import de.cubeisland.cubeengine.log.storage.LogEntry;
 
 import static de.cubeisland.cubeengine.log.action.ActionType.Category.BLOCK;
 import static de.cubeisland.cubeengine.log.action.ActionType.Category.ENVIRONEMENT;
+import static de.cubeisland.cubeengine.log.action.ActionType.Category.FLOW;
 import static org.bukkit.Material.*;
 
 /**
@@ -46,7 +47,7 @@ public class LavaFlow extends BlockActionType
     @Override
     protected EnumSet<Category> getCategories()
     {
-        return EnumSet.of(BLOCK, ENVIRONEMENT);
+        return EnumSet.of(BLOCK, ENVIRONEMENT, FLOW);
     }
 
     @Override
@@ -126,11 +127,11 @@ public class LavaFlow extends BlockActionType
         if (logEntry.hasAttached())
         {
             int amount = logEntry.getAttached().size();
-            user.sendTranslated("%s&aLava occupied this block &6%d times%s&a!",time,amount,loc);
+            user.sendTranslated("%s&aLava occupied this block &6%d times%s",time,amount,loc);
         }
         else
         {
-            user.sendTranslated("%s&aLava occupied the block%s&a!",time,loc);
+            user.sendTranslated("%s&aLava occupied the block%s",time,loc);
         }
     }
 

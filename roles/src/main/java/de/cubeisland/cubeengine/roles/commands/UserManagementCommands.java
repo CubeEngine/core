@@ -75,6 +75,7 @@ public class UserManagementCommands extends UserCommandHelper
             }
             if (attachment.getTemporaryRawData(worldId).assignRole(role))
             {
+                attachment.reloadFromDatabase();
                 attachment.apply();
                 context.sendTranslated("&aAdded the role &6%s&a temporarily to &2%s&a in &6%s&a.", roleName, user.getName(), world.getName());
                 return;
@@ -84,6 +85,7 @@ public class UserManagementCommands extends UserCommandHelper
         }
         if (attachment.getRawData(worldId).assignRole(role))
         {
+            attachment.reloadFromDatabase();
             attachment.apply();
             context.sendTranslated("&aAdded the role &6%s&a to &2%s&a in &6%s&a.", roleName, user.getName(), world.getName());
             return;
@@ -117,6 +119,7 @@ public class UserManagementCommands extends UserCommandHelper
         RolesAttachment attachment = this.manager.getRolesAttachment(user);
         if (attachment.getRawData(worldId).removeRole(role))
         {
+            attachment.reloadFromDatabase();
             attachment.apply();
             context.sendTranslated("&aRemoved the role &6%s&a from &2%s&a in &6%s&a.", role.getName(), user.getName(), world.getName());
             return;
@@ -137,8 +140,9 @@ public class UserManagementCommands extends UserCommandHelper
         if (world == null) return;
         long worldId = this.getModule().getCore().getWorldManager().getWorldId(world);
         RolesAttachment attachment = this.manager.getRolesAttachment(user);
+        attachment.getRawData(worldId).clearAssignedRoles();
         Set<Role> defaultRoles = this.manager.getProvider(worldId).getDefaultRoles();
-        attachment.getRawData(worldId).setAssignedRoles(defaultRoles);
+        attachment.getTemporaryRawData(worldId).setAssignedRoles(defaultRoles);
         attachment.apply();
         context.sendTranslated("&eCleared the roles of &2%s&e in &6%s&e.", user.getName(), world.getName());
         if (!defaultRoles.isEmpty())

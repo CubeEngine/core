@@ -17,34 +17,30 @@
  */
 package de.cubeisland.cubeengine.core.bukkit;
 
-import de.cubeisland.cubeengine.core.Core;
-import de.cubeisland.cubeengine.core.module.Module;
-import de.cubeisland.cubeengine.core.util.Cleanable;
-
-import gnu.trove.iterator.TIntIterator;
-import gnu.trove.set.TIntSet;
-import gnu.trove.set.hash.TIntHashSet;
-
-import org.bukkit.scheduler.BukkitScheduler;
-
 import java.util.Map;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Future;
 import java.util.concurrent.ThreadFactory;
 
-/**
- * This class provides methods to register and cancel tasks and the global
- * ScheduledExecutorService is provided by this class.
- */
-public class TaskManager implements Cleanable
+import org.bukkit.scheduler.BukkitScheduler;
+
+import de.cubeisland.cubeengine.core.Core;
+import de.cubeisland.cubeengine.core.module.Module;
+import de.cubeisland.cubeengine.core.task.TaskManager;
+
+import gnu.trove.iterator.TIntIterator;
+import gnu.trove.set.TIntSet;
+import gnu.trove.set.hash.TIntHashSet;
+
+public class BukkitTaskManager implements TaskManager
 {
     private final BukkitCore corePlugin;
     private final BukkitScheduler bukkitScheduler;
     private final Map<Module, TIntSet> moduleTasks;
     private final ThreadFactory threadFactory;
 
-    public TaskManager(Core core, ThreadFactory threadFactory, BukkitScheduler bukkitScheduler)
+    public BukkitTaskManager(Core core, ThreadFactory threadFactory, BukkitScheduler bukkitScheduler)
     {
         this.corePlugin = (BukkitCore)core;
         this.threadFactory = threadFactory;
@@ -90,7 +86,7 @@ public class TaskManager implements Cleanable
     }
 
     /**
-     * Schedules a delayed task for a module with the given delay
+     * Schedules a delayed task for a module with the given delay on the main server thread
      *
      * @param module   the module
      * @param runnable the task
@@ -129,7 +125,7 @@ public class TaskManager implements Cleanable
 
         final TIntSet tasks = this.getModuleIDs(module);
         final Task task = new Task(runnable, tasks);
-        final int taskID = this.bukkitScheduler.scheduleSyncRepeatingTask(this.corePlugin, task, delay, interval);
+        final int taskID = this.bukkitScheduler.runTaskTimer(this.corePlugin, task, delay, interval).getTaskId();
         if (taskID > -1)
         {
             task.taskID = taskID;
@@ -165,7 +161,7 @@ public class TaskManager implements Cleanable
 
         final TIntSet tasks = this.getModuleIDs(module);
         final Task task = new Task(runnable, tasks);
-        final int taskID = this.bukkitScheduler.scheduleAsyncDelayedTask(this.corePlugin, task, delay);
+        final int taskID = this.bukkitScheduler.runTaskLaterAsynchronously(this.corePlugin, task, delay).getTaskId();
         if (taskID > -1)
         {
             task.taskID = taskID;
@@ -190,7 +186,7 @@ public class TaskManager implements Cleanable
 
         final TIntSet tasks = this.getModuleIDs(module);
         final Task task = new Task(runnable, tasks);
-        final int taskID = this.bukkitScheduler.scheduleAsyncRepeatingTask(this.corePlugin, task, delay, interval);
+        final int taskID = this.bukkitScheduler.runTaskTimerAsynchronously(this.corePlugin, task, delay, interval).getTaskId();
         if (taskID > -1)
         {
             task.taskID = taskID;
@@ -206,7 +202,7 @@ public class TaskManager implements Cleanable
      * @param callable the method to call
      * @return a future object
      */
-    public <T> Future<T> callSyncMethod(Callable<T> callable)
+    public <T> Future<T> callSync(Callable<T> callable)
     {
         assert callable != null: "The callable must not be null!";
         return this.bukkitScheduler.callSyncMethod(this.corePlugin, callable);

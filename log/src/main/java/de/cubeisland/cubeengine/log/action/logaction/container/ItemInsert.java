@@ -18,10 +18,17 @@
 package de.cubeisland.cubeengine.log.action.logaction.container;
 
 import java.util.EnumSet;
+import java.util.HashMap;
 
+import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.World;
+import org.bukkit.block.BlockState;
+import org.bukkit.inventory.InventoryHolder;
+import org.bukkit.inventory.ItemStack;
 
 import de.cubeisland.cubeengine.core.user.User;
+import de.cubeisland.cubeengine.log.LogAttachment;
 import de.cubeisland.cubeengine.log.action.logaction.SimpleLogActionType;
 import de.cubeisland.cubeengine.log.storage.ItemData;
 import de.cubeisland.cubeengine.log.storage.LogEntry;
@@ -50,10 +57,34 @@ public class ItemInsert extends SimpleLogActionType
     protected void showLogEntry(User user, LogEntry logEntry, String time, String loc)
     {
         ItemData itemData= logEntry.getItemData();
-        user.sendTranslated("%s&2%s&a placed &6%d %s&a into &6%s%s&a!",
-                            time, logEntry.getCauserUser().getDisplayName(),
-                            itemData.amount,itemData,
-                            logEntry.getContainerTypeFromBlock(),loc);
+        int amount = itemData.amount;
+        if (logEntry.hasAttached())
+        {
+            for (LogEntry entry : logEntry.getAttached())
+            {
+                amount += entry.getItemData().amount;
+            }
+        }
+        if (amount > 0)
+        {
+            user.sendTranslated("%s&2%s&a placed &6%d %s&a into &6%s%s",
+                                time, logEntry.getCauserUser().getName(),
+                                amount,itemData,
+                                logEntry.getContainerTypeFromBlock(),loc);
+        }
+        else if (amount < 0)
+        {
+            user.sendTranslated("%s&2%s&a took &6%d %s&a out of &6%s%s",
+                                time, logEntry.getCauserUser().getName(),
+                                -amount,itemData,
+                                logEntry.getContainerTypeFromBlock(),loc);
+        }
+        else
+        {
+            user.sendTranslated("%s&2%s&a did not change the amount of &6%s&a in &6%s%s",
+                                time , logEntry.getCauserUser().getName(), itemData,
+                                logEntry.getContainerTypeFromBlock(), loc);
+        }
     }
 
     @Override
@@ -62,10 +93,55 @@ public class ItemInsert extends SimpleLogActionType
         return ContainerActionType.isSubActionSimilar(logEntry,other);
     }
 
-
     @Override
     public boolean isActive(World world)
     {
         return this.lm.getConfig(world).ITEM_INSERT_enable;
+    }
+
+    @Override
+    public boolean rollback(LogAttachment attachment, LogEntry logEntry, boolean force, boolean preview)
+    {
+        Location loc = logEntry.getLocation();
+        Material material = logEntry.getContainerTypeFromBlock().getMaterial();
+        if (material.equals(Material.STORAGE_MINECART))
+        {
+            // TODO MinecartInventoryHolders  // would need UUID
+        }
+        else
+        {
+            BlockState block = loc.getBlock().getState();
+            if (block instanceof InventoryHolder && block.getType().equals(material)) // Same container
+            {
+                ItemData itemData = logEntry.getItemData();
+                InventoryHolder holder = (InventoryHolder)block;
+                HashMap<Integer,ItemStack> couldNotRemove = holder.getInventory().removeItem(itemData.toItemStack());
+                if (!couldNotRemove.isEmpty())
+                {
+                    attachment.getHolder().sendTranslated("&cCould not rollback an item-insert!");
+                    return false;
+                }
+                return true;
+            }
+            if (force)
+            {
+                attachment.getHolder().sendTranslated("&cInvalid Container to rollback item-insert!");
+            }
+            return false;
+        }
+        return false;
+    }
+    // TODO furnace Minecart different event? / couldnt rollback that
+
+    @Override
+    public boolean canRollback()
+    {
+        return true;
+    }
+
+    @Override
+    public boolean isBlockBound()
+    {
+        return true;
     }
 }

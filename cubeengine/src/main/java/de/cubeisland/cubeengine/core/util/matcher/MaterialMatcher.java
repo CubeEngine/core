@@ -269,6 +269,8 @@ public class MaterialMatcher
         return null;
     }
 
+    // TODO match more than one ItemStack for ItemDB CE-357
+
     /**
      * Tries to match a ItemStack for given name
      *

@@ -63,16 +63,12 @@ public class EntityShear extends SimpleLogActionType
             this.logSimple(event.getEntity().getLocation(),event.getPlayer(),event.getEntity(),
                            this.serializeData(null, event.getEntity(),null));
         }
-        else
-        {
-            System.out.print("Sheared something unknown: "+event.getEntity()); //TODO remove
-        }
     }
 
     @Override
     protected void showLogEntry(User user, LogEntry logEntry, String time, String loc)
     {
-        user.sendTranslated("%s&2%s&a sheared &6%s%s&a!",
+        user.sendTranslated("%s&2%s&a sheared &6%s%s",
                             time,logEntry.getCauserUser().getDisplayName(),
                             logEntry.getEntityFromData(),loc);
     }
@@ -80,6 +76,7 @@ public class EntityShear extends SimpleLogActionType
     @Override
     public boolean isSimilar(LogEntry logEntry, LogEntry other)
     {
+        if (!super.isSimilar(logEntry, other)) return false;
         return logEntry.causer == other.causer
             && logEntry.data == other.data
             && logEntry.world == other.world;

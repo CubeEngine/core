@@ -177,9 +177,20 @@ public class RolesManager
 
     public WorldRoleProvider getProvider(long worldId)
     {
-        return this.worldRoleProviders.get(worldId);
+        WorldRoleProvider worldRoleProvider = this.worldRoleProviders.get(worldId);
+        if (worldRoleProvider == null)
+        {
+            if (this.wm.getWorld(worldId) != null) // make sure world exists
+            {
+                // TODO create the missing WorldProvider!
+                //worldRoleProvider = this.worldRoleProviders.get(worldId);
+            }
+            // else return null;
+        }
+        return worldRoleProvider;
     }
 
+    @SuppressWarnings("unchecked")
     public <Provider extends RoleProvider> Provider getProvider(World world)
     {
         if (world == null)
@@ -227,10 +238,10 @@ public class RolesManager
                 }
                 rolesAttachment = user.attachOrGet(RolesAttachment.class,this.module);
             }
-            rolesAttachment.flushResolvedData();
+            rolesAttachment.reload();
             if (user.isOnline())
             {
-                rolesAttachment.getResolvedData(); // recalculates data
+                rolesAttachment.getCurrentResolvedData(); // recalculates data
                 rolesAttachment.apply(); // and applies
             }
         }
@@ -249,24 +260,6 @@ public class RolesManager
             user = this.module.getCore().getUserManager().getExactUser(player.getName());
         }
         return user.attachOrGet(RolesAttachment.class, this.module);
-    }
-
-    public void reapplyAllRoles()
-    {
-        for (User user : this.module.getCore().getUserManager().getLoadedUsers())
-        {
-            RolesAttachment rolesAttachment = user.get(RolesAttachment.class);
-            if (rolesAttachment == null)
-            {
-                if (!user.isOnline())
-                {
-                    continue;
-                }
-                rolesAttachment = this.getRolesAttachment(user);
-            }
-            rolesAttachment.flushResolvedData();
-            rolesAttachment.apply();
-        }
     }
 
     /**

@@ -17,7 +17,9 @@
  */
 package de.cubeisland.cubeengine.core.command.readers;
 
-import de.cubeisland.cubeengine.core.CubeEngine;
+import java.util.Locale;
+
+import de.cubeisland.cubeengine.core.Core;
 import de.cubeisland.cubeengine.core.command.ArgumentReader;
 import de.cubeisland.cubeengine.core.command.exception.InvalidArgumentException;
 import de.cubeisland.cubeengine.core.user.User;
@@ -25,16 +27,18 @@ import de.cubeisland.cubeengine.core.user.User;
 /**
  * This argument is used to get users
  */
-public class UserReader extends ArgumentReader<User>
+public class UserReader extends ArgumentReader
 {
-    public UserReader()
+    private final Core core;
+
+    public UserReader(Core core)
     {
-        super(User.class);
+        this.core = core;
     }
 
     @Override
-    public User read(String arg) throws InvalidArgumentException
+    public User read(String arg, Locale locale) throws InvalidArgumentException
     {
-        return CubeEngine.getUserManager().findUser(arg);
+        return this.core.getUserManager().findUser(arg);
     }
 }

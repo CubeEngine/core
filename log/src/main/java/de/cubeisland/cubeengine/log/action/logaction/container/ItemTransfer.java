@@ -22,7 +22,6 @@ import java.util.EnumSet;
 import org.bukkit.World;
 
 import de.cubeisland.cubeengine.core.user.User;
-import de.cubeisland.cubeengine.log.Log;
 import de.cubeisland.cubeengine.log.action.logaction.SimpleLogActionType;
 import de.cubeisland.cubeengine.log.storage.LogEntry;
 
@@ -49,7 +48,7 @@ public class ItemTransfer extends SimpleLogActionType
     @Override
     protected void showLogEntry(User user, LogEntry logEntry, String time, String loc)
     {
-        user.sendTranslated("%s&6%s&a got moved out of &6%s%s&a!",
+        user.sendTranslated("%s&6%s&a got moved out of &6%s%s",
                             time,logEntry.getItemData(),
                             logEntry.getContainerTypeFromBlock(),loc);
     }
@@ -63,5 +62,17 @@ public class ItemTransfer extends SimpleLogActionType
     public boolean isActive(World world)
     {
         return this.lm.getConfig(world).ITEM_TRANSFER_enable;
+    }
+
+    @Override
+    public boolean canRollback()
+    {
+        return false; // TODO implement rollback
+    }
+
+    @Override
+    public boolean isBlockBound()
+    {
+        return true;
     }
 }

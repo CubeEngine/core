@@ -29,7 +29,7 @@ public class Rulebook extends Module
     @Override
     public void onEnable()
     {
-        this.getCore().getFileManager().dropResources(RulebookResource.values());
+        // this.getCore().getFileManager().dropResources(RulebookResource.values());
         Permission perm = this.getBasePermission().
                 createAbstractChild("command").
                 createAbstractChild("get").

@@ -25,8 +25,7 @@ import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.log.action.logaction.block.BlockActionType;
 import de.cubeisland.cubeengine.log.storage.LogEntry;
 
-import static de.cubeisland.cubeengine.log.action.ActionType.Category.BLOCK;
-import static de.cubeisland.cubeengine.log.action.ActionType.Category.ENVIRONEMENT;
+import static de.cubeisland.cubeengine.log.action.ActionType.Category.*;
 
 /**
  * other-ignite
@@ -37,7 +36,7 @@ public class OtherIgnite extends BlockActionType
     @Override
     protected EnumSet<Category> getCategories()
     {
-        return EnumSet.of(BLOCK, ENVIRONEMENT);
+        return EnumSet.of(FIRE, BLOCK, ENVIRONEMENT, IGNITE);
     }
 
     @Override
@@ -49,7 +48,7 @@ public class OtherIgnite extends BlockActionType
     @Override
     protected void showLogEntry(User user, LogEntry logEntry, String time, String loc)
     {
-        user.sendTranslated("%s&aFire got set by an explosion or something else%s&a!",time,loc);
+        user.sendTranslated("%s&aFire got set by an explosion or something else%s",time,loc);
     }
 
 

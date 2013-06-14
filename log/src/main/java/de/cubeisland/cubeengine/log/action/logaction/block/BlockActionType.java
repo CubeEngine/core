@@ -17,21 +17,31 @@
  */
 package de.cubeisland.cubeengine.log.action.logaction.block;
 
+import java.util.concurrent.TimeUnit;
+
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.BlockState;
+import org.bukkit.block.Jukebox;
+import org.bukkit.block.NoteBlock;
+import org.bukkit.block.Sign;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Hanging;
+import org.bukkit.material.Attachable;
 import org.bukkit.material.Bed;
 
 import de.cubeisland.cubeengine.core.util.BlockUtil;
+import de.cubeisland.cubeengine.log.LogAttachment;
 import de.cubeisland.cubeengine.log.action.LogActionType;
 import de.cubeisland.cubeengine.log.action.logaction.block.player.BlockBreak;
 import de.cubeisland.cubeengine.log.action.logaction.block.player.HangingBreak;
+import de.cubeisland.cubeengine.log.storage.ImmutableBlockData;
 import de.cubeisland.cubeengine.log.storage.LogEntry;
+
+import com.fasterxml.jackson.databind.node.ArrayNode;
 
 public abstract class BlockActionType extends LogActionType
 {
@@ -81,13 +91,8 @@ public abstract class BlockActionType extends LogActionType
             return false;
         }
         Material mat = Material.getMaterial(block);
-        if (this.lm.getConfig(world).placeNoLogging.contains(mat))
-        {
-            return true;
-        }
-        return false;
+        return this.lm.getConfig(world).placeNoLogging.contains(mat);
     }
-
 
     public void logBlockChange(Location location, Entity causer, Material oldBlock, Material newBlock, String additional)
     {
@@ -135,18 +140,19 @@ public abstract class BlockActionType extends LogActionType
      */
     public final BlockState adjustBlockForDoubleBlocks(BlockState blockState)
     {
-        if (blockState.getType().equals(Material.WOOD_DOOR) || blockState.getType().equals(Material.IRON_DOOR_BLOCK))
+        if (blockState.getType().equals(Material.WOODEN_DOOR) || blockState.getType().equals(Material.IRON_DOOR_BLOCK))
         {
             if (blockState.getRawData() == 8 || blockState.getRawData() == 9)
             {
                 return blockState.getBlock().getRelative(BlockFace.DOWN).getState();
             }
         }
-        else if (blockState instanceof Bed)
+        else if (blockState.getData() instanceof Bed)
         {
-            if (((Bed)blockState).isHeadOfBed())
+            Bed bed = (Bed)blockState.getData();
+            if (bed.isHeadOfBed())
             {
-                return blockState.getBlock().getRelative(((Bed)blockState).getFacing().getOppositeFace()).getState();
+                return blockState.getBlock().getRelative(bed.getFacing().getOppositeFace()).getState();
             }
         }
         return blockState;
@@ -167,7 +173,12 @@ public abstract class BlockActionType extends LogActionType
             }
             for (Block block : BlockUtil.getDetachableBlocksOnTop(blockState.getBlock()))
             {
-                blockBreak.preplanBlockPhyiscs(block.getLocation(), player, this);
+                if (block.getData() < 8
+                    || !(block.getType().equals(Material.WOODEN_DOOR)
+                      || block.getType().equals(Material.IRON_DOOR_BLOCK))) // ignore upper door halfs
+                {
+                    blockBreak.preplanBlockPhyiscs(block.getLocation(), player, this);
+                }
             }
         }
         HangingBreak hangingBreak = this.manager.getActionType(HangingBreak.class);
@@ -202,6 +213,7 @@ public abstract class BlockActionType extends LogActionType
     @Override
     public boolean isSimilar(LogEntry logEntry, LogEntry other)
     {
+        if (!super.isSimilar(logEntry, other)) return false;
         if ((logEntry.newBlock == other.newBlock || logEntry.newBlock.equals(other.newBlock))
             && logEntry.world == other.world
             && logEntry.causer == other.causer
@@ -209,7 +221,7 @@ public abstract class BlockActionType extends LogActionType
         {
             if (logEntry.block.equals(other.block))
             {
-                return true;
+                return nearTimeFrame(logEntry,other);
             }
             else
             {
@@ -217,18 +229,177 @@ public abstract class BlockActionType extends LogActionType
                 {
                     if (other.block.equals("LAVA") || other.block.equals("STATIONARY_LAVA"))
                     {
-                        return true;
+                        return nearTimeFrame(logEntry,other);
                     }
                 }
                 else if (logEntry.block.equals("WATER") || logEntry.block.equals("STATIONARY_WATER"))
                 {
                     if (other.block.equals("WATER") || other.block.equals("STATIONARY_WATER"))
                     {
-                        return true;
+                        return nearTimeFrame(logEntry,other);
                     }
                 }
             }
         }
         return false;
+    }
+
+    protected boolean nearTimeFrame(LogEntry logEntry, LogEntry other)
+    {
+        return logEntry.causer <= 0 ||
+            Math.abs(TimeUnit.MILLISECONDS.toSeconds(logEntry.timestamp.getTime() - other.timestamp.getTime())) < 5;
+    }
+
+    @Override
+    public boolean rollback(LogAttachment attachment, LogEntry logEntry, boolean force, boolean preview)
+    {
+        ImmutableBlockData oldBlock = logEntry.getOldBlock();
+        Block block = logEntry.getLocation().getBlock();
+        BlockState state = block.getState();
+        state.setType(oldBlock.material);
+        state.setRawData(oldBlock.data);
+        if (!force && (state.getData() instanceof Attachable || BlockUtil.isDetachableFromBelow(oldBlock.material)))
+        {
+            return false;
+        }
+        switch (block.getType())
+        {
+        case BED_BLOCK:
+            // TODO remove head too
+            Bed bed = (Bed)block.getState().getData();
+            Block headBed = block.getRelative(bed.getFacing());
+            BlockState headState = headBed.getState();
+            headState.setType(Material.AIR);
+            if (preview)
+            {
+                attachment.addToPreview(headState);
+            }
+            else
+            {
+                headState.update(true, false);
+            }
+            break;
+        case WOODEN_DOOR:
+        case IRON_DOOR_BLOCK:
+            Block topDoor = block.getRelative(BlockFace.UP);
+            if (topDoor.getType().equals(block.getType()))
+            {
+                BlockState topState = topDoor.getState();
+                topState.setType(Material.AIR);
+                if (preview)
+                {
+                    attachment.addToPreview(topState);
+                }
+                else
+                {
+                    topState.update(true, false);
+                }
+            }
+        }
+        if (preview)
+        {
+            attachment.addToPreview(state);
+        }
+        else
+        {
+            state.update(true,false);
+        }
+        switch (oldBlock.material)
+        {
+        case SIGN_POST:
+        case WALL_SIGN:
+            Sign sign = (Sign)block.getState(); // TODO ClassCastException here WHY?
+            if (logEntry.getAdditional() != null)
+            {
+                ArrayNode oldSign = (ArrayNode)logEntry.getAdditional().get("oldSign");
+                if (oldSign == null)
+                {
+                    oldSign = (ArrayNode)logEntry.getAdditional().get("sign"); // This is for old database
+                }
+                sign.setLine(0,oldSign.get(0).textValue());
+                sign.setLine(1,oldSign.get(1).textValue());
+                sign.setLine(2,oldSign.get(2).textValue());
+                sign.setLine(3,oldSign.get(3).textValue());
+                if (preview)
+                {
+                    attachment.addToPreview(sign);
+                }
+                else
+                {
+                    sign.update();
+                }
+            }
+            break;
+        case NOTE_BLOCK:
+            NoteBlock noteBlock = (NoteBlock)block.getState();
+            noteBlock.setRawNote(oldBlock.data);
+            if (preview)
+            {
+                attachment.addToPreview(noteBlock);
+            }
+            else
+            {
+                noteBlock.update();
+            }
+            break;
+        case JUKEBOX:
+            String playing = logEntry.getAdditional().get("playing").textValue();
+            Material mat = Material.getMaterial(playing);
+            Jukebox jukebox = (Jukebox)block.getState();
+            jukebox.setPlaying(mat);
+            if (preview)
+            {
+                attachment.addToPreview(jukebox);
+            }
+            else
+            {
+                jukebox.update();
+            }
+            break;
+        case BED_BLOCK:
+            Bed bed = (Bed)state.getData();
+            BlockState headBed = block.getRelative(bed.getFacing()).getState();
+            headBed.setType(Material.BED_BLOCK);
+            Bed bedhead = (Bed)headBed.getData();
+            bedhead.setHeadOfBed(true);
+            bedhead.setFacingDirection(bed.getFacing());
+            if (preview)
+            {
+                attachment.addToPreview(headBed);
+            }
+            else
+            {
+                headBed.update(true);
+            }
+            break;
+        case IRON_DOOR_BLOCK:
+        case WOODEN_DOOR:
+            BlockState topDoor = block.getRelative(BlockFace.UP).getState();
+            topDoor.setType(state.getType());
+            topDoor.setRawData((byte)8);
+            if (preview)
+            {
+                attachment.addToPreview(topDoor);
+            }
+            else
+            {
+                topDoor.update(true);
+            }
+            break;
+        // TODO inventoryHolders
+        }
+        return true;
+    }
+
+    @Override
+    public boolean isStackable()
+    {
+        return false;
+    }
+
+    @Override
+    public boolean isBlockBound()
+    {
+        return true;
     }
 }

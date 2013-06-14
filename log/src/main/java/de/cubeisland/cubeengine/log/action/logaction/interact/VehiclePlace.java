@@ -35,6 +35,7 @@ import de.cubeisland.cubeengine.log.storage.LogEntry;
 
 import static de.cubeisland.cubeengine.log.action.ActionType.Category.ENTITY;
 import static de.cubeisland.cubeengine.log.action.ActionType.Category.PLAYER;
+import static de.cubeisland.cubeengine.log.action.ActionType.Category.VEHICLE;
 
 /**
  * Placing vehicles
@@ -46,7 +47,7 @@ public class VehiclePlace extends SimpleLogActionType
     @Override
     protected EnumSet<Category> getCategories()
     {
-        return EnumSet.of(PLAYER, ENTITY);
+        return EnumSet.of(VEHICLE, PLAYER, ENTITY);
     }
 
     @Override
@@ -101,7 +102,7 @@ public class VehiclePlace extends SimpleLogActionType
     @Override
     protected void showLogEntry(User user, LogEntry logEntry, String time, String loc)
     {
-        user.sendTranslated("%s&2%s &aplaced a &6%s%s&a!",
+        user.sendTranslated("%s&2%s &aplaced a &6%s%s",
                             time,logEntry.getCauserUser().getDisplayName(),
                             logEntry.getEntityFromData(),loc);
     }
@@ -110,6 +111,7 @@ public class VehiclePlace extends SimpleLogActionType
     @Override
     public boolean isSimilar(LogEntry logEntry, LogEntry other)
     {
+        if (!super.isSimilar(logEntry, other)) return false;
         return logEntry.world == other.world
             && logEntry.causer == other.causer
             && logEntry.data == other.data;

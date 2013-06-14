@@ -17,15 +17,20 @@
  */
 package de.cubeisland.cubeengine.core.command;
 
-import de.cubeisland.cubeengine.core.command.exception.IncorrectUsageException;
-
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.Stack;
 
+import de.cubeisland.cubeengine.core.command.exception.IncorrectUsageException;
+
 public class BasicContextFactory implements ContextFactory
 {
     private ArgBounds bounds;
+
+    public BasicContextFactory()
+    {
+        this(new ArgBounds(0, 0));
+    }
 
     public BasicContextFactory(ArgBounds bounds)
     {

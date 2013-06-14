@@ -36,7 +36,7 @@ public class CreeperExplode extends BlockActionType
     @Override
     protected EnumSet<Category> getCategories()
     {
-        return EnumSet.of(BLOCK, ENTITY, PLAYER);
+        return EnumSet.of(EXPLOSION, BLOCK, BLOCK_ENTITY, PLAYER);
     }
 
     @Override
@@ -53,12 +53,12 @@ public class CreeperExplode extends BlockActionType
             int amount = logEntry.getAttached().size()+1;
             if (logEntry.getCauserUser() == null)
             {
-                user.sendTranslated("%s&aA Creeper-Explosion wrecked &6%dx %s&a%s!",
+                user.sendTranslated("%s&aA Creeper-Explosion wrecked &6%dx %s%s",
                                     time,amount,logEntry.getOldBlock(),loc);
             }
             else
             {
-                user.sendTranslated("%s&2%s &alet a Creeper detonate and destroy &6%dx &6%s&a%s!",
+                user.sendTranslated("%s&2%s &alet a Creeper detonate and destroy &6%dx &6%s%s",
                                     time,
                                     logEntry.getCauserUser().getDisplayName(),
                                     amount,
@@ -70,12 +70,12 @@ public class CreeperExplode extends BlockActionType
         {
             if (logEntry.getCauserUser() == null)
             {
-                user.sendTranslated("%s&aA Creeper-Explosion wrecked &6%s&a%s!",
+                user.sendTranslated("%s&aA Creeper-Explosion wrecked &6%s%s",
                                     time,logEntry.getOldBlock(),loc);
             }
             else
             {
-                user.sendTranslated("%s&2%s &alet a Creeper detonate and destroy &6%s&a%s!",
+                user.sendTranslated("%s&2%s &alet a Creeper detonate and destroy &6%s%s",
                                     time,
                                     logEntry.getCauserUser().getDisplayName(),
                                     logEntry.getOldBlock(),

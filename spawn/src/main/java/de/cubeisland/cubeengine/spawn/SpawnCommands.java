@@ -17,11 +17,16 @@
  */
 package de.cubeisland.cubeengine.spawn;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
 
 import de.cubeisland.cubeengine.core.command.CommandContext;
+import de.cubeisland.cubeengine.core.command.CommandSender;
+import de.cubeisland.cubeengine.core.command.parameterized.Completer;
 import de.cubeisland.cubeengine.core.command.parameterized.Flag;
 import de.cubeisland.cubeengine.core.command.parameterized.Param;
 import de.cubeisland.cubeengine.core.command.parameterized.ParameterizedContext;
@@ -29,23 +34,27 @@ import de.cubeisland.cubeengine.core.command.reflected.Command;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.util.StringUtils;
 import de.cubeisland.cubeengine.roles.Roles;
+import de.cubeisland.cubeengine.roles.commands.ManagementCommands;
 import de.cubeisland.cubeengine.roles.role.Role;
 import de.cubeisland.cubeengine.roles.role.RolesAttachment;
+import de.cubeisland.cubeengine.roles.role.RolesManager;
 
 public class SpawnCommands
 {
 
     private final Roles roles;
     private final Spawn module;
+    
+    private static RolesManager manager;
 
     public SpawnCommands(Roles roles, Spawn module)
     {
         this.roles = roles;
         this.module = module;
+        manager = roles.getRolesManager();
     }
 
-    @Command(desc = "Changes the global respawnpoint", usage = "[role] [<x> <y> <z>] [world]", max = 4)
-    //TODO set global spawn from console
+    @Command(desc = "Changes the respawnpoint", usage = "[role] [<x> <y> <z>] [world]", max = 4)
     public void setSpawn(CommandContext context)
     {
         User sender = null;
@@ -73,6 +82,7 @@ public class SpawnCommands
             if (sender == null)
             {
                 context.sendTranslated("&cIf not used ingame you have to specify a world and coordinates!");
+                context.sendTranslated("&eUse &6\"global\"&e instead of the role-name to set the default spawn.");
                 return;
             }
             world = sender.getWorld();
@@ -93,6 +103,7 @@ public class SpawnCommands
             if (sender == null)
             {
                 context.sendTranslated("&cIf not used ingame you have to specify a world and coordinates!");
+                context.sendTranslated("&eUse &6\"global\"&e instead of the role-name to set the default spawn.");
                 return;
             }
             final Location loc = sender.getLocation();
@@ -102,13 +113,16 @@ public class SpawnCommands
             yaw = loc.getYaw();
             pitch = loc.getPitch();
         }
-
         if (context.hasArg(0))
         {
-            Role role = roles.getRolesManager().getProvider(world).getRole(context.getString(0));
+            Role role = manager.getProvider(world).getRole(context.getString(0));
             if (role == null)
             {
-               context.sendTranslated("&cCould not find the role &6%s&c in &6%s&c!",context.getString(0),world.getName());
+                if (!context.getString(0).equalsIgnoreCase("global"))
+                {
+                    context.sendTranslated("&cCould not find the role &6%s&c in &6%s&c!",context.getString(0),world.getName());
+                    return;
+                }
             }
             else
             {
@@ -121,24 +135,20 @@ public class SpawnCommands
                 locStrings[5] = world.getName();
                 role.setMetadata("rolespawn", StringUtils.implode(":", locStrings));
                 role.saveToConfig();
-                roles.getRolesManager().getProvider(world).recalculateRoles();
+                manager.getProvider(world).recalculateRoles();
+                return;
             }
         }
-        else
-        {
-            world.setSpawnLocation(x, y, z);
-            context.sendTranslated("&aThe spawn in &6%s&a is now set to &eX:&6%d &eY:&6%d &eZ:&6%d", world.getName(), x, y, z);
-        }
+        world.setSpawnLocation(x, y, z);
+        context.sendTranslated("&aThe spawn in &6%s&a is now set to &eX:&6%d &eY:&6%d &eZ:&6%d", world.getName(), x, y, z);
     }
 
     @Command(desc = "Teleport directly to the worlds spawn.", usage = "[player] [world <world>] [role <role>]", max = 2,
-             params = {@Param(names = {
-                 "world", "w", "in"
-             }, type = World.class),
-                       @Param(names = {
-                           "role", "r"
-                       }, type = String.class) //TODO tabcompleter
-             } , flags = {
+             params = {
+                 @Param(names = {"world", "w", "in"}, type = World.class),
+                 @Param(names = {"role", "r"}, type = String.class, completer = RoleCompleter.class)
+             } ,
+             flags = {
         @Flag(longName = "force", name = "f"),
         @Flag(longName = "all", name = "a")
     })
@@ -242,7 +252,7 @@ public class SpawnCommands
         if (context.hasParam("role"))
         {
             String roleName = context.getString("role");
-            Role role = this.roles.getRolesManager().getProvider(world).getRole(roleName);
+            Role role = this.manager.getProvider(world).getRole(roleName);
             if (role == null)
             {
                 context.sendTranslated("&cCould not find the role &6%s&c in &6%s&c!",roleName,world.getName());
@@ -321,6 +331,43 @@ public class SpawnCommands
         else
         {
             user.safeTeleport(spawnLocation,TeleportCause.COMMAND,false);
+        }
+    }
+
+    public static class RoleCompleter implements Completer
+    {
+        @Override
+        public List<String> complete(CommandSender sender, String token)
+        {
+            List<String> roles = new ArrayList<String>();
+            if (sender instanceof User)
+            {
+                if (((User)sender).get(RolesAttachment.class).getWorkingWorldId() != null)
+                {
+                    for (Role role : manager.getProvider(((User)sender).get(RolesAttachment.class).getWorkingWorldId()).getRoles())
+                    {
+                        roles.add(role.getName());
+                    }
+                }
+                else
+                {
+                    for (Role role : manager.getProvider(((User)sender).getWorldId()).getRoles())
+                    {
+                        roles.add(role.getName());
+                    }
+                }
+            }
+            else
+            {
+                if (ManagementCommands.curWorldIdOfConsole != null)
+                {
+                    for (Role role : manager.getProvider(ManagementCommands.curWorldIdOfConsole).getRoles())
+                    {
+                        roles.add(role.getName());
+                    }
+                }
+            }
+            return roles;
         }
     }
 }

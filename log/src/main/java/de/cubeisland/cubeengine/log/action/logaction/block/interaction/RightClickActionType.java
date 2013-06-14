@@ -102,7 +102,7 @@ public class RightClickActionType extends ActionTypeContainer
             case FENCE_GATE:
                 DoorUse doorUse = this.manager.getActionType(DoorUse.class);
                 if (doorUse.isActive(state.getWorld()))
-                { // TODO on rollback care the newData state is not correct!
+                {
                     state = doorUse.adjustBlockForDoubleBlocks(state);
                     doorUse.logBlockChange(location,event.getPlayer(), BlockData.of(state),BlockData.of(state),null);
                 }
@@ -158,11 +158,13 @@ public class RightClickActionType extends ActionTypeContainer
             case POTATO:
                 if (itemInHand.getType().equals(Material.INK_SACK) && itemInHand.getDurability() == 15)
                 {
+                    // TODO THIS IS BULLSHIT I need an event for bonemealUse...
                     BonemealUse bonemealUse = this.manager.getActionType(BonemealUse.class);
                     if (bonemealUse.isActive(state.getWorld()))
                     {
                         BlockData newBlockData = BlockData.of(state);
                         //TODO adjust growth stage
+                        //TODO do not log if fully grown
                         bonemealUse.logBlockChange(location, event.getPlayer(),BlockData.of(state),newBlockData,null);
                     }
                 }
@@ -236,15 +238,16 @@ public class RightClickActionType extends ActionTypeContainer
                 RepeaterChange repeaterChange = this.manager.getActionType(RepeaterChange.class);
                 if (repeaterChange.isActive(state.getWorld()))
                 {
-                    Diode diode = (Diode) event.getClickedBlock().getState().getData();
+                    BlockData oldData= BlockData.of(state);
+                    Diode diode = (Diode) state.getData();
                     Integer delay = diode.getDelay() + 1;
                     if (delay == 5)
                     {
                         delay = 1;
                     }
+                    diode.setDelay(delay);
                     BlockData newData = BlockData.of(state);
-                    newData.data = delay.byteValue();
-                    repeaterChange.logBlockChange(location,event.getPlayer(),BlockData.of(state),newData,null);
+                    repeaterChange.logBlockChange(location,event.getPlayer(),oldData,newData,null);
                 }
                 break;
             default:
@@ -262,7 +265,7 @@ public class RightClickActionType extends ActionTypeContainer
             }
             else if (itemInHand.getType().equals(Material.FIREWORK))
             {
-                System.out.print(itemInHand);//TODO remove
+                //System.out.print(itemInHand);//TODO remove
                 FireworkUse fireworkUse = this.manager.getActionType(FireworkUse.class);
                 if (fireworkUse.isActive(state.getWorld()))
                 { //TODO perhaps serialize itemdata?
@@ -289,8 +292,18 @@ public class RightClickActionType extends ActionTypeContainer
                 if (cropTrample.isActive(event.getClickedBlock().getWorld()))
                 {
                     BlockState cropState = event.getClickedBlock().getRelative(BlockFace.UP).getState();
-                    cropTrample.logBlockChange(cropState.getLocation(),event.getPlayer(),BlockData.of(cropState),AIR,null);
-                    //TODO log the destroyed soil too / and not the crops if there are no crops
+                    switch (cropState.getType())
+                    {
+                        case CROPS:
+                        case GRASS:
+                        case MELON_STEM:
+                        case PUMPKIN_STEM:
+                        case SAPLING:
+                        case CARROT:
+                        case POTATO:
+                            cropTrample.logBlockChange(cropState.getLocation(),event.getPlayer(),BlockData.of(cropState),AIR,null);
+                    }
+                    cropTrample.logBlockChange(event.getClickedBlock().getLocation(), event.getPlayer(), BlockData.of(event.getClickedBlock().getState()),DIRT,null);
                 }
                 break;
             case WOOD_PLATE:

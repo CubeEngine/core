@@ -283,7 +283,7 @@ public class LoggingConfiguration extends YamlConfiguration
     @Option("logging.item.drop")
     public boolean ITEM_DROP_enable = false;
     @Comment("Items picked up by a player")
-    //TODO CE-343 Log Zombies picking up items
+    //TODO CE-343 Log Zombies picking up items (waiting for bukkit)
     @Option("logging.item.pickup")
     public boolean ITEM_PICKUP_enable = false;
     @Comment("Exp gained")

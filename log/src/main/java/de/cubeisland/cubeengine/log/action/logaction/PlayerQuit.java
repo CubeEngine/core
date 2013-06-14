@@ -56,7 +56,6 @@ public class PlayerQuit extends SimpleLogActionType
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onPlayerQuit(PlayerQuitEvent event)
     {
-        //TODO attach multiple quit at same loc
         if (this.isActive(event.getPlayer().getWorld()))
         {
             this.logSimple(event.getPlayer(),null);
@@ -66,15 +65,23 @@ public class PlayerQuit extends SimpleLogActionType
     @Override
     protected void showLogEntry(User user, LogEntry logEntry, String time, String loc)
     {
-        user.sendTranslated("%s&2%s&a leaved the server%s&a!",
-                            time,logEntry.getCauserUser().getDisplayName(),loc);
+        if (logEntry.hasAttached())
+        {
+            user.sendTranslated("%s&2%s&a left the server &6x%d%s",
+                                time,logEntry.getCauserUser().getDisplayName(),logEntry.getAttached().size() +1 , loc);
+        }
+        else
+        {
+            user.sendTranslated("%s&2%s&a left the server%s",
+                                time,logEntry.getCauserUser().getDisplayName(),loc);
+        }
     }
 
     @Override
     public boolean isSimilar(LogEntry logEntry, LogEntry other)
     {
+        if (!super.isSimilar(logEntry, other)) return false;
         return logEntry.world == other.world
-            && logEntry.location.equals(other.location)
             && logEntry.causer == other.causer;
     }
 

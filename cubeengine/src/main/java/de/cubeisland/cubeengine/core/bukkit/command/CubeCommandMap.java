@@ -15,88 +15,48 @@
  * You should have received a copy of the GNU General Public License
  * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-package de.cubeisland.cubeengine.core.bukkit;
+package de.cubeisland.cubeengine.core.bukkit.command;
 
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 
-import org.bukkit.Server;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandException;
 import org.bukkit.command.CommandSender;
-import org.bukkit.command.PluginCommand;
 import org.bukkit.command.SimpleCommandMap;
-import org.bukkit.command.defaults.BukkitCommand;
 
 import de.cubeisland.cubeengine.core.Core;
-import de.cubeisland.cubeengine.core.CubeEngine;
+import de.cubeisland.cubeengine.core.bukkit.BukkitCore;
+import de.cubeisland.cubeengine.core.bukkit.BukkitUtils;
 import de.cubeisland.cubeengine.core.command.CubeCommand;
 import de.cubeisland.cubeengine.core.util.StringUtils;
 import de.cubeisland.cubeengine.core.util.matcher.Match;
 
 /**
  * This CommandMap extends the SimpleCommandMap to add some functionality:
- * - an accessor for the known command map
  * - typo correction for the command lookup via edit distance
  */
 public class CubeCommandMap extends SimpleCommandMap
 {
     private final Core core;
 
-    public CubeCommandMap(Core core, Server server, SimpleCommandMap oldMap)
+    public CubeCommandMap(BukkitCore core, SimpleCommandMap oldMap)
     {
-        super(server);
+        super(core.getServer());
         this.core = core;
         for (Command command : oldMap.getCommands())
         {
             command.unregister(oldMap);
-            this.register(command);
+            command.register(this);
         }
     }
 
-    /**
-     * Returns a map of the known commands
-     *
-     * @return the known commands
-     */
-    public Map<String, Command> getKnownCommands()
-    {
-        return this.knownCommands;
-    }
-
-    @Override
-    public Command getCommand(String name)
-    {
-        name = name.trim();
-        if (name == null || name.isEmpty())
-        {
-            return null;
-        }
-        return super.getCommand(name.toLowerCase(Locale.ENGLISH));
-    }
-
-    @Override
-    public Command getFallback(final String name)
-    {
-        if (name == null)
-        {
-            return null;
-        }
-        return super.getFallback(name);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public boolean dispatch(CommandSender sender, String commandLine) throws CommandException
     {
-        assert CubeEngine.isMainThread(): "Commands may only be called synchronously!";
-
         commandLine = StringUtils.trimLeft(commandLine);
         if (commandLine.isEmpty())
         {
@@ -111,7 +71,7 @@ public class CubeCommandMap extends SimpleCommandMap
         }
 
         String label = parts[0].toLowerCase();
-        Command command = getCommand(label);
+        Command command = getCommand(label.toLowerCase(Locale.ENGLISH));
 
         if (command == null)
         {
@@ -165,79 +125,6 @@ public class CubeCommandMap extends SimpleCommandMap
         }
 
         // return true as the command was handled
-        return true;
-    }
-
-    public boolean register(Command command)
-    {
-        return this.register(null, command);
-    }
-
-    protected synchronized boolean registerAndOverwrite(String label, String fallbackPrefix, Command command, boolean isAlias)
-    {
-        label = label.trim().toLowerCase();
-        Command oldCommand = this.knownCommands.get(label);
-
-        if (isAlias && oldCommand != null && !this.aliases.contains(label) && !(oldCommand instanceof CubeCommand))
-        {
-            // Request is for an alias and it conflicts with a existing command or previous alias ignore it
-            // Note: This will mean it gets removed from the commands list of active aliases
-            return false;
-        }
-
-        if (oldCommand != null && !this.aliases.contains(label))
-        {
-            String fallback = label;
-            if (oldCommand instanceof PluginCommand)
-            {
-                fallback = ((PluginCommand)oldCommand).getPlugin().getName().toLowerCase(Locale.ENGLISH) + ":" + label;
-            }
-            else if (oldCommand instanceof BukkitCommand)
-            {
-                fallback = "bukkit:" + label;
-            }
-            else if (oldCommand instanceof CubeCommand)
-            {
-                fallback = ((CubeCommand)oldCommand).getModule().getId() + ":" + label;
-                oldCommand.setLabel(fallback);
-            }
-
-            if (fallback != label)
-            {
-                this.knownCommands.remove(label);
-                oldCommand.unregister(this);
-                this.knownCommands.put(fallback, oldCommand);
-                oldCommand.register(this);
-            }
-        }
-
-        if (isAlias)
-        {
-            this.aliases.add(label);
-        }
-        else
-        {
-            // Ensure lowerLabel isn't listed as a alias anymore and update the commands registered name
-            this.aliases.remove(label);
-        }
-        this.knownCommands.put(label, command);
-
-        return true;
-    }
-
-    @Override
-    public boolean register(String label, String fallbackPrefix, Command command)
-    {
-        registerAndOverwrite(label, fallbackPrefix, command, false);
-
-        for (String alias : command.getAliases())
-        {
-            registerAndOverwrite(alias, fallbackPrefix, command, true);
-        }
-
-        // Register to us so further updates of the commands label and aliases are postponed until its reregistered
-        command.register(this);
-
         return true;
     }
 }

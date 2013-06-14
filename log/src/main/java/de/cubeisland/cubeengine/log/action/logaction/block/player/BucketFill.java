@@ -32,6 +32,7 @@ import de.cubeisland.cubeengine.log.action.logaction.interact.MilkFill;
 import de.cubeisland.cubeengine.log.storage.LogEntry;
 
 import static de.cubeisland.cubeengine.log.action.ActionType.Category.BLOCK;
+import static de.cubeisland.cubeengine.log.action.ActionType.Category.BUCKET;
 import static de.cubeisland.cubeengine.log.action.ActionType.Category.PLAYER;
 import static org.bukkit.Material.AIR;
 
@@ -46,12 +47,12 @@ public class BucketFill extends BlockActionType
     @Override
     protected EnumSet<Category> getCategories()
     {
-        return EnumSet.of(BLOCK, PLAYER);
+        return EnumSet.of(BUCKET, BLOCK, PLAYER);
     }
     @Override
     public String getName()
     {
-        return  "bucket-fill";
+        return "bucket-fill";
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
@@ -85,13 +86,13 @@ public class BucketFill extends BlockActionType
             if (logEntry.getOldBlock().material.equals(Material.LAVA) ||
                 logEntry.getOldBlock().material.equals(Material.STATIONARY_LAVA))
             {
-                user.sendTranslated("%s&2%s &afilled &6%d&a buckets with lava%s!",
+                user.sendTranslated("%s&2%s &afilled &6%d&a buckets with lava%s",
                                     time,logEntry.getCauserUser().getDisplayName(),amount,loc);
             }
             else if (logEntry.getOldBlock().material.equals(Material.WATER) ||
                 logEntry.getOldBlock().material.equals(Material.STATIONARY_WATER))
             {
-                user.sendTranslated("%s&2%s &afilled &6%s&a buckets with water%s!",
+                user.sendTranslated("%s&2%s &afilled &6%s&a buckets with water%s",
                                     time,logEntry.getCauserUser().getDisplayName(),amount,loc);
             }
             else
@@ -105,27 +106,45 @@ public class BucketFill extends BlockActionType
             if (logEntry.getOldBlock().material.equals(Material.LAVA) ||
                 logEntry.getOldBlock().material.equals(Material.STATIONARY_LAVA))
             {
-                user.sendTranslated("%s&2%s &afilled a bucket with lava%s!",
+                user.sendTranslated("%s&2%s &afilled a bucket with lava%s",
                                     time,logEntry.getCauserUser().getDisplayName(),loc);
             }
             else if (logEntry.getOldBlock().material.equals(Material.WATER) ||
                 logEntry.getOldBlock().material.equals(Material.STATIONARY_WATER))
             {
-                user.sendTranslated("%s&2%s &afilled a bucket with water%s!",
+                user.sendTranslated("%s&2%s &afilled a bucket with water%s",
                                     time,logEntry.getCauserUser().getDisplayName(),loc);
             }
             else
             {
-                user.sendTranslated("%s&2%s &afilled a bucket with some random fluids%s!",
+                user.sendTranslated("%s&2%s &afilled a bucket with some random fluids%s",
                                     time,logEntry.getCauserUser().getDisplayName(),loc);
             }
         }
     }
 
-
     @Override
     public boolean isActive(World world)
     {
         return this.lm.getConfig(world).BUCKET_FILL_enable;
+    }
+
+    @Override
+    public boolean isSimilar(LogEntry logEntry, LogEntry other)
+    {
+        return super.isSimilar(logEntry, other);
+        /*
+        if ((logEntry.newBlock == other.newBlock || logEntry.newBlock.equals(other.newBlock))
+            && logEntry.world == other.world
+            && logEntry.causer == other.causer
+            && logEntry.additional == other.additional) // additional
+        {
+            if (logEntry.block.equals(other.block))
+            {
+                return nearTimeFrame(logEntry,other);
+            }
+        }*/
+        // TODO attach Water flooded the block to filled bucket with water
+        // Player filled water from an infinite source
     }
 }

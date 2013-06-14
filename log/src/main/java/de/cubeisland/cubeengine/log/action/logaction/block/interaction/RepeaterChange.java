@@ -18,6 +18,7 @@
 package de.cubeisland.cubeengine.log.action.logaction.block.interaction;
 
 import java.util.EnumSet;
+import java.util.concurrent.TimeUnit;
 
 import org.bukkit.World;
 
@@ -56,14 +57,14 @@ public class RepeaterChange extends BlockActionType
             LogEntry last = logEntry.getAttached().last();
             newTicks = (last.getNewData() >> 2) +1;
         }
-        if (oldTicks.intValue() == newTicks)
+        if (logEntry.hasAttached() && oldTicks.intValue() == newTicks)
         {
-            user.sendTranslated("%s&2&s &afiddled around with the repeater but did not change anything%s%a!",
+            user.sendTranslated("%s&2%s &afiddled around with the repeater but did not change anything%s",
                                 time,logEntry.getCauserUser().getDisplayName(),loc);
         }
         else
         {
-            user.sendTranslated("%s&2%s &aset the repeater to &6%d&a ticks delay%s&a!",
+            user.sendTranslated("%s&2%s &aset the repeater to &6%d&a ticks delay%s",
                                 time, logEntry.getCauserUser().getDisplayName(), newTicks,loc);
         }
     }
@@ -72,5 +73,11 @@ public class RepeaterChange extends BlockActionType
     public boolean isActive(World world)
     {
         return this.lm.getConfig(world).REPEATER_CHANGE_enable;
+    }
+
+    @Override
+    protected boolean nearTimeFrame(LogEntry logEntry, LogEntry other)
+    {
+        return Math.abs(TimeUnit.MILLISECONDS.toMinutes(logEntry.timestamp.getTime() - other.timestamp.getTime())) < 2;
     }
 }

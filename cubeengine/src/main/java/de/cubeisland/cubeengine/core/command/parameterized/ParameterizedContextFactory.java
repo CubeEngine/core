@@ -17,18 +17,6 @@
  */
 package de.cubeisland.cubeengine.core.command.parameterized;
 
-import de.cubeisland.cubeengine.core.command.ArgBounds;
-import de.cubeisland.cubeengine.core.command.ArgumentReader;
-import de.cubeisland.cubeengine.core.command.CommandContext;
-import de.cubeisland.cubeengine.core.command.ContextFactory;
-import de.cubeisland.cubeengine.core.command.CubeCommand;
-import de.cubeisland.cubeengine.core.command.exception.IncorrectUsageException;
-import de.cubeisland.cubeengine.core.command.exception.InvalidArgumentException;
-import de.cubeisland.cubeengine.core.command.exception.MissingParameterException;
-import de.cubeisland.cubeengine.core.command.CommandSender;
-import gnu.trove.map.hash.THashMap;
-import gnu.trove.set.hash.THashSet;
-
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
@@ -37,6 +25,19 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.Stack;
+
+import de.cubeisland.cubeengine.core.command.ArgBounds;
+import de.cubeisland.cubeengine.core.command.ArgumentReader;
+import de.cubeisland.cubeengine.core.command.CommandContext;
+import de.cubeisland.cubeengine.core.command.CommandSender;
+import de.cubeisland.cubeengine.core.command.ContextFactory;
+import de.cubeisland.cubeengine.core.command.CubeCommand;
+import de.cubeisland.cubeengine.core.command.exception.IncorrectUsageException;
+import de.cubeisland.cubeengine.core.command.exception.InvalidArgumentException;
+import de.cubeisland.cubeengine.core.command.exception.MissingParameterException;
+
+import gnu.trove.map.hash.THashMap;
+import gnu.trove.set.hash.THashSet;
 
 public class ParameterizedContextFactory implements ContextFactory
 {
@@ -233,7 +234,7 @@ public class ParameterizedContextFactory implements ContextFactory
                             StringBuilder paramValue = new StringBuilder();
                             offset += readString(paramValue, commandLine, offset);
                             //added named param
-                            params.put(param.getName(), ArgumentReader.read(param.getType(), paramValue.toString()));
+                            params.put(param.getName(), ArgumentReader.read(param.getType(), paramValue.toString(), sender));
                         }
                         catch (InvalidArgumentException ex)
                         {

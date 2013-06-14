@@ -22,6 +22,7 @@ import org.bukkit.event.Listener;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.log.storage.LogEntry;
 import de.cubeisland.cubeengine.log.storage.QueryParameter;
+import de.cubeisland.cubeengine.log.storage.ShowParameter;
 
 public abstract class LogActionType extends ActionType implements Listener
 {
@@ -34,62 +35,68 @@ public abstract class LogActionType extends ActionType implements Listener
     protected abstract void showLogEntry(User user, LogEntry logEntry, String time, String loc);
 
     @Override
-    public void showLogEntry(User user, QueryParameter params, LogEntry logEntry)
+    public void showLogEntry(User user, QueryParameter params, LogEntry logEntry, ShowParameter show)
     {
-        //TODO time OR time-frame if attached
-        String time = logEntry.timestamp.toString() + " - ";
-        //TODO location OR area if attached
-        String loc = "";
-        if (logEntry.hasAttached())
+        String time = "";
+        if (show.showDate)
         {
-            int xMin = logEntry.location.x;
-            int yMin = logEntry.location.y;
-            int zMin = logEntry.location.z;
-            int xMax = logEntry.location.x;
-            int yMax = logEntry.location.y;
-            int zMax = logEntry.location.z;
-            for (LogEntry entry : logEntry.getAttached())
+            time = "&7"+ logEntry.timestamp.toString() + " - ";
+            //TODO time-frame if attached
+        }
+        String loc = "";
+        if (show.showCoords)
+        {
+            if (logEntry.hasAttached())
             {
-                if (entry.location.x < xMin)
+                int xMin = logEntry.location.x;
+                int yMin = logEntry.location.y;
+                int zMin = logEntry.location.z;
+                int xMax = logEntry.location.x;
+                int yMax = logEntry.location.y;
+                int zMax = logEntry.location.z;
+                for (LogEntry entry : logEntry.getAttached())
                 {
-                    xMin = entry.location.x;
+                    if (entry.location.x < xMin)
+                    {
+                        xMin = entry.location.x;
+                    }
+                    else if (entry.location.x > xMax)
+                    {
+                        xMax = entry.location.x;
+                    }
+                    if (entry.location.y < yMin)
+                    {
+                        yMin = entry.location.y;
+                    }
+                    else if (entry.location.y > yMax)
+                    {
+                        yMax = entry.location.y;
+                    }
+                    if (entry.location.z < zMin)
+                    {
+                        zMin = entry.location.z;
+                    }
+                    else if (entry.location.z > zMax)
+                    {
+                        zMax = entry.location.z;
+                    }
                 }
-                else if (entry.location.x > xMax)
+                if (xMax == xMin && yMax == yMin && zMax == zMin)
                 {
-                    xMax = entry.location.x;
+                    loc = "\n&a   at &3%s&f:&3%d&f:&3%d&f:&3%d&a";
+                    loc = String.format(loc,logEntry.world.getName(),xMax,yMax,zMax);
                 }
-                if (entry.location.x < yMin)
+                else
                 {
-                    yMin = entry.location.x;
+                    loc = "\n&a   in between &3%d&f:&3%d&f:&3%d&a and &3%d&f:&3%d&f:&3%d&a in &3%s";
+                    loc = String.format(loc,xMin, yMin, zMin, xMax,yMax,zMax,logEntry.world.getName());
                 }
-                else if (entry.location.x > yMax)
-                {
-                    yMax = entry.location.x;
-                }
-                if (entry.location.x < zMin)
-                {
-                    zMin = entry.location.x;
-                }
-                else if (entry.location.x > zMax)
-                {
-                    zMax = entry.location.x;
-                }
-            }
-            if (xMax == xMin && yMax == yMin && zMax == zMin)
-            {
-                loc = " &aat &3%d&f:&3%d&f:&3%d&a in &3%s";
-                loc = String.format(loc,xMax,yMax,zMax,logEntry.world.getName());
             }
             else
             {
-                loc = " &ain between &3%d&f:&3%d&f:&3%d&a and &3%d&f:&3%d&f:&3%d&a in &3%s";
-                loc = String.format(loc,xMin, yMin, zMin, xMax,yMax,zMax,logEntry.world.getName());
+                loc = "\n&a   at &3%s&f:&3%d&f:&3%d&f:&3%d&a";
+                loc = String.format(loc,logEntry.world.getName(),logEntry.location.x,logEntry.location.y,logEntry.location.z);
             }
-        }
-        else
-        {
-            loc = " &aat &3%d&f:&3%d&f:&3%d&a in &3%s";
-            loc = String.format(loc,logEntry.location.x,logEntry.location.y,logEntry.location.z,logEntry.world.getName());
         }
         this.showLogEntry(user,logEntry,time,loc);
     }

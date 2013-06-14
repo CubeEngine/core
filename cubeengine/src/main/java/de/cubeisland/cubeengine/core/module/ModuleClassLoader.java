@@ -109,7 +109,7 @@ public class ModuleClassLoader extends URLClassLoader
         {
             clazz = iter.next().getValue();
             Convert.removeConverter(clazz);
-            ArgumentReader.unregisterReader(clazz);
+            ArgumentReader.removeReader(clazz);
             this.moduleLoader.getCore().getCommandManager().removeCommandFactory(clazz);
             iter.remove();
         }

@@ -36,7 +36,7 @@ public class EnderdragonExplode extends BlockActionType
     @Override
     protected EnumSet<Category> getCategories()
     {
-        return EnumSet.of(BLOCK, ENTITY, PLAYER);
+        return EnumSet.of(EXPLOSION, BLOCK, BLOCK_ENTITY, PLAYER);
     }
 
 
@@ -54,13 +54,13 @@ public class EnderdragonExplode extends BlockActionType
             int amount = logEntry.getAttached().size()+1;
             if (logEntry.hasCauserUser())
             {
-                user.sendTranslated("%s&aAn enderdragon attacking &2%s &achanged the integrity of &6%dx %s&a%s!",
+                user.sendTranslated("%s&aAn enderdragon attacking &2%s &achanged the integrity of &6%dx %s%s",
                                     time, logEntry.getCauserUser().getDisplayName(), amount,
                                     logEntry.getOldBlock(),loc);
             }
             else
             {
-                user.sendTranslated("%s&aAn enderdragon changed the integrity of &6%dx %s&a%s!",
+                user.sendTranslated("%s&aAn enderdragon changed the integrity of &6%dx %s%s",
                                     time,amount,
                                     logEntry.getOldBlock(),loc);
             }
@@ -69,13 +69,13 @@ public class EnderdragonExplode extends BlockActionType
         {
             if (logEntry.hasCauserUser())
             {
-                user.sendTranslated("%s&aAn enderdragon attacking &2%s &achanged the integrity of &6%s&a%s!",
+                user.sendTranslated("%s&aAn enderdragon attacking &2%s &achanged the integrity of &6%s%s",
                                     time, logEntry.getCauserUser().getDisplayName(),
                                     logEntry.getOldBlock(),loc);
             }
             else
             {
-                user.sendTranslated("%s&aAn enderdragon changed the integrity of &6%s&a%s!",
+                user.sendTranslated("%s&aAn enderdragon changed the integrity of &6%s%s",
                                     time,logEntry.getOldBlock(),loc);
             }
         }

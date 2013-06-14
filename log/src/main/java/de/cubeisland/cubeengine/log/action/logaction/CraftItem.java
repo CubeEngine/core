@@ -40,7 +40,7 @@ public class CraftItem extends SimpleLogActionType
     @Override
     protected EnumSet<Category> getCategories()
     {
-        return EnumSet.of(PLAYER,ITEM);
+        return EnumSet.of(PLAYER, ITEM);
     }
 
     @Override
@@ -67,7 +67,7 @@ public class CraftItem extends SimpleLogActionType
     @Override
     protected void showLogEntry(User user, LogEntry logEntry, String time, String loc)
     {
-        user.sendTranslated("%s&2%s&a crafted &6%s%s&a!",
+        user.sendTranslated("%s&2%s&a crafted &6%s%s",
                             time,logEntry.getCauserUser().getDisplayName(),
                             logEntry.getItemData(),loc);
     }
@@ -75,6 +75,7 @@ public class CraftItem extends SimpleLogActionType
     @Override
     public boolean isSimilar(LogEntry logEntry, LogEntry other)
     {
+        if (!super.isSimilar(logEntry, other)) return false;
         return logEntry.causer == other.causer
             && logEntry.world == other.world
             && logEntry.getItemData().equals(other.getItemData()); // ignoring amount

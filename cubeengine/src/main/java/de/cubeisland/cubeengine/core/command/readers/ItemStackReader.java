@@ -17,19 +17,17 @@
  */
 package de.cubeisland.cubeengine.core.command.readers;
 
-import de.cubeisland.cubeengine.core.command.ArgumentReader;
-import de.cubeisland.cubeengine.core.util.matcher.Match;
+import java.util.Locale;
+
 import org.bukkit.inventory.ItemStack;
 
-public class ItemStackReader extends ArgumentReader<ItemStack>
-{
-    public ItemStackReader()
-    {
-        super(ItemStack.class);
-    }
+import de.cubeisland.cubeengine.core.command.ArgumentReader;
+import de.cubeisland.cubeengine.core.util.matcher.Match;
 
+public class ItemStackReader extends ArgumentReader
+{
     @Override
-    public ItemStack read(String arg)
+    public ItemStack read(String arg, Locale locale)
     {
         return Match.material().itemStack(arg);
     }

@@ -37,6 +37,10 @@ import de.cubeisland.cubeengine.log.LogAttachment;
 public class LogCommands extends ContainerCommand
 {
     public static final String toolName = ChatFormat.parseFormats("&9Logging-ToolBlock");
+    public static final String selectorToolName = ChatFormat.parseFormats("&9Selector-Tool");
+
+    // TODO command to show current params on a lookup-tool
+    // TODO command to change params on a lookup-tool (only further limiting)
 
     private Log module;
 
@@ -61,8 +65,6 @@ public class LogCommands extends ContainerCommand
     }
 
     //TODO add rollback tool
-    //TODO logtool (cmd: tool)
-    //TODO decide toolItmes
     //TODO loghand (cmd hand) -> toggles general lookup with bare hands
 
     private Material matchType(String type, boolean block)// or item
@@ -100,6 +102,7 @@ public class LogCommands extends ContainerCommand
         return null;
     }
 
+    @SuppressWarnings("deprecation")
     private void findLogTool(User user, Material material)
     {
         ItemStack found = null;
@@ -126,7 +129,7 @@ public class LogCommands extends ContainerCommand
                 user.getWorld().dropItemNaturally(user.getLocation(),item);
             }
             user.updateInventory();
-            user.sendTranslated("&aReceived a new Log-Block!");
+            user.sendTranslated("&aReceived a new Log-Tool!");
             LogAttachment logAttachment = user.attachOrGet(LogAttachment.class,this.module);
             logAttachment.createNewLookup(material);
 
@@ -137,17 +140,20 @@ public class LogCommands extends ContainerCommand
         user.setItemInHand(found);
         user.getInventory().addItem(oldItemInHand);
         user.updateInventory();
-        user.sendTranslated("&aFound a Log-Block in your inventory!");
-        //TODO if found on hotbar setHeldItemSlot
+        user.sendTranslated("&aFound a Log-Tool in your inventory!");
     }
 
     @Alias(names = "lb")
-    @Command(desc = "Gives you a block to check logs with.",
+    @Command(desc = "Gives you a block to check logs with." +
+             "no log-type: Shows everything\n" +
+                 "chest: Shows chest-interactions only\n" +
+                 "player: Shows player-interacions only\n" +
+                 "kills: Shows kill-interactions only\n" +
+                 "block: Shows block-changes only",
              usage = "[log-type]", max = 2)
     public void block(CommandContext context)
     {
-        //TODO tabcompleter for logBlockTypes
-        //TODO show possible blocks in help
+        //TODO tabcompleter for logBlockTypes (waiting for CE-389)
         if (context.getSender() instanceof User)
         {
             Material blockMaterial = this.matchType(context.getString(0),true);
@@ -157,7 +163,7 @@ public class LogCommands extends ContainerCommand
                 return;
             }
             User user = (User) context.getSender();
-            this.findLogTool(user,blockMaterial);
+            this.findLogTool(user, blockMaterial);
         }
         else
         {
@@ -166,12 +172,16 @@ public class LogCommands extends ContainerCommand
     }
 
     @Alias(names = "lt")
-    @Command(desc = "Gives you a item to check logs with.",
+    @Command(desc = "Gives you a item to check logs with.\n" +
+        "no log-type: Shows everything\n" +
+        "chest: Shows chest-interactions only\n" +
+        "player: Shows player-interacions only\n" +
+        "kills: Shows kill-interactions only\n" +
+        "block: Shows block-changes only",
              usage = "[log-type]", max = 2)
     public void tool(CommandContext context)
     {
-        //TODO tabcompleter for logBlockTypes
-        //TODO show possible blocks in help
+        //TODO tabcompleter for logToolTypes (waiting for CE-389)
         if (context.getSender() instanceof User)
         {
             Material blockMaterial = this.matchType(context.getString(0),false);
@@ -187,5 +197,58 @@ public class LogCommands extends ContainerCommand
         {
             context.sendTranslated("&cWhy don't you check in your log-file? You won't need a block there!");
         }
+    }
+
+    @SuppressWarnings("deprecation")
+    public static void giveSelectionTool(User user)
+    {
+        ItemStack found = null;
+        for (ItemStack item : user.getInventory().getContents())
+        {
+            if (item != null && item.getType().equals(Material.WOOD_AXE)
+                && item.hasItemMeta() && item.getItemMeta().hasDisplayName() && item.getItemMeta().getDisplayName().equals(selectorToolName))
+            {
+                found = item;
+                break;
+            }
+        }
+        if (found == null)
+        {
+            found = new ItemStack(Material.WOOD_AXE,1);
+            ItemMeta meta = found.getItemMeta();
+            meta.setDisplayName(selectorToolName);
+            meta.setLore(Arrays.asList("created by "+user.getName()));
+            found.setItemMeta(meta);
+            ItemStack oldItemInHand = user.getItemInHand();
+            user.setItemInHand(found);
+            HashMap<Integer,ItemStack> tooMuch = user.getInventory().addItem(oldItemInHand);
+            for (ItemStack item : tooMuch.values())
+            {
+                user.getWorld().dropItemNaturally(user.getLocation(),item);
+            }
+            user.updateInventory();
+            user.sendTranslated("&aReceived a new Region-Selector Tool");
+            return;
+        }
+        user.getInventory().removeItem(found);
+        ItemStack oldItemInHand = user.getItemInHand();
+        user.setItemInHand(found);
+        user.getInventory().addItem(oldItemInHand);
+        user.updateInventory();
+        user.sendTranslated("&aFound a Region-Selector Tool in your inventory!");
+    }
+
+    @Command(desc = "Gives you a item to select a region with.")
+    public void selectionTool(CommandContext context)
+    {
+        if (context.getSender() instanceof User)
+        {
+            giveSelectionTool((User)context.getSender());
+        }
+        else
+        {
+            context.sendTranslated("&cYou cannot hold a selection tool!");
+        }
+        // if worldEdit give WE wand else give OUR wand
     }
 }

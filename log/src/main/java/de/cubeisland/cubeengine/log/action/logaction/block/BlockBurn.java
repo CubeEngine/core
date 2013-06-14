@@ -30,6 +30,7 @@ import de.cubeisland.cubeengine.log.storage.LogEntry;
 
 import static de.cubeisland.cubeengine.log.action.ActionType.Category.BLOCK;
 import static de.cubeisland.cubeengine.log.action.ActionType.Category.ENVIRONEMENT;
+import static de.cubeisland.cubeengine.log.action.ActionType.Category.FIRE;
 import static org.bukkit.Material.AIR;
 
 /**
@@ -44,7 +45,7 @@ public class BlockBurn extends BlockActionType
     @Override
     protected EnumSet<Category> getCategories()
     {
-        return EnumSet.of(BLOCK, ENVIRONEMENT);
+        return EnumSet.of(FIRE, BLOCK, ENVIRONEMENT);
     }
 
     @Override
@@ -69,7 +70,7 @@ public class BlockBurn extends BlockActionType
     @Override
     protected void showLogEntry(User user, LogEntry logEntry, String time, String loc)
     {
-        user.sendTranslated("%s&6%s &awent up into flames%s!",
+        user.sendTranslated("%s&6%s &awent up into flames%s",
                             time,
                             logEntry.getOldBlock(),
                             loc);

@@ -37,7 +37,6 @@ import static org.bukkit.Material.AIR;
  */
 public class LeafDecay extends BlockActionType
 {
-
     @Override
     protected EnumSet<Category> getCategories()
     {
@@ -64,7 +63,7 @@ public class LeafDecay extends BlockActionType
     @Override
     protected void showLogEntry(User user, LogEntry logEntry, String time, String loc)
     {
-        user.sendTranslated("%s&6%s &adecayed%s!",
+        user.sendTranslated("%s&6%s &adecayed%s",
                             time,logEntry.getOldBlock(),loc);
     }
 

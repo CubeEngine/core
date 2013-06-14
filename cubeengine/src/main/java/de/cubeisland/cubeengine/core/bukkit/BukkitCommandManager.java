@@ -21,7 +21,6 @@ import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -33,28 +32,21 @@ import java.util.logging.Logger;
 
 import org.bukkit.Server;
 import org.bukkit.command.Command;
-import org.bukkit.command.SimpleCommandMap;
 
+import de.cubeisland.cubeengine.core.CubeEngine;
+import de.cubeisland.cubeengine.core.bukkit.command.CommandBackend;
 import de.cubeisland.cubeengine.core.command.AliasCommand;
-import de.cubeisland.cubeengine.core.command.ArgBounds;
-import de.cubeisland.cubeengine.core.command.BasicContextFactory;
-import de.cubeisland.cubeengine.core.command.CommandContext;
 import de.cubeisland.cubeengine.core.command.CommandFactory;
 import de.cubeisland.cubeengine.core.command.CommandHolder;
 import de.cubeisland.cubeengine.core.command.CommandManager;
 import de.cubeisland.cubeengine.core.command.CommandSender;
-import de.cubeisland.cubeengine.core.command.ConsoleCommandCompleter;
 import de.cubeisland.cubeengine.core.command.CubeCommand;
-import de.cubeisland.cubeengine.core.command.result.confirm.ConfirmCommand;
 import de.cubeisland.cubeengine.core.command.result.confirm.ConfirmManager;
-import de.cubeisland.cubeengine.core.command.result.confirm.ConfirmResult;
 import de.cubeisland.cubeengine.core.command.sender.ConsoleCommandSender;
 import de.cubeisland.cubeengine.core.logger.CubeFileHandler;
 import de.cubeisland.cubeengine.core.logger.CubeLogger;
 import de.cubeisland.cubeengine.core.module.Module;
-import de.cubeisland.cubeengine.core.util.Pair;
 import de.cubeisland.cubeengine.core.util.StringUtils;
-import de.cubeisland.cubeengine.core.util.time.Duration;
 
 import gnu.trove.map.hash.THashMap;
 
@@ -65,29 +57,19 @@ public class BukkitCommandManager implements CommandManager
 {
     private final Server server;
     private final BukkitCore core;
-    final CubeCommandMap commandMap;
-    private final Map<String, Command> knownCommands;
+    private final CommandBackend commandBackend;
     private final Map<Class<? extends CubeCommand>, CommandFactory> commandFactories;
-    private final ConsoleCommandCompleter completer;
     private final ConsoleCommandSender consoleSender;
     private final Logger commandLogger;
     private final ConfirmManager confirmManager;
 
-    public BukkitCommandManager(BukkitCore core)
+    public BukkitCommandManager(BukkitCore core, CommandBackend commandBackend)
     {
         this.core = core;
         this.server = core.getServer();
-        SimpleCommandMap oldMap = (SimpleCommandMap)BukkitUtils.getCommandMap(this.server);
-        this.commandMap = new CubeCommandMap(core, this.server, oldMap);
-        this.knownCommands = this.commandMap.getKnownCommands();
-        this.commandFactories = new THashMap<Class<? extends CubeCommand>, CommandFactory>();
-        BukkitUtils.swapCommandMap(this.commandMap);
         this.consoleSender = new ConsoleCommandSender(core);
-
-        this.completer = new ConsoleCommandCompleter(core);
-        BukkitUtils.getConsoleReader(this.server).addCompleter(completer);
-
-
+        this.commandBackend = commandBackend;
+        this.commandFactories = new THashMap<Class<? extends CubeCommand>, CommandFactory>();
 
         this.commandLogger = new CubeLogger("commands");
         try
@@ -114,112 +96,27 @@ public class BukkitCommandManager implements CommandManager
         this.confirmManager = new ConfirmManager(this, core);
     }
 
-    /**
-     * Removes a command by its name
-     *
-     * @param name the name of the command to remove
-     */
-    public void removeCommands(String name)
+    public void removeCommand(String name, boolean completely)
     {
-        Command command = this.knownCommands.remove(name.toLowerCase());
-        if (command != null)
-        {
-            command.unregister(this.commandMap);
-            if (command instanceof CubeCommand)
-            {
-                ((CubeCommand)command).onRemove();
-            }
-        }
+        this.commandBackend.removeCommand(name, completely);
     }
 
-    /**
-     * Removes all commands of a module
-     *
-     * @param module the module
-     */
     public void removeCommands(Module module)
     {
-        Command command;
-        CubeCommand cubeCommand;
-        Iterator<Command> it = this.knownCommands.values().iterator();
-        while (it.hasNext())
-        {
-            command = it.next();
-            if (command instanceof CubeCommand)
-            {
-                cubeCommand = (CubeCommand)command;
-                if (cubeCommand.getModule() == module)
-                {
-                    it.remove();
-                    command.unregister(this.commandMap);
-                    cubeCommand.onRemove();
-                }
-                else
-                {
-                    this.removeSubCommands(module, cubeCommand);
-                }
-            }
-        }
+        this.commandBackend.removeCommands(module);
     }
 
-    private void removeSubCommands(Module module, CubeCommand command)
-    {
-        if (!command.hasChildren())
-        {
-            return;
-        }
-        Iterator<CubeCommand> iter = command.getChildren().iterator();
-        CubeCommand child;
-        while (iter.hasNext())
-        {
-            child = iter.next();
-            if (child.getModule() == module)
-            {
-                child.onRemove();
-                iter.remove();
-            }
-            else
-            {
-                this.removeSubCommands(module, child);
-            }
-        }
-    }
-
-    /**
-     * Removes all commands of the CubeEngine
-     */
     public void removeCommands()
     {
-        Iterator<Map.Entry<String, Command>> iter = this.knownCommands.entrySet().iterator();
-        Entry<String, Command> entry;
-        while (iter.hasNext())
-        {
-            entry = iter.next();
-            if (entry.getValue() instanceof CubeCommand)
-            {
-                ((CubeCommand)entry.getValue()).onRemove();
-                iter.remove();
-            }
-        }
+        this.commandBackend.removeCommands();
     }
 
-    /**
-     * Clears the server's command map (unregisters all commands)
-     */
     public void clean()
     {
-        this.removeCommands();
-        this.commandMap.clearCommands();
+        this.commandBackend.shutdown();
         this.commandFactories.clear();
-        BukkitUtils.getConsoleReader(this.server).removeCompleter(this.completer);
     }
 
-    /**
-     * Registers a command
-     *
-     * @param command the command to register
-     * @param parents the path under which the command should be registered
-     */
     public void registerCommand(CubeCommand command, String... parents)
     {
         if (command.getParent() != null)
@@ -245,7 +142,7 @@ public class BukkitCommandManager implements CommandManager
 
         if (parentCommand == null)
         {
-            this.commandMap.register(command.getModule().getId(), command);
+            this.commandBackend.registerCommand(command);
         }
         else
         {
@@ -272,13 +169,6 @@ public class BukkitCommandManager implements CommandManager
         this.registerCommands(module, commandHolder, commandHolder.getCommandType(), parents);
     }
 
-    /**
-     * Registers all methods annotated as a command in the given command holder object
-     *
-     * @param module        the module to register them for
-     * @param commandHolder the command holder containing the commands
-     * @param parents       the path under which the command should be registered
-     */
     @SuppressWarnings("unchecked")
     public void registerCommands(Module module, Object commandHolder, Class<? extends CubeCommand> commandType, String... parents)
     {
@@ -293,7 +183,7 @@ public class BukkitCommandManager implements CommandManager
         }
     }
 
-    public void registerCommandFactory(CommandFactory factory)
+    public <T extends CubeCommand> void registerCommandFactory(CommandFactory<T> factory)
     {
         this.commandFactories.put(factory.getCommandType(), factory);
     }
@@ -307,25 +197,19 @@ public class BukkitCommandManager implements CommandManager
     {
         this.commandFactories.remove(clazz);
 
-        Iterator<Entry<Class<? extends CubeCommand>, CommandFactory>> iter = this.commandFactories.entrySet().iterator();
-        while (iter.hasNext())
+        Iterator<Entry<Class<? extends CubeCommand>, CommandFactory>> it = this.commandFactories.entrySet().iterator();
+        while (it.hasNext())
         {
-            if (iter.next().getValue().getClass() == clazz)
+            if (it.next().getValue().getClass() == clazz)
             {
-                iter.remove();
+                it.remove();
             }
         }
     }
 
-    /**
-     * Gets a CubeCommand by its name
-     *
-     * @param name the name
-     * @return the CubeCommand instance or null if not found
-     */
     public CubeCommand getCommand(String name)
     {
-        Command command = this.knownCommands.get(name);
+        Command command = this.commandBackend.getCommand(name);
         if (command != null && command instanceof CubeCommand)
         {
             return (CubeCommand)command;
@@ -335,7 +219,9 @@ public class BukkitCommandManager implements CommandManager
 
     public boolean runCommand(CommandSender sender, String commandLine)
     {
-        return this.commandMap.dispatch(sender, commandLine);
+        assert CubeEngine.isMainThread(): "Commands may only be called synchronously!";
+
+        return this.commandBackend.dispatchCommand(sender, commandLine);
     }
 
     @Override

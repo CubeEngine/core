@@ -60,7 +60,7 @@ public class EntityDye extends SimpleLogActionType
     {
         JsonNode json = logEntry.getAdditional();
         DyeColor color = DyeColor.valueOf(json.get("nColor").asText());
-        user.sendTranslated("%s&2%s&a dyed a &6%s&a in &6%s%s&a!",
+        user.sendTranslated("%s&2%s&a dyed a &6%s&a in &6%s%s",
                             time,logEntry.getCauserUser().getDisplayName(),
                             logEntry.getEntityFromData(),
                             color.name(), loc); //TODO get Pretty name for color
@@ -69,6 +69,7 @@ public class EntityDye extends SimpleLogActionType
     @Override
     public boolean isSimilar(LogEntry logEntry, LogEntry other)
     {
+        if (!super.isSimilar(logEntry, other)) return false;
         return logEntry.causer == other.causer
             && logEntry.world == other.world
             && logEntry.data == other.data; //same entity

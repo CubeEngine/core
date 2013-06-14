@@ -18,6 +18,7 @@
 package de.cubeisland.cubeengine.log;
 
 import de.cubeisland.cubeengine.core.command.CommandManager;
+import de.cubeisland.cubeengine.core.command.reflected.ReflectedCommand;
 import de.cubeisland.cubeengine.core.config.Configuration;
 import de.cubeisland.cubeengine.core.module.Module;
 import de.cubeisland.cubeengine.core.util.convert.Convert;
@@ -39,31 +40,26 @@ public class Log extends Module
     private LogConfiguration config;
     private ObjectMapper objectMapper = null;
     private ActionTypeManager actionTypeManager;
+    private boolean worldEditFound = false;
 
     @Override
     public void onEnable()
     {
         this.config = Configuration.load(LogConfiguration.class, this);
         Convert.registerConverter(ContainerType.class, new ContainerTypeConverter());
-        //        TODO when sending logs to player
-        //        if same player and block type do not use 1 line for each block
-        //        but instead something like this:
-        //        <Player> BlockBreak <BlockType> x<times> at <cuboid> 
-        // perhaps make possible to select this cuboid to rollback later
-        //flag to ignore what block
-        //possibility to select the region containing the last search results
         this.logManager = new LogManager(this);
         this.actionTypeManager = new ActionTypeManager(this);
         this.actionTypeManager.registerLogActionTypes();
 
         final CommandManager cm = this.getCore().getCommandManager();
-        cm.registerCommand(new LookupCommands(this));
+        cm.registerCommands(this, new LookupCommands(this), ReflectedCommand.class);
         cm.registerCommand(new LogCommands(this));
 
         try
         {
             Class.forName("com.sk89q.worldedit.WorldEdit");
             LogEditSessionFactory.initialize(WorldEdit.getInstance(), this);
+            worldEditFound = true;
         }
         catch (ClassNotFoundException ignored)
         {
@@ -102,5 +98,10 @@ public class Log extends Module
     public ActionTypeManager getActionTypeManager()
     {
         return actionTypeManager;
+    }
+
+    public boolean hasWorldEdit()
+    {
+        return this.worldEditFound;
     }
 }

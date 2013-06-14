@@ -15,39 +15,26 @@
  * You should have received a copy of the GNU General Public License
  * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-package de.cubeisland.cubeengine.log.storage;
+package de.cubeisland.cubeengine.core.command.readers;
 
-import org.bukkit.Material;
-import org.bukkit.block.BlockState;
+import java.util.Locale;
 
-import de.cubeisland.cubeengine.core.util.matcher.Match;
-import de.cubeisland.cubeengine.log.Log;
+import de.cubeisland.cubeengine.core.command.ArgumentReader;
+import de.cubeisland.cubeengine.core.command.exception.InvalidArgumentException;
 
-public class BlockData
+public class ShortReader extends ArgumentReader
 {
-    public final Material material;
-    public final Byte data;
-
-    public BlockData(BlockState blockState)
-    {
-        this(blockState.getType(), blockState.getRawData());
-    }
-
-    public BlockData(Material material)
-    {
-        this(material,null);
-    }
-
-    public BlockData(Material material,Byte data)
-    {
-        this.material = material;
-        this.data = data;
-    }
-
     @Override
-    public String toString()
+    public Short read(String arg, Locale locale) throws InvalidArgumentException
     {
-        //Match.material() //TODO getPrettyName
-        return material + ":" + data;
+        String num = arg.replace(',', '.').replace(".", "");
+        try
+        {
+            return Short.parseShort(num);
+        }
+        catch (NumberFormatException e)
+        {
+            throw new InvalidArgumentException("Could not parse " + arg + "to Integer!");
+        }
     }
 }

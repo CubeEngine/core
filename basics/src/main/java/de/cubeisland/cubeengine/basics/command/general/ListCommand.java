@@ -27,6 +27,7 @@ import java.util.Set;
 import org.bukkit.Bukkit;
 
 import de.cubeisland.cubeengine.core.command.CommandContext;
+import de.cubeisland.cubeengine.core.command.CommandSender;
 import de.cubeisland.cubeengine.core.command.reflected.Command;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.util.ChatFormat;
@@ -47,11 +48,11 @@ public class ListCommand
     @Command(desc = "Displays all the online players.")
     public void list(CommandContext context)
     {
-        // TODO CE-94 list sorting by roles
+        CommandSender sender = context.getSender();
         Set<User> users = context.getCore().getUserManager().getOnlineUsers();
         if (users.isEmpty())
         {
-            context.sendTranslated("&cThere are no players online now!");
+            sender.sendTranslated("&cThere are no players online now!");
             return;
         }
         THashMap<User,String> userStrings = new THashMap<User, String>();
@@ -59,6 +60,10 @@ public class ListCommand
         ArrayList<User> afkList = new ArrayList<User>();
         for (User user : users)
         {
+            if ((sender instanceof User) && !((User)sender).canSee(user)) // TODO add a permission and a marker for hiddens
+            {
+                continue;
+            }
             String s = "&2"+user.getDisplayName();
             if (user.attachOrGet(BasicsAttachment.class,this.module).isAfk())
             {
@@ -69,28 +74,24 @@ public class ListCommand
             {
                 onlineList.add(user);
             }
-            userStrings.put(user,s);
+            userStrings.put(user, s);
         }
         Comparator<User> comparator = new Comparator<User>()
         {
             @Override
-            public int compare(User o1, User o2)
+            public int compare(User user1, User user2)
             {
-                return String.CASE_INSENSITIVE_ORDER.compare(o1.getDisplayName(),o2.getDisplayName());
+                return String.CASE_INSENSITIVE_ORDER.compare(user1.getDisplayName(), user2.getDisplayName());
             }
         };
         Collections.sort(onlineList,comparator);
         Collections.sort(afkList,comparator);
         onlineList.addAll(afkList);
 
-        DisplayOnlinePlayerListEvent event = new DisplayOnlinePlayerListEvent(this.module, context.getSender(), userStrings, onlineList);
-        if (event.isCancelled())
-        {
-            return;
-        }
+        DisplayOnlinePlayerListEvent event = new DisplayOnlinePlayerListEvent(sender, userStrings, onlineList);
         if (!(this.module.getCore().getEventManager().fireEvent(event)).isCancelled()) // catch this event to change / show list with extra data
         {
-            context.sendTranslated("&9Players online: &a%d&f/&e%d", event.getUserStrings().size(), Bukkit.getMaxPlayers());
+            sender.sendTranslated("&9Players online: &a%d&f/&e%d", event.getUserStrings().size(), Bukkit.getMaxPlayers());
             for (Entry<String,List<User>> entry : event.getGrouped().entrySet())
             {
                 String group = entry.getKey()+ChatFormat.parseFormats("&f: ");
@@ -100,7 +101,7 @@ public class ListCommand
                     displayNames.add(event.getUserStrings().get(user));
                 }
                 group += StringUtils.implode("&f, &2",displayNames);
-                context.getSender().sendMessage(ChatFormat.parseFormats(group));
+                sender.sendMessage(ChatFormat.parseFormats(group));
             }
         }
     }

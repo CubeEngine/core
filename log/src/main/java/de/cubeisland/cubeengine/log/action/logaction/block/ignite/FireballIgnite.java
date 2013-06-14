@@ -22,7 +22,6 @@ import java.util.EnumSet;
 import org.bukkit.World;
 
 import de.cubeisland.cubeengine.core.user.User;
-import de.cubeisland.cubeengine.log.Log;
 import de.cubeisland.cubeengine.log.action.logaction.block.BlockActionType;
 import de.cubeisland.cubeengine.log.storage.LogEntry;
 
@@ -37,7 +36,7 @@ public class FireballIgnite extends BlockActionType
     @Override
     protected EnumSet<Category> getCategories()
     {
-        return EnumSet.of(BLOCK, ENTITY, PLAYER);
+        return EnumSet.of(FIRE, IGNITE, BLOCK, BLOCK_ENTITY, PLAYER);
     }
 
     @Override
@@ -51,12 +50,12 @@ public class FireballIgnite extends BlockActionType
     {
         if (logEntry.hasCauserUser())
         {
-            user.sendTranslated("%s&aFire got set by a FireBall shot at &2%s%s&a!",
+            user.sendTranslated("%s&aFire got set by a FireBall shot at &2%s%s",
                                 time,logEntry.getCauserUser().getDisplayName(),loc);
         }
         else
         {
-            user.sendTranslated("%s&aFire got set by a FireBall%s&a!",time,loc);
+            user.sendTranslated("%s&aFire got set by a FireBall%s",time,loc);
         }
     }
 

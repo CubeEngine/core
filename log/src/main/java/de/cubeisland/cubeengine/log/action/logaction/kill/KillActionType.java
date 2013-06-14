@@ -17,19 +17,26 @@
  */
 package de.cubeisland.cubeengine.log.action.logaction.kill;
 
+import org.bukkit.DyeColor;
 import org.bukkit.Location;
+import org.bukkit.entity.Ageable;
 import org.bukkit.entity.Animals;
 import org.bukkit.entity.EnderDragon;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Ghast;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Monster;
+import org.bukkit.entity.Ocelot;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
+import org.bukkit.entity.Sheep;
 import org.bukkit.entity.Skeleton;
 import org.bukkit.entity.Tameable;
 import org.bukkit.entity.Villager;
+import org.bukkit.entity.Villager.Profession;
 import org.bukkit.entity.Wither;
+import org.bukkit.entity.Wolf;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
@@ -37,12 +44,16 @@ import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.inventory.ItemStack;
 
+import de.cubeisland.cubeengine.core.CubeEngine;
 import de.cubeisland.cubeengine.core.user.User;
+import de.cubeisland.cubeengine.log.LogAttachment;
 import de.cubeisland.cubeengine.log.action.logaction.ActionTypeContainer;
 import de.cubeisland.cubeengine.log.action.logaction.ItemDrop;
 import de.cubeisland.cubeengine.log.action.logaction.SimpleLogActionType;
 import de.cubeisland.cubeengine.log.storage.ItemData;
 import de.cubeisland.cubeengine.log.storage.LogEntry;
+
+import com.fasterxml.jackson.databind.JsonNode;
 
 import static org.bukkit.event.entity.EntityDamageEvent.DamageCause.PROJECTILE;
 
@@ -65,11 +76,9 @@ public class KillActionType extends ActionTypeContainer
         super("KILL");
     }
 
-    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
-    public void onEntityDeath(EntityDeathEvent event)
+    private void logDeathDrops(EntityDeathEvent event)
     {
-        LivingEntity killed = event.getEntity();
-        if (!event.getDrops().isEmpty())
+        if (!event.getDrops().isEmpty()) // TODO log drops later
         {
             ItemDrop itemDrop = this.manager.getActionType(ItemDrop.class);
             if (itemDrop.isActive(event.getEntity().getWorld()))
@@ -77,12 +86,17 @@ public class KillActionType extends ActionTypeContainer
                 for (ItemStack itemStack : event.getDrops())
                 {
                     String itemData = new ItemData(itemStack).serialize(this.om);
-                    itemDrop.logSimple(killed,itemData);
+                    itemDrop.logSimple(event.getEntity(),itemData);
                 }
             }
         }
-        Location location = event.getEntity().getLocation();
+    }
 
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    public void onEntityDeath(EntityDeathEvent event)
+    {
+        LivingEntity killed = event.getEntity();
+        Location location = event.getEntity().getLocation();
         SimpleLogActionType actionType;
         if (killed instanceof Player)
         {
@@ -118,6 +132,7 @@ public class KillActionType extends ActionTypeContainer
         EntityDamageEvent dmgEvent = killed.getLastDamageCause();
         if (dmgEvent == null)
         {
+            this.logDeathDrops(event);
             return; // should not happen anymore (but i'll leave it in to prevent NPE)
         }
         String additionalData = actionType.serializeData(dmgEvent.getCause(), killed,null);
@@ -132,6 +147,7 @@ public class KillActionType extends ActionTypeContainer
                 {
                     if (false) //TODO player is Killer
                     {
+                        this.logDeathDrops(event);
                         return;
                     }
                 }
@@ -139,6 +155,7 @@ public class KillActionType extends ActionTypeContainer
                 {
                     if (false) //TODO monster is Killer
                     {
+                        this.logDeathDrops(event);
                         return;
                     }
                 }
@@ -146,12 +163,14 @@ public class KillActionType extends ActionTypeContainer
                 {
                     if (false) //TODO boss is Killer
                     {
+                        this.logDeathDrops(event);
                         return;
                     }
                 }
                 else // Projectile shot by Dispenser
                 {
                     System.out.print("Unknown Shooter: "+ ((Projectile) damager).getShooter());
+                    this.logDeathDrops(event);
                     return;
                 }
             }
@@ -161,6 +180,7 @@ public class KillActionType extends ActionTypeContainer
                 {
                     if (false) //TODO player is Killer
                     {
+                        this.logDeathDrops(event);
                         return;
                     }
                 }
@@ -168,6 +188,7 @@ public class KillActionType extends ActionTypeContainer
                 {
                     if (false) //TODO boss is Killer
                     {
+                        this.logDeathDrops(event);
                         return;
                     }
                 }
@@ -175,6 +196,7 @@ public class KillActionType extends ActionTypeContainer
                 {
                     if (false) //TODO monster is Killer
                     {
+                        this.logDeathDrops(event);
                         return;
                     }
                 }
@@ -185,41 +207,144 @@ public class KillActionType extends ActionTypeContainer
         {
             if (false) //TODO environement is Killer
             {
+                this.logDeathDrops(event);
                 return;
             }
             causer = null;
         }
         actionType.logSimple(location,causer,killed,additionalData);
+        this.logDeathDrops(event);
     }
 
 
 
     static void showSubActionLogEntry(User user, LogEntry logEntry, String time, String loc)
     {
+        int amount = 1;
+        if (logEntry.hasAttached())
+        {
+            amount += logEntry.getAttached().size();
+        }
         if (logEntry.hasCauserUser())
         {
-            user.sendTranslated("&6%s &agot slaughtered by &2%s&a!",
-                                logEntry.getEntityFromData(),
-                                logEntry.getCauserUser().getDisplayName());
+            if (amount == 1)
+            {
+                user.sendTranslated("%s&6%s &agot slaughtered by &2%s%s",
+                                    time,
+                                    logEntry.getEntityFromData(),
+                                    logEntry.getCauserUser().getDisplayName(),loc);
+            }
+            else
+            {
+                user.sendTranslated("%s&6%dx %s &agot slaughtered by &2%s%s",
+                                    time, amount,
+                                    logEntry.getEntityFromData(),
+                                    logEntry.getCauserUser().getDisplayName(),
+                                    loc);
+            }
         }
         else if (logEntry.hasCauserEntity())
         {
-            user.sendTranslated("&6%s &acould not escape &6%s&a!",
-                                logEntry.getEntityFromData(),
-                                logEntry.getCauserEntity());
+            if (amount == 1)
+            {
+                user.sendTranslated("%s&6%s &acould not escape &6%s%s",
+                                    time,
+                                    logEntry.getEntityFromData(),
+                                    logEntry.getCauserEntity(), loc);
+            }
+            else
+            {
+                user.sendTranslated("%s&6%dx %s &acould not escape &6%s%s",
+                                    time, amount,
+                                    logEntry.getEntityFromData(),
+                                    logEntry.getCauserEntity(), loc);
+            }
+
         }
         else // something else
         {
-            user.sendTranslated("&6%s &adied! &f(&6%s&f)",
-                                logEntry.getEntityFromData(),
-                                "CAUSE"); //TODO get cause from json
+            if (amount == 1)
+            {
+                user.sendTranslated("%s&6%s &adied%s &f(&6%s&f)",
+                                    time,
+                                    logEntry.getEntityFromData(), loc,
+                                    logEntry.getAdditional().get("dmgC").toString());
+            }
+            else
+            {
+                user.sendTranslated("%s&6%dx %s &adied%s &f(&6%s&f)",
+                                    time,amount,
+                                    logEntry.getEntityFromData(),loc,
+                                    logEntry.getAdditional().get("dmgC").toString());
+            }
         }
     }
 
     public static boolean isSimilarSubAction(LogEntry logEntry, LogEntry other)
     {
+        if (logEntry.actionType != other.actionType) return false;
         return logEntry.causer == other.causer
             && logEntry.data == other.data
             && logEntry.world == other.world;
+    }
+
+    public static boolean rollbackDeath(LogAttachment attachment, LogEntry logEntry, boolean force, boolean preview)
+    {
+        if (!preview)
+        {
+            Location location = logEntry.getLocation();
+            int id = (int)-logEntry.getData();
+            EntityType entityType = EntityType.fromId(id);
+            Entity entity = location.getWorld().spawnEntity(location, entityType);
+            applySerializedData(entity, logEntry.getAdditional());
+        }
+        return true;
+    }
+
+    private static void applySerializedData(Entity entity, JsonNode json)
+    {
+        if (entity instanceof Ageable)
+        {
+            if (json.get("isAdult").asBoolean())
+            {
+                ((Ageable)entity).setAdult();
+            }
+            else
+            {
+                ((Ageable)entity).setBaby();
+            }
+        }
+        if (entity instanceof Ocelot)
+        {
+            ((Ocelot)entity).setSitting(json.get("isSit").asBoolean());
+        }
+        if (entity instanceof Wolf)
+        {
+            ((Wolf)entity).setSitting(json.get("isSit").asBoolean());
+            DyeColor color = DyeColor.valueOf(json.get("color").asText());
+            ((Wolf)entity).setCollarColor(color);
+        }
+        if (entity instanceof Sheep)
+        {
+            DyeColor color = DyeColor.valueOf(json.get("color").asText());
+            ((Sheep)entity).setColor(color);
+        }
+        if (entity instanceof Villager)
+        {
+            Profession profession = Profession.valueOf(json.get("prof").asText());
+            ((Villager)entity).setProfession(profession);
+        }
+        if (entity instanceof Tameable && ((Tameable) entity).isTamed())
+        {
+            JsonNode owner = json.get("owner");
+            if (owner != null)
+            {
+                User user = CubeEngine.getUserManager().getUser(owner.asText(), false);
+                if (user != null)
+                {
+                    ((Tameable)entity).setOwner(user);
+                }
+            }
+        }
     }
 }

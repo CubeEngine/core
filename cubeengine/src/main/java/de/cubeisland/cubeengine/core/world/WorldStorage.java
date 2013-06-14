@@ -17,8 +17,15 @@
  */
 package de.cubeisland.cubeengine.core.world;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
+
+import org.bukkit.World;
+
 import de.cubeisland.cubeengine.core.storage.SingleKeyStorage;
+import de.cubeisland.cubeengine.core.storage.StorageException;
 import de.cubeisland.cubeengine.core.storage.database.Database;
+import de.cubeisland.cubeengine.core.storage.database.querybuilder.QueryBuilder;
 
 public class WorldStorage extends SingleKeyStorage<Long, WorldModel>
 {
@@ -28,5 +35,35 @@ public class WorldStorage extends SingleKeyStorage<Long, WorldModel>
     {
         super(database, WorldModel.class, REVISION);
         this.initialize();
+    }
+
+    @Override
+    protected void prepareStatements() throws SQLException
+    {
+        super.prepareStatements();
+        QueryBuilder builder = this.database.getQueryBuilder();
+        this.database.storeStatement(this.modelClass,"getByUUID",
+                 builder.select(allFields).from(this.tableName)
+                     .where().field("worldUUID").isEqual().value().end().end());
+    }
+
+    public WorldModel get(World world)
+    {
+        String uuid = world.getUID().toString();
+        try
+        {
+            ResultSet query = this.database.preparedQuery(this.modelClass, "getByUUID", uuid);
+            if (query.next())
+            {
+                WorldModel model = new WorldModel(query.getLong("key"), world.getName(), uuid);
+                this.update(model);
+                return model;
+            }
+            return null;
+        }
+        catch (SQLException e)
+        {
+            throw new StorageException("Could not get world by UUID!", e, this.database.getStoredStatement(this.modelClass, "getByUUID"));
+        }
     }
 }

@@ -18,7 +18,6 @@
 package de.cubeisland.cubeengine.core.bukkit;
 
 import java.lang.reflect.Field;
-import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
 import java.util.logging.Filter;
@@ -32,7 +31,6 @@ import net.minecraft.server.v1_5_R3.PlayerConnection;
 import net.minecraft.server.v1_5_R3.RecipesFurnace;
 import net.minecraft.server.v1_5_R3.ServerConnection;
 import net.minecraft.server.v1_5_R3.TileEntityFurnace;
-import org.bukkit.craftbukkit.libs.jline.console.ConsoleReader;
 import org.bukkit.craftbukkit.v1_5_R3.CraftServer;
 import org.bukkit.craftbukkit.v1_5_R3.entity.CraftPlayer;
 import org.bukkit.craftbukkit.v1_5_R3.inventory.CraftItemStack;
@@ -41,12 +39,8 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Server;
-import org.bukkit.command.Command;
 import org.bukkit.command.CommandMap;
 import org.bukkit.command.CommandSender;
-import org.bukkit.command.PluginCommand;
-import org.bukkit.command.SimpleCommandMap;
-import org.bukkit.command.defaults.BukkitCommand;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -54,13 +48,12 @@ import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.plugin.PluginManager;
 
 import de.cubeisland.cubeengine.core.CubeEngine;
-import de.cubeisland.cubeengine.core.command.CubeCommand;
 import de.cubeisland.cubeengine.core.i18n.I18n;
 import de.cubeisland.cubeengine.core.i18n.Language;
 import de.cubeisland.cubeengine.core.user.User;
+import de.cubeisland.cubeengine.core.util.ReflectionUtils;
 
 import sun.misc.Signal;
 import sun.misc.SignalHandler;
@@ -73,16 +66,16 @@ import static de.cubeisland.cubeengine.core.logger.LogLevel.*;
 public class BukkitUtils
 {
     private static Field localeStringField;
-    private static Field playerConnectionListField = findFirstField(List.class, ServerConnection.class);
+    private static Field playerConnectionListField = ReflectionUtils.findFirstField(ServerConnection.class, List.class);
 
     static boolean init(BukkitCore core)
     {
         try
         {
-            localeStringField = findFirstField(String.class, LocaleLanguage.class);
+            localeStringField = ReflectionUtils.findFirstField(LocaleLanguage.class, String.class);
             localeStringField.setAccessible(true);
 
-            playerConnectionListField = findFirstField(List.class, ServerConnection.class);
+            playerConnectionListField = ReflectionUtils.findFirstField(ServerConnection.class, List.class);
             playerConnectionListField.setAccessible(true);
         }
         catch (Exception e)
@@ -145,89 +138,9 @@ public class BukkitUtils
         return null;
     }
 
-    static ConsoleReader getConsoleReader(final Server server)
-    {
-        return ((CraftServer)server).getServer().reader;
-    }
-
     public static CommandMap getCommandMap(final Server server)
     {
         return ((CraftServer)server).getCommandMap();
-    }
-
-    private static Field findFirstField(Class type, Object o)
-    {
-        return findFirstField(type, o.getClass());
-    }
-
-    private static Field findFirstField(Class<?> type, Class clazz)
-    {
-        for (Field field : clazz.getDeclaredFields())
-        {
-            if (type.isAssignableFrom(field.getType()))
-            {
-                field.setAccessible(true);
-                return field;
-            }
-        }
-        return null;
-    }
-
-    static SimpleCommandMap swapCommandMap(SimpleCommandMap commandMap)
-    {
-        assert commandMap != null: "The command map must not be null!";
-
-        final Server server = Bukkit.getServer();
-        final PluginManager pm = Bukkit.getPluginManager();
-
-        Field serverField = findFirstField(CommandMap.class, server);
-        Field pmField = findFirstField(CommandMap.class, pm);
-
-        SimpleCommandMap oldMap = ((CraftServer)server).getCommandMap();
-        if (serverField != null && pmField != null)
-        {
-            try
-            {
-                serverField.set(server, commandMap);
-                pmField.set(pm, commandMap);
-            }
-            catch (Exception e)
-            {
-                CubeEngine.getLog().log(DEBUG, e.getLocalizedMessage(), e);
-            }
-        }
-        return oldMap;
-    }
-
-    static void resetCommandMap()
-    {
-        SimpleCommandMap current = ((CraftServer)Bukkit.getServer()).getCommandMap();
-        if (current instanceof CubeCommandMap)
-        {
-            CubeCommandMap cubeMap = (CubeCommandMap)current;
-            swapCommandMap(current = new SimpleCommandMap(Bukkit.getServer()));
-
-            Collection<Command> commands = cubeMap.getKnownCommands().values();
-
-            for (Command command : commands)
-            {
-                command.unregister(cubeMap);
-                if (command instanceof CubeCommand)
-                {
-                    continue;
-                }
-                String prefix = "";
-                if (command instanceof PluginCommand)
-                {
-                    prefix = ((PluginCommand)command).getPlugin().getName();
-                }
-                else if (command instanceof BukkitCommand)
-                {
-                    prefix = "bukkit";
-                }
-                current.register(command.getLabel(), prefix, command);
-            }
-        }
     }
 
     private static Filter filter = null;
@@ -390,7 +303,6 @@ public class BukkitUtils
             hookInjector = null;
         }
 
-        resetCommandMap();
         resetCommandLogging();
     }
 
@@ -496,21 +408,6 @@ public class BukkitUtils
             {
                 core.getLog().log(NOTICE, "You're OS does not support the HUP signal! This can be ignored.");
             }
-
-            Signal.handle(new Signal("TERM"), new SignalHandler() {
-                private volatile boolean shuttingDown = false;
-
-                @Override
-                public void handle(Signal signal)
-                {
-                    if (!this.shuttingDown)
-                    {
-                        this.shuttingDown = true;
-                        core.getLog().log(NOTICE, "Shutting down the server!");
-                        core.getServer().shutdown();
-                    }
-                }
-            });
         }
         catch (ClassNotFoundException ignored)
         {}

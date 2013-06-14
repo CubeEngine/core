@@ -40,7 +40,7 @@ public class ItemPickup extends SimpleLogActionType
     @Override
     protected EnumSet<Category> getCategories()
     {
-        return EnumSet.of(PLAYER,ITEM);
+        return EnumSet.of(PLAYER, ITEM);
     }
 
     @Override
@@ -71,13 +71,17 @@ public class ItemPickup extends SimpleLogActionType
         int amount;
         if (logEntry.hasAttached())
         {
-            amount = 42; //TODO
+            amount = logEntry.getItemData().amount;
+            for (LogEntry entry : logEntry.getAttached())
+            {
+                amount += entry.getItemData().amount;
+            }
         }
         else
         {
             amount = logEntry.getItemData().amount;
         }
-        user.sendTranslated("%s&2%s&a picked up %d &6%s%s&a!",
+        user.sendTranslated("%s&2%s&a picked up %d &6%s%s",
                             time,logEntry.getCauserUser().getDisplayName(),
                             amount, logEntry.getItemData(), loc);
     }
@@ -85,6 +89,7 @@ public class ItemPickup extends SimpleLogActionType
     @Override
     public boolean isSimilar(LogEntry logEntry, LogEntry other)
     {
+        if (!super.isSimilar(logEntry, other)) return false;
         return logEntry.world == other.world
             && logEntry.causer == other.causer
             && logEntry.getItemData().equals(other.getItemData());

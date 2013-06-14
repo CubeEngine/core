@@ -42,7 +42,7 @@ public class EnchantItem extends SimpleLogActionType
     @Override
     protected EnumSet<Category> getCategories()
     {
-        return EnumSet.of(PLAYER,ITEM);
+        return EnumSet.of(PLAYER, ITEM);
     }
 
     @Override
@@ -75,7 +75,7 @@ public class EnchantItem extends SimpleLogActionType
     @Override
     protected void showLogEntry(User user, LogEntry logEntry, String time, String loc)
     {
-        user.sendTranslated("%s&2%s&a enchanted &6%s%s&a!",
+        user.sendTranslated("%s&2%s&a enchanted &6%s%s",
                            time, logEntry.getCauserUser().getDisplayName(),
                             logEntry.getItemData(),loc);//TODO list enchantments
     }
@@ -83,7 +83,7 @@ public class EnchantItem extends SimpleLogActionType
     @Override
     public boolean isSimilar(LogEntry logEntry, LogEntry other)
     {
-        return false; //TODO how to attach if?
+        return false;
     }
 
 

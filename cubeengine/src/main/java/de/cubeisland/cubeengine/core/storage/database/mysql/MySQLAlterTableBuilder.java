@@ -53,9 +53,23 @@ public class MySQLAlterTableBuilder extends
     }
 
     @Override
+    public AlterTableBuilder change(String field, String newName, AttrType type)
+    {
+        this.query.append("CHANGE COLUMN ").
+            append(this.database.prepareFieldName(field)).append(" ").
+            append(this.database.prepareFieldName(newName));
+
+        if (type != null)
+        {
+            this.query.append(" ").append(type.getType());
+        }
+        return this;
+    }
+
+    @Override
     public AlterTableBuilder modify(String field, AttrType type)
     {
-        this.query.append("ALTER COLUMN ").append(this.database.prepareFieldName(field)).append(" ").append(type.getType());
+        this.query.append("MODIFY COLUMN ").append(this.database.prepareFieldName(field)).append(" ").append(type.getType());
         return this;
     }
 

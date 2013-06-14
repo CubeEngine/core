@@ -17,6 +17,14 @@
  */
 package de.cubeisland.cubeengine.rulebook.bookManagement;
 
+import java.io.IOException;
+import java.util.List;
+import java.util.Locale;
+
+import org.bukkit.Material;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.PlayerInventory;
+
 import de.cubeisland.cubeengine.core.command.CommandContext;
 import de.cubeisland.cubeengine.core.command.ContainerCommand;
 import de.cubeisland.cubeengine.core.command.parameterized.Flag;
@@ -33,13 +41,6 @@ import de.cubeisland.cubeengine.rulebook.Rulebook;
 import gnu.trove.iterator.TIntIterator;
 import gnu.trove.set.TIntSet;
 import gnu.trove.set.hash.TIntHashSet;
-import org.bukkit.Material;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.PlayerInventory;
-
-import java.io.IOException;
-import java.util.List;
-import java.util.Locale;
 
 import static de.cubeisland.cubeengine.core.permission.PermDefault.TRUE;
 
@@ -47,13 +48,16 @@ public class RulebookCommands extends ContainerCommand
 {
     private final RulebookManager rulebookManager;
     private final Rulebook module;
-    
+
+    private Permission getPermission;
     
     public RulebookCommands(Rulebook module)
     {
         super(module, "rulebook", "shows all commands of the rulebook module");
         this.rulebookManager = module.getRuleBookManager();
         this.module = module;
+        this.getPermission = module.getBasePermission().createAbstractChild("command").createAbstractChild("get").createChild("other");
+        this.module.getCore().getPermissionManager().registerPermission(module, getPermission);
     }
 
     @Alias( names = {"getrules", "rules"})
@@ -76,7 +80,7 @@ public class RulebookCommands extends ContainerCommand
         User user = null;
         if(context.hasParam("player"))
         {
-            if(!context.getSender().hasPermission(Permission.BASE.getName() + '.' + context.getCommand().getModule().getId() + ".command.get.other"))// TODO register
+            if(!getPermission.isAuthorized(context.getSender()))
             {
                 context.sendTranslated("&cYou do not have the permissions to add the rulebook to the inventory of an other player");
                 return;

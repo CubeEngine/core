@@ -216,8 +216,7 @@ public abstract class Configuration<ConfigCodec extends ConfigurationCodec>
     {
         try
         {
-            T instance = clazz.newInstance();
-            return instance;
+            return clazz.newInstance();
         }
         catch (Exception e)
         {

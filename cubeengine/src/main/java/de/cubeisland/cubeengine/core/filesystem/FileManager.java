@@ -33,8 +33,6 @@ import de.cubeisland.cubeengine.core.CubeEngine;
 import de.cubeisland.cubeengine.core.logger.LogLevel;
 import de.cubeisland.cubeengine.core.util.Cleanable;
 
-import org.apache.commons.lang.Validate;
-
 import static de.cubeisland.cubeengine.core.CubeEngine.runsOnWindows;
 import static de.cubeisland.cubeengine.core.logger.LogLevel.*;
 
@@ -242,7 +240,13 @@ public class FileManager implements Cleanable
     public void clearTempDir()
     {
         logger.log(INFO, "Clearing the temporary folder ''{0}''...", this.tempDir.getAbsolutePath());
-        for (File file : this.tempDir.listFiles())
+        File[] files = this.tempDir.listFiles();
+        if (files == null)
+        {
+            logger.log(NOTICE, "Failed to list the temp folder for");
+            return;
+        }
+        for (File file : files)
         {
             try
             {
@@ -264,7 +268,19 @@ public class FileManager implements Cleanable
         }
         if (file.isDirectory())
         {
-            for (File f : file.listFiles())
+            File[] files = file.listFiles();
+            if (files == null)
+            {
+                if (!file.canRead() && !file.setReadable(true) && (files = file.listFiles()) == null)
+                {
+                    throw new IOException("Failed to list the folder '" + file.getAbsolutePath() + "' due to missing read permissions");
+                }
+                if (files == null)
+                {
+                    throw new IOException("Failed to list the folder '" + file.getAbsolutePath() + "'");
+                }
+            }
+            for (File f : files)
             {
                 try
                 {
@@ -274,9 +290,25 @@ public class FileManager implements Cleanable
                 {}
             }
         }
+        if (!file.exists())
+        {
+            return;
+        }
         if (!file.delete())
         {
-            throw new IOException("File to delete the file '" + file.getAbsolutePath() + "'");
+            if (!file.canWrite())
+            {
+                if (file.setWritable(true) && file.delete())
+                {
+                    return;
+                }
+                throw new IOException("Failed to delete the file '" + file.getAbsolutePath() + "' due to missing write permissions");
+            }
+            if (!file.renameTo(file))
+            {
+                throw new IOException("Failed to delete the file '" + file.getAbsolutePath() + "' due to a possible lock");
+            }
+            throw new IOException("Failed to delete the file '" + file.getAbsolutePath() + "'");
         }
     }
 

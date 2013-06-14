@@ -17,9 +17,9 @@
  */
 package de.cubeisland.cubeengine.core.bukkit;
 
-import org.bukkit.Material;
-
 import java.util.EnumSet;
+
+import org.bukkit.Material;
 
 import static org.bukkit.Material.*;
 
@@ -48,5 +48,14 @@ public class BlockUtil
     public static boolean isNonFluidProofBlock(Material mat)
     {
         return NON_FLUID_PROOF_BLOCKS.contains(mat);
+    }
+
+    private static final EnumSet<Material> NON_OBSTRUCTING_SOLID_BLOCKS =
+        EnumSet.of(SIGN_POST, WOODEN_DOOR, WALL_SIGN, STONE_PLATE, IRON_DOOR_BLOCK,
+                   WOOD_PLATE, GOLD_PLATE, IRON_PLATE);
+
+    public static boolean isNonObstructingSolidBlock(Material material)
+    {
+        return NON_OBSTRUCTING_SOLID_BLOCKS.contains(material);
     }
 }

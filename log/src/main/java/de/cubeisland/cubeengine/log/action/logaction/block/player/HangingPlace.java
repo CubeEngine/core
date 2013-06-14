@@ -72,7 +72,7 @@ public class HangingPlace extends BlockActionType
     @Override
     protected void showLogEntry(User user, LogEntry logEntry, String time, String loc)
     {
-        user.sendTranslated("%s&6%s &agot hung up by &2%s%s&a!",
+        user.sendTranslated("%s&6%s &agot hung up by &2%s%s",
                            time, logEntry.getNewBlock(),
                             logEntry.getCauserUser().getDisplayName(),loc);
     }

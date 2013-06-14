@@ -19,10 +19,9 @@ package de.cubeisland.cubeengine.log.storage;
 
 import java.io.IOException;
 import java.sql.Timestamp;
-import java.util.HashSet;
-import java.util.Set;
 import java.util.TreeSet;
 
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.entity.EntityType;
@@ -31,6 +30,7 @@ import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.user.UserManager;
 import de.cubeisland.cubeengine.core.util.math.BlockVector3;
 import de.cubeisland.cubeengine.log.Log;
+import de.cubeisland.cubeengine.log.LogAttachment;
 import de.cubeisland.cubeengine.log.action.ActionType;
 import de.cubeisland.cubeengine.log.action.logaction.container.ContainerType;
 
@@ -103,10 +103,6 @@ public class LogEntry implements Comparable<LogEntry>
 
     public boolean isSimilar(LogEntry other)
     {
-        if (this.actionType != other.actionType)
-        {
-            return false;
-        }
         return this.actionType.isSimilar(this,other);
     }
 
@@ -124,19 +120,19 @@ public class LogEntry implements Comparable<LogEntry>
         return null;
     }
 
-    public BlockData getOldBlock()
+    public ImmutableBlockData getOldBlock()
     {
-        return new BlockData(Material.getMaterial(this.block),this.data.byteValue());
+        return new ImmutableBlockData(Material.getMaterial(this.block),this.data.byteValue());
     }
 
-    public BlockData getNewBlock()
+    public ImmutableBlockData getNewBlock()
     {
-        return new BlockData(Material.getMaterial(this.newBlock),this.newData.byteValue());
+        return new ImmutableBlockData(Material.getMaterial(this.newBlock),this.newData.byteValue());
     }
 
-    public BlockData getMaterialFromNewBlock()
+    public ImmutableBlockData getMaterialFromNewBlock()
     {
-        return new BlockData(Material.getMaterial(this.newBlock),(byte)0);
+        return new ImmutableBlockData(Material.getMaterial(this.newBlock),(byte)0);
     }
 
     public EntityData getCauserEntity()
@@ -227,5 +223,32 @@ public class LogEntry implements Comparable<LogEntry>
     public Integer getNewData()
     {
         return newData;
+    }
+
+    public boolean rollback(LogAttachment attachment, boolean force, boolean preview)
+    {
+        return this.actionType.canRollback() && this.actionType.rollback(attachment, this, force, preview);
+    }
+
+    public boolean redo(User user)
+    {
+       // TODO
+        return false;
+    }
+
+    private Location bukkitLoc = null;
+
+    public Location getLocation()
+    {
+        if (bukkitLoc == null)
+        {
+            bukkitLoc = new Location(this.world, this.location.x, this.location.y, this.location.z);
+        }
+        return bukkitLoc;
+    }
+
+    public void clearAttached()
+    {
+        this.attached.clear();
     }
 }

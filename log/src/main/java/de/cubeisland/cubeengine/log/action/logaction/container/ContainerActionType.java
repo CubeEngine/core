@@ -87,6 +87,7 @@ public class ContainerActionType extends ActionTypeContainer
                 {
                     int amount = itemDataMap.get(itemData);
                     if (amount == 0) continue;
+                    itemData.amount = amount;
                     String additional = itemData.serialize(this.om);
                     SimpleLogActionType actionType;
                     if (amount < 0)
@@ -164,7 +165,8 @@ public class ContainerActionType extends ActionTypeContainer
             //System.out.print("Cursor: "+ cursorItem + " | Inventory: "+ inventoryItem);
             //System.out.print((event.getRawSlot() < event.getView().getTopInventory().getSize() ? "TOP " : "BOT ")
             //+ (event.isShiftClick() ? "SHIFT-" : "") + (event.isRightClick() ? "RIGHT" : "LEFT"));
-            if (inventoryItem.getType().equals(Material.AIR) && cursorItem.getType().equals(Material.AIR))
+            if ((inventoryItem == null || inventoryItem.getType().equals(Material.AIR))
+               && (cursorItem == null || cursorItem.getType().equals(Material.AIR)))
             {
                 return; // nothing to log
             }
@@ -426,17 +428,21 @@ public class ContainerActionType extends ActionTypeContainer
 
     static boolean isSubActionSimilar(LogEntry logEntry, LogEntry other)
     {
-        if (logEntry.causer == other.causer
-            && logEntry.world == other.world
-            && logEntry.location.equals(other.location)
-            && (logEntry.block == other.block || logEntry.block.equals(other.block))) // InventoryType
+        if (logEntry.actionType == other.actionType ||
+            ((logEntry.actionType instanceof ItemInsert || logEntry.actionType instanceof  ItemRemove)
+          && (other.actionType instanceof ItemInsert || other.actionType instanceof  ItemRemove)))
         {
-            ItemData itemData1 = logEntry.getItemData();
-            ItemData itemData2 = other.getItemData();
-            return itemData1.equals(itemData2); // this is ignoring amount
+            if (logEntry.causer == other.causer
+                && logEntry.world == other.world
+                && logEntry.location.equals(other.location)
+                && (logEntry.block == other.block || logEntry.block.equals(other.block))) // InventoryType
+            {
+                ItemData itemData1 = logEntry.getItemData();
+                ItemData itemData2 = other.getItemData();
+                return itemData1.equals(itemData2); // this is ignoring amount
+            }
         }
         return false;
-
     }
 
     @Override

@@ -18,6 +18,8 @@
 package de.cubeisland.cubeengine.roles.role;
 
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -39,6 +41,10 @@ public class UserDataStore implements RawDataStore
     {
         this.attachment = attachment;
         this.worldID = worldID;
+
+        this.roles = new HashSet<String>();
+        this.permissions = new HashMap<String, Boolean>();
+        this.metadata = new HashMap<String, String>();
     }
 
     @Override

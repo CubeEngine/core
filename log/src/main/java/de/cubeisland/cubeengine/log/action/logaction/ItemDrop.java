@@ -45,12 +45,11 @@ import static org.bukkit.Material.AIR;
  * {@link de.cubeisland.cubeengine.log.action.logaction.block.player.BlockBreak BlockBreak} when breaking inventory-holders</p>
  */
 public class ItemDrop extends SimpleLogActionType
-
 {
     @Override
     protected EnumSet<Category> getCategories()
     {
-        return EnumSet.of(PLAYER,ITEM);
+        return EnumSet.of(PLAYER, ITEM);
     }
 
     @Override
@@ -112,7 +111,11 @@ public class ItemDrop extends SimpleLogActionType
         int amount;
         if (logEntry.hasAttached())
         {
-            amount = 42; //TODO iterate and get correct amount
+            amount = logEntry.getItemData().amount;
+            for (LogEntry entry : logEntry.getAttached())
+            {
+                amount += entry.getItemData().amount;
+            }
         }
         else
         {
@@ -122,13 +125,13 @@ public class ItemDrop extends SimpleLogActionType
         {
             if (logEntry.block != null)
             {
-                user.sendTranslated("%s&2%s&a let drop %d &6%s&a from &6%s%s&a!",
+                user.sendTranslated("%s&2%s&a let drop &6%d %s&a from &6%s%s",
                                     time, logEntry.getCauserUser().getDisplayName(),
                                     amount, logEntry.getItemData(),logEntry.getContainerTypeFromBlock(),loc);
             }
             else
             {
-                user.sendTranslated("%s&2%s&a dropped %d &6%s%s!",
+                user.sendTranslated("%s&2%s&a dropped &6%d %s%s",
                                     time, logEntry.getCauserUser().getDisplayName(),
                                     amount, logEntry.getItemData(),loc);
             }
@@ -137,14 +140,14 @@ public class ItemDrop extends SimpleLogActionType
         {
             if (logEntry.block != null)
             {
-                user.sendTranslated("%s&6%s&a let drop %d &6%s&a from &6%s%s&a!",
+                user.sendTranslated("%s&6%s&a let drop %d &6%s&a from &6%s%s",
                                     time, logEntry.getCauserEntity(),
                                     amount, logEntry.getItemData(),
                                     logEntry.getContainerTypeFromBlock(),loc);
             }
             else
             {
-                user.sendTranslated("%s&6%s&a dropped %d &6%s%s!",
+                user.sendTranslated("%s&6%s&a dropped %d &6%s%s",
                                     time, logEntry.getCauserEntity(),
                                     amount, logEntry.getItemData(),loc);
             }
@@ -156,6 +159,7 @@ public class ItemDrop extends SimpleLogActionType
     @Override
     public boolean isSimilar(LogEntry logEntry, LogEntry other)
     {
+        if (!super.isSimilar(logEntry, other)) return false;
         return logEntry.world == other.world
             && logEntry.causer == other.causer
             && logEntry.getItemData().equals(other.getItemData());

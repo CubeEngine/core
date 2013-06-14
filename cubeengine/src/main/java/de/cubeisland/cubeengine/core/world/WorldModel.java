@@ -22,9 +22,12 @@ import org.bukkit.World;
 import de.cubeisland.cubeengine.core.storage.Model;
 import de.cubeisland.cubeengine.core.storage.database.AttrType;
 import de.cubeisland.cubeengine.core.storage.database.Attribute;
+import de.cubeisland.cubeengine.core.storage.database.Index;
+import de.cubeisland.cubeengine.core.storage.database.Index.IndexType;
 import de.cubeisland.cubeengine.core.storage.database.SingleKeyEntity;
 
-@SingleKeyEntity(tableName = "worlds", primaryKey = "key", autoIncrement = true)
+@SingleKeyEntity(tableName = "worlds", primaryKey = "key", autoIncrement = true,
+indices = @Index(value = IndexType.UNIQUE, fields = "worldUUID"))
 public class WorldModel implements Model<Long>
 {
     @Attribute(type = AttrType.INT, unsigned = true)
@@ -41,6 +44,13 @@ public class WorldModel implements Model<Long>
     {
         this.worldName = world.getName();
         this.worldUUID = world.getUID().toString();
+    }
+
+    public WorldModel(long key, String worldName, String uuid)
+    {
+        this.key = key;
+        this.worldName = worldName;
+        this.worldUUID = uuid;
     }
 
     @Override

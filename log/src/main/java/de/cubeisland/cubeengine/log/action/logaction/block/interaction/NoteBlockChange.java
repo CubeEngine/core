@@ -18,6 +18,7 @@
 package de.cubeisland.cubeengine.log.action.logaction.block.interaction;
 
 import java.util.EnumSet;
+import java.util.concurrent.TimeUnit;
 
 import org.bukkit.World;
 
@@ -59,12 +60,12 @@ public class NoteBlockChange extends BlockActionType
         }
         if (oldClicks.intValue() == newClicks)
         {
-            user.sendTranslated("%s&2&s &afiddled around with the noteblock but did not change anything%s%a!",
+            user.sendTranslated("%s&2&s &afiddled around with the noteblock but did not change anything%s",
                                 time,logEntry.getCauserUser().getDisplayName(),loc);
         }
         else
         {
-            user.sendTranslated("%s&2%s &aset the noteblock to &6%d&a clicks%s&a!",
+            user.sendTranslated("%s&2%s &aset the noteblock to &6%d&a clicks%s",
                                 time, logEntry.getCauserUser().getDisplayName(), newClicks,loc);
         }
     }
@@ -73,5 +74,11 @@ public class NoteBlockChange extends BlockActionType
     public boolean isActive(World world)
     {
         return this.lm.getConfig(world).NOTEBLOCK_CHANGE_enable;
+    }
+
+    @Override
+    protected boolean nearTimeFrame(LogEntry logEntry, LogEntry other)
+    {
+        return Math.abs(TimeUnit.MILLISECONDS.toMinutes(logEntry.timestamp.getTime() - other.timestamp.getTime())) < 2;
     }
 }

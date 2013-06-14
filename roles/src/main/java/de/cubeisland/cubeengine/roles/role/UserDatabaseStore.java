@@ -38,7 +38,7 @@ public class UserDatabaseStore extends UserDataStore
 
     public UserDatabaseStore(RolesAttachment attachment, long worldID, RolesManager manager)
     {
-        super(attachment,worldID);
+        super(attachment, worldID);
         this.rm = manager.rm;
         this.mdm = manager.mdm;
         this.pm = manager.pm;
@@ -92,8 +92,23 @@ public class UserDatabaseStore extends UserDataStore
         {
             return false;
         }
-        this.rm.store(new AssignedRole(this.getUserID(),this.worldID,roleName));
+        this.rm.store(new AssignedRole(this.getUserID(),this.worldID,roleName), false);
+        this.removeAssignedRoles(role.getAssignedRoles());
+        if (this.roles.isEmpty())
+        {
+            attachment.removeDefaultRoles(this.worldID);
+        }
         return super.assignRole(role);
+    }
+
+
+    private void removeAssignedRoles(Set<Role> roles)
+    {
+        for (Role role : roles)
+        {
+            this.removeAssignedRoles(role.getAssignedRoles());
+            this.removeRole(role);
+        }
     }
 
     @Override

@@ -17,159 +17,152 @@
  */
 package de.cubeisland.cubeengine.conomy.account;
 
-import de.cubeisland.cubeengine.conomy.ConomyPermissions;
 import de.cubeisland.cubeengine.conomy.account.storage.AccountModel;
-import de.cubeisland.cubeengine.conomy.currency.Currency;
-import de.cubeisland.cubeengine.core.CubeEngine;
-import de.cubeisland.cubeengine.core.user.User;
 
-public class Account
+public abstract class Account
 {
-    private User user;
-    private AccountModel model;
-    private final Currency currency;
-    private final AccountManager manager;
+    protected ConomyManager manager;
+    AccountModel model; // package private!
 
-    public Account(AccountManager manager, Currency currency, AccountModel model)
+    public Account(ConomyManager manager, AccountModel model)
     {
         this.manager = manager;
-        this.currency = currency;
         this.model = model;
-        this.user = model.user_id == null ? null : CubeEngine.getUserManager().getUser(model.user_id);
-    }
-
-    public User getUser()
-    {
-        return user;
-    }
-
-    public boolean isUserAccount()
-    {
-        return user != null;
-    }
-
-    public long getBalance()
-    {
-        return this.model.value;
-    }
-
-    public Currency getCurrency()
-    {
-        return currency;
-    }
-
-    private void updateModel()
-    {
-        this.manager.getStorage().update(this.model);
     }
 
     /**
-     * Transfers given amount of money from the source-account to this one.
+     * Returns the name of this account
      *
-     * @param source the source-account (can be null)
-     * @param amount the amount to transfer (can be negative) in this accounts
-     * currency
-     * @throws IllegalArgumentException when currencies are not convertible
-     * @return the new balance
+     * @return
      */
-    public long transaction(Account source, long amount) throws IllegalArgumentException
+    public abstract String getName();
+
+    /**
+     * Logs an action for this account formatted like this:
+     * <p>{@code action} accountName {@code value} :: current balance
+     */
+    public abstract void log(String action, Object value);
+
+    /**
+     * Updates the account in the database
+     */
+    protected void update()
     {
-        if (source != null)
-        {
-            if (!source.currency.equals(this.currency))
-            {
-                if (!this.currency.canConvert(source.currency))
-                {
-                    throw new IllegalArgumentException("Cannot convert " + source.currency.getName() + " into " + this.currency.getName());
-                }
-                long sourceAmount = source.currency.convert(this.currency, amount);
-                source.model.value -= sourceAmount;
-            }
-            else
-            {
-                source.model.value -= amount;
-            }
-            source.updateModel();
-        }
-        this.model.value += amount;
-        this.updateModel();
-        return this.model.value;
+        this.manager.storage.update(this.model);
     }
 
     /**
-     * Resets the balance to the defined default value.
-     */
-    public void resetToDefault()
-    {
-        this.model.value = this.currency.getDefaultBalance();
-        this.updateModel();
-    }
-
-    /**
-     * Sets the balance to the specified amount.
+     * Performs a transaction from this account to another.
      *
-     * @param amount the amount to set
+     * @param to the account to transfer to
+     * @param amount the amount to transfer
+     * @param force if true do not check if balance would go under minimum
+     * @return true if the transaction was successful
      */
-    public void set(long amount)
+    public boolean transactionTo(Account to, double amount, boolean force)
+    {
+        return this.manager.transaction(this,to,amount,force);
+    }
+
+    private void set0(long amount)
     {
         this.model.value = amount;
-        this.updateModel();
+        this.update();
     }
 
     /**
-     * Scales the balance with the given factor (always rounding down if
-     * necessary)
+     * Adds the specified amount into this account
+     *
+     * @param amount the amount to add
+     */
+    public void deposit(double amount)
+    {
+        this.set0(this.model.value + (long)(amount * this.manager.fractionalDigitsFactor()));
+        this.log("DEPOSIT", amount);
+
+    }
+
+    /**
+     * Removes the specified amount from this account
+     *
+     * @param amount the amount to remove
+     */
+    public void withdraw(double amount)
+    {
+        this.set0(this.model.value - (long)(amount * this.manager.fractionalDigitsFactor()));
+        this.log("WITHDRAW" , amount);
+    }
+
+    /**
+     * Sets this account to the specified balance
+     *
+     * @param amount the new balance to set
+     */
+    public void set(double amount)
+    {
+        this.set0((long)(amount * this.manager.fractionalDigitsFactor()));
+        this.log("SET" , "");
+    }
+
+    /**
+     * Scales the balance of this account with the specified factor.
      *
      * @param factor the factor to scale with
-     * @return the new balance
      */
-    public long scale(double factor)
+    public void scale(float factor)
     {
-        this.model.value = (long)(factor * this.model.value);
-        this.updateModel();
-        return this.model.value;
+        this.set0((long)(this.model.value * factor));
+        this.log("SCALE" , factor);
     }
 
+    /**
+     * Resets the balance of this account to the default-balance specified in the configuration
+     */
+    public void reset()
+    {
+        this.set0((long)(this.getDefaultBalance() * this.manager.fractionalDigitsFactor()));
+        this.log("RESET" , "");
+    }
+
+    /**
+     * Returns the hidden state of this account
+     *
+     * @return true if the account is hidden
+     */
     public boolean isHidden()
     {
-        return this.model.hidden;
+        return this.model.isHidden();
     }
 
+    /**
+     * Sets the hidden state of this account
+     *
+     * @param hidden true to hide this account
+     */
     public void setHidden(boolean hidden)
     {
-        this.model.hidden = hidden;
+        this.model.setHidden(hidden);
+        this.update();
+        this.log(hidden ? "HIDE" : "UNHIDE", "");
     }
-
-    public boolean canAfford(long amount)
+    /**
+     * Returns the current balance
+     *
+     * @return the current balance
+     */
+    public double balance()
     {
-        if (this.isUserAccount())
-        {
-            if (!ConomyPermissions.ACCOUNT_ALLOWUNDERMIN.isAuthorized(this.user))
-            {
-                if (this.getBalance() - amount < this.getCurrency().getMinMoney())
-                {
-                    return false;
-                }
-            }
-            return true; // Has perm or money
-        }
-        else
-        {
-            return true; //TODO bank-accs later
-        }
+        return (double)this.model.value / this.manager.fractionalDigitsFactor();
     }
 
-    @Override
-    public String toString()
-    {
-        if (this.isUserAccount())
-        {
-            return "USER:" + this.user.getName();
-        }
-        else
-        {
-            return "BANK:" + this.model.name;
-        }
+    /**
+     * Returns whether this account can afford the specified amount
+     *
+     * @param amount the amount to check for
+     * @return true if the account has sufficient balance
+     */
+    public abstract boolean has(double amount);
 
-    }
+    public abstract double getDefaultBalance();
+    public abstract double getMinBalance();
 }

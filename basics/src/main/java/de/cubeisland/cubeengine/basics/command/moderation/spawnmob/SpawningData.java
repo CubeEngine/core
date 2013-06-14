@@ -33,6 +33,7 @@ public class SpawningData
     public int amount = 1;
     private HashMap<EntityDataChanger,Object> data = new HashMap<EntityDataChanger, Object>();
 
+    @SuppressWarnings("unchecked")
     public void doSpawn()
     {
         if (entityType != null)

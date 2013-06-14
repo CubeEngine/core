@@ -23,6 +23,7 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
@@ -64,7 +65,7 @@ public abstract class BaseModuleManager implements ModuleManager
         this.core = core;
         this.logger = core.getLog();
         this.loader = new ModuleLoader(core, parentClassLoader);
-        this.modules = new THashMap<String, Module>();
+        this.modules = new LinkedHashMap<String, Module>();
         this.moduleInfos = new THashMap<String, ModuleInfo>();
         this.classMap = new THashMap<Class<? extends Module>, Module>();
         this.coreModule = new CoreModule();
@@ -329,16 +330,22 @@ public abstract class BaseModuleManager implements ModuleManager
     public synchronized void disableModule(Module module)
     {
         Profiler.startProfiling("disable-module");
-        module.disable();
-        this.core.getUserManager().cleanup(module);
-        this.core.getEventManager().removeListeners(module);
-        this.core.getPermissionManager().removePermissions(module);
-        this.core.getTaskManager().cancelTasks(module);
-        this.core.getCommandManager().removeCommands(module);
-        this.core.getApiServer().unregisterApiHandlers(module);
+        try
+        {
+            module.disable();
+            this.core.getUserManager().cleanup(module);
+            this.core.getEventManager().removeListeners(module);
+            this.core.getPermissionManager().removePermissions(module);
+            this.core.getTaskManager().cancelTasks(module);
+            this.core.getCommandManager().removeCommands(module);
+            this.core.getApiServer().unregisterApiHandlers(module);
 
-        this.core.getEventManager().fireEvent(new ModuleDisabledEvent(this.core, module));
-        module.getLog().log(INFO, "Module disabled within {0} microseconds", Profiler.endProfiling("disable-module", TimeUnit.MICROSECONDS));
+            this.core.getEventManager().fireEvent(new ModuleDisabledEvent(this.core, module));
+        }
+        finally
+        {
+            module.getLog().log(INFO, "Module disabled within {0} microseconds", Profiler.endProfiling("disable-module", TimeUnit.MICROSECONDS));
+        }
     }
 
     public synchronized void unloadModule(Module module)

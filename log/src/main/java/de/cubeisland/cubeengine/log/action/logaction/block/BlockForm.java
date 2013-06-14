@@ -25,6 +25,7 @@ import org.bukkit.entity.Entity;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.block.BlockFormEvent;
+import org.bukkit.event.block.EntityBlockFormEvent;
 
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.log.storage.LogEntry;
@@ -53,6 +54,7 @@ public class BlockForm extends BlockActionType
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onBlockForm(BlockFormEvent event)
     {
+        if (event instanceof EntityBlockFormEvent) return;
         if (this.isActive(event.getBlock().getWorld()))
         {
             this.logBlockChange(null,
@@ -67,12 +69,12 @@ public class BlockForm extends BlockActionType
         if (logEntry.hasAttached())
         {
             int amount = logEntry.getAttached().size()+1;
-            user.sendTranslated("%s&6%dx %s &aformed naturally%s&a!",
+            user.sendTranslated("%s&6%dx %s &aformed naturally%s",
                                 time,amount,logEntry.getNewBlock(),loc);
         }
         else
         {
-            user.sendTranslated("%s&6%s &aformed naturally%s&a!",
+            user.sendTranslated("%s&6%s &aformed naturally%s",
                                 time,logEntry.getNewBlock(),loc);
         }
     }

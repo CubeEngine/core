@@ -30,7 +30,7 @@ import de.cubeisland.cubeengine.log.action.logaction.block.BlockActionType;
 import de.cubeisland.cubeengine.log.storage.LogEntry;
 
 import static de.cubeisland.cubeengine.log.action.ActionType.Category.BLOCK;
-import static de.cubeisland.cubeengine.log.action.ActionType.Category.ENTITY;
+import static de.cubeisland.cubeengine.log.action.ActionType.Category.BLOCK_ENTITY;
 import static org.bukkit.Material.AIR;
 
 /**
@@ -42,7 +42,7 @@ public class EntityBreak extends BlockActionType
     @Override
     protected EnumSet<Category> getCategories()
     {
-        return EnumSet.of(BLOCK, ENTITY);
+        return EnumSet.of(BLOCK, BLOCK_ENTITY);
     }
 
     @Override
@@ -66,7 +66,7 @@ public class EntityBreak extends BlockActionType
     @Override
     protected void showLogEntry(User user, LogEntry logEntry, String time, String loc)
     {
-        user.sendTranslated("%s&aA &6%s &adestroyed &6%s&a%s!",
+        user.sendTranslated("%s&aA &6%s &adestroyed &6%s%s",
                             time,
                             logEntry.getCauserEntity(),
                             logEntry.getOldBlock(),

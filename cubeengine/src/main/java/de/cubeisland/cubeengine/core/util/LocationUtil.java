@@ -59,7 +59,7 @@ public class LocationUtil
                 if (topData.getItemType().isSolid())
                 {
                     MaterialData botData = loc.getBlock().getRelative(BlockFace.DOWN).getState().getData();
-                    if ((topData instanceof Step || topData instanceof WoodenStep) && (botData instanceof Step || botData instanceof WoodenStep) && isInvertedStep(topData) && !isInvertedStep(botData))
+                    if ((topData instanceof Step || topData instanceof WoodenStep) && (botData instanceof Step || botData instanceof WoodenStep) && BlockUtil.isInvertedStep(topData) && !BlockUtil.isInvertedStep(botData))
                     {
                         onHalf = true;
                     }
@@ -100,10 +100,5 @@ public class LocationUtil
                 }
             }
         }
-    }
-
-    public static boolean isInvertedStep(MaterialData stepData)
-    {
-        return (stepData.getData() & 0x8) == 0x8;
     }
 }

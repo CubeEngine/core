@@ -143,22 +143,25 @@ public abstract class MySQLComponentBuilder<This extends ComponentBuilder> imple
     {
         switch (operation)
         {
-            case 1:
+            case IS:
+                this.query.append(" IS ");
+                break;
+            case EQUAL:
                 this.query.append('=');
                 break;
-            case 2:
+            case NOT_EQUAL:
                 this.query.append("!=");
                 break;
-            case 3:
+            case LESS:
                 this.query.append('<');
                 break;
-            case 4:
+            case LESS_OR_EQUAL:
                 this.query.append("<=");
                 break;
-            case 5:
+            case GREATER:
                 this.query.append('>');
                 break;
-            case 6:
+            case GREATER_OR_EQUAL:
                 this.query.append(">=");
                 break;
             default:

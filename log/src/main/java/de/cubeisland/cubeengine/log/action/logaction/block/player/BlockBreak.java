@@ -39,18 +39,19 @@ import org.bukkit.material.Attachable;
 
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.util.BlockUtil;
+import de.cubeisland.cubeengine.core.util.ChatFormat;
 import de.cubeisland.cubeengine.core.util.Pair;
+import de.cubeisland.cubeengine.core.util.StringUtils;
 import de.cubeisland.cubeengine.log.action.logaction.ItemDrop;
 import de.cubeisland.cubeengine.log.action.logaction.block.BlockActionType;
 import de.cubeisland.cubeengine.log.storage.LogEntry;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import static de.cubeisland.cubeengine.core.util.BlockUtil.BLOCK_FACES;
-import static de.cubeisland.cubeengine.log.action.ActionType.Category.BLOCK;
-import static de.cubeisland.cubeengine.log.action.ActionType.Category.ENVIRONEMENT;
-import static de.cubeisland.cubeengine.log.action.ActionType.Category.PLAYER;
+import static de.cubeisland.cubeengine.log.action.ActionType.Category.*;
 import static org.bukkit.Material.*;
 
 /**
@@ -95,7 +96,7 @@ public class BlockBreak extends BlockActionType
         else if (blockState instanceof Sign)
         {
             json = this.om.createObjectNode();
-            ArrayNode sign = json.putArray("sign");
+            ArrayNode sign = json.putArray("oldSign");
             for (String line :  ((Sign)blockState).getLines())
             {
                 sign.add(line);
@@ -118,6 +119,7 @@ public class BlockBreak extends BlockActionType
         else
         {
             blockState = this.adjustBlockForDoubleBlocks(blockState); // WOOD_DOOR IRON_DOOR OR BED_BLOCK
+            blockData = BlockData.of(blockState);
         }
         this.logBlockChange(blockState.getLocation(),event.getPlayer(),blockData,AIR,json == null ? null : json.toString());
         if (blockState.getType().equals(OBSIDIAN)) // portal?
@@ -157,7 +159,6 @@ public class BlockBreak extends BlockActionType
                 return;
             }
             blockAttachedTo = event.getBlock().getRelative(BlockFace.DOWN);
-
         }
         if (blockAttachedTo == null) return;
         if (!blockAttachedTo.getType().isSolid())
@@ -170,7 +171,7 @@ public class BlockBreak extends BlockActionType
                 json.put("break-cause", cause.getRight().getID());
                 if (oldState instanceof Sign)
                 {
-                    ArrayNode sign = json.putArray("sign");
+                    ArrayNode sign = json.putArray("oldSign");
                     for (String line : ((Sign)oldState).getLines())
                     {
                         sign.add(line);
@@ -207,28 +208,45 @@ public class BlockBreak extends BlockActionType
         if (logEntry.hasAttached())
         {
             int amount = 1+logEntry.getAttached().size();
-            user.sendTranslated("%s&2%s &abroke &6%dx %s&a%s!",
+            user.sendTranslated("%s&2%s &abroke &6%dx %s%s",
                                 time,
                                 logEntry.getCauserUser().getDisplayName(),
                                 amount,
                                 logEntry.getOldBlock(),
                                 loc);
         }
-        else {
-            user.sendTranslated("%s&2%s &abroke &6%s&a%s!",
-                                time,
-                                logEntry.getCauserUser().getDisplayName(),
-                                logEntry.getOldBlock(),
-                                loc);
+        else
+        {
+            if (logEntry.getAdditional() != null && logEntry.getAdditional().get("oldSign") != null)
+            {
+                String delim = ChatFormat.parseFormats("&7 | &f");
+                ArrayNode oldSign = (ArrayNode)logEntry.getAdditional().get("oldSign");
+                String[] lines = new String[4];
+                int i=0;
+                for (JsonNode jsonNode : oldSign)
+                {
+                    lines[i++] = jsonNode.asText();
+                }
+                user.sendTranslated("%s&2%s &abroke &6%s&a \n   with &7[&f%s&7]&a written on it%s",
+                                    time,
+                                    logEntry.getCauserUser().getDisplayName(),
+                                    logEntry.getOldBlock(), StringUtils.implode(delim, lines),
+                                    loc);
+            }
+            else
+            {
+                user.sendTranslated("%s&2%s &abroke &6%s%s",
+                                    time,
+                                    logEntry.getCauserUser().getDisplayName(),
+                                    logEntry.getOldBlock(),
+                                    loc);
+            }
         }
     }
-
 
     @Override
     public boolean isActive(World world)
     {
         return this.lm.getConfig(world).BLOCK_BREAK_enable;
     }
-
-
 }

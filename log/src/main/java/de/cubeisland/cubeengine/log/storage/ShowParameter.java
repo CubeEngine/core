@@ -15,20 +15,18 @@
  * You should have received a copy of the GNU General Public License
  * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-package de.cubeisland.cubeengine.conomy.config;
+package de.cubeisland.cubeengine.log.storage;
 
-public class SubCurrencyConfig
+public class ShowParameter
 {
-    public String longNamePlural;
-    public String shortName;
-    public String shortNamePlural;
-    public int value;
+    public int pagelimit = 15;
+    public int page = 1;
 
-    public SubCurrencyConfig(String longNamePlural, String shortName, String shortNamePlural, int value)
-    {
-        this.longNamePlural = longNamePlural;
-        this.shortName = shortName;
-        this.shortNamePlural = shortNamePlural;
-        this.value = value;
-    }
+    public boolean showCoords = true;
+    public boolean showDate = true;
+    public boolean compress = true;
+    /**
+     * oldest entries first
+     */
+    public boolean reverseOrder = false;
 }

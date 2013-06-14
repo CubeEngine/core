@@ -128,7 +128,7 @@ public class HomeAdminCommand extends ContainerCommand
                         .sendTranslated("&eAre you sure you want to delete all public homes ever created by &2%s?", context
                             .getString(0));
                     context
-                        .sendTranslated("&eTo delete all the public homes, do: &6\"/confirm\" &ebefore 30 secunds");
+                        .sendTranslated("&eTo delete all the public homes, do: &6\"/confirm\" &ebefore 30 seconds has passed");
                 }
                 else if (context.hasFlag("priv"))
                 {
@@ -136,14 +136,14 @@ public class HomeAdminCommand extends ContainerCommand
                         .sendTranslated("&eAre you sure you want to delete all private homes ever created by &2%s?", context
                             .getString(0));
                     context
-                        .sendTranslated("&eTo delete all the private homes, do: &6\"/confirm\" &ebefore 30 secunds");
+                        .sendTranslated("&eTo delete all the private homes, do: &6\"/confirm\" &ebefore 30 seconds has passed");
                 }
                 else
                 {
                     context.sendTranslated("&eAre you sure you want to delete all homes ever created by &2%s?", context
                         .getString(0));
                     context
-                        .sendTranslated("&eTo delete all the homes, do: &6\"/confirm\" &ebefore 30 secunds");
+                        .sendTranslated("&eTo delete all the homes, do: &6\"/confirm\" &ebefore 30 seconds has passed");
                 }
             }
         }
@@ -154,20 +154,20 @@ public class HomeAdminCommand extends ContainerCommand
                 context
                     .sendTranslated("&eAre you sure you want to delete all public homes ever created on this server!?");
                 context
-                    .sendTranslated("&eTo delete all the public homes of every user, do: &6\"/confirm\" &ebefore 30 secunds");
+                    .sendTranslated("&eTo delete all the public homes of every user, do: &6\"/confirm\" &ebefore 30 seconds has passed");
             }
             else if (context.hasFlag("priv"))
             {
                 context
                     .sendTranslated("&eAre you sure you want to delete all private homes ever created on this server?");
                 context
-                    .sendTranslated("&eTo delete all the private homes of every user, do: &6\"/confirm\" &ebefore 30 secunds");
+                    .sendTranslated("&eTo delete all the private homes of every user, do: &6\"/confirm\" &ebefore 30 seconds has passed");
             }
             else
             {
                 context.sendTranslated("&eAre you sure you want to delete all homes ever created on this server!?");
                 context
-                    .sendTranslated("&eTo delete all the homes of every user, do: &6\"/confirm\" &ebefore 30 secunds");
+                    .sendTranslated("&eTo delete all the homes of every user, do: &6\"/confirm\" &ebefore 30 seconds has passed");
             }
         }
         return new ConfirmResult(new Runnable()
@@ -187,7 +187,7 @@ public class HomeAdminCommand extends ContainerCommand
                         mask |= tpManager.PRIVATE;
                     }
                     tpManager.deleteHomes(mask);
-                    context.sendTranslated("&eThe homes are now deleted");
+                    context.sendTranslated("&aThe homes are now deleted");
                 }
                 else
                 {
@@ -202,7 +202,7 @@ public class HomeAdminCommand extends ContainerCommand
                         mask |= tpManager.PRIVATE;
                     }
                     tpManager.deleteHomes(user, mask);
-                    context.sendTranslated("&eThe homes are now deleted");
+                    context.sendTranslated("&aThe homes are now deleted");
                 }
             }
         }, context);
@@ -306,6 +306,6 @@ public class HomeAdminCommand extends ContainerCommand
             return;
         }
         home.setVisibility(TeleportPoint.Visibility.PUBLIC);
-        context.sendTranslated("&6%s &cis now public", context.getString(0));
+        context.sendTranslated("&6%s &ais now public", context.getString(0));
     }
 }

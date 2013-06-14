@@ -75,7 +75,7 @@ public class BlockPlace extends BlockActionType
                 BlockFall blockFall = this.manager.getActionType(BlockFall.class);
                 if (blockFall.isActive(location.getWorld()))
                 {
-                    blockFall.preplanBlockFall(location.clone(), event.getPlayer(), this); // TODO this does not seem to work
+                    blockFall.preplanBlockFall(location.clone(), event.getPlayer(), this); // TODO this does not seem to work (check me)
                 }
             }
         }
@@ -102,7 +102,7 @@ public class BlockPlace extends BlockActionType
             int amount = logEntry.getAttached().size()+1;
             if (logEntry.getOldBlock().material.equals(Material.AIR))
             {
-                user.sendTranslated("%s&2%s &aplaced &6%dx %s&a%s!",
+                user.sendTranslated("%s&2%s &aplaced &6%dx %s%s",
                                     time,
                                     logEntry.getCauserUser().getDisplayName(),
                                     amount,
@@ -111,7 +111,7 @@ public class BlockPlace extends BlockActionType
             }
             else
             {
-                user.sendTranslated("%s&2%s &areplaced &6%dx %s&a with &6%s&a%s&a!",
+                user.sendTranslated("%s&2%s &areplaced &6%dx %s&a with &6%s%s",
                                     time,
                                     logEntry.getCauserUser().getDisplayName(),
                                     amount,
@@ -124,7 +124,7 @@ public class BlockPlace extends BlockActionType
         {
             if (logEntry.getOldBlock().material.equals(Material.AIR))
             {
-                user.sendTranslated("%s&2%s &aplaced &6%s&a%s!",
+                user.sendTranslated("%s&2%s &aplaced &6%s%s",
                                     time,
                                     logEntry.getCauserUser().getDisplayName(),
                                     logEntry.getNewBlock(),
@@ -132,7 +132,7 @@ public class BlockPlace extends BlockActionType
             }
             else
             {
-                user.sendTranslated("%s&2%s &areplaced &6%s&a with &6%s&a%s&a!",
+                user.sendTranslated("%s&2%s &areplaced &6%s&a with &6%s%s",
                                     time,
                                     logEntry.getCauserUser().getDisplayName(),
                                     logEntry.getOldBlock(),

@@ -25,8 +25,7 @@ import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.log.action.logaction.block.BlockActionType;
 import de.cubeisland.cubeengine.log.storage.LogEntry;
 
-import static de.cubeisland.cubeengine.log.action.ActionType.Category.BLOCK;
-import static de.cubeisland.cubeengine.log.action.ActionType.Category.PLAYER;
+import static de.cubeisland.cubeengine.log.action.ActionType.Category.*;
 
 /**
  * Emptying water-buckets
@@ -37,7 +36,7 @@ public class WaterBucket extends BlockActionType
     @Override
     protected EnumSet<Category> getCategories()
     {
-        return EnumSet.of(BLOCK, PLAYER);
+        return EnumSet.of(BUCKET, BUCKET_EMPTY, BLOCK, PLAYER);
     }
 
     @Override
@@ -52,12 +51,12 @@ public class WaterBucket extends BlockActionType
         if (logEntry.hasAttached())
         {
             int amount = logEntry.getAdditional().size()+1;
-            user.sendTranslated("&2%s &aemptied &6&d&a water-buckets!",
+            user.sendTranslated("&2%s &aemptied &6&d&a water-buckets",
                                 logEntry.getCauserUser().getDisplayName(),amount);
         }
         else
         {
-            user.sendTranslated("&2%s &aemptied a water-bucket!",
+            user.sendTranslated("&2%s &aemptied a water-bucket",
                                 logEntry.getCauserUser().getDisplayName());
         }
     }

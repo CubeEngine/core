@@ -17,15 +17,20 @@
  */
 package de.cubeisland.cubeengine.core.bukkit;
 
+import java.io.IOException;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
+import net.minecraft.server.v1_5_R3.RegionFileCache;
+
 import org.bukkit.Server;
 import org.bukkit.World;
+import org.bukkit.WorldCreator;
 
 import de.cubeisland.cubeengine.core.CubeEngine;
+import de.cubeisland.cubeengine.core.filesystem.FileManager;
 import de.cubeisland.cubeengine.core.world.AbstractWorldManager;
 import de.cubeisland.cubeengine.core.world.WorldModel;
 
@@ -35,36 +40,50 @@ public class BukkitWorldManager extends AbstractWorldManager
 {
     private final Server server;
 
-    public BukkitWorldManager(BukkitCore core)
+    public BukkitWorldManager(final BukkitCore core)
     {
         super(core);
         this.server = core.getServer();
+
+        core.addInitHook(new Runnable() {
+            @Override
+            public void run()
+            {
+                Collection<WorldModel> models = storage.getAll();
+                List<World> loadedWorlds = server.getWorlds();
+                for (WorldModel model : models)
+                {
+                    World world = server.getWorld(UUID.fromString(model.worldUUID));
+                    if (loadedWorlds.contains(world))
+                    {
+                        loadedWorlds.remove(world);
+                        worlds.put(world.getName(), model);
+                        worldIds.put(model.key, world);
+                    }
+                }
+                if (!loadedWorlds.isEmpty()) // new worlds?
+                {
+                    for (World world : loadedWorlds)
+                    {
+                        WorldModel model = new WorldModel(world);
+                        storage.store(model);
+                        worlds.put(world.getName(), model);
+                        worldIds.put(model.key, world);
+                    }
+                }
+            }
+        });
     }
 
     void loadWorlds()
     {
-        Collection<WorldModel> models = this.storage.getAll();
-        List<World> loadedWorlds = this.server.getWorlds();
-        for (WorldModel model : models)
-        {
-            World world = this.server.getWorld(UUID.fromString(model.worldUUID));
-            if (loadedWorlds.contains(world))
-            {
-                loadedWorlds.remove(world);
-                this.worlds.put(world.getName(), model);
-                this.worldIds.put(model.key, world);
-            }
-        }
-        if (!loadedWorlds.isEmpty()) // new worlds?
-        {
-            for (World world : loadedWorlds)
-            {
-                WorldModel model = new WorldModel(world);
-                this.storage.store(model);
-                this.worlds.put(world.getName(), model);
-                this.worldIds.put(model.key, world);
-            }
-        }
+    }
+
+    public World createWorld(WorldCreator creator)
+    {
+        assert CubeEngine.isMainThread() : "Must be executed from main thread!";
+
+        return this.server.createWorld(creator);
     }
 
     @Override
@@ -84,15 +103,30 @@ public class BukkitWorldManager extends AbstractWorldManager
     }
 
     @Override
-    public boolean unloadWorld(String worldName, boolean save)
+    public boolean unloadWorld(World world, boolean save)
     {
-        return this.server.unloadWorld(worldName, save);
+        assert CubeEngine.isMainThread() : "Must be executed from main thread!";
+        boolean success = this.server.unloadWorld(world, save);
+        if (success && !save)
+        {
+            RegionFileCache.a();
+        }
+        return success;
     }
 
     @Override
-    public boolean unloadWorld(World world, boolean save)
+    public boolean deleteWorld(World world) throws IOException
     {
-        return this.server.unloadWorld(world, save);
+        if (world == null)
+        {
+            return false;
+        }
+        if (!this.unloadWorld(world, false))
+        {
+            return false;
+        }
+        FileManager.deleteRecursive(world.getWorldFolder());
+        return true;
     }
 
     @Override

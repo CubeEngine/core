@@ -17,12 +17,10 @@
  */
 package de.cubeisland.cubeengine.shout.announce.announcer;
 
-import de.cubeisland.cubeengine.core.bukkit.TaskManager;
+import de.cubeisland.cubeengine.core.task.TaskManager;
 import de.cubeisland.cubeengine.core.util.Pair;
 import de.cubeisland.cubeengine.shout.announce.Announcement;
 import de.cubeisland.cubeengine.shout.announce.receiver.Receiver;
-
-import java.util.concurrent.Callable;
 
 public class MessageTask implements Runnable
 {
@@ -47,7 +45,7 @@ public class MessageTask implements Runnable
             Pair<Announcement, Integer> pair = receiver.getNextDelayAndAnnouncement();
             if (pair != null && pair.getLeft() != null && pair.getRight() != null)
             {
-                this.tm.callSyncMethod(new SenderTask(pair.getLeft().getMessage(receiver.getLocale()), this.receiver));
+                this.tm.callSync(new SenderTask(pair.getLeft().getMessage(receiver.getLocale()), this.receiver));
                 this.nextExecution = this.runs + pair.getRight();
             }
             else

@@ -25,8 +25,7 @@ import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.log.action.logaction.block.BlockActionType;
 import de.cubeisland.cubeengine.log.storage.LogEntry;
 
-import static de.cubeisland.cubeengine.log.action.ActionType.Category.BLOCK;
-import static de.cubeisland.cubeengine.log.action.ActionType.Category.PLAYER;
+import static de.cubeisland.cubeengine.log.action.ActionType.Category.*;
 
 /**
  * lighter-ignite
@@ -37,7 +36,7 @@ public class Lighter extends BlockActionType
     @Override
     protected EnumSet<Category> getCategories()
     {
-        return EnumSet.of(BLOCK, PLAYER);
+        return EnumSet.of(FIRE, BLOCK, PLAYER, IGNITE);
     }
 
     @Override
@@ -49,7 +48,7 @@ public class Lighter extends BlockActionType
     @Override
     protected void showLogEntry(User user, LogEntry logEntry, String time, String loc)
     {
-        user.sendTranslated("%s&2%s &aset fire%s&a!",
+        user.sendTranslated("%s&2%s &aset fire%s",
                             time, logEntry.getCauserUser().getDisplayName(),loc);
     }
 

@@ -118,6 +118,8 @@ public class KitCommand extends ContainerCommand
         context.sendTranslated("&aCreated the &6%s &akit!", kit.getKitName());
     }
 
+    // TODO list kit cmd
+
     @Alias(names = "kit")
     @Command(desc = "Gives a kit of items.", usage = "<kitname> [player]", min = 1, max = 2, flags = {
         @Flag(longName = "all", name = "a"),

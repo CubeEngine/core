@@ -57,6 +57,7 @@ import de.cubeisland.cubeengine.core.CubeEngine;
 import de.cubeisland.cubeengine.core.attachment.AttachmentHolder;
 import de.cubeisland.cubeengine.core.ban.IpBan;
 import de.cubeisland.cubeengine.core.ban.UserBan;
+import de.cubeisland.cubeengine.core.bukkit.BlockUtil;
 import de.cubeisland.cubeengine.core.bukkit.BukkitCore;
 import de.cubeisland.cubeengine.core.bukkit.BukkitUtils;
 import de.cubeisland.cubeengine.core.command.CommandSender;
@@ -69,7 +70,6 @@ import de.cubeisland.cubeengine.core.storage.database.DatabaseConstructor;
 import de.cubeisland.cubeengine.core.storage.database.Index;
 import de.cubeisland.cubeengine.core.storage.database.SingleKeyEntity;
 import de.cubeisland.cubeengine.core.util.ChatFormat;
-import de.cubeisland.cubeengine.core.util.LocationUtil;
 import de.cubeisland.cubeengine.core.util.convert.ConversionException;
 
 import gnu.trove.map.hash.THashMap;
@@ -77,7 +77,7 @@ import gnu.trove.set.hash.THashSet;
 
 import static de.cubeisland.cubeengine.core.logger.LogLevel.DEBUG;
 import static de.cubeisland.cubeengine.core.storage.database.Index.IndexType.UNIQUE;
-import static de.cubeisland.cubeengine.core.util.LocationUtil.isInvertedStep;
+import static de.cubeisland.cubeengine.core.util.BlockUtil.isInvertedStep;
 
 /**
  * A CubeEngine User (can exist offline too).
@@ -154,6 +154,7 @@ public class User extends UserBase implements Model<Long>, CommandSender, Attach
         {
             A attachment = type.newInstance();
             attachment.attachTo(module, this);
+            @SuppressWarnings("unchecked")
             A oldAttachment = (A) this.attachments.put(type, attachment);
             if (oldAttachment != null)
             {
@@ -343,16 +344,25 @@ public class User extends UserBase implements Model<Long>, CommandSender, Attach
     public void safeTeleport(Location location, TeleportCause cause, boolean keepDirection)
     {
         Location checkLocation = location.clone().add(0, 1, 0);
+        // Search for 2 non occluding blocks
         while (location.getBlock().getType().isSolid() || checkLocation.getBlock().getType().isSolid())
         {
-            if (!checkLocation.getBlock().getType().isSolid())
+            BlockState block = location.getBlock().getState();
+            BlockState block1Up = checkLocation.getBlock().getState();
+            // signpost OR plates ...
+            if ((!block.getType().isSolid() || BlockUtil.isNonObstructingSolidBlock(block.getType()))
+            && (!block1Up.getType().isSolid() || BlockUtil.isNonObstructingSolidBlock(block1Up.getType())))
             {
-                BlockState block = location.getBlock().getState();
-                BlockState upperBlock = checkLocation.getBlock().getRelative(BlockFace.UP).getState();
+                break;
+            }
+            if (!block1Up.getType().isSolid()) // block on top is non Solid
+            {
+                BlockState block2Up = checkLocation.getBlock().getRelative(BlockFace.UP).getState();
+                // If block & block2Up are Steps in the right direction add 0.5 to y and exit
                 if ((block.getData() instanceof Step || block.getData() instanceof  WoodenStep)
-                    && (upperBlock.getData() instanceof Step || upperBlock.getData() instanceof  WoodenStep))
+                && (block2Up.getData() instanceof Step || block2Up.getData() instanceof WoodenStep))
                 {
-                    if (!isInvertedStep(block.getData()) && isInvertedStep(upperBlock.getData()))
+                    if (!isInvertedStep(block.getData()) && isInvertedStep(block2Up.getData()))
                     {
                         location.add(0,0.5,0);
                         break;
@@ -384,7 +394,7 @@ public class User extends UserBase implements Model<Long>, CommandSender, Attach
         }
         if (blockBelow.getType().equals(Material.STEP) || blockBelow.getType().equals(Material.WOOD_STEP))
         {
-            if (!LocationUtil.isInvertedStep(blockBelow.getState().getData()))
+            if (!isInvertedStep(blockBelow.getState().getData()))
             {
                 location.setY(location.getBlockY() - 0.5);
             }

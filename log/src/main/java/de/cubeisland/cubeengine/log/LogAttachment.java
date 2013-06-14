@@ -17,10 +17,24 @@
  */
 package de.cubeisland.cubeengine.log;
 
+import java.util.LinkedList;
+import java.util.Queue;
+
+import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.block.BlockState;
 
 import de.cubeisland.cubeengine.core.user.UserAttachment;
 import de.cubeisland.cubeengine.log.storage.Lookup;
+import de.cubeisland.cubeengine.log.storage.QueryParameter;
+import de.cubeisland.cubeengine.log.storage.ShowParameter;
+
+import com.sk89q.worldedit.LocalSession;
+import com.sk89q.worldedit.Vector;
+import com.sk89q.worldedit.WorldEdit;
+import com.sk89q.worldedit.bukkit.BukkitUtil;
+import com.sk89q.worldedit.regions.CuboidRegion;
+import com.sk89q.worldedit.regions.RegionSelector;
 
 public class LogAttachment extends UserAttachment
 {
@@ -31,7 +45,9 @@ public class LogAttachment extends UserAttachment
     private Lookup killLookup; // lookup with soulsand block
     private Lookup playerLookup; // lookup with pumpkin block
     private Lookup blockLookup; // lookup with woodlog block
-    private Lookup commandLookup; // lookup with command //TODO
+    private Lookup commandLookup; // lookup with command
+    private Queue<ShowParameter> showParameters = new LinkedList<ShowParameter>();
+    private ShowParameter lastShowParameter;
 
     public void clearLookups()
     {
@@ -79,6 +95,23 @@ public class LogAttachment extends UserAttachment
         return this.playerLookup;
     }
 
+    public Lookup createNewCommandLookup()
+    {
+        this.commandLookup = Lookup.general((Log)this.getModule());
+        lastLookup = commandLookup;
+        return this.commandLookup;
+    }
+
+    public Lookup getCommandLookup()
+    {
+        if (commandLookup == null)
+        {
+            return this.createNewCommandLookup();
+        }
+        this.lastLookup = commandLookup;
+        return commandLookup;
+    }
+
     public Lookup createNewLookup(Material blockMaterial)
     {
         switch (blockMaterial)
@@ -94,7 +127,7 @@ public class LogAttachment extends UserAttachment
             case LOG:
                 return this.createNewBlockLookup();
             default:
-                return null; //TODO command lookup
+                return null;
         }
     }
 
@@ -126,6 +159,125 @@ public class LogAttachment extends UserAttachment
             return this.createNewLookup(blockMaterial);
         }
         return lookup;
+    }
+
+
+    public void setLastLookup(Lookup lastLookup)
+    {
+        this.lastLookup = lastLookup;
+    }
+
+    private Log module;
+
+    private Location location1;
+    private Location location2;
+
+    public boolean hasSelection()
+    {
+        if (this.module.hasWorldEdit())
+        {
+            LocalSession session = WorldEdit.getInstance().getSession(this.getHolder().getName());
+            RegionSelector selector = session.getRegionSelector(BukkitUtil.getLocalWorld(this.getHolder().getWorld()));
+            try
+            {
+                if (selector.getRegion() instanceof CuboidRegion)
+                {
+                    Vector pos1 = ((CuboidRegion)selector.getRegion()).getPos1();
+                    Vector pos2 = ((CuboidRegion)selector.getRegion()).getPos2();
+                    this.location1 = new Location(this.getHolder().getWorld(), pos1.getX(), pos1.getY(), pos1.getZ());
+                    this.location2 = new Location(this.getHolder().getWorld(), pos2.getX(), pos2.getY(), pos2.getZ());
+                    return true;
+                }
+            }
+            catch (Exception ignored)
+            {}
+            return false;
+        }
+        else
+        {
+            return location1 != null && location2 != null && location1.getWorld() == location2.getWorld();
+        }
+    }
+
+    public boolean applySelection(QueryParameter parameter)
+    {
+        if (hasSelection())
+        {
+            parameter.setLocationRange(location1, location2);
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public void onAttach()
+    {
+        if (this.getModule() instanceof Log)
+        {
+            this.module = (Log)this.getModule();
+            return;
+        }
+        throw new IllegalArgumentException("Only Log is allowed as module for LogAttachments!");
+    }
+
+    public void setSelectionPos1(Location clicked)
+    {
+        this.location1 = clicked;
+    }
+
+    public void setSelectionPos2(Location clicked)
+    {
+        this.location2 = clicked;
+    }
+
+    private Preview preview;
+
+    public void addToPreview(BlockState state)
+    {
+        if (preview == null)
+        {
+            this.createNewPreview();
+        }
+        preview.add(state);
+    }
+
+    public void createNewPreview()
+    {
+        this.preview = new Preview();
+    }
+
+    public void sendPreview()
+    {
+        this.preview.send(this.getHolder());
+    }
+
+    public ShowParameter getShowParameter()
+    {
+        this.lastShowParameter = showParameters.poll();
+        if (this.lastShowParameter == null)
+        {
+            return new ShowParameter();
+        }
+        return this.lastShowParameter;
+    }
+
+    public void queueShowParameter(ShowParameter show)
+    {
+        this.showParameters.add(show);
+    }
+
+    public ShowParameter getLastShowParameter()
+    {
+        if (this.lastShowParameter == null)
+        {
+            this.lastShowParameter = new ShowParameter();
+        }
+        return lastShowParameter;
+    }
+
+    public Lookup getLastLookup()
+    {
+        return this.lastLookup;
     }
 }
 

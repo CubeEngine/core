@@ -30,6 +30,7 @@ import de.cubeisland.cubeengine.log.storage.LogEntry;
 
 import static de.cubeisland.cubeengine.log.action.ActionType.Category.ENTITY;
 import static de.cubeisland.cubeengine.log.action.ActionType.Category.PLAYER;
+import static de.cubeisland.cubeengine.log.action.ActionType.Category.VEHICLE;
 
 
 /**
@@ -41,7 +42,7 @@ public class VehicleExit extends SimpleLogActionType
     @Override
     protected EnumSet<Category> getCategories()
     {
-        return EnumSet.of(PLAYER, ENTITY);
+        return EnumSet.of(VEHICLE, PLAYER, ENTITY);
     }
 
     @Override
@@ -70,13 +71,13 @@ public class VehicleExit extends SimpleLogActionType
     {
         if (logEntry.getCauserUser() == null)
         {
-            user.sendTranslated("%s&6%s &aexited a &6%s%s&a!",
+            user.sendTranslated("%s&6%s &aexited a &6%s%s",
                                 time, logEntry.getCauserEntity(),
                                 logEntry.getEntityFromData(),loc);
         }
         else
         {
-            user.sendTranslated("%s&2%s &aexited a &6%s%s&a!",
+            user.sendTranslated("%s&2%s &aexited a &6%s%s",
                                 time, logEntry.getCauserUser().getDisplayName(),
                                 logEntry.getEntityFromData(),loc);
         }
@@ -84,6 +85,7 @@ public class VehicleExit extends SimpleLogActionType
     @Override
     public boolean isSimilar(LogEntry logEntry, LogEntry other)
     {
+        if (!super.isSimilar(logEntry, other)) return false;
         return logEntry.world == other.world
             && logEntry.causer == other.causer
             && logEntry.data == other.data;

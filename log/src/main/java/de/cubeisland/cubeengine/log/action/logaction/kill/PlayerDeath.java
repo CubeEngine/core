@@ -23,15 +23,12 @@ import org.bukkit.World;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 
 import de.cubeisland.cubeengine.core.user.User;
-import de.cubeisland.cubeengine.log.Log;
 import de.cubeisland.cubeengine.log.action.logaction.SimpleLogActionType;
 import de.cubeisland.cubeengine.log.storage.LogEntry;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
-import static de.cubeisland.cubeengine.log.action.ActionType.Category.ENTITY;
-import static de.cubeisland.cubeengine.log.action.ActionType.Category.KILL;
-import static de.cubeisland.cubeengine.log.action.ActionType.Category.PLAYER;
+import static de.cubeisland.cubeengine.log.action.ActionType.Category.*;
 
 /**
  * player-death
@@ -56,13 +53,13 @@ public class PlayerDeath extends SimpleLogActionType
     {
         if (logEntry.hasCauserUser())
         {
-            user.sendTranslated("&2%s &agot slaughtered by &2%s&a!",
+            user.sendTranslated("&2%s &agot slaughtered by &2%s",
                                 logEntry.getUserFromData().getDisplayName(),
                                 logEntry.getCauserUser().getDisplayName());
         }
         else if (logEntry.hasCauserEntity())
         {
-            user.sendTranslated("&2%s &acould not escape &6%s&a!",
+            user.sendTranslated("&2%s &acould not escape &6%s",
                                 logEntry.getUserFromData().getDisplayName(),
                                 logEntry.getCauserEntity());
         }
@@ -70,8 +67,8 @@ public class PlayerDeath extends SimpleLogActionType
         {
             JsonNode json = logEntry.getAdditional();
             DamageCause dmgC = DamageCause.valueOf(json.get("dmgC").asText());
-            user.sendTranslated("&2%s &adied! &f(&6%s&f)",
-                                logEntry.getUserFromData().getDisplayName(),
+            user.sendTranslated("&2%s &adied &f(&6%s&f)",//TODO NPE why??? does it still happen
+                                logEntry.getUserFromData().getName(),
                                 dmgC.name());//TODO get pretty name for dmgC
         }
     }
@@ -89,4 +86,9 @@ public class PlayerDeath extends SimpleLogActionType
         return this.lm.getConfig(world).PLAYER_DEATH_enable;
     }
 
+    @Override
+    public boolean canRollback()
+    {
+        return false;
+    }
 }

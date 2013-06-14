@@ -54,7 +54,7 @@ public class BukkitUserManager extends AbstractUserManager
     protected ScheduledExecutorService nativeScheduler;
     protected TObjectIntMap<String> scheduledForRemoval;
 
-    public BukkitUserManager(BukkitCore core)
+    public BukkitUserManager(final BukkitCore core)
     {
         super(core);
         this.core = core;
@@ -63,17 +63,20 @@ public class BukkitUserManager extends AbstractUserManager
         this.nativeScheduler = Executors.newSingleThreadScheduledExecutor(core.getTaskManager().getThreadFactory());
         this.nativeScheduler.scheduleAtFixedRate(new UserCleanupTask(), delay, delay, TimeUnit.MINUTES);
         this.scheduledForRemoval = new TObjectIntHashMap<String>(Constants.DEFAULT_CAPACITY, Constants.DEFAULT_LOAD_FACTOR, -1);
-    }
 
-    void init()
-    {
-        core.getServer().getPluginManager().registerEvents(new UserListener(), core);
-        core.getServer().getPluginManager().registerEvents(new AttachmentHookListener(), core);
+        this.core.addInitHook(new Runnable() {
+            @Override
+            public void run()
+            {
+                core.getServer().getPluginManager().registerEvents(new UserListener(), core);
+                core.getServer().getPluginManager().registerEvents(new AttachmentHookListener(), core);
 
-        for (Player player : core.getServer().getOnlinePlayers())
-        {
-            this.onlineUsers.add(this.getExactUser(player.getName()));
-        }
+                for (Player player : core.getServer().getOnlinePlayers())
+                {
+                    onlineUsers.add(getExactUser(player.getName()));
+                }
+            }
+        });
     }
 
     public User findUser(String name)

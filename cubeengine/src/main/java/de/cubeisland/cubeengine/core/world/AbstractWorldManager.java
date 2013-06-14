@@ -17,6 +17,7 @@
  */
 package de.cubeisland.cubeengine.core.world;
 
+import java.io.IOException;
 import java.util.Locale;
 import java.util.Map;
 
@@ -53,8 +54,12 @@ public abstract class AbstractWorldManager implements WorldManager
         WorldModel model = this.worlds.get(world.getName());
         if (model == null)
         {
-            model = new WorldModel(world);
-            this.storage.store(model);
+            model = this.storage.get(world);
+            if (model == null)
+            {
+                model = new WorldModel(world);
+                this.storage.store(model);
+            }
             this.worlds.put(world.getName(), model);
             this.worldIds.put(model.key, world);
         }
@@ -64,7 +69,13 @@ public abstract class AbstractWorldManager implements WorldManager
     public synchronized Long getWorldId(String name)
     {
         WorldModel model = this.worlds.get(name);
-        return model == null ? null : model.key;
+        if (model == null)
+        {
+            World world = this.getWorld(name);
+            if (world == null) return null;
+            return this.getWorldId(world);
+        }
+        return model.key;
     }
 
     public synchronized long[] getAllWorldIds()
@@ -115,10 +126,24 @@ public abstract class AbstractWorldManager implements WorldManager
         }
     }
 
+    @Override
     public synchronized void removeGenerators(Module module)
     {
         this.generatorMap.remove(module.getId());
     }
+
+    @Override
+    public boolean unloadWorld(String worldName, boolean save)
+    {
+        return this.unloadWorld(this.getWorld(worldName), save);
+    }
+
+    @Override
+    public boolean deleteWorld(String worldName) throws IOException
+    {
+        return this.deleteWorld(this.getWorld(worldName));
+    }
+
 
     @Override
     public synchronized void clean()

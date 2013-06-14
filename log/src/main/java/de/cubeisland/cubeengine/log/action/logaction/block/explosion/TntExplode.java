@@ -36,9 +36,8 @@ public class TntExplode extends BlockActionType
     @Override
     protected EnumSet<Category> getCategories()
     {
-        return EnumSet.of(BLOCK, PLAYER);
+        return EnumSet.of(EXPLOSION, BLOCK, PLAYER);
     }
-
 
     @Override
     public String getName()
@@ -54,13 +53,13 @@ public class TntExplode extends BlockActionType
             int amount = logEntry.getAttached().size()+1;
             if (logEntry.hasCauserUser())
             {
-                user.sendTranslated("%s&aA TNT-Explosion induced by &2%s&a got rid of &6%dx %s&a%s!",
+                user.sendTranslated("%s&aA TNT-Explosion induced by &2%s&a got rid of &6%dx %s%s",
                                     time,logEntry.getCauserUser().getDisplayName(),amount,
                                     logEntry.getOldBlock(),loc);
             }
             else
             {
-                user.sendTranslated("%s&aA TNT-Explosion got rid of &6%dx %s&a%s!",
+                user.sendTranslated("%s&aA TNT-Explosion got rid of &6%dx %s%s",
                                     time,amount,logEntry.getOldBlock(),loc);
             }
         }
@@ -68,13 +67,13 @@ public class TntExplode extends BlockActionType
         {
             if (logEntry.hasCauserUser())
             {
-                user.sendTranslated("%s&aA TNT-Explosion induced by &2%s&a got rid of &6%s&a%s!",
+                user.sendTranslated("%s&aA TNT-Explosion induced by &2%s&a got rid of &6%s%s",
                                     time,logEntry.getCauserUser().getDisplayName(),
                                     logEntry.getOldBlock(),loc);
             }
             else
             {
-                user.sendTranslated("%s&aA TNT-Explosion got rid of &6%s&a%s!",
+                user.sendTranslated("%s&aA TNT-Explosion got rid of &6%s%s",
                                     time,logEntry.getOldBlock(),loc);
             }
         }

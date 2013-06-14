@@ -17,14 +17,18 @@
  */
 package de.cubeisland.cubeengine.log.action;
 
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeSet;
 import java.util.concurrent.ConcurrentHashMap;
 
 import de.cubeisland.cubeengine.core.logger.LogLevel;
 import de.cubeisland.cubeengine.core.util.ChatFormat;
 import de.cubeisland.cubeengine.core.util.StringUtils;
+import de.cubeisland.cubeengine.core.util.matcher.Match;
 import de.cubeisland.cubeengine.log.Log;
+import de.cubeisland.cubeengine.log.action.ActionType.Category;
 import de.cubeisland.cubeengine.log.action.logaction.CraftItem;
 import de.cubeisland.cubeengine.log.action.logaction.EnchantItem;
 import de.cubeisland.cubeengine.log.action.logaction.ItemDrop;
@@ -126,10 +130,12 @@ import gnu.trove.map.hash.TLongObjectHashMap;
 public class ActionTypeManager
 {
     private Map<Class<? extends ActionType>,ActionType> registeredActionTypes = new ConcurrentHashMap<Class<? extends ActionType>, ActionType>();
+    private Map<String, ActionType> actionTypesByName = new ConcurrentHashMap<String, ActionType>();
     private TLongObjectHashMap<ActionType> registeredIds = new TLongObjectHashMap<ActionType>();
     private final Log module;
 
     private Map<String,Long> actionIDs;
+
 
     public ActionTypeManager(Log module)
     {
@@ -248,10 +254,14 @@ public class ActionTypeManager
             }
             actionType.setID(actionTypeId);
         }
-        registeredIds.put(actionType.getID(),actionType);
-        registeredActionTypes.put(actionType.getClass(),actionType);
+        registeredIds.put(actionType.getID(), actionType);
+        registeredActionTypes.put(actionType.getClass(), actionType);
+        actionTypesByName.put(actionType.getName(), actionType);
         actionType.initialize(module);
-        this.module.getLog().log(LogLevel.DEBUG,"ActionType registered: " + actionType.getID() + " " + actionType.getName());
+        if (actionType.getID() != -1)
+        {
+            this.module.getLog().log(LogLevel.DEBUG,"ActionType registered: " + actionType.getID() + " " + actionType.getName());
+        }
         return this;
     }
 
@@ -274,5 +284,23 @@ public class ActionTypeManager
             actionTypes.add(actionType.getName().replace("-","&f-&7"));
         }
         return ChatFormat.parseFormats("&7&o"+StringUtils.implode("&f, &7&o",actionTypes));
+    }
+
+    public Set<ActionType> getActionType(String actionString)
+    {
+        Category category = Category.match(actionString);
+        if (category == null)
+        {
+            String match = Match.string().matchString(actionString, this.actionTypesByName.keySet());
+            if (match == null) return null;
+            HashSet<ActionType> actionTypes = new HashSet<ActionType>();
+            actionTypes.add(this.actionTypesByName.get(match));
+            return actionTypes;
+        }
+        else
+        {
+            return category.getActionTypes();
+        }
+
     }
 }

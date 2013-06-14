@@ -33,7 +33,7 @@ import de.cubeisland.cubeengine.core.CubeEngine;
 import de.cubeisland.cubeengine.core.permission.Permission;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.user.UserManager;
-import de.cubeisland.cubeengine.core.util.Task;
+import de.cubeisland.cubeengine.core.task.Task;
 
 public class FlyListener implements Listener
 {

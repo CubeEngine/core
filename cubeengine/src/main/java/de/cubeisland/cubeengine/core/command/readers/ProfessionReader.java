@@ -17,20 +17,18 @@
  */
 package de.cubeisland.cubeengine.core.command.readers;
 
+import java.util.Locale;
+
+import org.bukkit.entity.Villager;
+
 import de.cubeisland.cubeengine.core.command.ArgumentReader;
 import de.cubeisland.cubeengine.core.command.exception.InvalidArgumentException;
 import de.cubeisland.cubeengine.core.util.matcher.Match;
-import org.bukkit.entity.Villager;
 
-public class ProfessionReader extends ArgumentReader<Villager.Profession>
+public class ProfessionReader extends ArgumentReader
 {
-    public ProfessionReader()
-    {
-        super(Villager.Profession.class);
-    }
-
     @Override
-    public Villager.Profession read(String arg) throws InvalidArgumentException
+    public Villager.Profession read(String arg, Locale locale) throws InvalidArgumentException
     {
         return Match.profession().profession(arg);
     }

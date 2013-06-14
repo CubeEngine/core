@@ -17,27 +17,23 @@
  */
 package de.cubeisland.cubeengine.basics.command.moderation;
 
-import de.cubeisland.cubeengine.basics.Basics;
-import de.cubeisland.cubeengine.basics.BasicsPerm;
-import de.cubeisland.cubeengine.core.command.CommandContext;
-import de.cubeisland.cubeengine.core.command.parameterized.Flag;
-import de.cubeisland.cubeengine.core.command.parameterized.ParameterizedContext;
-import de.cubeisland.cubeengine.core.command.reflected.Command;
-import de.cubeisland.cubeengine.core.user.User;
-import de.cubeisland.cubeengine.core.util.math.Vector3;
-import de.cubeisland.cubeengine.core.util.math.shape.Cylinder;
-import de.cubeisland.cubeengine.core.util.math.shape.Shape;
-import de.cubeisland.cubeengine.core.util.math.shape.Sphere;
 import java.util.EnumSet;
-import java.util.HashSet;
-import java.util.Iterator;
 import java.util.Set;
+
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
 import org.bukkit.material.Openable;
+
+import de.cubeisland.cubeengine.core.command.parameterized.Flag;
+import de.cubeisland.cubeengine.core.command.parameterized.ParameterizedContext;
+import de.cubeisland.cubeengine.core.command.reflected.Command;
+import de.cubeisland.cubeengine.core.user.User;
+import de.cubeisland.cubeengine.core.util.math.Vector3;
+import de.cubeisland.cubeengine.core.util.math.shape.Sphere;
+import de.cubeisland.cubeengine.basics.Basics;
 
 public class DoorCommand
 {
@@ -49,7 +45,7 @@ public class DoorCommand
     }
 
     @Command(
-        desc = "",
+        desc = "Opens or closes doors around the player.",
         usage = "<open|close> <radius> <world> <x> <y> <z>",
         flags =
         {

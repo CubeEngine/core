@@ -105,7 +105,7 @@ public class SignManager implements Listener
         {
             SignType signType = this.registerdSignTypes.get(powerSignModel.PSID);
             SignTypeInfo info = signType.createInfo(powerSignModel);
-            PowerSign powerSign = new PowerSign(signType,info);
+            PowerSign<?, ?> powerSign = new PowerSign(signType,info);
             this.loadedPowerSigns.put(powerSign.getLocation(),powerSign);
         }
     }
@@ -157,7 +157,7 @@ public class SignManager implements Listener
             String psid = getPSID(location);
             if (psid == null)
             {
-                event.getPlayer().sendMessage("NO SIGN HERE");
+                event.getPlayer().sendMessage("[PowerSigns] No Sign here!");
                 //TODO check if it could be a PowerSign
                 //TODO create the sign if user has permission
                 return;

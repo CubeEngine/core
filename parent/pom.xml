@@ -368,7 +368,6 @@
           <configuration>
             <header>../header.txt</header>
             <strictCheck>true</strictCheck>
-            <aggregate>true</aggregate>
             <includes>
               <include>**/*.java</include>
             </includes>

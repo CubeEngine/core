@@ -24,6 +24,7 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.CountDownLatch;
@@ -46,6 +47,8 @@ import de.cubeisland.cubeengine.log.Log;
 import de.cubeisland.cubeengine.log.action.ActionType;
 
 import gnu.trove.map.hash.THashMap;
+
+import static de.cubeisland.cubeengine.core.storage.database.querybuilder.ComponentBuilder.IS;
 
 public class QueryManager
 {
@@ -172,6 +175,7 @@ public class QueryManager
                 return;
             }
             QueuedSqlParams poll = this.queuedLookups.poll();
+            final QueryAction queryAction = poll.action;
             final Lookup lookup = poll.lookup;
             final User user = poll.user;
             PreparedStatement stmt = this.database.prepareStatement(poll.sql);
@@ -180,7 +184,7 @@ public class QueryManager
                 stmt.setObject(i+1, poll.sqlData.get(i));
             }
             ResultSet resultSet = stmt.executeQuery();
-            QueryResults results = new QueryResults();
+            QueryResults results = new QueryResults(lookup);
             while (resultSet.next())
             {
                 long entryID = resultSet.getLong("id");
@@ -200,6 +204,7 @@ public class QueryManager
                 results.addResult(logEntry);
             }
             lookup.setQueryResults(results);
+
             if (user != null && user.isOnline())
             {
                 module.getCore().getTaskManager().runTask(module, new Runnable()
@@ -207,7 +212,20 @@ public class QueryManager
                     @Override
                     public void run()
                     {
-                        lookup.show(user);
+                        switch (queryAction)
+                        {
+                            case SHOW:
+                                lookup.show(user);
+                                   return;
+                            case ROLLBACK:
+                                lookup.rollback(user, false);
+                                return;
+                            case ROLLBACK_PREVIEW:
+                                lookup.rollback(user, true);
+                                return;
+                            case REDO: // TODO
+                            case REDO_PREVIEW: // TODO
+                        }
                     }
                 });
             }
@@ -317,7 +335,12 @@ public class QueryManager
         }
     }
 
-    public void prepareLookupQuery(final Lookup lookup, final User user)
+    public enum QueryAction
+    {
+        SHOW, ROLLBACK, REDO, ROLLBACK_PREVIEW, REDO_PREVIEW;
+    }
+
+    public void prepareLookupQuery(final Lookup lookup, final User user, QueryAction action)
     {
         final QueryParameter params = lookup.getQueryParameter();
         SelectBuilder selectBuilder =
@@ -331,14 +354,18 @@ public class QueryManager
         if (!params.actions.isEmpty())
         {
             selectBuilder.beginSub().field("action");
-            if (!params.includeActions)
+            boolean include = params.includeActions();
+            if (!include)
             {
                 selectBuilder.not();
             }
             selectBuilder.in().valuesInBrackets(params.actions.size()).endSub();
-            for (ActionType type : params.actions)
+            for (Entry<ActionType,Boolean> type : params.actions.entrySet())
             {
-                dataToInsert.add(type.getID());
+                if (!include || type.getValue()) // all exclude OR only include
+                {
+                    dataToInsert.add(type.getKey().getID());
+                }
             }
             needAnd = true;
         }
@@ -383,10 +410,13 @@ public class QueryManager
                 if (params.location2 != null)// has area
                 {
                     BlockVector3 loc2 = params.location2;
+                    boolean locX = loc1.x < loc2.x;
+                    boolean locY = loc1.y < loc2.y;
+                    boolean locZ = loc1.z < loc2.z;
                     selectBuilder.and().beginSub()
-                        .field("x").between(loc1.x,loc2.x)
-                        .and().field("y").between(loc1.y,loc2.y)
-                        .and().field("z").between(loc1.z,loc2.z)
+                        .field("x").between(locX ? loc1.x : loc2.x, locX ? loc2.x : loc1.x)
+                        .and().field("y").between(locY ? loc1.y : loc2.y, locY ? loc2.y : loc1.y)
+                        .and().field("z").between(locZ ? loc1.z : loc2.z, locZ ? loc2.z : loc1.z)
                         .endSub();
                 }
                 else if (params.radius == null)// has single location
@@ -409,9 +439,81 @@ public class QueryManager
             selectBuilder.endSub();
             needAnd = true;
         }
+        if (!params.blocks.isEmpty())
+        {
+            if (needAnd)
+            {
+                selectBuilder.and();
+            }
+            selectBuilder.beginSub();
+            // make sure there is data for blocks first
+            selectBuilder.not().beginSub().field("block").is(IS).value(null).or()
+                         .field("data").is(IS).value(null).or()
+                         .field("newBlock").is(IS).value(null).or()
+                         .field("newData").is(IS).value(null).endSub();
+            // Start filter blocks:
+            selectBuilder.and();
+            boolean include = params.includeBlocks();
+            if (!include)
+            {
+                selectBuilder.not();
+            }
+            selectBuilder.beginSub();
+            boolean or = false;
+            for (Entry<ImmutableBlockData,Boolean> data : params.blocks.entrySet())
+            {
+                if (!include || data.getValue()) // all exclude OR only include
+                {
+                    if (or)
+                    {
+                        selectBuilder.or();
+                    }
+                    selectBuilder.beginSub();
+                    selectBuilder.field("block").isEqual().value(data.getKey().material.name()).or().field("newBlock").isEqual().value(data.getKey().material.name());
+                    if (data.getKey().data != null)
+                    {
+                        selectBuilder.and().beginSub().field("data").isEqual().value(data.getKey().data).or().field("newData").isEqual().value(data.getKey().data).endSub();
+                    }
+                    selectBuilder.endSub();
+                    or = true;
+                }
+            }
+            selectBuilder.endSub().endSub();
+            needAnd = true;
+        }
+        if (!params.users.isEmpty())
+        {
+            if (needAnd)
+            {
+                selectBuilder.and();
+            }
+            // Start filter users:
+            boolean include = params.includeUsers();
+            if (!include)
+            {
+                selectBuilder.not();
+            }
+            selectBuilder.beginSub();
+            boolean or = false;
+            for (Entry<Long,Boolean> data : params.users.entrySet())
+            {
+                if (!include || data.getValue()) // all exclude OR only include
+                {
+                    if (or)
+                    {
+                        selectBuilder.or();
+                    }
+                    selectBuilder.field("causer").isEqual().value(data.getKey());
+                    or = true;
+                }
+            }
+            selectBuilder.endSub();
+            needAnd = true;
+        }
+        // TODO finish queryParams
         String sql = selectBuilder.end().end();
         System.out.print(user.getName() + ": Lookup queued!");
-        this.queuedLookups.offer(new QueuedSqlParams(lookup,user,sql,dataToInsert));
+        this.queuedLookups.offer(new QueuedSqlParams(lookup,user,sql,dataToInsert, action));
         if (this.futureLookup == null || this.futureLookup.isDone())
         {
             this.futureLookup = lookupExecutor.submit(lookupRunner);
@@ -466,13 +568,15 @@ public class QueryManager
         public final String sql;
         public final ArrayList sqlData;
         private final User user;
+        public final QueryAction action;
 
-        public QueuedSqlParams(Lookup lookup, User user, String sql, ArrayList sqlData)
+        public QueuedSqlParams(Lookup lookup, User user, String sql, ArrayList sqlData, QueryAction action)
         {
             this.lookup = lookup;
             this.sql = sql;
             this.sqlData = sqlData;
             this.user = user;
+            this.action = action;
         }
 
 

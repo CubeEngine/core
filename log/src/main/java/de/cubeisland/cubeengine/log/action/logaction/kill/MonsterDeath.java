@@ -22,6 +22,7 @@ import java.util.EnumSet;
 import org.bukkit.World;
 
 import de.cubeisland.cubeengine.core.user.User;
+import de.cubeisland.cubeengine.log.LogAttachment;
 import de.cubeisland.cubeengine.log.action.logaction.SimpleLogActionType;
 import de.cubeisland.cubeengine.log.storage.LogEntry;
 
@@ -30,6 +31,7 @@ import static de.cubeisland.cubeengine.log.action.ActionType.Category.*;
 /**
  * monster-death
  * <p>Events: {@link KillActionType}</p>
+ * <p>This action-type is ignored when doing a rollback unless specifically set
  */
 public class MonsterDeath extends SimpleLogActionType
 {
@@ -38,7 +40,6 @@ public class MonsterDeath extends SimpleLogActionType
     {
         return EnumSet.of(PLAYER, ENTITY, KILL);
     }
-
 
     @Override
     public String getName()
@@ -57,10 +58,15 @@ public class MonsterDeath extends SimpleLogActionType
         return KillActionType.isSimilarSubAction(logEntry,other);
     }
 
-
     @Override
     public boolean isActive(World world)
     {
         return this.lm.getConfig(world).MONSTER_DEATH_enable;
+    }
+
+    @Override
+    public boolean rollback(LogAttachment attachment, LogEntry logEntry, boolean force, boolean preview)
+    {
+        return KillActionType.rollbackDeath(attachment, logEntry, force, preview);
     }
 }

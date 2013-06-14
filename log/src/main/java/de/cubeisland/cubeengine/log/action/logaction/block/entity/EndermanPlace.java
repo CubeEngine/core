@@ -26,7 +26,7 @@ import de.cubeisland.cubeengine.log.action.logaction.block.BlockActionType;
 import de.cubeisland.cubeengine.log.storage.LogEntry;
 
 import static de.cubeisland.cubeengine.log.action.ActionType.Category.BLOCK;
-import static de.cubeisland.cubeengine.log.action.ActionType.Category.ENTITY;
+import static de.cubeisland.cubeengine.log.action.ActionType.Category.BLOCK_ENTITY;
 
 /**
  * Enderman placing blocks.
@@ -37,7 +37,7 @@ public class EndermanPlace extends BlockActionType
     @Override
     protected EnumSet<Category> getCategories()
     {
-        return EnumSet.of(BLOCK, ENTITY);
+        return EnumSet.of(BLOCK, BLOCK_ENTITY);
     }
 
     @Override
@@ -50,8 +50,16 @@ public class EndermanPlace extends BlockActionType
     @Override
     protected void showLogEntry(User user, LogEntry logEntry, String time, String loc)
     {
-        user.sendTranslated("%s&6%s &agot placed by an enderman%s&a!",
-                            time,logEntry.getNewBlock(),loc);
+        if (logEntry.hasAttached())
+        {
+            user.sendTranslated("%s&6Enderman &aplaced &6%s&6 x%d%s!",
+                time, logEntry.getNewBlock().toString(), logEntry.getAttached().size()+1, loc);
+        }
+        else
+        {
+            user.sendTranslated("%s&6Enderman &aplaced &6%s%s!",
+                time, logEntry.getNewBlock().toString(), loc);
+        }
     }
 
 

@@ -25,6 +25,7 @@ import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.log.action.logaction.SimpleLogActionType;
 import de.cubeisland.cubeengine.log.storage.LogEntry;
 
+import static de.cubeisland.cubeengine.log.action.ActionType.Category.BUCKET;
 import static de.cubeisland.cubeengine.log.action.ActionType.Category.ENTITY;
 import static de.cubeisland.cubeengine.log.action.ActionType.Category.PLAYER;
 
@@ -37,7 +38,7 @@ public class MilkFill extends SimpleLogActionType
     @Override
     protected EnumSet<Category> getCategories()
     {
-        return EnumSet.of(PLAYER, ENTITY);
+        return EnumSet.of(BUCKET, PLAYER, ENTITY);
     }
 
     @Override
@@ -55,6 +56,7 @@ public class MilkFill extends SimpleLogActionType
     @Override
     public boolean isSimilar(LogEntry logEntry, LogEntry other)
     {
+        if (!super.isSimilar(logEntry, other)) return false;
         return logEntry.causer == other.causer
             && logEntry.world == other.world;
     }
@@ -62,7 +64,7 @@ public class MilkFill extends SimpleLogActionType
     @Override
     protected void showLogEntry(User user, LogEntry logEntry, String time, String loc)
     {
-        user.sendTranslated("%s&2%s &amilked a cow%s&a!",
+        user.sendTranslated("%s&2%s &amilked a cow%s",
                             time, logEntry.getCauserUser().getDisplayName(),loc);
     }
 

@@ -26,7 +26,7 @@ import de.cubeisland.cubeengine.log.action.logaction.block.BlockActionType;
 import de.cubeisland.cubeengine.log.storage.LogEntry;
 
 import static de.cubeisland.cubeengine.log.action.ActionType.Category.BLOCK;
-import static de.cubeisland.cubeengine.log.action.ActionType.Category.ENTITY;
+import static de.cubeisland.cubeengine.log.action.ActionType.Category.BLOCK_ENTITY;
 
 /**
  * Enderman picking up blocks.
@@ -37,8 +37,10 @@ public class EndermanPickup  extends BlockActionType
     @Override
     protected EnumSet<Category> getCategories()
     {
-        return EnumSet.of(BLOCK, ENTITY);
+        return EnumSet.of(BLOCK, BLOCK_ENTITY);
     }
+
+    private final String[] names = {"enderman"};
 
     @Override
     public String getName()
@@ -46,12 +48,19 @@ public class EndermanPickup  extends BlockActionType
         return "enderman-pickup";
     }
 
-
     @Override
     protected void showLogEntry(User user, LogEntry logEntry, String time, String loc)
     {
-        user.sendTranslated("%s&6%s &agot picked up by an enderman%s!",
-                            logEntry.getOldBlock());
+        if (logEntry.hasAttached())
+        {
+            user.sendTranslated("%s&6Enderman &apicked up &6%s&6 x%d%s!",
+                                time, logEntry.getOldBlock().toString(), logEntry.getAttached().size()+1, loc);
+        }
+        else
+        {
+            user.sendTranslated("%s&6Enderman &apicked up &6%s%s!",
+                                time, logEntry.getOldBlock().toString(), loc);
+        }
     }
 
     @Override

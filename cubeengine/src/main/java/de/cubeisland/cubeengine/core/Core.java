@@ -22,7 +22,7 @@ import java.util.logging.Logger;
 
 import de.cubeisland.cubeengine.core.ban.BanManager;
 import de.cubeisland.cubeengine.core.bukkit.EventManager;
-import de.cubeisland.cubeengine.core.bukkit.TaskManager;
+import de.cubeisland.cubeengine.core.task.TaskManager;
 import de.cubeisland.cubeengine.core.command.CommandManager;
 import de.cubeisland.cubeengine.core.filesystem.FileManager;
 import de.cubeisland.cubeengine.core.i18n.I18n;

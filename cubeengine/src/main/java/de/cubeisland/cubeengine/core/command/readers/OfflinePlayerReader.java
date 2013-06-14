@@ -17,21 +17,27 @@
  */
 package de.cubeisland.cubeengine.core.command.readers;
 
-import de.cubeisland.cubeengine.core.command.ArgumentReader;
-import de.cubeisland.cubeengine.core.command.exception.InvalidArgumentException;
-import org.bukkit.Bukkit;
+import java.util.Locale;
+
 import org.bukkit.OfflinePlayer;
 
-public class OfflinePlayerReader extends ArgumentReader<OfflinePlayer>
+import de.cubeisland.cubeengine.core.Core;
+import de.cubeisland.cubeengine.core.bukkit.BukkitCore;
+import de.cubeisland.cubeengine.core.command.ArgumentReader;
+import de.cubeisland.cubeengine.core.command.exception.InvalidArgumentException;
+
+public class OfflinePlayerReader extends ArgumentReader
 {
-    public OfflinePlayerReader()
+    private final Core core;
+
+    public OfflinePlayerReader(Core core)
     {
-        super(OfflinePlayer.class);
+        this.core = core;
     }
 
     @Override
-    public OfflinePlayer read(String arg) throws InvalidArgumentException
+    public OfflinePlayer read(String arg, Locale locale) throws InvalidArgumentException
     {
-        return Bukkit.getOfflinePlayer(arg);
+        return ((BukkitCore)this.core).getServer().getOfflinePlayer(arg);
     }
 }

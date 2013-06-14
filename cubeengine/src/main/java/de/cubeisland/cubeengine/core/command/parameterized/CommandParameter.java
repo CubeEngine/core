@@ -21,18 +21,21 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
+import de.cubeisland.cubeengine.core.command.ArgumentReader;
+
 public class CommandParameter
 {
     private final String name;
     private final Set<String> aliases;
 
-    private final Class type;
+    private final Class<?> type;
     private boolean required;
 
     private Completer completer;
 
-    public CommandParameter(String name, Class type)
+    public CommandParameter(String name, Class<?> type)
     {
+        assert ArgumentReader.hasReader(type): "The named parameter '" + name + "' has an unreadable type: " + type.getName();
         this.name = name;
         this.aliases = new HashSet<String>(0);
         this.type = type;

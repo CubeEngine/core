@@ -20,130 +20,105 @@ package de.cubeisland.cubeengine.conomy.account.storage;
 import java.lang.reflect.Field;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
 
 import de.cubeisland.cubeengine.core.storage.SingleKeyStorage;
-import de.cubeisland.cubeengine.core.storage.StorageException;
+import de.cubeisland.cubeengine.core.storage.database.AttrType;
 import de.cubeisland.cubeengine.core.storage.database.Database;
+import de.cubeisland.cubeengine.core.storage.database.DatabaseUpdater;
 import de.cubeisland.cubeengine.core.storage.database.querybuilder.QueryBuilder;
-import de.cubeisland.cubeengine.conomy.currency.Currency;
+
+import static de.cubeisland.cubeengine.core.storage.database.querybuilder.ComponentBuilder.IS;
 
 public class AccountStorage extends SingleKeyStorage<Long, AccountModel>
 {
-    private static final int REVISION = 1;
-
-    public AccountStorage(Database database)
+    public AccountStorage(final Database database)
     {
-        super(database, AccountModel.class, REVISION);
+        super(database, AccountModel.class, 2);
+        this.registerUpdater(new DatabaseUpdater()
+        {
+            @Override
+            public void update(Database database) throws SQLException
+            {
+                QueryBuilder builder = database.getQueryBuilder();
+                database.execute(builder.alterTable(tableName).drop("currencyName").end().end());
+                database.execute(builder.alterTable(tableName).change("hidden", "mask",AttrType.TINYINT).end().end());
+            }
+        },1);
         this.initialize();
     }
 
     @Override
-    public void initialize()
+    protected void prepareStatements() throws SQLException
     {
-        try
-        {
-            super.initialize();
-            QueryBuilder builder = this.database.getQueryBuilder();
-            this.database.storeStatement(modelClass, "getByUserID",
-                    builder.select().cols(allFields).from(this.tableName).
-                        where().field("user_id").isEqual().value().end().end());
-            this.database.storeStatement(modelClass, "getByAccountName",
-                    builder.select().cols(allFields).from(this.tableName).
-                        where().field("name").isEqual().value().end().end());
-            this.database.storeStatement(modelClass, "getTopBalance",
-                    builder.select().cols(allFields).from(this.tableName).
-                        where().field("currencyName").isEqual().value().
-                            and().field("hidden").isEqual().value(false).
-                        orderBy("value").desc().limit().offset().end().end());
-            this.database.storeStatement(modelClass, "getTopBalanceWithHidden",
-                    builder.select().cols(allFields).from(this.tableName).
-                            where().field("currencyName").isEqual().value().
-                            orderBy("value").desc().limit().offset().end().end());
-            this.database.storeStatement(modelClass, "setAllUser",
-                    builder.update(this.tableName).set("value").
-                        where().field("currencyName").isEqual().value().
-                        and().not().field("user_id").isEqual().value(null).end().end());
+        super.prepareStatements();
+        QueryBuilder builder = this.database.getQueryBuilder();
+        // Get User-Account
+        this.database.storeStatement(modelClass, "getUserAccount",
+                                     builder.select().cols(allFields).from(this.tableName).
+                                         where().field("user_id").isEqual().value().end().end());
+        // Get Bank-Account
+        this.database.storeStatement(modelClass, "getBankAccount",
+                                     builder.select().cols(allFields).from(this.tableName).
+                                         where().field("name").isEqual().value().end().end());
+        // Get Top-Accounts (ignore hidden) VALUES: user, bank, limit, offset
+        this.database.storeStatement(modelClass, "getTop",
+                                     builder.select().cols(allFields).from(this.tableName).
+                                        where().field("mask").isEqual().value(0).or().field("mask").isEqual().value(2).
+                                          and().beginSub().field("name").is(IS).value(null).isEqual().value().
+                                         or().field("user_id").is(IS).value(null).isEqual().value().endSub().
+                                     orderBy("value").desc().limit().offset().end().end());
 
-            this.database.storeStatement(modelClass, "transactAllUser",
-                    builder.update(this.tableName).set("value").beginFunction("+").field("value").endFunction().
-                        where().field("currencyName").isEqual().value().
-                        and().not().field("user_id").isEqual().value(null).end().end());
-        }
-        catch (SQLException e)
-        {
-            throw new StorageException("Failed to initialize the account-manager!", e);
-        }
+        // Get Top-Accounts (ignore hidden)
+        this.database.storeStatement(modelClass, "getTop/wHidden",
+                                     builder.select().cols(allFields).from(this.tableName).
+                                         where().field("name").is(IS).value(null).isEqual().value().
+                                                or().field("user_id").is(IS).value(null).isEqual().value().
+                                         orderBy("value").desc().limit().offset().end().end());
+        // Sets the balance of all accounts
+        this.database.storeStatement(modelClass, "setAll",
+                                     builder.update(this.tableName).set("value").
+                                         where().field("name").is(IS).value(null).isEqual().value().
+                                            or().field("user_id").is(IS).value(null).isEqual().value()
+                                         .end().end());
+        // Changes the balance of all accounts
+        this.database.storeStatement(modelClass, "transactAll",
+                             builder.update(this.tableName).set("value").beginFunction("+").field("value").endFunction().
+                                where().field("name").is(IS).value(null).isEqual().value().
+                                   or().field("user_id").is(IS).value(null).isEqual().value()
+                                    .end().end());
+        // Scales the balance of all accounts
+        this.database.storeStatement(modelClass, "scaleAll",
+                         builder.update(this.tableName).set("value").beginFunction("*").field("value").endFunction().
+                             where().field("name").is(IS).value(null).isEqual().value().
+                                    or().field("user_id").is(IS).value(null).isEqual().value()
+                                .end().end());
+        // Sets all accounts to a hidden-state
+        this.database.storeStatement(modelClass, "setAllHidden",
+                                     builder.update(this.tableName).set("mask").beginFunction("|").field("mask").endFunction().
+                                         where().field("name").is(IS).value(null).isEqual().value().
+                                                or().field("user_id").is(IS).value(null).isEqual().value()
+                                            .end().end());
+        this.database.storeStatement(modelClass, "unsetAllHidden",
+                                     builder.update(this.tableName).set("mask").beginFunction("& ~").field("mask").endFunction().
+                                         where().field("name").is(IS).value(null).isEqual().value().
+                                                or().field("user_id").is(IS).value(null).isEqual().value()
+                                            .end().end());
     }
 
-    public Collection<AccountModel> loadAccounts(Long userId)
-    {
-        try
-        {
-            ResultSet resulsSet = this.database.preparedQuery(modelClass, "getByUserID", userId);
-            ArrayList<AccountModel> accs = new ArrayList<AccountModel>();
-            while (resulsSet.next())
-            {
-                AccountModel loadedModel = this.modelClass.newInstance();
-                for (Field field : this.fieldNames.keySet())
-                {
-                    field.set(loadedModel, resulsSet.getObject(this.fieldNames.get(field)));
-                }
-                accs.add(loadedModel);
-            }
-            return accs;
-        }
-        catch (SQLException ex)
-        {
-            throw new IllegalStateException("Error while reading from Database", ex);
-        }
-        catch (Exception ex)
-        {
-            throw new IllegalStateException("Error while creating fresh Model from Database", ex);
-        }
-    }
-
-    public Collection<AccountModel> loadAccounts(String name)
-    {
-        try
-        {
-            ResultSet resulsSet = this.database.preparedQuery(modelClass, "getByAccountName", name);
-            ArrayList<AccountModel> accs = new ArrayList<AccountModel>();
-            while (resulsSet.next())
-            {
-                AccountModel loadedModel = this.modelClass.newInstance();
-                for (Field field : this.fieldNames.keySet())
-                {
-                    field.set(loadedModel, resulsSet.getObject(this.fieldNames.get(field)));
-                }
-                accs.add(loadedModel);
-            }
-            return accs;
-        }
-        catch (SQLException ex)
-        {
-            throw new IllegalStateException("Error while reading from Database", ex);
-        }
-        catch (Exception ex)
-        {
-            throw new IllegalStateException("Error while creating fresh Model from Database", ex);
-        }
-    }
-
-    public Collection<AccountModel> getTopAccounts(Currency currency, int fromRank, int toRank, boolean showHidden)
+    public Collection<AccountModel> getTopAccounts(boolean user, boolean bank, int fromRank, int toRank, boolean showHidden)
     {
         try
         {
             ResultSet resultSet;
             if (showHidden)
             {
-                resultSet = this.database.preparedQuery(modelClass, "getTopBalanceWithHidden", currency.getName().toLowerCase(), toRank + 1 - fromRank, fromRank - 1);
+                resultSet = this.database.preparedQuery(modelClass, "getTop/wHidden", user, bank, toRank + 1 - fromRank, fromRank - 1);
             }
             else
             {
-                resultSet = this.database.preparedQuery(modelClass, "getTopBalance", currency.getName().toLowerCase(), toRank + 1  - fromRank, fromRank - 1);
+                resultSet = this.database.preparedQuery(modelClass, "getTop", user, bank, toRank + 1  - fromRank, fromRank - 1);
             }
             LinkedList<AccountModel> list = new LinkedList<AccountModel>();
             while (resultSet.next())
@@ -167,11 +142,11 @@ public class AccountStorage extends SingleKeyStorage<Long, AccountModel>
         }
     }
 
-    public void transactAll(Currency currency, long amount)
+    public void transactAll(boolean user, boolean bank, long amount)
     {
         try
         {
-            this.database.preparedUpdate(modelClass, "transactAllUser", amount, currency.getName());
+            this.database.preparedUpdate(modelClass, "transactAll", amount, user, bank);
         }
         catch (SQLException ex)
         {
@@ -179,11 +154,94 @@ public class AccountStorage extends SingleKeyStorage<Long, AccountModel>
         }
     }
 
-    public void setAll(Currency currency, long amount)
+    public void setAll(boolean user, boolean bank, long amount)
     {
         try
         {
-            this.database.preparedUpdate(modelClass, "setAllUser", amount, currency.getName());
+            this.database.preparedUpdate(modelClass, "setAll", amount, user, bank);
+        }
+        catch (SQLException ex)
+        {
+            throw new IllegalStateException("Error while updating database", ex);
+        }
+    }
+
+    public void scaleAll(boolean user, boolean bank, float factor)
+    {
+        try
+        {
+            this.database.preparedUpdate(modelClass, "scaleAll", factor, user, bank);
+        }
+        catch (SQLException ex)
+        {
+            throw new IllegalStateException("Error while updating database", ex);
+        }
+    }
+
+    public AccountModel getBankAccount(String name)
+    {
+        try
+        {
+            ResultSet resulsSet = this.database.preparedQuery(modelClass, "getBankAccount", name);
+            if (resulsSet.next())
+            {
+                AccountModel loadedModel = this.modelClass.newInstance();
+                for (Field field : this.fieldNames.keySet())
+                {
+                    field.set(loadedModel, resulsSet.getObject(this.fieldNames.get(field)));
+                }
+                return loadedModel;
+            }
+            return null;
+        }
+        catch (SQLException ex)
+        {
+            throw new IllegalStateException("Error while reading from Database", ex);
+        }
+        catch (Exception ex)
+        {
+            throw new IllegalStateException("Error while creating fresh Model from Database", ex);
+        }
+    }
+
+    public AccountModel getUserAccount(long userID)
+    {
+        try
+        {
+            ResultSet resulsSet = this.database.preparedQuery(modelClass, "getUserAccount", userID);
+            if (resulsSet.next())
+            {
+                AccountModel loadedModel = this.modelClass.newInstance();
+                for (Field field : this.fieldNames.keySet())
+                {
+                    field.set(loadedModel, resulsSet.getObject(this.fieldNames.get(field)));
+                }
+                return loadedModel;
+            }
+            return null;
+        }
+        catch (SQLException ex)
+        {
+            throw new IllegalStateException("Error while reading from Database", ex);
+        }
+        catch (Exception ex)
+        {
+            throw new IllegalStateException("Error while creating fresh Model from Database", ex);
+        }
+    }
+
+    public void setAllHidden(boolean user, boolean bank, boolean set)
+    {
+        try
+        {
+            if (set)
+            {
+                this.database.preparedUpdate(modelClass, "setAllHidden", 1, user, bank);
+            }
+            else
+            {
+                this.database.preparedUpdate(modelClass, "unsetAllHidden", 1, user, bank);
+            }
         }
         catch (SQLException ex)
         {

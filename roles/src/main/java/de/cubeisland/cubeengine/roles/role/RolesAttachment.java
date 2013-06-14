@@ -28,6 +28,7 @@ import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.user.UserAttachment;
 import de.cubeisland.cubeengine.core.util.Triplet;
 import de.cubeisland.cubeengine.roles.Roles;
+import de.cubeisland.cubeengine.roles.RolesConfig;
 import de.cubeisland.cubeengine.roles.role.resolved.ResolvedMetadata;
 import de.cubeisland.cubeengine.roles.role.resolved.ResolvedPermission;
 
@@ -49,6 +50,8 @@ public class RolesAttachment extends UserAttachment
     private Map<String, String> currentMetaData;
 
     private Long workingWorldID = null;
+    protected RolesManager manager;
+    protected RolesConfig config;
 
     /**
      * Gets the resolved data-store.
@@ -56,7 +59,7 @@ public class RolesAttachment extends UserAttachment
      *
      * @return
      */
-    protected ResolvedDataStore getResolvedData()
+    protected ResolvedDataStore getCurrentResolvedData()
     {
         return this.getResolvedData(this.getHolder().getWorldId());
     }
@@ -149,6 +152,16 @@ public class RolesAttachment extends UserAttachment
         this.currentMetaData = null;
     }
 
+    /**
+     * Removes all currently set temporary data invalidates all current data and reloads from database
+     */
+    public void reload()
+    {
+        this.temporaryData = new TLongObjectHashMap<UserDataStore>();
+        this.flushResolvedData();
+        this.reloadFromDatabase();
+    }
+
     public void reloadFromDatabase()
     {
         for (UserDatabaseStore userDatabaseStore : this.rawUserData.valueCollection())
@@ -169,7 +182,7 @@ public class RolesAttachment extends UserAttachment
         UserDatabaseStore rawDataStore = this.rawUserData.get(worldID);
         if (rawDataStore == null)
         {
-            rawDataStore = new UserDatabaseStore(this,worldID,((Roles)this.getModule()).getRolesManager());
+            rawDataStore = new UserDatabaseStore(this, worldID, manager);
             this.rawUserData.put(worldID,rawDataStore);
         }
         return rawDataStore;
@@ -192,6 +205,13 @@ public class RolesAttachment extends UserAttachment
         return rawDataStore;
     }
 
+    public WorldRoleProvider getCurrentWorldProvider()
+    {
+        return this.manager.getProvider(this.getHolder().getWorldId());
+    }
+
+    private boolean offlineMsgReceived = false;
+
     /**
      * Sets all permissions metadata and roles for the players world
      */
@@ -200,23 +220,26 @@ public class RolesAttachment extends UserAttachment
         User user = this.getHolder();
         if (user.isOnline())
         {
-            if (!Bukkit.getServer().getOnlineMode() && ((Roles)this.getModule()).getConfiguration().doNotAssignPermIfOffline && !user.isLoggedIn())
+            if (this.getRawData(user.getWorldId()).getRawAssignedRoles().isEmpty())
             {
-                user.sendTranslated("&cThe server is currently running in offline-mode. Permissions will not be applied until logging in! Contact an Administrator if you think this is an error.");
+                Set<Role> defaultRoles = this.getCurrentWorldProvider().getDefaultRoles();
+                this.getTemporaryRawData(user.getWorldId()).setAssignedRoles(defaultRoles);
+            }
+            ResolvedDataStore resolvedData = this.getCurrentResolvedData();
+            this.currentMetaData = resolvedData.getResolvedMetadata();
+            if (!Bukkit.getServer().getOnlineMode() && this.config.doNotAssignPermIfOffline && !user.isLoggedIn())
+            {
+                if (!offlineMsgReceived)
+                {
+                    user.sendTranslated("&cThe server is currently running in offline-mode. Permissions will not be applied until logging in! Contact an Administrator if you think this is an error.");
+                    offlineMsgReceived = true;
+                }
                 this.getModule().getLog().warning("Role-permissions not applied! Server is running in unsecured offline-mode!");
                 return;
             }
-
-            if (this.getRawData(user.getWorldId()).getRawAssignedRoles().isEmpty())
-            {
-                this.getRawData(user.getWorldId()).setAssignedRoles(((Roles)this.getModule()).getRolesManager().getProvider(user.getWorldId()).getDefaultRoles());
-            }
-            ResolvedDataStore resolvedData = this.getResolvedData();
             user.setPermission(resolvedData.getResolvedPermissions());
-            this.currentMetaData = resolvedData.getResolvedMetadata();
-
-            this.getModule().getLog().log(LogLevel.DEBUG, user.getName()+ ": resolved UserData set!");
-            for (Role assignedRole : this.getResolvedData(user.getWorldId()).assignedRoles)
+            this.getModule().getLog().log(LogLevel.DEBUG, "Calculating Roles of Player " + user.getName()+ "...");
+            for (Role assignedRole : resolvedData.assignedRoles)
             {
                 this.getModule().getLog().log(LogLevel.DEBUG, " - " + assignedRole.getName());
             }
@@ -257,6 +280,20 @@ public class RolesAttachment extends UserAttachment
         return dominantRole;
     }
 
+    /**
+     * Removes the assigned default roles from the temporary roles
+     *
+     * @param worldId
+     */
+    public void removeDefaultRoles(long worldId)
+    {
+        RawDataStore temporaryRawData = this.getTemporaryRawData(worldId);
+        for (Role role : this.manager.getProvider(worldId).getDefaultRoles())
+        {
+            temporaryRawData.removeRole(role);
+        }
+    }
+
     public void setWorkingWorldId(Long workingWorldId)
     {
         this.workingWorldID = workingWorldId;
@@ -289,5 +326,19 @@ public class RolesAttachment extends UserAttachment
             this.currentMetaData = null;
         }
         this.resolvedDataStores.remove(worldID);
+    }
+
+    @Override
+    public void onAttach()
+    {
+        if (this.getModule() instanceof Roles)
+        {
+            this.manager = ((Roles)this.getModule()).getRolesManager();
+            this.config = ((Roles)this.getModule()).getConfiguration();
+        }
+        else
+        {
+            throw new IllegalArgumentException("The module has to be Roles");
+        }
     }
 }
