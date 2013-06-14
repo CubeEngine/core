@@ -61,11 +61,11 @@ public class QueryParameter implements Cloneable
 
     private void resetLocations()
     {
-        worldID = null;
-        location1 = null;
-        location2 = null;
-        singleBlockLocations = null;
-        radius = null;
+        this.worldID = null;
+        this.location1 = null;
+        this.location2 = null;
+        this.singleBlockLocations = null;
+        this.radius = null;
     }
 
     public void setWorld(World world)
@@ -83,8 +83,8 @@ public class QueryParameter implements Cloneable
         }
         if (locations.length == 1)
         {
-            worldID = module.getCore().getWorldManager().getWorldId(locations[0].getWorld());
-            location1 = new BlockVector3(locations[0].getBlockX(),locations[0].getBlockY(),locations[0].getBlockZ());
+            this.worldID = this.module.getCore().getWorldManager().getWorldId(locations[0].getWorld());
+            this.location1 = new BlockVector3(locations[0].getBlockX(),locations[0].getBlockY(),locations[0].getBlockZ());
         }
         else
         {
@@ -95,9 +95,9 @@ public class QueryParameter implements Cloneable
     public void setLocationRange(Location loc1, Location loc2)
     {
         this.resetLocations();
-        worldID = module.getCore().getWorldManager().getWorldId(loc1.getWorld());
-        location1 = new BlockVector3(loc1.getBlockX(),loc1.getBlockY(),loc1.getBlockZ());
-        location2 = new BlockVector3(loc2.getBlockX(),loc2.getBlockY(),loc2.getBlockZ());
+        this.worldID = this.module.getCore().getWorldManager().getWorldId(loc1.getWorld());
+        this.location1 = new BlockVector3(loc1.getBlockX(),loc1.getBlockY(),loc1.getBlockZ());
+        this.location2 = new BlockVector3(loc2.getBlockX(),loc2.getBlockY(),loc2.getBlockZ());
     }
 
     public void setLocationRadius(Location loc, int radius)
@@ -145,7 +145,7 @@ public class QueryParameter implements Cloneable
 
     public void clearActions()
     {
-        actions.clear();
+        this.actions.clear();
     }
 
     public void setUsers(Set<Long> users, boolean include)
@@ -169,7 +169,7 @@ public class QueryParameter implements Cloneable
 
     public void clearUsers()
     {
-        users.clear();
+        this.users.clear();
     }
 
     public void setEntities(Set<EntityType> entities, boolean include)
@@ -193,7 +193,7 @@ public class QueryParameter implements Cloneable
 
     public void clearEntities()
     {
-        users.clear();
+        this.entities.clear();
     }
 
     public void setBlocks(Set<ImmutableBlockData> blockDatas, boolean include)
@@ -217,7 +217,7 @@ public class QueryParameter implements Cloneable
 
     public void clearBlocks()
     {
-        blocks.clear();
+        this.blocks.clear();
     }
 
     public void showNoLogsFound(User user)
@@ -231,7 +231,7 @@ public class QueryParameter implements Cloneable
                                     this.location2.x, this.location2.y, this.location2.z,
                                     this.module.getCore().getWorldManager().getWorld(worldID).getName());
             }
-            else if (radius == null)
+            else if (this.radius == null)
             {
                 user.sendTranslated("&eNo logs found at &3%s&f:&3%d&f:&3%d&f:&3%d&e!",
                                     this.module.getCore().getWorldManager().getWorld(worldID).getName(),
@@ -244,7 +244,7 @@ public class QueryParameter implements Cloneable
             else
             {
                 user.sendTranslated("&eNo logs found in a radius of &3%d around %d&f:&3%d&f:&3%d&e in &3%s&e!",
-                                    radius,this.location1.x, this.location1.y, this.location1.z,
+                                    this.radius,this.location1.x, this.location1.y, this.location1.z,
                                     this.module.getCore().getWorldManager().getWorld(worldID).getName());
             }
         }
@@ -258,23 +258,23 @@ public class QueryParameter implements Cloneable
     {
         QueryParameter params = new QueryParameter(this.module);
 
-        params.from_since = from_since;
-        params.to_before = to_before;
-        params.worldID = worldID;
-        params.location1 = location1;
-        params.location2 = location2;
-        params.radius = radius;
-        params.singleBlockLocations = singleBlockLocations;
-        params.actions = new ConcurrentHashMap<ActionType, Boolean>(actions);
-        params.users = new ConcurrentHashMap<Long, Boolean>(users);
-        params.entities = new ConcurrentHashMap<Integer, Boolean>(entities);
-        params.blocks = new ConcurrentHashMap<ImmutableBlockData, Boolean>(blocks);
+        params.from_since = this.from_since;
+        params.to_before = this.to_before;
+        params.worldID = this.worldID;
+        params.location1 = this.location1;
+        params.location2 = this.location2;
+        params.radius = this.radius;
+        params.singleBlockLocations = this.singleBlockLocations;
+        params.actions = new ConcurrentHashMap<ActionType, Boolean>(this.actions);
+        params.users = new ConcurrentHashMap<Long, Boolean>(this.users);
+        params.entities = new ConcurrentHashMap<Integer, Boolean>(this.entities);
+        params.blocks = new ConcurrentHashMap<ImmutableBlockData, Boolean>(this.blocks);
         return params;
     }
 
     public boolean hasTime()
     {
-        return from_since != null || to_before != null;
+        return this.from_since != null || this.to_before != null;
     }
 
     public boolean includeActions()

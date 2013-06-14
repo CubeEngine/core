@@ -109,6 +109,7 @@ public class MoneyCommand extends ContainerCommand
              flags = @Flag(longName = "showhidden", name = "f"))
     public void top(ParameterizedContext context)
     {
+        // TODO show around player +5 -5
         boolean showHidden = context.hasFlag("f");
         if (showHidden)
         {
