@@ -46,9 +46,10 @@ public class ServiceManager
     public <S> void registerService(Class<S> service, S provider, Module module)
     {
         RegisteredServiceProvider<?> replaced = this.providers.put(service, new RegisteredServiceProvider<S>(service, provider, module));
-        if (replaced != null)
+        if (replaced == null)
         {
-            module.getLog().info("Registered ServiceProvider for the Service: " + service.getName() + "("+ provider.getClass().getName()+")");
+            module.getLog().info("Registered ServiceProvider " + provider.getClass().getName()
+                                     + " the Service: " + service.getName());
         }
         else
         {
@@ -78,6 +79,18 @@ public class ServiceManager
                 iterator.remove();
             }
         }
+    }
+
+    public boolean isServiceRegistered(String serviceString)
+    {
+        for (Class service : this.providers.keySet())
+        {
+            if (service.getName().equals(serviceString))
+            {
+                return true;
+            }
+        }
+        return false;
     }
 }
 

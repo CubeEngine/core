@@ -187,6 +187,10 @@ public interface Core
      */
     BanManager getBanManager();
 
+    /**
+     * Returns the service-manager
+     *
+     * @return the service-manager
+     */
     ServiceManager getServiceManager();
-
 }

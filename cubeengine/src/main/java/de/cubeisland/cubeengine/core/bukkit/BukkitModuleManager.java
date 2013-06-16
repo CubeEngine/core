@@ -36,6 +36,7 @@ import de.cubeisland.cubeengine.core.module.exception.IncompatibleDependencyExce
 import de.cubeisland.cubeengine.core.module.exception.InvalidModuleException;
 import de.cubeisland.cubeengine.core.module.exception.MissingDependencyException;
 import de.cubeisland.cubeengine.core.module.exception.MissingPluginDependencyException;
+import de.cubeisland.cubeengine.core.module.exception.MissingProviderException;
 
 import static java.util.logging.Level.WARNING;
 
@@ -77,7 +78,7 @@ public class BukkitModuleManager extends BaseModuleManager
     }
 
     @Override
-    protected Module loadModule(String name, Map<String, ModuleInfo> moduleInfos, Stack<String> loadStack) throws CircularDependencyException, MissingDependencyException, InvalidModuleException, IncompatibleDependencyException, IncompatibleCoreException, MissingPluginDependencyException
+    protected Module loadModule(String name, Map<String, ModuleInfo> moduleInfos, Stack<String> loadStack) throws CircularDependencyException, MissingDependencyException, InvalidModuleException, IncompatibleDependencyException, IncompatibleCoreException, MissingPluginDependencyException, MissingProviderException
     {
         Module module = super.loadModule(name, moduleInfos, loadStack);
         try

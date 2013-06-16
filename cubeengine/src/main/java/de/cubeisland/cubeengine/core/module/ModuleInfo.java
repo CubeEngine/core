@@ -50,6 +50,9 @@ public class ModuleInfo
     private final Map<String, Version> softDependencies;
     private final Set<String> pluginDependencies;
     private final Set<String> loadAfter;
+    // Service Info:
+    private final Set<String> services;
+    private final Set<String> serviceProviders;
 
     ModuleInfo(Core core)
     {
@@ -75,6 +78,8 @@ public class ModuleInfo
         this.softDependencies = this.dependencies;
         this.pluginDependencies = Collections.emptySet();
         this.loadAfter = this.pluginDependencies;
+        this.services = null;
+        this.serviceProviders = null;
     }
 
     private static String nameToId(String name)
@@ -154,6 +159,9 @@ public class ModuleInfo
 
         this.pluginDependencies = config.pluginDependencies;
         this.loadAfter = config.loadAfter;
+
+        this.services = config.services;
+        this.serviceProviders = config.serviceProviders;
     }
 
     /**
@@ -344,5 +352,15 @@ public class ModuleInfo
         result = 31 * result + pluginDependencies.hashCode();
         result = 31 * result + loadAfter.hashCode();
         return result;
+    }
+
+    public Set<String> getServices()
+    {
+        return services;
+    }
+
+    public Set<String> getServiceProviders()
+    {
+        return serviceProviders;
     }
 }

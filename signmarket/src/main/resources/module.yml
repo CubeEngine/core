@@ -4,3 +4,5 @@ version: ${project.version}
 source-version: ${githead.branch}-${githead.commit}
 dependencies:
 - conomy
+services:
+- de.cubeisland.cubeengine.core.service.Economy

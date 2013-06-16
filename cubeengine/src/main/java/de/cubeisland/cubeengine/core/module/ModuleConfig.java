@@ -51,4 +51,8 @@ public class ModuleConfig extends Configuration
     public Set<String> pluginDependencies = new HashSet<String>(0);
     @Option("load-after")
     public Set<String> loadAfter = new HashSet<String>(0);
+    @Option("services")
+    public Set<String> services = new HashSet<String>(0);
+    @Option("service-providers")
+    public Set<String> serviceProviders = new HashSet<String>(0);
 }
