@@ -140,7 +140,7 @@ public final class BukkitCore extends JavaPlugin implements Core
 
         try
         {
-            System.setProperty("cubeengine.log", fileManager.getLogDir().getCanonicalPath());
+            System.setProperty("cubeengine.log", System.getProperty("cubeengine.log", fileManager.getLogDir().getCanonicalPath()));
         }
         catch (IOException e)
         {
@@ -458,7 +458,7 @@ public final class BukkitCore extends JavaPlugin implements Core
     }
 
     @Override
-    public org.slf4j.Logger getLog()
+    public Logger getLog()
     {
         return this.logger;
     }
