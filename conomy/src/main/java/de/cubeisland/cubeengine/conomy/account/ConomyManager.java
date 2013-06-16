@@ -32,6 +32,7 @@ import de.cubeisland.cubeengine.core.logger.CubeFileHandler;
 import de.cubeisland.cubeengine.core.logger.CubeLogger;
 import de.cubeisland.cubeengine.core.logger.LogLevel;
 import de.cubeisland.cubeengine.core.user.User;
+import de.cubeisland.cubeengine.core.service.Economy;
 import de.cubeisland.cubeengine.conomy.Conomy;
 import de.cubeisland.cubeengine.conomy.ConomyConfiguration;
 import de.cubeisland.cubeengine.conomy.account.storage.AccountModel;
@@ -51,6 +52,7 @@ public class ConomyManager
 
     protected final CubeLogger logger;
     protected final ConomyConfiguration config;
+    private Economy conomyInterface;
 
     public ConomyManager(Conomy module)
     {
@@ -87,6 +89,8 @@ public class ConomyManager
                 throw new IllegalStateException("Could not create handler for transaction-logger", ex);
             }
         }
+
+        this.conomyInterface = new ConomyInterface(this);
     }
 
     public BankAccount getBankAccount(String name, boolean create)
@@ -447,5 +451,10 @@ public class ConomyManager
         bankAccount.update();
         this.bankaccounts.put(newName, bankAccount);
         return true;
+    }
+
+    public Economy getInterface()
+    {
+        return this.conomyInterface;
     }
 }

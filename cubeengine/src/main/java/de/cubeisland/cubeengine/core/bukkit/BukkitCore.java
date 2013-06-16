@@ -60,6 +60,7 @@ import de.cubeisland.cubeengine.core.module.Module;
 import de.cubeisland.cubeengine.core.storage.TableManager;
 import de.cubeisland.cubeengine.core.storage.database.Database;
 import de.cubeisland.cubeengine.core.storage.database.DatabaseFactory;
+import de.cubeisland.cubeengine.core.service.Economy;
 import de.cubeisland.cubeengine.core.util.InventoryGuardFactory;
 import de.cubeisland.cubeengine.core.util.Profiler;
 import de.cubeisland.cubeengine.core.util.Version;
@@ -101,6 +102,7 @@ public final class BukkitCore extends JavaPlugin implements Core
     private BukkitBanManager banManager;
 
     private List<Runnable> initHooks;
+    private Economy economy = null;
 
     @Override
     public void onLoad()
@@ -532,5 +534,25 @@ public final class BukkitCore extends JavaPlugin implements Core
     public BukkitBanManager getBanManager()
     {
         return this.banManager;
+    }
+
+    @Override
+    public Economy getEconomyService()
+    {
+        return this.economy;
+    }
+
+    @Override
+    public void registerEconomyService(Economy economy)
+    {
+        if (this.economy != null)
+        {
+            this.getLog().info("Replaced Economy Interface "+this.economy.getName()+ " -> "+ economy.getName());
+        }
+        else
+        {
+            this.getLog().info("[Core] Economy Interface Set: " + economy.getName());
+        }
+        this.economy = economy;
     }
 }

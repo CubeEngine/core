@@ -22,7 +22,6 @@ import java.util.logging.Logger;
 
 import de.cubeisland.cubeengine.core.ban.BanManager;
 import de.cubeisland.cubeengine.core.bukkit.EventManager;
-import de.cubeisland.cubeengine.core.task.TaskManager;
 import de.cubeisland.cubeengine.core.command.CommandManager;
 import de.cubeisland.cubeengine.core.filesystem.FileManager;
 import de.cubeisland.cubeengine.core.i18n.I18n;
@@ -30,12 +29,14 @@ import de.cubeisland.cubeengine.core.module.ModuleManager;
 import de.cubeisland.cubeengine.core.permission.PermissionManager;
 import de.cubeisland.cubeengine.core.storage.TableManager;
 import de.cubeisland.cubeengine.core.storage.database.Database;
-import de.cubeisland.cubeengine.core.world.WorldManager;
+import de.cubeisland.cubeengine.core.task.TaskManager;
 import de.cubeisland.cubeengine.core.user.UserManager;
+import de.cubeisland.cubeengine.core.service.Economy;
 import de.cubeisland.cubeengine.core.util.InventoryGuardFactory;
 import de.cubeisland.cubeengine.core.util.Version;
 import de.cubeisland.cubeengine.core.util.matcher.Match;
 import de.cubeisland.cubeengine.core.webapi.ApiServer;
+import de.cubeisland.cubeengine.core.world.WorldManager;
 
 /**
  * This interface specifies all the methods the core of the CubeEngine has to provide.
@@ -179,5 +180,19 @@ public interface Core
      */
     InventoryGuardFactory getInventoryGuard();
 
+    /**
+     * Returns the ban-manager
+     *
+     * @return the ban-manager
+     */
     BanManager getBanManager();
+
+    /**
+     * Returns the registered EconomyInterface (can be null)
+     *
+     * @return an EconomyInterface
+     */
+    Economy getEconomyService();
+
+    void registerEconomyService(Economy economy);
 }

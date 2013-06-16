@@ -40,6 +40,7 @@ public class Conomy extends Module
         cm.registerCommand(new MoneyCommand(this));
         cm.registerCommand(new EcoCommands(this));
         cm.registerCommand(new BankCommands(this));
+        this.getCore().registerEconomyService(manager.getInterface());
     }
 
     public ConomyConfiguration getConfig()

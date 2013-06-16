@@ -35,6 +35,7 @@ import de.cubeisland.cubeengine.core.module.TestModuleManager;
 import de.cubeisland.cubeengine.core.permission.PermissionManager;
 import de.cubeisland.cubeengine.core.storage.TableManager;
 import de.cubeisland.cubeengine.core.storage.database.Database;
+import de.cubeisland.cubeengine.core.service.Economy;
 import de.cubeisland.cubeengine.core.world.WorldManager;
 import de.cubeisland.cubeengine.core.user.UserManager;
 import de.cubeisland.cubeengine.core.util.InventoryGuardFactory;
@@ -198,6 +199,18 @@ public class TestCore implements Core
 
     @Override
     public BanManager getBanManager()
+    {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public Economy getEconomyService()
+    {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public void registerEconomyService(Economy economy)
     {
         throw new UnsupportedOperationException("Not supported yet.");
     }
