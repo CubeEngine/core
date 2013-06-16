@@ -45,8 +45,6 @@ import de.cubeisland.cubeengine.core.bukkit.PlayerLanguageReceivedEvent;
 import de.cubeisland.cubeengine.core.command.reflected.ReflectedCommand;
 import de.cubeisland.cubeengine.core.config.Configuration;
 import de.cubeisland.cubeengine.core.filesystem.FileUtil;
-import de.cubeisland.cubeengine.core.logger.CubeFileHandler;
-import de.cubeisland.cubeengine.core.logger.LogLevel;
 import de.cubeisland.cubeengine.core.module.Inject;
 import de.cubeisland.cubeengine.core.module.Module;
 import de.cubeisland.cubeengine.core.storage.database.Database;
@@ -56,8 +54,6 @@ import de.cubeisland.cubeengine.basics.Basics;
 import de.cubeisland.cubeengine.test.commands.TestCommands;
 import de.cubeisland.cubeengine.test.database.TestManager;
 import de.cubeisland.cubeengine.test.database.TestModel;
-
-import static de.cubeisland.cubeengine.core.logger.LogLevel.*;
 
 public class Test extends Module
 {

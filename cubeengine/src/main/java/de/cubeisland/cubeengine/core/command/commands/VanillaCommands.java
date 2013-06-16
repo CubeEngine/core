@@ -53,7 +53,6 @@ import de.cubeisland.cubeengine.core.util.ChatFormat;
 import de.cubeisland.cubeengine.core.util.Profiler;
 
 import static de.cubeisland.cubeengine.core.command.ArgBounds.NO_MAX;
-import static de.cubeisland.cubeengine.core.logger.LogLevel.NOTICE;
 import static de.cubeisland.cubeengine.core.permission.PermDefault.FALSE;
 import static de.cubeisland.cubeengine.core.util.ChatFormat.*;
 import static de.cubeisland.cubeengine.core.util.Misc.arr;

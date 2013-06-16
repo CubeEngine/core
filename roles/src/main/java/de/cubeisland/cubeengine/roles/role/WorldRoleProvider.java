@@ -30,7 +30,7 @@ import de.cubeisland.cubeengine.roles.config.RoleMirror;
 import gnu.trove.map.hash.TLongObjectHashMap;
 import gnu.trove.procedure.TLongObjectProcedure;
 
-import static de.cubeisland.cubeengine.core.logger.LogLevel.DEBUG;
+
 
 public class WorldRoleProvider extends RoleProvider
 {

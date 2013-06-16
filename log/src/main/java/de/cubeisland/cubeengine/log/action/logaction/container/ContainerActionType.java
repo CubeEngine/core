@@ -38,7 +38,7 @@ import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 
 import de.cubeisland.cubeengine.core.bukkit.BukkitUtils;
-import de.cubeisland.cubeengine.core.logger.LogLevel;
+
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.log.LoggingConfiguration;
 import de.cubeisland.cubeengine.log.action.logaction.ActionTypeContainer;

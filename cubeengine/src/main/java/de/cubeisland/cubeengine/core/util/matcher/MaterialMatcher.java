@@ -34,7 +34,7 @@ import org.bukkit.inventory.ItemStack;
 import de.cubeisland.cubeengine.core.CoreResource;
 import de.cubeisland.cubeengine.core.CubeEngine;
 import de.cubeisland.cubeengine.core.filesystem.FileUtil;
-import de.cubeisland.cubeengine.core.logger.LogLevel;
+
 
 import gnu.trove.map.hash.THashMap;
 import gnu.trove.map.hash.TShortObjectHashMap;

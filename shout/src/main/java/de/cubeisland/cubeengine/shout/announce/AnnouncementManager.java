@@ -59,7 +59,6 @@ import org.apache.commons.lang.Validate;
 import org.slf4j.Logger;
 
 import static de.cubeisland.cubeengine.core.filesystem.FileExtentionFilter.TXT;
-import static de.cubeisland.cubeengine.core.logger.LogLevel.*;
 
 /**
  * Class to manage all the dynamicAnnouncements and their receivers

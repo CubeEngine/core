@@ -28,7 +28,7 @@ import de.cubeisland.cubeengine.core.config.node.MapNode;
 import de.cubeisland.cubeengine.core.config.node.Node;
 import de.cubeisland.cubeengine.core.config.node.NullNode;
 import de.cubeisland.cubeengine.core.config.node.StringNode;
-import de.cubeisland.cubeengine.core.logger.LogLevel;
+
 import de.cubeisland.cubeengine.core.util.convert.Convert;
 
 import org.yaml.snakeyaml.Yaml;

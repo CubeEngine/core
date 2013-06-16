@@ -44,8 +44,8 @@ import gnu.trove.map.hash.THashMap;
 import gnu.trove.set.hash.THashSet;
 import org.slf4j.LoggerFactory;
 
-import static de.cubeisland.cubeengine.core.logger.LogLevel.ERROR;
-import static de.cubeisland.cubeengine.core.logger.LogLevel.WARNING;
+
+
 
 /**
  * This class provides functionality to translate messages.

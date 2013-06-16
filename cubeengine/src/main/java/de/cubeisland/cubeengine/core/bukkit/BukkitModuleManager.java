@@ -25,7 +25,7 @@ import java.util.Stack;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
 
-import de.cubeisland.cubeengine.core.logger.LogLevel;
+
 import de.cubeisland.cubeengine.core.module.BaseModuleManager;
 import de.cubeisland.cubeengine.core.module.Inject;
 import de.cubeisland.cubeengine.core.module.Module;

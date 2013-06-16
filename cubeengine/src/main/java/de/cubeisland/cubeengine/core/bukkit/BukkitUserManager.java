@@ -46,7 +46,7 @@ import gnu.trove.map.TObjectIntMap;
 import gnu.trove.map.hash.TObjectIntHashMap;
 import gnu.trove.procedure.TObjectIntProcedure;
 
-import static de.cubeisland.cubeengine.core.logger.LogLevel.WARNING;
+
 
 public class BukkitUserManager extends AbstractUserManager
 {

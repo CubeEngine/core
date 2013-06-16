@@ -22,7 +22,7 @@ import java.io.IOException;
 
 import de.cubeisland.cubeengine.core.command.reflected.ReflectedCommand;
 import de.cubeisland.cubeengine.core.config.Configuration;
-import de.cubeisland.cubeengine.core.logger.LogLevel;
+
 import de.cubeisland.cubeengine.core.module.Inject;
 import de.cubeisland.cubeengine.core.module.Module;
 import de.cubeisland.cubeengine.roles.Roles;

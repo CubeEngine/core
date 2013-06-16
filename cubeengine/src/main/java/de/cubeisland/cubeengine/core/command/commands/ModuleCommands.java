@@ -35,7 +35,7 @@ import de.cubeisland.cubeengine.core.module.exception.ModuleException;
 import de.cubeisland.cubeengine.core.util.ChatFormat;
 import de.cubeisland.cubeengine.core.util.Version;
 
-import static de.cubeisland.cubeengine.core.logger.LogLevel.ERROR;
+
 
 public class ModuleCommands extends ContainerCommand
 {

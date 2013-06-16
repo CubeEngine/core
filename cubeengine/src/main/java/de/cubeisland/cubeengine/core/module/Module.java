@@ -30,8 +30,8 @@ import org.apache.commons.lang.Validate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import static de.cubeisland.cubeengine.core.logger.LogLevel.ERROR;
-import static de.cubeisland.cubeengine.core.logger.LogLevel.WARNING;
+
+
 
 /**
  * Module for CubeEngine.

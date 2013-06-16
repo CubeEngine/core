@@ -25,7 +25,7 @@ import java.util.Set;
 import java.util.Stack;
 
 import de.cubeisland.cubeengine.core.config.Configuration;
-import de.cubeisland.cubeengine.core.logger.LogLevel;
+
 import de.cubeisland.cubeengine.core.permission.Permission;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.util.StringUtils;
@@ -35,7 +35,7 @@ import de.cubeisland.cubeengine.roles.exception.CircularRoleDependencyException;
 
 import gnu.trove.map.hash.THashMap;
 
-import static de.cubeisland.cubeengine.core.logger.LogLevel.DEBUG;
+
 
 public abstract class RoleProvider
 {

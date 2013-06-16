@@ -30,7 +30,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
-import de.cubeisland.cubeengine.core.logger.LogLevel;
+
 import de.cubeisland.cubeengine.itemrepair.Itemrepair;
 import de.cubeisland.cubeengine.itemrepair.material.RepairItemContainer;
 import de.cubeisland.cubeengine.itemrepair.repair.blocks.RepairBlock;

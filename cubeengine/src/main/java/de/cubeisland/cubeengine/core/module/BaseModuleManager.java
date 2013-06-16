@@ -48,7 +48,7 @@ import gnu.trove.map.hash.THashMap;
 import gnu.trove.set.hash.THashSet;
 import org.slf4j.Logger;
 
-import static de.cubeisland.cubeengine.core.logger.LogLevel.*;
+
 
 public abstract class BaseModuleManager implements ModuleManager
 {

@@ -57,7 +57,6 @@ import io.netty.handler.codec.http.websocketx.WebSocketServerHandshaker;
 import io.netty.handler.codec.http.websocketx.WebSocketServerHandshakerFactory;
 import org.slf4j.LoggerFactory;
 
-import static de.cubeisland.cubeengine.core.logger.LogLevel.*;
 import static de.cubeisland.cubeengine.core.webapi.RequestError.*;
 import static io.netty.handler.codec.http.HttpHeaders.Names.CONTENT_TYPE;
 import static io.netty.handler.codec.http.HttpHeaders.Names.HOST;

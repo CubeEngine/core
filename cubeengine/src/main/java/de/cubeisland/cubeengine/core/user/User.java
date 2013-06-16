@@ -75,7 +75,7 @@ import de.cubeisland.cubeengine.core.util.convert.ConversionException;
 import gnu.trove.map.hash.THashMap;
 import gnu.trove.set.hash.THashSet;
 
-import static de.cubeisland.cubeengine.core.logger.LogLevel.DEBUG;
+
 import static de.cubeisland.cubeengine.core.storage.database.Index.IndexType.UNIQUE;
 import static de.cubeisland.cubeengine.core.util.BlockUtil.isInvertedStep;
 

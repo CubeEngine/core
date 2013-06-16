@@ -29,7 +29,7 @@ import de.cubeisland.cubeengine.core.CubeEngine;
 import de.cubeisland.cubeengine.core.command.ArgumentReader;
 import de.cubeisland.cubeengine.core.util.convert.Convert;
 
-import static de.cubeisland.cubeengine.core.logger.LogLevel.WARNING;
+
 
 /**
  * This is the ClassLoader used by modules

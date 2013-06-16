@@ -47,7 +47,7 @@ import de.cubeisland.cubeengine.core.util.StringUtils;
 import gnu.trove.map.hash.THashMap;
 import gnu.trove.set.hash.THashSet;
 
-import static de.cubeisland.cubeengine.core.logger.LogLevel.ERROR;
+
 import static de.cubeisland.cubeengine.core.util.StringUtils.startsWithIgnoreCase;
 
 /**

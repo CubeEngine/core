@@ -46,7 +46,7 @@ import de.cubeisland.cubeengine.core.util.Profiler;
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.Logger;
 
-import static de.cubeisland.cubeengine.core.logger.LogLevel.ERROR;
+
 import static java.util.Arrays.asList;
 
 public class CoreCommands extends ContainerCommand

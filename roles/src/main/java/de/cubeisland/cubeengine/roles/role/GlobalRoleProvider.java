@@ -21,7 +21,7 @@ import java.io.File;
 
 import de.cubeisland.cubeengine.roles.Roles;
 
-import static de.cubeisland.cubeengine.core.logger.LogLevel.DEBUG;
+
 
 public class GlobalRoleProvider extends RoleProvider
 {

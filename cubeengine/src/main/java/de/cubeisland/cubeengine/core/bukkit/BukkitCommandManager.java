@@ -17,10 +17,6 @@
  */
 package de.cubeisland.cubeengine.core.bukkit;
 
-import java.io.File;
-import java.io.IOException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -41,17 +37,12 @@ import de.cubeisland.cubeengine.core.command.sender.ConsoleCommandSender;
 import de.cubeisland.cubeengine.core.module.Module;
 import de.cubeisland.cubeengine.core.util.StringUtils;
 
-import ch.qos.logback.classic.Logger;
-import ch.qos.logback.classic.LoggerContext;
-import ch.qos.logback.classic.PatternLayout;
-import ch.qos.logback.classic.spi.ILoggingEvent;
-import ch.qos.logback.core.FileAppender;
 import gnu.trove.map.hash.THashMap;
-import org.slf4j.ILoggerFactory;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import static de.cubeisland.cubeengine.core.logger.LogLevel.INFO;
-import static de.cubeisland.cubeengine.core.logger.LogLevel.WARNING;
+
+
 
 public class BukkitCommandManager implements CommandManager
 {
@@ -71,7 +62,7 @@ public class BukkitCommandManager implements CommandManager
         this.commandBackend = commandBackend;
         this.commandFactories = new THashMap<Class<? extends CubeCommand>, CommandFactory>();
 
-        this.commandLogger = (Logger) LoggerFactory.getLogger("cubeengine.commands");
+        this.commandLogger = LoggerFactory.getLogger("cubeengine.commands");
         // TODO
 
         this.confirmManager = new ConfirmManager(this, core);
@@ -216,7 +207,7 @@ public class BukkitCommandManager implements CommandManager
     {
         if (command.isLoggable())
         {
-            this.commandLogger.info("execute {} {} {}", new String[]{sender.getName(), command.getName(), StringUtils.implode(" ", args)});
+            this.commandLogger.info("execute {} {} {}", sender.getName(), command.getName(), StringUtils.implode(" ", args));
         }
     }
 
@@ -225,7 +216,7 @@ public class BukkitCommandManager implements CommandManager
     {
         if (command.isLoggable())
         {
-            this.commandLogger.info("complete {} {} {}", new String[]{sender.getName(), command.getName(), StringUtils.implode(" ", args)});
+            this.commandLogger.info("complete {} {} {}", sender.getName(), command.getName(), StringUtils.implode(" ", args));
         }
     }
 

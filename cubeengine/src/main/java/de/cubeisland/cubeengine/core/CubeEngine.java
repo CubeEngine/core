@@ -18,13 +18,13 @@
 package de.cubeisland.cubeengine.core;
 
 import java.io.File;
-import java.util.logging.Logger;
 
 import de.cubeisland.cubeengine.core.filesystem.FileManager;
 import de.cubeisland.cubeengine.core.i18n.I18n;
 import de.cubeisland.cubeengine.core.user.UserManager;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.slf4j.Logger;
 
 /**
  * The CubeEngine provides static method to access all important Manager and the Core.
@@ -123,7 +123,7 @@ public final class CubeEngine
      *
      * @return the Logger
      */
-    public static org.slf4j.Logger getLog()
+    public static Logger getLog()
     {
         return core.getLog();
     }

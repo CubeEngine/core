@@ -23,7 +23,7 @@ import java.util.Set;
 
 import org.bukkit.Bukkit;
 
-import de.cubeisland.cubeengine.core.logger.LogLevel;
+
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.user.UserAttachment;
 import de.cubeisland.cubeengine.core.util.Triplet;

@@ -32,7 +32,7 @@ import de.cubeisland.cubeengine.core.util.worker.AsyncTaskQueue;
 
 import org.apache.commons.lang.Validate;
 
-import static de.cubeisland.cubeengine.core.logger.LogLevel.ERROR;
+
 
 /**
  * Abstract Database implementing most of the database methods.

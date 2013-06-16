@@ -29,7 +29,7 @@ import java.util.concurrent.ConcurrentMap;
 
 import de.cubeisland.cubeengine.core.Core;
 import de.cubeisland.cubeengine.core.CubeEngine;
-import de.cubeisland.cubeengine.core.logger.LogLevel;
+
 import de.cubeisland.cubeengine.core.util.Cleanable;
 
 import org.slf4j.Logger;

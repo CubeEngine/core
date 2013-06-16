@@ -22,7 +22,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import de.cubeisland.cubeengine.core.CubeEngine;
 
-import static de.cubeisland.cubeengine.core.logger.LogLevel.DEBUG;
+
 
 public class CubeThreadFactory implements ThreadFactory
 {

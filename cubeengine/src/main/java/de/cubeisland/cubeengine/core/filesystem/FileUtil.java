@@ -32,7 +32,7 @@ import java.nio.charset.Charset;
 import java.util.LinkedList;
 import java.util.List;
 
-import static de.cubeisland.cubeengine.core.logger.LogLevel.ERROR;
+
 
 /**
  * This class provides some methods to read Files lineByLine

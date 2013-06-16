@@ -35,7 +35,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import de.cubeisland.cubeengine.core.Core;
 import de.cubeisland.cubeengine.core.command.CommandSender;
 import de.cubeisland.cubeengine.core.filesystem.FileManager;
-import de.cubeisland.cubeengine.core.logger.LogLevel;
+
 import de.cubeisland.cubeengine.core.module.Module;
 import de.cubeisland.cubeengine.core.permission.Permission;
 import de.cubeisland.cubeengine.core.util.ChatFormat;

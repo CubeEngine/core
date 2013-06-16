@@ -20,7 +20,7 @@ package de.cubeisland.cubeengine.core.util.matcher;
 import de.cubeisland.cubeengine.core.CoreResource;
 import de.cubeisland.cubeengine.core.CubeEngine;
 import de.cubeisland.cubeengine.core.util.AliasMapFormat;
-import de.cubeisland.cubeengine.core.logger.LogLevel;
+
 import gnu.trove.map.hash.THashMap;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemStack;

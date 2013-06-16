@@ -21,7 +21,7 @@ import de.cubeisland.cubeengine.core.CoreResource;
 import de.cubeisland.cubeengine.core.CubeEngine;
 import de.cubeisland.cubeengine.core.filesystem.FileUtil;
 import de.cubeisland.cubeengine.core.util.StringUtils;
-import de.cubeisland.cubeengine.core.logger.LogLevel;
+
 import gnu.trove.map.hash.*;
 import org.bukkit.DyeColor;
 import org.bukkit.Material;

@@ -35,7 +35,7 @@ import org.bukkit.entity.Projectile;
 
 import de.cubeisland.cubeengine.core.CoreResource;
 import de.cubeisland.cubeengine.core.CubeEngine;
-import de.cubeisland.cubeengine.core.logger.LogLevel;
+
 import de.cubeisland.cubeengine.core.util.AliasMapFormat;
 
 import gnu.trove.map.hash.THashMap;

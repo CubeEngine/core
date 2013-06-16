@@ -19,7 +19,7 @@ package de.cubeisland.cubeengine.basics.command.moderation.kit;
 
 import de.cubeisland.cubeengine.basics.Basics;
 import de.cubeisland.cubeengine.core.config.Configuration;
-import de.cubeisland.cubeengine.core.logger.LogLevel;
+
 import de.cubeisland.cubeengine.core.util.StringUtils;
 import de.cubeisland.cubeengine.core.util.matcher.Match;
 import gnu.trove.map.hash.THashMap;

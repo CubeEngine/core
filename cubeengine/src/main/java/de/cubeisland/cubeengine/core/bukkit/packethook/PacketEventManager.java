@@ -32,7 +32,7 @@ import de.cubeisland.cubeengine.core.util.Cleanable;
 import gnu.trove.map.hash.TIntObjectHashMap;
 import org.slf4j.Logger;
 
-import static de.cubeisland.cubeengine.core.logger.LogLevel.DEBUG;
+
 
 public class PacketEventManager implements Cleanable
 {

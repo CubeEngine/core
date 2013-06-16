@@ -32,7 +32,7 @@ import de.cubeisland.cubeengine.core.CubeEngine;
 import de.cubeisland.cubeengine.core.bukkit.BukkitCore;
 import de.cubeisland.cubeengine.core.command.CubeCommand;
 
-import static de.cubeisland.cubeengine.core.logger.LogLevel.DEBUG;
+
 import static de.cubeisland.cubeengine.core.util.ReflectionUtils.findFirstField;
 import static de.cubeisland.cubeengine.core.util.ReflectionUtils.getFieldValue;
 

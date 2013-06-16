@@ -26,7 +26,7 @@ import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
 import de.cubeisland.cubeengine.core.command.reflected.ReflectedCommandFactory;
-import de.cubeisland.cubeengine.core.logger.LogLevel;
+
 import de.cubeisland.cubeengine.core.module.Module;
 
 import static de.cubeisland.cubeengine.core.util.Misc.arr;

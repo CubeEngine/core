@@ -29,7 +29,7 @@ import org.bukkit.event.block.SignChangeEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.world.ChunkLoadEvent;
 
-import de.cubeisland.cubeengine.core.logger.LogLevel;
+
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.powersigns.signtype.LiftSign;
 import de.cubeisland.cubeengine.powersigns.signtype.SignType;

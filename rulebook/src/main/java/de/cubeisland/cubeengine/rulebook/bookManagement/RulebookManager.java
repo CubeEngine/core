@@ -18,7 +18,7 @@
 package de.cubeisland.cubeengine.rulebook.bookManagement;
 
 import de.cubeisland.cubeengine.core.i18n.Language;
-import de.cubeisland.cubeengine.core.logger.LogLevel;
+
 import de.cubeisland.cubeengine.core.util.StringUtils;
 import de.cubeisland.cubeengine.rulebook.Rulebook;
 import org.bukkit.Bukkit;

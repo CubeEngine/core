@@ -58,7 +58,7 @@ import de.cubeisland.cubeengine.core.util.ReflectionUtils;
 import sun.misc.Signal;
 import sun.misc.SignalHandler;
 
-import static de.cubeisland.cubeengine.core.logger.LogLevel.*;
+
 
 /**
  * This class contains various methods to access bukkit-related stuff.

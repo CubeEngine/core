@@ -28,7 +28,7 @@ import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
 
-import static de.cubeisland.cubeengine.core.logger.LogLevel.ERROR;
+
 
 /**
  * MYSQLDatabase the MYSQL implementation for the database.

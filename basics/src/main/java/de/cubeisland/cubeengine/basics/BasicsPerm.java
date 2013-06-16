@@ -19,7 +19,7 @@ package de.cubeisland.cubeengine.basics;
 
 import java.util.concurrent.TimeUnit;
 
-import de.cubeisland.cubeengine.core.logger.LogLevel;
+
 import de.cubeisland.cubeengine.core.permission.Permission;
 import de.cubeisland.cubeengine.core.permission.PermissionContainer;
 import de.cubeisland.cubeengine.core.util.Profiler;

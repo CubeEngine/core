@@ -37,11 +37,11 @@ import de.cubeisland.cubeengine.core.command.parameterized.Completer;
 import de.cubeisland.cubeengine.core.command.parameterized.Flag;
 import de.cubeisland.cubeengine.core.command.parameterized.Param;
 import de.cubeisland.cubeengine.core.command.parameterized.ParameterizedContextFactory;
-import de.cubeisland.cubeengine.core.logger.LogLevel;
+
 import de.cubeisland.cubeengine.core.module.Module;
 
 import static de.cubeisland.cubeengine.core.command.ArgBounds.NO_MAX;
-import static de.cubeisland.cubeengine.core.logger.LogLevel.ERROR;
+
 import static de.cubeisland.cubeengine.core.util.Misc.arr;
 
 public class ReflectedCommandFactory<T extends CubeCommand> implements CommandFactory<T>

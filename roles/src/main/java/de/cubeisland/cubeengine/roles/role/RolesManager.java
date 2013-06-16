@@ -27,7 +27,7 @@ import java.util.concurrent.TimeUnit;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
 
-import de.cubeisland.cubeengine.core.logger.LogLevel;
+
 import de.cubeisland.cubeengine.core.world.WorldManager;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.util.Profiler;

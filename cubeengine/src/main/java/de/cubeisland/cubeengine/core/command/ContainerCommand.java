@@ -26,7 +26,7 @@ import de.cubeisland.cubeengine.core.command.reflected.ReflectedCommand;
 import de.cubeisland.cubeengine.core.module.Module;
 import de.cubeisland.cubeengine.core.util.ChatFormat;
 
-import static de.cubeisland.cubeengine.core.logger.LogLevel.WARNING;
+
 
 /**
  *

@@ -20,7 +20,7 @@ package de.cubeisland.cubeengine.core.command.result;
 import de.cubeisland.cubeengine.core.CubeEngine;
 import de.cubeisland.cubeengine.core.command.CommandContext;
 import de.cubeisland.cubeengine.core.command.CommandResult;
-import de.cubeisland.cubeengine.core.logger.LogLevel;
+
 
 public class ErrorResult implements CommandResult
 {

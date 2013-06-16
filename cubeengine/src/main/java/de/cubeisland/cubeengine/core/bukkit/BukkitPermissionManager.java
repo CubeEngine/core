@@ -49,7 +49,7 @@ import gnu.trove.map.hash.THashMap;
 import gnu.trove.set.hash.THashSet;
 import org.slf4j.LoggerFactory;
 
-import static de.cubeisland.cubeengine.core.logger.LogLevel.*;
+
 import static de.cubeisland.cubeengine.core.permission.Permission.BASE;
 
 public class BukkitPermissionManager implements PermissionManager
