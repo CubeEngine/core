@@ -107,8 +107,6 @@ public final class BukkitCore extends JavaPlugin implements Core
     @Override
     public void onLoad()
     {
-        // TODO this needs to be done in a better way
-        System.setOut(new PrintStream(new FileOutputStream(FileDescriptor.out)));
         final Server server = this.getServer();
         final PluginManager pm = server.getPluginManager();
 
