@@ -22,10 +22,6 @@ import de.cubeisland.cubeengine.core.permission.PermissionContainer;
 
 public class ConomyPermissions extends PermissionContainer<Conomy>
 {
-
-
-
-
     public ConomyPermissions(Conomy module)
     {
         super(module);
@@ -38,8 +34,6 @@ public class ConomyPermissions extends PermissionContainer<Conomy>
 
     public static final Permission USER_ALLOWUNDERMIN = ACCOUNT_USER.createChild("allow-under-min");
     public static final Permission USER_SHOWHIDDEN = ACCOUNT_USER.createChild("show-hidden");
-
-
 
     private static final Permission COMMAND = Permission.createAbstractPermission("command");
     private static final Permission COMMAND_MONEY_PAY = COMMAND.createAbstractChild("money").createAbstractChild("pay");

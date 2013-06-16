@@ -31,14 +31,12 @@ import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
+import de.cubeisland.cubeengine.core.service.Economy;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.util.ChatFormat;
 import de.cubeisland.cubeengine.core.util.InventoryGuardFactory;
 import de.cubeisland.cubeengine.core.util.RomanNumbers;
 import de.cubeisland.cubeengine.core.util.matcher.Match;
-import de.cubeisland.cubeengine.conomy.Conomy;
-import de.cubeisland.cubeengine.conomy.account.Account;
-import de.cubeisland.cubeengine.conomy.account.ConomyManager;
 import de.cubeisland.cubeengine.signmarket.storage.SignMarketBlockModel;
 import de.cubeisland.cubeengine.signmarket.storage.SignMarketItemModel;
 
@@ -50,7 +48,7 @@ public class MarketSign
 {
     private final MarketSignFactory msFactory;
     private final Signmarket module;
-    protected final ConomyManager conomy;
+    protected Economy economy;
     private SignMarketItemModel itemInfo;
     private SignMarketBlockModel blockInfo;
 
@@ -59,21 +57,21 @@ public class MarketSign
     private boolean editMode;
     public boolean syncOnMe = false;
 
-    public MarketSign(Signmarket module, Conomy conomy, Location location)
+    public MarketSign(Signmarket module, Location location)
     {
-        this(module, conomy, location, null);
+        this(module, location, null);
     }
 
-    public MarketSign(Signmarket module, Conomy conomy, Location location, User owner)
+    public MarketSign(Signmarket module, Location location, User owner)
     {
-        this(module, conomy, new SignMarketItemModel(), new SignMarketBlockModel(location));
+        this(module, new SignMarketItemModel(), new SignMarketBlockModel(location));
         this.blockInfo.setOwner(owner);
     }
 
-    public MarketSign(Signmarket module, Conomy conomy, SignMarketItemModel itemModel, SignMarketBlockModel blockModel)
+    public MarketSign(Signmarket module, SignMarketItemModel itemModel, SignMarketBlockModel blockModel)
     {
         this.module = module;
-        this.conomy = conomy.getManager();
+        this.economy = module.getCore().getServiceManager().getServiceProvider(Economy.class);
         this.blockInfo = blockModel;
         this.setItemInfo(itemModel);
         this.msFactory = module.getMarketSignFactory();
@@ -578,9 +576,9 @@ public class MarketSign
         }
         if (this.allowBuyIfEmpty())
         {
-            return "&o"+this.conomy.format(this.getPrice());
+            return "&o"+this.economy.format(this.getPrice());
         }
-        return this.conomy.format(this.getPrice());
+        return this.economy.format(this.getPrice());
     }
 
     @SuppressWarnings("deprecation")
@@ -760,30 +758,30 @@ public class MarketSign
                     user.sendTranslated("&cYou cannot afford the price of these items!");
                     return;
                 }
-                Account userAccount = this.conomy.getUserAccount(user, true);
-                Account ownerAccount = this.getOwner() != null ? this.conomy.getUserAccount(this.getOwner(), true) : null;
+                //Account userAccount = this.economy.getUserAccount(user, true);
+                //Account ownerAccount = this.getOwner() != null ? this.economy.getUserAccount(this.getOwner(), true) : null;
                 ItemStack item = this.getItem().clone();
                 item.setAmount(this.getAmount());
                 if (checkForPlace(user.getInventory(), item.clone()))
                 {
                     String price = this.parsePrice();
-                    if (userAccount.transactionTo(ownerAccount, this.getPrice(), false))
+                    this.economy.withdraw(user.getName(), this.getPrice());
+                    if (this.getOwner() != null)
                     {
-                        if (this.hasStock())
-                        {
-                            this.setStock(this.getStock() - this.getAmount());
-                            if (this.getStock() < 0)
-                            {
-                                this.setStock(0);
-                            }
-                            this.saveToDatabase();
-                        }
-                        user.getInventory().addItem(item);
-                        user.updateInventory();
-                        user.sendTranslated("&aYou bought &6%dx %s &afor &6%s&a.", this.getAmount(), Match.material().getNameFor(this.getItem()), price);
-                        return;
+                        this.economy.deposit(this.getOwner().getName(), this.getPrice());
                     }
-                    user.sendTranslated("&cOops! Something went wrong!");
+                    if (this.hasStock())
+                    {
+                        this.setStock(this.getStock() - this.getAmount());
+                        if (this.getStock() < 0)
+                        {
+                            this.setStock(0);
+                        }
+                        this.saveToDatabase();
+                    }
+                    user.getInventory().addItem(item);
+                    user.updateInventory();
+                    user.sendTranslated("&aYou bought &6%dx %s &afor &6%s&a.", this.getAmount(), Match.material().getNameFor(this.getItem()), price);
                     return;
                 }
                 user.sendTranslated("&cYou do not have enough space for these items!");
@@ -812,23 +810,19 @@ public class MarketSign
             ItemStack item = this.getItem().clone();
             item.setAmount(this.getAmount());
 
-            Account userAccount = this.conomy.getUserAccount(user, true);
-            Account ownerAccount = this.getOwner() != null ? this.conomy.getUserAccount(this.getOwner(), true) : null;
-            if (this.conomy.transaction(ownerAccount, userAccount, this.getPrice(), false))
+            this.economy.deposit(user.getName(), this.getPrice());
+            if (this.getOwner() != null)
             {
-                user.getInventory().removeItem(item);
-                if (this.hasStock())
-                {
-                    this.setStock(this.getStock() + this.getAmount());
-                    this.saveToDatabase();
-                } // else admin sign -> no change
-                user.updateInventory();
-                user.sendTranslated("&aYou sold &6%dx %s &afor &6%s&a.", this.getAmount(), Match.material().getNameFor(this.getItem()), this.parsePrice());
+                this.economy.withdraw(this.getOwner().getName(), this.getPrice());
             }
-            else
+            user.getInventory().removeItem(item);
+            if (this.hasStock())
             {
-                user.sendTranslated("&cOops! Something went wrong!");
-            }
+                this.setStock(this.getStock() + this.getAmount());
+                this.saveToDatabase();
+            } // else admin sign -> no change
+            user.updateInventory();
+            user.sendTranslated("&aYou sold &6%dx %s &afor &6%s&a.", this.getAmount(), Match.material().getNameFor(this.getItem()), this.parsePrice());
         }
     }
 
@@ -1074,7 +1068,7 @@ public class MarketSign
         {
             return true;
         }
-        return this.conomy.getUserAccount(user, true).has(this.getPrice());
+        return this.economy.has(user.getName(), this.getPrice());
     }
 
     public Inventory getInventory()
@@ -1157,9 +1151,9 @@ public class MarketSign
     {
         if (this.allowBuyIfEmpty())
         {
-            return (double)(this.module.getConfig().factorIfAdminSignIsEmpty * this.blockInfo.price) / this.conomy.fractionalDigitsFactor();
+            return (double)(this.module.getConfig().factorIfAdminSignIsEmpty * this.blockInfo.price) / this.economy.fractionalDigitsFactor();
         }
-        return (double) this.blockInfo.price / this.conomy.fractionalDigitsFactor();
+        return (double) this.blockInfo.price / this.economy.fractionalDigitsFactor();
     }
 
     public boolean isAdminSign() {

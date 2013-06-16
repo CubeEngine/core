@@ -33,9 +33,8 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 
 import de.cubeisland.cubeengine.core.permission.Permission;
+import de.cubeisland.cubeengine.core.service.Economy;
 import de.cubeisland.cubeengine.core.user.User;
-import de.cubeisland.cubeengine.conomy.account.Account;
-import de.cubeisland.cubeengine.conomy.account.ConomyManager;
 import de.cubeisland.cubeengine.itemrepair.Itemrepair;
 import de.cubeisland.cubeengine.itemrepair.material.BaseMaterial;
 import de.cubeisland.cubeengine.itemrepair.material.BaseMaterialContainer;
@@ -60,7 +59,7 @@ public class RepairBlock
     private final Random rand;
     private final String name;
 
-    private final ConomyManager conomyManager;
+    private Economy economy;
 
     public RepairBlock(Itemrepair module, RepairBlockManager manager, String name, RepairBlockConfig config)
     {
@@ -73,7 +72,7 @@ public class RepairBlock
         this.inventoryMap = new HashMap<String, Inventory>();
         this.rand = new Random(System.currentTimeMillis());
         this.config = config;
-        this.conomyManager = module.getConomy().getManager();
+        this.economy = module.getCore().getServiceManager().getServiceProvider(Economy.class);
     }
 
     public final String getName()
@@ -149,8 +148,8 @@ public class RepairBlock
 
     public void withdrawPlayer(User user, long amount)
     {
-        Account userAccount = conomyManager.getUserAccount(user, true);
-        userAccount.transactionTo(null,amount / conomyManager.fractionalDigitsFactor(), false);
+        economy.createPlayerAccount(user.getName()); // Make sure account exists
+        economy.withdraw(user.getName(), amount / economy.fractionalDigitsFactor());
         // TODO what if this returns false
         // TODO bankAccounts
             /*
@@ -172,7 +171,7 @@ public class RepairBlock
 
     public boolean checkBalance(User user, double price)
     {
-        return conomyManager.getUserAccount(user, true).has((long)(price / conomyManager.fractionalDigitsFactor()));
+        return economy.has(user.getName(), price / economy.fractionalDigitsFactor());
     }
 
     public RepairRequest requestRepair(Inventory inventory)
@@ -183,7 +182,7 @@ public class RepairBlock
         if (items.size() > 0)
         {
             Double price = calculatePrice(items.values());
-            String format = conomyManager.format(price / conomyManager.fractionalDigitsFactor());
+            String format = economy.format(price/ economy.fractionalDigitsFactor());
             if (this.config.breakPercentage > 0)
             {
                 user.sendTranslated("&cItems will break with a chance of &6%.2f%%",this.config.breakPercentage);
@@ -210,8 +209,7 @@ public class RepairBlock
             {
                 user.sendTranslated("&eThe repair would cost &b%s", format);
             }
-            user.sendTranslated("&eYou currently have &b%s", conomyManager.format(
-                conomyManager.getUserAccount(user, true).balance()));
+            user.sendTranslated("&eYou currently have &b%s", economy.format(user.getLocale(), economy.getBalance(user.getName())));
             user.sendTranslated("&bLeftclick&a again to repair all your damaged items.");
             return new RepairRequest(this, inventory, items, price);
         }
@@ -290,7 +288,7 @@ public class RepairBlock
                 user.sendTranslated("&cYou feel that some of your items lost their magical power!");
                 user.playEffect(user.getLocation(), Effect.GHAST_SHRIEK, 0);
             }
-            user.sendTranslated("&aYou paid &b%s&a to repair your items!",conomyManager.format(price / conomyManager.fractionalDigitsFactor()));
+            user.sendTranslated("&aYou paid &b%s&a to repair your items!", economy.format(price / economy.fractionalDigitsFactor()));
             if (this.config.costPercentage > 100)
             {
                 user.sendTranslated("&aThats %.2f%% of the normal price!", this.config.costPercentage);
@@ -305,7 +303,6 @@ public class RepairBlock
            user.sendTranslated("&cYou don't have enough money to repair these items!");
         }
     }
-
 
     /*
      * Utilities

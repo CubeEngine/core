@@ -26,6 +26,7 @@ public interface Economy
     String getName();
     boolean hasBankSupport();
     int fractionalDigits();
+    long fractionalDigitsFactor();
     String format(double amount);
     String format(Locale locale, double amount);
     String currencyNamePlural();
@@ -45,4 +46,5 @@ public interface Economy
     boolean isBankMember(String name, String playerName);
     List<String> getBanks();
     boolean createPlayerAccount(String playerName);
+    Double parse(String price);
 }

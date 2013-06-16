@@ -233,4 +233,16 @@ public class ConomyInterface implements Economy
         manager.getUserAccount(playerName, true);
         return true;
     }
+
+    @Override
+    public long fractionalDigitsFactor()
+    {
+        return this.manager.fractionalDigitsFactor();
+    }
+
+    @Override
+    public Double parse(String price)
+    {
+        return this.manager.parse(price);
+    }
 }

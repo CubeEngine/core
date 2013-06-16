@@ -322,7 +322,7 @@ public class EditModeListener extends ConversationCommand
         }
         if (context.hasParam("price"))
         {
-            Double dPrice = marketSign.conomy.parse(context.getString("price"));
+            Double dPrice = marketSign.economy.parse(context.getString("price"));
             if (dPrice == null)
             {
                 user.sendTranslated("&cInvalid price!");
@@ -334,7 +334,7 @@ public class EditModeListener extends ConversationCommand
             }
             else
             {
-                marketSign.setPrice((long)(dPrice * marketSign.conomy.fractionalDigitsFactor()));
+                marketSign.setPrice((long)(dPrice * marketSign.economy.fractionalDigitsFactor()));
             }
         }
         if (context.hasParam("amount"))

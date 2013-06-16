@@ -58,7 +58,7 @@ public class MarketSignFactory
                 this.module.getLog().warning("Inconsistent Data! BlockInfo without Marketsigninfo!");
                 continue;
             }
-            MarketSign marketSign = new MarketSign(module, this.conomy, itemModel, blockModel);
+            MarketSign marketSign = new MarketSign(module, itemModel, blockModel);
             usedItemKeys.add(blockModel.itemKey);
             this.marketSigns.put(blockModel.getLocation(),marketSign);
         }
@@ -83,7 +83,7 @@ public class MarketSignFactory
             this.module.getLog().warning("Tried to create sign at occupied position!");
             return marketSign;
         }
-        marketSign = new MarketSign(this.module, conomy, location);
+        marketSign = new MarketSign(this.module, location);
         //TODO PERMISSIONS!!!
         if (this.module.getConfig().allowAdminNoStock)
         {
