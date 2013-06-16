@@ -98,7 +98,7 @@ public class EnchantMatcher
             AliasMapFormat.parseStringList(file, enchantments, false);
             if (AliasMapFormat.parseStringList(CubeEngine.getFileManager().getSourceOf(file), enchantments, true))
             {
-                CubeEngine.getLog().warn("Updated enchantments.txt");
+                CubeEngine.getLog().info("Updated enchantments.txt");
                 AliasMapFormat.parseAndSaveStringListMap(enchantments, file);
             }
             return enchantments;

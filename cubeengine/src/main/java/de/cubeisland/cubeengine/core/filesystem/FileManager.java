@@ -74,7 +74,7 @@ public class FileManager implements Cleanable
         final File linkSource = new File(System.getProperty("user.dir", "."), CubeEngine.class.getSimpleName());
         if (!isSymLink(linkSource) && !createSymLink(linkSource, this.dataFolder))
         {
-            logger.warn("Linking to the CubeEngine directory failed! This can be ignored.");
+            logger.info("Linking to the CubeEngine directory failed! This can be ignored.");
         }
 
         this.languageDir = new File(this.dataFolder, "language");
@@ -118,7 +118,7 @@ public class FileManager implements Cleanable
         }
         if (!hideFile(this.tempDir))
         {
-            logger.warn("Hiding the temp folder failed! This can be ignored!");
+            logger.info("Hiding the temp folder failed! This can be ignored!");
         }
 
         this.fileSources = new ConcurrentHashMap<File, Resource>();
@@ -243,7 +243,7 @@ public class FileManager implements Cleanable
         File[] files = this.tempDir.listFiles();
         if (files == null)
         {
-            logger.warn("Failed to list the temp folder for");
+            logger.info("Failed to list the temp folder for");
             return;
         }
         for (File file : files)
@@ -254,7 +254,7 @@ public class FileManager implements Cleanable
             }
             catch (IOException e)
             {
-                logger.warn("Failed to remove the file ''{}''", file.getAbsolutePath());
+                logger.info("Failed to remove the file ''{}''", file.getAbsolutePath());
             }
         }
         logger.info("Temporary folder cleared!");

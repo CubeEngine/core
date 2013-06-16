@@ -231,7 +231,7 @@ public class MaterialMatcher
             List<String> jarinput = FileUtil.readStringList(CubeEngine.getFileManager().getSourceOf(file));
             if (jarinput != null && this.readItems(readItems, jarinput, true))
             {
-                CubeEngine.getLog().warn("Updated items.txt");
+                CubeEngine.getLog().info("Updated items.txt");
                 StringBuilder sb = new StringBuilder();
                 for (String itemName : readItems.keySet())
                 {

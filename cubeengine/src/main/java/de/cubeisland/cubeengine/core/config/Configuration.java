@@ -308,7 +308,7 @@ public abstract class Configuration<ConfigCodec extends ConfigurationCodec>
         }
         catch (FileNotFoundException e)
         {
-            CubeEngine.getLog().warn("{} not found! Creating new config from default...", file.getName());
+            CubeEngine.getLog().info("{} not found! Creating new config from default...", file.getName());
         }
         T config = load(clazz, inputStream, file); //loading config from InputSream or Default
 

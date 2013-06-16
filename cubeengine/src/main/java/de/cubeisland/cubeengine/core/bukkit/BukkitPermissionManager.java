@@ -84,7 +84,7 @@ public class BukkitPermissionManager implements PermissionManager
         }
         catch (Exception ex)
         {
-            core.getLog().warn("Couldn't access the permission manager internals for fast permission registration, falling back to normal registration.");
+            core.getLog().info("Couldn't access the permission manager internals for fast permission registration, falling back to normal registration.");
             this.startup = false;
         }
         this.wildcards = new THashMap<String, org.bukkit.permissions.Permission>(0);

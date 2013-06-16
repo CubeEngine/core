@@ -174,7 +174,7 @@ public class MaterialDataMatcher
         }
         if (update && updated)
         {
-            CubeEngine.getLog().warn("Updated datavalues.txt");
+            CubeEngine.getLog().info("Updated datavalues.txt");
             StringBuilder sb = new StringBuilder();
             HashMap<TShortObjectHashMap<Set<String>>, String> itemMap = new HashMap<TShortObjectHashMap<Set<String>>, String>();
             for (Material material : this.reverseItemData.keySet()) // make serializable...

@@ -149,7 +149,7 @@ public abstract class BaseModuleManager implements ModuleManager
                     else
                     {
                         this.unloadModule(module);
-                        this.logger.warn("A newer version of '" + info.getName() + "' will replace the currently loaded version!");
+                        this.logger.info("A newer version of '" + info.getName() + "' will replace the currently loaded version!");
                     }
                 }
                 this.moduleInfos.put(info.getId(), info);
@@ -177,7 +177,7 @@ public abstract class BaseModuleManager implements ModuleManager
                 this.logger.error("Failed to load the module '" + moduleName + "'", e);
             }
         }
-        this.logger.warn("Finished loading modules!");
+        this.logger.info("Finished loading modules!");
     }
 
     private Module loadModule(String name, Map<String, ModuleInfo> moduleInfos) throws CircularDependencyException, MissingDependencyException, InvalidModuleException, IncompatibleDependencyException, IncompatibleCoreException, MissingPluginDependencyException

@@ -372,15 +372,15 @@ public class BukkitUtils
                     final long time = System.currentTimeMillis();
                     if (time - this.lastReceived <= 5000)
                     {
-                        core.getLog().warn("Shutting down the server now!");
+                        core.getLog().info("Shutting down the server now!");
                         core.getServer().shutdown();
                         this.lastReceived = -1;
                     }
                     else
                     {
                         this.lastReceived = time;
-                        core.getLog().warn("You can't copy content from the console using CTRL-C!");
-                        core.getLog().warn("If you really want shutdown the server use the stop command or press CTRL-C again within 5 seconds!");
+                        core.getLog().info("You can't copy content from the console using CTRL-C!");
+                        core.getLog().info("If you really want shutdown the server use the stop command or press CTRL-C again within 5 seconds!");
                     }
                 }
             });
@@ -396,7 +396,7 @@ public class BukkitUtils
                         if (!this.reloading)
                         {
                             this.reloading = true;
-                            core.getLog().warn("Reloading the server!");
+                            core.getLog().info("Reloading the server!");
                             core.getServer().reload();
                             core.getLog().info("Done reloading the server!");
                             this.reloading = false;
@@ -406,7 +406,7 @@ public class BukkitUtils
             }
             catch (IllegalArgumentException e)
             {
-                core.getLog().warn("You're OS does not support the HUP signal! This can be ignored.");
+                core.getLog().info("You're OS does not support the HUP signal! This can be ignored.");
             }
         }
         catch (ClassNotFoundException ignored)

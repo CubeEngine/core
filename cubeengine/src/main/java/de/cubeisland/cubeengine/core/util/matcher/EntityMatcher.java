@@ -88,7 +88,7 @@ public class EntityMatcher
             AliasMapFormat.parseStringList(file, entityList, false);
             if (AliasMapFormat.parseStringList(CubeEngine.getFileManager().getSourceOf(file), entityList, true))
             {
-                CubeEngine.getLog().warn("Updated entities.txt");
+                CubeEngine.getLog().info("Updated entities.txt");
                 AliasMapFormat.parseAndSaveStringListMap(entityList, file);
             }
             return entityList;
