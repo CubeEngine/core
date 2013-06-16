@@ -20,7 +20,8 @@ package de.cubeisland.cubeengine.core.logger;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.bukkit.Bukkit;
+import de.cubeisland.cubeengine.core.CubeEngine;
+import de.cubeisland.cubeengine.core.bukkit.BukkitCore;
 
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.AppenderBase;
@@ -39,7 +40,7 @@ public class BukkitAppender extends AppenderBase<ILoggingEvent>
         }
         else
         {
-            this.logger = Bukkit.getPluginManager().getPlugin("CubeEngine").getLogger();
+            this.logger = ((BukkitCore)CubeEngine.getCore()).getLogger();
             super.start();
         }
     }
