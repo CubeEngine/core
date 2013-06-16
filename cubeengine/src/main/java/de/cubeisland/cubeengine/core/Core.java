@@ -27,11 +27,11 @@ import de.cubeisland.cubeengine.core.filesystem.FileManager;
 import de.cubeisland.cubeengine.core.i18n.I18n;
 import de.cubeisland.cubeengine.core.module.ModuleManager;
 import de.cubeisland.cubeengine.core.permission.PermissionManager;
+import de.cubeisland.cubeengine.core.service.ServiceManager;
 import de.cubeisland.cubeengine.core.storage.TableManager;
 import de.cubeisland.cubeengine.core.storage.database.Database;
 import de.cubeisland.cubeengine.core.task.TaskManager;
 import de.cubeisland.cubeengine.core.user.UserManager;
-import de.cubeisland.cubeengine.core.service.Economy;
 import de.cubeisland.cubeengine.core.util.InventoryGuardFactory;
 import de.cubeisland.cubeengine.core.util.Version;
 import de.cubeisland.cubeengine.core.util.matcher.Match;
@@ -187,12 +187,6 @@ public interface Core
      */
     BanManager getBanManager();
 
-    /**
-     * Returns the registered EconomyInterface (can be null)
-     *
-     * @return an EconomyInterface
-     */
-    Economy getEconomyService();
+    ServiceManager getServiceManager();
 
-    void registerEconomyService(Economy economy);
 }
