@@ -17,7 +17,9 @@
  */
 package de.cubeisland.cubeengine.log.action.logaction;
 
-import java.util.EnumSet;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 import org.bukkit.World;
@@ -26,11 +28,12 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 
 import de.cubeisland.cubeengine.core.user.User;
+import de.cubeisland.cubeengine.log.action.ActionTypeCategory;
 import de.cubeisland.cubeengine.log.storage.LogEntry;
 
 import com.fasterxml.jackson.databind.node.ArrayNode;
 
-import static de.cubeisland.cubeengine.log.action.ActionType.Category.PLAYER;
+import static de.cubeisland.cubeengine.log.action.ActionTypeCategory.PLAYER;
 
 /**
  * chatting
@@ -39,9 +42,9 @@ import static de.cubeisland.cubeengine.log.action.ActionType.Category.PLAYER;
 public class PlayerChat extends SimpleLogActionType
 {
     @Override
-    protected EnumSet<Category> getCategories()
+    protected Set<ActionTypeCategory> getCategories()
     {
-        return EnumSet.of(PLAYER);
+        return new HashSet<ActionTypeCategory>(Arrays.asList(PLAYER));
     }
 
     @Override

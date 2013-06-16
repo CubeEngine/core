@@ -17,7 +17,9 @@
  */
 package de.cubeisland.cubeengine.log.action.logaction.block.flow;
 
-import java.util.EnumSet;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.bukkit.Material;
 import org.bukkit.World;
@@ -27,13 +29,14 @@ import org.bukkit.block.BlockState;
 import org.bukkit.event.block.BlockFromToEvent;
 
 import de.cubeisland.cubeengine.core.user.User;
+import de.cubeisland.cubeengine.log.action.ActionTypeCategory;
 import de.cubeisland.cubeengine.log.action.logaction.block.BlockActionType;
 import de.cubeisland.cubeengine.log.action.logaction.block.BlockForm;
 import de.cubeisland.cubeengine.log.storage.LogEntry;
 
 import static de.cubeisland.cubeengine.core.util.BlockUtil.BLOCK_FACES;
 import static de.cubeisland.cubeengine.core.util.BlockUtil.DIRECTIONS;
-import static de.cubeisland.cubeengine.log.action.ActionType.Category.*;
+import static de.cubeisland.cubeengine.log.action.ActionTypeCategory.*;
 import static org.bukkit.Material.*;
 
 /**
@@ -45,9 +48,9 @@ import static org.bukkit.Material.*;
 public class WaterFlow extends BlockActionType
 {
     @Override
-    protected EnumSet<Category> getCategories()
+    protected Set<ActionTypeCategory> getCategories()
     {
-        return EnumSet.of(BLOCK, ENVIRONEMENT, FLOW);
+        return new HashSet<ActionTypeCategory>(Arrays.asList(BLOCK, ENVIRONEMENT, FLOW));
     }
 
     @Override

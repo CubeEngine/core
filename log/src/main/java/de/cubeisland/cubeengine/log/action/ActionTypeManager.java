@@ -17,6 +17,7 @@
  */
 package de.cubeisland.cubeengine.log.action;
 
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -28,7 +29,6 @@ import de.cubeisland.cubeengine.core.util.ChatFormat;
 import de.cubeisland.cubeengine.core.util.StringUtils;
 import de.cubeisland.cubeengine.core.util.matcher.Match;
 import de.cubeisland.cubeengine.log.Log;
-import de.cubeisland.cubeengine.log.action.ActionType.Category;
 import de.cubeisland.cubeengine.log.action.logaction.CraftItem;
 import de.cubeisland.cubeengine.log.action.logaction.EnchantItem;
 import de.cubeisland.cubeengine.log.action.logaction.ItemDrop;
@@ -132,15 +132,16 @@ public class ActionTypeManager
     private Map<Class<? extends ActionType>,ActionType> registeredActionTypes = new ConcurrentHashMap<Class<? extends ActionType>, ActionType>();
     private Map<String, ActionType> actionTypesByName = new ConcurrentHashMap<String, ActionType>();
     private TLongObjectHashMap<ActionType> registeredIds = new TLongObjectHashMap<ActionType>();
+    private Map<String, ActionTypeCategory> categories = new HashMap<String, ActionTypeCategory>();
     private final Log module;
 
     private Map<String,Long> actionIDs;
-
 
     public ActionTypeManager(Log module)
     {
         this.module = module;
         this.actionIDs = this.module.getLogManager().getQueryManager().getActionTypesFromDatabase();
+        ActionTypeCompleter.manager = this;
     }
 
     public void registerLogActionTypes()
@@ -260,6 +261,13 @@ public class ActionTypeManager
         actionType.initialize(module);
         if (actionType.getID() != -1)
         {
+            for (ActionTypeCategory category : actionType.getCategories())
+            {
+                this.categories.put(category.name, category);
+            }
+        }
+        if (actionType.getID() != -1)
+        {
             this.module.getLog().log(LogLevel.DEBUG,"ActionType registered: " + actionType.getID() + " " + actionType.getName());
         }
         return this;
@@ -288,7 +296,8 @@ public class ActionTypeManager
 
     public Set<ActionType> getActionType(String actionString)
     {
-        Category category = Category.match(actionString);
+
+        ActionTypeCategory category = this.categories.get(actionString);
         if (category == null)
         {
             String match = Match.string().matchString(actionString, this.actionTypesByName.keySet());
@@ -301,6 +310,13 @@ public class ActionTypeManager
         {
             return category.getActionTypes();
         }
+    }
 
+    public Set<String> getAllActionAndCategoryStrings()
+    {
+        HashSet<String> strings = new HashSet<String>();
+        strings.addAll(this.categories.keySet());
+        strings.addAll(this.actionTypesByName.keySet());
+        return strings;
     }
 }

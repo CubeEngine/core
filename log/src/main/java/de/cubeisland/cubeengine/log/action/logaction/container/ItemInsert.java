@@ -17,8 +17,10 @@
  */
 package de.cubeisland.cubeengine.log.action.logaction.container;
 
-import java.util.EnumSet;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -29,11 +31,12 @@ import org.bukkit.inventory.ItemStack;
 
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.log.LogAttachment;
+import de.cubeisland.cubeengine.log.action.ActionTypeCategory;
 import de.cubeisland.cubeengine.log.action.logaction.SimpleLogActionType;
 import de.cubeisland.cubeengine.log.storage.ItemData;
 import de.cubeisland.cubeengine.log.storage.LogEntry;
 
-import static de.cubeisland.cubeengine.log.action.ActionType.Category.*;
+import static de.cubeisland.cubeengine.log.action.ActionTypeCategory.*;
 
 /**
  * Inserting items into a container
@@ -42,9 +45,9 @@ import static de.cubeisland.cubeengine.log.action.ActionType.Category.*;
 public class ItemInsert extends SimpleLogActionType
 {
     @Override
-    protected EnumSet<Category> getCategories()
+    protected Set<ActionTypeCategory> getCategories()
     {
-        return EnumSet.of(PLAYER, INVENTORY, ITEM);
+        return new HashSet<ActionTypeCategory>(Arrays.asList(PLAYER, INVENTORY, ITEM));
     }
 
     @Override

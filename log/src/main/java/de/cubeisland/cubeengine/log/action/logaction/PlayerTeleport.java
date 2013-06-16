@@ -17,7 +17,9 @@
  */
 package de.cubeisland.cubeengine.log.action.logaction;
 
-import java.util.EnumSet;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.bukkit.Location;
 import org.bukkit.World;
@@ -26,12 +28,13 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.player.PlayerTeleportEvent;
 
 import de.cubeisland.cubeengine.core.user.User;
+import de.cubeisland.cubeengine.log.action.ActionTypeCategory;
 import de.cubeisland.cubeengine.log.storage.LogEntry;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
-import static de.cubeisland.cubeengine.log.action.ActionType.Category.PLAYER;
+import static de.cubeisland.cubeengine.log.action.ActionTypeCategory.PLAYER;
 
 /**
  * player teleports
@@ -40,9 +43,9 @@ import static de.cubeisland.cubeengine.log.action.ActionType.Category.PLAYER;
 public class PlayerTeleport extends SimpleLogActionType
 {
     @Override
-    protected EnumSet<Category> getCategories()
+    protected Set<ActionTypeCategory> getCategories()
     {
-        return EnumSet.of(PLAYER);
+        return new HashSet<ActionTypeCategory>(Arrays.asList(PLAYER));
     }
 
     @Override

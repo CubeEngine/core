@@ -124,11 +124,11 @@ public class QueryResults
         NavigableSet<LogEntry> navigableSet;
         if (show.reverseOrder)
         {
-            navigableSet = compressedEntries;
+            navigableSet = compressedEntries.descendingSet();
         }
         else
         {
-            navigableSet = compressedEntries.descendingSet();
+            navigableSet = compressedEntries;
         }
         for (LogEntry logEntry : navigableSet)
         {

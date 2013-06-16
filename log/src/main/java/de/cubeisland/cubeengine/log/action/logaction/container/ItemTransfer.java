@@ -17,15 +17,18 @@
  */
 package de.cubeisland.cubeengine.log.action.logaction.container;
 
-import java.util.EnumSet;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.bukkit.World;
 
 import de.cubeisland.cubeengine.core.user.User;
+import de.cubeisland.cubeengine.log.action.ActionTypeCategory;
 import de.cubeisland.cubeengine.log.action.logaction.SimpleLogActionType;
 import de.cubeisland.cubeengine.log.storage.LogEntry;
 
-import static de.cubeisland.cubeengine.log.action.ActionType.Category.*;
+import static de.cubeisland.cubeengine.log.action.ActionTypeCategory.*;
 
 /**
  * Items transferred by hoppers or droppers
@@ -34,9 +37,9 @@ import static de.cubeisland.cubeengine.log.action.ActionType.Category.*;
 public class ItemTransfer extends SimpleLogActionType
 {
     @Override
-    protected EnumSet<Category> getCategories()
+    protected Set<ActionTypeCategory> getCategories()
     {
-        return EnumSet.of(PLAYER, INVENTORY, ITEM);
+        return new HashSet<ActionTypeCategory>(Arrays.asList(PLAYER, INVENTORY, ITEM));
     }
 
     @Override

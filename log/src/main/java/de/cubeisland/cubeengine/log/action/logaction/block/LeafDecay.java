@@ -17,7 +17,9 @@
  */
 package de.cubeisland.cubeengine.log.action.logaction.block;
 
-import java.util.EnumSet;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.bukkit.World;
 import org.bukkit.event.EventHandler;
@@ -25,10 +27,11 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.block.LeavesDecayEvent;
 
 import de.cubeisland.cubeengine.core.user.User;
+import de.cubeisland.cubeengine.log.action.ActionTypeCategory;
 import de.cubeisland.cubeengine.log.storage.LogEntry;
 
-import static de.cubeisland.cubeengine.log.action.ActionType.Category.BLOCK;
-import static de.cubeisland.cubeengine.log.action.ActionType.Category.ENVIRONEMENT;
+import static de.cubeisland.cubeengine.log.action.ActionTypeCategory.BLOCK;
+import static de.cubeisland.cubeengine.log.action.ActionTypeCategory.ENVIRONEMENT;
 import static org.bukkit.Material.AIR;
 
 /**
@@ -38,9 +41,9 @@ import static org.bukkit.Material.AIR;
 public class LeafDecay extends BlockActionType
 {
     @Override
-    protected EnumSet<Category> getCategories()
+    protected Set<ActionTypeCategory> getCategories()
     {
-        return EnumSet.of(BLOCK, ENVIRONEMENT);
+        return new HashSet<ActionTypeCategory>(Arrays.asList(BLOCK, ENVIRONEMENT));
     }
 
     @Override

@@ -18,11 +18,6 @@
 package de.cubeisland.cubeengine.log.action;
 
 import java.sql.Timestamp;
-import java.util.Collections;
-import java.util.EnumSet;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
 
 import org.bukkit.Location;
@@ -100,9 +95,9 @@ public abstract class ActionType
         this.lm = module.getLogManager();
         if (this.getID() != -1)
         {
-            for (Category type : this.getCategories())
+            for (ActionTypeCategory category : this.getCategories())
             {
-                type.registerActionType(this);
+                category.registerActionType(this);
             }
         }
         this.enable();
@@ -110,7 +105,7 @@ public abstract class ActionType
 
     public abstract String getName();
     public abstract boolean canRollback();
-    protected abstract EnumSet<Category> getCategories();
+    protected abstract Set<ActionTypeCategory> getCategories();
     public abstract void enable();
 
     /**
@@ -188,107 +183,5 @@ public abstract class ActionType
         return false;
     }
 
-    public static enum Category
-    {
-        ALL("all"),
-        /**
-         * All actions with a possible player involved
-         */
-        PLAYER("player"),
-        /**
-         * All actions with a block involved
-         */
-        BLOCK("block"),
-        /**
-         * All actions with ItemStacks involved
-         */
-        ITEM("item"),
-        /**
-         * All actions with inventories involved
-         */
-        INVENTORY("inventory"),
-        /**
-         * All actions with entities excluding block changes by an entity
-         */
-        ENTITY("entity"),
-        /**
-         * All block actions with a possible living entity as causer
-         */
-        BLOCK_ENTITY("block-entity"),
-        /**
-         * possibly environmental actions such as grass growing naturally etc.
-         */
-        ENVIRONEMENT("environement"),
-        /**
-         * All actions of the death of an living entity or player
-         */
-        KILL("kill"),
-        /**
-         * All block-actions involving an explosion (tnt-prime too)
-         */
-        EXPLOSION("explosion"),
-        /**
-         * All actions involving lava or water flows
-         */
-        FLOW("flow"),
-        /**
-         * All actions involving fire ignition/spread
-         */
-        IGNITE("ignite"),
-        /**
-         * All actions involving fire excluding blocks indirectly broken by block-burns
-         */
-        FIRE("fire"),
-        /**
-         * All actions involving buckets
-         */
-        BUCKET("bucket"),
-        /**
-         * lava-bucket AND water-bucket
-         */
-        BUCKET_EMPTY("bucket-empty"),
-        /**
-         * All actions involving vehicles
-         */
-        VEHICLE("vehicle"),
-        /**
-         * All actions involving
-         */
-        SPAWN("spawn"),
-        ;
 
-        private static Map<String, Category> categories = new HashMap<String, Category>();
-
-        static
-        {
-            for (Category category : Category.values())
-            {
-                categories.put(category.name, category);
-            }
-        }
-
-        private HashSet<ActionType> actionTypes = new HashSet<ActionType>();
-
-        public final String name;
-
-        private Category(String name)
-        {
-            this.name = name;
-        }
-
-        public void registerActionType(ActionType actionType)
-        {
-            this.actionTypes.add(actionType);
-        }
-
-        public Set<ActionType> getActionTypes()
-        {
-            return Collections.unmodifiableSet(actionTypes);
-        }
-
-        public static Category match(String actionString)
-        {
-            return categories.get(actionString);
-        }
-    }
 }

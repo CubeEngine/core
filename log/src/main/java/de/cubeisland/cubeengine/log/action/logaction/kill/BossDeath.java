@@ -17,16 +17,19 @@
  */
 package de.cubeisland.cubeengine.log.action.logaction.kill;
 
-import java.util.EnumSet;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.bukkit.World;
 
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.log.LogAttachment;
+import de.cubeisland.cubeengine.log.action.ActionTypeCategory;
 import de.cubeisland.cubeengine.log.action.logaction.SimpleLogActionType;
 import de.cubeisland.cubeengine.log.storage.LogEntry;
 
-import static de.cubeisland.cubeengine.log.action.ActionType.Category.*;
+import static de.cubeisland.cubeengine.log.action.ActionTypeCategory.*;
 
 /**
  * boss-death
@@ -35,9 +38,9 @@ import static de.cubeisland.cubeengine.log.action.ActionType.Category.*;
 public class BossDeath extends SimpleLogActionType
 {
     @Override
-    protected EnumSet<Category> getCategories()
+    protected Set<ActionTypeCategory> getCategories()
     {
-        return EnumSet.of(PLAYER, ENTITY, KILL);
+        return new HashSet<ActionTypeCategory>(Arrays.asList(PLAYER, ENTITY, KILL));
     }
 
 

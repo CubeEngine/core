@@ -17,7 +17,9 @@
  */
 package de.cubeisland.cubeengine.log.action.logaction.interact;
 
-import java.util.EnumSet;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.bukkit.World;
 import org.bukkit.entity.Entity;
@@ -28,12 +30,11 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.vehicle.VehicleDestroyEvent;
 
 import de.cubeisland.cubeengine.core.user.User;
+import de.cubeisland.cubeengine.log.action.ActionTypeCategory;
 import de.cubeisland.cubeengine.log.action.logaction.SimpleLogActionType;
 import de.cubeisland.cubeengine.log.storage.LogEntry;
 
-import static de.cubeisland.cubeengine.log.action.ActionType.Category.ENTITY;
-import static de.cubeisland.cubeengine.log.action.ActionType.Category.PLAYER;
-import static de.cubeisland.cubeengine.log.action.ActionType.Category.VEHICLE;
+import static de.cubeisland.cubeengine.log.action.ActionTypeCategory.*;
 
 /**
  * Breaking vehicles
@@ -42,9 +43,9 @@ import static de.cubeisland.cubeengine.log.action.ActionType.Category.VEHICLE;
 public class VehicleBreak extends SimpleLogActionType
 {
     @Override
-    protected EnumSet<Category> getCategories()
+    protected Set<ActionTypeCategory> getCategories()
     {
-        return EnumSet.of(VEHICLE, PLAYER, ENTITY);
+        return new HashSet<ActionTypeCategory>(Arrays.asList(VEHICLE, PLAYER, ENTITY));
     }
 
     @Override

@@ -17,8 +17,10 @@
  */
 package de.cubeisland.cubeengine.log.action.logaction.block.player;
 
-import java.util.EnumSet;
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.bukkit.Location;
@@ -35,12 +37,13 @@ import org.bukkit.event.hanging.HangingBreakEvent;
 import org.bukkit.inventory.ItemStack;
 
 import de.cubeisland.cubeengine.core.user.User;
+import de.cubeisland.cubeengine.log.action.ActionTypeCategory;
 import de.cubeisland.cubeengine.log.action.logaction.block.BlockActionType;
 import de.cubeisland.cubeengine.log.storage.ItemData;
 import de.cubeisland.cubeengine.log.storage.LogEntry;
 
-import static de.cubeisland.cubeengine.log.action.ActionType.Category.BLOCK;
-import static de.cubeisland.cubeengine.log.action.ActionType.Category.PLAYER;
+import static de.cubeisland.cubeengine.log.action.ActionTypeCategory.BLOCK;
+import static de.cubeisland.cubeengine.log.action.ActionTypeCategory.PLAYER;
 import static org.bukkit.Material.*;
 
 /**
@@ -52,9 +55,9 @@ public class HangingBreak extends BlockActionType
 {
     // TODO Hanging place Item into frame stuff!!!
     @Override
-    protected EnumSet<Category> getCategories()
+    protected Set<ActionTypeCategory> getCategories()
     {
-        return EnumSet.of(BLOCK, PLAYER);
+        return new HashSet<ActionTypeCategory>(Arrays.asList(BLOCK, PLAYER));
     }
 
     @Override
