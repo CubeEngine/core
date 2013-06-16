@@ -127,24 +127,32 @@ public final class BukkitCore extends JavaPlugin implements Core
 
         this.initHooks = Collections.synchronizedList(new LinkedList<Runnable>());
 
-        this.logger = (Logger)LoggerFactory.getLogger("cubeengine.core");
-        this.logger.setLevel(Level.ALL);
-        // TODO RemoteHandler is not yet implemented this.logger.addHandler(new RemoteHandler(LogLevel.ERROR, this));
-
-        this.banManager = new BukkitBanManager(this);
-
         try
         {
             this.fileManager = new FileManager(this, this.getDataFolder().getAbsoluteFile());
         }
         catch (IOException e)
         {
-            this.logger.error("Failed to initialize the FileManager", e);
+            this.getLogger().log(java.util.logging.Level.SEVERE, "Failed to initialize the FileManager", e);
             pm.disablePlugin(this);
             return;
         }
         this.fileManager.clearTempDir();
         this.fileManager.dropResources(CoreResource.values());
+
+        try
+        {
+            System.setProperty("cubeengine.log", fileManager.getLogDir().getCanonicalPath());
+        }
+        catch (IOException e)
+        {
+            this.getLogger().log(java.util.logging.Level.SEVERE, "Failed to set the system property for the log folder", e);
+        }
+        this.logger = (Logger)LoggerFactory.getLogger("cubeengine.core");
+        this.logger.setLevel(Level.ALL);
+        // TODO RemoteHandler is not yet implemented this.logger.addHandler(new RemoteHandler(LogLevel.ERROR, this));
+
+        this.banManager = new BukkitBanManager(this);
 
         // depends on: file manager
         this.config = Configuration.load(BukkitCoreConfiguration.class, new File(this.fileManager.getDataFolder(), "core.yml"));

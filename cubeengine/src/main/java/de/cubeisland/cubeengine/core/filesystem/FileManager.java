@@ -26,13 +26,13 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
+import java.util.logging.Logger;
 
 import de.cubeisland.cubeengine.core.Core;
 import de.cubeisland.cubeengine.core.CubeEngine;
 
+import de.cubeisland.cubeengine.core.bukkit.BukkitCore;
 import de.cubeisland.cubeengine.core.util.Cleanable;
-
-import org.slf4j.Logger;
 
 import static de.cubeisland.cubeengine.core.CubeEngine.runsOnWindows;
 
@@ -51,7 +51,7 @@ public class FileManager implements Cleanable
 
     public FileManager(Core core, File dataFolder) throws IOException
     {
-        this.logger = core.getLog();
+        this.logger = ((BukkitCore)core).getLogger();
         assert dataFolder != null: "The CubeEngine plugin folder must not be null!";
         if (!dataFolder.exists())
         {
@@ -239,7 +239,7 @@ public class FileManager implements Cleanable
 
     public void clearTempDir()
     {
-        logger.info("Clearing the temporary folder ''{}''...", this.tempDir.getAbsolutePath());
+        logger.info("Clearing the temporary folder ''"+ this.tempDir.getAbsolutePath() + "''...");
         File[] files = this.tempDir.listFiles();
         if (files == null)
         {
@@ -254,7 +254,7 @@ public class FileManager implements Cleanable
             }
             catch (IOException e)
             {
-                logger.info("Failed to remove the file ''{}''", file.getAbsolutePath());
+                logger.info("Failed to remove the file ''" + file.getAbsolutePath() + "''");
             }
         }
         logger.info("Temporary folder cleared!");
@@ -475,7 +475,7 @@ public class FileManager implements Cleanable
             }
             catch (IOException e)
             {
-                logger.error(e.getMessage(), e);
+                logger.log(java.util.logging.Level.SEVERE, e.getMessage(), e);
             }
             finally
             {
