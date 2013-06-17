@@ -26,13 +26,14 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
-import java.util.logging.Logger;
 
 import de.cubeisland.cubeengine.core.Core;
 import de.cubeisland.cubeengine.core.CubeEngine;
 
 import de.cubeisland.cubeengine.core.bukkit.BukkitCore;
 import de.cubeisland.cubeengine.core.util.Cleanable;
+
+import org.slf4j.Logger;
 
 import static de.cubeisland.cubeengine.core.CubeEngine.runsOnWindows;
 
@@ -41,7 +42,7 @@ import static de.cubeisland.cubeengine.core.CubeEngine.runsOnWindows;
  */
 public class FileManager implements Cleanable
 {
-    private final Logger logger;
+    private Logger logger;
     private final File dataFolder;
     private final File languageDir;
     private final File logDir;
@@ -51,7 +52,7 @@ public class FileManager implements Cleanable
 
     public FileManager(Core core, File dataFolder) throws IOException
     {
-        this.logger = ((BukkitCore)core).getLogger();
+        java.util.logging.Logger logger = ((BukkitCore)core).getLogger();
         assert dataFolder != null: "The CubeEngine plugin folder must not be null!";
         if (!dataFolder.exists())
         {
@@ -122,6 +123,11 @@ public class FileManager implements Cleanable
         }
 
         this.fileSources = new ConcurrentHashMap<File, Resource>();
+    }
+
+    public void setLogger(Logger logger)
+    {
+        this.logger = logger;
     }
 
     public static boolean hideFile(File file)
@@ -239,11 +245,11 @@ public class FileManager implements Cleanable
 
     public void clearTempDir()
     {
-        logger.info("Clearing the temporary folder ''"+ this.tempDir.getAbsolutePath() + "''...");
+        logger.debug("Clearing the temporary folder '{}'...", this.tempDir.getAbsolutePath());
         File[] files = this.tempDir.listFiles();
         if (files == null)
         {
-            logger.info("Failed to list the temp folder for");
+            logger.info("Failed to list the temp folder for '{}'", this.getTempDir().getAbsolutePath());
             return;
         }
         for (File file : files)
@@ -254,10 +260,10 @@ public class FileManager implements Cleanable
             }
             catch (IOException e)
             {
-                logger.info("Failed to remove the file ''" + file.getAbsolutePath() + "''");
+                logger.info("Failed to remove the file '{}'", file.getAbsolutePath());
             }
         }
-        logger.info("Temporary folder cleared!");
+        logger.debug("Temporary folder cleared!");
     }
 
     public static void deleteRecursive(File file) throws IOException
@@ -475,7 +481,7 @@ public class FileManager implements Cleanable
             }
             catch (IOException e)
             {
-                logger.log(java.util.logging.Level.SEVERE, e.getMessage(), e);
+                logger.error(e.getMessage(), e);
             }
             finally
             {

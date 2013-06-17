@@ -153,6 +153,7 @@ public final class BukkitCore extends JavaPlugin implements Core
         this.logger = (Logger)LoggerFactory.getLogger("cubeengine.core");
         // TODO RemoteHandler is not yet implemented this.logger.addHandler(new RemoteHandler(LogLevel.ERROR, this));
         this.logger.setLevel(Level.ALL);
+        this.fileManager.setLogger(this.logger);
 
         this.banManager = new BukkitBanManager(this);
 
