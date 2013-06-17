@@ -49,7 +49,7 @@ public abstract class Module
     private boolean enabled;
     private Permission modulePermission;
 
-    final void initialize(Core core, ModuleInfo info, File folder, ModuleLoader loader, ClassLoader classLoader)
+    final void initialize(Core core, ModuleInfo info, File folder, ModuleLoader loader, ClassLoader classLoader, Logger logger)
     {
         if (!this.initialized)
         {
@@ -60,9 +60,7 @@ public abstract class Module
             this.classLoader = classLoader;
             this.folder = folder;
             this.enabled = false;
-
-            // Each module should provide a logback.xml file in their jars
-            this.log = LoggerFactory.getLogger("cubeengine."+info.getName().toLowerCase());
+            this.log = logger;
         }
     }
 

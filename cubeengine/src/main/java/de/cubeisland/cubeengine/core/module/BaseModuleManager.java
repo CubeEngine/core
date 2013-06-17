@@ -69,7 +69,7 @@ public abstract class BaseModuleManager implements ModuleManager
         this.moduleInfos = new THashMap<String, ModuleInfo>();
         this.classMap = new THashMap<Class<? extends Module>, Module>();
         this.coreModule = new CoreModule();
-        this.coreModule.initialize(core, new ModuleInfo(core), core.getFileManager().getDataFolder(), null, null);
+        this.coreModule.initialize(core, new ModuleInfo(core), core.getFileManager().getDataFolder(), null, null, logger);
     }
 
     public synchronized Module getModule(String name)

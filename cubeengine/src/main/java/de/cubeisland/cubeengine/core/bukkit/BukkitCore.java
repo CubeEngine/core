@@ -18,16 +18,12 @@
 package de.cubeisland.cubeengine.core.bukkit;
 
 import java.io.File;
-import java.io.FileDescriptor;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.PrintStream;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
-import java.util.logging.Handler;
 
 import org.bukkit.Server;
 import org.bukkit.command.CommandMap;
@@ -141,9 +137,9 @@ public final class BukkitCore extends JavaPlugin implements Core
 
         try
         {
-            System.setProperty("cubeengine.log", System.getProperty("cubeengine.log", fileManager.getLogDir().getCanonicalPath()));
-            System.setProperty("cubeengine.log.max-size", System.getProperty("cubeengine.log.max-size", "10MB"));
-            System.setProperty("cubeengine.log.max-file-count", System.getProperty("cubeengine.log.max-file-count", "10"));
+            System.setProperty("cubeengine.logger.default-path", System.getProperty("cubeengine.log", fileManager.getLogDir().getCanonicalPath()));
+            System.setProperty("cubeengine.logger.max-size", System.getProperty("cubeengine.log.max-size", "10MB"));
+            System.setProperty("cubeengine.logger.max-file-count", System.getProperty("cubeengine.log.max-file-count", "10"));
         }
         catch (IOException e)
         {
@@ -163,8 +159,8 @@ public final class BukkitCore extends JavaPlugin implements Core
         Logger parentLogger =  (Logger)LoggerFactory.getLogger("cubeengine");
         // Set the level for the parent logger to the lowest of either the file or console
         // subloggers inherit this by default, but can override
-        parentLogger.setLevel((config.loggingConsoleLevel.toInt() > config.loggingFileLevel.toInt()) ?
-                              this.config.loggingFileLevel : this.config.loggingConsoleLevel);
+        parentLogger.setLevel((config.loggingConsoleLevel.toInt() > config.loggingFileLevel
+                                                                          .toInt()) ? this.config.loggingFileLevel : this.config.loggingConsoleLevel);
         // Set a filter for the console log, so sub loggers don't write logs with lower level than the user wants
         ThresholdFilter consoleFilter = new ThresholdFilter();
         consoleFilter.setLevel(this.config.loggingConsoleLevel.toString());
