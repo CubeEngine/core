@@ -33,9 +33,8 @@ public class BukkitAppender extends AppenderBase<ILoggingEvent>
 {
     private Logger logger;
     public Layout<ILoggingEvent> layout;
-    // Remove the old "[INFO] [CubeEngine] " with 20 "\b" and add "[{DEBUG,TRACE}] [CubeEngine] "
-    private final String DEBUG_PREFIX = "\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b[DEBUG] [CubeEngine] ";
-    private final String TRACE_PREFIX = "\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b[TRACE] [CubeEngine] ";
+    private final Level TRACE = new CustomLevel("TRACE", Level.INFO.intValue()+1);
+    private final Level DEBUG = new CustomLevel("DEBUG", Level.INFO.intValue()+2);
 
     public void start()
     {
@@ -63,11 +62,11 @@ public class BukkitAppender extends AppenderBase<ILoggingEvent>
         }
         else if (event.getLevel().toString().equalsIgnoreCase("debug"))
         {
-            this.logger.log(Level.INFO, DEBUG_PREFIX + layout.doLayout(event));
+            this.logger.log(DEBUG, layout.doLayout(event));
         }
         else if (event.getLevel().toString().equalsIgnoreCase("trace"))
         {
-            this.logger.log(Level.INFO, TRACE_PREFIX + layout.doLayout(event));
+            this.logger.log(TRACE, layout.doLayout(event));
         }
         else
         {
@@ -84,5 +83,13 @@ public class BukkitAppender extends AppenderBase<ILoggingEvent>
     public Layout<ILoggingEvent> getLayout()
     {
         return this.layout;
+    }
+
+    private class CustomLevel extends Level
+    {
+        CustomLevel(String name, int value)
+        {
+            super(name, value);
+        }
     }
 }
