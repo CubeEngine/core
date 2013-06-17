@@ -28,11 +28,6 @@ import java.util.logging.FileHandler;
 import de.cubeisland.cubeengine.core.CubeEngine;
 import de.cubeisland.cubeengine.core.webapi.exception.ApiRequestException;
 
-import ch.qos.logback.classic.Logger;
-import ch.qos.logback.classic.LoggerContext;
-import ch.qos.logback.classic.PatternLayout;
-import ch.qos.logback.classic.spi.ILoggingEvent;
-import ch.qos.logback.core.FileAppender;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -55,6 +50,7 @@ import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
 import io.netty.handler.codec.http.websocketx.WebSocketFrame;
 import io.netty.handler.codec.http.websocketx.WebSocketServerHandshaker;
 import io.netty.handler.codec.http.websocketx.WebSocketServerHandshakerFactory;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import static de.cubeisland.cubeengine.core.webapi.RequestError.*;
@@ -79,8 +75,7 @@ public class ApiRequestHandler extends ChannelInboundMessageHandlerAdapter<Objec
     {
         this.server = server;
         this.objectMapper = mapper;
-        this.logger = (Logger)LoggerFactory.getLogger("cubeengine.webapi");
-        // TODO
+        this.logger = LoggerFactory.getLogger("cubeengine.webapi");
     }
 
     @Override

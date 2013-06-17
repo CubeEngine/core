@@ -73,8 +73,6 @@ import de.cubeisland.cubeengine.core.webapi.exception.ApiStartupException;
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.Logger;
 import ch.qos.logback.classic.filter.ThresholdFilter;
-import ch.qos.logback.classic.spi.ILoggingEvent;
-import ch.qos.logback.core.Appender;
 import org.slf4j.LoggerFactory;
 
 import static de.cubeisland.cubeengine.core.util.ReflectionUtils.findFirstField;

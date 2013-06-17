@@ -40,13 +40,9 @@ import de.cubeisland.cubeengine.core.permission.Permission;
 import de.cubeisland.cubeengine.core.permission.PermissionManager;
 import de.cubeisland.cubeengine.core.util.StringUtils;
 
-import ch.qos.logback.classic.Logger;
-import ch.qos.logback.classic.LoggerContext;
-import ch.qos.logback.classic.PatternLayout;
-import ch.qos.logback.classic.spi.ILoggingEvent;
-import ch.qos.logback.core.FileAppender;
 import gnu.trove.map.hash.THashMap;
 import gnu.trove.set.hash.THashSet;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 
@@ -89,8 +85,7 @@ public class BukkitPermissionManager implements PermissionManager
         }
         this.wildcards = new THashMap<String, org.bukkit.permissions.Permission>(0);
         this.modulePermissionMap = new THashMap<Module, Set<String>>(0);
-        this.logger = (Logger) LoggerFactory.getLogger("cubeengine.permissions");
-        // TODO
+        this.logger = LoggerFactory.getLogger("cubeengine.permissions");
 
         this.registerBukkitPermission(CUBEENGINE_WILDCARD);
     }

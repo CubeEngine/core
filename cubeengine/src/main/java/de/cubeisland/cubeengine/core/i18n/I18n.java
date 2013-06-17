@@ -35,13 +35,9 @@ import de.cubeisland.cubeengine.core.util.Cleanable;
 import de.cubeisland.cubeengine.core.util.Misc;
 import de.cubeisland.cubeengine.core.util.matcher.Match;
 
-import ch.qos.logback.classic.Logger;
-import ch.qos.logback.classic.LoggerContext;
-import ch.qos.logback.classic.PatternLayout;
-import ch.qos.logback.classic.spi.ILoggingEvent;
-import ch.qos.logback.core.FileAppender;
 import gnu.trove.map.hash.THashMap;
 import gnu.trove.set.hash.THashSet;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 
@@ -64,7 +60,7 @@ public class I18n implements Cleanable
     public I18n(Core core)
     {
         this.core = core;
-        this.logger = (Logger) LoggerFactory.getLogger("cubeengine.language");
+        this.logger = LoggerFactory.getLogger("cubeengine.language");
         // TODO
         this.languages = new THashMap<Locale, Language>();
         this.languageLookupMap = new THashMap<String, Language>();

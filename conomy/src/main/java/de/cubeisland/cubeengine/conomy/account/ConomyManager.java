@@ -36,11 +36,6 @@ import de.cubeisland.cubeengine.conomy.account.storage.AccountStorage;
 import de.cubeisland.cubeengine.conomy.account.storage.BankAccessStorage;
 
 import ch.qos.logback.classic.Logger;
-import ch.qos.logback.classic.LoggerContext;
-import ch.qos.logback.classic.PatternLayout;
-import ch.qos.logback.classic.spi.ILoggingEvent;
-import ch.qos.logback.classic.spi.LoggingEvent;
-import ch.qos.logback.core.FileAppender;
 import org.slf4j.LoggerFactory;
 
 import gnu.trove.map.hash.THashMap;
