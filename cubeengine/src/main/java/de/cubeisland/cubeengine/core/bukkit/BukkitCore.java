@@ -142,6 +142,8 @@ public final class BukkitCore extends JavaPlugin implements Core
         try
         {
             System.setProperty("cubeengine.log", System.getProperty("cubeengine.log", fileManager.getLogDir().getCanonicalPath()));
+            System.setProperty("cubeengine.log.max-size", System.getProperty("cubeengine.log.max-size", "10MB"));
+            System.setProperty("cubeengine.log.max-file-count", System.getProperty("cubeengine.log.max-file-count", "10"));
         }
         catch (IOException e)
         {
