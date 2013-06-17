@@ -18,6 +18,7 @@
 package de.cubeisland.cubeengine.core.logger;
 
 import java.util.logging.Level;
+import java.util.logging.LogRecord;
 import java.util.logging.Logger;
 
 import de.cubeisland.cubeengine.core.CubeEngine;
@@ -32,6 +33,9 @@ public class BukkitAppender extends AppenderBase<ILoggingEvent>
 {
     private Logger logger;
     public Layout<ILoggingEvent> layout;
+    // Remove the old "[INFO] [CubeEngine] " with 20 "\b" and add "[{DEBUG,TRACE}] [CubeEngine] "
+    private final String DEBUG_PREFIX = "\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b[DEBUG] [CubeEngine] ";
+    private final String TRACE_PREFIX = "\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b[TRACE] [CubeEngine] ";
 
     public void start()
     {
@@ -51,23 +55,23 @@ public class BukkitAppender extends AppenderBase<ILoggingEvent>
         Level level = null;
         if (event.getLevel().toString().equalsIgnoreCase("error"))
         {
-            level = Level.SEVERE;
+            this.logger.log(Level.SEVERE, layout.doLayout(event));
         }
         else if (event.getLevel().toString().equalsIgnoreCase("warn"))
         {
-            level = Level.WARNING;
+            this.logger.log(Level.WARNING, layout.doLayout(event));
         }
         else if (event.getLevel().toString().equalsIgnoreCase("debug"))
         {
-            level = Level.FINE;
+            this.logger.log(Level.INFO, DEBUG_PREFIX + layout.doLayout(event));
         }
         else if (event.getLevel().toString().equalsIgnoreCase("trace"))
         {
-            level = Level.FINEST;
+            this.logger.log(Level.INFO, TRACE_PREFIX + layout.doLayout(event));
         }
         else
         {
-            level = Level.INFO;
+            this.logger.log(Level.INFO, layout.doLayout(event));
         }
         this.logger.log(level, layout.doLayout(event));
     }

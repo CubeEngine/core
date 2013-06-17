@@ -71,9 +71,13 @@ public class CoreConfiguration extends Configuration
     @Comment("Currently available: mysql")
     public String database = "mysql";
 
-    @Option("logging.Level")
+    @Option("logging.console-Level")
     @Comment("Logging into Console \nALL > DEBUG > INFO > WARN > ERROR > OFF")
-    public Level loggingLevel = Level.INFO;
+    public Level loggingConsoleLevel = Level.INFO;
+
+    @Option("logging.file-Level")
+    @Comment("Logging to the main log file \nALL > DEBUG > INFO > WARN > ERROR > OFF")
+    public Level loggingFileLevel = Level.INFO;
 
     @Option("logging.log-commands")
     @Comment("Whether to log commands executed by players.")

@@ -27,6 +27,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
+import java.util.logging.Handler;
 
 import org.bukkit.Server;
 import org.bukkit.command.CommandMap;
@@ -71,6 +72,9 @@ import de.cubeisland.cubeengine.core.webapi.exception.ApiStartupException;
 
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.Logger;
+import ch.qos.logback.classic.filter.ThresholdFilter;
+import ch.qos.logback.classic.spi.ILoggingEvent;
+import ch.qos.logback.core.Appender;
 import org.slf4j.LoggerFactory;
 
 import static de.cubeisland.cubeengine.core.util.ReflectionUtils.findFirstField;
@@ -147,19 +151,34 @@ public final class BukkitCore extends JavaPlugin implements Core
             this.getLogger().log(java.util.logging.Level.SEVERE, "Failed to set the system property for the log folder", e);
         }
         this.logger = (Logger)LoggerFactory.getLogger("cubeengine.core");
-        this.logger.setLevel(Level.ALL);
         // TODO RemoteHandler is not yet implemented this.logger.addHandler(new RemoteHandler(LogLevel.ERROR, this));
+        this.logger.setLevel(Level.ALL);
 
         this.banManager = new BukkitBanManager(this);
 
         // depends on: file manager
         this.config = Configuration.load(BukkitCoreConfiguration.class, new File(this.fileManager.getDataFolder(), "core.yml"));
 
-        this.logger.setLevel(this.config.loggingLevel);
+        Logger parentLogger =  (Logger)LoggerFactory.getLogger("cubeengine");
+        // Set the level for the parent logger to the lowest of either the file or console
+        // subloggers inherit this by default, but can override
+        parentLogger.setLevel((config.loggingConsoleLevel.toInt() > config.loggingFileLevel.toInt()) ?
+                              this.config.loggingFileLevel : this.config.loggingConsoleLevel);
+        // Set a filter for the console log, so sub loggers don't write logs with lower level than the user wants
+        ThresholdFilter consoleFilter = new ThresholdFilter();
+        consoleFilter.setLevel(this.config.loggingConsoleLevel.toString());
+        parentLogger.getAppender("cubeengine-console").addFilter(consoleFilter);
+        consoleFilter.start();
+        // Set a filter for the file log, so sub loggers don't write logs with lower level than the user wants
+        ThresholdFilter fileFilter = new ThresholdFilter();
+        fileFilter.setLevel(this.config.loggingFileLevel.toString());
+        this.logger.getAppender("core-file").addFilter(fileFilter);
+        fileFilter.start();
 
         if (!this.config.logCommands)
         {
             BukkitUtils.disableCommandLogging();
+            ((Logger)LoggerFactory.getLogger("cubeengine.commands")).setAdditive(false);
         }
 
         if (this.config.catchSystemSignals)

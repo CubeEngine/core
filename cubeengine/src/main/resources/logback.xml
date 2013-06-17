@@ -1,15 +1,15 @@
-<configuration debug="true">
+<configuration>
   <!-- File appenders-->
   <appender name="commands-file" class="ch.qos.logback.core.FileAppender">
     <file>${cubeengine.log}/commands.log</file>
     <encoder>
-      <pattern>%date{yyyy-MM-dd HH:mm:ss} %msg%n</pattern>
+      <pattern>%date{yyyy-MM-dd HH:mm:ss} - %msg%n</pattern>
     </encoder>
   </appender>
   <appender name="permissions-file" class="ch.qos.logback.core.FileAppender">
     <file>${cubeengine.log}/permissions.log</file>
     <encoder>
-      <pattern>%date{yyyy-MM-dd HH:mm:ss} %msg%n</pattern>
+      <pattern>%date{yyyy-MM-dd HH:mm:ss} - %msg%n</pattern>
     </encoder>
   </appender>
   <appender name="language-file" class="ch.qos.logback.core.FileAppender">
@@ -32,18 +32,16 @@
   </appender>
 
   <!-- Console appenders -->
-  <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
-    <encoder>
-      <pattern>%date{HH:mm:ss} [%level] %msg%n</pattern>
-    </encoder>
-  </appender>
   <appender name="cubeengine-console" class="de.cubeisland.cubeengine.core.logger.BukkitAppender">
-    <layout class="ch.qos.logback.classic.PatternLayout">
-      <pattern>%msg%n</pattern>
+    <layout>
+      <!-- We only want to print the message, as Bukkit and our BukkitAppender handles prefix with level and the newline -->
+      <pattern>%msg</pattern>
     </layout>
   </appender>
 
-  <logger name="cubeengine.commands" level="debug">
+  <!-- Loggers -->
+  <!-- Loggers that only should log to files -->
+  <logger name="cubeengine.commands" level="debug" additivity="false">
     <appender-ref ref="commands-file" />
   </logger>
 
@@ -51,23 +49,23 @@
     <appender-ref ref="permissions-file" />
   </logger>
 
-  <logger name="cubeengine.language" level="debug">
+  <logger name="cubeengine.language" level="debug" additivity="false">
     <appender-ref ref="language-file" />
   </logger>
 
-  <logger name="cubeengine.webapi" level="debug">
+  <logger name="cubeengine.webapi" level="debug" additivity="false">
     <appender-ref ref="webapi-file" />
   </logger>
 
-  <logger name="cubeengine.core">
+  <!-- The logger for the core-->
+  <logger name="cubeengine.core" additivity="true">
     <appender-ref ref="core-file" />
   </logger>
 
-  <logger name="cubeengine" level="info" additivity="false">
+  <!-- The parent logger for all loggers related to CubeEngine-->
+  <logger name="cubeengine" level="all" additivity="false">
     <appender-ref ref="cubeengine-console" />
   </logger>
 
-  <root level="debug">
-    <appender-ref ref="STDOUT" />
-  </root>
+  <root level="all"/>
 </configuration>

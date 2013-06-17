@@ -17,6 +17,7 @@
  */
 package de.cubeisland.cubeengine.core.util.convert.converter;
 
+import de.cubeisland.cubeengine.core.config.node.BooleanNode;
 import de.cubeisland.cubeengine.core.config.node.Node;
 import de.cubeisland.cubeengine.core.config.node.StringNode;
 import de.cubeisland.cubeengine.core.util.convert.ConversionException;
@@ -38,12 +39,16 @@ public class LevelConverter implements Converter<Level>
     {
         if (node instanceof StringNode)
         {
-            Level lv = Level.valueOf(node.toString());
+            Level lv = Level.toLevel(node.toString(), null);
             if (lv == null)
             {
-                throw new ConversionException("Unknown LogLevel. " + ((StringNode)node).getValue());
+                throw new ConversionException("Unknown LogLevel: " + ((StringNode)node).getValue());
             }
             return lv;
+        }
+        else if (node instanceof BooleanNode && !((BooleanNode)node).getValue())
+        { // OFF is interpreted as a boolean false
+            return fromNode(new StringNode("OFF"));
         }
         throw new ConversionException("Invalid Node!" + node.getClass());
     }

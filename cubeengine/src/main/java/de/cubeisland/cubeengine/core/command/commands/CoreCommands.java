@@ -267,7 +267,7 @@ public class CoreCommands extends ContainerCommand
     {
         if (context.hasArgs())
         {
-            Level level = Level.valueOf(context.getString(0));
+            Level level = Level.toLevel(context.getString(0), null);
             if (level != null)
             {
                 ((Logger)context.getCore().getLog()).setLevel(level);

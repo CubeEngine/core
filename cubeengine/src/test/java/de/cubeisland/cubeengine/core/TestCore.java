@@ -53,7 +53,7 @@ public class TestCore implements Core
 {
     private final Version version = Version.ONE;
     private final String sourceVersion = "master-aaaaaaaa";
-    private final Logger logger = LoggerFactory.getLogger("null");
+    private final Logger logger = LoggerFactory.getLogger("");
     private ObjectMapper jsonObjectMapper = null;
     private CoreConfiguration config = null;
     private FileManager fileManager = null;
