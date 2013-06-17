@@ -33,8 +33,8 @@ public class BukkitAppender extends AppenderBase<ILoggingEvent>
 {
     private Logger logger;
     public Layout<ILoggingEvent> layout;
-    private final Level TRACE = new CustomLevel("TRACE", Level.INFO.intValue()+1);
-    private final Level DEBUG = new CustomLevel("DEBUG", Level.INFO.intValue()+2);
+    private final Level TRACE = new CustomLevel("TRACE", Level.INFO.intValue()+33);
+    private final Level DEBUG = new CustomLevel("DEBUG", Level.INFO.intValue()+66);
 
     public void start()
     {
