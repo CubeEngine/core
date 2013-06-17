@@ -142,54 +142,47 @@ public class ModuleLoader
             Module module = moduleClass.getConstructor().newInstance();
 
             Logger logger = (Logger)LoggerFactory.getLogger("cubeengine."+info.getName().toLowerCase());
-            // This logger will by default log to console, because it's a child of cubeengine
-            try{
-                //The module has it's own logger
-                logger.setAdditive(false);
-                // Setup the module's console logger
-                BukkitAppender consoleAppender = new BukkitAppender();
-                consoleAppender.setContext(logger.getLoggerContext());
-                PatternLayout consoleLayout = new PatternLayout();
-                consoleLayout.setContext(logger.getLoggerContext());
-                consoleLayout.setPattern("[" + info.getName() + "] %msg");
-                consoleAppender.setLayout(consoleLayout);
+            //The module has it's own logger
+            logger.setAdditive(false);
+            // Setup the module's console logger
+            BukkitAppender consoleAppender = new BukkitAppender();
+            consoleAppender.setContext(logger.getLoggerContext());
+            PatternLayout consoleLayout = new PatternLayout();
+            consoleLayout.setContext(logger.getLoggerContext());
+            consoleLayout.setPattern("[" + info.getName() + "] %msg");
+            consoleAppender.setLayout(consoleLayout);
 
-                // Setup the module's file logger
-                String logFile = System.getProperty("cubeengine.logger.default-path") + "/" +
-                    new SimpleDateFormat("yyyy-MM-dd--HH:mm").format(new Date()) + "/" + info.getName().toLowerCase();
-                RollingFileAppender<ILoggingEvent> fileAppender = new RollingFileAppender<ILoggingEvent>();
-                fileAppender.setContext(logger.getLoggerContext());
-                fileAppender.setFile(logFile + ".log");
-                PatternLayoutEncoder fileEnconder = new PatternLayoutEncoder();
-                fileEnconder.setContext(logger.getLoggerContext());
-                fileEnconder.setPattern("%date{yyyy-MM-dd HH:mm:ss} [%level] %msg%n");
-                fileAppender.setEncoder(fileEnconder);
-                FixedWindowRollingPolicy rollingPolicy = new FixedWindowRollingPolicy();
-                rollingPolicy.setContext(logger.getLoggerContext());
-                rollingPolicy.setParent(fileAppender);
-                rollingPolicy.setMinIndex(0);
-                rollingPolicy.setMaxIndex(Integer.valueOf(System.getProperty("cubeengine.logger.max-file-count")));
-                rollingPolicy.setFileNamePattern(logFile + ".%i.log");
-                fileAppender.setRollingPolicy(rollingPolicy);
-                SizeBasedTriggeringPolicy<ILoggingEvent> triggeringPolicy = new SizeBasedTriggeringPolicy<ILoggingEvent>();
-                triggeringPolicy.setContext(logger.getLoggerContext());
-                triggeringPolicy.setMaxFileSize(System.getProperty("cubeengine.logger.max-size"));
-                fileAppender.setTriggeringPolicy(triggeringPolicy);
+            // Setup the module's file logger
+            String logFile = System.getProperty("cubeengine.logger.default-path") + "/" +
+                new SimpleDateFormat("yyyy-MM-dd--HH:mm").format(new Date()) + "/" + info.getName().toLowerCase();
+            RollingFileAppender<ILoggingEvent> fileAppender = new RollingFileAppender<ILoggingEvent>();
+            fileAppender.setContext(logger.getLoggerContext());
+            fileAppender.setFile(logFile + ".log");
+            PatternLayoutEncoder fileEnconder = new PatternLayoutEncoder();
+            fileEnconder.setContext(logger.getLoggerContext());
+            fileEnconder.setPattern("%date{yyyy-MM-dd HH:mm:ss} [%level] %msg%n");
+            fileAppender.setEncoder(fileEnconder);
+            FixedWindowRollingPolicy rollingPolicy = new FixedWindowRollingPolicy();
+            rollingPolicy.setContext(logger.getLoggerContext());
+            rollingPolicy.setParent(fileAppender);
+            rollingPolicy.setMinIndex(0);
+            rollingPolicy.setMaxIndex(Integer.valueOf(System.getProperty("cubeengine.logger.max-file-count")));
+            rollingPolicy.setFileNamePattern(logFile + ".%i.log");
+            fileAppender.setRollingPolicy(rollingPolicy);
+            SizeBasedTriggeringPolicy<ILoggingEvent> triggeringPolicy = new SizeBasedTriggeringPolicy<ILoggingEvent>();
+            triggeringPolicy.setContext(logger.getLoggerContext());
+            triggeringPolicy.setMaxFileSize(System.getProperty("cubeengine.logger.max-size"));
+            fileAppender.setTriggeringPolicy(triggeringPolicy);
 
-                // Add the appenders to the logger and start everything
-                logger.addAppender(consoleAppender);
-                logger.addAppender(fileAppender);
-                rollingPolicy.start();
-                triggeringPolicy.start();
-                fileAppender.start();
-                fileEnconder.start();
-                consoleLayout.start();
-                consoleAppender.start();
-            }
-            catch (Exception e)
-            {
-                CubeEngine.getLog().error(e.getMessage(), e);
-            }
+            // Add the appenders to the logger and start everything
+            logger.addAppender(consoleAppender);
+            logger.addAppender(fileAppender);
+            rollingPolicy.start();
+            triggeringPolicy.start();
+            fileAppender.start();
+            fileEnconder.start();
+            consoleLayout.start();
+            consoleAppender.start();
 
             module.initialize(this.core, info, new File(info.getFile().getParentFile(), name), this, classLoader, logger);
             module.onLoad();
