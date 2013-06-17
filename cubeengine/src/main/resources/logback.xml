@@ -3,31 +3,31 @@
 
   <!-- File appenders-->
   <appender name="commands-file" class="ch.qos.logback.core.FileAppender">
-    <file>${cubeengine.log}/commands${byMinute}</file>
+    <file>${cubeengine.log}/commands${byMinute}.log</file>
     <encoder>
       <pattern>%date{yyyy-MM-dd HH:mm:ss} - %msg%n</pattern>
     </encoder>
   </appender>
   <appender name="permissions-file" class="ch.qos.logback.core.FileAppender">
-    <file>${cubeengine.log}/permissions${byMinute}</file>
+    <file>${cubeengine.log}/permissions${byMinute}.log</file>
     <encoder>
       <pattern>%date{yyyy-MM-dd HH:mm:ss} - %msg%n</pattern>
     </encoder>
   </appender>
   <appender name="language-file" class="ch.qos.logback.core.FileAppender">
-    <file>${cubeengine.log}/missing-translations${byMinute}</file>
+    <file>${cubeengine.log}/missing-translations${byMinute}.log</file>
     <encoder>
       <pattern>%date{yyyy-MM-dd HH:mm:ss} [%level] %msg%n</pattern>
     </encoder>
   </appender>
   <appender name="webapi-file" class="ch.qos.logback.core.FileAppender">
-    <file>${cubeengine.log}/webapi${byMinute}</file>
+    <file>${cubeengine.log}/webapi${byMinute}.log</file>
     <encoder>
       <pattern>%date{yyyy-MM-dd HH:mm:ss} [%level] %msg%n</pattern>
     </encoder>
   </appender>
   <appender name="core-file" class="ch.qos.logback.core.FileAppender">
-    <file>${cubeengine.log}/core${byMinute}</file>
+    <file>${cubeengine.log}/core${byMinute}.log</file>
     <encoder>
       <pattern>%date{yyyy-MM-dd HH:mm:ss} [%level] %msg%n</pattern>
     </encoder>
