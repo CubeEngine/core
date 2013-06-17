@@ -139,7 +139,6 @@ public final class BukkitCore extends JavaPlugin implements Core
             pm.disablePlugin(this);
             return;
         }
-        this.fileManager.clearTempDir();
         this.fileManager.dropResources(CoreResource.values());
 
         try
@@ -154,6 +153,7 @@ public final class BukkitCore extends JavaPlugin implements Core
         // TODO RemoteHandler is not yet implemented this.logger.addHandler(new RemoteHandler(LogLevel.ERROR, this));
         this.logger.setLevel(Level.ALL);
         this.fileManager.setLogger(this.logger);
+        this.fileManager.clearTempDir();
 
         this.banManager = new BukkitBanManager(this);
 
