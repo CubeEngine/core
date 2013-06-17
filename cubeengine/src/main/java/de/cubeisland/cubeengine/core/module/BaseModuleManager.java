@@ -226,7 +226,7 @@ public abstract class BaseModuleManager implements ModuleManager
 
         for (String loadAfterModule : info.getLoadAfter())
         {
-            if (loadStack.contains(loadAfterModule))
+            if (!loadStack.contains(loadAfterModule) && moduleInfos.containsKey(loadAfterModule))
             {
                 this.loadModule(loadAfterModule, moduleInfos, loadStack);
             }
