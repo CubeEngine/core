@@ -22,7 +22,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
@@ -32,10 +31,8 @@ import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
 import de.cubeisland.cubeengine.core.Core;
-import de.cubeisland.cubeengine.core.CubeEngine;
 import de.cubeisland.cubeengine.core.config.Configuration;
 import de.cubeisland.cubeengine.core.filesystem.FileManager;
-import de.cubeisland.cubeengine.core.logger.BukkitAppender;
 import de.cubeisland.cubeengine.core.module.event.ModuleLoadedEvent;
 import de.cubeisland.cubeengine.core.module.exception.IncompatibleCoreException;
 import de.cubeisland.cubeengine.core.module.exception.IncompatibleDependencyException;
@@ -43,14 +40,8 @@ import de.cubeisland.cubeengine.core.module.exception.InvalidModuleException;
 import de.cubeisland.cubeengine.core.module.exception.MissingDependencyException;
 import de.cubeisland.cubeengine.core.storage.Registry;
 
-import ch.qos.logback.classic.Logger;
-import ch.qos.logback.classic.PatternLayout;
-import ch.qos.logback.classic.encoder.PatternLayoutEncoder;
-import ch.qos.logback.classic.spi.ILoggingEvent;
-import ch.qos.logback.core.rolling.FixedWindowRollingPolicy;
-import ch.qos.logback.core.rolling.RollingFileAppender;
-import ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy;
 import gnu.trove.set.hash.THashSet;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
@@ -65,9 +56,10 @@ public class ModuleLoader
     private final Map<String, ModuleClassLoader> classLoaders;
     protected final String infoFileName;
     private final File tempFolder;
+    private final ModuleLoggerFactory loggerFactory;
     private Registry registry;
 
-    ModuleLoader(Core core, ClassLoader parentClassLoader)
+    ModuleLoader(Core core, ClassLoader parentClassLoader, ModuleLoggerFactory loggerFactory)
     {
         this.core = core;
         this.parentClassLoader = parentClassLoader;
@@ -76,6 +68,7 @@ public class ModuleLoader
         this.infoFileName = "module.yml";
         this.tempFolder = new File(core.getFileManager().getTempDir(), "modules");
         this.registry = new Registry(core.getDB());
+        this.loggerFactory = loggerFactory;
         if (!this.tempFolder.exists() && !this.tempFolder.mkdir())
         {
             throw new RuntimeException("Failed to create a temporary folder for the modules!");
@@ -140,49 +133,7 @@ public class ModuleLoader
             ModuleClassLoader classLoader = new ModuleClassLoader(this, tempFile.toURI().toURL(), info, this.parentClassLoader);
             Class<? extends Module> moduleClass = Class.forName(info.getMain(), true, classLoader).asSubclass(Module.class);
             Module module = moduleClass.getConstructor().newInstance();
-
-            Logger logger = (Logger)LoggerFactory.getLogger("cubeengine."+info.getName().toLowerCase());
-            //The module has it's own logger
-            logger.setAdditive(false);
-            // Setup the module's console logger
-            BukkitAppender consoleAppender = new BukkitAppender();
-            consoleAppender.setContext(logger.getLoggerContext());
-            PatternLayout consoleLayout = new PatternLayout();
-            consoleLayout.setContext(logger.getLoggerContext());
-            consoleLayout.setPattern("[" + info.getName() + "] %msg");
-            consoleAppender.setLayout(consoleLayout);
-
-            // Setup the module's file logger
-            String logFile = System.getProperty("cubeengine.logger.default-path") + "/" +
-                new SimpleDateFormat("yyyy-MM-dd--HH:mm").format(new Date()) + "/" + info.getName().toLowerCase();
-            RollingFileAppender<ILoggingEvent> fileAppender = new RollingFileAppender<ILoggingEvent>();
-            fileAppender.setContext(logger.getLoggerContext());
-            fileAppender.setFile(logFile + ".log");
-            PatternLayoutEncoder fileEnconder = new PatternLayoutEncoder();
-            fileEnconder.setContext(logger.getLoggerContext());
-            fileEnconder.setPattern("%date{yyyy-MM-dd HH:mm:ss} [%level] %msg%n");
-            fileAppender.setEncoder(fileEnconder);
-            FixedWindowRollingPolicy rollingPolicy = new FixedWindowRollingPolicy();
-            rollingPolicy.setContext(logger.getLoggerContext());
-            rollingPolicy.setParent(fileAppender);
-            rollingPolicy.setMinIndex(0);
-            rollingPolicy.setMaxIndex(Integer.valueOf(System.getProperty("cubeengine.logger.max-file-count")));
-            rollingPolicy.setFileNamePattern(logFile + ".%i.log");
-            fileAppender.setRollingPolicy(rollingPolicy);
-            SizeBasedTriggeringPolicy<ILoggingEvent> triggeringPolicy = new SizeBasedTriggeringPolicy<ILoggingEvent>();
-            triggeringPolicy.setContext(logger.getLoggerContext());
-            triggeringPolicy.setMaxFileSize(System.getProperty("cubeengine.logger.max-size"));
-            fileAppender.setTriggeringPolicy(triggeringPolicy);
-
-            // Add the appenders to the logger and start everything
-            logger.addAppender(consoleAppender);
-            logger.addAppender(fileAppender);
-            rollingPolicy.start();
-            triggeringPolicy.start();
-            fileAppender.start();
-            fileEnconder.start();
-            consoleLayout.start();
-            consoleAppender.start();
+            Logger logger = this.loggerFactory.getLogger(info);
 
             module.initialize(this.core, info, new File(info.getFile().getParentFile(), name), this, classLoader, logger);
             module.onLoad();

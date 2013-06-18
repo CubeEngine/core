@@ -68,6 +68,7 @@ import de.cubeisland.cubeengine.core.webapi.exception.ApiStartupException;
 
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.Logger;
+import ch.qos.logback.classic.PatternLayout;
 import ch.qos.logback.classic.filter.ThresholdFilter;
 import org.slf4j.LoggerFactory;
 
@@ -145,9 +146,23 @@ public final class BukkitCore extends JavaPlugin implements Core
         {
             this.getLogger().log(java.util.logging.Level.SEVERE, "Failed to set the system property for the log folder", e);
         }
+        // Configure the
+        Logger parentLogger = (Logger)LoggerFactory.getLogger("cubeengine");
+        BukkitAppender consoleAppender = new BukkitAppender();
+        consoleAppender.setContext(parentLogger.getLoggerContext());
+        consoleAppender.setName("cubeengine-console");
+        PatternLayout consoleLayout = new PatternLayout();
+        consoleLayout.setContext(parentLogger.getLoggerContext());
+        consoleLayout.setPattern("%msg");
+        consoleAppender.setLayout(consoleLayout);
+        parentLogger.addAppender(consoleAppender);
+        consoleLayout.start();
+        consoleAppender.start();
+
         this.logger = (Logger)LoggerFactory.getLogger("cubeengine.core");
         // TODO RemoteHandler is not yet implemented this.logger.addHandler(new RemoteHandler(LogLevel.ERROR, this));
         this.logger.setLevel(Level.ALL);
+
         this.fileManager.setLogger(this.logger);
         this.fileManager.clearTempDir();
 
@@ -156,7 +171,6 @@ public final class BukkitCore extends JavaPlugin implements Core
         // depends on: file manager
         this.config = Configuration.load(BukkitCoreConfiguration.class, new File(this.fileManager.getDataFolder(), "core.yml"));
 
-        Logger parentLogger =  (Logger)LoggerFactory.getLogger("cubeengine");
         // Set the level for the parent logger to the lowest of either the file or console
         // subloggers inherit this by default, but can override
         parentLogger.setLevel((config.loggingConsoleLevel.toInt() > config.loggingFileLevel

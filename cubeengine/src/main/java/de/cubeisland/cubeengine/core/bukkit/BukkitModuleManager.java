@@ -18,6 +18,8 @@
 package de.cubeisland.cubeengine.core.bukkit;
 
 import java.lang.reflect.Field;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Stack;
@@ -30,12 +32,22 @@ import de.cubeisland.cubeengine.core.module.BaseModuleManager;
 import de.cubeisland.cubeengine.core.module.Inject;
 import de.cubeisland.cubeengine.core.module.Module;
 import de.cubeisland.cubeengine.core.module.ModuleInfo;
+import de.cubeisland.cubeengine.core.module.ModuleLoggerFactory;
 import de.cubeisland.cubeengine.core.module.exception.CircularDependencyException;
 import de.cubeisland.cubeengine.core.module.exception.IncompatibleCoreException;
 import de.cubeisland.cubeengine.core.module.exception.IncompatibleDependencyException;
 import de.cubeisland.cubeengine.core.module.exception.InvalidModuleException;
 import de.cubeisland.cubeengine.core.module.exception.MissingDependencyException;
 import de.cubeisland.cubeengine.core.module.exception.MissingPluginDependencyException;
+
+import ch.qos.logback.classic.PatternLayout;
+import ch.qos.logback.classic.encoder.PatternLayoutEncoder;
+import ch.qos.logback.classic.spi.ILoggingEvent;
+import ch.qos.logback.core.rolling.FixedWindowRollingPolicy;
+import ch.qos.logback.core.rolling.RollingFileAppender;
+import ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import static java.util.logging.Level.WARNING;
 
@@ -46,7 +58,7 @@ public class BukkitModuleManager extends BaseModuleManager
 
     public BukkitModuleManager(BukkitCore core, ClassLoader parentClassLoader)
     {
-        super(core, parentClassLoader);
+        super(core, parentClassLoader, new BukkitModuleLoggerFactory());
         this.pluginManager = core.getServer().getPluginManager();
         this.core = core;
     }
@@ -68,7 +80,8 @@ public class BukkitModuleManager extends BaseModuleManager
                         }
                         catch (Exception e)
                         {
-                            module.getLog().warn("An uncaught exception occurred during onFinishLoading(): " + e.getMessage(), e);
+                            module.getLog().warn("An uncaught exception occurred during onFinishLoading(): " + e
+                                .getMessage(), e);
                         }
                     }
                 }
@@ -136,5 +149,75 @@ public class BukkitModuleManager extends BaseModuleManager
             pluginClassMap.put(plugin.getClass(), plugin);
         }
         return pluginClassMap;
+    }
+
+    public static class BukkitModuleLoggerFactory implements ModuleLoggerFactory
+    {
+
+        private final Map<ModuleInfo, Logger> loggers;
+
+        public BukkitModuleLoggerFactory()
+        {
+            this.loggers = new HashMap<ModuleInfo, Logger>();
+        }
+
+        @Override
+        public Logger getLogger(ModuleInfo module)
+        {
+            if (this.loggers.containsKey(module))
+            {
+                return this.loggers.get(module);
+            }
+            return createLogger(module);
+        }
+
+        private Logger createLogger(ModuleInfo module)
+        {
+            ch.qos.logback.classic.Logger logger = (ch.qos.logback.classic.Logger)LoggerFactory
+                .getLogger("cubeengine." + module.getName().toLowerCase());
+            //The module has it's own logger
+            logger.setAdditive(false);
+            // Setup the module's console logger
+            BukkitAppender consoleAppender = new BukkitAppender();
+            consoleAppender.setContext(logger.getLoggerContext());
+            PatternLayout consoleLayout = new PatternLayout();
+            consoleLayout.setContext(logger.getLoggerContext());
+            consoleLayout.setPattern("[" + module.getName() + "] %msg");
+            consoleAppender.setLayout(consoleLayout);
+
+            // Setup the module's file logger
+            String logFile = System.getProperty("cubeengine.logger.default-path") + "/" +
+                new SimpleDateFormat("yyyy-MM-dd--HH:mm").format(new Date()) + "/" + module.getName().toLowerCase();
+            RollingFileAppender<ILoggingEvent> fileAppender = new RollingFileAppender<ILoggingEvent>();
+            fileAppender.setContext(logger.getLoggerContext());
+            fileAppender.setFile(logFile + ".log");
+            PatternLayoutEncoder fileEnconder = new PatternLayoutEncoder();
+            fileEnconder.setContext(logger.getLoggerContext());
+            fileEnconder.setPattern("%date{yyyy-MM-dd HH:mm:ss} [%level] %msg%n");
+            fileAppender.setEncoder(fileEnconder);
+            FixedWindowRollingPolicy rollingPolicy = new FixedWindowRollingPolicy();
+            rollingPolicy.setContext(logger.getLoggerContext());
+            rollingPolicy.setParent(fileAppender);
+            rollingPolicy.setMinIndex(0);
+            rollingPolicy.setMaxIndex(Integer.valueOf(System.getProperty("cubeengine.logger.max-file-count")));
+            rollingPolicy.setFileNamePattern(logFile + ".%i.log");
+            fileAppender.setRollingPolicy(rollingPolicy);
+            SizeBasedTriggeringPolicy<ILoggingEvent> triggeringPolicy = new SizeBasedTriggeringPolicy<ILoggingEvent>();
+            triggeringPolicy.setContext(logger.getLoggerContext());
+            triggeringPolicy.setMaxFileSize(System.getProperty("cubeengine.logger.max-size"));
+            fileAppender.setTriggeringPolicy(triggeringPolicy);
+
+            // Add the appenders to the logger and start everything
+            logger.addAppender(consoleAppender);
+            logger.addAppender(fileAppender);
+            rollingPolicy.start();
+            triggeringPolicy.start();
+            fileAppender.start();
+            fileEnconder.start();
+            consoleLayout.start();
+            consoleAppender.start();
+
+            return logger;
+        }
     }
 }

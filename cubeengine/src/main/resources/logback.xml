@@ -78,14 +78,6 @@
     </triggeringPolicy>
   </appender>
 
-  <!-- Console appenders -->
-  <appender name="cubeengine-console" class="de.cubeisland.cubeengine.core.logger.BukkitAppender">
-    <layout>
-      <!-- We only want to print the message, as Bukkit and our BukkitAppender handles prefix with level and the newline -->
-      <pattern>%msg</pattern>
-    </layout>
-  </appender>
-
   <!-- Loggers -->
   <!-- Loggers that only should log to files -->
   <logger name="cubeengine.commands" level="debug" additivity="false">
@@ -110,9 +102,7 @@
   </logger>
 
   <!-- The parent logger for all loggers related to CubeEngine-->
-  <logger name="cubeengine" level="all" additivity="false">
-    <appender-ref ref="cubeengine-console" />
-  </logger>
+  <logger name="cubeengine" level="all" additivity="false"/>
 
   <root level="all"/>
 </configuration>
