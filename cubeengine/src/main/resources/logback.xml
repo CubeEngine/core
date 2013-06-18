@@ -1,5 +1,5 @@
 <configuration>
-  <timestamp key="byMinute" datePattern="yyyy'-'MM'-'dd'--'HH':'mm"/>
+  <timestamp key="byMinute" datePattern="yyyy'-'MM'-'dd'--'HH':'mm" timeReference="contextBirth"/>
 
   <!-- File appenders-->
   <appender name="commands-file" class="ch.qos.logback.core.rolling.RollingFileAppender">

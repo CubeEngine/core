@@ -187,7 +187,8 @@ public class BukkitModuleManager extends BaseModuleManager
 
             // Setup the module's file logger
             String logFile = System.getProperty("cubeengine.logger.default-path") + "/" +
-                new SimpleDateFormat("yyyy-MM-dd--HH:mm").format(new Date()) + "/" + module.getName().toLowerCase();
+                new SimpleDateFormat("yyyy-MM-dd--HH:mm").format(new Date(logger.getLoggerContext().getBirthTime()))
+                + "/" + module.getName().toLowerCase();
             RollingFileAppender<ILoggingEvent> fileAppender = new RollingFileAppender<ILoggingEvent>();
             fileAppender.setContext(logger.getLoggerContext());
             fileAppender.setFile(logFile + ".log");
