@@ -78,6 +78,15 @@
     </triggeringPolicy>
   </appender>
 
+  <appender name="exceptions-file" class="ch.qos.logback.core.FileAppender">
+    <file>${cubeengine.logger.default-path}/${byMinute}/exceptions.log</file>
+    <encoder>
+      <pattern>[%date{yyyy-MM-dd HH:mm:ss}] %msg%n</pattern>
+    </encoder>
+    <filter class="de.cubeisland.cubeengine.core.logger.ExceptionFilter" />
+  </appender>
+
+
   <!-- Loggers -->
   <!-- Loggers that only should log to files -->
   <logger name="cubeengine.commands" level="debug" additivity="false">
@@ -102,7 +111,9 @@
   </logger>
 
   <!-- The parent logger for all loggers related to CubeEngine-->
-  <logger name="cubeengine" level="all" additivity="false"/>
+  <logger name="cubeengine" level="all" additivity="false">
+    <appender-ref ref="exceptions-file" />
+  </logger>
 
   <root level="all"/>
 </configuration>

@@ -50,26 +50,26 @@ public class BukkitAppender extends AppenderBase<ILoggingEvent>
     @Override
     protected void append(ILoggingEvent event)
     {
-        Level level = null;
+        Level level;
         if (event.getLevel().toString().equalsIgnoreCase("error"))
         {
-            this.logger.log(Level.SEVERE, layout.doLayout(event));
+            level = Level.SEVERE;
         }
         else if (event.getLevel().toString().equalsIgnoreCase("warn"))
         {
-            this.logger.log(Level.WARNING, layout.doLayout(event));
+            level = Level.WARNING;
         }
         else if (event.getLevel().toString().equalsIgnoreCase("debug"))
         {
-            this.logger.log(DEBUG, layout.doLayout(event));
+            level = DEBUG;
         }
         else if (event.getLevel().toString().equalsIgnoreCase("trace"))
         {
-            this.logger.log(TRACE, layout.doLayout(event));
+            level = TRACE;
         }
         else
         {
-            this.logger.log(Level.INFO, layout.doLayout(event));
+            level = Level.INFO;
         }
         this.logger.log(level, layout.doLayout(event));
     }

@@ -210,6 +210,8 @@ public class BukkitModuleManager extends BaseModuleManager
             // Add the appenders to the logger and start everything
             logger.addAppender(consoleAppender);
             logger.addAppender(fileAppender);
+            logger.addAppender(((ch.qos.logback.classic.Logger)LoggerFactory.getLogger("cubeengine"))
+                                   .getAppender("exceptions-file"));
             rollingPolicy.start();
             triggeringPolicy.start();
             fileAppender.start();
