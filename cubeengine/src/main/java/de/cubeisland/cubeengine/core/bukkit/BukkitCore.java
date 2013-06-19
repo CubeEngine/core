@@ -153,7 +153,7 @@ public final class BukkitCore extends JavaPlugin implements Core
         consoleAppender.setName("cubeengine-console");
         PatternLayout consoleLayout = new PatternLayout();
         consoleLayout.setContext(parentLogger.getLoggerContext());
-        consoleLayout.setPattern("%msg");
+        consoleLayout.setPattern("%highlight(%msg)");
         consoleAppender.setLayout(consoleLayout);
         parentLogger.addAppender(consoleAppender);
         consoleLayout.start();

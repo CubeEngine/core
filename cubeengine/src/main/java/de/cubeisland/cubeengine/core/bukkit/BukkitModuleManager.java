@@ -182,7 +182,7 @@ public class BukkitModuleManager extends BaseModuleManager
             consoleAppender.setContext(logger.getLoggerContext());
             PatternLayout consoleLayout = new PatternLayout();
             consoleLayout.setContext(logger.getLoggerContext());
-            consoleLayout.setPattern("[" + module.getName() + "] %msg");
+            consoleLayout.setPattern("[" + module.getName() + "] %highlight(%msg)");
             consoleAppender.setLayout(consoleLayout);
 
             // Setup the module's file logger
