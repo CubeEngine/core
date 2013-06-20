@@ -22,11 +22,15 @@ import java.util.logging.Logger;
 
 import de.cubeisland.cubeengine.core.CubeEngine;
 import de.cubeisland.cubeengine.core.bukkit.BukkitCore;
+import de.cubeisland.cubeengine.core.logger.ConsoleLayout;
 
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.AppenderBase;
 import ch.qos.logback.core.Layout;
 import ch.qos.logback.core.status.ErrorStatus;
+import org.fusesource.jansi.Ansi;
+import org.fusesource.jansi.Ansi.Attribute;
+import org.fusesource.jansi.Ansi.Color;
 
 public class BukkitAppender extends AppenderBase<ILoggingEvent>
 {
@@ -34,6 +38,9 @@ public class BukkitAppender extends AppenderBase<ILoggingEvent>
     public Layout<ILoggingEvent> layout;
     private final Level TRACE = new CustomLevel("TRACE", Level.INFO.intValue()+33);
     private final Level DEBUG = new CustomLevel("DEBUG", Level.INFO.intValue()+66);
+    private final Level INFO = new CustomLevel("INFO", Level.INFO.intValue());
+    private final Level WARN = new CustomLevel("WARN", Level.WARNING.intValue());
+    private final Level ERROR = new CustomLevel("ERROR", Level.SEVERE.intValue());
 
     public void start()
     {
@@ -50,14 +57,18 @@ public class BukkitAppender extends AppenderBase<ILoggingEvent>
     @Override
     protected void append(ILoggingEvent event)
     {
+        if (!this.isStarted())
+        {
+            return;
+        }
         Level level;
         if (event.getLevel().toString().equalsIgnoreCase("error"))
         {
-            level = Level.SEVERE;
+            level = ERROR;
         }
         else if (event.getLevel().toString().equalsIgnoreCase("warn"))
         {
-            level = Level.WARNING;
+            level = WARN;
         }
         else if (event.getLevel().toString().equalsIgnoreCase("debug"))
         {
@@ -69,7 +80,7 @@ public class BukkitAppender extends AppenderBase<ILoggingEvent>
         }
         else
         {
-            level = Level.INFO;
+            level = INFO;
         }
         this.logger.log(level, layout.doLayout(event));
     }

@@ -28,6 +28,7 @@ import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
 
 
+import de.cubeisland.cubeengine.core.logger.ConsoleLayout;
 import de.cubeisland.cubeengine.core.module.BaseModuleManager;
 import de.cubeisland.cubeengine.core.module.Inject;
 import de.cubeisland.cubeengine.core.module.Module;
@@ -40,7 +41,6 @@ import de.cubeisland.cubeengine.core.module.exception.InvalidModuleException;
 import de.cubeisland.cubeengine.core.module.exception.MissingDependencyException;
 import de.cubeisland.cubeengine.core.module.exception.MissingPluginDependencyException;
 
-import ch.qos.logback.classic.PatternLayout;
 import ch.qos.logback.classic.encoder.PatternLayoutEncoder;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.rolling.FixedWindowRollingPolicy;
@@ -180,9 +180,9 @@ public class BukkitModuleManager extends BaseModuleManager
             // Setup the module's console logger
             BukkitAppender consoleAppender = new BukkitAppender();
             consoleAppender.setContext(logger.getLoggerContext());
-            PatternLayout consoleLayout = new PatternLayout();
+            ConsoleLayout consoleLayout = new ConsoleLayout();
             consoleLayout.setContext(logger.getLoggerContext());
-            consoleLayout.setPattern("[" + module.getName() + "] %highlight(%msg)");
+            consoleLayout.setPattern("[" + module.getName() + "] %msg");
             consoleAppender.setLayout(consoleLayout);
 
             // Setup the module's file logger
