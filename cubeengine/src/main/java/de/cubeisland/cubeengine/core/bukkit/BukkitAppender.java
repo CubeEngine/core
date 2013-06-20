@@ -36,11 +36,11 @@ public class BukkitAppender extends AppenderBase<ILoggingEvent>
 {
     private Logger logger;
     public Layout<ILoggingEvent> layout;
-    private final Level TRACE = new CustomLevel("TRACE", Level.INFO.intValue()+33);
-    private final Level DEBUG = new CustomLevel("DEBUG", Level.INFO.intValue()+66);
-    private final Level INFO = new CustomLevel("INFO", Level.INFO.intValue());
-    private final Level WARN = new CustomLevel("WARN", Level.WARNING.intValue());
-    private final Level ERROR = new CustomLevel("ERROR", Level.SEVERE.intValue());
+    private final Level trace = new CustomLevel("TRACE", Level.INFO.intValue()+33);
+    private final Level debug = new CustomLevel("DEBUG", Level.INFO.intValue()+66);
+    private final Level info = new CustomLevel("INFO", Level.INFO.intValue());
+    private final Level warn = new CustomLevel("WARN", Level.WARNING.intValue());
+    private final Level error = new CustomLevel("ERROR", Level.SEVERE.intValue());
 
     public void start()
     {
@@ -64,23 +64,23 @@ public class BukkitAppender extends AppenderBase<ILoggingEvent>
         Level level;
         if (event.getLevel().toString().equalsIgnoreCase("error"))
         {
-            level = ERROR;
+            level = error;
         }
         else if (event.getLevel().toString().equalsIgnoreCase("warn"))
         {
-            level = WARN;
+            level = warn;
         }
         else if (event.getLevel().toString().equalsIgnoreCase("debug"))
         {
-            level = DEBUG;
+            level = debug;
         }
         else if (event.getLevel().toString().equalsIgnoreCase("trace"))
         {
-            level = TRACE;
+            level = trace;
         }
         else
         {
-            level = INFO;
+            level = info;
         }
         this.logger.log(level, layout.doLayout(event));
     }
