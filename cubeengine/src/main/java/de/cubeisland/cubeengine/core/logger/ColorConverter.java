@@ -18,33 +18,23 @@
 package de.cubeisland.cubeengine.core.logger;
 
 import ch.qos.logback.classic.Level;
-import ch.qos.logback.classic.PatternLayout;
 import ch.qos.logback.classic.spi.ILoggingEvent;
-import ch.qos.logback.classic.spi.LoggingEvent;
-import ch.qos.logback.classic.spi.ThrowableProxy;
+import ch.qos.logback.core.pattern.CompositeConverter;
 import org.fusesource.jansi.Ansi;
 import org.fusesource.jansi.Ansi.Color;
 
-public class ConsoleLayout extends PatternLayout
+public class ColorConverter extends CompositeConverter<ILoggingEvent>
 {
-    public String doLayout(ILoggingEvent event) {
-        LoggingEvent proxy = new LoggingEvent();
-        proxy.setArgumentArray(event.getArgumentArray());
-        proxy.setCallerData(event.getCallerData());
-        proxy.setLevel(event.getLevel());
-        proxy.setLoggerContextRemoteView(event.getLoggerContextVO());
-        proxy.setLoggerName(event.getLoggerName());
-        proxy.setMarker(event.getMarker());
-        proxy.setMDCPropertyMap(event.getMDCPropertyMap());
-        proxy.setThreadName(event.getThreadName());
-        proxy.setThrowableProxy((ThrowableProxy)event.getThrowableProxy());
-        proxy.setTimeStamp(event.getTimeStamp());
-
+    @Override
+    protected String transform(ILoggingEvent event, String in)
+    {
         Ansi ansi = Ansi.ansi();
         String message = event.getMessage();
+        String prefix = null;
         if (message.startsWith("[") && message.contains("] "))
         {
             message = message.substring(message.indexOf("] "));
+            prefix = message.substring(0, message.indexOf("] "));
         }
         if (event.getLevel().equals(Level.ERROR))
         {
@@ -62,7 +52,10 @@ public class ConsoleLayout extends PatternLayout
         {
             message = ansi.fgBright(Color.BLACK).a(message).reset().toString();
         }
-        proxy.setMessage(message);
-        return super.doLayout(proxy);
+        if (prefix == null)
+        {
+            message = prefix + message;
+        }
+        return message;
     }
 }

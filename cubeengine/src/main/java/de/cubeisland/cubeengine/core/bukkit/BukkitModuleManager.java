@@ -29,7 +29,6 @@ import org.bukkit.plugin.PluginManager;
 
 
 import de.cubeisland.cubeengine.core.CubeEngine;
-import de.cubeisland.cubeengine.core.logger.ConsoleLayout;
 import de.cubeisland.cubeengine.core.logger.JULAppender;
 import de.cubeisland.cubeengine.core.module.BaseModuleManager;
 import de.cubeisland.cubeengine.core.module.Inject;
@@ -43,6 +42,7 @@ import de.cubeisland.cubeengine.core.module.exception.InvalidModuleException;
 import de.cubeisland.cubeengine.core.module.exception.MissingDependencyException;
 import de.cubeisland.cubeengine.core.module.exception.MissingPluginDependencyException;
 
+import ch.qos.logback.classic.PatternLayout;
 import ch.qos.logback.classic.encoder.PatternLayoutEncoder;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.rolling.FixedWindowRollingPolicy;
@@ -50,8 +50,6 @@ import ch.qos.logback.core.rolling.RollingFileAppender;
 import ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import static java.util.logging.Level.WARNING;
 
 public class BukkitModuleManager extends BaseModuleManager
 {
@@ -183,9 +181,9 @@ public class BukkitModuleManager extends BaseModuleManager
             JULAppender consoleAppender = new JULAppender();
             consoleAppender.setContext(logger.getLoggerContext());
             consoleAppender.setLogger(((BukkitCore)CubeEngine.getCore()).getLogger());
-            ConsoleLayout consoleLayout = new ConsoleLayout();
+            PatternLayout consoleLayout = new PatternLayout();
             consoleLayout.setContext(logger.getLoggerContext());
-            consoleLayout.setPattern("[" + module.getName() + "] %msg");
+            consoleLayout.setPattern("[" + module.getName() + "] color(%msg)");
             consoleAppender.setLayout(consoleLayout);
 
             // Setup the module's file logger

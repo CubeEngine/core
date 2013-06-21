@@ -52,7 +52,6 @@ import de.cubeisland.cubeengine.core.command.reflected.readable.ReadableCommandF
 import de.cubeisland.cubeengine.core.config.Configuration;
 import de.cubeisland.cubeengine.core.filesystem.FileManager;
 import de.cubeisland.cubeengine.core.i18n.I18n;
-import de.cubeisland.cubeengine.core.logger.ConsoleLayout;
 import de.cubeisland.cubeengine.core.logger.JULAppender;
 import de.cubeisland.cubeengine.core.module.Module;
 import de.cubeisland.cubeengine.core.storage.TableManager;
@@ -70,6 +69,7 @@ import de.cubeisland.cubeengine.core.webapi.exception.ApiStartupException;
 
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.Logger;
+import ch.qos.logback.classic.PatternLayout;
 import ch.qos.logback.classic.filter.ThresholdFilter;
 import org.slf4j.LoggerFactory;
 
@@ -153,9 +153,9 @@ public final class BukkitCore extends JavaPlugin implements Core
         consoleAppender.setContext(parentLogger.getLoggerContext());
         consoleAppender.setName("cubeengine-console");
         consoleAppender.setLogger(this.getLogger());
-        ConsoleLayout consoleLayout = new ConsoleLayout();
+        PatternLayout consoleLayout = new PatternLayout();
         consoleLayout.setContext(parentLogger.getLoggerContext());
-        consoleLayout.setPattern("%msg");
+        consoleLayout.setPattern("%color(%msg)");
         consoleAppender.setLayout(consoleLayout);
         parentLogger.addAppender(consoleAppender);
         consoleLayout.start();
