@@ -154,7 +154,8 @@ public class LiftSign extends SignType<LiftSign,LiftSignInfo>
             Sign sign = (Sign)(location.getBlock().getState());
             return this.createInfo(model.owner_id,location,sign.getLine(0),sign.getLine(1),sign.getLine(2),sign.getLine(3));
         }
-        this.module.getLog().warn("Expected sign not found at "+state.getX()+":"+state.getY()+":"+state.getZ() + " in "+ state.getWorld().getName());
+        this.module.getLog().warn("Expected a sign which was not found, at {}:{}:{} in {} ", state.getX(), state.getY(),
+                                  state.getZ(), state.getWorld().getName());
         return null;
     }
 

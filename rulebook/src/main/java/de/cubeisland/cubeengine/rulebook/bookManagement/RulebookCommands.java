@@ -220,7 +220,7 @@ public class RulebookCommands extends ContainerCommand
         }
         catch(IOException ex)
         {
-            this.getModule().getLog().error("Error by deleting the files.", ex);
+            this.getModule().getLog().error("Error when deleting the files: " + ex.getLocalizedMessage(), ex);
         }
 
     }
@@ -272,7 +272,7 @@ public class RulebookCommands extends ContainerCommand
             }
             catch(IOException ex)
             {
-                this.getModule().getLog().error("Error by deleting the files.", ex);
+                this.getModule().getLog().error("Error when deleting the files: " + ex.getLocalizedMessage(), ex);
             }
         }
         else

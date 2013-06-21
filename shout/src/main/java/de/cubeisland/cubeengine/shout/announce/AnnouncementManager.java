@@ -351,14 +351,14 @@ public class AnnouncementManager
             }
             if (folder.isDirectory())
             {
-                this.logger.debug("Loading announcement {0}", folder.getName());
+                this.logger.debug("Loading announcement {}", folder.getName());
                 try
                 {
                     this.addAnnouncement(this.loadAnnouncement(folder));
                 }
                 catch (ShoutException ex)
                 {
-                    this.logger.warn("There was an error loading the announcement: {0}", folder.getName());
+                    this.logger.warn("There was an error loading the announcement: {}", folder.getName());
                     this.logger.debug("The error message was: ", ex);
                 }
             }
@@ -449,12 +449,12 @@ public class AnnouncementManager
             }
         }
 
-        this.logger.debug("Languages: {0}", messages.keySet().toString());
-        this.logger.debug("Worlds: {0}", config.worlds);
-        this.logger.debug("Delay(in milliseconds): {0}", delay);
-        this.logger.debug("Permission: {0}", config.permNode);
-        this.logger.debug("Group: {0}", config.group);
-        this.logger.debug("FixedCycle: {0}", config.fixedCycle);
+        this.logger.trace("Languages: {}", messages.keySet().toString());
+        this.logger.trace("Worlds: {}", config.worlds);
+        this.logger.trace("Delay(in milliseconds): {}", delay);
+        this.logger.trace("Permission: {}", config.permNode);
+        this.logger.trace("Group: {}", config.group);
+        this.logger.trace("FixedCycle: {}", config.fixedCycle);
 
         try
         {

@@ -84,7 +84,7 @@ public class SignManager implements Listener
         {
             throw new IllegalStateException("Already registered String!" + signType.getPSID());
         }
-        this.module.getLog().debug("Registered SignType: " + signType.getPSID());
+        this.module.getLog().debug("Registered SignType: {}", signType.getPSID());
         for (String name : signType.getNames().keySet())
         {
             if (registerdSignTypes.put(name,signType) != null)

@@ -186,7 +186,7 @@ public class BukkitUserManager extends AbstractUserManager
 
             if (task == null || task.getTaskId() == -1)
             {
-                core.getLog().warn("The delayed removed of user ''{}'' could not be scheduled... removing him now.");
+                core.getLog().warn("The delayed removed of user '{}' could not be scheduled... removing him now.");
                 removeCachedUser(user);
             }
 

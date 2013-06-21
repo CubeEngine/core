@@ -57,7 +57,7 @@ public class EnchantMatcher
             Enchantment ench = this.bukkitnames.get(bukkitName);
             if (ench == null)
             {
-                CubeEngine.getLog().warn("Unkown Enchantment: " + bukkitName);
+                CubeEngine.getLog().warn("Unkown Enchantment: {}", bukkitName);
                 continue;
             }
             this.registerEnchantment(ench, enchs.get(bukkitName));

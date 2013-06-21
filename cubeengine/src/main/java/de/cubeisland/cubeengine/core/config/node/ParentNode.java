@@ -86,7 +86,7 @@ public abstract class ParentNode extends Node
             }
             else if (!(baseNode instanceof ParentNode))
             {
-                CubeEngine.getCore().getLog().warn("Could not resolve path (" + path + ") for " + baseNode);
+                CubeEngine.getCore().getLog().warn("Could not resolve path ({}) for {}", path, baseNode);
                 CubeEngine.getCore().getLog().warn("Is your configuration outdated?");
                 return null;
             }

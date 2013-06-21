@@ -39,7 +39,7 @@ public class UserAccount extends Account
     @Override
     public void log(String action, Object value)
     {
-        this.manager.logger.info(action + " User:" + this.getName() + " " + value + " :: " + this.balance());
+        this.manager.logger.info("{} User:{} {} :: {}", new String[]{action, this.getName(), value.toString(), ""+this.balance()});
     }
 
     /**

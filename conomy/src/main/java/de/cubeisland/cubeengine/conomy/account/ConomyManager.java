@@ -81,12 +81,12 @@ public class ConomyManager
                 model = new AccountModel(null,name,(int) (this.config.defaultBankBalance * this.config.fractionalDigitsFactor()),false,this.config.bankNeedInvite);
                 this.storage.store(model);
                 bankAccount = new BankAccount(this, model);
-                this.logger.info("NEW Bank:" + name + " :: " + bankAccount.balance());
+                this.logger.info("NEW Bank:{} :: {}", name,  bankAccount.balance());
             }
             else
             {
                 bankAccount = new BankAccount(this, model);
-                this.logger.info("LOAD Bank:" + name + " :: " + bankAccount.balance());
+                this.logger.info("LOAD Bank:{} :: {}", name, bankAccount.balance());
             }
             this.bankaccounts.put(name,bankAccount);
             this.bankaccountsID.put(bankAccount.model.key, bankAccount);
@@ -201,7 +201,7 @@ public class ConomyManager
     {
         final long longValue = (long)(value * this.config.fractionalDigitsFactor());
         this.storage.setAll(userAcc, bankAcc, longValue);
-        this.logger.info("SET-ALL " + (userAcc && bankAcc ? "User/Bank " : userAcc ? "User " : "Bank ") + value);
+        this.logger.info("SET-ALL {} {}", (userAcc && bankAcc ? "User/Bank" : userAcc ? "User" : "Bank"), value);
         // update all loaded accounts...
         if (userAcc)
         {
@@ -226,7 +226,7 @@ public class ConomyManager
     public void scaleAll(boolean userAcc, boolean bankAcc, float factor)
     {
         this.storage.scaleAll(userAcc, bankAcc, factor);
-        this.logger.info("SCALE-ALL " + (userAcc && bankAcc ? "User/Bank " : userAcc ? "User " : "Bank ") + factor);
+        this.logger.info("SCALE-ALL {} {}", (userAcc && bankAcc ? "User/Bank" : userAcc ? "User" : "Bank"), factor);
         // update all loaded accounts...
         if (userAcc)
         {
@@ -252,7 +252,7 @@ public class ConomyManager
     {
         final long longValue = (long)(value * this.config.fractionalDigitsFactor());
         this.storage.transactAll(userAcc, bankAcc, longValue);
-        this.logger.info("TRANSACTION-ALL " + (userAcc && bankAcc ? "User/Bank " : userAcc ? "User " : "Bank ") + value);
+        this.logger.info("TRANSACTION-ALL {} {}", (userAcc && bankAcc ? "User/Bank" : userAcc ? "User" : "Bank"), value);
         // update all loaded accounts...
         if (userAcc)
         {
@@ -289,8 +289,8 @@ public class ConomyManager
         }
         if (to != null && from != null)
         {
-            this.logger.info("TRANSACTION " + (from instanceof UserAccount ? "User:" : "Bank:") + from.getName()
-                                 + " -> " + (to instanceof UserAccount ? "User:" : "Bank:") + to.getName());
+            this.logger.info("TRANSACTION {}{} -> {}{}", new String[]{(from instanceof UserAccount ? "User:" : "Bank:"),
+                             from.getName(), (to instanceof UserAccount ? "User:" : "Bank:"),  to.getName()});
         }
         if (from != null)
         {

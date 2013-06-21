@@ -19,6 +19,7 @@ package de.cubeisland.cubeengine.core.bukkit;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.UndeclaredThrowableException;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -256,16 +257,16 @@ public final class BukkitCore extends JavaPlugin implements Core
         }
         else if (SimpleCommandMap.class.isAssignableFrom(commandMap.getClass()))
         {
-            this.getLog().info("The server you are using is not fully compatible, some advanced command features will be disabled.");
+            this.getLog().warn("The server you are using is not fully compatible, some advanced command features will be disabled.");
             this.getLog().debug("The type of the command map: {}", commandMap.getClass().getName());
             commandBackend = new SimpleCommandBackend(this, commandMap);
         }
         else
         {
-            this.getLog().warn("We encountered a serious compatibility issues, however basic command features should still work. Please report this issue to the developers!");
+            this.getLog().warn("We encountered a serious compatibility issue, however basic command features should still work. Please report this issue to the developers!");
             commandBackend = new FallbackCommandBackend(this);
         }
-        this.getLog().debug("Chosen command backend: " + commandBackend.getClass().getName());
+        this.getLog().debug("Chosen command backend: {}", commandBackend.getClass().getName());
         this.commandManager = new BukkitCommandManager(this, commandBackend);
         this.commandManager.registerCommandFactory(new ReflectedCommandFactory());
         this.commandManager.registerCommandFactory(new ReadableCommandFactory());
@@ -428,7 +429,7 @@ public final class BukkitCore extends JavaPlugin implements Core
         String[] parts = id.split(":", 2);
         if (parts.length < 2)
         {
-            this.getLog().warn("CubeEngine was specified as a world generator, you have to specify a module!");
+            this.getLog().warn("CubeEngine was specified as a world generator, but no module was specified!");
             return null;
         }
         Module module = this.getModuleManager().getModule(parts[0]);

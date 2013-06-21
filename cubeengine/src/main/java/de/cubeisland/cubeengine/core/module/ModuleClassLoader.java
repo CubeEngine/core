@@ -124,7 +124,7 @@ public class ModuleClassLoader extends URLClassLoader
         }
         catch (Exception ignored)
         {
-            CubeEngine.getLog().warn("Failed to close the class loader of the module ''{}''", this.moduleInfo.getName());
+            CubeEngine.getLog().warn("Failed to close the class loader of the module '{}'", this.moduleInfo.getName());
         }
     }
 }

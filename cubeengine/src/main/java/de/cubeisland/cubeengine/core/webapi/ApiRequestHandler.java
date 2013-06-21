@@ -64,6 +64,7 @@ import static io.netty.handler.codec.http.HttpHeaders.Names.HOST;
  */
 public class ApiRequestHandler extends ChannelInboundMessageHandlerAdapter<Object>
 {
+    // TODO rewrite log messages, most of them are incomplete
     private final Charset UTF8 = Charset.forName("UTF-8");
     private final String WEBSOCKET_ROUTE = "websocket";
     private final Logger logger;
@@ -153,7 +154,7 @@ public class ApiRequestHandler extends ChannelInboundMessageHandlerAdapter<Objec
             }
             else
             {
-                this.logger.info("handshaking now...");
+                this.logger.debug("handshaking now...");
                 this.handshaker.handshake(context.channel(), request).addListener(new ChannelFutureListener()
                 {
                     @Override
@@ -161,11 +162,11 @@ public class ApiRequestHandler extends ChannelInboundMessageHandlerAdapter<Objec
                     {
                         if (future.isSuccess())
                         {
-                            logger.info("Success!");
+                            logger.debug("Success!");
                         }
                         else
                         {
-                            logger.info("Failed!");
+                            logger.debug("Failed!");
                         }
                     }
                 });
@@ -220,18 +221,18 @@ public class ApiRequestHandler extends ChannelInboundMessageHandlerAdapter<Objec
     {
         if (frame instanceof CloseWebSocketFrame)
         {
-            this.logger.info("recevied close frame");
+            this.logger.debug("recevied close frame");
             this.server.unsubscribe(this);
             this.handshaker.close(context.channel(), (CloseWebSocketFrame)frame);
         }
         else if (frame instanceof PingWebSocketFrame)
         {
-            this.logger.info("recevied ping frame");
+            this.logger.debug("recevied ping frame");
             context.write(new PongWebSocketFrame(frame.content()));
         }
         else if (frame instanceof TextWebSocketFrame)
         {
-            this.logger.info("recevied text frame");
+            this.logger.debug("recevied text frame");
             this.handleTextWebSocketFrame(context, (TextWebSocketFrame)frame);
         }
         else

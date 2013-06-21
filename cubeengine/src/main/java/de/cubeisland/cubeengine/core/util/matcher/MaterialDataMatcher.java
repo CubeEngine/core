@@ -106,7 +106,7 @@ public class MaterialDataMatcher
                     }
                     catch (IllegalArgumentException ex)
                     {
-                        CubeEngine.getLog().warn("Unknown Material for Data: " + key);
+                        CubeEngine.getLog().warn("Unknown Material for Data: {}", key);
                         reverseCurrentItemData = new TShortObjectHashMap<Set<String>>();
                         reverseCurrentBlockData = new TByteObjectHashMap<Set<String>>();
                         currentItemData = new TObjectShortHashMap<String>();
@@ -148,7 +148,7 @@ public class MaterialDataMatcher
                     }
                     catch (NumberFormatException ex)
                     {
-                        CubeEngine.getLog().warn("Could not parse data for Material: " + value);
+                        CubeEngine.getLog().warn("Could not parse data for Material: {}", value);
                         continue;
                     }
                     for (String key : StringUtils.explode(",", line.substring(0, line.indexOf(":"))))
@@ -435,7 +435,7 @@ public class MaterialDataMatcher
         {
             if (dataNames.isEmpty())
             {
-                CubeEngine.getLog().warn("Unknown Block-Type: " + mat);
+                CubeEngine.getLog().warn("Unknown Block-Type: {}", mat);
                 return null;
             }
         }
@@ -446,7 +446,7 @@ public class MaterialDataMatcher
             {
                 if (dataNames.isEmpty())
                 {
-                    CubeEngine.getLog().warn("Unknown Block-Data: " + mat + "DATA: " + mask);
+                    CubeEngine.getLog().warn("Unknown Block-Data: {} DATA: {}", mat, mask);
                     return null;
                 }
             }
@@ -455,7 +455,7 @@ public class MaterialDataMatcher
         }
         if (dataNames.isEmpty())
         {
-            CubeEngine.getLog().warn("Unknown Block-Data: " + mat + "DATA: " + mask);
+            CubeEngine.getLog().warn("Unknown Block-Data: {} DATA: {}", mat, mask);
             return null;
         }
         return dataNames;

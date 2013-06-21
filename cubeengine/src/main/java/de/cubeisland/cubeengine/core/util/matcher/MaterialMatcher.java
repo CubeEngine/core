@@ -129,7 +129,7 @@ public class MaterialMatcher
         }
         catch (IllegalArgumentException ex)
         {
-            CubeEngine.getLog().warn("Unknown Material: " + materialName);
+            CubeEngine.getLog().warn("Unknown Material: {}", materialName);
             return;
         }
     }
@@ -397,7 +397,7 @@ public class MaterialMatcher
         TShortObjectHashMap<String> dataMap = this.itemnames.get(mat);
         if (dataMap == null)
         {
-            CubeEngine.getLog().warn("Unknown Item! ID: " + mat + " DATA: " + data);
+            CubeEngine.getLog().warn("Unknown Block-Data: {} DATA: {}", mat, data);
             return null;
         }
         String itemName = dataMap.get(data);
@@ -406,7 +406,7 @@ public class MaterialMatcher
             itemName = dataMap.get((short)0);
             if (itemName == null)
             {
-                CubeEngine.getLog().warn("Unknown Item! ID: " + mat + " DATA: " + data);
+                CubeEngine.getLog().warn("Unknown Block-Data: {} DATA: {}", mat, data);
                 return mat.name() + ":" + data;
             }
             itemName += ":" + data;
@@ -419,7 +419,7 @@ public class MaterialMatcher
         TShortObjectHashMap<String> dataMap = this.itemnames.get(mat);
         if (dataMap == null)
         {
-            CubeEngine.getLog().warn("Unknown Block! ID: " + mat + " DATA: " + blockData);
+            CubeEngine.getLog().warn("Unknown Block-Data: {} DATA: {}", mat, blockData);
             return null;
         }
         String itemName = dataMap.get((short)0);

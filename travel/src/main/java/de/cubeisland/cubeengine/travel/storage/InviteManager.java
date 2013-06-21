@@ -66,9 +66,7 @@ public class InviteManager extends TwoKeyStorage<Long, Long, TeleportInvite>
         catch (SQLException ex)
         {
             module.getLog().error("An error occurred while preparing the database statements for table " +
-                this.tableName);
-            module.getLog().warn("The error was: {0}", ex.getMessage());
-            module.getLog().debug("This is the stack: ", ex);
+                                  this.tableName + ": " + ex.getMessage(), ex);
         }
     }
 
@@ -130,9 +128,8 @@ public class InviteManager extends TwoKeyStorage<Long, Long, TeleportInvite>
         }
         catch (SQLException ex)
         {
-            module.getLog().warn("Something wrong happened while getting usernames for some users");
-            module.getLog().warn("The error message was: {0}", ex.getMessage());
-            module.getLog().debug("This is the stack: ", ex);
+            module.getLog().warn("Something wrong happened while getting usernames for some users: {}",  ex.getLocalizedMessage());
+            module.getLog().debug(ex.getLocalizedMessage(), ex);
         }
         this.cachedInvites.put(tPP, invitedUsers);
         return invitedUsers;

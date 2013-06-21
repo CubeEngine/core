@@ -80,7 +80,7 @@ public class BukkitModuleManager extends BaseModuleManager
                         }
                         catch (Exception e)
                         {
-                            module.getLog().warn("An uncaught exception occurred during onFinishLoading(): " + e
+                            module.getLog().warn("An uncaught exception occurred during onFinishLoading(): {}" , e
                                 .getMessage(), e);
                         }
                     }

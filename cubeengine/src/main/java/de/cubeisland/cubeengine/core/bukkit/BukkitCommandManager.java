@@ -207,7 +207,7 @@ public class BukkitCommandManager implements CommandManager
     {
         if (command.isLoggable())
         {
-            this.commandLogger.info("execute {} {} {}", sender.getName(), command.getName(), StringUtils.implode(" ", args));
+            this.commandLogger.debug("execute {} {} {}", sender.getName(), command.getName(), StringUtils.implode(" ", args));
         }
     }
 
@@ -216,7 +216,7 @@ public class BukkitCommandManager implements CommandManager
     {
         if (command.isLoggable())
         {
-            this.commandLogger.info("complete {} {} {}", sender.getName(), command.getName(), StringUtils.implode(" ", args));
+            this.commandLogger.debug("complete {} {} {}", sender.getName(), command.getName(), StringUtils.implode(" ", args));
         }
     }
 

@@ -103,7 +103,7 @@ public class Test extends Module
         }
         catch (Exception ex)
         {
-            this.getLog().error("Error while Enabling the TestModule", ex);
+            this.getLog().error("Error while Enabling the TestModule: " + ex.getLocalizedMessage(), ex);
         }
         this.getCore().getEventManager().registerListener(this, new TestListener(this));
 
@@ -162,7 +162,7 @@ public class Test extends Module
         }
         catch (IOException e)
         {
-            this.getLog().warn("Failed to delete the test world!", e);
+            this.getLog().warn("Failed to delete the test world: " + e.getLocalizedMessage(), e);
         }
 
         this.timer = null;
@@ -203,10 +203,8 @@ public class Test extends Module
 
     public void testl18n()
     {
-        this.getLog().debug(CubeEngine.getCore().getI18n().
-            translate("de_DE", "test", "english TEST"));
-        this.getLog().debug(CubeEngine.getCore().getI18n().
-            translate("fr_FR", "test", "english TEST"));
+        this.getLog().debug(CubeEngine.getCore().getI18n().translate("de_DE", "test", "english TEST"));
+        this.getLog().debug(CubeEngine.getCore().getI18n().translate("fr_FR", "test", "english TEST"));
     }
 
     private void testMatchers()
@@ -239,7 +237,7 @@ public class Test extends Module
         }
         catch (Exception ex)
         {
-            this.getLog().error("Error in testsomeutils", ex);
+            this.getLog().error("Error in testsomeutils: " + ex.getLocalizedMessage(), ex);
         }
     }
 

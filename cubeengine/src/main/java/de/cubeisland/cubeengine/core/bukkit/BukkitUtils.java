@@ -248,7 +248,7 @@ public class BukkitUtils
                 ServerConnection sc = player.server.ae();
                 ((List<PlayerConnection>)playerConnectionListField.get(sc)).remove(oldHandler);
                 sc.a(newHandler);
-                CubeEngine.getLog().debug("Replaced the NetServerHandler of player ''{}''", player.getName());
+                CubeEngine.getLog().debug("Replaced the NetServerHandler of player '{}'", player.getName());
                 oldHandler.disconnected = true;
             }
         }

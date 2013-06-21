@@ -157,7 +157,7 @@ public class Guests extends Module
             .registerPrevention(new WorkbenchPrevention(this))
             .enablePreventions();
 
-        this.getLog().info(this.prevManager.getPreventions().size() + " Prevention(s) have been registered!");
+        this.getLog().info("{} Prevention(s) have been registered!", this.prevManager.getPreventions().size());
     }
 
     @Override

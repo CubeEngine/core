@@ -289,13 +289,12 @@ public class QueryManager
             }
             if (logSize > 50)
             {
-                this.module.getLog().debug(
-                                         logSize + " logged in: " + TimeUnit.NANOSECONDS.toMillis(nanos) +
-                                             "ms | remaining logs: " + queuedLogs.size());
-                this.module.getLog().debug(
-                                         "Average logtime per log: " + TimeUnit.NANOSECONDS.toMicros(timeSpend / logsLogged)+ " micros");
-                this.module.getLog().debug(
-                                         "Average logtime per log in full load: " + TimeUnit.NANOSECONDS.toMicros(timeSpendFullLoad / logsLoggedFullLoad)+" micros");
+                this.module.getLog().debug("{} logged in: {} ms | remaining logs: {}",
+                                         logSize, TimeUnit.NANOSECONDS.toMillis(nanos), queuedLogs.size());
+                this.module.getLog().debug("Average logtime per log: {} micros",
+                                           TimeUnit.NANOSECONDS.toMicros(timeSpend / logsLogged));
+                this.module.getLog().debug("Average logtime per log in full load: {} micros",
+                                           TimeUnit.NANOSECONDS.toMicros(timeSpendFullLoad / logsLoggedFullLoad));
             }
             if (!queuedLogs.isEmpty())
             {
@@ -330,7 +329,7 @@ public class QueryManager
             try {
                 latch.await();
             } catch (InterruptedException e) {
-                this.module.getLog().warn("Error while waiting!",e);
+                this.module.getLog().warn("Error while waiting! " + e.getLocalizedMessage(), e);
             }
         }
     }

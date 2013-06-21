@@ -69,7 +69,7 @@ public class EntityMatcher
             }
             catch (IllegalArgumentException ex)
             {
-                CubeEngine.getLog().warn("Unknown EntityType:" + key);
+                CubeEngine.getLog().warn("Unknown EntityType: {}", key);
             }
         }
     }

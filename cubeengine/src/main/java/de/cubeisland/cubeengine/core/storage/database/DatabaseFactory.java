@@ -67,10 +67,6 @@ public class DatabaseFactory
                 }
                 org.slf4j.Logger logger = CubeEngine.getLog();
                 logger.error("Couldn't establish the database dataSource: " + t.getLocalizedMessage(), t);
-                while ((t = t.getCause()) != null)
-                {
-                    logger.error("  Caused by: " + t.getLocalizedMessage(), t);
-                }
             }
         }
         return null;

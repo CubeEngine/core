@@ -114,7 +114,7 @@ public class BukkitPermissionManager implements PermissionManager
             {
                 this.wildcards.put(permission.getName(), permission);
             }
-            this.logger.info("successful {}", permission.getName());
+            this.logger.debug("successful {}", permission.getName());
         }
         catch (IllegalArgumentException ignored)
         {

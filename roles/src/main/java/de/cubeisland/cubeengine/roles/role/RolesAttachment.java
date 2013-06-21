@@ -83,7 +83,7 @@ public class RolesAttachment extends UserAttachment
                 Role role = provider.getRole(roleName);
                 if (role == null)
                 {
-                    this.getModule().getLog().warn("NULL-Role! "+ roleName);
+                    this.getModule().getLog().warn("NULL-Role! {}", roleName);
                     continue;
                 }
                 assignedRoles.add(role);
@@ -97,7 +97,7 @@ public class RolesAttachment extends UserAttachment
                     Role role = provider.getRole(roleName);
                     if (role == null)
                     {
-                        this.getModule().getLog().warn("NULL-Role! "+ roleName);
+                        this.getModule().getLog().warn("NULL-Role! {}", roleName);
                         continue;
                     }
                     assignedRoles.add(role);
@@ -238,10 +238,10 @@ public class RolesAttachment extends UserAttachment
                 return;
             }
             user.setPermission(resolvedData.getResolvedPermissions());
-            this.getModule().getLog().debug("Calculating Roles of Player " + user.getName()+ "...");
+            this.getModule().getLog().debug("Calculating Roles of Player {}...", user.getName());
             for (Role assignedRole : resolvedData.assignedRoles)
             {
-                this.getModule().getLog().debug(" - " + assignedRole.getName());
+                this.getModule().getLog().debug(" - {}", assignedRole.getName());
             }
         }
         // else user is offline ignore

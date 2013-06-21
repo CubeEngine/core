@@ -186,7 +186,7 @@ public class I18n implements Cleanable
         }
         catch (IllegalArgumentException e)
         {
-            this.logger.error("Failed to load the language ''{}'': {}", config.locale, e.getLocalizedMessage());
+            this.logger.error("Failed to load the language '{}': {}", config.locale, e.getLocalizedMessage());
         }
         return null;
     }
@@ -233,7 +233,7 @@ public class I18n implements Cleanable
 
     private void logMissingTranslation(Locale locale, String message)
     {
-        this.logger.info(String.format("\"%s\" \"%s\"", localeToString(locale), message));
+        this.logger.info("\"{}\" \"{}\"", localeToString(locale), message);
     }
 
     /**

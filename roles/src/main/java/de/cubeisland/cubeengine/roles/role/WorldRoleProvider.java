@@ -68,7 +68,7 @@ public class WorldRoleProvider extends RoleProvider
         }
         if (this.defaultRoles.isEmpty())
         {
-            this.module.getLog().warn("The role-provider for " + this.mirrorConfig.mainWorld + " has no default roles!");
+            this.module.getLog().warn("The role-provider for {} has no default roles!", this.mirrorConfig.mainWorld);
         }
     }
 
@@ -91,7 +91,7 @@ public class WorldRoleProvider extends RoleProvider
     @Override
     public void recalculateRoles()
     {
-        this.module.getLog().debug("Calculating Roles of " + this.mirrorConfig.mainWorld + "...");
+        this.module.getLog().debug("Calculating Roles of {}...", mirrorConfig.mainWorld);
         super.recalculateRoles();
     }
 
