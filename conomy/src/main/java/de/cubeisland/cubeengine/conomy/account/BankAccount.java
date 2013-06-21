@@ -64,7 +64,7 @@ public class BankAccount extends Account
     @Override
     public void log(String action, Object value)
     {
-        this.manager.logger.info("{} Bank:{} {} :: {}", new String[]{action, this.getName(), value.toString(), ""+this.balance()});
+        this.manager.logger.info("{} Bank:{} {} :: {}", action, this.getName(), value.toString(), ""+this.balance());
     }
 
     /**

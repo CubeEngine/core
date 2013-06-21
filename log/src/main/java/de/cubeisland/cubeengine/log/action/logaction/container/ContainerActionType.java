@@ -399,7 +399,7 @@ public class ContainerActionType extends ActionTypeContainer
         Inventory target = event.getDestination();
         if (target == null || source == null)
         {
-            System.out.print("InventoryMoveItem has null "+source+" -> "+target);
+            this.logModule.getLog().debug("InventoryMoveItem has null {} -> {}", source, target);
             // TODO remove if fixed
             return;
         }

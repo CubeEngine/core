@@ -25,8 +25,6 @@ import java.util.HashSet;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
-import java.util.logging.Formatter;
-import java.util.logging.LogRecord;
 
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.conomy.Conomy;
@@ -35,7 +33,7 @@ import de.cubeisland.cubeengine.conomy.account.storage.AccountModel;
 import de.cubeisland.cubeengine.conomy.account.storage.AccountStorage;
 import de.cubeisland.cubeengine.conomy.account.storage.BankAccessStorage;
 
-import ch.qos.logback.classic.Logger;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import gnu.trove.map.hash.THashMap;
@@ -62,10 +60,10 @@ public class ConomyManager
         this.bankaccounts = new THashMap<String, BankAccount>();
         this.bankaccountsID = new THashMap<Long, BankAccount>();
 
-        this.logger =  (Logger) LoggerFactory.getLogger("cubeengine.conomy.transactions");
+        this.logger =  LoggerFactory.getLogger("cubeengine.conomy.transactions");
         if (!this.module.getConfig().enableLogging)
         {
-            logger.getAppender("conomy.transactions-file").stop();
+            ((ch.qos.logback.classic.Logger)logger).getAppender("conomy.transactions-file").stop();
         }
     }
 
@@ -289,8 +287,8 @@ public class ConomyManager
         }
         if (to != null && from != null)
         {
-            this.logger.info("TRANSACTION {}{} -> {}{}", new String[]{(from instanceof UserAccount ? "User:" : "Bank:"),
-                             from.getName(), (to instanceof UserAccount ? "User:" : "Bank:"),  to.getName()});
+            this.logger.info("TRANSACTION {}{} -> {}{}", (from instanceof UserAccount ? "User:" : "Bank:"),
+                             from.getName(), (to instanceof UserAccount ? "User:" : "Bank:"),  to.getName());
         }
         if (from != null)
         {

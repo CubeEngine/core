@@ -511,7 +511,7 @@ public class QueryManager
         }
         // TODO finish queryParams
         String sql = selectBuilder.end().end();
-        System.out.print(user.getName() + ": Lookup queued!");
+        this.module.getLog().debug("{}: Lookup queued!", user.getName());
         this.queuedLookups.offer(new QueuedSqlParams(lookup,user,sql,dataToInsert, action));
         if (this.futureLookup == null || this.futureLookup.isDone())
         {

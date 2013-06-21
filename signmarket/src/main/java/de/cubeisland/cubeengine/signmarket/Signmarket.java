@@ -37,19 +37,19 @@ public class Signmarket extends Module
     {
         Profiler.startProfiling("marketSignEnable");
         this.config = Configuration.load(SignMarketConfig.class, this);
-        System.out.print(Profiler.getCurrentDelta("marketSignEnable", TimeUnit.MILLISECONDS) + "ms - MarketSignFactory");
+        this.getLog().trace("{} ms - MarketSignFactory", Profiler.getCurrentDelta("marketSignEnable", TimeUnit.MILLISECONDS));
         this.marketSignFactory = new MarketSignFactory(this, this.conomy);
-        System.out.print(Profiler.getCurrentDelta("marketSignEnable", TimeUnit.MILLISECONDS) + "ms - MarketSignFactory-loadAllSigns");
+        this.getLog().trace("{} ms - MarketSignFactory-loadAllSigns", Profiler.getCurrentDelta("marketSignEnable", TimeUnit.MILLISECONDS));
         this.marketSignFactory.loadInAllSigns();
-        System.out.print(Profiler.getCurrentDelta("marketSignEnable", TimeUnit.MILLISECONDS) + "ms - EditModeListener");
+        this.getLog().trace("{} ms - EditModeListener", Profiler.getCurrentDelta("marketSignEnable", TimeUnit.MILLISECONDS));
         this.editModeListener = new EditModeListener(this, this.conomy);
-        System.out.print(Profiler.getCurrentDelta("marketSignEnable", TimeUnit.MILLISECONDS) + "ms - MarketSignListener");
+        this.getLog().trace("{} ms - MarketSignListener", Profiler.getCurrentDelta("marketSignEnable", TimeUnit.MILLISECONDS));
         this.getCore().getEventManager().registerListener(this, new MarketSignListener(this));
-        System.out.print(Profiler.getCurrentDelta("marketSignEnable", TimeUnit.MILLISECONDS) + "ms - Perms");
+        this.getLog().trace("{} ms - Perms", Profiler.getCurrentDelta("marketSignEnable", TimeUnit.MILLISECONDS));
         new MarketSignPerm(this);
-        System.out.print(Profiler.getCurrentDelta("marketSignEnable", TimeUnit.MILLISECONDS) + "ms - Command");
+        this.getLog().trace("{} ms - Command", Profiler.getCurrentDelta("marketSignEnable", TimeUnit.MILLISECONDS));
         this.getCore().getCommandManager().registerCommand(new SignMarketCommands(this));
-        System.out.print(Profiler.endProfiling("marketSignEnable", TimeUnit.MILLISECONDS) + "ms - done");
+        this.getLog().trace("{} ms - done", Profiler.endProfiling("marketSignEnable", TimeUnit.MILLISECONDS));
     }
 
     public MarketSignFactory getMarketSignFactory()

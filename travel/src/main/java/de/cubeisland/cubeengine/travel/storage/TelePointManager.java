@@ -226,10 +226,7 @@ public class TelePointManager extends SingleKeyStorage<Long, TeleportPoint>
         {
             throw new IllegalStateException("Error while creating fresh Model from Database", ex);
         }
-        if (module.getCore().isDebug())
-        {
-            System.out.print("getAll" + Profiler.getCurrentDelta("travelEnable", TimeUnit.MILLISECONDS));
-        }
+        module.getLog().trace("{} ms - getAll", Profiler.getCurrentDelta("travelEnable", TimeUnit.MILLISECONDS));
         return loadedModels;
     }
 

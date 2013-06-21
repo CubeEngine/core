@@ -28,6 +28,7 @@ import java.util.TreeSet;
 import org.bukkit.Bukkit;
 import org.bukkit.permissions.Permission;
 
+import de.cubeisland.cubeengine.core.CubeEngine;
 import de.cubeisland.cubeengine.roles.role.resolved.ResolvedMetadata;
 import de.cubeisland.cubeengine.roles.role.resolved.ResolvedPermission;
 
@@ -56,7 +57,7 @@ public class ResolvedDataStore
         {
              if (role.isDirty())
             {
-                System.out.print("Role to assign is dirty! " + role.getName());
+                CubeEngine.getLog().debug("Role to assign is dirty! {}", role.getName());
             }
             role.resolvedData.dependentData.add(this);
         }

@@ -118,7 +118,7 @@ public class Test extends Module
             @EventHandler
             public void onLanguageReceived(PlayerLanguageReceivedEvent event)
             {
-                System.out.print("Player: " + event.getPlayer().getName() + " Lang: " + event.getLanguage());
+                getLog().debug("Player: {} Lang: {}", event.getPlayer().getName(), event.getLanguage());
             }
         });
 

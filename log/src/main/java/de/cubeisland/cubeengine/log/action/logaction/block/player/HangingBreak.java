@@ -86,7 +86,7 @@ public class HangingBreak extends BlockActionType
             }
             else
             {
-                System.out.print("Unexpected HangingBreakEvent");
+                this.logModule.getLog().info("Unexpected HangingBreakEvent");
             }
         }
     }
@@ -123,7 +123,9 @@ public class HangingBreak extends BlockActionType
             }
         }
         else
-            System.out.print("Not a player breaking Hanging?");
+        {
+            this.logModule.getLog().debug("Not a player breaking Hanging?");
+        }
     }
 
     private volatile boolean clearPlanned = false;

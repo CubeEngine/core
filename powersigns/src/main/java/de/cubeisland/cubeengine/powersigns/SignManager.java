@@ -30,6 +30,7 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.world.ChunkLoadEvent;
 
 
+import de.cubeisland.cubeengine.core.CubeEngine;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.powersigns.signtype.LiftSign;
 import de.cubeisland.cubeengine.powersigns.signtype.SignType;
@@ -122,7 +123,7 @@ public class SignManager implements Listener
         {
             String idLine = event.getLine(1);
             idLine = idLine.substring(1,idLine.length()-1);
-            System.out.print("IdentifierLine: "+idLine);
+            CubeEngine.getLog().debug("IdentifierLine: {}" + idLine);
             idLine = idLine.toLowerCase();
             SignType signType = registerdSignTypes.get(idLine);
             if (signType == null)

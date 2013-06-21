@@ -28,6 +28,7 @@ import java.util.TreeSet;
 
 import org.bukkit.Location;
 
+import de.cubeisland.cubeengine.core.CubeEngine;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.log.LogAttachment;
 import de.cubeisland.cubeengine.log.action.logaction.kill.MonsterDeath;
@@ -52,7 +53,7 @@ public class QueryResults
             parameter.showNoLogsFound(user);
             return;
         }
-        System.out.print("Showing " + this.logEntries.size() + " logentries to " + user.getName());
+        CubeEngine.getLog().info("Showing {} logentries to {}", this.logEntries.size(), user.getName());
         if (show.pagelimit == -1)
         {
             show.pagelimit = this.logEntries.size();
@@ -211,7 +212,7 @@ public class QueryResults
             {
                 attachment.getHolder().sendTranslated("&cCould not Rollback:");
                 logEntry.actionType.showLogEntry(attachment.getHolder(), null, logEntry, show);
-                System.out.print("Could not Rollback!");
+                CubeEngine.getLog().warn("Could not rollback!");
             }
         }
     }
