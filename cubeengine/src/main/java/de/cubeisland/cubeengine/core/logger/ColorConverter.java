@@ -52,7 +52,7 @@ public class ColorConverter extends CompositeConverter<ILoggingEvent>
         {
             message = ansi.fgBright(Color.BLACK).a(message).reset().toString();
         }
-        if (prefix == null)
+        if (prefix != null)
         {
             message = prefix + message;
         }

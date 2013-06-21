@@ -90,19 +90,19 @@
 
   <!-- Loggers -->
   <!-- Loggers that only should log to files -->
-  <logger name="cubeengine.commands" level="debug">
+  <logger name="cubeengine.commands" level="debug" additivity="false">
     <appender-ref ref="commands-file" />
   </logger>
 
-  <logger name="cubeengine.permissions" level="debug">
+  <logger name="cubeengine.permissions" level="debug" additivity="false">
     <appender-ref ref="permissions-file" />
   </logger>
 
-  <logger name="cubeengine.language" level="debug">
+  <logger name="cubeengine.language" level="debug" additivity="false">
     <appender-ref ref="language-file" />
   </logger>
 
-  <logger name="cubeengine.webapi" level="debug">
+  <logger name="cubeengine.webapi" level="debug" additivity="false">
     <appender-ref ref="webapi-file" />
   </logger>
 
