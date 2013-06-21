@@ -15,41 +15,37 @@
  * You should have received a copy of the GNU General Public License
  * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-package de.cubeisland.cubeengine.core.bukkit;
+package de.cubeisland.cubeengine.core.logger;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
-import de.cubeisland.cubeengine.core.CubeEngine;
-import de.cubeisland.cubeengine.core.bukkit.BukkitCore;
-import de.cubeisland.cubeengine.core.logger.ConsoleLayout;
 
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.AppenderBase;
 import ch.qos.logback.core.Layout;
 import ch.qos.logback.core.status.ErrorStatus;
-import org.fusesource.jansi.Ansi;
-import org.fusesource.jansi.Ansi.Attribute;
-import org.fusesource.jansi.Ansi.Color;
 
-public class BukkitAppender extends AppenderBase<ILoggingEvent>
+/**
+ * An appender for LogBack that forwards all output to a java.util.logging.Logger
+ * It does support a layout.
+ */
+public class JULAppender  extends AppenderBase<ILoggingEvent>
 {
+
     private Logger logger;
-    public Layout<ILoggingEvent> layout;
-    private final Level trace = new CustomLevel("TRACE", Level.INFO.intValue()+33);
-    private final Level debug = new CustomLevel("DEBUG", Level.INFO.intValue()+66);
-    private final Level info = new CustomLevel("INFO", Level.INFO.intValue());
-    private final Level warn = new CustomLevel("WARN", Level.WARNING.intValue());
-    private final Level error = new CustomLevel("ERROR", Level.SEVERE.intValue());
+    private Layout<ILoggingEvent> layout;
 
     public void start()
     {
         if (this.layout == null) {
             addStatus(new ErrorStatus("No layout set for the appender named \""  + name + "\".", this));
         }
+        if (this.logger == null)
+        {
+            addStatus(new ErrorStatus("No logger set for the appender named \"" + name + "\"", this));
+        }
         else
         {
-            this.logger = ((BukkitCore)CubeEngine.getCore()).getLogger();
             super.start();
         }
     }
@@ -62,25 +58,25 @@ public class BukkitAppender extends AppenderBase<ILoggingEvent>
             return;
         }
         Level level;
-        if (event.getLevel().toString().equalsIgnoreCase("error"))
+        if (event.getLevel().equals(ch.qos.logback.classic.Level.ERROR))
         {
-            level = error;
+            level = LogBackLevel.error;
         }
-        else if (event.getLevel().toString().equalsIgnoreCase("warn"))
+        else if (event.getLevel().equals(ch.qos.logback.classic.Level.WARN))
         {
-            level = warn;
+            level = LogBackLevel.warn;
         }
-        else if (event.getLevel().toString().equalsIgnoreCase("debug"))
+        else if (event.getLevel().equals(ch.qos.logback.classic.Level.DEBUG))
         {
-            level = debug;
+            level = LogBackLevel.debug;
         }
-        else if (event.getLevel().toString().equalsIgnoreCase("trace"))
+        else if (event.getLevel().equals(ch.qos.logback.classic.Level.TRACE))
         {
-            level = trace;
+            level = LogBackLevel.trace;
         }
         else
         {
-            level = info;
+            level = LogBackLevel.info;
         }
         this.logger.log(level, layout.doLayout(event));
     }
@@ -90,16 +86,24 @@ public class BukkitAppender extends AppenderBase<ILoggingEvent>
         this.layout = layout;
     }
 
-    public Layout<ILoggingEvent> getLayout()
+    public void setLogger(Logger logger)
     {
-        return this.layout;
+        this.logger = logger;
     }
 
-    private class CustomLevel extends Level
+    private static class LogBackLevel extends Level
     {
-        CustomLevel(String name, int value)
+
+        public static final LogBackLevel trace = new LogBackLevel("TRACE", Level.INFO.intValue() + 33);
+        public static final LogBackLevel debug = new LogBackLevel("DEBUG", Level.INFO.intValue() + 66);
+        public static final LogBackLevel info = new LogBackLevel("INFO", Level.INFO.intValue());
+        public static final LogBackLevel warn = new LogBackLevel("WARN", Level.WARNING.intValue());
+        public static final LogBackLevel error = new LogBackLevel("ERROR", Level.SEVERE.intValue());
+
+        public LogBackLevel(String name, int level)
         {
-            super(name, value);
+            super(name, level);
         }
+
     }
 }

@@ -53,6 +53,7 @@ import de.cubeisland.cubeengine.core.config.Configuration;
 import de.cubeisland.cubeengine.core.filesystem.FileManager;
 import de.cubeisland.cubeengine.core.i18n.I18n;
 import de.cubeisland.cubeengine.core.logger.ConsoleLayout;
+import de.cubeisland.cubeengine.core.logger.JULAppender;
 import de.cubeisland.cubeengine.core.module.Module;
 import de.cubeisland.cubeengine.core.storage.TableManager;
 import de.cubeisland.cubeengine.core.storage.database.Database;
@@ -148,9 +149,10 @@ public final class BukkitCore extends JavaPlugin implements Core
         }
         // Configure the
         Logger parentLogger = (Logger)LoggerFactory.getLogger("cubeengine");
-        BukkitAppender consoleAppender = new BukkitAppender();
+        JULAppender consoleAppender = new JULAppender();
         consoleAppender.setContext(parentLogger.getLoggerContext());
         consoleAppender.setName("cubeengine-console");
+        consoleAppender.setLogger(this.getLogger());
         ConsoleLayout consoleLayout = new ConsoleLayout();
         consoleLayout.setContext(parentLogger.getLoggerContext());
         consoleLayout.setPattern("%msg");

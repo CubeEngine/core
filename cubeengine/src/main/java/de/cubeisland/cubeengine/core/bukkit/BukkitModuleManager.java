@@ -28,7 +28,9 @@ import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
 
 
+import de.cubeisland.cubeengine.core.CubeEngine;
 import de.cubeisland.cubeengine.core.logger.ConsoleLayout;
+import de.cubeisland.cubeengine.core.logger.JULAppender;
 import de.cubeisland.cubeengine.core.module.BaseModuleManager;
 import de.cubeisland.cubeengine.core.module.Inject;
 import de.cubeisland.cubeengine.core.module.Module;
@@ -178,8 +180,9 @@ public class BukkitModuleManager extends BaseModuleManager
             //The module has it's own logger
             logger.setAdditive(false);
             // Setup the module's console logger
-            BukkitAppender consoleAppender = new BukkitAppender();
+            JULAppender consoleAppender = new JULAppender();
             consoleAppender.setContext(logger.getLoggerContext());
+            consoleAppender.setLogger(((BukkitCore)CubeEngine.getCore()).getLogger());
             ConsoleLayout consoleLayout = new ConsoleLayout();
             consoleLayout.setContext(logger.getLoggerContext());
             consoleLayout.setPattern("[" + module.getName() + "] %msg");
