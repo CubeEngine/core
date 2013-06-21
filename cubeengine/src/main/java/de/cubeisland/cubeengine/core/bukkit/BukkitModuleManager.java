@@ -183,7 +183,7 @@ public class BukkitModuleManager extends BaseModuleManager
             consoleAppender.setLogger(((BukkitCore)CubeEngine.getCore()).getLogger());
             PatternLayout consoleLayout = new PatternLayout();
             consoleLayout.setContext(logger.getLoggerContext());
-            consoleLayout.setPattern("[" + module.getName() + "] color(%msg)");
+            consoleLayout.setPattern("[" + module.getName() + "] %color(%msg)");
             consoleAppender.setLayout(consoleLayout);
 
             // Setup the module's file logger

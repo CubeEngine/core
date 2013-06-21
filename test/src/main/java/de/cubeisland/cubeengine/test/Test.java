@@ -105,14 +105,6 @@ public class Test extends Module
         {
             this.getLog().error("Error while Enabling the TestModule", ex);
         }
-        try
-        {
-            //TODO logback! this.getLog().addHandler(new CubeFileHandler(LogLevel.ALL, new File(this.getCore().getFileManager().getLogDir(), "test").toString()));
-        }
-        catch (Exception ex)
-        {
-            this.getLog().error("Error while adding the FileHandler", ex);
-        }
         this.getCore().getEventManager().registerListener(this, new TestListener(this));
 
         this.testl18n();
@@ -132,6 +124,17 @@ public class Test extends Module
 
         this.getLog().debug("Basics-Module: {0}", String.valueOf(this.basicsModule));
         this.getLog().debug("BukkitCore-Plugin: {0}", String.valueOf(this.getCore()));
+
+        CubeEngine.getLog().trace("Trace log on core's logger");
+        CubeEngine.getLog().debug("Debug log on core's logger");
+        CubeEngine.getLog().info("Info log on core's logger");
+        CubeEngine.getLog().warn("Warn log on core's logger");
+        CubeEngine.getLog().error("Error log on test's logger");
+        this.getLog().trace("Trace log on test's logger");
+        this.getLog().debug("Debug log on test's logger");
+        this.getLog().info("Info log on test's logger");
+        this.getLog().warn("Warn log on test's logger");
+        this.getLog().error("Error log on test's logger");
 
         this.timer = new Timer("keepAliveTimer");
         this.timer.schedule(new KeepAliveTimer(), 2 * 1000, 2 * 1000);
