@@ -78,7 +78,15 @@ public class JULAppender  extends AppenderBase<ILoggingEvent>
         {
             level = LogBackLevel.info;
         }
-        this.logger.log(level, layout.doLayout(event));
+
+        if (event.getThrowableProxy() != null)
+        {
+            this.logger.log(level, layout.doLayout(event), event.getThrowableProxy());
+        }
+        else
+        {
+            this.logger.log(level, layout.doLayout(event), event.getArgumentArray());
+        }
     }
 
     public void setLayout(Layout<ILoggingEvent> layout)
