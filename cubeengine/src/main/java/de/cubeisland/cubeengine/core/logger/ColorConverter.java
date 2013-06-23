@@ -29,7 +29,7 @@ public class ColorConverter extends CompositeConverter<ILoggingEvent>
     protected String transform(ILoggingEvent event, String in)
     {
         Ansi ansi = Ansi.ansi();
-        String message = event.getMessage();
+        String message = in;
         String prefix = null;
         if (message.startsWith("[") && message.contains("] "))
         {
