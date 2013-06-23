@@ -57,6 +57,10 @@ public class QueryResults
         {
             show.pagelimit = this.logEntries.size();
         }
+        if (show.pagelimit > 80) // prevent showing too much logs
+        {
+            show.pagelimit = 80;
+        }
         int totalPages = (this.logEntries.size()+show.pagelimit-1) / show.pagelimit; // rounded up
         user.sendTranslated("&6%d&a distinct logs (&6%d&a pages)", this.logEntries.size(), totalPages);
         Iterator<LogEntry> entries = this.logEntries.iterator();
@@ -107,9 +111,9 @@ public class QueryResults
         {
             showing = compressedEntries.size();
         }
-        else if (compressedEntries.size() - (show.page * show.pagelimit) < show.pagelimit)
+        else if (compressedEntries.size() - ((show.page-1) * show.pagelimit) < show.pagelimit)
         {
-            showing = compressedEntries.size() - (show.page * show.pagelimit);
+            showing = compressedEntries.size() - ((show.page-1) * show.pagelimit);
         }
         if (show.page == 1)
         {
@@ -130,6 +134,7 @@ public class QueryResults
         {
             navigableSet = compressedEntries;
         }
+        System.out.print(String.format("Showing %d/%d/%d logentries to %s (page %d)", showing, navigableSet.size(), this.logEntries.size() , user.getName(), show.page)); // TODO use the new Logger!
         for (LogEntry logEntry : navigableSet)
         {
             if (cpage == show.page)
