@@ -19,6 +19,7 @@ package de.cubeisland.cubeengine.core.bukkit;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.lang.reflect.UndeclaredThrowableException;
 import java.util.Collections;
 import java.util.Iterator;
@@ -70,8 +71,11 @@ import de.cubeisland.cubeengine.core.webapi.exception.ApiStartupException;
 
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.Logger;
+import ch.qos.logback.classic.LoggerContext;
 import ch.qos.logback.classic.PatternLayout;
 import ch.qos.logback.classic.filter.ThresholdFilter;
+import ch.qos.logback.classic.joran.JoranConfigurator;
+import ch.qos.logback.core.joran.spi.JoranException;
 import org.slf4j.LoggerFactory;
 
 import static de.cubeisland.cubeengine.core.util.ReflectionUtils.findFirstField;
@@ -148,7 +152,25 @@ public final class BukkitCore extends JavaPlugin implements Core
         {
             this.getLogger().log(java.util.logging.Level.SEVERE, "Failed to set the system property for the log folder", e);
         }
-        // Configure the
+
+        File logbackXML = new File(this.getDataFolder(), "logback.xml");
+        if (logbackXML.exists())
+        {
+            try
+            {
+                JoranConfigurator logbackConfigurator = new JoranConfigurator();
+                logbackConfigurator.setContext((LoggerContext)LoggerFactory.getILoggerFactory());
+                logbackConfigurator.doConfigure(logbackXML.getAbsolutePath());
+            }
+            catch (JoranException ex)
+            {
+                this.getLogger().log(java.util.logging.Level.WARNING,
+                                     "An error occured when loading a logback.xml file from the CubeEngine folder: "
+                                         + ex.getLocalizedMessage(), ex);
+            }
+        }
+
+        // Configure the logger
         Logger parentLogger = (Logger)LoggerFactory.getLogger("cubeengine");
         JULAppender consoleAppender = new JULAppender();
         consoleAppender.setContext(parentLogger.getLoggerContext());

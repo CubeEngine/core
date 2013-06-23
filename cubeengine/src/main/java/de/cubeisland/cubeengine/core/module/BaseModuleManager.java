@@ -19,6 +19,7 @@ package de.cubeisland.cubeengine.core.module;
 
 import java.io.File;
 import java.io.FileFilter;
+import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -29,6 +30,9 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Stack;
 import java.util.concurrent.TimeUnit;
+import java.util.jar.JarEntry;
+import java.util.jar.JarFile;
+import java.util.zip.ZipEntry;
 
 import de.cubeisland.cubeengine.core.Core;
 import de.cubeisland.cubeengine.core.filesystem.FileExtentionFilter;
@@ -44,10 +48,13 @@ import de.cubeisland.cubeengine.core.module.exception.ModuleException;
 import de.cubeisland.cubeengine.core.util.Profiler;
 import de.cubeisland.cubeengine.core.util.Version;
 
+import ch.qos.logback.classic.LoggerContext;
+import ch.qos.logback.classic.joran.JoranConfigurator;
+import ch.qos.logback.core.joran.spi.JoranException;
 import gnu.trove.map.hash.THashMap;
 import gnu.trove.set.hash.THashSet;
 import org.slf4j.Logger;
-
+import org.slf4j.LoggerFactory;
 
 
 public abstract class BaseModuleManager implements ModuleManager
@@ -246,6 +253,26 @@ public abstract class BaseModuleManager implements ModuleManager
                 }
             }
         }
+
+        // Load the modules logback.xml, if it exists
+        try
+        {
+            JarFile jarFile = new JarFile(info.getFile());
+            ZipEntry entry = jarFile.getEntry("logback.xml");
+            if (entry != null)
+            {
+                JoranConfigurator logbackConfig = new JoranConfigurator();
+                logbackConfig.setContext((LoggerContext)LoggerFactory.getILoggerFactory());
+                logbackConfig.doConfigure(jarFile.getInputStream(entry));
+            }
+        }
+        catch (IOException ignored)
+        {} // This should never happen
+        catch (JoranException ex)
+        {
+            module.getLog().warn("An error occured while loading the modules logback.xml config: " + ex.getLocalizedMessage(), ex);
+        }
+
         module = this.loader.loadModule(info);
         loadStack.pop();
 

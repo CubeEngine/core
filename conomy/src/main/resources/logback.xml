@@ -1,4 +1,5 @@
 <configuration>
+  <timestamp key="byMinute" datePattern="yyyy'-'MM'-'dd'--'HHmm" timeReference="contextBirth"/>
   <appender name="conomy.transactions-file" class="ch.qos.logback.core.rolling.RollingFileAppender">
     <file>${cubeengine.logger.default-path}/${byMinute}/conomy-transactions.log</file>
     <encoder>
