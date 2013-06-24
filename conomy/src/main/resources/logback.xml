@@ -2,8 +2,11 @@
   <timestamp key="byMinute" datePattern="yyyy'-'MM'-'dd'--'HHmm" timeReference="contextBirth"/>
   <appender name="conomy.transactions-file" class="ch.qos.logback.core.rolling.RollingFileAppender">
     <file>${cubeengine.logger.default-path}/${byMinute}/conomy-transactions.log</file>
-    <encoder>
-      <pattern>%date{yyyy-MM-dd HH:mm:ss} %msg%n</pattern>
+    <encoder class="ch.qos.logback.core.encoder.LayoutWrappingEncoder">
+      <layout class="ch.qos.logback.classic.PatternLayout">
+        <pattern>%date{yyyy-MM-dd HH:mm:ss} %msg%n</pattern>
+        <fileHeader>CubeEngine Conomy Transactions log-file - ${byMinute}</fileHeader>
+      </layout>
     </encoder>
     <rollingPolicy class="ch.qos.logback.core.rolling.FixedWindowRollingPolicy">
       <fileNamePattern>${cubeengine.logger.default-path}/${byMinute}/conomy-transactions.%i.log</fileNamePattern>

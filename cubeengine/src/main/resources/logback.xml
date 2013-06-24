@@ -5,8 +5,11 @@
   <!-- File appenders-->
   <appender name="commands-file" class="ch.qos.logback.core.rolling.RollingFileAppender">
     <file>${cubeengine.logger.default-path}/${byMinute}/commands.log</file>
-    <encoder>
-      <pattern>%date{yyyy-MM-dd HH:mm:ss} - %msg%n</pattern>
+    <encoder class="ch.qos.logback.core.encoder.LayoutWrappingEncoder">
+      <layout class="ch.qos.logback.classic.PatternLayout">
+        <pattern>%date{yyyy-MM-dd HH:mm:ss} - %msg%n</pattern>
+        <fileHeader>CubeEngine Commands log-file - ${byMinute}</fileHeader>
+      </layout>
     </encoder>
 
     <rollingPolicy class="ch.qos.logback.core.rolling.FixedWindowRollingPolicy">
@@ -21,9 +24,13 @@
 
   <appender name="permissions-file" class="ch.qos.logback.core.rolling.RollingFileAppender">
     <file>${cubeengine.logger.default-path}/${byMinute}/permissions.log</file>
-    <encoder>
-      <pattern>%msg%n</pattern>
+    <encoder class="ch.qos.logback.core.encoder.LayoutWrappingEncoder">
+      <layout class="ch.qos.logback.classic.PatternLayout">
+        <pattern>%msg%n</pattern>
+        <fileHeader>CubeEngine Permissions log-file - ${byMinute}</fileHeader>
+      </layout>
     </encoder>
+
     <rollingPolicy class="ch.qos.logback.core.rolling.FixedWindowRollingPolicy">
       <fileNamePattern>${cubeengine.logger.default-path}/${byMinute}/permissions.%i.log</fileNamePattern>
       <minIndex>1</minIndex>
@@ -36,9 +43,13 @@
 
   <appender name="language-file" class="ch.qos.logback.core.rolling.RollingFileAppender">
     <file>${cubeengine.logger.default-path}/${byMinute}/missing-translations.log</file>
-    <encoder>
-      <pattern>%date{yyyy-MM-dd HH:mm:ss} [%level] %msg%n</pattern>
+    <encoder class="ch.qos.logback.core.encoder.LayoutWrappingEncoder">
+      <layout class="ch.qos.logback.classic.PatternLayout">
+        <pattern>%date{yyyy-MM-dd HH:mm:ss} [%level] %msg%n</pattern>
+        <fileHeader>CubeEngine Missing Translations log-file - ${byMinute}</fileHeader>
+      </layout>
     </encoder>
+
     <rollingPolicy class="ch.qos.logback.core.rolling.FixedWindowRollingPolicy">
       <fileNamePattern>${cubeengine.logger.default-path}/${byMinute}/missing-translations.%i.log</fileNamePattern>
       <minIndex>1</minIndex>
@@ -51,9 +62,13 @@
 
   <appender name="webapi-file" class="ch.qos.logback.core.rolling.RollingFileAppender">
     <file>${cubeengine.logger.default-path}/${byMinute}/webapi.log</file>
-    <encoder>
-      <pattern>%date{yyyy-MM-dd HH:mm:ss} [%level] %msg%n</pattern>
+    <encoder class="ch.qos.logback.core.encoder.LayoutWrappingEncoder">
+      <layout class="ch.qos.logback.classic.PatternLayout">
+        <pattern>%date{yyyy-MM-dd HH:mm:ss} [%level] %msg%n</pattern>
+        <fileHeader>CubeEngine WebAPI log-file - ${byMinute}</fileHeader>
+      </layout>
     </encoder>
+
     <rollingPolicy class="ch.qos.logback.core.rolling.FixedWindowRollingPolicy">
       <fileNamePattern>${cubeengine.logger.default-path}/${byMinute}/webapi.%i.log</fileNamePattern>
       <minIndex>1</minIndex>
@@ -66,9 +81,13 @@
 
   <appender name="core-file" class="ch.qos.logback.core.rolling.RollingFileAppender">
     <file>${cubeengine.logger.default-path}/${byMinute}/core.log</file>
-    <encoder>
-      <pattern>%date{yyyy-MM-dd HH:mm:ss} [%level] %msg%n</pattern>
+    <encoder class="ch.qos.logback.core.encoder.LayoutWrappingEncoder">
+      <layout class="ch.qos.logback.classic.PatternLayout">
+        <pattern>%date{yyyy-MM-dd HH:mm:ss} [%level] %msg%n</pattern>
+        <fileHeader>CubeEngine Core log-file - ${byMinute}</fileHeader>
+      </layout>
     </encoder>
+
     <rollingPolicy class="ch.qos.logback.core.rolling.FixedWindowRollingPolicy">
       <fileNamePattern>${cubeengine.logger.default-path}/${byMinute}/core.%i.log</fileNamePattern>
       <minIndex>1</minIndex>
@@ -81,9 +100,12 @@
 
   <appender name="exceptions-file" class="ch.qos.logback.core.FileAppender">
     <file>${cubeengine.logger.default-path}/${byMinute}/exceptions.log</file>
-    <encoder>
-      <pattern>[%date{yyyy-MM-dd HH:mm:ss}] %msg%n</pattern>
-    </encoder>
+    <encoder class="ch.qos.logback.core.encoder.LayoutWrappingEncoder">
+      <layout class="ch.qos.logback.classic.PatternLayout">
+        <pattern>[%date{yyyy-MM-dd HH:mm:ss}] %msg%n</pattern>
+        <fileHeader>CubeEngine Exceptions log-file - ${byMinute}</fileHeader>
+      </layout>
+    </encoder>>
     <filter class="de.cubeisland.cubeengine.core.logger.ExceptionFilter" />
   </appender>
 
@@ -114,6 +136,7 @@
   <!-- The parent logger for all loggers related to CubeEngine-->
   <logger name="cubeengine" level="all" additivity="false">
     <appender-ref ref="exceptions-file" />
+    <!-- A JULAppender is set programmatically -->
   </logger>
 
   <root level="all"/>
