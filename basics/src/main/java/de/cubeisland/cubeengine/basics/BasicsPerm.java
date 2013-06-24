@@ -35,7 +35,7 @@ public class BasicsPerm extends PermissionContainer<Basics>
     public BasicsPerm(Basics module)
     {
         super(module);
-        module.getLog().debug("{} ms - Basics.Permission-register", Profiler.getCurrentDelta("basicsEnable", TimeUnit.MILLISECONDS));
+        module.getLog().trace("{} ms - Basics.Permission-register", Profiler.getCurrentDelta("basicsEnable", TimeUnit.MILLISECONDS));
         this.bindToModule(KITS,COMMAND,ITEM_BLACKLIST,TELEPORT,COMPASS_JUMPTO,POWERTOOL_USE,SIGN_COLORED,CHANGEPAINTING,KICK_RECEIVEMESSAGE,
                           COMMAND_KILL_PREVENT, COMMAND_CLEARINVENTORY_PREVENT, COMMAND_INVSEE_MODIFY_PREVENT, COMMAND_KICK_NOREASON, TELEPORT_PREVENT, COMMAND_AFK_PREVENT);
         this.registerAllPermissions();

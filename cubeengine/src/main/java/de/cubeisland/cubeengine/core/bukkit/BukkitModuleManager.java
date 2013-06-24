@@ -44,6 +44,7 @@ import de.cubeisland.cubeengine.core.module.exception.MissingPluginDependencyExc
 
 import ch.qos.logback.classic.PatternLayout;
 import ch.qos.logback.classic.encoder.PatternLayoutEncoder;
+import ch.qos.logback.classic.filter.ThresholdFilter;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.rolling.FixedWindowRollingPolicy;
 import ch.qos.logback.core.rolling.RollingFileAppender;
@@ -185,6 +186,10 @@ public class BukkitModuleManager extends BaseModuleManager
             consoleLayout.setContext(logger.getLoggerContext());
             consoleLayout.setPattern("[" + module.getName() + "] %color(%msg)");
             consoleAppender.setLayout(consoleLayout);
+            ThresholdFilter consoleFilter = new ThresholdFilter();
+            consoleFilter.setLevel(((BukkitCore)CubeEngine.getCore()).getConfiguration().loggingConsoleLevel.toString());
+            consoleAppender.addFilter(consoleFilter);
+            consoleFilter.start();
 
             // Setup the module's file logger
             String logFile = System.getProperty("cubeengine.logger.default-path") + "/" +
@@ -208,6 +213,10 @@ public class BukkitModuleManager extends BaseModuleManager
             triggeringPolicy.setContext(logger.getLoggerContext());
             triggeringPolicy.setMaxFileSize(System.getProperty("cubeengine.logger.max-size"));
             fileAppender.setTriggeringPolicy(triggeringPolicy);
+            ThresholdFilter fileFilter = new ThresholdFilter();
+            fileFilter.setLevel(((BukkitCore)CubeEngine.getCore()).getConfiguration().loggingFileLevel.toString());
+            fileAppender.addFilter(fileFilter);
+            fileFilter.start();
 
             // Add the appenders to the logger and start everything
             logger.addAppender(consoleAppender);

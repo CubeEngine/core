@@ -129,7 +129,7 @@ public class Test extends Module
         CubeEngine.getLog().debug("Debug log on core's logger");
         CubeEngine.getLog().info("Info log on core's logger");
         CubeEngine.getLog().warn("Warn log on core's logger");
-        CubeEngine.getLog().error("Error log on test's logger");
+        CubeEngine.getLog().error("Error log on core's logger");
         this.getLog().trace("Trace log on test's logger");
         this.getLog().debug("Debug log on test's logger");
         this.getLog().info("Info log on test's logger");
