@@ -79,6 +79,10 @@ public class CoreConfiguration extends Configuration
     @Comment("Logging to the main log file \nALL > DEBUG > INFO > WARN > ERROR > OFF")
     public Level loggingFileLevel = Level.INFO;
 
+    @Option("logging.archive-logs")
+    @Comment("Zip all old logs to zip archives")
+    public boolean loggingArchiveLogs = true;
+
     @Option("logging.log-commands")
     @Comment("Whether to log commands executed by players.")
     public boolean logCommands = false;

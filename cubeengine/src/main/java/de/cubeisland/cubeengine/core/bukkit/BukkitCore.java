@@ -18,14 +18,21 @@
 package de.cubeisland.cubeengine.core.bukkit;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.UndeclaredThrowableException;
+import java.text.SimpleDateFormat;
 import java.util.Collections;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
+import java.util.zip.ZipOutputStream;
 
 import org.bukkit.Server;
 import org.bukkit.command.CommandMap;
@@ -186,7 +193,7 @@ public final class BukkitCore extends JavaPlugin implements Core
 
         this.logger = (Logger)LoggerFactory.getLogger("cubeengine.core");
         // TODO RemoteHandler is not yet implemented this.logger.addHandler(new RemoteHandler(LogLevel.ERROR, this));
-        this.logger.setLevel(Level.ALL);
+        this.logger.setLevel(Level.INFO);
 
         this.fileManager.setLogger(this.logger);
         this.fileManager.clearTempDir();
@@ -199,7 +206,9 @@ public final class BukkitCore extends JavaPlugin implements Core
         // Set the level for the parent logger to the lowest of either the file or console
         // subloggers inherit this by default, but can override
         parentLogger.setLevel((config.loggingConsoleLevel.toInt() > config.loggingFileLevel
-                                                                          .toInt()) ? this.config.loggingFileLevel : this.config.loggingConsoleLevel);
+                                                                          .toInt()) ? this.config.loggingFileLevel
+                                                                                    : this.config.loggingConsoleLevel);
+        this.logger.setLevel(parentLogger.getLevel());
         // Set a filter for the console log, so sub loggers don't write logs with lower level than the user wants
         ThresholdFilter consoleFilter = new ThresholdFilter();
         consoleFilter.setLevel(this.config.loggingConsoleLevel.toString());
@@ -432,6 +441,7 @@ public final class BukkitCore extends JavaPlugin implements Core
         CubeEngine.clean();
         Convert.cleanup();
         Profiler.clean();
+        this.cleanupLogging();
     }
 
     public void addInitHook(Runnable runnable)
@@ -439,6 +449,54 @@ public final class BukkitCore extends JavaPlugin implements Core
         assert runnable != null: "The runnble must nto be null!";
 
         this.initHooks.add(runnable);
+    }
+
+    private void cleanupLogging()
+    {
+        String date = new SimpleDateFormat("yyyy-MM-dd--HHmm").format(new Date(logger.getLoggerContext().getBirthTime()));
+        ((LoggerContext)LoggerFactory.getILoggerFactory()).stop();
+        if (this.getConfiguration().loggingArchiveLogs)
+        {
+            try
+            {
+                ZipOutputStream zip = new ZipOutputStream(new FileOutputStream(
+                    System.getProperty("cubeengine.logger.default-path") + File.separator + date + ".zip"));
+                File oldLogFolder = new File(System.getProperty("cubeengine.logger.default-path") + File.separator + date);
+                if (!oldLogFolder.exists() || !oldLogFolder.isDirectory())
+                {
+                    zip.close();
+                    System.out.println(oldLogFolder.exists() + " " + oldLogFolder.isDirectory() + " - " + oldLogFolder.getAbsolutePath());
+                    return;
+                }
+                for (File logFile : oldLogFolder.listFiles())
+                {
+                    if (!logFile.isFile())
+                    {
+                        throw new IOException("A folder was placed in the log directory");
+                    }
+                    ZipEntry zipLogFile = new ZipEntry(logFile.getName());
+                    zip.putNextEntry(zipLogFile);
+                    FileInputStream logStream = new FileInputStream(logFile.getCanonicalFile());
+
+                    int c;
+                    while ((c = logStream.read()) != -1) {
+                        zip.write(c);
+                    }
+
+                    zip.closeEntry();
+                    logStream.close();
+                    logFile.delete();
+                }
+                zip.finish();
+                zip.close();
+                oldLogFolder.delete();
+            }
+            catch (IOException ex)
+            {
+                this.getLogger().log(java.util.logging.Level.WARNING, "An error occured while compressing the logs: "
+                    + ex.getLocalizedMessage(), ex);
+            }
+        }
     }
 
     @Override
