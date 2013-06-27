@@ -21,8 +21,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.lang.reflect.UndeclaredThrowableException;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.Collections;
 import java.util.Date;
@@ -31,7 +31,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import java.util.zip.ZipEntry;
-import java.util.zip.ZipFile;
 import java.util.zip.ZipOutputStream;
 
 import org.bukkit.Server;
@@ -83,6 +82,7 @@ import ch.qos.logback.classic.LoggerContext;
 import ch.qos.logback.classic.PatternLayout;
 import ch.qos.logback.classic.filter.ThresholdFilter;
 import ch.qos.logback.classic.joran.JoranConfigurator;
+import ch.qos.logback.classic.util.ContextInitializer;
 import ch.qos.logback.core.joran.spi.JoranException;
 import org.slf4j.LoggerFactory;
 
@@ -162,23 +162,33 @@ public final class BukkitCore extends JavaPlugin implements Core
         }
 
         ((LoggerContext)LoggerFactory.getILoggerFactory()).start();
-        File logbackXML = new File(this.getDataFolder(), "logback.xml");
-        if (logbackXML.exists())
+        try
         {
-            try
+            File logbackXML = new File(this.getDataFolder(), "logback.xml");
+            URL url;
+            if (logbackXML.exists())
             {
-                JoranConfigurator logbackConfigurator = new JoranConfigurator();
-                logbackConfigurator.setContext((LoggerContext)LoggerFactory.getILoggerFactory());
-                logbackConfigurator.doConfigure(logbackXML.getAbsolutePath());
+                url = logbackXML.toURI().toURL();
             }
-            catch (JoranException ex)
+            else
             {
-                this.getLogger().log(java.util.logging.Level.WARNING,
-                                     "An error occured when loading a logback.xml file from the CubeEngine folder: "
-                                         + ex.getLocalizedMessage(), ex);
+                url = new ContextInitializer((LoggerContext)LoggerFactory.getILoggerFactory()).findURLOfDefaultConfigurationFile(true);
             }
+            JoranConfigurator logbackConfigurator = new JoranConfigurator();
+            logbackConfigurator.setContext((LoggerContext)LoggerFactory.getILoggerFactory());
+            ((LoggerContext)LoggerFactory.getILoggerFactory()).reset();
+            logbackConfigurator.doConfigure(url);
         }
-
+        catch (JoranException ex)
+        {
+            this.getLogger().log(java.util.logging.Level.WARNING,
+                                 "An error occured when loading a logback.xml file from the CubeEngine folder: "
+                                     + ex.getLocalizedMessage(), ex);
+        }
+        catch (MalformedURLException e)
+        {
+            throw new IllegalStateException(e);
+        }
         // Configure the logger
         Logger parentLogger = (Logger)LoggerFactory.getLogger("cubeengine");
         JULAppender consoleAppender = new JULAppender();
@@ -220,6 +230,10 @@ public final class BukkitCore extends JavaPlugin implements Core
         // Set a filter for the file log, so sub loggers don't write logs with lower level than the user wants
         ThresholdFilter fileFilter = new ThresholdFilter();
         fileFilter.setLevel(this.config.loggingFileLevel.toString());
+
+
+
+
         this.logger.getAppender("core-file").addFilter(fileFilter);
         fileFilter.start();
 
