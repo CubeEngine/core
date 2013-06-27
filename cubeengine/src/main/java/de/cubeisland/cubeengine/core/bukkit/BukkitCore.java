@@ -61,6 +61,7 @@ import de.cubeisland.cubeengine.core.command.reflected.readable.ReadableCommandF
 import de.cubeisland.cubeengine.core.config.Configuration;
 import de.cubeisland.cubeengine.core.filesystem.FileManager;
 import de.cubeisland.cubeengine.core.i18n.I18n;
+import de.cubeisland.cubeengine.core.logger.ColorConverter;
 import de.cubeisland.cubeengine.core.logger.JULAppender;
 import de.cubeisland.cubeengine.core.module.Module;
 import de.cubeisland.cubeengine.core.storage.TableManager;
@@ -160,6 +161,7 @@ public final class BukkitCore extends JavaPlugin implements Core
             this.getLogger().log(java.util.logging.Level.SEVERE, "Failed to set the system property for the log folder", e);
         }
 
+        ((LoggerContext)LoggerFactory.getILoggerFactory()).start();
         File logbackXML = new File(this.getDataFolder(), "logback.xml");
         if (logbackXML.exists())
         {
@@ -194,6 +196,7 @@ public final class BukkitCore extends JavaPlugin implements Core
         this.logger = (Logger)LoggerFactory.getLogger("cubeengine.core");
         // TODO RemoteHandler is not yet implemented this.logger.addHandler(new RemoteHandler(LogLevel.ERROR, this));
         this.logger.setLevel(Level.INFO);
+        ColorConverter.setANSISupport(BukkitUtils.isANSISupported());
 
         this.fileManager.setLogger(this.logger);
         this.fileManager.clearTempDir();

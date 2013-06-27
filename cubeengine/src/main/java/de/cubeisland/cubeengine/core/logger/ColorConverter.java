@@ -25,9 +25,21 @@ import org.fusesource.jansi.Ansi.Color;
 
 public class ColorConverter extends CompositeConverter<ILoggingEvent>
 {
+
+    private static boolean terminalSupportsColours = false;
+
+    public static void setANSISupport(boolean ansiSupport)
+    {
+        terminalSupportsColours = ansiSupport;
+    }
+
     @Override
     protected String transform(ILoggingEvent event, String in)
     {
+        if (!terminalSupportsColours)
+        {
+            return in;
+        }
         Ansi ansi = Ansi.ansi();
         String message = in;
         String prefix = null;

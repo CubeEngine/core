@@ -412,4 +412,9 @@ public class BukkitUtils
         catch (ClassNotFoundException ignored)
         {}
     }
+
+    public static boolean isANSISupported()
+    {
+        return ((CraftServer) Bukkit.getServer()).getReader().getTerminal().isAnsiSupported();
+    }
 }

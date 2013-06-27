@@ -72,7 +72,7 @@ public class CoreConfiguration extends Configuration
     public String database = "mysql";
 
     @Option("logging.console-Level")
-    @Comment("Logging into Console \nALL > DEBUG > INFO > WARN > ERROR > OFF")
+    @Comment("Logging into Console \nALL > TRACE > DEBUG > INFO > WARN > ERROR > OFF")
     public Level loggingConsoleLevel = Level.INFO;
 
     @Option("logging.file-Level")
