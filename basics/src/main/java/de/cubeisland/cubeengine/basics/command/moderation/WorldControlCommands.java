@@ -17,9 +17,31 @@
  */
 package de.cubeisland.cubeengine.basics.command.moderation;
 
-import de.cubeisland.cubeengine.basics.Basics;
-import de.cubeisland.cubeengine.basics.BasicsConfiguration;
-import de.cubeisland.cubeengine.basics.BasicsPerm;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.List;
+
+import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.World;
+import org.bukkit.entity.Ambient;
+import org.bukkit.entity.Animals;
+import org.bukkit.entity.EnderDragon;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.EntityType;
+import org.bukkit.entity.Ghast;
+import org.bukkit.entity.Golem;
+import org.bukkit.entity.Item;
+import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Monster;
+import org.bukkit.entity.NPC;
+import org.bukkit.entity.Player;
+import org.bukkit.entity.Slime;
+import org.bukkit.entity.Tameable;
+import org.bukkit.entity.WaterMob;
+import org.bukkit.entity.Wither;
+
 import de.cubeisland.cubeengine.core.command.parameterized.Flag;
 import de.cubeisland.cubeengine.core.command.parameterized.Param;
 import de.cubeisland.cubeengine.core.command.parameterized.ParameterizedContext;
@@ -28,15 +50,9 @@ import de.cubeisland.cubeengine.core.command.reflected.Command;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.util.StringUtils;
 import de.cubeisland.cubeengine.core.util.matcher.Match;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.World;
-import org.bukkit.entity.*;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
+import de.cubeisland.cubeengine.basics.Basics;
+import de.cubeisland.cubeengine.basics.BasicsConfiguration;
+import de.cubeisland.cubeengine.basics.BasicsPerm;
 
 import static de.cubeisland.cubeengine.core.command.ArgBounds.NO_MAX;
 
@@ -355,7 +371,8 @@ public class WorldControlCommands
                     match = Match.entity().getNameFor(Match.entity().living(s_type));
                     if (match == null)
                     {
-                        return; //TODO msg
+                        context.sendTranslated("&cUnkown entity &6%s", s_type);
+                        return;
                     }
                     specialmatch = true;
                 }

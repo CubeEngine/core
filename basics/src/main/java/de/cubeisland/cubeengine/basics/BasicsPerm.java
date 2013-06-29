@@ -97,7 +97,7 @@ public class BasicsPerm extends PermissionContainer<Basics>
     /**
      * Prevents from being killed by the kill command unless forced
      */
-    public static final Permission COMMAND_KILL_PREVENT = COMMAND_KILL.createNew("prevent",FALSE); //TODO bundle for all prevent perms
+    public static final Permission COMMAND_KILL_PREVENT = COMMAND_KILL.createNew("prevent",FALSE);
     /**
      * Kills a player even if the player has the prevent permission
      */
