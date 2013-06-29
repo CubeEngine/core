@@ -335,11 +335,12 @@ public class MaterialDataMatcher
             CubeEngine.getLog().warning("No data found for Wool-color");
             return null;
         }
-        Short dataVal = woolData.get(Match.string().matchString(data, woolData.keySet()));
-        if (dataVal == null)
+        String match = Match.string().matchString(data, woolData.keySet());
+        if (match == null)
         {
             return null;
         }
+        Short dataVal = woolData.get(match);
         return DyeColor.getByWoolData(dataVal.byteValue());
     }
 

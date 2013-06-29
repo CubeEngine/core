@@ -48,19 +48,16 @@ import de.cubeisland.cubeengine.basics.BasicsConfiguration;
 public class SpawnMobCommand
 {
     private BasicsConfiguration config;
-    private AdvancedSpawnMob advancedSpawnMob;
 
     public SpawnMobCommand(Basics basics)
     {
         config = basics.getConfiguration();
-        this.advancedSpawnMob = new AdvancedSpawnMob(basics);
     }
 
     @Command(desc = "Spawns the specified Mob", max = 3, usage = "<mob>[:data][,<ridingmob>[:data]] [amount] [player]")
     public void spawnMob(CommandContext context)
     {
-        // TODO fix skeleton not having a bow
-        // TODO custom loot items
+        // TODO custom loot items & Equipment
         User sender = null;
         if (context.getSender() instanceof User)
         {
@@ -74,11 +71,6 @@ public class SpawnMobCommand
         if (!context.hasArg(0))
         {
             context.sendTranslated("&cYou need to define what mob to spawn!");
-            return;
-        }
-        if (context.getString(0).equalsIgnoreCase("advanced"))
-        {
-            advancedSpawnMob.addUser(sender); //TODO
             return;
         }
         Location loc;
@@ -207,7 +199,6 @@ public class SpawnMobCommand
         for (String data : datas)
         {
             String match = Match.string().matchString(data.toLowerCase(Locale.ENGLISH), "saddled", "baby", "angry", "tamed", "power", "charged", "sitting");
-            //TODO this list configurable something like datavalues.txt
             if (match == null)
             {
                 if (data.toLowerCase(Locale.ENGLISH).endsWith("hp"))

@@ -188,7 +188,8 @@ public class SpawnCommands
         TeleportCommands.teleport(user, spawnLocation, true, force, true);
     }
 
-    @Command(desc = "Teleports you to the spawn of given world", usage = "<world>", min = 1, max = 1)
+    @Command(desc = "Teleports you to the spawn of given world",
+             usage = "<world>", min = 1, max = 1)
     public void tpworld(CommandContext context)
     {
         if (context.getSender() instanceof User)
@@ -204,6 +205,11 @@ public class SpawnCommands
             final Location userLocation = sender.getLocation();
             spawnLocation.setPitch(userLocation.getPitch());
             spawnLocation.setYaw(userLocation.getYaw());
+            if (!TpWorldPermissions.getPermission(world.getName()).isAuthorized(sender))
+            {
+                context.sendTranslated("You are not allowed to teleport to this world!");
+                return;
+            }
             if (TeleportCommands.teleport(sender, spawnLocation, true, false, true))
                 context.sendTranslated("&aTeleported to the spawn of world &6%s&a!", world.getName());
             return;

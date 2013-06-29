@@ -45,7 +45,7 @@ public class LocationUtil
         while (true)
         {
             loc.add(v);
-            if (loc.distanceSquared(originalLoc) > 200 * 200//more than 200 blocks away
+            if (loc.distanceSquared(originalLoc) > maxDistanceToWall * maxDistanceToWall
                 || loc.getY() < 0 //below world
                 || loc.getY() > loc.getWorld().getMaxHeight()) //above world 
             {
@@ -53,7 +53,7 @@ public class LocationUtil
             }
             if (passed && (!loc.getBlock().getType().isSolid()))
             {
-                if (loc.distanceSquared(locBeginWall) < 1.5) continue;
+                if (loc.distanceSquared(locBeginWall) < 1.5) continue; // not yet behind wall
                 MaterialData topData = loc.getBlock().getRelative(BlockFace.UP).getState().getData();
                 boolean onHalf = false;
                 if (topData.getItemType().isSolid())
@@ -79,24 +79,28 @@ public class LocationUtil
                 loc.setPitch(userLocation.getPitch());
                 return loc;
             }
-            else if (loc.getBlock().getTypeId() != 0)
-            {
-                if (!passed)
-                {
-                    passed = true;
-                    locBeginWall = loc.clone();
-                }
-                if (loc.distanceSquared(locBeginWall) > maxThicknessOfWall * maxThicknessOfWall)
-                {
-                    return null;
-                }
-            }
             else
-            // if Type is AIR
             {
-                if (loc.distanceSquared(originalLoc) > maxDistanceToWall * maxDistanceToWall)
+                switch (loc.getBlock().getType())
                 {
-                    return null;
+                    case AIR:
+                    case WATER:
+                    case STATIONARY_WATER:
+                        if (loc.distanceSquared(originalLoc) > maxDistanceToWall * maxDistanceToWall)
+                        {
+                            return null;
+                        }
+                        break;
+                    default:
+                        if (!passed)
+                        {
+                            passed = true;
+                            locBeginWall = loc.clone();
+                        }
+                        if (loc.distanceSquared(locBeginWall) > maxThicknessOfWall * maxThicknessOfWall)
+                        {
+                            return null;
+                        }
                 }
             }
         }

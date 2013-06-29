@@ -52,13 +52,7 @@ public class TeleportCommands
 
     public static boolean teleport(User user, Location loc, boolean safe, boolean force, boolean keepDirection)
     {
-        if (!force && !user.getWorld().equals(loc.getWorld()) // TODO NPE!  // I think this is fixed? @Faithcaio validate this
-                && !TpWorldPermissions.getPermission(loc.getWorld().getName()).isAuthorized(user))
-        {
-            //TODO this feels not correct
-            user.sendTranslated("You are not allowed to teleport to this world!");
-            return false;
-        }
+
         if (safe)
         {
             user.safeTeleport(loc, PlayerTeleportEvent.TeleportCause.COMMAND, keepDirection);

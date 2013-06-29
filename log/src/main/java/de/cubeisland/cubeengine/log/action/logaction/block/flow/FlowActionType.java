@@ -25,7 +25,7 @@ import org.bukkit.event.block.BlockFromToEvent;
 
 import de.cubeisland.cubeengine.log.action.logaction.ActionTypeContainer;
 
-import static de.cubeisland.cubeengine.core.bukkit.BlockUtil.isNonFluidProofBlock;
+import static de.cubeisland.cubeengine.core.util.BlockUtil.isNonFluidProofBlock;
 import static org.bukkit.Material.AIR;
 
 /**
