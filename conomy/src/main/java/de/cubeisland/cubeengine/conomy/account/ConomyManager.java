@@ -457,4 +457,15 @@ public class ConomyManager
     {
         return this.conomyInterface;
     }
+
+    /**
+     * Returns the names of all banks
+     *
+     * @param hidden if true return hidden banks too
+     * @return
+     */
+    public Set<String> getAllBanks(boolean hidden)
+    {
+        return this.storage.getBankAccounts(hidden);
+    }
 }

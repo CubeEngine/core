@@ -35,6 +35,8 @@ public class ConomyPermissions extends PermissionContainer<Conomy>
     public static final Permission USER_ALLOWUNDERMIN = ACCOUNT_USER.createChild("allow-under-min");
     public static final Permission USER_SHOWHIDDEN = ACCOUNT_USER.createChild("show-hidden");
 
+    public static final Permission BANK_SHOWHIDDEN = ACCOUNT.createAbstractChild("bank").createChild("show-hidden");
+
     private static final Permission COMMAND = Permission.createAbstractPermission("command");
     private static final Permission COMMAND_MONEY_PAY = COMMAND.createAbstractChild("money").createAbstractChild("pay");
     public static final Permission COMMAND_MONEY_PAY_FORCE = COMMAND_MONEY_PAY.createChild("force");
@@ -42,6 +44,8 @@ public class ConomyPermissions extends PermissionContainer<Conomy>
 
     private static final Permission COMMAND_BANK =  COMMAND.createAbstractChild("bank");
     public static final Permission COMMAND_BANK_BALANCE_SHOWHIDDEN = COMMAND_BANK.createAbstractChild("balance").createChild("show-hidden");
+
+    public static final Permission COMMAND_BANK_LISTINVITES_OTHER = COMMAND_BANK.createAbstractChild("listinvites").createChild("force");
 
     public static final Permission COMMAND_BANK_INVITE_FORCE = COMMAND_BANK.createAbstractChild("invite").createChild("force");
 

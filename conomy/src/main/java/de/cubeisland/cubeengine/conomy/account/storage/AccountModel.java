@@ -66,12 +66,10 @@ public class AccountModel implements Model<Long>
         this.mask = (byte)((hidden ? 1 : 0) + (needsInvite ? 2 : 0));
     }
 
-
     public AccountModel(Long user_id, String name, long balance, boolean hidden)
     {
         this(user_id, name, balance, hidden, false);
     }
-
 
     public boolean needsInvite()
     {

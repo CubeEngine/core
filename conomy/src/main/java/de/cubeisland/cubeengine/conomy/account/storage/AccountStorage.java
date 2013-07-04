@@ -21,7 +21,9 @@ import java.lang.reflect.Field;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.LinkedList;
+import java.util.Set;
 
 import de.cubeisland.cubeengine.core.storage.SingleKeyStorage;
 import de.cubeisland.cubeengine.core.storage.database.AttrType;
@@ -62,20 +64,17 @@ public class AccountStorage extends SingleKeyStorage<Long, AccountModel>
         this.database.storeStatement(modelClass, "getBankAccount",
                                      builder.select().cols(allFields).from(this.tableName).
                                          where().field("name").isEqual().value().end().end());
-        // Get Top-Accounts (ignore hidden) VALUES: user, bank, limit, offset
+        // Get Bank-Accounts
+        this.database.storeStatement(modelClass, "getBankAccounts", builder.select().cols("name").from(this.tableName).
+                                            where().not().field("name").is(IS).value(null).
+                                            and().field("mask").beginFunction("&").value(1).endFunction().isEqual().value(1).isEqual().value().end().end());
+        // Get Top-Accounts VALUES: showhidden, user, bank, limit, offset
         this.database.storeStatement(modelClass, "getTop",
                                      builder.select().cols(allFields).from(this.tableName).
-                                        where().field("mask").isEqual().value(0).or().field("mask").isEqual().value(2).
+                                        where().field("mask").beginFunction("&").value(1).endFunction().isEqual().value(1).isEqual().value(). // Hidden bit is set?
                                           and().beginSub().field("name").is(IS).value(null).isEqual().value().
                                          or().field("user_id").is(IS).value(null).isEqual().value().endSub().
                                      orderBy("value").desc().limit().offset().end().end());
-
-        // Get Top-Accounts (ignore hidden)
-        this.database.storeStatement(modelClass, "getTop/wHidden",
-                                     builder.select().cols(allFields).from(this.tableName).
-                                         where().field("name").is(IS).value(null).isEqual().value().
-                                                or().field("user_id").is(IS).value(null).isEqual().value().
-                                         orderBy("value").desc().limit().offset().end().end());
         // Sets the balance of all accounts
         this.database.storeStatement(modelClass, "setAll",
                                      builder.update(this.tableName).set("value").
@@ -112,14 +111,7 @@ public class AccountStorage extends SingleKeyStorage<Long, AccountModel>
         try
         {
             ResultSet resultSet;
-            if (showHidden)
-            {
-                resultSet = this.database.preparedQuery(modelClass, "getTop/wHidden", user, bank, toRank + 1 - fromRank, fromRank - 1);
-            }
-            else
-            {
-                resultSet = this.database.preparedQuery(modelClass, "getTop", user, bank, toRank + 1  - fromRank, fromRank - 1);
-            }
+            resultSet = this.database.preparedQuery(modelClass, "getTop", showHidden, user, bank, toRank + 1  - fromRank, fromRank - 1);
             LinkedList<AccountModel> list = new LinkedList<AccountModel>();
             while (resultSet.next())
             {
@@ -246,6 +238,24 @@ public class AccountStorage extends SingleKeyStorage<Long, AccountModel>
         catch (SQLException ex)
         {
             throw new IllegalStateException("Error while updating database", ex);
+        }
+    }
+
+    public Set<String> getBankAccounts(boolean hidden)
+    {
+        try
+        {
+            ResultSet resultSet = this.database.preparedQuery(modelClass, "getBankAccounts", hidden);
+            Set<String> result = new HashSet<String>();
+            while (resultSet.next())
+            {
+                result.add(resultSet.getString("name"));
+            }
+            return result;
+        }
+        catch (SQLException ex)
+        {
+            throw new IllegalStateException("Error while reading from Database", ex);
         }
     }
 }

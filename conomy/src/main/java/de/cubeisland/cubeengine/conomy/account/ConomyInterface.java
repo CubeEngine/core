@@ -220,7 +220,7 @@ public class ConomyInterface implements Economy
     @Override
     public List<String> getBanks()
     {
-        return new ArrayList<String>(); // TODO
+        return new ArrayList<String>(this.manager.getAllBanks(true));
     }
 
     @Override
