@@ -17,15 +17,16 @@
  */
 package de.cubeisland.cubeengine.core.util;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemStack;
+
 import de.cubeisland.cubeengine.core.Core;
 import de.cubeisland.cubeengine.core.CubeEngine;
 import de.cubeisland.cubeengine.core.module.Module;
 import de.cubeisland.cubeengine.core.user.User;
-import org.bukkit.inventory.Inventory;
-import org.bukkit.inventory.ItemStack;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class InventoryGuardFactory
 {

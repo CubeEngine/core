@@ -17,14 +17,14 @@
  */
 package de.cubeisland.cubeengine.core.module;
 
+import java.io.File;
+import java.util.Locale;
+import java.util.logging.LogRecord;
+
 import de.cubeisland.cubeengine.core.Core;
 import de.cubeisland.cubeengine.core.logger.CubeFileHandler;
 import de.cubeisland.cubeengine.core.logger.CubeLogger;
 import de.cubeisland.cubeengine.core.logger.LogLevel;
-
-import java.io.File;
-import java.util.Locale;
-import java.util.logging.LogRecord;
 
 /**
  * This logger is used to log module messages.

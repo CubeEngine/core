@@ -17,11 +17,11 @@
  */
 package de.cubeisland.cubeengine.core.config.node;
 
-import de.cubeisland.cubeengine.core.util.convert.Convert;
-
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
+
+import de.cubeisland.cubeengine.core.util.convert.Convert;
 
 public class ListNode extends ParentNode
 {

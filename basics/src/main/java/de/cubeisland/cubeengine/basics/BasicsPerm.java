@@ -23,7 +23,6 @@ import de.cubeisland.cubeengine.core.logger.LogLevel;
 import de.cubeisland.cubeengine.core.permission.Permission;
 import de.cubeisland.cubeengine.core.permission.PermissionContainer;
 import de.cubeisland.cubeengine.core.util.Profiler;
-
 import de.cubeisland.cubeengine.basics.command.teleport.TpWorldPermissions;
 
 import static de.cubeisland.cubeengine.core.permission.PermDefault.FALSE;

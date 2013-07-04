@@ -19,7 +19,6 @@ package de.cubeisland.cubeengine.signmarket.storage;
 
 import java.util.Collection;
 
-import de.cubeisland.cubeengine.core.logger.LogLevel;
 import de.cubeisland.cubeengine.core.storage.SingleKeyStorage;
 import de.cubeisland.cubeengine.signmarket.Signmarket;
 

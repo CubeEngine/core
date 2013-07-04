@@ -17,18 +17,23 @@
  */
 package de.cubeisland.cubeengine.test;
 
-import de.cubeisland.cubeengine.core.CubeEngine;
-import de.cubeisland.cubeengine.core.config.YamlConfiguration;
-import de.cubeisland.cubeengine.core.config.annotations.*;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
+
 import org.bukkit.Location;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.Server;
 import org.bukkit.plugin.Plugin;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.LinkedList;
+import de.cubeisland.cubeengine.core.CubeEngine;
+import de.cubeisland.cubeengine.core.config.YamlConfiguration;
+import de.cubeisland.cubeengine.core.config.annotations.Comment;
+import de.cubeisland.cubeengine.core.config.annotations.DefaultConfig;
+import de.cubeisland.cubeengine.core.config.annotations.MapComment;
+import de.cubeisland.cubeengine.core.config.annotations.MapComments;
+import de.cubeisland.cubeengine.core.config.annotations.Option;
 
 /**
  * This configuration is used to test a lot of configstuff.

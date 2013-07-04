@@ -17,12 +17,12 @@
  */
 package de.cubeisland.cubeengine.shout.announce.receiver;
 
+import java.util.Queue;
+
 import de.cubeisland.cubeengine.core.util.Pair;
 import de.cubeisland.cubeengine.shout.announce.Announcement;
 import de.cubeisland.cubeengine.shout.announce.AnnouncementManager;
 import de.cubeisland.cubeengine.shout.announce.MessageOfTheDay;
-
-import java.util.Queue;
 
 public abstract class AbstractReceiver implements Receiver
 {

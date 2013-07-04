@@ -17,11 +17,12 @@
  */
 package de.cubeisland.cubeengine.test.database;
 
+import java.sql.Date;
+
 import de.cubeisland.cubeengine.core.storage.Model;
 import de.cubeisland.cubeengine.core.storage.database.AttrType;
 import de.cubeisland.cubeengine.core.storage.database.Attribute;
 import de.cubeisland.cubeengine.core.storage.database.SingleKeyEntity;
-import java.sql.Date;
 
 @SingleKeyEntity(tableName = "orders", primaryKey = "id", autoIncrement = true)
 public class TestModel implements Model<Long>

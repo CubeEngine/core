@@ -25,8 +25,8 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.TreeMap;
 
-import net.minecraft.server.v1_5_R3.EntityTypes;
-import net.minecraft.server.v1_5_R3.NPC;
+import net.minecraft.server.v1_6_R1.EntityTypes;
+import net.minecraft.server.v1_6_R1.NPC;
 
 import org.bukkit.entity.Animals;
 import org.bukkit.entity.EntityType;

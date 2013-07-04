@@ -17,17 +17,18 @@
  */
 package de.cubeisland.cubeengine.guests.prevention.preventions;
 
-import de.cubeisland.cubeengine.guests.Guests;
-import de.cubeisland.cubeengine.guests.prevention.FilteredItemPrevention;
+import java.util.EnumSet;
+import java.util.List;
+import java.util.Set;
+
 import org.bukkit.Material;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 
-import java.util.EnumSet;
-import java.util.List;
-import java.util.Set;
+import de.cubeisland.cubeengine.guests.Guests;
+import de.cubeisland.cubeengine.guests.prevention.FilteredItemPrevention;
 
 /**
  * Prevents door usage.

@@ -17,10 +17,10 @@
  */
 package de.cubeisland.cubeengine.core.command;
 
+import java.util.Locale;
+
 import de.cubeisland.cubeengine.core.Core;
 import de.cubeisland.cubeengine.core.permission.Permission;
-
-import java.util.Locale;
 
 public interface CommandSender extends org.bukkit.command.CommandSender
 {

@@ -22,7 +22,6 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicReference;
-import org.apache.commons.lang.Validate;
 
 /**
  * This TaskQueue will execute all tasks in an async thread.

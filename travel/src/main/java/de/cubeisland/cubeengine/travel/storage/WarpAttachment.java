@@ -17,13 +17,10 @@
  */
 package de.cubeisland.cubeengine.travel.storage;
 
-import de.cubeisland.cubeengine.core.attachment.Attachment;
-import de.cubeisland.cubeengine.core.user.User;
-import de.cubeisland.cubeengine.core.user.UserAttachment;
-
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
+
+import de.cubeisland.cubeengine.core.user.UserAttachment;
 
 public class WarpAttachment extends UserAttachment
 {

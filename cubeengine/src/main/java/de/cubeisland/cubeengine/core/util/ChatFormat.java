@@ -17,11 +17,11 @@
  */
 package de.cubeisland.cubeengine.core.util;
 
+import java.util.regex.Pattern;
+
 import gnu.trove.map.TCharObjectMap;
 import gnu.trove.map.hash.TCharObjectHashMap;
 import org.fusesource.jansi.Ansi;
-
-import java.util.regex.Pattern;
 
 /**
  * This enum contains all of Minecraft's chat format codes and some utility methods to parse them.

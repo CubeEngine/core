@@ -28,7 +28,6 @@ import org.bukkit.material.Attachable;
 import org.bukkit.material.MaterialData;
 
 import static org.bukkit.Material.*;
-import static org.bukkit.Material.IRON_PLATE;
 
 /**
  * Provides Utils for blocks in Bukkit.

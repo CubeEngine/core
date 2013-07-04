@@ -17,16 +17,16 @@
  */
 package de.cubeisland.cubeengine.core.util.convert.converter;
 
+import org.bukkit.OfflinePlayer;
+import org.bukkit.Server;
+import org.bukkit.plugin.Plugin;
+
 import de.cubeisland.cubeengine.core.Core;
 import de.cubeisland.cubeengine.core.config.node.Node;
 import de.cubeisland.cubeengine.core.config.node.StringNode;
 import de.cubeisland.cubeengine.core.util.convert.ConversionException;
 import de.cubeisland.cubeengine.core.util.convert.Convert;
 import de.cubeisland.cubeengine.core.util.convert.Converter;
-import de.cubeisland.cubeengine.core.util.matcher.MaterialMatcher;
-import org.bukkit.OfflinePlayer;
-import org.bukkit.Server;
-import org.bukkit.plugin.Plugin;
 
 public class PlayerConverter implements Converter<OfflinePlayer>
 {

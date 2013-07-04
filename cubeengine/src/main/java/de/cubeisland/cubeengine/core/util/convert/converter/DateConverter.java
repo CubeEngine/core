@@ -17,13 +17,13 @@
  */
 package de.cubeisland.cubeengine.core.util.convert.converter;
 
+import java.sql.Date;
+
 import de.cubeisland.cubeengine.core.config.node.Node;
 import de.cubeisland.cubeengine.core.config.node.StringNode;
 import de.cubeisland.cubeengine.core.util.convert.ConversionException;
 import de.cubeisland.cubeengine.core.util.convert.Convert;
 import de.cubeisland.cubeengine.core.util.convert.Converter;
-
-import java.sql.Date;
 
 public class DateConverter implements Converter<Date>
 {

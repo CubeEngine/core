@@ -17,15 +17,18 @@
  */
 package de.cubeisland.cubeengine.guests.prevention.preventions;
 
-import de.cubeisland.cubeengine.guests.Guests;
-import de.cubeisland.cubeengine.guests.prevention.FilteredPrevention;
-import gnu.trove.set.hash.THashSet;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
+
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
+
+import de.cubeisland.cubeengine.guests.Guests;
+import de.cubeisland.cubeengine.guests.prevention.FilteredPrevention;
+
+import gnu.trove.set.hash.THashSet;
 
 /**
  * Prevents command usage.

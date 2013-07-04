@@ -17,21 +17,32 @@
  */
 package de.cubeisland.cubeengine.core.util.matcher;
 
-import de.cubeisland.cubeengine.core.CoreResource;
-import de.cubeisland.cubeengine.core.CubeEngine;
-import de.cubeisland.cubeengine.core.filesystem.FileUtil;
-import de.cubeisland.cubeengine.core.util.StringUtils;
-import de.cubeisland.cubeengine.core.logger.LogLevel;
-import gnu.trove.map.hash.*;
+import java.io.File;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Set;
+
 import org.bukkit.DyeColor;
 import org.bukkit.Material;
 import org.bukkit.entity.EntityType;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.SkullMeta;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.*;
+import de.cubeisland.cubeengine.core.CoreResource;
+import de.cubeisland.cubeengine.core.CubeEngine;
+import de.cubeisland.cubeengine.core.filesystem.FileUtil;
+import de.cubeisland.cubeengine.core.logger.LogLevel;
+import de.cubeisland.cubeengine.core.util.StringUtils;
+
+import gnu.trove.map.hash.TByteObjectHashMap;
+import gnu.trove.map.hash.THashMap;
+import gnu.trove.map.hash.TObjectByteHashMap;
+import gnu.trove.map.hash.TObjectShortHashMap;
+import gnu.trove.map.hash.TShortObjectHashMap;
 
 public class MaterialDataMatcher
 {

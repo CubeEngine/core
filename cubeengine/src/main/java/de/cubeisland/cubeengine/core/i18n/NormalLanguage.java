@@ -25,7 +25,6 @@ import de.cubeisland.cubeengine.core.Core;
 import de.cubeisland.cubeengine.core.util.Cleanable;
 
 import gnu.trove.map.hash.THashMap;
-import org.apache.commons.lang.Validate;
 
 /**
  * This class is a generic language that loads its translations from files.

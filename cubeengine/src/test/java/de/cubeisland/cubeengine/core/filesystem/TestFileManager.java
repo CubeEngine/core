@@ -17,10 +17,10 @@
  */
 package de.cubeisland.cubeengine.core.filesystem;
 
-import de.cubeisland.cubeengine.core.Core;
-
 import java.io.File;
 import java.io.IOException;
+
+import de.cubeisland.cubeengine.core.Core;
 
 public class TestFileManager extends FileManager
 {

@@ -17,14 +17,19 @@
  */
 package de.cubeisland.cubeengine.core.command.parameterized;
 
+import java.util.LinkedList;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Set;
+import java.util.Stack;
+
 import de.cubeisland.cubeengine.core.command.BasicContext;
-import de.cubeisland.cubeengine.core.command.CubeCommand;
 import de.cubeisland.cubeengine.core.command.CommandSender;
+import de.cubeisland.cubeengine.core.command.CubeCommand;
 import de.cubeisland.cubeengine.core.user.User;
+
 import gnu.trove.map.hash.THashMap;
 import gnu.trove.set.hash.THashSet;
-
-import java.util.*;
 
 public class ParameterizedContext extends BasicContext
 {

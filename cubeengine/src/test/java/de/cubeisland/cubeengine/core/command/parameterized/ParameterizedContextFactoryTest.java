@@ -17,19 +17,20 @@
  */
 package de.cubeisland.cubeengine.core.command.parameterized;
 
+import java.util.Arrays;
+import java.util.Stack;
+
 import de.cubeisland.cubeengine.core.Core;
 import de.cubeisland.cubeengine.core.TestCore;
 import de.cubeisland.cubeengine.core.command.ArgBounds;
+import de.cubeisland.cubeengine.core.command.CommandSender;
 import de.cubeisland.cubeengine.core.command.CubeCommand;
 import de.cubeisland.cubeengine.core.command.TestCommand;
-import de.cubeisland.cubeengine.core.command.CommandSender;
 import de.cubeisland.cubeengine.core.command.sender.TestConsoleSender;
 import de.cubeisland.cubeengine.core.module.Module;
 import de.cubeisland.cubeengine.core.module.ModuleManager;
-import junit.framework.TestCase;
 
-import java.util.Arrays;
-import java.util.Stack;
+import junit.framework.TestCase;
 
 import static de.cubeisland.cubeengine.core.command.parameterized.ParameterizedContextFactory.readString;
 import static de.cubeisland.cubeengine.core.util.StringUtils.explode;

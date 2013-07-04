@@ -21,8 +21,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.service.Economy;
+import de.cubeisland.cubeengine.core.user.User;
 
 public class ConomyInterface implements Economy
 {

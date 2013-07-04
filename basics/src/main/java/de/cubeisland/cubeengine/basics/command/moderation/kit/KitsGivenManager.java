@@ -17,13 +17,14 @@
  */
 package de.cubeisland.cubeengine.basics.command.moderation.kit;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
+
 import de.cubeisland.cubeengine.core.storage.StorageException;
 import de.cubeisland.cubeengine.core.storage.TwoKeyStorage;
 import de.cubeisland.cubeengine.core.storage.database.Database;
 import de.cubeisland.cubeengine.core.storage.database.querybuilder.QueryBuilder;
 import de.cubeisland.cubeengine.core.user.User;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 
 public class KitsGivenManager extends TwoKeyStorage<Long, String, KitsGiven>
 {

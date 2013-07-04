@@ -23,7 +23,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
-import net.minecraft.server.v1_5_R3.RegionFileCache;
+import net.minecraft.server.v1_6_R1.RegionFileCache;
 
 import org.bukkit.Server;
 import org.bukkit.World;

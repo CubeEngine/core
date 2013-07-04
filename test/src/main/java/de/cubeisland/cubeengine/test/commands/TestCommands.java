@@ -17,6 +17,10 @@
  */
 package de.cubeisland.cubeengine.test.commands;
 
+import java.util.LinkedList;
+import java.util.Map.Entry;
+import java.util.concurrent.TimeUnit;
+
 import de.cubeisland.cubeengine.core.command.CommandContext;
 import de.cubeisland.cubeengine.core.command.CommandResult;
 import de.cubeisland.cubeengine.core.command.parameterized.Flag;
@@ -26,10 +30,6 @@ import de.cubeisland.cubeengine.core.command.reflected.Command;
 import de.cubeisland.cubeengine.core.command.result.AsyncResult;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.util.time.Duration;
-
-import java.util.LinkedList;
-import java.util.Map.Entry;
-import java.util.concurrent.TimeUnit;
 
 public class TestCommands
 {

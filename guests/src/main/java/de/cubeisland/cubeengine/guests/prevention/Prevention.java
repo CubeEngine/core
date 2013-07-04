@@ -17,10 +17,19 @@
  */
 package de.cubeisland.cubeengine.guests.prevention;
 
+import java.util.Locale;
+
+import org.bukkit.configuration.Configuration;
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.configuration.MemoryConfiguration;
+import org.bukkit.entity.Player;
+import org.bukkit.event.Cancellable;
+import org.bukkit.event.Listener;
+
 import de.cubeisland.cubeengine.core.permission.Permission;
-import de.cubeisland.cubeengine.core.permission.PermissionContainer;
 import de.cubeisland.cubeengine.core.util.ChatFormat;
 import de.cubeisland.cubeengine.guests.Guests;
+
 import gnu.trove.map.TIntObjectMap;
 import gnu.trove.map.TObjectIntMap;
 import gnu.trove.map.TObjectLongMap;
@@ -29,14 +38,6 @@ import gnu.trove.map.hash.TIntObjectHashMap;
 import gnu.trove.map.hash.TObjectIntHashMap;
 import gnu.trove.map.hash.TObjectLongHashMap;
 import gnu.trove.procedure.TObjectObjectProcedure;
-import org.bukkit.configuration.Configuration;
-import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.configuration.MemoryConfiguration;
-import org.bukkit.entity.Player;
-import org.bukkit.event.Cancellable;
-import org.bukkit.event.Listener;
-
-import java.util.Locale;
 
 /**
  * This class represents a prevention.

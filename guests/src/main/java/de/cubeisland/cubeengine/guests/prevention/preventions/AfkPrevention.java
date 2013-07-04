@@ -27,8 +27,8 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
-import de.cubeisland.cubeengine.core.task.TaskManager;
 import de.cubeisland.cubeengine.core.logger.LogLevel;
+import de.cubeisland.cubeengine.core.task.TaskManager;
 import de.cubeisland.cubeengine.guests.Guests;
 import de.cubeisland.cubeengine.guests.prevention.Prevention;
 

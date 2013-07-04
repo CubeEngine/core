@@ -17,11 +17,11 @@
  */
 package de.cubeisland.cubeengine.core.util.chatlayout;
 
-import de.cubeisland.cubeengine.core.util.StringUtils;
-
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+
+import de.cubeisland.cubeengine.core.util.StringUtils;
 
 public class ListLayout extends AbstractChatLayout<List<String>>
 {

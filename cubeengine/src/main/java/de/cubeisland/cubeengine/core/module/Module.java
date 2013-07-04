@@ -27,8 +27,6 @@ import de.cubeisland.cubeengine.core.storage.ModuleRegistry;
 import de.cubeisland.cubeengine.core.storage.SimpleModuleRegistry;
 import de.cubeisland.cubeengine.core.util.Version;
 
-import org.apache.commons.lang.Validate;
-
 import static de.cubeisland.cubeengine.core.logger.LogLevel.ERROR;
 import static de.cubeisland.cubeengine.core.logger.LogLevel.WARNING;
 

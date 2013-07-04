@@ -17,8 +17,6 @@
  */
 package de.cubeisland.cubeengine.core.filesystem;
 
-import de.cubeisland.cubeengine.core.CubeEngine;
-
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -31,6 +29,8 @@ import java.io.Reader;
 import java.nio.charset.Charset;
 import java.util.LinkedList;
 import java.util.List;
+
+import de.cubeisland.cubeengine.core.CubeEngine;
 
 import static de.cubeisland.cubeengine.core.logger.LogLevel.ERROR;
 

@@ -17,15 +17,14 @@
  */
 package de.cubeisland.cubeengine.core.util;
 
-import de.cubeisland.cubeengine.core.filesystem.FileUtil;
-import org.apache.commons.lang.Validate;
-
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.TreeMap;
+
+import de.cubeisland.cubeengine.core.filesystem.FileUtil;
 
 /**
  * This class provides methods to convert the AliasMaps used for items.txt etc. into a TreeMap and back.

@@ -17,13 +17,13 @@
  */
 package de.cubeisland.cubeengine.core.command.parameterized.completer;
 
-import de.cubeisland.cubeengine.core.CubeEngine;
-import de.cubeisland.cubeengine.core.command.parameterized.Completer;
-import de.cubeisland.cubeengine.core.command.CommandSender;
-import de.cubeisland.cubeengine.core.user.User;
-
 import java.util.ArrayList;
 import java.util.List;
+
+import de.cubeisland.cubeengine.core.CubeEngine;
+import de.cubeisland.cubeengine.core.command.CommandSender;
+import de.cubeisland.cubeengine.core.command.parameterized.Completer;
+import de.cubeisland.cubeengine.core.user.User;
 
 import static de.cubeisland.cubeengine.core.util.StringUtils.startsWithIgnoreCase;
 

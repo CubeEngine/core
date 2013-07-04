@@ -17,15 +17,16 @@
  */
 package de.cubeisland.cubeengine.core.util;
 
-import de.cubeisland.cubeengine.core.user.User;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
 import org.bukkit.Bukkit;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import de.cubeisland.cubeengine.core.user.User;
 
 public class InventoryUtil
 {

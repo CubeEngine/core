@@ -17,15 +17,15 @@
  */
 package de.cubeisland.cubeengine.core.config.codec;
 
+import java.io.File;
+import java.io.InputStream;
+
 import de.cubeisland.cubeengine.core.config.InvalidConfigurationException;
 import de.cubeisland.cubeengine.core.config.MultiConfiguration;
 import de.cubeisland.cubeengine.core.config.annotations.Revision;
 import de.cubeisland.cubeengine.core.config.annotations.Updater;
 import de.cubeisland.cubeengine.core.config.node.IntNode;
 import de.cubeisland.cubeengine.core.config.node.MapNode;
-
-import java.io.File;
-import java.io.InputStream;
 
 /**
  * This abstract Codec can be implemented to read and write configurations that allow child-configs

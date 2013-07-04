@@ -17,9 +17,8 @@
  */
 package de.cubeisland.cubeengine.guests.prevention.preventions;
 
-import de.cubeisland.cubeengine.guests.Guests;
-import de.cubeisland.cubeengine.guests.prevention.FilteredItemPrevention;
 import java.util.EnumSet;
+
 import org.bukkit.Material;
 import org.bukkit.event.Event.Result;
 import org.bukkit.event.EventHandler;
@@ -27,6 +26,9 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
+
+import de.cubeisland.cubeengine.guests.Guests;
+import de.cubeisland.cubeengine.guests.prevention.FilteredItemPrevention;
 
 /**
  * Prevents item usage.

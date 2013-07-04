@@ -17,16 +17,16 @@
  */
 package de.cubeisland.cubeengine.core.storage.database;
 
-import de.cubeisland.cubeengine.core.CubeEngine;
-import de.cubeisland.cubeengine.core.config.Configuration;
-import de.cubeisland.cubeengine.core.storage.database.mysql.MySQLDatabaseConfiguration;
-import de.cubeisland.cubeengine.core.logger.LogLevel;
 import java.io.File;
 import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.logging.Logger;
-import org.apache.commons.lang.Validate;
+
+import de.cubeisland.cubeengine.core.CubeEngine;
+import de.cubeisland.cubeengine.core.config.Configuration;
+import de.cubeisland.cubeengine.core.logger.LogLevel;
+import de.cubeisland.cubeengine.core.storage.database.mysql.MySQLDatabaseConfiguration;
 
 /**
  * Creates new instance of database.

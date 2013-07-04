@@ -30,8 +30,6 @@ import de.cubeisland.cubeengine.core.CubeEngine;
 import de.cubeisland.cubeengine.core.storage.Storage;
 import de.cubeisland.cubeengine.core.util.worker.AsyncTaskQueue;
 
-import org.apache.commons.lang.Validate;
-
 import static de.cubeisland.cubeengine.core.logger.LogLevel.ERROR;
 
 /**

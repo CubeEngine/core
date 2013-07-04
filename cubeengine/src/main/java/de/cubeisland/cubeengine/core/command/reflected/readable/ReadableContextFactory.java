@@ -17,21 +17,22 @@
  */
 package de.cubeisland.cubeengine.core.command.reflected.readable;
 
-import de.cubeisland.cubeengine.core.command.ArgBounds;
-import de.cubeisland.cubeengine.core.command.BasicContextFactory;
-import de.cubeisland.cubeengine.core.command.BasicContext;
-import de.cubeisland.cubeengine.core.command.CubeCommand;
-import de.cubeisland.cubeengine.core.command.CommandSender;
-import de.cubeisland.cubeengine.core.util.StringUtils;
-import gnu.trove.map.hash.THashMap;
-import gnu.trove.set.hash.THashSet;
-
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Set;
 import java.util.Stack;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import de.cubeisland.cubeengine.core.command.ArgBounds;
+import de.cubeisland.cubeengine.core.command.BasicContext;
+import de.cubeisland.cubeengine.core.command.BasicContextFactory;
+import de.cubeisland.cubeengine.core.command.CommandSender;
+import de.cubeisland.cubeengine.core.command.CubeCommand;
+import de.cubeisland.cubeengine.core.util.StringUtils;
+
+import gnu.trove.map.hash.THashMap;
+import gnu.trove.set.hash.THashSet;
 
 import static de.cubeisland.cubeengine.core.command.ArgBounds.NO_MAX;
 

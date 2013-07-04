@@ -19,7 +19,6 @@ package de.cubeisland.cubeengine.shout.announce.announcer;
 
 import java.util.concurrent.Callable;
 
-import de.cubeisland.cubeengine.core.util.ChatFormat;
 import de.cubeisland.cubeengine.shout.announce.receiver.Receiver;
 
 class SenderTask implements Callable<Void>

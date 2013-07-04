@@ -17,12 +17,13 @@
  */
 package de.cubeisland.cubeengine.core.util.worker;
 
-import de.cubeisland.cubeengine.core.Core;
-import de.cubeisland.cubeengine.core.bukkit.BukkitCore;
 import java.util.LinkedList;
 import java.util.Queue;
-import org.apache.commons.lang.Validate;
+
 import org.bukkit.scheduler.BukkitScheduler;
+
+import de.cubeisland.cubeengine.core.Core;
+import de.cubeisland.cubeengine.core.bukkit.BukkitCore;
 
 /**
  * This TaskQueue will execute one task every serverTick.

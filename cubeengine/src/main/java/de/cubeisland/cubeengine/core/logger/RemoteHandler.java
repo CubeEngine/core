@@ -17,10 +17,11 @@
  */
 package de.cubeisland.cubeengine.core.logger;
 
-import de.cubeisland.cubeengine.core.Core;
 import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.LogRecord;
+
+import de.cubeisland.cubeengine.core.Core;
 
 /**
  * This handler will post exceptions and other SEVERE messages to our log collector.

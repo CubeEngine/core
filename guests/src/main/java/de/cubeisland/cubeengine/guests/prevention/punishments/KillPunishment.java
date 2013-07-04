@@ -17,9 +17,10 @@
  */
 package de.cubeisland.cubeengine.guests.prevention.punishments;
 
-import de.cubeisland.cubeengine.guests.prevention.Punishment;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
+
+import de.cubeisland.cubeengine.guests.prevention.Punishment;
 
 /**
  * Kills a player.

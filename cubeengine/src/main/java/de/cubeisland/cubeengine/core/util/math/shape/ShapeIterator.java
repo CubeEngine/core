@@ -17,10 +17,11 @@
  */
 package de.cubeisland.cubeengine.core.util.math.shape;
 
+import java.util.Iterator;
+
 import de.cubeisland.cubeengine.core.util.math.MathHelper;
 import de.cubeisland.cubeengine.core.util.math.SquareMatrix3;
 import de.cubeisland.cubeengine.core.util.math.Vector3;
-import java.util.Iterator;
 
 final class ShapeIterator implements Iterator<Vector3>
 {

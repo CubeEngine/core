@@ -17,18 +17,17 @@
  */
 package de.cubeisland.cubeengine.travel.storage;
 
+import java.util.Locale;
+import java.util.Set;
+
+import org.bukkit.Location;
+
 import de.cubeisland.cubeengine.core.CubeEngine;
 import de.cubeisland.cubeengine.core.permission.PermDefault;
 import de.cubeisland.cubeengine.core.permission.Permission;
 import de.cubeisland.cubeengine.core.user.User;
-
 import de.cubeisland.cubeengine.travel.Travel;
 import de.cubeisland.cubeengine.travel.storage.TeleportPoint.Visibility;
-
-import org.bukkit.Location;
-
-import java.util.Locale;
-import java.util.Set;
 
 public class Warp
 {

@@ -17,14 +17,14 @@
  */
 package de.cubeisland.cubeengine.core.command.parameterized;
 
-import de.cubeisland.cubeengine.core.command.CubeCommand;
-import de.cubeisland.cubeengine.core.command.CommandSender;
-import de.cubeisland.cubeengine.core.module.Module;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
+
+import de.cubeisland.cubeengine.core.command.CommandSender;
+import de.cubeisland.cubeengine.core.command.CubeCommand;
+import de.cubeisland.cubeengine.core.module.Module;
 
 import static de.cubeisland.cubeengine.core.util.StringUtils.startsWithIgnoreCase;
 

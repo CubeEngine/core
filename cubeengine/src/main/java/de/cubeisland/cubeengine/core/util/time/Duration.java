@@ -17,13 +17,14 @@
  */
 package de.cubeisland.cubeengine.core.util.time;
 
-import de.cubeisland.cubeengine.core.util.StringUtils;
-import de.cubeisland.cubeengine.core.util.matcher.Match;
-import gnu.trove.map.hash.TCharLongHashMap;
-import gnu.trove.map.hash.TObjectLongHashMap;
-
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
+
+import de.cubeisland.cubeengine.core.util.StringUtils;
+import de.cubeisland.cubeengine.core.util.matcher.Match;
+
+import gnu.trove.map.hash.TCharLongHashMap;
+import gnu.trove.map.hash.TObjectLongHashMap;
 
 public class Duration
 {

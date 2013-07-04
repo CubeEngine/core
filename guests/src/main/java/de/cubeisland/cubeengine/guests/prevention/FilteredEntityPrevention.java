@@ -17,11 +17,13 @@
  */
 package de.cubeisland.cubeengine.guests.prevention;
 
-import de.cubeisland.cubeengine.guests.Guests;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
+
 import org.bukkit.entity.EntityType;
+
+import de.cubeisland.cubeengine.guests.Guests;
 
 /**
  * This class represents a filterable Prevention related to Materials.

@@ -18,7 +18,6 @@
 package de.cubeisland.cubeengine.log.action.logaction;
 
 import java.util.Arrays;
-import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.Set;
 

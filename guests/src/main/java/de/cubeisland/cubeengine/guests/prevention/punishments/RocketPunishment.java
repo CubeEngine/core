@@ -17,10 +17,11 @@
  */
 package de.cubeisland.cubeengine.guests.prevention.punishments;
 
-import de.cubeisland.cubeengine.guests.prevention.Punishment;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.util.Vector;
+
+import de.cubeisland.cubeengine.guests.prevention.Punishment;
 
 /**
  * Shoots a player into the skys.

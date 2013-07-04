@@ -17,22 +17,24 @@
  */
 package de.cubeisland.cubeengine.irc;
 
-import de.cubeisland.cubeengine.core.util.Cleanable;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
+import javax.net.SocketFactory;
+import javax.net.ssl.SSLSocketFactory;
+
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
+
+import de.cubeisland.cubeengine.core.util.Cleanable;
+
 import org.pircbotx.Channel;
 import org.pircbotx.PircBotX;
 import org.pircbotx.UtilSSLSocketFactory;
 import org.pircbotx.hooks.ListenerAdapter;
 import org.pircbotx.hooks.events.MessageEvent;
 import org.pircbotx.hooks.events.PrivateMessageEvent;
-
-import javax.net.SocketFactory;
-import javax.net.ssl.SSLSocketFactory;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
 
 public class BotManager implements Cleanable
 {

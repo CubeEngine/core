@@ -23,17 +23,16 @@ import java.util.Locale;
 import java.util.logging.Filter;
 import java.util.logging.Logger;
 
-import net.minecraft.server.v1_5_R3.DedicatedPlayerList;
-import net.minecraft.server.v1_5_R3.EntityPlayer;
-import net.minecraft.server.v1_5_R3.Item;
-import net.minecraft.server.v1_5_R3.LocaleLanguage;
-import net.minecraft.server.v1_5_R3.PlayerConnection;
-import net.minecraft.server.v1_5_R3.RecipesFurnace;
-import net.minecraft.server.v1_5_R3.ServerConnection;
-import net.minecraft.server.v1_5_R3.TileEntityFurnace;
-import org.bukkit.craftbukkit.v1_5_R3.CraftServer;
-import org.bukkit.craftbukkit.v1_5_R3.entity.CraftPlayer;
-import org.bukkit.craftbukkit.v1_5_R3.inventory.CraftItemStack;
+import net.minecraft.server.v1_6_R1.DedicatedPlayerList;
+import net.minecraft.server.v1_6_R1.EntityPlayer;
+import net.minecraft.server.v1_6_R1.Item;
+import net.minecraft.server.v1_6_R1.PlayerConnection;
+import net.minecraft.server.v1_6_R1.RecipesFurnace;
+import net.minecraft.server.v1_6_R1.ServerConnection;
+import net.minecraft.server.v1_6_R1.TileEntityFurnace;
+import org.bukkit.craftbukkit.v1_6_R1.CraftServer;
+import org.bukkit.craftbukkit.v1_6_R1.entity.CraftPlayer;
+import org.bukkit.craftbukkit.v1_6_R1.inventory.CraftItemStack;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -65,15 +64,15 @@ import static de.cubeisland.cubeengine.core.logger.LogLevel.*;
  */
 public class BukkitUtils
 {
-    private static Field localeStringField;
+    private static Field entityPlayerLocaleField;
     private static Field playerConnectionListField = ReflectionUtils.findFirstField(ServerConnection.class, List.class);
 
     static boolean init(BukkitCore core)
     {
         try
         {
-            localeStringField = ReflectionUtils.findFirstField(LocaleLanguage.class, String.class);
-            localeStringField.setAccessible(true);
+            entityPlayerLocaleField = EntityPlayer.class.getDeclaredField("locale");
+            entityPlayerLocaleField.setAccessible(true);
 
             playerConnectionListField = ReflectionUtils.findFirstField(ServerConnection.class, List.class);
             playerConnectionListField.setAccessible(true);
@@ -125,7 +124,7 @@ public class BukkitUtils
         {
             try
             {
-                final String localeString = (String)localeStringField.get(((CraftPlayer)player).getHandle().getLocale());
+                final String localeString = (String)entityPlayerLocaleField.get(((CraftPlayer)player).getHandle());
                 final Language lang = i18n.getLanguage(I18n.stringToLocale(localeString));
                 if (lang != null)
                 {
@@ -245,7 +244,7 @@ public class BukkitUtils
                 Location loc = player.getBukkitEntity().getLocation(helperLocation);
                 newHandler.a(loc.getX(), loc.getY(), loc.getZ(), loc.getYaw(), loc.getPitch());
 
-                ServerConnection sc = player.server.ae();
+                ServerConnection sc = player.server.ag();
                 ((List<PlayerConnection>)playerConnectionListField.get(sc)).remove(oldHandler);
                 sc.a(newHandler);
                 CubeEngine.getLog().log(DEBUG, "Replaced the NetServerHandler of player ''{0}''", player.getName());
@@ -334,20 +333,20 @@ public class BukkitUtils
      */
     public static boolean canBePlacedInBrewingstand(Material material)
     {
-        return Item.byId[material.getId()].w();
+        return Item.byId[material.getId()].x();
     }
 
     public static boolean isFuel(ItemStack item)
     {
         // Create an NMS item stack
-        net.minecraft.server.v1_5_R3.ItemStack nmss = CraftItemStack.asNMSCopy(item);
+        net.minecraft.server.v1_6_R1.ItemStack nmss = CraftItemStack.asNMSCopy(item);
         // Use the NMS TileEntityFurnace to check if the item being clicked is a fuel
         return TileEntityFurnace.isFuel(nmss);
     }
 
     public static boolean isSmeltable(ItemStack item)
     {
-        net.minecraft.server.v1_5_R3.ItemStack nmss = CraftItemStack.asNMSCopy(item);
+        net.minecraft.server.v1_6_R1.ItemStack nmss = CraftItemStack.asNMSCopy(item);
         // If the result of that item being cooked is null, it is not cookable
         return RecipesFurnace.getInstance().getResult(nmss.getItem().id) != null;
     }

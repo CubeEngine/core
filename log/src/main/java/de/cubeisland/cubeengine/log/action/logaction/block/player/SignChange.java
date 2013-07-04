@@ -19,7 +19,6 @@ package de.cubeisland.cubeengine.log.action.logaction.block.player;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;

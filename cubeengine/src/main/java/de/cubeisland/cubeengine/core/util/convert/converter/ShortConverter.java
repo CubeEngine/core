@@ -19,7 +19,6 @@ package de.cubeisland.cubeengine.core.util.convert.converter;
 
 import de.cubeisland.cubeengine.core.config.node.Node;
 import de.cubeisland.cubeengine.core.config.node.ShortNode;
-import de.cubeisland.cubeengine.core.config.node.StringNode;
 import de.cubeisland.cubeengine.core.util.convert.BasicConverter;
 import de.cubeisland.cubeengine.core.util.convert.ConversionException;
 

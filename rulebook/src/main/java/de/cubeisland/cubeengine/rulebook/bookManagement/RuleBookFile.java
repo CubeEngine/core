@@ -17,9 +17,6 @@
  */
 package de.cubeisland.cubeengine.rulebook.bookManagement;
 
-import de.cubeisland.cubeengine.core.CubeEngine;
-import de.cubeisland.cubeengine.core.i18n.Language;
-import de.cubeisland.cubeengine.core.util.StringUtils;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -30,6 +27,10 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+
+import de.cubeisland.cubeengine.core.CubeEngine;
+import de.cubeisland.cubeengine.core.i18n.Language;
+import de.cubeisland.cubeengine.core.util.StringUtils;
 
 public class RuleBookFile
 {

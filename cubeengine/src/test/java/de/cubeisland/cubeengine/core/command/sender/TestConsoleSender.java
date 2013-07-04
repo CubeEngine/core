@@ -17,17 +17,16 @@
  */
 package de.cubeisland.cubeengine.core.command.sender;
 
-import de.cubeisland.cubeengine.core.Core;
-import de.cubeisland.cubeengine.core.command.CommandSender;
-import de.cubeisland.cubeengine.core.permission.Permission;
+import java.util.Locale;
+import java.util.Set;
+
 import org.bukkit.Server;
 import org.bukkit.permissions.PermissionAttachment;
 import org.bukkit.permissions.PermissionAttachmentInfo;
 import org.bukkit.plugin.Plugin;
 
-import java.util.Locale;
-import java.util.Set;
-
+import de.cubeisland.cubeengine.core.Core;
+import de.cubeisland.cubeengine.core.command.CommandSender;
 import de.cubeisland.cubeengine.core.permission.Permission;
 
 public class TestConsoleSender implements CommandSender

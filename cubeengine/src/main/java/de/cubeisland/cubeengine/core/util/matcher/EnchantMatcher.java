@@ -17,19 +17,21 @@
  */
 package de.cubeisland.cubeengine.core.util.matcher;
 
-import de.cubeisland.cubeengine.core.CoreResource;
-import de.cubeisland.cubeengine.core.CubeEngine;
-import de.cubeisland.cubeengine.core.util.AliasMapFormat;
-import de.cubeisland.cubeengine.core.logger.LogLevel;
-import gnu.trove.map.hash.THashMap;
-import org.bukkit.enchantments.Enchantment;
-import org.bukkit.inventory.ItemStack;
-
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
 import java.util.Locale;
 import java.util.TreeMap;
+
+import org.bukkit.enchantments.Enchantment;
+import org.bukkit.inventory.ItemStack;
+
+import de.cubeisland.cubeengine.core.CoreResource;
+import de.cubeisland.cubeengine.core.CubeEngine;
+import de.cubeisland.cubeengine.core.logger.LogLevel;
+import de.cubeisland.cubeengine.core.util.AliasMapFormat;
+
+import gnu.trove.map.hash.THashMap;
 
 /**
  * This Matcher provides methods to match Enchantments.
