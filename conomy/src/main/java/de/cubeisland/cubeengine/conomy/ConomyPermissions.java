@@ -59,8 +59,8 @@ public class ConomyPermissions extends PermissionContainer<Conomy>
     public static Permission COMMAND_BANK_PAY_FORCE  = COMMAND_BANK.createAbstractChild("pay").createChild("force");
 
     private static Permission COMMAND_BANK_DELETE = COMMAND_BANK.createAbstractChild("delete");
-    public static final Permission COMMAND_BANK_DELETE_OWN = COMMAND_BANK_DELETE.createChild("own");// TODO use me
-    public static final Permission COMMAND_BANK_DELETE_OTHER = COMMAND_BANK_DELETE.createChild("other"); // TODO use me
+    public static final Permission COMMAND_BANK_DELETE_OWN = COMMAND_BANK_DELETE.createChild("own");
+    public static final Permission COMMAND_BANK_DELETE_OTHER = COMMAND_BANK_DELETE.createChild("other");
 
     private static final Permission COMMAND_ECO_CREATE = COMMAND.createAbstractChild("eco").createAbstractChild("create");
     public static final Permission ECO_CREATE_OTHER = COMMAND_ECO_CREATE.createChild("other");

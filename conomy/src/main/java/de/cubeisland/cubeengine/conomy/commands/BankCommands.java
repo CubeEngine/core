@@ -335,6 +335,25 @@ public class BankCommands extends ContainerCommand
             context.sendTranslated("&cThere is no bank-account named &6%s&c!", context.getString(0));
             return;
         }
+        if (context.getSender() instanceof User)
+        {
+            if (account.isOwner((User)context.getSender()))
+            {
+                if (!ConomyPermissions.COMMAND_BANK_DELETE_OWN.isAuthorized(context.getSender()))
+                {
+                    context.sendTranslated("&cYou are not allowed to delete your bank!");
+                    return;
+                }
+            }
+            else
+            {
+                if (!ConomyPermissions.COMMAND_BANK_DELETE_OTHER.isAuthorized(context.getSender()))
+                {
+                    context.sendTranslated("&cYou are not owner of this bank!");
+                    return;
+                }
+            }
+        } // else ignore perms
         account.delete();
         context.sendTranslated("&aYou deleted the bank &6%s&a!", account.getName());
     }
