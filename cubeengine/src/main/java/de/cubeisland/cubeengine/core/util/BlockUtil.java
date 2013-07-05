@@ -44,6 +44,11 @@ public class BlockUtil
             BlockFace.DOWN, BlockFace.NORTH, BlockFace.WEST, BlockFace.EAST, BlockFace.SOUTH
     };
 
+    public static final BlockFace[] CARDINAL_DIRECTIONS = new BlockFace[]
+        {
+            BlockFace.NORTH, BlockFace.WEST, BlockFace.EAST, BlockFace.SOUTH
+        };
+
     /**
      * Searches for blocks that are attached onto given block.
      *

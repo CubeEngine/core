@@ -71,8 +71,7 @@ public class MarketSignFactory
         {
             return null;
         }
-        MarketSign result = this.marketSigns.get(location);
-        return result;
+        return this.marketSigns.get(location);
     }
 
     public MarketSign createSignAt(User user, Location location)

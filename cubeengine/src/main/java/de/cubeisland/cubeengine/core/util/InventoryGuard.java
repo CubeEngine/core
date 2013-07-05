@@ -164,7 +164,6 @@ public class InventoryGuard implements Listener
                 {
                     if (this.blockAllIn)
                     {
-
                         for (GuardedItemStack guardedItem : this.noBlockIn)
                         {
                             if (guardedItem.item.isSimilar(event.getOldCursor()))
