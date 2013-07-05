@@ -174,7 +174,7 @@ public class ContainerActionType extends ActionTypeContainer
             {
                 if (event.isShiftClick()) // top & shift -> remove items
                 {
-                    if (inventoryItem.getType().equals(Material.AIR))
+                    if (inventoryItem == null || inventoryItem.getType().equals(Material.AIR))
                     {
                         return;
                     }

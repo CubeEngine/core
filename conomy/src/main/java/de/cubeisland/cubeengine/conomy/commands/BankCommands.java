@@ -331,7 +331,6 @@ public class BankCommands extends ContainerCommand
         }
     }
 
-
     public void uninvite(CommandContext context)
     {
         // TODO reject invite / uninvite
