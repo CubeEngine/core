@@ -58,7 +58,11 @@ public class DatabaseFactory
             try
             {
                 DatabaseConfiguration config = Configuration.load(configClazz, configFile);
-                return config.getDatabaseClass().getConstructor(DatabaseConfiguration.class).newInstance(config);
+                Database database = config.getDatabaseClass().getConstructor(DatabaseConfiguration.class).newInstance(config);
+                if (database.getConnection().isValid(500))
+                {
+                    return database;
+                }
             }
             catch (Exception e)
             {
@@ -68,11 +72,7 @@ public class DatabaseFactory
                     t = e.getCause();
                 }
                 Logger logger = CubeEngine.getLog();
-                logger.log(LogLevel.ERROR, "Couldn't establish the database dataSource: " + t.getLocalizedMessage(), t);
-                while ((t = t.getCause()) != null)
-                {
-                    logger.log(LogLevel.ERROR, "  Caused by: " + t.getLocalizedMessage(), t);
-                }
+                logger.log(LogLevel.ERROR, "Couldn't establish the database dataSource: " , t);
             }
         }
         return null;

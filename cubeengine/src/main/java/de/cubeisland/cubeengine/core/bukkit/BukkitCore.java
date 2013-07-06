@@ -197,10 +197,9 @@ public final class BukkitCore extends JavaPlugin implements Core
         this.database = DatabaseFactory.loadDatabase(this.config.database, new File(this.fileManager.getDataFolder(), "database.yml"));
         if (this.database == null)
         {
-            this.logger.log(ERROR, "Could not connect to the database type ''{0}''", this.config.database);
-            pm.disablePlugin(this);
             return;
         }
+
         // depends on: database
         this.tableManager = new TableManager(this);
 
@@ -277,6 +276,12 @@ public final class BukkitCore extends JavaPlugin implements Core
     @Override
     public void onEnable()
     {
+        if (this.database == null)
+        {
+            this.getLog().log(ERROR, "Could not establish database connection (" + this.config.database + ")");
+            this.getServer().getPluginManager().disablePlugin(this);
+            return;
+        }
         Iterator<Runnable> it = this.initHooks.iterator();
         while (it.hasNext())
         {
