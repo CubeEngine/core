@@ -1,7 +1,7 @@
 CubeEngine
 ==========
 
-CubeEnine Minecraft module framework
+CubeEngine Minecraft module framework
 
 Website
 -------
