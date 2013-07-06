@@ -20,6 +20,7 @@ package de.cubeisland.cubeengine.core.util;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map.Entry;
 
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -174,9 +175,12 @@ public class InventoryGuard implements Listener
                                     return;
                                 }
                                 int amount = 0;
-                                for (ItemStack itemStack : event.getNewItems().values())
+                                for (Entry<Integer, ItemStack> entry : event.getNewItems().entrySet())
                                 {
-                                    amount += itemStack.getAmount();
+                                    if (entry.getKey() < event.getInventory().getSize())
+                                    {
+                                        amount += entry.getValue().getAmount();
+                                    }
                                 }
                                 int amountIn = InventoryUtil.getAmountOf(this.inventory,event.getOldCursor());
                                 if (amountIn + amount <= guardedItem.amount)
