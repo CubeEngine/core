@@ -593,16 +593,16 @@ public class MarketSign
         {
             amount = user.getItemInHand().getAmount();
         }
-        if (this.getStock() + amount > this.getMaxItemAmount())
+        if (this.getMaxItemAmount() != -1)
         {
-            amount = this.getMaxItemAmount() - this.getStock();
-            if (amount <= 0)
+            if (this.getStock() + amount > this.getMaxItemAmount())
             {
-                user.sendMessage("&cThe market-sign inventory is full!");
-                return 0;
-            }
-            else
-            {
+                amount = this.getMaxItemAmount() - this.getStock();
+                if (amount <= 0)
+                {
+                    user.sendMessage("&cThe market-sign inventory is full!");
+                    return 0;
+                }
                 user.sendMessage("&cThe market-sign cannot hold all your items!");
             }
         }
@@ -1044,8 +1044,7 @@ public class MarketSign
         }
         else
         {
-            //TODO perhaps if AIR and attachable set sign
-            this.module.getLog().warning("Market-Sign is not a sign-block! " + this.getLocation());
+            this.module.getLog().warning("No sign found where a market-sign was expected! " + this.getLocation());
         }
     }
 
@@ -1053,7 +1052,6 @@ public class MarketSign
     {
         if (this.blockInfo.isBuyOrSell() && this.isBuySign())
         {
-            //TODO infinite buy admin-signs with stock
             if (this.hasStock() && (this.getStock() < this.getAmount() || this.getStock() == 0))
             {
                 return true;
@@ -1082,7 +1080,16 @@ public class MarketSign
             }
             else
             {
-                inventory = Bukkit.getServer().createInventory(this.itemInfo, this.itemInfo.getSize(), "Market-Sign"); // DOUBLE-CHEST
+                String signString;
+                if (this.isBuySign())
+                {
+                    signString = "MarketSign - Buy";
+                }
+                else
+                {
+                    signString = "MarketSign - Sell";
+                }
+                inventory = Bukkit.getServer().createInventory(this.itemInfo, this.itemInfo.getSize(), signString); // DOUBLE-CHEST
                 ItemStack item = this.getItem().clone();
                 item.setAmount(this.itemInfo.stock);
                 if (this.itemInfo.stock > 0)

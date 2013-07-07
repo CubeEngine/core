@@ -276,15 +276,17 @@ public class InventoryGuard implements Listener
                         case SWAP_WITH_CURSOR:
                             if (this.blockAllIn) // Block all in except allowed
                             {
-                                if (this.hasAllowIn(cursor, event.getAction())) // Check allowed (& amount)
+                                if (!this.hasAllowIn(cursor, event.getAction())) // Check allowed (& amount)
                                 {
-                                    this.runOnChange();
+                                    event.setCancelled(true);
+                                    user.updateInventory();
                                     return;
                                 }
                             }
-                            else if (!this.hasDenyIn(cursor)) // Allow all in except denied
+                            else if (this.hasDenyIn(cursor)) // Allow all in except denied
                             {
-                                this.runOnChange();
+                                event.setCancelled(true);
+                                user.updateInventory();
                                 return;
                             }
                             break;
@@ -293,21 +295,22 @@ public class InventoryGuard implements Listener
                             {
                                 if (this.blockAllIn) // Block all in except allowed
                                 {
-                                    if (this.hasAllowIn(user.getInventory().getItem(event.getHotbarButton()), event.getAction()))
+                                    if (!this.hasAllowIn(user.getInventory().getItem(event.getHotbarButton()), event.getAction()))
                                     {
-                                        this.runOnChange();
+                                        event.setCancelled(true);
+                                        user.updateInventory();
                                         return;
                                     }
                                 }
-                                else if (!this.hasDenyIn(user.getInventory().getItem(event.getHotbarButton()))) // Allow all in except denied
+                                else if (this.hasDenyIn(user.getInventory().getItem(event.getHotbarButton()))) // Allow all in except denied
                                 {
-                                    this.runOnChange();
+                                    event.setCancelled(true);
+                                    user.updateInventory();
                                     return;
                                 }
                             } // else: How could that happen block it!
                     }
-                    event.setCancelled(true);
-                    user.updateInventory();
+                    this.runOnChange();
                 }
                 else if (event.isShiftClick()) // Bot ShiftClick / assuming full stack movement
                 {
@@ -400,10 +403,7 @@ public class InventoryGuard implements Listener
         {
             if (guardedItem.item.isSimilar(itemStack))
             {
-                if (guardedItem.amount == 0)
-                {
-                    return true;
-                }
+                if (guardedItem.amount == 0) return true;
                 int amountIn = InventoryUtil.getAmountOf(this.inventory,itemStack);
                 switch (action)
                 {
@@ -428,11 +428,10 @@ public class InventoryGuard implements Listener
         {
             if (guardedItem.item.isSimilar(itemStack))
             {
-                return true;
-            }
-            int amountIn = InventoryUtil.getAmountOf(this.inventory,itemStack);
-            switch (action)
-            {
+                if (guardedItem.amount == 0) return true;
+                int amountIn = InventoryUtil.getAmountOf(this.inventory,itemStack);
+                switch (action)
+                {
                 case PICKUP_ALL:
                 case HOTBAR_MOVE_AND_READD:
                 case SWAP_WITH_CURSOR:
@@ -449,8 +448,9 @@ public class InventoryGuard implements Listener
                     return amountIn - 1 >= guardedItem.amount;
                 case COLLECT_TO_CURSOR:
                     return amountIn - Math.min(amountIn, itemStack.getAmount()) >= guardedItem.amount;
+                }
+                System.out.print("#################################### This should be impossible");
             }
-            System.out.print("#################################### This should be impossible");
         }
         return false;
     }
