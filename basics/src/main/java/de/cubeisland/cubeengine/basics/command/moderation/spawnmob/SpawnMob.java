@@ -37,9 +37,6 @@ public class SpawnMob
 {
     // TODO custom loot items & Equipment
     // TODO random color
-    // TODO ocelot colors  Ocelot.Type. ...
-    // TODO zombie villager
-    // TODO skeleton wither
     static Entity[] spawnMobs(CommandContext context, String mobString, Location loc, int amount)
     {
         String[] mobStrings = StringUtils.explode(",", mobString);
@@ -89,7 +86,7 @@ public class SpawnMob
         for (int i = 0; i < amount; ++i)
         {
             spawnedMobs[i] = loc.getWorld().spawnEntity(loc, entityType);
-            applyDataToMob(context, entityType, spawnedMobs[i], entityData);
+            applyDataToMob(spawnedMobs[i], entityData);
             if (ridingOn != null)
             {
                 ridingOn[i].setPassenger(spawnedMobs[i]);
@@ -102,7 +99,7 @@ public class SpawnMob
         return spawnedMobs;
     }
 
-    static void applyDataToMob(CommandContext context, EntityType entityType, Entity entity, List<String> datas)
+    static void applyDataToMob(Entity entity, List<String> datas)
     {
         for (String data : datas)
         {

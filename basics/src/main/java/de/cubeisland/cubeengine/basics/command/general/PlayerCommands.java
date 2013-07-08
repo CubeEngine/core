@@ -614,7 +614,7 @@ public class PlayerCommands
         }
         if (user.hasPlayedBefore() || user.isOnline())
         {
-            context.sendTranslated("&eLife: &2%d&f/&2%d", user.getHealth(), user.getMaxHealth());
+            context.sendTranslated("&eLife: &2%.0f&f/&2%.0f", user.getHealth(), user.getMaxHealth());
             context.sendTranslated("&eHunger: &2%d&f/&220 &f(&2%d&f/&2%d&f)", user.getFoodLevel(), (int)user.getSaturation(), user.getFoodLevel());
             context.sendTranslated("&eLevel: &2%d &f+ &2%d%%", user.getLevel(), (int)(user.getExp() * 100));
             Location loc = user.getLocation();
@@ -645,7 +645,7 @@ public class PlayerCommands
             Timestamp muted = this.module.getBasicUserManager().getBasicUser(user).muted;
             if (muted != null && muted.getTime() > System.currentTimeMillis())
             {
-                context.sendTranslated("&eMuted: &ctrue"); //TODO show time
+                context.sendTranslated("&eMuted until &6%s", DateFormat.getDateTimeInstance(SHORT, SHORT, context.getSender().getLocale()).format(muted));
             }
             if (user.getGameMode() != GameMode.CREATIVE)
             {
