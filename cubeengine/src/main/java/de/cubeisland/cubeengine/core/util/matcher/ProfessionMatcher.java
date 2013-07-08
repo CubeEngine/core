@@ -41,4 +41,9 @@ public class ProfessionMatcher
         String match = Match.string().matchString(name.toUpperCase(Locale.ENGLISH), this.professions);
         return Profession.valueOf(match);
     }
+
+    public String[] professions()
+    {
+        return professions.toArray(new String[professions.size()]);
+    }
 }

@@ -232,7 +232,7 @@ public class LogEntry implements Comparable<LogEntry>
 
     public boolean redo(User user)
     {
-       // TODO
+       // TODO CE-418 http://bugs.engine.cubeisland.de/browse/CE-418
         return false;
     }
 

@@ -472,4 +472,10 @@ public class MaterialDataMatcher
         }
         return dataNames;
     }
+
+    public String[] colorStrings()
+    {
+        Set<String> woolColors = this.itemData.get(Material.WOOL).keySet();
+        return woolColors.toArray(new String[woolColors.size()]);
+    }
 }
