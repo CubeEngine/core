@@ -27,10 +27,10 @@ import java.util.Random;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import net.minecraft.server.v1_6_R1.DedicatedPlayerList;
-import net.minecraft.server.v1_6_R1.EntityPlayer;
-import net.minecraft.server.v1_6_R1.Packet0KeepAlive;
-import org.bukkit.craftbukkit.v1_6_R1.CraftServer;
+import net.minecraft.server.v1_6_R2.DedicatedPlayerList;
+import net.minecraft.server.v1_6_R2.EntityPlayer;
+import net.minecraft.server.v1_6_R2.Packet0KeepAlive;
+import org.bukkit.craftbukkit.v1_6_R2.CraftServer;
 
 import org.bukkit.World;
 import org.bukkit.World.Environment;

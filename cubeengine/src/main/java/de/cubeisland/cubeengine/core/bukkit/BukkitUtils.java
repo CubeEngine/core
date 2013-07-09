@@ -23,16 +23,16 @@ import java.util.Locale;
 import java.util.logging.Filter;
 import java.util.logging.Logger;
 
-import net.minecraft.server.v1_6_R1.DedicatedPlayerList;
-import net.minecraft.server.v1_6_R1.EntityPlayer;
-import net.minecraft.server.v1_6_R1.Item;
-import net.minecraft.server.v1_6_R1.PlayerConnection;
-import net.minecraft.server.v1_6_R1.RecipesFurnace;
-import net.minecraft.server.v1_6_R1.ServerConnection;
-import net.minecraft.server.v1_6_R1.TileEntityFurnace;
-import org.bukkit.craftbukkit.v1_6_R1.CraftServer;
-import org.bukkit.craftbukkit.v1_6_R1.entity.CraftPlayer;
-import org.bukkit.craftbukkit.v1_6_R1.inventory.CraftItemStack;
+import net.minecraft.server.v1_6_R2.DedicatedPlayerList;
+import net.minecraft.server.v1_6_R2.EntityPlayer;
+import net.minecraft.server.v1_6_R2.Item;
+import net.minecraft.server.v1_6_R2.PlayerConnection;
+import net.minecraft.server.v1_6_R2.RecipesFurnace;
+import net.minecraft.server.v1_6_R2.ServerConnection;
+import net.minecraft.server.v1_6_R2.TileEntityFurnace;
+import org.bukkit.craftbukkit.v1_6_R2.CraftServer;
+import org.bukkit.craftbukkit.v1_6_R2.entity.CraftPlayer;
+import org.bukkit.craftbukkit.v1_6_R2.inventory.CraftItemStack;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -339,14 +339,14 @@ public class BukkitUtils
     public static boolean isFuel(ItemStack item)
     {
         // Create an NMS item stack
-        net.minecraft.server.v1_6_R1.ItemStack nmss = CraftItemStack.asNMSCopy(item);
+        net.minecraft.server.v1_6_R2.ItemStack nmss = CraftItemStack.asNMSCopy(item);
         // Use the NMS TileEntityFurnace to check if the item being clicked is a fuel
         return TileEntityFurnace.isFuel(nmss);
     }
 
     public static boolean isSmeltable(ItemStack item)
     {
-        net.minecraft.server.v1_6_R1.ItemStack nmss = CraftItemStack.asNMSCopy(item);
+        net.minecraft.server.v1_6_R2.ItemStack nmss = CraftItemStack.asNMSCopy(item);
         // If the result of that item being cooked is null, it is not cookable
         return RecipesFurnace.getInstance().getResult(nmss.getItem().id) != null;
     }
