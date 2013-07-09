@@ -170,6 +170,8 @@ public class BlockBreak extends BlockActionType
             Pair<Entity,BlockActionType> cause = this.plannedPyhsics.remove(loc);
             if (cause != null)
             {
+                oldState = this.adjustBlockForDoubleBlocks(oldState);
+                oldData.data = oldState.getRawData();
                 ObjectNode json = this.om.createObjectNode();
                 json.put("break-cause", cause.getRight().getID());
                 if (oldState instanceof Sign)
