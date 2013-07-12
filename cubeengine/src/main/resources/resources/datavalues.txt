@@ -164,7 +164,7 @@ POTION:
     awkward: 16
     thick: 32
     water: 0
-WOOL:
+WOOL,STAINED_CLAY,CARPET:
     black: 15
     red: 14
     green: 13
