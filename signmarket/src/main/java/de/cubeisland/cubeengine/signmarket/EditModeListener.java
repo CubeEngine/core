@@ -368,7 +368,7 @@ public class EditModeListener extends ConversationCommand
                 }
                 else
                 {
-                    if (marketSign.getStock() != 0)
+                    if (marketSign.hasStock() && marketSign.getStock() != 0)
                     {
                         user.sendTranslated("&cYou have to take all items out of the market-sign to be able to change the item in it!");
                         return null;
@@ -524,7 +524,7 @@ public class EditModeListener extends ConversationCommand
                 return; // not a market-sign
             }
             this.setEditingSign(user, curLoc, curSign);
-            if (curSign.getStock() != 0)
+            if (curSign.hasStock() && curSign.getStock() != 0)
             {
                 user.sendTranslated("&cYou have to take all items out of the market-sign to be able to change the item in it!");
                 event.setCancelled(true);
