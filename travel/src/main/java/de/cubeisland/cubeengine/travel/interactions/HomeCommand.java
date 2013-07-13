@@ -70,6 +70,8 @@ public class HomeCommand extends ContainerCommand
             this.getChild("invite").setUsage("[user]").getContextFactory().setArgBounds(new ArgBounds(1, 1));
             this.getChild("uninvite").setUsage("[user]").getContextFactory().setArgBounds(new ArgBounds(1, 1));
             this.getChild("setgreeting").setUsage("[welcome message]");
+            this.getChild("makeprivate").setUsage("");
+            this.getChild("makepublic").setUsage("");
         }
     }
 
@@ -165,15 +167,17 @@ public class HomeCommand extends ContainerCommand
     @Alias(names = {
         "sethome"
     })
-    @Command(names = "set", desc = "Set your home", usage = "[HomeName]", min = 0, max = 1, flags = {
-        @Flag(longName = "public", name = "pub")
-    }, permDefault = PermDefault.TRUE)
+    @Command(names = {"set", "sethome"},
+             desc = "Set your home", usage = "[HomeName]",
+             min = 0, max = 1,
+             flags = {@Flag(longName = "public", name = "pub")},
+             permDefault = PermDefault.TRUE)
     public void setHome(ParameterizedContext context)
     {
         if (context.getSender() instanceof User)
         {
             User sender = (User)context.getSender();
-            if (this.tpManager.getNumberOfHomes(sender) == this.module.getConfig().maxhomes)
+            if (this.tpManager.getNumberOfHomes(sender) >= this.module.getConfig().maxhomes)
             {
                 sender.sendTranslated("&4You have reached your maximum number of homes!");
                 sender.sendTranslated("&cYou have to delete a home to make a new one");
@@ -189,7 +193,7 @@ public class HomeCommand extends ContainerCommand
                     return;
                 }
                 this.tpManager.createHome(location, "home", sender, TeleportPoint.Visibility.PRIVATE);
-                sender.sendTranslated("&aYour home have been created!");
+                sender.sendTranslated("&aYour home has been created!");
             }
             else if (this.module.getConfig().multipleHomes)
             {
@@ -202,16 +206,14 @@ public class HomeCommand extends ContainerCommand
                     {
                         if (this.tpManager.getHome(name).isPublic())
                         {
-                            sender
-                                .sendTranslated("&cA public home by that name already exist. Please choose another name");
+                            sender.sendTranslated("&cA public home by that name already exist. Please choose another name");
                             return;
                         }
                     }
                 }
                 if (name.contains(":") || name.length() >= 32)
                 {
-                    sender
-                        .sendTranslated("&cHomes may not have names that are longer then 32 characters, and they may not contain colon(:)'s!");
+                    sender.sendTranslated("&cHomes may not have names that are longer then 32 characters nor contain colon(:)'s!");
                     return;
                 }
                 if (this.tpManager.hasHome(context.getString(0).toLowerCase(), sender))
@@ -220,21 +222,21 @@ public class HomeCommand extends ContainerCommand
                     return;
                 }
                 this.tpManager.createHome(location, name, sender, visibility);
-                sender.sendTranslated("&aYour home &6%s &ahave been created!", context.getString(0));
+                sender.sendTranslated("&aYour home &6%s &ahas been created!", context.getString(0));
             }
+            return;
         }
-        else
-        {
-            context.sendTranslated("&4This command can only be used by users!");
-        }
+        context.sendTranslated("&eOk so I'll need your new Address then. &cNo seriously this won't work!");
     }
 
-    @Command(desc = "Set the welcome message of homes", names = {"setgreeting", "greeting", "setwelcome", "setwelcomemsg"},
-             min = 1, max = -1, permDefault = PermDefault.TRUE, params = {
-        @Param(names = {"home", "h"})
-    }, usage = "[Welcome message goes here] <home [home name]>")
+    @Command(desc = "Set the welcome message of homes",
+             names = {"setgreeting", "greeting", "setwelcome", "setwelcomemsg"},
+             min = 1, max = -1, permDefault = PermDefault.TRUE,
+             params = {@Param(names = {"home", "h"})},
+             usage = "[Welcome message goes here] <home [home name]>")
     public void setWelcomeMessage(ParameterizedContext context)
     {
+        // TODO append the greeting message
         if (context.getSender() instanceof User)
         {
             User sender = (User)context.getSender();
@@ -244,7 +246,7 @@ public class HomeCommand extends ContainerCommand
                 home = this.tpManager.getHome(sender, context.getString("home"));
                 if (home == null || !home.isOwner(sender))
                 {
-                    sender.sendTranslated("&6%s &cis not a home you're owning!");
+                    sender.sendTranslated("&6%s&c is not a home you're owning!");
                     return;
                 }
             }
@@ -257,27 +259,24 @@ public class HomeCommand extends ContainerCommand
                     return;
                 }
             }
-
-            StringBuilder message = new StringBuilder();
-            for (int x = 0; x < context.getArgCount(); x++)
-            {
-                message.append(context.getString(x)).append(' ');
-            }
-
-            home.setWelcomeMsg(message.toString());
+            home.setWelcomeMsg(context.getStrings(0));
             home.update();
             sender.sendTranslated("&aThe welcome message for the home is now set to: ");
             sender.sendMessage(home.getWelcomeMsg());
         }
     }
 
-    @Command(names = {"move", "replace"}, desc = "Move a home", usage = "[HomeName]", min = 0, max = 1, permDefault = PermDefault.TRUE)
+    @Command(names = {"move", "replace"},
+             desc = "Move a home",
+             usage = "[HomeName]",
+             min = 0, max = 1,
+             permDefault = PermDefault.TRUE)
     public void moveHome(CommandContext context)
     {
         if (context.getSender() instanceof User)
         {
             User sender = (User)context.getSender();
-            if (context.getArgCount() == 0)
+            if (context.getArgCount() == 0 || !this.module.getConfig().multipleHomes)
             {
                 Home home = this.tpManager.getHome(sender, "home");
                 if (home == null)
@@ -292,38 +291,37 @@ public class HomeCommand extends ContainerCommand
                 }
                 home.setLocation(sender.getLocation());
                 home.update();
-                sender.sendTranslated("&aYour home have been moved");
+                sender.sendTranslated("&aYour home has been moved to you current location!");
+                return;
             }
-            else if (this.module.getConfig().multipleHomes)
+            if (this.module.getConfig().multipleHomes)
             {
                 Home home = this.tpManager.getHome(sender, context.getString(0));
                 if (home == null)
                 {
-                    sender.sendTranslated("&96%s &cCould not be found!", context.getString(0));
+                    sender.sendTranslated("&cYou do not have a home named &6%s&c!", context.getString(0));
                     return;
                 }
-                if (!home.isOwner(sender))
+                if (!home.isOwner(sender)) // TODO permission
                 {
-                    sender.sendTranslated("&cYou can't move another users home");
+                    sender.sendTranslated("&cYou are not allowed to move another users home!");
                     return;
                 }
                 home.setLocation(sender.getLocation());
                 home.update();
-                sender.sendTranslated("&6%s &ahave been moved", home.getName());
+                sender.sendTranslated("&aThe home &6%s&a has been moved to your current location!", home.getName());
+                return;
             }
+            return;
         }
-        else
-        {
-            context.sendTranslated("&4This command can only be used by users!");
-        }
+        context.sendTranslated("&cI am calling the moving company right now!");
     }
 
-    @Alias(names = {
-        "remhome", "removehome", "delhome", "deletehome"
-    })
-    @Command(names = {
-        "remove", "delete", "rem", "del"
-    }, desc = "Remove a home", usage = "[HomeName]", min = 0, max = 1, permDefault = PermDefault.TRUE)
+    @Alias(names = {"remhome", "removehome", "delhome", "deletehome"})
+    @Command(names = {"remove", "delete", "rem", "del"},
+             desc = "Remove a home", usage = "[HomeName]",
+             min = 0, max = 1,
+             permDefault = PermDefault.TRUE)
     public void removeHome(CommandContext context)
     {
         if (context.getSender() instanceof User)
@@ -361,24 +359,21 @@ public class HomeCommand extends ContainerCommand
                 this.tpManager.deleteHome(home);
                 sender.sendTranslated("&6%s &chave been removed", context.getString(0));
             }
+            return;
         }
-        else
-        {
-            context.sendTranslated("&4This command can only be used by users!");
-        }
+        context.sendTranslated("&cSo where do you want to sleep this night?");
     }
 
-    @Alias(names = {
-        "listhomes", "homes"
-    })
-    @Command(names = {
-        "list"
-    }, desc = "List homes you can access", permDefault = PermDefault.TRUE, min = 0, max = 0, flags = {
+    @Alias(names = {"listhomes", "homes"})
+    @Command(names = {"list", "listhomes"},
+             desc = "List homes you can access",
+             permDefault = PermDefault.TRUE, min = 0, max = 0,
+             flags = {
         @Flag(name = "pub", longName = "public"),
         @Flag(name = "priv", longName = "private"),
         @Flag(name = "o", longName = "owned"),
-        @Flag(name = "i", longName = "invited")
-    }, usage = "<-public> <-private> <-owned> <-invited>")
+        @Flag(name = "i", longName = "invited")},
+             usage = "<-public> <-private> <-owned> <-invited>")
     public void listHomes(ParameterizedContext context) throws Exception
     {
         if (!context.isSender(User.class))
@@ -408,10 +403,10 @@ public class HomeCommand extends ContainerCommand
         Set<Home> homes = this.tpManager.listHomes(user, mask);
         if (homes.isEmpty())
         {
-            user.sendTranslated("&cThe query returned null homes!");
+            user.sendTranslated("&cYou are not invited to any home!");
             return;
         }
-        user.sendTranslated("&eHere is a list of the homes: ");
+        user.sendTranslated("&eHere is a list of your homes: ");
         for (Home home : homes)
         {
             if (home.isOwner(user))
@@ -432,66 +427,70 @@ public class HomeCommand extends ContainerCommand
         }
     }
 
-    @Command(names = {
-        "ilist", "invited"
-    }, desc = "List all players invited to your homes", min = 0, max = 0, permDefault = PermDefault.TRUE)
+    @Command(names = {"ilist", "invited"},
+             desc = "List all players invited to your homes",
+             min = 0, max = 0,
+             permDefault = PermDefault.TRUE)
     public void invitedList(CommandContext context)
     {
-        if (!context.isSender(User.class))
+        if (context.getSender() instanceof User)
         {
-
-            return;
-        }
-
-        User user = (User)context.getSender();
-        Set<Home> homes = this.tpManager.listHomes(user, this.tpManager.OWNED);
-        if (!homes.isEmpty())
-        {
-            user.sendTranslated("&eHere is a list of all your homes with the users invited to them:");
-            for (Home home : homes)
+            User user = (User)context.getSender();
+            Set<Home> homes = this.tpManager.listHomes(user, this.tpManager.OWNED);
+            if (!homes.isEmpty())
             {
-                Set<TeleportInvite> invites = this.inviteManager.getInvites(home.getModel());
-                if (invites.size() != 0)
+                user.sendTranslated("&eHere is a list of all your homes with the users invited to them:");
+                for (Home home : homes)
                 {
-                    context.sendTranslated("  &6%s&e:", home.getName());
-                    for (TeleportInvite invite : invites)
+                    Set<TeleportInvite> invites = this.inviteManager.getInvites(home.getModel());
+                    if (invites.size() != 0)
                     {
-                        context.sendMessage("    &2" + CubeEngine.getUserManager().getUser(invite.userKey).getName());
+                        context.sendTranslated("  &6%s&e:", home.getName());
+                        for (TeleportInvite invite : invites)
+                        {
+                            context.sendMessage("    &2" + CubeEngine.getUserManager().getUser(invite.userKey).getName());
+                        }
                     }
                 }
+                return;
             }
+            context.sendTranslated("&cYou don't have any homes with users invited to them!");
             return;
         }
-        context.sendTranslated("&cYou don't have any homes with users invited to them!");
+        context.sendTranslated("&cNo one will ever invite a console to his home.");
     }
 
-    @Command(desc = "Invite a user to one of your homes", min = 1, max = 2, usage = "[home] <user>", permDefault = PermDefault.TRUE)
+    @Command(desc = "Invite a user to one of your homes",
+             min = 1, max = 2,
+             usage = "[home] <user>",
+             permDefault = PermDefault.TRUE)
     public void invite(CommandContext context)
     {
         if (context.getSender() instanceof User)
         {
             User sender = (User)context.getSender();
-            if (context.getArgCount() == 1)
+            if (context.getArgCount() == 1 || !this.module.getConfig().multipleHomes)
             {
                 Home home = this.tpManager.getHome(sender, "home");
                 if (home == null)
                 {
-                    sender.sendTranslated("&4You don't have a home!");
+                    sender.sendTranslated("&cYou don't have a home!");
                     return;
                 }
-                if (!home.isOwner(sender))
+                if (!home.isOwner(sender)) // TODO permission
                 {
-                    sender.sendTranslated("&4You can't edit another players home");
+                    sender.sendTranslated("&cYou are not allowed to edit another players home");
                     return;
                 }
                 if (home.isPublic())
                 {
                     sender.sendTranslated("&cYou can't invite a person to a public home >:(");
+                    return;
                 }
-                User invited = CubeEngine.getUserManager().getUser(context.getString(0), false);
+                User invited = context.getUser(0);
                 if (invited == null)
                 {
-                    sender.sendTranslated("&cThat user could not be found!");
+                    sender.sendTranslated("&cUser &2%s&c not found!", context.getString(0));
                     return;
                 }
                 if (invited.equals(sender))
@@ -501,17 +500,15 @@ public class HomeCommand extends ContainerCommand
                 }
                 if (home.isInvited(invited))
                 {
-                    sender.sendTranslated("&2%s &cis already invited to your home!", invited.getDisplayName());
+                    sender.sendTranslated("&2%s&c is already invited to your home!", invited.getDisplayName());
                     return;
                 }
                 home.invite(invited);
                 if (invited.isOnline())
                 {
-                    invited
-                        .sendTranslated("&2%s &ehas invited you to his home. To access it do: /home &2%s&e:&6home", sender
-                            .getDisplayName(), sender.getName());
+                    invited.sendTranslated("&2%s&e invited you to his home. To teleport to it use: /home &2%s&e:&6home", sender.getDisplayName(), sender.getName());
                 }
-                sender.sendTranslated("&2%s &aIs now invited to your home", context.getString(0));
+                sender.sendTranslated("&2%s&a Is now invited to your home", context.getString(0));
             }
             else if (this.module.getConfig().multipleHomes)
             {
@@ -549,14 +546,15 @@ public class HomeCommand extends ContainerCommand
                 }
                 sender.sendTranslated("&2%s &aIs now invited to &6%s", context.getString(1), context.getString(0));
             }
+            return;
         }
-        else
-        {
-            context.sendTranslated("&4This command can only be used by users!");
-        }
+        context.sendTranslated("&cHow about making a phone call to invite someone instead?");
     }
 
-    @Command(desc = "Uninvite a user from one of your homes", min = 1, max = 2, usage = "[home] <user>", permDefault = PermDefault.TRUE)
+    @Command(desc = "Uninvite a user from one of your homes",
+             min = 1, max = 2,
+             usage = "[home] <user>",
+             permDefault = PermDefault.TRUE)
     public void unInvite(CommandContext context)
     {
         if (context.getSender() instanceof User)
@@ -570,9 +568,9 @@ public class HomeCommand extends ContainerCommand
                     sender.sendTranslated("&cYou don't have a home!");
                     return;
                 }
-                if (!home.isOwner(sender))
+                if (!home.isOwner(sender)) // TODO permission
                 {
-                    sender.sendTranslated("&cYou can't edit another players home");
+                    sender.sendTranslated("&cYou are not allowed to edit another players home");
                     return;
                 }
                 if (home.isPublic())
@@ -630,12 +628,9 @@ public class HomeCommand extends ContainerCommand
                 home.unInvite(invited);
                 if (invited.isOnline())
                 {
-                    invited
-                        .sendTranslated("&eYou are no longer invited to &2%s&e's home &6%s", sender.getDisplayName(), context
-                            .getString(0));
+                    invited.sendTranslated("&eYou are no longer invited to &2%s&e's home &6%s", sender.getDisplayName(), context.getString(0));
                 }
-                sender
-                    .sendTranslated("&2%s &eIs no longer invited to &6%s", context.getString(1), context.getString(0));
+                sender.sendTranslated("&2%s &eIs no longer invited to &6%s", context.getString(1), context.getString(0));
             }
         }
         else
@@ -644,9 +639,10 @@ public class HomeCommand extends ContainerCommand
         }
     }
 
-    @Command(names = {
-        "makeprivate", "setprivate", "private"
-    }, desc = "Make one of your homes private", min = 0, max = 1, permDefault = PermDefault.TRUE)
+    @Command(names = {"makeprivate", "setprivate", "private"},
+             desc = "Make one of your homes private",
+             usage = "[home]",
+             min = 0, max = 1, permDefault = PermDefault.TRUE)
     public void makePrivate(CommandContext context)
     {
         if (context.getSender() instanceof User)
@@ -678,9 +674,11 @@ public class HomeCommand extends ContainerCommand
         context.sendTranslated("&4This command can only be used by users!");
     }
 
-    @Command(names = {
-        "makepublic", "setpublic", "public"
-    }, desc = "Make one of your homes public", min = 0, max = 1, permDefault = PermDefault.TRUE)
+    @Command(names = {"makepublic", "setpublic", "public"},
+             desc = "Make one of your homes public",
+             min = 0, max = 1,
+             permDefault = PermDefault.TRUE,
+             usage = "[home]")
     public void makePublic(CommandContext context)
     {
         if (context.getSender() instanceof User)

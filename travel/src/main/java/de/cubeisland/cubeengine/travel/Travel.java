@@ -19,7 +19,6 @@ package de.cubeisland.cubeengine.travel;
 
 import java.util.concurrent.TimeUnit;
 
-import de.cubeisland.cubeengine.core.bukkit.EventManager;
 import de.cubeisland.cubeengine.core.command.CommandManager;
 import de.cubeisland.cubeengine.core.config.Configuration;
 import de.cubeisland.cubeengine.core.module.Module;
@@ -50,7 +49,6 @@ public class Travel extends Module
         this.inviteManager = new InviteManager(this.getCore().getDB(), this);
         System.out.print(Profiler.getCurrentDelta("travelEnable", TimeUnit.MILLISECONDS) + "ms - InviteManager-load");
         this.telePointManager.load(this.inviteManager);
-
         final CommandManager cm = this.getCore().getCommandManager();
         System.out.print(Profiler.getCurrentDelta("travelEnable", TimeUnit.MILLISECONDS) + "ms - register commands");
         cm.registerCommand(new HomeCommand(this));
@@ -58,8 +56,7 @@ public class Travel extends Module
         cm.registerCommand(new WarpCommand(this));
         cm.registerCommand(new WarpAdminCommand(this), "warp");
         System.out.print(Profiler.getCurrentDelta("travelEnable", TimeUnit.MILLISECONDS) + "ms - register listener");
-        final EventManager em = this.getCore().getEventManager();
-        em.registerListener(this, new HomeListener(this));
+        this.getCore().getEventManager().registerListener(this, new HomeListener(this));
         System.out.print(Profiler.endProfiling("travelEnable", TimeUnit.MILLISECONDS) + "ms - done");
     }
 
