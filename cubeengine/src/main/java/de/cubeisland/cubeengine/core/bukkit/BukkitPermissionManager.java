@@ -284,6 +284,12 @@ public class BukkitPermissionManager implements PermissionManager
         }
     }
 
+    @Override
+    public void removePermission(Module module, Permission permission)
+    {
+        this.removePermission(module, permission.getName());
+    }
+
     public void removePermissions(Module module)
     {
         assert module != null: "The module must not be null!";

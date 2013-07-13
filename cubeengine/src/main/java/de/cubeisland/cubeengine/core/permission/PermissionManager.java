@@ -80,4 +80,12 @@ public interface PermissionManager extends Cleanable
      * @return the default value or null if the permission was not registered
      */
     PermDefault getDefaultFor(String permission);
+
+    /**
+     * Removes a permission of a module
+     *
+     * @param module the module
+     * @param permission the permission
+     */
+    void removePermission(Module module, Permission permission);
 }
