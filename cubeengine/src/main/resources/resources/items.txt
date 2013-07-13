@@ -1458,6 +1458,8 @@ MONSTER_EGG:96
 MONSTER_EGG:98
   ocelotegg
   eggocelot
+MONSTER_EGG:100
+  horseegg
 MONSTER_EGG:120
   villageregg
   eggvillager

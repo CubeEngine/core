@@ -208,12 +208,12 @@ public class ContainerActionType extends ActionTypeContainer
                 }
                 else
                 {
-                    if (cursorItem.getType().equals(Material.AIR)) // remove items
+                    if (cursorItem == null ||cursorItem.getType().equals(Material.AIR)) // remove items
                     {
                         int remove = event.isLeftClick() ? inventoryItem.getAmount() : (inventoryItem.getAmount() + 1) / 2;
                         this.prepareForLogging(user, new ItemData(inventoryItem),-remove);
-                    } // TODO possible NPE around here
-                    else if (inventoryItem.getType().equals(Material.AIR)) // put items
+                    }
+                    else if (inventoryItem == null || inventoryItem.getType().equals(Material.AIR)) // put items
                     {
                         int put = event.isLeftClick() ? cursorItem.getAmount() : 1;
                         if (holder instanceof BrewingStand) // handle BrewingStands separatly

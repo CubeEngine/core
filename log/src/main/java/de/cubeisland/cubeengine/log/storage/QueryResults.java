@@ -52,7 +52,6 @@ public class QueryResults
             parameter.showNoLogsFound(user);
             return;
         }
-        System.out.print("Showing " + this.logEntries.size() + " logentries to " + user.getName());
         if (show.pagelimit == -1)
         {
             show.pagelimit = this.logEntries.size();
