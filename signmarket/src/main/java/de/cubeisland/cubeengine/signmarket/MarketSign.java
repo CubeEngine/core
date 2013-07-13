@@ -159,7 +159,7 @@ public class MarketSign
             throw new IllegalArgumentException("Use setAdminSign() instead!");
         }
         this.blockInfo.setOwner(user);
-        if (this.getStock() == null)
+        if (!this.hasStock())
         {
             this.setStock(0);
         }
@@ -674,7 +674,7 @@ public class MarketSign
         if (this.breakingSign.containsKey(user.key) && System.currentTimeMillis() - this.breakingSign.get(user.key) <= 500)//0.5 sec
         {
             Location location = this.getLocation();
-            if (this.getStock() != null && this.getStock() == 1337) //pssst i am not here
+            if (this.hasStock() && this.getStock() == 1337) //pssst i am not here
             {
                 location.getWorld().strikeLightningEffect(location);
             }
@@ -693,7 +693,7 @@ public class MarketSign
     {
         if (!this.hasInfiniteSize() && this.hasStock())
         {
-            if (this.getMaxItemAmount() >= this.getStock()+ this.getAmount())
+            if (this.getMaxItemAmount() >= this.getStock() + this.getAmount())
             {
                 return false;
             }
@@ -734,7 +734,8 @@ public class MarketSign
         return maxAmount;
     }
 
-    public boolean hasInfiniteSize() {
+    public boolean hasInfiniteSize()
+    {
         return this.itemInfo.size == -1;
     }
 
@@ -1134,9 +1135,9 @@ public class MarketSign
         this.blockInfo = blockModel;
     }
 
-    public Integer getStock()
+    public int getStock()
     {
-        return this.itemInfo.stock;
+        return this.itemInfo.stock == null ? 0 : this.itemInfo.stock;
     }
 
     public void setStock(Integer stock)
