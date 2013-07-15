@@ -24,8 +24,8 @@ import de.cubeisland.cubeengine.core.config.annotations.Codec;
 import de.cubeisland.cubeengine.core.config.annotations.Comment;
 import de.cubeisland.cubeengine.core.config.annotations.Option;
 import de.cubeisland.cubeengine.core.config.annotations.Revision;
-import de.cubeisland.cubeengine.core.logger.CubeLevel;
-import de.cubeisland.cubeengine.core.logger.LogLevel;
+
+import ch.qos.logback.classic.Level;
 
 /**
  * This Configuration holds all basic settings for CubeEngine.
@@ -71,9 +71,17 @@ public class CoreConfiguration extends Configuration
     @Comment("Currently available: mysql")
     public String database = "mysql";
 
-    @Option("logging.Level")
-    @Comment("Logging into Console \nALL > DEBUG > INFO > NOTICE > WARNING > ERROR > OFF")
-    public CubeLevel loggingLevel = LogLevel.NOTICE;
+    @Option("logging.console-Level")
+    @Comment("Logging into Console \nALL > TRACE > DEBUG > INFO > WARN > ERROR > OFF")
+    public Level loggingConsoleLevel = Level.INFO;
+
+    @Option("logging.file-Level")
+    @Comment("Logging to the main log file \nALL > DEBUG > INFO > WARN > ERROR > OFF")
+    public Level loggingFileLevel = Level.INFO;
+
+    @Option("logging.archive-logs")
+    @Comment("Zip all old logs to zip archives")
+    public boolean loggingArchiveLogs = true;
 
     @Option("logging.log-commands")
     @Comment("Whether to log commands executed by players.")

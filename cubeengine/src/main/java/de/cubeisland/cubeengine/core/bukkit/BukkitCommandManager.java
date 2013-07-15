@@ -17,18 +17,9 @@
  */
 package de.cubeisland.cubeengine.core.bukkit;
 
-import java.io.File;
-import java.io.IOException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.logging.FileHandler;
-import java.util.logging.Formatter;
-import java.util.logging.Level;
-import java.util.logging.LogRecord;
-import java.util.logging.Logger;
 
 import org.bukkit.Server;
 import org.bukkit.command.Command;
@@ -43,15 +34,15 @@ import de.cubeisland.cubeengine.core.command.CommandSender;
 import de.cubeisland.cubeengine.core.command.CubeCommand;
 import de.cubeisland.cubeengine.core.command.result.confirm.ConfirmManager;
 import de.cubeisland.cubeengine.core.command.sender.ConsoleCommandSender;
-import de.cubeisland.cubeengine.core.logger.CubeFileHandler;
-import de.cubeisland.cubeengine.core.logger.CubeLogger;
 import de.cubeisland.cubeengine.core.module.Module;
 import de.cubeisland.cubeengine.core.util.StringUtils;
 
 import gnu.trove.map.hash.THashMap;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import static de.cubeisland.cubeengine.core.logger.LogLevel.INFO;
-import static de.cubeisland.cubeengine.core.logger.LogLevel.WARNING;
+
+
 
 public class BukkitCommandManager implements CommandManager
 {
@@ -71,27 +62,8 @@ public class BukkitCommandManager implements CommandManager
         this.commandBackend = commandBackend;
         this.commandFactories = new THashMap<Class<? extends CubeCommand>, CommandFactory>();
 
-        this.commandLogger = new CubeLogger("commands");
-        try
-        {
-            FileHandler handler = new CubeFileHandler(Level.ALL, new File(core.getFileManager().getLogDir(), this.commandLogger.getName()).getPath());
-            handler.setFormatter(new Formatter() {
-                private final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-
-                @Override
-                public String format(LogRecord record)
-                {
-                    StringBuilder sb = new StringBuilder(this.dateFormat.format(new Date(record.getMillis())));
-                    sb.append(' ').append(record.getMessage()).append('\n');
-                    return sb.toString();
-                }
-            });
-            this.commandLogger.addHandler(handler);
-        }
-        catch (IOException e)
-        {
-            core.getLog().log(WARNING, "Failed to create the command log!", e);
-        }
+        this.commandLogger = LoggerFactory.getLogger("cubeengine.commands");
+        // TODO
 
         this.confirmManager = new ConfirmManager(this, core);
     }
@@ -235,7 +207,7 @@ public class BukkitCommandManager implements CommandManager
     {
         if (command.isLoggable())
         {
-            this.commandLogger.log(INFO, "execute " + sender.getName() + ' ' + command.getName() + ' ' + StringUtils.implode(" ", args));
+            this.commandLogger.debug("execute {} {} {}", sender.getName(), command.getName(), StringUtils.implode(" ", args));
         }
     }
 
@@ -244,7 +216,7 @@ public class BukkitCommandManager implements CommandManager
     {
         if (command.isLoggable())
         {
-            this.commandLogger.log(INFO, "complete " + sender.getName() + ' ' + command.getName() + ' ' + StringUtils.implode(" ", args));
+            this.commandLogger.debug("complete {} {} {}", sender.getName(), command.getName(), StringUtils.implode(" ", args));
         }
     }
 

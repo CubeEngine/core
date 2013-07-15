@@ -27,11 +27,6 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
-import java.util.logging.FileHandler;
-import java.util.logging.Formatter;
-import java.util.logging.Level;
-import java.util.logging.LogRecord;
-import java.util.logging.Logger;
 
 import org.bukkit.permissions.Permissible;
 import org.bukkit.permissions.PermissionDefault;
@@ -39,8 +34,6 @@ import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.SimplePluginManager;
 
 import de.cubeisland.cubeengine.core.CubeEngine;
-import de.cubeisland.cubeengine.core.logger.CubeFileHandler;
-import de.cubeisland.cubeengine.core.logger.CubeLogger;
 import de.cubeisland.cubeengine.core.module.Module;
 import de.cubeisland.cubeengine.core.permission.PermDefault;
 import de.cubeisland.cubeengine.core.permission.Permission;
@@ -49,8 +42,10 @@ import de.cubeisland.cubeengine.core.util.StringUtils;
 
 import gnu.trove.map.hash.THashMap;
 import gnu.trove.set.hash.THashSet;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import static de.cubeisland.cubeengine.core.logger.LogLevel.*;
+
 import static de.cubeisland.cubeengine.core.permission.Permission.BASE;
 
 public class BukkitPermissionManager implements PermissionManager
@@ -85,33 +80,12 @@ public class BukkitPermissionManager implements PermissionManager
         }
         catch (Exception ex)
         {
-            core.getLog().log(NOTICE, "Couldn't access the permission manager internals for fast permission registration, falling back to normal registration.");
+            core.getLog().info("Couldn't access the permission manager internals for fast permission registration, falling back to normal registration.");
             this.startup = false;
         }
         this.wildcards = new THashMap<String, org.bukkit.permissions.Permission>(0);
         this.modulePermissionMap = new THashMap<Module, Set<String>>(0);
-        this.logger = new CubeLogger("permissions");
-        try
-        {
-            FileHandler handler = new CubeFileHandler(Level.ALL, new File(core.getFileManager().getLogDir(), this.logger.getName()).getPath());
-            handler.setFormatter(new Formatter() {
-                private final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-
-                @Override
-                public String format(LogRecord record)
-                {
-                    StringBuilder sb = new StringBuilder(this.dateFormat.format(new Date(record.getMillis())));
-                    sb.append(' ').append(record.getMessage()).append('\n');
-                    return sb.toString();
-                }
-            });
-            this.logger.addHandler(handler);
-            this.logger.setLevel(core.getLog().getLevel());
-        }
-        catch (IOException e)
-        {
-            core.getLog().log(ERROR, "Failed to create the permission log");
-        }
+        this.logger = LoggerFactory.getLogger("cubeengine.permissions");
 
         this.registerBukkitPermission(CUBEENGINE_WILDCARD);
     }
@@ -140,11 +114,11 @@ public class BukkitPermissionManager implements PermissionManager
             {
                 this.wildcards.put(permission.getName(), permission);
             }
-            this.logger.log(INFO, "successful " + permission.getName());
+            this.logger.debug("successful {}", permission.getName());
         }
         catch (IllegalArgumentException ignored)
         {
-            this.logger.log(DEBUG, "duplicated " + permission.getName());
+            this.logger.debug("duplicated {}", permission.getName());
         }
     }
 

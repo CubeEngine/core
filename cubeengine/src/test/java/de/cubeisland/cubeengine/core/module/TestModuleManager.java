@@ -47,7 +47,7 @@ public class TestModuleManager implements ModuleManager
     {
         TestModule module = new TestModule();
         ModuleInfo info = new TestModuleInfo(this.core);
-        module.initialize(this.core, info, null, new ModuleLogger(this.core, info), this.ldr, null);
+        module.initialize(this.core, info, null, this.ldr, null, this.core.getLog());
         return module;
     }
 

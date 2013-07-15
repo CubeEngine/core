@@ -46,7 +46,7 @@ import gnu.trove.map.TObjectIntMap;
 import gnu.trove.map.hash.TObjectIntHashMap;
 import gnu.trove.procedure.TObjectIntProcedure;
 
-import static de.cubeisland.cubeengine.core.logger.LogLevel.WARNING;
+
 
 public class BukkitUserManager extends AbstractUserManager
 {
@@ -186,7 +186,7 @@ public class BukkitUserManager extends AbstractUserManager
 
             if (task == null || task.getTaskId() == -1)
             {
-                core.getLogger().log(WARNING, "The delayed removed of user ''{0}'' could not be scheduled... removing him now.");
+                core.getLog().warn("The delayed removed of user '{}' could not be scheduled... removing him now.");
                 removeCachedUser(user);
             }
 

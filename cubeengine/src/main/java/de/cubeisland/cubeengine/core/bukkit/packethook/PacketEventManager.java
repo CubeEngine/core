@@ -19,7 +19,6 @@ package de.cubeisland.cubeengine.core.bukkit.packethook;
 
 import java.util.LinkedList;
 import java.util.List;
-import java.util.logging.Logger;
 
 import net.minecraft.server.v1_6_R2.Packet;
 import net.minecraft.server.v1_6_R2.Packet204LocaleAndViewDistance;
@@ -31,8 +30,9 @@ import de.cubeisland.cubeengine.core.bukkit.PlayerLanguageReceivedEvent;
 import de.cubeisland.cubeengine.core.util.Cleanable;
 
 import gnu.trove.map.hash.TIntObjectHashMap;
+import org.slf4j.Logger;
 
-import static de.cubeisland.cubeengine.core.logger.LogLevel.DEBUG;
+
 
 public class PacketEventManager implements Cleanable
 {
@@ -123,12 +123,12 @@ public class PacketEventManager implements Cleanable
     {
         if (player == null)
         {
-            this.logger.log(DEBUG, "The player was null!");
+            this.logger.debug("The player was null!");
             return false;
         }
         if (packet == null)
         {
-            this.logger.log(DEBUG, "The packet was null!");
+            this.logger.debug("The packet was null!");
             return false;
         }
         List<PacketReceivedListener> listeners = this.receivedListeners.get(packet.n());
@@ -148,12 +148,12 @@ public class PacketEventManager implements Cleanable
     {
         if (player == null)
         {
-            this.logger.log(DEBUG, "The player was null!");
+            this.logger.debug("The player was null!");
             return false;
         }
         if (packet == null)
         {
-            this.logger.log(DEBUG, "The packet was null!");
+            this.logger.debug("The packet was null!");
             return false;
         }
         List<PacketSentListener> listeners = this.sentListeners.get(packet.n());

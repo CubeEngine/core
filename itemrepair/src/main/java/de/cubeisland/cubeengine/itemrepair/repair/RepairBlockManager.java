@@ -30,7 +30,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
-import de.cubeisland.cubeengine.core.logger.LogLevel;
+
 import de.cubeisland.cubeengine.itemrepair.Itemrepair;
 import de.cubeisland.cubeengine.itemrepair.material.RepairItemContainer;
 import de.cubeisland.cubeengine.itemrepair.repair.blocks.RepairBlock;
@@ -81,15 +81,15 @@ public class RepairBlockManager
                 }
                 else
                 {
-                    this.module.getLog().warning("Deleting saved RepairBlock that is no longer a RepairBlock at " +
-                             + block.getX() + ":" + block.getY() + ":" + block.getZ() + " in " + block.getWorld().getName());
+                    this.module.getLog().warn("Deleting saved RepairBlock that is no longer a RepairBlock at {}:{}:{} in {}",
+                                              block.getX(), block.getY(), block.getZ(), block.getWorld().getName());
                     // TODO delete
                 }
             }
             else
             {
-                this.module.getLog().warning("Deleting saved RepairBlock that does not correspond to block at " +
-                             + block.getX() + ":" + block.getY() + ":" + block.getZ() + " in " + block.getWorld().getName());
+                this.module.getLog().warn("Deleting saved RepairBlock that does not correspond to block at {}:{}:{} in {}",
+                                          block.getX(), block.getY(), block.getZ(), block.getWorld().getName());
                 // TODO delete
             }
         }
@@ -106,8 +106,7 @@ public class RepairBlockManager
     {
         this.module.getCore().getPermissionManager().registerPermission(this.module, block.getPermission());
         this.repairBlocks.put(block.getMaterial(), block);
-        this.module.getLog().log(LogLevel.DEBUG, "Added a repair block: " + block.getName() + " on ID: " + block
-            .getMaterial());
+        this.module.getLog().debug("Added a repair block: {} on ID: {}", block.getName(), block.getMaterial());
         return this;
     }
 

@@ -33,7 +33,6 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.BookMeta;
 
 import de.cubeisland.cubeengine.core.i18n.Language;
-import de.cubeisland.cubeengine.core.logger.LogLevel;
 import de.cubeisland.cubeengine.core.util.StringUtils;
 import de.cubeisland.cubeengine.rulebook.Rulebook;
 
@@ -57,7 +56,7 @@ public final class RulebookManager
             }
             catch(IOException ex)
             {
-                this.module.getLog().log(LogLevel.ERROR, "Can't read the file {0}", book.getName());
+                this.module.getLog().error("Can't read the file {}", book.getName());
             }
         }
     }
@@ -165,7 +164,7 @@ public final class RulebookManager
             }
             catch(IOException ex)
             {
-                this.module.getLog().log(LogLevel.ERROR, "Error by creating the book");
+                this.module.getLog().error("Error when creating the book: " + ex.getLocalizedMessage(), ex);
             }
         }
     }

@@ -192,7 +192,7 @@ public class SpawnCommands
                 RolesAttachment rolesAttachment = user.get(RolesAttachment.class);
                 if (rolesAttachment == null)
                 {
-                    this.roles.getLog().warning("Missing RolesAttachment!");
+                    this.roles.getLog().warn("Missing RolesAttachment!");
                     return;
                 }
                 String rolespawn = rolesAttachment.getCurrentMetadata("rolespawn");
@@ -278,7 +278,7 @@ public class SpawnCommands
             RolesAttachment rolesAttachment = user.get(RolesAttachment.class);
             if (rolesAttachment == null)
             {
-                this.roles.getLog().warning("Missing RolesAttachment!");
+                this.roles.getLog().warn("Missing RolesAttachment!");
                 return;
             }
             String rolespawn = rolesAttachment.getCurrentMetadata("rolespawn");

@@ -85,7 +85,7 @@ public class Chat extends Module implements Listener
             RolesAttachment rolesAttachment = user.get(RolesAttachment.class);
             if (rolesAttachment == null)
             {
-                this.roles.getLog().warning("Missing RolesAttachment!");
+                this.roles.getLog().warn("Missing RolesAttachment!");
                 return;
             }
             if (format.contains("{ROLE.PREFIX}"))

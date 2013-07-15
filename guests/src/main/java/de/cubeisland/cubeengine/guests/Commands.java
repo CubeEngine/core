@@ -24,7 +24,7 @@ import de.cubeisland.cubeengine.core.command.CommandSender;
 import de.cubeisland.cubeengine.core.command.ContainerCommand;
 import de.cubeisland.cubeengine.core.command.parameterized.ParameterizedContext;
 import de.cubeisland.cubeengine.core.command.reflected.Command;
-import de.cubeisland.cubeengine.core.logger.LogLevel;
+
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.util.ChatFormat;
 import de.cubeisland.cubeengine.guests.prevention.Prevention;
@@ -363,7 +363,7 @@ public class Commands extends ContainerCommand
     {
         if (context != null)
         {
-            this.guests.getLog().log(LogLevel.INFO, message);
+            this.guests.getLog().info(message);
         }
         final CommandSender sender = context.getSender();
         for (User user : this.guests.getCore().getUserManager().getOnlineUsers())

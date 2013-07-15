@@ -33,7 +33,7 @@ import de.cubeisland.cubeengine.core.command.parameterized.ParameterizedContext;
 import de.cubeisland.cubeengine.core.command.reflected.Alias;
 import de.cubeisland.cubeengine.core.command.reflected.Command;
 import de.cubeisland.cubeengine.core.i18n.Language;
-import de.cubeisland.cubeengine.core.logger.LogLevel;
+
 import de.cubeisland.cubeengine.core.permission.Permission;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.rulebook.Rulebook;
@@ -220,7 +220,7 @@ public class RulebookCommands extends ContainerCommand
         }
         catch(IOException ex)
         {
-            this.getModule().getLog().log(LogLevel.ERROR, "Error by deleting the files.", ex);
+            this.getModule().getLog().error("Error when deleting the files: " + ex.getLocalizedMessage(), ex);
         }
 
     }
@@ -272,7 +272,7 @@ public class RulebookCommands extends ContainerCommand
             }
             catch(IOException ex)
             {
-                this.getModule().getLog().log(LogLevel.ERROR, "Error by deleting the files.", ex);
+                this.getModule().getLog().error("Error when deleting the files: " + ex.getLocalizedMessage(), ex);
             }
         }
         else

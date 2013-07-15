@@ -1073,7 +1073,7 @@ public class MarketSign
         }
         else
         {
-            this.module.getLog().warning("No sign found where a market-sign was expected! " + this.getLocation());
+            this.module.getLog().warn("No sign found where a market-sign was expected! {}" , this.getLocation());
         }
     }
 

@@ -44,7 +44,6 @@ public class RepairItem
     {
         if (material == null || baseMaterial == null)
         {
-            System.out.print("Error:" + material + ": " + baseMaterial);
             return null;
         }
         return new RepairItem(material,baseMaterial,baseMaterialCount);

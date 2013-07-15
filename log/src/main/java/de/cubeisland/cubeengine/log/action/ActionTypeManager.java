@@ -24,7 +24,7 @@ import java.util.Set;
 import java.util.TreeSet;
 import java.util.concurrent.ConcurrentHashMap;
 
-import de.cubeisland.cubeengine.core.logger.LogLevel;
+
 import de.cubeisland.cubeengine.core.util.ChatFormat;
 import de.cubeisland.cubeengine.core.util.StringUtils;
 import de.cubeisland.cubeengine.core.util.matcher.Match;
@@ -268,7 +268,7 @@ public class ActionTypeManager
         }
         if (actionType.getID() != -1)
         {
-            this.module.getLog().log(LogLevel.DEBUG,"ActionType registered: " + actionType.getID() + " " + actionType.getName());
+            this.module.getLog().debug("ActionType registered: " + actionType.getID() + " " + actionType.getName());
         }
         return this;
     }

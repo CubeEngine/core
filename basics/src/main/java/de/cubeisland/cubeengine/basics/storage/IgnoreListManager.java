@@ -23,11 +23,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+import de.cubeisland.cubeengine.core.CubeEngine;
 import de.cubeisland.cubeengine.core.storage.StorageException;
 import de.cubeisland.cubeengine.core.storage.TwoKeyStorage;
 import de.cubeisland.cubeengine.core.storage.database.Database;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.util.Profiler;
+
+import de.cubeisland.cubeengine.basics.Basics;
 
 import gnu.trove.map.hash.TLongObjectHashMap;
 
@@ -40,9 +43,9 @@ public class IgnoreListManager extends TwoKeyStorage<Long, Long, IgnoreList>
     public IgnoreListManager(Database database)
     {
         super(database, IgnoreList.class, REVISION);
-        System.out.print(Profiler.getCurrentDelta("basicsEnable", TimeUnit.MILLISECONDS) + "ms - IgnoreList.Manager-super");
+        CubeEngine.getLog().trace("{} ms - IgnoreList.Manager-super", Profiler.getCurrentDelta("basicsEnable", TimeUnit.MILLISECONDS));
         this.initialize();
-        System.out.print(Profiler.getCurrentDelta("basicsEnable", TimeUnit.MILLISECONDS) + "ms - IgnoreList.Manager-init");
+        CubeEngine.getLog().trace("{} ms - IgnoreList.Manager-init", Profiler.getCurrentDelta("basicsEnable", TimeUnit.MILLISECONDS));
     }
 
     @Override

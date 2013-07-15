@@ -22,6 +22,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -39,6 +41,8 @@ import de.cubeisland.cubeengine.core.module.exception.MissingDependencyException
 import de.cubeisland.cubeengine.core.storage.Registry;
 
 import gnu.trove.set.hash.THashSet;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This class is used to load modules and provide a centralized place for class
@@ -52,9 +56,10 @@ public class ModuleLoader
     private final Map<String, ModuleClassLoader> classLoaders;
     protected final String infoFileName;
     private final File tempFolder;
+    private final ModuleLoggerFactory loggerFactory;
     private Registry registry;
 
-    ModuleLoader(Core core, ClassLoader parentClassLoader)
+    ModuleLoader(Core core, ClassLoader parentClassLoader, ModuleLoggerFactory loggerFactory)
     {
         this.core = core;
         this.parentClassLoader = parentClassLoader;
@@ -63,6 +68,7 @@ public class ModuleLoader
         this.infoFileName = "module.yml";
         this.tempFolder = new File(core.getFileManager().getTempDir(), "modules");
         this.registry = new Registry(core.getDB());
+        this.loggerFactory = loggerFactory;
         if (!this.tempFolder.exists() && !this.tempFolder.mkdir())
         {
             throw new RuntimeException("Failed to create a temporary folder for the modules!");
@@ -127,8 +133,9 @@ public class ModuleLoader
             ModuleClassLoader classLoader = new ModuleClassLoader(this, tempFile.toURI().toURL(), info, this.parentClassLoader);
             Class<? extends Module> moduleClass = Class.forName(info.getMain(), true, classLoader).asSubclass(Module.class);
             Module module = moduleClass.getConstructor().newInstance();
+            Logger logger = this.loggerFactory.getLogger(info);
 
-            module.initialize(this.core, info, new File(info.getFile().getParentFile(), name), new ModuleLogger(this.core, info), this, classLoader);
+            module.initialize(this.core, info, new File(info.getFile().getParentFile(), name), this, classLoader, logger);
             module.onLoad();
 
             this.core.getEventManager().fireEvent(new ModuleLoadedEvent(this.core, module));
