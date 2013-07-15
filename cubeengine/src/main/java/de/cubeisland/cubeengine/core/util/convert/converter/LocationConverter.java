@@ -17,6 +17,14 @@
  */
 package de.cubeisland.cubeengine.core.util.convert.converter;
 
+import java.util.LinkedHashMap;
+import java.util.Map;
+
+import org.bukkit.Location;
+import org.bukkit.Server;
+import org.bukkit.World;
+import org.bukkit.plugin.Plugin;
+
 import de.cubeisland.cubeengine.core.Core;
 import de.cubeisland.cubeengine.core.config.node.MapNode;
 import de.cubeisland.cubeengine.core.config.node.Node;
@@ -24,13 +32,6 @@ import de.cubeisland.cubeengine.core.config.node.StringNode;
 import de.cubeisland.cubeengine.core.util.convert.ConversionException;
 import de.cubeisland.cubeengine.core.util.convert.Convert;
 import de.cubeisland.cubeengine.core.util.convert.Converter;
-import org.bukkit.Location;
-import org.bukkit.Server;
-import org.bukkit.World;
-import org.bukkit.plugin.Plugin;
-
-import java.util.LinkedHashMap;
-import java.util.Map;
 
 public class LocationConverter implements Converter<Location>
 {

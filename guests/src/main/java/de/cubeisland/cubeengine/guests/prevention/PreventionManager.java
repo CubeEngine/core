@@ -17,15 +17,16 @@
  */
 package de.cubeisland.cubeengine.guests.prevention;
 
+import java.util.ArrayList;
+import java.util.Collection;
+
 import de.cubeisland.cubeengine.core.bukkit.EventManager;
 import de.cubeisland.cubeengine.core.permission.PermDefault;
 
 import de.cubeisland.cubeengine.core.permission.PermissionManager;
 import de.cubeisland.cubeengine.guests.Guests;
-import gnu.trove.map.hash.THashMap;
 
-import java.util.ArrayList;
-import java.util.Collection;
+import gnu.trove.map.hash.THashMap;
 
 /**
  * This class manages the Prevention's.

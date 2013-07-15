@@ -17,13 +17,13 @@
  */
 package de.cubeisland.cubeengine.shout.announce.receiver;
 
+import java.util.Locale;
+import java.util.Queue;
+
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.util.ChatFormat;
 import de.cubeisland.cubeengine.shout.announce.Announcement;
 import de.cubeisland.cubeengine.shout.announce.AnnouncementManager;
-
-import java.util.Locale;
-import java.util.Queue;
 
 public class UserReceiver extends AbstractReceiver
 {

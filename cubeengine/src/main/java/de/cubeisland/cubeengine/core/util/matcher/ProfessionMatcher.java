@@ -17,11 +17,11 @@
  */
 package de.cubeisland.cubeengine.core.util.matcher;
 
-import org.bukkit.entity.Villager.Profession;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+
+import org.bukkit.entity.Villager.Profession;
 
 public class ProfessionMatcher
 {
@@ -40,5 +40,10 @@ public class ProfessionMatcher
     {
         String match = Match.string().matchString(name.toUpperCase(Locale.ENGLISH), this.professions);
         return Profession.valueOf(match);
+    }
+
+    public String[] professions()
+    {
+        return professions.toArray(new String[professions.size()]);
     }
 }

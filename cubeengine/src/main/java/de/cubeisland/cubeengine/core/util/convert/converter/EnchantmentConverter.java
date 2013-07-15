@@ -17,13 +17,14 @@
  */
 package de.cubeisland.cubeengine.core.util.convert.converter;
 
+import org.bukkit.enchantments.Enchantment;
+
 import de.cubeisland.cubeengine.core.config.node.Node;
 import de.cubeisland.cubeengine.core.config.node.StringNode;
 import de.cubeisland.cubeengine.core.util.convert.ConversionException;
 import de.cubeisland.cubeengine.core.util.convert.Convert;
 import de.cubeisland.cubeengine.core.util.convert.Converter;
 import de.cubeisland.cubeengine.core.util.matcher.Match;
-import org.bukkit.enchantments.Enchantment;
 
 public class EnchantmentConverter implements Converter<Enchantment>
 {

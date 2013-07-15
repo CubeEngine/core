@@ -17,17 +17,19 @@
  */
 package de.cubeisland.cubeengine.fun.commands;
 
+import java.util.Iterator;
+import java.util.Map;
+
+import org.bukkit.World;
+import org.bukkit.command.CommandSender;
+
 import de.cubeisland.cubeengine.core.command.parameterized.Param;
 import de.cubeisland.cubeengine.core.command.parameterized.ParameterizedContext;
 import de.cubeisland.cubeengine.core.command.reflected.Command;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.fun.Fun;
-import gnu.trove.map.hash.THashMap;
-import org.bukkit.World;
-import org.bukkit.command.CommandSender;
 
-import java.util.Iterator;
-import java.util.Map;
+import gnu.trove.map.hash.THashMap;
 
 public class DiscoCommand
 {

@@ -17,14 +17,14 @@
  */
 package de.cubeisland.cubeengine.core.storage.database;
 
-import de.cubeisland.cubeengine.core.storage.Storage;
-import de.cubeisland.cubeengine.core.storage.database.querybuilder.QueryBuilder;
-
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+
+import de.cubeisland.cubeengine.core.storage.Storage;
+import de.cubeisland.cubeengine.core.storage.database.querybuilder.QueryBuilder;
 
 /**
  * The Database interface.

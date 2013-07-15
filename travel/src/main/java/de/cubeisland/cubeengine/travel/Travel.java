@@ -19,12 +19,15 @@ package de.cubeisland.cubeengine.travel;
 
 import java.util.concurrent.TimeUnit;
 
-import de.cubeisland.cubeengine.core.bukkit.EventManager;
 import de.cubeisland.cubeengine.core.command.CommandManager;
 import de.cubeisland.cubeengine.core.config.Configuration;
 import de.cubeisland.cubeengine.core.module.Module;
 import de.cubeisland.cubeengine.core.util.Profiler;
-import de.cubeisland.cubeengine.travel.interactions.*;
+import de.cubeisland.cubeengine.travel.interactions.HomeAdminCommand;
+import de.cubeisland.cubeengine.travel.interactions.HomeCommand;
+import de.cubeisland.cubeengine.travel.interactions.HomeListener;
+import de.cubeisland.cubeengine.travel.interactions.WarpAdminCommand;
+import de.cubeisland.cubeengine.travel.interactions.WarpCommand;
 import de.cubeisland.cubeengine.travel.storage.InviteManager;
 import de.cubeisland.cubeengine.travel.storage.TelePointManager;
 
@@ -46,7 +49,6 @@ public class Travel extends Module
         this.inviteManager = new InviteManager(this.getCore().getDB(), this);
         this.getLog().trace("{} ms - InviteManager-load", Profiler.getCurrentDelta("travelEnable", TimeUnit.MILLISECONDS));
         this.telePointManager.load(this.inviteManager);
-
         final CommandManager cm = this.getCore().getCommandManager();
         this.getLog().trace("{} ms - register commands", Profiler.getCurrentDelta("travelEnable", TimeUnit.MILLISECONDS));
         cm.registerCommand(new HomeCommand(this));
@@ -54,8 +56,7 @@ public class Travel extends Module
         cm.registerCommand(new WarpCommand(this));
         cm.registerCommand(new WarpAdminCommand(this), "warp");
         this.getLog().trace("{} ms - register listener", Profiler.getCurrentDelta("travelEnable", TimeUnit.MILLISECONDS));
-        final EventManager em = this.getCore().getEventManager();
-        em.registerListener(this, new HomeListener(this));
+        this.getCore().getEventManager().registerListener(this, new HomeListener(this));
         this.getLog().trace("{} ms - Done", Profiler.endProfiling("travelEnable", TimeUnit.MILLISECONDS));
     }
 

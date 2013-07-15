@@ -68,7 +68,7 @@ public class HomeListener implements Listener
                             return;
                         }
                         Home home = tpManager.createHome(user.getLocation(), "home", user, TeleportPoint.Visibility.PRIVATE);
-                        user.sendTranslated("&aYour home have been created!");
+                        user.sendTranslated("&aYour home has been created!");
                         event.setCancelled(true);
                     }
                 }

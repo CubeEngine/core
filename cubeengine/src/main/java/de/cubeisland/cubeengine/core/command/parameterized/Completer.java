@@ -17,9 +17,9 @@
  */
 package de.cubeisland.cubeengine.core.command.parameterized;
 
-import de.cubeisland.cubeengine.core.command.CommandSender;
-
 import java.util.List;
+
+import de.cubeisland.cubeengine.core.command.CommandSender;
 
 public interface Completer
 {

@@ -17,19 +17,22 @@
  */
 package de.cubeisland.cubeengine.log.action.logaction.interact;
 
-import java.util.EnumSet;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.bukkit.DyeColor;
 import org.bukkit.World;
 
 import de.cubeisland.cubeengine.core.user.User;
+import de.cubeisland.cubeengine.log.action.ActionTypeCategory;
 import de.cubeisland.cubeengine.log.action.logaction.SimpleLogActionType;
 import de.cubeisland.cubeengine.log.storage.LogEntry;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
-import static de.cubeisland.cubeengine.log.action.ActionType.Category.ENTITY;
-import static de.cubeisland.cubeengine.log.action.ActionType.Category.PLAYER;
+import static de.cubeisland.cubeengine.log.action.ActionTypeCategory.ENTITY;
+import static de.cubeisland.cubeengine.log.action.ActionTypeCategory.PLAYER;
 
 /**
  * Dyeing sheeps or wolfcollars
@@ -38,9 +41,9 @@ import static de.cubeisland.cubeengine.log.action.ActionType.Category.PLAYER;
 public class EntityDye extends SimpleLogActionType
 {
     @Override
-    protected EnumSet<Category> getCategories()
+    protected Set<ActionTypeCategory> getCategories()
     {
-        return EnumSet.of(PLAYER, ENTITY);
+        return new HashSet<ActionTypeCategory>(Arrays.asList(PLAYER, ENTITY));
     }
 
     @Override

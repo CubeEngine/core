@@ -56,7 +56,11 @@ public class DatabaseFactory
             try
             {
                 DatabaseConfiguration config = Configuration.load(configClazz, configFile);
-                return config.getDatabaseClass().getConstructor(DatabaseConfiguration.class).newInstance(config);
+                Database database = config.getDatabaseClass().getConstructor(DatabaseConfiguration.class).newInstance(config);
+                if (database.getConnection().isValid(500))
+                {
+                    return database;
+                }
             }
             catch (Exception e)
             {

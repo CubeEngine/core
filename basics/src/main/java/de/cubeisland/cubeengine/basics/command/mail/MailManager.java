@@ -17,20 +17,20 @@
  */
 package de.cubeisland.cubeengine.basics.command.mail;
 
-import de.cubeisland.cubeengine.basics.storage.BasicUser;
-import de.cubeisland.cubeengine.basics.storage.BasicUserManager;
+import java.lang.reflect.Field;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
+
 import de.cubeisland.cubeengine.core.command.CommandSender;
 import de.cubeisland.cubeengine.core.storage.SingleKeyStorage;
 import de.cubeisland.cubeengine.core.storage.StorageException;
 import de.cubeisland.cubeengine.core.storage.database.Database;
 import de.cubeisland.cubeengine.core.storage.database.querybuilder.QueryBuilder;
 import de.cubeisland.cubeengine.core.user.User;
-
-import java.lang.reflect.Field;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
+import de.cubeisland.cubeengine.basics.storage.BasicUser;
+import de.cubeisland.cubeengine.basics.storage.BasicUserManager;
 
 import static de.cubeisland.cubeengine.core.storage.database.querybuilder.ComponentBuilder.EQUAL;
 

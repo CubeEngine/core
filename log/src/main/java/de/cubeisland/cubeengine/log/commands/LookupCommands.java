@@ -37,6 +37,7 @@ import de.cubeisland.cubeengine.core.util.matcher.Match;
 import de.cubeisland.cubeengine.log.Log;
 import de.cubeisland.cubeengine.log.LogAttachment;
 import de.cubeisland.cubeengine.log.action.ActionType;
+import de.cubeisland.cubeengine.log.action.ActionTypeCompleter;
 import de.cubeisland.cubeengine.log.action.ActionTypeManager;
 import de.cubeisland.cubeengine.log.storage.ImmutableBlockData;
 import de.cubeisland.cubeengine.log.storage.Lookup;
@@ -100,9 +101,9 @@ public class LookupCommands
         @Flag(longName = "descending", name = "desc") //sort in descending order (default ascending) //TODO implement
     },
     params = {
-        @Param(names = {"action","a"}),// !!must have tabcompleter for all register actionTypes
+        @Param(names = {"action","a"}, completer = ActionTypeCompleter.class),
         @Param(names = {"radius","r"}),//<radius> OR selection|sel OR global|g OR player|p:<radius>
-        @Param(names = {"user","player","p"}),
+        @Param(names = {"user","player","p"}, completer = PlayerListCompleter.class),
         @Param(names = {"block","b"}),
         @Param(names = {"entity","e"}),
         @Param(names = {"since","time","t"}), // if not given default since 3d
@@ -153,9 +154,9 @@ public class LookupCommands
         desc = "Performs a rollback", usage = "",
         flags = @Flag(longName = "preview", name = "pre"),
         params = {
-            @Param(names = {"action","a"}),// !!must have tabcompleter for all register actionTypes
+            @Param(names = {"action","a"}, completer = ActionTypeCompleter.class),
             @Param(names = {"radius","r"}),//<radius> OR selection|sel OR global|g OR player|p:<radius>
-            @Param(names = {"user","player","p"}),
+            @Param(names = {"user","player","p"}, completer = PlayerListCompleter.class),
             @Param(names = {"block","b"}),
             @Param(names = {"entity","e"}),
             @Param(names = {"since","time","t"}), // if not given default since 3d

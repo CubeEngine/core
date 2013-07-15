@@ -751,6 +751,17 @@ ACTIVATOR_RAIL:0
   activatorrail
 DROPPER:0
   dropper
+STAINED_CLAY:0
+  stainedclay
+HAY_BLOCK:0
+  hayblock
+CARPET:0
+  carpet
+HARD_CLAY:0
+  hardclay
+  hardenedclay
+COAL_BLOCK:0
+  coalblock
 IRON_SPADE:0
   ironshovel
   ironspade
@@ -1447,6 +1458,8 @@ MONSTER_EGG:96
 MONSTER_EGG:98
   ocelotegg
   eggocelot
+MONSTER_EGG:100
+  horseegg
 MONSTER_EGG:120
   villageregg
   eggvillager
@@ -1518,6 +1531,20 @@ EXPLOSIVE_MINECART:0
 HOPPER_MINECART:0
   HopperMinecart
   MinecartWithHopper
+IRON_BARDING:0
+  ironhorsearmor
+  ironbarding
+GOLD_BARDING:0
+  goldhorsearmor
+  goldbarding
+DIAMOND_BARDING:0
+  diamondhorsearmor
+  diamondbarding
+LEASH:0
+  leash
+  lead
+NAME_TAG:0
+  nametag
 GOLD_RECORD:0
   goldrecord
   golddisk

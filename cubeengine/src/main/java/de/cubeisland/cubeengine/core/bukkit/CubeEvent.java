@@ -17,9 +17,10 @@
  */
 package de.cubeisland.cubeengine.core.bukkit;
 
-import de.cubeisland.cubeengine.core.Core;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.Event;
+
+import de.cubeisland.cubeengine.core.Core;
 
 /**
  * This class is a custom Event containing the core to allow easy access.

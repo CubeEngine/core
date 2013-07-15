@@ -17,6 +17,8 @@
  */
 package de.cubeisland.cubeengine.basics.command.teleport;
 
+import java.util.HashSet;
+
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -85,14 +87,24 @@ public class TeleportListener implements Listener
                         Location loc;
                         if (event.getClickedBlock() != null && event.getClickedBlock().getType().isSolid())
                         {
-                            loc = event.getClickedBlock().getLocation().add(0.5, 0, 0.5);
+                            loc = event.getClickedBlock().getLocation().add(0.5, 1, 0.5);
                         }
                         else
                         {
-                            Block block = event.getPlayer().getTargetBlock(null, this.basics.getConfiguration().jumpToMaxRange);
+                            Block block;
+                            Material userIsIn = user.getEyeLocation().getBlock().getType();
+                            if (userIsIn.equals(Material.WATER) || userIsIn.equals(Material.STATIONARY_WATER))
+                            {
+                                block = event.getPlayer().getTargetBlock(new HashSet<Byte>(8,9), this.basics.getConfiguration().jumpToMaxRange);
+                            }
+                            else
+                            {
+                                block = event.getPlayer().getTargetBlock(null, this.basics.getConfiguration().jumpToMaxRange);
+                            }
+
                             if (block.getTypeId() != 0)
                             {
-                                loc = block.getLocation().add(0.5, 0, 0.5);
+                                loc = block.getLocation().add(0.5, 1, 0.5);
                             }
                             else return;
                         }

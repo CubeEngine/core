@@ -17,9 +17,10 @@
  */
 package de.cubeisland.cubeengine.core.util.math.shape;
 
+import java.util.Iterator;
+
 import de.cubeisland.cubeengine.core.util.math.MathHelper;
 import de.cubeisland.cubeengine.core.util.math.Vector3;
-import java.util.Iterator;
 
 public class Cylinder implements Shape
 {

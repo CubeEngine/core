@@ -17,13 +17,15 @@
  */
 package de.cubeisland.cubeengine.core.storage;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
+
 import de.cubeisland.cubeengine.core.module.Module;
 import de.cubeisland.cubeengine.core.storage.database.AttrType;
 import de.cubeisland.cubeengine.core.storage.database.Database;
 import de.cubeisland.cubeengine.core.storage.database.querybuilder.QueryBuilder;
+
 import gnu.trove.map.hash.THashMap;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 
 public class Registry
 {

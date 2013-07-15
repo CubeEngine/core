@@ -17,15 +17,18 @@
  */
 package de.cubeisland.cubeengine.guests.prevention.preventions;
 
-import de.cubeisland.cubeengine.guests.Guests;
-import de.cubeisland.cubeengine.guests.prevention.Prevention;
-import gnu.trove.map.hash.TObjectLongHashMap;
 import java.util.concurrent.TimeUnit;
+
 import org.bukkit.configuration.Configuration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
+
+import de.cubeisland.cubeengine.guests.Guests;
+import de.cubeisland.cubeengine.guests.prevention.Prevention;
+
+import gnu.trove.map.hash.TObjectLongHashMap;
 
 /**
  * Prevents spamming.

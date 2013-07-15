@@ -17,17 +17,15 @@
  */
 package de.cubeisland.cubeengine.basics.command.moderation.kit;
 
-import de.cubeisland.cubeengine.basics.Basics;
-import de.cubeisland.cubeengine.core.config.Configuration;
-import de.cubeisland.cubeengine.core.config.YamlConfiguration;
-import de.cubeisland.cubeengine.core.config.annotations.Codec;
-import de.cubeisland.cubeengine.core.config.annotations.Comment;
-import de.cubeisland.cubeengine.core.config.annotations.Option;
-import de.cubeisland.cubeengine.core.util.time.Duration;
-
 import java.io.File;
 import java.util.LinkedList;
 import java.util.List;
+
+import de.cubeisland.cubeengine.core.config.YamlConfiguration;
+import de.cubeisland.cubeengine.core.config.annotations.Comment;
+import de.cubeisland.cubeengine.core.config.annotations.Option;
+import de.cubeisland.cubeengine.core.util.time.Duration;
+import de.cubeisland.cubeengine.basics.Basics;
 
 public class KitConfiguration extends YamlConfiguration
 {

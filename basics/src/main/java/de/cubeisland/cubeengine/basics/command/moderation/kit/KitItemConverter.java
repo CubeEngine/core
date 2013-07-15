@@ -17,15 +17,16 @@
  */
 package de.cubeisland.cubeengine.basics.command.moderation.kit;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import org.bukkit.Material;
+
 import de.cubeisland.cubeengine.core.config.node.Node;
 import de.cubeisland.cubeengine.core.util.convert.ConversionException;
 import de.cubeisland.cubeengine.core.util.convert.Convert;
 import de.cubeisland.cubeengine.core.util.convert.Converter;
 import de.cubeisland.cubeengine.core.util.matcher.Match;
-import org.bukkit.Material;
-
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public class KitItemConverter implements Converter<KitItem>
 {

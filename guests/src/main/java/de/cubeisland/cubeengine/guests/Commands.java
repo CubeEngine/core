@@ -17,6 +17,8 @@
  */
 package de.cubeisland.cubeengine.guests;
 
+import java.util.Set;
+
 import de.cubeisland.cubeengine.core.command.CommandContext;
 import de.cubeisland.cubeengine.core.command.CommandSender;
 import de.cubeisland.cubeengine.core.command.ContainerCommand;
@@ -27,9 +29,8 @@ import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.util.ChatFormat;
 import de.cubeisland.cubeengine.guests.prevention.Prevention;
 import de.cubeisland.cubeengine.guests.prevention.PreventionManager;
-import gnu.trove.set.hash.THashSet;
 
-import java.util.Set;
+import gnu.trove.set.hash.THashSet;
 
 public class Commands extends ContainerCommand
 {

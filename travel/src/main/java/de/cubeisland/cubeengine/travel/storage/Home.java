@@ -17,6 +17,11 @@
  */
 package de.cubeisland.cubeengine.travel.storage;
 
+import java.util.Locale;
+import java.util.Set;
+
+import org.bukkit.Location;
+
 import de.cubeisland.cubeengine.core.CubeEngine;
 import de.cubeisland.cubeengine.core.permission.PermDefault;
 import de.cubeisland.cubeengine.core.permission.Permission;
@@ -24,18 +29,13 @@ import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.travel.Travel;
 import de.cubeisland.cubeengine.travel.storage.TeleportPoint.Visibility;
 
-import org.bukkit.Location;
-
-import java.util.Locale;
-import java.util.Set;
-
 public class Home
 {
     private final TeleportPoint parent;
     private final Travel module;
     private final TelePointManager telePointManager;
     private final InviteManager inviteManager;
-    private final Permission permission;
+    private Permission permission;
     private Set<String> invited;
 
     public Home(TeleportPoint teleportPoint, TelePointManager telePointManager, InviteManager inviteManager, Travel module)
@@ -47,7 +47,7 @@ public class Home
         if (teleportPoint.visibility == Visibility.PUBLIC)
         {
             this.permission = module.getBasePermission().
-                createAbstractChild("warps").createAbstractChild("access").
+                createAbstractChild("publichomes").createAbstractChild("access").
                                         createChild(parent.name.toLowerCase(Locale.ENGLISH), PermDefault.TRUE);
             module.getCore().getPermissionManager().registerPermission(module, this.permission);
         }
@@ -152,6 +152,18 @@ public class Home
             {
                 telePointManager.removeHomeFromUser(this, user);
             }
+        }
+        if (visibility.equals(Visibility.PUBLIC))
+        {
+            this.permission = module.getBasePermission().
+                createAbstractChild("publichomes").createAbstractChild("access").
+                                        createChild(parent.name.toLowerCase(Locale.ENGLISH), PermDefault.TRUE);
+            module.getCore().getPermissionManager().registerPermission(module, this.permission);
+        }
+        else
+        {
+            module.getCore().getPermissionManager().removePermission(this.module, permission);
+            this.permission = null;
         }
     }
 

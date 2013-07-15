@@ -24,8 +24,7 @@ import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.log.Log;
 import de.cubeisland.cubeengine.log.LogAttachment;
 import de.cubeisland.cubeengine.log.action.ActionType;
-import de.cubeisland.cubeengine.log.action.ActionType.Category;
-
+import de.cubeisland.cubeengine.log.action.ActionTypeCategory;
 
 public class Lookup implements Cloneable
 {
@@ -58,7 +57,7 @@ public class Lookup implements Cloneable
     {
         Lookup lookup = new Lookup(module);
         lookup.queryParameter = new QueryParameter(module);
-        lookup.queryParameter.setActions(Category.INVENTORY.getActionTypes(), true); // include inv
+        lookup.queryParameter.setActions(ActionTypeCategory.INVENTORY.getActionTypes(), true); // include inv
         lookup.queryParameter.since(System.currentTimeMillis() - TimeUnit.DAYS.toMillis(30));
         return lookup;
     }
@@ -70,7 +69,7 @@ public class Lookup implements Cloneable
     {
         Lookup lookup = new Lookup(module);
         lookup.queryParameter = new QueryParameter(module);
-        lookup.queryParameter.setActions(Category.KILL.getActionTypes(), true); // include kills
+        lookup.queryParameter.setActions(ActionTypeCategory.KILL.getActionTypes(), true); // include kills
         lookup.queryParameter.since(System.currentTimeMillis() - TimeUnit.DAYS.toMillis(30));
         return lookup;
     }
@@ -82,7 +81,7 @@ public class Lookup implements Cloneable
     {
         Lookup lookup = new Lookup(module);
         lookup.queryParameter = new QueryParameter(module);
-        lookup.queryParameter.setActions(Category.PLAYER.getActionTypes(), true); // include player
+        lookup.queryParameter.setActions(ActionTypeCategory.PLAYER.getActionTypes(), true); // include player
         lookup.queryParameter.since(System.currentTimeMillis() - TimeUnit.DAYS.toMillis(30));
         return lookup;
     }
@@ -94,7 +93,7 @@ public class Lookup implements Cloneable
     {
         Lookup lookup = new Lookup(module);
         lookup.queryParameter = new QueryParameter(module);
-        lookup.queryParameter.setActions(Category.BLOCK.getActionTypes(), true); // include block
+        lookup.queryParameter.setActions(ActionTypeCategory.BLOCK.getActionTypes(), true); // include block
         lookup.queryParameter.since(System.currentTimeMillis() - TimeUnit.DAYS.toMillis(30));
         return lookup;
     }

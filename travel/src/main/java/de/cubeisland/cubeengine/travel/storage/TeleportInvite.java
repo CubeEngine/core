@@ -17,12 +17,16 @@
  */
 package de.cubeisland.cubeengine.travel.storage;
 
+import java.util.List;
+
 import de.cubeisland.cubeengine.core.storage.TwoKeyModel;
-import de.cubeisland.cubeengine.core.storage.database.*;
+import de.cubeisland.cubeengine.core.storage.database.AttrType;
+import de.cubeisland.cubeengine.core.storage.database.Attribute;
+import de.cubeisland.cubeengine.core.storage.database.DatabaseConstructor;
+import de.cubeisland.cubeengine.core.storage.database.Index;
+import de.cubeisland.cubeengine.core.storage.database.TwoKeyEntity;
 import de.cubeisland.cubeengine.core.util.Pair;
 import de.cubeisland.cubeengine.core.util.convert.ConversionException;
-
-import java.util.List;
 
 @TwoKeyEntity(tableName = "teleportinvites", firstPrimaryKey = "teleportpoint", secondPrimaryKey = "userkey",
               indices = {

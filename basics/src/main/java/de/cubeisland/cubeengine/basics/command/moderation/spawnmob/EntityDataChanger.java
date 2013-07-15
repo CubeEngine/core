@@ -17,9 +17,15 @@
  */
 package de.cubeisland.cubeengine.basics.command.moderation.spawnmob;
 
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
 import org.bukkit.DyeColor;
 import org.bukkit.entity.Ageable;
-import org.bukkit.entity.AnimalTamer;
 import org.bukkit.entity.Creeper;
 import org.bukkit.entity.Enderman;
 import org.bukkit.entity.Entity;
@@ -37,27 +43,36 @@ import org.bukkit.entity.Villager;
 import org.bukkit.entity.Wolf;
 import org.bukkit.entity.Zombie;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.material.Colorable;
 
-public class EntityDataChanger<E,T>
+import de.cubeisland.cubeengine.core.util.matcher.Match;
+
+import static org.bukkit.entity.Villager.Profession;
+
+public class EntityDataChanger<EntityInterface>
 {
-    private Class<E> clazz;
-    private EntityChanger<E,T> changer;
+    private final Class<EntityInterface> clazz;
+    private final EntityChanger<EntityInterface, ?> changer;
+    public static Set<EntityDataChanger> entityDataChangers = new HashSet<EntityDataChanger>();
 
-    public static final EntityDataChanger<Pig,Boolean> PIGSADDLE =
-            new EntityDataChanger<Pig,Boolean>(Pig.class,
-                    new EntityChanger<Pig,Boolean>() {
-                        @Override
-                        public void applyEntity(Pig entity, Boolean value) {
-                            entity.setSaddle(value);
-                        }
-                    });
+    public static final EntityDataChanger<Pig> PIG_SADDLE =
+            new EntityDataChanger<Pig>(Pig.class,
+                new BoolEntityChanger<Pig>("saddled")
+                {
+                    @Override
+                    public void applyEntity(Pig entity, String input)
+                    {
+                        entity.setSaddle(this.getTypeValue(input));
+                    }
+                });
 
-    public static final EntityDataChanger<Ageable,Boolean> BABYAGEABLE =
-            new EntityDataChanger<Ageable,Boolean>(Ageable.class,
-                    new EntityChanger<Ageable,Boolean>() {
+    public static final EntityDataChanger<Ageable> AGEABLE_BABY =
+            new EntityDataChanger<Ageable>(Ageable.class,
+                    new BoolEntityChanger<Ageable>("baby") {
                         @Override
-                        public void applyEntity(Ageable entity, Boolean value) {
-                            if (value)
+                        public void applyEntity(Ageable entity, String input)
+                        {
+                            if (this.getTypeValue(input))
                             {
                                 entity.setBaby();
                             }
@@ -68,133 +83,248 @@ public class EntityDataChanger<E,T>
                         }
                     });
 
-    public static final EntityDataChanger<Zombie,Boolean> BABYZOMBIE =
-        new EntityDataChanger<Zombie,Boolean>(Zombie.class,
-                      new EntityChanger<Zombie,Boolean>() {
-                          @Override
-                          public void applyEntity(Zombie entity, Boolean value) {
-                              entity.setBaby(value);
-                          }
-                      });
+    public static final EntityDataChanger<Zombie> ZOMBIE_BABY =
+        new EntityDataChanger<Zombie>(Zombie.class,
+            new BoolEntityChanger<Zombie>("baby") {
+                @Override
+                public void applyEntity(Zombie entity, String input)
+                {
+                    entity.setBaby(this.getTypeValue(input));
+                }
+            });
 
-    public static  final EntityDataChanger<Wolf,Boolean> ANGRYWOLF =
-            new EntityDataChanger<Wolf,Boolean>(Wolf.class,
-                    new EntityChanger<Wolf,Boolean>() {
+    public static final EntityDataChanger<Zombie> ZOMBIE_VILLAGER =
+        new EntityDataChanger<Zombie>(Zombie.class,
+          new BoolEntityChanger<Zombie>("villager") {
+              @Override
+              public void applyEntity(Zombie entity, String input) {
+                  entity.setVillager(this.getTypeValue(input));
+              }
+          });
+
+    public static final EntityDataChanger<Wolf> WOLF_ANGRY =
+            new EntityDataChanger<Wolf>(Wolf.class,
+                    new BoolEntityChanger<Wolf>("angry") {
                         @Override
-                        public void applyEntity(Wolf entity, Boolean value) {
-                            entity.setAngry(value);
+                        public void applyEntity(Wolf entity, String input) {
+                            entity.setAngry(this.getTypeValue(input));
                         }
                     });
 
-    public static  final EntityDataChanger<PigZombie,Boolean> ANGRYPIGZOMBIE =
-        new EntityDataChanger<PigZombie,Boolean>(PigZombie.class,
-                          new EntityChanger<PigZombie,Boolean>() {
+    public static final EntityDataChanger<PigZombie> PIGZOMBIE_ANGRY =
+        new EntityDataChanger<PigZombie>(PigZombie.class,
+                          new BoolEntityChanger<PigZombie>("angry") {
                               @Override
-                              public void applyEntity(PigZombie entity, Boolean value) {
-                                  entity.setAngry(value);
+                              public void applyEntity(PigZombie entity, String input) {
+                                  entity.setAngry(this.getTypeValue(input));
                               }
                           });
 
-    public static final EntityDataChanger<Creeper,Boolean> POWERED =
-            new EntityDataChanger<Creeper,Boolean>(Creeper.class,
-                    new EntityChanger<Creeper,Boolean>() {
+    public static final EntityDataChanger<Creeper> CREEPER_POWERED =
+            new EntityDataChanger<Creeper>(Creeper.class,
+                    new BoolEntityChanger<Creeper>("powered", "power", "charged") {
                         @Override
-                        public void applyEntity(Creeper entity, Boolean value) {
-                            entity.setPowered(value);
+                        public void applyEntity(Creeper entity, String input) {
+                            entity.setPowered(this.getTypeValue(input));
                         }
                     });
 
-    public static final EntityDataChanger<Wolf,Boolean> SITTINGWOLF =
-            new EntityDataChanger<Wolf,Boolean>(Wolf.class,
-                    new EntityChanger<Wolf,Boolean>() {
+    public static final EntityDataChanger<Wolf> WOLF_SIT =
+            new EntityDataChanger<Wolf>(Wolf.class,
+                    new BoolEntityChanger<Wolf>("sitting", "sit") {
                         @Override
-                        public void applyEntity(Wolf entity, Boolean value) {
-                            entity.setSitting(value);
+                        public void applyEntity(Wolf entity, String input) {
+                            entity.setSitting(this.getTypeValue(input));
                         }
                     });
 
-    public static final EntityDataChanger<Ocelot,Boolean> SITTINGOCELOT =
-        new EntityDataChanger<Ocelot,Boolean>(Ocelot.class,
-                  new EntityChanger<Ocelot,Boolean>() {
-                      @Override
-                      public void applyEntity(Ocelot entity, Boolean value) {
-                          entity.setSitting(value);
-                      }
-                  });
+    public static final EntityDataChanger<Ocelot> OCELOT_SIT =
+        new EntityDataChanger<Ocelot>(Ocelot.class,
+         new BoolEntityChanger<Ocelot>("sitting", "sit") {
+             @Override
+             public void applyEntity(Ocelot entity, String input) {
+                 entity.setSitting(this.getTypeValue(input));
+             }
+         });
 
-    public static  final EntityDataChanger<Tameable,AnimalTamer> TAME =
-            new EntityDataChanger<Tameable,AnimalTamer>(Tameable.class,
-                    new EntityChanger<Tameable,AnimalTamer>() {
+    public static final EntityDataChanger<Skeleton> SKELETON_TYPE =
+        new EntityDataChanger<Skeleton>(Skeleton.class,
+         new BoolEntityChanger<Skeleton>("wither") {
+             @Override
+             public void applyEntity(Skeleton entity, String input)
+             {
+                 if (this.getTypeValue(input)) entity.setSkeletonType(SkeletonType.WITHER);
+             }
+         });
+
+    public static final EntityDataChanger<Sheep> SHEEP_SHEARED =
+        new EntityDataChanger<Sheep>(Sheep.class,
+                                             new BoolEntityChanger<Sheep>("sheared") {
+                                                 @Override
+                                                 public void applyEntity(Sheep entity, String input)
+                                                 {
+                                                    entity.setSheared(this.getTypeValue(input));
+                                                 }
+                                             });
+
+
+    public static final EntityDataChanger<Ocelot> OCELOT_TYPE =
+        new EntityDataChanger<Ocelot>(Ocelot.class,
+              new MappedEntityChanger<Ocelot, Type>() {
+                  @Override
+                  void fillValues()
+                  {
+                      this.map.put("black", Type.BLACK_CAT);
+                      this.map.put("red", Type.RED_CAT);
+                      this.map.put("orange", Type.RED_CAT);
+                      this.map.put("white", Type.SIAMESE_CAT);
+                      this.map.put("siamese", Type.SIAMESE_CAT);
+                  }
+
+                  @Override
+                  public void applyEntity(Ocelot entity, String input)
+                  {
+                      Type catType = this.getTypeValue(input);
+                      if (catType != null) entity.setCatType(catType);
+                  }
+              });
+
+    public static  final EntityDataChanger<Colorable> SHEEP_COLOR =
+            new EntityDataChanger<Colorable>(Colorable.class,
+                    new EntityChanger<Colorable, DyeColor>() {
                         @Override
-                        public void applyEntity(Tameable entity, AnimalTamer value) {
-                            entity.setTamed(true);
-                            if (value != null)
+                        public void applyEntity(Colorable entity, String input)
+                        {
+                            DyeColor color = this.getTypeValue(input);
+                            if (color != null) entity.setColor(color);
+                        }
+                        @Override
+                        public DyeColor getTypeValue(String input)
+                        {
+                            return Match.materialData().colorData(input);
+                        }
+                    });
+
+    public static final EntityDataChanger<Wolf> WOLF_COLLAR =
+        new EntityDataChanger<Wolf>(Wolf.class,
+                   new EntityChanger<Wolf, DyeColor>() {
+                         @Override
+                         public void applyEntity(Wolf entity, String input) {
+                             DyeColor color = this.getTypeValue(input);
+                             if (color != null) entity.setCollarColor(color);
+                         }
+                         @Override
+                         public DyeColor getTypeValue(String input)
+                         {
+                             return Match.materialData().colorData(input);
+                         }
+                     });
+
+    public static  final EntityDataChanger<Villager> VILLAGER_PROFESSION =
+            new EntityDataChanger<Villager>(Villager.class,
+                    new EntityChanger<Villager, Profession>() {
+                        @Override
+                        public void applyEntity(Villager entity, String input)
+                        {
+                            Profession typeValue = this.getTypeValue(input);
+                            if (typeValue != null) entity.setProfession(typeValue);
+                        }
+
+                        @Override
+                        public Profession getTypeValue(String input)
+                        {
+                            return Match.profession().profession(input);
+                        }
+                    });
+
+    public static final EntityDataChanger<Enderman> ENDERMAN_ITEM =
+            new EntityDataChanger<Enderman>(Enderman.class,
+                    new EntityChanger<Enderman, ItemStack>() {
+                        @Override
+                        public void applyEntity(Enderman entity, String value) {
+                            ItemStack typeValue = this.getTypeValue(value);
+                            if (typeValue != null && typeValue.getType().isBlock())
                             {
-                                entity.setOwner(value);
+                                entity.setCarriedMaterial(typeValue.getData());
                             }
                         }
-                    });
 
-    public static  final EntityDataChanger<Sheep,DyeColor> SHEEP_COLOR =
-            new EntityDataChanger<Sheep,DyeColor>(Sheep.class,
-                    new EntityChanger<Sheep,DyeColor>() {
                         @Override
-                        public void applyEntity(Sheep entity, DyeColor value) {
-                            entity.setColor(value);
+                        public ItemStack getTypeValue(String input)
+                        {
+                            return Match.material().itemStack(input);
                         }
                     });
 
-    public static  final EntityDataChanger<Slime,Integer> SLIME_SIZE =
-            new EntityDataChanger<Slime,Integer>(Slime.class,
-                    new EntityChanger<Slime,Integer>() {
+    public static final EntityDataChanger<Slime> SLIME_SIZE =
+        new EntityDataChanger<Slime>(Slime.class,
+                                             new EntityChanger<Slime,Integer>() {
+                                                 @Override
+                                                 public void applyEntity(Slime entity, String input) {
+                                                     Integer typeValue = this.getTypeValue(input);
+                                                     if (typeValue != null) entity.setSize(typeValue);
+                                                 }
+
+                                                 @Override
+                                                 public Integer getTypeValue(String input)
+                                                 {
+                                                     // TODO tiny small big 0 2 4
+                                                     try
+                                                     {
+                                                         Integer parsed = Integer.parseInt(input);
+                                                         return (parsed > 0 && parsed <= 250) ? parsed : null;
+                                                     }
+                                                     catch (NumberFormatException ex)
+                                                     {
+                                                         return null;
+                                                     }
+                                                 }
+                                             });
+
+    public static final EntityDataChanger<LivingEntity> HP =
+            new EntityDataChanger<LivingEntity>(LivingEntity.class,
+                    new EntityChanger<LivingEntity, Integer>() {
                         @Override
-                        public void applyEntity(Slime entity, Integer size) {
-                            if (size > 0 && size <= 250)
+                        public void applyEntity(LivingEntity entity, String input)
+                        {
+                            Integer typeValue = this.getTypeValue(input);
+                            if (typeValue != null)
                             {
-                                entity.setSize(size);
+                                entity.setMaxHealth(typeValue);
+                                entity.setHealth(typeValue);
                             }
                         }
-                    });
 
-    public static  final EntityDataChanger<Villager,Villager.Profession> VILLAGER_PROFESSION =
-            new EntityDataChanger<Villager,Villager.Profession>(Villager.class,
-                    new EntityChanger<Villager,Villager.Profession>() {
                         @Override
-                        public void applyEntity(Villager entity, Villager.Profession value) {
-                            entity.setProfession(value);
-                        }
-                    });
-
-    public static final EntityDataChanger<Enderman,ItemStack> ENDERMAN_ITEM =
-            new EntityDataChanger<Enderman,ItemStack>(Enderman.class,
-                    new EntityChanger<Enderman,ItemStack>() {
-                        @Override
-                        public void applyEntity(Enderman entity, ItemStack value) {
-                            if (value.getType().isBlock())
+                        public Integer getTypeValue(String input)
+                        {
+                            if (input.endsWith("hp"))
                             {
-                                entity.setCarriedMaterial(value.getData());
+                                try
+                                {
+                                    return Integer.parseInt(input.substring(0,input.length()-2));
+                                }
+                                catch (NumberFormatException ex)
+                                {}
                             }
+                            return null;
                         }
                     });
 
-    public static final EntityDataChanger<LivingEntity,Integer> HP =
-            new EntityDataChanger<LivingEntity,Integer>(LivingEntity.class,
-                    new EntityChanger<LivingEntity,Integer>() {
-                        @Override
-                        public void applyEntity(LivingEntity entity, Integer value) {
-                            entity.setMaxHealth(value);
-                            entity.setHealth(value);
-                        }
-                    });
+    // TODO set tame_owner
 
-    public static final EntityDataChanger<Zombie,Boolean> VILLAGER_ZOMBIE =
-            new EntityDataChanger<Zombie,Boolean>(Zombie.class,
-                    new EntityChanger<Zombie,Boolean>() {
-                        @Override
-                        public void applyEntity(Zombie entity, Boolean value) {
-                            entity.setVillager(value);
-                        }
-                    });
+    public static final EntityDataChanger<Tameable> TAMEABLE =
+        new EntityDataChanger<Tameable>(Tameable.class,
+                                                    new BoolEntityChanger<Tameable>("tamed") {
+                                                        @Override
+                                                        public void applyEntity(Tameable entity, String value) {
+                                                            entity.setTamed(this.getTypeValue(value));
+                                                        }
+                                                    });
+
+
+// TODO equipment
+/*
 
     public static final EntityDataChanger<LivingEntity,ItemStack> EQUIP_ITEMINHAND =
             new EntityDataChanger<LivingEntity,ItemStack>(LivingEntity.class,
@@ -239,62 +369,78 @@ public class EntityDataChanger<E,T>
                             entity.getEquipment().setBoots(value);
                         }
                     });
+//*/
 
-    public static final EntityDataChanger<Wolf,DyeColor> WOLF_COLLAR =
-        new EntityDataChanger<Wolf,DyeColor>(Wolf.class,
-                      new EntityChanger<Wolf,DyeColor>() {
-                          @Override
-                          public void applyEntity(Wolf entity, DyeColor value) {
-                              entity.setCollarColor(value);
-                          }
-                      });
 
-    public static final EntityDataChanger<Skeleton,SkeletonType> SKELETON_TYPE =
-        new EntityDataChanger<Skeleton,SkeletonType>(Skeleton.class,
-                 new EntityChanger<Skeleton,SkeletonType>() {
-                     @Override
-                     public void applyEntity(Skeleton entity, SkeletonType value) {
-                         entity.setSkeletonType(value);
-                     }
-                 });
-
-    public static final EntityDataChanger<Ocelot,Type> CAT_TYPE =
-        new EntityDataChanger<Ocelot,Type>(Ocelot.class,
-                 new EntityChanger<Ocelot,Type>() {
-                     @Override
-                     public void applyEntity(Ocelot entity, Type value) {
-                         entity.setCatType(value);
-                     }
-                 });
-
-    public static final EntityDataChanger<Sheep,Boolean> SHEEP_SHEARED =
-        new EntityDataChanger<Sheep,Boolean>(Sheep.class,
-                 new EntityChanger<Sheep,Boolean>() {
-                     @Override
-                     public void applyEntity(Sheep entity, Boolean value) {
-                         entity.setSheared(value);
-                     }
-                 });
-
-    private EntityDataChanger(Class<E> clazz, EntityChanger<E,T> changer)
+    private EntityDataChanger(Class<EntityInterface> clazz, EntityChanger<EntityInterface, ?> changer)
     {
         this.clazz = clazz;
         this.changer = changer;
+        entityDataChangers.add(this);
     }
 
     @SuppressWarnings("unchecked")
-    public boolean applyTo(Entity entity, T value)
+    public boolean applyTo(Entity entity, String value)
     {
-        if (clazz.isAssignableFrom(entity.getClass()))
+        if (canApply(entity))
         {
-            this.changer.applyEntity((E)entity, value);
+            this.changer.applyEntity((EntityInterface)entity, value);
             return true;
         }
         return false;
     }
 
+    public boolean canApply(Entity entity)
+    {
+        return clazz.isAssignableFrom(entity.getClass());
+    }
+
     private static abstract class EntityChanger<E,T>
     {
-        public abstract void applyEntity(E entity, T value);
+        public abstract void applyEntity(E entity, String input);
+        public abstract T getTypeValue(String input);
+    }
+
+    private static abstract class BoolEntityChanger<E> extends EntityChanger<E, Boolean>
+    {
+        private List<String> names;
+        protected BoolEntityChanger(String... names)
+        {
+            this.names = Arrays.asList(names);
+        }
+
+        @Override
+        public Boolean getTypeValue(String input)
+        {
+            return Match.string().matchString(input, this.names) != null;
+        }
+    }
+
+    private static abstract class ColorEntityChanger<E> extends EntityChanger<E, DyeColor>
+    {
+        @Override
+        public DyeColor getTypeValue(String input)
+        {
+            return Match.materialData().colorData(input);
+        }
+    }
+
+    private static abstract class MappedEntityChanger<E, T> extends EntityChanger<E, T>
+    {
+        protected Map<String, T> map = new HashMap<String, T>();
+
+        protected MappedEntityChanger()
+        {
+            this.fillValues();
+        }
+
+        @Override
+        public T getTypeValue(String input)
+        {
+            String match = Match.string().matchString(input, map.keySet());
+            return match != null ? map.get(match) : null;
+        }
+
+        abstract void fillValues();
     }
 }

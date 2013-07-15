@@ -17,11 +17,10 @@
  */
 package de.cubeisland.cubeengine.core.util;
 
+import java.util.concurrent.TimeUnit;
+
 import gnu.trove.map.TObjectLongMap;
 import gnu.trove.map.hash.TObjectLongHashMap;
-import org.apache.commons.lang.Validate;
-
-import java.util.concurrent.TimeUnit;
 
 /**
  * This class helps profiling code

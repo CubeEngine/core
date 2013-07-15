@@ -17,9 +17,10 @@
  */
 package de.cubeisland.cubeengine.core.i18n;
 
-import de.cubeisland.cubeengine.core.util.Cleanable;
 import java.util.Locale;
 import java.util.Map;
+
+import de.cubeisland.cubeengine.core.util.Cleanable;
 
 /**
  * This interface represents a language containing translations.

@@ -30,6 +30,7 @@ import de.cubeisland.cubeengine.core.command.parameterized.ParameterizedContext;
 import de.cubeisland.cubeengine.core.command.reflected.Alias;
 import de.cubeisland.cubeengine.core.command.reflected.Command;
 import de.cubeisland.cubeengine.core.user.User;
+import de.cubeisland.cubeengine.core.util.ChatFormat;
 import de.cubeisland.cubeengine.core.util.FileUtil;
 import de.cubeisland.cubeengine.basics.Basics;
 import de.cubeisland.cubeengine.basics.BasicsPerm;
@@ -118,7 +119,18 @@ public class KitCommand extends ContainerCommand
         context.sendTranslated("&aCreated the &6%s &akit!", kit.getKitName());
     }
 
-    // TODO list kit cmd
+
+    @Alias(names = "kitlist")
+    @Command(desc = "Lists all currently available kits.")
+    public void list(ParameterizedContext context)
+    {
+        context.sendTranslated("&aThe following kits are available:");
+        String format = ChatFormat.parseFormats(" &f-&e %s");
+        for (String kitName : this.module.getKitManager().getKitsNames())
+        {
+            context.sendMessage(String.format(format, kitName));
+        }
+    }
 
     @Alias(names = "kit")
     @Command(desc = "Gives a kit of items.", usage = "<kitname> [player]", min = 1, max = 2, flags = {

@@ -160,7 +160,7 @@ public class SpawnCommands
             user = (User)context.getSender();
         }
         World world = module.getConfiguration().mainWorld;
-        if (world == null)
+        if (world == null && user != null)
         {
             world = user.getWorld();
         }
@@ -252,7 +252,7 @@ public class SpawnCommands
         if (context.hasParam("role"))
         {
             String roleName = context.getString("role");
-            Role role = this.manager.getProvider(world).getRole(roleName);
+            Role role = manager.getProvider(world).getRole(roleName);
             if (role == null)
             {
                 context.sendTranslated("&cCould not find the role &6%s&c in &6%s&c!",roleName,world.getName());

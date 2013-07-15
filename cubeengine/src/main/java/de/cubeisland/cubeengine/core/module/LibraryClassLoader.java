@@ -17,8 +17,6 @@
  */
 package de.cubeisland.cubeengine.core.module;
 
-import de.cubeisland.cubeengine.core.CubeEngine;
-
 import java.lang.reflect.Method;
 import java.net.URL;
 import java.net.URLClassLoader;

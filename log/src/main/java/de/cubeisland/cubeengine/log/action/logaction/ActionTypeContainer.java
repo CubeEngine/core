@@ -18,11 +18,12 @@
 package de.cubeisland.cubeengine.log.action.logaction;
 
 
-import java.util.EnumSet;
+import java.util.Set;
 
 import org.bukkit.World;
 
 import de.cubeisland.cubeengine.core.user.User;
+import de.cubeisland.cubeengine.log.action.ActionTypeCategory;
 import de.cubeisland.cubeengine.log.action.LogActionType;
 import de.cubeisland.cubeengine.log.storage.LogEntry;
 
@@ -36,7 +37,7 @@ public class ActionTypeContainer extends LogActionType
     }
 
     @Override
-    protected EnumSet<Category> getCategories()
+    protected Set<ActionTypeCategory> getCategories()
     {
         throw new UnsupportedOperationException();
     }

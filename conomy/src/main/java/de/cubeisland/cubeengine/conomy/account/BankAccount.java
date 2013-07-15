@@ -18,7 +18,9 @@
 package de.cubeisland.cubeengine.conomy.account;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.conomy.account.storage.AccountModel;
@@ -30,7 +32,6 @@ public class BankAccount extends Account
 {
     private Map<Long, BankAccessModel> owner;
     private Map<Long, BankAccessModel> member;
-
     private Map<Long, BankAccessModel> invites;
 
     protected BankAccount(ConomyManager manager, AccountModel model)
@@ -239,5 +240,38 @@ public class BankAccount extends Account
     public boolean rename(String newName)
     {
         return this.manager.renameBank(this, newName);
+    }
+
+    public Set<String> getInvites()
+    {
+        Set<String> invites = new HashSet<String>();
+        for (Long userId : this.invites.keySet())
+        {
+            invites.add(this.manager.module.getCore().getUserManager().getUser(userId).getName());
+            // TODO do not cache all those users!
+        }
+        return invites;
+    }
+
+    public Set<String> getOwners()
+    {
+        Set<String> owners = new HashSet<String>();
+        for (Long userId : this.owner.keySet())
+        {
+            owners.add(this.manager.module.getCore().getUserManager().getUser(userId).getName());
+            // TODO do not cache all those users!
+        }
+        return owners;
+    }
+
+    public Set<String> getMembers()
+    {
+        Set<String> members = new HashSet<String>();
+        for (Long userId : this.member.keySet())
+        {
+            members.add(this.manager.module.getCore().getUserManager().getUser(userId).getName());
+            // TODO do not cache all those users!
+        }
+        return members;
     }
 }

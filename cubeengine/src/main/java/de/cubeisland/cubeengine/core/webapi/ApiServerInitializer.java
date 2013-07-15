@@ -17,8 +17,9 @@
  */
 package de.cubeisland.cubeengine.core.webapi;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import de.cubeisland.cubeengine.core.Core;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.handler.codec.http.HttpContentCompressor;

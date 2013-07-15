@@ -17,23 +17,27 @@
  */
 package de.cubeisland.cubeengine.core.config.codec;
 
-import de.cubeisland.cubeengine.core.config.InvalidConfigurationException;
-import de.cubeisland.cubeengine.core.config.MultiConfiguration;
-import de.cubeisland.cubeengine.core.config.annotations.Comment;
-import de.cubeisland.cubeengine.core.config.annotations.MapComment;
-import de.cubeisland.cubeengine.core.config.annotations.MapComments;
-import de.cubeisland.cubeengine.core.config.annotations.Option;
-import de.cubeisland.cubeengine.core.config.node.*;
-import de.cubeisland.cubeengine.core.util.convert.Convert;
-import de.cubeisland.cubeengine.core.util.convert.converter.generic.CollectionConverter;
-import de.cubeisland.cubeengine.core.util.convert.converter.generic.MapConverter;
-
 import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.Map;
+
+import de.cubeisland.cubeengine.core.config.InvalidConfigurationException;
+import de.cubeisland.cubeengine.core.config.MultiConfiguration;
+import de.cubeisland.cubeengine.core.config.annotations.Comment;
+import de.cubeisland.cubeengine.core.config.annotations.MapComment;
+import de.cubeisland.cubeengine.core.config.annotations.MapComments;
+import de.cubeisland.cubeengine.core.config.annotations.Option;
+import de.cubeisland.cubeengine.core.config.node.ListNode;
+import de.cubeisland.cubeengine.core.config.node.MapNode;
+import de.cubeisland.cubeengine.core.config.node.Node;
+import de.cubeisland.cubeengine.core.config.node.NullNode;
+import de.cubeisland.cubeengine.core.config.node.StringNode;
+import de.cubeisland.cubeengine.core.util.convert.Convert;
+import de.cubeisland.cubeengine.core.util.convert.converter.generic.CollectionConverter;
+import de.cubeisland.cubeengine.core.util.convert.converter.generic.MapConverter;
 
 public class MultiCodecContainer<ConfigCodec extends MultiConfigurationCodec> extends CodecContainer<ConfigCodec>
 {

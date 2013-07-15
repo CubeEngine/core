@@ -17,14 +17,14 @@
  */
 package de.cubeisland.cubeengine.core.command.reflected.readable;
 
-import de.cubeisland.cubeengine.core.permission.PermDefault;
-
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 import java.util.regex.Pattern;
+
+import de.cubeisland.cubeengine.core.permission.PermDefault;
 
 @Documented
 @Retention(RetentionPolicy.RUNTIME)

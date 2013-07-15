@@ -17,8 +17,9 @@
  */
 package de.cubeisland.cubeengine.core.user;
 
-import de.cubeisland.cubeengine.core.Core;
 import org.bukkit.event.HandlerList;
+
+import de.cubeisland.cubeengine.core.Core;
 
 public class UserAuthorizedEvent extends UserEvent
 {

@@ -17,11 +17,6 @@
  */
 package de.cubeisland.cubeengine.guests.prevention.preventions;
 
-import de.cubeisland.cubeengine.core.bukkit.BukkitCore;
-import de.cubeisland.cubeengine.core.util.math.Square;
-import de.cubeisland.cubeengine.core.util.math.Vector2;
-import de.cubeisland.cubeengine.guests.Guests;
-import de.cubeisland.cubeengine.guests.prevention.Prevention;
 import org.bukkit.Location;
 import org.bukkit.Server;
 import org.bukkit.configuration.Configuration;
@@ -30,6 +25,12 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
+
+import de.cubeisland.cubeengine.core.bukkit.BukkitCore;
+import de.cubeisland.cubeengine.core.util.math.Square;
+import de.cubeisland.cubeengine.core.util.math.Vector2;
+import de.cubeisland.cubeengine.guests.Guests;
+import de.cubeisland.cubeengine.guests.prevention.Prevention;
 
 /**
  * Prevents movement.

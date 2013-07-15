@@ -17,16 +17,16 @@
  */
 package de.cubeisland.cubeengine.core.storage.database.mysql;
 
-import com.mysql.jdbc.jdbc2.optional.MysqlDataSource;
+import java.sql.Connection;
+import java.sql.DatabaseMetaData;
+import java.sql.SQLException;
+
 import de.cubeisland.cubeengine.core.CubeEngine;
 import de.cubeisland.cubeengine.core.storage.database.AbstractDatabase;
 import de.cubeisland.cubeengine.core.storage.database.DatabaseConfiguration;
 import de.cubeisland.cubeengine.core.storage.database.querybuilder.QueryBuilder;
-import org.apache.commons.lang.Validate;
 
-import java.sql.Connection;
-import java.sql.DatabaseMetaData;
-import java.sql.SQLException;
+import com.mysql.jdbc.jdbc2.optional.MysqlDataSource;
 
 
 

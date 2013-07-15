@@ -17,11 +17,12 @@
  */
 package de.cubeisland.cubeengine.core.bukkit;
 
-import de.cubeisland.cubeengine.core.CorePerms;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerKickEvent;
+
+import de.cubeisland.cubeengine.core.CorePerms;
 
 public class PreventSpamKickListener implements Listener
 {

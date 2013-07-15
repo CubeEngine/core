@@ -17,6 +17,8 @@
  */
 package de.cubeisland.cubeengine.log.action.logaction.container;
 
+import java.util.Map.Entry;
+
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.BlockState;
@@ -29,6 +31,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
+import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.event.inventory.InventoryMoveItemEvent;
 import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.inventory.BrewerInventory;
@@ -62,9 +65,6 @@ import static de.cubeisland.cubeengine.core.util.InventoryUtil.getMissingSpace;
  */
 public class ContainerActionType extends ActionTypeContainer
 {
-    // TODO do we want to track the postion of the items?
-    // problem -> we cannot first gather the information and then log it but have to log every single click
-    // also the new inventory "clicks" are not yet possible to log
     public ContainerActionType()
     {
         super("CONTAINER");
@@ -147,6 +147,26 @@ public class ContainerActionType extends ActionTypeContainer
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    public void onInventoryDrag(InventoryDragEvent event)
+    {
+        if (event.getWhoClicked() instanceof Player)
+        {
+            final User user = this.um.getExactUser(event.getWhoClicked().getName());
+            if (!this.inventoryChanges.containsKey(user.key)) return;
+            Inventory inventory = event.getInventory();
+            int amount = 0;
+            for (Entry<Integer, ItemStack> entry : event.getNewItems().entrySet())
+            {
+                if (entry.getKey() < inventory.getSize())
+                {
+                    amount += entry.getValue().getAmount();
+                }
+            }
+            this.prepareForLogging(user, new ItemData(event.getOldCursor()), amount);
+        }
+    }
+
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onInventoryClick(InventoryClickEvent event)
     {
         if (event.getSlot() == -999)
@@ -155,6 +175,7 @@ public class ContainerActionType extends ActionTypeContainer
         }
         if (event.getWhoClicked() instanceof Player)
         {
+            // TODO use the new inventoryStuff
             final User user = this.um.getExactUser(event.getWhoClicked().getName());
             if (!this.inventoryChanges.containsKey(user.key)) return;
             Inventory inventory = event.getInventory();
@@ -174,7 +195,7 @@ public class ContainerActionType extends ActionTypeContainer
             {
                 if (event.isShiftClick()) // top & shift -> remove items
                 {
-                    if (inventoryItem.getType().equals(Material.AIR))
+                    if (inventoryItem == null || inventoryItem.getType().equals(Material.AIR))
                     {
                         return;
                     }
@@ -187,12 +208,12 @@ public class ContainerActionType extends ActionTypeContainer
                 }
                 else
                 {
-                    if (cursorItem.getType().equals(Material.AIR)) // remove items
+                    if (cursorItem == null ||cursorItem.getType().equals(Material.AIR)) // remove items
                     {
                         int remove = event.isLeftClick() ? inventoryItem.getAmount() : (inventoryItem.getAmount() + 1) / 2;
                         this.prepareForLogging(user, new ItemData(inventoryItem),-remove);
                     }
-                    else if (inventoryItem.getType().equals(Material.AIR)) // put items
+                    else if (inventoryItem == null || inventoryItem.getType().equals(Material.AIR)) // put items
                     {
                         int put = event.isLeftClick() ? cursorItem.getAmount() : 1;
                         if (holder instanceof BrewingStand) // handle BrewingStands separatly
@@ -256,7 +277,7 @@ public class ContainerActionType extends ActionTypeContainer
             }
             else if (event.isShiftClick())// click in bottom inventory AND shift -> put | ELSE no container change
             {
-                if (inventoryItem.getType().equals(Material.AIR))
+                if (inventoryItem == null || inventoryItem.getType().equals(Material.AIR))
                 {
                     return;
                 }

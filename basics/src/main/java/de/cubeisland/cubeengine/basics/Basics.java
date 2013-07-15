@@ -141,14 +141,7 @@ public class Basics extends Module
         this.getLog().trace("{} ms - done", Profiler.endProfiling("basicsEnable", TimeUnit.MILLISECONDS));
         
         /**
-         * * //commands TODO
-         *
-         * helpop -> move to CubePermissions ?? not only op but also "Moderator"
-         * ignore -> move to CubeChat info
-         *
-         * nick -> move to CubeChat realname -> move to CubeChat rules
-         *
-         * help -> Display ALL availiable cmd
+         * TODO command: nick -> move to CubeChat realname -> move to CubeChat rules
          */
     }
 

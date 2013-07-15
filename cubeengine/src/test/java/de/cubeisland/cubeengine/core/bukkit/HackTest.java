@@ -17,16 +17,18 @@
  */
 package de.cubeisland.cubeengine.core.bukkit;
 
-import de.cubeisland.cubeengine.core.CubeEngine;
-import de.cubeisland.cubeengine.core.TestCore;
-import junit.framework.TestCase;
-import net.minecraft.server.v1_5_R3.Connection;
-import net.minecraft.server.v1_5_R3.Packet;
-
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.List;
+
+import net.minecraft.server.v1_6_R2.Connection;
+import net.minecraft.server.v1_6_R2.Packet;
+
+import de.cubeisland.cubeengine.core.CubeEngine;
+import de.cubeisland.cubeengine.core.TestCore;
+
+import junit.framework.TestCase;
 
 public class HackTest extends TestCase
 {

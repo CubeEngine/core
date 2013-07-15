@@ -17,9 +17,10 @@
  */
 package de.cubeisland.cubeengine.core.module.event;
 
+import org.bukkit.event.HandlerList;
+
 import de.cubeisland.cubeengine.core.Core;
 import de.cubeisland.cubeengine.core.module.Module;
-import org.bukkit.event.HandlerList;
 
 /**
  * This event is fired when a module got enabled.

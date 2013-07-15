@@ -25,16 +25,16 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
-import net.minecraft.server.v1_5_R3.EntityPlayer;
-import net.minecraft.server.v1_5_R3.NBTTagCompound;
-import net.minecraft.server.v1_5_R3.NBTTagDouble;
-import net.minecraft.server.v1_5_R3.NBTTagFloat;
-import net.minecraft.server.v1_5_R3.NBTTagList;
-import net.minecraft.server.v1_5_R3.PlayerInteractManager;
-import net.minecraft.server.v1_5_R3.WorldNBTStorage;
-import net.minecraft.server.v1_5_R3.WorldServer;
-import org.bukkit.craftbukkit.v1_5_R3.CraftServer;
-import org.bukkit.craftbukkit.v1_5_R3.CraftWorld;
+import net.minecraft.server.v1_6_R2.EntityPlayer;
+import net.minecraft.server.v1_6_R2.NBTTagCompound;
+import net.minecraft.server.v1_6_R2.NBTTagDouble;
+import net.minecraft.server.v1_6_R2.NBTTagFloat;
+import net.minecraft.server.v1_6_R2.NBTTagList;
+import net.minecraft.server.v1_6_R2.PlayerInteractManager;
+import net.minecraft.server.v1_6_R2.WorldNBTStorage;
+import net.minecraft.server.v1_6_R2.WorldServer;
+import org.bukkit.craftbukkit.v1_6_R2.CraftServer;
+import org.bukkit.craftbukkit.v1_6_R2.CraftWorld;
 
 import org.bukkit.Achievement;
 import org.bukkit.Bukkit;
@@ -1038,63 +1038,6 @@ public class UserBase implements Player
     }
 
     @Override
-    public int getHealth()
-    {
-        final Player player = this.getOfflinePlayer().getPlayer();
-        if (player != null)
-        {
-            return player.getHealth();
-        }
-        else
-        {
-            NBTTagCompound data = this.getData();
-            if (data != null)
-            {
-                return data.getShort("Health");
-            }
-        }
-        return 0;
-    }
-
-    @Override
-    public void setHealth(int i)
-    {
-        final Player player = this.getOfflinePlayer().getPlayer();
-        if (player != null)
-        {
-            player.setHealth(i);
-        }
-        else
-        {
-            NBTTagCompound data = this.getData();
-            if (data != null)
-            {
-                data.setInt("Health", i);
-                this.saveData();
-            }
-        }
-    }
-
-    @Override
-    public int getMaxHealth()
-    {
-        final Player player = this.getOfflinePlayer().getPlayer();
-        if (player != null)
-        {
-            return player.getMaxHealth();
-        }
-        else
-        {
-            NBTTagCompound data = this.getData();
-            if (data != null)
-            {
-                return data.getInt("Bukkit.MaxHealth");
-            }
-        }
-        return 0;
-    }
-
-    @Override
     public double getEyeHeight()
     {
         final Player player = this.getOfflinePlayer().getPlayer();
@@ -1267,26 +1210,6 @@ public class UserBase implements Player
     }
 
     @Override
-    public void damage(int i)
-    {
-        final Player player = this.getOfflinePlayer().getPlayer();
-        if (player != null)
-        {
-            player.damage(i);
-        }
-    }
-
-    @Override
-    public void damage(int i, Entity entity)
-    {
-        final Player player = this.getOfflinePlayer().getPlayer();
-        if (player != null)
-        {
-            player.damage(i, entity);
-        }
-    }
-
-    @Override
     public int getMaximumNoDamageTicks()
     {
         final Player player = this.getOfflinePlayer().getPlayer();
@@ -1308,7 +1231,209 @@ public class UserBase implements Player
     }
 
     @Override
-    public int getLastDamage()
+    public boolean isScaledHealth()
+    {
+        final Player player = this.getOfflinePlayer().getPlayer();
+        return player != null && player.isScaledHealth();
+    }
+
+    @Override
+    public void setScaleHealth(boolean b)
+    {
+        final Player player = this.getOfflinePlayer().getPlayer();
+        if (player != null)
+        {
+            player.setScaleHealth(b);
+        }
+    }
+
+    @Override
+    public int _INVALID_getLastDamage()
+    {
+        final Player player = this.getOfflinePlayer().getPlayer();
+        if (player != null)
+        {
+            return player._INVALID_getLastDamage();
+        }
+        return 0;
+    }
+
+    @Override
+    public void setLastDamage(double v)
+    {
+        final Player player = this.getOfflinePlayer().getPlayer();
+        if (player != null)
+        {
+            player.setLastDamage(v);
+        }
+    }
+
+    @Override
+    public void _INVALID_setLastDamage(int i)
+    {
+        final Player player = this.getOfflinePlayer().getPlayer();
+        if (player != null)
+        {
+            player._INVALID_setLastDamage(i);
+        }
+    }
+
+    @Override
+    public void damage(double v)
+    {
+        final Player player = this.getOfflinePlayer().getPlayer();
+        if (player != null)
+        {
+            player.damage(v);
+        }
+    }
+
+    @Override
+    public void _INVALID_damage(int i)
+    {
+        final Player player = this.getOfflinePlayer().getPlayer();
+        if (player != null)
+        {
+            player._INVALID_damage(i);
+        }
+    }
+
+    @Override
+    public void damage(double v, Entity entity)
+    {
+        final Player player = this.getOfflinePlayer().getPlayer();
+        if (player != null)
+        {
+            player.damage(v, entity);
+        }
+    }
+
+    @Override
+    public void _INVALID_damage(int i, Entity entity)
+    {
+        final Player player = this.getOfflinePlayer().getPlayer();
+        if (player != null)
+        {
+            player._INVALID_damage(i, entity);
+        }
+    }
+
+    @Override
+    public int _INVALID_getHealth()
+    {
+        final Player player = this.getOfflinePlayer().getPlayer();
+        if (player != null)
+        {
+            return player._INVALID_getHealth();
+        }
+        else
+        {
+            NBTTagCompound data = this.getData();
+            if (data != null)
+            {
+                return (int)data.getDouble("Health");
+            }
+        }
+        return 0;
+    }
+
+    @Override
+    public void setHealth(double v)
+    {
+        final Player player = this.getOfflinePlayer().getPlayer();
+        if (player != null)
+        {
+            player.setHealth(v);
+        }
+        else
+        {
+            NBTTagCompound data = this.getData();
+            if (data != null)
+            {
+                data.setDouble("Health", v);
+                this.saveData();
+            }
+        }
+    }
+
+    @Override
+    public void _INVALID_setHealth(int i)
+    {
+        final Player player = this.getOfflinePlayer().getPlayer();
+        if (player != null)
+        {
+            player._INVALID_setHealth(i);
+        }
+        else
+        {
+            NBTTagCompound data = this.getData();
+            if (data != null)
+            {
+                data.setDouble("Health", i);
+                this.saveData();
+            }
+        }
+    }
+
+    @Override
+    public int _INVALID_getMaxHealth()
+    {
+        final Player player = this.getOfflinePlayer().getPlayer();
+        if (player != null)
+        {
+            return player._INVALID_getMaxHealth();
+        }
+        else
+        {
+            NBTTagCompound data = this.getData();
+            if (data != null)
+            {
+                return (int)data.getDouble("Bukkit.MaxHealth");
+            }
+        }
+        return 0;
+    }
+
+    @Override
+    public void setMaxHealth(double v)
+    {
+        final Player player = this.getOfflinePlayer().getPlayer();
+        if (player != null)
+        {
+            player.setMaxHealth(v);
+        }
+        else
+        {
+            NBTTagCompound data = this.getData();
+            if (data != null)
+            {
+                data.setDouble("Bukkit.MaxHealth", v); // TODO check if still correct!
+                this.saveData();
+            }
+        }
+    }
+
+    @Override
+    public void _INVALID_setMaxHealth(int i)
+    {
+        final Player player = this.getOfflinePlayer().getPlayer();
+        if (player != null)
+        {
+            player._INVALID_setMaxHealth(i);
+        }
+        else
+        {
+            NBTTagCompound data = this.getData();
+            if (data != null)
+            {
+                data.setDouble("Bukkit.MaxHealth", i);
+                this.saveData();
+            }
+        }
+    }
+
+    @Override
+    public double getLastDamage()
     {
         final Player player = this.getOfflinePlayer().getPlayer();
         if (player != null)
@@ -1319,13 +1444,41 @@ public class UserBase implements Player
     }
 
     @Override
-    public void setLastDamage(int i)
+    public double getHealth()
     {
         final Player player = this.getOfflinePlayer().getPlayer();
         if (player != null)
         {
-            player.setLastDamage(i);
+            return player.getHealth();
         }
+        else
+        {
+            NBTTagCompound data = this.getData();
+            if (data != null)
+            {
+                return (int)data.getDouble("Health");
+            }
+        }
+        return 0;
+    }
+
+    @Override
+    public double getMaxHealth()
+    {
+        final Player player = this.getOfflinePlayer().getPlayer();
+        if (player != null)
+        {
+            return player.getMaxHealth();
+        }
+        else
+        {
+            NBTTagCompound data = this.getData();
+            if (data != null)
+            {
+                return (int)data.getDouble("Bukkit.MaxHealth");
+            }
+        }
+        return 0;
     }
 
     @Override
@@ -2290,25 +2443,6 @@ public class UserBase implements Player
         if (player != null)
         {
             player.setTexturePack(string);
-        }
-    }
-
-    @Override
-    public void setMaxHealth(int health)
-    {
-        final Player player = this.getOfflinePlayer().getPlayer();
-        if (player != null)
-        {
-            player.setMaxHealth(health);
-        }
-        else
-        {
-            NBTTagCompound data = this.getData();
-            if (data != null)
-            {
-                data.setInt("Bukkit.MaxHealth", health);
-                this.saveData();
-            }
         }
     }
 

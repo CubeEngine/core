@@ -58,7 +58,6 @@ import static de.cubeisland.cubeengine.core.util.ChatFormat.*;
 import static de.cubeisland.cubeengine.core.util.Misc.arr;
 import static java.text.DateFormat.SHORT;
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
-import static java.util.concurrent.TimeUnit.SECONDS;
 
 public class VanillaCommands implements CommandHolder
 {
@@ -114,9 +113,9 @@ public class VanillaCommands implements CommandHolder
             // pre-translate to avoid a NPE
             final String preTranslated = context.getSender().translate("&aThe reload is completed after %d seconds");
 
-            Profiler.startProfiling("reload_server");
+            long time = System.currentTimeMillis();
             this.core.getServer().reload();
-            context.sendMessage(String.format(preTranslated, Profiler.endProfiling("reload_server", SECONDS)));
+            context.sendMessage(String.format(preTranslated, MILLISECONDS.toSeconds(System.currentTimeMillis() - time)));
         }
     }
 

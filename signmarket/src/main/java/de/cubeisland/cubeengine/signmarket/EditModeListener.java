@@ -322,7 +322,7 @@ public class EditModeListener extends ConversationCommand
         }
         if (context.hasParam("price"))
         {
-            Double dPrice = marketSign.conomy.parse(context.getString("price"));
+            Double dPrice = marketSign.economy.parse(context.getString("price"));
             if (dPrice == null)
             {
                 user.sendTranslated("&cInvalid price!");
@@ -334,7 +334,7 @@ public class EditModeListener extends ConversationCommand
             }
             else
             {
-                marketSign.setPrice((long)(dPrice * marketSign.conomy.fractionalDigitsFactor()));
+                marketSign.setPrice((long)(dPrice * marketSign.economy.fractionalDigitsFactor()));
             }
         }
         if (context.hasParam("amount"))
@@ -362,7 +362,18 @@ public class EditModeListener extends ConversationCommand
             }
             else
             {
-                marketSign.setItemStack(item, false);
+                if (marketSign.isAdminSign())
+                {
+                    marketSign.setItemStack(item, false);
+                }
+                else
+                {
+                    if (marketSign.hasStock() && marketSign.getStock() != 0)
+                    {
+                        user.sendTranslated("&cYou have to take all items out of the market-sign to be able to change the item in it!");
+                        return null;
+                    }
+                }
             }
         }
         if (context.hasParam("size"))
@@ -512,9 +523,13 @@ public class EditModeListener extends ConversationCommand
                 user.sendTranslated("&eThis sign is not a market-sign!");
                 return; // not a market-sign
             }
-            //TODO prevent changing if user-sign and items in stock! OR take out all items
-
             this.setEditingSign(user, curLoc, curSign);
+            if (curSign.hasStock() && curSign.getStock() != 0)
+            {
+                user.sendTranslated("&cYou have to take all items out of the market-sign to be able to change the item in it!");
+                event.setCancelled(true);
+                event.setUseItemInHand(Event.Result.DENY);
+            }
             curSign.setItemStack(user.getItemInHand(), true);
             curSign.updateSignText();
             user.sendTranslated("&aItem in sign updated!");

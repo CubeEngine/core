@@ -17,13 +17,13 @@
  */
 package de.cubeisland.cubeengine.core.webapi;
 
-import de.cubeisland.cubeengine.core.module.Module;
-
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.Set;
+
+import de.cubeisland.cubeengine.core.module.Module;
 
 /**
  * This class is a wrapper for the action requestMethods to extract the information

@@ -17,15 +17,18 @@
  */
 package de.cubeisland.cubeengine.log.action.logaction.block.explosion;
 
-import java.util.EnumSet;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.bukkit.World;
 
 import de.cubeisland.cubeengine.core.user.User;
+import de.cubeisland.cubeengine.log.action.ActionTypeCategory;
 import de.cubeisland.cubeengine.log.action.logaction.block.BlockActionType;
 import de.cubeisland.cubeengine.log.storage.LogEntry;
 
-import static de.cubeisland.cubeengine.log.action.ActionType.Category.*;
+import static de.cubeisland.cubeengine.log.action.ActionTypeCategory.*;
 
 /**
  * TNT-Explosions
@@ -34,9 +37,9 @@ import static de.cubeisland.cubeengine.log.action.ActionType.Category.*;
 public class TntExplode extends BlockActionType
 {
     @Override
-    protected EnumSet<Category> getCategories()
+    protected Set<ActionTypeCategory> getCategories()
     {
-        return EnumSet.of(EXPLOSION, BLOCK, PLAYER);
+        return new HashSet<ActionTypeCategory>(Arrays.asList(EXPLOSION, BLOCK, PLAYER));
     }
 
     @Override

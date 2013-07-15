@@ -17,7 +17,9 @@
  */
 package de.cubeisland.cubeengine.log.action.logaction.block.player;
 
-import java.util.EnumSet;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -29,14 +31,15 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.block.BlockPlaceEvent;
 
 import de.cubeisland.cubeengine.core.user.User;
+import de.cubeisland.cubeengine.log.action.ActionTypeCategory;
 import de.cubeisland.cubeengine.log.action.logaction.block.BlockActionType;
 import de.cubeisland.cubeengine.log.action.logaction.block.BlockFall;
 import de.cubeisland.cubeengine.log.storage.LogEntry;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
-import static de.cubeisland.cubeengine.log.action.ActionType.Category.BLOCK;
-import static de.cubeisland.cubeengine.log.action.ActionType.Category.PLAYER;
+import static de.cubeisland.cubeengine.log.action.ActionTypeCategory.BLOCK;
+import static de.cubeisland.cubeengine.log.action.ActionTypeCategory.PLAYER;
 import static org.bukkit.Material.AIR;
 import static org.bukkit.Material.DRAGON_EGG;
 
@@ -49,9 +52,9 @@ import static org.bukkit.Material.DRAGON_EGG;
 public class BlockPlace extends BlockActionType
 {
     @Override
-    protected EnumSet<Category> getCategories()
+    protected Set<ActionTypeCategory> getCategories()
     {
-        return EnumSet.of(BLOCK, PLAYER);
+        return new HashSet<ActionTypeCategory>(Arrays.asList(BLOCK, PLAYER));
     }
 
     @Override

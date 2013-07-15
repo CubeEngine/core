@@ -76,7 +76,7 @@ public class ItemRepairCommands extends ContainerCommand implements Listener
         }
         else
         {
-            context.sendTranslated("&cOnly players can add repair blocks!");
+            context.sendTranslated("&eOk now you only need to right-click &4NOW&e!\n... too slow");
         }
     }
 

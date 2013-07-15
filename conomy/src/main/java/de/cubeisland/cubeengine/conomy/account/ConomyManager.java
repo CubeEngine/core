@@ -49,6 +49,7 @@ public class ConomyManager
 
     protected final Logger logger;
     protected final ConomyConfiguration config;
+    private Economy conomyInterface;
 
     public ConomyManager(Conomy module)
     {
@@ -65,6 +66,8 @@ public class ConomyManager
         {
             ((ch.qos.logback.classic.Logger)logger).getAppender("conomy.transactions-file").stop();
         }
+
+        this.conomyInterface = new ConomyInterface(this);
     }
 
     public BankAccount getBankAccount(String name, boolean create)
@@ -425,5 +428,21 @@ public class ConomyManager
         bankAccount.update();
         this.bankaccounts.put(newName, bankAccount);
         return true;
+    }
+
+    public Economy getInterface()
+    {
+        return this.conomyInterface;
+    }
+
+    /**
+     * Returns the names of all banks
+     *
+     * @param hidden if true return hidden banks too
+     * @return
+     */
+    public Set<String> getAllBanks(boolean hidden)
+    {
+        return this.storage.getBankAccounts(hidden);
     }
 }

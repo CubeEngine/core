@@ -17,15 +17,17 @@
  */
 package de.cubeisland.cubeengine.basics.command.general;
 
-import de.cubeisland.cubeengine.basics.BasicsPerm;
+import org.bukkit.craftbukkit.v1_6_R2.entity.CraftPlayer;
+
 import org.bukkit.GameMode;
-import org.bukkit.craftbukkit.v1_5_R3.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+
+import de.cubeisland.cubeengine.basics.BasicsPerm;
 
 public class FlyListener implements Listener
 {

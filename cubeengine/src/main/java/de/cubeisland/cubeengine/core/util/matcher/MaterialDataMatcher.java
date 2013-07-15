@@ -29,9 +29,17 @@ import org.bukkit.entity.EntityType;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.SkullMeta;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.*;
+import de.cubeisland.cubeengine.core.CoreResource;
+import de.cubeisland.cubeengine.core.CubeEngine;
+import de.cubeisland.cubeengine.core.filesystem.FileUtil;
+import de.cubeisland.cubeengine.core.logger.LogLevel;
+import de.cubeisland.cubeengine.core.util.StringUtils;
+
+import gnu.trove.map.hash.TByteObjectHashMap;
+import gnu.trove.map.hash.THashMap;
+import gnu.trove.map.hash.TObjectByteHashMap;
+import gnu.trove.map.hash.TObjectShortHashMap;
+import gnu.trove.map.hash.TShortObjectHashMap;
 
 public class MaterialDataMatcher
 {
@@ -335,11 +343,12 @@ public class MaterialDataMatcher
             CubeEngine.getLog().warn("No data found for Wool-color");
             return null;
         }
-        Short dataVal = woolData.get(Match.string().matchString(data, woolData.keySet()));
-        if (dataVal == null)
+        String match = Match.string().matchString(data, woolData.keySet());
+        if (match == null)
         {
             return null;
         }
+        Short dataVal = woolData.get(match);
         return DyeColor.getByWoolData(dataVal.byteValue());
     }
 
@@ -459,5 +468,11 @@ public class MaterialDataMatcher
             return null;
         }
         return dataNames;
+    }
+
+    public String[] colorStrings()
+    {
+        Set<String> woolColors = this.itemData.get(Material.WOOL).keySet();
+        return woolColors.toArray(new String[woolColors.size()]);
     }
 }

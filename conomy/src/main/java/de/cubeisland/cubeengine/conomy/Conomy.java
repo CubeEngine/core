@@ -20,6 +20,7 @@ package de.cubeisland.cubeengine.conomy;
 import de.cubeisland.cubeengine.core.command.CommandManager;
 import de.cubeisland.cubeengine.core.config.Configuration;
 import de.cubeisland.cubeengine.core.module.Module;
+import de.cubeisland.cubeengine.core.service.Economy;
 import de.cubeisland.cubeengine.conomy.account.ConomyManager;
 import de.cubeisland.cubeengine.conomy.commands.BankCommands;
 import de.cubeisland.cubeengine.conomy.commands.EcoCommands;
@@ -40,6 +41,7 @@ public class Conomy extends Module
         cm.registerCommand(new MoneyCommand(this));
         cm.registerCommand(new EcoCommands(this));
         cm.registerCommand(new BankCommands(this));
+        this.getCore().getServiceManager().registerService(Economy.class, manager.getInterface(), this);
     }
 
     public ConomyConfiguration getConfig()

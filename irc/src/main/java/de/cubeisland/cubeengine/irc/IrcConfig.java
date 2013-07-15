@@ -17,14 +17,14 @@
  */
 package de.cubeisland.cubeengine.irc;
 
+import java.util.Collections;
+import java.util.Set;
+
 import de.cubeisland.cubeengine.core.config.Configuration;
 import de.cubeisland.cubeengine.core.config.annotations.Codec;
 import de.cubeisland.cubeengine.core.config.annotations.Comment;
 import de.cubeisland.cubeengine.core.config.annotations.DefaultConfig;
 import de.cubeisland.cubeengine.core.config.annotations.Option;
-
-import java.util.Collections;
-import java.util.Set;
 
 /**
  * Represents a IrcConfig

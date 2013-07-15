@@ -17,12 +17,14 @@
  */
 package de.cubeisland.cubeengine.guests.prevention.punishments;
 
-import de.cubeisland.cubeengine.guests.prevention.Punishment;
 import java.util.Locale;
+
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
+
+import de.cubeisland.cubeengine.guests.prevention.Punishment;
 
 /**
  * Poisons a player.

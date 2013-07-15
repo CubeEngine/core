@@ -26,6 +26,7 @@ import de.cubeisland.cubeengine.core.command.parameterized.ParameterizedContext;
 import de.cubeisland.cubeengine.core.command.reflected.Alias;
 import de.cubeisland.cubeengine.core.command.reflected.Command;
 import de.cubeisland.cubeengine.core.user.User;
+import de.cubeisland.cubeengine.core.util.ChatFormat;
 import de.cubeisland.cubeengine.conomy.Conomy;
 import de.cubeisland.cubeengine.conomy.ConomyPermissions;
 import de.cubeisland.cubeengine.conomy.account.Account;
@@ -83,9 +84,42 @@ public class BankCommands extends ContainerCommand
         context.sendTranslated("&cPlease do specify the bank you want to show the balance of!");
     }
 
+    @Command(desc = "Lists all banks", usage = "[owner]")
     public void list(CommandContext context) //Lists all banks [of given player]
     {
-        // TODO
+        String format = ChatFormat.parseFormats(" - &e%s");
+        if (context.hasArg(0))
+        {
+            User user = context.getUser(1);
+            if (user == null)
+            {
+                context.sendTranslated("&cUser &2%s&c not found!", context.getString(0));
+                return;
+            }
+            Set<BankAccount> bankAccounts = this.manager.getBankAccounts(user);
+            if (bankAccounts.isEmpty())
+            {
+                context.sendTranslated("&2%s&a is not owner of any bank!");
+                return;
+            }
+            context.sendTranslated("&2%s&a is the owner of the following banks:", user.getName());
+            for (BankAccount bankAccount : bankAccounts)
+            {
+                context.sendMessage(String.format(format,bankAccount.getName()));
+            }
+            return;
+        }
+        Set<String> allBanks = this.manager.getAllBanks(ConomyPermissions.BANK_SHOWHIDDEN.isAuthorized(context.getSender()));
+        if (allBanks.isEmpty())
+        {
+            context.sendTranslated("&eThere are no banks currently!");
+            return;
+        }
+        context.sendTranslated("&aThe following banks do exist:");
+        for (String bank : allBanks)
+        {
+            context.sendMessage(String.format(format,bank));
+        }
     }
 
     @Command(desc = "Invites a user to a bank",
@@ -297,7 +331,6 @@ public class BankCommands extends ContainerCommand
         }
     }
 
-
     public void uninvite(CommandContext context)
     {
         // TODO reject invite / uninvite
@@ -335,6 +368,25 @@ public class BankCommands extends ContainerCommand
             context.sendTranslated("&cThere is no bank-account named &6%s&c!", context.getString(0));
             return;
         }
+        if (context.getSender() instanceof User)
+        {
+            if (account.isOwner((User)context.getSender()))
+            {
+                if (!ConomyPermissions.COMMAND_BANK_DELETE_OWN.isAuthorized(context.getSender()))
+                {
+                    context.sendTranslated("&cYou are not allowed to delete your bank!");
+                    return;
+                }
+            }
+            else
+            {
+                if (!ConomyPermissions.COMMAND_BANK_DELETE_OTHER.isAuthorized(context.getSender()))
+                {
+                    context.sendTranslated("&cYou are not owner of this bank!");
+                    return;
+                }
+            }
+        } // else ignore perms
         account.delete();
         context.sendTranslated("&aYou deleted the bank &6%s&a!", account.getName());
     }
@@ -399,13 +451,86 @@ public class BankCommands extends ContainerCommand
         context.sendTranslated("&2%s&a is now owner of the bank &6%s&a!", user.getName(), account.getName());
     }
 
-    // TODO listinvites
+    @Command(desc = "Lists the current invites of a bank",
+             usage = "<bank-name>")
+    public void listinvites(ParameterizedContext context)
+    {
+        BankAccount account = this.getBankAccount(context.getString(0));
+        if (account == null)
+        {
+            context.sendTranslated("&cThere is no bank-account named &6%s&c!", context.getString(0));
+            return;
+        }
+        if (account.needsInvite())
+        {
+            if (context.getSender() instanceof User && !account.hasAccess((User)context.getSender()))
+            {
+                if (!ConomyPermissions.COMMAND_BANK_LISTINVITES_OTHER.isAuthorized(context.getSender()))
+                {
+                    context.sendTranslated("&cYou are not allowed to see the invites of this bank!");
+                    return;
+                }
+            }
+            Set<String> invites = account.getInvites();
+            if (invites.isEmpty())
+            {
+                String format = ChatFormat.parseFormats(" - &2%s");
+                context.sendTranslated("&aThe following players are invited:");
+                for (String invite : invites)
+                {
+                    context.sendMessage(String.format(format, invite));
+                }
+                return;
+            }
+            context.sendTranslated("&eThere are currently no invites for this bank");
+            return;
+        }
+        context.sendTranslated("&eThis bank does not require invites");
+    }
 
-    public void listmembers(CommandContext context)//list all members with their rank
-    {}// TODO
+    @Command(desc = "Lists the members of a bank",
+             usage = "<bank-name>")
+    public void listmembers(CommandContext context)
+    {
+        BankAccount account = this.getBankAccount(context.getString(0));
+        if (account == null)
+        {
+            context.sendTranslated("&cThere is no bank-account named &6%s&c!", context.getString(0));
+            return;
+        }
+        Set<String> owners = account.getOwners();
+        Set<String> members = account.getMembers();
+        String format = ChatFormat.parseFormats(" - &2%s");
+        if (owners.isEmpty())
+        {
+            context.sendTranslated("&eThis bank has no owners!");
+        }
+        else
+        {
+            context.sendTranslated("&eOwners:");
+            for (String owner : owners)
+            {
+                context.sendMessage(String.format(format,owner));
+            }
+        }
+        if (members.isEmpty())
+        {
+            context.sendTranslated("&eThis bank has no members!");
+        }
+        else
+        {
+            context.sendTranslated("&eMembers:");
+            for (String member : members)
+            {
+                context.sendMessage(String.format(format,member));
+            }
+        }
+    }
 
     // TODO bank Info cmd
     // Owners Members Invites Balance Hidden
+    public void info(CommandContext context)//list all members with their rank
+    {}
 
     @Command(desc = "Deposits given amount of money into the bank",
              usage = "<bank-name> <amount>",

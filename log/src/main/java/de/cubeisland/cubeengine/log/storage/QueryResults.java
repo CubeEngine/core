@@ -53,10 +53,13 @@ public class QueryResults
             parameter.showNoLogsFound(user);
             return;
         }
-        CubeEngine.getLog().info("Showing {} logentries to {}", this.logEntries.size(), user.getName());
         if (show.pagelimit == -1)
         {
             show.pagelimit = this.logEntries.size();
+        }
+        if (show.pagelimit > 80) // prevent showing too much logs
+        {
+            show.pagelimit = 80;
         }
         int totalPages = (this.logEntries.size()+show.pagelimit-1) / show.pagelimit; // rounded up
         user.sendTranslated("&6%d&a distinct logs (&6%d&a pages)", this.logEntries.size(), totalPages);
@@ -108,9 +111,9 @@ public class QueryResults
         {
             showing = compressedEntries.size();
         }
-        else if (compressedEntries.size() - (show.page * show.pagelimit) < show.pagelimit)
+        else if (compressedEntries.size() - ((show.page-1) * show.pagelimit) < show.pagelimit)
         {
-            showing = compressedEntries.size() - (show.page * show.pagelimit);
+            showing = compressedEntries.size() - ((show.page-1) * show.pagelimit);
         }
         if (show.page == 1)
         {
@@ -125,12 +128,13 @@ public class QueryResults
         NavigableSet<LogEntry> navigableSet;
         if (show.reverseOrder)
         {
-            navigableSet = compressedEntries;
+            navigableSet = compressedEntries.descendingSet();
         }
         else
         {
-            navigableSet = compressedEntries.descendingSet();
+            navigableSet = compressedEntries;
         }
+		CubeEngine.getLog().info("Showing {} {}/{}/{} logentries to {} (page{})", showing, navigableSet.size(), this.logEntries.size() , user.getName(), show.page);
         for (LogEntry logEntry : navigableSet)
         {
             if (cpage == show.page)

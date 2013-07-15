@@ -17,8 +17,10 @@
  */
 package de.cubeisland.cubeengine.log.action.logaction.interact;
 
-import java.util.EnumSet;
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Set;
 
 import org.bukkit.World;
 import org.bukkit.entity.LivingEntity;
@@ -30,6 +32,7 @@ import org.bukkit.potion.PotionEffect;
 
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.util.ChatFormat;
+import de.cubeisland.cubeengine.log.action.ActionTypeCategory;
 import de.cubeisland.cubeengine.log.action.logaction.SimpleLogActionType;
 import de.cubeisland.cubeengine.log.storage.LogEntry;
 
@@ -38,9 +41,7 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import gnu.trove.set.hash.TShortHashSet;
 
-import static de.cubeisland.cubeengine.log.action.ActionType.Category.ENTITY;
-import static de.cubeisland.cubeengine.log.action.ActionType.Category.ITEM;
-import static de.cubeisland.cubeengine.log.action.ActionType.Category.PLAYER;
+import static de.cubeisland.cubeengine.log.action.ActionTypeCategory.*;
 
 /**
  * splashed potions
@@ -49,9 +50,9 @@ import static de.cubeisland.cubeengine.log.action.ActionType.Category.PLAYER;
 public class PotionSplash extends SimpleLogActionType
 {
     @Override
-    protected EnumSet<Category> getCategories()
+    protected Set<ActionTypeCategory> getCategories()
     {
-        return EnumSet.of(PLAYER, ENTITY, ITEM);
+        return new HashSet<ActionTypeCategory>(Arrays.asList(PLAYER, ENTITY, ITEM));
     }
 
     @Override

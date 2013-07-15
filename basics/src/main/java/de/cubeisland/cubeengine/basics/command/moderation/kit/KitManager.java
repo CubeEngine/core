@@ -17,21 +17,22 @@
  */
 package de.cubeisland.cubeengine.basics.command.moderation.kit;
 
-import de.cubeisland.cubeengine.basics.Basics;
-import de.cubeisland.cubeengine.core.config.Configuration;
-
-import de.cubeisland.cubeengine.core.util.StringUtils;
-import de.cubeisland.cubeengine.core.util.matcher.Match;
-import gnu.trove.map.hash.THashMap;
-
 import java.io.File;
 import java.io.FileFilter;
 import java.util.Locale;
 import java.util.Set;
 
+import de.cubeisland.cubeengine.core.config.Configuration;
+
+import de.cubeisland.cubeengine.core.util.StringUtils;
+import de.cubeisland.cubeengine.core.util.matcher.Match;
+import de.cubeisland.cubeengine.basics.Basics;
+
+import gnu.trove.map.hash.THashMap;
+
 public class KitManager
 {
-   private  final Basics module;
+   private final Basics module;
 
     public KitManager(Basics module) {
         this.module = module;
@@ -105,4 +106,8 @@ public class KitManager
         }
     }
 
+    public Set<String> getKitsNames()
+    {
+        return this.kitMap.keySet();
+    }
 }

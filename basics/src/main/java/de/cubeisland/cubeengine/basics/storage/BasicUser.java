@@ -17,17 +17,17 @@
  */
 package de.cubeisland.cubeengine.basics.storage;
 
-import de.cubeisland.cubeengine.basics.command.mail.Mail;
+import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.List;
+
 import de.cubeisland.cubeengine.core.storage.Model;
 import de.cubeisland.cubeengine.core.storage.database.AttrType;
 import de.cubeisland.cubeengine.core.storage.database.Attribute;
 import de.cubeisland.cubeengine.core.storage.database.Index;
 import de.cubeisland.cubeengine.core.storage.database.SingleKeyEntity;
 import de.cubeisland.cubeengine.core.user.User;
-
-import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.List;
+import de.cubeisland.cubeengine.basics.command.mail.Mail;
 
 import static de.cubeisland.cubeengine.core.storage.database.Index.IndexType.FOREIGN_KEY;
 

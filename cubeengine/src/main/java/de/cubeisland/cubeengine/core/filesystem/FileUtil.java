@@ -17,8 +17,6 @@
  */
 package de.cubeisland.cubeengine.core.filesystem;
 
-import de.cubeisland.cubeengine.core.CubeEngine;
-
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;

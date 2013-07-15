@@ -17,8 +17,9 @@
  */
 package de.cubeisland.cubeengine.core.command.sender;
 
-import de.cubeisland.cubeengine.core.Core;
 import org.bukkit.block.Block;
+
+import de.cubeisland.cubeengine.core.Core;
 
 public class BlockCommandSender extends WrappedCommandSender
 {

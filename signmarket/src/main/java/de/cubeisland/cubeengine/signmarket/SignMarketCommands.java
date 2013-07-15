@@ -17,13 +17,13 @@
  */
 package de.cubeisland.cubeengine.signmarket;
 
+import java.util.Arrays;
+
 import de.cubeisland.cubeengine.core.command.ContainerCommand;
 import de.cubeisland.cubeengine.core.command.parameterized.ParameterizedContext;
 import de.cubeisland.cubeengine.core.command.reflected.Alias;
 import de.cubeisland.cubeengine.core.command.reflected.Command;
 import de.cubeisland.cubeengine.core.user.User;
-
-import java.util.Arrays;
 
 public class SignMarketCommands extends ContainerCommand
 {

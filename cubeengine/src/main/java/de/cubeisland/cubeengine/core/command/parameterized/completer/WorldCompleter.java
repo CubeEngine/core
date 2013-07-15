@@ -17,14 +17,15 @@
  */
 package de.cubeisland.cubeengine.core.command.parameterized.completer;
 
-import de.cubeisland.cubeengine.core.command.parameterized.Completer;
-import de.cubeisland.cubeengine.core.command.CommandSender;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.bukkit.Bukkit;
 import org.bukkit.Server;
 import org.bukkit.World;
 
-import java.util.ArrayList;
-import java.util.List;
+import de.cubeisland.cubeengine.core.command.CommandSender;
+import de.cubeisland.cubeengine.core.command.parameterized.Completer;
 
 import static de.cubeisland.cubeengine.core.util.StringUtils.startsWithIgnoreCase;
 

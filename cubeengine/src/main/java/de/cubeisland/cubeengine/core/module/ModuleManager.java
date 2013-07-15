@@ -26,6 +26,7 @@ import de.cubeisland.cubeengine.core.module.exception.IncompatibleDependencyExce
 import de.cubeisland.cubeengine.core.module.exception.InvalidModuleException;
 import de.cubeisland.cubeengine.core.module.exception.MissingDependencyException;
 import de.cubeisland.cubeengine.core.module.exception.MissingPluginDependencyException;
+import de.cubeisland.cubeengine.core.module.exception.MissingProviderException;
 import de.cubeisland.cubeengine.core.module.exception.ModuleException;
 import de.cubeisland.cubeengine.core.util.Cleanable;
 
@@ -60,7 +61,7 @@ public interface ModuleManager extends Cleanable
      * @throws IncompatibleCoreException        if the module depends on a newer core
      * @throws MissingPluginDependencyException if the module depends on a missing plugin
      */
-    Module loadModule(File moduleFile) throws InvalidModuleException, CircularDependencyException, MissingDependencyException, IncompatibleDependencyException, IncompatibleCoreException, MissingPluginDependencyException;
+    Module loadModule(File moduleFile) throws InvalidModuleException, CircularDependencyException, MissingDependencyException, IncompatibleDependencyException, IncompatibleCoreException, MissingPluginDependencyException, MissingProviderException;
 
     /**
      * This method loads all modules from a directory

@@ -17,8 +17,10 @@
  */
 package de.cubeisland.cubeengine.log.action.logaction.block.player;
 
-import java.util.EnumSet;
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.bukkit.Location;
@@ -42,6 +44,7 @@ import de.cubeisland.cubeengine.core.util.BlockUtil;
 import de.cubeisland.cubeengine.core.util.ChatFormat;
 import de.cubeisland.cubeengine.core.util.Pair;
 import de.cubeisland.cubeengine.core.util.StringUtils;
+import de.cubeisland.cubeengine.log.action.ActionTypeCategory;
 import de.cubeisland.cubeengine.log.action.logaction.ItemDrop;
 import de.cubeisland.cubeengine.log.action.logaction.block.BlockActionType;
 import de.cubeisland.cubeengine.log.storage.LogEntry;
@@ -51,7 +54,7 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import static de.cubeisland.cubeengine.core.util.BlockUtil.BLOCK_FACES;
-import static de.cubeisland.cubeengine.log.action.ActionType.Category.*;
+import static de.cubeisland.cubeengine.log.action.ActionTypeCategory.*;
 import static org.bukkit.Material.*;
 
 /**
@@ -64,9 +67,9 @@ import static org.bukkit.Material.*;
 public class BlockBreak extends BlockActionType
 {
     @Override
-    protected EnumSet<Category> getCategories()
+    protected Set<ActionTypeCategory> getCategories()
     {
-        return EnumSet.of(BLOCK, PLAYER, ENVIRONEMENT);
+        return new HashSet<ActionTypeCategory>(Arrays.asList(BLOCK, PLAYER, ENVIRONEMENT));
     }
 
     @Override
@@ -167,6 +170,8 @@ public class BlockBreak extends BlockActionType
             Pair<Entity,BlockActionType> cause = this.plannedPyhsics.remove(loc);
             if (cause != null)
             {
+                oldState = this.adjustBlockForDoubleBlocks(oldState);
+                oldData.data = oldState.getRawData();
                 ObjectNode json = this.om.createObjectNode();
                 json.put("break-cause", cause.getRight().getID());
                 if (oldState instanceof Sign)

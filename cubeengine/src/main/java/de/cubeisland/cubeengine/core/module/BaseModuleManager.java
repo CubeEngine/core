@@ -23,6 +23,7 @@ import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.Locale;
@@ -44,6 +45,7 @@ import de.cubeisland.cubeengine.core.module.exception.IncompatibleDependencyExce
 import de.cubeisland.cubeengine.core.module.exception.InvalidModuleException;
 import de.cubeisland.cubeengine.core.module.exception.MissingDependencyException;
 import de.cubeisland.cubeengine.core.module.exception.MissingPluginDependencyException;
+import de.cubeisland.cubeengine.core.module.exception.MissingProviderException;
 import de.cubeisland.cubeengine.core.module.exception.ModuleException;
 import de.cubeisland.cubeengine.core.util.Profiler;
 import de.cubeisland.cubeengine.core.util.Version;
@@ -67,6 +69,8 @@ public abstract class BaseModuleManager implements ModuleManager
     private final Map<Class<? extends Module>, Module> classMap;
     private final CoreModule coreModule;
 
+    private final Map<String, String> serviceProviders;
+
     public BaseModuleManager(Core core, ClassLoader parentClassLoader, ModuleLoggerFactory loggerFactory)
     {
         this.core = core;
@@ -76,6 +80,7 @@ public abstract class BaseModuleManager implements ModuleManager
         this.moduleInfos = new THashMap<String, ModuleInfo>();
         this.classMap = new THashMap<Class<? extends Module>, Module>();
         this.coreModule = new CoreModule();
+                this.serviceProviders = new HashMap<String, String>();
         this.coreModule.initialize(core, new ModuleInfo(core), core.getFileManager().getDataFolder(), null, null, logger);
     }
 
@@ -100,7 +105,7 @@ public abstract class BaseModuleManager implements ModuleManager
         return new ArrayList<Module>(this.modules.values());
     }
 
-    public synchronized Module loadModule(File moduleFile) throws InvalidModuleException, CircularDependencyException, MissingDependencyException, IncompatibleDependencyException, IncompatibleCoreException, MissingPluginDependencyException
+    public synchronized Module loadModule(File moduleFile) throws InvalidModuleException, CircularDependencyException, MissingDependencyException, IncompatibleDependencyException, IncompatibleCoreException, MissingPluginDependencyException, MissingProviderException
     {
         assert moduleFile != null: "The file must not be null!";
         if (!moduleFile.isFile())
@@ -132,10 +137,7 @@ public abstract class BaseModuleManager implements ModuleManager
     public synchronized void loadModules(File directory)
     {
         assert directory != null: "The directory must not be null!";
-        if (!directory.isDirectory())
-        {
-            throw new IllegalArgumentException("The given File is no directory!");
-        }
+        assert !directory.isDirectory(): "The given File is no directory!";
 
         Module module;
         ModuleInfo info;
@@ -169,6 +171,16 @@ public abstract class BaseModuleManager implements ModuleManager
         Collection<String> moduleNames = new HashSet<String>(this.moduleInfos.keySet());
         for (String moduleName : moduleNames)
         {
+            if (this.moduleInfos.get(moduleName).getServiceProviders() != null)
+            {
+                for (String service : this.moduleInfos.get(moduleName).getServiceProviders())
+                {
+                    this.serviceProviders.put(service, moduleName);
+                }
+            }
+        }
+        for (String moduleName : moduleNames)
+        {
             try
             {
                 this.loadModule(moduleName, this.moduleInfos);
@@ -187,7 +199,7 @@ public abstract class BaseModuleManager implements ModuleManager
         this.logger.info("Finished loading modules!");
     }
 
-    private Module loadModule(String name, Map<String, ModuleInfo> moduleInfos) throws CircularDependencyException, MissingDependencyException, InvalidModuleException, IncompatibleDependencyException, IncompatibleCoreException, MissingPluginDependencyException
+    private Module loadModule(String name, Map<String, ModuleInfo> moduleInfos) throws CircularDependencyException, MissingDependencyException, InvalidModuleException, IncompatibleDependencyException, IncompatibleCoreException, MissingPluginDependencyException, MissingProviderException
     {
         return this.loadModule(name, moduleInfos, new Stack<String>());
     }
@@ -196,7 +208,7 @@ public abstract class BaseModuleManager implements ModuleManager
     {}
 
     @SuppressWarnings("unchecked")
-    protected Module loadModule(String name, Map<String, ModuleInfo> moduleInfos, Stack<String> loadStack) throws CircularDependencyException, MissingDependencyException, InvalidModuleException, IncompatibleDependencyException, IncompatibleCoreException, MissingPluginDependencyException
+    protected Module loadModule(String name, Map<String, ModuleInfo> moduleInfos, Stack<String> loadStack) throws CircularDependencyException, MissingDependencyException, InvalidModuleException, IncompatibleDependencyException, IncompatibleCoreException, MissingPluginDependencyException, MissingProviderException
     {
         name = name.toLowerCase(Locale.ENGLISH);
         Module module = this.modules.get(name);
@@ -220,12 +232,26 @@ public abstract class BaseModuleManager implements ModuleManager
 
         for (String loadAfterModule : info.getLoadAfter())
         {
-            if (!loadStack.contains(loadAfterModule))
+            if (!loadStack.contains(loadAfterModule) && moduleInfos.containsKey(loadAfterModule))
             {
                 this.loadModule(loadAfterModule, moduleInfos, loadStack);
             }
         }
-
+        if (info.getServices() != null)
+        {
+            for (String service : info.getServices())
+            {
+                if (!this.core.getServiceManager().isServiceRegistered(service))
+                {
+                    String providerModule = this.serviceProviders.get(service);
+                    if (providerModule == null)
+                    {
+                        throw new MissingProviderException(name, service);
+                    }
+                    this.loadModule(providerModule, moduleInfos);
+                }
+            }
+        }
         Module depModule;
         String depName;
         for (Map.Entry<String, Version> dep : info.getSoftDependencies().entrySet())

@@ -144,7 +144,20 @@ public abstract class BlockActionType extends LogActionType
         {
             if (blockState.getRawData() == 8 || blockState.getRawData() == 9)
             {
+                if (blockState.getRawData() == 9)
+                {
+                    blockState = blockState.getBlock().getRelative(BlockFace.DOWN).getState();
+                    blockState.setRawData((byte)(blockState.getRawData()+8));
+                    return blockState;
+                }
                 return blockState.getBlock().getRelative(BlockFace.DOWN).getState();
+            }
+            else
+            {
+                if (blockState.getBlock().getRelative(BlockFace.UP).getState().getRawData() == 9)
+                {
+                    blockState.setRawData((byte)(blockState.getRawData()+8));
+                }
             }
         }
         else if (blockState.getData() instanceof Bed)
@@ -257,7 +270,15 @@ public abstract class BlockActionType extends LogActionType
         Block block = logEntry.getLocation().getBlock();
         BlockState state = block.getState();
         state.setType(oldBlock.material);
-        state.setRawData(oldBlock.data);
+        if (oldBlock.material.equals(Material.IRON_DOOR_BLOCK) || oldBlock.material.equals(Material.WOODEN_DOOR))
+        {
+            byte data = (byte)(oldBlock.data & ~8);
+            state.setRawData(data);
+        }
+        else
+        {
+            state.setRawData(oldBlock.data);
+        }
         if (!force && (state.getData() instanceof Attachable || BlockUtil.isDetachableFromBelow(oldBlock.material)))
         {
             return false;
@@ -265,7 +286,6 @@ public abstract class BlockActionType extends LogActionType
         switch (block.getType())
         {
         case BED_BLOCK:
-            // TODO remove head too
             Bed bed = (Bed)block.getState().getData();
             Block headBed = block.getRelative(bed.getFacing());
             BlockState headState = headBed.getState();
@@ -374,9 +394,10 @@ public abstract class BlockActionType extends LogActionType
             break;
         case IRON_DOOR_BLOCK:
         case WOODEN_DOOR:
+            byte data = (byte)(((oldBlock.data & 8) == 8) ? 9 : 8);
             BlockState topDoor = block.getRelative(BlockFace.UP).getState();
             topDoor.setType(state.getType());
-            topDoor.setRawData((byte)8);
+            topDoor.setRawData(data);
             if (preview)
             {
                 attachment.addToPreview(topDoor);

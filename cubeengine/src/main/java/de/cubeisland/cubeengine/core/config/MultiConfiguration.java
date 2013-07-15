@@ -17,13 +17,13 @@
  */
 package de.cubeisland.cubeengine.core.config;
 
-import de.cubeisland.cubeengine.core.config.codec.MultiConfigurationCodec;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.lang.reflect.Field;
 import java.util.HashSet;
+
+import de.cubeisland.cubeengine.core.config.codec.MultiConfigurationCodec;
 
 /**
  * This Configuration can have child-configs.

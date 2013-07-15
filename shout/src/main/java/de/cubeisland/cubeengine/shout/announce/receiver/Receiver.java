@@ -17,12 +17,12 @@
  */
 package de.cubeisland.cubeengine.shout.announce.receiver;
 
+import java.util.Locale;
+import java.util.Queue;
+
 import de.cubeisland.cubeengine.core.util.Pair;
 import de.cubeisland.cubeengine.shout.announce.Announcement;
 import de.cubeisland.cubeengine.shout.announce.MessageOfTheDay;
-
-import java.util.Locale;
-import java.util.Queue;
 
 public interface Receiver
 {

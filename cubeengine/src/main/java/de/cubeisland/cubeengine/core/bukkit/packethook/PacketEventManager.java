@@ -20,8 +20,8 @@ package de.cubeisland.cubeengine.core.bukkit.packethook;
 import java.util.LinkedList;
 import java.util.List;
 
-import net.minecraft.server.v1_5_R3.Packet;
-import net.minecraft.server.v1_5_R3.Packet204LocaleAndViewDistance;
+import net.minecraft.server.v1_6_R2.Packet;
+import net.minecraft.server.v1_6_R2.Packet204LocaleAndViewDistance;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;

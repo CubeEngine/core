@@ -17,8 +17,11 @@
  */
 package de.cubeisland.cubeengine.core.webapi;
 
-import de.cubeisland.cubeengine.core.Core;
-import de.cubeisland.cubeengine.core.bukkit.BukkitCore;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Set;
+
 import org.bukkit.Server;
 import org.bukkit.command.CommandSender;
 import org.bukkit.permissions.Permission;
@@ -26,10 +29,8 @@ import org.bukkit.permissions.PermissionAttachment;
 import org.bukkit.permissions.PermissionAttachmentInfo;
 import org.bukkit.plugin.Plugin;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Set;
+import de.cubeisland.cubeengine.core.Core;
+import de.cubeisland.cubeengine.core.bukkit.BukkitCore;
 
 public class ApiCommandSender implements CommandSender
 {

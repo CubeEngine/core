@@ -61,6 +61,7 @@ import de.cubeisland.cubeengine.core.i18n.I18n;
 import de.cubeisland.cubeengine.core.logger.ColorConverter;
 import de.cubeisland.cubeengine.core.logger.JULAppender;
 import de.cubeisland.cubeengine.core.module.Module;
+import de.cubeisland.cubeengine.core.service.ServiceManager;
 import de.cubeisland.cubeengine.core.storage.TableManager;
 import de.cubeisland.cubeengine.core.storage.database.Database;
 import de.cubeisland.cubeengine.core.storage.database.DatabaseFactory;
@@ -112,8 +113,10 @@ public final class BukkitCore extends JavaPlugin implements Core
     private PacketEventManager packetEventManager;
     private CorePerms corePerms;
     private BukkitBanManager banManager;
+    private ServiceManager serviceManager;
 
     private List<Runnable> initHooks;
+
 
     @Override
     public void onLoad()
@@ -204,6 +207,7 @@ public final class BukkitCore extends JavaPlugin implements Core
         this.fileManager.clearTempDir();
 
         this.banManager = new BukkitBanManager(this);
+        this.serviceManager = new ServiceManager(this);
 
         // depends on: file manager
         this.config = Configuration.load(BukkitCoreConfiguration.class, new File(this.fileManager.getDataFolder(), "core.yml"));
@@ -262,10 +266,9 @@ public final class BukkitCore extends JavaPlugin implements Core
         this.database = DatabaseFactory.loadDatabase(this.config.database, new File(this.fileManager.getDataFolder(), "database.yml"));
         if (this.database == null)
         {
-            this.logger.error("Could not connect to the database type '{}'", this.config.database);
-            pm.disablePlugin(this);
             return;
         }
+
         // depends on: database
         this.tableManager = new TableManager(this);
 
@@ -342,6 +345,12 @@ public final class BukkitCore extends JavaPlugin implements Core
     @Override
     public void onEnable()
     {
+        if (this.database == null)
+        {
+            this.getLog().log(ERROR, "Could not establish database connection (" + this.config.database + ")");
+            this.getServer().getPluginManager().disablePlugin(this);
+            return;
+        }
         Iterator<Runnable> it = this.initHooks.iterator();
         while (it.hasNext())
         {
@@ -650,5 +659,11 @@ public final class BukkitCore extends JavaPlugin implements Core
     public BukkitBanManager getBanManager()
     {
         return this.banManager;
+    }
+
+    @Override
+    public ServiceManager getServiceManager()
+    {
+        return this.serviceManager;
     }
 }

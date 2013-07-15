@@ -109,24 +109,25 @@ public class MovementCommands
             final Location currentLocation = userLocation.clone();
             currentLocation.add(0,2,0);
             //go upwards until hitting solid blocks
-            while (currentLocation.getBlock().getType().equals(Material.AIR) && currentLocation.getBlockY() < currentLocation.getWorld().getMaxHeight())
+            while (currentLocation.getBlock().getType().equals(Material.AIR) && currentLocation.getBlockY() < currentLocation.getWorld().getMaxHeight()+1)
             {
                 currentLocation.add(0, 1, 0);
             }
             // go upwards until hitting 2 airblocks again
             while (!((currentLocation.getBlock().getType().equals(Material.AIR))
                     && (currentLocation.getBlock().getRelative(BlockFace.UP).getType().equals(Material.AIR)))
-                    && currentLocation.getBlockY() + 1 < currentLocation.getWorld().getMaxHeight())
+                    && currentLocation.getBlockY() + 1 < currentLocation.getWorld().getMaxHeight()+1)
             {
                 currentLocation.add(0, 1, 0);
             }
-            if (currentLocation.getWorld().getHighestBlockYAt(currentLocation) < currentLocation.getBlockY())
+            if (currentLocation.getY() > currentLocation.getWorld().getMaxHeight() // currentLocation is higher than the world
+                && currentLocation.getWorld().getHighestBlockYAt(currentLocation) < currentLocation.getBlockY())
             {
-                currentLocation.setY(currentLocation.getWorld().getHighestBlockYAt(currentLocation));
+                currentLocation.setY(currentLocation.getWorld().getHighestBlockYAt(currentLocation)); // set to highest point
             }
-            if (currentLocation.getY() <= userLocation.getY())
+            if (currentLocation.getY() <= userLocation.getY()) // highest point is equal/below current location
             {
-                context.sendTranslated("&cYou cannot ascend here"); // TODO check why this comes sometimes but shouldn't
+                context.sendTranslated("&cYou cannot ascend here");
                 return;
             }
             //reached new location
@@ -353,14 +354,22 @@ public class MovementCommands
             return;
         }
         Location userLoc = user.getLocation();
-        TeleportCommands.teleport(user, sender.getLocation(), true, false, false);
-        TeleportCommands.teleport(sender, userLoc, true, false, false);
-        //TODO handle if tp fails
-        if (context.hasArg(1))
+        if (TeleportCommands.teleport(user, sender.getLocation(), true, false, false))
         {
-            context.sendTranslated("&aSwapped position of &2%s &aand &2%s&a!", user.getName(), sender.getName());
-            return;
+            if (TeleportCommands.teleport(sender, userLoc, true, false, false))
+            {
+                if (context.hasArg(1))
+                {
+                    context.sendTranslated("&aSwapped position of &2%s &aand &2%s&a!", user.getName(), sender.getName());
+                    return;
+                }
+                context.sendTranslated("&aSwapped position with &2%s&a!", user.getName());
+            }
+            else
+            {
+                TeleportCommands.teleport(user, userLoc, false, true, false);
+            }
         }
-        context.sendTranslated("&aSwapped position with &2%s&a!", user.getName());
+        context.sendTranslated("&cCould not teleport both players!");
     }
 }

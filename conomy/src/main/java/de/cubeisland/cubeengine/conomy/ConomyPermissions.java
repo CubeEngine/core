@@ -22,10 +22,6 @@ import de.cubeisland.cubeengine.core.permission.PermissionContainer;
 
 public class ConomyPermissions extends PermissionContainer<Conomy>
 {
-
-
-
-
     public ConomyPermissions(Conomy module)
     {
         super(module);
@@ -39,7 +35,7 @@ public class ConomyPermissions extends PermissionContainer<Conomy>
     public static final Permission USER_ALLOWUNDERMIN = ACCOUNT_USER.createChild("allow-under-min");
     public static final Permission USER_SHOWHIDDEN = ACCOUNT_USER.createChild("show-hidden");
 
-
+    public static final Permission BANK_SHOWHIDDEN = ACCOUNT.createAbstractChild("bank").createChild("show-hidden");
 
     private static final Permission COMMAND = Permission.createAbstractPermission("command");
     private static final Permission COMMAND_MONEY_PAY = COMMAND.createAbstractChild("money").createAbstractChild("pay");
@@ -48,6 +44,8 @@ public class ConomyPermissions extends PermissionContainer<Conomy>
 
     private static final Permission COMMAND_BANK =  COMMAND.createAbstractChild("bank");
     public static final Permission COMMAND_BANK_BALANCE_SHOWHIDDEN = COMMAND_BANK.createAbstractChild("balance").createChild("show-hidden");
+
+    public static final Permission COMMAND_BANK_LISTINVITES_OTHER = COMMAND_BANK.createAbstractChild("listinvites").createChild("force");
 
     public static final Permission COMMAND_BANK_INVITE_FORCE = COMMAND_BANK.createAbstractChild("invite").createChild("force");
 
@@ -65,8 +63,8 @@ public class ConomyPermissions extends PermissionContainer<Conomy>
     public static Permission COMMAND_BANK_PAY_FORCE  = COMMAND_BANK.createAbstractChild("pay").createChild("force");
 
     private static Permission COMMAND_BANK_DELETE = COMMAND_BANK.createAbstractChild("delete");
-    public static final Permission COMMAND_BANK_DELETE_OWN = COMMAND_BANK_DELETE.createChild("own");// TODO use me
-    public static final Permission COMMAND_BANK_DELETE_OTHER = COMMAND_BANK_DELETE.createChild("other"); // TODO use me
+    public static final Permission COMMAND_BANK_DELETE_OWN = COMMAND_BANK_DELETE.createChild("own");
+    public static final Permission COMMAND_BANK_DELETE_OTHER = COMMAND_BANK_DELETE.createChild("other");
 
     private static final Permission COMMAND_ECO_CREATE = COMMAND.createAbstractChild("eco").createAbstractChild("create");
     public static final Permission ECO_CREATE_OTHER = COMMAND_ECO_CREATE.createChild("other");

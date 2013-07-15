@@ -17,11 +17,12 @@
  */
 package de.cubeisland.cubeengine.core.i18n;
 
-import de.cubeisland.cubeengine.core.util.ChatFormat;
-import gnu.trove.map.hash.THashMap;
-
 import java.util.Locale;
 import java.util.Map;
+
+import de.cubeisland.cubeengine.core.util.ChatFormat;
+
+import gnu.trove.map.hash.THashMap;
 
 /**
  * This class represents the source language.

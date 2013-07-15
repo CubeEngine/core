@@ -18,17 +18,20 @@
 package de.cubeisland.cubeengine.signmarket;
 
 import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
 import org.bukkit.block.BlockState;
-import org.bukkit.block.Sign;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
+import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.material.Sign;
 import org.bukkit.util.BlockIterator;
 
 import de.cubeisland.cubeengine.core.user.User;
+import de.cubeisland.cubeengine.core.util.BlockUtil;
 
 public class MarketSignListener implements Listener
 {
@@ -41,13 +44,42 @@ public class MarketSignListener implements Listener
     }
 
     @EventHandler
+    public void onBlockBreak(BlockBreakEvent event)
+    {
+        if (event.getPlayer() == null)
+        {
+            return;
+        }
+        if (this.module.getMarketSignFactory().getSignAt(event.getBlock().getLocation()) != null)
+        {
+            event.setCancelled(true);
+            return;
+        }
+        for (BlockFace blockFace : BlockUtil.CARDINAL_DIRECTIONS)
+        {
+            Block relative = event.getBlock().getRelative(blockFace);
+            if (relative.getState().getData() instanceof Sign)
+            {
+                if (this.module.getMarketSignFactory().getSignAt(relative.getLocation()) != null)
+                {
+                    Block originalBlock = relative.getRelative(((Sign)relative.getState().getData()).getAttachedFace());
+                    if (originalBlock.equals(event.getBlock()))
+                    {
+                        event.setCancelled(true);
+                    }
+                }
+            }
+        }
+    }
+
+    @EventHandler
     public void onPlayerInteract(PlayerInteractEvent event)
     {
         if (event.useItemInHand().equals(Event.Result.DENY))
         {
             return;
         }
-        if (event.getClickedBlock() != null && event.getClickedBlock().getState() instanceof Sign)
+        if (event.getClickedBlock() != null && event.getClickedBlock().getState().getData() instanceof Sign)
         {
             MarketSign marketSign = this.module.getMarketSignFactory().getSignAt(event.getClickedBlock().getLocation());
             if (marketSign == null)

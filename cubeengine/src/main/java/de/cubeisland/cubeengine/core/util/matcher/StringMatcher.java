@@ -17,13 +17,20 @@
  */
 package de.cubeisland.cubeengine.core.util.matcher;
 
-import com.google.common.base.Functions;
-import com.google.common.collect.Ordering;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeMap;
+
 import de.cubeisland.cubeengine.core.CubeEngine;
 
 import gnu.trove.map.hash.THashMap;
 
-import java.util.*;
+import com.google.common.base.Functions;
+import com.google.common.collect.Ordering;
+import gnu.trove.map.hash.THashMap;
 
 public class StringMatcher
 {

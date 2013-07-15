@@ -23,7 +23,6 @@ import java.util.concurrent.TimeUnit;
 import de.cubeisland.cubeengine.core.permission.Permission;
 import de.cubeisland.cubeengine.core.permission.PermissionContainer;
 import de.cubeisland.cubeengine.core.util.Profiler;
-
 import de.cubeisland.cubeengine.basics.command.teleport.TpWorldPermissions;
 
 import static de.cubeisland.cubeengine.core.permission.PermDefault.FALSE;
@@ -97,7 +96,7 @@ public class BasicsPerm extends PermissionContainer<Basics>
     /**
      * Prevents from being killed by the kill command unless forced
      */
-    public static final Permission COMMAND_KILL_PREVENT = COMMAND_KILL.createNew("prevent",FALSE); //TODO bundle for all prevent perms
+    public static final Permission COMMAND_KILL_PREVENT = COMMAND_KILL.createNew("prevent",FALSE);
     /**
      * Kills a player even if the player has the prevent permission
      */

@@ -17,7 +17,9 @@
  */
 package de.cubeisland.cubeengine.log.action.logaction;
 
-import java.util.EnumSet;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.bukkit.Location;
 import org.bukkit.World;
@@ -31,12 +33,13 @@ import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 
 import de.cubeisland.cubeengine.core.user.User;
+import de.cubeisland.cubeengine.log.action.ActionTypeCategory;
 import de.cubeisland.cubeengine.log.action.logaction.container.ContainerType;
 import de.cubeisland.cubeengine.log.storage.ItemData;
 import de.cubeisland.cubeengine.log.storage.LogEntry;
 
-import static de.cubeisland.cubeengine.log.action.ActionType.Category.ITEM;
-import static de.cubeisland.cubeengine.log.action.ActionType.Category.PLAYER;
+import static de.cubeisland.cubeengine.log.action.ActionTypeCategory.ITEM;
+import static de.cubeisland.cubeengine.log.action.ActionTypeCategory.PLAYER;
 import static org.bukkit.Material.AIR;
 
 /**
@@ -47,9 +50,9 @@ import static org.bukkit.Material.AIR;
 public class ItemDrop extends SimpleLogActionType
 {
     @Override
-    protected EnumSet<Category> getCategories()
+    protected Set<ActionTypeCategory> getCategories()
     {
-        return EnumSet.of(PLAYER, ITEM);
+        return new HashSet<ActionTypeCategory>(Arrays.asList(PLAYER, ITEM));
     }
 
     @Override

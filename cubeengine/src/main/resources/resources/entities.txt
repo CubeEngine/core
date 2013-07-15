@@ -99,6 +99,10 @@ OCELOT:
 IRON_GOLEM:
     IronGolem
     VillagerGolem
+HORSE:
+    horse
+    mule
+    donkey
 #NPCs
 VILLAGER:
     Villager

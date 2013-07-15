@@ -44,7 +44,11 @@ public class ImmutableBlockData
     @Override
     public String toString()
     {
-        //Match.material() //TODO getPrettyName
+        if (data == 0)
+        {
+            return material.name();
+        }
         return material + ":" + data;
+        //Match.material() //TODO pretty name CE-294 http://bugs.engine.cubeisland.de/browse/CE-294
     }
 }

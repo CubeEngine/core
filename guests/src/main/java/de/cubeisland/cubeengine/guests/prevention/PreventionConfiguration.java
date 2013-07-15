@@ -20,6 +20,7 @@ package de.cubeisland.cubeengine.guests.prevention;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.YamlConfiguration;
 

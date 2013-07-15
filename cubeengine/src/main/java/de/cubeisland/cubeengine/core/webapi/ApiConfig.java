@@ -17,13 +17,14 @@
  */
 package de.cubeisland.cubeengine.core.webapi;
 
+import java.util.Collections;
+import java.util.Set;
+
 import de.cubeisland.cubeengine.core.config.Configuration;
 import de.cubeisland.cubeengine.core.config.annotations.Codec;
 import de.cubeisland.cubeengine.core.config.annotations.Comment;
 import de.cubeisland.cubeengine.core.config.annotations.Option;
 import de.cubeisland.cubeengine.core.config.annotations.Revision;
-import java.util.Collections;
-import java.util.Set;
 
 @Codec("yml")
 @Revision(1)

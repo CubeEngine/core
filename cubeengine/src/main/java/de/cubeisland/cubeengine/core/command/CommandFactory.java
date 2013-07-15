@@ -17,8 +17,9 @@
  */
 package de.cubeisland.cubeengine.core.command;
 
-import de.cubeisland.cubeengine.core.module.Module;
 import java.util.List;
+
+import de.cubeisland.cubeengine.core.module.Module;
 
 public interface CommandFactory<T extends CubeCommand>
 {

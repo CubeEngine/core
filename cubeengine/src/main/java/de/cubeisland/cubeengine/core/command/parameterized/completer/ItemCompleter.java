@@ -17,12 +17,12 @@
  */
 package de.cubeisland.cubeengine.core.command.parameterized.completer;
 
-import de.cubeisland.cubeengine.core.command.parameterized.Completer;
-import de.cubeisland.cubeengine.core.command.CommandSender;
-import de.cubeisland.cubeengine.core.util.matcher.Match;
-
 import java.util.Arrays;
 import java.util.List;
+
+import de.cubeisland.cubeengine.core.command.CommandSender;
+import de.cubeisland.cubeengine.core.command.parameterized.Completer;
+import de.cubeisland.cubeengine.core.util.matcher.Match;
 
 public class ItemCompleter implements Completer
 {
