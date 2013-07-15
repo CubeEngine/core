@@ -158,7 +158,7 @@ public class SignManager implements Listener
             String psid = getPSID(location);
             if (psid == null)
             {
-                event.getPlayer().sendMessage("[PowerSigns] No Sign here!");
+               // event.getPlayer().sendMessage("[PowerSigns] No Sign here!");
                 //TODO check if it could be a PowerSign
                 //TODO create the sign if user has permission
                 return;

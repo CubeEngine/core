@@ -245,4 +245,10 @@ public class ConomyInterface implements Economy
     {
         return this.manager.parse(price);
     }
+
+    @Override
+    public double convertLongToDouble(long value)
+    {
+        return (double)value / this.fractionalDigitsFactor();
+    }
 }

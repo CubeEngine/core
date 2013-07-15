@@ -27,6 +27,15 @@ public interface Economy
     boolean hasBankSupport();
     int fractionalDigits();
     long fractionalDigitsFactor();
+
+    /**
+     * Divides the long value by fractionalDigitsFactor()
+     * <p>100 (cents) => 1.00 (Euro)
+     *
+     * @param value the value to convert
+     * @return the converted value
+     */
+    double convertLongToDouble(long value);
     String format(double amount);
     String format(Locale locale, double amount);
     String currencyNamePlural();

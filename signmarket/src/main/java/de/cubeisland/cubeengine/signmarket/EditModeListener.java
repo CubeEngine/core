@@ -74,10 +74,12 @@ public class EditModeListener extends ConversationCommand
     private TLongObjectHashMap<Location> currentSignLocation = new TLongObjectHashMap<Location>();
     private TLongObjectHashMap<MarketSign> previousMarketSign = new TLongObjectHashMap<MarketSign>();
 
-    private void setEditingSign(User user, Location location, MarketSign marketSign)
+    // TODO shift-click to edit multiple signs at the same time
+
+    private boolean setEditingSign(User user, MarketSign marketSign)
     {
-        Location previous = this.currentSignLocation.put(user.key, location);
-        if (!location.equals(previous))
+        Location previous = this.currentSignLocation.put(user.key, marketSign.getLocation());
+        if (!marketSign.getLocation().equals(previous))
         {
             MarketSign previousSign = this.signFactory.getSignAt(previous);
             if (previousSign != null)
@@ -85,10 +87,12 @@ public class EditModeListener extends ConversationCommand
                 this.previousMarketSign.put(user.key, previousSign);
                 previousSign.exitEditMode(user);
             }
+            marketSign.enterEditMode();
             user.sendTranslated("&aChanged active sign!");
-            marketSign.updateSignText();
+            return true;
         }
         marketSign.enterEditMode();
+        return false;
     }
 
     @Override
@@ -124,7 +128,7 @@ public class EditModeListener extends ConversationCommand
             user.sendTranslated("&4No market-sign at position! This should not happen!");
             return null;
         }
-        this.setEditingSign(user, loc, marketSign);
+        this.setEditingSign(user, marketSign);
         if (context.hasFlag("copy"))
         {
             MarketSign prevMarketSign = this.previousMarketSign.get(user.key);
@@ -143,7 +147,7 @@ public class EditModeListener extends ConversationCommand
             {
                 if (MarketSignPerm.SIGN_CREATE_ADMIN_BUY.isAuthorized(user))
                 {
-                    marketSign.setBuy();
+                    marketSign.setTypeBuy();
                 }
                 else
                 {
@@ -154,7 +158,7 @@ public class EditModeListener extends ConversationCommand
             {
                 if (MarketSignPerm.SIGN_CREATE_USER_BUY.isAuthorized(user))
                 {
-                    marketSign.setBuy();
+                    marketSign.setTypeBuy();
                 }
                 else
                 {
@@ -168,7 +172,7 @@ public class EditModeListener extends ConversationCommand
             {
                 if (MarketSignPerm.SIGN_CREATE_ADMIN_SELL.isAuthorized(user))
                 {
-                    marketSign.setSell();
+                    marketSign.setTypeSell();
                 }
                 else
                 {
@@ -179,7 +183,7 @@ public class EditModeListener extends ConversationCommand
             {
                 if (MarketSignPerm.SIGN_CREATE_USER_SELL.isAuthorized(user))
                 {
-                    marketSign.setSell();
+                    marketSign.setTypeSell();
                 }
                 else
                 {
@@ -189,11 +193,11 @@ public class EditModeListener extends ConversationCommand
         }
         if (context.hasParam("demand"))
         {
-            if (marketSign.isBuySign() == null)
+            if (marketSign.isTypeBuy() == null)
             {
-                marketSign.setSell();
+                marketSign.setTypeSell();
             }
-            if (marketSign.isBuySign())
+            if (marketSign.isTypeBuy())
             {
                 user.sendTranslated("&cBuy signs cannot have a demand!");
             }
@@ -204,7 +208,11 @@ public class EditModeListener extends ConversationCommand
             else
             {
                 Integer demand = context.getParam("demand",null);
-                if (demand == null || demand > 0)
+                if (demand == -1)
+                {
+                    marketSign.setNoDemand();
+                }
+                else if (demand != null && demand > 0)
                 {
                     marketSign.setDemand(demand);
                 }
@@ -443,10 +451,7 @@ public class EditModeListener extends ConversationCommand
     @EventHandler(priority = EventPriority.LOW)
     public void onClick(PlayerInteractEvent event)
     {
-        if (event.useItemInHand().equals(Event.Result.DENY))
-            return;
-        if (event.getPlayer().isSneaking())
-            return;
+        if (event.useItemInHand().equals(Event.Result.DENY)) return;
         User user = this.getModule().getCore().getUserManager().getExactUser(event.getPlayer().getName());
         if (!this.hasUser(user))
         {
@@ -467,23 +472,23 @@ public class EditModeListener extends ConversationCommand
                         return;
                     }
                 }
-                MarketSign marketSign = this.signFactory.getSignAt(newLoc);
-                if (marketSign == null)
+                MarketSign curSign = this.signFactory.getSignAt(newLoc);
+                if (curSign == null)
                 {
-                    if (user.isSneaking())
+                    if (!user.isSneaking())
                     {
-                        event.setUseInteractedBlock(Event.Result.DEFAULT);
-                        event.setUseItemInHand(Event.Result.DEFAULT);
+                        user.sendTranslated("&cThis is not a market-sign!\n&eUse shift leftclick to convert the sign.");
                         return;
                     }
-                    user.sendTranslated("&cThis is not a market-sign!\n&eUse shift leftclick to destroy the sign.");
+                    curSign = this.signFactory.createSignAt(user, newLoc);
+                    this.setEditingSign(user, curSign);
                     return;
                 }
-                if (marketSign.isInEditMode())
+                if (curSign.isInEditMode())
                 {
-                    if (marketSign.tryBreak(user))
+                    if (curSign.tryBreak(user))
                     {
-                        this.previousMarketSign.put(user.key, marketSign);
+                        this.previousMarketSign.put(user.key, curSign);
                         this.currentSignLocation.remove(user.key);
                     }
                     return;
@@ -493,11 +498,12 @@ public class EditModeListener extends ConversationCommand
                     user.sendTranslated("&cYou are not allowed to edit market-signs!");
                     return;
                 }
-                this.setEditingSign(user, newLoc, marketSign);
+                this.setEditingSign(user, curSign);
             }
         }
         else
         {
+            if (event.getPlayer().isSneaking()) return;
             BlockState signFound = null;
             if (event.getAction().equals(Action.RIGHT_CLICK_AIR))
             {
@@ -510,12 +516,9 @@ public class EditModeListener extends ConversationCommand
             {
                 signFound = event.getClickedBlock().getState();
             }
-            if (signFound == null)
-            {
-                return;
-            }
-            if (user.getItemInHand() == null || user.getItemInHand().getTypeId() == 0)
-                return;
+            if (signFound == null) return;
+            event.setCancelled(true);
+            event.setUseItemInHand(Event.Result.DENY);
             Location curLoc = signFound.getLocation();
             MarketSign curSign = this.signFactory.getSignAt(curLoc);
             if (curSign == null)
@@ -523,18 +526,18 @@ public class EditModeListener extends ConversationCommand
                 user.sendTranslated("&eThis sign is not a market-sign!");
                 return; // not a market-sign
             }
-            this.setEditingSign(user, curLoc, curSign);
-            if (curSign.hasStock() && curSign.getStock() != 0)
+            if (!this.setEditingSign(user, curSign))
             {
-                user.sendTranslated("&cYou have to take all items out of the market-sign to be able to change the item in it!");
-                event.setCancelled(true);
-                event.setUseItemInHand(Event.Result.DENY);
+                if (user.getItemInHand() == null || user.getItemInHand().getTypeId() == 0) return;
+                if (!curSign.isAdminSign() && curSign.hasStock() && curSign.getStock() != 0)
+                {
+                    user.sendTranslated("&cYou have to take all items out of the market-sign to be able to change the item in it!");
+                    return;
+                }
+                curSign.setItemStack(user.getItemInHand(), true);
+                curSign.updateSignText();
+                user.sendTranslated("&aItem in sign updated!");
             }
-            curSign.setItemStack(user.getItemInHand(), true);
-            curSign.updateSignText();
-            user.sendTranslated("&aItem in sign updated!");
-            event.setCancelled(true);
-            event.setUseItemInHand(Event.Result.DENY);
         }
     }
 
@@ -552,10 +555,7 @@ public class EditModeListener extends ConversationCommand
                     event.setCancelled(true);
                     return;
                 }
-                Location loc = event.getBlockPlaced().getLocation();
-                MarketSign marketSign = this.signFactory.createSignAt(user, loc);
-                this.setEditingSign(user, loc, marketSign);
-                marketSign.updateSignText();
+                this.setEditingSign(user, this.signFactory.createSignAt(user, event.getBlockPlaced().getLocation()));
             }
         }
     }
@@ -568,7 +568,9 @@ public class EditModeListener extends ConversationCommand
         {
             Location loc = event.getBlock().getLocation();
             if (loc.equals(this.currentSignLocation.get(user.key)))
+            {
                 event.setCancelled(true);
+            }
         }
     }
 }

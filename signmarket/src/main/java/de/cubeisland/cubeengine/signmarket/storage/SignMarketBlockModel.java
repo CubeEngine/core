@@ -66,17 +66,18 @@ public class SignMarketBlockModel implements Model<Long>
     // Helper-methods:
     private Location location;
 
-    public SignMarketBlockModel(Location location) {
+    public SignMarketBlockModel(Location location)
+    {
         this.world = CubeEngine.getCore().getWorldManager().getWorldId(location.getWorld());
         this.x = location.getBlockX();
         this.y = location.getBlockY();
         this.z = location.getBlockZ();
     }
 
-    public void copyValuesFrom(SignMarketBlockModel blockInfo) {
+    public void copyValuesFrom(SignMarketBlockModel blockInfo)
+    {
         this.signType = blockInfo.signType;
         this.owner = blockInfo.owner;
-        this.userOwner = null;
         this.itemKey = blockInfo.itemKey;
         this.amount = blockInfo.amount;
         this.demand = blockInfo.demand;
@@ -107,28 +108,11 @@ public class SignMarketBlockModel implements Model<Long>
     public void setOwner(User owner)
     {
         this.owner = owner == null ? null : owner.key;
-        this.userOwner = owner;
     }
 
-    private User userOwner;
-    public User getOwner()
-    {
-        if (owner == null)
-            return null;
-        if (userOwner == null)
-        {
-            userOwner = CubeEngine.getUserManager().getUser(owner);
-        }
-        return userOwner;
-    }
-
-    public boolean isBuyOrSell()
-    {
-        return this.signType != null;
-    }
     public boolean isOwner(User user)
     {
-        return this.owner == user.key;
+        return this.owner.equals(user.key);
     }
 
     //for database:
