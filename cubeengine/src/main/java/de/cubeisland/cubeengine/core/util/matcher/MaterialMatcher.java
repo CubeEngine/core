@@ -34,7 +34,7 @@ import org.bukkit.inventory.ItemStack;
 import de.cubeisland.cubeengine.core.CoreResource;
 import de.cubeisland.cubeengine.core.CubeEngine;
 import de.cubeisland.cubeengine.core.filesystem.FileUtil;
-import de.cubeisland.cubeengine.core.logger.LogLevel;
+
 
 import gnu.trove.map.hash.THashMap;
 import gnu.trove.map.hash.TShortObjectHashMap;
@@ -129,7 +129,7 @@ public class MaterialMatcher
         }
         catch (IllegalArgumentException ex)
         {
-            CubeEngine.getLog().warning("Unknown Material: " + materialName);
+            CubeEngine.getLog().warn("Unknown Material: {}", materialName);
             return;
         }
     }
@@ -231,7 +231,7 @@ public class MaterialMatcher
             List<String> jarinput = FileUtil.readStringList(CubeEngine.getFileManager().getSourceOf(file));
             if (jarinput != null && this.readItems(readItems, jarinput, true))
             {
-                CubeEngine.getLog().log(LogLevel.NOTICE, "Updated items.txt");
+                CubeEngine.getLog().info("Updated items.txt");
                 StringBuilder sb = new StringBuilder();
                 for (String itemName : readItems.keySet())
                 {
@@ -397,7 +397,7 @@ public class MaterialMatcher
         TShortObjectHashMap<String> dataMap = this.itemnames.get(mat);
         if (dataMap == null)
         {
-            CubeEngine.getLog().warning("Unknown Item! ID: " + mat + " DATA: " + data);
+            CubeEngine.getLog().warn("Unknown Block-Data: {} DATA: {}", mat, data);
             return null;
         }
         String itemName = dataMap.get(data);
@@ -406,7 +406,7 @@ public class MaterialMatcher
             itemName = dataMap.get((short)0);
             if (itemName == null)
             {
-                CubeEngine.getLog().warning("Unknown Item! ID: " + mat + " DATA: " + data);
+                CubeEngine.getLog().warn("Unknown Block-Data: {} DATA: {}", mat, data);
                 return mat.name() + ":" + data;
             }
             itemName += ":" + data;
@@ -419,7 +419,7 @@ public class MaterialMatcher
         TShortObjectHashMap<String> dataMap = this.itemnames.get(mat);
         if (dataMap == null)
         {
-            CubeEngine.getLog().warning("Unknown Block! ID: " + mat + " DATA: " + blockData);
+            CubeEngine.getLog().warn("Unknown Block-Data: {} DATA: {}", mat, blockData);
             return null;
         }
         String itemName = dataMap.get((short)0);

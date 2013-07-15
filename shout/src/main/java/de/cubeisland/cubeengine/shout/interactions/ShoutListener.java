@@ -23,7 +23,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerQuitEvent;
 
 import de.cubeisland.cubeengine.core.bukkit.PlayerLanguageReceivedEvent;
-import de.cubeisland.cubeengine.core.logger.LogLevel;
+
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.shout.Shout;
 import de.cubeisland.cubeengine.shout.announce.AnnouncementManager;
@@ -46,7 +46,7 @@ public class ShoutListener implements Listener
 
         if (this.module.getCore().isDebug())
         {
-            this.module.getLog().log(LogLevel.DEBUG, "Loading user: {0}", user.getName());
+            this.module.getLog().debug("Loading user: {}", user.getName());
         }
         this.am.initializeUser(user);
     }

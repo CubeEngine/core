@@ -136,11 +136,11 @@ public class NormalLanguage implements Cleanable, Language
         }
         catch (FileNotFoundException ignored)
         {
-            this.core.getLog().log(LogLevel.WARNING, "The translation category " + cat + " was not found for the language ''" + this.code + "'' !");
+            this.core.getLog().warn("The translation category " + cat + " was not found for the language ''" + this.code + "'' !");
         }
         catch (IOException e)
         {
-            this.core.getLog().log(LogLevel.ERROR, String.valueOf(e), e);
+            this.core.getLog().error(String.valueOf(e), e);
         }*/
         return null;
     }
@@ -165,7 +165,7 @@ public class NormalLanguage implements Cleanable, Language
         }
         catch (IOException e)
         {
-            CubeEngine.getLog().log(LogLevel.WARNING, e.getLocalizedMessage(), e);
+            CubeEngine.getLog().warn(e.getLocalizedMessage(), e);
         }
         finally
         {

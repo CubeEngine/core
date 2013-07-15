@@ -22,7 +22,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import de.cubeisland.cubeengine.core.CubeEngine;
 
-import static de.cubeisland.cubeengine.core.logger.LogLevel.DEBUG;
+
 
 public class CubeThreadFactory implements ThreadFactory
 {
@@ -66,7 +66,7 @@ public class CubeThreadFactory implements ThreadFactory
         {
             name += " - " + caller;
         }
-        CubeEngine.getLog().log(DEBUG, "Creating thread: {0}", name);
+        CubeEngine.getLog().debug("Creating thread: {}", name);
         return new CubeThread(this.group, r, name);
     }
 
@@ -81,7 +81,7 @@ public class CubeThreadFactory implements ThreadFactory
         public void interrupt()
         {
             super.interrupt();
-            CubeEngine.getLog().log(DEBUG, "Interrupted thread: {0}", this.getName()); // TODO remove CubeEngine
+            CubeEngine.getLog().debug("Interrupted thread: {}", this.getName()); // TODO remove CubeEngine
         }
     }
 }

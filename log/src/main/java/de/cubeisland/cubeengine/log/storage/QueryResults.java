@@ -28,6 +28,7 @@ import java.util.TreeSet;
 
 import org.bukkit.Location;
 
+import de.cubeisland.cubeengine.core.CubeEngine;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.log.LogAttachment;
 import de.cubeisland.cubeengine.log.action.logaction.kill.MonsterDeath;
@@ -133,7 +134,7 @@ public class QueryResults
         {
             navigableSet = compressedEntries;
         }
-        System.out.print(String.format("Showing %d/%d/%d logentries to %s (page %d)", showing, navigableSet.size(), this.logEntries.size() , user.getName(), show.page)); // TODO use the new Logger!
+		CubeEngine.getLog().info("Showing {} {}/{}/{} logentries to {} (page{})", showing, navigableSet.size(), this.logEntries.size() , user.getName(), show.page);
         for (LogEntry logEntry : navigableSet)
         {
             if (cpage == show.page)
@@ -215,7 +216,7 @@ public class QueryResults
             {
                 attachment.getHolder().sendTranslated("&cCould not Rollback:");
                 logEntry.actionType.showLogEntry(attachment.getHolder(), null, logEntry, show);
-                System.out.print("Could not Rollback!");
+                CubeEngine.getLog().warn("Could not rollback!");
             }
         }
     }

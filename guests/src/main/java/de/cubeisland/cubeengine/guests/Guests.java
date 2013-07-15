@@ -20,7 +20,7 @@ package de.cubeisland.cubeengine.guests;
 import java.io.File;
 
 import de.cubeisland.cubeengine.core.config.Configuration;
-import de.cubeisland.cubeengine.core.logger.LogLevel;
+
 import de.cubeisland.cubeengine.core.module.Module;
 import de.cubeisland.cubeengine.guests.prevention.PreventionManager;
 import de.cubeisland.cubeengine.guests.prevention.preventions.AfkPrevention;
@@ -157,7 +157,7 @@ public class Guests extends Module
             .registerPrevention(new WorkbenchPrevention(this))
             .enablePreventions();
 
-        this.getLog().log(LogLevel.NOTICE, this.prevManager.getPreventions().size() + " Prevention(s) have been registered!");
+        this.getLog().info("{} Prevention(s) have been registered!", this.prevManager.getPreventions().size());
     }
 
     @Override

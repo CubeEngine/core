@@ -43,21 +43,21 @@ public class Travel extends Module
     {
         Profiler.startProfiling("travelEnable");
         this.config = Configuration.load(TravelConfig.class, this);
-        System.out.print(Profiler.getCurrentDelta("travelEnable", TimeUnit.MILLISECONDS) + "ms - TelePointManager");
+        this.getLog().trace("{} ms - TelePointManager", Profiler.getCurrentDelta("travelEnable", TimeUnit.MILLISECONDS));
         this.telePointManager = new TelePointManager(this);
-        System.out.print(Profiler.getCurrentDelta("travelEnable", TimeUnit.MILLISECONDS) + "ms - InviteManager");
+        this.getLog().trace("{} ms - InviteManager", Profiler.getCurrentDelta("travelEnable", TimeUnit.MILLISECONDS));
         this.inviteManager = new InviteManager(this.getCore().getDB(), this);
-        System.out.print(Profiler.getCurrentDelta("travelEnable", TimeUnit.MILLISECONDS) + "ms - InviteManager-load");
+        this.getLog().trace("{} ms - InviteManager-load", Profiler.getCurrentDelta("travelEnable", TimeUnit.MILLISECONDS));
         this.telePointManager.load(this.inviteManager);
         final CommandManager cm = this.getCore().getCommandManager();
-        System.out.print(Profiler.getCurrentDelta("travelEnable", TimeUnit.MILLISECONDS) + "ms - register commands");
+        this.getLog().trace("{} ms - register commands", Profiler.getCurrentDelta("travelEnable", TimeUnit.MILLISECONDS));
         cm.registerCommand(new HomeCommand(this));
         cm.registerCommand(new HomeAdminCommand(this), "home");
         cm.registerCommand(new WarpCommand(this));
         cm.registerCommand(new WarpAdminCommand(this), "warp");
-        System.out.print(Profiler.getCurrentDelta("travelEnable", TimeUnit.MILLISECONDS) + "ms - register listener");
+        this.getLog().trace("{} ms - register listener", Profiler.getCurrentDelta("travelEnable", TimeUnit.MILLISECONDS));
         this.getCore().getEventManager().registerListener(this, new HomeListener(this));
-        System.out.print(Profiler.endProfiling("travelEnable", TimeUnit.MILLISECONDS) + "ms - done");
+        this.getLog().trace("{} ms - Done", Profiler.endProfiling("travelEnable", TimeUnit.MILLISECONDS));
     }
 
     public TravelConfig getConfig()

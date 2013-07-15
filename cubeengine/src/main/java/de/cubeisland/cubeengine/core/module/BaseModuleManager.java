@@ -19,6 +19,7 @@ package de.cubeisland.cubeengine.core.module;
 
 import java.io.File;
 import java.io.FileFilter;
+import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -30,7 +31,9 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Stack;
 import java.util.concurrent.TimeUnit;
-import java.util.logging.Logger;
+import java.util.jar.JarEntry;
+import java.util.jar.JarFile;
+import java.util.zip.ZipEntry;
 
 import de.cubeisland.cubeengine.core.Core;
 import de.cubeisland.cubeengine.core.filesystem.FileExtentionFilter;
@@ -47,10 +50,14 @@ import de.cubeisland.cubeengine.core.module.exception.ModuleException;
 import de.cubeisland.cubeengine.core.util.Profiler;
 import de.cubeisland.cubeengine.core.util.Version;
 
+import ch.qos.logback.classic.LoggerContext;
+import ch.qos.logback.classic.joran.JoranConfigurator;
+import ch.qos.logback.core.joran.spi.JoranException;
 import gnu.trove.map.hash.THashMap;
 import gnu.trove.set.hash.THashSet;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import static de.cubeisland.cubeengine.core.logger.LogLevel.*;
 
 public abstract class BaseModuleManager implements ModuleManager
 {
@@ -64,18 +71,17 @@ public abstract class BaseModuleManager implements ModuleManager
 
     private final Map<String, String> serviceProviders;
 
-    public BaseModuleManager(Core core, ClassLoader parentClassLoader)
+    public BaseModuleManager(Core core, ClassLoader parentClassLoader, ModuleLoggerFactory loggerFactory)
     {
         this.core = core;
         this.logger = core.getLog();
-        this.loader = new ModuleLoader(core, parentClassLoader);
+        this.loader = new ModuleLoader(core, parentClassLoader, loggerFactory);
         this.modules = new LinkedHashMap<String, Module>();
         this.moduleInfos = new THashMap<String, ModuleInfo>();
         this.classMap = new THashMap<Class<? extends Module>, Module>();
         this.coreModule = new CoreModule();
-        this.serviceProviders = new HashMap<String, String>();
-        this.coreModule.initialize(core, new ModuleInfo(core), core.getFileManager().getDataFolder(), core.getLog(), null, null);
-
+                this.serviceProviders = new HashMap<String, String>();
+        this.coreModule.initialize(core, new ModuleInfo(core), core.getFileManager().getDataFolder(), null, null, logger);
     }
 
     public synchronized Module getModule(String name)
@@ -135,7 +141,7 @@ public abstract class BaseModuleManager implements ModuleManager
 
         Module module;
         ModuleInfo info;
-        this.logger.log(NOTICE, "Loading modules...");
+        this.logger.info("Loading modules...");
         for (File file : directory.listFiles((FileFilter)FileExtentionFilter.JAR))
         {
             try
@@ -146,20 +152,20 @@ public abstract class BaseModuleManager implements ModuleManager
                 {
                     if (module.getInfo().getVersion().compareTo(info.getVersion()) >= 0)
                     {
-                        this.logger.log(WARNING, "A newer or equal version of the module '" + info.getName() + "' is already loaded!");
+                        this.logger.warn("A newer or equal version of the module '" + info.getName() + "' is already loaded!");
                         continue;
                     }
                     else
                     {
                         this.unloadModule(module);
-                        this.logger.log(NOTICE, "A newer version of '" + info.getName() + "' will replace the currently loaded version!");
+                        this.logger.info("A newer version of '" + info.getName() + "' will replace the currently loaded version!");
                     }
                 }
                 this.moduleInfos.put(info.getId(), info);
             }
             catch (InvalidModuleException e)
             {
-                this.logger.log(ERROR, e.getLocalizedMessage(), e);
+                this.logger.error(e.getLocalizedMessage(), e);
             }
         }
         Collection<String> moduleNames = new HashSet<String>(this.moduleInfos.keySet());
@@ -182,15 +188,15 @@ public abstract class BaseModuleManager implements ModuleManager
             catch (InvalidModuleException e)
             {
                 this.moduleInfos.remove(moduleName);
-                this.logger.log(DEBUG, "Failed to load the module '" + moduleName + "'", e);
+                this.logger.debug("Failed to load the module '" + moduleName + "'", e);
             }
             catch (ModuleException e)
             {
                 this.moduleInfos.remove(moduleName);
-                this.logger.log(ERROR, "Failed to load the module '" + moduleName + "'", e);
+                this.logger.error("Failed to load the module '" + moduleName + "'", e);
             }
         }
-        this.logger.log(NOTICE, "Finished loading modules!");
+        this.logger.info("Finished loading modules!");
     }
 
     private Module loadModule(String name, Map<String, ModuleInfo> moduleInfos) throws CircularDependencyException, MissingDependencyException, InvalidModuleException, IncompatibleDependencyException, IncompatibleCoreException, MissingPluginDependencyException, MissingProviderException
@@ -254,7 +260,7 @@ public abstract class BaseModuleManager implements ModuleManager
             depModule = this.loadModule(depName, moduleInfos, loadStack);
             if (dep.getValue().isNewerThan(Version.ZERO) && depModule.getInfo().getVersion().isOlderThan(dep.getValue()))
             {
-                this.logger.log(WARNING, "The module " + name + " requested a newer version of " + depName + "!");
+                this.logger.warn("The module " + name + " requested a newer version of " + depName + "!");
             }
         }
         for (Map.Entry<String, Version> dep : info.getDependencies().entrySet())
@@ -273,6 +279,26 @@ public abstract class BaseModuleManager implements ModuleManager
                 }
             }
         }
+
+        // Load the modules logback.xml, if it exists
+        try
+        {
+            JarFile jarFile = new JarFile(info.getFile());
+            ZipEntry entry = jarFile.getEntry("logback.xml");
+            if (entry != null)
+            {
+                JoranConfigurator logbackConfig = new JoranConfigurator();
+                logbackConfig.setContext((LoggerContext)LoggerFactory.getILoggerFactory());
+                logbackConfig.doConfigure(jarFile.getInputStream(entry));
+            }
+        }
+        catch (IOException ignored)
+        {} // This should never happen
+        catch (JoranException ex)
+        {
+            module.getLog().warn("An error occured while loading the modules logback.xml config: " + ex.getLocalizedMessage(), ex);
+        }
+
         module = this.loader.loadModule(info);
         loadStack.pop();
 
@@ -286,7 +312,7 @@ public abstract class BaseModuleManager implements ModuleManager
         }
         catch (NoClassDefFoundError e)
         {
-            module.getLog().log(WARNING, "Failed to get the fields of the main class: " + e.getLocalizedMessage(), e);
+            module.getLog().warn("Failed to get the fields of the main class: " + e.getLocalizedMessage(), e);
         }
         for (Field field : fields)
         {
@@ -317,7 +343,7 @@ public abstract class BaseModuleManager implements ModuleManager
                 }
                 catch (Exception e)
                 {
-                    module.getLog().log(WARNING, "Failed to inject a dependency: {0}", injectedModule.getName());
+                    module.getLog().warn("Failed to inject a dependency: {}", injectedModule.getName());
                 }
             }
         }
@@ -330,18 +356,18 @@ public abstract class BaseModuleManager implements ModuleManager
 
     public synchronized boolean enableModule(Module module)
     {
-        module.getLog().log(INFO, "Enabling version {0}...", module.getVersion());
+        module.getLog().info("Enabling version {}...", module.getVersion());
         Profiler.startProfiling("enable-module");
         boolean result = module.enable();
         final long enableTime = Profiler.endProfiling("enable-module", TimeUnit.MICROSECONDS);
         if (!result)
         {
-            module.getLog().log(ERROR, " Module failed to load.");
+            module.getLog().error(" Module failed to load.");
         }
         else
         {
             this.core.getEventManager().fireEvent(new ModuleEnabledEvent(this.core, module));
-            module.getLog().log(INFO, "Successfully enabled within {0} microseconds!", enableTime);
+            module.getLog().info("Successfully enabled within {} microseconds!", enableTime);
         }
         return result;
     }
@@ -371,7 +397,7 @@ public abstract class BaseModuleManager implements ModuleManager
         }
         finally
         {
-            module.getLog().log(INFO, "Module disabled within {0} microseconds", Profiler.endProfiling("disable-module", TimeUnit.MICROSECONDS));
+            module.getLog().info("Module disabled within {} microseconds", Profiler.endProfiling("disable-module", TimeUnit.MICROSECONDS));
         }
     }
 
@@ -400,7 +426,7 @@ public abstract class BaseModuleManager implements ModuleManager
         this.loader.unloadModule(module);
         this.moduleInfos.remove(module.getId());
 
-        this.logger.log(DEBUG, Profiler.getCurrentDelta("unload-" + module.getId(), TimeUnit.MILLISECONDS)+ "ms - null fields");
+        this.logger.debug(Profiler.getCurrentDelta("unload-" + module.getId(), TimeUnit.MILLISECONDS)+ "ms - null fields");
         // null all the fields referencing this module
         for (Module m : this.modules.values())
         {
@@ -417,16 +443,16 @@ public abstract class BaseModuleManager implements ModuleManager
                     {}
             }
         }
-        this.logger.log(DEBUG, Profiler.getCurrentDelta("unload-" + module.getId(), TimeUnit.MILLISECONDS)+ "ms - classloader");
+        this.logger.debug(Profiler.getCurrentDelta("unload-" + module.getId(), TimeUnit.MILLISECONDS)+ "ms - classloader");
         ClassLoader classLoader = module.getClassLoader();
         if (classLoader instanceof ModuleClassLoader)
         {
             ((ModuleClassLoader)classLoader).shutdown();
         }
-        this.logger.log(DEBUG, Profiler.getCurrentDelta("unload-" + module.getId(), TimeUnit.MILLISECONDS)+ "ms - Before GC ");
+        this.logger.debug(Profiler.getCurrentDelta("unload-" + module.getId(), TimeUnit.MILLISECONDS)+ "ms - Before GC ");
         System.gc();
         System.gc();
-        this.logger.log(DEBUG, "Unloading '" + module.getName() + "' took {0} milliseconds!", Profiler
+        this.logger.debug("Unloading '" + module.getName() + "' took {} milliseconds!", Profiler
             .endProfiling("unload-" + module.getId(), TimeUnit.MILLISECONDS));
     }
 
@@ -452,7 +478,7 @@ public abstract class BaseModuleManager implements ModuleManager
             }
             else
             {
-                this.logger.log(NOTICE, "The module ''{0}'' is not natively reloadable, falling back to disabling and re-enabling.", module.getName());
+                this.logger.warn("The module ''{}'' is not natively reloadable, falling back to disabling and re-enabling.", module.getName());
                 this.disableModule(module);
                 this.enableModule(module);
             }
@@ -475,8 +501,8 @@ public abstract class BaseModuleManager implements ModuleManager
             }
             catch (ModuleException e)
             {
-                this.logger.log(ERROR, "Failed to reload ''{0}''", module.getName());
-                this.logger.log(ERROR, e.getLocalizedMessage(), e);
+                this.logger.error("Failed to reload ''{}''", module.getName());
+                this.logger.error(e.getLocalizedMessage(), e);
             }
             ++modules;
         }
@@ -503,13 +529,13 @@ public abstract class BaseModuleManager implements ModuleManager
     @Override
     public synchronized void clean()
     {
-        this.logger.log(DEBUG, "Unload modules...");
+        this.logger.debug("Unload modules...");
         Profiler.startProfiling("unload-modules");
         this.unloadModules();
-        this.logger.log(DEBUG, "Unloading the modules took {0} milliseconds!", Profiler.endProfiling("unload-modules", TimeUnit.MILLISECONDS));
+        this.logger.debug("Unloading the modules took {} milliseconds!", Profiler.endProfiling("unload-modules", TimeUnit.MILLISECONDS));
         this.modules.clear();
         this.moduleInfos.clear();
-        this.logger.log(DEBUG, "Shutting down the loader");
+        this.logger.debug("Shutting down the loader");
         this.loader.shutdown();
     }
 

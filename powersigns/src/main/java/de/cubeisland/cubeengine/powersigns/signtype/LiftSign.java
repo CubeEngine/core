@@ -154,7 +154,8 @@ public class LiftSign extends SignType<LiftSign,LiftSignInfo>
             Sign sign = (Sign)(location.getBlock().getState());
             return this.createInfo(model.owner_id,location,sign.getLine(0),sign.getLine(1),sign.getLine(2),sign.getLine(3));
         }
-        this.module.getLog().warning("Expected sign not found at "+state.getX()+":"+state.getY()+":"+state.getZ() + " in "+ state.getWorld().getName());
+        this.module.getLog().warn("Expected a sign which was not found, at {}:{}:{} in {} ", state.getX(), state.getY(),
+                                  state.getZ(), state.getWorld().getName());
         return null;
     }
 
@@ -186,13 +187,13 @@ public class LiftSign extends SignType<LiftSign,LiftSignInfo>
                     String psid = this.manager.getPSID(destination);
                     if (psid != null && psid.equals(this.signType.getPSID())) // is LiftSign
                     {
-                        System.out.print("Valid saved dest-loc");
+                        this.module.getLog().debug("Valid saved dest-loc");
                         return destination.clone(); // return valid
                     }
                 }
                 else // invalid
                 {
-                    System.out.print("Invalid saved dest-loc");
+                    this.module.getLog().debug("Invalid saved dest-loc");
                     this.destination = null;
                     return this.findLiftSign(floors);
                 }
@@ -211,7 +212,7 @@ public class LiftSign extends SignType<LiftSign,LiftSignInfo>
                         floors--;
                         if (floors == 0) // reached actual floor
                         {
-                            System.out.print("Valid found dest-loc");
+                            this.module.getLog().debug("Valid found dest-loc");
                             this.destination = searchLocation.clone();
                             PowerSign<LiftSign,LiftSignInfo> powerSign = this.manager.getPowerSign(destination);
                             powerSign.getSignTypeInfo().updateSignText();
@@ -221,7 +222,7 @@ public class LiftSign extends SignType<LiftSign,LiftSignInfo>
                     }
                 }
             }
-            System.out.print("No found dest-loc");
+            this.module.getLog().debug("No found dest-loc");
             return null;
         }
 

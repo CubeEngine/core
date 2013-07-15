@@ -47,7 +47,7 @@ public class RepairBlockPersister extends SingleKeyStorage<Long,RepairBlockModel
         }
         else
         {
-            this.module.getLog().warning("Could not delete model by block!");
+            this.module.getLog().warn("Could not delete model by block!");
         }
     }
 

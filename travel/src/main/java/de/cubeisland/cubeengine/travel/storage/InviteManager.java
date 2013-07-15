@@ -26,7 +26,7 @@ import java.util.Map;
 import java.util.Set;
 
 import de.cubeisland.cubeengine.core.CubeEngine;
-import de.cubeisland.cubeengine.core.logger.LogLevel;
+
 import de.cubeisland.cubeengine.core.storage.TwoKeyStorage;
 import de.cubeisland.cubeengine.core.storage.database.Database;
 import de.cubeisland.cubeengine.core.storage.database.querybuilder.QueryBuilder;
@@ -68,10 +68,8 @@ public class InviteManager extends TwoKeyStorage<Long, Long, TeleportInvite>
         }
         catch (SQLException ex)
         {
-            module.getLog().log(LogLevel.ERROR, "An error occurred while preparing the database statements for table " +
-                this.tableName);
-            module.getLog().log(LogLevel.WARNING, "The error was: {0}", ex.getMessage());
-            module.getLog().log(LogLevel.DEBUG, "This is the stack: ", ex);
+            module.getLog().error("An error occurred while preparing the database statements for table " +
+                                  this.tableName + ": " + ex.getMessage(), ex);
         }
     }
 
@@ -133,9 +131,8 @@ public class InviteManager extends TwoKeyStorage<Long, Long, TeleportInvite>
         }
         catch (SQLException ex)
         {
-            module.getLog().log(LogLevel.WARNING, "Something wrong happened while getting usernames for some users");
-            module.getLog().log(LogLevel.WARNING, "The error message was: {0}", ex.getMessage());
-            module.getLog().log(LogLevel.DEBUG, "This is the stack: ", ex);
+            module.getLog().warn("Something wrong happened while getting usernames for some users: {}",  ex.getLocalizedMessage());
+            module.getLog().debug(ex.getLocalizedMessage(), ex);
         }
         this.cachedInvites.put(tPP, invitedUsers);
         return invitedUsers;

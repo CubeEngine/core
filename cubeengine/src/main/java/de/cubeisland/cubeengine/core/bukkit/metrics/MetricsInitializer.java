@@ -25,7 +25,6 @@ import org.mcstats.Metrics;
 import org.mcstats.Metrics.Graph;
 import org.mcstats.Metrics.Plotter;
 
-import static de.cubeisland.cubeengine.core.logger.LogLevel.NOTICE;
 
 public final class MetricsInitializer
 {
@@ -47,7 +46,7 @@ public final class MetricsInitializer
             }
             catch (IOException e)
             {
-                this.core.getLog().log(NOTICE, "The initialization of metrics failed!");
+                this.core.getLog().warn("The initialization of metrics failed! " + e.getLocalizedMessage(), e);
             }
             this.initializeGraphs();
         }

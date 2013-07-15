@@ -30,7 +30,7 @@ import de.cubeisland.cubeengine.roles.config.RoleMirror;
 import gnu.trove.map.hash.TLongObjectHashMap;
 import gnu.trove.procedure.TLongObjectProcedure;
 
-import static de.cubeisland.cubeengine.core.logger.LogLevel.DEBUG;
+
 
 public class WorldRoleProvider extends RoleProvider
 {
@@ -68,7 +68,7 @@ public class WorldRoleProvider extends RoleProvider
         }
         if (this.defaultRoles.isEmpty())
         {
-            this.module.getLog().warning("The role-provider for " + this.mirrorConfig.mainWorld + " has no default roles!");
+            this.module.getLog().warn("The role-provider for {} has no default roles!", this.mirrorConfig.mainWorld);
         }
     }
 
@@ -91,7 +91,7 @@ public class WorldRoleProvider extends RoleProvider
     @Override
     public void recalculateRoles()
     {
-        this.module.getLog().log(DEBUG, "Calculating Roles of " + this.mirrorConfig.mainWorld + "...");
+        this.module.getLog().debug("Calculating Roles of {}...", mirrorConfig.mainWorld);
         super.recalculateRoles();
     }
 

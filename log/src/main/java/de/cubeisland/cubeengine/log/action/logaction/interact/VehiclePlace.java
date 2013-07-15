@@ -74,8 +74,8 @@ public class VehiclePlace extends SimpleLogActionType
         }
         else
         {
-            System.out.print("Unexpected VehiclePlacement: "+event.getVehicle()+
-                                 " planned: "+plannedVehiclePlace.size());
+            this.logModule.getLog().info("Unexpected VehiclePlacement: {} planned: {}", event.getVehicle(),
+                                         plannedVehiclePlace.size());
         }
     }
 

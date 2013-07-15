@@ -23,7 +23,7 @@ import java.util.Locale;
 import java.util.Set;
 
 import de.cubeisland.cubeengine.core.config.Configuration;
-import de.cubeisland.cubeengine.core.logger.LogLevel;
+
 import de.cubeisland.cubeengine.core.util.StringUtils;
 import de.cubeisland.cubeengine.core.util.matcher.Match;
 import de.cubeisland.cubeengine.basics.Basics;
@@ -81,7 +81,7 @@ public class KitManager
         }
         catch (Exception ex)
         {
-            module.getLog().log(LogLevel.WARNING, "Could not load the kit configuration!", ex);
+            module.getLog().warn("Could not load the kit configuration!", ex);
         }
     }
 

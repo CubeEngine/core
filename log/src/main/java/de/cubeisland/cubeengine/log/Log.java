@@ -63,7 +63,7 @@ public class Log extends Module
         }
         catch (ClassNotFoundException ignored)
         {
-            System.out.print("No WorldEdit found!");
+            this.getLog().warn("No WorldEdit found!");
         }
 
         this.getCore().getEventManager().registerListener(this, new ToolListener(this));

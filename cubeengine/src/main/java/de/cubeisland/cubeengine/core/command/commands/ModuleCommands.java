@@ -35,7 +35,7 @@ import de.cubeisland.cubeengine.core.module.exception.ModuleException;
 import de.cubeisland.cubeengine.core.util.ChatFormat;
 import de.cubeisland.cubeengine.core.util.Version;
 
-import static de.cubeisland.cubeengine.core.logger.LogLevel.ERROR;
+
 
 public class ModuleCommands extends ContainerCommand
 {
@@ -147,8 +147,8 @@ public class ModuleCommands extends ContainerCommand
             {
                 context.sendTranslated("&cFailed to reload the module!");
                 context.sendTranslated("&eCheck the server log for info.");
-                context.getCore().getLog().log(ERROR, "Failed to reload the module: {0}", module.getName());
-                context.getCore().getLog().log(ERROR, e.getLocalizedMessage(), e);
+                context.getCore().getLog().error("Failed to reload the module " + module.getName() +": "
+                                                     + e.getLocalizedMessage(), e);
             }
         }
     }
@@ -186,8 +186,8 @@ public class ModuleCommands extends ContainerCommand
         catch (ModuleException e)
         {
             context.sendTranslated("&cThe module failed to load! Check the server log for info.");
-            context.getCore().getLog().log(ERROR, "Failed to load a module from file: {0}", moduleFile.getPath());
-            context.getCore().getLog().log(ERROR, e.getLocalizedMessage(), e);
+            context.getCore().getLog().error("Failed to load a module from file " + moduleFile.getPath() + ": "
+                                                 + e.getLocalizedMessage(), e);
         }
     }
 

@@ -47,7 +47,7 @@ import de.cubeisland.cubeengine.core.util.StringUtils;
 import gnu.trove.map.hash.THashMap;
 import gnu.trove.set.hash.THashSet;
 
-import static de.cubeisland.cubeengine.core.logger.LogLevel.ERROR;
+
 import static de.cubeisland.cubeengine.core.util.StringUtils.startsWithIgnoreCase;
 
 /**
@@ -527,7 +527,7 @@ public abstract class CubeCommand extends Command
         {
             sender.sendTranslated("&4An unknown error occurred while executing this command!");
             sender.sendTranslated("&4Please report this error to an administrator.");
-            this.module.getLog().log(ERROR, e.getLocalizedMessage(), e);
+            this.module.getLog().error(e.getLocalizedMessage(), e);
         }
 
         return true;

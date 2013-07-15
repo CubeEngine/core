@@ -53,7 +53,6 @@ import de.cubeisland.cubeengine.core.util.ChatFormat;
 import de.cubeisland.cubeengine.core.util.Profiler;
 
 import static de.cubeisland.cubeengine.core.command.ArgBounds.NO_MAX;
-import static de.cubeisland.cubeengine.core.logger.LogLevel.NOTICE;
 import static de.cubeisland.cubeengine.core.permission.PermDefault.FALSE;
 import static de.cubeisland.cubeengine.core.util.ChatFormat.*;
 import static de.cubeisland.cubeengine.core.util.Misc.arr;
@@ -241,7 +240,7 @@ public class VanillaCommands implements CommandHolder
             onlineUser.sendTranslated("&eUser &2%s &ehas been opped by &2%s&e!", offlinePlayer.getName(), context.getSender().getName());
         }
 
-        this.core.getLog().log(NOTICE, "Player {0} has been opped by {1}", arr(offlinePlayer.getName(), context.getSender().getName()));
+        this.core.getLog().info("Player {} has been opped by {}", arr(offlinePlayer.getName(), context.getSender().getName()));
     }
 
     @Command(
@@ -292,7 +291,7 @@ public class VanillaCommands implements CommandHolder
             onlineUser.sendTranslated("&eUser &2%s&a has been opped by &2%s&a!", offlinePlayer.getName(), context.getSender().getName());
         }
 
-        this.core.getLog().log(NOTICE, "Player {0} has been deopped by {1}", arr(offlinePlayer.getName(), context.getSender().getName()));
+        this.core.getLog().info("Player {} has been deopped by {}", arr(offlinePlayer.getName(), context.getSender().getName()));
     }
 
     @Command(desc = "Lists all loaded plugins")

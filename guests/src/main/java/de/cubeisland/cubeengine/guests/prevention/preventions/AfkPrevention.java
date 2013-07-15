@@ -27,8 +27,8 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
-import de.cubeisland.cubeengine.core.logger.LogLevel;
 import de.cubeisland.cubeengine.core.task.TaskManager;
+
 import de.cubeisland.cubeengine.guests.Guests;
 import de.cubeisland.cubeengine.guests.prevention.Prevention;
 
@@ -164,7 +164,7 @@ public class AfkPrevention extends Prevention
                 this.taskId = taskManager.runTaskDelayed(getModule(), this, timeout);
                 if (this.taskId < 0)
                 {
-                    getModule().getLog().log(LogLevel.ERROR, "Tracker for {0} failed to schedule!", this.player.getName());
+                    getModule().getLog().error("Tracker for {} failed to schedule!", this.player.getName());
                 }
             }
         }

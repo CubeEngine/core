@@ -17,33 +17,38 @@
  */
 package de.cubeisland.cubeengine.core.util.convert.converter;
 
+import de.cubeisland.cubeengine.core.config.node.BooleanNode;
 import de.cubeisland.cubeengine.core.config.node.Node;
 import de.cubeisland.cubeengine.core.config.node.StringNode;
-import de.cubeisland.cubeengine.core.logger.CubeLevel;
-import de.cubeisland.cubeengine.core.logger.LogLevel;
 import de.cubeisland.cubeengine.core.util.convert.ConversionException;
 import de.cubeisland.cubeengine.core.util.convert.Convert;
 import de.cubeisland.cubeengine.core.util.convert.Converter;
 
-public class CubeLevelConverter implements Converter<CubeLevel>
+import ch.qos.logback.classic.Level;
+
+public class LevelConverter implements Converter<Level>
 {
     @Override
-    public Node toNode(CubeLevel object) throws ConversionException
+    public Node toNode(Level object) throws ConversionException
     {
         return Convert.wrapIntoNode(object.toString());
     }
 
     @Override
-    public CubeLevel fromNode(Node node) throws ConversionException
+    public Level fromNode(Node node) throws ConversionException
     {
         if (node instanceof StringNode)
         {
-            CubeLevel lv = LogLevel.parse(((StringNode)node).getValue());
+            Level lv = Level.toLevel(node.toString(), null);
             if (lv == null)
             {
-                throw new ConversionException("Unknown LogLevel. " + ((StringNode)node).getValue());
+                throw new ConversionException("Unknown LogLevel: " + ((StringNode)node).getValue());
             }
             return lv;
+        }
+        else if (node instanceof BooleanNode && !((BooleanNode)node).getValue())
+        { // OFF is interpreted as a boolean false
+            return fromNode(new StringNode("OFF"));
         }
         throw new ConversionException("Invalid Node!" + node.getClass());
     }

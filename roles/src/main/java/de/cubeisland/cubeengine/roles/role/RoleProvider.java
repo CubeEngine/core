@@ -25,7 +25,7 @@ import java.util.Set;
 import java.util.Stack;
 
 import de.cubeisland.cubeengine.core.config.Configuration;
-import de.cubeisland.cubeengine.core.logger.LogLevel;
+
 import de.cubeisland.cubeengine.core.permission.Permission;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.util.StringUtils;
@@ -35,7 +35,7 @@ import de.cubeisland.cubeengine.roles.exception.CircularRoleDependencyException;
 
 import gnu.trove.map.hash.THashMap;
 
-import static de.cubeisland.cubeengine.core.logger.LogLevel.DEBUG;
+
 
 public abstract class RoleProvider
 {
@@ -114,7 +114,7 @@ public abstract class RoleProvider
                 this.configs.put(config.roleName.toLowerCase(), config);
             }
         }
-        this.module.getLog().log(DEBUG, this.getFolder().getName()+ ": " + i + " role-configs read!");
+        this.module.getLog().debug("{}: {} role-configs read!", this.getFolder().getName(), i);
     }
 
     /**
@@ -166,7 +166,8 @@ public abstract class RoleProvider
                     Role parentRole = this.getRole(parentName);
                     if (parentRole == null) // Dependency Missing?
                     {
-                        this.module.getLog().log(LogLevel.WARNING, "ParentRole missing for \"" + role.getName() + "\"\nUnknown role: " + parentName);
+                        this.module.getLog().warn("ParentRole missing for \"{}\"\nUnknown role: {}", role.getName(),
+                                                  parentName);
                     }
                     this.calculateRole(parentRole,roleStack);
                 }
@@ -187,12 +188,12 @@ public abstract class RoleProvider
                 data.calculate(parentRoles);
                 role.resolvedData = data;
                 roleStack.pop();
-                this.module.getLog().log(DEBUG, "   - " + role.getName() + " calculated!");
+                this.module.getLog().debug("   - {} calculated!", role.getName());
                 return role;
             }
             catch (CircularRoleDependencyException ex)
             {
-                this.module.getLog().log(LogLevel.WARNING, ex.getMessage());
+                this.module.getLog().warn(ex.getMessage());
                 return null;
             }
         }

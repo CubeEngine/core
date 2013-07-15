@@ -17,20 +17,12 @@
  */
 package de.cubeisland.cubeengine.conomy.account;
 
-import java.io.File;
-import java.text.SimpleDateFormat;
 import java.util.Collection;
-import java.util.Date;
 import java.util.HashSet;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
-import java.util.logging.Formatter;
-import java.util.logging.LogRecord;
 
-import de.cubeisland.cubeengine.core.logger.CubeFileHandler;
-import de.cubeisland.cubeengine.core.logger.CubeLogger;
-import de.cubeisland.cubeengine.core.logger.LogLevel;
 import de.cubeisland.cubeengine.core.service.Economy;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.conomy.Conomy;
@@ -40,6 +32,8 @@ import de.cubeisland.cubeengine.conomy.account.storage.AccountStorage;
 import de.cubeisland.cubeengine.conomy.account.storage.BankAccessStorage;
 
 import gnu.trove.map.hash.THashMap;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class ConomyManager
 {
@@ -50,7 +44,7 @@ public class ConomyManager
     private Map<String,BankAccount> bankaccounts;
     private Map<Long,BankAccount> bankaccountsID;
 
-    protected final CubeLogger logger;
+    protected final Logger logger;
     protected final ConomyConfiguration config;
     private Economy conomyInterface;
 
@@ -64,30 +58,10 @@ public class ConomyManager
         this.bankaccounts = new THashMap<String, BankAccount>();
         this.bankaccountsID = new THashMap<Long, BankAccount>();
 
-        this.logger = new CubeLogger("conomy_transactions");
-        if (this.module.getConfig().enableLogging)
+        this.logger =  LoggerFactory.getLogger("cubeengine.conomy.transactions");
+        if (!this.module.getConfig().enableLogging)
         {
-            try
-            {
-                final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-                CubeFileHandler handler = new CubeFileHandler(LogLevel.ALL,
-                                                              new File(this.module.getCore().getFileManager().getLogDir(), "conomy_transactions").toString());
-                this.logger.addHandler(handler);
-                handler.setFormatter(new Formatter() {
-                    @Override
-                    public String format(LogRecord record)
-                    {
-                        StringBuilder sb = new StringBuilder();
-                        sb.append(dateFormat.format(new Date(record.getMillis())))
-                          .append(" ").append(record.getMessage()).append("\n");
-                        return sb.toString();
-                    }
-                });
-            }
-            catch (Exception ex)
-            {
-                throw new IllegalStateException("Could not create handler for transaction-logger", ex);
-            }
+            ((ch.qos.logback.classic.Logger)logger).getAppender("conomy.transactions-file").stop();
         }
 
         this.conomyInterface = new ConomyInterface(this);
@@ -105,12 +79,12 @@ public class ConomyManager
                 model = new AccountModel(null,name,(int) (this.config.defaultBankBalance * this.config.fractionalDigitsFactor()),false,this.config.bankNeedInvite);
                 this.storage.store(model);
                 bankAccount = new BankAccount(this, model);
-                this.logger.info("NEW Bank:" + name + " :: " + bankAccount.balance());
+                this.logger.info("NEW Bank:{} :: {}", name,  bankAccount.balance());
             }
             else
             {
                 bankAccount = new BankAccount(this, model);
-                this.logger.info("LOAD Bank:" + name + " :: " + bankAccount.balance());
+                this.logger.info("LOAD Bank:{} :: {}", name, bankAccount.balance());
             }
             this.bankaccounts.put(name,bankAccount);
             this.bankaccountsID.put(bankAccount.model.key, bankAccount);
@@ -225,7 +199,7 @@ public class ConomyManager
     {
         final long longValue = (long)(value * this.config.fractionalDigitsFactor());
         this.storage.setAll(userAcc, bankAcc, longValue);
-        this.logger.info("SET-ALL " + (userAcc && bankAcc ? "User/Bank " : userAcc ? "User " : "Bank ") + value);
+        this.logger.info("SET-ALL {} {}", (userAcc && bankAcc ? "User/Bank" : userAcc ? "User" : "Bank"), value);
         // update all loaded accounts...
         if (userAcc)
         {
@@ -250,7 +224,7 @@ public class ConomyManager
     public void scaleAll(boolean userAcc, boolean bankAcc, float factor)
     {
         this.storage.scaleAll(userAcc, bankAcc, factor);
-        this.logger.info("SCALE-ALL " + (userAcc && bankAcc ? "User/Bank " : userAcc ? "User " : "Bank ") + factor);
+        this.logger.info("SCALE-ALL {} {}", (userAcc && bankAcc ? "User/Bank" : userAcc ? "User" : "Bank"), factor);
         // update all loaded accounts...
         if (userAcc)
         {
@@ -276,7 +250,7 @@ public class ConomyManager
     {
         final long longValue = (long)(value * this.config.fractionalDigitsFactor());
         this.storage.transactAll(userAcc, bankAcc, longValue);
-        this.logger.info("TRANSACTION-ALL " + (userAcc && bankAcc ? "User/Bank " : userAcc ? "User " : "Bank ") + value);
+        this.logger.info("TRANSACTION-ALL {} {}", (userAcc && bankAcc ? "User/Bank" : userAcc ? "User" : "Bank"), value);
         // update all loaded accounts...
         if (userAcc)
         {
@@ -313,8 +287,8 @@ public class ConomyManager
         }
         if (to != null && from != null)
         {
-            this.logger.info("TRANSACTION " + (from instanceof UserAccount ? "User:" : "Bank:") + from.getName()
-                                 + " -> " + (to instanceof UserAccount ? "User:" : "Bank:") + to.getName());
+            this.logger.info("TRANSACTION {}{} -> {}{}", (from instanceof UserAccount ? "User:" : "Bank:"),
+                             from.getName(), (to instanceof UserAccount ? "User:" : "Bank:"),  to.getName());
         }
         if (from != null)
         {
