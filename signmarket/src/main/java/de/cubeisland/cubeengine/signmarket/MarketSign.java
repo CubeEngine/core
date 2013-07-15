@@ -37,6 +37,8 @@ import de.cubeisland.cubeengine.core.util.ChatFormat;
 import de.cubeisland.cubeengine.core.util.InventoryGuardFactory;
 import de.cubeisland.cubeengine.core.util.RomanNumbers;
 import de.cubeisland.cubeengine.core.util.matcher.Match;
+import de.cubeisland.cubeengine.signmarket.exceptions.NoDemandException;
+import de.cubeisland.cubeengine.signmarket.exceptions.NoStockException;
 import de.cubeisland.cubeengine.signmarket.storage.SignMarketBlockModel;
 import de.cubeisland.cubeengine.signmarket.storage.SignMarketItemModel;
 
@@ -91,13 +93,14 @@ public class MarketSign
 
     public void breakSign()
     {
+        this.getLocation().getBlock().breakNaturally();
         this.dropContents();
         msFactory.delete(this);
     }
 
     public void dropContents()
     {
-        if (this.isAdminSign() || !this.itemInfo.hasStock() || this.editMode || this.itemInfo.stock <= 0 || this.itemInfo.sharesStock()) // no stock / edit mode / shared stock
+        if (this.isAdminSign() || !this.hasStock() || this.editMode || this.itemInfo.stock <= 0 || this.itemInfo.sharesStock()) // no stock / edit mode / shared stock
         {
             return;
         }
@@ -278,7 +281,6 @@ public class MarketSign
      * <p>on shift right-click: inspect the sign, shows all information saved
      *
      * @param user
-     * @return true if the event shall be canceled
      */
     public void executeAction(User user, Action type)
     {
@@ -430,7 +432,6 @@ public class MarketSign
                 if (sneaking)
                 {
                     this.showInfo(user);
-                    return;
                 }
                 else
                 {
@@ -452,7 +453,6 @@ public class MarketSign
                     this.useSign(user);
                 }
         }
-        return;
     }
 
     public void showInfo(User user)
@@ -552,13 +552,42 @@ public class MarketSign
         }
     }
 
-    public boolean hasStock() {
-        return this.itemInfo.hasStock();
+    /**
+     * Returns true if both item-models share the same item and are not infinite item-sources
+     * <p>in addition to this the market-signs have to share their owner too!
+     *
+     * @param model the model to compare to
+     * @return
+     */
+    public boolean canSync(MarketSign model)
+    {
+        return this.hasStock() == model.hasStock()
+            && this.getItem().isSimilar(model.getItem())
+            && this.itemInfo.size == model.itemInfo.size;
+    }
+
+    /**
+     * Returns the size of the display-chest
+     *
+     * @return
+     */
+    public int getChestSize()
+    {
+        if (this.itemInfo.size == -1)
+        {
+            return 54;
+        }
+        return this.itemInfo.size * 9;
+    }
+
+    public boolean hasStock()
+    {
+        return this.itemInfo.stock != null;
     }
 
     public boolean hasDemand()
     {
-        return this.getDemand() != null;
+        return this.blockInfo.demand != null;
     }
 
     private String parsePrice()
@@ -679,7 +708,6 @@ public class MarketSign
                 location.getWorld().strikeLightningEffect(location);
             }
             this.breakSign();
-            location.getWorld().getBlockAt(location).breakNaturally();
             this.breakingSign.remove(user.key);
             user.sendTranslated("&aMarketSign destroyed!");
             return true;
@@ -1090,7 +1118,7 @@ public class MarketSign
                 {
                     signString = "MarketSign - Sell";
                 }
-                inventory = Bukkit.getServer().createInventory(this.itemInfo, this.itemInfo.getSize(), signString); // DOUBLE-CHEST
+                inventory = Bukkit.getServer().createInventory(this.itemInfo, this.getChestSize(), signString); // DOUBLE-CHEST
                 ItemStack item = this.getItem().clone();
                 item.setAmount(this.itemInfo.stock);
                 if (this.itemInfo.stock > 0)
@@ -1114,8 +1142,8 @@ public class MarketSign
      * Sets the new Item-Info and returns the replaced infoModel
      * The item-infos and block-info will be updated accordingly
      *
-     * @param itemInfo
-     * @return
+     * @param itemInfo the new item-info to set
+     * @return the old item-info
      */
     public SignMarketItemModel setItemInfo(SignMarketItemModel itemInfo)
     {
@@ -1130,19 +1158,34 @@ public class MarketSign
         return old;
     }
 
-    public void setBlockInfo(SignMarketBlockModel blockModel)
+    /**
+     * Returns the amount of items in stock in this sign
+     *
+     * @return the amount of items in stock
+     * @throws NoStockException when this sign has no stock
+     */
+    public int getStock() throws NoStockException
     {
-        this.blockInfo = blockModel;
+        if (this.itemInfo.stock == null) throw new NoStockException();
+        return this.itemInfo.stock;
     }
 
-    public int getStock()
+    /**
+     * Sets the stock of this sign to the specified amount
+     *
+     * @param amount
+     */
+    public void setStock(int amount)
     {
-        return this.itemInfo.stock == null ? 0 : this.itemInfo.stock;
+        this.itemInfo.stock = amount;
     }
 
-    public void setStock(Integer stock)
+    /**
+     * Sets this sign having no stock
+     */
+    public void setNoStock()
     {
-        this.itemInfo.stock = stock;
+        this.itemInfo.stock = null;
     }
 
     public Boolean isBuySign()
@@ -1150,8 +1193,9 @@ public class MarketSign
         return this.blockInfo.signType;
     }
 
-    public Integer getDemand()
+    public int getDemand()
     {
+        if (this.blockInfo.demand == null) throw new NoDemandException();
         return this.blockInfo.demand;
     }
 
@@ -1203,15 +1247,6 @@ public class MarketSign
     public Location getLocation()
     {
         return this.blockInfo.getLocation();
-    }
-
-    public Integer getRemainingDemand()
-    {
-        if (this.getDemand() != null)
-        {
-            return this.getDemand() - this.getStock();
-        }
-        return null;
     }
 
     public SignMarketBlockModel getBlockInfo()

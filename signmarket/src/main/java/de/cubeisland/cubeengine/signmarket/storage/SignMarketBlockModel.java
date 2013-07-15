@@ -131,7 +131,6 @@ public class SignMarketBlockModel implements Model<Long>
         return this.owner == user.key;
     }
 
-
     //for database:
     @Override
     public Long getId()
@@ -145,6 +144,4 @@ public class SignMarketBlockModel implements Model<Long>
     }
     public SignMarketBlockModel()
     {}
-
-
 }

@@ -265,7 +265,7 @@ public class EditModeListener extends ConversationCommand
                     {
                         if (MarketSignPerm.SIGN_CREATE_ADMIN_NOSTOCK.isAuthorized(user))
                         {
-                            marketSign.setStock(null);
+                            marketSign.setNoStock();
                         }
                         else
                         {

@@ -87,12 +87,12 @@ public class MarketSignFactory
         if (this.module.getConfig().allowAdminNoStock)
         {
             marketSign.setAdminSign();
-            marketSign.setStock(null);
+            marketSign.setNoStock();
         }
         else if (this.module.getConfig().allowAdminStock)
         {
             marketSign.setAdminSign();
-            marketSign.setStock(null);
+            marketSign.setNoStock();
         }
         else
         {
@@ -138,7 +138,7 @@ public class MarketSignFactory
                 continue;
             }
             if ((marketSign.getOwner() == sign.getOwner() && marketSign != sign)  // same owner (but not same sign)
-                && marketSign.getItemInfo().canSync(sign.getItemInfo())) // both have stock AND same item -> doSync
+                && marketSign.canSync(sign)) // both have stock AND same item -> doSync
             {
                 // apply the found item-info to the marketsign
                 SignMarketItemModel itemModel = marketSign.setItemInfo(sign.getItemInfo());

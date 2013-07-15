@@ -65,8 +65,6 @@ public class SignMarketItemModel implements Model<Long>,InventoryHolder,Cloneabl
 
     private ItemStack itemStack;
 
-
-
     public void setItem(ItemStack item)
     {
         this.item = item.getType().name();
@@ -144,41 +142,6 @@ public class SignMarketItemModel implements Model<Long>,InventoryHolder,Cloneabl
         return itemStack;
     }
 
-
-    public boolean hasStock()
-    {
-        return this.stock != null;
-    }
-
-    /**
-     * Returns true if both item-models share the same item and are not infinite item-sources
-     * <p>in addition to this the market-signs have to share their owner too!
-     *
-     * @param model the model to compare to
-     * @return
-     */
-    public boolean canSync(SignMarketItemModel model)
-    {
-        return this.hasStock() == model.hasStock()
-            && this.getItem().isSimilar(model.getItem())
-            && this.getSize() == model.getSize();
-    }
-
-    //for database:
-    @Override
-    public Long getId()
-    {
-        return this.key;
-    }
-
-    @Override
-    public void setId(Long id)
-    {
-        this.key = id;
-    }
-    public SignMarketItemModel()
-    {}
-
     private THashSet<MarketSign> sharedStockSigns = new THashSet<MarketSign>();
 
     public void removeSign(MarketSign marketSign)
@@ -210,7 +173,6 @@ public class SignMarketItemModel implements Model<Long>,InventoryHolder,Cloneabl
     }
 
     public Inventory inventory;
-
     @Override
     public Inventory getInventory()
     {
@@ -220,14 +182,6 @@ public class SignMarketItemModel implements Model<Long>,InventoryHolder,Cloneabl
     public void initInventory(Inventory inventory)
     {
         this.inventory = inventory;
-    }
-
-    public int getSize() {
-        if (this.size == -1)
-        {
-            return 54;
-        }
-        return this.size * 9;
     }
 
     public THashSet<MarketSign> getReferenced()
@@ -252,4 +206,18 @@ public class SignMarketItemModel implements Model<Long>,InventoryHolder,Cloneabl
         this.enchantments = itemInfo.enchantments;
         this.itemStack = null;
     }
+
+    //for database:
+    @Override
+    public Long getId()
+    {
+        return this.key;
+    }
+    @Override
+    public void setId(Long id)
+    {
+        this.key = id;
+    }
+    public SignMarketItemModel()
+    {}
 }
