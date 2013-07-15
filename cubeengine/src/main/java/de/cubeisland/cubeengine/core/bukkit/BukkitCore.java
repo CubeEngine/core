@@ -347,7 +347,7 @@ public final class BukkitCore extends JavaPlugin implements Core
     {
         if (this.database == null)
         {
-            this.getLog().log(ERROR, "Could not establish database connection (" + this.config.database + ")");
+            this.getLog().error("Could not establish database connection ({})", this.config.database);
             this.getServer().getPluginManager().disablePlugin(this);
             return;
         }

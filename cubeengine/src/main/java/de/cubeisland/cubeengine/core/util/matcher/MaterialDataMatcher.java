@@ -17,12 +17,15 @@
  */
 package de.cubeisland.cubeengine.core.util.matcher;
 
-import de.cubeisland.cubeengine.core.CoreResource;
-import de.cubeisland.cubeengine.core.CubeEngine;
-import de.cubeisland.cubeengine.core.filesystem.FileUtil;
-import de.cubeisland.cubeengine.core.util.StringUtils;
+import java.io.File;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Set;
 
-import gnu.trove.map.hash.*;
 import org.bukkit.DyeColor;
 import org.bukkit.Material;
 import org.bukkit.entity.EntityType;
@@ -32,7 +35,6 @@ import org.bukkit.inventory.meta.SkullMeta;
 import de.cubeisland.cubeengine.core.CoreResource;
 import de.cubeisland.cubeengine.core.CubeEngine;
 import de.cubeisland.cubeengine.core.filesystem.FileUtil;
-import de.cubeisland.cubeengine.core.logger.LogLevel;
 import de.cubeisland.cubeengine.core.util.StringUtils;
 
 import gnu.trove.map.hash.TByteObjectHashMap;

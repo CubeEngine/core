@@ -17,15 +17,6 @@
  */
 package de.cubeisland.cubeengine.rulebook.bookManagement;
 
-import de.cubeisland.cubeengine.core.i18n.Language;
-
-import de.cubeisland.cubeengine.core.util.StringUtils;
-import de.cubeisland.cubeengine.rulebook.Rulebook;
-import org.bukkit.Bukkit;
-import org.bukkit.Material;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.BookMeta;
-
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -42,7 +33,6 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.BookMeta;
 
 import de.cubeisland.cubeengine.core.i18n.Language;
-import de.cubeisland.cubeengine.core.logger.LogLevel;
 import de.cubeisland.cubeengine.core.util.StringUtils;
 import de.cubeisland.cubeengine.rulebook.Rulebook;
 

@@ -30,6 +30,7 @@ import java.nio.charset.Charset;
 import java.util.LinkedList;
 import java.util.List;
 
+import de.cubeisland.cubeengine.core.CubeEngine;
 
 
 /**
