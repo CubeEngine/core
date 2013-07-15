@@ -172,17 +172,19 @@ public class BlockBreak extends BlockActionType
             {
                 oldState = this.adjustBlockForDoubleBlocks(oldState);
                 oldData.data = oldState.getRawData();
-                ObjectNode json = this.om.createObjectNode();
-                json.put("break-cause", cause.getRight().getID());
+
                 if (oldState instanceof Sign)
                 {
+                    ObjectNode json = this.om.createObjectNode();
                     ArrayNode sign = json.putArray("oldSign");
                     for (String line : ((Sign)oldState).getLines())
                     {
                         sign.add(line);
                     }
+                    cause.getRight().logBlockChange(loc, cause.getLeft(), oldData, AIR, json.toString());
+                    return;
                 }
-                this.logBlockChange(loc, cause.getLeft(), oldData, AIR, json.toString());
+                cause.getRight().logBlockChange(loc, cause.getLeft(), oldData, AIR, null);
             }
         }
     }
