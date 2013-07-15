@@ -18,7 +18,6 @@
 package de.cubeisland.cubeengine.core;
 
 import java.nio.charset.Charset;
-import java.util.logging.Logger;
 
 import de.cubeisland.cubeengine.core.ban.BanManager;
 import de.cubeisland.cubeengine.core.bukkit.EventManager;
@@ -37,6 +36,8 @@ import de.cubeisland.cubeengine.core.util.Version;
 import de.cubeisland.cubeengine.core.util.matcher.Match;
 import de.cubeisland.cubeengine.core.webapi.ApiServer;
 import de.cubeisland.cubeengine.core.world.WorldManager;
+
+import org.slf4j.Logger;
 
 /**
  * This interface specifies all the methods the core of the CubeEngine has to provide.

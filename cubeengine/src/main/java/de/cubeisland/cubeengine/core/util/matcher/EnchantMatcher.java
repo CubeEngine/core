@@ -28,7 +28,6 @@ import org.bukkit.inventory.ItemStack;
 
 import de.cubeisland.cubeengine.core.CoreResource;
 import de.cubeisland.cubeengine.core.CubeEngine;
-import de.cubeisland.cubeengine.core.logger.LogLevel;
 import de.cubeisland.cubeengine.core.util.AliasMapFormat;
 
 import gnu.trove.map.hash.THashMap;
@@ -59,7 +58,7 @@ public class EnchantMatcher
             Enchantment ench = this.bukkitnames.get(bukkitName);
             if (ench == null)
             {
-                CubeEngine.getLog().warning("Unkown Enchantment: " + bukkitName);
+                CubeEngine.getLog().warn("Unkown Enchantment: {}", bukkitName);
                 continue;
             }
             this.registerEnchantment(ench, enchs.get(bukkitName));
@@ -100,7 +99,7 @@ public class EnchantMatcher
             AliasMapFormat.parseStringList(file, enchantments, false);
             if (AliasMapFormat.parseStringList(CubeEngine.getFileManager().getSourceOf(file), enchantments, true))
             {
-                CubeEngine.getLog().log(LogLevel.NOTICE, "Updated enchantments.txt");
+                CubeEngine.getLog().info("Updated enchantments.txt");
                 AliasMapFormat.parseAndSaveStringListMap(enchantments, file);
             }
             return enchantments;

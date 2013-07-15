@@ -29,7 +29,7 @@ import de.cubeisland.cubeengine.core.CubeEngine;
 import de.cubeisland.cubeengine.core.command.ArgumentReader;
 import de.cubeisland.cubeengine.core.util.convert.Convert;
 
-import static de.cubeisland.cubeengine.core.logger.LogLevel.WARNING;
+
 
 /**
  * This is the ClassLoader used by modules
@@ -124,7 +124,7 @@ public class ModuleClassLoader extends URLClassLoader
         }
         catch (Exception ignored)
         {
-            CubeEngine.getLog().log(WARNING, "Failed to close the class loader of the module ''{0}''", this.moduleInfo.getName());
+            CubeEngine.getLog().warn("Failed to close the class loader of the module '{}'", this.moduleInfo.getName());
         }
     }
 }

@@ -29,7 +29,8 @@ import org.bukkit.event.block.SignChangeEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.world.ChunkLoadEvent;
 
-import de.cubeisland.cubeengine.core.logger.LogLevel;
+
+import de.cubeisland.cubeengine.core.CubeEngine;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.powersigns.signtype.LiftSign;
 import de.cubeisland.cubeengine.powersigns.signtype.SignType;
@@ -84,7 +85,7 @@ public class SignManager implements Listener
         {
             throw new IllegalStateException("Already registered String!" + signType.getPSID());
         }
-        this.module.getLog().log(LogLevel.DEBUG, "Registered SignType: " + signType.getPSID());
+        this.module.getLog().debug("Registered SignType: {}", signType.getPSID());
         for (String name : signType.getNames().keySet())
         {
             if (registerdSignTypes.put(name,signType) != null)
@@ -122,7 +123,7 @@ public class SignManager implements Listener
         {
             String idLine = event.getLine(1);
             idLine = idLine.substring(1,idLine.length()-1);
-            System.out.print("IdentifierLine: "+idLine);
+            CubeEngine.getLog().debug("IdentifierLine: {}" + idLine);
             idLine = idLine.toLowerCase();
             SignType signType = registerdSignTypes.get(idLine);
             if (signType == null)

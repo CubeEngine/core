@@ -28,7 +28,7 @@ import de.cubeisland.cubeengine.core.storage.database.querybuilder.QueryBuilder;
 
 import com.mysql.jdbc.jdbc2.optional.MysqlDataSource;
 
-import static de.cubeisland.cubeengine.core.logger.LogLevel.ERROR;
+
 
 /**
  * MYSQLDatabase the MYSQL implementation for the database.
@@ -141,7 +141,7 @@ public class MySQLDatabase extends AbstractDatabase
             }
             catch (SQLException e)
             {
-                CubeEngine.getLog().log(ERROR, e.getLocalizedMessage(), e);
+                CubeEngine.getLog().error(e.getLocalizedMessage(), e);
             }
         }
     }

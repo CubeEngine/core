@@ -56,7 +56,7 @@ public class SpawnListener implements Listener
             RolesAttachment rolesAttachment = user.get(RolesAttachment.class);
             if (rolesAttachment == null)
             {
-                this.roles.getLog().warning("Missing RolesAttachment!");
+                this.roles.getLog().warn("Missing RolesAttachment!");
                 return;
             }
             String spawnString = rolesAttachment.getCurrentMetadata("rolespawn");
@@ -65,7 +65,7 @@ public class SpawnListener implements Listener
                 Location spawnLoc = this.getSpawnLocation(spawnString);
                 if (spawnLoc == null)
                 {
-                    roles.getLog().warning(" [Spawn] Invalid Location. Check your role-configuration!");
+                    roles.getLog().warn("Invalid Location. Check your role-configuration!");
                     return;
                 }
                 user.teleport(spawnLoc.add(0.5,0,0.5), TeleportCause.PLUGIN);
@@ -82,7 +82,7 @@ public class SpawnListener implements Listener
             RolesAttachment rolesAttachment = user.get(RolesAttachment.class);
             if (rolesAttachment == null)
             {
-                this.roles.getLog().warning("Missing RolesAttachment!");
+                this.roles.getLog().warn("Missing RolesAttachment!");
                 return;
             }
             String spawnString = rolesAttachment.getCurrentMetadata("rolespawn");
@@ -91,7 +91,7 @@ public class SpawnListener implements Listener
                 Location spawnLoc = this.getSpawnLocation(spawnString);
                 if (spawnLoc == null)
                 {
-                    roles.getLog().warning(" [Spawn] Invalid Location. Check your role-configuration!");
+                    roles.getLog().warn("Invalid Location. Check your role-configuration!");
                     return;
                 }
                 event.setRespawnLocation(spawnLoc.add(0.5,0,0.5));

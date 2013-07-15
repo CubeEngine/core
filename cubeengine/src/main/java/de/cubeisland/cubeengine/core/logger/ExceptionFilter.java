@@ -17,40 +17,22 @@
  */
 package de.cubeisland.cubeengine.core.logger;
 
-import java.util.logging.Handler;
-import java.util.logging.Level;
-import java.util.logging.LogRecord;
+import ch.qos.logback.classic.spi.ILoggingEvent;
+import ch.qos.logback.core.filter.Filter;
+import ch.qos.logback.core.spi.FilterReply;
 
-import de.cubeisland.cubeengine.core.Core;
-
-/**
- * This handler will post exceptions and other SEVERE messages to our log collector.
- */
-public class RemoteHandler extends Handler
+public class ExceptionFilter extends Filter<ILoggingEvent>
 {
-    private final Core core;
-
-    public RemoteHandler(Level level, Core core)
-    {
-        this.core = core;
-        this.setLevel(level);
-    }
-
     @Override
-    public void publish(LogRecord record)
+    public FilterReply decide(ILoggingEvent event)
     {
-        if (!isLoggable(record))
+        if (event.getThrowableProxy() != null)
         {
-            return;
+            return FilterReply.ACCEPT;
         }
-        //TODO API
+        else
+        {
+            return FilterReply.DENY;
+        }
     }
-
-    @Override
-    public void flush()
-    {}
-
-    @Override
-    public void close() throws SecurityException
-    {}
 }

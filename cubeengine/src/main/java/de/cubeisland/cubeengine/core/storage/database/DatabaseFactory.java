@@ -17,16 +17,14 @@
  */
 package de.cubeisland.cubeengine.core.storage.database;
 
+import de.cubeisland.cubeengine.core.CubeEngine;
+import de.cubeisland.cubeengine.core.config.Configuration;
+import de.cubeisland.cubeengine.core.storage.database.mysql.MySQLDatabaseConfiguration;
 import java.io.File;
 import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.logging.Logger;
-
-import de.cubeisland.cubeengine.core.CubeEngine;
-import de.cubeisland.cubeengine.core.config.Configuration;
-import de.cubeisland.cubeengine.core.logger.LogLevel;
-import de.cubeisland.cubeengine.core.storage.database.mysql.MySQLDatabaseConfiguration;
 
 /**
  * Creates new instance of database.
@@ -71,8 +69,8 @@ public class DatabaseFactory
                 {
                     t = e.getCause();
                 }
-                Logger logger = CubeEngine.getLog();
-                logger.log(LogLevel.ERROR, "Couldn't establish the database dataSource: " , t);
+                org.slf4j.Logger logger = CubeEngine.getLog();
+                logger.error("Couldn't establish the database dataSource: " + t.getLocalizedMessage(), t);
             }
         }
         return null;

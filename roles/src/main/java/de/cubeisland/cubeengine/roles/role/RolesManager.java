@@ -27,7 +27,8 @@ import java.util.concurrent.TimeUnit;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
 
-import de.cubeisland.cubeengine.core.logger.LogLevel;
+
+import de.cubeisland.cubeengine.core.world.WorldManager;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.util.Profiler;
 import de.cubeisland.cubeengine.core.util.Triplet;
@@ -109,7 +110,7 @@ public class RolesManager
             Long mainWorldID = wm.getWorldId(mirror.mainWorld);
             if (mainWorldID == null)
             {
-                this.module.getLog().log(LogLevel.WARNING, "Ignoring unknown world: " + mirror.mainWorld);
+                this.module.getLog().warn("Ignoring unknown world: {}", mirror.mainWorld);
                 continue;
             }
             WorldRoleProvider provider = new WorldRoleProvider(module, this, mirror, mainWorldID);
@@ -121,22 +122,20 @@ public class RolesManager
     private void registerWorldRoleProvider(WorldRoleProvider provider)
     {
         TLongObjectHashMap<Triplet<Boolean, Boolean, Boolean>> worldMirrors = provider.getWorldMirrors();
-        this.module.getLog().log(LogLevel.DEBUG, "Loading role-provider for " + provider.getMainWorld());
+        this.module.getLog().debug("Loading role-provider for {}", provider.getMainWorld());
         for (long worldId : worldMirrors.keys())
         {
             if (this.worldRoleProviders.containsKey(worldId))
             {
-                this.module.getLog().log(LogLevel.ERROR,
-                                         "The world " + this.module.getCore().getWorldManager().getWorld(worldId).getName()
-                                             + " is mirrored multiple times!\n"
-                                             + "Check your configuration under mirrors." + provider.getMainWorld());
+                this.module.getLog().error("The world {} is mirrored multiple times! Check your configuration under mirrors.{}",
+                                           this.module.getCore().getWorldManager().getWorld(worldId).getName(), provider.getMainWorld());
                 continue;
             }
             if (worldMirrors.get(worldId).getFirst()) // Roles are mirrored add to provider...
             {
-                this.module.getLog().log(LogLevel.DEBUG, "  " + wm.getWorld(worldId).getName()+
-                    ": ( RoleMirror " + (worldMirrors.get(worldId).getSecond() ? "; AssignedRoleMirror " : "")
-                    + (worldMirrors.get(worldId).getThird() ? "; UserDataMirror " :"") + ")");
+                this.module.getLog().debug("  {}: (RoleMirror {}{})", wm.getWorld(worldId).getName(),
+                                           (worldMirrors.get(worldId).getSecond() ? "; AssignedRoleMirror " : ""),
+                                           (worldMirrors.get(worldId).getThird() ? "; UserDataMirror " :""));
                 this.worldRoleProviders.put(worldId, provider);
                 this.providerSet.add(provider);
             }
@@ -170,7 +169,7 @@ public class RolesManager
                 this.providerSet.add(provider);
                 this.assignedRoleMirrors.put(worldId,worldId);
                 this.userMirrors.put(worldId,worldId);
-                this.module.getLog().log(LogLevel.DEBUG,"Loading role-provider without mirror: "+wm.getWorld(worldId).getName());
+                this.module.getLog().debug("Loading role-provider without mirror: {}", wm.getWorld(worldId).getName());
             }
         }
     }
@@ -221,7 +220,7 @@ public class RolesManager
 
     public void recalculateAllRoles()
     {
-        this.module.getLog().log(LogLevel.DEBUG,"Calculating all roles...");
+        this.module.getLog().debug("Calculating all roles...");
         Profiler.startProfiling("calculateAllRoles");
         for (RoleProvider roleProvider : providerSet)
         {
@@ -245,7 +244,7 @@ public class RolesManager
                 rolesAttachment.apply(); // and applies
             }
         }
-        this.module.getLog().log(LogLevel.DEBUG,"All roles are now calculated! ("+Profiler.endProfiling("calculateAllRoles", TimeUnit.MILLISECONDS)+"ms)");
+        this.module.getLog().debug("All roles are now calculated! ({} ms)", Profiler.endProfiling("calculateAllRoles", TimeUnit.MILLISECONDS));
     }
 
     public RolesAttachment getRolesAttachment(Player player)

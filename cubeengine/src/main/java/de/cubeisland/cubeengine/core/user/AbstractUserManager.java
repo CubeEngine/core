@@ -35,7 +35,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import de.cubeisland.cubeengine.core.Core;
 import de.cubeisland.cubeengine.core.command.CommandSender;
 import de.cubeisland.cubeengine.core.filesystem.FileManager;
-import de.cubeisland.cubeengine.core.logger.LogLevel;
+
 import de.cubeisland.cubeengine.core.module.Module;
 import de.cubeisland.cubeengine.core.permission.Permission;
 import de.cubeisland.cubeengine.core.util.ChatFormat;
@@ -230,7 +230,7 @@ public abstract class AbstractUserManager implements UserManager
 
     protected synchronized void cacheUser(User user)
     {
-        this.core.getLog().log(LogLevel.DEBUG,"User "+ user.getName()+ " cached!");
+        this.core.getLog().debug("User "+ user.getName()+ " cached!");
         this.cachedUsers.put(user.getName().toLowerCase(), user);
         this.cachedUsers.put(user.getId(), user);
         this.attachDefaults(user);
@@ -238,7 +238,7 @@ public abstract class AbstractUserManager implements UserManager
 
     protected synchronized void removeCachedUser(User user)
     {
-        this.core.getLog().log(LogLevel.DEBUG,"Removed cached user "+ user.getName()+ "!");
+        this.core.getLog().debug("Removed cached user "+ user.getName()+ "!");
         this.cachedUsers.remove(user.getName().toLowerCase());
         this.cachedUsers.remove(user.getId());
         user.detachAll();

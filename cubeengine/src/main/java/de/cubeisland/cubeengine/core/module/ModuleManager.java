@@ -30,6 +30,8 @@ import de.cubeisland.cubeengine.core.module.exception.MissingProviderException;
 import de.cubeisland.cubeengine.core.module.exception.ModuleException;
 import de.cubeisland.cubeengine.core.util.Cleanable;
 
+import org.slf4j.Logger;
+
 /**
  * This class manages the modules.
  */

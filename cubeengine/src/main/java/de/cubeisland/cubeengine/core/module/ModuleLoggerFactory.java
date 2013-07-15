@@ -15,22 +15,13 @@
  * You should have received a copy of the GNU General Public License
  * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-package de.cubeisland.cubeengine.core.logger;
+package de.cubeisland.cubeengine.core.module;
 
-import java.util.Locale;
-import java.util.logging.Level;
+import org.slf4j.Logger;
 
-public class CubeLevel extends Level
+public interface ModuleLoggerFactory
 {
-    CubeLevel(String name, int level)
-    {
-        super(name, level);
-        LogLevel.LEVELS.put(name.toUpperCase(Locale.ENGLISH), this);
-    }
 
-    CubeLevel(Level level)
-    {
-        super(level.getName(), level.intValue(), level.getResourceBundleName());
-        LogLevel.LEVELS.put(this.getName().toUpperCase(Locale.ENGLISH), this);
-    }
+    Logger getLogger(ModuleInfo module);
+
 }

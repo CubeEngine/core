@@ -169,7 +169,7 @@ public class KillActionType extends ActionTypeContainer
                 }
                 else // Projectile shot by Dispenser
                 {
-                    System.out.print("Unknown Shooter: "+ ((Projectile) damager).getShooter());
+                    this.logModule.getLog().debug("Unknown shooter: {}", ((Projectile) damager).getShooter());
                     this.logDeathDrops(event);
                     return;
                 }

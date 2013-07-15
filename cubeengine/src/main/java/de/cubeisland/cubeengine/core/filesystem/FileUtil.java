@@ -32,7 +32,6 @@ import java.util.List;
 
 import de.cubeisland.cubeengine.core.CubeEngine;
 
-import static de.cubeisland.cubeengine.core.logger.LogLevel.ERROR;
 
 /**
  * This class provides some methods to read Files lineByLine
@@ -101,7 +100,7 @@ public class FileUtil
         }
         catch (IOException e)
         {
-            CubeEngine.getLog().log(ERROR, e.getMessage(), e);
+            CubeEngine.getLog().error(e.getMessage(), e);
         }
         finally
         {

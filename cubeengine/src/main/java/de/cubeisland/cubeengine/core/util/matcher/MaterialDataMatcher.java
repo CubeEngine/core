@@ -35,7 +35,6 @@ import org.bukkit.inventory.meta.SkullMeta;
 import de.cubeisland.cubeengine.core.CoreResource;
 import de.cubeisland.cubeengine.core.CubeEngine;
 import de.cubeisland.cubeengine.core.filesystem.FileUtil;
-import de.cubeisland.cubeengine.core.logger.LogLevel;
 import de.cubeisland.cubeengine.core.util.StringUtils;
 
 import gnu.trove.map.hash.TByteObjectHashMap;
@@ -117,7 +116,7 @@ public class MaterialDataMatcher
                     }
                     catch (IllegalArgumentException ex)
                     {
-                        CubeEngine.getLog().warning("Unknown Material for Data: " + key);
+                        CubeEngine.getLog().warn("Unknown Material for Data: {}", key);
                         reverseCurrentItemData = new TShortObjectHashMap<Set<String>>();
                         reverseCurrentBlockData = new TByteObjectHashMap<Set<String>>();
                         currentItemData = new TObjectShortHashMap<String>();
@@ -159,7 +158,7 @@ public class MaterialDataMatcher
                     }
                     catch (NumberFormatException ex)
                     {
-                        CubeEngine.getLog().warning("Could not parse data for Material: " + value);
+                        CubeEngine.getLog().warn("Could not parse data for Material: {}", value);
                         continue;
                     }
                     for (String key : StringUtils.explode(",", line.substring(0, line.indexOf(":"))))
@@ -185,7 +184,7 @@ public class MaterialDataMatcher
         }
         if (update && updated)
         {
-            CubeEngine.getLog().log(LogLevel.NOTICE, "Updated datavalues.txt");
+            CubeEngine.getLog().info("Updated datavalues.txt");
             StringBuilder sb = new StringBuilder();
             HashMap<TShortObjectHashMap<Set<String>>, String> itemMap = new HashMap<TShortObjectHashMap<Set<String>>, String>();
             for (Material material : this.reverseItemData.keySet()) // make serializable...
@@ -254,7 +253,7 @@ public class MaterialDataMatcher
             }
             catch (IOException e)
             {
-                CubeEngine.getLog().warning("Could not save changed datavalues.txt");
+                CubeEngine.getLog().warn("Could not save changed datavalues.txt");
             }
         }
     }
@@ -343,7 +342,7 @@ public class MaterialDataMatcher
         TObjectShortHashMap<String> woolData = this.itemData.get(Material.WOOL);
         if (woolData == null)
         {
-            CubeEngine.getLog().warning("No data found for Wool-color");
+            CubeEngine.getLog().warn("No data found for Wool-color");
             return null;
         }
         String match = Match.string().matchString(data, woolData.keySet());
@@ -447,7 +446,7 @@ public class MaterialDataMatcher
         {
             if (dataNames.isEmpty())
             {
-                CubeEngine.getLog().warning("Unknown Block-Type: " + mat);
+                CubeEngine.getLog().warn("Unknown Block-Type: {}", mat);
                 return null;
             }
         }
@@ -458,7 +457,7 @@ public class MaterialDataMatcher
             {
                 if (dataNames.isEmpty())
                 {
-                    CubeEngine.getLog().warning("Unknown Block-Data: " + mat + "DATA: " + mask);
+                    CubeEngine.getLog().warn("Unknown Block-Data: {} DATA: {}", mat, mask);
                     return null;
                 }
             }
@@ -467,7 +466,7 @@ public class MaterialDataMatcher
         }
         if (dataNames.isEmpty())
         {
-            CubeEngine.getLog().warning("Unknown Block-Data: " + mat + "DATA: " + mask);
+            CubeEngine.getLog().warn("Unknown Block-Data: {} DATA: {}", mat, mask);
             return null;
         }
         return dataNames;

@@ -21,7 +21,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 import de.cubeisland.cubeengine.core.bukkit.EventManager;
-import de.cubeisland.cubeengine.core.logger.LogLevel;
+import de.cubeisland.cubeengine.core.permission.PermDefault;
+
 import de.cubeisland.cubeengine.core.permission.PermissionManager;
 import de.cubeisland.cubeengine.guests.Guests;
 
@@ -135,7 +136,7 @@ public class PreventionManager
             }
             catch (Throwable t)
             {
-                this.guests.getLog().log(LogLevel.ERROR, "Failed to enable the prevention '" + prevention.getName() + "'...", t);
+                this.guests.getLog().error("Failed to enable the prevention '" + prevention.getName() + "'...", t);
             }
         }
         return false;
@@ -196,7 +197,7 @@ public class PreventionManager
             }
             catch (Throwable t)
             {
-                this.guests.getLog().log(LogLevel.ERROR, "Failed to disable the prevention '" + prevention.getName() + "'...", t);
+                this.guests.getLog().error("Failed to disable the prevention '" + prevention.getName() + "'...", t);
             }
         }
         return this;

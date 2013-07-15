@@ -21,7 +21,7 @@ import java.io.File;
 
 import de.cubeisland.cubeengine.roles.Roles;
 
-import static de.cubeisland.cubeengine.core.logger.LogLevel.DEBUG;
+
 
 public class GlobalRoleProvider extends RoleProvider
 {
@@ -40,7 +40,7 @@ public class GlobalRoleProvider extends RoleProvider
     @Override
     public void recalculateRoles()
     {
-        this.module.getLog().log(DEBUG, "Calculating global Roles...");
+        this.module.getLog().debug("Calculating global Roles...");
         super.recalculateRoles();
     }
 

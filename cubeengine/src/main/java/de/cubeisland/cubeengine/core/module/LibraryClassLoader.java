@@ -23,7 +23,6 @@ import java.net.URLClassLoader;
 
 import de.cubeisland.cubeengine.core.CubeEngine;
 
-import static de.cubeisland.cubeengine.core.logger.LogLevel.WARNING;
 
 /**
  * This is a global ClassLoader that should be used to load classes from libraries.
@@ -57,7 +56,7 @@ public class LibraryClassLoader extends URLClassLoader
         }
         catch (Exception ignored)
         {
-            CubeEngine.getLog().log(WARNING, "Failed to close the library class loader");
+            CubeEngine.getLog().warn("Failed to close the library class loader");
         }
     }
 }

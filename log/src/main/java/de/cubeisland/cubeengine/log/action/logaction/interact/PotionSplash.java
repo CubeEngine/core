@@ -114,7 +114,7 @@ public class PotionSplash extends SimpleLogActionType
                 }
             }
         }
-        System.out.print(json.toString());
+        this.logModule.getLog().debug(json.toString());
         return json.toString();
     }
 

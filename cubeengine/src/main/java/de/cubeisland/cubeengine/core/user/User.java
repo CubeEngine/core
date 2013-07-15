@@ -75,7 +75,7 @@ import de.cubeisland.cubeengine.core.util.convert.ConversionException;
 import gnu.trove.map.hash.THashMap;
 import gnu.trove.set.hash.THashSet;
 
-import static de.cubeisland.cubeengine.core.logger.LogLevel.DEBUG;
+
 import static de.cubeisland.cubeengine.core.storage.database.Index.IndexType.UNIQUE;
 import static de.cubeisland.cubeengine.core.util.BlockUtil.isInvertedStep;
 
@@ -257,7 +257,7 @@ public class User extends UserBase implements Model<Long>, CommandSender, Attach
         }
         if (!Thread.currentThread().getStackTrace()[1].getClassName().equals(this.getClass().getName()))
         {
-            CubeEngine.getLog().log(DEBUG, "A module sent an untranslated message!");
+            CubeEngine.getLog().debug("A module sent an untranslated message!");
         }
         super.sendMessage(ChatFormat.parseFormats(string));
     }

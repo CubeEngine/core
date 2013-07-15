@@ -41,7 +41,7 @@ import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 
 import de.cubeisland.cubeengine.core.bukkit.BukkitUtils;
-import de.cubeisland.cubeengine.core.logger.LogLevel;
+
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.log.LoggingConfiguration;
 import de.cubeisland.cubeengine.log.action.logaction.ActionTypeContainer;
@@ -123,7 +123,7 @@ public class ContainerActionType extends ActionTypeContainer
         }
         if (holder != null)
         {
-            this.logModule.getLog().log(LogLevel.DEBUG,"Unknown InventoryHolder:" + holder.toString());
+            this.logModule.getLog().debug("Unknown InventoryHolder: {}", holder.toString());
         }
         return null;
     }
@@ -420,7 +420,7 @@ public class ContainerActionType extends ActionTypeContainer
         Inventory target = event.getDestination();
         if (target == null || source == null)
         {
-            System.out.print("InventoryMoveItem has null "+source+" -> "+target);
+            this.logModule.getLog().debug("InventoryMoveItem has null {} -> {}", source, target);
             // TODO remove if fixed
             return;
         }

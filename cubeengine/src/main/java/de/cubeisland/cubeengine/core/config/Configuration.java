@@ -29,7 +29,7 @@ import de.cubeisland.cubeengine.core.CubeEngine;
 import de.cubeisland.cubeengine.core.config.annotations.Codec;
 import de.cubeisland.cubeengine.core.config.codec.ConfigurationCodec;
 import de.cubeisland.cubeengine.core.config.codec.YamlCodec;
-import de.cubeisland.cubeengine.core.logger.LogLevel;
+
 import de.cubeisland.cubeengine.core.module.Module;
 
 import org.yaml.snakeyaml.reader.ReaderException;
@@ -105,7 +105,7 @@ public abstract class Configuration<ConfigCodec extends ConfigurationCodec>
         }
         catch (Exception e)
         {
-            CubeEngine.getLog().log(SEVERE, "Failed to load the configuration " + this.file.getPath(), e);
+            CubeEngine.getLog().error("Failed to load the configuration " + this.file.getPath(), e);
         }
     }
 
@@ -308,7 +308,7 @@ public abstract class Configuration<ConfigCodec extends ConfigurationCodec>
         }
         catch (FileNotFoundException e)
         {
-            CubeEngine.getLog().log(LogLevel.NOTICE, "{0} not found! Creating new config from default...", file.getName());
+            CubeEngine.getLog().info("{} not found! Creating new config from default...", file.getName());
         }
         T config = load(clazz, inputStream, file); //loading config from InputSream or Default
 

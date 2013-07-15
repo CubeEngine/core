@@ -48,12 +48,11 @@ import de.cubeisland.cubeengine.core.config.node.Node;
 import de.cubeisland.cubeengine.core.config.node.NullNode;
 import de.cubeisland.cubeengine.core.config.node.ShortNode;
 import de.cubeisland.cubeengine.core.config.node.StringNode;
-import de.cubeisland.cubeengine.core.logger.CubeLevel;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.util.Version;
 import de.cubeisland.cubeengine.core.util.convert.converter.BooleanConverter;
 import de.cubeisland.cubeengine.core.util.convert.converter.ByteConverter;
-import de.cubeisland.cubeengine.core.util.convert.converter.CubeLevelConverter;
+import de.cubeisland.cubeengine.core.util.convert.converter.LevelConverter;
 import de.cubeisland.cubeengine.core.util.convert.converter.DateConverter;
 import de.cubeisland.cubeengine.core.util.convert.converter.DoubleConverter;
 import de.cubeisland.cubeengine.core.util.convert.converter.DurationConverter;
@@ -75,6 +74,8 @@ import de.cubeisland.cubeengine.core.util.convert.converter.generic.ArrayConvert
 import de.cubeisland.cubeengine.core.util.convert.converter.generic.CollectionConverter;
 import de.cubeisland.cubeengine.core.util.convert.converter.generic.MapConverter;
 import de.cubeisland.cubeengine.core.util.time.Duration;
+
+import ch.qos.logback.classic.Level;
 
 /**
  * This class provides the converters.
@@ -109,7 +110,7 @@ public class Convert
         registerConverter(Double.class, converter = new DoubleConverter());
         registerConverter(double.class, converter);
         registerConverter(Date.class, new DateConverter());
-        registerConverter(CubeLevel.class, new CubeLevelConverter());
+        registerConverter(Level.class, new LevelConverter());
         registerConverter(Float.class, converter = new FloatConverter());
         registerConverter(float.class, converter);
         registerConverter(Long.class, converter = new LongConverter());
