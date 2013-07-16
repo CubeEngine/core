@@ -52,9 +52,9 @@ public class Roles extends Module
     @Override
     public void onEnable()
     {
-        this.getCore().getUserManager().addDefaultAttachment(RolesAttachment.class, this);
-
         this.rolesManager = new RolesManager(this);
+
+        this.getCore().getUserManager().addDefaultAttachment(RolesAttachment.class, this);
 
         final CommandManager cm = this.getCore().getCommandManager();
         cm.registerCommand(new RoleCommands(this));
