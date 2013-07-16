@@ -41,6 +41,10 @@ public class VoteModel implements Model<Long>
     @Attribute(type = AttrType.SMALLINT, unsigned = true)
     public int voteamount;
 
+    // Database-constructor
+    public VoteModel()
+    {}
+
     public VoteModel(User user)
     {
         this.userid = user.key;

@@ -57,7 +57,7 @@ public interface Storage<K, M extends Model<K>>
     public void store(M model);
 
     /**
-     * Stores the model into the DataBase asynchonous
+     * Stores the model into the DataBase asynchronous
      *
      * @param model the model to store
      */
@@ -71,7 +71,7 @@ public interface Storage<K, M extends Model<K>>
     public void update(M model);
 
     /**
-     * Updates the model in the DataBase asynchonous
+     * Updates the model in the DataBase asynchronous
      *
      * @param model the model to update
      */
@@ -85,7 +85,7 @@ public interface Storage<K, M extends Model<K>>
     public void merge(M model);
 
     /**
-     * Merges the model into the DataBase asynchonous
+     * Merges the model into the DataBase asynchronous
      *
      * @param model the model to merge in
      */
