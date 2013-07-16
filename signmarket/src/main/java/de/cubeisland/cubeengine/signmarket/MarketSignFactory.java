@@ -20,7 +20,6 @@ package de.cubeisland.cubeengine.signmarket;
 import org.bukkit.Location;
 
 import de.cubeisland.cubeengine.core.user.User;
-import de.cubeisland.cubeengine.conomy.Conomy;
 import de.cubeisland.cubeengine.signmarket.storage.SignMarketBlockManager;
 import de.cubeisland.cubeengine.signmarket.storage.SignMarketBlockModel;
 import de.cubeisland.cubeengine.signmarket.storage.SignMarketItemManager;
@@ -37,18 +36,18 @@ public class MarketSignFactory
     private SignMarketBlockManager signMarketBlockManager;
 
     private final Signmarket module;
-    private final Conomy conomy;
 
-    public MarketSignFactory(Signmarket module, Conomy conomy)
+    public MarketSignFactory(Signmarket module)
     {
         this.module = module;
-        this.conomy = conomy;
         this.signMarketItemManager = new SignMarketItemManager(module);
         this.signMarketBlockManager = new SignMarketBlockManager(module);
     }
 
     public void loadInAllSigns()
     {
+        this.signMarketItemManager.load();
+        this.signMarketBlockManager.load();
         TLongHashSet usedItemKeys = new TLongHashSet();
         for (SignMarketBlockModel blockModel : this.signMarketBlockManager.getLoadedModels())
         {
@@ -137,7 +136,7 @@ public class MarketSignFactory
             {
                 continue;
             }
-            if ((marketSign.getOwner() == sign.getOwner() && marketSign != sign)  // same owner (but not same sign)
+            if ((marketSign.getRawOwner() == sign.getRawOwner() && marketSign != sign)  // same owner (but not same sign)
                 && marketSign.canSync(sign)) // both have stock AND same item -> doSync
             {
                 // apply the found item-info to the marketsign
@@ -149,7 +148,8 @@ public class MarketSignFactory
                     marketSign.syncOnMe = false;
                 }
                 this.saveOrUpdate(marketSign);
-                // updating/storing is done down below
+                this.module.getLog().debug("block-model #{} synced onto the item-model #{} (size: {})" ,
+                                           marketSign.getBlockInfo().key, marketSign.getItemInfo().key, marketSign.getItemInfo().getReferenced().size());
                 if (itemModel.key != -1 && itemModel.isNotReferenced())
                 {
                     this.signMarketItemManager.delete(itemModel); // delete if no more referenced
@@ -182,9 +182,5 @@ public class MarketSignFactory
         {
             this.signMarketBlockManager.update(marketSign.getBlockInfo());
         }
-    }
-
-    public SignMarketItemManager getSignMarketItemManager() {
-        return signMarketItemManager;
     }
 }

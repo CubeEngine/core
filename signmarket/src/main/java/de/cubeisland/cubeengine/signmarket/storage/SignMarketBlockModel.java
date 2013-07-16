@@ -112,7 +112,7 @@ public class SignMarketBlockModel implements Model<Long>
 
     public boolean isOwner(User user)
     {
-        return this.owner.equals(user.key);
+        return user.key.equals(this.owner);
     }
 
     //for database:

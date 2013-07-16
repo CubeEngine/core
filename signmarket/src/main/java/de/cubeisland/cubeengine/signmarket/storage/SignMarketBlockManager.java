@@ -30,17 +30,25 @@ public class SignMarketBlockManager extends SingleKeyStorage<Long, SignMarketBlo
 {
     private static final int REVISION = 1;
 
-    private THashMap<Location,SignMarketBlockModel> blockModels = new THashMap<Location, SignMarketBlockModel>();
+    private THashMap<Location,SignMarketBlockModel> blockModels;
+
+    private Signmarket module;
 
     public SignMarketBlockManager(Signmarket module)
     {
         super(module.getCore().getDB(), SignMarketBlockModel.class, REVISION);
+        this.module = module;
         this.initialize();
-        Collection<SignMarketBlockModel> models;
+    }
+
+    public void load()
+    {
+        this.blockModels = new THashMap<Location, SignMarketBlockModel>();
         for (SignMarketBlockModel model : this.getAll())
         {
             this.blockModels.put(model.getLocation(),model);
         }
+        this.module.getLog().debug("{} block-models loaded", this.blockModels.size());
     }
 
     public Collection<SignMarketBlockModel> getLoadedModels()
@@ -53,6 +61,7 @@ public class SignMarketBlockManager extends SingleKeyStorage<Long, SignMarketBlo
     {
         this.blockModels.remove(model.getLocation());
         super.delete(model);
+        this.module.getLog().debug("deleted block-model #{}", model.key);
     }
 
     @Override
@@ -60,5 +69,6 @@ public class SignMarketBlockManager extends SingleKeyStorage<Long, SignMarketBlo
     {
         this.blockModels.put(blockModel.getLocation(),blockModel);
         super.store(blockModel);
+        this.module.getLog().debug("stored block-model #{}", blockModel.key);
     }
 }

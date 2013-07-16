@@ -38,7 +38,7 @@ public class Signmarket extends Module
         Profiler.startProfiling("marketSignEnable");
         this.config = Configuration.load(SignMarketConfig.class, this);
         this.getLog().trace("{} ms - MarketSignFactory", Profiler.getCurrentDelta("marketSignEnable", TimeUnit.MILLISECONDS));
-        this.marketSignFactory = new MarketSignFactory(this, this.conomy);
+        this.marketSignFactory = new MarketSignFactory(this);
         this.getLog().trace("{} ms - MarketSignFactory-loadAllSigns", Profiler.getCurrentDelta("marketSignEnable", TimeUnit.MILLISECONDS));
         this.marketSignFactory.loadInAllSigns();
         this.getLog().trace("{} ms - EditModeListener", Profiler.getCurrentDelta("marketSignEnable", TimeUnit.MILLISECONDS));

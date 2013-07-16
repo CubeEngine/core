@@ -91,7 +91,6 @@ public class MarketSignListener implements Listener
             event.setUseInteractedBlock(Event.Result.DENY);
             event.setUseItemInHand(Event.Result.DENY);
             event.setCancelled(true);
-            marketSign.updateSignText();
         }
         else if (event.getAction().equals(Action.RIGHT_CLICK_AIR)) // when placing a block is not possible -> RIGHT_CLICK_AIR instead of RIGHT_CLICK_BLOCK
         {

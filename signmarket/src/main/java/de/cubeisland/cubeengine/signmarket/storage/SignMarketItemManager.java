@@ -17,9 +17,6 @@
  */
 package de.cubeisland.cubeengine.signmarket.storage;
 
-import java.util.Collection;
-
-
 import de.cubeisland.cubeengine.core.storage.SingleKeyStorage;
 import de.cubeisland.cubeengine.signmarket.Signmarket;
 
@@ -30,18 +27,25 @@ public class SignMarketItemManager extends SingleKeyStorage<Long, SignMarketItem
 {
     private static final int REVISION = 1;
 
-    private TLongObjectHashMap<SignMarketItemModel> itemInfoModels = new TLongObjectHashMap<SignMarketItemModel>();
-    private final Signmarket module;
+    private TLongObjectHashMap<SignMarketItemModel> itemInfoModels;
+
+    private Signmarket module;
 
     public SignMarketItemManager(Signmarket module)
     {
         super(module.getCore().getDB(), SignMarketItemModel.class, REVISION);
         this.module = module;
         this.initialize();
+    }
+
+    public void load()
+    {
+        this.itemInfoModels = new TLongObjectHashMap<SignMarketItemModel>();
         for (SignMarketItemModel model : this.getAll())
         {
             this.itemInfoModels.put(model.key, model);
         }
+        this.module.getLog().debug("{} item-models loaded", this.itemInfoModels.size());
     }
 
     public SignMarketItemModel getInfoModel(long key)
@@ -49,16 +53,12 @@ public class SignMarketItemManager extends SingleKeyStorage<Long, SignMarketItem
         return this.itemInfoModels.get(key);
     }
 
-    public Collection<SignMarketItemModel> getModels()
-    {
-        return this.itemInfoModels.valueCollection();
-    }
-
     @Override
     public void store(SignMarketItemModel itemInfo)
     {
         super.store(itemInfo);
         this.itemInfoModels.put(itemInfo.key, itemInfo);
+        this.module.getLog().debug("stored item-model #{}", itemInfo.key);
     }
 
     public void deleteUnusedModels(TLongHashSet usedKeys)
@@ -69,6 +69,7 @@ public class SignMarketItemManager extends SingleKeyStorage<Long, SignMarketItem
             {
                 this.deleteByKey(key);
                 this.itemInfoModels.remove(key);
+                this.module.getLog().debug("deleted unused item-model #{}", key);
             }
         }
     }
@@ -78,5 +79,6 @@ public class SignMarketItemManager extends SingleKeyStorage<Long, SignMarketItem
     {
         this.itemInfoModels.remove(itemInfo.key);
         super.delete(itemInfo);
+        this.module.getLog().debug("deleted item-model #{}", itemInfo.key);
     }
 }

@@ -204,6 +204,7 @@ public class SignMarketItemModel implements Model<Long>,InventoryHolder,Cloneabl
         this.customName = itemInfo.customName;
         this.lore = itemInfo.lore;
         this.enchantments = itemInfo.enchantments;
+        this.size = itemInfo.size;
         this.itemStack = null;
     }
 

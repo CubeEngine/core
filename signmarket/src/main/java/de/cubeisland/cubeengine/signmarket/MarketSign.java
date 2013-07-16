@@ -336,7 +336,9 @@ public class MarketSign
                             }
                             int amount = this.putItems(user, true);
                             if (amount != 0)
-                                user.sendTranslated("&aAdded all (&6%d&a) &6%s &ato the stock!", amount, Match.material().getNameFor(this.itemInfo.getItem()));
+                            {
+                                user.sendTranslated("&aAdded all (&6%d&a) &6%s&a to the stock!", amount, Match.material().getNameFor(this.itemInfo.getItem()));
+                            }
                             return;
                         }
                     }
@@ -370,7 +372,7 @@ public class MarketSign
                                     user.sendTranslated("&aAdded &6%d&ax &6%s &ato the stock!", amount, Match.material().getNameFor(this.itemInfo.getItem()));
                                 return;
                             }
-                            else if (itemInHand != null && itemInHand.getTypeId() != 0)
+                            else if (itemInHand.getTypeId() != 0)
                             {
                                 user.sendTranslated("&cUse bare hands to break the sign!");
                                 return;
@@ -503,8 +505,7 @@ public class MarketSign
             }
             else
             {
-                user.sendTranslated("&3Buy: &6%d &ffor &6%s &ffrom &2%s", this.getAmount(), this.parsePrice(), this
-                    .getOwner().getName());
+                user.sendTranslated("&3Buy: &6%d &ffor &6%s &ffrom &2%s", this.getAmount(), this.parsePrice(), this.getOwner().getName());
             }
         }
         else
@@ -515,8 +516,7 @@ public class MarketSign
             }
             else
             {
-                user.sendTranslated("&3Sell: &6%d &ffor &6%s &fto &2%s", this.getAmount(), this.parsePrice(), this
-                    .getOwner().getName());
+                user.sendTranslated("&3Sell: &6%d &ffor &6%s &fto &2%s", this.getAmount(), this.parsePrice(), this.getOwner().getName());
             }
         }
         if (this.getItem() == null)
@@ -941,7 +941,7 @@ public class MarketSign
                     lines[0] = "&5&l";
                 }
             }
-            else if (!isValid ||(this.isTypeBuy() && this.isSoldOut()) || (!this.isTypeBuy() && this.isSatisfied()))
+            else if (!isValid ||(this.isTypeBuy() && this.isSoldOut()) || (!this.isTypeBuy() && this.hasDemand() && this.isSatisfied()))
             {
                 lines[0] = "&4&l";
             }
@@ -975,7 +975,7 @@ public class MarketSign
                 }
                 else
                 {
-                    if (!this.isInEditMode() && this.isSatisfied())
+                    if (!this.isInEditMode() && this.hasDemand() && this.isSatisfied())
                     {
                         lines[0] += "satisfied";
                     }
@@ -1037,7 +1037,7 @@ public class MarketSign
             else
             {
                 lines[2] = String.valueOf(this.getAmount());
-                if (this.isTypeBuy() == null)
+                if (!this.hasType())
                 {
                     lines[2] = "&4" + lines[2];
                 }
@@ -1061,7 +1061,7 @@ public class MarketSign
                 }
                 else if (this.hasStock())
                 {
-                    if (this.canAfford(this.getOwner()) && !this.isSatisfied() && !this.isFull())
+                    if (this.isAdminSign() || (this.canAfford(this.getOwner()) && !this.isFull() && !(this.hasDemand() && this.isSatisfied())))
                     {
                         if (this.hasDemand())
                         {
@@ -1306,6 +1306,8 @@ public class MarketSign
         if (this.isInEditMode()) return;
         if (this.itemInfo.getReferenced().size() > 1) // ItemInfo is synced with other signs
         {
+            this.module.getLog().debug("block-model #{} de-synced from item-model #{} (size:{}-1)",
+                     this.blockInfo.key, this.itemInfo.key, this.itemInfo.getReferenced().size());
             SignMarketItemModel newItemInfo = this.itemInfo.clone();
             this.setItemInfo(newItemInfo); // de-sync to prevent changing other signs
         }
@@ -1361,5 +1363,15 @@ public class MarketSign
             throw new IllegalArgumentException("Invalid inventory-size!");
         }
         this.itemInfo.size = size;
+    }
+
+    /**
+     * Returns the UserOwner OR null if this is an admin sign
+     *
+     * @return the owner or null
+     */
+    public User getRawOwner()
+    {
+        return this.isAdminSign() ? null : this.getOwner();
     }
 }

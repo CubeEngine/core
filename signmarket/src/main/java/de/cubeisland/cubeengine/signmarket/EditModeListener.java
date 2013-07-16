@@ -99,11 +99,6 @@ public class EditModeListener extends ConversationCommand
     public void removeUser(User user)
     {
         super.removeUser(user);
-        MarketSign marketSign = this.signFactory.getSignAt(this.currentSignLocation.remove(user.key));
-        if (marketSign != null)
-        {
-            marketSign.exitEditMode(user);
-        }
         user.sendTranslated("&aEdit mode quit!");
     }
 
@@ -238,6 +233,10 @@ public class EditModeListener extends ConversationCommand
             if (MarketSignPerm.SIGN_CREATE_USER.isAuthorized(user))
             {
                 marketSign.setOwner(user);
+                if (marketSign.hasInfiniteSize())
+                {
+                    marketSign.setSize(6);
+                }
             }
             else
             {
