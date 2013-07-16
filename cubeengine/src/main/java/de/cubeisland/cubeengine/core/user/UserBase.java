@@ -29,6 +29,7 @@ import net.minecraft.server.v1_6_R2.EntityPlayer;
 import net.minecraft.server.v1_6_R2.NBTTagCompound;
 import net.minecraft.server.v1_6_R2.NBTTagDouble;
 import net.minecraft.server.v1_6_R2.NBTTagFloat;
+import net.minecraft.server.v1_6_R2.NBTTagInt;
 import net.minecraft.server.v1_6_R2.NBTTagList;
 import net.minecraft.server.v1_6_R2.PlayerInteractManager;
 import net.minecraft.server.v1_6_R2.WorldNBTStorage;
@@ -1250,12 +1251,7 @@ public class UserBase implements Player
     @Override
     public int _INVALID_getLastDamage()
     {
-        final Player player = this.getOfflinePlayer().getPlayer();
-        if (player != null)
-        {
-            return player._INVALID_getLastDamage();
-        }
-        return 0;
+        throw new UnsupportedOperationException();
     }
 
     @Override
@@ -1271,11 +1267,7 @@ public class UserBase implements Player
     @Override
     public void _INVALID_setLastDamage(int i)
     {
-        final Player player = this.getOfflinePlayer().getPlayer();
-        if (player != null)
-        {
-            player._INVALID_setLastDamage(i);
-        }
+        throw new UnsupportedOperationException();
     }
 
     @Override
@@ -1291,11 +1283,7 @@ public class UserBase implements Player
     @Override
     public void _INVALID_damage(int i)
     {
-        final Player player = this.getOfflinePlayer().getPlayer();
-        if (player != null)
-        {
-            player._INVALID_damage(i);
-        }
+        throw new UnsupportedOperationException();
     }
 
     @Override
@@ -1311,30 +1299,13 @@ public class UserBase implements Player
     @Override
     public void _INVALID_damage(int i, Entity entity)
     {
-        final Player player = this.getOfflinePlayer().getPlayer();
-        if (player != null)
-        {
-            player._INVALID_damage(i, entity);
-        }
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public int _INVALID_getHealth()
     {
-        final Player player = this.getOfflinePlayer().getPlayer();
-        if (player != null)
-        {
-            return player._INVALID_getHealth();
-        }
-        else
-        {
-            NBTTagCompound data = this.getData();
-            if (data != null)
-            {
-                return (int)data.getDouble("Health");
-            }
-        }
-        return 0;
+        throw new UnsupportedOperationException();
     }
 
     @Override
@@ -1350,7 +1321,7 @@ public class UserBase implements Player
             NBTTagCompound data = this.getData();
             if (data != null)
             {
-                data.setDouble("Health", v);
+                data.setDouble("HealF", v);
                 this.saveData();
             }
         }
@@ -1359,39 +1330,13 @@ public class UserBase implements Player
     @Override
     public void _INVALID_setHealth(int i)
     {
-        final Player player = this.getOfflinePlayer().getPlayer();
-        if (player != null)
-        {
-            player._INVALID_setHealth(i);
-        }
-        else
-        {
-            NBTTagCompound data = this.getData();
-            if (data != null)
-            {
-                data.setDouble("Health", i);
-                this.saveData();
-            }
-        }
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public int _INVALID_getMaxHealth()
     {
-        final Player player = this.getOfflinePlayer().getPlayer();
-        if (player != null)
-        {
-            return player._INVALID_getMaxHealth();
-        }
-        else
-        {
-            NBTTagCompound data = this.getData();
-            if (data != null)
-            {
-                return (int)data.getDouble("Bukkit.MaxHealth");
-            }
-        }
-        return 0;
+        throw new UnsupportedOperationException();
     }
 
     @Override
@@ -1407,7 +1352,21 @@ public class UserBase implements Player
             NBTTagCompound data = this.getData();
             if (data != null)
             {
-                data.setDouble("Bukkit.MaxHealth", v); // TODO check if still correct!
+                NBTTagList list = data.getList("Attributes");
+                if (list == null)
+                {
+                    list = new NBTTagList();
+                    data.set("Attributes", list);
+                }
+                if (list.size() == 0)
+                {
+                    list.add(new NBTTagDouble("generic.MaxHealth",v));
+                }
+                else
+                {
+                    NBTTagDouble nbt = (NBTTagDouble)list.get(0);
+                    nbt.data = v;
+                }
                 this.saveData();
             }
         }
@@ -1416,20 +1375,7 @@ public class UserBase implements Player
     @Override
     public void _INVALID_setMaxHealth(int i)
     {
-        final Player player = this.getOfflinePlayer().getPlayer();
-        if (player != null)
-        {
-            player._INVALID_setMaxHealth(i);
-        }
-        else
-        {
-            NBTTagCompound data = this.getData();
-            if (data != null)
-            {
-                data.setDouble("Bukkit.MaxHealth", i);
-                this.saveData();
-            }
-        }
+        throw new UnsupportedOperationException();
     }
 
     @Override
@@ -1456,7 +1402,11 @@ public class UserBase implements Player
             NBTTagCompound data = this.getData();
             if (data != null)
             {
-                return (int)data.getDouble("Health");
+                if (data.get("HealF") == null)
+                {
+                    return data.getShort("Health");
+                }
+                return data.getFloat("HealF");
             }
         }
         return 0;
@@ -1475,7 +1425,15 @@ public class UserBase implements Player
             NBTTagCompound data = this.getData();
             if (data != null)
             {
-                return (int)data.getDouble("Bukkit.MaxHealth");
+                NBTTagList list = data.getList("Attributes");
+                if (list == null || list.size() == 0)
+                {
+                    NBTTagInt nbt = (NBTTagInt)data.get("Bukkit.MaxHealth");
+                    if (nbt == null) return 0;
+                    return nbt.data;
+                }
+                data = (NBTTagCompound)list.get(0);
+                return data.getDouble("Base");
             }
         }
         return 0;
