@@ -787,6 +787,7 @@ public class MarketSign
     @SuppressWarnings("deprecation")
     private void useSign(User user)
     {
+        this.economy.createPlayerAccount(user.getName());
         if (this.isValidSign(user))
         {
             if (this.isTypeBuy())

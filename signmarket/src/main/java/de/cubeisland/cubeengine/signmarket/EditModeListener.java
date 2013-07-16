@@ -45,13 +45,11 @@ public class EditModeListener extends ConversationCommand
 {
     private final MarketSignFactory signFactory;
     private final SignMarketConfig config;
-    private final Conomy conomy;
 
-    public EditModeListener(Signmarket signmarket, Conomy conomy) {
+    public EditModeListener(Signmarket signmarket) {
         super(signmarket, new ConversationContextFactory());
         this.signFactory = signmarket.getMarketSignFactory();
         this.config = signmarket.getConfig();
-        this.conomy = conomy;
 
         this.getContextFactory()
                 .addFlag(new CommandFlag("exit", "exit"))

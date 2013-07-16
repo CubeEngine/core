@@ -20,14 +20,11 @@ package de.cubeisland.cubeengine.signmarket;
 import java.util.concurrent.TimeUnit;
 
 import de.cubeisland.cubeengine.core.config.Configuration;
-import de.cubeisland.cubeengine.core.module.Inject;
 import de.cubeisland.cubeengine.core.module.Module;
 import de.cubeisland.cubeengine.core.util.Profiler;
-import de.cubeisland.cubeengine.conomy.Conomy;
 
 public class Signmarket extends Module
 {
-    @Inject private Conomy conomy;
     private MarketSignFactory marketSignFactory;
     private SignMarketConfig config;
     private EditModeListener editModeListener;
@@ -42,7 +39,7 @@ public class Signmarket extends Module
         this.getLog().trace("{} ms - MarketSignFactory-loadAllSigns", Profiler.getCurrentDelta("marketSignEnable", TimeUnit.MILLISECONDS));
         this.marketSignFactory.loadInAllSigns();
         this.getLog().trace("{} ms - EditModeListener", Profiler.getCurrentDelta("marketSignEnable", TimeUnit.MILLISECONDS));
-        this.editModeListener = new EditModeListener(this, this.conomy);
+        this.editModeListener = new EditModeListener(this);
         this.getLog().trace("{} ms - MarketSignListener", Profiler.getCurrentDelta("marketSignEnable", TimeUnit.MILLISECONDS));
         this.getCore().getEventManager().registerListener(this, new MarketSignListener(this));
         this.getLog().trace("{} ms - Perms", Profiler.getCurrentDelta("marketSignEnable", TimeUnit.MILLISECONDS));

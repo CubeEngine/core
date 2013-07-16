@@ -17,33 +17,74 @@
  */
 package de.cubeisland.cubeengine.vote;
 
+import java.sql.Timestamp;
+
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 
-import de.cubeisland.cubeengine.core.module.Inject;
+import de.cubeisland.cubeengine.core.config.Configuration;
 import de.cubeisland.cubeengine.core.module.Module;
+import de.cubeisland.cubeengine.core.service.Economy;
 import de.cubeisland.cubeengine.core.user.User;
-import de.cubeisland.cubeengine.conomy.Conomy;
-import de.cubeisland.cubeengine.conomy.account.Account;
+import de.cubeisland.cubeengine.core.util.ChatFormat;
+import de.cubeisland.cubeengine.vote.storage.VoteManager;
+import de.cubeisland.cubeengine.vote.storage.VoteModel;
 
 import com.vexsoftware.votifier.model.VotifierEvent;
 
 public class Vote extends Module implements Listener
 {
-    @Inject private Conomy conomy;
+    private VoteConfiguration config;
+
+    private VoteManager manager;
 
     @Override
     public void onEnable()
     {
+        this.config = Configuration.load(VoteConfiguration.class, this);
         this.getCore().getEventManager().registerListener(this, this);
+        this.manager = new VoteManager(this);
     }
 
     @EventHandler
     private void onVote(VotifierEvent event)
     {
         final com.vexsoftware.votifier.model.Vote vote = event.getVote();
-        final User user = this.getCore().getUserManager().getUser(vote.getUsername());
-        final Account account = this.conomy.getManager().getUserAccount(user, true);
-        // TODO
+        if (this.getCore().getUserManager().getUser(vote.getUsername(), false) != null)
+        {
+            User user = this.getCore().getUserManager().getUser(vote.getUsername());
+            Economy economy = this.getCore().getServiceManager().getServiceProvider(Economy.class);
+            VoteModel voteModel = this.manager.get(user.key);
+            if (voteModel == null)
+            {
+                voteModel = new VoteModel(user);
+                this.manager.store(voteModel);
+            }
+            else
+            {
+                if (System.currentTimeMillis() - voteModel.lastvote.getTime() > this.config.votebonustime.toMillis())
+                {
+                    voteModel.voteamount = 1;
+                }
+                else
+                {
+                    voteModel.voteamount++;
+                }
+                voteModel.lastvote = new Timestamp(System.currentTimeMillis());
+                this.manager.update(voteModel);
+            }
+            economy.createPlayerAccount(vote.getUsername());
+            double money = this.config.votereward * (Math.pow(1+1.5/voteModel.voteamount, voteModel.voteamount-1));
+            economy.deposit(vote.getUsername(), money);
+            String moneyFormat = economy.format(money);
+            this.getCore().getUserManager().broadcastMessage(this.config.votebroadcast.
+                replace("{PLAYER}", vote.getUsername()).
+                replace("{MONEY}", moneyFormat).
+                replace("{AMOUNT}", String.valueOf(voteModel.voteamount)));
+            user.sendMessage(ChatFormat.parseFormats(this.config.votemessage.
+                replace("{PLAYER}", vote.getUsername()).
+                replace("{MONEY}", moneyFormat).
+                replace("{AMOUNT}", String.valueOf(voteModel.voteamount))));
+        }
     }
 }

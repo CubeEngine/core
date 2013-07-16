@@ -4,5 +4,5 @@ version: ${project.version}
 source-version: ${githead.branch}-${githead.commit}
 plugin-dependencies:
 - Votifier
-dependencies:
-- Conomy
+services:
+- de.cubeisland.cubeengine.core.service.Economy
