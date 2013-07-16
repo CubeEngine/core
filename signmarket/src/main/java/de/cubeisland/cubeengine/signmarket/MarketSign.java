@@ -812,7 +812,7 @@ public class MarketSign
                 {
                     String price = this.parsePrice();
                     this.economy.withdraw(user.getName(), this.getPrice());
-                    if (this.getOwner() != null)
+                    if (!this.isAdminSign())
                     {
                         this.economy.deposit(this.getOwner().getName(), this.getPrice());
                     }
@@ -833,7 +833,7 @@ public class MarketSign
                 user.sendTranslated("&cYou do not have enough space for these items!");
                 return;
             } // else Sell
-            if (this.isSatisfied())
+            if (this.hasDemand() && this.isSatisfied())
             {
                 user.sendTranslated("&cThis market-sign is &4&lsatisfied&c! You can no longer sell items to it.");
                 return;
@@ -843,9 +843,9 @@ public class MarketSign
                 user.sendTranslated("&cThis market-sign is &4&lfull&c! You can no longer sell items to it.");
                 return;
             }
-            if (!this.canAfford(this.getOwner()))
+            if (!this.isAdminSign() && !this.canAfford(this.getOwner()))
             {
-                user.sendTranslated("&cThe owner cannot afford the money to aquire your items!");
+                user.sendTranslated("&cThe owner cannot afford the money to acquire your items!");
                 return;
             }
             if (getAmountOf(user.getInventory(), this.getItem()) < this.getAmount())
@@ -857,7 +857,7 @@ public class MarketSign
             item.setAmount(this.getAmount());
 
             this.economy.deposit(user.getName(), this.getPrice());
-            if (this.getOwner() != null)
+            if (!this.isAdminSign())
             {
                 this.economy.withdraw(this.getOwner().getName(), this.getPrice());
             }
