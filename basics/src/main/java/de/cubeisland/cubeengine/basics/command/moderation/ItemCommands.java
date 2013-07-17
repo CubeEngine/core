@@ -112,6 +112,11 @@ public class ItemCommands
         {
             User sender = (User)context.getSender();
             ItemStack item = sender.getItemInHand();
+            if (item == null || item.getType().equals(Material.AIR))
+            {
+                context.sendTranslated("&cYou need to hold an item to rename in your hand!");
+                return;
+            }
             ItemMeta meta = item.getItemMeta();
             String name = ChatFormat.parseFormats(context.getString(0));
             meta.setDisplayName(name);
@@ -122,7 +127,7 @@ public class ItemCommands
             }
             meta.setLore(list);
             item.setItemMeta(meta);
-            context.sendTranslated("&aYou now hold &6%s &ain your hands!", name);
+            context.sendTranslated("&aYou now hold &6%s&a in your hands!", name);
             return;
         }
         context.sendTranslated("&cTrying to give your &6toys &ca name?");
