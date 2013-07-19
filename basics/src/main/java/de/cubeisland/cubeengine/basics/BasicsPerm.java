@@ -29,8 +29,6 @@ import static de.cubeisland.cubeengine.core.permission.PermDefault.FALSE;
 
 public class BasicsPerm extends PermissionContainer<Basics>
 {
-
-
     public BasicsPerm(Basics module)
     {
         super(module);
@@ -240,6 +238,8 @@ public class BasicsPerm extends PermissionContainer<Basics>
     public static final Permission COMMAND_BUTCHER_FLAG_ALL = COMMAND_BUTCHER_FLAG.createChild("all");
     public static final Permission COMMAND_BUTCHER_FLAG_OTHER = COMMAND_BUTCHER_FLAG.createChild("other");
     public static final Permission COMMAND_BUTCHER_FLAG_NPC = COMMAND_BUTCHER_FLAG.createChild("npc");
+    public static final Permission COMMAND_BUTCHER_FLAG_MONSTER = COMMAND_BUTCHER_FLAG.createChild("monster");
+    public static final Permission COMMAND_BUTCHER_FLAG_BOSS = COMMAND_BUTCHER_FLAG.createChild("boss");
 
     private static final Permission COMMAND_FEED = COMMAND.createAbstractChild("feed");
     public static final Permission COMMAND_FEED_ALL = COMMAND_FEED.createChild("all");

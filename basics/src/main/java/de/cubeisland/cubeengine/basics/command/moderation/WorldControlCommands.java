@@ -18,29 +18,16 @@
 package de.cubeisland.cubeengine.basics.command.moderation;
 
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
 import java.util.List;
 
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
-import org.bukkit.entity.Ambient;
-import org.bukkit.entity.Animals;
-import org.bukkit.entity.EnderDragon;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
-import org.bukkit.entity.Ghast;
-import org.bukkit.entity.Golem;
 import org.bukkit.entity.Item;
 import org.bukkit.entity.LivingEntity;
-import org.bukkit.entity.Monster;
-import org.bukkit.entity.NPC;
 import org.bukkit.entity.Player;
-import org.bukkit.entity.Slime;
-import org.bukkit.entity.Tameable;
-import org.bukkit.entity.WaterMob;
-import org.bukkit.entity.Wither;
 
 import de.cubeisland.cubeengine.core.command.parameterized.Flag;
 import de.cubeisland.cubeengine.core.command.parameterized.Param;
@@ -54,6 +41,8 @@ import de.cubeisland.cubeengine.basics.Basics;
 import de.cubeisland.cubeengine.basics.BasicsConfiguration;
 import de.cubeisland.cubeengine.basics.BasicsPerm;
 
+import static de.cubeisland.cubeengine.basics.command.moderation.EntityRemoval.DIRECT_ENTITY_REMOVAL;
+import static de.cubeisland.cubeengine.basics.command.moderation.EntityRemoval.GROUPED_ENTITY_REMOVAL;
 import static de.cubeisland.cubeengine.core.command.ArgBounds.NO_MAX;
 
 /**
@@ -64,9 +53,9 @@ public class WorldControlCommands
 
     private BasicsConfiguration config;
 
-    public WorldControlCommands(Basics basics)
+    public WorldControlCommands(Basics module)
     {
-        this.config = basics.getConfiguration();
+        this.config = module.getConfiguration();
     }
 
     @Command(desc = "Changes the weather", min = 1, max = 3, usage = "<sun|rain|storm> [duration] [in <world>]", params = @Param(names = "in", type = World.class))
@@ -287,20 +276,8 @@ public class WorldControlCommands
         }
     }
 
-    private final Collection<String> BUTCHER_TARGETS = new HashSet<String>()
-    {
-        {
-            this.add("pet");
-            this.add("golem");
-            this.add("animal");
-            this.add("npc");
-            this.add("other");
-            this.add("boss");
-            this.add("monster");
-        }
-    };
-
-    @Command(desc = "Gets rid of living mobs nearby you", flags = {
+    @Command(desc = "Gets rid of mobs nearby you. Valid types are:\n" +
+        "monster, animal, pet, golem, boss, other, creeper, skeleton, spider etc.", flags = {
         @Flag(longName = "lightning", name = "l"), // die with style
         @Flag(longName = "all", name = "a")// infinite radius
     }, params = @Param(names = "in", type = World.class, completer = WorldCompleter.class),
@@ -342,17 +319,27 @@ public class WorldControlCommands
         {
             lightning = true;
         }
-        List<Entity> list = loc.getWorld().getEntities(); // entities remaining in that list will NOT get removed
-        String[] s_types =
+        List<Entity> list;
+        if (context.getSender() instanceof User)
         {
-            "monster"
-        };
+            list = ((User)context.getSender()).getNearbyEntities(radius, radius, radius);
+        }
+        else
+        {
+            list = loc.getWorld().getEntities();
+        }
+        String[] s_types = { "monster" };
         boolean allTypes = false;
         if (context.hasArg(0))
         {
             if (context.getString(0).equals("*"))
             {
                 allTypes = true;
+                if (!BasicsPerm.COMMAND_BUTCHER_FLAG_ALLTYPE.isAuthorized(context.getSender()))
+                {
+                    context.sendTranslated("&cYou are not allowed to butcher all types of living entities at once!");
+                    return;
+                }
             }
             else
             {
@@ -364,32 +351,31 @@ public class WorldControlCommands
         {
             for (String s_type : s_types)
             {
-                String match = Match.string().matchString(s_type, this.BUTCHER_TARGETS);
-                boolean specialmatch = false;
+                String match = Match.string().matchString(s_type, GROUPED_ENTITY_REMOVAL.keySet());
+                EntityType directEntityMatch = null;
                 if (match == null)
                 {
-                    match = Match.entity().getNameFor(Match.entity().living(s_type));
-                    if (match == null)
+                    directEntityMatch = Match.entity().living(s_type);
+                    if (directEntityMatch == null)
                     {
                         context.sendTranslated("&cUnkown entity &6%s", s_type);
                         return;
                     }
-                    specialmatch = true;
+                    if (DIRECT_ENTITY_REMOVAL.get(directEntityMatch) == null) throw new IllegalStateException("Missing Entity? " + directEntityMatch);
                 }
                 remList = new ArrayList<Entity>();
                 for (Entity entity : list)
                 {
-                    if ( //TODO change perms
-                    (match.equals("pet") && entity instanceof Tameable && ((Tameable)entity).isTamed() && BasicsPerm.COMMAND_BUTCHER_FLAG_PET.isAuthorized(context.getSender()))
-                            || (match.equals("golem") && entity instanceof Golem && BasicsPerm.COMMAND_BUTCHER_FLAG_GOLEM.isAuthorized(context.getSender()))
-                            || (match.equals("animal") && entity instanceof Animals && !(entity instanceof Tameable) && BasicsPerm.COMMAND_BUTCHER_FLAG_ANIMAL.isAuthorized(context.getSender()))
-                            || (match.equals("npc") && entity instanceof NPC && BasicsPerm.COMMAND_BUTCHER_FLAG_NPC.isAuthorized(context.getSender()))
-                            || (match.equals("other") && (entity instanceof Ambient || entity instanceof WaterMob) && BasicsPerm.COMMAND_BUTCHER_FLAG_OTHER.isAuthorized(context.getSender()))
-                            || (match.equals("boss") && (entity instanceof EnderDragon || entity instanceof Wither)) //TODO perm
-                        || (match.equals("monster") && entity instanceof Monster || entity instanceof Slime || entity instanceof Ghast)//TODO perm
-                        || (specialmatch
-                            && (entity.getType().equals(Match.entity().any(match)))) //TODO perms
-                    )
+                    EntityRemoval entityRemoval;
+                    if (directEntityMatch != null)
+                    {
+                        entityRemoval = DIRECT_ENTITY_REMOVAL.get(directEntityMatch);
+                    }
+                    else
+                    {
+                        entityRemoval = GROUPED_ENTITY_REMOVAL.get(match);
+                    }
+                    if (entityRemoval.doesMatch(entity) && entityRemoval.isAllowed(context.getSender()))
                     {
                         remList.add(entity);
                     }

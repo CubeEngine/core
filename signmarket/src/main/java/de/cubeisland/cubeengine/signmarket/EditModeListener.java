@@ -37,7 +37,6 @@ import de.cubeisland.cubeengine.core.command.parameterized.CommandFlag;
 import de.cubeisland.cubeengine.core.command.parameterized.CommandParameter;
 import de.cubeisland.cubeengine.core.command.parameterized.ParameterizedContext;
 import de.cubeisland.cubeengine.core.user.User;
-import de.cubeisland.cubeengine.conomy.Conomy;
 
 import gnu.trove.map.hash.TLongObjectHashMap;
 
