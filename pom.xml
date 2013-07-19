@@ -35,7 +35,6 @@
     <module>log</module>
     <module>writer</module>
     <module>shout</module>
-    <module>guests</module>
     <module>roles</module>
     <module>rulebook</module>
     <module>irc</module>
