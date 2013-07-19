@@ -29,12 +29,9 @@ import de.cubeisland.cubeengine.core.CubeEngine;
 import de.cubeisland.cubeengine.core.config.annotations.Codec;
 import de.cubeisland.cubeengine.core.config.codec.ConfigurationCodec;
 import de.cubeisland.cubeengine.core.config.codec.YamlCodec;
-
 import de.cubeisland.cubeengine.core.module.Module;
 
 import org.yaml.snakeyaml.reader.ReaderException;
-
-import static java.util.logging.Level.SEVERE;
 
 /**
  * This abstract class represents a configuration.
@@ -249,6 +246,7 @@ public abstract class Configuration<ConfigCodec extends ConfigurationCodec>
      * @param <T>
      * @return the loaded Configuration
      */
+    @SuppressWarnings("unchecked")
     public static <T extends Configuration> T load(Class<T> clazz, InputStream is, File file)
     {
         T config = createInstance(clazz);

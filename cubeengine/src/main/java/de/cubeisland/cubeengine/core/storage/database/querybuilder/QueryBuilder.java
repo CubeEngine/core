@@ -17,6 +17,8 @@
  */
 package de.cubeisland.cubeengine.core.storage.database.querybuilder;
 
+import de.cubeisland.cubeengine.core.storage.database.AttrType;
+
 public interface QueryBuilder
 {
     /**
@@ -154,4 +156,12 @@ public interface QueryBuilder
      * @return the query as String
      */
     public String end();
+
+    /**
+     * Returns the String for the implementation of given AttributeType
+     *
+     * @param attrType the AttributeType
+     * @return the String
+     */
+    String getAttrTypeString(AttrType attrType);
 }

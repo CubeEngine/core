@@ -41,9 +41,6 @@ import gnu.trove.map.hash.THashMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-
-
-
 public class BukkitCommandManager implements CommandManager
 {
     private final Server server;
@@ -64,7 +61,6 @@ public class BukkitCommandManager implements CommandManager
 
         this.commandLogger = LoggerFactory.getLogger("cubeengine.commands");
         // TODO
-
         this.confirmManager = new ConfirmManager(this, core);
     }
 

@@ -218,7 +218,7 @@ public interface Database
     void startTransaction() throws SQLException;
 
     /**
-     * Commits a transaction.
+     * Commits and ends an transaction.
      *
      * @throws SQLException
      */
@@ -236,7 +236,7 @@ public interface Database
      *
      * @param manager the manager
      */
-    void update(Storage manager);
+    void updateStructure(Storage manager);
 
     /**
      * Executes an insert query and returns the last inserted id.

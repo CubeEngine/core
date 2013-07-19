@@ -30,8 +30,6 @@ import de.cubeisland.cubeengine.core.CubeEngine;
 import de.cubeisland.cubeengine.core.storage.Storage;
 import de.cubeisland.cubeengine.core.util.worker.AsyncTaskQueue;
 
-import org.apache.commons.lang.Validate;
-
 
 
 /**
@@ -42,8 +40,14 @@ public abstract class AbstractDatabase implements Database
 {
     private final ConcurrentMap<String, String> statements = new ConcurrentHashMap<String, String>();
     private final ConcurrentMap<String, PreparedStatement> preparedStatements = new ConcurrentHashMap<String, PreparedStatement>();
-    private final ExecutorService executorService = Executors.newSingleThreadExecutor(); // TODO thread factory!
-    private final AsyncTaskQueue taskQueue = new AsyncTaskQueue(this.executorService); // TODO shutdown!
+    private final ExecutorService executorService;
+    private final AsyncTaskQueue taskQueue;
+
+    protected AbstractDatabase()
+    {
+        this.executorService = Executors.newSingleThreadExecutor(CubeEngine.getCore().getTaskManager().getThreadFactory());
+        this.taskQueue = new AsyncTaskQueue(this.executorService);
+    }
 
     @Override
     public Object getLastInsertedId(Class owner, String name, Object... params) throws SQLException
@@ -260,12 +264,11 @@ public abstract class AbstractDatabase implements Database
         this.getConnection().setAutoCommit(false);
     }
 
-    //TODO end Transaction
-
     @Override
     public void commit() throws SQLException
     {
         this.getConnection().commit();
+        this.getConnection().setAutoCommit(true);
     }
 
     @Override
@@ -275,7 +278,7 @@ public abstract class AbstractDatabase implements Database
     }
 
     @Override
-    public void update(Storage manager) // TODO rename!
+    public void updateStructure(Storage manager)
     {
         manager.updateStructure();
     }

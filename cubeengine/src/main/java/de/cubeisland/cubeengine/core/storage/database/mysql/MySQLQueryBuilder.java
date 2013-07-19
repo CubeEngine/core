@@ -17,6 +17,9 @@
  */
 package de.cubeisland.cubeengine.core.storage.database.mysql;
 
+import java.util.EnumMap;
+
+import de.cubeisland.cubeengine.core.storage.database.AttrType;
 import de.cubeisland.cubeengine.core.storage.database.Database;
 import de.cubeisland.cubeengine.core.storage.database.querybuilder.AlterTableBuilder;
 import de.cubeisland.cubeengine.core.storage.database.querybuilder.DatabaseBuilder;
@@ -31,6 +34,8 @@ import de.cubeisland.cubeengine.core.storage.database.querybuilder.TableBuilder;
 import de.cubeisland.cubeengine.core.storage.database.querybuilder.UpdateBuilder;
 
 import org.apache.commons.lang.Validate;
+
+import static de.cubeisland.cubeengine.core.storage.database.AttrType.*;
 
 /**
  * QueryBuilder implementation for MYSQL.
@@ -271,5 +276,47 @@ public class MySQLQueryBuilder implements QueryBuilder
         this.query = null;
         this.nextQuery = false;
         return res;
+    }
+
+    private EnumMap<AttrType, String> attributeMap = new EnumMap<AttrType, String>(AttrType.class)
+    {
+        {
+            this.put(INT, "INT");
+            this.put(TINYINT, "TINYINT");
+            this.put(SMALLINT, "SMALLINT");
+            this.put(MEDIUMINT, "MEDIUMINT");
+            this.put(BIGINT, "BIGINT");
+            this.put(DECIMAL, "DECIMAL");
+            this.put(FLOAT, "FLOAT");
+            this.put(DOUBLE, "DOUBLE");
+            this.put(REAL, "REAL");
+            this.put(BIT, "BIT");
+            this.put(BOOLEAN, "BOOLEAN");
+            this.put(SERIAL, "SERIAL");
+            this.put(DATE, "DATE");
+            this.put(DATETIME, "DATETIME");
+            this.put(TIMESTAMP, "TIMESTAMP");
+            this.put(YEAR, "YEAR");
+            this.put(CHAR, "CHAR");
+            this.put(VARCHAR, "VARCHAR");
+            this.put(TEXT, "TEXT");
+            this.put(TINYTEXT, "TINYTEXT");
+            this.put(MEDIUMTEXT, "MEDIUMTEXT");
+            this.put(BINARY, "BINARY");
+            this.put(VARBINARY, "VARBINARY");
+            this.put(TINYBLOB, "TINYBLOB");
+            this.put(MEDIUMBLOB, "MEDIUMBLOB");
+            this.put(BLOB, "BLOB");
+            this.put(ENUM, "ENUM");
+            this.put(SET, "SET");
+        }
+    };
+
+    @Override
+    public String getAttrTypeString(AttrType attrType)
+    {
+        String s = this.attributeMap.get(attrType);
+        if (s == null) throw new UnsupportedOperationException("The AttributeType " + attrType.name() + " is not supported by this QueryBuilder! " + this.getClass());
+        return s;
     }
 }
