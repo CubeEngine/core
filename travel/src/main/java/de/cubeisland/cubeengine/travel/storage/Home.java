@@ -145,12 +145,15 @@ public class Home
         parent.visibility = visibility;
         parent.visibilityId = visibility.ordinal();
         telePointManager.removeHomeFromUser(this, parent.owner);
-        for (String name : this.invited)
+        if (this.invited != null)
         {
-            User user = CubeEngine.getUserManager().findOnlineUser(name);
-            if (user != null)
+            for (String name : this.invited)
             {
-                telePointManager.removeHomeFromUser(this, user);
+                User user = CubeEngine.getUserManager().findOnlineUser(name);
+                if (user != null)
+                {
+                    telePointManager.removeHomeFromUser(this, user);
+                }
             }
         }
         if (visibility.equals(Visibility.PUBLIC))
