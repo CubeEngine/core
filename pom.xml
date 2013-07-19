@@ -12,6 +12,19 @@
     <projectBase>${project.basedir}</projectBase>
   </properties>
 
+  <distributionManagement>
+    <repository>
+      <id>cubeisland-repo</id>
+      <name>Release</name>
+      <url>http://nexus.cubeisland.de/content/repositories/releases</url>
+    </repository>
+    <snapshotRepository>
+      <id>cubeisland-repo</id>
+      <name>Release</name>
+      <url>http://nexus.cubeisland.de/content/repositories/snapshots</url>
+    </snapshotRepository>
+  </distributionManagement>
+
   <modules>
     <module>parent</module>
     <module>cubeengine</module>
