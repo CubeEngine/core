@@ -110,7 +110,7 @@ public class HomeCommand extends ContainerCommand
             {
                 if (context.getCore().getUserManager().findUser(context.getString(0)) != null)
                 {
-                    User user = CubeEngine.getUserManager().findUser(context.getString(0));
+                    User user = this.module.getCore().getUserManager().findUser(context.getString(0));
                     Home home = this.tpManager.getHome(user, "home");
                     if (home != null && home.canAccess(sender))
                     {
@@ -177,7 +177,7 @@ public class HomeCommand extends ContainerCommand
         if (context.getSender() instanceof User)
         {
             User sender = (User)context.getSender();
-            if (this.tpManager.getNumberOfHomes(sender) >= this.module.getConfig().maxhomes)
+            if (this.tpManager.getNumberOfHomes(sender) >= this.module.getConfig().maxhomes) // TODO permission to allow more
             {
                 sender.sendTranslated("&4You have reached your maximum number of homes!");
                 sender.sendTranslated("&cYou have to delete a home to make a new one");

@@ -39,8 +39,10 @@ import de.cubeisland.cubeengine.core.storage.database.querybuilder.QueryBuilder;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.util.matcher.Match;
 import de.cubeisland.cubeengine.travel.Travel;
+import de.cubeisland.cubeengine.travel.storage.TeleportPoint.Visibility;
 
-import static de.cubeisland.cubeengine.core.storage.database.querybuilder.ComponentBuilder.EQUAL;
+import static de.cubeisland.cubeengine.travel.storage.TeleportPoint.Type.HOME;
+import static de.cubeisland.cubeengine.travel.storage.TeleportPoint.Type.WARP;
 
 public class TelePointManager extends SingleKeyStorage<Long, TeleportPoint> implements ModuleProvider<Travel>
 {
@@ -69,87 +71,19 @@ public class TelePointManager extends SingleKeyStorage<Long, TeleportPoint> impl
         QueryBuilder builder = this.database.getQueryBuilder();
 
         // List statements
-        this.database
-            .storeStatement(this.modelClass, "homes_all_public", builder.select().cols("key", "name", "owner")
-                                                                        .from(this.tableName).where()
-                                                                        .field("visibility").is(EQUAL)
-                                                                        .value(TeleportPoint.Visibility.PUBLIC
-                                                                                                       .ordinal())
-                                                                        .and().field("type").is(EQUAL)
-                                                                        .value(TeleportPoint.Type.HOME.ordinal())
-                                                                        .end().end());
-        this.database
-            .storeStatement(this.modelClass, "homes_all_private", builder.select().cols("key", "name", "owner")
-                                                                         .from(this.tableName).where()
-                                                                         .field("visibility").is(EQUAL)
-                                                                         .value(TeleportPoint.Visibility.PRIVATE
-                                                                                                        .ordinal())
-                                                                         .and().field("type").is(EQUAL)
-                                                                         .value(TeleportPoint.Type.HOME.ordinal())
-                                                                         .end().end());
-        this.database
-            .storeStatement(this.modelClass, "homes_owned_private", builder.select().cols("key", "name", "owner")
-                                                                           .from(this.tableName).where()
-                                                                           .field("owner").is(EQUAL).value().and()
-                                                                           .field("visibility").is(EQUAL)
-                                                                           .value(TeleportPoint.Visibility.PRIVATE
-                                                                                                          .ordinal())
-                                                                           .and().field("type").is(EQUAL)
-                                                                           .value(TeleportPoint.Type.HOME.ordinal())
-                                                                           .end().end());
-        this.database
-            .storeStatement(this.modelClass, "homes_owned_public", builder.select().cols("key", "name", "owner")
-                                                                          .from(this.tableName).where()
-                                                                          .field("owner").is(EQUAL).value().and()
-                                                                          .field("visibility").is(EQUAL)
-                                                                          .value(TeleportPoint.Visibility.PUBLIC
-                                                                                                         .ordinal())
-                                                                          .and().field("type").is(EQUAL)
-                                                                          .value(TeleportPoint.Type.HOME.ordinal())
-                                                                          .end().end());
-        this.database.storeStatement(this.modelClass, "warps_all_public", builder.select()
-                                                                                 .cols("key", "name", "owner", "visibility")
-                                                                                 .from(this.tableName).where()
-                                                                                 .field("visibility").is(EQUAL)
-                                                                                 .value(TeleportPoint.Visibility
-                                                                                            .PUBLIC.ordinal()).and()
-                                                                                 .field("type").is(EQUAL)
-                                                                                 .value(TeleportPoint.Type.WARP
-                                                                                                          .ordinal())
-                                                                                 .end().end());
-        this.database
-            .storeStatement(this.modelClass, "warps_all_private", builder.select().cols("key", "name", "owner", "visibility")
-                                                                         .from(this.tableName).where()
-                                                                         .field("visibility").is(EQUAL)
-                                                                         .value(TeleportPoint.Visibility.PRIVATE
-                                                                                                        .ordinal())
-                                                                         .and().field("type").is(EQUAL)
-                                                                         .value(TeleportPoint.Type.WARP.ordinal())
-                                                                         .end().end());
-        this.database.storeStatement(this.modelClass, "warps_owned_private", builder.select()
-                                                                                    .cols("key", "name", "owner", "visibility")
-                                                                                    .from(this.tableName).where()
-                                                                                    .field("owner").is(EQUAL)
-                                                                                    .value().and()
-                                                                                    .field("visibility").is(EQUAL)
-                                                                                    .value(TeleportPoint.Visibility
-                                                                                               .PRIVATE.ordinal())
-                                                                                    .and().field("type").is(EQUAL)
-                                                                                    .value(TeleportPoint.Type.WARP
-                                                                                                             .ordinal())
-                                                                                    .end().end());
-        this.database.storeStatement(this.modelClass, "warps_owned_public", builder.select()
-                                                                                   .cols("key", "name", "owner", "visibility")
-                                                                                   .from(this.tableName).where()
-                                                                                   .field("owner").is(EQUAL).value()
-                                                                                   .and().field("visibility")
-                                                                                   .is(EQUAL)
-                                                                                   .value(TeleportPoint.Visibility
-                                                                                              .PUBLIC.ordinal())
-                                                                                   .and().field("type").is(EQUAL)
-                                                                                   .value(TeleportPoint.Type.WARP
-                                                                                                            .ordinal())
-                                                                                   .end().end());
+        this.database.storeStatement(this.modelClass, "filtered_getAll",
+                                     builder.select(this.tableName+".key","name","owner","player").from(this.tableName)
+                                            .joinOnEqual("user", "key", tableName, "owner")
+                                     .where().field("type").isEqual().value() // First value TeleportPoint.Type.<>.ordinal() (home/warp)
+                                     .and().field("visibility").isEqual().value() // Second value Visibility.<>.ordinal() (public/private)
+            .end().end());
+        this.database.storeStatement(this.modelClass, "filtered_getAll_owned",
+                                     builder.select(this.tableName+".key","name","owner","player").from(this.tableName)
+                                            .joinOnEqual("user", "key", tableName, "owner")
+                                            .where().field("type").isEqual().value() // First value TeleportPoint.Type.<>.ordinal() (home/warp)
+                                         .and().field("visibility").isEqual().value() // Second value Visibility.<>.ordinal() (public/private)
+                                         .and().field("owner").isEqual().value() // Third value owner key
+                                         .end().end());
         // Override getAll and get Statements
         this.database.storeStatement(this.modelClass, "getall", builder.select().
             fields(tableName + ".key", "owner", "type", "visibility", "world", "x", "y", "z", "yaw", "pitch", "name", "welcomemsg", "player")
@@ -171,7 +105,7 @@ public class TelePointManager extends SingleKeyStorage<Long, TeleportPoint> impl
         this.inviteManager = inviteManager;
         for (TeleportPoint teleportPoint : this.getAll())
         {
-            if (teleportPoint.type.equals(TeleportPoint.Type.HOME))
+            if (teleportPoint.type.equals(HOME))
             {
                 Home home = new Home(teleportPoint, this, inviteManager, this.module);
                 if (home.isPublic())
@@ -515,7 +449,7 @@ public class TelePointManager extends SingleKeyStorage<Long, TeleportPoint> impl
      */
     public Home createHome(Location location, String name, User owner, TeleportPoint.Visibility visibility)
     {
-        Home home = new Home(new TeleportPoint(location, name, owner, null, TeleportPoint.Type.HOME, visibility), this, inviteManager, this.module);
+        Home home = new Home(new TeleportPoint(location, name, owner, null, HOME, visibility), this, inviteManager, this.module);
         this.store(home.getModel());
         this.putHomeToUser(home, home.getOwner());
         this.homes.put(home.getStorageName(), home);
@@ -829,7 +763,7 @@ public class TelePointManager extends SingleKeyStorage<Long, TeleportPoint> impl
         {
             try
             {
-                ResultSet resultSet = database.preparedQuery(this.modelClass, "homes_all_public");
+                ResultSet resultSet = database.preparedQuery(this.modelClass, "filtered_getAll", HOME.ordinal(), Visibility.PUBLIC.ordinal());
                 homes.addAll(this.getHomes(resultSet));
                 resultSet.close();
             }
@@ -843,7 +777,7 @@ public class TelePointManager extends SingleKeyStorage<Long, TeleportPoint> impl
         {
             try
             {
-                ResultSet resultSet = database.preparedQuery(this.modelClass, "homes_all_private");
+                ResultSet resultSet = database.preparedQuery(this.modelClass, "filtered_getAll", HOME.ordinal(), Visibility.PRIVATE.ordinal());
                 homes.addAll(this.getHomes(resultSet));
                 resultSet.close();
             }
@@ -881,7 +815,7 @@ public class TelePointManager extends SingleKeyStorage<Long, TeleportPoint> impl
         {
             try
             {
-                ResultSet resultSet = database.preparedQuery(this.modelClass, "homes_owned_public", user.getId());
+                ResultSet resultSet = database.preparedQuery(this.modelClass, "filtered_getAll_owned", HOME.ordinal(), Visibility.PUBLIC.ordinal(), user.getId());
                 homes.addAll(this.getHomes(resultSet));
                 resultSet.close();
             }
@@ -894,7 +828,7 @@ public class TelePointManager extends SingleKeyStorage<Long, TeleportPoint> impl
         {
             try
             {
-                ResultSet resultSet = database.preparedQuery(this.modelClass, "homes_owned_private", user.getId());
+                ResultSet resultSet = database.preparedQuery(this.modelClass, "filtered_getAll_owned", HOME.ordinal(), Visibility.PRIVATE.ordinal(), user.getId());
                 homes.addAll(this.getHomes(resultSet));
                 resultSet.close();
             }
@@ -908,7 +842,7 @@ public class TelePointManager extends SingleKeyStorage<Long, TeleportPoint> impl
             for (TeleportInvite invite : this.inviteManager.getInvites(user))
             {
                 TeleportPoint point = this.get(invite.teleportPoint);
-                if (point.type == TeleportPoint.Type.HOME)
+                if (point.type == HOME)
                 {
                     Home home = this.homes.get(point.ownerName + ":" + point.name);
                     if (home != null)
@@ -932,7 +866,7 @@ public class TelePointManager extends SingleKeyStorage<Long, TeleportPoint> impl
         {
             try
             {
-                ResultSet resultSet = database.preparedQuery(this.modelClass, "warps_all_public");
+                ResultSet resultSet = database.preparedQuery(this.modelClass, "filtered_getAll", WARP.ordinal(), Visibility.PUBLIC.ordinal());
                 warps.addAll(this.getWarps(resultSet));
                 resultSet.close();
             }
@@ -946,7 +880,7 @@ public class TelePointManager extends SingleKeyStorage<Long, TeleportPoint> impl
         {
             try
             {
-                ResultSet resultSet = database.preparedQuery(this.modelClass, "warps_all_private");
+                ResultSet resultSet = database.preparedQuery(this.modelClass, "filtered_getAll", WARP.ordinal(), Visibility.PRIVATE.ordinal());
                 warps.addAll(this.getWarps(resultSet));
                 resultSet.close();
             }
@@ -984,7 +918,7 @@ public class TelePointManager extends SingleKeyStorage<Long, TeleportPoint> impl
         {
             try
             {
-                ResultSet resultSet = database.preparedQuery(this.modelClass, "warps_owned_public", user.getId());
+                ResultSet resultSet = database.preparedQuery(this.modelClass, "filtered_getAll_owned", WARP.ordinal(), Visibility.PUBLIC.ordinal(), user.getId());
                 warps.addAll(this.getWarps(resultSet));
                 resultSet.close();
             }
@@ -997,7 +931,7 @@ public class TelePointManager extends SingleKeyStorage<Long, TeleportPoint> impl
         {
             try
             {
-                ResultSet resultSet = database.preparedQuery(this.modelClass, "warps_owned_private", user.getId());
+                ResultSet resultSet = database.preparedQuery(this.modelClass, "filtered_getAll_owned", WARP.ordinal(), Visibility.PRIVATE.ordinal(), user.getId());
                 warps.addAll(this.getWarps(resultSet));
                 resultSet.close();
             }
@@ -1011,7 +945,7 @@ public class TelePointManager extends SingleKeyStorage<Long, TeleportPoint> impl
             for (TeleportInvite invite : this.inviteManager.getInvites(user))
             {
                 TeleportPoint point = this.get(invite.teleportPoint);
-                if (point.type == TeleportPoint.Type.HOME)
+                if (point.type == HOME)
                 {
                     Warp warp = this.warps.get(point.ownerName + ":" + point.name);
                     if (warp != null)
@@ -1070,16 +1004,15 @@ public class TelePointManager extends SingleKeyStorage<Long, TeleportPoint> impl
         while (resultSet.next())
         {
             String name = resultSet.getString("name");
-            long ownerId = resultSet.getLong("owner");
-            User owner = this.module.getCore().getUserManager().getUser(ownerId);
+            String ownerName = resultSet.getString("player");
             Home home;
-            if (owner == null)
+            if (ownerName == null)
             {
                 home = this.homes.get("Unknown" + ":" + name);
             }
             else
             {
-                home = this.homes.get(owner.getName() + ":" + name);
+                home = this.homes.get(ownerName + ":" + name);
             }
             homes.add(home);
         }
@@ -1092,14 +1025,12 @@ public class TelePointManager extends SingleKeyStorage<Long, TeleportPoint> impl
         while (resultSet.next())
         {
             String name = resultSet.getString("name");
-            long ownerId = resultSet.getLong("owner");
+            String ownerName = resultSet.getString("player");
             int visibility = resultSet.getInt("visibility");
-
-            User owner = CubeEngine.getUserManager().getUser(ownerId);
             Warp warp;
             if (visibility == TeleportPoint.Visibility.PRIVATE.ordinal())
             {
-                warp = this.warps.get(owner.getName() + ":" + name);
+                warp = this.warps.get(ownerName + ":" + name);
             }
             else
             {
