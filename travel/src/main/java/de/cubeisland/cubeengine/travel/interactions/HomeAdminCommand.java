@@ -245,7 +245,7 @@ public class HomeAdminCommand extends ContainerCommand
             }
             else
             {
-                context.sendTranslated("  &2%s&e:&6%s", home.getOwner().getName(), home.getName());
+                context.sendTranslated("  &2%s&e:&6%s", home.getOwnerName(), home.getName());
             }
         }
     }

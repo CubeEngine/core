@@ -201,23 +201,7 @@ public class SingleKeyStorage<Key_f, M extends Model<Key_f>> extends AbstractSto
             ResultSet resultSet = this.database.preparedQuery(this.modelClass, "get", key);
             if (resultSet.next())
             {
-                if (this.modelConstructor == null)
-                {
-                    loadedModel = this.modelClass.newInstance();
-                    for (Field field : this.fieldNames.keySet())
-                    {
-                        field.set(loadedModel, resultSet.getObject(this.fieldNames.get(field)));
-                    }
-                }
-                else
-                {
-                    ArrayList<Object> values = new ArrayList<Object>();
-                    for (String name : this.reverseFieldNames.keySet())
-                    {
-                        values.add(resultSet.getObject(name));
-                    }
-                    loadedModel = this.modelConstructor.newInstance(values);
-                }
+                loadedModel = this.createModel(resultSet);
             }
         }
         catch (SQLException ex)

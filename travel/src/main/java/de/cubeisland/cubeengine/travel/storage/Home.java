@@ -232,4 +232,9 @@ public class Home
     {
         return this.parent.getId();
     }
+
+    public String getOwnerName()
+    {
+        return this.parent.getOwnerName();
+    }
 }

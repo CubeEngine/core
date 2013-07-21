@@ -17,12 +17,13 @@
  */
 package de.cubeisland.cubeengine.travel.storage;
 
-import java.util.List;
+import java.util.Map;
 
 import org.bukkit.Location;
 
-import de.cubeisland.cubeengine.core.CubeEngine;
+import de.cubeisland.cubeengine.core.module.Module;
 import de.cubeisland.cubeengine.core.storage.Model;
+import de.cubeisland.cubeengine.core.storage.ModuleProvided;
 import de.cubeisland.cubeengine.core.storage.database.AttrType;
 import de.cubeisland.cubeengine.core.storage.database.Attribute;
 import de.cubeisland.cubeengine.core.storage.database.DatabaseConstructor;
@@ -37,9 +38,9 @@ import org.apache.commons.lang.Validate;
                  indices = {
                      @Index(value = Index.IndexType.FOREIGN_KEY, fields = "owner", f_table = "user", f_field = "key"), @Index(value = Index.IndexType.FOREIGN_KEY, fields = "world", f_table = "worlds", f_field = "key"), @Index(value = Index.IndexType.UNIQUE, fields = {"owner", "name", "type"})
                  })
-public class TeleportPoint implements Model<Long>
+public class TeleportPoint implements Model<Long>, ModuleProvided
 {
-
+    private Module module;
     // Database values
     @Attribute(type = AttrType.INT, unsigned = true)
     public Long key;
@@ -67,7 +68,8 @@ public class TeleportPoint implements Model<Long>
     public String name;
     @Attribute(type = AttrType.LONGTEXT, notnull = false, name = "welcomemsg")
     public String welcomeMsg = "";
-    public String ownerName = "Unknown";
+
+    public String ownerName;
 
     // "Normal" values
     protected Location location;
@@ -75,29 +77,27 @@ public class TeleportPoint implements Model<Long>
     public Type type;
     public Visibility visibility;
 
-
-
     @DatabaseConstructor
-    public TeleportPoint(List<Object> args) throws ConversionException
+    public TeleportPoint(Map<String, Object> args) throws ConversionException
     {
-        this.key = Long.valueOf(args.get(0).toString());
-        this.ownerKey = Long.valueOf(args.get(1).toString());
-        this.typeId = Integer.valueOf(args.get(2).toString());
-        this.visibilityId = Integer.valueOf(args.get(3).toString());
-        this.worldKey = Long.valueOf(args.get(4).toString());
-        this.x = Double.valueOf(args.get(5).toString());
-        this.y = Double.valueOf(args.get(6).toString());
-        this.z = Double.valueOf(args.get(7).toString());
-        this.yaw = Float.valueOf(args.get(8).toString());
-        this.pitch = Float.valueOf(args.get(9).toString());
-        this.name = args.get(10).toString();
-        if (args.get(11) != null)
+        this.key = Long.valueOf(args.get("key").toString());
+        this.ownerKey = Long.valueOf(args.get("owner").toString());
+        this.typeId = Integer.valueOf(args.get("type").toString());
+        this.visibilityId = Integer.valueOf(args.get("visibility").toString());
+        this.worldKey = Long.valueOf(args.get("world").toString());
+        this.x = Double.valueOf(args.get("x").toString());
+        this.y = Double.valueOf(args.get("y").toString());
+        this.z = Double.valueOf(args.get("z").toString());
+        this.yaw = Float.valueOf(args.get("yaw").toString());
+        this.pitch = Float.valueOf(args.get("pitch").toString());
+        this.name = args.get("name").toString();
+        if (args.get("welcomemsg") != null)
         {
-            this.welcomeMsg = args.get(11).toString();
+            this.welcomeMsg = args.get("welcomemsg").toString();
         }
-        if (args.get(12) != null)
+        if (args.get("player") != null)
         {
-            this.ownerName = args.get(12).toString();
+            this.ownerName = args.get("player").toString();
         }
 
         this.type = Type.values()[typeId];
@@ -153,18 +153,21 @@ public class TeleportPoint implements Model<Long>
     {
         if (this.owner == null)
         {
-            // TODO get rid of CubeEngine
-            this.owner = CubeEngine.getUserManager().getUser(ownerKey);
+            this.owner = this.module.getCore().getUserManager().getUser(ownerKey);
         }
         return this.owner;
+    }
+
+    public String getOwnerName()
+    {
+        return this.ownerName;
     }
 
     protected Location getLocation()
     {
         if (this.location == null)
         {
-            // TODO get rid of CubeEngine
-            this.location = new Location(CubeEngine.getCore().getWorldManager().getWorld(worldKey), x, y, z, yaw, pitch);
+            this.location = new Location(this.module.getCore().getWorldManager().getWorld(worldKey), x, y, z, yaw, pitch);
         }
         return this.location;
     }
@@ -184,5 +187,11 @@ public class TeleportPoint implements Model<Long>
     {
         PUBLIC,
         PRIVATE
+    }
+
+    @Override
+    public void setModule(Module module)
+    {
+        this.module = module;
     }
 }

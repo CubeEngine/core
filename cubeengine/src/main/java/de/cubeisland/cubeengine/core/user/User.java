@@ -24,7 +24,6 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -75,7 +74,6 @@ import de.cubeisland.cubeengine.core.util.convert.ConversionException;
 import gnu.trove.map.hash.THashMap;
 import gnu.trove.set.hash.THashSet;
 
-
 import static de.cubeisland.cubeengine.core.storage.database.Index.IndexType.UNIQUE;
 import static de.cubeisland.cubeengine.core.util.BlockUtil.isInvertedStep;
 
@@ -101,21 +99,21 @@ public class User extends UserBase implements Model<Long>, CommandSender, Attach
     @Attribute(type = AttrType.DATETIME)
     public final Timestamp firstseen;
     @Attribute(name = "language", type = AttrType.VARCHAR, length = 5, notnull = false)
-    public Locale locale = null;
+    public Locale locale = null; // TODO this is not used at all
     boolean loggedInState = false;
     private final Map<Class<? extends UserAttachment>, UserAttachment> attachments;
     private final Core core;
 
     @DatabaseConstructor
-    User(List<Object> args) throws ConversionException
+    User(Map<String, Object> args) throws ConversionException
     {
-        super((String)args.get(1));
-        this.key = (Long)args.get(0);
+        super((String)args.get("player"));
+        this.key = (Long)args.get("key");
         this.player = this.getOfflinePlayer().getName();
-        this.nogc = (Boolean)args.get(2);
-        this.lastseen = (Timestamp)args.get(3);
-        this.firstseen = (Timestamp)args.get(3);
-        this.passwd = (byte[])args.get(4);
+        this.nogc = (Boolean)args.get("nogc");
+        this.lastseen = (Timestamp)args.get("lastseen");
+        this.firstseen = (Timestamp)args.get("firstseen");
+        this.passwd = (byte[])args.get("passwd");
         this.attachments = new THashMap<Class<? extends UserAttachment>, UserAttachment>();
         this.core = CubeEngine.getCore();
     }

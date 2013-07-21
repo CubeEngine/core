@@ -20,8 +20,9 @@ package de.cubeisland.cubeengine.core.user;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
-import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 import de.cubeisland.cubeengine.core.Core;
@@ -91,12 +92,12 @@ public class UserStorage extends SingleKeyStorage<Long, User>
         try
         {
             ResultSet resultSet = this.database.preparedQuery(modelClass, "get_by_name", playerName);
-            ArrayList<Object> values = new ArrayList<Object>();
+            Map<String, Object> values = new HashMap<String, Object>();
             if (resultSet.next())
             {
                 for (String name : this.allFields)
                 {
-                    values.add(resultSet.getObject(name));
+                    values.put(name, resultSet.getObject(name));
                 }
                 loadedModel = this.modelConstructor.newInstance(values);
             }

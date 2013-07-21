@@ -184,26 +184,10 @@ public class TripletKeyStorage<Key_f, Key_s, Key_t, M extends TripletKeyModel<Ke
         M loadedModel = null;
         try
         {
-            ResultSet resulsSet = this.database.preparedQuery(this.modelClass, "get", key.getFirst(), key.getSecond(), key.getThird());
-            if (resulsSet.next())
+            ResultSet resultSet = this.database.preparedQuery(this.modelClass, "get", key.getFirst(), key.getSecond(), key.getThird());
+            if (resultSet.next())
             {
-                if (this.modelConstructor == null)
-                {
-                    loadedModel = this.modelClass.newInstance();
-                    for (Field field : this.fieldNames.keySet())
-                    {
-                        field.set(loadedModel, resulsSet.getObject(this.fieldNames.get(field)));
-                    }
-                }
-                else
-                {
-                    ArrayList<Object> values = new ArrayList<Object>();
-                    for (String name : this.reverseFieldNames.keySet())
-                    {
-                        values.add(resulsSet.getObject(name));
-                    }
-                    loadedModel = this.modelConstructor.newInstance(values);
-                }
+                loadedModel = this.createModel(resultSet);
             }
         }
         catch (SQLException ex)

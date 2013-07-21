@@ -122,7 +122,7 @@ public class HomeCommand extends ContainerCommand
                         else
                         {
                             sender.sendTranslated("&aYou have been teleported to &6%s&a's default home",
-                                                  home.getOwner().getDisplayName());
+                                                  home.getOwnerName());
                         }
                         return null;
                     }
@@ -152,7 +152,7 @@ public class HomeCommand extends ContainerCommand
                     else
                     {
                         context.sendTranslated("&aYou have been teleported to &2%s&a's home: &6%s",
-                                               home.getOwner().getDisplayName(), home.getName());
+                                               home.getOwnerName(), home.getName());
                     }
                 }
             }
@@ -421,7 +421,7 @@ public class HomeCommand extends ContainerCommand
                 }
                 else
                 {
-                    user.sendTranslated("  &2%s&e:&6%s", home.getOwner().getName(), home.getName());
+                    user.sendTranslated("  &2%s&e:&6%s", home.getOwnerName(), home.getName());
                 }
             }
         }

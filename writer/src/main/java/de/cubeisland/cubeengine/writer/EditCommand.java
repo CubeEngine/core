@@ -88,7 +88,7 @@ public class EditCommand
                 }
                 Sign sign = (Sign)target.getState();
                 String[] lines = sign.getLines();
-                for (Entry<String, Object> entry : params.entrySet()) // TODO refactor
+                for (Entry<String, Object> entry : params.entrySet())
                 {
                     lines[Integer.parseInt(entry.getKey()) - 1] = (String)entry.getValue();
                 }
@@ -104,7 +104,6 @@ public class EditCommand
                     sign.setLine(i, lines[i]);
                 }
                 sign.update();
-
                 user.sendTranslated("The sign has been changed");
             }
             else

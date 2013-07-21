@@ -20,6 +20,7 @@ package de.cubeisland.cubeengine.core.storage;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -31,6 +32,7 @@ import de.cubeisland.cubeengine.core.storage.database.Attribute;
 import de.cubeisland.cubeengine.core.storage.database.Database;
 import de.cubeisland.cubeengine.core.storage.database.DatabaseConstructor;
 import de.cubeisland.cubeengine.core.storage.database.DatabaseUpdater;
+import de.cubeisland.cubeengine.core.storage.database.ModuleProvider;
 import de.cubeisland.cubeengine.core.storage.database.querybuilder.QueryBuilder;
 
 import gnu.trove.map.hash.TIntObjectHashMap;
@@ -178,30 +180,10 @@ public abstract class AbstractStorage<K, M extends Model<K>, T> implements Stora
         Collection<M> loadedModels = new ArrayList<M>();
         try
         {
-            ResultSet resulsSet = this.database.preparedQuery(this.modelClass, "getall");
-
-            while (resulsSet.next())
+            ResultSet resultSet = this.database.preparedQuery(this.modelClass, "getall");
+            while (resultSet.next())
             {
-                M loadedModel;
-                if (modelConstructor == null)
-                {
-                    loadedModel = this.modelClass.newInstance();
-                    for (Field field : this.fieldNames.keySet())
-                    {
-                        field.set(loadedModel, resulsSet.getObject(this.fieldNames.get(field)));
-                    }
-                }
-                else
-                {
-                    ArrayList<Object> values = new ArrayList<Object>();
-                    for (String name : this.reverseFieldNames.keySet())
-                    {
-                        values.add(resulsSet.getObject(name));
-                    }
-                    loadedModel = this.modelConstructor.newInstance(values);
-
-                }
-                loadedModels.add(loadedModel);
+                loadedModels.add( this.createModel(resultSet));
             }
         }
         catch (SQLException ex)
@@ -213,6 +195,33 @@ public abstract class AbstractStorage<K, M extends Model<K>, T> implements Stora
             throw new IllegalStateException("Error while creating fresh Model from Database", ex);
         }
         return loadedModels;
+    }
+
+    @Override
+    public M createModel(ResultSet resultSet) throws IllegalAccessException, InstantiationException, SQLException, InvocationTargetException
+    {
+        M loadedModel;
+        if (modelConstructor == null)
+        {
+            loadedModel = this.modelClass.newInstance();
+            for (Field field : this.fieldNames.keySet())
+            {
+                field.set(loadedModel, resultSet.getObject(this.fieldNames.get(field)));
+            }
+            this.injectModule(loadedModel);
+        }
+        else
+        {
+            Map<String, Object> values = new LinkedHashMap<String, Object>();
+            for (String name : this.reverseFieldNames.keySet())
+            {
+                values.put(name, resultSet.getObject(name));
+            }
+            loadedModel = this.modelConstructor.newInstance(values);
+            this.injectModule(loadedModel);
+        }
+        this.injectModule(loadedModel);
+        return loadedModel;
     }
 
     @Override
@@ -261,6 +270,22 @@ public abstract class AbstractStorage<K, M extends Model<K>, T> implements Stora
         catch (SQLException ex)
         {
             throw new IllegalStateException("Error while clearing Database", ex);
+        }
+    }
+
+    protected void injectModule(M model)
+    {
+        if (model instanceof ModuleProvided)
+        {
+            if (!(this instanceof ModuleProvider)) throw new UnsupportedOperationException();
+            try
+            {
+                ((ModuleProvided)model).setModule(((ModuleProvider)this).getModule());
+            }
+            catch (Exception ex)
+            {
+                throw new UnsupportedOperationException("Cannot not inject module into model!", ex);
+            }
         }
     }
 }

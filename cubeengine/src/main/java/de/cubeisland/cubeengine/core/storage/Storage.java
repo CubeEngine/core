@@ -17,6 +17,9 @@
  */
 package de.cubeisland.cubeengine.core.storage;
 
+import java.lang.reflect.InvocationTargetException;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.Collection;
 
 import de.cubeisland.cubeengine.core.storage.database.DatabaseUpdater;
@@ -136,6 +139,14 @@ public interface Storage<K, M extends Model<K>>
      * @param fromRevision the revision to update from with this updater
      */
     public void registerUpdater(DatabaseUpdater updater, int... fromRevision);
+
+    /**
+     * Creates a model for the resultSet values
+     *
+     * @param resultSet the ResultSet to get the data from
+     * @return a new model with data
+     */
+    public M createModel(ResultSet resultSet) throws IllegalAccessException, InstantiationException, SQLException, InvocationTargetException;
 
     public enum SubscribeType
     {

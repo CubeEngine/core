@@ -17,7 +17,7 @@
  */
 package de.cubeisland.cubeengine.travel.storage;
 
-import java.util.List;
+import java.util.Map;
 
 import de.cubeisland.cubeengine.core.storage.TwoKeyModel;
 import de.cubeisland.cubeengine.core.storage.database.AttrType;
@@ -40,10 +40,10 @@ public class TeleportInvite implements TwoKeyModel<Long, Long>
     public Long userKey;
 
     @DatabaseConstructor
-    public TeleportInvite(List<Object> args) throws ConversionException
+    public TeleportInvite(Map<String, Object> args) throws ConversionException
     {
-        this.teleportPoint = Long.valueOf(args.get(0).toString());
-        this.userKey = Long.valueOf(args.get(1).toString());
+        this.teleportPoint = Long.valueOf(args.get("teleportpoint").toString());
+        this.userKey = Long.valueOf(args.get("userkey").toString());
     }
 
     public TeleportInvite(Long teleportPoint, Long userKey)

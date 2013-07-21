@@ -23,27 +23,26 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
-import java.util.concurrent.TimeUnit;
 
 import org.bukkit.Location;
 
 import de.cubeisland.cubeengine.core.CubeEngine;
 import de.cubeisland.cubeengine.core.command.CommandSender;
-
 import de.cubeisland.cubeengine.core.storage.SingleKeyStorage;
 import de.cubeisland.cubeengine.core.storage.StorageException;
+import de.cubeisland.cubeengine.core.storage.database.ModuleProvider;
 import de.cubeisland.cubeengine.core.storage.database.querybuilder.QueryBuilder;
 import de.cubeisland.cubeengine.core.user.User;
-import de.cubeisland.cubeengine.core.util.Profiler;
 import de.cubeisland.cubeengine.core.util.matcher.Match;
 import de.cubeisland.cubeengine.travel.Travel;
 
 import static de.cubeisland.cubeengine.core.storage.database.querybuilder.ComponentBuilder.EQUAL;
 
-public class TelePointManager extends SingleKeyStorage<Long, TeleportPoint>
+public class TelePointManager extends SingleKeyStorage<Long, TeleportPoint> implements ModuleProvider<Travel>
 {
     private static final int REVISION = 6;
 
@@ -151,16 +150,6 @@ public class TelePointManager extends SingleKeyStorage<Long, TeleportPoint>
                                                                                    .value(TeleportPoint.Type.WARP
                                                                                                             .ordinal())
                                                                                    .end().end());
-
-        // Other statements
-        this.database
-            .storeStatement(this.modelClass, "get_name", builder.select().cols("name").from(this.tableName).where()
-                                                                .field("key").is(EQUAL).value().end().end());
-        // TODO is this ever used???
-        this.database
-            .storeStatement(User.class, "get_owner", builder.select().cols("owner").from(this.tableName).where()
-                                                            .field("key").is(EQUAL).value().end().end());
-
         // Override getAll and get Statements
         this.database.storeStatement(this.modelClass, "getall", builder.select().
             fields(tableName + ".key", "owner", "type", "visibility", "world", "x", "y", "z", "yaw", "pitch", "name", "welcomemsg", "player")
@@ -206,16 +195,17 @@ public class TelePointManager extends SingleKeyStorage<Long, TeleportPoint>
         try
         {
             ResultSet resulsSet = this.database.preparedQuery(this.modelClass, "getall");
-
             while (resulsSet.next())
             {
-                ArrayList<Object> values = new ArrayList<Object>();
+                Map<String, Object> values = new LinkedHashMap<String, Object>();
                 for (String name : this.reverseFieldNames.keySet())
                 {
-                    values.add(resulsSet.getObject(name));
+                    values.put(name, resulsSet.getObject(name));
                 }
-                values.add(resulsSet.getObject("player"));
-                loadedModels.add(this.modelConstructor.newInstance(values));
+                values.put("player", resulsSet.getObject("player"));
+                TeleportPoint tpPoint = this.modelConstructor.newInstance(values);
+                this.injectModule(tpPoint);
+                loadedModels.add(tpPoint);
             }
         }
         catch (SQLException ex)
@@ -237,13 +227,15 @@ public class TelePointManager extends SingleKeyStorage<Long, TeleportPoint>
             ResultSet resulsSet = this.database.preparedQuery(this.modelClass, "getall");
             if (resulsSet.next())
             {
-                ArrayList<Object> values = new ArrayList<Object>();
+                Map<String, Object> values = new HashMap<String, Object>();
                 for (String name : this.reverseFieldNames.keySet())
                 {
-                    values.add(resulsSet.getObject(name));
+                    values.put(name, resulsSet.getObject(name));
                 }
-                values.add(resulsSet.getObject("player"));
-                return this.modelConstructor.newInstance(values);
+                values.put("player", resulsSet.getObject("player"));
+                TeleportPoint tpPoint = this.modelConstructor.newInstance(values);
+                this.injectModule(tpPoint);
+                return tpPoint;
             }
             return null;
         }
@@ -1079,7 +1071,7 @@ public class TelePointManager extends SingleKeyStorage<Long, TeleportPoint>
         {
             String name = resultSet.getString("name");
             long ownerId = resultSet.getLong("owner");
-            User owner = CubeEngine.getUserManager().getUser(ownerId);
+            User owner = this.module.getCore().getUserManager().getUser(ownerId);
             Home home;
             if (owner == null)
             {
@@ -1116,5 +1108,11 @@ public class TelePointManager extends SingleKeyStorage<Long, TeleportPoint>
             warps.add(warp);
         }
         return warps;
+    }
+
+    @Override
+    public Travel getModule()
+    {
+        return this.module;
     }
 }
