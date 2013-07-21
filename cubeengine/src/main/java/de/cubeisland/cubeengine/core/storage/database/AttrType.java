@@ -17,8 +17,6 @@
  */
 package de.cubeisland.cubeengine.core.storage.database;
 
-import de.cubeisland.cubeengine.core.storage.database.querybuilder.QueryBuilder;
-
 /**
  * The possible AttributeTypes for the database.
  */
@@ -105,11 +103,6 @@ public enum AttrType
     {
         this.length = length;
         this.signed = signed;
-    }
-
-    public String getType(QueryBuilder builder)
-    {
-        return builder.getAttrTypeString(this);
     }
 
     public boolean hasLength()
