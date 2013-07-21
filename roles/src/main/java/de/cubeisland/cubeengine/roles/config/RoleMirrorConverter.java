@@ -19,7 +19,6 @@ package de.cubeisland.cubeengine.roles.config;
 
 import java.util.Map;
 
-import de.cubeisland.cubeengine.core.CubeEngine;
 import de.cubeisland.cubeengine.core.config.node.ListNode;
 import de.cubeisland.cubeengine.core.config.node.MapNode;
 import de.cubeisland.cubeengine.core.config.node.Node;
@@ -45,7 +44,7 @@ public class RoleMirrorConverter implements Converter<RoleMirror>
         resultMap.setNode(new StringNode(mirror.mainWorld), NullNode.emptyNode());
         for (long worldId : mirror.getWorldMirrors().keys())
         {
-            String worldName = CubeEngine.getCore().getWorldManager().getWorld(worldId).getName();
+            String worldName = this.module.getCore().getWorldManager().getWorld(worldId).getName();
             if (mirror.mainWorld.equals(worldName))
             {
                 continue;

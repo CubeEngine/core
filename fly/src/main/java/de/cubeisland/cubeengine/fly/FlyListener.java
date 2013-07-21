@@ -29,7 +29,6 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Vector;
 
-import de.cubeisland.cubeengine.core.CubeEngine;
 import de.cubeisland.cubeengine.core.permission.Permission;
 import de.cubeisland.cubeengine.core.task.Task;
 import de.cubeisland.cubeengine.core.user.User;
@@ -77,7 +76,7 @@ public class FlyListener implements Listener
             return;
         }
 
-        FlyStartEvent flyStartEvent = new FlyStartEvent(CubeEngine.getCore(), user);
+        FlyStartEvent flyStartEvent = new FlyStartEvent(fly.getCore(), user);
         if (flyStartEvent.isCancelled())
         {
             user.sendTranslated("You are not allowed to fly now!");

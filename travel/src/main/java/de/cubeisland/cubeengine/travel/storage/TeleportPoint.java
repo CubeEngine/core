@@ -151,7 +151,6 @@ public class TeleportPoint implements Model<Long>
     {
         if (this.owner == null)
         {
-            // TODO get rid of CubeEngine
             this.owner = CubeEngine.getCore().getUserManager().getUser(ownerKey);
         }
         return this.owner;
@@ -166,7 +165,6 @@ public class TeleportPoint implements Model<Long>
     {
         if (this.location == null)
         {
-            // TODO get rid of CubeEngine
             this.location = new Location(CubeEngine.getCore().getWorldManager().getWorld(worldKey), x, y, z, yaw, pitch);
         }
         return this.location;

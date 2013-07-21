@@ -60,7 +60,7 @@ public class BukkitModuleManager extends BaseModuleManager
 
     public BukkitModuleManager(BukkitCore core, ClassLoader parentClassLoader)
     {
-        super(core, parentClassLoader, new BukkitModuleLoggerFactory());
+        super(core, parentClassLoader, new BukkitModuleLoggerFactory(core));
         this.pluginManager = core.getServer().getPluginManager();
         this.core = core;
     }
@@ -157,9 +157,11 @@ public class BukkitModuleManager extends BaseModuleManager
     {
 
         private final Map<ModuleInfo, Logger> loggers;
+        private final BukkitCore core;
 
-        public BukkitModuleLoggerFactory()
+        public BukkitModuleLoggerFactory(BukkitCore core)
         {
+            this.core = core;
             this.loggers = new HashMap<ModuleInfo, Logger>();
         }
 
@@ -188,7 +190,7 @@ public class BukkitModuleManager extends BaseModuleManager
             consoleLayout.setPattern("[" + module.getName() + "] %color(%msg)");
             consoleAppender.setLayout(consoleLayout);
             ThresholdFilter consoleFilter = new ThresholdFilter();
-            consoleFilter.setLevel(((BukkitCore)CubeEngine.getCore()).getConfiguration().loggingConsoleLevel.toString());
+            consoleFilter.setLevel(this.core.getConfiguration().loggingConsoleLevel.toString());
             consoleAppender.addFilter(consoleFilter);
             consoleFilter.start();
 
@@ -215,7 +217,7 @@ public class BukkitModuleManager extends BaseModuleManager
             triggeringPolicy.setMaxFileSize(System.getProperty("cubeengine.logger.max-size"));
             fileAppender.setTriggeringPolicy(triggeringPolicy);
             ThresholdFilter fileFilter = new ThresholdFilter();
-            fileFilter.setLevel(((BukkitCore)CubeEngine.getCore()).getConfiguration().loggingFileLevel.toString());
+            fileFilter.setLevel(this.core.getConfiguration().loggingFileLevel.toString());
             fileAppender.addFilter(fileFilter);
             fileFilter.start();
 
