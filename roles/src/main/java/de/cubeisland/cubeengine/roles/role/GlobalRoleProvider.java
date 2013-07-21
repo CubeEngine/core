@@ -21,8 +21,6 @@ import java.io.File;
 
 import de.cubeisland.cubeengine.roles.Roles;
 
-
-
 public class GlobalRoleProvider extends RoleProvider
 {
     public GlobalRoleProvider(Roles module, RolesManager manager)
@@ -40,6 +38,10 @@ public class GlobalRoleProvider extends RoleProvider
     @Override
     public void recalculateRoles()
     {
+        if (this.roles.isEmpty())
+        {
+            return;
+        }
         this.module.getLog().debug("Calculating global Roles...");
         super.recalculateRoles();
     }

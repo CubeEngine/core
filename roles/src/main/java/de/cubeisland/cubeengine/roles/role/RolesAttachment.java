@@ -83,7 +83,9 @@ public class RolesAttachment extends UserAttachment
                 Role role = provider.getRole(roleName);
                 if (role == null)
                 {
-                    this.getModule().getLog().warn("NULL-Role! {}", roleName);
+                    this.getModule().getLog().warn("The role {} is not available in {}", roleName, provider.getMainWorld());
+                    this.getHolder().sendTranslated("&cYour role &6%s&c is not available in &6%s", roleName, provider.getMainWorld());
+                    this.getHolder().sendTranslated("&4You should report this to an administrator!");
                     continue;
                 }
                 assignedRoles.add(role);
@@ -97,7 +99,9 @@ public class RolesAttachment extends UserAttachment
                     Role role = provider.getRole(roleName);
                     if (role == null)
                     {
-                        this.getModule().getLog().warn("NULL-Role! {}", roleName);
+                        this.getModule().getLog().warn("The temporary role {} is not available in {}", roleName, provider.getMainWorld());
+                        this.getHolder().sendTranslated("&cYour temporary role &6%s&c is not available in &6%s", roleName, provider.getMainWorld());
+                        this.getHolder().sendTranslated("&4You should report this to an administrator!");
                         continue;
                     }
                     assignedRoles.add(role);

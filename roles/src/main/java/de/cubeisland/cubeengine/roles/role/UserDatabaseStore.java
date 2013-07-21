@@ -35,6 +35,7 @@ public class UserDatabaseStore extends UserDataStore
     private AssignedRoleManager rm;
     private UserMetaDataManager mdm;
     private UserPermissionsManager pm;
+    private RolesManager manager;
 
     public UserDatabaseStore(RolesAttachment attachment, long worldID, RolesManager manager)
     {
@@ -42,14 +43,17 @@ public class UserDatabaseStore extends UserDataStore
         this.rm = manager.rm;
         this.mdm = manager.mdm;
         this.pm = manager.pm;
+        this.manager = manager;
         this.loadFromDatabase();
     }
 
     protected void loadFromDatabase()
     {
-        this.roles = this.rm.getRolesByUserInWorld(this.getUserID(),this.getMainWorldID());
-        this.permissions = this.pm.getPermissionsByUserInWorld(this.getUserID(),this.getMainWorldID()); // TODO mirrors
-        this.metadata = this.mdm.getMetadataByUserInWorld(this.getUserID(),this.getMainWorldID()); //TODO mirrors
+        long assignedRolesMirror = this.manager.assignedRolesMirrors.get(this.getMainWorldID());
+        this.roles = this.rm.getRolesByUserInWorld(this.getUserID() ,assignedRolesMirror);
+        long userDataMirror = this.manager.assignedUserDataMirrors.get(this.getMainWorldID());
+        this.permissions = this.pm.getPermissionsByUserInWorld(this.getUserID(), userDataMirror);
+        this.metadata = this.mdm.getMetadataByUserInWorld(this.getUserID(), userDataMirror);
     }
 
     @Override

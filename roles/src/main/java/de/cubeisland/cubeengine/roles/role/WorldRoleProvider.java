@@ -91,6 +91,11 @@ public class WorldRoleProvider extends RoleProvider
     @Override
     public void recalculateRoles()
     {
+        if (this.roles.isEmpty())
+        {
+            this.module.getLog().warn("There are no roles for {}", mirrorConfig.mainWorld);
+            return;
+        }
         this.module.getLog().debug("Calculating Roles of {}...", mirrorConfig.mainWorld);
         super.recalculateRoles();
     }

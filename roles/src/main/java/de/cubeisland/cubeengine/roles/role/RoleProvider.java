@@ -139,7 +139,6 @@ public abstract class RoleProvider
         {
             this.calculateRole(role, roleStack);
         }
-
     }
 
     /**

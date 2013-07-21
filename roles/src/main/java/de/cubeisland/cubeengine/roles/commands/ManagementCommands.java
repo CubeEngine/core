@@ -39,6 +39,7 @@ public class ManagementCommands extends ContainerCommand
     public void reload(CommandContext context)
     {
         Roles module = (Roles)this.getModule();
+        module.getConfiguration().reload();
         module.getRolesManager().initRoleProviders();
         module.getRolesManager().recalculateAllRoles();
         context.sendTranslated("&f[&6Roles&f]&a reload complete!");

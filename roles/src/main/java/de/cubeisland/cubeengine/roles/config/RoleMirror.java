@@ -17,8 +17,6 @@
  */
 package de.cubeisland.cubeengine.roles.config;
 
-import de.cubeisland.cubeengine.core.CubeEngine;
-
 import de.cubeisland.cubeengine.core.util.Triplet;
 import de.cubeisland.cubeengine.roles.Roles;
 
