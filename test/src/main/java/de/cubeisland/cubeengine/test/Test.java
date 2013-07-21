@@ -57,7 +57,7 @@ import de.cubeisland.cubeengine.test.database.TestModel;
 
 public class Test extends Module
 {
-    public static final String TEST_WORLD_NAME = "test123";
+    public static final String TEST_WORLD_NAME = "world_test";
     public TestManager manager;
     public UserManager uM;
     protected TestConfig config;
