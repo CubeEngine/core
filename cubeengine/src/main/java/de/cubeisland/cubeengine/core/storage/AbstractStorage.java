@@ -32,7 +32,6 @@ import de.cubeisland.cubeengine.core.storage.database.Attribute;
 import de.cubeisland.cubeengine.core.storage.database.Database;
 import de.cubeisland.cubeengine.core.storage.database.DatabaseConstructor;
 import de.cubeisland.cubeengine.core.storage.database.DatabaseUpdater;
-import de.cubeisland.cubeengine.core.storage.database.ModuleProvider;
 import de.cubeisland.cubeengine.core.storage.database.querybuilder.QueryBuilder;
 
 import gnu.trove.map.hash.TIntObjectHashMap;
@@ -208,7 +207,6 @@ public abstract class AbstractStorage<K, M extends Model<K>, T> implements Stora
             {
                 field.set(loadedModel, resultSet.getObject(this.fieldNames.get(field)));
             }
-            this.injectModule(loadedModel);
         }
         else
         {
@@ -218,9 +216,7 @@ public abstract class AbstractStorage<K, M extends Model<K>, T> implements Stora
                 values.put(name, resultSet.getObject(name));
             }
             loadedModel = this.modelConstructor.newInstance(values);
-            this.injectModule(loadedModel);
         }
-        this.injectModule(loadedModel);
         return loadedModel;
     }
 
@@ -270,22 +266,6 @@ public abstract class AbstractStorage<K, M extends Model<K>, T> implements Stora
         catch (SQLException ex)
         {
             throw new IllegalStateException("Error while clearing Database", ex);
-        }
-    }
-
-    protected void injectModule(M model)
-    {
-        if (model instanceof ModuleProvided)
-        {
-            if (!(this instanceof ModuleProvider)) throw new UnsupportedOperationException();
-            try
-            {
-                ((ModuleProvided)model).setModule(((ModuleProvider)this).getModule());
-            }
-            catch (Exception ex)
-            {
-                throw new UnsupportedOperationException("Cannot not inject module into model!", ex);
-            }
         }
     }
 }

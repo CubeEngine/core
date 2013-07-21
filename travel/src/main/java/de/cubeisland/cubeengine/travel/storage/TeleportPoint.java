@@ -21,9 +21,8 @@ import java.util.Map;
 
 import org.bukkit.Location;
 
-import de.cubeisland.cubeengine.core.module.Module;
+import de.cubeisland.cubeengine.core.CubeEngine;
 import de.cubeisland.cubeengine.core.storage.Model;
-import de.cubeisland.cubeengine.core.storage.ModuleProvided;
 import de.cubeisland.cubeengine.core.storage.database.AttrType;
 import de.cubeisland.cubeengine.core.storage.database.Attribute;
 import de.cubeisland.cubeengine.core.storage.database.DatabaseConstructor;
@@ -38,9 +37,8 @@ import org.apache.commons.lang.Validate;
                  indices = {
                      @Index(value = Index.IndexType.FOREIGN_KEY, fields = "owner", f_table = "user", f_field = "key"), @Index(value = Index.IndexType.FOREIGN_KEY, fields = "world", f_table = "worlds", f_field = "key"), @Index(value = Index.IndexType.UNIQUE, fields = {"owner", "name", "type"})
                  })
-public class TeleportPoint implements Model<Long>, ModuleProvided
+public class TeleportPoint implements Model<Long>
 {
-    private Module module;
     // Database values
     @Attribute(type = AttrType.INT, unsigned = true)
     public Long key;
@@ -153,7 +151,8 @@ public class TeleportPoint implements Model<Long>, ModuleProvided
     {
         if (this.owner == null)
         {
-            this.owner = this.module.getCore().getUserManager().getUser(ownerKey);
+            // TODO get rid of CubeEngine
+            this.owner = CubeEngine.getCore().getUserManager().getUser(ownerKey);
         }
         return this.owner;
     }
@@ -167,7 +166,8 @@ public class TeleportPoint implements Model<Long>, ModuleProvided
     {
         if (this.location == null)
         {
-            this.location = new Location(this.module.getCore().getWorldManager().getWorld(worldKey), x, y, z, yaw, pitch);
+            // TODO get rid of CubeEngine
+            this.location = new Location(CubeEngine.getCore().getWorldManager().getWorld(worldKey), x, y, z, yaw, pitch);
         }
         return this.location;
     }
@@ -187,11 +187,5 @@ public class TeleportPoint implements Model<Long>, ModuleProvided
     {
         PUBLIC,
         PRIVATE
-    }
-
-    @Override
-    public void setModule(Module module)
-    {
-        this.module = module;
     }
 }

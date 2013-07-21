@@ -34,7 +34,6 @@ import de.cubeisland.cubeengine.core.CubeEngine;
 import de.cubeisland.cubeengine.core.command.CommandSender;
 import de.cubeisland.cubeengine.core.storage.SingleKeyStorage;
 import de.cubeisland.cubeengine.core.storage.StorageException;
-import de.cubeisland.cubeengine.core.storage.database.ModuleProvider;
 import de.cubeisland.cubeengine.core.storage.database.querybuilder.QueryBuilder;
 import de.cubeisland.cubeengine.core.user.User;
 import de.cubeisland.cubeengine.core.util.matcher.Match;
@@ -44,7 +43,7 @@ import de.cubeisland.cubeengine.travel.storage.TeleportPoint.Visibility;
 import static de.cubeisland.cubeengine.travel.storage.TeleportPoint.Type.HOME;
 import static de.cubeisland.cubeengine.travel.storage.TeleportPoint.Type.WARP;
 
-public class TelePointManager extends SingleKeyStorage<Long, TeleportPoint> implements ModuleProvider<Travel>
+public class TelePointManager extends SingleKeyStorage<Long, TeleportPoint>
 {
     private static final int REVISION = 6;
 
@@ -138,7 +137,6 @@ public class TelePointManager extends SingleKeyStorage<Long, TeleportPoint> impl
                 }
                 values.put("player", resulsSet.getObject("player"));
                 TeleportPoint tpPoint = this.modelConstructor.newInstance(values);
-                this.injectModule(tpPoint);
                 loadedModels.add(tpPoint);
             }
         }
@@ -168,7 +166,6 @@ public class TelePointManager extends SingleKeyStorage<Long, TeleportPoint> impl
                 }
                 values.put("player", resulsSet.getObject("player"));
                 TeleportPoint tpPoint = this.modelConstructor.newInstance(values);
-                this.injectModule(tpPoint);
                 return tpPoint;
             }
             return null;
@@ -1039,11 +1036,5 @@ public class TelePointManager extends SingleKeyStorage<Long, TeleportPoint> impl
             warps.add(warp);
         }
         return warps;
-    }
-
-    @Override
-    public Travel getModule()
-    {
-        return this.module;
     }
 }
