@@ -287,11 +287,24 @@ public class ChatCommands
     public void chatcolors(CommandContext context)
     {
         context.sendMessage("&aThe following chat-codes are available:");
-        context.sendMessage(
+        StringBuilder builder = new StringBuilder();
+        int i = 0;
+        for (ChatFormat chatFormat : ChatFormat.values())
+        {
+            if (i++ % 3 == 0)
+            {
+                builder.append("\n");
+            }
+            builder.append(" ").append(chatFormat.getChar()).append(" ").append(chatFormat.toString()).append(chatFormat.name()).append("&r");
+        }
+        context.sendMessage(builder.toString());
+        context.sendTranslated("&aTo use these type &6&&a followed by the code above");
+
+       /*context.sendMessage(
             "&00 black &11 darkblue &22 darkgreen &33 darkaqua\n"
                 + "&44 darkred &55 purple &66 orange &77 grey\n"
                 + "&88 darkgrey &99 indigo &aa brightgreen &bb aqua\n"
                 + "&cc red &dd pink &ee yellow &ff white\n"
-                + "k: &kk&r &ll bold&r &mm strike&r &nn underline&r &oo italic");
+                + "k: &kk&r &ll bold&r &mm strike&r &nn underline&r &oo italic");*/
     }
 }
