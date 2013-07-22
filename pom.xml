@@ -48,6 +48,7 @@
     <module>powersigns</module>
     <module>itemrepair</module>
     <module>hideme</module>
+    <module>horselocker</module>
   </modules>
 
   <build>

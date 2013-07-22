@@ -4,26 +4,19 @@
   <parent>
     <groupId>de.cubeisland.engine</groupId>
     <artifactId>parent</artifactId>
-    <version>1.0.0-SNAPSHOT</version>
+    <version>1.0.0</version>
     <relativePath>../parent/pom.xml</relativePath>
   </parent>
 
-  <artifactId>hideme</artifactId>
-  <name>Hideme</name>
+  <artifactId>horselocker</artifactId>
+  <name>Horselocker</name>
   <version>1.0.0-SNAPSHOT</version>
-  <description>This module allows players to hide themselves.</description>
+  <description>Prevents other users to access your horse</description>
 
   <dependencies>
     <dependency>
       <groupId>${project.parent.groupId}</groupId>
       <artifactId>cubeengine</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>${project.parent.groupId}</groupId>
-      <artifactId>basics</artifactId>
-      <version>1.0.0-SNAPSHOT</version>
-      <type>jar</type>
-      <scope>provided</scope>
     </dependency>
   </dependencies>
 </project>
