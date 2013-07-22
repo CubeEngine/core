@@ -53,19 +53,16 @@ public class LogManager
         this.worldsFolder = new File(module.getFolder(), "worlds");
         if (!this.worldsFolder.exists() && !this.worldsFolder.mkdir())
         {
-            throw new RuntimeException("Couldn't create the worlds folder: " + this.worldsFolder
-                .getAbsolutePath()); // TODO change to a specific exception
+            throw new FolderNotFoundException("Couldn't create the worlds folder: " + this.worldsFolder.getAbsolutePath());
         }
         else
         {
-            this.globalConfig = Configuration.load(LoggingConfiguration.class, new File(module
-                                                                                            .getFolder(), "globalconfig.yml")); // TODO rename to global.yml
+            this.globalConfig = Configuration.load(LoggingConfiguration.class, new File(module.getFolder(), "globalconfig.yml"));
             for (World world : ((BukkitCore)module.getCore()).getServer().getWorlds())
             {
                 this.initWorldConfig(world);
             }
         }
-
         this.queryManager = new QueryManager(module);
     }
 
@@ -74,8 +71,7 @@ public class LogManager
         File worldFolder = new File(this.worldsFolder, world.getName());
         if (!worldFolder.exists() && !worldFolder.mkdir())
         {
-            throw new RuntimeException("Failed to create the world folder for " + world
-                .getName()); // TODO change to a specific exception
+            throw new FolderNotFoundException("Failed to create the world folder for " + world.getName());
         }
         LoggingConfiguration config = this.globalConfig.loadChild(new File(worldFolder, "config.yml"));
         this.worldConfigs.put(world, config);

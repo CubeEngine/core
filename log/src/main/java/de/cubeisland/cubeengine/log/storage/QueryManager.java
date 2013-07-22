@@ -63,7 +63,7 @@ public class QueryManager
     Queue<QueuedLog> queuedLogs = new ConcurrentLinkedQueue<QueuedLog>();
     Queue<QueuedSqlParams> queuedLookups = new ConcurrentLinkedQueue<QueuedSqlParams>();
 
-    private final int batchSize;
+    private int batchSize;
     private Future<?> futureStore = null;
     private Future<?> futureLookup = null;
 
@@ -150,7 +150,7 @@ public class QueryManager
                 }
             }
         };
-        this.storeExecutor = Executors.newSingleThreadExecutor(this.module.getCore().getTaskManager().getThreadFactory()); //TODO shut down
+        this.storeExecutor = Executors.newSingleThreadExecutor(this.module.getCore().getTaskManager().getThreadFactory());
         this.lookupRunner = new Runnable()
         {
             @Override
@@ -163,7 +163,7 @@ public class QueryManager
                 }
             }
         };
-        this.lookupExecutor = Executors.newSingleThreadExecutor(this.module.getCore().getTaskManager().getThreadFactory()); //TODO shut down
+        this.lookupExecutor = Executors.newSingleThreadExecutor(this.module.getCore().getTaskManager().getThreadFactory());
     }
 
     private void doQueryLookup()
@@ -223,8 +223,11 @@ public class QueryManager
                             case ROLLBACK_PREVIEW:
                                 lookup.rollback(user, true);
                                 return;
-                            case REDO: // TODO
-                            case REDO_PREVIEW: // TODO
+                            case REDO:
+                                user.sendMessage("REDO is not finished yet"); // TODO
+                                return;
+                            case REDO_PREVIEW:
+                                user.sendMessage("REDO_PREVIEW is not finished yet"); // TODO
                         }
                     }
                 });
@@ -287,14 +290,17 @@ public class QueryManager
                 timeSpendFullLoad += nanos;
                 logsLoggedFullLoad += logSize;
             }
-            if (logSize > 50)
+            if (logSize > this.module.getConfiguration().showLogInfoInConsole)
             {
                 this.module.getLog().debug("{} logged in: {} ms | remaining logs: {}",
                                          logSize, TimeUnit.NANOSECONDS.toMillis(nanos), queuedLogs.size());
                 this.module.getLog().debug("Average logtime per log: {} micros",
                                            TimeUnit.NANOSECONDS.toMicros(timeSpend / logsLogged));
-                this.module.getLog().debug("Average logtime per log in full load: {} micros",
-                                           TimeUnit.NANOSECONDS.toMicros(timeSpendFullLoad / logsLoggedFullLoad));
+                if (timeSpendFullLoad != 0)
+                {
+                    this.module.getLog().debug("Average logtime per log in full load: {} micros",
+                                               TimeUnit.NANOSECONDS.toMicros(timeSpendFullLoad / logsLoggedFullLoad));
+                }
             }
             if (!queuedLogs.isEmpty())
             {
@@ -325,12 +331,15 @@ public class QueryManager
     {
         if (!this.queuedLogs.isEmpty())
         {
+            this.batchSize = this.batchSize * 5;
+            this.lookupExecutor.shutdown();
             latch = new CountDownLatch(1);
             try {
-                latch.await();
+                latch.await(3, TimeUnit.MINUTES); // wait for all logs to be logged (stop after 3 min)
             } catch (InterruptedException e) {
                 this.module.getLog().warn("Error while waiting! " + e.getLocalizedMessage(), e);
             }
+            this.storeExecutor.shutdown();
         }
     }
 
@@ -426,7 +435,7 @@ public class QueryManager
                          .and().field("z").isEqual().value(loc1.z)
                          .endSub();
                 }
-                else
+                else // has radius
                 {
                     selectBuilder.and().beginSub()
                                  .field("x").between(loc1.x-params.radius,loc1.x+params.radius)
@@ -577,7 +586,5 @@ public class QueryManager
             this.user = user;
             this.action = action;
         }
-
-
     }
 }

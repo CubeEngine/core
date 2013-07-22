@@ -40,12 +40,7 @@ public class LogEditSessionFactory extends EditSessionFactory
 
     public static void initialize(WorldEdit worldEdit, Log module)
     {
-        try
-        {
-            worldEdit.setEditSessionFactory(new LogEditSessionFactory(module, worldEdit.getEditSessionFactory()));
-        }
-        catch (Exception ignore)
-        {}
+        worldEdit.setEditSessionFactory(new LogEditSessionFactory(module, worldEdit.getEditSessionFactory()));
     }
 
     private boolean ignoreWorldEdit(LocalWorld world)

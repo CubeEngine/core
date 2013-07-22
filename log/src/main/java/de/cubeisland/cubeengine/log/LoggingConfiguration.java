@@ -355,4 +355,14 @@ public class LoggingConfiguration extends YamlConfiguration
     @Comment("Players crafting an item")
     @Option("logging.player.craft")
     public boolean CRAFT_ITEM_enable = true;
+
+    @Override
+    public String[] head()
+    {
+        if (this.getParent() == null)
+        {
+            return new String[]{"This is the global configuration for logging.","Any settings here can be overwritten for each world in their configuration"};
+        }
+        return null;
+    }
 }

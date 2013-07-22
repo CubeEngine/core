@@ -134,7 +134,7 @@ public class QueryResults
         {
             navigableSet = compressedEntries;
         }
-		CubeEngine.getLog().info("Showing {}/{}/{} logentries to {} (page{})", showing, navigableSet.size(), this.logEntries.size() , user.getName(), show.page);
+		CubeEngine.getLog().info("Showing {}/{}/{} logentries to {} (page {})", showing, navigableSet.size(), this.logEntries.size() , user.getName(), show.page);
         for (LogEntry logEntry : navigableSet)
         {
             if (cpage == show.page)

@@ -71,7 +71,7 @@ public class EditModeListener extends ConversationCommand
     private TLongObjectHashMap<Location> currentSignLocation = new TLongObjectHashMap<Location>();
     private TLongObjectHashMap<MarketSign> previousMarketSign = new TLongObjectHashMap<MarketSign>();
 
-    // TODO shift-click to edit multiple signs at the same time
+    // TODO CE-420 shift-click to edit multiple signs at the same time
 
     private boolean setEditingSign(User user, MarketSign marketSign)
     {

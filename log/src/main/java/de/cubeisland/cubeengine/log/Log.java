@@ -17,6 +17,10 @@
  */
 package de.cubeisland.cubeengine.log;
 
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.server.PluginEnableEvent;
+
 import de.cubeisland.cubeengine.core.command.CommandManager;
 import de.cubeisland.cubeengine.core.command.reflected.ReflectedCommand;
 import de.cubeisland.cubeengine.core.config.Configuration;
@@ -32,9 +36,9 @@ import de.cubeisland.cubeengine.log.storage.LogManager;
 import de.cubeisland.cubeengine.log.tool.ToolListener;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.sk89q.worldedit.WorldEdit;
+import com.sk89q.worldedit.bukkit.WorldEditPlugin;
 
-public class Log extends Module
+public class Log extends Module implements Listener
 {
     private LogManager logManager;
     private LogConfiguration config;
@@ -54,20 +58,26 @@ public class Log extends Module
         final CommandManager cm = this.getCore().getCommandManager();
         cm.registerCommands(this, new LookupCommands(this), ReflectedCommand.class);
         cm.registerCommand(new LogCommands(this));
-
         try
         {
             Class.forName("com.sk89q.worldedit.WorldEdit");
-            LogEditSessionFactory.initialize(WorldEdit.getInstance(), this);
-            worldEditFound = true;
+            this.getCore().getEventManager().registerListener(this, this); // only register if worldEdit is available
         }
         catch (ClassNotFoundException ignored)
         {
             this.getLog().warn("No WorldEdit found!");
         }
-
         this.getCore().getEventManager().registerListener(this, new ToolListener(this));
+    }
 
+    @EventHandler
+    public void onWorldEditEnable(PluginEnableEvent event)
+    {
+        if (event.getPlugin() instanceof WorldEditPlugin)
+        {
+            LogEditSessionFactory.initialize(((WorldEditPlugin)event.getPlugin()).getWorldEdit(), this);
+            worldEditFound = true;
+        }
     }
 
     @Override

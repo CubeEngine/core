@@ -55,7 +55,7 @@ public class HomeAdminCommand extends ContainerCommand
     {
         if (context.isSender(User.class))
         {
-            User sender = (User)context.getSender(); //TODO console
+            User sender = (User)context.getSender();
             User user = context.getUser(0);
             Home home;
             if (user == null)

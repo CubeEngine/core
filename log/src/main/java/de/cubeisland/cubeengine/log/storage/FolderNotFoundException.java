@@ -15,20 +15,15 @@
  * You should have received a copy of the GNU General Public License
  * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-package de.cubeisland.cubeengine.log;
+package de.cubeisland.cubeengine.log.storage;
 
-import de.cubeisland.cubeengine.core.config.YamlConfiguration;
-import de.cubeisland.cubeengine.core.config.annotations.Comment;
-import de.cubeisland.cubeengine.core.config.annotations.DefaultConfig;
-import de.cubeisland.cubeengine.core.config.annotations.Option;
-
-@DefaultConfig()
-public class LogConfiguration  extends YamlConfiguration
+/**
+ * This exception is thrown when a specific folder could not be found and/or created
+ */
+public class FolderNotFoundException extends RuntimeException
 {
-    @Comment("The maximum of logs that may be logged at once.")
-    @Option("logging.batch-size")
-    public int loggingBatchSize = 2000;
-    @Comment("Shows log info in the console when logging at least that amount of logs at once")
-    @Option("info.show-log-info")
-    public int showLogInfoInConsole = 200;
+    public FolderNotFoundException(String s)
+    {
+        super(s);
+    }
 }
