@@ -22,6 +22,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import java.util.Set;
 
 import org.bukkit.DyeColor;
@@ -52,7 +53,7 @@ import static org.bukkit.entity.Villager.Profession;
 public class EntityDataChanger<EntityInterface>
 {
     private final Class<EntityInterface> clazz;
-    private final EntityChanger<EntityInterface, ?> changer;
+    protected final EntityChanger<EntityInterface, ?> changer;
     public static Set<EntityDataChanger> entityDataChangers = new HashSet<EntityDataChanger>();
 
     public static final EntityDataChanger<Pig> PIG_SADDLE =
@@ -60,9 +61,9 @@ public class EntityDataChanger<EntityInterface>
                 new BoolEntityChanger<Pig>("saddled")
                 {
                     @Override
-                    public void applyEntity(Pig entity, String input)
+                    public void applyEntity(Pig entity, Boolean input)
                     {
-                        entity.setSaddle(this.getTypeValue(input));
+                        entity.setSaddle(input);
                     }
                 });
 
@@ -70,16 +71,10 @@ public class EntityDataChanger<EntityInterface>
             new EntityDataChanger<Ageable>(Ageable.class,
                     new BoolEntityChanger<Ageable>("baby") {
                         @Override
-                        public void applyEntity(Ageable entity, String input)
+                        public void applyEntity(Ageable entity, Boolean input)
                         {
-                            if (this.getTypeValue(input))
-                            {
-                                entity.setBaby();
-                            }
-                            else
-                            {
-                                entity.setAdult();
-                            }
+                            if (input) entity.setBaby();
+                            else entity.setAdult();
                         }
                     });
 
@@ -87,9 +82,9 @@ public class EntityDataChanger<EntityInterface>
         new EntityDataChanger<Zombie>(Zombie.class,
             new BoolEntityChanger<Zombie>("baby") {
                 @Override
-                public void applyEntity(Zombie entity, String input)
+                public void applyEntity(Zombie entity, Boolean input)
                 {
-                    entity.setBaby(this.getTypeValue(input));
+                    entity.setBaby(input);
                 }
             });
 
@@ -97,8 +92,8 @@ public class EntityDataChanger<EntityInterface>
         new EntityDataChanger<Zombie>(Zombie.class,
           new BoolEntityChanger<Zombie>("villager") {
               @Override
-              public void applyEntity(Zombie entity, String input) {
-                  entity.setVillager(this.getTypeValue(input));
+              public void applyEntity(Zombie entity, Boolean input) {
+                  entity.setVillager(input);
               }
           });
 
@@ -106,8 +101,8 @@ public class EntityDataChanger<EntityInterface>
             new EntityDataChanger<Wolf>(Wolf.class,
                     new BoolEntityChanger<Wolf>("angry") {
                         @Override
-                        public void applyEntity(Wolf entity, String input) {
-                            entity.setAngry(this.getTypeValue(input));
+                        public void applyEntity(Wolf entity, Boolean input) {
+                            entity.setAngry(input);
                         }
                     });
 
@@ -115,8 +110,8 @@ public class EntityDataChanger<EntityInterface>
         new EntityDataChanger<PigZombie>(PigZombie.class,
                           new BoolEntityChanger<PigZombie>("angry") {
                               @Override
-                              public void applyEntity(PigZombie entity, String input) {
-                                  entity.setAngry(this.getTypeValue(input));
+                              public void applyEntity(PigZombie entity, Boolean input) {
+                                  entity.setAngry(input);
                               }
                           });
 
@@ -124,8 +119,8 @@ public class EntityDataChanger<EntityInterface>
             new EntityDataChanger<Creeper>(Creeper.class,
                     new BoolEntityChanger<Creeper>("powered", "power", "charged") {
                         @Override
-                        public void applyEntity(Creeper entity, String input) {
-                            entity.setPowered(this.getTypeValue(input));
+                        public void applyEntity(Creeper entity, Boolean input) {
+                            entity.setPowered(input);
                         }
                     });
 
@@ -133,8 +128,8 @@ public class EntityDataChanger<EntityInterface>
             new EntityDataChanger<Wolf>(Wolf.class,
                     new BoolEntityChanger<Wolf>("sitting", "sit") {
                         @Override
-                        public void applyEntity(Wolf entity, String input) {
-                            entity.setSitting(this.getTypeValue(input));
+                        public void applyEntity(Wolf entity, Boolean input) {
+                            entity.setSitting(input);
                         }
                     });
 
@@ -142,8 +137,8 @@ public class EntityDataChanger<EntityInterface>
         new EntityDataChanger<Ocelot>(Ocelot.class,
          new BoolEntityChanger<Ocelot>("sitting", "sit") {
              @Override
-             public void applyEntity(Ocelot entity, String input) {
-                 entity.setSitting(this.getTypeValue(input));
+             public void applyEntity(Ocelot entity, Boolean input) {
+                 entity.setSitting(input);
              }
          });
 
@@ -151,21 +146,22 @@ public class EntityDataChanger<EntityInterface>
         new EntityDataChanger<Skeleton>(Skeleton.class,
          new BoolEntityChanger<Skeleton>("wither") {
              @Override
-             public void applyEntity(Skeleton entity, String input)
+             public void applyEntity(Skeleton entity, Boolean input)
              {
-                 if (this.getTypeValue(input)) entity.setSkeletonType(SkeletonType.WITHER);
+                 if (input) entity.setSkeletonType(SkeletonType.WITHER);
+                 else entity.setSkeletonType(SkeletonType.NORMAL);
              }
          });
 
     public static final EntityDataChanger<Sheep> SHEEP_SHEARED =
         new EntityDataChanger<Sheep>(Sheep.class,
-                                             new BoolEntityChanger<Sheep>("sheared") {
-                                                 @Override
-                                                 public void applyEntity(Sheep entity, String input)
-                                                 {
-                                                    entity.setSheared(this.getTypeValue(input));
-                                                 }
-                                             });
+                     new BoolEntityChanger<Sheep>("sheared") {
+                         @Override
+                         public void applyEntity(Sheep entity, Boolean input)
+                         {
+                            entity.setSheared(input);
+                         }
+                     });
 
 
     public static final EntityDataChanger<Ocelot> OCELOT_TYPE =
@@ -182,10 +178,9 @@ public class EntityDataChanger<EntityInterface>
                   }
 
                   @Override
-                  public void applyEntity(Ocelot entity, String input)
+                  public void applyEntity(Ocelot entity, Type input)
                   {
-                      Type catType = this.getTypeValue(input);
-                      if (catType != null) entity.setCatType(catType);
+                      entity.setCatType(input);
                   }
               });
 
@@ -193,10 +188,9 @@ public class EntityDataChanger<EntityInterface>
             new EntityDataChanger<Colorable>(Colorable.class,
                     new EntityChanger<Colorable, DyeColor>() {
                         @Override
-                        public void applyEntity(Colorable entity, String input)
+                        public void applyEntity(Colorable entity, DyeColor input)
                         {
-                            DyeColor color = this.getTypeValue(input);
-                            if (color != null) entity.setColor(color);
+                            entity.setColor(input);
                         }
                         @Override
                         public DyeColor getTypeValue(String input)
@@ -205,13 +199,24 @@ public class EntityDataChanger<EntityInterface>
                         }
                     });
 
+    public static  final EntityDataChanger<Colorable> SHEEP_COLOR_RANDOM =
+        new EntityDataChanger<Colorable>(Colorable.class,
+                 new BoolEntityChanger<Colorable>("random") {
+                     private Random random = new Random(System.nanoTime());
+                     @Override
+                     public void applyEntity(Colorable entity, Boolean input)
+                     {
+                         if (input) entity.setColor(DyeColor.getByWoolData((byte)this.random.nextInt(16)));
+                     }
+                 });
+
+
     public static final EntityDataChanger<Wolf> WOLF_COLLAR =
         new EntityDataChanger<Wolf>(Wolf.class,
                    new EntityChanger<Wolf, DyeColor>() {
                          @Override
-                         public void applyEntity(Wolf entity, String input) {
-                             DyeColor color = this.getTypeValue(input);
-                             if (color != null) entity.setCollarColor(color);
+                         public void applyEntity(Wolf entity, DyeColor input) {
+                             entity.setCollarColor(input);
                          }
                          @Override
                          public DyeColor getTypeValue(String input)
@@ -224,10 +229,9 @@ public class EntityDataChanger<EntityInterface>
             new EntityDataChanger<Villager>(Villager.class,
                     new EntityChanger<Villager, Profession>() {
                         @Override
-                        public void applyEntity(Villager entity, String input)
+                        public void applyEntity(Villager entity, Profession input)
                         {
-                            Profession typeValue = this.getTypeValue(input);
-                            if (typeValue != null) entity.setProfession(typeValue);
+                            entity.setProfession(input);
                         }
 
                         @Override
@@ -241,11 +245,10 @@ public class EntityDataChanger<EntityInterface>
             new EntityDataChanger<Enderman>(Enderman.class,
                     new EntityChanger<Enderman, ItemStack>() {
                         @Override
-                        public void applyEntity(Enderman entity, String value) {
-                            ItemStack typeValue = this.getTypeValue(value);
-                            if (typeValue != null && typeValue.getType().isBlock())
+                        public void applyEntity(Enderman entity, ItemStack value) {
+                            if (value.getType().isBlock())
                             {
-                                entity.setCarriedMaterial(typeValue.getData());
+                                entity.setCarriedMaterial(value.getData());
                             }
                         }
 
@@ -260,15 +263,30 @@ public class EntityDataChanger<EntityInterface>
         new EntityDataChanger<Slime>(Slime.class,
                                              new EntityChanger<Slime,Integer>() {
                                                  @Override
-                                                 public void applyEntity(Slime entity, String input) {
-                                                     Integer typeValue = this.getTypeValue(input);
-                                                     if (typeValue != null) entity.setSize(typeValue);
+                                                 public void applyEntity(Slime entity, Integer input)
+                                                 {
+                                                     entity.setSize(input);
                                                  }
 
                                                  @Override
                                                  public Integer getTypeValue(String input)
                                                  {
-                                                     // TODO tiny small big 0 2 4
+                                                     String match = Match.string().matchString(input, "tiny", "small", "big");
+                                                     if (match != null)
+                                                     {
+                                                        if (match.equals("tiny"))
+                                                        {
+                                                            return 0;
+                                                        }
+                                                        else if (match.equals("small"))
+                                                        {
+                                                            return 2;
+                                                        }
+                                                        else if (match.equals("big"))
+                                                        {
+                                                            return 4;
+                                                        }
+                                                     }
                                                      try
                                                      {
                                                          Integer parsed = Integer.parseInt(input);
@@ -285,14 +303,10 @@ public class EntityDataChanger<EntityInterface>
             new EntityDataChanger<LivingEntity>(LivingEntity.class,
                     new EntityChanger<LivingEntity, Integer>() {
                         @Override
-                        public void applyEntity(LivingEntity entity, String input)
+                        public void applyEntity(LivingEntity entity, Integer input)
                         {
-                            Integer typeValue = this.getTypeValue(input);
-                            if (typeValue != null)
-                            {
-                                entity.setMaxHealth(typeValue);
-                                entity.setHealth(typeValue);
-                            }
+                            entity.setMaxHealth(input);
+                            entity.setHealth(input);
                         }
 
                         @Override
@@ -315,12 +329,12 @@ public class EntityDataChanger<EntityInterface>
 
     public static final EntityDataChanger<Tameable> TAMEABLE =
         new EntityDataChanger<Tameable>(Tameable.class,
-                                                    new BoolEntityChanger<Tameable>("tamed") {
-                                                        @Override
-                                                        public void applyEntity(Tameable entity, String value) {
-                                                            entity.setTamed(this.getTypeValue(value));
-                                                        }
-                                                    });
+                        new BoolEntityChanger<Tameable>("tamed") {
+                            @Override
+                            public void applyEntity(Tameable entity, Boolean value) {
+                                entity.setTamed(value);
+                            }
+                        });
 
 
 // TODO equipment
@@ -395,9 +409,14 @@ public class EntityDataChanger<EntityInterface>
         return clazz.isAssignableFrom(entity.getClass());
     }
 
-    private static abstract class EntityChanger<E,T>
+    public static abstract class EntityChanger<E,T>
     {
-        public abstract void applyEntity(E entity, String input);
+        public void applyEntity(E entity, String input)
+        {
+            T typeValue = this.getTypeValue(input);
+            if (typeValue != null) this.applyEntity(entity, typeValue);
+        }
+        public abstract void applyEntity(E entity, T convertedInput);
         public abstract T getTypeValue(String input);
     }
 
@@ -413,15 +432,6 @@ public class EntityDataChanger<EntityInterface>
         public Boolean getTypeValue(String input)
         {
             return Match.string().matchString(input, this.names) != null;
-        }
-    }
-
-    private static abstract class ColorEntityChanger<E> extends EntityChanger<E, DyeColor>
-    {
-        @Override
-        public DyeColor getTypeValue(String input)
-        {
-            return Match.materialData().colorData(input);
         }
     }
 

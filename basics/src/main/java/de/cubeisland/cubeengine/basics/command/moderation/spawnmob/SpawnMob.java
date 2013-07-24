@@ -19,7 +19,10 @@ package de.cubeisland.cubeengine.basics.command.moderation.spawnmob;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -68,8 +71,9 @@ public class SpawnMob
         }
         if (entityName.contains(":"))
         {
-            entityData = Arrays.asList(StringUtils.explode(":", entityName
-                .substring(entityName.indexOf(":") + 1, entityName.length())));
+            entityData = Arrays.asList(StringUtils.explode(":", entityName.substring(entityName
+                                                                                         .indexOf(":") + 1, entityName
+                                                                                         .length())));
             entityName = entityName.substring(0, entityName.indexOf(":"));
             entityType = Match.entity().mob(entityName);
         }
@@ -86,7 +90,6 @@ public class SpawnMob
         for (int i = 0; i < amount; ++i)
         {
             spawnedMobs[i] = loc.getWorld().spawnEntity(loc, entityType);
-            applyDataToMob(spawnedMobs[i], entityData);
             if (ridingOn != null)
             {
                 ridingOn[i].setPassenger(spawnedMobs[i]);
@@ -96,18 +99,43 @@ public class SpawnMob
                 ((Skeleton)spawnedMobs[i]).getEquipment().setItemInHand(new ItemStack(Material.BOW));
             }
         }
+        applyDataToMob(entityData, spawnedMobs);
         return spawnedMobs;
     }
 
-    static void applyDataToMob(Entity entity, List<String> datas)
+    /**
+     * Applies a list of data in Strings onto given entities
+     *
+     * @param datas the data to apply
+     * @param entities one or multiple entities of the same type
+     */
+    @SuppressWarnings("unchecked")
+    static void applyDataToMob(List<String> datas, Entity... entities)
     {
+        if (entities.length == 0) throw new IllegalArgumentException("You need to provide at least one entity to apply the data to!");
+        for (Entity entity : entities)
+        {
+            if (!entities[0].getType().equals(entity.getType())) throw new IllegalArgumentException("All the entities need to be of the same type");
+        }
         for (String data : datas)
         {
+            Map<EntityDataChanger, Object> changers = new HashMap<EntityDataChanger, Object>();
             for (EntityDataChanger entityDataChanger : EntityDataChanger.entityDataChangers)
             {
-                if (entityDataChanger.canApply(entity))
+                if (entityDataChanger.canApply(entities[0]))
                 {
-                    entityDataChanger.applyTo(entity, data);
+                    Object typeValue = entityDataChanger.changer.getTypeValue(data);
+                    if (typeValue != null) // valid typeValue for given data?
+                    {
+                        changers.put(entityDataChanger, typeValue); // save to apply later to all entities
+                    }
+                }
+            }
+            for (Entity entity : entities)
+            {
+                for (Entry<EntityDataChanger, Object> entry : changers.entrySet())
+                {
+                    entry.getKey().changer.applyEntity(entity, entry.getValue());
                 }
             }
         }
