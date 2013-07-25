@@ -3,4 +3,4 @@ description: ${project.description}
 version: ${project.version}
 source-version: ${githead.branch}-${githead.commit}
 service-providers:
-- de.cubeisland.cubeengine.core.service.Economy
+- de.cubeisland.engine.core.service.Economy

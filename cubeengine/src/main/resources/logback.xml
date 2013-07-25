@@ -1,6 +1,6 @@
 <configuration>
   <timestamp key="byMinute" datePattern="yyyy'-'MM'-'dd'--'HHmm" timeReference="contextBirth"/>
-  <conversionRule conversionWord="color" converterClass="de.cubeisland.cubeengine.core.logger.ColorConverter" />
+  <conversionRule conversionWord="color" converterClass="de.cubeisland.engine.core.logger.ColorConverter" />
 
   <!-- File appenders-->
   <appender name="commands-file" class="ch.qos.logback.core.rolling.RollingFileAppender">
@@ -106,7 +106,7 @@
         <fileHeader>CubeEngine Exceptions log-file - ${byMinute}</fileHeader>
       </layout>
     </encoder>>
-    <filter class="de.cubeisland.cubeengine.core.logger.ExceptionFilter" />
+    <filter class="de.cubeisland.engine.core.logger.ExceptionFilter" />
   </appender>
 
 
