@@ -18,6 +18,7 @@
 package de.cubeisland.engine.basics.command.moderation;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import org.bukkit.Location;
@@ -346,7 +347,7 @@ public class WorldControlCommands
                 s_types = StringUtils.explode(",", context.getString(0));
             }
         }
-        List<Entity> remList;
+        List<Entity> remList = new ArrayList<Entity>();
         if (!allTypes)
         {
             for (String s_type : s_types)
@@ -363,7 +364,6 @@ public class WorldControlCommands
                     }
                     if (DIRECT_ENTITY_REMOVAL.get(directEntityMatch) == null) throw new IllegalStateException("Missing Entity? " + directEntityMatch);
                 }
-                remList = new ArrayList<Entity>();
                 for (Entity entity : list)
                 {
                     EntityRemoval entityRemoval;
@@ -380,23 +380,21 @@ public class WorldControlCommands
                         remList.add(entity);
                     }
                 }
-                list.removeAll(remList);
             }
         }
-        remList = loc.getWorld().getEntities();
-        if (!allTypes)
+        else
         {
-            remList.removeAll(list);
+            remList.addAll(list);
         }
-        list.clear();
-        for (Entity entity : remList)
+        Iterator<Entity> iterator = remList.iterator();
+        while (iterator.hasNext())
         {
-            if (entity.getType().isAlive())
+            Entity next = iterator.next();
+            if (!next.getType().isAlive())
             {
-                list.add(entity);
+                remList.remove(next);
             }
         }
-        remList.retainAll(list);
         removed = this.removeEntities(remList, loc, radius, lightning);
         context.sendTranslated(removed == 0 ? "&eNothing to butcher!" : "&aYou just slaughtered &e%d &aliving entities!", removed);
     }

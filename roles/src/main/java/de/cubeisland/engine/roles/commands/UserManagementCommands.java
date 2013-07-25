@@ -127,7 +127,7 @@ public class UserManagementCommands extends UserCommandHelper
         context.sendTranslated("&2%s&e did not have the role &6%s&e in &6%s&e.", user.getName(), role.getName(), world.getName());
     }
 
-    @Alias(names = "clearurole")
+    @Alias(names = {"clearurole", "manuclear"})
     @Command(desc = "Clears all roles from the player and sets the defaultroles [in world]",
              usage = "<player> [in <world>]",
              params = @Param(names = "in", type = World.class),
