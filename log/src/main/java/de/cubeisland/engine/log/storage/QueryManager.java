@@ -33,7 +33,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
-
+import de.cubeisland.engine.core.command.CommandSender;
 import de.cubeisland.engine.core.storage.StorageException;
 import de.cubeisland.engine.core.storage.database.AttrType;
 import de.cubeisland.engine.core.storage.database.Database;
@@ -45,7 +45,6 @@ import de.cubeisland.engine.core.util.Profiler;
 import de.cubeisland.engine.core.util.math.BlockVector3;
 import de.cubeisland.engine.log.Log;
 import de.cubeisland.engine.log.action.ActionType;
-
 import gnu.trove.map.hash.THashMap;
 
 import static de.cubeisland.engine.core.storage.database.querybuilder.ComponentBuilder.IS;
@@ -75,6 +74,10 @@ public class QueryManager
 
     private CountDownLatch latch = null;
 
+    private int cleanUpTaskId;
+
+    private String mainTable = "log_entries";
+    private String tempTable = "log_entries_temp";
 
     public QueryManager(Log module)
     {
@@ -94,6 +97,7 @@ public class QueryManager
                 .engine("innoDB").defaultcharset("utf8")
                 .end().end();
             this.database.execute(sql);
+            this.mainTable = "log_entries";
             sql = builder.insert().into("log_actiontypes")
                          .cols("name")
                          .end().end();
@@ -104,36 +108,7 @@ public class QueryManager
             this.database.storeStatement(this.getClass(), "unregisterAction", sql);
             sql = builder.select().wildcard().from("log_actiontypes").end().end();
             this.database.storeStatement(this.getClass(), "getAllActions", sql);
-
-            sql = builder.createTable("log_entries", true).beginFields()
-                                .field("id", AttrType.INT, true).autoIncrement()
-                                .field("date", AttrType.DATETIME)
-                                .field("world", AttrType.INT, true, false)
-                                .field("x", AttrType.INT, false, false)
-                                .field("y", AttrType.INT, false, false)
-                                .field("z", AttrType.INT, false, false)
-                                .field("action", AttrType.INT, true)
-                                .field("causer", AttrType.BIGINT, false, false)
-                                .field("block",AttrType.VARCHAR, 255, false)
-                .field("data",AttrType.BIGINT,false,false) // in kill logs this is the killed entity
-                .field("newBlock", AttrType.VARCHAR, 255, false)
-                .field("newData",AttrType.TINYINT, false,false)
-                .field("additionalData",AttrType.VARCHAR,255, false)
-                .foreignKey("world").references("worlds", "key")
-                .foreignKey("action").references("log_actiontypes","id").onDelete("CASCADE")
-                .index("x","y","z","world","date")
-                .index("causer")
-                .index("block")
-                .index("newBlock")
-                .primaryKey("id").endFields()
-                .engine("innoDB").defaultcharset("utf8")
-                .end().end();
-            this.database.execute(sql);
-            sql = builder.insert().into("log_entries")
-                         .cols("date", "action", "world", "x", "y", "z", "causer",
-                               "block", "data", "newBlock", "newData", "additionalData")
-                         .end().end();
-            this.database.storeStatement(this.getClass(), "storeLog", sql);
+            this.createTableWithInsertQuery(builder, this.mainTable);
         }
         catch (SQLException ex)
         {
@@ -164,6 +139,186 @@ public class QueryManager
             }
         };
         this.lookupExecutor = Executors.newSingleThreadExecutor(this.module.getCore().getTaskManager().getThreadFactory());
+
+        this.cleanUpTaskId = this.module.getCore().getTaskManager().runAsynchronousTimer(this.module, new Runnable()
+        {
+            @Override
+            public void run()
+            {
+                cleanUpLogs();
+            }
+        }, this.module.getConfiguration().cleanUpDelay.toTicks(), this.module.getConfiguration().cleanUpDelay.toTicks());
+        this.cleanUpLogs();
+    }
+
+    private void createTableWithInsertQuery(QueryBuilder builder, String table) throws SQLException
+    {
+        String sql = builder.createTable(table, true).beginFields()
+                     .field("id", AttrType.INT, true).autoIncrement()
+                     .field("date", AttrType.DATETIME)
+                     .field("world", AttrType.INT, true, false)
+                     .field("x", AttrType.INT, false, false)
+                     .field("y", AttrType.INT, false, false)
+                     .field("z", AttrType.INT, false, false)
+                     .field("action", AttrType.INT, true)
+                     .field("causer", AttrType.BIGINT, false, false)
+                     .field("block",AttrType.VARCHAR, 255, false)
+            .field("data",AttrType.BIGINT,false,false) // in kill logs this is the killed entity
+            .field("newBlock", AttrType.VARCHAR, 255, false)
+            .field("newData",AttrType.TINYINT, false,false)
+            .field("additionalData",AttrType.VARCHAR,255, false)
+            .foreignKey("world").references("worlds", "key")
+            .foreignKey("action").references("log_actiontypes","id").onDelete("CASCADE")
+            .index("x","y","z","world","date")
+            .index("causer")
+            .index("block")
+            .index("newBlock")
+            .primaryKey("id").endFields()
+            .engine("innoDB").defaultcharset("utf8")
+            .end().end();
+        this.database.execute(sql);
+        sql = builder.insert().into(table)
+                     .cols("date", "action", "world", "x", "y", "z", "causer",
+                           "block", "data", "newBlock", "newData", "additionalData")
+                     .end().end();
+        this.database.storeStatement(this.getClass(), "storeLog", sql);
+    }
+
+    /**
+     * ONLY execute async this could take a LONG time
+     */
+    private void optimizeTable(final CommandSender sender)
+    {
+        if (true) return;// TODO do this with a separate db-connection
+        try
+        {
+            this.database.execute("OPTIMIZE TABLE cube_"+ this.mainTable);
+            sender.sendTranslated("&aOptimization finished! Copy temp-table...");
+            this.database.startTransaction();
+            this.database.execute("INSERT INTO cube_" + this.mainTable + " (date, action, world, x, y, z, causer, block, data, newBlock, newData, additionalData)"
+                                      + " SELECT date, action, world, x, y, z, causer, block, data, newBlock, newData, additionalData FROM cube_" + this.tempTable);
+            this.database.commit();
+        }
+        catch (SQLException e)
+        {
+            this.module.getLog().error("Error during optimization of log-tables", e);
+        }
+    }
+
+    private boolean optimizeRunning = false;
+
+    /**
+     * Optimizes the indices of the log table
+     *
+     * @param sender
+     */
+    public void optimize(final CommandSender sender)
+    {
+        if (true)
+        {
+            // TODO do this with a separate connection
+            sender.sendMessage("NOT YET FINISHED");
+            return;
+        }
+        if (optimizeRunning)
+        {
+            sender.sendTranslated("&cThe database is already busy optimizing.");
+            return;
+        }
+        try
+        {
+            optimizeRunning = true;
+            Profiler.startProfiling("log_optimize");
+            sender.sendTranslated("&aStarted optimizing! This may take a while.");
+            this.createTableWithInsertQuery(this.database.getQueryBuilder(), this.tempTable); // Create temp table & log into that table
+            this.module.getCore().getTaskManager().getThreadFactory().newThread(new Runnable()
+            {
+                @Override
+                public void run()
+                {
+                    optimizeTable(sender);
+                    module.getCore().getTaskManager().runTask(module, new Runnable()
+                    {
+                        @Override
+                        public void run()
+                        {
+                            try
+                            {
+                                createTableWithInsertQuery(database.getQueryBuilder(), mainTable);
+                                database.execute(database.getQueryBuilder().dropTable(tempTable).end());
+                                sender.sendTranslated("&adone in %d seconds! Indices are now optimized!", Profiler.endProfiling("log_optimize", TimeUnit.SECONDS));
+                                optimizeRunning = false;
+                            }
+                            catch (SQLException e)
+                            {
+                                module.getLog().error("Error during optimization of log-tables", e);
+                            }
+                        }
+                    });
+                }
+            }).start();
+        }
+        catch (SQLException e)
+        {
+            this.module.getLog().error("Error during optimization of log-tables", e);
+        }
+    }
+
+    private void cleanUpLogs()
+    {
+        if (true) return;// TODO do this with a separate db-connection
+        Profiler.endProfiling("log_cleanUp");
+        Profiler.startProfiling("log_cleanUp");
+        if (this.module.getConfiguration().cleanUpDeletedWorlds)
+        {
+            long[] worlds = this.module.getCore().getWorldManager().getAllWorldIds();
+            Long[] values = new Long[worlds.length];
+            for (int i = 0 ; i < worlds.length; i++)
+            {
+                values[i] = worlds[i];
+            }
+            final String query = this.database.getQueryBuilder().deleteFrom("log_entries").where().field("world").not().in()
+                                      .valuesInBrackets(values).end().end();
+            this.module.getCore().getTaskManager().getThreadFactory().newThread(new Runnable()
+            {
+                @Override
+                public void run()
+                {
+                    try
+                    {
+                        database.execute(query);
+                        module.getLog().debug("Deleted logs from deleted worlds! {} ms", Profiler.getCurrentDelta("log_cleanUp", TimeUnit.MILLISECONDS));
+                    }
+                    catch (SQLException e)
+                    {
+                        module.getLog().error("Could not clean up deleted world logs!", e);
+                    }
+                }
+            }).start();
+        }
+        if (this.module.getConfiguration().cleanUpOldLogs)
+        {
+            final String query = this.database.getQueryBuilder().deleteFrom("log_entries")
+                              .where().field("date").is(ComponentBuilder.LESS)
+                              .value(new Timestamp(System.currentTimeMillis() - this.module.getConfiguration()
+                                  .cleanUpOldLogsTime.toMillis())).end().end();
+            this.module.getCore().getTaskManager().getThreadFactory().newThread(new Runnable()
+            {
+                @Override
+                public void run()
+                {
+                    try
+                    {
+                        database.execute(query);
+                        module.getLog().debug("Deleted old logs! {} ms",Profiler.getCurrentDelta("log_cleanUp", TimeUnit.MILLISECONDS));
+                    }
+                    catch (SQLException e)
+                    {
+                        module.getLog().error("Could not clean up old logs!", e);
+                    }
+                }
+            }).start();
+        }
     }
 
     private void doQueryLookup()
@@ -329,6 +484,7 @@ public class QueryManager
 
     protected void disable()
     {
+        this.module.getCore().getTaskManager().cancelTask(this.module, cleanUpTaskId);
         if (!this.queuedLogs.isEmpty())
         {
             this.batchSize = this.batchSize * 5;
