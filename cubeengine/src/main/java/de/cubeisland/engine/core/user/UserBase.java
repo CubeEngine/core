@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-package de.cubeisland.cubeengine.core.user;
+package de.cubeisland.engine.core.user;
 
 import java.net.InetSocketAddress;
 import java.util.Collection;
@@ -1232,21 +1232,44 @@ public class UserBase implements Player
     }
 
     @Override
-    public boolean isScaledHealth()
+    public boolean isHealthScaled()
     {
         final Player player = this.getOfflinePlayer().getPlayer();
-        return player != null && player.isScaledHealth();
+        return player != null && player.isHealthScaled();
     }
 
     @Override
-    public void setScaleHealth(boolean b)
+    public void setHealthScaled(boolean b)
     {
         final Player player = this.getOfflinePlayer().getPlayer();
         if (player != null)
         {
-            player.setScaleHealth(b);
+            player.setHealthScaled(b);
         }
     }
+
+
+    @Override
+    public void setHealthScale(double v) throws IllegalArgumentException
+    {
+        final Player player = this.getOfflinePlayer().getPlayer();
+        if (player != null)
+        {
+            player.setHealthScale(v);
+        }
+    }
+
+    @Override
+    public double getHealthScale()
+    {
+        final Player player = this.getOfflinePlayer().getPlayer();
+        if (player != null)
+        {
+            return player.getHealthScale();
+        }
+        return 0;
+    }
+
 
     @Override
     public int _INVALID_getLastDamage()
