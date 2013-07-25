@@ -98,6 +98,7 @@ public class MapConverter
         }
     }
 
+    @SuppressWarnings("unchecked")
     public static <S extends Map> S getMapFor(ParameterizedType ptype)
     {
         try
@@ -114,11 +115,11 @@ public class MapConverter
         }
         catch (IllegalAccessException ex)
         {
-            throw new IllegalArgumentException("Collection-conversion failed: Could not access the default constructor of: " + ptype.getRawType(), ex);
+            throw new IllegalArgumentException("Map-conversion failed: Could not access the default constructor of: " + ptype.getRawType(), ex);
         }
         catch (InstantiationException ex)
         {
-            throw new IllegalArgumentException("Collection-conversion failed: Could not create an instance of: " + ptype.getRawType(), ex);
+            throw new IllegalArgumentException("Map-conversion failed: Could not create an instance of: " + ptype.getRawType(), ex);
         }
     }
 }

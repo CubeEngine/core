@@ -331,9 +331,60 @@ public class BankCommands extends ContainerCommand
         }
     }
 
+    @Command(desc = "Removes a player from the invite-list",
+             usage = "<player> <bank>", min = 2, max = 2
+            )
     public void uninvite(CommandContext context)
     {
-        // TODO reject invite / uninvite
+        User user = context.getUser(0);
+        if (user ==  null)
+        {
+            context.sendTranslated("&cUser &2%s&c not found!", context.getString(1));
+            return;
+        }
+        BankAccount bankAccount = this.getBankAccount(context.getString(1));
+        if (bankAccount == null)
+        {
+            context.sendTranslated("&cThere is no bank-account named &6%s&c!", context.getString(0));
+            return;
+        }
+        if (bankAccount.isOwner(user) || ConomyPermissions.COMMAND_BANK_UNINVITE_FORCE.isAuthorized(context.getSender()))
+        {
+            if (!bankAccount.isInvited(user))
+            {
+                context.sendTranslated("&2%s&c is not invited to the bank &6%s&c!", user.getName(), bankAccount.getName());
+                return;
+            }
+            bankAccount.uninvite(user);
+            context.sendTranslated("&2%s&a is no longer invited to the bank &6%s&a!", user.getName(), bankAccount.getName());
+            return;
+        }
+        context.sendTranslated("&cYou are not allowed to uninvite someone from this bank!");
+    }
+
+    @Command(desc = "Rejects an invite from a bank",
+             usage = "<bank>", min = 1, max = 1
+    )
+    public void rejectinvite(CommandContext context)
+    {
+        if (context.getSender() instanceof User)
+        {
+            User user = (User)context.getSender();
+            BankAccount bankAccount = this.getBankAccount(context.getString(0));
+            if (bankAccount == null)
+            {
+                context.sendTranslated("&cThere is no bank-account named &6%s&c!", context.getString(0));
+                return;
+            }
+            if (bankAccount.isInvited(user))
+            {
+                context.sendTranslated("&cYou are not invited to the bank &6%s!", bankAccount.getName());
+                return;
+            }
+            bankAccount.uninvite(user);
+            return;
+        }
+        context.sendTranslated("&cHow did you manage to get invited in the first place?");
     }
 
     @Command(desc = "Creates a new bank",

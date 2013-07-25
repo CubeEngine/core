@@ -47,6 +47,7 @@ public class ConomyPermissions extends PermissionContainer<Conomy>
 
     public static final Permission COMMAND_BANK_LISTINVITES_OTHER = COMMAND_BANK.createAbstractChild("listinvites").createChild("force");
 
+    public static final Permission COMMAND_BANK_UNINVITE_FORCE = COMMAND_BANK.createAbstractChild("uninvite").createChild("force");
     public static final Permission COMMAND_BANK_INVITE_FORCE = COMMAND_BANK.createAbstractChild("invite").createChild("force");
 
     private static Permission COMMAND_BANK_JOIN = COMMAND_BANK.createAbstractChild("join");
