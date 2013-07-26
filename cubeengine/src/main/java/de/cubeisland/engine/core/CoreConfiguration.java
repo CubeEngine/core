@@ -67,10 +67,6 @@ public class CoreConfiguration extends Configuration
     @Comment("How many Ticks after disconnecting a user should stay in the user manager")
     public Integer userManagerKeepUserLoaded = 300;
 
-    @Option("database")
-    @Comment("Currently available: mysql")
-    public String database = "mysql";
-
     @Option("logging.console-Level")
     @Comment("Logging into Console \nALL > TRACE > DEBUG > INFO > WARN > ERROR > OFF")
     public Level loggingConsoleLevel = Level.INFO;

@@ -17,6 +17,7 @@
  */
 package de.cubeisland.engine.core.storage.database;
 
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -26,25 +27,27 @@ import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import de.cubeisland.engine.core.Core;
 import de.cubeisland.engine.core.CubeEngine;
 import de.cubeisland.engine.core.storage.Storage;
 import de.cubeisland.engine.core.util.worker.AsyncTaskQueue;
-
 
 
 /**
  * Abstract Database implementing most of the database methods.
  * Extend this class and complement it to use the database.
  */
-public abstract class AbstractDatabase implements Database
+public abstract class AbstractPooledDatabase implements Database
 {
     private final ConcurrentMap<String, String> statements = new ConcurrentHashMap<String, String>();
-    private final ConcurrentMap<String, PreparedStatement> preparedStatements = new ConcurrentHashMap<String, PreparedStatement>();
     private final ExecutorService executorService;
     private final AsyncTaskQueue taskQueue;
 
-    protected AbstractDatabase()
+    private final Core core;
+
+    protected AbstractPooledDatabase(Core core)
     {
+        this.core = core;
         this.executorService = Executors.newSingleThreadExecutor(CubeEngine.getCore().getTaskManager().getThreadFactory());
         this.taskQueue = new AsyncTaskQueue(this.executorService);
     }
@@ -65,21 +68,40 @@ public abstract class AbstractDatabase implements Database
     @Override
     public ResultSet query(String query, Object... params) throws SQLException
     {
-        this.getConnection();
-        return this.createAndBindValues(query, params).executeQuery();
+        try
+        {
+            return this.createAndBindValues(query, params).executeQuery();
+        }
+        catch (SQLException e)
+        {
+            throw new SQLException("SQL-Error while doing a query: " + query, e);
+        }
     }
 
     @Override
     public ResultSet preparedQuery(Class owner, String name, Object... params) throws SQLException
     {
-        this.getConnection();
-        return this.bindValues(getStoredStatement(owner, name), params).executeQuery();
+        try
+        {
+            return this.bindValues(getStoredStatement(owner, name), params).executeQuery();
+        }
+        catch (SQLException e)
+        {
+            throw new SQLException("SQL-Error while doing a stored query: " + this.getRawStoredStatement(owner, name), e);
+        }
     }
 
     @Override
     public int update(String query, Object... params) throws SQLException
     {
-        return this.createAndBindValues(query, params).executeUpdate();
+        try
+        {
+            return this.createAndBindValues(query, params).executeUpdate();
+        }
+        catch (SQLException e)
+        {
+            throw new SQLException("SQL-Error while doing an update-query: " + query, e);
+        }
     }
 
     @Override
@@ -96,7 +118,7 @@ public abstract class AbstractDatabase implements Database
                 }
                 catch (SQLException e)
                 {
-                    CubeEngine.getLog().error("An asynchronous query failed!", e);
+                    core.getLog().error("An asynchronous query failed!", e);
                 }
             }
         });
@@ -105,8 +127,14 @@ public abstract class AbstractDatabase implements Database
     @Override
     public int preparedUpdate(Class owner, String name, Object... params) throws SQLException
     {
-        this.getConnection();
-        return this.bindValues(getStoredStatement(owner, name), params).executeUpdate();
+        try
+        {
+            return this.bindValues(getStoredStatement(owner, name), params).executeUpdate();
+        }
+        catch (SQLException e)
+        {
+            throw new SQLException("SQL-Error while doing a stored update-query: " + this.getRawStoredStatement(owner, name), e);
+        }
     }
 
     @Override
@@ -123,7 +151,7 @@ public abstract class AbstractDatabase implements Database
                 }
                 catch (SQLException e)
                 {
-                    CubeEngine.getLog().error("An asynchronous query failed!", e);
+                    core.getLog().error("An asynchronous query failed!", e);
                 }
             }
         });
@@ -138,7 +166,7 @@ public abstract class AbstractDatabase implements Database
         }
         catch (SQLException e)
         {
-            throw new SQLException("SQL-Error while executing: " + query, e);
+            throw new SQLException("SQL-Error while doing an execute-query: " + query, e);
         }
     }
 
@@ -156,7 +184,7 @@ public abstract class AbstractDatabase implements Database
                 }
                 catch (SQLException e)
                 {
-                    CubeEngine.getLog().error("An asynchronous query failed!", e);
+                    core.getLog().error("An asynchronous query failed!", e);
                 }
             }
         });
@@ -165,14 +193,19 @@ public abstract class AbstractDatabase implements Database
     @Override
     public boolean preparedExecute(Class owner, String name, Object... params) throws SQLException
     {
-        this.getConnection();
-        return this.bindValues(getStoredStatement(owner, name), params).execute();
+        try
+        {
+            return this.bindValues(getStoredStatement(owner, name), params).execute();
+        }
+        catch (SQLException e)
+        {
+            throw new SQLException("SQL-Error while doing a stored update-query: " + this.getRawStoredStatement(owner, name), e);
+        }
     }
 
     @Override
     public void asyncPreparedExecute(final Class owner, final String name, final Object... params)
     {
-
         this.taskQueue.addTask(new Runnable()
         {
             @Override
@@ -217,11 +250,15 @@ public abstract class AbstractDatabase implements Database
     @Override
     public PreparedStatement prepareStatement(String statement) throws SQLException
     {
-        if (statement == null)
-        {
-            return null;
-        }
+        assert statement != null : "The statement must not be null!";
         return this.getConnection().prepareStatement(statement, PreparedStatement.RETURN_GENERATED_KEYS);
+    }
+
+    @Override
+    public PreparedStatement prepareStatement(String statement, Connection withConnection) throws SQLException
+    {
+        assert statement != null : "The statement must not be null!";
+        return withConnection.prepareStatement(statement, PreparedStatement.RETURN_GENERATED_KEYS);
     }
 
     @Override
@@ -230,32 +267,42 @@ public abstract class AbstractDatabase implements Database
         assert owner != null: "The owner must not be null!";
         assert name != null: "The name must not be null!";
 
-        name = owner.getName() + "_" + name.toLowerCase(Locale.ENGLISH);
-        PreparedStatement statement = this.preparedStatements.get(name);
-        if (statement == null)
-        {
-            String raw = this.statements.get(name);
-            if (raw != null)
-            {
-                try
-                {
-                    statement = this.prepareStatement(raw);
-                    if (statement != null)
-                    {
-                        this.preparedStatements.put(name, statement);
-                    }
-                }
-                catch (SQLException e)
-                {
-                    CubeEngine.getLog().error("A statement could not be prepared!", e);
-                }
-            }
-        }
-        if (statement == null)
+        String raw = this.getRawStoredStatement(owner, name);
+        if (raw == null)
         {
             throw new IllegalArgumentException("Statement not found!");
         }
-        return statement;
+        try
+        {
+            return this.prepareStatement(this.statements.get(name));
+        }
+        catch (SQLException e)
+        {
+            CubeEngine.getLog().error("A statement could not be prepared!", e);
+        }
+        return null;
+    }
+
+    @Override
+    public PreparedStatement getStoredStatement(Class owner, String name, Connection connection)
+    {
+        assert owner != null: "The owner must not be null!";
+        assert name != null: "The name must not be null!";
+
+        String raw = this.getRawStoredStatement(owner, name);
+        if (raw == null)
+        {
+            throw new IllegalArgumentException("Statement not found!");
+        }
+        try
+        {
+            return this.prepareStatement(this.statements.get(name), connection);
+        }
+        catch (SQLException e)
+        {
+            CubeEngine.getLog().error("A statement could not be prepared!", e);
+        }
+        return null;
     }
 
     @Override
@@ -284,12 +331,6 @@ public abstract class AbstractDatabase implements Database
     }
 
     @Override
-    public void clearStatementCache()
-    {
-        this.preparedStatements.clear();
-    }
-
-    @Override
     public void queueOperation(Runnable operation)
     {
         this.taskQueue.addTask(operation);
@@ -299,5 +340,11 @@ public abstract class AbstractDatabase implements Database
     public void shutdown()
     {
         this.taskQueue.shutdown();
+    }
+
+    @Override
+    public String getRawStoredStatement(Class owner, String name)
+    {
+        return this.statements.get(owner.getName() + "_" + name.toLowerCase(Locale.ENGLISH));
     }
 }

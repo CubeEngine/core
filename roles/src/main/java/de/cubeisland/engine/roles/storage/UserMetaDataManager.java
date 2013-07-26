@@ -71,7 +71,7 @@ public class UserMetaDataManager extends TripletKeyStorage<Long, Long, String, U
         catch (SQLException ex)
         {
             throw new StorageException("Error while deleting Models in Database", ex,
-                                       this.database.getStoredStatement(modelClass,"deleteAllByUserInWorld"));
+                                       this.database.getStoredStatement(modelClass, "deleteAllByUserInWorld"));
         }
     }
 
@@ -84,7 +84,7 @@ public class UserMetaDataManager extends TripletKeyStorage<Long, Long, String, U
         catch (SQLException ex)
         {
             throw new StorageException("Error while deleting Models in Database", ex,
-                                       this.database.getStoredStatement(modelClass,"deleteAllByUser"));
+                                       this.database.getStoredStatement(modelClass, "deleteAllByUser"));
         }
     }
 
@@ -103,7 +103,7 @@ public class UserMetaDataManager extends TripletKeyStorage<Long, Long, String, U
         catch (SQLException ex)
         {
             throw new StorageException("Error while getting Model from Database", ex,
-                           this.database.getStoredStatement(modelClass,"getallByUserInWorld"));
+                           this.database.getStoredStatement(modelClass, "getallByUserInWorld"));
         }
     }
 
@@ -126,7 +126,7 @@ public class UserMetaDataManager extends TripletKeyStorage<Long, Long, String, U
         catch (SQLException ex)
         {
             throw new StorageException("Error while storing Models into Database", ex,
-                                       this.database.getStoredStatement(modelClass,"store"));
+                                       this.database.getStoredStatement(modelClass, "store"));
         }
     }
 }

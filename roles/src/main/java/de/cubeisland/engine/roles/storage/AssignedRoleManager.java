@@ -101,7 +101,7 @@ public class AssignedRoleManager extends TripletKeyStorage<Long, Long, String, A
         catch (SQLException ex)
         {
             throw new StorageException("Error while getting Model from Database", ex,
-                                       this.database.getStoredStatement(modelClass,"getallByUser"));
+                                       this.database.getStoredStatement(modelClass, "getallByUser"));
         }
     }
 
@@ -119,7 +119,7 @@ public class AssignedRoleManager extends TripletKeyStorage<Long, Long, String, A
         catch (SQLException ex)
         {
             throw new StorageException("Error while deleting assigned Role (multi)", ex,
-                                       this.database.getStoredStatement(modelClass,"deleteByUserAndWorld"));
+                                       this.database.getStoredStatement(modelClass, "deleteByUserAndWorld"));
         }
     }
 
@@ -143,7 +143,7 @@ public class AssignedRoleManager extends TripletKeyStorage<Long, Long, String, A
         catch (SQLException ex)
         {
             throw new StorageException("Error while renaming roles in database!", ex,
-                                       this.database.getStoredStatement(modelClass,"rename"));
+                                       this.database.getStoredStatement(modelClass, "rename"));
         }
     }
 
@@ -156,7 +156,7 @@ public class AssignedRoleManager extends TripletKeyStorage<Long, Long, String, A
         catch (SQLException ex)
         {
             throw new StorageException("Error while renaming global roles in database!", ex,
-                                       this.database.getStoredStatement(modelClass,"renameGlobal"));
+                                       this.database.getStoredStatement(modelClass, "renameGlobal"));
         }
     }
 
@@ -169,7 +169,7 @@ public class AssignedRoleManager extends TripletKeyStorage<Long, Long, String, A
         catch (SQLException ex)
         {
             throw new StorageException("Error while deleting removed Role (multi)", ex,
-                                       this.database.getStoredStatement(modelClass,"deleteByWorldAndRole"));
+                                       this.database.getStoredStatement(modelClass, "deleteByWorldAndRole"));
         }
     }
 
@@ -188,7 +188,7 @@ public class AssignedRoleManager extends TripletKeyStorage<Long, Long, String, A
         catch (SQLException ex)
         {
             throw new StorageException("Error while getting Model from Database", ex,
-                                       this.database.getStoredStatement(modelClass,"getallByUserAndWorld"));
+                                       this.database.getStoredStatement(modelClass, "getallByUserAndWorld"));
         }
     }
 
@@ -214,7 +214,7 @@ public class AssignedRoleManager extends TripletKeyStorage<Long, Long, String, A
         catch (SQLException ex)
         {
             throw new StorageException("Error while storing Models into Database", ex,
-                                       this.database.getStoredStatement(modelClass,"store"));
+                                       this.database.getStoredStatement(modelClass, "store"));
         }
     }
 }

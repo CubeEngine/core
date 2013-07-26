@@ -252,7 +252,7 @@ public class TwoKeyStorage<Key_f, Key_s, M extends TwoKeyModel<Key_f, Key_s>> ex
         }
         catch (SQLException ex)
         {
-            throw new StorageException("An SQL-Error occurred while updating the Model", ex,this.database.getStoredStatement(modelClass,"update"));
+            throw new StorageException("An SQL-Error occurred while updating the Model", ex,this.database.getStoredStatement(modelClass, "update"));
         }
         catch (Exception ex)
         {
@@ -285,7 +285,7 @@ public class TwoKeyStorage<Key_f, Key_s, M extends TwoKeyModel<Key_f, Key_s>> ex
         }
         catch (SQLException ex)
         {
-            throw new StorageException("An SQL-Error occurred while merging the Model", ex,this.database.getStoredStatement(modelClass,"merge"));
+            throw new StorageException("An SQL-Error occurred while merging the Model", ex,this.database.getStoredStatement(modelClass, "merge"));
         }
         catch (Exception ex)
         {

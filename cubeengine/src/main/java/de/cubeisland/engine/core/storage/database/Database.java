@@ -24,7 +24,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import de.cubeisland.engine.core.storage.Storage;
-import de.cubeisland.engine.core.storage.database.querybuilder.QueryBuilder;
 
 /**
  * The Database interface.
@@ -54,36 +53,7 @@ public interface Database
      */
     DatabaseMetaData getMetaData() throws SQLException;
 
-    /**
-     * Prepares a name. (Quoting)
-     *
-     * @param name the name to prepare
-     * @return the prepared name
-     */
-    String prepareTableName(String name);
 
-    /**
-     * Prepares a field name. (Quoting).
-     *
-     * @param name the fieldname to prepare
-     * @return the prepared fieldname
-     */
-    String prepareFieldName(String name);
-
-    /**
-     * Prepares a string. (Quoting).
-     *
-     * @param name the string to prepare
-     * @return the prepared string
-     */
-    String prepareString(String name);
-
-    /**
-     * Returns the QueryBuilder.
-     *
-     * @return the querybuilder
-     */
-    QueryBuilder getQueryBuilder();
 
     /**
      * Gets a stored statement by name
@@ -93,6 +63,25 @@ public interface Database
      * @return the prepared Statement
      */
     PreparedStatement getStoredStatement(Class owner, String name);
+
+    /**
+     * Gets a stored statement by name with given connection
+     *
+     * @param owner the owner of the statement
+     * @param name  the name of the statement
+     * @param connection the connection to get the statement with
+     * @return the prepared Statement
+     */
+    PreparedStatement getStoredStatement(Class owner, String name, Connection connection);
+
+    /**
+     * Gets the raw string used for a stored statement
+     *
+     * @param owner the owner of the statement
+     * @param name the name of the statement
+     * @return the stored String
+     */
+    String getRawStoredStatement(Class owner, String name);
 
     /**
      * Prepares and stores a statement for given name.
@@ -112,6 +101,16 @@ public interface Database
      * @throws SQLException
      */
     PreparedStatement prepareStatement(String statement) throws SQLException;
+
+    /**
+     * Returns the statement created with given connection
+     *
+     * @param statement the statement
+     * @param withConnection the connection
+     * @return the prepared statement
+     * @throws SQLException
+     */
+    PreparedStatement prepareStatement(String statement, Connection withConnection) throws SQLException;
 
     /**
      * Executes a query.
@@ -255,8 +254,6 @@ public interface Database
      * @param runnable the operation to execute.
      */
     void queueOperation(Runnable runnable);
-
-    void clearStatementCache();
 
     void shutdown();
 }

@@ -142,7 +142,7 @@ public class TelePointManager extends SingleKeyStorage<Long, TeleportPoint>
         }
         catch (SQLException ex)
         {
-            throw new StorageException("Error while getting Model from Database", ex, this.database.getStoredStatement(this.modelClass,"getall"));
+            throw new StorageException("Error while getting Model from Database", ex, this.database.getStoredStatement(this.modelClass, "getall"));
         }
         catch (Exception ex)
         {
@@ -172,7 +172,7 @@ public class TelePointManager extends SingleKeyStorage<Long, TeleportPoint>
         }
         catch (SQLException ex)
         {
-            throw new StorageException("Error while getting Model from Database", ex, this.database.getStoredStatement(this.modelClass,"get"));
+            throw new StorageException("Error while getting Model from Database", ex, this.database.getStoredStatement(this.modelClass, "get"));
         }
         catch (Exception ex)
         {

@@ -419,7 +419,7 @@ public class QueryManager
             Profiler.startProfiling("logging");
             int logSize = logs.size();
             this.database.getConnection().setAutoCommit(false);
-            PreparedStatement stmt = this.database.getStoredStatement(this.getClass(),"storeLog");
+            PreparedStatement stmt = this.database.getStoredStatement(this.getClass(), "storeLog");
             try
             {
                 for (QueuedLog log : logs)
@@ -698,7 +698,7 @@ public class QueryManager
         }
         catch (SQLException e)
         {
-            throw new StorageException("Could not get actionTypes from db!",e,this.database.getStoredStatement(this.getClass(),"getAllActions"));
+            throw new StorageException("Could not get actionTypes from db!",e,this.database.getStoredStatement(this.getClass(), "getAllActions"));
         }
     }
 
@@ -710,7 +710,7 @@ public class QueryManager
         }
         catch (SQLException e)
         {
-            throw new StorageException("Could not get register ActionType!",e,this.database.getStoredStatement(this.getClass(),"registerAction"));
+            throw new StorageException("Could not get register ActionType!",e,this.database.getStoredStatement(this.getClass(), "registerAction"));
         }
     }
 
@@ -722,7 +722,7 @@ public class QueryManager
         }
         catch (SQLException e)
         {
-            throw new StorageException("Could not get unregister ActionType!",e,this.database.getStoredStatement(this.getClass(),"unregisterAction"));
+            throw new StorageException("Could not get unregister ActionType!",e,this.database.getStoredStatement(this.getClass(), "unregisterAction"));
         }
     }
 

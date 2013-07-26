@@ -28,8 +28,10 @@ import de.cubeisland.engine.core.storage.database.Attribute;
 import de.cubeisland.engine.core.storage.database.Database;
 import de.cubeisland.engine.core.storage.database.Index;
 import de.cubeisland.engine.core.storage.database.SingleKeyEntity;
-import de.cubeisland.engine.core.storage.database.querybuilder.QueryBuilder;
-import de.cubeisland.engine.core.storage.database.querybuilder.TableBuilder;
+import de.cubeisland.engine.core.storage.database.mysql.MySQLDatabase;
+import de.cubeisland.engine.core.storage.database.mysql.MySQLQueryBuilder;
+
+import static de.cubeisland.engine.core.storage.database.mysql.MySQLDatabase.prepareFieldName;
 
 /**
  * Storage-Implementation for single Integer-Key-Models
@@ -53,19 +55,36 @@ public class SingleKeyStorage<Key_f, M extends Model<Key_f>> extends AbstractSto
     {
         super.initialize();
         //Fields:
-        QueryBuilder builder = this.database.getQueryBuilder();
-        TableBuilder tableBuilder = builder.createTable(this.tableName, true).beginFields();
+        StringBuilder builder = new StringBuilder(MySQLQueryBuilder.createTable(this.tableName, false, true));
+        builder.append("\n( ");
+        boolean first = true;
         for (Field field : this.reverseFieldNames.values())
         {
+            if (!first)
+            {
+                builder.append(",\n");
+            }
+            first = false;
             Attribute attribute = this.attributeAnnotations.get(field);
             String dbName = this.fieldNames.get(field);
+            String defaultValue = null;
+            if (attribute.defaultIsValue())
+            {
+                try
+                {
+                    M model = this.modelClass.newInstance();
+                    defaultValue = field.get(model).toString();
+                }
+                catch (Exception e)
+                {
+                    throw new IllegalArgumentException("Default value is not set OR Default-Constructor is not accessible.");
+                }
+            }
             if (this.dbKey.equals(dbName))
             {
-                tableBuilder.field(dbName, attribute.type(), attribute.unsigned(), attribute.length(), attribute.notnull());
-                if (this.keyIsAi)
-                {
-                    tableBuilder.autoIncrement();
-                }
+                builder.append(MySQLQueryBuilder.field(dbName, attribute.type(), attribute
+                    .notnull(), this.keyIsAi, true, attribute.comment(), defaultValue, attribute.unsigned(), attribute
+                                                           .length(), attribute.decimals()));
             }
             else
             {
@@ -81,26 +100,20 @@ public class SingleKeyStorage<Key_f, M extends Model<Key_f>> extends AbstractSto
                     {
                         list.add(field.getName());
                     }
-                    tableBuilder.enumField(dbName, list.toArray(new String[list.size()]), attribute.notnull());
+                    builder.append(MySQLQueryBuilder.field(dbName, attribute.type(), attribute
+                        .notnull(), false, false, attribute.comment(), defaultValue, false, 0, 0, list
+                                                               .toArray(new String[list.size()])));
                 }
                 else
                 {
-                    tableBuilder.field(dbName, attribute.type(), attribute.unsigned(), attribute.length(), attribute.notnull());
+                    builder.append(MySQLQueryBuilder.field(dbName, attribute.type(), attribute.notnull(), false, false, attribute.comment(), defaultValue,
+                                           attribute.unsigned(), attribute.length(), attribute.decimals()));
                 }
             }
             if (attribute.defaultIsValue())
             {
-                try
-                {
-                    M model = this.modelClass.newInstance();
-                    tableBuilder.defaultValue(field.get(model).toString());
-                }
-                catch (Exception e)
-                {
-                    throw new IllegalArgumentException("Default value is not set OR Default-Constructor is not accessible.");
-                }
-            }
 
+            }
         }
         for (Index index : this.storageType.indices())
         {
@@ -114,26 +127,43 @@ public class SingleKeyStorage<Key_f, M extends Model<Key_f>> extends AbstractSto
             switch (index.value())
             {
                 case FOREIGN_KEY:
-                    tableBuilder.foreignKey(index.fields()).references(index.f_table(), index.f_field()).onDelete(index.onDelete());
+                    String[] fields = index.fields();
+                    builder.append(",\n FOREIGN KEY (").append(prepareFieldName(fields[0]));
+                    for (int i = 1; i < fields.length; ++i)
+                    {
+                        builder.append(", ").append(prepareFieldName(fields[i]));
+                    }
+                    builder.append(')');
                     break;
                 case UNIQUE:
-                    tableBuilder.unique(index.fields());
+                    fields = index.fields();
+                    builder.append(",\n UNIQUE(").append(prepareFieldName(fields[0]));
+                    for (int i = 1; i < fields.length; ++i)
+                    {
+                        builder.append(", ").append(prepareFieldName(fields[i]));
+                    }
+                    builder.append(")");
                     break;
                 case INDEX:
-                    tableBuilder.index(index.fields());
+                    fields = index.fields();
+                    builder.append(", INDEX (").append(prepareFieldName(fields[0]));
+                    for (int i = 1; i < fields.length; ++i)
+                    {
+                        builder.append(", ").append(prepareFieldName(fields[i]));
+                    }
+                    builder.append(')');
             }
         }
-
-        tableBuilder.primaryKey(this.dbKey).endFields();
-
-        tableBuilder.engine(this.storageType.engine()).defaultcharset(this.storageType.charset());
+        builder.append(",\nPRIMARY KEY(").append(this.dbKey).append("))");
+        builder.append(", ENGINE=").append(this.storageType.engine()).append(" DEFAULT CHARSET=").append(this.storageType
+                                                                                                             .charset());
         if (this.keyIsAi)
         {
-            tableBuilder.autoIncrement(1);
+            builder.append("\nAUTO_INCREMENT=").append(1);
         }
         try
         {
-            this.database.execute(tableBuilder.end().end());
+            this.database.execute(builder.toString());
         }
         catch (SQLException ex)
         {
@@ -166,30 +196,46 @@ public class SingleKeyStorage<Key_f, M extends Model<Key_f>> extends AbstractSto
                 fields[i++] = fieldName;
             }
         }
-        QueryBuilder builder = this.database.getQueryBuilder();
+        String preparedTableName = MySQLDatabase.prepareTableName(this.tableName);
+        StringBuilder builder = new StringBuilder();
         if (this.keyIsAi)
         {
-            builder.insert()
-                   .into(this.tableName)
-                   .cols(fields)
-                   .end();
+            builder.append("INSERT INTO ").append(preparedTableName).append(" ").append(MySQLQueryBuilder
+                                                                                            .fieldsInBrackets(fields));
         }
         else
         {
-            builder.insert()
-                   .into(this.tableName)
-                   .cols(this.allFields)
-                   .end();
+            builder.append("INSERT INTO ").append(preparedTableName).append(" ").append(MySQLQueryBuilder
+                                                                                            .fieldsInBrackets(this.allFields));
         }
-        this.database.storeStatement(this.modelClass, "store", builder.end());
+        this.database.storeStatement(this.modelClass, "store", builder.toString());
+        builder = new StringBuilder("INSERT INTO ").append(preparedTableName).append(" ").append(MySQLQueryBuilder.fieldsInBrackets(this.allFields)).append("\nVALUES (?");
+        for (i = 1; i < this.allFields.length; ++i)
+        {
+            builder.append(", ?");
+        }
+        String col = MySQLDatabase.prepareFieldName(fields[0]);
+        builder.append(')').append("\nON DUPLICATE KEY UPDATE ").append(col).append("=VALUES(").append(col).append(")");
+        for (int j = 1; j < fields.length; ++j)
+        {
+            col = MySQLDatabase.prepareFieldName(fields[j]);
+            builder.append(", ").append(col).append("=VALUES(").append(col).append(')');
+        }
+        this.database.storeStatement(this.modelClass, "merge", builder.toString());
+        this.database.storeStatement(this.modelClass, "get", new StringBuilder("SELECT ").append(MySQLQueryBuilder.fields(this.allFields))
+                             .append("\nFROM ").append(preparedTableName)
+                             .append("\nWHERE ").append(MySQLDatabase.prepareFieldName(this.dbKey)).append(" = ?").toString());
+        builder = new StringBuilder("UPDATE ").append(preparedTableName).append("\nSET ");
+        builder.append(MySQLDatabase.prepareFieldName(fields[0])).append("=? ");
+        for (int j = 1; j < fields.length; ++j)
+        {
+            builder.append(',').append(MySQLDatabase.prepareFieldName(fields[j])).append("=? ");
+        }
+        builder.append("\nWHERE ").append(MySQLDatabase.prepareFieldName(this.dbKey)).append(" = ?");
+        this.database.storeStatement(this.modelClass, "update", builder.toString());
 
-        this.database.storeStatement(this.modelClass, "merge", builder.merge().into(this.tableName).cols(this.allFields).updateCols(fields).end().end());
-
-        this.database.storeStatement(this.modelClass, "get", builder.select(this.allFields).from(this.tableName).where().field(this.dbKey).isEqual().value().end().end());
-
-        this.database.storeStatement(this.modelClass, "update", builder.update(this.tableName).set(fields).where().field(this.dbKey).isEqual().value().end().end());
-
-        this.database.storeStatement(this.modelClass, "delete", builder.deleteFrom(this.tableName).where().field(this.dbKey).isEqual().value().limit(1).end().end());
+        this.database.storeStatement(this.modelClass, "delete", new StringBuilder("DELETE FROM ").append(preparedTableName)
+                                             .append("\nWHERE ").append(MySQLDatabase.prepareFieldName(this.dbKey)).append(" = ? LIMIT 1").toString());
     }
 
     @Override
@@ -281,7 +327,7 @@ public class SingleKeyStorage<Key_f, M extends Model<Key_f>> extends AbstractSto
         }
         catch (SQLException ex)
         {
-            throw new StorageException("An SQL-Error occurred while updating the Model", ex,this.database.getStoredStatement(modelClass,"update"));
+            throw new StorageException("An SQL-Error occurred while updating the Model", ex,this.database.getStoredStatement(modelClass, "update"));
         }
         catch (Exception ex)
         {
@@ -310,7 +356,7 @@ public class SingleKeyStorage<Key_f, M extends Model<Key_f>> extends AbstractSto
         }
         catch (SQLException ex)
         {
-            throw new StorageException("An SQL-Error occurred while merging the model", ex,this.database.getStoredStatement(modelClass,"merge"));
+            throw new StorageException("An SQL-Error occurred while merging the model", ex,this.database.getStoredStatement(modelClass, "merge"));
         }
         catch (Exception ex)
         {

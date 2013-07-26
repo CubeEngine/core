@@ -1,148 +1,128 @@
-/**
- * This file is part of CubeEngine.
- * CubeEngine is licensed under the GNU General Public License Version 3.
- *
- * CubeEngine is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * CubeEngine is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
- */
 package de.cubeisland.engine.core.storage.database.mysql;
 
+import java.io.File;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
 
-import de.cubeisland.engine.core.CubeEngine;
-import de.cubeisland.engine.core.storage.database.AbstractDatabase;
-import de.cubeisland.engine.core.storage.database.DatabaseConfiguration;
-import de.cubeisland.engine.core.storage.database.querybuilder.QueryBuilder;
+import com.jolbox.bonecp.BoneCP;
+import com.jolbox.bonecp.BoneCPConfig;
+import de.cubeisland.engine.core.Core;
+import de.cubeisland.engine.core.config.Configuration;
+import de.cubeisland.engine.core.storage.database.AbstractPooledDatabase;
 
-import com.mysql.jdbc.jdbc2.optional.MysqlDataSource;
-
-
-
-/**
- * MYSQLDatabase the MYSQL implementation for the database.
- */
-public class MySQLDatabase extends AbstractDatabase
+public class MySQLDatabase extends AbstractPooledDatabase
 {
+    private final MySQLDatabaseConfiguration config;
+    private BoneCP connectionPool;
+    private BoneCPConfig poolConfig;
+
     private static final char NAME_QUOTE = '`';
     private static final char STRING_QUOTE = '\'';
+    private static String tableprefix;
 
-    private final MysqlDataSource ds;
-    private final String tablePrefix;
-    private final MySQLQueryBuilder queryBuilder;
-    private Connection connection;
-
-    public MySQLDatabase(DatabaseConfiguration configuration) throws SQLException
+    public MySQLDatabase(Core core, MySQLDatabaseConfiguration config) throws SQLException
     {
-        MySQLDatabaseConfiguration config = (MySQLDatabaseConfiguration)configuration;
+        super(core);
+        try
+        {
+            Class.forName("com.mysql.jdbc.Driver");
+        }
+        catch (ClassNotFoundException e)
+        {
+            throw new IllegalStateException(e);
+        }
+        this.config = config;
+        this.poolConfig = new BoneCPConfig();
+        this.poolConfig.setJdbcUrl("jdbc:mysql://" + config.host+ ":" + config.port + "/"+config.database);
+        this.poolConfig.setUsername(config.user);
+        this.poolConfig.setPassword(config.pass);
+        this.poolConfig.setMinConnectionsPerPartition(5);
+        this.poolConfig.setMaxConnectionsPerPartition(10);
+        this.poolConfig.setPartitionCount(1);
+        this.connectionPool = new BoneCP(this.poolConfig);
 
-        this.ds = new MysqlDataSource();
-        this.ds.setServerName(config.host);
-        this.ds.setPort(config.port);
-        this.ds.setUser(config.user);
-        this.ds.setPassword(config.pass);
-        this.ds.setDatabaseName(config.database);
-        this.ds.setConnectionCollation("utf8_general_ci");
-        this.connection = null;
-
-        this.tablePrefix = config.tablePrefix;
-        this.queryBuilder = new MySQLQueryBuilder(this);
+        tableprefix = this.config.tablePrefix;
     }
 
+    public static MySQLDatabase loadFromConfig(Core core, File file)
+    {
+        MySQLDatabaseConfiguration config = Configuration.load(MySQLDatabaseConfiguration.class, file);
+        try
+        {
+            return new MySQLDatabase(core, config);
+        }
+        catch (SQLException e)
+        {
+            core.getLog().error("Could not establish connection with the database!", e);
+        }
+        return null;
+    }
+
+    @Override
     public Connection getConnection() throws SQLException
     {
-        if (this.connection == null || connection.isClosed())
-        {
-            this.clearStatementCache();
-            this.connection = this.ds.getConnection();
-        }
-        else if (!this.connection.isValid(500))
-        {
-            this.clearStatementCache();
-            this.connection.close();
-            this.connection = this.ds.getConnection();
-        }
-        return this.connection;
+        return this.connectionPool.getConnection();
     }
 
+    @Override
     public DatabaseMetaData getMetaData() throws SQLException
     {
         return this.getConnection().getMetaData();
     }
 
-    @Override
-    public String getName()
-    {
-        return "MySQL";
-    }
-
-    @Override
-    public QueryBuilder getQueryBuilder()
-    {
-        if (!CubeEngine.isMainThread())
-        {
-            throw new IllegalStateException("This method may only be called from the thread the database was created in!");
-        }
-        return this.queryBuilder;
-    }
-
-    @Override
-    public String prepareTableName(String name)
+    /**
+     * Prepares a table name. (Quoting)
+     *
+     * @param name the name to prepare
+     * @return the prepared name
+     */
+    public static String prepareTableName(String name)
     {
         assert name != null: "The name must not be null!";
 
-        return NAME_QUOTE + this.tablePrefix + name + NAME_QUOTE;
+        return NAME_QUOTE + tableprefix + name + NAME_QUOTE;
     }
 
-    @Override
-    public String prepareFieldName(String name)
+    /**
+     * Prepares a field name. (Quoting).
+     *
+     * @param name the fieldname to prepare
+     * @return the prepared fieldname
+     */
+    public static String prepareFieldName(String name)
     {
         assert name != null: "The name must not be null!";
 
         int dotOffset = name.indexOf('.');
         if (dotOffset >= 0)
         {
-            return this.prepareTableName(name.substring(0, dotOffset)) + '.' + NAME_QUOTE + name.substring(dotOffset + 1) + NAME_QUOTE;
+            return prepareTableName(name.substring(0, dotOffset)) + '.' + NAME_QUOTE + name.substring(dotOffset + 1) + NAME_QUOTE;
         }
         return NAME_QUOTE + name + NAME_QUOTE;
     }
 
-    @Override
-    public String prepareString(String name)
+    /**
+     * Prepares a string. (Quoting).
+     *
+     * @param name the string to prepare
+     * @return the prepared string
+     */
+    public static String prepareString(String name)
     {
         return STRING_QUOTE + name + STRING_QUOTE;
     }
 
+    @Override
     public void shutdown()
     {
         super.shutdown();
-        if (this.connection != null)
-        {
-            try
-            {
-                if (this.connection.isValid(500) && !this.connection.getAutoCommit())
-                {
-                    // rollback stuff that's still in progress at this time.
-                    this.connection.rollback();
-                }
-                this.connection.close();
-                this.connection = null;
-            }
-            catch (SQLException e)
-            {
-                CubeEngine.getLog().error(e.getLocalizedMessage(), e);
-            }
-        }
+        this.connectionPool.shutdown();
+    }
+
+    @Override
+    public String getName()
+    {
+        return "MySQL";
     }
 }

@@ -166,7 +166,7 @@ public class MailManager extends SingleKeyStorage<Long, Mail>
         }
         catch (SQLException ex)
         {
-            throw new StorageException("Error while getting Model from Database", ex, this.database.getStoredStatement(modelClass,"getallByUser"));
+            throw new StorageException("Error while getting Model from Database", ex, this.database.getStoredStatement(modelClass, "getallByUser"));
         }
         catch (Exception ex)
         {

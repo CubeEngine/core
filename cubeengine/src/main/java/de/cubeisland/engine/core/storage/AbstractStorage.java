@@ -32,8 +32,7 @@ import de.cubeisland.engine.core.storage.database.Attribute;
 import de.cubeisland.engine.core.storage.database.Database;
 import de.cubeisland.engine.core.storage.database.DatabaseConstructor;
 import de.cubeisland.engine.core.storage.database.DatabaseUpdater;
-import de.cubeisland.engine.core.storage.database.querybuilder.QueryBuilder;
-
+import de.cubeisland.engine.core.storage.database.mysql.MySQLDatabase;
 import gnu.trove.map.hash.TIntObjectHashMap;
 
 // TODO possibility to set an order to the fields but how? perhaps give int
@@ -168,9 +167,8 @@ public abstract class AbstractStorage<K, M extends Model<K>, T> implements Stora
 
     protected void prepareStatements() throws SQLException
     {
-        QueryBuilder builder = this.database.getQueryBuilder();
-        this.database.storeStatement(this.modelClass, "clear", builder.truncateTable(this.tableName).end());
-        this.database.storeStatement(this.modelClass, "getall", builder.select().wildcard().from(this.tableName).end().end());
+        this.database.storeStatement(this.modelClass, "clear", "TRUNCATE TABLE " + MySQLDatabase.prepareTableName(this.tableName));
+        this.database.storeStatement(this.modelClass, "getall", "SELECT * FROM " + MySQLDatabase.prepareTableName(this.tableName));
     }
 
     @Override

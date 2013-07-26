@@ -104,7 +104,7 @@ public class UserStorage extends SingleKeyStorage<Long, User>
         }
         catch (SQLException e)
         {
-            throw new StorageException("An SQL-Error occurred while creating a new Model from database", e,this.database.getStoredStatement(modelClass,"get_by_name"));
+            throw new StorageException("An SQL-Error occurred while creating a new Model from database", e,this.database.getStoredStatement(modelClass, "get_by_name"));
         }
         catch (Exception e)
         {
@@ -161,7 +161,7 @@ public class UserStorage extends SingleKeyStorage<Long, User>
         }
         catch (SQLException ex)
         {
-            throw new StorageException("An SQL-Error occured while getting all user-keys!", ex, database.getStoredStatement(User.class,"gettAllKeys"));
+            throw new StorageException("An SQL-Error occured while getting all user-keys!", ex, database.getStoredStatement(User.class, "gettAllKeys"));
         }
     }
 }

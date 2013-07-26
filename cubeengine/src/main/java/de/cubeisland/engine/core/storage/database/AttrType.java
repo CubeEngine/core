@@ -17,6 +17,10 @@
  */
 package de.cubeisland.engine.core.storage.database;
 
+import java.util.EnumSet;
+
+import static de.cubeisland.engine.core.storage.database.AttrType.DataTypeInfo.*;
+
 /**
  * The possible AttributeTypes for the database.
  */
@@ -26,92 +30,104 @@ public enum AttrType
     /**
      * -2147483648 to 2147483647 normal. 0 to 4294967295 UNSIGNED.
      */
-    INT(false, true),
+    INT(LENGTH, UNSIGNED, ZEROFILL),
     /**
      * -128 to 127 normal. 0 to 255 UNSIGNED.
      */
-    TINYINT(false, true),
+    TINYINT(LENGTH, UNSIGNED, ZEROFILL),
     /**
      * -32768 to 32767 normal. 0 to 65535 UNSIGNED.
      */
-    SMALLINT(false, true),
+    SMALLINT(LENGTH, UNSIGNED, ZEROFILL),
     /**
      * -8388608 to 8388607 normal. 0 to 16777215 UNSIGNED.
      */
-    MEDIUMINT(false, true),
+    MEDIUMINT(LENGTH, UNSIGNED, ZEROFILL),
     /**
      * -9223372036854775808 to 9223372036854775807 normal. 0 to 18446744073709551615 UNSIGNED.
      */
-    BIGINT(false, true),
-    DECIMAL(false, true),
-    FLOAT(false, true),
-    DOUBLE(false, true),
-    REAL(false, true),
-    BIT( false, true),
-    BOOLEAN(false, false),
-    SERIAL(true, true),
+    BIGINT(LENGTH, UNSIGNED, ZEROFILL),
+    DECIMAL(LENGTH, UNSIGNED, DECIMALS, ZEROFILL),
+    FLOAT(LENGTH, UNSIGNED, DECIMALS, ZEROFILL),
+    DOUBLE(LENGTH, UNSIGNED, DECIMALS, ZEROFILL),
+    REAL(LENGTH, UNSIGNED, DECIMALS, ZEROFILL),
+    BIT(LENGTH),
+    BOOLEAN,
     // Date/Time:
-    DATE(false, false),
-    TIME(false, false),
-    DATETIME(false, false),
-    TIMESTAMP(false, false),
-    YEAR(false, false),
+    DATE,
+    TIME,
+    DATETIME,
+    TIMESTAMP,
+    YEAR,
     // Strings
-    CHAR(false, true),
+    CHAR(LENGTH, CHARSET, COLLATE),
     /**
      * Up to 255 characters.
      */
-    VARCHAR(true, false),
+    VARCHAR(LENGTH, CHARSET, COLLATE),
     /**
      * Up to 65,535 characters.
      */
-    TEXT(false, false),
+    TEXT(DataTypeInfo.BINARY, CHARSET, COLLATE),
     /**
      * Up to 255 characters.
      */
-    TINYTEXT(true, false),
+    TINYTEXT(DataTypeInfo.BINARY, CHARSET, COLLATE),
     /**
      * Up to 16,777,215 characters.
      */
-    MEDIUMTEXT(true,false),
+    MEDIUMTEXT(DataTypeInfo.BINARY, CHARSET, COLLATE),
     /**
      * Up to 4,294,967,295 characters.
      */
-    LONGTEXT(true,false),
+    LONGTEXT(DataTypeInfo.BINARY, CHARSET, COLLATE),
     // Binary
-    BINARY(false,false),
-    VARBINARY(true,false),
-    TINYBLOB(false,false),
+    BINARY(LENGTH),
+    VARBINARY(LENGTH),
+    TINYBLOB,
     /**
      * Up 16,777,215 bytes of data.
      */
-    MEDIUMBLOB(false,false),
+    MEDIUMBLOB,
     /**
      * Up 65,535 bytes of data.
      */
-    BLOB(false,false),
+    BLOB,
     /**
      * Up 4,294,967,295 bytes of data.
      */
-    LONGBLOB(false,false),
-    ENUM(true,false),
-    SET(true,false);
-    private final boolean length;
-    private final boolean signed;
+    LONGBLOB,
+    ENUM(VALUES, CHARSET, COLLATE),
+    SET(VALUES, CHARSET, COLLATE);
 
-    private AttrType(boolean length, boolean signed)
+    private EnumSet<DataTypeInfo>  info;
+
+    private AttrType(DataTypeInfo... info)
     {
-        this.length = length;
-        this.signed = signed;
+        if (info.length == 0)
+        {
+            this.info = EnumSet.noneOf(DataTypeInfo.class);
+        }
+        else
+        {
+            this.info = EnumSet.of(info[0], info);
+        }
     }
 
-    public boolean hasLength()
+    public boolean can(DataTypeInfo info)
     {
-        return this.length;
+        return this.info.contains(info);
     }
 
-    public boolean canBeSigned()
+    public enum DataTypeInfo
     {
-        return this.signed;
+        LENGTH,
+        UNSIGNED,
+        DECIMALS,
+        CHARSET,
+        COLLATE,
+        VALUES,
+        ZEROFILL,
+        BINARY
     }
 }

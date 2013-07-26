@@ -68,7 +68,7 @@ public class UserPermissionsManager extends TripletKeyStorage<Long, Long, String
         }
         catch (SQLException ex)
         {
-            throw new StorageException("Error while deleting from Database", ex, this.database.getStoredStatement(modelClass,"removeByUserInWorld"));
+            throw new StorageException("Error while deleting from Database", ex, this.database.getStoredStatement(modelClass, "removeByUserInWorld"));
         }
     }
 
@@ -86,7 +86,7 @@ public class UserPermissionsManager extends TripletKeyStorage<Long, Long, String
         }
         catch (SQLException ex)
         {
-            throw new StorageException("Error while getting permissions from Database", ex, this.database.getStoredStatement(modelClass,"getallByUserInWorld"));
+            throw new StorageException("Error while getting permissions from Database", ex, this.database.getStoredStatement(modelClass, "getallByUserInWorld"));
         }
     }
 
@@ -109,7 +109,7 @@ public class UserPermissionsManager extends TripletKeyStorage<Long, Long, String
         catch (SQLException ex)
         {
             throw new StorageException("Error while storing Models into Database", ex,
-                                       this.database.getStoredStatement(modelClass,"store"));
+                                       this.database.getStoredStatement(modelClass, "store"));
         }
     }
 }

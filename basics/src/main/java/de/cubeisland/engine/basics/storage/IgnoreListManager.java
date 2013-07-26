@@ -102,7 +102,7 @@ public class IgnoreListManager extends TwoKeyStorage<Long, Long, IgnoreList>
         }
         catch (SQLException e)
         {
-            throw new StorageException("Error while getting models form database", e,this.database.getStoredStatement(modelClass,"getAllByUser"));
+            throw new StorageException("Error while getting models form database", e,this.database.getStoredStatement(modelClass, "getAllByUser"));
         }
     }
 }

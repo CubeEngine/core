@@ -57,4 +57,8 @@ public @interface Attribute
      * If true the default value will be set to the fields value
      */
     public boolean defaultIsValue() default false;
+
+    public String comment() default "";
+
+    public int decimals() default 0;
 }
