@@ -108,14 +108,21 @@ import de.cubeisland.engine.core.bukkit.packethook.PacketEventManager;
 public class CubePlayerConnection extends PlayerConnection
 {
     private final Player player;
+    private final PlayerConnection oldPlayerConnection;
     private final PacketEventManager em;
 
-    public CubePlayerConnection(Player bukkitPlayer, EntityPlayer player)
+    public CubePlayerConnection(Player bukkitPlayer, EntityPlayer player, PlayerConnection oldPlayerConnection)
     {
         super(player.server, player.playerConnection.networkManager, player);
         this.player = bukkitPlayer;
+        this.oldPlayerConnection = oldPlayerConnection;
         BukkitCore core = (BukkitCore)CubeEngine.getCore();
         this.em = core.getPacketEventManager();
+    }
+
+    public PlayerConnection getOldPlayerConnection()
+    {
+        return oldPlayerConnection;
     }
 
     /**

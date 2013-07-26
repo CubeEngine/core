@@ -182,9 +182,9 @@ public class BukkitUtils
             hookInjector = new PacketHookInjector();
             core.getServer().getPluginManager().registerEvents(hookInjector, core);
 
-            for (Player player : Bukkit.getOnlinePlayers())
+            for (Player player : core.getServer().getOnlinePlayers())
             {
-                hookInjector.swap(player);
+                PacketHookInjector.swap(player);
             }
         }
     }
@@ -202,7 +202,7 @@ public class BukkitUtils
 
             for (Player player : Bukkit.getOnlinePlayers())
             {
-                resetPlayerNetServerHandler(player);
+                resetPlayerConnection(player);
             }
         }
 
@@ -216,21 +216,21 @@ public class BukkitUtils
         @EventHandler(priority = EventPriority.LOW)
         public void onPlayerJoin(PlayerJoinEvent event)
         {
-            this.swap(event.getPlayer());
+            swap(event.getPlayer());
         }
 
-        public void swap(final Player player)
+        public static void swap(final Player player)
         {
             final EntityPlayer entity = ((CraftPlayer)player).getHandle();
 
-            swapPlayerNetServerHandler(entity, new CubePlayerConnection(player, entity));
+            swapPlayerConnection(entity, new CubePlayerConnection(player, entity, entity.playerConnection));
         }
     }
 
     private static final Location helperLocation = new Location(null, 0, 0, 0);
 
     @SuppressWarnings("unchecked")
-    private static void swapPlayerNetServerHandler(EntityPlayer player, PlayerConnection newHandler)
+    private static void swapPlayerConnection(EntityPlayer player, PlayerConnection newHandler)
     {
         if (playerConnectionListField == null)
         {
@@ -244,25 +244,31 @@ public class BukkitUtils
                 Location loc = player.getBukkitEntity().getLocation(helperLocation);
                 newHandler.a(loc.getX(), loc.getY(), loc.getZ(), loc.getYaw(), loc.getPitch());
 
-                ServerConnection sc = player.server.ag();
-                ((List<PlayerConnection>)playerConnectionListField.get(sc)).remove(oldHandler);
-                sc.a(newHandler);
-                CubeEngine.getLog().debug("Replaced the NetServerHandler of player '{}'", player.getName());
+                ServerConnection serverConnection = player.server.ag();
+                ((List<PlayerConnection>)playerConnectionListField.get(serverConnection)).remove(oldHandler);
+                serverConnection.a(newHandler);
+                CubeEngine.getLog().debug("Replaced the PlayerConnection of player '{}'", player.getName());
                 oldHandler.disconnected = true;
             }
         }
         catch (Exception e)
         {
             player.playerConnection = oldHandler;
-            CubeEngine.getLog().debug(e.getLocalizedMessage(), e);
+            CubeEngine.getLog().debug("Failed to swap the PlayerConnection of player {}: " + e.getLocalizedMessage(), e);
         }
     }
 
-    public static void resetPlayerNetServerHandler(Player player)
+    public static void resetPlayerConnection(Player player)
     {
         final EntityPlayer entity = ((CraftPlayer)player).getHandle();
 
-        swapPlayerNetServerHandler(entity, new PlayerConnection(entity.server, entity.playerConnection.networkManager, entity));
+        // only swap back if it's still our wrapper
+        if (entity.playerConnection instanceof CubePlayerConnection)
+        {
+            PlayerConnection old = ((CubePlayerConnection)entity.playerConnection).getOldPlayerConnection();
+            old.disconnected = false;
+            swapPlayerConnection(entity, old);
+        }
     }
 
     public static boolean isInvulnerable(Player player)

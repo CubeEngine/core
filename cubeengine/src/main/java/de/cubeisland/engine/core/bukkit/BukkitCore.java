@@ -241,7 +241,7 @@ public final class BukkitCore extends JavaPlugin implements Core
         }
 
         this.packetEventManager = new PacketEventManager(this.logger);
-        //TODO this is not working atm BukkitUtils.registerPacketHookInjector(this);
+        BukkitUtils.registerPacketHookInjector(this);
 
         // depends on: object mapper
         this.apiServer = new ApiServer(this);
