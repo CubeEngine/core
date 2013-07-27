@@ -31,20 +31,10 @@
     </dependency>
     <dependency>
       <groupId>io.netty</groupId>
-      <artifactId>netty-all</artifactId>
-      <version>4.0.0.CR3</version>
+      <artifactId>netty-codec-http</artifactId>
+      <version>4.0.4.Final</version>
       <type>jar</type>
       <scope>compile</scope>
-      <exclusions>
-        <exclusion>
-          <groupId>io.netty</groupId>
-          <artifactId>netty-example</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>io.netty</groupId>
-          <artifactId>netty-testsuite</artifactId>
-        </exclusion>
-      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.yaml</groupId>

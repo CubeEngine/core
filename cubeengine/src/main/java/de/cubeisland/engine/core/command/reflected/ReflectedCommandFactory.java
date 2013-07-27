@@ -63,7 +63,7 @@ public class ReflectedCommandFactory<T extends CubeCommand> implements CommandFa
         if (methodParams.length != 1 || !CommandContext.class.isAssignableFrom(methodParams[0]))
         {
             module.getLog().warn("The method ''{}.{}'' does not match the required method signature: public void {}(CommandContext context)",
-                                 arr(holder.getClass().getSimpleName(), method.getName(), method.getName()));
+                                 holder.getClass().getSimpleName(), method.getName(), method.getName());
             return false;
         }
         return true;
@@ -135,7 +135,7 @@ public class ReflectedCommandFactory<T extends CubeCommand> implements CommandFa
         if (annotation.max() > NO_MAX && annotation.max() < annotation.min())
         {
             module.getLog().error("{}.{}: The the maximum args must not be less than the minimum",
-                                  arr(holder.getClass().getSimpleName(), method.getName()));
+                                  holder.getClass().getSimpleName(), method.getName());
             return null;
         }
         ReflectedCommand cmd = new ReflectedCommand(

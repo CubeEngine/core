@@ -29,10 +29,8 @@ import java.util.concurrent.ConcurrentMap;
 
 import de.cubeisland.engine.core.Core;
 import de.cubeisland.engine.core.CubeEngine;
-
 import de.cubeisland.engine.core.bukkit.BukkitCore;
 import de.cubeisland.engine.core.util.Cleanable;
-
 import org.slf4j.Logger;
 
 import static de.cubeisland.engine.core.CubeEngine.runsOnWindows;
@@ -53,18 +51,20 @@ public class FileManager implements Cleanable
     public FileManager(Core core, File dataFolder) throws IOException
     {
         java.util.logging.Logger logger = ((BukkitCore)core).getLogger();
-        assert dataFolder != null: "The CubeEngine plugin folder must not be null!";
+        assert dataFolder != null : "The CubeEngine plugin folder must not be null!";
         if (!dataFolder.exists())
         {
             if (!dataFolder.mkdirs())
             {
-                throw new IOException("The CubeEngine plugin folder could not be created: " + dataFolder.getAbsolutePath());
+                throw new IOException("The CubeEngine plugin folder could not be created: " + dataFolder
+                    .getAbsolutePath());
             }
             dataFolder.setWritable(true, true);
         }
         else if (!dataFolder.isDirectory())
         {
-            throw new IOException("The CubeEngine plugin folder was found, but it doesn't seem to be directory: " + dataFolder.getAbsolutePath());
+            throw new IOException("The CubeEngine plugin folder was found, but it doesn't seem to be directory: " + dataFolder
+                .getAbsolutePath());
         }
         if (!dataFolder.canWrite() && !dataFolder.setWritable(true, true))
         {
@@ -136,12 +136,13 @@ public class FileManager implements Cleanable
         {
             try
             {
-                return Runtime.getRuntime().exec(new String[] {
-                "attrib", "+H", file.getAbsolutePath()
+                return Runtime.getRuntime().exec(new String[]{
+                    "attrib", "+H", file.getAbsolutePath()
                 }).waitFor() == 0;
             }
             catch (Exception e)
-            {}
+            {
+            }
         }
         return false;
     }
@@ -153,21 +154,21 @@ public class FileManager implements Cleanable
         {
             if (target.isDirectory())
             {
-                command = new String[] {
-                "cmd", "/c", "mklink", "/d", source.getAbsolutePath(), target.getAbsolutePath()
+                command = new String[]{
+                    "cmd", "/c", "mklink", "/d", source.getAbsolutePath(), target.getAbsolutePath()
                 };
             }
             else
             {
-                command = new String[] {
-                "cmd", "/c", "mklink", source.getAbsolutePath(), target.getAbsolutePath()
+                command = new String[]{
+                    "cmd", "/c", "mklink", source.getAbsolutePath(), target.getAbsolutePath()
                 };
             }
         }
         else
         {
-            command = new String[] {
-            "ln", "-s", target.getAbsolutePath(), source.getAbsolutePath()
+            command = new String[]{
+                "ln", "-s", target.getAbsolutePath(), source.getAbsolutePath()
             };
         }
         try
@@ -175,7 +176,8 @@ public class FileManager implements Cleanable
             return Runtime.getRuntime().exec(command).waitFor() == 0;
         }
         catch (Exception e)
-        {}
+        {
+        }
         return false;
     }
 
@@ -279,7 +281,8 @@ public class FileManager implements Cleanable
             {
                 if (!file.canRead() && !file.setReadable(true) && (files = file.listFiles()) == null)
                 {
-                    throw new IOException("Failed to list the folder '" + file.getAbsolutePath() + "' due to missing read permissions");
+                    throw new IOException("Failed to list the folder '" + file
+                        .getAbsolutePath() + "' due to missing read permissions");
                 }
                 if (files == null)
                 {
@@ -293,7 +296,8 @@ public class FileManager implements Cleanable
                     deleteRecursive(f);
                 }
                 catch (FileNotFoundException ignored)
-                {}
+                {
+                }
             }
         }
         if (!file.exists())
@@ -308,11 +312,13 @@ public class FileManager implements Cleanable
                 {
                     return;
                 }
-                throw new IOException("Failed to delete the file '" + file.getAbsolutePath() + "' due to missing write permissions");
+                throw new IOException("Failed to delete the file '" + file
+                    .getAbsolutePath() + "' due to missing write permissions");
             }
             if (!file.renameTo(file))
             {
-                throw new IOException("Failed to delete the file '" + file.getAbsolutePath() + "' due to a possible lock");
+                throw new IOException("Failed to delete the file '" + file
+                    .getAbsolutePath() + "' due to a possible lock");
             }
             throw new IOException("Failed to delete the file '" + file.getAbsolutePath() + "'");
         }
@@ -329,7 +335,8 @@ public class FileManager implements Cleanable
             return true;
         }
         catch (IOException ignored)
-        {}
+        {
+        }
         finally
         {
             try
@@ -379,6 +386,7 @@ public class FileManager implements Cleanable
      * Returns a resource as a stream
      *
      * @param resource the resource
+     *
      * @return a stream to read from
      */
     public InputStream getResourceStream(Resource resource)
@@ -394,11 +402,12 @@ public class FileManager implements Cleanable
      * Returns a resource as a file by first copying it to the file system
      *
      * @param resource the resource
+     *
      * @return a file
      */
     public File getResourceFile(Resource resource)
     {
-        assert resource != null: "The resource must not be null!";
+        assert resource != null : "The resource must not be null!";
 
         File file = this.dropResource(resource.getClass(), getSaneSource(resource), resource.getTarget(), false);
         this.fileSources.put(file, resource);
@@ -412,7 +421,7 @@ public class FileManager implements Cleanable
      */
     public void dropResources(Resource[] resources)
     {
-        assert resources != null: "The resources must not be null!";
+        assert resources != null : "The resources must not be null!";
 
         for (Resource resource : resources)
         {
@@ -427,18 +436,20 @@ public class FileManager implements Cleanable
      * @param resPath   the resource path
      * @param filePath  the target file path
      * @param overwrite wheter to overwrite an existing file
+     *
      * @return a file
      */
     public File dropResource(Class clazz, String resPath, String filePath, boolean overwrite)
     {
-        assert filePath != null: "The file path must not be null!";
-        assert resPath != null: "The resource path must not be null!";
+        assert filePath != null : "The file path must not be null!";
+        assert resPath != null : "The resource path must not be null!";
 
         if (filePath.startsWith("/"))
         {
             filePath = filePath.substring(1);
         }
-        return this.dropResource(clazz, resPath, new File(this.dataFolder, filePath.replace('\\', File.separatorChar).replace('/', File.separatorChar)), overwrite);
+        return this.dropResource(clazz, resPath, new File(this.dataFolder, filePath.replace('\\', File.separatorChar)
+                                                                                   .replace('/', File.separatorChar)), overwrite);
     }
 
     /**
@@ -448,13 +459,14 @@ public class FileManager implements Cleanable
      * @param resPath   the resource path
      * @param file      the target file
      * @param overwrite whether to overwrite an existing file
+     *
      * @return a file
      */
     public File dropResource(Class clazz, String resPath, File file, boolean overwrite)
     {
-        assert clazz != null: "The class must not be null!";
-        assert resPath != null: "The resource path must not be null!";
-        assert file != null: "The file must not be null!";
+        assert clazz != null : "The class must not be null!";
+        assert resPath != null : "The resource path must not be null!";
+        assert file != null : "The file must not be null!";
         if (file.exists() && !file.isFile())
         {
             throw new IllegalArgumentException("The given file exists, but is no file!");
@@ -490,7 +502,8 @@ public class FileManager implements Cleanable
                     reader.close();
                 }
                 catch (IOException ignored)
-                {}
+                {
+                }
                 if (writer != null)
                 {
                     try
@@ -498,7 +511,8 @@ public class FileManager implements Cleanable
                         writer.close();
                     }
                     catch (IOException ignored)
-                    {}
+                    {
+                    }
                 }
             }
         }
@@ -513,12 +527,14 @@ public class FileManager implements Cleanable
      * Revers look up for resources by file
      *
      * @param file the file
+     *
      * @return stream of the resource
      */
     public InputStream getSourceOf(File file)
     {
         return this.getResourceStream(this.fileSources.get(file));
     }
+
 
     @Override
     public void clean()

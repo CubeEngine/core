@@ -42,7 +42,7 @@
           <relocations>
             <relocation>
               <pattern>org.pircbotx</pattern>
-              <shadedPattern>${project.parent.groupId}.cubeengine.${project.artifactId}.external.org.pircbotx
+              <shadedPattern>${externalPackage}.pircbotx
               </shadedPattern>
             </relocation>
           </relocations>

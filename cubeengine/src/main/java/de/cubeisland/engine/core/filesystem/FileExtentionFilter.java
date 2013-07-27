@@ -31,6 +31,7 @@ public class FileExtentionFilter implements FileFilter, FilenameFilter
     public static final FileExtentionFilter JSON = new FileExtentionFilter("json");
     public static final FileExtentionFilter INI = new FileExtentionFilter("ini");
     public static final FileExtentionFilter JAR = new FileExtentionFilter("jar");
+    public static final FileExtentionFilter LOG = new FileExtentionFilter("log");
     private final String extention;
 
     public FileExtentionFilter(String extention)
