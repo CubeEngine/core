@@ -21,15 +21,9 @@ import java.lang.reflect.Field;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.List;
 
-import de.cubeisland.engine.core.storage.database.AttrType;
-import de.cubeisland.engine.core.storage.database.Attribute;
 import de.cubeisland.engine.core.storage.database.Database;
-import de.cubeisland.engine.core.storage.database.Index;
 import de.cubeisland.engine.core.storage.database.TripletKeyEntity;
-import de.cubeisland.engine.core.storage.database.querybuilder.QueryBuilder;
-import de.cubeisland.engine.core.storage.database.querybuilder.TableBuilder;
 import de.cubeisland.engine.core.util.Triplet;
 
 public class TripletKeyStorage<Key_f, Key_s, Key_t, M extends TripletKeyModel<Key_f, Key_s, Key_t>> extends AbstractStorage<Triplet<Key_f, Key_s, Key_t>, M, TripletKeyEntity>
@@ -53,6 +47,8 @@ public class TripletKeyStorage<Key_f, Key_s, Key_t, M extends TripletKeyModel<Ke
     {
         super.initialize();
         //Fields:
+        //TODO DATABASE
+        /*
         QueryBuilder builder = this.database.getQueryBuilder();
         TableBuilder tableBuilder = builder.createTable(this.tableName, true).beginFields();
         for (Field field : this.reverseFieldNames.values())
@@ -131,6 +127,7 @@ public class TripletKeyStorage<Key_f, Key_s, Key_t, M extends TripletKeyModel<Ke
             throw new IllegalStateException("Error while preparing statements for the table "+ this.tableName, ex);
         }
         tableManager.registerTable(this.tableName, this.revision);
+        */
     }
 
     /**
@@ -149,6 +146,8 @@ public class TripletKeyStorage<Key_f, Key_s, Key_t, M extends TripletKeyModel<Ke
                 fields[i++] = fieldName;
             }
         }
+        //TODO DATABASE
+        /*
         QueryBuilder builder = this.database.getQueryBuilder();
 
         this.database.storeStatement(this.modelClass, "store",
@@ -176,6 +175,7 @@ public class TripletKeyStorage<Key_f, Key_s, Key_t, M extends TripletKeyModel<Ke
                                          field(this.f_dbKey).isEqual().value().and().
                                                 field(this.s_dbKey).isEqual().value().and().
                                                 field(this.t_dbKey).isEqual().value().limit(1).end().end());
+                                                */
     }
 
     @Override

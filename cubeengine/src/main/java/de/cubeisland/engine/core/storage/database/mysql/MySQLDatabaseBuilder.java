@@ -40,7 +40,7 @@ public class MySQLDatabaseBuilder extends MySQLComponentBuilder<DatabaseBuilder>
         {
             this.query.append("IF NOT EXISTS");
         }
-        this.query.append(this.database.prepareTableName(name));
+        // this.query.append(this.database.prepareTableName(name));
         return this;
     }
 

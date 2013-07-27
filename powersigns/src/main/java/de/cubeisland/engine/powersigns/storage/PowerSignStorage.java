@@ -28,7 +28,6 @@ import org.bukkit.World;
 
 import de.cubeisland.engine.core.storage.SingleKeyStorage;
 import de.cubeisland.engine.core.storage.StorageException;
-import de.cubeisland.engine.core.storage.database.querybuilder.SelectBuilder;
 import de.cubeisland.engine.core.world.WorldManager;
 import de.cubeisland.engine.powersigns.Powersigns;
 
@@ -47,15 +46,20 @@ public class PowerSignStorage extends SingleKeyStorage<Long,PowerSignModel>
     protected void prepareStatements() throws SQLException
     {
         super.prepareStatements();
+        //TODO DATABASE
+        /*
         this.database.storeStatement(this.modelClass,"getFromChunk",this.database.getQueryBuilder().
                                     select().wildcard().from(this.tableName).where().
                                     field("chunkX").isEqual().value().and().
                                     field("chunkZ").isEqual().value().and().
                                     field("world").isEqual().value().end().end());
+                                    */
     }
 
     public Set<PowerSignModel> loadFromLoadedChunks(Set<World> worlds)
     {
+        //TODO DATABASE
+        /*
         SelectBuilder builder = this.database.getQueryBuilder().select().wildcard().from(this.tableName).where();
         boolean first = true;
         for (World world : worlds)
@@ -110,6 +114,8 @@ public class PowerSignStorage extends SingleKeyStorage<Long,PowerSignModel>
         {
             throw new StorageException("Error while loading powersigns on startup!",e);
         }
+        */
+        return null; //TODO DATABASE
     }
 
     public Set<PowerSignModel> loadFromChunk(Chunk chunk)

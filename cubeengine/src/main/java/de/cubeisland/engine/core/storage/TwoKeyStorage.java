@@ -21,15 +21,9 @@ import java.lang.reflect.Field;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.List;
 
-import de.cubeisland.engine.core.storage.database.AttrType;
-import de.cubeisland.engine.core.storage.database.Attribute;
 import de.cubeisland.engine.core.storage.database.Database;
-import de.cubeisland.engine.core.storage.database.Index;
 import de.cubeisland.engine.core.storage.database.TwoKeyEntity;
-import de.cubeisland.engine.core.storage.database.querybuilder.QueryBuilder;
-import de.cubeisland.engine.core.storage.database.querybuilder.TableBuilder;
 import de.cubeisland.engine.core.util.Pair;
 
 public class TwoKeyStorage<Key_f, Key_s, M extends TwoKeyModel<Key_f, Key_s>> extends AbstractStorage<Pair<Key_f, Key_s>, M, TwoKeyEntity>
@@ -51,6 +45,8 @@ public class TwoKeyStorage<Key_f, Key_s, M extends TwoKeyModel<Key_f, Key_s>> ex
     {
         super.initialize();
         //Fields:
+        //TODO DATABASE
+        /*
         QueryBuilder builder = this.database.getQueryBuilder();
         TableBuilder tableBuilder = builder.createTable(this.tableName, true).beginFields();
         for (Field field : this.reverseFieldNames.values())
@@ -129,6 +125,7 @@ public class TwoKeyStorage<Key_f, Key_s, M extends TwoKeyModel<Key_f, Key_s>> ex
             throw new IllegalStateException("Error while preparing statements for the table "+ this.tableName, ex);
         }
         tableManager.registerTable(this.tableName, this.revision);
+        */
     }
 
     /**
@@ -147,6 +144,8 @@ public class TwoKeyStorage<Key_f, Key_s, M extends TwoKeyModel<Key_f, Key_s>> ex
                 fields[i++] = fieldName;
             }
         }
+        //TODO DATABASE
+        /*
         QueryBuilder builder = this.database.getQueryBuilder();
 
         this.database.storeStatement(this.modelClass, "store",
@@ -168,6 +167,7 @@ public class TwoKeyStorage<Key_f, Key_s, M extends TwoKeyModel<Key_f, Key_s>> ex
 
         this.database.storeStatement(this.modelClass, "delete",
                                      builder.deleteFrom(this.tableName).where().field(this.f_dbKey).isEqual().value().and().field(this.s_dbKey).isEqual().value().limit(1).end().end());
+                                     */
     }
 
     @Override

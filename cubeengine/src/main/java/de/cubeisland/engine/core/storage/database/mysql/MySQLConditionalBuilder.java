@@ -49,10 +49,10 @@ public abstract class MySQLConditionalBuilder<This extends ConditionalBuilder>
         {
             this.query.append(",");
         }
-        this.query.append(this.database.prepareFieldName(cols[0]));
+        //   this.query.append(this.database.prepareFieldName(cols[0]));
         for (int i = 1; i < cols.length; ++i)
         {
-            this.query.append(',').append(this.database.prepareFieldName(cols[i]));
+            //  this.query.append(',').append(this.database.prepareFieldName(cols[i]));
         }
         return (This)this;
     }

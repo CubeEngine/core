@@ -28,11 +28,7 @@ import java.util.Set;
 import de.cubeisland.engine.core.Core;
 import de.cubeisland.engine.core.storage.SingleKeyStorage;
 import de.cubeisland.engine.core.storage.StorageException;
-import de.cubeisland.engine.core.storage.database.querybuilder.ComponentBuilder;
 import de.cubeisland.engine.core.util.StringUtils;
-
-import static de.cubeisland.engine.core.storage.database.querybuilder.ComponentBuilder.EQUAL;
-import static de.cubeisland.engine.core.storage.database.querybuilder.ComponentBuilder.LESS;
 
 public class UserStorage extends SingleKeyStorage<Long, User>
 {
@@ -52,6 +48,7 @@ public class UserStorage extends SingleKeyStorage<Long, User>
     public void initialize()
     {
         super.initialize();
+        /*  //TODO DATABASE
         try
         {
             this.database.storeStatement(User.class, "get_by_name", this.database.getQueryBuilder().select().wildcard().from(this.tableName).where().field("player").is(ComponentBuilder.EQUAL).value().end().end());
@@ -66,6 +63,7 @@ public class UserStorage extends SingleKeyStorage<Long, User>
         {
             throw new StorageException("Failed to initialize the user-manager!", e);
         }
+        */
     }
 
     public void resetAllPasswords()

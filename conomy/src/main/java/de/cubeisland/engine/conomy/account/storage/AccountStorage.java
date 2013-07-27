@@ -26,18 +26,15 @@ import java.util.LinkedList;
 import java.util.Set;
 
 import de.cubeisland.engine.core.storage.SingleKeyStorage;
-import de.cubeisland.engine.core.storage.database.AttrType;
 import de.cubeisland.engine.core.storage.database.Database;
-import de.cubeisland.engine.core.storage.database.DatabaseUpdater;
-import de.cubeisland.engine.core.storage.database.querybuilder.QueryBuilder;
-
-import static de.cubeisland.engine.core.storage.database.querybuilder.ComponentBuilder.IS;
 
 public class AccountStorage extends SingleKeyStorage<Long, AccountModel>
 {
     public AccountStorage(final Database database)
     {
         super(database, AccountModel.class, 2);
+        //TODO DATABASE
+        /*
         this.registerUpdater(new DatabaseUpdater()
         {
             @Override
@@ -49,12 +46,15 @@ public class AccountStorage extends SingleKeyStorage<Long, AccountModel>
             }
         },1);
         this.initialize();
+        */
     }
 
     @Override
     protected void prepareStatements() throws SQLException
     {
         super.prepareStatements();
+        //TODO DATABASE
+        /*
         QueryBuilder builder = this.database.getQueryBuilder();
         // Get User-Account
         this.database.storeStatement(modelClass, "getUserAccount",
@@ -104,6 +104,7 @@ public class AccountStorage extends SingleKeyStorage<Long, AccountModel>
                                          where().field("name").is(IS).value(null).isEqual().value().
                                                 or().field("user_id").is(IS).value(null).isEqual().value()
                                             .end().end());
+                                            */
     }
 
     public Collection<AccountModel> getTopAccounts(boolean user, boolean bank, int fromRank, int toRank, boolean showHidden)

@@ -26,8 +26,6 @@ import java.util.Map.Entry;
 import de.cubeisland.engine.core.storage.StorageException;
 import de.cubeisland.engine.core.storage.TripletKeyStorage;
 import de.cubeisland.engine.core.storage.database.Database;
-import de.cubeisland.engine.core.storage.database.querybuilder.QueryBuilder;
-
 import gnu.trove.map.hash.THashMap;
 
 public class UserMetaDataManager extends TripletKeyStorage<Long, Long, String, UserMetaData>
@@ -42,7 +40,8 @@ public class UserMetaDataManager extends TripletKeyStorage<Long, Long, String, U
 
     @Override
     public void initialize()
-    {
+    {//TODO DATABASE
+        /*
         try
         {
             super.initialize();
@@ -59,7 +58,7 @@ public class UserMetaDataManager extends TripletKeyStorage<Long, Long, String, U
         catch (SQLException e)
         {
             throw new StorageException("Failed to initialize the role-manager!", e);
-        }
+        }*/
     }
 
     public void clearByUserInWorld(Long userID, Long worldID)

@@ -25,7 +25,6 @@ import org.bukkit.World;
 import de.cubeisland.engine.core.storage.SingleKeyStorage;
 import de.cubeisland.engine.core.storage.StorageException;
 import de.cubeisland.engine.core.storage.database.Database;
-import de.cubeisland.engine.core.storage.database.querybuilder.QueryBuilder;
 
 public class WorldStorage extends SingleKeyStorage<Long, WorldModel>
 {
@@ -41,10 +40,13 @@ public class WorldStorage extends SingleKeyStorage<Long, WorldModel>
     protected void prepareStatements() throws SQLException
     {
         super.prepareStatements();
+        //TODO DATABASE
+        /*
         QueryBuilder builder = this.database.getQueryBuilder();
         this.database.storeStatement(this.modelClass,"getByUUID",
                  builder.select(allFields).from(this.tableName)
                      .where().field("worldUUID").isEqual().value().end().end());
+                     */
     }
 
     public WorldModel get(World world)

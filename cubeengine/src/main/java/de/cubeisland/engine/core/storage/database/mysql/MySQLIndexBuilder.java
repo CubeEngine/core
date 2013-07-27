@@ -47,7 +47,7 @@ public class MySQLIndexBuilder extends MySQLComponentBuilder<IndexBuilder> imple
     @Override
     public IndexBuilder on(String table, String... fields)
     {
-        this.query.append(" ON ").append(this.database.prepareTableName(table));
+        //   this.query.append(" ON ").append(this.database.prepareTableName(table));
         return this.fieldsInBrackets(fields);
     }
 }

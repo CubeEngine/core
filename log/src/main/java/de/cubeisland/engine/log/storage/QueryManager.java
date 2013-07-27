@@ -24,7 +24,6 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.CountDownLatch;
@@ -37,17 +36,11 @@ import de.cubeisland.engine.core.command.CommandSender;
 import de.cubeisland.engine.core.storage.StorageException;
 import de.cubeisland.engine.core.storage.database.AttrType;
 import de.cubeisland.engine.core.storage.database.Database;
-import de.cubeisland.engine.core.storage.database.querybuilder.ComponentBuilder;
 import de.cubeisland.engine.core.storage.database.querybuilder.QueryBuilder;
-import de.cubeisland.engine.core.storage.database.querybuilder.SelectBuilder;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.util.Profiler;
-import de.cubeisland.engine.core.util.math.BlockVector3;
 import de.cubeisland.engine.log.Log;
-import de.cubeisland.engine.log.action.ActionType;
 import gnu.trove.map.hash.THashMap;
-
-import static de.cubeisland.engine.core.storage.database.querybuilder.ComponentBuilder.IS;
 
 public class QueryManager
 {
@@ -84,9 +77,11 @@ public class QueryManager
         this.database = module.getCore().getDB();
         this.module = module;
         this.batchSize = module.getConfiguration().loggingBatchSize;
-
+ /*
         try
         {
+            //TODO DATABASE
+
             QueryBuilder builder = database.getQueryBuilder();
             String sql = builder.createTable("log_actiontypes",true).beginFields()
                 .field("id",AttrType.INT,true).autoIncrement()
@@ -113,7 +108,7 @@ public class QueryManager
         catch (SQLException ex)
         {
             throw new StorageException("Error during initialization of log-tables", ex);
-        }
+        }*/
 
         this.storeRunner = new Runnable() {
             @Override
@@ -214,6 +209,8 @@ public class QueryManager
      */
     public void optimize(final CommandSender sender)
     {
+        //TODO DATABASE
+        /*
         if (true)
         {
             // TODO do this with a separate connection
@@ -261,11 +258,13 @@ public class QueryManager
         catch (SQLException e)
         {
             this.module.getLog().error("Error during optimization of log-tables", e);
-        }
+        }*/
     }
 
     private void cleanUpLogs()
     {
+        //TODO DATABASE
+        /*
         if (true) return;// TODO do this with a separate db-connection
         Profiler.endProfiling("log_cleanUp");
         Profiler.startProfiling("log_cleanUp");
@@ -319,6 +318,7 @@ public class QueryManager
                 }
             }).start();
         }
+        */
     }
 
     private void doQueryLookup()
@@ -506,6 +506,8 @@ public class QueryManager
 
     public void prepareLookupQuery(final Lookup lookup, final User user, QueryAction action)
     {
+        //TODO DATABASE
+        /*
         final QueryParameter params = lookup.getQueryParameter();
         SelectBuilder selectBuilder =
             this.database.getQueryBuilder().select("id","date","action",
@@ -682,6 +684,7 @@ public class QueryManager
         {
             this.futureLookup = lookupExecutor.submit(lookupRunner);
         }
+        */
     }
 
     public Map<String,Long> getActionTypesFromDatabase()

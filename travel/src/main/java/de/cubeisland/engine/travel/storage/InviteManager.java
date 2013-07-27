@@ -17,8 +17,6 @@
  */
 package de.cubeisland.engine.travel.storage;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -26,14 +24,10 @@ import java.util.Map;
 import java.util.Set;
 
 import de.cubeisland.engine.core.CubeEngine;
-
 import de.cubeisland.engine.core.storage.TwoKeyStorage;
 import de.cubeisland.engine.core.storage.database.Database;
-import de.cubeisland.engine.core.storage.database.querybuilder.QueryBuilder;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.travel.Travel;
-
-import static de.cubeisland.engine.core.storage.database.querybuilder.ComponentBuilder.EQUAL;
 
 public class InviteManager extends TwoKeyStorage<Long, Long, TeleportInvite>
 {
@@ -52,10 +46,12 @@ public class InviteManager extends TwoKeyStorage<Long, Long, TeleportInvite>
     }
 
     public void initialize()
-    {
+    {/*
         try
         {
             super.initialize();
+            //TODO DATABASE
+
             QueryBuilder builder = database.getQueryBuilder();
             this.database.storeStatement(this.modelClass, "getInvitedTo", builder.select().cols("teleportpoint")
                                                                                  .from(this.tableName).where()
@@ -71,6 +67,7 @@ public class InviteManager extends TwoKeyStorage<Long, Long, TeleportInvite>
             module.getLog().error("An error occurred while preparing the database statements for table " +
                                   this.tableName + ": " + ex.getMessage(), ex);
         }
+        */
     }
 
     public void invite(TeleportPoint tPP, User user)
@@ -120,6 +117,8 @@ public class InviteManager extends TwoKeyStorage<Long, Long, TeleportInvite>
         {
             return invitedUsers;
         }
+        //TODO DATABASE
+        /*
         try
         {
             ResultSet names = database.query(database.getQueryBuilder().select("player").from("user").where().field("key").in()
@@ -133,7 +132,7 @@ public class InviteManager extends TwoKeyStorage<Long, Long, TeleportInvite>
         {
             module.getLog().warn("Something wrong happened while getting usernames for some users: {}",  ex.getLocalizedMessage());
             module.getLog().debug(ex.getLocalizedMessage(), ex);
-        }
+        }*/
         this.cachedInvites.put(tPP, invitedUsers);
         return invitedUsers;
     }

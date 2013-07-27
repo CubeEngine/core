@@ -47,10 +47,10 @@ public class MySQLSelectBuilder extends MySQLConditionalBuilder<SelectBuilder> i
     {
         if (cols.length > 0)
         {
-            this.query.append(this.database.prepareFieldName(cols[0]));
+            //this.query.append(this.database.prepareFieldName(cols[0]));
             for (int i = 1; i < cols.length; ++i)
             {
-                this.query.append(',').append(this.database.prepareFieldName(cols[i]));
+              //  this.query.append(',').append(this.database.prepareFieldName(cols[i]));
             }
         }
         return this;
@@ -60,10 +60,10 @@ public class MySQLSelectBuilder extends MySQLConditionalBuilder<SelectBuilder> i
     public MySQLSelectBuilder from(String... tables)
     {
         Validate.notEmpty(tables, "No tables specified!");
-        this.query.append(" \nFROM ").append(this.database.prepareTableName(tables[0]));
+      //  this.query.append(" \nFROM ").append(this.database.prepareTableName(tables[0]));
         for (int i = 1; i < tables.length; ++i)
         {
-            this.query.append(',').append(this.database.prepareTableName(tables[i]));
+        //    this.query.append(',').append(this.database.prepareTableName(tables[i]));
         }
         return this;
     }
@@ -85,35 +85,35 @@ public class MySQLSelectBuilder extends MySQLConditionalBuilder<SelectBuilder> i
     @Override
     public SelectBuilder into(String table)
     {
-        this.query.append(" \nINTO ").append(this.database.prepareTableName(table));
+     //   this.query.append(" \nINTO ").append(this.database.prepareTableName(table));
         return this;
     }
 
     @Override
     public SelectBuilder in(String database)
     {
-        this.query.append(" IN ").append(this.database.prepareFieldName(database));
+    //   this.query.append(" IN ").append(this.database.prepareFieldName(database));
         return this;
     }
 
     @Override
     public SelectBuilder leftJoinOnEqual(String table, String key, String otherTable, String otherKey)
     {
-        this.query.append(" \nLEFT JOIN ").append(this.database.prepareTableName(table));
+        //this.query.append(" \nLEFT JOIN ").append(this.database.prepareTableName(table));
         this.onEqual(table, key, otherTable, otherKey);
         return this;
     }
 
     private void onEqual(String table, String key, String otherTable, String otherKey)
     {
-        this.query.append(" \nON ").append(this.database.prepareFieldName(table + "." + key))
-                .append(" = ").append(this.database.prepareFieldName(otherTable + "." + otherKey));
+     //   this.query.append(" \nON ").append(this.database.prepareFieldName(table + "." + key))
+       //         .append(" = ").append(this.database.prepareFieldName(otherTable + "." + otherKey));
     }
 
     @Override
     public SelectBuilder rightJoinOnEqual(String table, String key, String otherTable, String otherKey)
     {
-        this.query.append(" \nRIGHT JOIN ").append(this.database.prepareTableName(table));
+       // this.query.append(" \nRIGHT JOIN ").append(this.database.prepareTableName(table));
         this.onEqual(table, key, otherTable, otherKey);
         return this;
     }
@@ -121,7 +121,7 @@ public class MySQLSelectBuilder extends MySQLConditionalBuilder<SelectBuilder> i
     @Override
     public SelectBuilder joinOnEqual(String table, String key, String otherTable, String otherKey)
     {
-        this.query.append(" \nJOIN ").append(this.database.prepareTableName(table));
+    //    this.query.append(" \nJOIN ").append(this.database.prepareTableName(table));
         this.onEqual(table, key, otherTable, otherKey);
         return this;
     }

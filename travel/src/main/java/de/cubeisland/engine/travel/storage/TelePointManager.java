@@ -34,7 +34,6 @@ import de.cubeisland.engine.core.CubeEngine;
 import de.cubeisland.engine.core.command.CommandSender;
 import de.cubeisland.engine.core.storage.SingleKeyStorage;
 import de.cubeisland.engine.core.storage.StorageException;
-import de.cubeisland.engine.core.storage.database.querybuilder.QueryBuilder;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.util.matcher.Match;
 import de.cubeisland.engine.travel.Travel;
@@ -67,6 +66,8 @@ public class TelePointManager extends SingleKeyStorage<Long, TeleportPoint>
     protected void prepareStatements() throws SQLException
     {
         super.prepareStatements();
+        //TODO DATABASE
+        /*
         QueryBuilder builder = this.database.getQueryBuilder();
 
         // List statements
@@ -94,6 +95,7 @@ public class TelePointManager extends SingleKeyStorage<Long, TeleportPoint>
                .from(tableName).joinOnEqual("user", "key", tableName, "owner")
             .where().field(tableName + ".key").isEqual().value()
                .end().end());
+               */
     }
 
     /**

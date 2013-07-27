@@ -194,7 +194,7 @@ public class MySQLQueryBuilder implements QueryBuilder
         assert table != null: "No table specified!";
 
         this.init();
-        this.query.append("TRUNCATE TABLE ").append(this.database.prepareTableName(table));
+        //this.query.append("TRUNCATE TABLE ").append(this.database.prepareTableName(table));
         return this;
     }
 
@@ -204,10 +204,10 @@ public class MySQLQueryBuilder implements QueryBuilder
         Validate.notEmpty(tables, "No tables specified!");
 
         this.init();
-        this.query.append("DROP TABLE ").append(this.database.prepareTableName(tables[0]));
+        //this.query.append("DROP TABLE ").append(this.database.prepareTableName(tables[0]));
         for (int i = 1; i < tables.length; ++i)
         {
-            this.query.append(',').append(this.database.prepareTableName(tables[i]));
+          //  this.query.append(',').append(this.database.prepareTableName(tables[i]));
         }
         return this;
     }
@@ -294,7 +294,6 @@ public class MySQLQueryBuilder implements QueryBuilder
             this.put(REAL, "REAL");
             this.put(BIT, "BIT");
             this.put(BOOLEAN, "BOOLEAN");
-            this.put(SERIAL, "SERIAL");
             this.put(DATE, "DATE");
             this.put(DATETIME, "DATETIME");
             this.put(TIMESTAMP, "TIMESTAMP");

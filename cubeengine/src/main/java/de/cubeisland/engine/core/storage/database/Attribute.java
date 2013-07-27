@@ -42,10 +42,6 @@ public @interface Attribute
 
     public AttrType type();
 
-    public int length() default -1;
-
-    public boolean notnull() default true;
-
     public boolean unsigned() default false;//TODO maybe move to AttrType have a U_INT version etc
 
     /**
@@ -53,12 +49,11 @@ public @interface Attribute
      */
     public String name() default "";
 
-    /**
-     * If true the default value will be set to the fields value
-     */
-    public boolean defaultIsValue() default false;
-
     public String comment() default "";
 
+    // TODO remove those:
     public int decimals() default 0;
+    public int length() default -1;
+    public boolean defaultIsValue() default false;
+    public boolean notnull() default true;
 }

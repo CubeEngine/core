@@ -23,16 +23,13 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import de.cubeisland.engine.basics.storage.BasicUser;
+import de.cubeisland.engine.basics.storage.BasicUserManager;
 import de.cubeisland.engine.core.command.CommandSender;
 import de.cubeisland.engine.core.storage.SingleKeyStorage;
 import de.cubeisland.engine.core.storage.StorageException;
 import de.cubeisland.engine.core.storage.database.Database;
-import de.cubeisland.engine.core.storage.database.querybuilder.QueryBuilder;
 import de.cubeisland.engine.core.user.User;
-import de.cubeisland.engine.basics.storage.BasicUser;
-import de.cubeisland.engine.basics.storage.BasicUserManager;
-
-import static de.cubeisland.engine.core.storage.database.querybuilder.ComponentBuilder.EQUAL;
 
 public class MailManager extends SingleKeyStorage<Long, Mail>
 {
@@ -49,8 +46,10 @@ public class MailManager extends SingleKeyStorage<Long, Mail>
     @Override
     public void initialize()
     {
+        /*
         try
         {
+            //TODO DATABASE
             super.initialize();
             QueryBuilder builder = this.database.getQueryBuilder();
             this.database.storeStatement(modelClass, "getallByUser", builder.select().wildcard().from(this.tableName).where().field("userId").is(EQUAL).value().end().end());
@@ -58,7 +57,7 @@ public class MailManager extends SingleKeyStorage<Long, Mail>
         catch (SQLException e)
         {
             throw new StorageException("Failed to initialize the mail-manager!", e);
-        }
+        }*/
     }
 
     public List<Mail> getMails(User user)

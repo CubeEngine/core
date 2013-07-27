@@ -42,10 +42,10 @@ public class MySQLUpdateBuilder extends MySQLConditionalBuilder<UpdateBuilder>
 
         this.hasCols = false;
         this.query = new StringBuilder("UPDATE ");
-        this.query.append(this.database.prepareTableName(tables[0]));
+        //this.query.append(this.database.prepareTableName(tables[0]));
         for (int i = 1; i < tables.length; ++i)
         {
-            this.query.append(',').append(this.database.prepareTableName(tables[i]));
+          //  this.query.append(',').append(this.database.prepareTableName(tables[i]));
         }
         return this;
     }
@@ -65,10 +65,10 @@ public class MySQLUpdateBuilder extends MySQLConditionalBuilder<UpdateBuilder>
     {
         if (cols.length > 0)
         {
-            this.query.append(this.database.prepareFieldName(cols[0])).append("=? ");
+       //     this.query.append(this.database.prepareFieldName(cols[0])).append("=? ");
             for (int i = 1; i < cols.length; ++i)
             {
-                this.query.append(',').append(this.database.prepareFieldName(cols[i])).append("=? ");
+         //       this.query.append(',').append(this.database.prepareFieldName(cols[i])).append("=? ");
             }
             this.hasCols = true;
         }

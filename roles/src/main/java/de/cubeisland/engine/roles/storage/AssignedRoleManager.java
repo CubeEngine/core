@@ -27,16 +27,12 @@ import java.util.Set;
 import de.cubeisland.engine.core.storage.StorageException;
 import de.cubeisland.engine.core.storage.TripletKeyStorage;
 import de.cubeisland.engine.core.storage.database.Database;
-import de.cubeisland.engine.core.storage.database.querybuilder.QueryBuilder;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.util.Triplet;
 import de.cubeisland.engine.roles.role.Role;
 import de.cubeisland.engine.roles.role.WorldRoleProvider;
-
 import gnu.trove.map.hash.TLongObjectHashMap;
 import gnu.trove.set.hash.THashSet;
-
-import static de.cubeisland.engine.core.storage.database.querybuilder.ComponentBuilder.EQUAL;
 
 public class AssignedRoleManager extends TripletKeyStorage<Long, Long, String, AssignedRole>
 {
@@ -50,7 +46,8 @@ public class AssignedRoleManager extends TripletKeyStorage<Long, Long, String, A
 
     @Override
     protected void prepareStatements() throws SQLException
-    {
+    {//TODO DATABASE
+        /*
         super.prepareStatements();
         QueryBuilder builder = this.database.getQueryBuilder();
         this.database.storeStatement(modelClass, "getallByUser",
@@ -75,6 +72,7 @@ public class AssignedRoleManager extends TripletKeyStorage<Long, Long, String, A
         this.database.storeStatement(modelClass, "renameGlobal",
                                      builder.update(this.tableName).set("roleName").
                                          where().field("roleName").isEqual().value().end().end());
+                                         */
 
     }
 

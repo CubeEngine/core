@@ -20,10 +20,8 @@ package de.cubeisland.engine.basics.command.moderation.kit;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-import de.cubeisland.engine.core.storage.StorageException;
 import de.cubeisland.engine.core.storage.TwoKeyStorage;
 import de.cubeisland.engine.core.storage.database.Database;
-import de.cubeisland.engine.core.storage.database.querybuilder.QueryBuilder;
 import de.cubeisland.engine.core.user.User;
 
 public class KitsGivenManager extends TwoKeyStorage<Long, String, KitsGiven>
@@ -40,6 +38,8 @@ public class KitsGivenManager extends TwoKeyStorage<Long, String, KitsGiven>
     @Override
     public void initialize()
     {
+        //TODO DATABASE
+        /*
         try
         {
             super.initialize();
@@ -58,7 +58,7 @@ public class KitsGivenManager extends TwoKeyStorage<Long, String, KitsGiven>
         catch (SQLException e)
         {
             throw new StorageException("Failed to initialize the mail-manager!", e);
-        }
+        }*/
     }
 
     public boolean reachedUsageLimit(User user, String name, int limitUsagePerPlayer)

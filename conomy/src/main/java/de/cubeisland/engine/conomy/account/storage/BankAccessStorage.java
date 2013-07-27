@@ -25,7 +25,6 @@ import java.util.Set;
 import de.cubeisland.engine.core.storage.SingleKeyStorage;
 import de.cubeisland.engine.core.storage.StorageException;
 import de.cubeisland.engine.core.storage.database.Database;
-import de.cubeisland.engine.core.storage.database.querybuilder.QueryBuilder;
 import de.cubeisland.engine.core.user.User;
 
 public class BankAccessStorage extends SingleKeyStorage<Long, BankAccessModel>
@@ -42,6 +41,8 @@ public class BankAccessStorage extends SingleKeyStorage<Long, BankAccessModel>
     protected void prepareStatements() throws SQLException
     {
         super.prepareStatements();
+        //TODO DATABASE
+        /*
         QueryBuilder builder = this.database.getQueryBuilder();
         this.database.storeStatement(this.modelClass, "getBankAccess", builder.select(allFields).from(this.tableName)
                                                                               .where().field("accountId").isEqual()
@@ -49,7 +50,7 @@ public class BankAccessStorage extends SingleKeyStorage<Long, BankAccessModel>
         this.database.storeStatement(this.modelClass, "getUserAccess", builder.select("accountId").from(this.tableName)
                                                                               .where().field("userId").isEqual()
                                                                               .value().end().end());
-
+*/
     }
 
     public Set<BankAccessModel> getBankAccess(AccountModel model)

@@ -38,7 +38,7 @@ public class MySQLTableBuilder extends MySQLComponentBuilder<TableBuilder>
     protected MySQLTableBuilder create(String name, int actionIfExists)
     {
         this.fieldCounter = 0;
-        name = this.database.prepareTableName(name);
+        //name = this.database.prepareTableName(name);
         switch (actionIfExists)
         {
             case 1: // DO NOTHING
@@ -101,7 +101,7 @@ public class MySQLTableBuilder extends MySQLComponentBuilder<TableBuilder>
         {
             this.query.append(",\n");
         }
-        this.query.append(this.database.prepareFieldName(name)).append(' ').append(type.name());
+        // this.query.append(this.database.prepareFieldName(name)).append(' ').append(type.name());
         if (length > 0)
         {
             this.query.append('(').append(length).append(')');
@@ -127,10 +127,10 @@ public class MySQLTableBuilder extends MySQLComponentBuilder<TableBuilder>
         {
             throw new IllegalStateException("Enum cannot be empty!");
         }
-        this.query.append(this.database.prepareFieldName(name)).append(' ').append(AttrType.ENUM.name()).append("(").append(this.database.prepareString(enumValues[0]));
+        //  this.query.append(this.database.prepareFieldName(name)).append(' ').append(AttrType.ENUM.name()).append("(").append(this.database.prepareString(enumValues[0]));
         for (int i = 1; i < enumValues.length; ++i)
         {
-            this.query.append(", ").append(this.database.prepareString(enumValues[i]));
+            //      this.query.append(", ").append(this.database.prepareString(enumValues[i]));
         }
         this.query.append(notnull ? " NOT NULL" : " NULL");
         this.fieldCounter++;
@@ -159,10 +159,10 @@ public class MySQLTableBuilder extends MySQLComponentBuilder<TableBuilder>
         {
             throw new IllegalArgumentException("Foreign Keys can not be none!");
         }
-        this.query.append(", INDEX (").append(this.database.prepareFieldName(fields[0]));
+        // this.query.append(", INDEX (").append(this.database.prepareFieldName(fields[0]));
         for (int i = 1; i < fields.length; ++i)
         {
-            this.query.append(", ").append(this.database.prepareFieldName(fields[i]));
+            //     this.query.append(", ").append(this.database.prepareFieldName(fields[i]));
         }
         this.query.append(')');
         return this;
@@ -173,14 +173,14 @@ public class MySQLTableBuilder extends MySQLComponentBuilder<TableBuilder>
     {
         if (fields.length == 1)
         {
-            this.query.append(",PRIMARY KEY (").append(this.database.prepareFieldName(fields[0])).append(')');
+            //     this.query.append(",PRIMARY KEY (").append(this.database.prepareFieldName(fields[0])).append(')');
         }
         else
         {
-            this.query.append(",PRIMARY KEY (").append(this.database.prepareFieldName(fields[0]));
+            //      this.query.append(",PRIMARY KEY (").append(this.database.prepareFieldName(fields[0]));
             for (int i = 1; i < fields.length; ++i)
             {
-                this.query.append(", ").append(this.database.prepareFieldName(fields[i]));
+                //      this.query.append(", ").append(this.database.prepareFieldName(fields[i]));
             }
             this.query.append(")");
         }
@@ -194,10 +194,10 @@ public class MySQLTableBuilder extends MySQLComponentBuilder<TableBuilder>
         {
             throw new IllegalArgumentException("Foreign Keys can not be none!");
         }
-        this.query.append(", FOREIGN KEY (").append(this.database.prepareFieldName(keys[0]));
+        //    this.query.append(", FOREIGN KEY (").append(this.database.prepareFieldName(keys[0]));
         for (int i = 1; i < keys.length; ++i)
         {
-            this.query.append(", ").append(this.database.prepareFieldName(keys[i]));
+            //     this.query.append(", ").append(this.database.prepareFieldName(keys[i]));
         }
         this.query.append(')');
         this.foreignKeys = keys.length;
@@ -215,12 +215,12 @@ public class MySQLTableBuilder extends MySQLComponentBuilder<TableBuilder>
         {
             throw new IllegalArgumentException("Foreign Key-references have to be the same amount as the foreign keys!");
         }
-        this.query.append(" REFERENCES ").
-                append(this.database.prepareTableName(otherTable)).
-                append(" (").append(this.database.prepareFieldName(fields[0]));
+        //   this.query.append(" REFERENCES ").
+        //          append(this.database.prepareTableName(otherTable)).
+        //           append(" (").append(this.database.prepareFieldName(fields[0]));
         for (int i = 1; i < fields.length; ++i)
         {
-            this.query.append(", ").append(this.database.prepareFieldName(fields[i]));
+            //         this.query.append(", ").append(this.database.prepareFieldName(fields[i]));
         }
         this.query.append(')');
         return this;
@@ -266,10 +266,10 @@ public class MySQLTableBuilder extends MySQLComponentBuilder<TableBuilder>
     @Override
     public MySQLTableBuilder unique(String... fields)
     {
-        this.query.append(", UNIQUE(").append(this.database.prepareFieldName(fields[0]));
+        //    this.query.append(", UNIQUE(").append(this.database.prepareFieldName(fields[0]));
         for (int i = 1; i < fields.length; ++i)
         {
-            this.query.append(", ").append(this.database.prepareFieldName(fields[i]));
+            //      this.query.append(", ").append(this.database.prepareFieldName(fields[i]));
         }
         this.query.append(")");
         return this;

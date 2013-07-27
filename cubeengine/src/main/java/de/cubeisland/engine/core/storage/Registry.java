@@ -21,10 +21,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import de.cubeisland.engine.core.module.Module;
-import de.cubeisland.engine.core.storage.database.AttrType;
 import de.cubeisland.engine.core.storage.database.Database;
-import de.cubeisland.engine.core.storage.database.querybuilder.QueryBuilder;
-
 import gnu.trove.map.hash.THashMap;
 
 public class Registry
@@ -35,9 +32,10 @@ public class Registry
 
     public Registry(Database database)
     {
-        this.database = database;
+        this.database = database;/*
         try
         {
+             //TODO DATABASE
             QueryBuilder builder = database.getQueryBuilder();
             String sql = builder.createTable(TABLENAME, true).beginFields()
                     .field("key", AttrType.VARCHAR, 16)
@@ -58,6 +56,7 @@ public class Registry
         {
             throw new StorageException("Error while creating Registry-Statements");
         }
+        */
     }
 
     public void merge(Module module, String key, String value)

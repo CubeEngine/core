@@ -39,6 +39,7 @@ import org.bukkit.WorldType;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 
+import de.cubeisland.engine.basics.Basics;
 import de.cubeisland.engine.core.CubeEngine;
 import de.cubeisland.engine.core.bukkit.BukkitCore;
 import de.cubeisland.engine.core.bukkit.PlayerLanguageReceivedEvent;
@@ -47,13 +48,10 @@ import de.cubeisland.engine.core.config.Configuration;
 import de.cubeisland.engine.core.filesystem.FileUtil;
 import de.cubeisland.engine.core.module.Inject;
 import de.cubeisland.engine.core.module.Module;
-import de.cubeisland.engine.core.storage.database.Database;
 import de.cubeisland.engine.core.user.UserManager;
 import de.cubeisland.engine.core.util.matcher.Match;
-import de.cubeisland.engine.basics.Basics;
 import de.cubeisland.engine.test.commands.TestCommands;
 import de.cubeisland.engine.test.database.TestManager;
-import de.cubeisland.engine.test.database.TestModel;
 
 public class Test extends Module
 {
@@ -141,7 +139,8 @@ public class Test extends Module
     }
 
     public void initializeDatabase() throws SQLException
-    {
+    {//TODO DATABASE
+        /*
         Database db = this.getCore().getDB();
         try
         {
@@ -149,7 +148,7 @@ public class Test extends Module
         }
         catch (Exception ignore)
         {}
-        this.manager = new TestManager(db);
+        this.manager = new TestManager(db);*/
     }
 
     @Override
@@ -177,6 +176,8 @@ public class Test extends Module
 
     public void testDatabase() throws SQLException
     {
+        //TODO DATABASE
+        /*
         Database database = this.getCore().getDB();
 
         try
@@ -199,6 +200,7 @@ public class Test extends Module
         model.orderPrice = 100;
         model.customer = "Paul";
         this.manager.update(model);
+        */
     }
 
     public void testl18n()

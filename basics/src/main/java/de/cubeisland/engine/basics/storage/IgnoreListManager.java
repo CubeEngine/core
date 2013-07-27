@@ -49,10 +49,13 @@ public class IgnoreListManager extends TwoKeyStorage<Long, Long, IgnoreList>
     @Override
     protected void prepareStatements() throws SQLException
     {
+        //TODO DATABASE
+        /*
         super.prepareStatements();
         this.database.storeStatement(modelClass, "getAllByUser", this.database.getQueryBuilder()
                                                                               .select().wildcard().from(this.tableName)
                                                                               .where().field("key").isEqual().value().end().end());
+                                                                              */
     }
 
     public boolean addIgnore(User user, User toIgnore)

@@ -72,7 +72,7 @@ public abstract class MySQLComponentBuilder<This extends ComponentBuilder> imple
     @SuppressWarnings("unchecked")
     public This field(String name)
     {
-        this.query.append(this.database.prepareFieldName(name));
+        //   this.query.append(this.database.prepareFieldName(name));
         return (This)this;
     }
 
@@ -128,7 +128,7 @@ public abstract class MySQLComponentBuilder<This extends ComponentBuilder> imple
         }
         else if (value instanceof String || value instanceof Timestamp)
         {
-            this.query.append(this.database.prepareString(value.toString()));
+            //this.query.append(this.database.prepareString(value.toString()));
         }
         else
         {
@@ -251,7 +251,7 @@ public abstract class MySQLComponentBuilder<This extends ComponentBuilder> imple
     @SuppressWarnings("unchecked")
     public This as(String field)
     {
-        this.query.append(" AS ").append(this.database.prepareFieldName(field));
+        //   this.query.append(" AS ").append(this.database.prepareFieldName(field));
         return (This)this;
     }
 
@@ -269,14 +269,14 @@ public abstract class MySQLComponentBuilder<This extends ComponentBuilder> imple
     {
         if (fields.length == 1)
         {
-            this.query.append(" GROUP BY ").append(this.database.prepareFieldName(fields[0]));
+            //      this.query.append(" GROUP BY ").append(this.database.prepareFieldName(fields[0]));
         }
         else
         {
-            this.query.append(" GROUP BY ").append(this.database.prepareFieldName(fields[0]));
+            //    this.query.append(" GROUP BY ").append(this.database.prepareFieldName(fields[0]));
             for (int i = 1; i < fields.length; ++i)
             {
-                this.query.append(',').append(this.database.prepareFieldName(fields[i]));
+                //      this.query.append(',').append(this.database.prepareFieldName(fields[i]));
             }
         }
         return (This)this;

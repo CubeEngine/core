@@ -39,7 +39,7 @@ public class MySQLMergeBuilder extends MySQLComponentBuilder<MergeBuilder>
     @Override
     public MySQLMergeBuilder into(String table)
     {
-        this.query = new StringBuilder("INSERT INTO ").append(this.database.prepareTableName(table)).append(" ");
+        //this.query = new StringBuilder("INSERT INTO ").append(this.database.prepareTableName(table)).append(" ");
         this.updateColsSpecified = false;
         this.insertCols = null;
         return this;
@@ -50,11 +50,11 @@ public class MySQLMergeBuilder extends MySQLComponentBuilder<MergeBuilder>
     {
         Validate.notEmpty(cols, "You have to specify at least one col to insert");
 
-        this.query.append('(').append(this.database.prepareFieldName(cols[0]));
+        //   this.query.append('(').append(this.database.prepareFieldName(cols[0]));
         int i;
         for (i = 1; i < cols.length; ++i)
         {
-            this.query.append(',').append(this.database.prepareFieldName(cols[i]));
+            //      this.query.append(',').append(this.database.prepareFieldName(cols[i]));
         }
         this.query.append(") VALUES (?");
         for (i = 1; i < cols.length; ++i)
@@ -76,12 +76,12 @@ public class MySQLMergeBuilder extends MySQLComponentBuilder<MergeBuilder>
         }
         Validate.notEmpty(updateCols, "You have to specify at least one col to update!");
         assert this.insertCols.length >= updateCols.length: "More update cols than insert cols specified!";
-
-        String col = this.database.prepareFieldName(updateCols[0]);
+String col = null;
+        //   String col = this.database.prepareFieldName(updateCols[0]);
         this.query.append(" ON DUPLICATE KEY UPDATE ").append(col).append("=VALUES(").append(col).append(')');
         for (int i = 1; i < updateCols.length; ++i)
         {
-            col = this.database.prepareFieldName(updateCols[i]);
+            //      col = this.database.prepareFieldName(updateCols[i]);
             this.query.append(',').append(col).append("=VALUES(").append(col).append(')');
         }
 

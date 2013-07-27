@@ -41,7 +41,7 @@ public class MySQLInsertBuilder extends MySQLComponentBuilder<InsertBuilder>
     {
         assert table != null: "The table name must not be null!";
 
-        this.query = new StringBuilder("INSERT INTO ").append(this.database.prepareTableName(table)).append(' ');
+       // this.query = new StringBuilder("INSERT INTO ").append(this.database.prepareTableName(table)).append(' ');
         return this;
     }
 
@@ -51,10 +51,10 @@ public class MySQLInsertBuilder extends MySQLComponentBuilder<InsertBuilder>
         Validate.notEmpty(cols, "You have to specify at least one col to insert");
         Validate.noNullElements(cols, "Column names must not be null!");
 
-        this.query.append('(').append(this.database.prepareFieldName(cols[0]));
+        //this.query.append('(').append(this.database.prepareFieldName(cols[0]));
         for (int i = 1; i < cols.length; ++i)
         {
-            this.query.append(',').append(this.database.prepareFieldName(cols[i]));
+          //  this.query.append(',').append(this.database.prepareFieldName(cols[i]));
         }
         this.query.append(")");
         this.colsSet = true;
