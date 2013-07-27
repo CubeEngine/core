@@ -22,17 +22,16 @@ import java.nio.charset.Charset;
 import java.util.HashMap;
 import java.util.Map;
 
-import de.cubeisland.engine.core.webapi.exception.ApiRequestException;
-
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import de.cubeisland.engine.core.webapi.exception.ApiRequestException;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerContext;
-import io.netty.channel.ChannelInboundMessageHandlerAdapter;
+import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.handler.codec.http.DefaultFullHttpResponse;
 import io.netty.handler.codec.http.FullHttpRequest;
 import io.netty.handler.codec.http.FullHttpResponse;
@@ -58,7 +57,7 @@ import static io.netty.handler.codec.http.HttpHeaders.Names.HOST;
  *
  * @author Phillip Schichtel
  */
-public class ApiRequestHandler extends ChannelInboundMessageHandlerAdapter<Object>
+public class ApiRequestHandler extends SimpleChannelInboundHandler<Object>
 {
     // TODO rewrite log messages, most of them are incomplete
     private final Charset UTF8 = Charset.forName("UTF-8");
@@ -83,7 +82,7 @@ public class ApiRequestHandler extends ChannelInboundMessageHandlerAdapter<Objec
     }
 
     @Override
-    public void messageReceived(ChannelHandlerContext context, Object message) throws Exception
+    public void channelRead0(ChannelHandlerContext context, Object message) throws Exception
     {
         this.logger.info("{} connected...", ((InetSocketAddress)context.channel().remoteAddress()).getAddress().getHostAddress());
         if (!this.server.isAddressAccepted((InetSocketAddress)context.channel().remoteAddress()))
@@ -252,66 +251,66 @@ public class ApiRequestHandler extends ChannelInboundMessageHandlerAdapter<Objec
         String command = content.substring(0, newLinePos).trim();
         content = content.substring(newLinePos).trim();
 
-        if ("request".equals(command))
+        switch (command)
         {
-            String route;
-            newLinePos = content.indexOf('\n');
-            RequestMethod method = null;
-            if (newLinePos == -1)
-            {
-                route = content;
-            }
-            else
-            {
-                route = normalizeRoute(content.substring(0, newLinePos));
-                content = content.substring(newLinePos).trim();
-
-                final int spacePos = route.indexOf(' ');
-                if (spacePos != -1)
+            case "request":
+                String route;
+                newLinePos = content.indexOf('\n');
+                RequestMethod method = null;
+                if (newLinePos == -1)
                 {
-                    method = RequestMethod.getByName(route.substring(0, spacePos));
-                    route = route.substring(spacePos + 1);
+                    route = content;
                 }
-            }
+                else
+                {
+                    route = normalizeRoute(content.substring(0, newLinePos));
+                    content = content.substring(newLinePos).trim();
 
-            if (method == null)
-            {
-                method = RequestMethod.GET;
-            }
+                    final int spacePos = route.indexOf(' ');
+                    if (spacePos != -1)
+                    {
+                        method = RequestMethod.getByName(route.substring(0, spacePos));
+                        route = route.substring(spacePos + 1);
+                    }
+                }
 
-            JsonNode data = null;
-            if (!content.isEmpty())
-            {
+                if (method == null)
+                {
+                    method = RequestMethod.GET;
+                }
+
+                JsonNode data = null;
+                if (!content.isEmpty())
+                {
+                    try
+                    {
+                        data = this.objectMapper.readTree(content);
+                    }
+                    catch (Exception e)
+                    {
+                        // TODO ERROR
+                    }
+                }
+
+                ApiHandler handler = this.server.getApiHandler(route);
+                Parameters params = null;
+                ApiRequest request = new ApiRequest((InetSocketAddress)context.channel()
+                                                                              .remoteAddress(), method, params, HttpHeaders.EMPTY_HEADERS, data);
+                ApiResponse response = new ApiResponse();
                 try
                 {
-                    data = this.objectMapper.readTree(content);
+                    handler.execute(request, response);
                 }
-                catch (Exception e)
+                catch (Exception ignored)
                 {
-                    // TODO ERROR
                 }
-            }
-
-            ApiHandler handler = this.server.getApiHandler(route);
-            Parameters params = null;
-            ApiRequest request = new ApiRequest((InetSocketAddress)context.channel().remoteAddress(), method, params, HttpHeaders.EMPTY_HEADERS, data);
-            ApiResponse response = new ApiResponse();
-            try
-            {
-                handler.execute(request, response);
-            }
-            catch (ApiRequestException ignored)
-            {}
-            catch (Throwable ignored) // TODO change to exception
-            {}
-        }
-        else if ("subscribe".equals(command))
-        {
-            this.server.subscribe(content.trim(), this);
-        }
-        else if ("unsubscribe".equals(command))
-        {
-            this.server.unsubscribe(content.trim(), this);
+                break;
+            case "subscribe":
+                this.server.subscribe(content.trim(), this);
+                break;
+            case "unsubscribe":
+                this.server.unsubscribe(content.trim(), this);
+                break;
         }
 
         context.write(new TextWebSocketFrame(command + " -- " + content));
@@ -329,13 +328,13 @@ public class ApiRequestHandler extends ChannelInboundMessageHandlerAdapter<Objec
 
     private void error(ChannelHandlerContext context, RequestError error, ApiRequestException e)
     {
-        Map<String, Object> data = new HashMap<String, Object>();
+        Map<String, Object> data = new HashMap<>();
         data.put("id", error.getCode());
         data.put("desc", error.getDescription());
 
         if (e != null)
         {
-            Map<String, Object> reason = new HashMap<String, Object>();
+            Map<String, Object> reason = new HashMap<>();
             reason.put("id", e.getCode());
             reason.put("desc", e.getMessage());
             data.put("reason", reason);
