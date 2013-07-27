@@ -18,22 +18,18 @@
 package de.cubeisland.engine.log.storage;
 
 import java.io.File;
-import java.sql.Timestamp;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.bukkit.Location;
 import org.bukkit.World;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import de.cubeisland.engine.core.bukkit.BukkitCore;
 import de.cubeisland.engine.core.config.Configuration;
-import de.cubeisland.engine.core.storage.database.querybuilder.SelectBuilder;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.log.Log;
 import de.cubeisland.engine.log.LoggingConfiguration;
 import de.cubeisland.engine.log.storage.QueryManager.QueryAction;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class LogManager
 {
@@ -77,7 +73,8 @@ public class LogManager
         this.worldConfigs.put(world, config);
         return config;
     }
-
+// TODO DATABASE
+    /*
     private void buildWorldAndLocation(SelectBuilder builder, World world, Location loc1, Location loc2)
     {
         if (world != null)
@@ -101,11 +98,11 @@ public class LogManager
             builder.and();
         }
     }
-
     private void buildDates(SelectBuilder builder, Timestamp fromDate, Timestamp toDate)
     {
         builder.beginSub().field("date").between(fromDate, toDate).endSub();
     }
+    */
 
     public void disable()
     {

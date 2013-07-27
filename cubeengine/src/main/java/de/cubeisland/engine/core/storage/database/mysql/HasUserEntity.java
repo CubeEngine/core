@@ -17,6 +17,7 @@
  */
 package de.cubeisland.engine.core.storage.database.mysql;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
@@ -26,13 +27,15 @@ import de.cubeisland.engine.core.storage.database.AttrType;
 import de.cubeisland.engine.core.storage.database.Attribute;
 
 @Entity
-@Table(name = "hasuser")
+@Table(name = "hasuser_test")
 public class HasUserEntity
 {
     @Id
     @Attribute(type = AttrType.INT, unsigned = true)
     private long id;
     @ManyToOne
+    @Column(name = "userEntity_id")
+    @Attribute(type = AttrType.INT, unsigned = true)
     private UserEntityTest userEntity;
 
     public long getId()

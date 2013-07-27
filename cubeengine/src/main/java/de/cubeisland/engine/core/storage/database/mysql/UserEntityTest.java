@@ -29,7 +29,7 @@ import de.cubeisland.engine.core.storage.database.AttrType;
 import de.cubeisland.engine.core.storage.database.Attribute;
 
 @Entity
-@Table(name = "user")
+@Table(name = "user_test")
 public class UserEntityTest
 {
     @Version

@@ -31,7 +31,7 @@ import de.cubeisland.engine.core.storage.database.SingleKeyEntity;
 import de.cubeisland.engine.core.storage.database.mysql.MySQLDatabase;
 import de.cubeisland.engine.core.storage.database.mysql.MySQLQueryBuilder;
 
-import static de.cubeisland.engine.core.storage.database.mysql.MySQLDatabase.prepareFieldName;
+import static de.cubeisland.engine.core.storage.database.mysql.MySQLDatabase.prepareColumnName;
 
 /**
  * Storage-Implementation for single Integer-Key-Models
@@ -128,28 +128,28 @@ public class SingleKeyStorage<Key_f, M extends Model<Key_f>> extends AbstractSto
             {
                 case FOREIGN_KEY:
                     String[] fields = index.fields();
-                    builder.append(",\n FOREIGN KEY (").append(prepareFieldName(fields[0]));
+                    builder.append(",\n FOREIGN KEY (").append(prepareColumnName(fields[0]));
                     for (int i = 1; i < fields.length; ++i)
                     {
-                        builder.append(", ").append(prepareFieldName(fields[i]));
+                        builder.append(", ").append(prepareColumnName(fields[i]));
                     }
                     builder.append(')');
                     break;
                 case UNIQUE:
                     fields = index.fields();
-                    builder.append(",\n UNIQUE(").append(prepareFieldName(fields[0]));
+                    builder.append(",\n UNIQUE(").append(prepareColumnName(fields[0]));
                     for (int i = 1; i < fields.length; ++i)
                     {
-                        builder.append(", ").append(prepareFieldName(fields[i]));
+                        builder.append(", ").append(prepareColumnName(fields[i]));
                     }
                     builder.append(")");
                     break;
                 case INDEX:
                     fields = index.fields();
-                    builder.append(", INDEX (").append(prepareFieldName(fields[0]));
+                    builder.append(", INDEX (").append(prepareColumnName(fields[0]));
                     for (int i = 1; i < fields.length; ++i)
                     {
-                        builder.append(", ").append(prepareFieldName(fields[i]));
+                        builder.append(", ").append(prepareColumnName(fields[i]));
                     }
                     builder.append(')');
             }
@@ -214,28 +214,28 @@ public class SingleKeyStorage<Key_f, M extends Model<Key_f>> extends AbstractSto
         {
             builder.append(", ?");
         }
-        String col = MySQLDatabase.prepareFieldName(fields[0]);
+        String col = MySQLDatabase.prepareColumnName(fields[0]);
         builder.append(')').append("\nON DUPLICATE KEY UPDATE ").append(col).append("=VALUES(").append(col).append(")");
         for (int j = 1; j < fields.length; ++j)
         {
-            col = MySQLDatabase.prepareFieldName(fields[j]);
+            col = MySQLDatabase.prepareColumnName(fields[j]);
             builder.append(", ").append(col).append("=VALUES(").append(col).append(')');
         }
         this.database.storeStatement(this.modelClass, "merge", builder.toString());
         this.database.storeStatement(this.modelClass, "get", new StringBuilder("SELECT ").append(MySQLQueryBuilder.fields(this.allFields))
                              .append("\nFROM ").append(preparedTableName)
-                             .append("\nWHERE ").append(MySQLDatabase.prepareFieldName(this.dbKey)).append(" = ?").toString());
+                             .append("\nWHERE ").append(MySQLDatabase.prepareColumnName(this.dbKey)).append(" = ?").toString());
         builder = new StringBuilder("UPDATE ").append(preparedTableName).append("\nSET ");
-        builder.append(MySQLDatabase.prepareFieldName(fields[0])).append("=? ");
+        builder.append(MySQLDatabase.prepareColumnName(fields[0])).append("=? ");
         for (int j = 1; j < fields.length; ++j)
         {
-            builder.append(',').append(MySQLDatabase.prepareFieldName(fields[j])).append("=? ");
+            builder.append(',').append(MySQLDatabase.prepareColumnName(fields[j])).append("=? ");
         }
-        builder.append("\nWHERE ").append(MySQLDatabase.prepareFieldName(this.dbKey)).append(" = ?");
+        builder.append("\nWHERE ").append(MySQLDatabase.prepareColumnName(this.dbKey)).append(" = ?");
         this.database.storeStatement(this.modelClass, "update", builder.toString());
 
         this.database.storeStatement(this.modelClass, "delete", new StringBuilder("DELETE FROM ").append(preparedTableName)
-                                             .append("\nWHERE ").append(MySQLDatabase.prepareFieldName(this.dbKey)).append(" = ? LIMIT 1").toString());
+                                             .append("\nWHERE ").append(MySQLDatabase.prepareColumnName(this.dbKey)).append(" = ? LIMIT 1").toString());
     }
 
     @Override

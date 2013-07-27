@@ -34,9 +34,7 @@ import java.util.concurrent.TimeUnit;
 
 import de.cubeisland.engine.core.command.CommandSender;
 import de.cubeisland.engine.core.storage.StorageException;
-import de.cubeisland.engine.core.storage.database.AttrType;
 import de.cubeisland.engine.core.storage.database.Database;
-import de.cubeisland.engine.core.storage.database.querybuilder.QueryBuilder;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.util.Profiler;
 import de.cubeisland.engine.log.Log;
@@ -145,7 +143,8 @@ public class QueryManager
         }, this.module.getConfiguration().cleanUpDelay.toTicks(), this.module.getConfiguration().cleanUpDelay.toTicks());
         this.cleanUpLogs();
     }
-
+//TODO DATABASE
+    /*
     private void createTableWithInsertQuery(QueryBuilder builder, String table) throws SQLException
     {
         String sql = builder.createTable(table, true).beginFields()
@@ -178,7 +177,7 @@ public class QueryManager
                      .end().end();
         this.database.storeStatement(this.getClass(), "storeLog", sql);
     }
-
+    */
     /**
      * ONLY execute async this could take a LONG time
      */

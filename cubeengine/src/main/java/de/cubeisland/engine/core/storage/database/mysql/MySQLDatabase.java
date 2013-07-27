@@ -37,7 +37,9 @@ import javax.persistence.Table;
 import com.avaje.ebean.EbeanServer;
 import com.avaje.ebean.EbeanServerFactory;
 import com.avaje.ebean.config.DataSourceConfig;
+import com.avaje.ebean.config.MatchingNamingConvention;
 import com.avaje.ebean.config.ServerConfig;
+import com.avaje.ebean.config.TableName;
 import com.jolbox.bonecp.BoneCP;
 import com.jolbox.bonecp.BoneCPConfig;
 import de.cubeisland.engine.core.Core;
@@ -95,10 +97,10 @@ public class MySQLDatabase extends AbstractPooledDatabase
         ServerConfig serverConfig = new ServerConfig();
         serverConfig.setDataSourceConfig(dataSourceConfig);
         serverConfig.setName("cubeengine");
-
+        serverConfig.setNamingConvention(new NamingConvention());
         //serverConfig.setDdlGenerate(true);
         //serverConfig.setDdlRun(true);
-        EbeanServer ebeanServer = EbeanServerFactory.create(serverConfig);
+            EbeanServer ebeanServer = EbeanServerFactory.create(serverConfig);
         ebeanServer.getServerCacheManager().setCaching(UserEntityTest.class, true);
         ebeanServer.getServerCacheManager().init(ebeanServer);
 
@@ -128,6 +130,7 @@ public class MySQLDatabase extends AbstractPooledDatabase
         ebeanServer.refresh(get);
         System.out.print(get.getId() + ":" + get.getPlayer());
 
+
     }
 
     public static MySQLDatabase loadFromConfig(Core core, File file)
@@ -152,15 +155,13 @@ public class MySQLDatabase extends AbstractPooledDatabase
             StringBuilder builder = new StringBuilder("CREATE");
             // TODO TEMPORARY and alternativ name for temp-table (or just append _temp)
             builder.append(" TABLE");
-            builder.append(" IF NOT EXISTS"); // TODO
+            builder.append(" IF NOT EXISTS "); // TODO
             Table table = modelClass.getAnnotation(Table.class);
             builder.append(MySQLDatabase.prepareTableName(table.name())).append("\n(");
             boolean first = true;
             boolean autoIncrement = false;
             for (Field field : modelClass.getDeclaredFields())
             {
-                if (!first) builder.append(",\n");
-                first = false;
                 if (field.isAnnotationPresent(javax.persistence.Version.class) && field.getType().equals(Version.class))
                 {
                     try
@@ -173,6 +174,8 @@ public class MySQLDatabase extends AbstractPooledDatabase
                 }
                 if (field.isAnnotationPresent(Attribute.class))
                 {
+                    if (!first) builder.append(",\n");
+                    first = false;
                     Attribute attribute = field.getAnnotation(Attribute.class);
                     Column column = field.getAnnotation(Column.class);
                     Id id = field.getAnnotation(Id.class);
@@ -189,7 +192,8 @@ public class MySQLDatabase extends AbstractPooledDatabase
                         }
                         // TODO MultiKey
                     }
-                    else if (id != null || column != null) // Primary Key OR Column
+                    else if (field.isAnnotationPresent(ManyToOne.class)
+                        || id != null || column != null) // Primary Key OR Column
                     {
                         builder.append(getColName(field, column)).append(" ") // col_name
                                .append(attribute.type().name()) // data_type
@@ -218,18 +222,19 @@ public class MySQLDatabase extends AbstractPooledDatabase
             }
             // TODO multi unique uses UniqueConstraint in table annotation
             builder.append(")\n");
-            if (autoIncrement) builder.append(" AUTO_INCREMENT 1,\n");
+            if (autoIncrement) builder.append("AUTO_INCREMENT 1,\n");
             builder.append("ENGINE InnoDB,\n");
             builder.append("COLLATE utf8_unicode_ci,\n");
-            builder.append(" COMMENT ").append(MySQLDatabase.prepareString(version.toString()));
+            builder.append("COMMENT ").append(MySQLDatabase.prepareString(version.toString()));
             // TODO multi unique uses UniqueConstraint in table annotation
             try
             {
                 this.execute(builder.toString());
+                System.out.print("\n" + builder.toString());
             }
             catch (SQLException e)
             {
-                System.out.print(builder.toString());
+
                 e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
             }
             return;
@@ -246,8 +251,8 @@ public class MySQLDatabase extends AbstractPooledDatabase
         {
             if (foreignField.isAnnotationPresent(Id.class))
             {
-                builder.append(getColName(field, column)).append(" REFERENCES ")
-                    .append(tableName).append(" (")
+                builder.append("(").append(getColName(field, column)).append(") REFERENCES ")
+                    .append(tableName).append("(")
                     .append(getColName(foreignField, foreignField.getAnnotation(Column.class)))
                     .append(")");
                 for (CascadeType cascade : cascades)
@@ -274,7 +279,7 @@ public class MySQLDatabase extends AbstractPooledDatabase
         AttrType type = attribute.type();
         if (type.can(LENGTH))
         {
-            if (column.length() != 255)
+            if (column != null && column.length() != 255)
             {
                 builder.append("(").append(column.length());
                 if (type.can(DECIMALS))
@@ -330,7 +335,7 @@ public class MySQLDatabase extends AbstractPooledDatabase
 
     static String getKeyType(Id id, Column column)
     {
-        return id == null ? (column.unique() ? " UNIQUE KEY " : "") : " PRIMARY KEY ";
+        return id == null ? (column != null && column.unique() ? " UNIQUE KEY " : "") : " PRIMARY KEY ";
     }
 
     static String getAutoIncrement(Id id)
@@ -343,17 +348,17 @@ public class MySQLDatabase extends AbstractPooledDatabase
     {
         if (column != null && !column.name().isEmpty())
         {
-            return column.name();
+            return MySQLDatabase.prepareColumnName(column.name());
         }
         else
         {
-            return field.getName();
+            return MySQLDatabase.prepareColumnName(field.getName());
         }
     }
 
     static String getNullOrNotNull(Column column)
     {
-        return column == null || !column.nullable() ? "NOT NULL" : "NULL";
+        return column == null || !column.nullable() ? " NOT NULL " : " NULL ";
     }
 
     @Override
@@ -387,7 +392,7 @@ public class MySQLDatabase extends AbstractPooledDatabase
      * @param name the fieldname to prepare
      * @return the prepared fieldname
      */
-    public static String prepareFieldName(String name)
+    public static String prepareColumnName(String name)
     {
         assert name != null: "The name must not be null!";
 
@@ -421,5 +426,15 @@ public class MySQLDatabase extends AbstractPooledDatabase
     public String getName()
     {
         return "MySQL";
+    }
+
+    class NamingConvention extends MatchingNamingConvention
+    {
+        @Override
+        public TableName getTableName(Class<?> beanClass)
+        {
+            TableName tableName = super.getTableName(beanClass);
+            return new TableName(tableName.getCatalog(), tableName.getSchema(), MySQLDatabase.this.config.tablePrefix + tableName.getName());
+        }
     }
 }
