@@ -18,18 +18,12 @@
 package de.cubeisland.engine.core.bukkit;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.text.SimpleDateFormat;
 import java.util.Collections;
-import java.util.Date;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipOutputStream;
 
 import org.bukkit.Server;
 import org.bukkit.command.CommandMap;
@@ -64,7 +58,6 @@ import de.cubeisland.engine.core.command.commands.VanillaCommands.WhitelistComma
 import de.cubeisland.engine.core.command.reflected.ReflectedCommandFactory;
 import de.cubeisland.engine.core.command.reflected.readable.ReadableCommandFactory;
 import de.cubeisland.engine.core.config.Configuration;
-import de.cubeisland.engine.core.filesystem.FileManager;
 import de.cubeisland.engine.core.i18n.I18n;
 import de.cubeisland.engine.core.logger.ColorConverter;
 import de.cubeisland.engine.core.logger.JULAppender;
@@ -96,7 +89,7 @@ public final class BukkitCore extends JavaPlugin implements Core
     private Database database;
     private BukkitPermissionManager permissionManager;
     private BukkitUserManager userManager;
-    private FileManager fileManager;
+    private BukkitFileManager fileManager;
     private BukkitModuleManager moduleManager;
     private I18n i18n;
     private BukkitCoreConfiguration config;
@@ -115,6 +108,7 @@ public final class BukkitCore extends JavaPlugin implements Core
     private ServiceManager serviceManager;
 
     private List<Runnable> initHooks;
+    private LoggerContext loggerContext;
 
 
     @Override
@@ -140,7 +134,7 @@ public final class BukkitCore extends JavaPlugin implements Core
 
         try
         {
-            this.fileManager = new FileManager(this, this.getDataFolder().getAbsoluteFile());
+            this.fileManager = new BukkitFileManager(this);
         }
         catch (IOException e)
         {
@@ -161,7 +155,9 @@ public final class BukkitCore extends JavaPlugin implements Core
             this.getLogger().log(java.util.logging.Level.SEVERE, "Failed to set the system property for the log folder", e);
         }
 
-        ((LoggerContext)LoggerFactory.getILoggerFactory()).start();
+        this.loggerContext = (LoggerContext)LoggerFactory.getILoggerFactory();
+        this.loggerContext.start();
+
         try
         {
             File logbackXML = new File(this.getDataFolder(), "logback.xml");
@@ -313,7 +309,7 @@ public final class BukkitCore extends JavaPlugin implements Core
         this.permissionManager = new BukkitPermissionManager(this);
 
         // depends on: core module
-        this.corePerms = new CorePerms(this.getModuleManager().getCoreModule());
+        this.corePerms = new CorePerms(this.moduleManager.getCoreModule());
 
         // depends on: server, module manager
         this.commandManager.registerCommand(new ModuleCommands(this.moduleManager));
@@ -409,13 +405,6 @@ public final class BukkitCore extends JavaPlugin implements Core
             this.apiServer = null;
         }
 
-        if (this.fileManager != null)
-        {
-            this.logger.debug("file manager cleanup");
-            this.fileManager.clean();
-            this.fileManager = null;
-        }
-
         if (this.userManager != null)
         {
             this.logger.debug("user manager cleanup");
@@ -453,63 +442,32 @@ public final class BukkitCore extends JavaPlugin implements Core
         CubeEngine.clean();
         Convert.cleanup();
         Profiler.clean();
-        this.cleanupLogging();
+
+        if (this.fileManager != null)
+        {
+            this.logger.debug("file manager cleanup");
+            this.fileManager.clean();
+        }
+
+        if (this.loggerContext != null)
+        {
+            this.loggerContext.stop();
+        }
+
+        if (this.fileManager != null)
+        {
+            this.fileManager.cycleLogs();
+        }
+        this.fileManager = null;
     }
 
     public void addInitHook(Runnable runnable)
     {
-        assert runnable != null: "The runnble must nto be null!";
+        assert runnable != null: "The runnble must not be null!";
 
         this.initHooks.add(runnable);
     }
 
-    private void cleanupLogging()
-    {
-        String date = new SimpleDateFormat("yyyy-MM-dd--HHmm").format(new Date(logger.getLoggerContext().getBirthTime()));
-        ((LoggerContext)LoggerFactory.getILoggerFactory()).stop();
-        if (this.getConfiguration().loggingArchiveLogs)
-        {
-            try
-            {
-                ZipOutputStream zip = new ZipOutputStream(new FileOutputStream(
-                    System.getProperty("cubeengine.logger.default-path") + File.separator + date + ".zip"));
-                File oldLogFolder = new File(System.getProperty("cubeengine.logger.default-path") + File.separator + date);
-                if (!oldLogFolder.exists() || !oldLogFolder.isDirectory())
-                {
-                    zip.close();
-                    System.out.println(oldLogFolder.exists() + " " + oldLogFolder.isDirectory() + " - " + oldLogFolder.getAbsolutePath());
-                    return;
-                }
-                for (File logFile : oldLogFolder.listFiles())
-                {
-                    if (!logFile.isFile())
-                    {
-                        throw new IOException("A folder was placed in the log directory");
-                    }
-                    ZipEntry zipLogFile = new ZipEntry(logFile.getName());
-                    zip.putNextEntry(zipLogFile);
-                    FileInputStream logStream = new FileInputStream(logFile.getCanonicalFile());
-
-                    int c;
-                    while ((c = logStream.read()) != -1) {
-                        zip.write(c);
-                    }
-
-                    zip.closeEntry();
-                    logStream.close();
-                    logFile.delete();
-                }
-                zip.finish();
-                zip.close();
-                oldLogFolder.delete();
-            }
-            catch (IOException ex)
-            {
-                this.getLogger().log(java.util.logging.Level.WARNING, "An error occured while compressing the logs: "
-                    + ex.getLocalizedMessage(), ex);
-            }
-        }
-    }
 
     @Override
     public ChunkGenerator getDefaultWorldGenerator(String worldName, String id)
@@ -565,7 +523,7 @@ public final class BukkitCore extends JavaPlugin implements Core
     }
 
     @Override
-    public FileManager getFileManager()
+    public BukkitFileManager getFileManager()
     {
         return this.fileManager;
     }
