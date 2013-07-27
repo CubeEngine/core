@@ -18,7 +18,6 @@
 package de.cubeisland.engine.core.bukkit;
 
 import java.lang.reflect.Field;
-import java.util.List;
 import java.util.Locale;
 import java.util.logging.Filter;
 import java.util.logging.Logger;
@@ -26,34 +25,24 @@ import java.util.logging.Logger;
 import net.minecraft.server.v1_6_R2.DedicatedPlayerList;
 import net.minecraft.server.v1_6_R2.EntityPlayer;
 import net.minecraft.server.v1_6_R2.Item;
-import net.minecraft.server.v1_6_R2.PlayerConnection;
 import net.minecraft.server.v1_6_R2.RecipesFurnace;
-import net.minecraft.server.v1_6_R2.ServerConnection;
 import net.minecraft.server.v1_6_R2.TileEntityFurnace;
 import org.bukkit.craftbukkit.v1_6_R2.CraftServer;
 import org.bukkit.craftbukkit.v1_6_R2.entity.CraftPlayer;
 import org.bukkit.craftbukkit.v1_6_R2.inventory.CraftItemStack;
 
 import org.bukkit.Bukkit;
-import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Server;
 import org.bukkit.command.CommandMap;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
-import org.bukkit.event.HandlerList;
-import org.bukkit.event.Listener;
-import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.inventory.ItemStack;
 
-import de.cubeisland.engine.core.CubeEngine;
+import de.cubeisland.engine.core.bukkit.packethook.PacketHookInjector;
 import de.cubeisland.engine.core.i18n.I18n;
 import de.cubeisland.engine.core.i18n.Language;
 import de.cubeisland.engine.core.user.User;
-import de.cubeisland.engine.core.util.ReflectionUtils;
-
 import sun.misc.Signal;
 import sun.misc.SignalHandler;
 
@@ -65,7 +54,6 @@ import sun.misc.SignalHandler;
 public class BukkitUtils
 {
     private static Field entityPlayerLocaleField;
-    private static Field playerConnectionListField = ReflectionUtils.findFirstField(ServerConnection.class, List.class);
 
     static boolean init(BukkitCore core)
     {
@@ -74,8 +62,6 @@ public class BukkitUtils
             entityPlayerLocaleField = EntityPlayer.class.getDeclaredField("locale");
             entityPlayerLocaleField.setAccessible(true);
 
-            playerConnectionListField = ReflectionUtils.findFirstField(ServerConnection.class, List.class);
-            playerConnectionListField.setAccessible(true);
         }
         catch (Exception e)
         {
@@ -169,106 +155,9 @@ public class BukkitUtils
         }
     }
 
-    private static PacketHookInjector hookInjector = null;
-    /**
-     * Registers the packet hook injector
-     *
-     * @param core the BukkitCore
-     */
-    static synchronized void registerPacketHookInjector(BukkitCore core)
-    {
-        if (hookInjector == null)
-        {
-            hookInjector = new PacketHookInjector();
-            core.getServer().getPluginManager().registerEvents(hookInjector, core);
-
-            for (Player player : core.getServer().getOnlinePlayers())
-            {
-                PacketHookInjector.swap(player);
-            }
-        }
-    }
-
     public static int getPing(Player onlinePlayer)
     {
         return ((CraftPlayer)onlinePlayer).getHandle().ping;
-    }
-
-    private static class PacketHookInjector implements Listener
-    {
-        public void shutdown()
-        {
-            HandlerList.unregisterAll(this);
-
-            for (Player player : Bukkit.getOnlinePlayers())
-            {
-                resetPlayerConnection(player);
-            }
-        }
-
-        /**
-         * The event listener swaps the joining player's NetServerHandler
-         * instance with a custom one including all the magic to make the new
-         * NetServerHandler work.
-         *
-         * @param event the join event object
-         */
-        @EventHandler(priority = EventPriority.LOW)
-        public void onPlayerJoin(PlayerJoinEvent event)
-        {
-            swap(event.getPlayer());
-        }
-
-        public static void swap(final Player player)
-        {
-            final EntityPlayer entity = ((CraftPlayer)player).getHandle();
-
-            swapPlayerConnection(entity, new CubePlayerConnection(player, entity, entity.playerConnection));
-        }
-    }
-
-    private static final Location helperLocation = new Location(null, 0, 0, 0);
-
-    @SuppressWarnings("unchecked")
-    private static void swapPlayerConnection(EntityPlayer player, PlayerConnection newHandler)
-    {
-        if (playerConnectionListField == null)
-        {
-            return;
-        }
-        PlayerConnection oldHandler = player.playerConnection;
-        try
-        {
-            if (oldHandler.getClass() != newHandler.getClass())
-            {
-                Location loc = player.getBukkitEntity().getLocation(helperLocation);
-                newHandler.a(loc.getX(), loc.getY(), loc.getZ(), loc.getYaw(), loc.getPitch());
-
-                ServerConnection serverConnection = player.server.ag();
-                ((List<PlayerConnection>)playerConnectionListField.get(serverConnection)).remove(oldHandler);
-                serverConnection.a(newHandler);
-                CubeEngine.getLog().debug("Replaced the PlayerConnection of player '{}'", player.getName());
-                oldHandler.disconnected = true;
-            }
-        }
-        catch (Exception e)
-        {
-            player.playerConnection = oldHandler;
-            CubeEngine.getLog().debug("Failed to swap the PlayerConnection of player {}: " + e.getLocalizedMessage(), e);
-        }
-    }
-
-    public static void resetPlayerConnection(Player player)
-    {
-        final EntityPlayer entity = ((CraftPlayer)player).getHandle();
-
-        // only swap back if it's still our wrapper
-        if (entity.playerConnection instanceof CubePlayerConnection)
-        {
-            PlayerConnection old = ((CubePlayerConnection)entity.playerConnection).getOldPlayerConnection();
-            old.disconnected = false;
-            swapPlayerConnection(entity, old);
-        }
     }
 
     public static boolean isInvulnerable(Player player)
@@ -302,11 +191,7 @@ public class BukkitUtils
 
     public static synchronized void cleanup()
     {
-        if (hookInjector != null)
-        {
-            hookInjector.shutdown();
-            hookInjector = null;
-        }
+        PacketHookInjector.shutdown();
 
         resetCommandLogging();
     }

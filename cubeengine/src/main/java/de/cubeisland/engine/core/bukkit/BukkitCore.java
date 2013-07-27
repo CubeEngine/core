@@ -48,6 +48,7 @@ import de.cubeisland.engine.core.bukkit.command.FallbackCommandBackend;
 import de.cubeisland.engine.core.bukkit.command.SimpleCommandBackend;
 import de.cubeisland.engine.core.bukkit.metrics.MetricsInitializer;
 import de.cubeisland.engine.core.bukkit.packethook.PacketEventManager;
+import de.cubeisland.engine.core.bukkit.packethook.PacketHookInjector;
 import de.cubeisland.engine.core.command.ArgumentReader;
 import de.cubeisland.engine.core.command.commands.CoreCommands;
 import de.cubeisland.engine.core.command.commands.ModuleCommands;
@@ -241,7 +242,10 @@ public final class BukkitCore extends JavaPlugin implements Core
         }
 
         this.packetEventManager = new PacketEventManager(this.logger);
-        BukkitUtils.registerPacketHookInjector(this);
+        if (!PacketHookInjector.register(this))
+        {
+            this.logger.warn("Failed to register the packet hook, some features might not work.");
+        }
 
         // depends on: object mapper
         this.apiServer = new ApiServer(this);
