@@ -26,7 +26,6 @@ import javax.persistence.Table;
 
 import de.cubeisland.engine.core.storage.database.AttrType;
 import de.cubeisland.engine.core.storage.database.Attribute;
-import de.cubeisland.engine.core.storage.database.Index;
 
 @Entity
 @Table(name = "user")
@@ -37,19 +36,19 @@ public class UserEntityTest
     private long id;
     @Column(nullable = false, length = 16)
     @Attribute(type = AttrType.VARCHAR)
-    private String player;
+    private String player ="abc";
     @Column(nullable = false)
     @Attribute(type = AttrType.BOOLEAN)
     private boolean nogc = false;
     @Column(nullable = false)
     @Attribute(type = AttrType.DATETIME)
-    private Timestamp lastseen;
+    private Timestamp lastseen = new Timestamp(System.currentTimeMillis());
     @Column(length = 128)
     @Attribute(type = AttrType.VARBINARY)
     private byte[] passwd;
     @Column(nullable = false)
     @Attribute(type = AttrType.DATETIME)
-    private Timestamp firstseen;
+    private Timestamp firstseen= new Timestamp(System.currentTimeMillis());;
     @Column(name = "language", length = 5)
     @Attribute(type = AttrType.VARCHAR)
     private Locale locale = null;

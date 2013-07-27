@@ -30,6 +30,8 @@ import javax.persistence.Column;
 import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 import com.avaje.ebean.EbeanServer;
@@ -95,7 +97,32 @@ public class MySQLDatabase extends AbstractPooledDatabase
         serverConfig.setDdlGenerate(true);
         serverConfig.setDdlRun(true);
         EbeanServer ebeanServer = EbeanServerFactory.create(serverConfig);
-        UserEntityTest userEntity = ebeanServer.find(UserEntityTest.class, 1);
+        ebeanServer.getServerCacheManager().setCaching(UserEntityTest.class, true);
+        ebeanServer.getServerCacheManager().init(ebeanServer);
+
+
+
+        UserEntityTest created = ebeanServer.createEntityBean(UserEntityTest.class);
+        ebeanServer.save(created);
+        HasUserEntity created2 = new HasUserEntity();
+        created2.setUserEntity(created);
+        ebeanServer.save(created2);
+
+        UserEntityTest get = ebeanServer.find(UserEntityTest.class, 1);
+        HasUserEntity get2 = ebeanServer.find(HasUserEntity.class, 1);
+        UserEntityTest get3 = ebeanServer.find(UserEntityTest.class, 1);
+        System.out.print("C:"+created);
+        System.out.print("G:"+get);
+        System.out.print("G3"+get3);
+        System.out.print("IG:" + get2.getUserEntity());
+
+        System.out.print(get.getId() + ":" + get.getPlayer());
+        created.setPlayer("CHANGED!");
+        ebeanServer.update(created);
+        ebeanServer.refresh(get);
+        ebeanServer.refresh(get2);
+        System.out.print(get.getId() + ":" + get.getPlayer());
+        System.out.print(get2.getId() + ":" + get2.getUserEntity().getPlayer());
     }
 
     public static MySQLDatabase loadFromConfig(Core core, File file)
@@ -122,11 +149,11 @@ public class MySQLDatabase extends AbstractPooledDatabase
             builder.append(" IF NOT EXISTS"); // TODO
             Table table = modelClass.getAnnotation(Table.class);
             builder.append(MySQLDatabase.prepareTableName(table.name())).append("\n(");
-            boolean first = false;
-
+            boolean first = true;
             for (Field field : modelClass.getDeclaredFields())
             {
                 if (!first) builder.append(",\n");
+                first = false;
                 if (field.isAnnotationPresent(Attribute.class))
                 {
                     Attribute attribute = field.getAnnotation(Attribute.class);
@@ -156,10 +183,15 @@ public class MySQLDatabase extends AbstractPooledDatabase
                     {
                         throw new IllegalStateException("Missing Column Annotation!");
                     }
+                    if (field.isAnnotationPresent(ManyToOne.class))
+                    {
+                        JoinColumn joinColumn = field.getAnnotation(JoinColumn.class);
+                    }
 
                     // TODO foreign key / index
                 }
             }
+            builder.append(")");
             // multi unique uses UniqueConstraint in table annotation
             return;
         }
