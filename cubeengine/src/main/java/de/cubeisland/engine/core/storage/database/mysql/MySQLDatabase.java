@@ -26,11 +26,11 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
@@ -45,7 +45,9 @@ import de.cubeisland.engine.core.config.Configuration;
 import de.cubeisland.engine.core.storage.database.AbstractPooledDatabase;
 import de.cubeisland.engine.core.storage.database.AttrType;
 import de.cubeisland.engine.core.storage.database.Attribute;
+import de.cubeisland.engine.core.storage.database.Index;
 import de.cubeisland.engine.core.util.StringUtils;
+import de.cubeisland.engine.core.util.Version;
 
 import static de.cubeisland.engine.core.storage.database.AttrType.DataTypeInfo.*;
 
@@ -94,19 +96,21 @@ public class MySQLDatabase extends AbstractPooledDatabase
         serverConfig.setDataSourceConfig(dataSourceConfig);
         serverConfig.setName("cubeengine");
 
-        serverConfig.setDdlGenerate(true);
-        serverConfig.setDdlRun(true);
+        //serverConfig.setDdlGenerate(true);
+        //serverConfig.setDdlRun(true);
         EbeanServer ebeanServer = EbeanServerFactory.create(serverConfig);
         ebeanServer.getServerCacheManager().setCaching(UserEntityTest.class, true);
         ebeanServer.getServerCacheManager().init(ebeanServer);
 
-
+        this.createTableForModel(UserEntityTest.class);
+        this.createTableForModel(HasUserEntity.class);
 
         UserEntityTest created = ebeanServer.createEntityBean(UserEntityTest.class);
         ebeanServer.save(created);
         HasUserEntity created2 = new HasUserEntity();
         created2.setUserEntity(created);
         ebeanServer.save(created2);
+
 
         UserEntityTest get = ebeanServer.find(UserEntityTest.class, 1);
         HasUserEntity get2 = ebeanServer.find(HasUserEntity.class, 1);
@@ -119,10 +123,11 @@ public class MySQLDatabase extends AbstractPooledDatabase
         System.out.print(get.getId() + ":" + get.getPlayer());
         created.setPlayer("CHANGED!");
         ebeanServer.update(created);
-        ebeanServer.refresh(get);
         ebeanServer.refresh(get2);
-        System.out.print(get.getId() + ":" + get.getPlayer());
         System.out.print(get2.getId() + ":" + get2.getUserEntity().getPlayer());
+        ebeanServer.refresh(get);
+        System.out.print(get.getId() + ":" + get.getPlayer());
+
     }
 
     public static MySQLDatabase loadFromConfig(Core core, File file)
@@ -143,6 +148,7 @@ public class MySQLDatabase extends AbstractPooledDatabase
     {
         if (modelClass.isAnnotationPresent(Entity.class) && modelClass.isAnnotationPresent(Table.class))
         {
+            Version version = new Version(0);
             StringBuilder builder = new StringBuilder("CREATE");
             // TODO TEMPORARY and alternativ name for temp-table (or just append _temp)
             builder.append(" TABLE");
@@ -150,15 +156,30 @@ public class MySQLDatabase extends AbstractPooledDatabase
             Table table = modelClass.getAnnotation(Table.class);
             builder.append(MySQLDatabase.prepareTableName(table.name())).append("\n(");
             boolean first = true;
+            boolean autoIncrement = false;
             for (Field field : modelClass.getDeclaredFields())
             {
                 if (!first) builder.append(",\n");
                 first = false;
+                if (field.isAnnotationPresent(javax.persistence.Version.class) && field.getType().equals(Version.class))
+                {
+                    try
+                    {
+                        field.setAccessible(true);
+                        version = (Version)field.get(null);
+                    }
+                    catch (IllegalAccessException ignore)
+                    {}
+                }
                 if (field.isAnnotationPresent(Attribute.class))
                 {
                     Attribute attribute = field.getAnnotation(Attribute.class);
                     Column column = field.getAnnotation(Column.class);
                     Id id = field.getAnnotation(Id.class);
+                    if (id != null)
+                    {
+                        autoIncrement = true;
+                    }
                     if (field.isAnnotationPresent(EmbeddedId.class)) // Multiple Col as Primary Key
                     {
                         Set<String> embededId = new HashSet<String>();
@@ -185,17 +206,66 @@ public class MySQLDatabase extends AbstractPooledDatabase
                     }
                     if (field.isAnnotationPresent(ManyToOne.class))
                     {
-                        JoinColumn joinColumn = field.getAnnotation(JoinColumn.class);
+                        ManyToOne foreignKey = field.getAnnotation(ManyToOne.class);
+                        builder.append(",\n").append(getForeignKey(field, column, foreignKey.cascade(), field
+                            .getType()));
                     }
-
-                    // TODO foreign key / index
+                    if (field.isAnnotationPresent(Index.class))
+                    {
+                        builder.append(",\nINDEX (").append(getColName(field, column)).append(")");
+                    }
                 }
             }
-            builder.append(")");
-            // multi unique uses UniqueConstraint in table annotation
+            // TODO multi unique uses UniqueConstraint in table annotation
+            builder.append(")\n");
+            if (autoIncrement) builder.append(" AUTO_INCREMENT 1,\n");
+            builder.append("ENGINE InnoDB,\n");
+            builder.append("COLLATE utf8_unicode_ci,\n");
+            builder.append(" COMMENT ").append(MySQLDatabase.prepareString(version.toString()));
+            // TODO multi unique uses UniqueConstraint in table annotation
+            try
+            {
+                this.execute(builder.toString());
+            }
+            catch (SQLException e)
+            {
+                System.out.print(builder.toString());
+                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            }
             return;
         }
         throw new IllegalArgumentException("The modelClass " + modelClass + " is not a valid DatabaseEntity");
+    }
+
+    static String getForeignKey(Field field, Column column, CascadeType[] cascades, Class<?> entityClass)
+    {
+        Table annotation = entityClass.getAnnotation(Table.class);
+        String tableName = MySQLDatabase.prepareTableName(annotation.name());
+        StringBuilder builder = new StringBuilder(" FOREIGN KEY ");
+        for (Field foreignField : entityClass.getDeclaredFields())
+        {
+            if (foreignField.isAnnotationPresent(Id.class))
+            {
+                builder.append(getColName(field, column)).append(" REFERENCES ")
+                    .append(tableName).append(" (")
+                    .append(getColName(foreignField, foreignField.getAnnotation(Column.class)))
+                    .append(")");
+                for (CascadeType cascade : cascades)
+                {
+                    switch (cascade)
+                    {
+                        case REMOVE:
+                            builder.append(" ON DELETE CASCADE");
+                            break;
+                        case REFRESH:
+                            builder.append(" ON UPDATE CASCADE");
+                    }
+                }
+                return builder.toString();
+            }
+        }
+        throw new IllegalStateException("No Primary Key found for a foreign key");
+
     }
 
     static String getDataTypeDef(Field field, Column column, Attribute attribute)

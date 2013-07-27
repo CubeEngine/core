@@ -23,6 +23,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.persistence.Version;
 
 import de.cubeisland.engine.core.storage.database.AttrType;
 import de.cubeisland.engine.core.storage.database.Attribute;
@@ -31,6 +32,9 @@ import de.cubeisland.engine.core.storage.database.Attribute;
 @Table(name = "user")
 public class UserEntityTest
 {
+    @Version
+    static final de.cubeisland.engine.core.util.Version version = new de.cubeisland.engine.core.util.Version(1);
+
     @Id
     @Attribute(type = AttrType.INT, unsigned = true)
     private long id;
