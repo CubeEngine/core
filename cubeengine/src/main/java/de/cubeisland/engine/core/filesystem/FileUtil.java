@@ -18,18 +18,19 @@
 package de.cubeisland.engine.core.filesystem;
 
 import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.Reader;
+import java.io.Writer;
+import java.nio.ByteBuffer;
+import java.nio.channels.ReadableByteChannel;
 import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.LinkedList;
 import java.util.List;
 
+import de.cubeisland.engine.core.Core;
 import de.cubeisland.engine.core.CubeEngine;
 
 
@@ -45,17 +46,14 @@ public class FileUtil
      * @param file the file
      * @return a list of lines
      */
-    public static List<String> readStringList(File file)
+    public static List<String> readStringList(Path file)
     {
-        try
+        assert file != null: "The file must not be null!";
+        try (BufferedReader reader = Files.newBufferedReader(file, Core.CHARSET))
         {
-            if (file == null)
-            {
-                return null;
-            }
-            return readStringList(new FileReader(file));
+            return readStringList(reader);
         }
-        catch (FileNotFoundException ex)
+        catch (IOException ex)
         {
             return null;
         }
@@ -69,11 +67,9 @@ public class FileUtil
      */
     public static List<String> readStringList(InputStream stream)
     {
-        if (stream == null)
-        {
-            return null;
-        }
-        return readStringList(new InputStreamReader(stream));
+        assert stream != null: "The stream may not be null!";
+
+        return readStringList(new BufferedReader(new InputStreamReader(stream)));
     }
 
     /**
@@ -82,13 +78,13 @@ public class FileUtil
      * @param reader the reader
      * @return a list of lines
      */
-    public static List<String> readStringList(Reader reader)
+    public static List<String> readStringList(BufferedReader reader)
     {
         if (reader == null)
         {
             return null;
         }
-        List<String> list = new LinkedList<String>();
+        List<String> list = new LinkedList<>();
         BufferedReader bufferedReader = new BufferedReader(reader);
         String line;
         try
@@ -121,41 +117,25 @@ public class FileUtil
      * @param file   the file to save to
      * @throws IOException
      */
-    public static void saveFile(String string, File file) throws IOException
+    public static void saveFile(String string, Path file) throws IOException
     {
-        FileWriter fw = new FileWriter(file);
-        try
+        try (Writer out = Files.newBufferedWriter(file, Core.CHARSET))
         {
-            fw.write(string);
-        }
-        finally
-        {
-            fw.close();
+            out.write(string);
         }
     }
 
-    public static String readToString(InputStream stream, Charset charset)
+    public static String readToString(ReadableByteChannel in, Charset charset) throws IOException
     {
         StringBuilder builder = new StringBuilder();
 
-        byte[] buffer = new byte[512];
-        int bytesRead;
-        do
+        ByteBuffer buffer = ByteBuffer.allocate(2048);
+        while (in.read(buffer) >= 0 || buffer.position() > 0)
         {
-            try
-            {
-                bytesRead = stream.read(buffer);
-                if (bytesRead > 0)
-                {
-                    builder.append(new String(buffer, 0, bytesRead, charset));
-                }
-            }
-            catch (IOException e)
-            {
-                break;
-            }
+            buffer.flip();
+            builder.append(new String(buffer.array(), 0, buffer.position(), charset));
+            buffer.compact();
         }
-        while (bytesRead > 0);
 
         return builder.toString();
     }

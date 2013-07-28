@@ -18,6 +18,7 @@
 package de.cubeisland.engine.core.i18n;
 
 import java.io.File;
+import java.nio.file.Path;
 import java.util.Locale;
 import java.util.Map;
 
@@ -36,10 +37,10 @@ public class NormalLanguage implements Cleanable, Language
     private final String localName;
     private final Language parent;
     private final Map<String, String> messages;
-    private final File messageDir;
+    private final Path messageDir;
     private final Locale locale;
 
-    public NormalLanguage(Core core, LocaleConfig config, File languageDir, Language parent)
+    public NormalLanguage(Core core, LocaleConfig config, Path languagePath, Language parent)
     {
         assert config.locale != null: "The code must not be null!";
         assert config.name != null: "The name must not be null!";
@@ -51,8 +52,8 @@ public class NormalLanguage implements Cleanable, Language
         this.localName = config.localName;
         this.locale = config.locale;
         this.parent = parent;
-        this.messageDir = new File(languageDir, I18n.localeToString(this.locale));
-        this.messages = new THashMap<String, String>();
+        this.messageDir = languagePath.resolve(I18n.localeToString(this.locale));
+        this.messages = new THashMap<>();
     }
 
     @Override

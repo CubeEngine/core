@@ -17,7 +17,9 @@
  */
 package de.cubeisland.engine.roles.role;
 
-import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
@@ -38,7 +40,6 @@ import de.cubeisland.engine.roles.config.RoleMirror;
 import de.cubeisland.engine.roles.storage.AssignedRoleManager;
 import de.cubeisland.engine.roles.storage.UserMetaDataManager;
 import de.cubeisland.engine.roles.storage.UserPermissionsManager;
-
 import gnu.trove.map.hash.TLongLongHashMap;
 import gnu.trove.map.hash.TLongObjectHashMap;
 import gnu.trove.set.hash.TLongHashSet;
@@ -54,7 +55,7 @@ public class RolesManager
     protected TLongLongHashMap assignedUserDataMirrors;
     protected TLongLongHashMap assignedRolesMirrors;
 
-    private final File rolesFolder;
+    private final Path rolesFolder;
 
     protected AssignedRoleManager rm;
     protected UserMetaDataManager mdm;
@@ -64,7 +65,7 @@ public class RolesManager
     {
         this.module = module;
         this.wm = module.getCore().getWorldManager();
-        this.rolesFolder = new File(module.getFolder(),"roles");
+        this.rolesFolder = module.getFolder().resolve("roles");
 
         this.rm = new AssignedRoleManager(module.getCore().getDB());
         this.mdm = new UserMetaDataManager(module.getCore().getDB());
@@ -73,20 +74,27 @@ public class RolesManager
 
     public void initRoleProviders()
     {
-        this.rolesFolder.mkdir();
+        try
+        {
+            Files.createDirectories(this.rolesFolder);
 
-        this.assignedUserDataMirrors = new TLongLongHashMap();
-        this.assignedRolesMirrors = new TLongLongHashMap();
+            this.assignedUserDataMirrors = new TLongLongHashMap();
+            this.assignedRolesMirrors = new TLongLongHashMap();
 
-        this.globalRoleProvider = new GlobalRoleProvider(module,this);
+            this.globalRoleProvider = new GlobalRoleProvider(module,this);
 
-        this.providerSet = new LinkedHashSet<RoleProvider>();
-        this.providerSet.add(this.globalRoleProvider);
+            this.providerSet = new LinkedHashSet<>();
+            this.providerSet.add(this.globalRoleProvider);
 
-        this.createWorldRoleProviders(); // Create all WorldProviders according to their mirrors
-        // Load In All Configurations & Create Role-Objects
-        // AND Resolve Dependencies and Role-Data
-        this.reloadAllRoles();
+            this.createWorldRoleProviders(); // Create all WorldProviders according to their mirrors
+            // Load In All Configurations & Create Role-Objects
+            // AND Resolve Dependencies and Role-Data
+            this.reloadAllRoles();
+        }
+        catch (IOException e)
+        {
+            this.module.getLog().error("Failed to initialize the role providers!", e);
+        }
     }
 
     public void saveAll()
@@ -102,7 +110,7 @@ public class RolesManager
     
     private void createWorldRoleProviders()
     {
-        this.worldRoleProviders = new TLongObjectHashMap<WorldRoleProvider>();
+        this.worldRoleProviders = new TLongObjectHashMap<>();
         for (RoleMirror mirror : this.module.getConfiguration().mirrors)
         {
             Long mainWorldID = wm.getWorldId(mirror.mainWorld);
@@ -206,7 +214,7 @@ public class RolesManager
         return (Provider)this.getProvider(this.wm.getWorldId(world));
     }
 
-    public File getRolesFolder()
+    public Path getRolesFolder()
     {
         return rolesFolder;
     }

@@ -26,4 +26,9 @@ public class FolderNotFoundException extends RuntimeException
     {
         super(s);
     }
+
+    public FolderNotFoundException(String message, Throwable cause)
+    {
+        super(message, cause);
+    }
 }

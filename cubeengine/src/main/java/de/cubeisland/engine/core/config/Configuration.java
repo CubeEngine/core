@@ -17,20 +17,19 @@
  */
 package de.cubeisland.engine.core.config;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStream;
+import java.io.Reader;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
 
+import de.cubeisland.engine.core.Core;
 import de.cubeisland.engine.core.CubeEngine;
 import de.cubeisland.engine.core.config.annotations.Codec;
 import de.cubeisland.engine.core.config.codec.ConfigurationCodec;
 import de.cubeisland.engine.core.config.codec.YamlCodec;
 import de.cubeisland.engine.core.module.Module;
-
 import org.yaml.snakeyaml.reader.ReaderException;
 
 /**
@@ -41,7 +40,7 @@ public abstract class Configuration<ConfigCodec extends ConfigurationCodec>
     private static final Map<String, ConfigurationCodec> codecs = new HashMap<String, ConfigurationCodec>();
     protected final Class<? extends Configuration> configurationClass;
     public final ConfigCodec codec;
-    protected File file;
+    protected Path file;
 
     static
     {
@@ -77,16 +76,16 @@ public abstract class Configuration<ConfigCodec extends ConfigurationCodec>
     /**
      * Saves this configuration into given File
      *
-     * @param targetFile the File to save to
+     * @param target the File to save to
      */
-    public final void save(File targetFile)
+    public final void save(Path target)
     {
-        if (targetFile == null)
+        if (target == null)
         {
             throw new IllegalArgumentException("A configuration cannot be saved without a valid file!");
         }
-        this.codec.save(this, targetFile);
-        this.onSaved(targetFile);
+        this.codec.save(this, target);
+        this.onSaved(target);
     }
 
     public void reload()
@@ -97,12 +96,14 @@ public abstract class Configuration<ConfigCodec extends ConfigurationCodec>
         }
         try
         {
-            FileInputStream is = new FileInputStream(this.file);
-            this.codec.load(this, is);
+            try (Reader reader = Files.newBufferedReader(this.file, Core.CHARSET))
+            {
+                this.codec.load(this, reader);
+            }
         }
         catch (Exception e)
         {
-            CubeEngine.getLog().error("Failed to load the configuration " + this.file.getPath(), e);
+            CubeEngine.getLog().error("Failed to load the configuration " + this.file, e);
         }
     }
 
@@ -129,7 +130,7 @@ public abstract class Configuration<ConfigCodec extends ConfigurationCodec>
      *
      * @param file the file
      */
-    public final void setFile(File file)
+    public final void setPath(Path file)
     {
         assert file != null: "The file must not be null!";
         this.file = file;
@@ -140,7 +141,7 @@ public abstract class Configuration<ConfigCodec extends ConfigurationCodec>
      *
      * @return the file of this config
      */
-    public final File getFile()
+    public final Path getPath()
     {
         return this.file;
     }
@@ -148,13 +149,13 @@ public abstract class Configuration<ConfigCodec extends ConfigurationCodec>
     /**
      * This method is called right after the configuration got loaded.
      */
-    public void onLoaded(File loadFrom)
+    public void onLoaded(Path loadFrom)
     {}
 
     /**
      * This method gets called right after the configuration get saved.
      */
-    public void onSaved(File savedIn)
+    public void onSaved(Path savedTo)
     {}
 
     /**
@@ -234,29 +235,29 @@ public abstract class Configuration<ConfigCodec extends ConfigurationCodec>
         {
             throw new InvalidConfigurationException("No codec specified for " + clazz.getName());
         }
-        return load(clazz, new File(module.getFolder(), "config." + codecAnnotation.value()));
+        return load(clazz, module.getFolder().resolve("config." + codecAnnotation.value()));
     }
 
     /**
      * Returns the loaded Configuration
      *
      * @param clazz the configurations class
-     * @param is the input-stream to load from
+     * @param reader the input-stream to load from
      * @param file the corresponding file
      * @param <T>
      * @return the loaded Configuration
      */
     @SuppressWarnings("unchecked")
-    public static <T extends Configuration> T load(Class<T> clazz, InputStream is, File file)
+    public static <T extends Configuration> T load(Class<T> clazz, Reader reader, Path file)
     {
         T config = createInstance(clazz);
 
         config.file = file;
         try
         {
-            if (is != null)
+            if (reader != null)
             {
-                config.codec.load(config, is); //load config in maps -> updates -> sets fields
+                config.codec.load(config, reader); //load config in maps -> updates -> sets fields
             }
             config.onLoaded(file);
             return config;
@@ -265,9 +266,9 @@ public abstract class Configuration<ConfigCodec extends ConfigurationCodec>
         {
             if (e instanceof ReaderException)
             {//TODO abstract...
-                throw new InvalidConfigurationException("Failed to parse the YAML configuration. Try encoding it as UTF-8 or validate on yamllint.com" + (file != null ? " File: " + file.getAbsoluteFile() : ""), e);
+                throw new InvalidConfigurationException("Failed to parse the YAML configuration. Try encoding it as UTF-8 or validate on yamllint.com" + (file != null ? " File: " + file : ""), e);
             }
-            throw new InvalidConfigurationException("Error while loading a configuration!" + (file != null ? " File: " + file.getAbsoluteFile() : ""), e);
+            throw new InvalidConfigurationException("Error while loading a configuration!" + (file != null ? " File: " + file : ""), e);
         }
     }
 
@@ -275,13 +276,13 @@ public abstract class Configuration<ConfigCodec extends ConfigurationCodec>
      * Returns the loaded Configuration
      *
      * @param clazz the configurations class
-     * @param is the input-stream to load from
+     * @param reader the input-stream to load from
      * @param <T>
      * @return the loaded Configuration
      */
-    public static <T extends Configuration> T load(Class<T> clazz, InputStream is)
+    public static <T extends Configuration> T load(Class<T> clazz, Reader reader)
     {
-        return load(clazz, is, null);
+        return load(clazz, reader, null);
     }
 
     /**
@@ -293,28 +294,27 @@ public abstract class Configuration<ConfigCodec extends ConfigurationCodec>
      * @param <T>
      * @return the loaded configuration
      */
-    public static <T extends Configuration> T load(Class<T> clazz, File file, boolean save)
+    public static <T extends Configuration> T load(Class<T> clazz, Path file, boolean save)
     {
         if (file == null)
         {
             return null;
         }
-        InputStream inputStream = null;
+        Reader reader = null;
         try
         {
-            inputStream = new FileInputStream(file);
+            reader = Files.newBufferedReader(file, Core.CHARSET);
         }
-        catch (FileNotFoundException e)
-        {
-            CubeEngine.getLog().info("{} not found! Creating new config from default...", file.getName());
-        }
-        T config = load(clazz, inputStream, file); //loading config from InputSream or Default
+        catch (IOException ignored)
+        {}
 
-        if (inputStream != null)
+        T config = load(clazz, reader, file); //loading config from InputSream or Default
+
+        if (reader != null)
         {
             try
             {
-                inputStream.close();
+                reader.close();
             }
             catch (IOException ignored)
             {}
@@ -334,7 +334,7 @@ public abstract class Configuration<ConfigCodec extends ConfigurationCodec>
      * @param <T>
      * @return the loaded configuration
      */
-    public static <T extends Configuration> T load(Class<T> clazz, File file)
+    public static <T extends Configuration> T load(Class<T> clazz, Path file)
     {
         return load(clazz, file, true);
     }

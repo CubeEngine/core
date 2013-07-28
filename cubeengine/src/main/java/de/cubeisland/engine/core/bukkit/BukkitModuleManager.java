@@ -145,7 +145,7 @@ public class BukkitModuleManager extends BaseModuleManager
     protected Map<Class<?>, Plugin> getPluginClassMap()
     {
         Plugin[] plugins = this.pluginManager.getPlugins();
-        Map<Class<?>, Plugin> pluginClassMap = new HashMap<Class<?>, Plugin>(plugins.length);
+        Map<Class<?>, Plugin> pluginClassMap = new HashMap<>(plugins.length);
         for (Plugin plugin : plugins)
         {
             pluginClassMap.put(plugin.getClass(), plugin);
@@ -162,7 +162,7 @@ public class BukkitModuleManager extends BaseModuleManager
         public BukkitModuleLoggerFactory(BukkitCore core)
         {
             this.core = core;
-            this.loggers = new HashMap<ModuleInfo, Logger>();
+            this.loggers = new HashMap<>();
         }
 
         @Override
@@ -198,7 +198,7 @@ public class BukkitModuleManager extends BaseModuleManager
             String logFile = System.getProperty("cubeengine.logger.default-path") + "/" +
                 new SimpleDateFormat("yyyy-MM-dd--HHmm").format(new Date(logger.getLoggerContext().getBirthTime()))
                 + "/" + module.getName().toLowerCase();
-            RollingFileAppender<ILoggingEvent> fileAppender = new RollingFileAppender<ILoggingEvent>();
+            RollingFileAppender<ILoggingEvent> fileAppender = new RollingFileAppender<>();
             fileAppender.setContext(logger.getLoggerContext());
             fileAppender.setFile(logFile + ".log");
             PatternLayoutEncoder fileEnconder = new PatternLayoutEncoder();
@@ -212,7 +212,7 @@ public class BukkitModuleManager extends BaseModuleManager
             rollingPolicy.setMaxIndex(Integer.valueOf(System.getProperty("cubeengine.logger.max-file-count")));
             rollingPolicy.setFileNamePattern(logFile + ".%i.log");
             fileAppender.setRollingPolicy(rollingPolicy);
-            SizeBasedTriggeringPolicy<ILoggingEvent> triggeringPolicy = new SizeBasedTriggeringPolicy<ILoggingEvent>();
+            SizeBasedTriggeringPolicy<ILoggingEvent> triggeringPolicy = new SizeBasedTriggeringPolicy<>();
             triggeringPolicy.setContext(logger.getLoggerContext());
             triggeringPolicy.setMaxFileSize(System.getProperty("cubeengine.logger.max-size"));
             fileAppender.setTriggeringPolicy(triggeringPolicy);

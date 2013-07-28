@@ -17,7 +17,8 @@
  */
 package de.cubeisland.engine.core.module;
 
-import java.io.File;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Locale;
@@ -26,10 +27,7 @@ import java.util.Set;
 
 import de.cubeisland.engine.core.Core;
 import de.cubeisland.engine.core.bukkit.BukkitCore;
-import de.cubeisland.engine.core.bukkit.PluginConfig;
-import de.cubeisland.engine.core.config.Configuration;
 import de.cubeisland.engine.core.util.Version;
-
 import org.apache.commons.lang.Validate;
 
 /**
@@ -38,7 +36,7 @@ import org.apache.commons.lang.Validate;
 public class ModuleInfo
 {
     private static final char DEP_VERSION_DELIM = '/';
-    private final File file;
+    private final Path file;
     private final String main;
     private final String id;
     private final String name;
@@ -56,18 +54,15 @@ public class ModuleInfo
 
     ModuleInfo(Core core)
     {
-        this.file = new File("CubeEngine.jar");
+        this.file = Paths.get("CubeEngine.jar");
+        this.sourceVersion = core.getSourceVersion();
         if (core instanceof BukkitCore)
         {
             this.main = ((BukkitCore)core).getDescription().getMain();
-            PluginConfig pluginConfig = Configuration.load(PluginConfig.class, ((BukkitCore)core)
-                .getResource("plugin.yml"));
-            this.sourceVersion = pluginConfig.sourceVersion;
         }
         else
         {
             this.main = "";
-            this.sourceVersion = "uknown-abcdefgh";
         }
         this.id = CoreModule.ID;
         this.name = CoreModule.NAME;
@@ -90,7 +85,7 @@ public class ModuleInfo
         return name;
     }
 
-    public ModuleInfo(File file, ModuleConfig config)
+    public ModuleInfo(Path file, ModuleConfig config)
     {
         assert config != null: "The module configuration failed to loaded!";
         assert config.name != null: "The module doesn't seem to have a name.";
@@ -169,7 +164,7 @@ public class ModuleInfo
      *
      * @return the module file
      */
-    File getFile()
+    Path getPath()
     {
         return this.file;
     }

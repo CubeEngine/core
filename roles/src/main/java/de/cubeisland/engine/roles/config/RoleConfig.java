@@ -17,7 +17,7 @@
  */
 package de.cubeisland.engine.roles.config;
 
-import java.io.File;
+import java.nio.file.Path;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -56,26 +56,26 @@ public class RoleConfig extends Configuration
     @Option("parents")
     @Comment("The roles this role will inherit from.\n"
         + "Any priority of parents will be ignored!")
-    public Set<String> parents = new HashSet<String>();
+    public Set<String> parents = new HashSet<>();
     @Option("metadata")
     @Comment("The metadata such as prefix or suffix e.g.:\n" +
                  "metadata: \n" +
                  "  prefix: '&7Guest'")
-    public Map<String, String> metadata = new LinkedHashMap<String, String>();
+    public Map<String, String> metadata = new LinkedHashMap<>();
 
     @Override
-    public void onLoaded(File loadFrom) {
+    public void onLoaded(Path loadFrom) {
         if (this.priority == null)
         {
             this.priority = Priority.ABSULTEZERO;
         }
         if (this.parents == null)
         {
-            this.parents = new HashSet<String>();
+            this.parents = new HashSet<>();
         }
         if (this.metadata == null)
         {
-            this.metadata = new LinkedHashMap<String, String>();
+            this.metadata = new LinkedHashMap<>();
         }
     }
 }
