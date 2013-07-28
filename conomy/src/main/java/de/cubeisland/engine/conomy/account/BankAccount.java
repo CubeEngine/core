@@ -105,7 +105,7 @@ public class BankAccount extends Account
     {
         if (this.isOwner(user)) return false;
         // Search if new owner is moderator OR member
-        BankAccessModel access = this.member.remove(user.key);
+        BankAccessModel access = this.member.remove(user.getId());
         if (access != null) // promote new owner
         {
             access.accessLevel = OWNER;
@@ -116,7 +116,7 @@ public class BankAccount extends Account
             access = new BankAccessModel(this.model, user, OWNER);
             this.manager.bankAccessStorage.store(access);
         }
-        this.owner.put(user.key, access);
+        this.owner.put(user.getId(), access);
         return true;
     }
 
@@ -130,10 +130,10 @@ public class BankAccount extends Account
     {
         if (this.isOwner(user))
         {
-            BankAccessModel access = this.owner.remove(user.key);
+            BankAccessModel access = this.owner.remove(user.getId());
             access.accessLevel = MEMBER;
             this.manager.bankAccessStorage.update(access);
-            this.member.put(user.key, access);
+            this.member.put(user.getId(), access);
             return true;
         }
         return false;
@@ -148,7 +148,7 @@ public class BankAccount extends Account
     public boolean promoteToMember(User user)
     {
         if (this.hasAccess(user)) return false;
-        BankAccessModel access = this.invites.remove(user.key);
+        BankAccessModel access = this.invites.remove(user.getId());
         if (access == null)
         {
             access = new BankAccessModel(this.model, user, MEMBER);
@@ -159,7 +159,7 @@ public class BankAccount extends Account
             access.accessLevel = MEMBER;
             this.manager.bankAccessStorage.update(access);
         }
-        this.member.put(user.key, access);
+        this.member.put(user.getId(), access);
         return true;
     }
 
@@ -171,10 +171,10 @@ public class BankAccount extends Account
      */
     public boolean kickUser(User user)
     {
-        BankAccessModel oldAccess = this.owner.remove(user.key);
+        BankAccessModel oldAccess = this.owner.remove(user.getId());
         if (oldAccess == null)
         {
-            oldAccess = this.member.remove(user.key);
+            oldAccess = this.member.remove(user.getId());
         }
         if (oldAccess != null)
         {
@@ -192,17 +192,17 @@ public class BankAccount extends Account
      */
     public boolean isOwner(User user)
     {
-        return this.owner.get(user.key) != null;
+        return this.owner.get(user.getId()) != null;
     }
 
     public boolean isMember(User user)
     {
-        return this.member.get(user.key) != null;
+        return this.member.get(user.getId()) != null;
     }
 
     public boolean isInvited(User user)
     {
-        return this.invites.get(user.key) != null;
+        return this.invites.get(user.getId()) != null;
     }
 
     public boolean hasAccess(User user)
@@ -212,17 +212,17 @@ public class BankAccount extends Account
 
     public boolean invite(User user)
     {
-        if (!needsInvite() || this.hasAccess(user) || this.invites.get(user.key) != null) return false;
+        if (!needsInvite() || this.hasAccess(user) || this.invites.get(user.getId()) != null) return false;
         BankAccessModel invite = new BankAccessModel(this.model, user, INVITED);
         this.manager.bankAccessStorage.store(invite);
-        this.invites.put(user.key, invite);
+        this.invites.put(user.getId(), invite);
         return true;
     }
 
     public boolean uninvite(User user)
     {
-        if (!needsInvite() || this.hasAccess(user) || this.invites.get(user.key) == null) return false;
-        BankAccessModel invite = this.invites.remove(user.key);
+        if (!needsInvite() || this.hasAccess(user) || this.invites.get(user.getId()) == null) return false;
+        BankAccessModel invite = this.invites.remove(user.getId());
         this.manager.bankAccessStorage.delete(invite);
         return true;
     }

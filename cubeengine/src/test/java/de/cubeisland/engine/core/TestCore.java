@@ -32,7 +32,6 @@ import de.cubeisland.engine.core.module.ModuleManager;
 import de.cubeisland.engine.core.module.TestModuleManager;
 import de.cubeisland.engine.core.permission.PermissionManager;
 import de.cubeisland.engine.core.service.ServiceManager;
-import de.cubeisland.engine.core.storage.TableManager;
 import de.cubeisland.engine.core.storage.database.Database;
 import de.cubeisland.engine.core.task.TaskManager;
 import de.cubeisland.engine.core.user.UserManager;

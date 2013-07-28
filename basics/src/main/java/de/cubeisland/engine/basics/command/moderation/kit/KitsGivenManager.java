@@ -65,7 +65,7 @@ public class KitsGivenManager extends TwoKeyStorage<Long, String, KitsGiven>
     {
         try
         {
-            ResultSet resulsSet = this.database.preparedQuery(modelClass, "getLimitForUser", user.key, name);
+            ResultSet resulsSet = this.database.preparedQuery(modelClass, "getLimitForUser", user.getId(), name);
             if (resulsSet.next())
             {
                 Integer amount = resulsSet.getInt("amount");

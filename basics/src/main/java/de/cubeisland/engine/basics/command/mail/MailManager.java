@@ -71,7 +71,7 @@ public class MailManager extends SingleKeyStorage<Long, Mail>
         List<Mail> mails = new ArrayList<Mail>();
         for (Mail mail : this.getMails(user))
         {
-            if (mail.senderId == sender.key)
+            if (mail.senderId == sender.getId())
             {
                 mails.add(mail);
             }
@@ -85,11 +85,11 @@ public class MailManager extends SingleKeyStorage<Long, Mail>
         Mail mail;
         if (from instanceof User)
         {
-            mail = new Mail(user.key, ((User)from).key, message);
+            mail = new Mail(user.getId(), ((User)from).getId(), message);
         }
         else
         {
-            mail = new Mail(user.key, null, message);
+            mail = new Mail(user.getId(), null, message);
         }
         bUser.mailbox.add(mail);
         this.store(mail);
@@ -100,7 +100,7 @@ public class MailManager extends SingleKeyStorage<Long, Mail>
         Mail mail;
         if (from instanceof User)
         {
-            mail = new Mail(userKey, ((User)from).key, message);
+            mail = new Mail(userKey, ((User)from).getId(), message);
         }
         else
         {
@@ -139,7 +139,7 @@ public class MailManager extends SingleKeyStorage<Long, Mail>
         BasicUser bUser = this.getBasicUserWithMails(user);
         for (Mail mail : bUser.mailbox)
         {
-            if (mail.senderId == (sendBy == null ? 0 : sendBy.key))
+            if (mail.senderId == (sendBy == null ? 0 : sendBy.getId()))
             {
                 this.delete(mail);
             }
@@ -152,7 +152,7 @@ public class MailManager extends SingleKeyStorage<Long, Mail>
         List<Mail> loadedModels = new ArrayList<Mail>();
         try
         {
-            ResultSet result = this.database.preparedQuery(modelClass, "getallByUser", user.key);
+            ResultSet result = this.database.preparedQuery(modelClass, "getallByUser", user.getId());
             while (result.next())
             {
                 Mail loadedModel = this.modelClass.newInstance();

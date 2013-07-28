@@ -61,7 +61,7 @@ public class BankAccessModel implements Model<Long>
 
     public BankAccessModel(AccountModel accountModel, User user, byte type)
     {
-        this.userId = user.key;
+        this.userId = user.getId();
         this.accountId = accountModel.key;
         this.accessLevel = type;
         this.name = accountModel.name;

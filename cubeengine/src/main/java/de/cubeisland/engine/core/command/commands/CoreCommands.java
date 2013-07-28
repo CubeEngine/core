@@ -140,10 +140,6 @@ public class CoreCommands extends ContainerCommand
             {
                 final UserManager um = this.getModule().getCore().getUserManager();
                 um.resetAllPasswords();
-                for (User user : um.getLoadedUsers())
-                {
-                    user.passwd = null; //update loaded users
-                }
                 sender.sendTranslated("&All passwords reset!");
             }
             else

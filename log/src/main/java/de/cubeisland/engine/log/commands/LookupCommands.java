@@ -385,7 +385,7 @@ public class LookupCommands
         return true;
     }
 
-    private boolean readUser(QueryParameter params, String userString, User user)
+    private boolean readUser(QueryParameter params, String userString, User sender)
     {
         if (userString == null) return true;
         String[] users = StringUtils.explode(",", userString);
@@ -396,19 +396,19 @@ public class LookupCommands
             {
                 name = name.substring(1);
             }
-            User u = this.module.getCore().getUserManager().getUser(name, false);
-            if (u == null)
+            User user = this.module.getCore().getUserManager().getUser(name, false);
+            if (user == null)
             {
-                user.sendTranslated("&cUser &2%s&c not found!", name);
+                sender.sendTranslated("&cUser &2%s&c not found!", name);
                 return false;
             }
             if (negate)
             {
-                params.excludeUser(u.key);
+                params.excludeUser(user.getId());
             }
             else
             {
-                params.includeUser(u.key);
+                params.includeUser(user.getId());
             }
         }
         return true;

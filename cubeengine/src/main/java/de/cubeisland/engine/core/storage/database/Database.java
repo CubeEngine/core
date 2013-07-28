@@ -23,6 +23,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+import com.avaje.ebean.EbeanServer;
 import de.cubeisland.engine.core.storage.Storage;
 
 /**
@@ -256,4 +257,10 @@ public interface Database
     void queueOperation(Runnable runnable);
 
     void shutdown();
+
+    EbeanServer getEbeanServer();
+
+    public void createTableForModel(Class<?> modelClass);
+
+    public DatabaseConfiguration getDatabaseConfig();
 }

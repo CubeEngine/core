@@ -57,7 +57,7 @@ public abstract class ConversationCommand extends CubeCommand implements Listene
 
     public boolean hasUser(User user)
     {
-        return usersInMode.contains(user.key);
+        return usersInMode.contains(user.getId());
     }
 
     @EventHandler
@@ -162,7 +162,7 @@ public abstract class ConversationCommand extends CubeCommand implements Listene
      */
     public boolean addUser(User user)
     {
-        return this.usersInMode.add(user.key);
+        return this.usersInMode.add(user.getId());
     }
 
     /**
@@ -172,7 +172,7 @@ public abstract class ConversationCommand extends CubeCommand implements Listene
      */
     public void removeUser(User user)
     {
-        this.usersInMode.remove(user.key);
+        this.usersInMode.remove(user.getId());
     }
 
     @Override

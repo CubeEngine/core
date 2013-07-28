@@ -79,7 +79,7 @@ public class BankAccessStorage extends SingleKeyStorage<Long, BankAccessModel>
     {
         try
         {
-            ResultSet resultSet = this.database.preparedQuery(this.modelClass, "getUserAccess", user.key);
+            ResultSet resultSet = this.database.preparedQuery(this.modelClass, "getUserAccess", user.getId());
             Set<Long> result = new HashSet<Long>();
             while (resultSet.next())
             {

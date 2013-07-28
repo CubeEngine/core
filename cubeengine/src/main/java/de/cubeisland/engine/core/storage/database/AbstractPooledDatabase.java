@@ -43,7 +43,7 @@ public abstract class AbstractPooledDatabase implements Database
     private final ExecutorService executorService;
     private final AsyncTaskQueue taskQueue;
 
-    private final Core core;
+    protected final Core core;
 
     protected AbstractPooledDatabase(Core core)
     {

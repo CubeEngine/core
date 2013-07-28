@@ -80,7 +80,7 @@ public class AssignedRoleManager extends TripletKeyStorage<Long, Long, String, A
     {
         try
         {
-            ResultSet resulsSet = this.database.preparedQuery(modelClass, "getallByUser", user.key);
+            ResultSet resulsSet = this.database.preparedQuery(modelClass, "getallByUser", user.getId());
             TLongObjectHashMap<List<String>> result = new TLongObjectHashMap<List<String>>();
             while (resulsSet.next())
             {

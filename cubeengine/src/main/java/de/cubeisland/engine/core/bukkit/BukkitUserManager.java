@@ -39,8 +39,8 @@ import org.bukkit.scheduler.BukkitTask;
 import de.cubeisland.engine.core.user.AbstractUserManager;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.user.UserAttachment;
+import de.cubeisland.engine.core.user.UserEntity;
 import de.cubeisland.engine.core.util.matcher.Match;
-
 import gnu.trove.impl.Constants;
 import gnu.trove.map.TObjectIntMap;
 import gnu.trove.map.hash.TObjectIntHashMap;
@@ -98,10 +98,11 @@ public class BukkitUserManager extends AbstractUserManager
             String foundUser = Match.string().matchString(name, onlinePlayerList);
             if (foundUser == null)
             {
+                UserEntity entity = this.ebean.find(UserEntity.class).where().eq("player", name).findUnique();
                 //Looking up saved users
-                user = this.storage.loadUser(name);
-                if (user != null)
+                if (entity != null)
                 {
+                    user = new User(entity);
                     this.cacheUser(user);
                 }
             }
@@ -174,8 +175,8 @@ public class BukkitUserManager extends AbstractUserManager
                 public void run()
                 {
                     scheduledForRemoval.remove(user.getName());
-                    user.lastseen = new Timestamp(System.currentTimeMillis());
-                    storage.update(user); // is async
+                    user.getEntity().setLastseen(new Timestamp(System.currentTimeMillis()));
+                    ebean.update(user.getEntity());
                     if (!user.isOnline())
                     {
                         return;

@@ -65,7 +65,7 @@ public class IgnoreListManager extends TwoKeyStorage<Long, Long, IgnoreList>
             return false;
         }
         this.store(new IgnoreList(user, toIgnore));
-        this.ignoreList.get(user.key).add(toIgnore.key);
+        this.ignoreList.get(user.getId()).add(toIgnore.getId());
         return true;
     }
 
@@ -76,32 +76,32 @@ public class IgnoreListManager extends TwoKeyStorage<Long, Long, IgnoreList>
             return false;
         }
         this.delete(new IgnoreList(user, toUnIgnore));
-        this.ignoreList.get(user.key).remove(toUnIgnore.key);
+        this.ignoreList.get(user.getId()).remove(toUnIgnore.getId());
         return true;
     }
 
     public boolean checkIgnore(User user, User doesIgnore)
     {
-        if (this.ignoreList.containsKey(user.key))
+        if (this.ignoreList.containsKey(user.getId()))
         {
-            List<Long> ignored = this.ignoreList.get(user.key);
-            return ignored.contains(doesIgnore.key);
+            List<Long> ignored = this.ignoreList.get(user.getId());
+            return ignored.contains(doesIgnore.getId());
         }
         try
         {
-            List<Long> ignored = this.ignoreList.get(user.key);
+            List<Long> ignored = this.ignoreList.get(user.getId());
             if (ignored == null)
             {
                 ignored = new ArrayList<Long>();
-                this.ignoreList.put(user.key, ignored);
+                this.ignoreList.put(user.getId(), ignored);
             }
             ignored.clear();
-            ResultSet result = this.database.preparedQuery(modelClass, "getAllByUser", user.key);
+            ResultSet result = this.database.preparedQuery(modelClass, "getAllByUser", user.getId());
             while (result.next())
             {
                 ignored.add(result.getLong("ignore"));
             }
-            return ignored.contains(doesIgnore.key);
+            return ignored.contains(doesIgnore.getId());
         }
         catch (SQLException e)
         {

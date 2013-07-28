@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-package de.cubeisland.engine.core.storage.database.mysql;
+package de.cubeisland.engine.core.user;
 
 import java.sql.Timestamp;
 import java.util.Locale;
@@ -25,40 +25,59 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.persistence.Version;
 
+import com.avaje.ebean.annotation.NamedUpdate;
+import com.avaje.ebean.annotation.NamedUpdates;
 import de.cubeisland.engine.core.storage.database.AttrType;
 import de.cubeisland.engine.core.storage.database.Attribute;
 
 @Entity
-@Table(name = "user_test")
-public class UserEntityTest
+@Table(name = "user")
+@NamedUpdates(
+    {@NamedUpdate(name = "clearPw", update = "UPDATE user SET passwd = :passwd"),
+     @NamedUpdate(name = "cleanUp", update = "DELETE FROM user WHERE lastseen < :lastseen AND NOT nogc"),
+    }
+
+)
+public class UserEntity
 {
     @Version
     static final de.cubeisland.engine.core.util.Version version = new de.cubeisland.engine.core.util.Version(1);
+    public static final Long NO_ID = -1L;
 
     @Id
+    @Column(name = "key") // TODO change to Id
     @Attribute(type = AttrType.INT, unsigned = true)
     private long id;
-    @Column(nullable = false, length = 16)
+    @Column(nullable = false, length = 16, unique = true)
     @Attribute(type = AttrType.VARCHAR)
-    private String player ="abc";
+    private String player;
     @Column(nullable = false)
     @Attribute(type = AttrType.BOOLEAN)
     private boolean nogc = false;
     @Column(nullable = false)
     @Attribute(type = AttrType.DATETIME)
-    private Timestamp lastseen = new Timestamp(System.currentTimeMillis());
+    private Timestamp lastseen;
     @Column(length = 128)
     @Attribute(type = AttrType.VARBINARY)
     private byte[] passwd;
     @Column(nullable = false)
     @Attribute(type = AttrType.DATETIME)
-    private Timestamp firstseen= new Timestamp(System.currentTimeMillis());
+    private Timestamp firstseen;
     @Column(name = "language", length = 5)
     @Attribute(type = AttrType.VARCHAR)
     private Locale locale = null;
 
-    public UserEntityTest()
+    public UserEntity()
     {
+    }
+
+    UserEntity(String playerName)
+    {
+        this.id = NO_ID;
+        this.player = playerName;
+        this.lastseen = new Timestamp(System.currentTimeMillis());
+        this.firstseen = this.lastseen;
+        this.passwd = new byte[0];
     }
 
     public long getId()

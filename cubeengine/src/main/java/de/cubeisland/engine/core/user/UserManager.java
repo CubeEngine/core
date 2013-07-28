@@ -100,6 +100,6 @@ public interface UserManager extends Cleanable
     void removeDefaultAttachment(Class<? extends UserAttachment> attachmentClass);
     void removeDefaultAttachments(Module module);
     void removeDefaultAttachments();
-    Set<Long> getAllKeys();
+    Set<Long> getAllIds();
     void cleanup(Module module);
 }

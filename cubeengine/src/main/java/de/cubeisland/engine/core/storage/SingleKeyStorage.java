@@ -177,7 +177,7 @@ public class SingleKeyStorage<Key_f, M extends Model<Key_f>> extends AbstractSto
         {
             throw new IllegalStateException("Error while preparing statements for the table "+ this.tableName, ex);
         }
-        tableManager.registerTable(this.tableName, this.revision);
+        //tableManager.registerTable(this.tableName, this.revision);
     }
 
     /**

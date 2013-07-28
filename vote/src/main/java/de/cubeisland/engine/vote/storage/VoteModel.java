@@ -47,7 +47,7 @@ public class VoteModel implements Model<Long>
 
     public VoteModel(User user)
     {
-        this.userid = user.key;
+        this.userid = user.getId();
         this.lastvote = new Timestamp(System.currentTimeMillis());
         this.voteamount = 1;
     }

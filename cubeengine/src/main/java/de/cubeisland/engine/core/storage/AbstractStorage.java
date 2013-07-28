@@ -41,7 +41,6 @@ import gnu.trove.map.hash.TIntObjectHashMap;
 public abstract class AbstractStorage<K, M extends Model<K>, T> implements Storage<K, M>
 {
     protected final Database database;
-    protected static TableManager tableManager = null; //Init in TableManager.class TODO holy cow!!
     // ModelInfo:
     protected T storageType = null;
     protected String tableName = null; // Has to be initialized in the implementation!
@@ -145,6 +144,18 @@ public abstract class AbstractStorage<K, M extends Model<K>, T> implements Stora
     @Override
     public void updateStructure()
     {
+        /*
+        Connection connection = this.database.getConnection();
+
+        try
+        {
+
+        }
+        catch (SQLException e)
+        {
+            throw new IllegalStateException("Error while updating DatabaseStructure", e);
+        }
+
         if (tableManager == null) //Tablemanager is null when creating TableManager
         {
             return;
@@ -161,8 +172,9 @@ public abstract class AbstractStorage<K, M extends Model<K>, T> implements Stora
         }
         catch (SQLException e)
         {
-            throw new IllegalStateException("Error while updating DatabaseStructure", e);
+
         }
+        */
     }
 
     protected void prepareStatements() throws SQLException

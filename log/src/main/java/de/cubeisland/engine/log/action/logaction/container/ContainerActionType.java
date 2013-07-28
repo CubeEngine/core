@@ -78,7 +78,7 @@ public class ContainerActionType extends ActionTypeContainer
         if (event.getPlayer() instanceof Player)
         {
             User user = this.um.getExactUser(event.getPlayer().getName());
-            TObjectIntHashMap<ItemData> itemDataMap = this.inventoryChanges.get(user.key);
+            TObjectIntHashMap<ItemData> itemDataMap = this.inventoryChanges.get(user.getId());
             if (itemDataMap != null)
             {
                 Location location = this.getLocationForHolder(event.getInventory().getHolder());
@@ -101,7 +101,7 @@ public class ContainerActionType extends ActionTypeContainer
                     actionType.logSimple(location,event.getPlayer(),new ContainerType(event.getInventory().getHolder()),additional);
                 }
             }
-            this.inventoryChanges.remove(user.key);
+            this.inventoryChanges.remove(user.getId());
         }
     }
 
@@ -140,7 +140,7 @@ public class ContainerActionType extends ActionTypeContainer
                 if (!config.CONTAINER_ignore.contains(type))
                 {
                     User user = this.um.getExactUser(event.getPlayer().getName());
-                    this.inventoryChanges.put(user.key,new TObjectIntHashMap<ItemData>());
+                    this.inventoryChanges.put(user.getId(),new TObjectIntHashMap<ItemData>());
                 }
             }
         }
@@ -152,7 +152,7 @@ public class ContainerActionType extends ActionTypeContainer
         if (event.getWhoClicked() instanceof Player)
         {
             final User user = this.um.getExactUser(event.getWhoClicked().getName());
-            if (!this.inventoryChanges.containsKey(user.key)) return;
+            if (!this.inventoryChanges.containsKey(user.getId())) return;
             Inventory inventory = event.getInventory();
             int amount = 0;
             for (Entry<Integer, ItemStack> entry : event.getNewItems().entrySet())
@@ -177,7 +177,7 @@ public class ContainerActionType extends ActionTypeContainer
         {
             // TODO use the new inventoryStuff
             final User user = this.um.getExactUser(event.getWhoClicked().getName());
-            if (!this.inventoryChanges.containsKey(user.key)) return;
+            if (!this.inventoryChanges.containsKey(user.getId())) return;
             Inventory inventory = event.getInventory();
             InventoryHolder holder = inventory.getHolder();
             ItemStack inventoryItem = event.getCurrentItem();
@@ -402,11 +402,11 @@ public class ContainerActionType extends ActionTypeContainer
 
     private void prepareForLogging(User user, ItemData itemData, int amount)
     {
-        TObjectIntHashMap<ItemData> itemDataMap = this.inventoryChanges.get(user.key);
+        TObjectIntHashMap<ItemData> itemDataMap = this.inventoryChanges.get(user.getId());
         if (itemDataMap == null)
         {
             itemDataMap = new TObjectIntHashMap<ItemData>();
-            this.inventoryChanges.put(user.key,itemDataMap);
+            this.inventoryChanges.put(user.getId(),itemDataMap);
         }
         int oldAmount = itemDataMap.get(itemData); // if not yet set this returns 0
         itemDataMap.put(itemData,oldAmount + amount);

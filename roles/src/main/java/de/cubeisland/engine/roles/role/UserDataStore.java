@@ -191,7 +191,7 @@ public class UserDataStore implements RawDataStore
 
     public Long getUserID()
     {
-        return this.attachment.getHolder().key;
+        return this.attachment.getHolder().getId();
     }
 
     @Override

@@ -181,14 +181,14 @@ public class MailCommand extends ContainerCommand
         for (User user : users)
         {
             this.mailManager.addMail(user, sender, message);
-            alreadySend.add(user.key);
+            alreadySend.add(user.getId());
         }
         final User sendingUser = sender;
         this.basics.getCore().getTaskManager().runAsynchronousTaskDelayed(this.getModule(),new Runnable()
         {
             public void run() // Async sending to all Users ever
             {
-                for (Long userKey : basics.getCore().getUserManager().getAllKeys())
+                for (Long userKey : basics.getCore().getUserManager().getAllIds())
                 {
                     if (!alreadySend.contains(userKey))
                     {

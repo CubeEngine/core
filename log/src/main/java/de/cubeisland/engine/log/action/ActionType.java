@@ -68,7 +68,7 @@ public abstract class ActionType
         }
         else if (causer instanceof Player)
         {
-            causerID = this.um.getExactUser(((Player)causer).getName()).key;
+            causerID = this.um.getExactUser(((Player)causer).getName()).getId();
         }
         else
         {

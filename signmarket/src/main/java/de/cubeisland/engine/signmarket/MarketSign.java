@@ -719,7 +719,7 @@ public class MarketSign
 
     public boolean tryBreak(User user)
     {
-        if (this.breakingSign.containsKey(user.key) && System.currentTimeMillis() - this.breakingSign.get(user.key) <= 500)//0.5 sec
+        if (this.breakingSign.containsKey(user.getId()) && System.currentTimeMillis() - this.breakingSign.get(user.getId()) <= 500)//0.5 sec
         {
             Location location = this.getLocation();
             if (this.hasStock() && this.getStock() == 1337) //pssst i am not here
@@ -727,11 +727,11 @@ public class MarketSign
                 location.getWorld().strikeLightningEffect(location);
             }
             this.breakSign(user);
-            this.breakingSign.remove(user.key);
+            this.breakingSign.remove(user.getId());
             user.sendTranslated("&aMarketSign destroyed!");
             return true;
         }
-        this.breakingSign.put(user.key, System.currentTimeMillis());
+        this.breakingSign.put(user.getId(), System.currentTimeMillis());
         user.sendTranslated("&eDoubleclick to break the sign!");
         return false;
     }

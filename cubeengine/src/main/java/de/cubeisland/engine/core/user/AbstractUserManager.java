@@ -24,7 +24,9 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.sql.Timestamp;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
@@ -32,16 +34,15 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
+import com.avaje.ebean.EbeanServer;
 import de.cubeisland.engine.core.Core;
 import de.cubeisland.engine.core.command.CommandSender;
 import de.cubeisland.engine.core.filesystem.FileManager;
-
 import de.cubeisland.engine.core.module.Module;
 import de.cubeisland.engine.core.permission.Permission;
 import de.cubeisland.engine.core.util.ChatFormat;
 import de.cubeisland.engine.core.util.StringUtils;
 import de.cubeisland.engine.core.util.Triplet;
-
 import gnu.trove.map.hash.TLongObjectHashMap;
 import gnu.trove.set.hash.THashSet;
 
@@ -52,7 +53,6 @@ import gnu.trove.set.hash.THashSet;
 public abstract class AbstractUserManager implements UserManager
 {
     private final Core core;
-    protected UserStorage storage;
     protected List<User> onlineUsers;
     protected ConcurrentHashMap<Object, User> cachedUsers;
     protected Set<DefaultAttachment> defaultAttachments;
@@ -60,15 +60,19 @@ public abstract class AbstractUserManager implements UserManager
     protected MessageDigest messageDigest;
     private Random random;
 
+    protected EbeanServer ebean;
+
     public AbstractUserManager(final Core core)
     {
-        this.storage = new UserStorage(core);
+        core.getDB().createTableForModel(UserEntity.class);
+        this.ebean = core.getDB().getEbeanServer();
+
         this.core = core;
 
-        this.cachedUsers = new ConcurrentHashMap<Object, User>();
-        this.onlineUsers = new CopyOnWriteArrayList<User>();
+        this.cachedUsers = new ConcurrentHashMap<>();
+        this.onlineUsers = new CopyOnWriteArrayList<>();
 
-        this.defaultAttachments = new THashSet<DefaultAttachment>();
+        this.defaultAttachments = new THashSet<>();
 
         this.random = new Random();
         this.loadSalt();
@@ -99,8 +103,8 @@ public abstract class AbstractUserManager implements UserManager
         {
             messageDigest.reset();
             password += this.salt;
-            password += user.firstseen.toString();
-            return Arrays.equals(user.passwd, messageDigest.digest(password.getBytes()));
+            password += user.getEntity().getFirstseen().toString();
+            return Arrays.equals(user.getEntity().getPasswd(), messageDigest.digest(password.getBytes()));
         }
     }
 
@@ -110,26 +114,30 @@ public abstract class AbstractUserManager implements UserManager
         {
             this.messageDigest.reset();
             password += this.salt;
-            password += user.firstseen.toString();
-            user.passwd = this.messageDigest.digest(password.getBytes());
-            this.storage.update(user);
+            password += user.getEntity().getFirstseen().toString();
+            user.getEntity().setPasswd(this.messageDigest.digest(password.getBytes()));
+            this.ebean.update(user.getEntity());
         }
     }
 
     public void resetPassword(User user)
     {
-        user.passwd = null;
-        this.storage.update(user);
+        user.getEntity().setPasswd(null);
+        this.ebean.update(user.getEntity());
     }
 
     public void resetAllPasswords()
     {
-        this.storage.resetAllPasswords();
+        this.ebean.createUpdate(UserEntity.class, "clearPw").setParameter("passwd", null).execute();
+        for (User user : this.getLoadedUsers())
+        {
+            this.ebean.refresh(user.getEntity());
+        }
     }
 
     public void removeUser(final User user)
     {
-        this.storage.delete(user); //this is async
+        this.ebean.delete(user.getEntity());
         this.removeCachedUser(user);
     }
 
@@ -151,18 +159,19 @@ public abstract class AbstractUserManager implements UserManager
         return null;
     }
 
-    public synchronized User getUser(long key)
+    public synchronized User getUser(long id)
     {
-        User user = this.cachedUsers.get(key);
+        User user = this.cachedUsers.get(id);
         if (user != null)
         {
             return user;
         }
-        user = this.storage.get(key);
-        if (user == null)
+        UserEntity entity = this.ebean.find(UserEntity.class, id);
+        if (entity == null)
         {
             return null;
         }
+        user = new User(entity);
         this.cacheUser(user);
         return user;
     }
@@ -190,14 +199,16 @@ public abstract class AbstractUserManager implements UserManager
         return user;
     }
 
-    protected synchronized User loadUser(String playerName)
+    protected synchronized User loadUser(String name)
     {
-        User user = this.storage.loadUser(playerName);
-        if (user != null)
+        UserEntity entity = this.ebean.find(UserEntity.class).where().eq("player", name).findUnique();
+        if (entity != null)
         {
+            User user = new User(entity);
             this.cacheUser(user);
+            return user;
         }
-        return user;
+        return null;
     }
 
     /**
@@ -214,7 +225,7 @@ public abstract class AbstractUserManager implements UserManager
             return user;
         }
         user = new User(this.core, name);
-        this.storage.store(user, false);
+        this.ebean.save(user.getEntity());
         this.cacheUser(user);
 
         return user;
@@ -338,7 +349,7 @@ public abstract class AbstractUserManager implements UserManager
 
     public Triplet<Long, String, Integer> getFailedLogin(User user)
     {
-        return this.failedLogins.get(user.key);
+        return this.failedLogins.get(user.getId());
     }
 
     protected void addFailedLogin(User user)
@@ -347,7 +358,7 @@ public abstract class AbstractUserManager implements UserManager
         if (loginFail == null)
         {
             loginFail = new Triplet<Long, String, Integer>(System.currentTimeMillis(), user.getAddress().getAddress().getHostAddress(), 1);
-            this.failedLogins.put(user.key, loginFail);
+            this.failedLogins.put(user.getId(), loginFail);
         }
         else
         {
@@ -359,7 +370,7 @@ public abstract class AbstractUserManager implements UserManager
 
     protected void removeFailedLogins(User user)
     {
-        this.failedLogins.remove(user.key);
+        this.failedLogins.remove(user.getId());
     }
 
     public synchronized void kickAll(String message)
@@ -442,9 +453,14 @@ public abstract class AbstractUserManager implements UserManager
         this.defaultAttachments.clear();
     }
 
-    public Set<Long> getAllKeys()
+    public Set<Long> getAllIds()
     {
-        return this.storage.getAllKeys();
+        Set<Long> ids = new HashSet<>();
+        for (Object o : this.ebean.find(UserEntity.class).findIds())
+        {
+            ids.add((Long)o);
+        }
+        return ids;
     }
 
     public synchronized void cleanup(Module module)
@@ -457,7 +473,6 @@ public abstract class AbstractUserManager implements UserManager
     public void shutdown()
     {
         this.clean();
-        this.storage = null;
 
         this.onlineUsers.clear();
         this.onlineUsers = null;
@@ -479,7 +494,8 @@ public abstract class AbstractUserManager implements UserManager
     @Override
     public void clean()
     {
-        this.storage.cleanup();
+        Timestamp time = new Timestamp(System.currentTimeMillis() - core.getConfiguration().userManagerCleanupDatabase.toMillis());
+        this.ebean.createUpdate(UserEntity.class, "cleanUp").setParameter("lastseen", time).execute();
     }
 
     protected final class DefaultAttachment

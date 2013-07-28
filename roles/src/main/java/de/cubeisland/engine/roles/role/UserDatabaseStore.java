@@ -159,7 +159,7 @@ public class UserDatabaseStore extends UserDataStore
     public void setPermissions(Map<String, Boolean> perms)
     {
         this.clearPermissions();
-        pm.setPermissions(this.attachment.getHolder().key,this.worldID,perms);
+        pm.setPermissions(this.attachment.getHolder().getId(),this.worldID,perms);
         super.setPermissions(perms);
     }
 
@@ -167,7 +167,7 @@ public class UserDatabaseStore extends UserDataStore
     public void setMetadata(Map<String, String> metadata)
     {
         this.clearMetadata();
-        this.mdm.setMetadata(this.attachment.getHolder().key,this.worldID,metadata);
+        this.mdm.setMetadata(this.attachment.getHolder().getId(),this.worldID,metadata);
         super.setMetadata(metadata);
     }
 
@@ -175,7 +175,7 @@ public class UserDatabaseStore extends UserDataStore
     public void setAssignedRoles(Set<Role> roles)
     {
         this.clearAssignedRoles();
-        rm.setAssigned(this.attachment.getHolder().key, this.worldID, roles);
+        rm.setAssigned(this.attachment.getHolder().getId(), this.worldID, roles);
         super.setAssignedRoles(roles);
     }
 

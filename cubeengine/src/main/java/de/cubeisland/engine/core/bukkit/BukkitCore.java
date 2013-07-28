@@ -63,7 +63,6 @@ import de.cubeisland.engine.core.logger.ColorConverter;
 import de.cubeisland.engine.core.logger.JULAppender;
 import de.cubeisland.engine.core.module.Module;
 import de.cubeisland.engine.core.service.ServiceManager;
-import de.cubeisland.engine.core.storage.TableManager;
 import de.cubeisland.engine.core.storage.database.Database;
 import de.cubeisland.engine.core.storage.database.mysql.MySQLDatabase;
 import de.cubeisland.engine.core.util.InventoryGuardFactory;
@@ -97,7 +96,6 @@ public final class BukkitCore extends JavaPlugin implements Core
     private EventManager eventRegistration;
     private BukkitCommandManager commandManager;
     private BukkitTaskManager taskManager;
-    private TableManager tableManager;
     private ApiServer apiServer;
     private BukkitWorldManager worldManager;
     private Match matcherManager;
@@ -263,9 +261,6 @@ public final class BukkitCore extends JavaPlugin implements Core
         {
             return;
         }
-
-        // depends on: database
-        this.tableManager = new TableManager(this);
 
         // depends on: plugin manager
         this.eventRegistration = new EventManager(this);
@@ -568,12 +563,6 @@ public final class BukkitCore extends JavaPlugin implements Core
     public BukkitTaskManager getTaskManager()
     {
         return this.taskManager;
-    }
-
-    @Override
-    public TableManager getTableManger()
-    {
-        return this.tableManager;
     }
 
     @Override

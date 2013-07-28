@@ -21,6 +21,7 @@ import java.io.File;
 import java.lang.reflect.Field;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -45,6 +46,7 @@ import de.cubeisland.engine.core.config.Configuration;
 import de.cubeisland.engine.core.storage.database.AbstractPooledDatabase;
 import de.cubeisland.engine.core.storage.database.AttrType;
 import de.cubeisland.engine.core.storage.database.Attribute;
+import de.cubeisland.engine.core.storage.database.DatabaseConfiguration;
 import de.cubeisland.engine.core.storage.database.Index;
 import de.cubeisland.engine.core.util.StringUtils;
 import de.cubeisland.engine.core.util.Version;
@@ -133,19 +135,40 @@ public class MySQLDatabase extends AbstractPooledDatabase
         return null;
     }
 
+    private boolean updateTableStructure(Version version, String tableName, Class<?> modelClass)
+    {
+        try
+        {
+            ResultSet resultSet = this.query("SELECT table_comment \n" +
+                                             "FROM INFORMATION_SCHEMA.TABLES \n" +
+                                             "WHERE table_schema=" + this.config.database +
+                                             "\nAND table_name=" + tableName);
+            if (resultSet.next())
+            {
+                Version dbVersion = Version.fromString(resultSet.getString("table_comment"));
+                if (dbVersion.isNewerThan(version))
+                {
+                    this.core.getLog().info("table-version is newer than expected! " + tableName + ":" + dbVersion.toString() + " expected version: " + version.toString());
+                }
+                else if (dbVersion.isOlderThan(version))
+                {
+                    this.core.getLog().info("table-version is too old! Updating " + tableName + " from " +dbVersion.toString()+ " to " + version.toString());
+                    // TODO do the update
+                }
+                return true;
+            }
+        }
+        catch (SQLException e)
+        {}
+        return false;
+    }
+
     public void createTableForModel(Class<?> modelClass)
     {
         if (modelClass.isAnnotationPresent(Entity.class) && modelClass.isAnnotationPresent(Table.class))
         {
-            Version version = new Version(0);
-            StringBuilder builder = new StringBuilder("CREATE");
-            // TODO TEMPORARY and alternativ name for temp-table (or just append _temp)
-            builder.append(" TABLE");
-            builder.append(" IF NOT EXISTS "); // TODO
             Table table = modelClass.getAnnotation(Table.class);
-            builder.append(MySQLDatabase.prepareTableName(table.name())).append("\n(");
-            boolean first = true;
-            boolean autoIncrement = false;
+            Version version = new Version(0);
             for (Field field : modelClass.getDeclaredFields())
             {
                 if (field.isAnnotationPresent(javax.persistence.Version.class) && field.getType().equals(Version.class))
@@ -155,9 +178,23 @@ public class MySQLDatabase extends AbstractPooledDatabase
                         field.setAccessible(true);
                         version = (Version)field.get(null);
                     }
-                    catch (IllegalAccessException ignore)
-                    {}
+                    catch (IllegalAccessException e)
+                    {
+                        throw new IllegalStateException("Version was not accessible!",e);
+                    }
                 }
+            }
+            String tableName = MySQLDatabase.prepareTableName(table.name());
+            if (this.updateTableStructure(version, tableName, modelClass)) return;
+            StringBuilder builder = new StringBuilder("CREATE");
+            // TODO TEMPORARY and alternativ name for temp-table (or just append _temp)
+            builder.append(" TABLE");
+            builder.append(" IF NOT EXISTS "); // TODO
+            builder.append(tableName).append("\n(");
+            boolean first = true;
+            boolean autoIncrement = false;
+            for (Field field : modelClass.getDeclaredFields())
+            {
                 if (field.isAnnotationPresent(Attribute.class))
                 {
                     if (!first) builder.append(",\n");
@@ -421,5 +458,17 @@ public class MySQLDatabase extends AbstractPooledDatabase
             TableName tableName = super.getTableName(beanClass);
             return new TableName(tableName.getCatalog(), tableName.getSchema(), MySQLDatabase.prepareTableName(tableName.getName()));
         }
+    }
+
+    @Override
+    public EbeanServer getEbeanServer()
+    {
+        return this.ebeanServer;
+    }
+
+    @Override
+    public DatabaseConfiguration getDatabaseConfig()
+    {
+        return this.config;
     }
 }

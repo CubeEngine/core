@@ -41,8 +41,8 @@ public class IgnoreList implements TwoKeyModel<Long, Long>
 
     IgnoreList(User user, User ignore)
     {
-        this.key = user.key;
-        this.ignore = ignore.key;
+        this.key = user.getId();
+        this.ignore = ignore.getId();
     }
 
     @Override

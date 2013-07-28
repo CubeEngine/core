@@ -54,7 +54,7 @@ public class Vote extends Module implements Listener
         {
             User user = this.getCore().getUserManager().getUser(vote.getUsername());
             Economy economy = this.getCore().getServiceManager().getServiceProvider(Economy.class);
-            VoteModel voteModel = this.manager.get(user.key);
+            VoteModel voteModel = this.manager.get(user.getId());
             if (voteModel == null)
             {
                 voteModel = new VoteModel(user);
