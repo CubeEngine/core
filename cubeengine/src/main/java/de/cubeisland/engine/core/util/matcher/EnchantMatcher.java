@@ -17,7 +17,6 @@
  */
 package de.cubeisland.engine.core.util.matcher;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Path;
@@ -45,14 +44,14 @@ public class EnchantMatcher
 
     EnchantMatcher()
     {
-        this.bukkitnames = new THashMap<String, Enchantment>();
+        this.bukkitnames = new THashMap<>();
         for (Enchantment enchantment : Enchantment.values())
         {
             this.bukkitnames.put(enchantment.getName(), enchantment);
         }
 
-        this.enchantments = new THashMap<String, Enchantment>();
-        this.enchantmentName = new THashMap<Enchantment, String>();
+        this.enchantments = new THashMap<>();
+        this.enchantmentName = new THashMap<>();
 
         TreeMap<String, List<String>> enchs = this.readEnchantments();
         for (String bukkitName : enchs.keySet())

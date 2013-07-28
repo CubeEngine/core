@@ -17,7 +17,6 @@
  */
 package de.cubeisland.engine.core.module;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
@@ -244,7 +243,7 @@ public class ModuleLoader
             return clazz;
         }
 
-        Set<String> alreadyChecked = new THashSet<String>(this.classLoaders.size() / 2);
+        Set<String> alreadyChecked = new THashSet<>(this.classLoaders.size() / 2);
         alreadyChecked.add(info.getId());
 
         for (String dep : info.getSoftDependencies().keySet())
@@ -311,11 +310,11 @@ public class ModuleLoader
      * @param file the file to add
      * @throws MalformedURLException if the file is invalid
      */
-    public void registerLibraryClassPath(File file) throws MalformedURLException
+    public void registerLibraryClassPath(Path file) throws MalformedURLException
     {
         assert file != null: "The file must not be null!";
 
-        this.registerLibraryClassPath(file.toURI().toURL());
+        this.registerLibraryClassPath(file.toUri().toURL());
     }
 
     /**

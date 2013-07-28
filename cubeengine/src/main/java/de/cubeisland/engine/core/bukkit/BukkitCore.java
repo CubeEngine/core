@@ -87,12 +87,14 @@ import org.slf4j.LoggerFactory;
 
 import static de.cubeisland.engine.core.util.ReflectionUtils.findFirstField;
 import static de.cubeisland.engine.core.util.ReflectionUtils.getFieldValue;
+import static java.util.logging.Level.WARNING;
 
 /**
  * This represents the Bukkit-JavaPlugin that gets loaded and implements the Core
  */
 public final class BukkitCore extends JavaPlugin implements Core
 {
+    //region Core fields
     private Version version;
     private Database database;
     private BukkitPermissionManager permissionManager;
@@ -114,6 +116,7 @@ public final class BukkitCore extends JavaPlugin implements Core
     private CorePerms corePerms;
     private BukkitBanManager banManager;
     private ServiceManager serviceManager;
+    //endregion
 
     private List<Runnable> initHooks;
     private LoggerContext loggerContext;
@@ -202,11 +205,10 @@ public final class BukkitCore extends JavaPlugin implements Core
                 logbackConfigurator.doConfigure(new ContextInitializer((LoggerContext)LoggerFactory.getILoggerFactory()).findURLOfDefaultConfigurationFile(true));
             }
         }
-        catch (JoranException ex)
+        catch (JoranException e)
         {
-            this.getLogger().log(java.util.logging.Level.WARNING,
-                                 "An error occured when loading a logback.xml file from the CubeEngine folder: "
-                                     + ex.getLocalizedMessage(), ex);
+            this.getLogger().log(WARNING, "An error occurred when loading a logback.xml file from the CubeEngine folder: " + e
+                .getLocalizedMessage(), e);
         }
         // Configure the logger
         Logger parentLogger = (Logger)LoggerFactory.getLogger("cubeengine");
@@ -573,7 +575,7 @@ public final class BukkitCore extends JavaPlugin implements Core
     }
     //endregion
 
-    //region Core implementations
+    //region Core getters
     @Override
     public Version getVersion()
     {

@@ -18,31 +18,30 @@
 package de.cubeisland.engine.core.filesystem.gettext;
 
 import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.nio.channels.Channels;
+import java.nio.channels.FileChannel;
+import java.nio.channels.ReadableByteChannel;
+import java.nio.file.Path;
 import java.util.Map;
 
 import de.cubeisland.engine.core.Core;
-
 import gnu.trove.map.hash.THashMap;
 
 public class PlaintextMessageCatalog implements MessageCatalog
 {
-    private final File file;
+    private final Path file;
 
-    public PlaintextMessageCatalog(File file)
+    public PlaintextMessageCatalog(Path file)
     {
         this.file = file;
     }
 
-    public Map<String, String> read(InputStream inputStream) throws IOException
+    public Map<String, String> read(ReadableByteChannel channel) throws IOException
     {
-        Map<String, String> messages = new THashMap<String, String>();
-        BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream, Core.CHARSET));
+        Map<String, String> messages = new THashMap<>();
+        BufferedReader reader = new BufferedReader(Channels.newReader(channel, Core.CHARSET.name()));
 
         String line;
         int spaceOffset;
@@ -74,10 +73,6 @@ public class PlaintextMessageCatalog implements MessageCatalog
                 {
                     currentId = text;
                 }
-                else
-                {
-                    continue;
-                }
             }
             else
             {
@@ -91,7 +86,10 @@ public class PlaintextMessageCatalog implements MessageCatalog
 
     public Map<String, String> read() throws IOException
     {
-        return this.read(new FileInputStream(this.file));
+        try (FileChannel in = FileChannel.open(this.file))
+        {
+            return this.read(in);
+        }
     }
 
     public void write(Map<String, String> messages) throws IOException
