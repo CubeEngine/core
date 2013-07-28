@@ -17,8 +17,8 @@
  */
 package de.cubeisland.engine.core.util.matcher;
 
-import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.EnumSet;
@@ -34,8 +34,6 @@ import org.bukkit.inventory.ItemStack;
 import de.cubeisland.engine.core.CoreResource;
 import de.cubeisland.engine.core.CubeEngine;
 import de.cubeisland.engine.core.filesystem.FileUtil;
-
-
 import gnu.trove.map.hash.THashMap;
 import gnu.trove.map.hash.TShortObjectHashMap;
 
@@ -72,9 +70,9 @@ public class MaterialMatcher
     MaterialMatcher(MaterialDataMatcher materialDataMatcher)
     {
         this.materialDataMatcher = materialDataMatcher;
-        this.items = new THashMap<String, ImmutableItemStack>();
-        this.itemnames = new THashMap<Material, TShortObjectHashMap<String>>();
-        this.bukkitnames = new THashMap<String, ImmutableItemStack>();
+        this.items = new THashMap<>();
+        this.itemnames = new THashMap<>();
+        this.bukkitnames = new THashMap<>();
         // Read Bukkit names
         for (Material mat : Material.values())
         {
@@ -109,7 +107,7 @@ public class MaterialMatcher
             TShortObjectHashMap<String> dataMap = this.itemnames.get(material);
             if (dataMap == null)
             {
-                dataMap = new TShortObjectHashMap<String>();
+                dataMap = new TShortObjectHashMap<>();
                 this.itemnames.put(material, dataMap);
             }
             dataMap.put(data, names.get(0));
@@ -130,7 +128,6 @@ public class MaterialMatcher
         catch (IllegalArgumentException ex)
         {
             CubeEngine.getLog().warn("Unknown Material: {}", materialName);
-            return;
         }
     }
 
@@ -145,8 +142,8 @@ public class MaterialMatcher
     private boolean readItems(TreeMap<String, TreeMap<Short, List<String>>> map, List<String> input, boolean update)
     {
         boolean updated = false;
-        TreeMap<Short, List<String>> readData = new TreeMap<Short, List<String>>();
-        ArrayList<String> names = new ArrayList<String>();
+        TreeMap<Short, List<String>> readData = new TreeMap<>();
+        ArrayList<String> names = new ArrayList<>();
         String currentItemName = "";
         short currentData = 0;
         for (String line : input)
@@ -164,14 +161,14 @@ public class MaterialMatcher
                 {
                     if (currentData != data)
                     {
-                        names = new ArrayList<String>(); // New DATA Create new nameList
+                        names = new ArrayList<>(); // New DATA Create new nameList
                         readData.put(data, names);
                         currentData = data;
                     }
                     if (!currentItemName.equals(name))
                     {
-                        readData = new TreeMap<Short, List<String>>(); // New ID Create new ID & DATA
-                        names = new ArrayList<String>(); // New DATA Create new nameList
+                        readData = new TreeMap<>(); // New ID Create new ID & DATA
+                        names = new ArrayList<>(); // New DATA Create new nameList
                         readData.put(data, names);
                         map.put(name, readData);
                         currentData = data;
@@ -182,17 +179,17 @@ public class MaterialMatcher
                 {
                     if (currentData != data)
                     {
-                        names = new ArrayList<String>(); // New DATA Create new nameList
+                        names = new ArrayList<>(); // New DATA Create new nameList
                         currentData = data;
                     }
                     if (!currentItemName.equals(name))
                     {
-                        readData = new TreeMap<Short, List<String>>(); // New ID Create new DataValContainer
-                        names = new ArrayList<String>(); // New DATA Create new nameList
+                        readData = new TreeMap<>(); // New ID Create new DataValContainer
+                        names = new ArrayList<>(); // New DATA Create new nameList
                         currentData = data;
                         currentItemName = name;
                     }
-                    if (map.get(name) == null || map.get(name).isEmpty()) // Unkown ID -> Create new ID & DATA
+                    if (map.get(name) == null || map.get(name).isEmpty()) // Unknown ID -> Create new ID & DATA
                     {
                         readData.put(data, names);
                         map.put(name, readData);
@@ -200,7 +197,7 @@ public class MaterialMatcher
                     }
                     else
                     {
-                        if (map.get(name).get(data) == null || map.get(name).get(data).isEmpty()) // Known ID unkown DATA -> Create new DATA
+                        if (map.get(name).get(data) == null || map.get(name).get(data).isEmpty()) // Known ID unknown DATA -> Create new DATA
                         {
                             map.get(name).put(data, names);
                         }
@@ -222,10 +219,10 @@ public class MaterialMatcher
     {
         try
         {
-            File file = new File(CubeEngine.getFileManager().getDataFolder(), CoreResource.ITEMS.getTarget());
+            Path file = CubeEngine.getFileManager().getDataPath().resolve(CoreResource.ITEMS.getTarget());
             List<String> input = FileUtil.readStringList(file);
 
-            TreeMap<String, TreeMap<Short, List<String>>> readItems = new TreeMap<String, TreeMap<Short, List<String>>>();
+            TreeMap<String, TreeMap<Short, List<String>>> readItems = new TreeMap<>();
             this.readItems(readItems, input, false);
 
             List<String> jarinput = FileUtil.readStringList(CubeEngine.getFileManager().getSourceOf(file));
@@ -376,9 +373,7 @@ public class MaterialMatcher
      */
     public boolean repairable(ItemStack item)
     {
-        if (item == null)
-            return false;
-        return this.repairableMaterials.contains(item.getType());
+        return item != null && this.repairableMaterials.contains(item.getType());
     }
 
     /**

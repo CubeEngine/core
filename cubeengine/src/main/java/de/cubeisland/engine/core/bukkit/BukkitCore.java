@@ -19,6 +19,8 @@ package de.cubeisland.engine.core.bukkit;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.Reader;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -111,6 +113,7 @@ public final class BukkitCore extends JavaPlugin implements Core
 
     private List<Runnable> initHooks;
     private LoggerContext loggerContext;
+    private PluginConfig pluginConfig;
 
 
     @Override
@@ -118,6 +121,15 @@ public final class BukkitCore extends JavaPlugin implements Core
     {
         final Server server = this.getServer();
         final PluginManager pm = server.getPluginManager();
+
+        try (Reader reader = new InputStreamReader(this.getResource("plugin.yml")))
+        {
+            this.pluginConfig = Configuration.load(PluginConfig.class, reader);
+        }
+        catch (IOException e)
+        {
+            pluginConfig = Configuration.createInstance(PluginConfig.class);
+        }
 
         if (!BukkitUtils.isCompatible(this) && !BukkitUtils.init(this))
         {
@@ -148,7 +160,7 @@ public final class BukkitCore extends JavaPlugin implements Core
 
         try
         {
-            System.setProperty("cubeengine.logger.default-path", System.getProperty("cubeengine.log", fileManager.getLogDir().getCanonicalPath()));
+            System.setProperty("cubeengine.logger.default-path", System.getProperty("cubeengine.log", fileManager.getLogPath().toRealPath().toString()));
             System.setProperty("cubeengine.logger.max-size", System.getProperty("cubeengine.log.max-size", "10MB"));
             System.setProperty("cubeengine.logger.max-file-count", System.getProperty("cubeengine.log.max-file-count", "10"));
         }
@@ -200,14 +212,13 @@ public final class BukkitCore extends JavaPlugin implements Core
         this.logger.setLevel(Level.INFO);
         ColorConverter.setANSISupport(BukkitUtils.isANSISupported());
 
-        this.fileManager.setLogger(this.logger);
         this.fileManager.clearTempDir();
 
         this.banManager = new BukkitBanManager(this);
         this.serviceManager = new ServiceManager(this);
 
         // depends on: file manager
-        this.config = Configuration.load(BukkitCoreConfiguration.class, new File(this.fileManager.getDataFolder(), "core.yml"));
+        this.config = Configuration.load(BukkitCoreConfiguration.class, this.fileManager.getDataPath().resolve("core.yml"));
 
         // Set the level for the parent logger to the lowest of either the file or console
         // subloggers inherit this by default, but can override
@@ -245,7 +256,7 @@ public final class BukkitCore extends JavaPlugin implements Core
 
         // depends on: object mapper
         this.apiServer = new ApiServer(this);
-        this.apiServer.configure(Configuration.load(ApiConfig.class, new File(this.fileManager.getDataFolder(), "webapi.yml")));
+        this.apiServer.configure(Configuration.load(ApiConfig.class, this.fileManager.getDataPath().resolve("webapi.yml")));
 
         // depends on: core config, server
         this.taskManager = new BukkitTaskManager(this, new CubeThreadFactory("CubeEngine"), this.getServer().getScheduler());
@@ -263,7 +274,7 @@ public final class BukkitCore extends JavaPlugin implements Core
         }
 
         // depends on: core config, file manager, task manager
-        this.database = DatabaseFactory.loadDatabase(this.config.database, new File(this.fileManager.getDataFolder(), "database.yml"));
+        this.database = DatabaseFactory.loadDatabase(this.config.database, this.fileManager.getDataPath().resolve("database.yml"));
         if (this.database == null)
         {
             return;
@@ -334,7 +345,7 @@ public final class BukkitCore extends JavaPlugin implements Core
         MetricsInitializer metricsInit = new MetricsInitializer(BukkitCore.this);
 
         // depends on: file manager
-        this.moduleManager.loadModules(this.fileManager.getModulesDir());
+        this.moduleManager.loadModules(this.fileManager.getModulesPath());
 
         metricsInit.start();
 
@@ -507,7 +518,7 @@ public final class BukkitCore extends JavaPlugin implements Core
     @Override
     public String getSourceVersion()
     {
-        return this.moduleManager.getCoreModule().getInfo().getSourceVersion();
+        return this.pluginConfig.sourceVersion;
     }
 
     @Override

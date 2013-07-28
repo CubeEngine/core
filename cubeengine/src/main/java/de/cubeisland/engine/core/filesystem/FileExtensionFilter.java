@@ -20,27 +20,37 @@ package de.cubeisland.engine.core.filesystem;
 import java.io.File;
 import java.io.FileFilter;
 import java.io.FilenameFilter;
+import java.io.IOException;
+import java.nio.file.DirectoryStream.Filter;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
 /**
  * This class can be used to creates file or filename filters.
  */
-public class FileExtentionFilter implements FileFilter, FilenameFilter
+public class FileExtensionFilter implements Filter<Path>, FileFilter, FilenameFilter
 {
-    public static final FileExtentionFilter TXT = new FileExtentionFilter("txt");
-    public static final FileExtentionFilter YAML = new FileExtentionFilter("yml");
-    public static final FileExtentionFilter JSON = new FileExtentionFilter("json");
-    public static final FileExtentionFilter INI = new FileExtentionFilter("ini");
-    public static final FileExtentionFilter JAR = new FileExtentionFilter("jar");
-    public static final FileExtentionFilter LOG = new FileExtentionFilter("log");
+    public static final FileExtensionFilter TXT = new FileExtensionFilter("txt");
+    public static final FileExtensionFilter YAML = new FileExtensionFilter("yml");
+    public static final FileExtensionFilter JSON = new FileExtensionFilter("json");
+    public static final FileExtensionFilter INI = new FileExtensionFilter("ini");
+    public static final FileExtensionFilter JAR = new FileExtensionFilter("jar");
+    public static final FileExtensionFilter LOG = new FileExtensionFilter("log");
     private final String extention;
 
-    public FileExtentionFilter(String extention)
+    public FileExtensionFilter(String extention)
     {
         if (!extention.startsWith("."))
         {
             extention = "." + extention;
         }
         this.extention = extention;
+    }
+
+    @Override
+    public boolean accept(Path entry) throws IOException
+    {
+        return Files.isRegularFile(entry) && entry.endsWith(this.extention);
     }
 
     @Override

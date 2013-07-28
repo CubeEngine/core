@@ -17,10 +17,11 @@
  */
 package de.cubeisland.engine.core.module;
 
-import java.io.File;
-import java.io.FileFilter;
 import java.io.IOException;
 import java.lang.reflect.Field;
+import java.nio.file.DirectoryStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -34,8 +35,10 @@ import java.util.concurrent.TimeUnit;
 import java.util.jar.JarFile;
 import java.util.zip.ZipEntry;
 
+import ch.qos.logback.classic.LoggerContext;
+import ch.qos.logback.classic.joran.JoranConfigurator;
+import ch.qos.logback.core.joran.spi.JoranException;
 import de.cubeisland.engine.core.Core;
-import de.cubeisland.engine.core.filesystem.FileExtentionFilter;
 import de.cubeisland.engine.core.module.event.ModuleDisabledEvent;
 import de.cubeisland.engine.core.module.event.ModuleEnabledEvent;
 import de.cubeisland.engine.core.module.exception.CircularDependencyException;
@@ -48,14 +51,12 @@ import de.cubeisland.engine.core.module.exception.MissingProviderException;
 import de.cubeisland.engine.core.module.exception.ModuleException;
 import de.cubeisland.engine.core.util.Profiler;
 import de.cubeisland.engine.core.util.Version;
-
-import ch.qos.logback.classic.LoggerContext;
-import ch.qos.logback.classic.joran.JoranConfigurator;
-import ch.qos.logback.core.joran.spi.JoranException;
 import gnu.trove.map.hash.THashMap;
 import gnu.trove.set.hash.THashSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import static de.cubeisland.engine.core.filesystem.FileExtensionFilter.JAR;
 
 
 public abstract class BaseModuleManager implements ModuleManager
@@ -75,12 +76,12 @@ public abstract class BaseModuleManager implements ModuleManager
         this.core = core;
         this.logger = core.getLog();
         this.loader = new ModuleLoader(core, parentClassLoader, loggerFactory);
-        this.modules = new LinkedHashMap<String, Module>();
-        this.moduleInfos = new THashMap<String, ModuleInfo>();
-        this.classMap = new THashMap<Class<? extends Module>, Module>();
+        this.modules = new LinkedHashMap<>();
+        this.moduleInfos = new THashMap<>();
+        this.classMap = new THashMap<>();
         this.coreModule = new CoreModule();
-                this.serviceProviders = new HashMap<String, String>();
-        this.coreModule.initialize(core, new ModuleInfo(core), core.getFileManager().getDataFolder(), null, null, logger);
+                this.serviceProviders = new HashMap<>();
+        this.coreModule.initialize(core, new ModuleInfo(core), core.getFileManager().getDataPath(), null, null, logger);
     }
 
     public synchronized Module getModule(String name)
@@ -101,21 +102,21 @@ public abstract class BaseModuleManager implements ModuleManager
 
     public synchronized Collection<Module> getModules()
     {
-        return new ArrayList<Module>(this.modules.values());
+        return new ArrayList<>(this.modules.values());
     }
 
-    public synchronized Module loadModule(File moduleFile) throws InvalidModuleException, CircularDependencyException, MissingDependencyException, IncompatibleDependencyException, IncompatibleCoreException, MissingPluginDependencyException, MissingProviderException
+    public synchronized Module loadModule(Path modulePath) throws InvalidModuleException, CircularDependencyException, MissingDependencyException, IncompatibleDependencyException, IncompatibleCoreException, MissingPluginDependencyException, MissingProviderException
     {
-        assert moduleFile != null: "The file must not be null!";
-        if (!moduleFile.isFile())
+        assert modulePath != null: "The file must not be null!";
+        if (!Files.isRegularFile(modulePath))
         {
             throw new IllegalArgumentException("The given File is does not exist is not a normal file!");
         }
 
-        ModuleInfo info = this.loader.loadModuleInfo(moduleFile);
+        ModuleInfo info = this.loader.loadModuleInfo(modulePath);
         if (info == null)
         {
-            throw new InvalidModuleException("Failed to load the module info for file '" + moduleFile.getName() + "'!");
+            throw new InvalidModuleException("Failed to load the module info for file '" + modulePath.getFileName() + "'!");
         }
 
         ModuleInfo oldInfo = this.moduleInfos.put(info.getId(), info);
@@ -128,46 +129,52 @@ public abstract class BaseModuleManager implements ModuleManager
             }
         }
 
-        Module module = this.loadModule(info.getName(), this.moduleInfos);
-
-        return module;
+        return this.loadModule(info.getName(), this.moduleInfos);
     }
 
-    public synchronized void loadModules(File directory)
+    public synchronized void loadModules(Path directory)
     {
         assert directory != null: "The directory must not be null!";
-        assert !directory.isDirectory(): "The given File is no directory!";
+        assert !Files.isDirectory(directory): "The given File is no directory!";
 
         Module module;
         ModuleInfo info;
         this.logger.info("Loading modules...");
-        for (File file : directory.listFiles((FileFilter)FileExtentionFilter.JAR))
+        try (DirectoryStream<Path> directoryStream = Files.newDirectoryStream(directory, JAR))
         {
-            try
+            for (Path file : directoryStream )
             {
-                info = this.loader.loadModuleInfo(file);
-                module = this.getModule(info.getId());
-                if (module != null)
+                try
                 {
-                    if (module.getInfo().getVersion().compareTo(info.getVersion()) >= 0)
+                    info = this.loader.loadModuleInfo(file);
+                    module = this.getModule(info.getId());
+                    if (module != null)
                     {
-                        this.logger.warn("A newer or equal version of the module '" + info.getName() + "' is already loaded!");
-                        continue;
+                        if (module.getInfo().getVersion().compareTo(info.getVersion()) >= 0)
+                        {
+                            this.logger.warn("A newer or equal version of the module '" + info.getName() + "' is already loaded!");
+                            continue;
+                        }
+                        else
+                        {
+                            this.unloadModule(module);
+                            this.logger.info("A newer version of '" + info.getName() + "' will replace the currently loaded version!");
+                        }
                     }
-                    else
-                    {
-                        this.unloadModule(module);
-                        this.logger.info("A newer version of '" + info.getName() + "' will replace the currently loaded version!");
-                    }
+                    this.moduleInfos.put(info.getId(), info);
                 }
-                this.moduleInfos.put(info.getId(), info);
-            }
-            catch (InvalidModuleException e)
-            {
-                this.logger.error(e.getLocalizedMessage(), e);
+                catch (InvalidModuleException e)
+                {
+                    this.logger.error(e.getLocalizedMessage(), e);
+                }
             }
         }
-        Collection<String> moduleNames = new HashSet<String>(this.moduleInfos.keySet());
+        catch (IOException e)
+        {
+            this.core.getLog().error("Failed to load modules!", e);
+            return;
+        }
+        Collection<String> moduleNames = new HashSet<>(this.moduleInfos.keySet());
         for (String moduleName : moduleNames)
         {
             if (this.moduleInfos.get(moduleName).getServiceProviders() != null)
@@ -282,7 +289,7 @@ public abstract class BaseModuleManager implements ModuleManager
         // Load the modules logback.xml, if it exists
         try
         {
-            JarFile jarFile = new JarFile(info.getFile());
+            JarFile jarFile = new JarFile(info.getPath().toFile());
             ZipEntry entry = jarFile.getEntry("logback.xml");
             if (entry != null)
             {
@@ -407,7 +414,7 @@ public abstract class BaseModuleManager implements ModuleManager
             return;
         }
 
-        Set<Module> disable = new HashSet<Module>();
+        Set<Module> disable = new HashSet<>();
         for (Module m : this.modules.values())
         {
             if (m.getInfo().getDependencies().containsKey(module.getId()) || m.getInfo().getSoftDependencies().containsKey(module.getId()))
@@ -467,7 +474,7 @@ public abstract class BaseModuleManager implements ModuleManager
         if (fromFile)
         {
             this.unloadModule(module);
-            this.loadModule(module.getInfo().getFile());
+            this.loadModule(module.getInfo().getPath());
         }
         else
         {
@@ -518,7 +525,7 @@ public abstract class BaseModuleManager implements ModuleManager
 
     public synchronized void unloadModules()
     {
-        for (Module module : new THashSet<Module>(this.modules.values()))
+        for (Module module : new THashSet<>(this.modules.values()))
         {
             this.unloadModule(module);
         }

@@ -17,15 +17,16 @@
  */
 package de.cubeisland.engine.core.module;
 
-import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
 import de.cubeisland.engine.core.Core;
 import de.cubeisland.engine.core.permission.Permission;
 import de.cubeisland.engine.core.storage.ModuleRegistry;
 import de.cubeisland.engine.core.storage.SimpleModuleRegistry;
 import de.cubeisland.engine.core.util.Version;
-
 import org.slf4j.Logger;
 
 
@@ -41,11 +42,11 @@ public abstract class Module
     private ModuleLoader loader;
     private ModuleRegistry registry = null;
     private ClassLoader classLoader;
-    private File folder;
+    private Path folder;
     private boolean enabled;
     private Permission modulePermission;
 
-    final void initialize(Core core, ModuleInfo info, File folder, ModuleLoader loader, ClassLoader classLoader, Logger logger)
+    final void initialize(Core core, ModuleInfo info, Path folder, ModuleLoader loader, ClassLoader classLoader, Logger logger)
     {
         if (!this.initialized)
         {
@@ -135,14 +136,15 @@ public abstract class Module
      *
      * @return the module folder or null if it could not be created
      */
-    public File getFolder()
+    public Path getFolder()
     {
-        if (!this.folder.exists())
+        try
         {
-            if (!this.folder.mkdirs())
-            {
-                return null;
-            }
+            Files.createDirectories(this.folder);
+        }
+        catch (IOException e)
+        {
+            this.log.error("Failed to create the data folder!", e);
         }
         return this.folder;
     }

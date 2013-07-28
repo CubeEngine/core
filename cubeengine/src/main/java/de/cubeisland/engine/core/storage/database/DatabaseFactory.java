@@ -17,13 +17,14 @@
  */
 package de.cubeisland.engine.core.storage.database;
 
+import java.lang.reflect.InvocationTargetException;
+import java.nio.file.Path;
+import java.util.HashMap;
+import java.util.Locale;
+
 import de.cubeisland.engine.core.CubeEngine;
 import de.cubeisland.engine.core.config.Configuration;
 import de.cubeisland.engine.core.storage.database.mysql.MySQLDatabaseConfiguration;
-import java.io.File;
-import java.lang.reflect.InvocationTargetException;
-import java.util.HashMap;
-import java.util.Locale;
 
 /**
  * Creates new instance of database.
@@ -44,7 +45,7 @@ public class DatabaseFactory
      * @param configFile the configurationFile for the database
      * @return the prepared database
      */
-    public static Database loadDatabase(String name, File configFile)
+    public static Database loadDatabase(String name, Path configFile)
     {
         assert name != null: "The name must not be null!";
         assert configFile != null: "The config file must not be null!";
