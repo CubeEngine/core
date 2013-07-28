@@ -121,7 +121,7 @@ public class PlayerCommands
                 return;
             }
             String[] userNames = StringUtils.explode(",",context.getString(0));
-            List<String> fed = new ArrayList<String>();
+            List<String> fed = new ArrayList<>();
             for (String name : userNames)
             {
                 User user = this.um.findUser(name);
@@ -191,7 +191,7 @@ public class PlayerCommands
                 return;
             }
             String[] userNames = StringUtils.explode(",",context.getString(0));
-            List<String> starved = new ArrayList<String>();
+            List<String> starved = new ArrayList<>();
             for (String name : userNames)
             {
                 User user = this.um.findUser(name);
@@ -260,7 +260,7 @@ public class PlayerCommands
                 return;
             }
             String[] userNames = StringUtils.explode(",",context.getString(0));
-            List<String> healed = new ArrayList<String>();
+            List<String> healed = new ArrayList<>();
             for (String name : userNames)
             {
                 User user = this.um.findUser(name);
@@ -382,7 +382,7 @@ public class PlayerCommands
         if (context.hasArg(0))
         {
             String[] names = StringUtils.explode(",",context.getString(0));
-            List<String> killed = new ArrayList<String>();
+            List<String> killed = new ArrayList<>();
             if ("*".equals(names[0]))
             {
                 if (!BasicsPerm.COMMAND_KILL_ALL.isAuthorized(context.getSender()))

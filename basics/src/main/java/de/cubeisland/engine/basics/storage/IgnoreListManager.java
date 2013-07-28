@@ -36,7 +36,7 @@ public class IgnoreListManager extends TwoKeyStorage<Long, Long, IgnoreList>
 {
 
     private static final int REVISION = 1;
-    private TLongObjectHashMap<List<Long>> ignoreList = new TLongObjectHashMap<List<Long>>();
+    private TLongObjectHashMap<List<Long>> ignoreList = new TLongObjectHashMap<>();
 
     public IgnoreListManager(Database database)
     {
@@ -89,7 +89,7 @@ public class IgnoreListManager extends TwoKeyStorage<Long, Long, IgnoreList>
             List<Long> ignored = this.ignoreList.get(user.key);
             if (ignored == null)
             {
-                ignored = new ArrayList<Long>();
+                ignored = new ArrayList<>();
                 this.ignoreList.put(user.key, ignored);
             }
             ignored.clear();

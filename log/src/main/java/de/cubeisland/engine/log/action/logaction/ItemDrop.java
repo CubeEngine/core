@@ -52,7 +52,7 @@ public class ItemDrop extends SimpleLogActionType
     @Override
     protected Set<ActionTypeCategory> getCategories()
     {
-        return new HashSet<ActionTypeCategory>(Arrays.asList(PLAYER, ITEM));
+        return new HashSet<>(Arrays.asList(PLAYER, ITEM));
     }
 
     @Override

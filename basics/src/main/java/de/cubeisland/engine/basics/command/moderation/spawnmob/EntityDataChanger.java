@@ -54,10 +54,10 @@ public class EntityDataChanger<EntityInterface>
 {
     private final Class<EntityInterface> clazz;
     protected final EntityChanger<EntityInterface, ?> changer;
-    public static Set<EntityDataChanger> entityDataChangers = new HashSet<EntityDataChanger>();
+    public static Set<EntityDataChanger> entityDataChangers = new HashSet<>();
 
     public static final EntityDataChanger<Pig> PIG_SADDLE =
-            new EntityDataChanger<Pig>(Pig.class,
+            new EntityDataChanger<>(Pig.class,
                 new BoolEntityChanger<Pig>("saddled")
                 {
                     @Override
@@ -68,7 +68,7 @@ public class EntityDataChanger<EntityInterface>
                 });
 
     public static final EntityDataChanger<Ageable> AGEABLE_BABY =
-            new EntityDataChanger<Ageable>(Ageable.class,
+            new EntityDataChanger<>(Ageable.class,
                     new BoolEntityChanger<Ageable>("baby") {
                         @Override
                         public void applyEntity(Ageable entity, Boolean input)
@@ -79,7 +79,7 @@ public class EntityDataChanger<EntityInterface>
                     });
 
     public static final EntityDataChanger<Zombie> ZOMBIE_BABY =
-        new EntityDataChanger<Zombie>(Zombie.class,
+        new EntityDataChanger<>(Zombie.class,
             new BoolEntityChanger<Zombie>("baby") {
                 @Override
                 public void applyEntity(Zombie entity, Boolean input)
@@ -89,7 +89,7 @@ public class EntityDataChanger<EntityInterface>
             });
 
     public static final EntityDataChanger<Zombie> ZOMBIE_VILLAGER =
-        new EntityDataChanger<Zombie>(Zombie.class,
+        new EntityDataChanger<>(Zombie.class,
           new BoolEntityChanger<Zombie>("villager") {
               @Override
               public void applyEntity(Zombie entity, Boolean input) {
@@ -98,7 +98,7 @@ public class EntityDataChanger<EntityInterface>
           });
 
     public static final EntityDataChanger<Wolf> WOLF_ANGRY =
-            new EntityDataChanger<Wolf>(Wolf.class,
+            new EntityDataChanger<>(Wolf.class,
                     new BoolEntityChanger<Wolf>("angry") {
                         @Override
                         public void applyEntity(Wolf entity, Boolean input) {
@@ -107,7 +107,7 @@ public class EntityDataChanger<EntityInterface>
                     });
 
     public static final EntityDataChanger<PigZombie> PIGZOMBIE_ANGRY =
-        new EntityDataChanger<PigZombie>(PigZombie.class,
+        new EntityDataChanger<>(PigZombie.class,
                           new BoolEntityChanger<PigZombie>("angry") {
                               @Override
                               public void applyEntity(PigZombie entity, Boolean input) {
@@ -116,7 +116,7 @@ public class EntityDataChanger<EntityInterface>
                           });
 
     public static final EntityDataChanger<Creeper> CREEPER_POWERED =
-            new EntityDataChanger<Creeper>(Creeper.class,
+            new EntityDataChanger<>(Creeper.class,
                     new BoolEntityChanger<Creeper>("powered", "power", "charged") {
                         @Override
                         public void applyEntity(Creeper entity, Boolean input) {
@@ -125,7 +125,7 @@ public class EntityDataChanger<EntityInterface>
                     });
 
     public static final EntityDataChanger<Wolf> WOLF_SIT =
-            new EntityDataChanger<Wolf>(Wolf.class,
+            new EntityDataChanger<>(Wolf.class,
                     new BoolEntityChanger<Wolf>("sitting", "sit") {
                         @Override
                         public void applyEntity(Wolf entity, Boolean input) {
@@ -134,7 +134,7 @@ public class EntityDataChanger<EntityInterface>
                     });
 
     public static final EntityDataChanger<Ocelot> OCELOT_SIT =
-        new EntityDataChanger<Ocelot>(Ocelot.class,
+        new EntityDataChanger<>(Ocelot.class,
          new BoolEntityChanger<Ocelot>("sitting", "sit") {
              @Override
              public void applyEntity(Ocelot entity, Boolean input) {
@@ -143,7 +143,7 @@ public class EntityDataChanger<EntityInterface>
          });
 
     public static final EntityDataChanger<Skeleton> SKELETON_TYPE =
-        new EntityDataChanger<Skeleton>(Skeleton.class,
+        new EntityDataChanger<>(Skeleton.class,
          new BoolEntityChanger<Skeleton>("wither") {
              @Override
              public void applyEntity(Skeleton entity, Boolean input)
@@ -154,7 +154,7 @@ public class EntityDataChanger<EntityInterface>
          });
 
     public static final EntityDataChanger<Sheep> SHEEP_SHEARED =
-        new EntityDataChanger<Sheep>(Sheep.class,
+        new EntityDataChanger<>(Sheep.class,
                      new BoolEntityChanger<Sheep>("sheared") {
                          @Override
                          public void applyEntity(Sheep entity, Boolean input)
@@ -165,7 +165,7 @@ public class EntityDataChanger<EntityInterface>
 
 
     public static final EntityDataChanger<Ocelot> OCELOT_TYPE =
-        new EntityDataChanger<Ocelot>(Ocelot.class,
+        new EntityDataChanger<>(Ocelot.class,
               new MappedEntityChanger<Ocelot, Type>() {
                   @Override
                   void fillValues()
@@ -185,7 +185,7 @@ public class EntityDataChanger<EntityInterface>
               });
 
     public static  final EntityDataChanger<Colorable> SHEEP_COLOR =
-            new EntityDataChanger<Colorable>(Colorable.class,
+            new EntityDataChanger<>(Colorable.class,
                     new EntityChanger<Colorable, DyeColor>() {
                         @Override
                         public void applyEntity(Colorable entity, DyeColor input)
@@ -200,7 +200,7 @@ public class EntityDataChanger<EntityInterface>
                     });
 
     public static  final EntityDataChanger<Colorable> SHEEP_COLOR_RANDOM =
-        new EntityDataChanger<Colorable>(Colorable.class,
+        new EntityDataChanger<>(Colorable.class,
                  new BoolEntityChanger<Colorable>("random") {
                      private Random random = new Random(System.nanoTime());
                      @Override
@@ -212,7 +212,7 @@ public class EntityDataChanger<EntityInterface>
 
 
     public static final EntityDataChanger<Wolf> WOLF_COLLAR =
-        new EntityDataChanger<Wolf>(Wolf.class,
+        new EntityDataChanger<>(Wolf.class,
                    new EntityChanger<Wolf, DyeColor>() {
                          @Override
                          public void applyEntity(Wolf entity, DyeColor input) {
@@ -226,7 +226,7 @@ public class EntityDataChanger<EntityInterface>
                      });
 
     public static  final EntityDataChanger<Villager> VILLAGER_PROFESSION =
-            new EntityDataChanger<Villager>(Villager.class,
+            new EntityDataChanger<>(Villager.class,
                     new EntityChanger<Villager, Profession>() {
                         @Override
                         public void applyEntity(Villager entity, Profession input)
@@ -242,7 +242,7 @@ public class EntityDataChanger<EntityInterface>
                     });
 
     public static final EntityDataChanger<Enderman> ENDERMAN_ITEM =
-            new EntityDataChanger<Enderman>(Enderman.class,
+            new EntityDataChanger<>(Enderman.class,
                     new EntityChanger<Enderman, ItemStack>() {
                         @Override
                         public void applyEntity(Enderman entity, ItemStack value) {
@@ -260,7 +260,7 @@ public class EntityDataChanger<EntityInterface>
                     });
 
     public static final EntityDataChanger<Slime> SLIME_SIZE =
-        new EntityDataChanger<Slime>(Slime.class,
+        new EntityDataChanger<>(Slime.class,
                                              new EntityChanger<Slime,Integer>() {
                                                  @Override
                                                  public void applyEntity(Slime entity, Integer input)
@@ -300,7 +300,7 @@ public class EntityDataChanger<EntityInterface>
                                              });
 
     public static final EntityDataChanger<LivingEntity> HP =
-            new EntityDataChanger<LivingEntity>(LivingEntity.class,
+            new EntityDataChanger<>(LivingEntity.class,
                     new EntityChanger<LivingEntity, Integer>() {
                         @Override
                         public void applyEntity(LivingEntity entity, Integer input)
@@ -328,7 +328,7 @@ public class EntityDataChanger<EntityInterface>
     // TODO set tame_owner
 
     public static final EntityDataChanger<Tameable> TAMEABLE =
-        new EntityDataChanger<Tameable>(Tameable.class,
+        new EntityDataChanger<>(Tameable.class,
                         new BoolEntityChanger<Tameable>("tamed") {
                             @Override
                             public void applyEntity(Tameable entity, Boolean value) {
@@ -437,7 +437,7 @@ public class EntityDataChanger<EntityInterface>
 
     private static abstract class MappedEntityChanger<E, T> extends EntityChanger<E, T>
     {
-        protected Map<String, T> map = new HashMap<String, T>();
+        protected Map<String, T> map = new HashMap<>();
 
         protected MappedEntityChanger()
         {

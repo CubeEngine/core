@@ -58,7 +58,7 @@ public class ChatCommands
         {
             User sender = (User)context.getSender();
             String[] userNames = StringUtils.explode(",",context.getString(0));
-            List<String> added = new ArrayList<String>();
+            List<String> added = new ArrayList<>();
             for (String name : userNames)
             {
                 User user = this.um.findUser(name);
@@ -96,7 +96,7 @@ public class ChatCommands
         {
             User sender = (User)context.getSender();
             String[] userNames = StringUtils.explode(",",context.getString(0));
-            List<String> added = new ArrayList<String>();
+            List<String> added = new ArrayList<>();
             for (String name : userNames)
             {
                 User user = this.um.findUser(name);

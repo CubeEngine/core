@@ -64,7 +64,7 @@ public class ThrowCommands
     public ThrowCommands(Fun fun)
     {
         this.fun = fun;
-        this.thrownItems = new THashMap<String, ThrowTask>();
+        this.thrownItems = new THashMap<>();
         this.throwListener = new ThrowListener();
         fun.getCore().getEventManager().registerListener(fun, this.throwListener);
 
@@ -320,7 +320,7 @@ public class ThrowCommands
 
         public ThrowListener()
         {
-            this.entities = new THashSet<Entity>();
+            this.entities = new THashSet<>();
             this.removal = null;
         }
 

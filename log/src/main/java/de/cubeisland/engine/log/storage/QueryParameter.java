@@ -46,13 +46,13 @@ public class QueryParameter implements Cloneable
     Integer radius;
     Set<Location> singleBlockLocations;
     // The actions to look for
-    Map<ActionType, Boolean> actions = new ConcurrentHashMap<ActionType, Boolean>();
+    Map<ActionType, Boolean> actions = new ConcurrentHashMap<>();
     // Users
-    Map<Long, Boolean> users = new ConcurrentHashMap<Long, Boolean>();
+    Map<Long, Boolean> users = new ConcurrentHashMap<>();
     // Entity
-    Map<Integer, Boolean> entities = new ConcurrentHashMap<Integer, Boolean>();
+    Map<Integer, Boolean> entities = new ConcurrentHashMap<>();
     // Blocks
-    Map<ImmutableBlockData, Boolean> blocks = new ConcurrentHashMap<ImmutableBlockData, Boolean>();
+    Map<ImmutableBlockData, Boolean> blocks = new ConcurrentHashMap<>();
 
     public QueryParameter(Log module)
     {
@@ -88,7 +88,7 @@ public class QueryParameter implements Cloneable
         }
         else
         {
-            this.singleBlockLocations = new HashSet<Location>(Arrays.asList(locations));
+            this.singleBlockLocations = new HashSet<>(Arrays.asList(locations));
         }
     }
 
@@ -265,10 +265,10 @@ public class QueryParameter implements Cloneable
         params.location2 = this.location2;
         params.radius = this.radius;
         params.singleBlockLocations = this.singleBlockLocations;
-        params.actions = new ConcurrentHashMap<ActionType, Boolean>(this.actions);
-        params.users = new ConcurrentHashMap<Long, Boolean>(this.users);
-        params.entities = new ConcurrentHashMap<Integer, Boolean>(this.entities);
-        params.blocks = new ConcurrentHashMap<ImmutableBlockData, Boolean>(this.blocks);
+        params.actions = new ConcurrentHashMap<>(this.actions);
+        params.users = new ConcurrentHashMap<>(this.users);
+        params.entities = new ConcurrentHashMap<>(this.entities);
+        params.blocks = new ConcurrentHashMap<>(this.blocks);
         return params;
     }
 

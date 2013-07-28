@@ -68,8 +68,8 @@ public class EditModeListener extends ConversationCommand
         ;
     }
 //TODO itemblacklist?
-    private TLongObjectHashMap<Location> currentSignLocation = new TLongObjectHashMap<Location>();
-    private TLongObjectHashMap<MarketSign> previousMarketSign = new TLongObjectHashMap<MarketSign>();
+    private TLongObjectHashMap<Location> currentSignLocation = new TLongObjectHashMap<>();
+    private TLongObjectHashMap<MarketSign> previousMarketSign = new TLongObjectHashMap<>();
 
     // TODO CE-420 shift-click to edit multiple signs at the same time
 

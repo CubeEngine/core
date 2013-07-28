@@ -49,7 +49,7 @@ public class AssignedRole implements TripletKeyModel<Long, Long, String>
     @Override
     public Triplet<Long, Long, String> getId()
     {
-        return new Triplet<Long, Long, String>(this.userId, this.worldId, this.roleName);
+        return new Triplet<>(this.userId, this.worldId, this.roleName);
     }
 
     @Override

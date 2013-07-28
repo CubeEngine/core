@@ -28,7 +28,7 @@ import de.cubeisland.engine.core.storage.SingleKeyStorage;
 
 public class RepairBlockPersister extends SingleKeyStorage<Long,RepairBlockModel>
 {
-    private Map<Block,RepairBlockModel> models = new HashMap<Block, RepairBlockModel>();
+    private Map<Block,RepairBlockModel> models = new HashMap<>();
     private final Module module;
 
     public RepairBlockPersister(Module module)

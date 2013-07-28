@@ -83,7 +83,7 @@ public class AssignedRoleManager extends TripletKeyStorage<Long, Long, String, A
         try
         {
             ResultSet resulsSet = this.database.preparedQuery(modelClass, "getallByUser", user.key);
-            TLongObjectHashMap<List<String>> result = new TLongObjectHashMap<List<String>>();
+            TLongObjectHashMap<List<String>> result = new TLongObjectHashMap<>();
             while (resulsSet.next())
             {
                 int worldId = resulsSet.getInt("worldId");
@@ -91,7 +91,7 @@ public class AssignedRoleManager extends TripletKeyStorage<Long, Long, String, A
                 List<String> list = result.get(worldId);
                 if (list == null)
                 {
-                    list = new ArrayList<String>();
+                    list = new ArrayList<>();
                     result.put(worldId, list);
                 }
                 list.add(resulsSet.getString("roleName"));
@@ -107,7 +107,7 @@ public class AssignedRoleManager extends TripletKeyStorage<Long, Long, String, A
 
     public void delete(long userid, String roleName, long worldId)
     {
-        this.deleteByKey(new Triplet<Long, Long, String>(userid, worldId, roleName), false);
+        this.deleteByKey(new Triplet<>(userid, worldId, roleName), false);
     }
 
     public void clearByUserAndWorld(long userid, long worldId)
@@ -178,7 +178,7 @@ public class AssignedRoleManager extends TripletKeyStorage<Long, Long, String, A
         try
         {
             ResultSet resultSet = this.database.preparedQuery(modelClass, "getallByUserAndWorld", userID, worldId);
-            Set<String> result = new THashSet<String>();
+            Set<String> result = new THashSet<>();
             while (resultSet.next())
             {
                 result.add(resultSet.getString("roleName"));

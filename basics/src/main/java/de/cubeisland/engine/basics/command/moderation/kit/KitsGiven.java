@@ -41,7 +41,7 @@ public class KitsGiven implements TwoKeyModel<Long, String>
     @Override
     public Pair<Long, String> getId()
     {
-        return new Pair<Long, String>(userId, kitName);
+        return new Pair<>(userId, kitName);
     }
 
     @Override

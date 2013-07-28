@@ -69,7 +69,7 @@ public class MailManager extends SingleKeyStorage<Long, Mail>
 
     public List<Mail> getMails(User user, User sender)
     {
-        List<Mail> mails = new ArrayList<Mail>();
+        List<Mail> mails = new ArrayList<>();
         for (Mail mail : this.getMails(user))
         {
             if (mail.senderId == sender.key)
@@ -132,7 +132,7 @@ public class MailManager extends SingleKeyStorage<Long, Mail>
         {
             this.delete(mail);
         }
-        bUser.mailbox = new ArrayList<Mail>();
+        bUser.mailbox = new ArrayList<>();
     }
 
     public void removeMail(User user, User sendBy)
@@ -145,12 +145,12 @@ public class MailManager extends SingleKeyStorage<Long, Mail>
                 this.delete(mail);
             }
         }
-        bUser.mailbox = new ArrayList<Mail>(); // will have to read again from database
+        bUser.mailbox = new ArrayList<>(); // will have to read again from database
     }
 
     public List<Mail> getAll(User user)
     {
-        List<Mail> loadedModels = new ArrayList<Mail>();
+        List<Mail> loadedModels = new ArrayList<>();
         try
         {
             ResultSet result = this.database.preparedQuery(modelClass, "getallByUser", user.key);

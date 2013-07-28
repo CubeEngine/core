@@ -112,7 +112,7 @@ public class AccountStorage extends SingleKeyStorage<Long, AccountModel>
         {
             ResultSet resultSet;
             resultSet = this.database.preparedQuery(modelClass, "getTop", showHidden, user, bank, toRank + 1  - fromRank, fromRank - 1);
-            LinkedList<AccountModel> list = new LinkedList<AccountModel>();
+            LinkedList<AccountModel> list = new LinkedList<>();
             while (resultSet.next())
             {
                 AccountModel loadedModel = this.modelClass.newInstance();
@@ -246,7 +246,7 @@ public class AccountStorage extends SingleKeyStorage<Long, AccountModel>
         try
         {
             ResultSet resultSet = this.database.preparedQuery(modelClass, "getBankAccounts", hidden);
-            Set<String> result = new HashSet<String>();
+            Set<String> result = new HashSet<>();
             while (resultSet.next())
             {
                 result.add(resultSet.getString("name"));

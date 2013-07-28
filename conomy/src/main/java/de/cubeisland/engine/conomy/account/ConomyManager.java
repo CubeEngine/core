@@ -55,8 +55,8 @@ public class ConomyManager
         this.bankAccessStorage = new BankAccessStorage(module.getCore().getDB());
 
         this.config = module.getConfig();
-        this.bankaccounts = new THashMap<String, BankAccount>();
-        this.bankaccountsID = new THashMap<Long, BankAccount>();
+        this.bankaccounts = new THashMap<>();
+        this.bankaccountsID = new THashMap<>();
 
         this.logger =  LoggerFactory.getLogger("cubeengine.conomy.transactions");
         if (!this.module.getConfig().enableLogging)
@@ -395,7 +395,7 @@ public class ConomyManager
     public Set<BankAccount> getBankAccounts(User user)
     {
         Set<Long> accountIds = this.bankAccessStorage.getBankAccounts(user);
-        Set<BankAccount> accounts = new HashSet<BankAccount>();
+        Set<BankAccount> accounts = new HashSet<>();
         for (Long accountId : accountIds)
         {
             BankAccount acc = this.bankaccountsID.get(accountId);

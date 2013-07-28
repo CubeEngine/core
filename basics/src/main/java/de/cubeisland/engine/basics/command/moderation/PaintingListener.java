@@ -41,7 +41,7 @@ public class PaintingListener implements Listener
     public PaintingListener(Basics module)
     {
         this.module = module;
-        this.paintingChange = new HashMap<String, Painting>();
+        this.paintingChange = new HashMap<>();
     }
     
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)

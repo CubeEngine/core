@@ -69,7 +69,7 @@ public class BlockBreak extends BlockActionType
     @Override
     protected Set<ActionTypeCategory> getCategories()
     {
-        return new HashSet<ActionTypeCategory>(Arrays.asList(BLOCK, PLAYER, ENVIRONEMENT));
+        return new HashSet<>(Arrays.asList(BLOCK, PLAYER, ENVIRONEMENT));
     }
 
     @Override
@@ -190,10 +190,10 @@ public class BlockBreak extends BlockActionType
     }
 
     private volatile boolean clearPlanned = false;
-    private Map<Location,Pair<Entity,BlockActionType>> plannedPyhsics = new ConcurrentHashMap<Location, Pair<Entity, BlockActionType>>();
+    private Map<Location,Pair<Entity,BlockActionType>> plannedPyhsics = new ConcurrentHashMap<>();
     public void preplanBlockPhyiscs(Location location, Entity player, BlockActionType reason)
     {
-        plannedPyhsics.put(location,new Pair<Entity, BlockActionType>(player,reason));
+        plannedPyhsics.put(location,new Pair<>(player,reason));
         if (!clearPlanned)
         {
             clearPlanned = true;

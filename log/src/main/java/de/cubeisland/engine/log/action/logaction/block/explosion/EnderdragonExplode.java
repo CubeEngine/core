@@ -39,7 +39,7 @@ public class EnderdragonExplode extends BlockActionType
     @Override
     protected Set<ActionTypeCategory> getCategories()
     {
-        return new HashSet<ActionTypeCategory>(Arrays.asList(EXPLOSION, BLOCK, BLOCK_ENTITY, PLAYER));
+        return new HashSet<>(Arrays.asList(EXPLOSION, BLOCK, BLOCK_ENTITY, PLAYER));
     }
 
 

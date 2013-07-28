@@ -47,7 +47,7 @@ public class InviteManager extends TwoKeyStorage<Long, Long, TeleportInvite>
         super(database, TeleportInvite.class, REVISION);
         this.initialize();
         this.module = module;
-        this.cachedInvites = new HashMap<TeleportPoint, Set<String>>();
+        this.cachedInvites = new HashMap<>();
         this.invites = this.getAll();
     }
 
@@ -87,7 +87,7 @@ public class InviteManager extends TwoKeyStorage<Long, Long, TeleportInvite>
      */
     public Set<User> getInvitedUsers(TeleportPoint tPP)
     {
-        Set<User> invitedUsers = new HashSet<User>();
+        Set<User> invitedUsers = new HashSet<>();
         for (String name : getInvited(tPP))
         {
             User user = CubeEngine.getUserManager().findOnlineUser(name);
@@ -110,8 +110,8 @@ public class InviteManager extends TwoKeyStorage<Long, Long, TeleportInvite>
         {
             return this.cachedInvites.get(tPP);
         }
-        Set<String> invitedUsers = new HashSet<String>();
-        Set<Long> keys = new HashSet<Long>();
+        Set<String> invitedUsers = new HashSet<>();
+        Set<Long> keys = new HashSet<>();
         for (TeleportInvite tpI : getInvites(tPP))
         {
             keys.add(tpI.userKey);
@@ -146,7 +146,7 @@ public class InviteManager extends TwoKeyStorage<Long, Long, TeleportInvite>
      */
     public Set<TeleportInvite> getInvites(User user)
     {
-        Set<TeleportInvite> invites = new HashSet<TeleportInvite>();
+        Set<TeleportInvite> invites = new HashSet<>();
         for (TeleportInvite invite : this.invites)
         {
             if (invite.userKey.equals(user.getId()))
@@ -165,7 +165,7 @@ public class InviteManager extends TwoKeyStorage<Long, Long, TeleportInvite>
      */
     public Set<TeleportInvite> getInvites(TeleportPoint tPP)
     {
-        Set<TeleportInvite> invites = new HashSet<TeleportInvite>();
+        Set<TeleportInvite> invites = new HashSet<>();
         for (TeleportInvite invite : this.invites)
         {
             if (invite.teleportPoint.equals(tPP.getId()))

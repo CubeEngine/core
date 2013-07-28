@@ -89,7 +89,7 @@ public class ActionTypeCategory
      */
     public static final ActionTypeCategory SPAWN = new ActionTypeCategory("spawn");
 
-    private HashSet<ActionType> actionTypes = new HashSet<ActionType>();
+    private HashSet<ActionType> actionTypes = new HashSet<>();
 
     public final String name;
 

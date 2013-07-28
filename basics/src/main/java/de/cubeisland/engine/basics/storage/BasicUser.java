@@ -43,7 +43,7 @@ public class BasicUser implements Model<Long>
     @Attribute(type = AttrType.BOOLEAN)
     public boolean godMode;
 
-    public List<Mail> mailbox = new ArrayList<Mail>();
+    public List<Mail> mailbox = new ArrayList<>();
 
     public BasicUser()
     {}

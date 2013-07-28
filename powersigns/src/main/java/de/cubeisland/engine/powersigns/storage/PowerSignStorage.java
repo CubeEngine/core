@@ -85,7 +85,7 @@ public class PowerSignStorage extends SingleKeyStorage<Long,PowerSignModel>
         String sql = builder.end().end();
         try
         {
-            Set<PowerSignModel> models = new HashSet<PowerSignModel>();
+            Set<PowerSignModel> models = new HashSet<>();
             ResultSet resultSet = this.database.query(sql);
             while (resultSet.next())
             {
@@ -116,7 +116,7 @@ public class PowerSignStorage extends SingleKeyStorage<Long,PowerSignModel>
     {
         try
         {
-            Set<PowerSignModel> models = new HashSet<PowerSignModel>();
+            Set<PowerSignModel> models = new HashSet<>();
             ResultSet resultSet = this.database.preparedQuery(this.modelClass,"getFromChunk",chunk.getX(),chunk.getZ(),this.wm.getWorldId(chunk.getWorld()));
             while (resultSet.next())
             {

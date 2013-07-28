@@ -42,7 +42,7 @@ public class NoteBlockChange extends BlockActionType
     @Override
     protected Set<ActionTypeCategory> getCategories()
     {
-        return new HashSet<ActionTypeCategory>(Arrays.asList(BLOCK, PLAYER));
+        return new HashSet<>(Arrays.asList(BLOCK, PLAYER));
     }
 
     @Override

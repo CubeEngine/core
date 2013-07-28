@@ -57,7 +57,7 @@ public class HangingBreak extends BlockActionType
     @Override
     protected Set<ActionTypeCategory> getCategories()
     {
-        return new HashSet<ActionTypeCategory>(Arrays.asList(BLOCK, PLAYER));
+        return new HashSet<>(Arrays.asList(BLOCK, PLAYER));
     }
 
     @Override
@@ -132,7 +132,7 @@ public class HangingBreak extends BlockActionType
     }
 
     private volatile boolean clearPlanned = false;
-    private Map<Location,Entity> plannedHangingBreak = new ConcurrentHashMap<Location,Entity>();
+    private Map<Location,Entity> plannedHangingBreak = new ConcurrentHashMap<>();
     public void preplanHangingBreak(Location location, Entity player)
     {
         plannedHangingBreak.put(location, player);

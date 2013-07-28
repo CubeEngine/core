@@ -69,7 +69,7 @@ public class RepairBlock
         this.itemProvider = repairBlockManager.getItemProvider();
         this.priceProvider = itemProvider.getPriceProvider();
         this.permission = this.module.getBasePermission().createAbstractChild("block").createChild(name);
-        this.inventoryMap = new HashMap<String, Inventory>();
+        this.inventoryMap = new HashMap<>();
         this.rand = new Random(System.currentTimeMillis());
         this.config = config;
         this.economy = module.getCore().getServiceManager().getServiceProvider(Economy.class);

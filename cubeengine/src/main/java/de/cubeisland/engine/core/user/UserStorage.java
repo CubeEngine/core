@@ -92,7 +92,7 @@ public class UserStorage extends SingleKeyStorage<Long, User>
         try
         {
             ResultSet resultSet = this.database.preparedQuery(modelClass, "get_by_name", playerName);
-            Map<String, Object> values = new HashMap<String, Object>();
+            Map<String, Object> values = new HashMap<>();
             if (resultSet.next())
             {
                 for (String name : this.allFields)
@@ -152,7 +152,7 @@ public class UserStorage extends SingleKeyStorage<Long, User>
         try
         {
             ResultSet resultSet = database.preparedQuery(User.class,"getAllKeys");
-            Set<Long> result = new HashSet<Long>();
+            Set<Long> result = new HashSet<>();
             while (resultSet.next())
             {
                 result.add(resultSet.getLong(dbKey));

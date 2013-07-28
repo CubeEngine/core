@@ -43,7 +43,7 @@ public class FireSpread extends BlockActionType
     @Override
     protected Set<ActionTypeCategory> getCategories()
     {
-        return new HashSet<ActionTypeCategory>(Arrays.asList(FIRE, IGNITE, BLOCK, ENVIRONEMENT));
+        return new HashSet<>(Arrays.asList(FIRE, IGNITE, BLOCK, ENVIRONEMENT));
     }
 
     @Override

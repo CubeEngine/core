@@ -39,7 +39,7 @@ public class FireworkUse extends SimpleLogActionType
     @Override
     protected Set<ActionTypeCategory> getCategories()
     {
-        return new HashSet<ActionTypeCategory>(Arrays.asList(PLAYER, ENTITY, ITEM));//TODO item
+        return new HashSet<>(Arrays.asList(PLAYER, ENTITY, ITEM));//TODO item
     }
 
     @Override

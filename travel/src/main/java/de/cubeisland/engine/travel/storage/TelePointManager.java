@@ -58,9 +58,9 @@ public class TelePointManager extends SingleKeyStorage<Long, TeleportPoint>
         super(module.getCore().getDB(), TeleportPoint.class, REVISION);
         this.module = module;
         this.initialize();
-        this.homes = new HashMap<String, Home>();
-        this.publicHomes = new HashMap<String, Home>();
-        this.warps = new HashMap<String, Warp>();
+        this.homes = new HashMap<>();
+        this.publicHomes = new HashMap<>();
+        this.warps = new HashMap<>();
     }
 
     @Override
@@ -124,13 +124,13 @@ public class TelePointManager extends SingleKeyStorage<Long, TeleportPoint>
     @Override
     public Collection<TeleportPoint> getAll()
     {
-        Collection<TeleportPoint> loadedModels = new ArrayList<TeleportPoint>();
+        Collection<TeleportPoint> loadedModels = new ArrayList<>();
         try
         {
             ResultSet resulsSet = this.database.preparedQuery(this.modelClass, "getall");
             while (resulsSet.next())
             {
-                Map<String, Object> values = new LinkedHashMap<String, Object>();
+                Map<String, Object> values = new LinkedHashMap<>();
                 for (String name : this.reverseFieldNames.keySet())
                 {
                     values.put(name, resulsSet.getObject(name));
@@ -159,7 +159,7 @@ public class TelePointManager extends SingleKeyStorage<Long, TeleportPoint>
             ResultSet resulsSet = this.database.preparedQuery(this.modelClass, "getall");
             if (resulsSet.next())
             {
-                Map<String, Object> values = new HashMap<String, Object>();
+                Map<String, Object> values = new HashMap<>();
                 for (String name : this.reverseFieldNames.keySet())
                 {
                     values.put(name, resulsSet.getObject(name));
@@ -415,7 +415,7 @@ public class TelePointManager extends SingleKeyStorage<Long, TeleportPoint>
         }
 
         // If another home the player has can be taken away it's prefix, do it
-        Set<Home> prefixed = new HashSet<Home>();
+        Set<Home> prefixed = new HashSet<>();
         for (String name : attachment.allHomes().keySet())
         {
             String[] parts = name.split(":");
@@ -601,7 +601,7 @@ public class TelePointManager extends SingleKeyStorage<Long, TeleportPoint>
      */
     public TreeMap<String, Integer> searchWarp(String search, CommandSender sender)
     {
-        Set<String> warps = new HashSet<String>();
+        Set<String> warps = new HashSet<>();
         if (sender instanceof User)
         {
             User user = (User)sender;
@@ -755,7 +755,7 @@ public class TelePointManager extends SingleKeyStorage<Long, TeleportPoint>
 
     public Set<Home> listHomes(int mask)
     {
-        Set<Home> homes = new HashSet<Home>();
+        Set<Home> homes = new HashSet<>();
         if ((mask & PUBLIC) == PUBLIC)
         {
             try
@@ -788,7 +788,7 @@ public class TelePointManager extends SingleKeyStorage<Long, TeleportPoint>
 
     public Set<Home> listHomes(User user, int mask)
     {
-        Set<Home> homes = new HashSet<Home>();
+        Set<Home> homes = new HashSet<>();
         if (mask == -1)
         {
             homes.addAll(this.listHomes(PUBLIC));
@@ -858,7 +858,7 @@ public class TelePointManager extends SingleKeyStorage<Long, TeleportPoint>
 
     public Set<Warp> listWarps(int mask)
     {
-        Set<Warp> warps = new HashSet<Warp>();
+        Set<Warp> warps = new HashSet<>();
         if ((mask & PUBLIC) == PUBLIC)
         {
             try
@@ -891,7 +891,7 @@ public class TelePointManager extends SingleKeyStorage<Long, TeleportPoint>
 
     public Set<Warp> listWarps(User user, int mask)
     {
-        Set<Warp> warps = new HashSet<Warp>();
+        Set<Warp> warps = new HashSet<>();
         if (mask == -1)
         {
             warps.addAll(this.listWarps(PUBLIC));
@@ -997,7 +997,7 @@ public class TelePointManager extends SingleKeyStorage<Long, TeleportPoint>
 
     private Set<Home> getHomes(ResultSet resultSet) throws SQLException
     {
-        Set<Home> homes = new HashSet<Home>();
+        Set<Home> homes = new HashSet<>();
         while (resultSet.next())
         {
             String name = resultSet.getString("name");
@@ -1018,7 +1018,7 @@ public class TelePointManager extends SingleKeyStorage<Long, TeleportPoint>
 
     private Set<Warp> getWarps(ResultSet resultSet) throws SQLException
     {
-        Set<Warp> warps = new HashSet<Warp>();
+        Set<Warp> warps = new HashSet<>();
         while (resultSet.next())
         {
             String name = resultSet.getString("name");

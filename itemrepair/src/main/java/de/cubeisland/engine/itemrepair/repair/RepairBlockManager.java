@@ -50,7 +50,7 @@ public class RepairBlockManager
     public RepairBlockManager(Itemrepair module)
     {
         this.module = module;
-        this.repairBlocks = new EnumMap<Material, RepairBlock>(Material.class);
+        this.repairBlocks = new EnumMap<>(Material.class);
         this.itemProvider = new RepairItemContainer(module.getConfig().baseMaterials);
 
         for (Entry<String, RepairBlockConfig> entry : module.getConfig().repairBlockConfigs.entrySet())
@@ -58,7 +58,7 @@ public class RepairBlockManager
             RepairBlock repairBlock = new RepairBlock(module,this,entry.getKey(),entry.getValue());
             this.addRepairBlock(repairBlock);
         }
-        this.blockMap = new HashMap<Block, Material>();
+        this.blockMap = new HashMap<>();
         this.persister = new RepairBlockPersister(module);
         this.loadBlocks();
     }

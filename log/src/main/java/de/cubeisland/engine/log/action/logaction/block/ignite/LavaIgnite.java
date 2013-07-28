@@ -39,7 +39,7 @@ public class LavaIgnite extends BlockActionType
     @Override
     protected Set<ActionTypeCategory> getCategories()
     {
-        return new HashSet<ActionTypeCategory>(Arrays.asList(FIRE, BLOCK, ENVIRONEMENT, IGNITE));
+        return new HashSet<>(Arrays.asList(FIRE, BLOCK, ENVIRONEMENT, IGNITE));
     }
 
     @Override

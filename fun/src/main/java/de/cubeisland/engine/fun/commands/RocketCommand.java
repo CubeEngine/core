@@ -112,7 +112,7 @@ public class RocketCommand
         public RocketListener()
         {
             this.userManager = module.getCore().getUserManager();
-            this.instances = new HashSet<RocketCMDInstance>();
+            this.instances = new HashSet<>();
         }
 
         public void addInstance(User user, int height)
@@ -130,7 +130,7 @@ public class RocketCommand
 
         public Collection<User> getUsers()
         {
-            Set<User> users = new HashSet<User>();
+            Set<User> users = new HashSet<>();
             for (RocketCMDInstance instance : instances)
             {
                 users.add(instance.getUser());

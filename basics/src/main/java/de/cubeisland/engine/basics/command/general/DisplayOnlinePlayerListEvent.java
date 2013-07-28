@@ -53,9 +53,9 @@ public class DisplayOnlinePlayerListEvent extends Event implements Cancellable
     public DisplayOnlinePlayerListEvent(CommandSender sender, THashMap<User, String> userStrings, List<User> defaultList)
     {
         this.sender = sender;
-        this.userStrings = new THashMap<User, String>();
+        this.userStrings = new THashMap<>();
         this.userStrings = userStrings;
-        grouped = new THashMap<String, List<User>>();
+        grouped = new THashMap<>();
         this.grouped.put("&6Players",defaultList);
         this.defaultList = defaultList;
         cancelled = false;

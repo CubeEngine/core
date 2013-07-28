@@ -45,7 +45,7 @@ public class EnchantItem extends SimpleLogActionType
     @Override
     protected Set<ActionTypeCategory> getCategories()
     {
-        return new HashSet<ActionTypeCategory>(Arrays.asList(PLAYER, ITEM));
+        return new HashSet<>(Arrays.asList(PLAYER, ITEM));
     }
 
     @Override
@@ -68,7 +68,7 @@ public class EnchantItem extends SimpleLogActionType
             ItemData itemData = new ItemData(event.getItem());
             if (itemData.enchantments == null)
             {
-                itemData.enchantments = new HashMap<Enchantment, Integer>();
+                itemData.enchantments = new HashMap<>();
             }
             itemData.enchantments.putAll(event.getEnchantsToAdd());
             this.logSimple(event.getEnchanter(),itemData.serialize(this.om));

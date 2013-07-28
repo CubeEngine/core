@@ -64,7 +64,7 @@ public class TeleportInvite implements TwoKeyModel<Long, Long>
     @Override
     public Pair<Long, Long> getId()
     {
-        return new Pair<Long, Long>(teleportPoint, userKey);
+        return new Pair<>(teleportPoint, userKey);
     }
 
     @Override

@@ -70,7 +70,7 @@ public class ContainerActionType extends ActionTypeContainer
         super("CONTAINER");
     }
 
-    private TLongObjectHashMap<TObjectIntHashMap<ItemData>> inventoryChanges = new TLongObjectHashMap<TObjectIntHashMap<ItemData>>();
+    private TLongObjectHashMap<TObjectIntHashMap<ItemData>> inventoryChanges = new TLongObjectHashMap<>();
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onInventoryClose(InventoryCloseEvent event)
@@ -405,7 +405,7 @@ public class ContainerActionType extends ActionTypeContainer
         TObjectIntHashMap<ItemData> itemDataMap = this.inventoryChanges.get(user.key);
         if (itemDataMap == null)
         {
-            itemDataMap = new TObjectIntHashMap<ItemData>();
+            itemDataMap = new TObjectIntHashMap<>();
             this.inventoryChanges.put(user.key,itemDataMap);
         }
         int oldAmount = itemDataMap.get(itemData); // if not yet set this returns 0

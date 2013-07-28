@@ -39,7 +39,7 @@ public class EntityExplode extends BlockActionType
     @Override
     protected Set<ActionTypeCategory> getCategories()
     {
-        return new HashSet<ActionTypeCategory>(Arrays.asList(EXPLOSION, BLOCK, BLOCK_ENTITY));
+        return new HashSet<>(Arrays.asList(EXPLOSION, BLOCK, BLOCK_ENTITY));
     }
 
 

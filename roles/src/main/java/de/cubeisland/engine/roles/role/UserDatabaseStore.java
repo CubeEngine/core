@@ -61,7 +61,7 @@ public class UserDatabaseStore extends UserDataStore
     {
         if (set == null)
         {
-            pm.deleteByKey(new Triplet<Long, Long, String>(this.getUserID(), this.worldID, perm));
+            pm.deleteByKey(new Triplet<>(this.getUserID(), this.worldID, perm));
         }
         else
         {
@@ -75,7 +75,7 @@ public class UserDatabaseStore extends UserDataStore
     {
         if (value == null)
         {
-            mdm.deleteByKey(new Triplet<Long, Long, String>(this.getUserID(), this.worldID, key));
+            mdm.deleteByKey(new Triplet<>(this.getUserID(), this.worldID, key));
         }
         else
         {
@@ -182,7 +182,7 @@ public class UserDatabaseStore extends UserDataStore
     @Override
     public Map<String, Boolean> getAllRawPermissions()
     {
-        Map<String,Boolean> result = new THashMap<String, Boolean>();
+        Map<String,Boolean> result = new THashMap<>();
         for (Role assignedRole : this.attachment.getResolvedData(this.worldID).assignedRoles)
         {
             result.putAll(assignedRole.getAllRawPermissions());
@@ -194,7 +194,7 @@ public class UserDatabaseStore extends UserDataStore
     @Override
     public Map<String, String> getAllRawMetadata()
     {
-        Map<String,String> result = new THashMap<String, String>();
+        Map<String,String> result = new THashMap<>();
         for (Role assignedRole : this.attachment.getResolvedData(this.worldID).assignedRoles)
         {
             result.putAll(assignedRole.getAllRawMetadata());

@@ -63,10 +63,10 @@ public abstract class AbstractUserManager implements UserManager
         this.storage = new UserStorage(core);
         this.core = core;
 
-        this.cachedUsers = new ConcurrentHashMap<Object, User>();
-        this.onlineUsers = new CopyOnWriteArrayList<User>();
+        this.cachedUsers = new ConcurrentHashMap<>();
+        this.onlineUsers = new CopyOnWriteArrayList<>();
 
-        this.defaultAttachments = new THashSet<DefaultAttachment>();
+        this.defaultAttachments = new THashSet<>();
 
         this.loadSalt();
 
@@ -243,12 +243,12 @@ public abstract class AbstractUserManager implements UserManager
 
     public synchronized Set<User> getOnlineUsers()
     {
-        return new THashSet<User>(this.onlineUsers);
+        return new THashSet<>(this.onlineUsers);
     }
 
     public synchronized Set<User> getLoadedUsers()
     {
-        return new THashSet<User>(this.cachedUsers.values());
+        return new THashSet<>(this.cachedUsers.values());
     }
 
     public User findOnlineUser(String name)
@@ -327,7 +327,7 @@ public abstract class AbstractUserManager implements UserManager
         FileUtil.setReadOnly(file);
     }
 
-    private TLongObjectHashMap<Triplet<Long, String, Integer>> failedLogins = new TLongObjectHashMap<Triplet<Long, String, Integer>>();
+    private TLongObjectHashMap<Triplet<Long, String, Integer>> failedLogins = new TLongObjectHashMap<>();
 
     public Triplet<Long, String, Integer> getFailedLogin(User user)
     {
@@ -339,7 +339,7 @@ public abstract class AbstractUserManager implements UserManager
         Triplet<Long, String, Integer> loginFail = this.getFailedLogin(user);
         if (loginFail == null)
         {
-            loginFail = new Triplet<Long, String, Integer>(System.currentTimeMillis(), user.getAddress().getAddress().getHostAddress(), 1);
+            loginFail = new Triplet<>(System.currentTimeMillis(), user.getAddress().getAddress().getHostAddress(), 1);
             this.failedLogins.put(user.key, loginFail);
         }
         else

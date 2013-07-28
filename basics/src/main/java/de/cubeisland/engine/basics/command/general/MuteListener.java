@@ -54,7 +54,7 @@ public class MuteListener implements Listener
                 }
             }
             // ignored?
-            ArrayList<Player> ignore = new ArrayList<Player>();
+            ArrayList<Player> ignore = new ArrayList<>();
             for (Player player : event.getRecipients())
             {
                 User user = this.basics.getCore().getUserManager().getExactUser(player.getName());

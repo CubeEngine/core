@@ -39,7 +39,7 @@ public class Lighter extends BlockActionType
     @Override
     protected Set<ActionTypeCategory> getCategories()
     {
-        return new HashSet<ActionTypeCategory>(Arrays.asList(FIRE, BLOCK, PLAYER, IGNITE));
+        return new HashSet<>(Arrays.asList(FIRE, BLOCK, PLAYER, IGNITE));
     }
 
     @Override

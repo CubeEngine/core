@@ -40,7 +40,7 @@ public class SoupFill extends SimpleLogActionType
     @Override
     protected Set<ActionTypeCategory> getCategories()
     {
-        return new HashSet<ActionTypeCategory>(Arrays.asList(PLAYER, ENTITY));
+        return new HashSet<>(Arrays.asList(PLAYER, ENTITY));
     }
 
     @Override

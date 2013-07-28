@@ -129,10 +129,10 @@ import gnu.trove.map.hash.TLongObjectHashMap;
 
 public class ActionTypeManager
 {
-    private Map<Class<? extends ActionType>,ActionType> registeredActionTypes = new ConcurrentHashMap<Class<? extends ActionType>, ActionType>();
-    private Map<String, ActionType> actionTypesByName = new ConcurrentHashMap<String, ActionType>();
-    private TLongObjectHashMap<ActionType> registeredIds = new TLongObjectHashMap<ActionType>();
-    private Map<String, ActionTypeCategory> categories = new HashMap<String, ActionTypeCategory>();
+    private Map<Class<? extends ActionType>,ActionType> registeredActionTypes = new ConcurrentHashMap<>();
+    private Map<String, ActionType> actionTypesByName = new ConcurrentHashMap<>();
+    private TLongObjectHashMap<ActionType> registeredIds = new TLongObjectHashMap<>();
+    private Map<String, ActionTypeCategory> categories = new HashMap<>();
     private final Log module;
 
     private Map<String,Long> actionIDs;
@@ -286,7 +286,7 @@ public class ActionTypeManager
 
     public String getActionTypesAsString()
     {
-        TreeSet<String> actionTypes = new TreeSet<String>();
+        TreeSet<String> actionTypes = new TreeSet<>();
         for (ActionType actionType : this.registeredActionTypes.values())
         {
             actionTypes.add(actionType.getName().replace("-","&f-&7"));
@@ -302,7 +302,7 @@ public class ActionTypeManager
         {
             String match = Match.string().matchString(actionString, this.actionTypesByName.keySet());
             if (match == null) return null;
-            HashSet<ActionType> actionTypes = new HashSet<ActionType>();
+            HashSet<ActionType> actionTypes = new HashSet<>();
             actionTypes.add(this.actionTypesByName.get(match));
             return actionTypes;
         }
@@ -314,7 +314,7 @@ public class ActionTypeManager
 
     public Set<String> getAllActionAndCategoryStrings()
     {
-        HashSet<String> strings = new HashSet<String>();
+        HashSet<String> strings = new HashSet<>();
         strings.addAll(this.categories.keySet());
         strings.addAll(this.actionTypesByName.keySet());
         return strings;

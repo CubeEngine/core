@@ -40,7 +40,7 @@ public class BossDeath extends SimpleLogActionType
     @Override
     protected Set<ActionTypeCategory> getCategories()
     {
-        return new HashSet<ActionTypeCategory>(Arrays.asList(PLAYER, ENTITY, KILL));
+        return new HashSet<>(Arrays.asList(PLAYER, ENTITY, KILL));
     }
 
 

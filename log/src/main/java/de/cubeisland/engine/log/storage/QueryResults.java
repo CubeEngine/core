@@ -36,7 +36,7 @@ import de.cubeisland.engine.log.action.logaction.kill.MonsterDeath;
 public class QueryResults
 {
     private Lookup lookup;
-    private TreeSet<LogEntry> logEntries = new TreeSet<LogEntry>();
+    private TreeSet<LogEntry> logEntries = new TreeSet<>();
 
     public QueryResults(Lookup lookup)
     {
@@ -66,7 +66,7 @@ public class QueryResults
         Iterator<LogEntry> entries = this.logEntries.iterator();
         LogEntry entry = entries.next();
         LogEntry lastAttach = entry;
-        TreeSet<LogEntry> compressedEntries = new TreeSet<LogEntry>();
+        TreeSet<LogEntry> compressedEntries = new TreeSet<>();
         if (show.compress)
         {
             compressedEntries.add(entry); // add first entry
@@ -158,9 +158,9 @@ public class QueryResults
     public void rollback(LogAttachment attachment, boolean preview)
     {
         // Find the oldest entry at a location
-        Map<Location,LogEntry> finalBlock = new HashMap<Location, LogEntry>();
-        Map<Location,LinkedList<LogEntry>> blockChanges = new HashMap<Location, LinkedList<LogEntry>>();
-        TreeSet<LogEntry> filteredLogs = new TreeSet<LogEntry>();
+        Map<Location,LogEntry> finalBlock = new HashMap<>();
+        Map<Location,LinkedList<LogEntry>> blockChanges = new HashMap<>();
+        TreeSet<LogEntry> filteredLogs = new TreeSet<>();
         for (LogEntry logEntry : this.logEntries.descendingSet())
         {
             if (logEntry.actionType.canRollback()) // can rollback
@@ -176,7 +176,7 @@ public class QueryResults
                         LinkedList<LogEntry> changes = blockChanges.get(logEntry.getLocation());
                         if (changes == null)
                         {
-                            changes = new LinkedList<LogEntry>();
+                            changes = new LinkedList<>();
                             blockChanges.put(logEntry.getLocation(), changes);
                         }
                         changes.add(logEntry);
@@ -200,7 +200,7 @@ public class QueryResults
         }
         filteredLogs.addAll(finalBlock.values());
         // Start Rollback 1st Round
-        Set <LogEntry> rollbackRound2 = new LinkedHashSet<LogEntry>();
+        Set <LogEntry> rollbackRound2 = new LinkedHashSet<>();
         for (LogEntry logEntry : filteredLogs.descendingSet()) // Rollback normal blocks
         {
             if (!logEntry.rollback(attachment, false, preview)) // Rollback failed (cannot set yet (torches etc)) try again later

@@ -52,7 +52,7 @@ public class UserMetaData implements TripletKeyModel<Long, Long, String>
     @Override
     public Triplet<Long, Long, String> getId()
     {
-        return new Triplet<Long, Long, String>(userId, worldId, key);
+        return new Triplet<>(userId, worldId, key);
     }
 
     @Override

@@ -77,7 +77,7 @@ public class UserPermissionsManager extends TripletKeyStorage<Long, Long, String
         try
         {
             ResultSet resultSet = this.database.preparedQuery(modelClass, "getallByUserInWorld", userID,worldID);
-            THashMap<String, Boolean> result = new THashMap<String, Boolean>();
+            THashMap<String, Boolean> result = new THashMap<>();
             while (resultSet.next())
             {
                 result.put(resultSet.getString("perm"), resultSet.getBoolean("isSet"));

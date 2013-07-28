@@ -39,7 +39,7 @@ public class FireballIgnite extends BlockActionType
     @Override
     protected Set<ActionTypeCategory> getCategories()
     {
-        return new HashSet<ActionTypeCategory>(Arrays.asList(FIRE, IGNITE, BLOCK, BLOCK_ENTITY, PLAYER));
+        return new HashSet<>(Arrays.asList(FIRE, IGNITE, BLOCK, BLOCK_ENTITY, PLAYER));
     }
 
     @Override

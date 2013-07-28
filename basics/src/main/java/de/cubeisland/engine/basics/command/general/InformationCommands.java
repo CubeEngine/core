@@ -216,8 +216,8 @@ public class InformationCommands
         int squareRadius = radius * radius;
         Location userLocation = user.getLocation();
         List<Entity> list = userLocation.getWorld().getEntities();
-        LinkedList<String> outputlist = new LinkedList<String>();
-        TreeMap<Double, List<Entity>> sortedMap = new TreeMap<Double, List<Entity>>();
+        LinkedList<String> outputlist = new LinkedList<>();
+        TreeMap<Double, List<Entity>> sortedMap = new TreeMap<>();
         final Location entityLocation = new Location(null, 0, 0, 0);
         for (Entity entity : list)
         {
@@ -232,7 +232,7 @@ public class InformationCommands
                         List<Entity> sublist = sortedMap.get(distance);
                         if (sublist == null)
                         {
-                            sublist = new ArrayList<Entity>();
+                            sublist = new ArrayList<>();
                         }
                         sublist.add(entity);
                         sortedMap.put(distance, sublist);
@@ -241,7 +241,7 @@ public class InformationCommands
             }
         }
         int i = 0;
-        LinkedHashMap<String, Pair<Double, Integer>> groupedEntities = new LinkedHashMap<String, Pair<Double, Integer>>();
+        LinkedHashMap<String, Pair<Double, Integer>> groupedEntities = new LinkedHashMap<>();
         for (double dist : sortedMap.keySet())
         {
             i++;
@@ -273,7 +273,7 @@ public class InformationCommands
                     Pair<Double, Integer> pair = groupedEntities.get(key);
                     if (pair == null)
                     {
-                        pair = new Pair<Double, Integer>(Math.sqrt(dist), 1);
+                        pair = new Pair<>(Math.sqrt(dist), 1);
                         groupedEntities.put(key, pair);
                     }
                     else

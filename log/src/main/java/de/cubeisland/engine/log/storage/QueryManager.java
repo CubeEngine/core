@@ -60,8 +60,8 @@ public class QueryManager
     private final ExecutorService lookupExecutor;
     private final Runnable lookupRunner;
 
-    Queue<QueuedLog> queuedLogs = new ConcurrentLinkedQueue<QueuedLog>();
-    Queue<QueuedSqlParams> queuedLookups = new ConcurrentLinkedQueue<QueuedSqlParams>();
+    Queue<QueuedLog> queuedLogs = new ConcurrentLinkedQueue<>();
+    Queue<QueuedSqlParams> queuedLookups = new ConcurrentLinkedQueue<>();
 
     private int batchSize;
     private Future<?> futureStore = null;
@@ -251,7 +251,7 @@ public class QueryManager
             {
                 return;
             }
-            final Queue<QueuedLog> logs = new LinkedList<QueuedLog>();
+            final Queue<QueuedLog> logs = new LinkedList<>();
             for (int i = 0; i < amount; i++) // log <amount> next logs...
             {
                 QueuedLog toLog = this.queuedLogs.poll();
@@ -358,7 +358,7 @@ public class QueryManager
                                                    "additionalData")
                          .from("log_entries").where();
         boolean needAnd = false;
-        ArrayList<Object> dataToInsert = new ArrayList<Object>();
+        ArrayList<Object> dataToInsert = new ArrayList<>();
         if (!params.actions.isEmpty())
         {
             selectBuilder.beginSub().field("action");
@@ -532,7 +532,7 @@ public class QueryManager
     {
         try
         {
-            Map<String,Long> map = new THashMap<String, Long>();
+            Map<String,Long> map = new THashMap<>();
             ResultSet resultSet = this.database.preparedQuery(this.getClass(),"getAllActions");
             while (resultSet.next())
             {

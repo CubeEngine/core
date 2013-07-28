@@ -184,7 +184,7 @@ public class WorldControlCommands
         int entitiesRemoved;
         if (context.getString(0).equalsIgnoreCase("*"))
         {
-            List<Entity> list = new ArrayList<Entity>();
+            List<Entity> list = new ArrayList<>();
             for (Entity entity : world.getEntities())
             {
                 if (!(entity instanceof LivingEntity))
@@ -198,7 +198,7 @@ public class WorldControlCommands
         {
             List<Entity> list = world.getEntities(); // All entites remaining in that list will not get deleted!
             String[] s_entityTypes = StringUtils.explode(",", context.getString(0));
-            List<org.bukkit.entity.EntityType> types = new ArrayList<org.bukkit.entity.EntityType>();
+            List<org.bukkit.entity.EntityType> types = new ArrayList<>();
             for (String s_entityType : s_entityTypes)
             {
                 if (s_entityType.contains(":"))
@@ -210,7 +210,7 @@ public class WorldControlCommands
                         return;
                     }
                     Material itemtype = Match.material().material(s_entityType.substring(s_entityType.indexOf(":") + 1));
-                    List<Entity> remList = new ArrayList<Entity>();
+                    List<Entity> remList = new ArrayList<>();
                     for (Entity entity : list)
                     {
                         if (entity.getType().equals(EntityType.DROPPED_ITEM) && ((Item)entity).getItemStack().getType().equals(itemtype))
@@ -240,7 +240,7 @@ public class WorldControlCommands
                     types.add(type);
                 }
             }
-            List<Entity> remList = new ArrayList<Entity>();
+            List<Entity> remList = new ArrayList<>();
             for (Entity entity : list)
             {
                 if (types.contains(entity.getType()))
@@ -347,7 +347,7 @@ public class WorldControlCommands
                 s_types = StringUtils.explode(",", context.getString(0));
             }
         }
-        List<Entity> remList = new ArrayList<Entity>();
+        List<Entity> remList = new ArrayList<>();
         if (!allTypes)
         {
             for (String s_type : s_types)

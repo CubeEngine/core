@@ -60,7 +60,7 @@ public class BasicsAttachment extends UserAttachment
         return afk;
     }
 
-    private Map<String,Long> kitUsages = new HashMap<String, Long>();
+    private Map<String,Long> kitUsages = new HashMap<>();
 
     public void setKitUsage(String name)
     {

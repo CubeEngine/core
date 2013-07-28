@@ -40,9 +40,9 @@ public abstract class AbstractWorldManager implements WorldManager
     public AbstractWorldManager(Core core)
     {
         this.storage = new WorldStorage(core.getDB());
-        this.worlds = new THashMap<String, WorldModel>();
-        this.worldIds = new TLongObjectHashMap<World>();
-        this.generatorMap = new THashMap<String, Map<String, ChunkGenerator>>();
+        this.worlds = new THashMap<>();
+        this.worldIds = new TLongObjectHashMap<>();
+        this.generatorMap = new THashMap<>();
     }
 
     public synchronized long getWorldId(World world)
@@ -96,7 +96,7 @@ public abstract class AbstractWorldManager implements WorldManager
         Map<String, ChunkGenerator> moduleGenerators = this.generatorMap.get(module.getId());
         if (moduleGenerators == null)
         {
-            this.generatorMap.put(module.getId(), moduleGenerators = new THashMap<String, ChunkGenerator>(1));
+            this.generatorMap.put(module.getId(), moduleGenerators = new THashMap<>(1));
         }
         moduleGenerators.put(id.toLowerCase(Locale.ENGLISH), generator);
     }

@@ -116,7 +116,7 @@ public class ItemData
         }
         if (json.get("lore") != null)
         {
-            lore = new ArrayList<String>();
+            lore = new ArrayList<>();
             ArrayNode jsonLore = (ArrayNode)json.get("lore");
             for (JsonNode elem : jsonLore)
             {
@@ -125,7 +125,7 @@ public class ItemData
         }
         if (json.get("enchs") != null)
         {
-            enchantments = new HashMap<Enchantment, Integer>();
+            enchantments = new HashMap<>();
             ObjectNode jsonEnchs = (ObjectNode)json.get("enchs");
             Iterator<Entry<String,JsonNode>> enchs = jsonEnchs.fields();
             while (enchs.hasNext())

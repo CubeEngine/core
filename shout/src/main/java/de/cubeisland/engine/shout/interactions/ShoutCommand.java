@@ -59,7 +59,7 @@ public class ShoutCommand
         }
         else
         {
-            players = new ArrayList<Player>();
+            players = new ArrayList<>();
             for (String world : announcement.getWorlds())
             {
                 players.addAll(Bukkit.getWorld(world).getPlayers());

@@ -37,15 +37,15 @@ import gnu.trove.set.hash.THashSet;
 
 public class RolesAttachment extends UserAttachment
 {
-    private TLongObjectHashMap<UserDatabaseStore> rawUserData = new TLongObjectHashMap<UserDatabaseStore>();
+    private TLongObjectHashMap<UserDatabaseStore> rawUserData = new TLongObjectHashMap<>();
     // roleMirrors
     // assignedRoleMirrors
     // userMirrors
 
     // mirrors are NOT active for temporary Roles
-    private TLongObjectHashMap<UserDataStore> temporaryData = new TLongObjectHashMap<UserDataStore>();
+    private TLongObjectHashMap<UserDataStore> temporaryData = new TLongObjectHashMap<>();
 
-    private TLongObjectHashMap<ResolvedDataStore> resolvedDataStores = new TLongObjectHashMap<ResolvedDataStore>();
+    private TLongObjectHashMap<ResolvedDataStore> resolvedDataStores = new TLongObjectHashMap<>();
 
     private Map<String, String> currentMetaData;
 
@@ -76,7 +76,7 @@ public class RolesAttachment extends UserAttachment
         ResolvedDataStore dataStore = resolvedDataStores.get(worldID);
         if (dataStore == null || dataStore.isDirty())
         {
-            Set<Role> assignedRoles = new THashSet<Role>();
+            Set<Role> assignedRoles = new THashSet<>();
             WorldRoleProvider provider = ((Roles)this.getModule()).getRolesManager().getProvider(worldID);
             for (String roleName : this.getRawData(worldID).getRawAssignedRoles())
             {
@@ -152,7 +152,7 @@ public class RolesAttachment extends UserAttachment
      */
     public void flushResolvedData()
     {
-        this.resolvedDataStores = new TLongObjectHashMap<ResolvedDataStore>();
+        this.resolvedDataStores = new TLongObjectHashMap<>();
         this.currentMetaData = null;
     }
 
@@ -161,7 +161,7 @@ public class RolesAttachment extends UserAttachment
      */
     public void reload()
     {
-        this.temporaryData = new TLongObjectHashMap<UserDataStore>();
+        this.temporaryData = new TLongObjectHashMap<>();
         this.flushResolvedData();
         this.reloadFromDatabase();
     }

@@ -53,7 +53,7 @@ public class LogEntry implements Comparable<LogEntry>
     public final Integer newData;
     public final JsonNode additional;
 
-    private TreeSet<LogEntry> attached = new TreeSet<LogEntry>();
+    private TreeSet<LogEntry> attached = new TreeSet<>();
 
     public LogEntry(Log module, long entryID, Timestamp timestamp, int action, long worldId, int x, int y, int z,
                     long causer, String block, Long data, String newBlock, Integer newData, String additionalData)

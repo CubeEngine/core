@@ -40,7 +40,7 @@ public class NaturalSpawn extends SimpleLogActionType
     @Override
     protected Set<ActionTypeCategory> getCategories()
     {
-        return new HashSet<ActionTypeCategory>(Arrays.asList(SPAWN, ENTITY));
+        return new HashSet<>(Arrays.asList(SPAWN, ENTITY));
     }
 
     @Override

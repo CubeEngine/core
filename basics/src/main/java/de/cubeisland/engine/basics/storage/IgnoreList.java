@@ -48,7 +48,7 @@ public class IgnoreList implements TwoKeyModel<Long, Long>
     @Override
     public Pair<Long, Long> getId()
     {
-        return new Pair<Long, Long>(key, ignore);
+        return new Pair<>(key, ignore);
     }
 
     @Override

@@ -93,7 +93,7 @@ public class UserMetaDataManager extends TripletKeyStorage<Long, Long, String, U
         try
         {
             ResultSet resulsSet = this.database.preparedQuery(modelClass, "getallByUserInWorld", userID, worldID);
-            THashMap<String, String> result = new THashMap<String, String>();
+            THashMap<String, String> result = new THashMap<>();
             while (resulsSet.next())
             {
                 result.put(resulsSet.getString("key"), resulsSet.getString("value"));

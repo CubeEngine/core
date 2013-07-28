@@ -43,7 +43,7 @@ public class SignMarketBlockManager extends SingleKeyStorage<Long, SignMarketBlo
 
     public void load()
     {
-        this.blockModels = new THashMap<Location, SignMarketBlockModel>();
+        this.blockModels = new THashMap<>();
         for (SignMarketBlockModel model : this.getAll())
         {
             this.blockModels.put(model.getLocation(),model);

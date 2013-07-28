@@ -76,7 +76,7 @@ public class MarketSign
         this.blockInfo.setOwner(owner);
         if (owner != null)
         {
-            this.userOwner = new WeakReference<User>(owner);
+            this.userOwner = new WeakReference<>(owner);
         }
     }
 
@@ -883,7 +883,7 @@ public class MarketSign
         if (this.blockInfo.owner == null) throw new NoOwnerException();
         if (userOwner == null || userOwner.get() == null)
         {
-            userOwner = new WeakReference<User>(CubeEngine.getUserManager().getUser(this.blockInfo.owner));
+            userOwner = new WeakReference<>(CubeEngine.getUserManager().getUser(this.blockInfo.owner));
         }
         return userOwner.get();
     }

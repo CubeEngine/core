@@ -90,7 +90,7 @@ public class SignMarketItemModel implements Model<Long>,InventoryHolder,Cloneabl
         Map<Enchantment, Integer> enchs = item.getEnchantments();
         if (!enchs.isEmpty())
         {
-            List<String> enchStrings = new ArrayList<String>();
+            List<String> enchStrings = new ArrayList<>();
             for (Enchantment ench : enchs.keySet())
             {
                 enchStrings.add(ench.getId() + ":" + enchs.get(ench));
@@ -142,7 +142,7 @@ public class SignMarketItemModel implements Model<Long>,InventoryHolder,Cloneabl
         return itemStack;
     }
 
-    private THashSet<MarketSign> sharedStockSigns = new THashSet<MarketSign>();
+    private THashSet<MarketSign> sharedStockSigns = new THashSet<>();
 
     public void removeSign(MarketSign marketSign)
     {

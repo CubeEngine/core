@@ -55,9 +55,9 @@ public class ListCommand
             sender.sendTranslated("&cThere are no players online now!");
             return;
         }
-        THashMap<User,String> userStrings = new THashMap<User, String>();
-        ArrayList<User> onlineList = new ArrayList<User>();
-        ArrayList<User> afkList = new ArrayList<User>();
+        THashMap<User,String> userStrings = new THashMap<>();
+        ArrayList<User> onlineList = new ArrayList<>();
+        ArrayList<User> afkList = new ArrayList<>();
         for (User user : users)
         {
             if ((sender instanceof User) && !((User)sender).canSee(user)) // TODO add a permission and a marker for hiddens
@@ -95,7 +95,7 @@ public class ListCommand
             for (Entry<String,List<User>> entry : event.getGrouped().entrySet())
             {
                 String group = entry.getKey()+ChatFormat.parseFormats("&f: ");
-                List<String> displayNames = new ArrayList<String>();
+                List<String> displayNames = new ArrayList<>();
                 for (User user : entry.getValue())
                 {
                     displayNames.add(event.getUserStrings().get(user));

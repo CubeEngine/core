@@ -40,7 +40,7 @@ public class SignMarketItemManager extends SingleKeyStorage<Long, SignMarketItem
 
     public void load()
     {
-        this.itemInfoModels = new TLongObjectHashMap<SignMarketItemModel>();
+        this.itemInfoModels = new TLongObjectHashMap<>();
         for (SignMarketItemModel model : this.getAll())
         {
             this.itemInfoModels.put(model.key, model);
