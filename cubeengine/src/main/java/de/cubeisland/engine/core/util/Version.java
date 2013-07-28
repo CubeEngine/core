@@ -110,20 +110,20 @@ public class Version implements Comparable<Version>
     @Override
     public int compareTo(Version other)
     {
-        int major = this.getMajor() - other.getMajor();
-        if (major != 0)
+        int majorDiff = this.getMajor() - other.getMajor();
+        if (majorDiff != 0)
         {
-            return major;
+            return majorDiff;
         }
-        int minor = this.getMinor() - other.getMinor();
-        if (minor != 0)
+        int minorDiff = this.getMinor() - other.getMinor();
+        if (minorDiff != 0)
         {
-            return minor;
+            return minorDiff;
         }
-        int bugfix = this.getPatch() - other.getPatch();
-        if (bugfix != 0)
+        int patchDiff = this.getPatch() - other.getPatch();
+        if (patchDiff != 0)
         {
-            return bugfix;
+            return patchDiff;
         }
         if (this.getQualifier() == null && other.getQualifier() != null)
         {
@@ -133,9 +133,10 @@ public class Version implements Comparable<Version>
         {
             return -1;
         }
-        if (this.getQualifier() == null && other.getQualifier() == null)
+
+        if ((this.getQualifier() == null && other.getQualifier() == null) || this.getQualifier().equalsIgnoreCase(other.getQualifier()))
         {
-            return 0;
+            return this.getBuildNumber() - other.getBuildNumber();
         }
 
         return this.getQualifier().compareToIgnoreCase(other.getQualifier());
@@ -163,6 +164,7 @@ public class Version implements Comparable<Version>
         result = 31 * result + minor;
         result = 31 * result + patch;
         result = 31 * result + (qualifier != null ? qualifier.hashCode() : 0);
+        result = 31 * result + buildNumber;
         return result;
     }
 
@@ -174,6 +176,7 @@ public class Version implements Comparable<Version>
         {
             version += "-" + this.getQualifier().toUpperCase(Locale.US);
         }
+        version += this.getBuildNumber();
         return version;
     }
 
