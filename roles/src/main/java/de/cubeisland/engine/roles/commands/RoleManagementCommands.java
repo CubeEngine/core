@@ -17,6 +17,8 @@
  */
 package de.cubeisland.engine.roles.commands;
 
+import java.io.IOException;
+
 import org.bukkit.World;
 
 import de.cubeisland.engine.core.command.parameterized.Flag;
@@ -461,14 +463,23 @@ public class RoleManagementCommands extends RoleCommandHelper
         RoleProvider provider = this.manager.getProvider(world);
         Role role = this.getRole(context, provider, roleName, world);
         if (role == null) return;
-        role.deleteRole();
         this.manager.recalculateAllRoles();
-        if (global)
+        try
         {
-            context.sendTranslated("&aGlobal role &6%s &adeleted!", role.getName());
-            return;
+            role.deleteRole();
+            if (global)
+            {
+                context.sendTranslated("&aGlobal role &6%s &adeleted!", role.getName());
+                return;
+            }
+            context.sendTranslated("&aDeleted the role &6%s&a in &6%s&a!", role.getName(), world.getName());
         }
-        context.sendTranslated("&aDeleted the role &6%s&a in &6%s&a!", role.getName(), world.getName());
+        catch (IOException e)
+        {
+            context.getCommand().getModule().getLog().warn("Failed to delete the role configuration for {}:", role.getName());
+            context.getCommand().getModule().getLog().warn(e.getLocalizedMessage(), e);
+            context.sendTranslated("&eDeleted the role, however its configuration file could not be removed.");
+        }
     }
 
 

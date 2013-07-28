@@ -17,7 +17,7 @@
  */
 package de.cubeisland.engine.core.module;
 
-import java.io.File;
+import java.nio.file.Path;
 import java.util.Collection;
 
 import de.cubeisland.engine.core.module.exception.CircularDependencyException;
@@ -49,7 +49,7 @@ public interface ModuleManager extends Cleanable
     /**
      * Loads a module
      *
-     * @param moduleFile the file to load the module from
+     * @param modulePath the file to load the module from
      * @return the loaded module
      *
      * @throws InvalidModuleException           if the file is not a valid module
@@ -59,14 +59,14 @@ public interface ModuleManager extends Cleanable
      * @throws IncompatibleCoreException        if the module depends on a newer core
      * @throws MissingPluginDependencyException if the module depends on a missing plugin
      */
-    Module loadModule(File moduleFile) throws InvalidModuleException, CircularDependencyException, MissingDependencyException, IncompatibleDependencyException, IncompatibleCoreException, MissingPluginDependencyException, MissingProviderException;
+    Module loadModule(Path modulePath) throws InvalidModuleException, CircularDependencyException, MissingDependencyException, IncompatibleDependencyException, IncompatibleCoreException, MissingPluginDependencyException, MissingProviderException;
 
     /**
      * This method loads all modules from a directory
      *
      * @param directory the directory to load from
      */
-    void loadModules(File directory);
+    void loadModules(Path directory);
 
     /**
      * Enables a module

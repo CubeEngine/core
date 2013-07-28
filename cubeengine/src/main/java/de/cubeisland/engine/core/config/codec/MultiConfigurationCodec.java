@@ -17,8 +17,8 @@
  */
 package de.cubeisland.engine.core.config.codec;
 
-import java.io.File;
-import java.io.InputStream;
+import java.io.Reader;
+import java.nio.file.Path;
 
 import de.cubeisland.engine.core.config.InvalidConfigurationException;
 import de.cubeisland.engine.core.config.MultiConfiguration;
@@ -32,7 +32,7 @@ import de.cubeisland.engine.core.config.node.MapNode;
  */
 public abstract class MultiConfigurationCodec<Config extends MultiConfiguration> extends ConfigurationCodec<Config>
 {
-    public void saveChildConfig(Config parentConfig, Config config, File file)
+    public void saveChildConfig(Config parentConfig, Config config, Path file)
     {
         try
         {
@@ -60,12 +60,12 @@ public abstract class MultiConfigurationCodec<Config extends MultiConfiguration>
      * Loads in the given configuration using the InputStream
      *
      * @param config the config to load
-     * @param is the InputStream to load from
+     * @param reader the InputStream to load from
      */
-    public void loadChildConfig(MultiConfiguration config, InputStream is) throws InstantiationException, IllegalAccessException
+    public void loadChildConfig(MultiConfiguration config, Reader reader) throws InstantiationException, IllegalAccessException
     {
         MultiCodecContainer container = new MultiCodecContainer(this);
-        container.fillFromInputStream(is);
+        container.fillFromReader(reader);
         Revision a_revision = config.getClass().getAnnotation(Revision.class);
         if (a_revision != null)
         {

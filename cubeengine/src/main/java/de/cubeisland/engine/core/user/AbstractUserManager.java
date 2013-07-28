@@ -18,16 +18,17 @@
 package de.cubeisland.engine.core.user;
 
 import java.io.BufferedReader;
-import java.io.File;
+import java.io.BufferedWriter;
 import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.FileWriter;
+import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Random;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -35,13 +36,11 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import de.cubeisland.engine.core.Core;
 import de.cubeisland.engine.core.command.CommandSender;
 import de.cubeisland.engine.core.filesystem.FileManager;
-
 import de.cubeisland.engine.core.module.Module;
 import de.cubeisland.engine.core.permission.Permission;
 import de.cubeisland.engine.core.util.ChatFormat;
 import de.cubeisland.engine.core.util.StringUtils;
 import de.cubeisland.engine.core.util.Triplet;
-
 import gnu.trove.map.hash.TLongObjectHashMap;
 import gnu.trove.set.hash.THashSet;
 
@@ -58,7 +57,6 @@ public abstract class AbstractUserManager implements UserManager
     protected Set<DefaultAttachment> defaultAttachments;
     protected String salt;
     protected MessageDigest messageDigest;
-    private Random random;
 
     public AbstractUserManager(final Core core)
     {
@@ -70,7 +68,6 @@ public abstract class AbstractUserManager implements UserManager
 
         this.defaultAttachments = new THashSet<DefaultAttachment>();
 
-        this.random = new Random();
         this.loadSalt();
 
         try
@@ -302,36 +299,32 @@ public abstract class AbstractUserManager implements UserManager
 
     private void loadSalt()
     {
-        File file = new File(this.core.getFileManager().getDataFolder(), ".salt");
-        try
+        Path file = this.core.getFileManager().getDataPath().resolve(".salt");
+        try (BufferedReader reader = Files.newBufferedReader(file, Charset.defaultCharset()))
         {
-            BufferedReader reader = new BufferedReader(new FileReader(file));
             this.salt = reader.readLine();
-            reader.close();
         }
         catch (FileNotFoundException e)
         {
-            if (this.salt == null)
+            try
             {
-                try
+                this.salt = StringUtils.randomString(new SecureRandom(), 32);
+                try (BufferedWriter writer = Files.newBufferedWriter(file, Charset.defaultCharset()))
                 {
-                    this.salt = StringUtils.randomString(this.random, 32);
-                    FileWriter fileWriter = new FileWriter(file);
-                    fileWriter.write(this.salt);
-                    fileWriter.close();
+                    writer.write(this.salt);
                 }
-                catch (Exception inner)
-                {
-                    throw new IllegalStateException("Could not store the static salt in '" + file.getAbsolutePath() + "'!", inner);
-                }
+            }
+            catch (Exception inner)
+            {
+                throw new IllegalStateException("Could not store the static salt in '" + file + "'!", inner);
             }
         }
         catch (Exception e)
         {
-            throw new IllegalStateException("Could not store the static salt in '" + file.getAbsolutePath() + "'!", e);
+            throw new IllegalStateException("Could not store the static salt in '" + file + "'!", e);
         }
         FileManager.hideFile(file);
-        file.setReadOnly();
+        FileManager.setReadOnly(file);
     }
 
     private TLongObjectHashMap<Triplet<Long, String, Integer>> failedLogins = new TLongObjectHashMap<Triplet<Long, String, Integer>>();
@@ -472,8 +465,6 @@ public abstract class AbstractUserManager implements UserManager
         this.salt = null;
 
         this.messageDigest = null;
-
-        this.random = null;
     }
 
     @Override

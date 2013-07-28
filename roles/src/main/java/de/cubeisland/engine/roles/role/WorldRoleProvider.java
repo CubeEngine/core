@@ -17,7 +17,7 @@
  */
 package de.cubeisland.engine.roles.role;
 
-import java.io.File;
+import java.nio.file.Path;
 import java.util.HashSet;
 import java.util.Locale;
 import java.util.Set;
@@ -26,7 +26,6 @@ import de.cubeisland.engine.core.util.Triplet;
 import de.cubeisland.engine.roles.Roles;
 import de.cubeisland.engine.roles.config.RoleConfig;
 import de.cubeisland.engine.roles.config.RoleMirror;
-
 import gnu.trove.map.hash.TLongObjectHashMap;
 import gnu.trove.procedure.TLongObjectProcedure;
 
@@ -35,7 +34,7 @@ import gnu.trove.procedure.TLongObjectProcedure;
 public class WorldRoleProvider extends RoleProvider
 {
     private RoleMirror mirrorConfig;
-    private Set<Role> defaultRoles = new HashSet<Role>();
+    private Set<Role> defaultRoles = new HashSet<>();
 
     public WorldRoleProvider(Roles module, RolesManager manager, RoleMirror mirror, long mainWorldId)
     {
@@ -54,7 +53,7 @@ public class WorldRoleProvider extends RoleProvider
         Set<String> defaultRoles = this.module.getConfiguration().defaultRoles.get(mirrorConfig.mainWorld);
         if (defaultRoles == null)
         {
-            defaultRoles = new HashSet<String>();
+            defaultRoles = new HashSet<>();
         }
         for (RoleConfig config : this.configs.values())
         {
@@ -101,12 +100,12 @@ public class WorldRoleProvider extends RoleProvider
     }
 
     @Override
-    public File getFolder()
+    public Path getFolder()
     {
         if (this.folder == null)
         {
             // Sets the folder for this provider
-            this.folder = new File(this.manager.getRolesFolder(), this.mirrorConfig.mainWorld);
+            this.folder = this.manager.getRolesFolder().resolve(this.mirrorConfig.mainWorld);
         }
         return this.folder;
     }

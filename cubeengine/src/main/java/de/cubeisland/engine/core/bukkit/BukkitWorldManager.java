@@ -125,7 +125,7 @@ public class BukkitWorldManager extends AbstractWorldManager
         {
             return false;
         }
-        FileManager.deleteRecursive(world.getWorldFolder());
+        FileManager.deleteRecursive(world.getWorldFolder().toPath());
         return true;
     }
 
@@ -134,6 +134,6 @@ public class BukkitWorldManager extends AbstractWorldManager
     {
         assert CubeEngine.isMainThread() : "Must be executed from main thread!";
 
-        return new THashSet<World>(this.server.getWorlds());
+        return new THashSet<>(this.server.getWorlds());
     }
 }

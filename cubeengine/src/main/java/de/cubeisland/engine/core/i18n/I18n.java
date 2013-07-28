@@ -17,8 +17,10 @@
  */
 package de.cubeisland.engine.core.i18n;
 
-import java.io.File;
-import java.io.FileFilter;
+import java.io.IOException;
+import java.nio.file.DirectoryStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
@@ -27,19 +29,17 @@ import java.util.Stack;
 
 import de.cubeisland.engine.core.Core;
 import de.cubeisland.engine.core.config.Configuration;
-import de.cubeisland.engine.core.filesystem.FileExtentionFilter;
 import de.cubeisland.engine.core.filesystem.FileManager;
 import de.cubeisland.engine.core.filesystem.gettext.MessageCatalogFactory;
 import de.cubeisland.engine.core.util.Cleanable;
 import de.cubeisland.engine.core.util.Misc;
 import de.cubeisland.engine.core.util.matcher.Match;
-
 import gnu.trove.map.hash.THashMap;
 import gnu.trove.set.hash.THashSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-
+import static de.cubeisland.engine.core.filesystem.FileExtensionFilter.YAML;
 
 
 /**
@@ -61,15 +61,15 @@ public class I18n implements Cleanable
         this.core = core;
         this.logger = LoggerFactory.getLogger("cubeengine.language");
         // TODO
-        this.languages = new THashMap<Locale, Language>();
-        this.languageLookupMap = new THashMap<String, Language>();
+        this.languages = new THashMap<>();
+        this.languageLookupMap = new THashMap<>();
         this.sourceLanguage = new SourceLanguage();
         this.languages.put(this.sourceLanguage.getLocale(), this.sourceLanguage);
         this.registerLanguage(this.sourceLanguage);
         this.messageCatalogFactory = new MessageCatalogFactory();
 
         FileManager fm = core.getFileManager();
-        this.loadLanguages(fm.getLanguageDir());
+        this.loadLanguages(fm.getLanguagePath());
 
         Locale def = core.getConfiguration().defaultLocale;
         if (this.languages.containsKey(def))
@@ -85,7 +85,7 @@ public class I18n implements Cleanable
 
     public Set<Language> getLanguages()
     {
-        return new THashSet<Language>(this.languages.values());
+        return new THashSet<>(this.languages.values());
     }
 
     public SourceLanguage getSourceLanguage()
@@ -111,33 +111,41 @@ public class I18n implements Cleanable
     /**
      * This method load all languages from a directory
      *
-     * @param languageDir the directory to load from
+     * @param languagePath the directory to load from
      */
-    private synchronized void loadLanguages(File languageDir)
+    private synchronized void loadLanguages(Path languagePath)
     {
-        Map<Locale, LocaleConfig> languages = new HashMap<Locale, LocaleConfig>();
+        Map<Locale, LocaleConfig> languages = new HashMap<>();
         LocaleConfig config;
-        for (File file : languageDir.listFiles((FileFilter)FileExtentionFilter.YAML))
+
+        try (DirectoryStream<Path> directory = Files.newDirectoryStream(languagePath, YAML))
         {
-            config = Configuration.load(LocaleConfig.class, file, false);
-            if (config.locale != null)
+            for (Path file : directory)
             {
-                languages.put(config.locale, config);
-            }
-            else
-            {
-                this.logger.error("The language ''{}'' has an invalid configuration!", file.getName());
+                config = Configuration.load(LocaleConfig.class, file, false);
+                if (config.locale != null)
+                {
+                    languages.put(config.locale, config);
+                }
+                else
+                {
+                    this.logger.error("The language ''{}'' has an invalid configuration!", file.getFileName());
+                }
             }
         }
+        catch (IOException e)
+        {
+            this.core.getLog().warn("Failed to load the languages!", e);
+        }
 
-        Stack<Locale> loadStack = new Stack<Locale>();
+        Stack<Locale> loadStack = new Stack<>();
         for (LocaleConfig entry : languages.values())
         {
-            this.loadLanguage(languageDir, entry, languages, loadStack);
+            this.loadLanguage(languagePath, entry, languages, loadStack);
         }
     }
 
-    private Language loadLanguage(File languageDir, LocaleConfig config, Map<Locale, LocaleConfig> languages, Stack<Locale> loadStack)
+    private Language loadLanguage(Path languagePath, LocaleConfig config, Map<Locale, LocaleConfig> languages, Stack<Locale> loadStack)
     {
         if (this.languages.containsKey(config.locale))
         {
@@ -160,13 +168,13 @@ public class I18n implements Cleanable
             if (parent != null)
             {
                 loadStack.add(config.locale);
-                language = this.loadLanguage(languageDir, parent, languages, loadStack);
+                language = this.loadLanguage(languagePath, parent, languages, loadStack);
                 loadStack.pop();
             }
         }
         try
         {
-            language = new NormalLanguage(this.core, config, languageDir, language);
+            language = new NormalLanguage(this.core, config, languagePath, language);
             this.registerLanguage(language);
             if (config.clones != null)
             {
@@ -220,7 +228,7 @@ public class I18n implements Cleanable
     public Set<Language> searchLanguages(String name, int maximumDifference)
     {
         Set<String> matches = Match.string().getBestMatches(name, this.languageLookupMap.keySet(), maximumDifference);
-        Set<Language> languages = new THashSet<Language>(matches.size());
+        Set<Language> languages = new THashSet<>(matches.size());
 
         for (String match : matches)
         {

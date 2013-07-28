@@ -17,8 +17,8 @@
  */
 package de.cubeisland.engine.core.config.codec;
 
-import java.io.File;
-import java.io.InputStream;
+import java.io.Reader;
+import java.nio.file.Path;
 
 import de.cubeisland.engine.core.config.Configuration;
 import de.cubeisland.engine.core.config.InvalidConfigurationException;
@@ -44,12 +44,12 @@ public abstract class ConfigurationCodec<Config extends Configuration>
      * Loads in the given configuration using the InputStream
      *
      * @param config the config to load
-     * @param is the InputStream to load from
+     * @param reader the InputStream to load from
      */
-    public void load(Config config, InputStream is) throws InstantiationException, IllegalAccessException
+    public void load(Config config, Reader reader) throws InstantiationException, IllegalAccessException
     {
         CodecContainer container = new CodecContainer<ConfigurationCodec>(this);
-        container.fillFromInputStream(is);
+        container.fillFromReader(reader);
         Revision revisionAnnotation = config.getClass().getAnnotation(Revision.class);
         if (revisionAnnotation != null && revisionAnnotation.value() > container.revision)
         {
@@ -84,7 +84,7 @@ public abstract class ConfigurationCodec<Config extends Configuration>
      * @param config the configuration to save
      * @param file the file to save into
      */
-    public void save(Config config, File file)
+    public void save(Config config, Path file)
     {
         try
         {
@@ -151,5 +151,5 @@ public abstract class ConfigurationCodec<Config extends Configuration>
      * @param container the container to fill with values
      * @param is the InputStream
      */
-    public abstract void loadFromInputStream(CodecContainer container, InputStream is);
+    public abstract void loadFromReader(CodecContainer container, Reader is);
 }

@@ -17,7 +17,8 @@
  */
 package de.cubeisland.engine.roles.role;
 
-import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -31,7 +32,6 @@ import de.cubeisland.engine.roles.config.RoleConfig;
 import de.cubeisland.engine.roles.exception.CircularRoleDependencyException;
 import de.cubeisland.engine.roles.role.resolved.ResolvedMetadata;
 import de.cubeisland.engine.roles.role.resolved.ResolvedPermission;
-
 import gnu.trove.map.hash.THashMap;
 
 public class Role implements RawDataStore,Comparable<Role>
@@ -79,10 +79,10 @@ public class Role implements RawDataStore,Comparable<Role>
         }
     }
 
-    protected void saveConfigToNewFile()
+    protected void saveConfigToNewFile() throws IOException
     {
-        this.config.getFile().delete();
-        this.config.setFile(new File(this.config.getFile().getParentFile(), this.config.roleName + ".yml"));
+        Files.delete(this.config.getPath());
+        this.config.setPath(this.config.getPath().getParent().resolve(this.config.roleName + ".yml"));
         this.saveToConfig();
     }
 
@@ -107,8 +107,7 @@ public class Role implements RawDataStore,Comparable<Role>
 
     public boolean isDirty()
     {
-        if (this.resolvedData == null) return true;
-        return this.resolvedData.isDirty();
+        return this.resolvedData == null || this.resolvedData.isDirty();
     }
 
     public boolean isGlobal()
@@ -257,11 +256,11 @@ public class Role implements RawDataStore,Comparable<Role>
         }
     }
 
-    public void deleteRole()
+    public void deleteRole() throws IOException
     {
         this.makeDirty();
-        this.config.getFile().delete();
         this.resolvedData.performDeleteRole();
+        Files.delete(this.config.getPath());
     }
 
     public boolean isDefaultRole()
@@ -319,7 +318,7 @@ public class Role implements RawDataStore,Comparable<Role>
     @Override
     public Map<String, Boolean> getAllRawPermissions()
     {
-        Map<String,Boolean> result = new THashMap<String, Boolean>();
+        Map<String,Boolean> result = new THashMap<>();
         for (Role assignedRole : this.resolvedData.assignedRoles)
         {
             result.putAll(assignedRole.getAllRawPermissions());
@@ -331,7 +330,7 @@ public class Role implements RawDataStore,Comparable<Role>
     @Override
     public Map<String, String> getAllRawMetadata()
     {
-        Map<String,String> result = new THashMap<String, String>();
+        Map<String,String> result = new THashMap<>();
         for (Role assignedRole : this.resolvedData.assignedRoles)
         {
             result.putAll(assignedRole.getAllRawMetadata());
