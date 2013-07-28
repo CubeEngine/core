@@ -26,8 +26,9 @@ public class Version implements Comparable<Version>
 
     private final int major;
     private final int minor;
-    private final int bugfix;
-    private final String suffix;
+    private final int patch;
+    private final String qualifier;
+    private final int buildNumber;
 
     public Version(int major)
     {
@@ -39,17 +40,23 @@ public class Version implements Comparable<Version>
         this(major, minor, 0);
     }
 
-    public Version(int major, int minor, int bugfix)
+    public Version(int major, int minor, int patch)
     {
-        this(major, minor, bugfix, null);
+        this(major, minor, patch, null);
     }
 
-    public Version(int major, int minor, int bugfix, String suffix)
+    public Version(int major, int minor, int patch, String qualifier)
+    {
+        this(major, minor, patch, qualifier, 0);
+    }
+
+    public Version(int major, int minor, int patch, String qualifier, int buildNumber)
     {
         this.major = major;
         this.minor = minor;
-        this.bugfix = bugfix;
-        this.suffix = suffix == null ? null : suffix.toUpperCase(Locale.US);
+        this.patch = patch;
+        this.qualifier = qualifier == null ? null : qualifier.toUpperCase(Locale.US);
+        this.buildNumber = buildNumber;
     }
 
     public int getMajor()
@@ -62,19 +69,24 @@ public class Version implements Comparable<Version>
         return minor;
     }
 
-    public int getBugfix()
+    public int getPatch()
     {
-        return bugfix;
+        return patch;
     }
 
-    public String getSuffix()
+    public String getQualifier()
     {
-        return suffix;
+        return qualifier;
+    }
+
+    public int getBuildNumber()
+    {
+        return buildNumber;
     }
 
     public boolean isRelease()
     {
-        return this.getSuffix() == null;
+        return this.getQualifier() == null;
     }
 
     public boolean isNewerThan(Version version)
@@ -108,25 +120,25 @@ public class Version implements Comparable<Version>
         {
             return minor;
         }
-        int bugfix = this.getBugfix() - other.getBugfix();
+        int bugfix = this.getPatch() - other.getPatch();
         if (bugfix != 0)
         {
             return bugfix;
         }
-        if (this.getSuffix() == null && other.getSuffix() != null)
+        if (this.getQualifier() == null && other.getQualifier() != null)
         {
             return 1;
         }
-        if (other.getSuffix() == null && this.getSuffix() != null)
+        if (other.getQualifier() == null && this.getQualifier() != null)
         {
             return -1;
         }
-        if (this.getSuffix() == null && other.getSuffix() == null)
+        if (this.getQualifier() == null && other.getQualifier() == null)
         {
             return 0;
         }
 
-        return this.getSuffix().compareToIgnoreCase(other.getSuffix());
+        return this.getQualifier().compareToIgnoreCase(other.getQualifier());
     }
 
     @Override
@@ -149,18 +161,18 @@ public class Version implements Comparable<Version>
     {
         int result = major;
         result = 31 * result + minor;
-        result = 31 * result + bugfix;
-        result = 31 * result + (suffix != null ? suffix.hashCode() : 0);
+        result = 31 * result + patch;
+        result = 31 * result + (qualifier != null ? qualifier.hashCode() : 0);
         return result;
     }
 
     @Override
     public String toString()
     {
-        String version = this.getMajor() + "." + this.getMinor() + "." + this.getBugfix();
-        if (this.getSuffix() != null)
+        String version = this.getMajor() + "." + this.getMinor() + "." + this.getPatch();
+        if (this.getQualifier() != null)
         {
-            version += "-" + this.getSuffix().toUpperCase(Locale.US);
+            version += "-" + this.getQualifier().toUpperCase(Locale.US);
         }
         return version;
     }
@@ -186,16 +198,28 @@ public class Version implements Comparable<Version>
 
         int major = 0;
         int minor = 0;
-        int bugfix = 0;
-        String suffix = null;
+        int patch = 0;
+        String qualifier = null;
+        int buildNumber = 0;
 
         if (!string.isEmpty())
         {
             int dashIndex = string.lastIndexOf('-');
             if (dashIndex > -1)
             {
-                suffix = string.substring(dashIndex + 1);
+                qualifier = string.substring(dashIndex + 1);
                 string = string.substring(0, dashIndex);
+
+                dashIndex = qualifier.indexOf('-');
+                if (dashIndex > -1)
+                {
+                    String buildNumString = qualifier.substring(dashIndex + 1);
+                    if (buildNumString.matches("^[0-9]+$"))
+                    {
+                        buildNumber = Integer.parseInt(buildNumString);
+                        qualifier = qualifier.substring(0, dashIndex);
+                    }
+                }
             }
             string = string.replace('-', '.').replace(',', '.').replace('_', '.').replace('/', '.').replace('\\', '.');
             String[] parts = string.split("\\.");
@@ -209,11 +233,22 @@ public class Version implements Comparable<Version>
             }
             if (parts.length > 2)
             {
-                bugfix = readNumber(parts[2]);
+                patch = readNumber(parts[2]);
             }
         }
 
-        return new Version(major, minor, bugfix, suffix);
+        if (minor == 0 && patch == 0 && qualifier == null && buildNumber == 0)
+        {
+            switch (major)
+            {
+                case 0:
+                    return ZERO;
+                case 1:
+                    return ONE;
+            }
+        }
+
+        return new Version(major, minor, patch, qualifier, buildNumber);
     }
 
     private static int readNumber(String string)
