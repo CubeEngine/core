@@ -36,12 +36,10 @@ import javax.persistence.Table;
 
 import com.avaje.ebean.EbeanServer;
 import com.avaje.ebean.EbeanServerFactory;
-import com.avaje.ebean.config.DataSourceConfig;
 import com.avaje.ebean.config.MatchingNamingConvention;
 import com.avaje.ebean.config.ServerConfig;
 import com.avaje.ebean.config.TableName;
-import com.jolbox.bonecp.BoneCP;
-import com.jolbox.bonecp.BoneCPConfig;
+import com.jolbox.bonecp.BoneCPDataSource;
 import de.cubeisland.engine.core.Core;
 import de.cubeisland.engine.core.config.Configuration;
 import de.cubeisland.engine.core.storage.database.AbstractPooledDatabase;
@@ -56,12 +54,14 @@ import static de.cubeisland.engine.core.storage.database.AttrType.DataTypeInfo.*
 public class MySQLDatabase extends AbstractPooledDatabase
 {
     private final MySQLDatabaseConfiguration config;
-    private BoneCP connectionPool;
-    private BoneCPConfig poolConfig;
 
     private static final char NAME_QUOTE = '`';
     private static final char STRING_QUOTE = '\'';
     private static String tableprefix;
+
+    private final BoneCPDataSource dataSource;
+    private final EbeanServer ebeanServer;
+    private final ServerConfig serverConfig;
 
     public MySQLDatabase(Core core, MySQLDatabaseConfiguration config) throws SQLException
     {
@@ -75,35 +75,23 @@ public class MySQLDatabase extends AbstractPooledDatabase
             throw new IllegalStateException(e);
         }
         this.config = config;
-        this.poolConfig = new BoneCPConfig();
-        this.poolConfig.setJdbcUrl("jdbc:mysql://" + config.host+ ":" + config.port + "/"+config.database);
-        this.poolConfig.setUsername(config.user);
-        this.poolConfig.setPassword(config.pass);
-        this.poolConfig.setMinConnectionsPerPartition(5);
-        this.poolConfig.setMaxConnectionsPerPartition(10);
-        this.poolConfig.setPartitionCount(1);
-        this.connectionPool = new BoneCP(this.poolConfig);
+        dataSource = new BoneCPDataSource();
+        dataSource.setJdbcUrl("jdbc:mysql://" + config.host + ":" + config.port + "/" + config.database);
+        dataSource.setUsername(config.user);
+        dataSource.setPassword(config.pass);
+        dataSource.setMinConnectionsPerPartition(5);
+        dataSource.setMaxConnectionsPerPartition(10);
+        dataSource.setPartitionCount(1);
 
         tableprefix = this.config.tablePrefix;
 
-        // Ebeans TEST:
-        DataSourceConfig dataSourceConfig = new DataSourceConfig();
-        dataSourceConfig.setDriver("com.mysql.jdbc.Driver");
-        dataSourceConfig.setUrl("jdbc:mysql://" + config.host + ":" + config.port + "/" + config.database);
-        dataSourceConfig.setUsername(config.user);
-        dataSourceConfig.setPassword(config.pass);
-        dataSourceConfig.setMinConnections(5);
-        dataSourceConfig.setMaxConnections(10);
-        ServerConfig serverConfig = new ServerConfig();
-        serverConfig.setDataSourceConfig(dataSourceConfig);
+        serverConfig = new ServerConfig();
+        serverConfig.setDataSource(dataSource);
         serverConfig.setName("cubeengine");
         serverConfig.setNamingConvention(new NamingConvention());
-        //serverConfig.setDdlGenerate(true);
-        //serverConfig.setDdlRun(true);
-            EbeanServer ebeanServer = EbeanServerFactory.create(serverConfig);
-        ebeanServer.getServerCacheManager().setCaching(UserEntityTest.class, true);
-        ebeanServer.getServerCacheManager().init(ebeanServer);
+        ebeanServer = EbeanServerFactory.create(serverConfig);
 
+        //TESTS:
         this.createTableForModel(UserEntityTest.class);
         this.createTableForModel(HasUserEntity.class);
 
@@ -126,11 +114,9 @@ public class MySQLDatabase extends AbstractPooledDatabase
         created.setPlayer("CHANGED!");
         ebeanServer.update(created);
         ebeanServer.refresh(get2);
-        System.out.print(get2.getId() + ":" + get2.getUserEntity().getPlayer());
+        System.out.print(get2.getKey() + ":" + get2.getUserEntity().getPlayer());
         ebeanServer.refresh(get);
         System.out.print(get.getId() + ":" + get.getPlayer());
-
-
     }
 
     public static MySQLDatabase loadFromConfig(Core core, File file)
@@ -364,7 +350,7 @@ public class MySQLDatabase extends AbstractPooledDatabase
     @Override
     public Connection getConnection() throws SQLException
     {
-        return this.connectionPool.getConnection();
+        return this.dataSource.getConnection();
     }
 
     @Override
@@ -419,7 +405,6 @@ public class MySQLDatabase extends AbstractPooledDatabase
     public void shutdown()
     {
         super.shutdown();
-        this.connectionPool.shutdown();
     }
 
     @Override
@@ -434,7 +419,7 @@ public class MySQLDatabase extends AbstractPooledDatabase
         public TableName getTableName(Class<?> beanClass)
         {
             TableName tableName = super.getTableName(beanClass);
-            return new TableName(tableName.getCatalog(), tableName.getSchema(), MySQLDatabase.this.config.tablePrefix + tableName.getName());
+            return new TableName(tableName.getCatalog(), tableName.getSchema(), MySQLDatabase.prepareTableName(tableName.getName()));
         }
     }
 }

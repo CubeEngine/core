@@ -17,6 +17,7 @@
  */
 package de.cubeisland.engine.core.storage.database.mysql;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
@@ -32,19 +33,20 @@ public class HasUserEntity
 {
     @Id
     @Attribute(type = AttrType.INT, unsigned = true)
-    private long id;
-    @ManyToOne
-    @Column(name = "userEntity_id")
+    private long key;
+    @ManyToOne(cascade = {CascadeType.REMOVE, CascadeType.REFRESH})
+    @Column(name = "userEntity_id", nullable = false)
     @Attribute(type = AttrType.INT, unsigned = true)
     private UserEntityTest userEntity;
 
-    public long getId()
+    public long getKey()
     {
-        return id;
+        return key;
     }
-    public void setId(long id)
+
+    public void setKey(long key)
     {
-        this.id = id;
+        this.key = key;
     }
 
     public UserEntityTest getUserEntity()

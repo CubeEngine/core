@@ -80,6 +80,13 @@
       <scope>compile</scope>
     </dependency>
     <dependency>
+      <groupId>com.google.guava</groupId>
+      <artifactId>guava</artifactId>
+      <version>14.0.1</version>
+      <type>jar</type>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
       <groupId>org.bukkit</groupId>
       <artifactId>bukkit</artifactId>
     </dependency>
@@ -227,6 +234,14 @@
             <relocation>
               <pattern>io.netty</pattern>
               <shadedPattern>${externalPackage}.netty</shadedPattern>
+            </relocation>
+            <relocation>
+              <pattern>com.google</pattern>
+              <shadedPattern>${externalPackage}.guava</shadedPattern>
+            </relocation>
+            <relocation>
+              <pattern>com.jolbox.bonecp</pattern>
+              <shadedPattern>${externalPackage}.bonecp</shadedPattern>
             </relocation>
             <relocation>
               <pattern>org.yaml.snakeyaml</pattern>
