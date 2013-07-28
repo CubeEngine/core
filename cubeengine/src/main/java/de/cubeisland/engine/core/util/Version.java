@@ -197,22 +197,19 @@ public class Version implements Comparable<Version>
                 suffix = string.substring(dashIndex + 1);
                 string = string.substring(0, dashIndex);
             }
-            if (dashIndex > 0)
+            string = string.replace('-', '.').replace(',', '.').replace('_', '.').replace('/', '.').replace('\\', '.');
+            String[] parts = string.split("\\.");
+            if (parts.length > 0)
             {
-                string = string.replace('-', '.').replace(',', '.').replace('_', '.').replace('/', '.').replace('\\', '.');
-                String[] parts = string.split("\\.");
-                if (parts.length > 0)
-                {
-                    major = readNumber(parts[0]);
-                }
-                if (parts.length > 1)
-                {
-                    minor = readNumber(parts[1]);
-                }
-                if (parts.length > 2)
-                {
-                    bugfix = readNumber(parts[2]);
-                }
+                major = readNumber(parts[0]);
+            }
+            if (parts.length > 1)
+            {
+                minor = readNumber(parts[1]);
+            }
+            if (parts.length > 2)
+            {
+                bugfix = readNumber(parts[2]);
             }
         }
 
