@@ -73,7 +73,7 @@ public class ParameterizedContext extends BasicContext
 
     public Set<String> getFlags()
     {
-        return new THashSet<String>(this.flags);
+        return new THashSet<>(this.flags);
     }
 
     public boolean hasParams()
@@ -83,7 +83,7 @@ public class ParameterizedContext extends BasicContext
 
     public Map<String, Object> getParams()
     {
-        return new THashMap<String, Object>(this.params);
+        return new THashMap<>(this.params);
     }
 
     public boolean hasParam(String name)
@@ -91,6 +91,7 @@ public class ParameterizedContext extends BasicContext
         return this.params.containsKey(name.toLowerCase(Locale.ENGLISH));
     }
 
+    @SuppressWarnings("unchecked")
     public <T> T getParam(String name)
     {
         return (T)this.params.get(name.toLowerCase(Locale.ENGLISH));

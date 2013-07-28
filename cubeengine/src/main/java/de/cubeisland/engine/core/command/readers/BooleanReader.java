@@ -35,13 +35,13 @@ public class BooleanReader extends ArgumentReader
     public BooleanReader(Core core)
     {
         this.core = core;
-        this.yesStrings = new THashSet<String>();
+        this.yesStrings = new THashSet<>();
         this.yesStrings.add("yes");
         this.yesStrings.add("+");
         this.yesStrings.add("1");
         this.yesStrings.add("true");
 
-        this.noStrings = new THashSet<String>();
+        this.noStrings = new THashSet<>();
         this.noStrings.add("no");
         this.noStrings.add("-");
         this.noStrings.add("0");

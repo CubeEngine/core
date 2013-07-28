@@ -63,10 +63,10 @@ public class MaterialDataMatcher
     {
         if (!update)
         {
-            this.reverseItemData = new THashMap<Material, TShortObjectHashMap<Set<String>>>();
-            this.reverseBlockData = new THashMap<Material, TByteObjectHashMap<Set<String>>>();
-            this.itemData = new THashMap<Material, TObjectShortHashMap<String>>();
-            this.blockData = new THashMap<Material, TObjectByteHashMap<String>>();
+            this.reverseItemData = new THashMap<>();
+            this.reverseBlockData = new THashMap<>();
+            this.itemData = new THashMap<>();
+            this.blockData = new THashMap<>();
         }
         boolean updated = false;
         Path file = CubeEngine.getFileManager().getDataPath().resolve(CoreResource.DATAVALUES.getTarget());

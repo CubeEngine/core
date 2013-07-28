@@ -59,7 +59,7 @@ public class BasicContextFactory implements ContextFactory
         {
             throw new IncorrectUsageException("You've given too many arguments.");
         }
-        return new BasicContext(command, sender, labels, new LinkedList<String>(Arrays.asList(commandLine)));
+        return new BasicContext(command, sender, labels, new LinkedList<>(Arrays.asList(commandLine)));
     }
 
     @Override

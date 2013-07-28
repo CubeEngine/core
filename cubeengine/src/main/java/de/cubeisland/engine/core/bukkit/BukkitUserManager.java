@@ -62,7 +62,7 @@ public class BukkitUserManager extends AbstractUserManager
         final long delay = (long)core.getConfiguration().userManagerCleanup;
         this.nativeScheduler = Executors.newSingleThreadScheduledExecutor(core.getTaskManager().getThreadFactory());
         this.nativeScheduler.scheduleAtFixedRate(new UserCleanupTask(), delay, delay, TimeUnit.MINUTES);
-        this.scheduledForRemoval = new TObjectIntHashMap<String>(Constants.DEFAULT_CAPACITY, Constants.DEFAULT_LOAD_FACTOR, -1);
+        this.scheduledForRemoval = new TObjectIntHashMap<>(Constants.DEFAULT_CAPACITY, Constants.DEFAULT_LOAD_FACTOR, -1);
 
         this.core.addInitHook(new Runnable() {
             @Override
@@ -90,7 +90,7 @@ public class BukkitUserManager extends AbstractUserManager
         if (user == null)
         {
             //Get all online Player and searching for similar names
-            ArrayList<String> onlinePlayerList = new ArrayList<String>();
+            ArrayList<String> onlinePlayerList = new ArrayList<>();
             for (Player player : this.core.getServer().getOnlinePlayers())
             {
                 onlinePlayerList.add(player.getName());

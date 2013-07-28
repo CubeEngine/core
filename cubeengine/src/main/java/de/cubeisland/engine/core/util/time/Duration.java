@@ -28,8 +28,8 @@ import gnu.trove.map.hash.TObjectLongHashMap;
 
 public class Duration
 {
-    private final static TObjectLongHashMap<String> longerNames = new TObjectLongHashMap<String>();
-    private final static TObjectLongHashMap<String> shortNames = new TObjectLongHashMap<String>();
+    private final static TObjectLongHashMap<String> longerNames = new TObjectLongHashMap<>();
+    private final static TObjectLongHashMap<String> shortNames = new TObjectLongHashMap<>();
     private final static TCharLongHashMap veryShortNames = new TCharLongHashMap();
     private final static long MS = TimeUnit.MILLISECONDS.toMillis(1L);
     private final static long SEC = TimeUnit.SECONDS.toMillis(1L);

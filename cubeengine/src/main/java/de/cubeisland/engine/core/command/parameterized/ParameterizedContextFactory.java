@@ -48,8 +48,8 @@ public class ParameterizedContextFactory implements ContextFactory
     public ParameterizedContextFactory(ArgBounds bounds)
     {
         this.bounds = bounds;
-        this.flagMap = new THashMap<String, CommandFlag>();
-        this.paramMap = new THashMap<String, CommandParameter>();
+        this.flagMap = new THashMap<>();
+        this.paramMap = new THashMap<>();
     }
 
     public ParameterizedContextFactory(ArgBounds bounds, Collection<CommandFlag> flags, Collection<CommandParameter> params)
@@ -109,12 +109,12 @@ public class ParameterizedContextFactory implements ContextFactory
         CommandParameter param = this.paramMap.remove(name.toLowerCase(Locale.ENGLISH));
         if (param != null)
         {
-            Iterator<Map.Entry<String, CommandParameter>> iter = this.paramMap.entrySet().iterator();
-            while (iter.hasNext())
+            Iterator<Map.Entry<String, CommandParameter>> it = this.paramMap.entrySet().iterator();
+            while (it.hasNext())
             {
-                if (iter.next().getValue() == param)
+                if (it.next().getValue() == param)
                 {
-                    iter.remove();
+                    it.remove();
                 }
             }
         }
@@ -128,7 +128,7 @@ public class ParameterizedContextFactory implements ContextFactory
 
     public Set<CommandParameter> getParameters()
     {
-        return new THashSet<CommandParameter>(this.paramMap.values());
+        return new THashSet<>(this.paramMap.values());
     }
 
     public void addFlags(Collection<CommandFlag> flags)
@@ -155,12 +155,12 @@ public class ParameterizedContextFactory implements ContextFactory
         CommandFlag flag = this.flagMap.remove(name.toLowerCase(Locale.ENGLISH));
         if (flag != null)
         {
-            Iterator<Map.Entry<String, CommandFlag>> iter = this.flagMap.entrySet().iterator();
-            while (iter.hasNext())
+            Iterator<Map.Entry<String, CommandFlag>> it = this.flagMap.entrySet().iterator();
+            while (it.hasNext())
             {
-                if (iter.next().getValue() == flag)
+                if (it.next().getValue() == flag)
                 {
-                    iter.remove();
+                    it.remove();
                 }
             }
         }
@@ -174,15 +174,15 @@ public class ParameterizedContextFactory implements ContextFactory
 
     public Set<CommandFlag> getFlags()
     {
-        return new THashSet<CommandFlag>(this.flagMap.values());
+        return new THashSet<>(this.flagMap.values());
     }
 
     @Override
     public ParameterizedContext parse(CubeCommand command, CommandSender sender, Stack<String> labels, String[] commandLine)
     {
-        final LinkedList<String> args = new LinkedList<String>();
-        final Set<String> flags = new THashSet<String>();
-        final Map<String, Object> params = new THashMap<String, Object>();
+        final LinkedList<String> args = new LinkedList<>();
+        final Set<String> flags = new THashSet<>();
+        final Map<String, Object> params = new THashMap<>();
 
         if (commandLine.length > 0)
         {

@@ -153,7 +153,7 @@ public class BukkitBanManager implements BanManager
     public Set<IpBan> getIpBans()
     {
         Map ipBans = this.ipBans.getEntries();
-        Set<IpBan> bans = new THashSet<IpBan>(ipBans.size());
+        Set<IpBan> bans = new THashSet<>(ipBans.size());
 
         for (BanEntry entry : (Collection<BanEntry>)ipBans.values())
         {
@@ -175,7 +175,7 @@ public class BukkitBanManager implements BanManager
     public Set<UserBan> getUserBans()
     {
         Map nameBans = this.nameBans.getEntries();
-        Set<UserBan> bans = new THashSet<UserBan>(nameBans.size());
+        Set<UserBan> bans = new THashSet<>(nameBans.size());
 
         for (BanEntry entry : (Collection<BanEntry>)nameBans.values())
         {
@@ -187,7 +187,7 @@ public class BukkitBanManager implements BanManager
     @Override
     public Set<Ban> getBans()
     {
-        Set<Ban> bans = new THashSet<Ban>();
+        Set<Ban> bans = new THashSet<>();
         bans.addAll(this.getIpBans());
         bans.addAll(this.getUserBans());
         return bans;

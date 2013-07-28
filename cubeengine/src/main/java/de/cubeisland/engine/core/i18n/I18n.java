@@ -32,7 +32,7 @@ import de.cubeisland.engine.core.config.Configuration;
 import de.cubeisland.engine.core.filesystem.FileManager;
 import de.cubeisland.engine.core.filesystem.gettext.MessageCatalogFactory;
 import de.cubeisland.engine.core.util.Cleanable;
-import de.cubeisland.engine.core.util.Misc;
+import de.cubeisland.engine.core.util.StringUtils;
 import de.cubeisland.engine.core.util.matcher.Match;
 import gnu.trove.map.hash.THashMap;
 import gnu.trove.set.hash.THashSet;
@@ -337,7 +337,7 @@ public class I18n implements Cleanable
 
     private static boolean mayBeRegionCode(String string)
     {
-        if (!Misc.isNumeric(string))
+        if (!StringUtils.isNumeric(string))
         {
             return false;
         }

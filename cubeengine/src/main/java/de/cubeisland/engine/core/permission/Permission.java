@@ -148,7 +148,7 @@ public class Permission
         this.permission = parentPermission.permission + "." + this.permission;
         if (!parentPermission.hasChildren())
         {
-            parentPermission.children = new THashSet<Permission>();
+            parentPermission.children = new THashSet<>();
         }
         parentPermission.children.add(this);
         if (children != null)
@@ -219,7 +219,7 @@ public class Permission
         newPermission.parent = this;
         if (!this.hasChildren())
         {
-            this.children = new THashSet<Permission>();
+            this.children = new THashSet<>();
         }
         this.children.add(newPermission);
         return newPermission;
@@ -239,8 +239,7 @@ public class Permission
      */
     public Permission createNew(String name, PermDefault def)
     {
-        Permission newPermission = new Permission(this.permission, name, def);
-        return newPermission;
+        return new Permission(this.permission, name, def);
     }
 
     /**
@@ -252,7 +251,7 @@ public class Permission
         newPermission.parent = this;
         if (!this.hasChildren())
         {
-            this.children = new THashSet<Permission>();
+            this.children = new THashSet<>();
         }
         this.children.add(newPermission);
         return newPermission;
@@ -287,7 +286,7 @@ public class Permission
     {
         if (bundle == null)
         {
-            bundle = new THashSet<Permission>();
+            bundle = new THashSet<>();
         }
         bundle.add(bundlePermission);
     }
@@ -299,7 +298,7 @@ public class Permission
 
     public boolean hasChildren()
     {
-        return children == null ? false : !children.isEmpty();
+        return children != null && !children.isEmpty();
     }
 
     public boolean hasParent()
@@ -309,7 +308,7 @@ public class Permission
 
     public boolean hasBundles()
     {
-        return this.bundle == null ? false : !this.bundle.isEmpty();
+        return this.bundle != null && !this.bundle.isEmpty();
     }
 
     @Override

@@ -37,7 +37,7 @@ import org.yaml.snakeyaml.reader.ReaderException;
  */
 public abstract class Configuration<ConfigCodec extends ConfigurationCodec>
 {
-    private static final Map<String, ConfigurationCodec> codecs = new HashMap<String, ConfigurationCodec>();
+    private static final Map<String, ConfigurationCodec> codecs = new HashMap<>();
     protected final Class<? extends Configuration> configurationClass;
     public final ConfigCodec codec;
     protected Path file;

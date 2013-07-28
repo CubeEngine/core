@@ -37,7 +37,7 @@ public final class ApiResponse
      */
     public ApiResponse()
     {
-        this.headers = new HashMap<String, List<String>>();
+        this.headers = new HashMap<>();
         this.content = null;
     }
 
@@ -73,7 +73,7 @@ public final class ApiResponse
         }
         else
         {
-            List<String> values = new LinkedList<String>();
+            List<String> values = new LinkedList<>();
             values.add(value);
             this.headers.put(name, values);
         }
@@ -88,7 +88,7 @@ public final class ApiResponse
         List<String> values = this.headers.get(name);
         if (values == null)
         {
-            this.headers.put(name, values = new LinkedList<String>());
+            this.headers.put(name, values = new LinkedList<>());
         }
         values.add(value);
 

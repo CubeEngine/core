@@ -83,7 +83,7 @@ public abstract class ParameterizedCommand extends CubeCommand
         final boolean mayBeFlag = (token.length() > 0 && token.charAt(0) == '-');
         if (result == null && !mayBeFlag)
         {
-            List<String> params = new ArrayList<String>(0);
+            List<String> params = new ArrayList<>(0);
             for (CommandParameter entry : contextFactory.getParameters())
             {
                 if (startsWithIgnoreCase(entry.getName(), token))
@@ -98,7 +98,7 @@ public abstract class ParameterizedCommand extends CubeCommand
         }
         if (result == null && mayBeFlag)
         {
-            List<String> flags = new ArrayList<String>();
+            List<String> flags = new ArrayList<>();
             if (!token.isEmpty() && token.charAt(0) == '-')
             {
                 token = token.substring(1).toLowerCase(Locale.ENGLISH);

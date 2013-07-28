@@ -45,7 +45,7 @@ public class InventoryGuardFactory
 
     private InventoryGuardFactory prepareInv(Inventory inventory, User... users)
     {
-        this.currentGuardConfig = new ThreadLocal<InventoryGuard>();
+        this.currentGuardConfig = new ThreadLocal<>();
         this.currentGuardConfig.set(new InventoryGuard(this.core, inventory, users));
         return this;
     }
@@ -81,7 +81,7 @@ public class InventoryGuardFactory
      */
     public InventoryGuardFactory blockPutIn(ItemStack... items)
     {
-        List<GuardedItemStack> list = new ArrayList<GuardedItemStack>();
+        List<GuardedItemStack> list = new ArrayList<>();
         for (ItemStack item : items)
         {
             list.add(new GuardedItemStack(item,item.getAmount()));
@@ -101,7 +101,7 @@ public class InventoryGuardFactory
      */
     public InventoryGuardFactory notBlockPutIn(ItemStack... items)
     {
-        List<GuardedItemStack> list = new ArrayList<GuardedItemStack>();
+        List<GuardedItemStack> list = new ArrayList<>();
         for (ItemStack item : items)
         {
             list.add(new GuardedItemStack(item,item.getAmount()));
@@ -129,7 +129,7 @@ public class InventoryGuardFactory
      */
     public InventoryGuardFactory blockTakeOut(ItemStack... items)
     {
-        List<GuardedItemStack> list = new ArrayList<GuardedItemStack>();
+        List<GuardedItemStack> list = new ArrayList<>();
         for (ItemStack item : items)
         {
             list.add(new GuardedItemStack(item,item.getAmount()));
@@ -147,7 +147,7 @@ public class InventoryGuardFactory
      */
     public InventoryGuardFactory notBlockTakeOut(ItemStack... items)
     {
-        List<GuardedItemStack> list = new ArrayList<GuardedItemStack>();
+        List<GuardedItemStack> list = new ArrayList<>();
         for (ItemStack item : items)
         {
             list.add(new GuardedItemStack(item,item.getAmount()));

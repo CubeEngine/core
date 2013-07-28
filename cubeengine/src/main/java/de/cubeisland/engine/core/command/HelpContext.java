@@ -34,6 +34,6 @@ public final class HelpContext extends BasicContext
 
     public HelpContext(CubeCommand command, CommandSender sender, Stack<String> labels, String[] args)
     {
-        super(command, sender, labels, new LinkedList<String>(Arrays.asList(args)));
+        super(command, sender, labels, new LinkedList<>(Arrays.asList(args)));
     }
 }

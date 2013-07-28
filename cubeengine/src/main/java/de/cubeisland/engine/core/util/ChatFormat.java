@@ -155,7 +155,7 @@ public enum ChatFormat
     static
     {
         ChatFormat[] values = values();
-        FORMAT_CHARS_MAP = new TCharObjectHashMap<ChatFormat>(values.length);
+        FORMAT_CHARS_MAP = new TCharObjectHashMap<>(values.length);
         for (ChatFormat format : values)
         {
             FORMAT_CHARS_MAP.put(format.getChar(), format);

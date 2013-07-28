@@ -41,7 +41,7 @@ public class PlayerCompleter implements Completer
     @Override
     public List<String> complete(CommandSender sender, String token)
     {
-        List<String> playerNames = new ArrayList<String>();
+        List<String> playerNames = new ArrayList<>();
         for (User player : CubeEngine.getUserManager().getOnlineUsers())
         {
             String name = player.getName();

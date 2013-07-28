@@ -32,7 +32,7 @@ public class InventoryUtil
 {
     public static boolean giveItemsToUser(User user, ItemStack... items)
     {
-        List<ItemStack> list = new ArrayList<ItemStack>();
+        List<ItemStack> list = new ArrayList<>();
         for (ItemStack item : items)
         {
             if (item.getAmount() > 64)
@@ -131,7 +131,7 @@ public class InventoryUtil
     public static ItemStack[] splitIntoMaxItems(ItemStack item, int maxStackSize)
     {
         int itemAmount = item.getAmount();
-        List<ItemStack> list = new ArrayList<ItemStack>();
+        List<ItemStack> list = new ArrayList<>();
         while (itemAmount > maxStackSize)
         {
             itemAmount -= maxStackSize;

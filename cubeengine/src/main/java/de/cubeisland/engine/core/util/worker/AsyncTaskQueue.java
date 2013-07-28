@@ -43,7 +43,7 @@ public class AsyncTaskQueue implements TaskQueue
     {
         this.executorService = executorService;
         this.taskQueue = taskQueue;
-        this.exectorFuture = new AtomicReference<Future<?>>();
+        this.exectorFuture = new AtomicReference<>();
         this.isShutdown = false;
     }
 

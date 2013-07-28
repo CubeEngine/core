@@ -75,7 +75,7 @@ public class BasicContext implements CommandContext
     @Override
     public Stack<String> getLabels()
     {
-        Stack<String> newStack = new Stack<String>();
+        Stack<String> newStack = new Stack<>();
         newStack.addAll(this.labels);
         return newStack;
     }
@@ -100,7 +100,7 @@ public class BasicContext implements CommandContext
 
     public LinkedList<String> getArgs()
     {
-        return new LinkedList<String>(this.args);
+        return new LinkedList<>(this.args);
     }
 
     @Override

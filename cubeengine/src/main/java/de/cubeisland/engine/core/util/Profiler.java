@@ -27,7 +27,7 @@ import gnu.trove.map.hash.TObjectLongHashMap;
  */
 public class Profiler
 {
-    private static final TObjectLongMap<String> startTimes = new TObjectLongHashMap<String>();
+    private static final TObjectLongMap<String> startTimes = new TObjectLongHashMap<>();
 
     public static void startProfiling(String id)
     {

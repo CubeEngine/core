@@ -67,7 +67,7 @@ public class CodecContainer<ConfigCodec extends ConfigurationCodec>
      */
     public CodecContainer(ConfigCodec codec)
     {
-        this.comments = new THashMap<String, String>();
+        this.comments = new THashMap<>();
         this.codec = codec;
     }
 

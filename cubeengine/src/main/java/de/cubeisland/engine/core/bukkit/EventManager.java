@@ -46,7 +46,7 @@ public class EventManager
     {
         this.corePlugin = (BukkitCore)core;
         this.pm = this.corePlugin.getServer().getPluginManager();
-        this.listenerMap = new ConcurrentHashMap<Module, Set<Listener>>();
+        this.listenerMap = new ConcurrentHashMap<>();
     }
 
     /**
@@ -61,7 +61,7 @@ public class EventManager
         Set<Listener> listeners = this.listenerMap.get(module);
         if (listeners == null)
         {
-            this.listenerMap.put(module, listeners = new THashSet<Listener>(1));
+            this.listenerMap.put(module, listeners = new THashSet<>(1));
         }
         listeners.add(listener);
 

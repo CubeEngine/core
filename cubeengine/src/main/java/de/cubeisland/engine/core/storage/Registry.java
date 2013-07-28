@@ -30,7 +30,7 @@ import gnu.trove.map.hash.THashMap;
 public class Registry
 {
     private String TABLENAME = "registry";
-    private THashMap<String, THashMap<String, String>> data = new THashMap<String, THashMap<String, String>>();
+    private THashMap<String, THashMap<String, String>> data = new THashMap<>();
     private final Database database;
 
     public Registry(Database database)
@@ -98,7 +98,7 @@ public class Registry
                 THashMap<String, String> map = this.data.get(module.getId());
                 if (map == null)
                 {
-                    map = new THashMap<String, String>();
+                    map = new THashMap<>();
                     this.data.put(module.getId(), map);
                 }
                 map.clear();

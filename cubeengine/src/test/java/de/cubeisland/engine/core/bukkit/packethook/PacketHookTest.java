@@ -57,7 +57,7 @@ public class PacketHookTest extends TestCase
 
     private static Method[] readMethods(final Class clazz)
     {
-        List<Method> methods = new ArrayList<Method>();
+        List<Method> methods = new ArrayList<>();
 
         for (Method method : clazz.getDeclaredMethods())
         {

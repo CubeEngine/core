@@ -109,7 +109,7 @@ public class ModuleInfo
         int delimOffset;
         Version version;
 
-        this.dependencies = new HashMap<String, Version>(config.dependencies.size());
+        this.dependencies = new HashMap<>(config.dependencies.size());
         config.dependencies.remove(this.id);
         for (String dep : config.dependencies)
         {
@@ -131,7 +131,7 @@ public class ModuleInfo
             this.dependencies.put(dep, version);
         }
 
-        this.softDependencies = new HashMap<String, Version>(config.softDependencies.size());
+        this.softDependencies = new HashMap<>(config.softDependencies.size());
         config.softDependencies.remove(this.id);
         for (String dep : config.softDependencies)
         {

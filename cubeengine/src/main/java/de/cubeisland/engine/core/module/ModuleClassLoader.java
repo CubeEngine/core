@@ -44,7 +44,7 @@ public class ModuleClassLoader extends URLClassLoader
             jarURL
         }, parent);
         this.moduleLoader = moduleLoader;
-        this.classMap = new ConcurrentHashMap<String, Class>();
+        this.classMap = new ConcurrentHashMap<>();
         this.moduleInfo = info;
     }
 
@@ -111,8 +111,6 @@ public class ModuleClassLoader extends URLClassLoader
             this.moduleLoader.getCore().getCommandManager().removeCommandFactory(clazz);
             iter.remove();
         }
-        this.moduleInfo = null;
-        this.moduleLoader = null;
 
         try
         {
@@ -124,5 +122,8 @@ public class ModuleClassLoader extends URLClassLoader
         {
             CubeEngine.getLog().warn("Failed to close the class loader of the module '{}'", this.moduleInfo.getName());
         }
+
+        this.moduleInfo = null;
+        this.moduleLoader = null;
     }
 }

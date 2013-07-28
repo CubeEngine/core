@@ -46,7 +46,7 @@ public final class ApiRequest
         this.remoteAddress = remoteAddress;
         this.method = method;
         this.urlParams = params;
-        this.headers = new THashMap<String, List<String>>();
+        this.headers = new THashMap<>();
         this.data = data;
 
         List<String> list;
@@ -55,7 +55,7 @@ public final class ApiRequest
             list = this.headers.get(entry.getKey());
             if (list == null)
             {
-                this.headers.put(entry.getKey(), list = new ArrayList<String>(1));
+                this.headers.put(entry.getKey(), list = new ArrayList<>(1));
             }
             list.add(entry.getValue());
         }

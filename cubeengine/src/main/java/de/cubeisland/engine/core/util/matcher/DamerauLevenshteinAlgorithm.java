@@ -123,7 +123,7 @@ public class DamerauLevenshteinAlgorithm
             return source.length() * this.deleteCost;
         }
         int[][] table = new int[source.length()][target.length()];
-        Map<Character, Integer> sourceIndexByCharacter = new HashMap<Character, Integer>();
+        Map<Character, Integer> sourceIndexByCharacter = new HashMap<>();
         if (source.charAt(0) != target.charAt(0))
         {
             table[0][0] = Math.min(replaceCost, deleteCost + insertCost);

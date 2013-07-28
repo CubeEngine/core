@@ -39,7 +39,7 @@ public abstract class AbstractChatLayout<T> implements ChatLayout<T>
 
     public List<String> splitUp(String string, int maxLen)
     {
-        List<String> parts = new LinkedList<String>();
+        List<String> parts = new LinkedList<>();
         if (string == null)
         {
             return null;

@@ -38,8 +38,6 @@ import de.cubeisland.engine.core.user.User;
 
 public class InventoryGuard implements Listener
 {
-    // TODO option to not block creative CloneStack
-    private final Core core;
     private final Inventory inventory;
     private final HashSet<User> users;
     private Module module;
@@ -47,18 +45,17 @@ public class InventoryGuard implements Listener
     private boolean blockAllIn = false;
     private boolean blockAllOut = false;
 
-    private HashSet<GuardedItemStack> blockIn = new HashSet<GuardedItemStack>();
-    private HashSet<GuardedItemStack> blockOut = new HashSet<GuardedItemStack>();
-    private HashSet<GuardedItemStack> noBlockIn = new HashSet<GuardedItemStack>();
-    private HashSet<GuardedItemStack> noBlockOut = new HashSet<GuardedItemStack>();
-    private HashSet<Runnable> onClose = new HashSet<Runnable>();
-    private HashSet<Runnable> onChange = new HashSet<Runnable>();
+    private HashSet<GuardedItemStack> blockIn = new HashSet<>();
+    private HashSet<GuardedItemStack> blockOut = new HashSet<>();
+    private HashSet<GuardedItemStack> noBlockIn = new HashSet<>();
+    private HashSet<GuardedItemStack> noBlockOut = new HashSet<>();
+    private HashSet<Runnable> onClose = new HashSet<>();
+    private HashSet<Runnable> onChange = new HashSet<>();
 
     public InventoryGuard(Core core, Inventory inventory, User[] users)
     {
-        this.core = core;
         this.inventory = inventory;
-        this.users = new HashSet<User>(Arrays.asList(users));
+        this.users = new HashSet<>(Arrays.asList(users));
     }
 
     public void submitInventory(Module module, boolean openInventory)

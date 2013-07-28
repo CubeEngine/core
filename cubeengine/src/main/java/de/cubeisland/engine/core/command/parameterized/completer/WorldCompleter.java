@@ -36,7 +36,7 @@ public class WorldCompleter implements Completer
     @Override
     public List<String> complete(CommandSender sender, String token)
     {
-        List<String> offers = new ArrayList<String>();
+        List<String> offers = new ArrayList<>();
         for (World world : this.server.getWorlds())
         {
             final String name = world.getName();
