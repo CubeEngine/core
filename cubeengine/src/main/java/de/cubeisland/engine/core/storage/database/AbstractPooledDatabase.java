@@ -68,9 +68,9 @@ public abstract class AbstractPooledDatabase implements Database
     @Override
     public ResultSet query(String query, Object... params) throws SQLException
     {
-        try
+        try (Connection connection = this.getConnection())
         {
-            return this.createAndBindValues(query, params).executeQuery();
+            return this.createAndBindValues(connection, query, params).executeQuery();
         }
         catch (SQLException e)
         {
@@ -78,12 +78,13 @@ public abstract class AbstractPooledDatabase implements Database
         }
     }
 
+
     @Override
     public ResultSet preparedQuery(Class owner, String name, Object... params) throws SQLException
     {
-        try
+        try (Connection connection = this.getConnection())
         {
-            return this.bindValues(getStoredStatement(owner, name), params).executeQuery();
+            return this.bindValues(getStoredStatement(owner, name, connection), params).executeQuery();
         }
         catch (SQLException e)
         {
@@ -94,9 +95,9 @@ public abstract class AbstractPooledDatabase implements Database
     @Override
     public int update(String query, Object... params) throws SQLException
     {
-        try
+        try  (Connection connection = this.getConnection())
         {
-            return this.createAndBindValues(query, params).executeUpdate();
+            return this.createAndBindValues(connection, query, params).executeUpdate();
         }
         catch (SQLException e)
         {
@@ -127,9 +128,9 @@ public abstract class AbstractPooledDatabase implements Database
     @Override
     public int preparedUpdate(Class owner, String name, Object... params) throws SQLException
     {
-        try
+        try (Connection connection = this.getConnection())
         {
-            return this.bindValues(getStoredStatement(owner, name), params).executeUpdate();
+            return this.bindValues(getStoredStatement(owner, name, connection), params).executeUpdate();
         }
         catch (SQLException e)
         {
@@ -160,9 +161,9 @@ public abstract class AbstractPooledDatabase implements Database
     @Override
     public boolean execute(String query, Object... params) throws SQLException
     {
-        try
+        try (Connection connection = this.getConnection())
         {
-            return this.createAndBindValues(query, params).execute();
+            return this.createAndBindValues(query, params, connection).execute();
         }
         catch (SQLException e)
         {
@@ -193,9 +194,9 @@ public abstract class AbstractPooledDatabase implements Database
     @Override
     public boolean preparedExecute(Class owner, String name, Object... params) throws SQLException
     {
-        try
+        try (Connection connection = this.getConnection())
         {
-            return this.bindValues(getStoredStatement(owner, name), params).execute();
+            return this.bindValues(getStoredStatement(owner, name, connection), params).execute();
         }
         catch (SQLException e)
         {
@@ -226,6 +227,11 @@ public abstract class AbstractPooledDatabase implements Database
     protected PreparedStatement createAndBindValues(String query, Object... params) throws SQLException
     {
         return this.bindValues(this.prepareStatement(query), params);
+    }
+
+    private PreparedStatement createAndBindValues(Connection withConnection, String query, Object[] params) throws SQLException
+    {
+        return this.bindValues(this.prepareStatement(query, withConnection), params);
     }
 
     protected PreparedStatement bindValues(PreparedStatement statement, Object... params) throws SQLException

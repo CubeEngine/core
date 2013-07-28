@@ -15,16 +15,24 @@
  * You should have received a copy of the GNU General Public License
  * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
+/*
+ * To change this template, choose Tools | Templates
+ * and open the template in the editor.
+ */
 package de.cubeisland.engine.core.storage.database;
 
-import java.sql.SQLException;
-
-import de.cubeisland.engine.core.util.Version;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
- * The update method will be called automatically when the dbVersion is lower than the codeVersion
+ * Declares a DatabaseUpdater
  */
-public interface DatabaseUpdater
+@Retention(RetentionPolicy.RUNTIME)
+@Target(value = {ElementType.TYPE})
+public @interface DBUpdater
 {
-    public void update(Database database, Class<?> entityClass, Version dbVersion, Version codeVersion) throws SQLException;
+    public Class<? extends DatabaseUpdater> value();
 }
+

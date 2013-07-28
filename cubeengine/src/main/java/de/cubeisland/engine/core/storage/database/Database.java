@@ -96,6 +96,7 @@ public interface Database
 
     /**
      * Prepares the statement
+     * <p>remember to close the connection to give it back to the connection-pool
      *
      * @param statement the statement
      * @return the prepared statement
@@ -260,7 +261,7 @@ public interface Database
 
     EbeanServer getEbeanServer();
 
-    public void createTableForModel(Class<?> modelClass);
+    public void registerEntity(Class<?> modelClass);
 
     public DatabaseConfiguration getDatabaseConfig();
 }

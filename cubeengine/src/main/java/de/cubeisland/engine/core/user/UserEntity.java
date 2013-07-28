@@ -23,12 +23,12 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
-import javax.persistence.Version;
 
 import com.avaje.ebean.annotation.NamedUpdate;
 import com.avaje.ebean.annotation.NamedUpdates;
 import de.cubeisland.engine.core.storage.database.AttrType;
 import de.cubeisland.engine.core.storage.database.Attribute;
+import de.cubeisland.engine.core.util.Version;
 
 @Entity
 @Table(name = "user")
@@ -40,8 +40,8 @@ import de.cubeisland.engine.core.storage.database.Attribute;
 )
 public class UserEntity
 {
-    @Version
-    static final de.cubeisland.engine.core.util.Version version = new de.cubeisland.engine.core.util.Version(1);
+    @javax.persistence.Version
+    static final Version version = new Version(1);
     public static final Long NO_ID = -1L;
 
     @Id

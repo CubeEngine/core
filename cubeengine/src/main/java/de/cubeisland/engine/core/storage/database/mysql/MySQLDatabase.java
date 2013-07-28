@@ -46,6 +46,7 @@ import de.cubeisland.engine.core.config.Configuration;
 import de.cubeisland.engine.core.storage.database.AbstractPooledDatabase;
 import de.cubeisland.engine.core.storage.database.AttrType;
 import de.cubeisland.engine.core.storage.database.Attribute;
+import de.cubeisland.engine.core.storage.database.DBUpdater;
 import de.cubeisland.engine.core.storage.database.DatabaseConfiguration;
 import de.cubeisland.engine.core.storage.database.Index;
 import de.cubeisland.engine.core.util.StringUtils;
@@ -94,8 +95,8 @@ public class MySQLDatabase extends AbstractPooledDatabase
         ebeanServer = EbeanServerFactory.create(serverConfig);
 
         //TESTS:
-        this.createTableForModel(UserEntityTest.class);
-        this.createTableForModel(HasUserEntity.class);
+        this.registerEntity(UserEntityTest.class);
+        this.registerEntity(HasUserEntity.class);
 
         UserEntityTest created = ebeanServer.createEntityBean(UserEntityTest.class);
         ebeanServer.save(created);
@@ -153,23 +154,40 @@ public class MySQLDatabase extends AbstractPooledDatabase
                 else if (dbVersion.isOlderThan(version))
                 {
                     this.core.getLog().info("table-version is too old! Updating " + tableName + " from " +dbVersion.toString()+ " to " + version.toString());
-                    // TODO do the update
+                    DBUpdater dbUpdater = modelClass.getAnnotation(DBUpdater.class);
+                    if (dbUpdater == null)
+                    {
+                        this.core.getLog().warn("No Updater declared!");
+                    }
+                    else
+                    {
+                        dbUpdater.value().newInstance().update(this, modelClass, dbVersion, version);
+                        this.core.getLog().info(tableName + " got updated to " + version.toString());
+                        this.execute("ALTER TABLE " + tableName + " COMMENT = " + MySQLDatabase.prepareString(version.toString()));
+                    }
                 }
                 return true;
             }
         }
-        catch (SQLException e)
-        {}
+        catch (Exception e)
+        {
+            this.core.getLog().warn("Could not execute structure update!", e);
+        }
         return false;
     }
 
-    public void createTableForModel(Class<?> modelClass)
+    /**
+     * Creates or updates the table for given entity
+     *
+     * @param entityClass the entity to register
+     */
+    public void registerEntity(Class<?> entityClass)
     {
-        if (modelClass.isAnnotationPresent(Entity.class) && modelClass.isAnnotationPresent(Table.class))
+        if (entityClass.isAnnotationPresent(Entity.class) && entityClass.isAnnotationPresent(Table.class))
         {
-            Table table = modelClass.getAnnotation(Table.class);
+            Table table = entityClass.getAnnotation(Table.class);
             Version version = new Version(0);
-            for (Field field : modelClass.getDeclaredFields())
+            for (Field field : entityClass.getDeclaredFields())
             {
                 if (field.isAnnotationPresent(javax.persistence.Version.class) && field.getType().equals(Version.class))
                 {
@@ -185,7 +203,7 @@ public class MySQLDatabase extends AbstractPooledDatabase
                 }
             }
             String tableName = MySQLDatabase.prepareTableName(table.name());
-            if (this.updateTableStructure(version, tableName, modelClass)) return;
+            if (this.updateTableStructure(version, tableName, entityClass)) return;
             StringBuilder builder = new StringBuilder("CREATE");
             // TODO TEMPORARY and alternativ name for temp-table (or just append _temp)
             builder.append(" TABLE");
@@ -193,7 +211,7 @@ public class MySQLDatabase extends AbstractPooledDatabase
             builder.append(tableName).append("\n(");
             boolean first = true;
             boolean autoIncrement = false;
-            for (Field field : modelClass.getDeclaredFields())
+            for (Field field : entityClass.getDeclaredFields())
             {
                 if (field.isAnnotationPresent(Attribute.class))
                 {
@@ -262,7 +280,7 @@ public class MySQLDatabase extends AbstractPooledDatabase
             }
             return;
         }
-        throw new IllegalArgumentException("The modelClass " + modelClass + " is not a valid DatabaseEntity");
+        throw new IllegalArgumentException("The entityClass " + entityClass + " is not a valid DatabaseEntity");
     }
 
     static String getForeignKey(Field field, Column column, CascadeType[] cascades, Class<?> entityClass)
