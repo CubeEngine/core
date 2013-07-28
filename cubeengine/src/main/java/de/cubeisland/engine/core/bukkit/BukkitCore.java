@@ -17,10 +17,13 @@
  */
 package de.cubeisland.engine.core.bukkit;
 
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.text.SimpleDateFormat;
 import java.util.Collections;
 import java.util.Date;
@@ -28,6 +31,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map.Entry;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
@@ -38,6 +42,14 @@ import org.bukkit.generator.ChunkGenerator;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import ch.qos.logback.classic.Level;
+import ch.qos.logback.classic.Logger;
+import ch.qos.logback.classic.LoggerContext;
+import ch.qos.logback.classic.PatternLayout;
+import ch.qos.logback.classic.filter.ThresholdFilter;
+import ch.qos.logback.classic.joran.JoranConfigurator;
+import ch.qos.logback.classic.util.ContextInitializer;
+import ch.qos.logback.core.joran.spi.JoranException;
 import de.cubeisland.engine.core.Core;
 import de.cubeisland.engine.core.CorePerms;
 import de.cubeisland.engine.core.CoreResource;
@@ -65,6 +77,7 @@ import de.cubeisland.engine.core.service.ServiceManager;
 import de.cubeisland.engine.core.storage.TableManager;
 import de.cubeisland.engine.core.storage.database.Database;
 import de.cubeisland.engine.core.storage.database.DatabaseFactory;
+import de.cubeisland.engine.core.util.FreezeDetection;
 import de.cubeisland.engine.core.util.InventoryGuardFactory;
 import de.cubeisland.engine.core.util.Profiler;
 import de.cubeisland.engine.core.util.Version;
@@ -74,15 +87,6 @@ import de.cubeisland.engine.core.util.worker.CubeThreadFactory;
 import de.cubeisland.engine.core.webapi.ApiConfig;
 import de.cubeisland.engine.core.webapi.ApiServer;
 import de.cubeisland.engine.core.webapi.exception.ApiStartupException;
-
-import ch.qos.logback.classic.Level;
-import ch.qos.logback.classic.Logger;
-import ch.qos.logback.classic.LoggerContext;
-import ch.qos.logback.classic.PatternLayout;
-import ch.qos.logback.classic.filter.ThresholdFilter;
-import ch.qos.logback.classic.joran.JoranConfigurator;
-import ch.qos.logback.classic.util.ContextInitializer;
-import ch.qos.logback.core.joran.spi.JoranException;
 import org.slf4j.LoggerFactory;
 
 import static de.cubeisland.engine.core.util.ReflectionUtils.findFirstField;
@@ -116,6 +120,7 @@ public final class BukkitCore extends JavaPlugin implements Core
     private ServiceManager serviceManager;
 
     private List<Runnable> initHooks;
+    private FreezeDetection freezeDetection;
 
 
     @Override
@@ -136,6 +141,16 @@ public final class BukkitCore extends JavaPlugin implements Core
 
         CubeEngine.initialize(this);
         Convert.init(this);
+
+        this.freezeDetection = new FreezeDetection(this);
+        this.freezeDetection.addListener(new Runnable() {
+            @Override
+            public void run()
+            {
+                dumpThreads();
+            }
+        });
+        this.freezeDetection.start();
 
         this.initHooks = Collections.synchronizedList(new LinkedList<Runnable>());
 
@@ -383,6 +398,12 @@ public final class BukkitCore extends JavaPlugin implements Core
         this.logger.debug("utils cleanup");
         BukkitUtils.cleanup();
 
+        if (freezeDetection != null)
+        {
+            this.freezeDetection.shutdown();
+            this.freezeDetection = null;
+        }
+
         if (this.packetEventManager != null)
         {
             this.packetEventManager.clean();
@@ -513,6 +534,49 @@ public final class BukkitCore extends JavaPlugin implements Core
         }
     }
 
+    public void dumpThreads()
+    {
+        Path threadDumpFolder = this.getDataFolder().toPath().resolve("thread-dumps");
+        try
+        {
+            Files.createDirectories(threadDumpFolder);
+        }
+        catch (IOException e)
+        {
+            this.getLog().warn("Failed to create the folder for the thread dumps!", e);
+            return;
+        }
+        try (BufferedWriter writer = Files.newBufferedWriter(threadDumpFolder.resolve(System.currentTimeMillis() + ".dump"), Core.CHARSET))
+        {
+            Thread t;
+            int i = 0;
+            for (Entry<Thread, StackTraceElement[]> entry : Thread.getAllStackTraces().entrySet())
+            {
+                t = entry.getKey();
+
+                writer.write("Thread #" + ++i + "\n");
+                writer.write("ID: " + t.getId() + "\n");
+                writer.write("Name: " + t.getName() + "\n");
+                writer.write("State: " + t.getState().name() + "\n");
+                writer.write("Stacktrace:\n");
+
+                int j = 0;
+                for (StackTraceElement e : entry.getValue())
+                {
+                    writer.write("#" + ++j + " " + e.getClassName() + '.' + e.getMethodName() + '(' + e.getFileName() + ':' + e.getLineNumber() + ')');
+                }
+
+                writer.write("\n\n\n");
+            }
+        }
+        catch (IOException e)
+        {
+            this.getLog().warn("Failed to write a thread dump!", e);
+        }
+    }
+
+
+    //region Plugin overrides
     @Override
     public ChunkGenerator getDefaultWorldGenerator(String worldName, String id)
     {
@@ -535,7 +599,9 @@ public final class BukkitCore extends JavaPlugin implements Core
 
         return this.getWorldManager().getGenerator(module, parts[1].toLowerCase(Locale.ENGLISH));
     }
+    //endregion
 
+    //region Core implementations
     @Override
     public Version getVersion()
     {
@@ -666,4 +732,5 @@ public final class BukkitCore extends JavaPlugin implements Core
     {
         return this.serviceManager;
     }
+    //endregion
 }
