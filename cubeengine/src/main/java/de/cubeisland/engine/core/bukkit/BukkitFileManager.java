@@ -30,6 +30,7 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
 import de.cubeisland.engine.core.filesystem.FileManager;
+import de.cubeisland.engine.core.filesystem.FileUtil;
 
 import static de.cubeisland.engine.core.filesystem.FileExtensionFilter.LOG;
 import static java.util.logging.Level.WARNING;
@@ -84,7 +85,7 @@ public class BukkitFileManager extends FileManager
                     }
                 }
                 zip.finish();
-                FileManager.deleteRecursive(folderPath);
+                FileUtil.deleteRecursive(folderPath);
             }
             catch (IOException ex)
             {

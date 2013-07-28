@@ -30,7 +30,7 @@ import org.bukkit.World;
 import org.bukkit.WorldCreator;
 
 import de.cubeisland.engine.core.CubeEngine;
-import de.cubeisland.engine.core.filesystem.FileManager;
+import de.cubeisland.engine.core.filesystem.FileUtil;
 import de.cubeisland.engine.core.world.AbstractWorldManager;
 import de.cubeisland.engine.core.world.WorldModel;
 
@@ -125,7 +125,7 @@ public class BukkitWorldManager extends AbstractWorldManager
         {
             return false;
         }
-        FileManager.deleteRecursive(world.getWorldFolder().toPath());
+        FileUtil.deleteRecursive(world.getWorldFolder().toPath());
         return true;
     }
 

@@ -35,7 +35,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 import de.cubeisland.engine.core.Core;
 import de.cubeisland.engine.core.command.CommandSender;
-import de.cubeisland.engine.core.filesystem.FileManager;
+import de.cubeisland.engine.core.filesystem.FileUtil;
 import de.cubeisland.engine.core.module.Module;
 import de.cubeisland.engine.core.permission.Permission;
 import de.cubeisland.engine.core.util.ChatFormat;
@@ -323,8 +323,8 @@ public abstract class AbstractUserManager implements UserManager
         {
             throw new IllegalStateException("Could not store the static salt in '" + file + "'!", e);
         }
-        FileManager.hideFile(file);
-        FileManager.setReadOnly(file);
+        FileUtil.hideFile(file);
+        FileUtil.setReadOnly(file);
     }
 
     private TLongObjectHashMap<Triplet<Long, String, Integer>> failedLogins = new TLongObjectHashMap<Triplet<Long, String, Integer>>();

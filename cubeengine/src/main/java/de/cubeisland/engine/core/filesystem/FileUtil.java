@@ -24,14 +24,27 @@ import java.io.InputStreamReader;
 import java.io.Writer;
 import java.nio.ByteBuffer;
 import java.nio.channels.ReadableByteChannel;
+import java.nio.channels.WritableByteChannel;
 import java.nio.charset.Charset;
+import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.SimpleFileVisitor;
+import java.nio.file.attribute.BasicFileAttributes;
+import java.nio.file.attribute.DosFileAttributeView;
+import java.nio.file.attribute.FileAttribute;
+import java.nio.file.attribute.PosixFileAttributeView;
+import java.nio.file.attribute.PosixFilePermission;
+import java.nio.file.attribute.PosixFilePermissions;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
 import de.cubeisland.engine.core.Core;
 import de.cubeisland.engine.core.CubeEngine;
+
+import static java.nio.file.attribute.PosixFilePermissions.asFileAttribute;
+import static java.nio.file.attribute.PosixFilePermissions.fromString;
 
 
 /**
@@ -40,6 +53,10 @@ import de.cubeisland.engine.core.CubeEngine;
  */
 public class FileUtil
 {
+    public static final FileAttribute<Set<PosixFilePermission>> DEFAULT_FOLDER_PERMS = asFileAttribute(fromString("rwxrwxr-x"));
+    private static final Set<PosixFilePermission> READ_ONLY_PERM = PosixFilePermissions.fromString("--r--r---");
+    private static final RecursiveDirectoryDeleter TREE_WALKER = new RecursiveDirectoryDeleter();
+
     /**
      * Reads the file line by line and returns a list of Strings containing all lines
      *
@@ -138,5 +155,95 @@ public class FileUtil
         }
 
         return builder.toString();
+    }
+
+    public static boolean hideFile(Path path)
+    {
+        try
+        {
+            DosFileAttributeView attributeView = Files.getFileAttributeView(path, DosFileAttributeView.class);
+            attributeView.setHidden(true);
+            return true;
+        }
+        catch (IOException e)
+        {
+            return false;
+        }
+    }
+
+    public static boolean setReadOnly(Path file)
+    {
+        try
+        {
+            Files.getFileAttributeView(file, PosixFileAttributeView.class).setPermissions(READ_ONLY_PERM);
+        }
+        catch (Exception ignore)
+        {
+            try
+            {
+                Files.getFileAttributeView(file, DosFileAttributeView.class).setReadOnly(true);
+            }
+            catch (Exception  ignored)
+            {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public static void deleteRecursive(Path file) throws IOException
+    {
+        if (file == null)
+        {
+            return;
+        }
+        if (Files.isRegularFile(file))
+        {
+            Files.delete(file);
+        }
+        else
+        {
+            Files.walkFileTree(file, TREE_WALKER);
+        }
+    }
+
+    public static void copy(ReadableByteChannel in, WritableByteChannel out) throws IOException
+    {
+        final ByteBuffer buffer = ByteBuffer.allocateDirect(1024 * 4);
+
+        while (in.read(buffer) >= 0 || buffer.position() > 0)
+        {
+            buffer.flip();
+            out.write(buffer);
+            buffer.compact();
+        }
+    }
+
+    public static class RecursiveDirectoryDeleter extends SimpleFileVisitor<Path>
+    {
+        @Override
+        public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException
+        {
+            Files.delete(file);
+            return FileVisitResult.CONTINUE;
+        }
+
+        @Override
+        public FileVisitResult visitFileFailed(Path file, IOException exc) throws IOException
+        {
+            Files.delete(file);
+            return FileVisitResult.CONTINUE;
+        }
+
+        @Override
+        public FileVisitResult postVisitDirectory(Path dir, IOException exc) throws IOException
+        {
+            if (exc != null)
+            {
+                throw exc;
+            }
+            Files.delete(dir);
+            return FileVisitResult.CONTINUE;
+        }
     }
 }

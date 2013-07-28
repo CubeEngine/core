@@ -20,34 +20,21 @@ package de.cubeisland.engine.core.filesystem;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.ByteBuffer;
 import java.nio.channels.Channels;
 import java.nio.channels.FileChannel;
 import java.nio.channels.ReadableByteChannel;
-import java.nio.channels.WritableByteChannel;
 import java.nio.file.FileAlreadyExistsException;
-import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.nio.file.SimpleFileVisitor;
-import java.nio.file.attribute.BasicFileAttributes;
-import java.nio.file.attribute.DosFileAttributeView;
-import java.nio.file.attribute.FileAttribute;
-import java.nio.file.attribute.PosixFileAttributeView;
-import java.nio.file.attribute.PosixFilePermission;
-import java.nio.file.attribute.PosixFilePermissions;
-import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
 import de.cubeisland.engine.core.Core;
 import de.cubeisland.engine.core.CubeEngine;
+import de.cubeisland.engine.core.filesystem.FileUtil.RecursiveDirectoryDeleter;
 import de.cubeisland.engine.core.util.Cleanable;
 import org.slf4j.Logger;
-
-import static java.nio.file.attribute.PosixFilePermissions.asFileAttribute;
-import static java.nio.file.attribute.PosixFilePermissions.fromString;
 
 /**
  * Manages all the configurations of the CubeEngine.
@@ -62,8 +49,6 @@ public class FileManager implements Cleanable
     private final Path tempPath;
     private ConcurrentMap<Path, Resource> fileSources;
 
-    private static FileAttribute<Set<PosixFilePermission>> FILE_PERMISSIONS = asFileAttribute(fromString("rwxrwxr-x"));
-
     public FileManager(Core core, Path dataPath) throws IOException
     {
         assert dataPath != null : "The CubeEngine plugin folder must not be null!";
@@ -71,17 +56,17 @@ public class FileManager implements Cleanable
 
         this.logger = core.getLog();
 
-        this.dataPath = Files.createDirectories(dataPath, FILE_PERMISSIONS);
+        this.dataPath = Files.createDirectories(dataPath, FileUtil.DEFAULT_FOLDER_PERMS);
 
         final Path linkSource = Paths.get(System.getProperty("user.dir", "."), CubeEngine.class.getSimpleName());
 
-        this.languagePath = Files.createDirectories(dataPath.resolve("language"), FILE_PERMISSIONS);
+        this.languagePath = Files.createDirectories(dataPath.resolve("language"), FileUtil.DEFAULT_FOLDER_PERMS);
 
-        this.logPath = Files.createDirectories(dataPath.resolve("log"), FILE_PERMISSIONS);
+        this.logPath = Files.createDirectories(dataPath.resolve("log"), FileUtil.DEFAULT_FOLDER_PERMS);
 
-        this.modulesPath = Files.createDirectories(dataPath.resolve("modules"), FILE_PERMISSIONS);
+        this.modulesPath = Files.createDirectories(dataPath.resolve("modules"), FileUtil.DEFAULT_FOLDER_PERMS);
 
-        this.tempPath = Files.createDirectories(dataPath.resolve("language"), FILE_PERMISSIONS);
+        this.tempPath = Files.createDirectories(dataPath.resolve("language"), FileUtil.DEFAULT_FOLDER_PERMS);
 
         this.fileSources = new ConcurrentHashMap<>();
 
@@ -92,46 +77,10 @@ public class FileManager implements Cleanable
         catch (IOException ignored)
         {}
 
-        if (!hideFile(this.tempPath))
+        if (!FileUtil.hideFile(this.tempPath))
         {
             logger.info("Hiding the temp folder failed! This can be ignored!");
         }
-    }
-
-    public static boolean hideFile(Path path)
-    {
-        try
-        {
-            DosFileAttributeView attributeView = Files.getFileAttributeView(path, DosFileAttributeView.class);
-            attributeView.setHidden(true);
-            return true;
-        }
-        catch (IOException e)
-        {
-            return false;
-        }
-    }
-
-    private static final Set<PosixFilePermission> READ_ONLY_PERMISSION = PosixFilePermissions.fromString("--r--r---");
-
-    public static boolean setReadOnly(Path file)
-    {
-        try
-        {
-            Files.getFileAttributeView(file, PosixFileAttributeView.class).setPermissions(READ_ONLY_PERMISSION);
-        }
-        catch (Exception ignore)
-        {
-            try
-            {
-                Files.getFileAttributeView(file, DosFileAttributeView.class).setReadOnly(true);
-            }
-            catch (Exception  ignored)
-            {
-                return false;
-            }
-        }
-        return true;
     }
 
     /**
@@ -208,38 +157,6 @@ public class FileManager implements Cleanable
         }
 
         logger.debug("Temporary folder cleared!");
-    }
-
-    private static final RecursiveDirectoryDeleter TREE_WALKER = new RecursiveDirectoryDeleter();
-
-    public static void deleteRecursive(Path file) throws IOException
-    {
-        if (file == null)
-        {
-            return;
-        }
-        if (Files.isRegularFile(file))
-        {
-            Files.delete(file);
-        }
-        else
-        {
-            Files.walkFileTree(file, TREE_WALKER);
-        }
-    }
-
-    public static void copy(ReadableByteChannel in, WritableByteChannel out) throws IOException
-    {
-        final ByteBuffer buffer = ByteBuffer.allocateDirect(1024 * 4);
-        int bytesRead;
-
-
-        while (in.read(buffer) >= 0 || buffer.position() > 0)
-        {
-            buffer.flip();
-            out.write(buffer);
-            buffer.compact();
-        }
     }
 
     private static String getSaneSource(Resource resource)
@@ -342,7 +259,7 @@ public class FileManager implements Cleanable
             {
                 try (FileChannel fileChannel = FileChannel.open(file))
                 {
-                    FileManager.copy(sourceChannel, fileChannel);
+                    FileUtil.copy(sourceChannel, fileChannel);
                 }
                 catch (IOException e)
                 {
@@ -376,33 +293,5 @@ public class FileManager implements Cleanable
     public void clean()
     {
         this.clearTempDir();
-    }
-
-    public static class RecursiveDirectoryDeleter extends SimpleFileVisitor<Path>
-    {
-        @Override
-        public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException
-        {
-            Files.delete(file);
-            return FileVisitResult.CONTINUE;
-        }
-
-        @Override
-        public FileVisitResult visitFileFailed(Path file, IOException exc) throws IOException
-        {
-            Files.delete(file);
-            return FileVisitResult.CONTINUE;
-        }
-
-        @Override
-        public FileVisitResult postVisitDirectory(Path dir, IOException exc) throws IOException
-        {
-            if (exc != null)
-            {
-                throw exc;
-            }
-            Files.delete(dir);
-            return FileVisitResult.CONTINUE;
-        }
     }
 }
