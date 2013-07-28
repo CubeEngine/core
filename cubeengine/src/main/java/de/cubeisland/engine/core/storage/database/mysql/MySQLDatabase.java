@@ -142,8 +142,10 @@ public class MySQLDatabase extends AbstractPooledDatabase
         {
             ResultSet resultSet = this.query("SELECT table_comment \n" +
                                              "FROM INFORMATION_SCHEMA.TABLES \n" +
-                                             "WHERE table_schema=" + this.config.database +
-                                             "\nAND table_name=" + tableName);
+                                             "WHERE table_schema = ?" +
+                                             "\nAND table_name = ?",
+                                             MySQLDatabase.prepareString(this.config.database),
+                                             MySQLDatabase.prepareString(this.config.tablePrefix + tableName));
             if (resultSet.next())
             {
                 Version dbVersion = Version.fromString(resultSet.getString("table_comment"));
@@ -163,8 +165,8 @@ public class MySQLDatabase extends AbstractPooledDatabase
                     {
                         dbUpdater.value().newInstance().update(this, modelClass, dbVersion, version);
                         this.core.getLog().info(tableName + " got updated to " + version.toString());
-                        this.execute("ALTER TABLE " + tableName + " COMMENT = " + MySQLDatabase.prepareString(version.toString()));
                     }
+                    this.execute("ALTER TABLE ? COMMENT = ?;", prepareTableName(tableName) , prepareString(version.toString()));
                 }
                 return true;
             }
@@ -202,13 +204,13 @@ public class MySQLDatabase extends AbstractPooledDatabase
                     }
                 }
             }
-            String tableName = MySQLDatabase.prepareTableName(table.name());
-            if (this.updateTableStructure(version, tableName, entityClass)) return;
+            if (this.updateTableStructure(version, table.name(), entityClass)) return;
+            this.core.getLog().debug("Creating table {} for {}", table.name(), entityClass.getName());
             StringBuilder builder = new StringBuilder("CREATE");
             // TODO TEMPORARY and alternativ name for temp-table (or just append _temp)
             builder.append(" TABLE");
             builder.append(" IF NOT EXISTS "); // TODO
-            builder.append(tableName).append("\n(");
+            builder.append(prepareTableName(table.name())).append("\n(");
             boolean first = true;
             boolean autoIncrement = false;
             for (Field field : entityClass.getDeclaredFields())
@@ -266,7 +268,7 @@ public class MySQLDatabase extends AbstractPooledDatabase
             if (autoIncrement) builder.append("AUTO_INCREMENT 1,\n");
             builder.append("ENGINE InnoDB,\n");
             builder.append("COLLATE utf8_unicode_ci,\n");
-            builder.append("COMMENT ").append(MySQLDatabase.prepareString(version.toString()));
+            builder.append("COMMENT ").append(prepareString(version.toString()));
             // TODO multi unique uses UniqueConstraint in table annotation
             try
             {
@@ -371,7 +373,7 @@ public class MySQLDatabase extends AbstractPooledDatabase
 
     static String getComment(Attribute attribute)
     {
-        return attribute.comment().isEmpty() ? "" : " COMMENT " + MySQLDatabase.prepareString(attribute.comment());
+        return attribute.comment().isEmpty() ? "" : " COMMENT " + prepareString(attribute.comment());
     }
 
     static String getKeyType(Id id, Column column)
@@ -389,11 +391,11 @@ public class MySQLDatabase extends AbstractPooledDatabase
     {
         if (column != null && !column.name().isEmpty())
         {
-            return MySQLDatabase.prepareColumnName(column.name());
+            return prepareColumnName(column.name());
         }
         else
         {
-            return MySQLDatabase.prepareColumnName(field.getName());
+            return prepareColumnName(field.getName());
         }
     }
 
@@ -474,7 +476,7 @@ public class MySQLDatabase extends AbstractPooledDatabase
         public TableName getTableName(Class<?> beanClass)
         {
             TableName tableName = super.getTableName(beanClass);
-            return new TableName(tableName.getCatalog(), tableName.getSchema(), MySQLDatabase.prepareTableName(tableName.getName()));
+            return new TableName(tableName.getCatalog(), tableName.getSchema(), prepareTableName(tableName.getName()));
         }
     }
 

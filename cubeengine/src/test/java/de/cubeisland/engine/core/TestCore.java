@@ -150,12 +150,6 @@ public class TestCore implements Core
     }
 
     @Override
-    public TableManager getTableManger()
-    {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    @Override
     public PermissionManager getPermissionManager()
     {
         throw new UnsupportedOperationException("Not supported yet.");

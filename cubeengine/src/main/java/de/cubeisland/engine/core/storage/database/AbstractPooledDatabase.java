@@ -163,7 +163,7 @@ public abstract class AbstractPooledDatabase implements Database
     {
         try (Connection connection = this.getConnection())
         {
-            return this.createAndBindValues(query, params, connection).execute();
+            return this.createAndBindValues(connection, query, params).execute();
         }
         catch (SQLException e)
         {
