@@ -17,51 +17,45 @@
  */
 package de.cubeisland.engine.core.world;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Table;
+
 import org.bukkit.World;
 
-import de.cubeisland.engine.core.storage.Model;
 import de.cubeisland.engine.core.storage.database.AttrType;
 import de.cubeisland.engine.core.storage.database.Attribute;
 import de.cubeisland.engine.core.storage.database.Index;
 import de.cubeisland.engine.core.storage.database.Index.IndexType;
 import de.cubeisland.engine.core.storage.database.SingleKeyEntity;
 
+
+@Entity
+@Table(name = "worlds")
+// TODO change from String UUID -> 2 Longs
+// TODO updater
 @SingleKeyEntity(tableName = "worlds", primaryKey = "key", autoIncrement = true,
 indices = @Index(value = IndexType.UNIQUE, fields = "worldUUID"))
-public class WorldModel implements Model<Long>
+public class WorldEntity
 {
+    @Id
+    @Column(name = "key") // TODO change to Id
     @Attribute(type = AttrType.INT, unsigned = true)
-    public Long key = -1L;
-    @Attribute(type = AttrType.VARCHAR, length = 64, notnull = false)
+    public Long id = -1L;
+    @Column(length = 64)
+    @Attribute(type = AttrType.VARCHAR)
     public String worldName;
-    @Attribute(type = AttrType.VARCHAR, length = 64, notnull = false)
+    @Column(length = 64, unique = true)
+    @Attribute(type = AttrType.VARCHAR)
     public String worldUUID;
 
-    public WorldModel()
+    public WorldEntity()
     {}
 
-    public WorldModel(World world)
+    public WorldEntity(World world)
     {
         this.worldName = world.getName();
         this.worldUUID = world.getUID().toString();
-    }
-
-    public WorldModel(long key, String worldName, String uuid)
-    {
-        this.key = key;
-        this.worldName = worldName;
-        this.worldUUID = uuid;
-    }
-
-    @Override
-    public Long getId()
-    {
-        return this.key;
-    }
-
-    @Override
-    public void setId(Long id)
-    {
-        this.key = id;
     }
 }

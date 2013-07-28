@@ -36,7 +36,6 @@ import de.cubeisland.engine.core.util.Version;
     {@NamedUpdate(name = "clearPw", update = "UPDATE user SET passwd = :passwd"),
      @NamedUpdate(name = "cleanUp", update = "DELETE FROM user WHERE lastseen < :lastseen AND NOT nogc"),
     }
-
 )
 public class UserEntity
 {

@@ -32,8 +32,7 @@ import org.bukkit.WorldCreator;
 import de.cubeisland.engine.core.CubeEngine;
 import de.cubeisland.engine.core.filesystem.FileManager;
 import de.cubeisland.engine.core.world.AbstractWorldManager;
-import de.cubeisland.engine.core.world.WorldModel;
-
+import de.cubeisland.engine.core.world.WorldEntity;
 import gnu.trove.set.hash.THashSet;
 
 public class BukkitWorldManager extends AbstractWorldManager
@@ -49,26 +48,26 @@ public class BukkitWorldManager extends AbstractWorldManager
             @Override
             public void run()
             {
-                Collection<WorldModel> models = storage.getAll();
+                Collection<WorldEntity> entities = ebean.find(WorldEntity.class).findList();
                 List<World> loadedWorlds = server.getWorlds();
-                for (WorldModel model : models)
+                for (WorldEntity entity : entities)
                 {
-                    World world = server.getWorld(UUID.fromString(model.worldUUID));
+                    World world = server.getWorld(UUID.fromString(entity.worldUUID));
                     if (loadedWorlds.contains(world))
                     {
                         loadedWorlds.remove(world);
-                        worlds.put(world.getName(), model);
-                        worldIds.put(model.key, world);
+                        worlds.put(world.getName(), entity);
+                        worldIds.put(entity.id, world);
                     }
                 }
                 if (!loadedWorlds.isEmpty()) // new worlds?
                 {
                     for (World world : loadedWorlds)
                     {
-                        WorldModel model = new WorldModel(world);
-                        storage.store(model);
-                        worlds.put(world.getName(), model);
-                        worldIds.put(model.key, world);
+                        WorldEntity entity = new WorldEntity(world);
+                        ebean.save(entity);
+                        worlds.put(world.getName(), entity);
+                        worldIds.put(entity.id, world);
                     }
                 }
             }
@@ -134,6 +133,6 @@ public class BukkitWorldManager extends AbstractWorldManager
     {
         assert CubeEngine.isMainThread() : "Must be executed from main thread!";
 
-        return new THashSet<World>(this.server.getWorlds());
+        return new THashSet<>(this.server.getWorlds());
     }
 }

@@ -140,12 +140,12 @@ public class MySQLDatabase extends AbstractPooledDatabase
     {
         try
         {
-            ResultSet resultSet = this.query("SELECT table_comment \n" +
+            ResultSet resultSet = this.query("SELECT table_name, table_comment \n" +
                                              "FROM INFORMATION_SCHEMA.TABLES \n" +
                                              "WHERE table_schema = ?" +
                                              "\nAND table_name = ?",
-                                             MySQLDatabase.prepareString(this.config.database),
-                                             MySQLDatabase.prepareString(this.config.tablePrefix + tableName));
+                                             this.config.database,
+                                             this.config.tablePrefix + tableName);
             if (resultSet.next())
             {
                 Version dbVersion = Version.fromString(resultSet.getString("table_comment"));
@@ -166,7 +166,7 @@ public class MySQLDatabase extends AbstractPooledDatabase
                         dbUpdater.value().newInstance().update(this, modelClass, dbVersion, version);
                         this.core.getLog().info(tableName + " got updated to " + version.toString());
                     }
-                    this.execute("ALTER TABLE ? COMMENT = ?;", prepareTableName(tableName) , prepareString(version.toString()));
+                    this.execute("ALTER TABLE " + prepareTableName(tableName) + " COMMENT = ?;", version.toString());
                 }
                 return true;
             }
@@ -273,7 +273,7 @@ public class MySQLDatabase extends AbstractPooledDatabase
             try
             {
                 this.execute(builder.toString());
-                System.out.print("\n" + builder.toString());
+//                System.out.print("\n" + builder.toString());
             }
             catch (SQLException e)
             {

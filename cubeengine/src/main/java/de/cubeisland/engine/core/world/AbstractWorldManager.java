@@ -24,23 +24,25 @@ import java.util.Map;
 import org.bukkit.World;
 import org.bukkit.generator.ChunkGenerator;
 
+import com.avaje.ebean.EbeanServer;
 import de.cubeisland.engine.core.Core;
 import de.cubeisland.engine.core.module.Module;
-
 import gnu.trove.map.hash.THashMap;
 import gnu.trove.map.hash.TLongObjectHashMap;
 
 public abstract class AbstractWorldManager implements WorldManager
 {
-    protected final WorldStorage storage;
-    protected final Map<String, WorldModel> worlds;
+    protected final Map<String, WorldEntity> worlds;
     protected final TLongObjectHashMap<World> worldIds;
     private final Map<String, Map<String, ChunkGenerator>> generatorMap;
 
+    protected EbeanServer ebean;
+
     public AbstractWorldManager(Core core)
     {
-        this.storage = new WorldStorage(core.getDB());
-        this.worlds = new THashMap<String, WorldModel>();
+        core.getDB().registerEntity(WorldEntity.class);
+        this.ebean = core.getDB().getEbeanServer();
+        this.worlds = new THashMap<String, WorldEntity>();
         this.worldIds = new TLongObjectHashMap<World>();
         this.generatorMap = new THashMap<String, Map<String, ChunkGenerator>>();
     }
@@ -51,31 +53,31 @@ public abstract class AbstractWorldManager implements WorldManager
         {
             throw new IllegalArgumentException("the world given is null!");
         }
-        WorldModel model = this.worlds.get(world.getName());
-        if (model == null)
+        WorldEntity worldEntity = this.worlds.get(world.getName());
+        if (worldEntity == null)
         {
-            model = this.storage.get(world);
-            if (model == null)
+            worldEntity = this.ebean.find(WorldEntity.class).where().eq("worldUUID", world.getUID().toString()).findUnique();
+            if (worldEntity == null)
             {
-                model = new WorldModel(world);
-                this.storage.store(model);
+                worldEntity = new WorldEntity(world);
+                this.ebean.save(worldEntity);
             }
-            this.worlds.put(world.getName(), model);
-            this.worldIds.put(model.key, world);
+            this.worlds.put(world.getName(), worldEntity);
+            this.worldIds.put(worldEntity.id, world);
         }
-        return model.key;
+        return worldEntity.id;
     }
 
     public synchronized Long getWorldId(String name)
     {
-        WorldModel model = this.worlds.get(name);
+        WorldEntity model = this.worlds.get(name);
         if (model == null)
         {
             World world = this.getWorld(name);
             if (world == null) return null;
             return this.getWorldId(world);
         }
-        return model.key;
+        return model.id;
     }
 
     public synchronized long[] getAllWorldIds()
