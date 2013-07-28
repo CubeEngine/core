@@ -167,7 +167,7 @@ public class DoorCommand
         Material type = block.getType();
         BlockState state = block.getState();
 
-        if(!this.isOpenable(state))
+        if(!(state.getData() instanceof Openable))
         {
             return false;
         }
@@ -189,24 +189,5 @@ public class DoorCommand
         }
         state.update();
         return true;
-    }
-
-    /**
-     * This method checks whether a Block is openable.
-     *
-     * @param state - The state of the block.
-     * @return whether the meterialdate of the block implements openable or not.
-     */
-    public boolean isOpenable(BlockState state)
-    {
-        Class<?>[] interfaces = state.getData().getClass().getInterfaces();
-        for(int i = 0; i < interfaces.length; i++)
-        {
-            if(interfaces[i] == Openable.class)
-            {
-                return true;
-            }
-        }
-        return false;
     }
 }

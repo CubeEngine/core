@@ -329,17 +329,23 @@ public class PlayerCommands
         if (context.hasArg(0))
         {
             String mode = context.getString(0);
-            if (mode.equals("survival") || mode.equals("s") || mode.equals("0"))
+            switch (mode)
             {
-                user.setGameMode(GameMode.SURVIVAL);
-            }
-            else if (mode.equals("creative") || mode.equals("c") || mode.equals("1"))
-            {
-                user.setGameMode(GameMode.CREATIVE);
-            }
-            else if (mode.equals("adventure") || mode.equals("a")|| mode.equals("2"))
-            {
-                user.setGameMode(GameMode.ADVENTURE);
+                case "survival":
+                case "s":
+                case "0":
+                    user.setGameMode(GameMode.SURVIVAL);
+                    break;
+                case "creative":
+                case "c":
+                case "1":
+                    user.setGameMode(GameMode.CREATIVE);
+                    break;
+                case "adventure":
+                case "a":
+                case "2":
+                    user.setGameMode(GameMode.ADVENTURE);
+                    break;
             }
         }
         else

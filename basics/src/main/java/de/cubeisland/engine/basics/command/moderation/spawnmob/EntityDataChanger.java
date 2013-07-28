@@ -274,18 +274,15 @@ public class EntityDataChanger<EntityInterface>
                                                      String match = Match.string().matchString(input, "tiny", "small", "big");
                                                      if (match != null)
                                                      {
-                                                        if (match.equals("tiny"))
-                                                        {
-                                                            return 0;
-                                                        }
-                                                        else if (match.equals("small"))
-                                                        {
-                                                            return 2;
-                                                        }
-                                                        else if (match.equals("big"))
-                                                        {
-                                                            return 4;
-                                                        }
+                                                         switch (match)
+                                                         {
+                                                             case "tiny":
+                                                                 return 0;
+                                                             case "small":
+                                                                 return 2;
+                                                             case "big":
+                                                                 return 4;
+                                                         }
                                                      }
                                                      try
                                                      {
