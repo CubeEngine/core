@@ -34,13 +34,13 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-import com.avaje.ebean.EbeanServer;
 import com.avaje.ebean.Expr;
 import de.cubeisland.engine.core.Core;
 import de.cubeisland.engine.core.command.CommandSender;
 import de.cubeisland.engine.core.filesystem.FileManager;
 import de.cubeisland.engine.core.module.Module;
 import de.cubeisland.engine.core.permission.Permission;
+import de.cubeisland.engine.core.storage.database.Database;
 import de.cubeisland.engine.core.storage.database.mysql.MySQLDatabase;
 import de.cubeisland.engine.core.util.ChatFormat;
 import de.cubeisland.engine.core.util.StringUtils;
@@ -62,12 +62,12 @@ public abstract class AbstractUserManager implements UserManager
     protected MessageDigest messageDigest;
     private Random random;
 
-    protected EbeanServer ebean;
+    protected Database database;
 
     public AbstractUserManager(final Core core)
     {
         core.getDB().registerEntity(UserEntity.class);
-        this.ebean = core.getDB().getEbeanServer();
+        this.database = core.getDB();
 
         this.core = core;
 
@@ -118,30 +118,30 @@ public abstract class AbstractUserManager implements UserManager
             password += this.salt;
             password += user.getEntity().getFirstseen().toString();
             user.getEntity().setPasswd(this.messageDigest.digest(password.getBytes()));
-            this.ebean.update(user.getEntity());
+            this.database.getEbeanServer().update(user.getEntity());
         }
     }
 
     public void resetPassword(User user)
     {
         user.getEntity().setPasswd(null);
-        this.ebean.update(user.getEntity());
+        this.database.getEbeanServer().update(user.getEntity());
     }
 
     public void resetAllPasswords()
     {
-        this.ebean.createUpdate(UserEntity.class, "UPDATE :table SET passwd = :passwd")
+        this.database.getEbeanServer().createUpdate(UserEntity.class, "UPDATE :table SET passwd = :passwd")
                 .setParameter("passwd", null)
                 .setParameter("table", MySQLDatabase.prepareTableName("user")).execute();
         for (User user : this.getLoadedUsers())
         {
-            this.ebean.refresh(user.getEntity());
+            this.database.getEbeanServer().refresh(user.getEntity());
         }
     }
 
     public void removeUser(final User user)
     {
-        this.ebean.delete(user.getEntity());
+        this.database.getEbeanServer().delete(user.getEntity());
         this.removeCachedUser(user);
     }
 
@@ -170,7 +170,7 @@ public abstract class AbstractUserManager implements UserManager
         {
             return user;
         }
-        UserEntity entity = this.ebean.find(UserEntity.class, id);
+        UserEntity entity = this.database.getEbeanServer().find(UserEntity.class, id);
         if (entity == null)
         {
             return null;
@@ -205,7 +205,7 @@ public abstract class AbstractUserManager implements UserManager
 
     protected synchronized User loadUser(String name)
     {
-        UserEntity entity = this.ebean.find(UserEntity.class).where().eq("player", name).findUnique();
+        UserEntity entity = this.database.getEbeanServer().find(UserEntity.class).where().eq("player", name).findUnique();
         if (entity != null)
         {
             User user = new User(entity);
@@ -229,7 +229,7 @@ public abstract class AbstractUserManager implements UserManager
             return user;
         }
         user = new User(this.core, name);
-        this.ebean.save(user.getEntity());
+        this.database.getEbeanServer().save(user.getEntity());
         this.cacheUser(user);
 
         return user;
@@ -460,7 +460,7 @@ public abstract class AbstractUserManager implements UserManager
     public Set<Long> getAllIds()
     {
         Set<Long> ids = new HashSet<>();
-        for (Object o : this.ebean.find(UserEntity.class).findIds())
+        for (Object o : this.database.getEbeanServer().find(UserEntity.class).findIds())
         {
             ids.add((Long)o);
         }
@@ -499,7 +499,7 @@ public abstract class AbstractUserManager implements UserManager
     public void clean()
     {
         Timestamp time = new Timestamp(System.currentTimeMillis() - core.getConfiguration().userManagerCleanupDatabase.toMillis());
-        this.ebean.delete(UserEntity.class, this.ebean.find(UserEntity.class).where().and(Expr.le("lasteen", time),Expr.eq("nogc",false)).findIds());
+        this.database.getEbeanServer().delete(UserEntity.class, this.database.getEbeanServer().find(UserEntity.class).where().and(Expr.le("lasteen", time),Expr.eq("nogc",false)).findIds());
     }
 
     protected final class DefaultAttachment

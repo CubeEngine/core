@@ -24,9 +24,9 @@ import java.util.Map;
 import org.bukkit.World;
 import org.bukkit.generator.ChunkGenerator;
 
-import com.avaje.ebean.EbeanServer;
 import de.cubeisland.engine.core.Core;
 import de.cubeisland.engine.core.module.Module;
+import de.cubeisland.engine.core.storage.database.Database;
 import gnu.trove.map.hash.THashMap;
 import gnu.trove.map.hash.TLongObjectHashMap;
 
@@ -36,12 +36,11 @@ public abstract class AbstractWorldManager implements WorldManager
     protected final TLongObjectHashMap<World> worldIds;
     private final Map<String, Map<String, ChunkGenerator>> generatorMap;
 
-    protected EbeanServer ebean;
+    protected Database database;
 
     public AbstractWorldManager(Core core)
     {
         core.getDB().registerEntity(WorldEntity.class);
-        this.ebean = core.getDB().getEbeanServer();
         this.worlds = new THashMap<>();
         this.worldIds = new TLongObjectHashMap<>();
         this.generatorMap = new THashMap<>();
@@ -56,11 +55,11 @@ public abstract class AbstractWorldManager implements WorldManager
         WorldEntity worldEntity = this.worlds.get(world.getName());
         if (worldEntity == null)
         {
-            worldEntity = this.ebean.find(WorldEntity.class).where().eq("worldUUID", world.getUID().toString()).findUnique();
+            worldEntity = this.database.getEbeanServer().find(WorldEntity.class).where().eq("worldUUID", world.getUID().toString()).findUnique();
             if (worldEntity == null)
             {
                 worldEntity = new WorldEntity(world);
-                this.ebean.save(worldEntity);
+                this.database.getEbeanServer().save(worldEntity);
             }
             this.worlds.put(world.getName(), worldEntity);
             this.worldIds.put(worldEntity.getId(), world);

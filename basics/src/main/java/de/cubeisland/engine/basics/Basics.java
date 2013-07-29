@@ -71,6 +71,14 @@ public class Basics extends Module
     private LagTimer lagTimer;
 
     @Override
+    public void onLoad()
+    {
+        this.getCore().getDB().registerEntity(BasicsUserEntity.class);
+        this.getCore().getDB().registerEntity(Mail.class);
+        this.getCore().getDB().registerEntity(IgnoreList.class);
+    }
+
+    @Override
     public void onEnable()
     {
         Profiler.startProfiling("basicsEnable");
@@ -78,12 +86,6 @@ public class Basics extends Module
 		final Database db = this.getCore().getDB();
         final CommandManager cm = this.getCore().getCommandManager();
         final EventManager em = this.getCore().getEventManager();
-
-        this.getLog().trace("{} ms - register entities", Profiler
-            .getCurrentDelta("basicsEnable", TimeUnit.MILLISECONDS));
-        this.getCore().getDB().registerEntity(BasicsUserEntity.class);
-        this.getCore().getDB().registerEntity(Mail.class);
-        this.getCore().getDB().registerEntity(IgnoreList.class);
         this.getLog().trace("{} ms - Basics.Permission", Profiler.getCurrentDelta("basicsEnable", TimeUnit.MILLISECONDS));
         new BasicsPerm(this);
         this.getCore().getUserManager().addDefaultAttachment(BasicsAttachment.class, this);

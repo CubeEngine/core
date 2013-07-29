@@ -64,7 +64,7 @@ public class MySQLDatabase extends AbstractPooledDatabase
     private static String tableprefix;
 
     private final BoneCPDataSource dataSource;
-    private final EbeanServer ebeanServer;
+    private EbeanServer ebeanServer;
     private final ServerConfig serverConfig;
 
     public MySQLDatabase(Core core, MySQLDatabaseConfiguration config) throws SQLException
@@ -88,11 +88,14 @@ public class MySQLDatabase extends AbstractPooledDatabase
         dataSource.setPartitionCount(1);
 
         tableprefix = this.config.tablePrefix;
-
         serverConfig = new ServerConfig();
         serverConfig.setDataSource(dataSource);
         serverConfig.setName("cubeengine");
         serverConfig.setNamingConvention(new NamingConvention());
+    }
+
+    public void enable()
+    {
         ebeanServer = EbeanServerFactory.create(serverConfig);
     }
 
@@ -159,6 +162,7 @@ public class MySQLDatabase extends AbstractPooledDatabase
      */
     public void registerEntity(Class<?> entityClass)
     {
+        this.serverConfig.addClass(entityClass);
         if (entityClass.isAnnotationPresent(Entity.class) && entityClass.isAnnotationPresent(Table.class))
         {
             Table table = entityClass.getAnnotation(Table.class);
@@ -461,6 +465,7 @@ public class MySQLDatabase extends AbstractPooledDatabase
     @Override
     public EbeanServer getEbeanServer()
     {
+        if (ebeanServer == null) throw new IllegalStateException("The Ebean-Server is not accessible at this point!");
         return this.ebeanServer;
     }
 

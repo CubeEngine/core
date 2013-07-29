@@ -48,7 +48,7 @@ public class BukkitWorldManager extends AbstractWorldManager
             @Override
             public void run()
             {
-                Collection<WorldEntity> entities = ebean.find(WorldEntity.class).findList();
+                Collection<WorldEntity> entities = database.getEbeanServer().find(WorldEntity.class).findList();
                 List<World> loadedWorlds = server.getWorlds();
                 for (WorldEntity entity : entities)
                 {
@@ -65,7 +65,7 @@ public class BukkitWorldManager extends AbstractWorldManager
                     for (World world : loadedWorlds)
                     {
                         WorldEntity entity = new WorldEntity(world);
-                        ebean.save(entity);
+                        database.getEbeanServer().save(entity);
                         worlds.put(world.getName(), entity);
                         worldIds.put(entity.getId(), world);
                     }

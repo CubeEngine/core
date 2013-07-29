@@ -98,7 +98,7 @@ public class BukkitUserManager extends AbstractUserManager
             String foundUser = Match.string().matchString(name, onlinePlayerList);
             if (foundUser == null)
             {
-                UserEntity entity = this.ebean.find(UserEntity.class).where().eq("player", name).findUnique();
+                UserEntity entity = this.database.getEbeanServer().find(UserEntity.class).where().eq("player", name).findUnique();
                 //Looking up saved users
                 if (entity != null)
                 {
@@ -176,7 +176,7 @@ public class BukkitUserManager extends AbstractUserManager
                 {
                     scheduledForRemoval.remove(user.getName());
                     user.getEntity().setLastseen(new Timestamp(System.currentTimeMillis()));
-                    ebean.update(user.getEntity());
+                    database.getEbeanServer().update(user.getEntity());
                     if (!user.isOnline())
                     {
                         return;

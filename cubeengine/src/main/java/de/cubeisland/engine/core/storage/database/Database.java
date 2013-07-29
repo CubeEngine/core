@@ -264,4 +264,6 @@ public interface Database
     public void registerEntity(Class<?> modelClass);
 
     public DatabaseConfiguration getDatabaseConfig();
+
+    void enable();
 }
