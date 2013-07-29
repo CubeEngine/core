@@ -26,29 +26,24 @@ import org.bukkit.World;
 
 import de.cubeisland.engine.core.storage.database.AttrType;
 import de.cubeisland.engine.core.storage.database.Attribute;
-import de.cubeisland.engine.core.storage.database.Index;
-import de.cubeisland.engine.core.storage.database.Index.IndexType;
-import de.cubeisland.engine.core.storage.database.SingleKeyEntity;
 
 
 @Entity
 @Table(name = "worlds")
 // TODO change from String UUID -> 2 Longs
 // TODO updater
-@SingleKeyEntity(tableName = "worlds", primaryKey = "key", autoIncrement = true,
-indices = @Index(value = IndexType.UNIQUE, fields = "worldUUID"))
 public class WorldEntity
 {
     @Id
     @Column(name = "key") // TODO change to Id
     @Attribute(type = AttrType.INT, unsigned = true)
-    public Long id = -1L;
+    private Long id = -1L;
     @Column(length = 64)
     @Attribute(type = AttrType.VARCHAR)
-    public String worldName;
+    private String worldName;
     @Column(length = 64, unique = true)
     @Attribute(type = AttrType.VARCHAR)
-    public String worldUUID;
+    private String worldUUID;
 
     public WorldEntity()
     {}
@@ -57,5 +52,35 @@ public class WorldEntity
     {
         this.worldName = world.getName();
         this.worldUUID = world.getUID().toString();
+    }
+
+    public Long getId()
+    {
+        return id;
+    }
+
+    public void setId(Long id)
+    {
+        this.id = id;
+    }
+
+    public String getWorldName()
+    {
+        return worldName;
+    }
+
+    public void setWorldName(String worldName)
+    {
+        this.worldName = worldName;
+    }
+
+    public String getWorldUUID()
+    {
+        return worldUUID;
+    }
+
+    public void setWorldUUID(String worldUUID)
+    {
+        this.worldUUID = worldUUID;
     }
 }

@@ -19,7 +19,6 @@ package de.cubeisland.engine.test.database;
 
 import de.cubeisland.engine.core.storage.SingleKeyStorage;
 import de.cubeisland.engine.core.storage.database.Database;
-import de.cubeisland.engine.core.storage.database.DatabaseUpdater;
 
 public class TestManager extends SingleKeyStorage<Long, TestModel>
 {

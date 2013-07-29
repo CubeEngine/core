@@ -17,12 +17,15 @@
  */
 package de.cubeisland.engine.basics.storage;
 
+import java.sql.Timestamp;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.ManyToOne;
+import javax.persistence.Id;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
+import com.avaje.ebean.EbeanServer;
 import de.cubeisland.engine.core.storage.database.AttrType;
 import de.cubeisland.engine.core.storage.database.Attribute;
 import de.cubeisland.engine.core.user.User;
@@ -30,48 +33,68 @@ import de.cubeisland.engine.core.user.UserEntity;
 import de.cubeisland.engine.core.util.Version;
 
 @Entity
-@Table(name = "ignorelist")
-public class IgnoreList
+@Table(name = "basicuser")
+public class BasicsUserEntity
 {
     @javax.persistence.Version
     static final Version version = new Version(1);
 
-    @Column(name = "key")
-    @ManyToOne(cascade = {CascadeType.REFRESH, CascadeType.REMOVE})
+    @Id
+    @Column(name = "key") // TODO change to Id
+    @OneToOne(cascade = {CascadeType.REFRESH, CascadeType.REMOVE})
     @Attribute(type = AttrType.INT, unsigned = true)
-    public UserEntity userEntity;
+    private UserEntity entity; // User Key
+    @Column()
+    @Attribute(type = AttrType.TIMESTAMP)
+    private Timestamp muted;
     @Column(nullable = false)
-    @ManyToOne(cascade = {CascadeType.REFRESH, CascadeType.REMOVE})
-    @Attribute(type = AttrType.INT, unsigned = true)
-    public UserEntity ignore;
+    @Attribute(type = AttrType.BOOLEAN)
+    private boolean godMode = false;
 
-    public IgnoreList()
+    public BasicsUserEntity()
+    {}
+
+    public BasicsUserEntity(User user)
     {
+        this.entity = user.getEntity();
     }
 
-    public IgnoreList(User user, User ignore)
+    public void update(EbeanServer ebean)
     {
-        this.userEntity = user.getEntity();
-        this.ignore = ignore.getEntity();
+        if (this.muted != null && this.muted.getTime() < System.currentTimeMillis())
+        {
+            this.muted = null; // remove muted information as it is no longer needed
+        }
+        ebean.update(this);
     }
 
-    public UserEntity getUserEntity()
+    public UserEntity getEntity()
     {
-        return userEntity;
+        return entity;
     }
 
-    public void setUserEntity(UserEntity userEntity)
+    public void setEntity(UserEntity entity)
     {
-        this.userEntity = userEntity;
+        this.entity = entity;
     }
 
-    public UserEntity getIgnore()
+    public Timestamp getMuted()
     {
-        return ignore;
+        return muted;
     }
 
-    public void setIgnore(UserEntity ignore)
+    public void setMuted(Timestamp muted)
     {
-        this.ignore = ignore;
+        this.muted = muted;
+    }
+
+    public boolean isGodMode()
+    {
+        return godMode;
+    }
+
+    public void setGodMode(boolean godMode)
+    {
+        this.godMode = godMode;
     }
 }

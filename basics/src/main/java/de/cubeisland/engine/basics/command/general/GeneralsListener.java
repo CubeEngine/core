@@ -29,13 +29,14 @@ import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.ItemStack;
 
-import de.cubeisland.engine.core.bukkit.AfterJoinEvent;
-import de.cubeisland.engine.core.user.User;
-import de.cubeisland.engine.core.util.matcher.Match;
 import de.cubeisland.engine.basics.Basics;
 import de.cubeisland.engine.basics.BasicsAttachment;
 import de.cubeisland.engine.basics.BasicsPerm;
-import de.cubeisland.engine.basics.storage.BasicUser;
+import de.cubeisland.engine.basics.BasicsUser;
+import de.cubeisland.engine.basics.storage.BasicsUserEntity;
+import de.cubeisland.engine.core.bukkit.AfterJoinEvent;
+import de.cubeisland.engine.core.user.User;
+import de.cubeisland.engine.core.util.matcher.Match;
 
 public class GeneralsListener implements Listener
 {
@@ -51,8 +52,8 @@ public class GeneralsListener implements Listener
     {
         if (event.getEntity() instanceof Player)
         {
-            BasicUser bUser = this.basics.getBasicUserManager().getBasicUser((Player)event.getEntity());
-            if (bUser.godMode)
+            BasicsUserEntity bUser = this.basics.getBasicsUser((Player)event.getEntity()).getbUEntity();
+            if (bUser.isGodMode())
             {
                 event.setCancelled(true);
             }
@@ -73,12 +74,12 @@ public class GeneralsListener implements Listener
     @EventHandler
     public void onLeave(PlayerQuitEvent event)
     {
-        BasicUser bUser = this.basics.getBasicUserManager().getBasicUser(event.getPlayer());
+        BasicsUserEntity bUser = this.basics.getBasicsUser(event.getPlayer()).getbUEntity();
         if (!BasicsPerm.COMMAND_GOD_KEEP.isAuthorized(event.getPlayer()))
         {
-            bUser.godMode = false;
+            bUser.setGodMode(false);
         }
-        this.basics.getBasicUserManager().update(bUser); //update godmode
+        bUser.update(this.basics.getCore().getDB().getEbeanServer());
         if (!BasicsPerm.COMMAND_GAMEMODE_KEEP.isAuthorized(event.getPlayer()))
         {
             event.getPlayer().setGameMode(Bukkit.getServer().getDefaultGameMode()); // reset gamemode to default on the server
@@ -88,12 +89,12 @@ public class GeneralsListener implements Listener
     @EventHandler
     public void onWorldChange(PlayerChangedWorldEvent event)
     {
-        BasicUser bUser = this.basics.getBasicUserManager().getBasicUser(event.getPlayer());
+        BasicsUserEntity bUser = this.basics.getBasicsUser(event.getPlayer()).getbUEntity();
         if (!BasicsPerm.COMMAND_GOD_KEEP.isAuthorized(event.getPlayer()))
         {
-            bUser.godMode = false;
+            bUser.setGodMode(false);
         }
-        this.basics.getBasicUserManager().update(bUser); //update godmode
+        bUser.update(this.basics.getCore().getDB().getEbeanServer());
         if (!BasicsPerm.COMMAND_GAMEMODE_KEEP.isAuthorized(event.getPlayer()))
         {
             event.getPlayer().setGameMode(Bukkit.getServer().getDefaultGameMode()); // reset gamemode to default on the server
@@ -103,14 +104,14 @@ public class GeneralsListener implements Listener
     @EventHandler
     public void onAfterJoin(AfterJoinEvent event)
     {
-        User user = basics.getCore().getUserManager().getExactUser(event.getPlayer().getName());
-        int amount = basics.getMailManager().countMail(user);
+        User user = this.basics.getCore().getUserManager().getExactUser(event.getPlayer().getName());
+        BasicsUser bUser = this.basics.getBasicsUser(user);
+        int amount = bUser.countMail();
         if (amount > 0)
         {
             user.sendTranslated("&aYou have &6%d &anew mails!\n&eUse &6/mail read &eto display them.", amount);
         }
-        BasicUser bUser = this.basics.getBasicUserManager().getBasicUser(user);
-        if (bUser.godMode == true)
+        if (bUser.getbUEntity().isGodMode())
         {
             user.setInvulnerable(true);
         }

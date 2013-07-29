@@ -32,6 +32,7 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageEvent;
 
+import de.cubeisland.engine.basics.storage.BasicsUserEntity;
 import de.cubeisland.engine.core.ban.UserBan;
 import de.cubeisland.engine.core.command.CommandContext;
 import de.cubeisland.engine.core.command.CommandSender;
@@ -48,7 +49,6 @@ import de.cubeisland.engine.core.util.time.Duration;
 import de.cubeisland.engine.basics.Basics;
 import de.cubeisland.engine.basics.BasicsAttachment;
 import de.cubeisland.engine.basics.BasicsPerm;
-import de.cubeisland.engine.basics.storage.BasicUser;
 
 import static de.cubeisland.engine.core.command.ArgBounds.NO_MAX;
 import static java.text.DateFormat.SHORT;
@@ -464,7 +464,7 @@ public class PlayerCommands
     {
         if (!force)
         {
-            if (BasicsPerm.COMMAND_KILL_PREVENT.isAuthorized(user) || this.module.getBasicUserManager().getBasicUser(user).godMode)
+            if (BasicsPerm.COMMAND_KILL_PREVENT.isAuthorized(user) || this.module.getBasicsUser(user).getbUEntity().isGodMode())
             {
                 context.sendTranslated("&cYou cannot kill &2%s&c!", user.getDisplayName());
                 return false;
@@ -642,7 +642,7 @@ public class PlayerCommands
             {
                 context.sendTranslated("&eOP: &atrue");
             }
-            Timestamp muted = this.module.getBasicUserManager().getBasicUser(user).muted;
+            Timestamp muted = module.getBasicsUser(user).getbUEntity().getMuted();
             if (muted != null && muted.getTime() > System.currentTimeMillis())
             {
                 context.sendTranslated("&eMuted until &6%s", DateFormat.getDateTimeInstance(SHORT, SHORT, context.getSender().getLocale()).format(muted));
@@ -704,9 +704,9 @@ public class PlayerCommands
             context.sendTranslated("&aYou are god already!");
             return;
         }
-        BasicUser bUser = this.module.getBasicUserManager().getBasicUser(user);
-        bUser.godMode = !bUser.godMode;
-        if (bUser.godMode)
+        BasicsUserEntity bUser = module.getBasicsUser(user).getbUEntity();
+        bUser.setGodMode(!bUser.isGodMode());
+        if (bUser.isGodMode())
         {
             if (other)
             {

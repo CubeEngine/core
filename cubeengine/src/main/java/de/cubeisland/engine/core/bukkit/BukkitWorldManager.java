@@ -52,12 +52,12 @@ public class BukkitWorldManager extends AbstractWorldManager
                 List<World> loadedWorlds = server.getWorlds();
                 for (WorldEntity entity : entities)
                 {
-                    World world = server.getWorld(UUID.fromString(entity.worldUUID));
+                    World world = server.getWorld(UUID.fromString(entity.getWorldUUID()));
                     if (loadedWorlds.contains(world))
                     {
                         loadedWorlds.remove(world);
                         worlds.put(world.getName(), entity);
-                        worldIds.put(entity.id, world);
+                        worldIds.put(entity.getId(), world);
                     }
                 }
                 if (!loadedWorlds.isEmpty()) // new worlds?
@@ -67,7 +67,7 @@ public class BukkitWorldManager extends AbstractWorldManager
                         WorldEntity entity = new WorldEntity(world);
                         ebean.save(entity);
                         worlds.put(world.getName(), entity);
-                        worldIds.put(entity.id, world);
+                        worldIds.put(entity.getId(), world);
                     }
                 }
             }

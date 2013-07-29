@@ -33,6 +33,7 @@ import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 import com.avaje.ebean.EbeanServer;
@@ -93,33 +94,6 @@ public class MySQLDatabase extends AbstractPooledDatabase
         serverConfig.setName("cubeengine");
         serverConfig.setNamingConvention(new NamingConvention());
         ebeanServer = EbeanServerFactory.create(serverConfig);
-
-        //TESTS:
-        this.registerEntity(UserEntityTest.class);
-        this.registerEntity(HasUserEntity.class);
-
-        UserEntityTest created = ebeanServer.createEntityBean(UserEntityTest.class);
-        ebeanServer.save(created);
-        HasUserEntity created2 = new HasUserEntity();
-        created2.setUserEntity(created);
-        ebeanServer.save(created2);
-
-
-        UserEntityTest get = ebeanServer.find(UserEntityTest.class, 1);
-        HasUserEntity get2 = ebeanServer.find(HasUserEntity.class, 1);
-        UserEntityTest get3 = ebeanServer.find(UserEntityTest.class, 1);
-        System.out.print("C:"+created);
-        System.out.print("G:"+get);
-        System.out.print("G3"+get3);
-        System.out.print("IG:" + get2.getUserEntity());
-
-        System.out.print(get.getId() + ":" + get.getPlayer());
-        created.setPlayer("CHANGED!");
-        ebeanServer.update(created);
-        ebeanServer.refresh(get2);
-        System.out.print(get2.getKey() + ":" + get2.getUserEntity().getPlayer());
-        ebeanServer.refresh(get);
-        System.out.print(get.getId() + ":" + get.getPlayer());
     }
 
     public static MySQLDatabase loadFromConfig(Core core, File file)
@@ -254,8 +228,12 @@ public class MySQLDatabase extends AbstractPooledDatabase
                     if (field.isAnnotationPresent(ManyToOne.class))
                     {
                         ManyToOne foreignKey = field.getAnnotation(ManyToOne.class);
-                        builder.append(",\n").append(getForeignKey(field, column, foreignKey.cascade(), field
-                            .getType()));
+                        builder.append(",\n").append(getForeignKey(field, column, foreignKey.cascade(), field.getType()));
+                    }
+                    if (field.isAnnotationPresent(OneToOne.class))
+                    {
+                        OneToOne foreignKey = field.getAnnotation(OneToOne.class);
+                        builder.append(",\n").append(getForeignKey(field, column, foreignKey.cascade(), field.getType()));
                     }
                     if (field.isAnnotationPresent(Index.class))
                     {

@@ -19,7 +19,6 @@ package de.cubeisland.engine.signmarket.storage;
 
 import de.cubeisland.engine.core.storage.SingleKeyStorage;
 import de.cubeisland.engine.signmarket.Signmarket;
-
 import gnu.trove.map.hash.TLongObjectHashMap;
 import gnu.trove.set.hash.TLongHashSet;
 

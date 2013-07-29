@@ -42,9 +42,9 @@ public abstract class AbstractWorldManager implements WorldManager
     {
         core.getDB().registerEntity(WorldEntity.class);
         this.ebean = core.getDB().getEbeanServer();
-        this.worlds = new THashMap<String, WorldEntity>();
-        this.worldIds = new TLongObjectHashMap<World>();
-        this.generatorMap = new THashMap<String, Map<String, ChunkGenerator>>();
+        this.worlds = new THashMap<>();
+        this.worldIds = new TLongObjectHashMap<>();
+        this.generatorMap = new THashMap<>();
     }
 
     public synchronized long getWorldId(World world)
@@ -63,21 +63,21 @@ public abstract class AbstractWorldManager implements WorldManager
                 this.ebean.save(worldEntity);
             }
             this.worlds.put(world.getName(), worldEntity);
-            this.worldIds.put(worldEntity.id, world);
+            this.worldIds.put(worldEntity.getId(), world);
         }
-        return worldEntity.id;
+        return worldEntity.getId();
     }
 
     public synchronized Long getWorldId(String name)
     {
-        WorldEntity model = this.worlds.get(name);
-        if (model == null)
+        WorldEntity entity = this.worlds.get(name);
+        if (entity == null)
         {
             World world = this.getWorld(name);
             if (world == null) return null;
             return this.getWorldId(world);
         }
-        return model.id;
+        return entity.getId();
     }
 
     public synchronized long[] getAllWorldIds()
@@ -98,7 +98,7 @@ public abstract class AbstractWorldManager implements WorldManager
         Map<String, ChunkGenerator> moduleGenerators = this.generatorMap.get(module.getId());
         if (moduleGenerators == null)
         {
-            this.generatorMap.put(module.getId(), moduleGenerators = new THashMap<String, ChunkGenerator>(1));
+            this.generatorMap.put(module.getId(), moduleGenerators = new THashMap<>(1));
         }
         moduleGenerators.put(id.toLowerCase(Locale.ENGLISH), generator);
     }

@@ -24,12 +24,11 @@ import org.bukkit.Location;
 import org.bukkit.inventory.ItemStack;
 
 import de.cubeisland.engine.core.user.UserAttachment;
-import de.cubeisland.engine.basics.storage.BasicUser;
 
 public class BasicsAttachment extends UserAttachment
 {
     private long lastAction = 0;
-    private BasicUser basicUser = null;
+    private BasicsUser basicUser = null;
     private boolean afk;
     private Location lastLocation = null;
     private Integer tpRequestCancelTask;
@@ -82,12 +81,12 @@ public class BasicsAttachment extends UserAttachment
         this.unlimitedItems = b;
     }
 
-    public BasicUser getBasicUser() {
+    public BasicsUser getBasicsUser() {
+        if (basicUser == null)
+        {
+            this.basicUser = new BasicsUser(this.getModule().getCore().getDB().getEbeanServer(), this.getHolder());
+        }
         return basicUser;
-    }
-
-    public void setBasicUser(BasicUser basicUser) {
-        this.basicUser = basicUser;
     }
 
     public Location getLastLocation() {

@@ -128,7 +128,7 @@ public abstract class AbstractUserManager implements UserManager
 
     public void resetAllPasswords()
     {
-        this.ebean.createUpdate(UserEntity.class, "clearPw").setParameter("passwd", null).execute();
+        this.ebean.createNamedUpdate(UserEntity.class, "clearPw").setParameter("passwd", null).execute();
         for (User user : this.getLoadedUsers())
         {
             this.ebean.refresh(user.getEntity());
@@ -495,7 +495,7 @@ public abstract class AbstractUserManager implements UserManager
     public void clean()
     {
         Timestamp time = new Timestamp(System.currentTimeMillis() - core.getConfiguration().userManagerCleanupDatabase.toMillis());
-        this.ebean.createUpdate(UserEntity.class, "cleanUp").setParameter("lastseen", time).execute();
+        this.ebean.createNamedUpdate(UserEntity.class, "cleanUp").setParameter("lastseen", time).execute();
     }
 
     protected final class DefaultAttachment

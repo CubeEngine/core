@@ -15,11 +15,15 @@
  * You should have received a copy of the GNU General Public License
  * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-package de.cubeisland.engine.basics.command.mail;
+package de.cubeisland.engine.basics.command.general;
 
 import java.util.List;
 import java.util.Set;
 
+import de.cubeisland.engine.basics.Basics;
+import de.cubeisland.engine.basics.BasicsAttachment;
+import de.cubeisland.engine.basics.BasicsUser;
+import de.cubeisland.engine.basics.storage.Mail;
 import de.cubeisland.engine.core.command.CommandContext;
 import de.cubeisland.engine.core.command.CommandSender;
 import de.cubeisland.engine.core.command.ContainerCommand;
@@ -27,9 +31,6 @@ import de.cubeisland.engine.core.command.reflected.Alias;
 import de.cubeisland.engine.core.command.reflected.Command;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.util.ChatFormat;
-import de.cubeisland.engine.basics.Basics;
-import de.cubeisland.engine.basics.storage.BasicUser;
-
 import gnu.trove.set.TLongSet;
 import gnu.trove.set.hash.TLongHashSet;
 
@@ -37,14 +38,12 @@ import static de.cubeisland.engine.core.command.ArgBounds.NO_MAX;
 
 public class MailCommand extends ContainerCommand
 {
-    private Basics basics;
-    private MailManager mailManager;
+    private Basics module;
 
-    public MailCommand(Basics basics)
+    public MailCommand(Basics module)
     {
-        super(basics, "mail", "Manages your server-mails.");
-        this.basics = basics;
-        this.mailManager = basics.getMailManager();
+        super(module, "mail", "Manages your server-mails.");
+        this.module = module;
     }
 
     @Alias(names = "readmail")
@@ -94,8 +93,8 @@ public class MailCommand extends ContainerCommand
                 return;
             }
         }
-        BasicUser bUser = this.basics.getBasicUserManager().getBasicUser(sender);
-        if (bUser.mailbox.isEmpty())
+        BasicsUser bUser = sender.attachOrGet(BasicsAttachment.class, this.module).getBasicsUser();
+        if (bUser.countMail() == 0)
         {
             context.sendTranslated("&eYou do not have any mail!");
             return;
@@ -103,11 +102,11 @@ public class MailCommand extends ContainerCommand
         List<Mail> mails;
         if (mailof == null) //get mails
         {
-            mails = mailManager.getMails(sender);
+            mails = bUser.getMails();
         }
         else //Search for mail of that user
         {
-            mails = mailManager.getMails(sender, mailof);
+            mails = bUser.getMailsFrom(mailof);
         }
         if (mails.isEmpty()) // Mailbox is not empty but no message from that player
         {
@@ -119,7 +118,7 @@ public class MailCommand extends ContainerCommand
         for (Mail mail : mails)
         {
             i++;
-            sb.append("\n&f").append(i).append(": ").append(mail.toString());
+            sb.append("\n&f").append(i).append(": ").append(mail.readMail());
         }
         context.sendTranslated("&aYour mails:%s", ChatFormat.parseFormats(sb.toString()));
     }
@@ -134,7 +133,7 @@ public class MailCommand extends ContainerCommand
             context.sendTranslated("&cUser &2%s &cnot found!", context.getString(0));
             return;
         }
-        List<Mail> mails = mailManager.getMails(user);
+        List<Mail> mails = user.attachOrGet(BasicsAttachment.class, this.module).getBasicsUser().getMails();
         if (mails.isEmpty()) // Mailbox is not empty but no message from that player
         {
             context.sendTranslated("&2%s &edoes not have any mails!", user.getName());
@@ -166,11 +165,10 @@ public class MailCommand extends ContainerCommand
     }
 
     @Alias(names = "sendallmail")
-    @Command(desc = "Sends mails to all players.", usage = "<message>"
-    , min = 1 , max = NO_MAX)
+    @Command(desc = "Sends mails to all players.", usage = "<message>", min = 1 , max = NO_MAX)
     public void sendAll(CommandContext context)
     {
-        Set<User> users = this.basics.getCore().getUserManager().getOnlineUsers();
+        Set<User> users = this.module.getCore().getUserManager().getOnlineUsers();
         final TLongSet alreadySend = new TLongHashSet();
         User sender = null;
         if (context.getSender() instanceof User)
@@ -180,19 +178,22 @@ public class MailCommand extends ContainerCommand
         final String message = context.getStrings(0);
         for (User user : users)
         {
-            this.mailManager.addMail(user, sender, message);
+            user.attachOrGet(BasicsAttachment.class, module).getBasicsUser().addMail(sender, message);
             alreadySend.add(user.getId());
         }
-        final User sendingUser = sender;
-        this.basics.getCore().getTaskManager().runAsynchronousTaskDelayed(this.getModule(),new Runnable()
+        final Long senderId = sender == null ? null : sender.getId();
+        this.module.getCore().getTaskManager().runAsynchronousTaskDelayed(this.getModule(),new Runnable()
         {
             public void run() // Async sending to all Users ever
             {
-                for (Long userKey : basics.getCore().getUserManager().getAllIds())
+                for (Long userId : module.getCore().getUserManager().getAllIds())
                 {
-                    if (!alreadySend.contains(userKey))
+                    if (!alreadySend.contains(userId))
                     {
-                        mailManager.addFastMail(userKey, sendingUser, message);
+                        module.getCore().getDB().getEbeanServer().createNamedUpdate(Mail.class, "fastMail")
+                              .setParameter("message", message)
+                              .setParameter("userId", userId)
+                              .setParameter("senderId", senderId).execute();
                     }
                 }
             }
@@ -216,7 +217,7 @@ public class MailCommand extends ContainerCommand
         }
         if (!context.hasArg(0))
         {
-            this.mailManager.removeMail(sender);
+            sender.attachOrGet(BasicsAttachment.class, this.module).getBasicsUser().clearMail();
             context.sendTranslated("&eCleared all mails!");
             return;
         }
@@ -226,7 +227,7 @@ public class MailCommand extends ContainerCommand
             context.sendTranslated("&cUser &2%s &cnot found!", context.getString(0));
             return;
         }
-        this.mailManager.removeMail(sender, from);
+        sender.attachOrGet(BasicsAttachment.class, this.module).getBasicsUser().clearMailFrom(from);
         context.sendTranslated("&eCleared all mails from &2%s&e!", from.getName());
     }
 
@@ -234,7 +235,7 @@ public class MailCommand extends ContainerCommand
     {
         for (User user : users)
         {
-            mailManager.addMail(user, from, message);
+            user.attachOrGet(BasicsAttachment.class, this.module).getBasicsUser().addMail(from, message);
             if (user.isOnline())
             {
                 user.sendTranslated("&eYou just got a mail from &2%s&e!", from.getName());

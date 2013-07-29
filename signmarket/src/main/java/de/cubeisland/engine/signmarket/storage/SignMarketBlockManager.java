@@ -23,7 +23,6 @@ import org.bukkit.Location;
 
 import de.cubeisland.engine.core.storage.SingleKeyStorage;
 import de.cubeisland.engine.signmarket.Signmarket;
-
 import gnu.trove.map.hash.THashMap;
 
 public class SignMarketBlockManager extends SingleKeyStorage<Long, SignMarketBlockModel>

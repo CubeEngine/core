@@ -19,26 +19,19 @@ package de.cubeisland.engine.basics;
 
 import java.util.concurrent.TimeUnit;
 
-import de.cubeisland.engine.core.bukkit.EventManager;
-import de.cubeisland.engine.core.command.CommandManager;
-import de.cubeisland.engine.core.command.reflected.ReflectedCommand;
-import de.cubeisland.engine.core.config.Configuration;
+import org.bukkit.entity.Player;
 
-import de.cubeisland.engine.core.module.Module;
-import de.cubeisland.engine.core.storage.database.Database;
-import de.cubeisland.engine.core.util.Profiler;
-import de.cubeisland.engine.core.util.convert.Convert;
 import de.cubeisland.engine.basics.command.general.ChatCommands;
 import de.cubeisland.engine.basics.command.general.ColoredSigns;
 import de.cubeisland.engine.basics.command.general.FlyListener;
 import de.cubeisland.engine.basics.command.general.GeneralsListener;
+import de.cubeisland.engine.basics.command.general.IgnoreCommands;
 import de.cubeisland.engine.basics.command.general.InformationCommands;
 import de.cubeisland.engine.basics.command.general.LagTimer;
 import de.cubeisland.engine.basics.command.general.ListCommand;
+import de.cubeisland.engine.basics.command.general.MailCommand;
 import de.cubeisland.engine.basics.command.general.MuteListener;
 import de.cubeisland.engine.basics.command.general.PlayerCommands;
-import de.cubeisland.engine.basics.command.mail.MailCommand;
-import de.cubeisland.engine.basics.command.mail.MailManager;
 import de.cubeisland.engine.basics.command.moderation.DoorCommand;
 import de.cubeisland.engine.basics.command.moderation.InventoryCommands;
 import de.cubeisland.engine.basics.command.moderation.ItemCommands;
@@ -58,17 +51,22 @@ import de.cubeisland.engine.basics.command.teleport.SpawnCommands;
 import de.cubeisland.engine.basics.command.teleport.TeleportCommands;
 import de.cubeisland.engine.basics.command.teleport.TeleportListener;
 import de.cubeisland.engine.basics.command.teleport.TeleportRequestCommands;
-import de.cubeisland.engine.basics.storage.BasicUserManager;
-import de.cubeisland.engine.basics.storage.IgnoreListManager;
+import de.cubeisland.engine.basics.storage.BasicsUserEntity;
+import de.cubeisland.engine.basics.storage.IgnoreList;
+import de.cubeisland.engine.basics.storage.Mail;
+import de.cubeisland.engine.core.bukkit.EventManager;
+import de.cubeisland.engine.core.command.CommandManager;
+import de.cubeisland.engine.core.command.reflected.ReflectedCommand;
+import de.cubeisland.engine.core.config.Configuration;
+import de.cubeisland.engine.core.module.Module;
+import de.cubeisland.engine.core.storage.database.Database;
+import de.cubeisland.engine.core.util.Profiler;
+import de.cubeisland.engine.core.util.convert.Convert;
 
 public class Basics extends Module
 {
-
     private BasicsConfiguration config;
-    private BasicUserManager basicUM;
-    private MailManager mailManager;
     private KitsGivenManager kitGivenManager;
-    private IgnoreListManager ignoreListManager;
     private KitManager kitManager;
     private LagTimer lagTimer;
 
@@ -81,12 +79,11 @@ public class Basics extends Module
         final CommandManager cm = this.getCore().getCommandManager();
         final EventManager em = this.getCore().getEventManager();
 
-        this.getLog().trace("{} ms - BU-Manager", Profiler.getCurrentDelta("basicsEnable", TimeUnit.MILLISECONDS));
-        this.basicUM = new BasicUserManager(this);
-        this.getLog().trace("{} ms - Mail.Manager", Profiler.getCurrentDelta("basicsEnable", TimeUnit.MILLISECONDS));
-        this.mailManager = new MailManager(db, this.basicUM);
-        this.getLog().trace("{} ms - IgnoreList.Manager", Profiler.getCurrentDelta("basicsEnable", TimeUnit.MILLISECONDS));
-        this.ignoreListManager = new IgnoreListManager(db);
+        this.getLog().trace("{} ms - register entities", Profiler
+            .getCurrentDelta("basicsEnable", TimeUnit.MILLISECONDS));
+        this.getCore().getDB().registerEntity(BasicsUserEntity.class);
+        this.getCore().getDB().registerEntity(Mail.class);
+        this.getCore().getDB().registerEntity(IgnoreList.class);
         this.getLog().trace("{} ms - Basics.Permission", Profiler.getCurrentDelta("basicsEnable", TimeUnit.MILLISECONDS));
         new BasicsPerm(this);
         this.getCore().getUserManager().addDefaultAttachment(BasicsAttachment.class, this);
@@ -95,6 +92,8 @@ public class Basics extends Module
 
         this.getLog().trace("{} ms - General-Commands", Profiler.getCurrentDelta("basicsEnable", TimeUnit.MILLISECONDS));
         //General:
+        IgnoreCommands ignoreCommands = new IgnoreCommands(this);
+        cm.registerCommands(this, ignoreCommands , ReflectedCommand.class);
         cm.registerCommands(this, new ChatCommands(this), ReflectedCommand.class);
         cm.registerCommands(this, new InformationCommands(this), ReflectedCommand.class);
         cm.registerCommands(this, new ListCommand(this), ReflectedCommand.class);
@@ -102,7 +101,7 @@ public class Basics extends Module
         cm.registerCommands(this, new PlayerCommands(this), ReflectedCommand.class);
         this.getLog().trace("{} ms - General-Listener", Profiler.getCurrentDelta("basicsEnable", TimeUnit.MILLISECONDS));
         em.registerListener(this, new GeneralsListener(this));
-        em.registerListener(this, new MuteListener(this));
+        em.registerListener(this, new MuteListener(this, ignoreCommands));
         this.getLog().trace("{} ms - Moderation-Commands", Profiler.getCurrentDelta("basicsEnable", TimeUnit.MILLISECONDS));
         //Moderation:
         cm.registerCommands(this, new InventoryCommands(this), ReflectedCommand.class);
@@ -150,24 +149,9 @@ public class Basics extends Module
         return this.config;
     }
 
-    public BasicUserManager getBasicUserManager()
-    {
-        return this.basicUM;
-    }
-
-    public MailManager getMailManager()
-    {
-        return this.mailManager;
-    }
-
     public KitsGivenManager getKitGivenManager()
     {
         return this.kitGivenManager;
-    }
-
-    public IgnoreListManager getIgnoreListManager()
-    {
-        return this.ignoreListManager;
     }
 
     public KitManager getKitManager() {
@@ -176,5 +160,10 @@ public class Basics extends Module
 
     public LagTimer getLagTimer() {
         return this.lagTimer;
+    }
+
+    public BasicsUser getBasicsUser(Player player)
+    {
+        return this.getCore().getUserManager().getExactUser(player.getName()).attachOrGet(BasicsAttachment.class, this).getBasicsUser();
     }
 }

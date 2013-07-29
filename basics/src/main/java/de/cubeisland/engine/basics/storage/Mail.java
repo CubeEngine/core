@@ -20,9 +20,13 @@ package de.cubeisland.engine.basics.storage;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
+import com.avaje.ebean.annotation.NamedUpdate;
+import com.avaje.ebean.annotation.NamedUpdates;
+import de.cubeisland.engine.core.CubeEngine;
 import de.cubeisland.engine.core.storage.database.AttrType;
 import de.cubeisland.engine.core.storage.database.Attribute;
 import de.cubeisland.engine.core.user.User;
@@ -30,29 +34,55 @@ import de.cubeisland.engine.core.user.UserEntity;
 import de.cubeisland.engine.core.util.Version;
 
 @Entity
-@Table(name = "ignorelist")
-public class IgnoreList
+@Table(name = "mail")
+@NamedUpdates(@NamedUpdate(name = "fastMail" , update = "INSERT INTO mail (message, userId, senderId) \nVALUES (:message, :userId, :senderId)"))
+public class Mail
 {
     @javax.persistence.Version
     static final Version version = new Version(1);
 
-    @Column(name = "key")
+    @Id
+    @Attribute(type = AttrType.INT, unsigned = true)
+    private Long key;
+    @Column(length = 100, nullable = false)
+    @Attribute(type = AttrType.VARCHAR)
+    private String message;
+    @Column(name = "userId", nullable = false)
     @ManyToOne(cascade = {CascadeType.REFRESH, CascadeType.REMOVE})
     @Attribute(type = AttrType.INT, unsigned = true)
-    public UserEntity userEntity;
-    @Column(nullable = false)
+    private UserEntity userEntity;
+    @Column()
     @ManyToOne(cascade = {CascadeType.REFRESH, CascadeType.REMOVE})
     @Attribute(type = AttrType.INT, unsigned = true)
-    public UserEntity ignore;
+    private UserEntity senderEntity;
 
-    public IgnoreList()
+    public Mail(UserEntity userId, UserEntity senderId, String message)
     {
+        this.message = message;
+        this.userEntity = userId;
+        this.senderEntity = senderId;
     }
 
-    public IgnoreList(User user, User ignore)
+    public Mail() {}
+
+    public Long getKey()
     {
-        this.userEntity = user.getEntity();
-        this.ignore = ignore.getEntity();
+        return key;
+    }
+
+    public void setKey(Long key)
+    {
+        this.key = key;
+    }
+
+    public String getMessage()
+    {
+        return message;
+    }
+
+    public void setMessage(String message)
+    {
+        this.message = message;
     }
 
     public UserEntity getUserEntity()
@@ -65,13 +95,23 @@ public class IgnoreList
         this.userEntity = userEntity;
     }
 
-    public UserEntity getIgnore()
+    public UserEntity getSenderEntity()
     {
-        return ignore;
+        return senderEntity;
     }
 
-    public void setIgnore(UserEntity ignore)
+    public void setSenderEntity(UserEntity senderEntity)
     {
-        this.ignore = ignore;
+        this.senderEntity = senderEntity;
+    }
+
+    public String readMail()
+    {
+        if (this.getSenderEntity() == null || this.getSenderEntity().getId() == 0)
+        {
+            return "&cCONSOLE&f: " + this.getMessage();
+        }
+        User user = CubeEngine.getUserManager().getUser(this.getSenderEntity().getId());
+        return "&2" + user.getName() + "&f: " + this.getMessage();
     }
 }
