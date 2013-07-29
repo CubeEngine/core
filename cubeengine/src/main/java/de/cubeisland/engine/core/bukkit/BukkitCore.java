@@ -327,9 +327,6 @@ public final class BukkitCore extends JavaPlugin implements Core
         this.moduleManager.loadModules(this.fileManager.getModulesDir());
 
         metricsInit.start();
-
-        // depends on: finished loading modules
-        this.userManager.clean();
     }
 
     @Override

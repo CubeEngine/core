@@ -29,6 +29,7 @@ import de.cubeisland.engine.core.command.CommandSender;
 import de.cubeisland.engine.core.command.ContainerCommand;
 import de.cubeisland.engine.core.command.reflected.Alias;
 import de.cubeisland.engine.core.command.reflected.Command;
+import de.cubeisland.engine.core.storage.database.mysql.MySQLDatabase;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.util.ChatFormat;
 import gnu.trove.set.TLongSet;
@@ -190,10 +191,13 @@ public class MailCommand extends ContainerCommand
                 {
                     if (!alreadySend.contains(userId))
                     {
-                        module.getCore().getDB().getEbeanServer().createNamedUpdate(Mail.class, "fastMail")
+                        module.getCore().getDB().getEbeanServer().createUpdate(Mail.class,
+                            "INSERT INTO :table (message, userId, senderId) \nVALUES (:message, :userId, :senderId)")
                               .setParameter("message", message)
                               .setParameter("userId", userId)
-                              .setParameter("senderId", senderId).execute();
+                              .setParameter("senderId", senderId)
+                              .setParameter("table", MySQLDatabase.prepareTableName("mail")).execute();
+
                     }
                 }
             }

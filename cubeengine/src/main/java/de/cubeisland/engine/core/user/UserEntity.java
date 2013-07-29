@@ -24,19 +24,12 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
-import com.avaje.ebean.annotation.NamedUpdate;
-import com.avaje.ebean.annotation.NamedUpdates;
 import de.cubeisland.engine.core.storage.database.AttrType;
 import de.cubeisland.engine.core.storage.database.Attribute;
 import de.cubeisland.engine.core.util.Version;
 
 @Entity
 @Table(name = "user")
-@NamedUpdates(
-    {@NamedUpdate(name = "clearPw", update = "UPDATE user SET passwd = :passwd"),
-     @NamedUpdate(name = "cleanUp", update = "DELETE FROM user WHERE lastseen < :lastseen AND NOT nogc"),
-    }
-)
 public class UserEntity
 {
     @javax.persistence.Version

@@ -24,8 +24,6 @@ import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
-import com.avaje.ebean.annotation.NamedUpdate;
-import com.avaje.ebean.annotation.NamedUpdates;
 import de.cubeisland.engine.core.CubeEngine;
 import de.cubeisland.engine.core.storage.database.AttrType;
 import de.cubeisland.engine.core.storage.database.Attribute;
@@ -35,7 +33,6 @@ import de.cubeisland.engine.core.util.Version;
 
 @Entity
 @Table(name = "mail")
-@NamedUpdates(@NamedUpdate(name = "fastMail" , update = "INSERT INTO mail (message, userId, senderId) \nVALUES (:message, :userId, :senderId)"))
 public class Mail
 {
     @javax.persistence.Version

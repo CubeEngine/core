@@ -35,11 +35,13 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import com.avaje.ebean.EbeanServer;
+import com.avaje.ebean.Expr;
 import de.cubeisland.engine.core.Core;
 import de.cubeisland.engine.core.command.CommandSender;
 import de.cubeisland.engine.core.filesystem.FileManager;
 import de.cubeisland.engine.core.module.Module;
 import de.cubeisland.engine.core.permission.Permission;
+import de.cubeisland.engine.core.storage.database.mysql.MySQLDatabase;
 import de.cubeisland.engine.core.util.ChatFormat;
 import de.cubeisland.engine.core.util.StringUtils;
 import de.cubeisland.engine.core.util.Triplet;
@@ -128,7 +130,9 @@ public abstract class AbstractUserManager implements UserManager
 
     public void resetAllPasswords()
     {
-        this.ebean.createNamedUpdate(UserEntity.class, "clearPw").setParameter("passwd", null).execute();
+        this.ebean.createUpdate(UserEntity.class, "UPDATE :table SET passwd = :passwd")
+                .setParameter("passwd", null)
+                .setParameter("table", MySQLDatabase.prepareTableName("user")).execute();
         for (User user : this.getLoadedUsers())
         {
             this.ebean.refresh(user.getEntity());
@@ -495,7 +499,7 @@ public abstract class AbstractUserManager implements UserManager
     public void clean()
     {
         Timestamp time = new Timestamp(System.currentTimeMillis() - core.getConfiguration().userManagerCleanupDatabase.toMillis());
-        this.ebean.createNamedUpdate(UserEntity.class, "cleanUp").setParameter("lastseen", time).execute();
+        this.ebean.delete(UserEntity.class, this.ebean.find(UserEntity.class).where().and(Expr.le("lasteen", time),Expr.eq("nogc",false)).findIds());
     }
 
     protected final class DefaultAttachment
