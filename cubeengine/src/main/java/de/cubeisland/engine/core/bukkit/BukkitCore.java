@@ -130,15 +130,6 @@ public final class BukkitCore extends JavaPlugin implements Core
         final Server server = this.getServer();
         final PluginManager pm = server.getPluginManager();
 
-        try (Reader reader = new InputStreamReader(this.getResource("plugin.yml")))
-        {
-            this.pluginConfig = Configuration.load(PluginConfig.class, reader);
-        }
-        catch (IOException e)
-        {
-            pluginConfig = Configuration.createInstance(PluginConfig.class);
-        }
-
         if (!BukkitUtils.isCompatible(this) && !BukkitUtils.init(this))
         {
             this.getLogger().log(java.util.logging.Level.SEVERE, "Your Bukkit server is incompatible with this CubeEngine version.");
@@ -151,6 +142,15 @@ public final class BukkitCore extends JavaPlugin implements Core
 
         CubeEngine.initialize(this);
         Convert.init(this);
+
+        try (Reader reader = new InputStreamReader(this.getResource("plugin.yml")))
+        {
+            this.pluginConfig = Configuration.load(PluginConfig.class, reader);
+        }
+        catch (IOException e)
+        {
+            pluginConfig = Configuration.createInstance(PluginConfig.class);
+        }
 
         this.freezeDetection = new FreezeDetection(this);
         this.freezeDetection.addListener(new Runnable() {
