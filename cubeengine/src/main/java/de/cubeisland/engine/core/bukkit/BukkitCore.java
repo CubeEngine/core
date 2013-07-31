@@ -142,16 +142,6 @@ public final class BukkitCore extends JavaPlugin implements Core
         CubeEngine.initialize(this);
         Convert.init(this);
 
-        this.freezeDetection = new FreezeDetection(this);
-        this.freezeDetection.addListener(new Runnable() {
-            @Override
-            public void run()
-            {
-                dumpThreads();
-            }
-        });
-        this.freezeDetection.start();
-
         this.initHooks = Collections.synchronizedList(new LinkedList<Runnable>());
 
         try
@@ -298,6 +288,17 @@ public final class BukkitCore extends JavaPlugin implements Core
 
         // depends on: database
         this.moduleManager = new BukkitModuleManager(this, this.getClassLoader());
+
+        // depends on: module-manager
+        this.freezeDetection = new FreezeDetection(this);
+        this.freezeDetection.addListener(new Runnable() {
+            @Override
+            public void run()
+            {
+                dumpThreads();
+            }
+        });
+        this.freezeDetection.start();
 
         // depends on: user manager, world manager
         ArgumentReader.init(this);
