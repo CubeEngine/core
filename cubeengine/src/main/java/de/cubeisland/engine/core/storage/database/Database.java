@@ -265,5 +265,5 @@ public interface Database
 
     public DatabaseConfiguration getDatabaseConfig();
 
-    void enable();
+    void enable(ClassLoader coreLoader);
 }

@@ -43,7 +43,10 @@ import com.avaje.ebean.config.ServerConfig;
 import com.avaje.ebean.config.TableName;
 import com.jolbox.bonecp.BoneCPDataSource;
 import de.cubeisland.engine.core.Core;
+import de.cubeisland.engine.core.CubeEngine;
 import de.cubeisland.engine.core.config.Configuration;
+import de.cubeisland.engine.core.module.Module;
+import de.cubeisland.engine.core.storage.DatabaseClassloader;
 import de.cubeisland.engine.core.storage.database.AbstractPooledDatabase;
 import de.cubeisland.engine.core.storage.database.AttrType;
 import de.cubeisland.engine.core.storage.database.Attribute;
@@ -92,11 +95,22 @@ public class MySQLDatabase extends AbstractPooledDatabase
         serverConfig.setDataSource(dataSource);
         serverConfig.setName("cubeengine");
         serverConfig.setNamingConvention(new NamingConvention());
+        serverConfig.setRegister(false);
     }
 
-    public void enable()
+    public void enable(ClassLoader coreLoader)
     {
+        ClassLoader previous = Thread.currentThread().getContextClassLoader();
+        DatabaseClassloader classLoader = new DatabaseClassloader();
+        for (Module module : CubeEngine.getCore().getModuleManager().getModules())
+        {
+            classLoader.addClassLoader(module.getClassLoader());
+        }
+        classLoader.addClassLoader(coreLoader);
+        classLoader.addClassLoader(previous);
+        Thread.currentThread().setContextClassLoader(classLoader);
         ebeanServer = EbeanServerFactory.create(serverConfig);
+        Thread.currentThread().setContextClassLoader(previous);
     }
 
     public static MySQLDatabase loadFromConfig(Core core, File file)

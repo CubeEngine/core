@@ -337,7 +337,7 @@ public final class BukkitCore extends JavaPlugin implements Core
             this.getServer().getPluginManager().disablePlugin(this);
             return;
         }
-        this.database.enable();
+        this.database.enable(this.getClassLoader());
         Iterator< Runnable > it = this.initHooks.iterator();
         while (it.hasNext())
         {
