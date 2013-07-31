@@ -26,6 +26,7 @@ public class FreezeDetection
         this.executor = null;
         this.taskId = -1;
         this.lastHeartbeat = -1;
+        this.listeners = new ConcurrentLinkedQueue<>();
     }
 
     public void addListener(Runnable r)
