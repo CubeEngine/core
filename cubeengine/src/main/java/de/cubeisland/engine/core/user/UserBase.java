@@ -2568,4 +2568,14 @@ public class UserBase implements Player
             player.setScoreboard(scoreboard);
         }
     }
+
+    @Override
+    public void playSound(Location location, String s, float v, float v2)
+    {
+        final Player player = this.getOfflinePlayer().getPlayer();
+        if (player != null)
+        {
+            player.playSound(location, s, v, v2);
+        }
+    }
 }
