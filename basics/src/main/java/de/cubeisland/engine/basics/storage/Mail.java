@@ -44,8 +44,9 @@ public class Mail
     @Column(length = 100, nullable = false)
     @Attribute(type = AttrType.VARCHAR)
     private String message;
+
     @Column(name = "userId", nullable = false)
-    @ManyToOne(cascade = {CascadeType.REFRESH, CascadeType.REMOVE})
+    @ManyToOne(optional = false, cascade = {CascadeType.REFRESH, CascadeType.REMOVE})
     @Attribute(type = AttrType.INT, unsigned = true)
     private UserEntity userEntity;
     @Column()

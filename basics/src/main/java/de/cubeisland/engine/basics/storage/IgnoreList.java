@@ -20,6 +20,7 @@ package de.cubeisland.engine.basics.storage;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
@@ -31,12 +32,15 @@ import de.cubeisland.engine.core.util.Version;
 
 @Entity
 @Table(name = "ignorelist")
+// TODO updater!!! adding the id field
 public class IgnoreList
 {
     @javax.persistence.Version
     static final Version version = new Version(1);
 
-    @Column(name = "key")
+    @Id
+    public long id; // Ebean requires this
+    @Column(name = "key") // TODO change
     @ManyToOne(cascade = {CascadeType.REFRESH, CascadeType.REMOVE})
     @Attribute(type = AttrType.INT, unsigned = true)
     public UserEntity userEntity;
@@ -47,6 +51,16 @@ public class IgnoreList
 
     public IgnoreList()
     {
+    }
+
+    public long getId()
+    {
+        return id;
+    }
+
+    public void setId(long id)
+    {
+        this.id = id;
     }
 
     public IgnoreList(User user, User ignore)

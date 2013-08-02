@@ -34,14 +34,21 @@ import de.cubeisland.engine.core.util.Version;
 
 @Entity
 @Table(name = "basicuser")
+// TODO updater!!! adding the id field
 public class BasicsUserEntity
 {
     @javax.persistence.Version
     static final Version version = new Version(1);
 
     @Id
-    @Column(name = "key") // TODO change to Id
-    @OneToOne(cascade = {CascadeType.REFRESH, CascadeType.REMOVE})
+    public long id; // Ebean requires this
+    /*
+     * @Id field is always required
+     * @Id field cannot be a foreign key at the same time (except EmbeddedId but i am not sure how it works yet)
+     */
+
+    @Column(name = "key") // TODO change
+    @OneToOne(optional = false, cascade = {CascadeType.REFRESH, CascadeType.REMOVE})
     @Attribute(type = AttrType.INT, unsigned = true)
     private UserEntity entity; // User Key
     @Column()
@@ -66,6 +73,16 @@ public class BasicsUserEntity
             this.muted = null; // remove muted information as it is no longer needed
         }
         ebean.update(this);
+    }
+
+    public long getId()
+    {
+        return id;
+    }
+
+    public void setId(long id)
+    {
+        this.id = id;
     }
 
     public UserEntity getEntity()

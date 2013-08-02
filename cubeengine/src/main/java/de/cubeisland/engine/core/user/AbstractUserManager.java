@@ -66,7 +66,6 @@ public abstract class AbstractUserManager implements UserManager
 
     public AbstractUserManager(final Core core)
     {
-        core.getDB().registerEntity(UserEntity.class);
         this.database = core.getDB();
 
         this.core = core;

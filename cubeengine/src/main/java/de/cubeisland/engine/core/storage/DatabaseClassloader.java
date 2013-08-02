@@ -18,6 +18,7 @@
 package de.cubeisland.engine.core.storage;
 
 import java.io.InputStream;
+import java.net.URL;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -52,6 +53,17 @@ public class DatabaseClassloader extends ClassLoader
         {
             InputStream stream = classLoader.getResourceAsStream(name);
             if (stream != null) return stream;
+        }
+        return null;
+    }
+
+    @Override
+    public URL getResource(String name)
+    {
+        for (ClassLoader classLoader : classLoaders)
+        {
+            URL resource = classLoader.getResource(name);
+            if (resource != null) return resource;
         }
         return null;
     }

@@ -171,6 +171,10 @@
             <groupId>javax.persistence</groupId>
             <artifactId>persistence-api</artifactId>
           </exclusion>
+          <exclusion>
+            <groupId>org.avaje</groupId>
+            <artifactId>ebean</artifactId>
+          </exclusion>
         </exclusions>
       </dependency>
       <!-- Logback dependencies-->

@@ -41,6 +41,7 @@ import com.avaje.ebean.EbeanServerFactory;
 import com.avaje.ebean.config.MatchingNamingConvention;
 import com.avaje.ebean.config.ServerConfig;
 import com.avaje.ebean.config.TableName;
+import com.avaje.ebeaninternal.server.core.BootupClassPathSearch;
 import com.jolbox.bonecp.BoneCPDataSource;
 import de.cubeisland.engine.core.Core;
 import de.cubeisland.engine.core.CubeEngine;
@@ -96,19 +97,21 @@ public class MySQLDatabase extends AbstractPooledDatabase
         serverConfig.setName("cubeengine");
         serverConfig.setNamingConvention(new NamingConvention());
         serverConfig.setRegister(false);
+
     }
 
     public void enable(ClassLoader coreLoader)
     {
         ClassLoader previous = Thread.currentThread().getContextClassLoader();
         DatabaseClassloader classLoader = new DatabaseClassloader();
+        classLoader.addClassLoader(coreLoader);
+        classLoader.addClassLoader(previous);
         for (Module module : CubeEngine.getCore().getModuleManager().getModules())
         {
             classLoader.addClassLoader(module.getClassLoader());
         }
-        classLoader.addClassLoader(coreLoader);
-        classLoader.addClassLoader(previous);
         Thread.currentThread().setContextClassLoader(classLoader);
+        System.out.print(BootupClassPathSearch.class.getClassLoader());
         ebeanServer = EbeanServerFactory.create(serverConfig);
         Thread.currentThread().setContextClassLoader(previous);
     }
