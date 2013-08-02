@@ -42,7 +42,7 @@ public class AccountAttachment extends UserAttachment
         if (this.getModule() instanceof Conomy)
         {
             this.manager =  ((Conomy)this.getModule()).getManager();
-            AccountModel model = manager.storage.getUserAccount(this.getHolder().getId());
+            AccountModel model = manager.loadUserAccount(this.getHolder());
             if (model != null)
             {
                 this.userAccount = new UserAccount(this, manager, model);
@@ -63,9 +63,9 @@ public class AccountAttachment extends UserAttachment
     public UserAccount createAccount()
     {
         if (this.userAccount != null) return this.getAccount();
-        AccountModel model = new AccountModel(this.getHolder().getId(), null,
+        AccountModel model = new AccountModel(this.getHolder(), null,
               (long) (this.manager.config.defaultBalance * this.manager.config.fractionalDigitsFactor()), false);
-        this.manager.storage.store(model);
+        this.manager.ebean.save(model);
         this.userAccount = new UserAccount(this, this.manager, model);
         this.manager.logger.debug("NEW User:" + this.getHolder().getName() + " :: " + userAccount.balance());
         return this.userAccount;

@@ -57,7 +57,7 @@ public class BankAccessStorage extends SingleKeyStorage<Long, BankAccessModel>
     {
         try
         {
-            ResultSet resultSet = this.database.preparedQuery(this.modelClass, "getBankAccess", model.key);
+            ResultSet resultSet = this.database.preparedQuery(this.modelClass, "getBankAccess", model.getId());
             Set<BankAccessModel> result = new HashSet<BankAccessModel>();
             while (resultSet.next())
             {
@@ -65,7 +65,7 @@ public class BankAccessStorage extends SingleKeyStorage<Long, BankAccessModel>
                 long userId = resultSet.getLong("userId");
                 long accountId = resultSet.getLong("accountId");
                 byte accountType = resultSet.getByte("accessLevel");
-                result.add(new BankAccessModel(id, userId, accountId, accountType, model.name));
+                result.add(new BankAccessModel(id, userId, accountId, accountType, model.getName()));
             }
             return result;
         }

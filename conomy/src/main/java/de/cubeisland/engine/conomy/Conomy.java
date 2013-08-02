@@ -17,6 +17,7 @@
  */
 package de.cubeisland.engine.conomy;
 
+import de.cubeisland.engine.conomy.account.storage.AccountModel;
 import de.cubeisland.engine.core.command.CommandManager;
 import de.cubeisland.engine.core.config.Configuration;
 import de.cubeisland.engine.core.module.Module;
@@ -30,6 +31,12 @@ public class Conomy extends Module
 {
     private ConomyConfiguration config;
     private ConomyManager manager;
+
+    @Override
+    public void onLoad()
+    {
+        this.getCore().getDB().registerEntity(AccountModel.class);
+    }
 
     @Override
     public void onEnable()

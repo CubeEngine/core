@@ -23,14 +23,14 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
-import de.cubeisland.engine.core.service.Economy;
-import de.cubeisland.engine.core.user.User;
+import com.avaje.ebean.EbeanServer;
 import de.cubeisland.engine.conomy.Conomy;
 import de.cubeisland.engine.conomy.ConomyConfiguration;
 import de.cubeisland.engine.conomy.account.storage.AccountModel;
-import de.cubeisland.engine.conomy.account.storage.AccountStorage;
 import de.cubeisland.engine.conomy.account.storage.BankAccessStorage;
-
+import de.cubeisland.engine.core.service.Economy;
+import de.cubeisland.engine.core.storage.database.mysql.MySQLDatabase;
+import de.cubeisland.engine.core.user.User;
 import gnu.trove.map.hash.THashMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,8 +38,8 @@ import org.slf4j.LoggerFactory;
 public class ConomyManager
 {
     protected final Conomy module;
-    protected final AccountStorage storage;
-    protected final BankAccessStorage bankAccessStorage;
+    protected BankAccessStorage bankAccessStorage; // TODO remove
+    protected final EbeanServer ebean;
 
     private Map<String,BankAccount> bankaccounts;
     private Map<Long,BankAccount> bankaccountsID;
@@ -51,8 +51,9 @@ public class ConomyManager
     public ConomyManager(Conomy module)
     {
         this.module = module;
-        this.storage = new AccountStorage(module.getCore().getDB());
-        this.bankAccessStorage = new BankAccessStorage(module.getCore().getDB());
+        this.ebean = module.getCore().getDB().getEbeanServer();
+
+        //this.bankAccessStorage = new BankAccessStorage(module.getCore().getDB()); // TODO remove
 
         this.config = module.getConfig();
         this.bankaccounts = new THashMap<String, BankAccount>();
@@ -72,12 +73,12 @@ public class ConomyManager
         BankAccount bankAccount = this.bankaccounts.get(name);
         if (bankAccount == null)
         {
-            AccountModel model = this.storage.getBankAccount(name);
+            AccountModel model = this.ebean.find(AccountModel.class).where().eq("name",name).findUnique();
             if (model == null)
             {
                 if (!create) return null;
                 model = new AccountModel(null,name,(int) (this.config.defaultBankBalance * this.config.fractionalDigitsFactor()),false,this.config.bankNeedInvite);
-                this.storage.store(model);
+                this.ebean.save(model);
                 bankAccount = new BankAccount(this, model);
                 this.logger.info("NEW Bank:{} :: {}", name,  bankAccount.balance());
             }
@@ -87,7 +88,7 @@ public class ConomyManager
                 this.logger.info("LOAD Bank:{} :: {}", name, bankAccount.balance());
             }
             this.bankaccounts.put(name,bankAccount);
-            this.bankaccountsID.put(bankAccount.model.key, bankAccount);
+            this.bankaccountsID.put(bankAccount.model.getId(), bankAccount);
         }
         return bankAccount;
     }
@@ -198,7 +199,15 @@ public class ConomyManager
     public void setAll(boolean userAcc, boolean bankAcc, double value)
     {
         final long longValue = (long)(value * this.config.fractionalDigitsFactor());
-        this.storage.setAll(userAcc, bankAcc, longValue);
+        this.ebean.createUpdate(AccountModel.class,
+            "UPDATE :table SET value = :value " +
+            "WHERE name IS NULL = :setUser " +
+            "OR user_id IS NULL = :setBank")
+            .setParameter("table", MySQLDatabase.prepareTableName("user"))
+            // TODO cache the table names so we do not have to use strings (String getTableName(Class<?> entityClass) smth like this)
+            .setParameter("value", longValue)
+            .setParameter("setUser", userAcc)
+            .setParameter("setBank", bankAcc).execute();
         this.logger.info("SET-ALL {} {}", (userAcc && bankAcc ? "User/Bank" : userAcc ? "User" : "Bank"), value);
         // update all loaded accounts...
         if (userAcc)
@@ -208,7 +217,7 @@ public class ConomyManager
                 UserAccount userAccount = ConomyManager.this.getUserAccount(user, false);
                 if (userAccount != null)
                 {
-                    userAccount.model.value = longValue;
+                    userAccount.model.setValue(longValue);
                 }
             }
         }
@@ -216,14 +225,21 @@ public class ConomyManager
         {
             for (BankAccount bankAccount : this.bankaccounts.values())
             {
-                bankAccount.model.value = longValue;
+                bankAccount.model.setValue(longValue);
             }
         }
     }
 
     public void scaleAll(boolean userAcc, boolean bankAcc, float factor)
     {
-        this.storage.scaleAll(userAcc, bankAcc, factor);
+        this.ebean.createUpdate(AccountModel.class,
+            "UPDATE :table SET value = :factor * value" +
+            "WHERE name IS NULL = :setUser " +
+            "OR user_id IS NULL = :setBank")
+            .setParameter("table", MySQLDatabase.prepareTableName("user"))
+            .setParameter("factor", factor)
+            .setParameter("setUser", userAcc)
+            .setParameter("setBank", bankAcc).execute();
         this.logger.info("SCALE-ALL {} {}", (userAcc && bankAcc ? "User/Bank" : userAcc ? "User" : "Bank"), factor);
         // update all loaded accounts...
         if (userAcc)
@@ -233,7 +249,7 @@ public class ConomyManager
                 UserAccount userAccount = ConomyManager.this.getUserAccount(user, false);
                 if (userAccount != null)
                 {
-                    userAccount.model.value *= factor;
+                    userAccount.model.setValue((long)(userAccount.model.getValue() * factor));
                 }
             }
         }
@@ -241,7 +257,7 @@ public class ConomyManager
         {
             for (BankAccount bankAccount : this.bankaccounts.values())
             {
-                bankAccount.model.value *= factor;
+                bankAccount.model.setValue((long)(bankAccount.model.getValue() * factor));
             }
         }
     }
@@ -249,7 +265,14 @@ public class ConomyManager
     public void transactionAll(boolean userAcc, boolean bankAcc, double value)
     {
         final long longValue = (long)(value * this.config.fractionalDigitsFactor());
-        this.storage.transactAll(userAcc, bankAcc, longValue);
+        this.ebean.createUpdate(AccountModel.class,
+            "UPDATE :table SET value = :value + value" +
+            "WHERE name IS NULL = :setUser " +
+            "OR user_id IS NULL = :setBank")
+            .setParameter("table", MySQLDatabase.prepareTableName("user"))
+            .setParameter("value", longValue)
+            .setParameter("setUser", userAcc)
+            .setParameter("setBank", bankAcc).execute();
         this.logger.info("TRANSACTION-ALL {} {}", (userAcc && bankAcc ? "User/Bank" : userAcc ? "User" : "Bank"), value);
         // update all loaded accounts...
         if (userAcc)
@@ -259,7 +282,7 @@ public class ConomyManager
                 UserAccount userAccount = ConomyManager.this.getUserAccount(user, false);
                 if (userAccount != null)
                 {
-                    userAccount.model.value += longValue;
+                    userAccount.model.setValue(userAccount.model.getValue() + longValue);
                 }
             }
         }
@@ -267,7 +290,7 @@ public class ConomyManager
         {
             for (BankAccount bankAccount : this.bankaccounts.values())
             {
-                bankAccount.model.value += longValue;
+                bankAccount.model.setValue(bankAccount.model.getValue() + longValue);
             }
         }
     }
@@ -303,17 +326,70 @@ public class ConomyManager
 
     public Collection<AccountModel> getTopAccounts(boolean user, boolean bank, int fromRank, int toRank, boolean showHidden)
     {
-        return this.storage.getTopAccounts(user, bank, fromRank, toRank, showHidden);
+        return this.ebean.find(AccountModel.class).where()
+            .raw("((mask & 1) = 0 OR ((mask & 1) = 1) = " + showHidden + ")")
+            .raw("(name IS NULL) = " + user + " OR " + "(user_id IS NULL) = " + bank)
+            .orderBy().desc("value")
+            .setFirstRow(fromRank - 1)
+            .setMaxRows(toRank + 1 - fromRank).findList();
     }
 
-    public void hideAll(boolean user, boolean bank)
+    public void hideAll(boolean userAcc, boolean bankAcc)
     {
-        this.storage.setAllHidden(user, bank, true);
+        this.ebean.createUpdate(AccountModel.class,
+            "UPDATE :table SET mask = 1 | mask" +
+            "WHERE name IS NULL = :setUser " +
+            "OR user_id IS NULL = :setBank")
+            .setParameter("table", MySQLDatabase.prepareTableName("userAcc"))
+            .setParameter("setUser", userAcc)
+            .setParameter("setBank", bankAcc).execute();
+        if (userAcc)
+        {
+            for (User user : this.module.getCore().getUserManager().getOnlineUsers())
+            {
+                UserAccount userAccount = ConomyManager.this.getUserAccount(user, false);
+                if (userAccount != null)
+                {
+                    userAccount.model.setHidden(true);
+                }
+            }
+        }
+        if (bankAcc)
+        {
+            for (BankAccount bankAccount : this.bankaccounts.values())
+            {
+                bankAccount.model.setHidden(true);
+            }
+        }
     }
 
-    public void unhideAll(boolean user, boolean bank)
+    public void unhideAll(boolean userAcc, boolean bankAcc)
     {
-        this.storage.setAllHidden(user, bank, false);
+        this.ebean.createUpdate(AccountModel.class,
+            "UPDATE :table SET mask = 1 & ~mask" +
+            "WHERE name IS NULL = :setUser " +
+            "OR user_id IS NULL = :setBank")
+            .setParameter("table", MySQLDatabase.prepareTableName("userAcc"))
+            .setParameter("setUser", userAcc)
+            .setParameter("setBank", bankAcc).execute();
+        if (userAcc)
+        {
+            for (User user : this.module.getCore().getUserManager().getOnlineUsers())
+            {
+                UserAccount userAccount = ConomyManager.this.getUserAccount(user, false);
+                if (userAccount != null)
+                {
+                    userAccount.model.setHidden(true);
+                }
+            }
+        }
+        if (bankAcc)
+        {
+            for (BankAccount bankAccount : this.bankaccounts.values())
+            {
+                bankAccount.model.setHidden(true);
+            }
+        }
     }
 
     public boolean deleteUserAccount(User user)
@@ -323,7 +399,7 @@ public class ConomyManager
         {
             return false;
         }
-        this.storage.delete(account.model);
+        this.ebean.delete(account.model);
         user.detach(AccountAttachment.class);
         return true;
     }
@@ -335,9 +411,9 @@ public class ConomyManager
         {
             return false;
         }
-        this.storage.delete(bankAccount.model);
+        this.ebean.delete(bankAccount.model);
         this.bankaccounts.remove(name);
-        this.bankaccountsID.remove(bankAccount.model.key);
+        this.bankaccountsID.remove(bankAccount.model.getId());
         return true;
     }
 
@@ -401,7 +477,7 @@ public class ConomyManager
             BankAccount acc = this.bankaccountsID.get(accountId);
             if (acc == null)
             {
-                AccountModel model = this.storage.get(accountId);
+                AccountModel model = this.ebean.find(AccountModel.class, accountId);
                 acc = new BankAccount(this, model);
                 this.bankaccountsID.put(accountId, acc);
                 this.bankaccounts.put(acc.getName(), acc);
@@ -421,8 +497,8 @@ public class ConomyManager
         BankAccount acc = this.getBankAccount(newName, false);
         if (acc != null) return false; // Account name exists!
         this.bankaccounts.remove(bankAccount.getName());
-        bankAccount.model.name = newName;
-        bankAccount.update();
+        bankAccount.model.setName(newName);
+        this.update(bankAccount.model);
         this.bankaccounts.put(newName, bankAccount);
         return true;
     }
@@ -438,8 +514,25 @@ public class ConomyManager
      * @param hidden if true return hidden banks too
      * @return
      */
-    public Set<String> getAllBanks(boolean hidden)
+    public Set<String> getBankNames(boolean hidden)
     {
-        return this.storage.getBankAccounts(hidden);
+        Set<String> banks = new HashSet<>();
+        for (AccountModel accountModel : this.ebean.find(AccountModel.class).select("name")
+                                                   .where().isNotNull("name")
+                                                   .raw("(mask & 1 = 0) OR (mask & 1 = 1) = " + hidden).findList())
+        {
+            banks.add(accountModel.getName());
+        }
+        return banks;
+    }
+
+    public void update(AccountModel model)
+    {
+        this.ebean.update(model);
+    }
+
+    protected AccountModel loadUserAccount(User holder)
+    {
+        return this.ebean.find(AccountModel.class).where().eq("user_id",holder.getEntity().getId()).findUnique();
     }
 }

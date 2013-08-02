@@ -17,58 +17,65 @@
  */
 package de.cubeisland.engine.conomy.account.storage;
 
-import de.cubeisland.engine.core.storage.Model;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
+import javax.persistence.UniqueConstraint;
+
 import de.cubeisland.engine.core.storage.database.AttrType;
 import de.cubeisland.engine.core.storage.database.Attribute;
 import de.cubeisland.engine.core.storage.database.Index;
-import de.cubeisland.engine.core.storage.database.SingleKeyEntity;
+import de.cubeisland.engine.core.user.User;
+import de.cubeisland.engine.core.user.UserEntity;
+import de.cubeisland.engine.core.util.Version;
 
-import static de.cubeisland.engine.core.storage.database.Index.IndexType.FOREIGN_KEY;
 import static de.cubeisland.engine.core.storage.database.Index.IndexType.UNIQUE;
 
-@SingleKeyEntity(tableName = "accounts", primaryKey = "key", autoIncrement = true, indices = {
-    @Index(value = FOREIGN_KEY, fields = "user_id", f_table = "user", f_field = "key"),
-    @Index(value = UNIQUE, fields = { "user_id", "name"})
-})
-public class AccountModel implements Model<Long>
+@Entity
+@Table(name = "accounts", uniqueConstraints = @UniqueConstraint(columnNames = {"user_id", "name"}))
+@Index(value = UNIQUE, fields = { "user_id", "name"})
+public class AccountModel
 {
+    @javax.persistence.Version
+    static final Version version = new Version(1);
+
+    @Id
+    @Column(name = "key")
     @Attribute(type = AttrType.INT, unsigned = true)
-    public long key;
-    @Attribute(type = AttrType.INT, unsigned = true, notnull = false)
-    public Long user_id;
-    @Attribute(type = AttrType.VARCHAR, length = 64, notnull = false)
-    public String name;
+    private long id;
+    @Column(name = "user_id")
+    @ManyToOne(cascade = {CascadeType.REFRESH, CascadeType.REMOVE})
+    @JoinColumn(name = "user_id")
+    @Attribute(type = AttrType.INT, unsigned = true)
+    private UserEntity userEntity;
+    @Column(length = 64)
+    @Attribute(type = AttrType.VARCHAR)
+    private String name;
+    @Column()
     @Attribute(type = AttrType.BIGINT)
-    public long value;
+    private long value;
+    @Column()
     @Attribute(type = AttrType.TINYINT)
-    public int mask = 0;
-
-    @Override
-    public Long getId()
-    {
-        return key;
-    }
-
-    @Override
-    public void setId(Long id)
-    {
-        this.key = id;
-    }
+    private int mask = 0;
 
     public AccountModel()
     {}
 
-    public AccountModel(Long user_id, String name, long balance, boolean hidden, boolean needsInvite)
+    public AccountModel(User user, String name, long balance, boolean hidden, boolean needsInvite)
     {
-        this.user_id = user_id;
+        this.userEntity = user.getEntity();
         this.name = name;
         this.value = balance;
         this.mask = (byte)((hidden ? 1 : 0) + (needsInvite ? 2 : 0));
     }
 
-    public AccountModel(Long user_id, String name, long balance, boolean hidden)
+    public AccountModel(User user, String name, long balance, boolean hidden)
     {
-        this(user_id, name, balance, hidden, false);
+        this(user, name, balance, hidden, false);
     }
 
     public boolean needsInvite()
@@ -103,5 +110,55 @@ public class AccountModel implements Model<Long>
         {
             this.mask &= ~1;
         }
+    }
+
+    public long getId()
+    {
+        return id;
+    }
+
+    public void setId(long id)
+    {
+        this.id = id;
+    }
+
+    public UserEntity getUserEntity()
+    {
+        return userEntity;
+    }
+
+    public void setUserEntity(UserEntity userEntity)
+    {
+        this.userEntity = userEntity;
+    }
+
+    public String getName()
+    {
+        return name;
+    }
+
+    public void setName(String name)
+    {
+        this.name = name;
+    }
+
+    public long getValue()
+    {
+        return value;
+    }
+
+    public void setValue(long value)
+    {
+        this.value = value;
+    }
+
+    public int getMask()
+    {
+        return mask;
+    }
+
+    public void setMask(int mask)
+    {
+        this.mask = mask;
     }
 }

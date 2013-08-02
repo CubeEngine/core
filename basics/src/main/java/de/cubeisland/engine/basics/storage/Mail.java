@@ -21,6 +21,7 @@ import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
@@ -46,10 +47,12 @@ public class Mail
     private String message;
 
     @Column(name = "userId", nullable = false)
+    @JoinColumn(name = "userid") // ebean needs this
     @ManyToOne(optional = false, cascade = {CascadeType.REFRESH, CascadeType.REMOVE})
     @Attribute(type = AttrType.INT, unsigned = true)
     private UserEntity userEntity;
-    @Column()
+    @Column(name = "senderId")
+    @JoinColumn(name = "senderId") // ebean needs this
     @ManyToOne(cascade = {CascadeType.REFRESH, CascadeType.REMOVE})
     @Attribute(type = AttrType.INT, unsigned = true)
     private UserEntity senderEntity;

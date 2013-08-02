@@ -149,7 +149,7 @@ public class MoneyCommand extends ContainerCommand
         for (AccountModel account : models)
         {
             context.sendTranslated("&a%d &f- &2%s&f: &6%s", i++,
-                    this.module.getCore().getUserManager().getUser(account.user_id).getName(), manager.format(account.value / manager.fractionalDigitsFactor()));
+                   account.getUserEntity().getPlayer(), manager.format(account.getValue() / manager.fractionalDigitsFactor()));
         }
     }
 

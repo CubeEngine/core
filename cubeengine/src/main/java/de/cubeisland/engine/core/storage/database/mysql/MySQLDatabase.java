@@ -35,6 +35,7 @@ import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
+import javax.persistence.UniqueConstraint;
 
 import com.avaje.ebean.EbeanServer;
 import com.avaje.ebean.EbeanServerFactory;
@@ -95,7 +96,9 @@ public class MySQLDatabase extends AbstractPooledDatabase
         serverConfig = new ServerConfig();
         serverConfig.setDataSource(dataSource);
         serverConfig.setName("cubeengine");
-        serverConfig.setNamingConvention(new NamingConvention());
+        NamingConvention namingConvention = new NamingConvention();
+        namingConvention.setUseForeignKeyPrefix(false); // Use the column names we declare!
+        serverConfig.setNamingConvention(namingConvention);
         serverConfig.setRegister(false);
 
     }
@@ -253,18 +256,19 @@ public class MySQLDatabase extends AbstractPooledDatabase
                         ManyToOne foreignKey = field.getAnnotation(ManyToOne.class);
                         builder.append(",\n").append(getForeignKey(field, column, foreignKey.cascade(), field.getType()));
                     }
-                    if (field.isAnnotationPresent(OneToOne.class))
-                    {
-                        OneToOne foreignKey = field.getAnnotation(OneToOne.class);
-                        builder.append(",\n").append(getForeignKey(field, column, foreignKey.cascade(), field.getType()));
-                    }
                     if (field.isAnnotationPresent(Index.class))
                     {
                         builder.append(",\nINDEX (").append(getColName(field, column)).append(")");
                     }
                 }
             }
-            // TODO multi unique uses UniqueConstraint in table annotation
+            if (table.uniqueConstraints().length != 0)
+            {
+                for (UniqueConstraint uniqueConstraint : table.uniqueConstraints())
+                {
+                    builder.append(",\nUNIQUE (").append(MySQLQueryBuilder.fields(uniqueConstraint.columnNames())).append(")");
+                }
+            }
             builder.append(")\n");
             if (autoIncrement) builder.append("AUTO_INCREMENT 1,\n");
             builder.append("ENGINE InnoDB,\n");

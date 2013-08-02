@@ -37,9 +37,9 @@ public class BankAccount extends Account
     protected BankAccount(ConomyManager manager, AccountModel model)
     {
         super(manager, model);
-        this.owner = new HashMap<Long, BankAccessModel>();
-        this.member = new HashMap<Long, BankAccessModel>();
-        this.invites = new HashMap<Long, BankAccessModel>();
+        this.owner = new HashMap<>();
+        this.member = new HashMap<>();
+        this.invites = new HashMap<>();
         for (BankAccessModel access : this.manager.bankAccessStorage.getBankAccess(this.model))
         {
             switch (access.accessLevel)
@@ -59,7 +59,7 @@ public class BankAccount extends Account
     @Override
     public String getName()
     {
-        return this.model.name;
+        return this.model.getName();
     }
 
     @Override
@@ -79,7 +79,7 @@ public class BankAccount extends Account
     @Override
     public boolean has(double amount)
     {
-        return (this.model.value - amount * this.manager.fractionalDigitsFactor()) >= this.manager.getMinimumBankBalance();
+        return (this.model.getValue() - amount * this.manager.fractionalDigitsFactor()) >= this.manager.getMinimumBankBalance();
     }
 
     @Override

@@ -24,7 +24,8 @@ import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
-import javax.persistence.OneToOne;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 import com.avaje.ebean.EbeanServer;
@@ -54,7 +55,8 @@ public class BasicsUserEntity
      */
 
     @Column(name = "userid")
-    @OneToOne(optional = false, cascade = {CascadeType.REFRESH, CascadeType.REMOVE})
+    @ManyToOne(optional = false, cascade = {CascadeType.REFRESH, CascadeType.REMOVE})
+    @JoinColumn(name = "userid") // ebean needs this
     @Attribute(type = AttrType.INT, unsigned = true)
     private UserEntity entity; // User Key
     @Column()

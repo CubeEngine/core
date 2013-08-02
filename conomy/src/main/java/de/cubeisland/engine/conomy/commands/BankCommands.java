@@ -109,7 +109,7 @@ public class BankCommands extends ContainerCommand
             }
             return;
         }
-        Set<String> allBanks = this.manager.getAllBanks(ConomyPermissions.BANK_SHOWHIDDEN.isAuthorized(context.getSender()));
+        Set<String> allBanks = this.manager.getBankNames(ConomyPermissions.BANK_SHOWHIDDEN.isAuthorized(context.getSender()));
         if (allBanks.isEmpty())
         {
             context.sendTranslated("&eThere are no banks currently!");

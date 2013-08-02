@@ -266,6 +266,7 @@ public final class BukkitCore extends JavaPlugin implements Core
         this.database.registerEntity(UserEntity.class);
         this.database.registerEntity(WorldEntity.class);
 
+
         // depends on: plugin manager
         this.eventRegistration = new EventManager(this);
 

@@ -46,7 +46,7 @@ public class BasicsUser
 
     public void loadMails()
     {
-        this.mailbox = this.ebeanServer.find(Mail.class).where().eq("senderId", bUEntity.getEntity()).findList();
+        this.mailbox = this.ebeanServer.find(Mail.class).where().eq("senderId", bUEntity.getEntity().getId()).findList();
     }
 
     public List<Mail> getMails()

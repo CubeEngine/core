@@ -23,6 +23,7 @@ import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
@@ -48,10 +49,12 @@ public class IgnoreList
     public long id; // Ebean requires this
     @Column(name = "userid")
     @ManyToOne(cascade = {CascadeType.REFRESH, CascadeType.REMOVE})
+    @JoinColumn(name = "senderId") // ebean needs this
     @Attribute(type = AttrType.INT, unsigned = true)
     public UserEntity userEntity;
     @Column(name = "ignoreid", nullable = false)
     @ManyToOne(cascade = {CascadeType.REFRESH, CascadeType.REMOVE})
+    @JoinColumn(name = "ignoreid") // ebean needs this
     @Attribute(type = AttrType.INT, unsigned = true)
     public UserEntity ignore;
 
