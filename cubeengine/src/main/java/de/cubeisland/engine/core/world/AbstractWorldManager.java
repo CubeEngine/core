@@ -41,6 +41,7 @@ public abstract class AbstractWorldManager implements WorldManager
     public AbstractWorldManager(Core core)
     {
         core.getDB().registerEntity(WorldEntity.class);
+        this.database = core.getDB();
         this.worlds = new THashMap<>();
         this.worldIds = new TLongObjectHashMap<>();
         this.generatorMap = new THashMap<>();
