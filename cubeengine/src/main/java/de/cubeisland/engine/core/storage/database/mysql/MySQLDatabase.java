@@ -149,6 +149,7 @@ public class MySQLDatabase extends AbstractPooledDatabase
                 }
                 else if (dbVersion.isOlderThan(version))
                 {
+                    Connection connection = this.getConnection();
                     this.core.getLog().info("table-version is too old! Updating " + tableName + " from " +dbVersion.toString()+ " to " + version.toString());
                     DBUpdater dbUpdater = modelClass.getAnnotation(DBUpdater.class);
                     if (dbUpdater == null)
@@ -157,17 +158,18 @@ public class MySQLDatabase extends AbstractPooledDatabase
                     }
                     else
                     {
-                        dbUpdater.value().newInstance().update(this, modelClass, dbVersion, version);
+                        dbUpdater.value().newInstance().update(connection, modelClass, dbVersion, version);
                         this.core.getLog().info(tableName + " got updated to " + version.toString());
                     }
-                    this.execute("ALTER TABLE " + prepareTableName(tableName) + " COMMENT = ?;", version.toString());
+                    this.bindValues(this.prepareStatement("ALTER TABLE " + prepareTableName(tableName) + " COMMENT = ?", connection), version.toString()).execute();
+                    connection.close(); // return the connection to the pool
                 }
                 return true;
             }
         }
         catch (Exception e)
         {
-            this.core.getLog().warn("Could not execute structure update!", e);
+            this.core.getLog().warn("Could not execute structure update for the table " + tableName, e);
         }
         return false;
     }

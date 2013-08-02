@@ -17,6 +17,7 @@
  */
 package de.cubeisland.engine.core.storage.database;
 
+import java.sql.Connection;
 import java.sql.SQLException;
 
 import de.cubeisland.engine.core.util.Version;
@@ -26,5 +27,5 @@ import de.cubeisland.engine.core.util.Version;
  */
 public interface DatabaseUpdater
 {
-    public void update(Database database, Class<?> entityClass, Version dbVersion, Version codeVersion) throws SQLException;
+    public void update(Connection connection, Class<?> entityClass, Version dbVersion, Version codeVersion) throws SQLException;
 }
