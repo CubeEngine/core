@@ -60,7 +60,7 @@ public class BasicsUserEntity
     @Attribute(type = AttrType.INT, unsigned = true)
     private UserEntity entity; // User Key
     @Column()
-    @Attribute(type = AttrType.TIMESTAMP)
+    @Attribute(type = AttrType.DATETIME)
     private Timestamp muted;
     @Column(nullable = false)
     @Attribute(type = AttrType.BOOLEAN)
@@ -134,7 +134,7 @@ public class BasicsUserEntity
                 connection.prepareStatement("CREATE TABLE IF NOT EXISTS `cube_basicuser` \n(" +
                          "id bigint(20) NOT NULL AUTO_INCREMENT,\n" +
                          "userid int(10) unsigned NOT NULL,\n" +
-                         "muted timestamp null default null,\n" +
+                         "muted datetime null default null,\n" +
                          "godmode tinyint(1) NOT NULL,\n" +
                          "PRIMARY KEY (id),\n" +
                          "FOREIGN KEY f_userid (userid) REFERENCES cube_user(`key`) ON DELETE CASCADE ON UPDATE CASCADE)\n" +

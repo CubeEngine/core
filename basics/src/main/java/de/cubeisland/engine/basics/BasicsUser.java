@@ -42,6 +42,11 @@ public class BasicsUser
     {
         this.ebeanServer = ebeanServer;
         this.bUEntity = ebeanServer.find(BasicsUserEntity.class, user.getEntity().getId());
+        if (bUEntity == null)
+        {
+            this.bUEntity = new BasicsUserEntity(user);
+            ebeanServer.save(this.bUEntity);
+        }
     }
 
     public void loadMails()

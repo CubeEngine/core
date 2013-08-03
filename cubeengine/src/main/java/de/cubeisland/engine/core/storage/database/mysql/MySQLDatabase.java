@@ -41,12 +41,9 @@ import com.avaje.ebean.EbeanServerFactory;
 import com.avaje.ebean.config.MatchingNamingConvention;
 import com.avaje.ebean.config.ServerConfig;
 import com.avaje.ebean.config.TableName;
-import com.avaje.ebeaninternal.server.core.BootupClassPathSearch;
 import com.jolbox.bonecp.BoneCPDataSource;
 import de.cubeisland.engine.core.Core;
-import de.cubeisland.engine.core.CubeEngine;
 import de.cubeisland.engine.core.config.Configuration;
-import de.cubeisland.engine.core.module.Module;
 import de.cubeisland.engine.core.storage.DatabaseClassloader;
 import de.cubeisland.engine.core.storage.database.AbstractPooledDatabase;
 import de.cubeisland.engine.core.storage.database.AttrType;
@@ -99,20 +96,18 @@ public class MySQLDatabase extends AbstractPooledDatabase
         namingConvention.setUseForeignKeyPrefix(false); // Use the column names we declare!
         serverConfig.setNamingConvention(namingConvention);
         serverConfig.setRegister(false);
+        this.databaseClassloader = new DatabaseClassloader();
 
     }
+
+    private DatabaseClassloader databaseClassloader;
 
     public void enable(ClassLoader coreLoader)
     {
         ClassLoader previous = Thread.currentThread().getContextClassLoader();
-        DatabaseClassloader classLoader = new DatabaseClassloader();
-        classLoader.addClassLoader(coreLoader);
-        classLoader.addClassLoader(previous);
-        for (Module module : CubeEngine.getCore().getModuleManager().getModules())
-        {
-            classLoader.addClassLoader(module.getClassLoader());
-        }
-        Thread.currentThread().setContextClassLoader(classLoader);
+        databaseClassloader.addClassLoader(coreLoader);
+        databaseClassloader.addClassLoader(previous);
+        Thread.currentThread().setContextClassLoader(databaseClassloader);
         ebeanServer = EbeanServerFactory.create(serverConfig);
         Thread.currentThread().setContextClassLoader(previous);
     }
@@ -183,6 +178,7 @@ public class MySQLDatabase extends AbstractPooledDatabase
     public void registerEntity(Class<?> entityClass)
     {
         this.serverConfig.addClass(entityClass);
+        this.databaseClassloader.addClassLoader(entityClass.getClassLoader());
         if (entityClass.isAnnotationPresent(Entity.class) && entityClass.isAnnotationPresent(Table.class))
         {
             Table table = entityClass.getAnnotation(Table.class);
