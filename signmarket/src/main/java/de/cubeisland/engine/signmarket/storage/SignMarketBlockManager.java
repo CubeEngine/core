@@ -21,11 +21,11 @@ import java.util.Collection;
 
 import org.bukkit.Location;
 
-import de.cubeisland.engine.core.storage.SingleKeyStorage;
+import com.avaje.ebean.EbeanServer;
 import de.cubeisland.engine.signmarket.Signmarket;
 import gnu.trove.map.hash.THashMap;
 
-public class SignMarketBlockManager extends SingleKeyStorage<Long, SignMarketBlockModel>
+public class SignMarketBlockManager
 {
     private static final int REVISION = 1;
 
@@ -33,17 +33,18 @@ public class SignMarketBlockManager extends SingleKeyStorage<Long, SignMarketBlo
 
     private Signmarket module;
 
+    private EbeanServer ebean;
+
     public SignMarketBlockManager(Signmarket module)
     {
-        super(module.getCore().getDB(), SignMarketBlockModel.class, REVISION);
+        this.ebean = module.getCore().getDB().getEbeanServer();
         this.module = module;
-        this.initialize();
     }
 
     public void load()
     {
-        this.blockModels = new THashMap<Location, SignMarketBlockModel>();
-        for (SignMarketBlockModel model : this.getAll())
+        this.blockModels = new THashMap<>();
+        for (SignMarketBlockModel model : this.ebean.find(SignMarketBlockModel.class).findList())
         {
             this.blockModels.put(model.getLocation(),model);
         }
@@ -55,19 +56,23 @@ public class SignMarketBlockManager extends SingleKeyStorage<Long, SignMarketBlo
         return this.blockModels.values();
     }
 
-    @Override
     public void delete(SignMarketBlockModel model)
     {
         this.blockModels.remove(model.getLocation());
-        super.delete(model);
-        this.module.getLog().debug("deleted block-model #{}", model.key);
+        if (model.getId() == 0) return; // unsaved model
+        this.ebean.delete(model);
+        this.module.getLog().debug("deleted block-model #{}", model.getId());
     }
 
-    @Override
     public void store(SignMarketBlockModel blockModel)
     {
         this.blockModels.put(blockModel.getLocation(),blockModel);
-        super.store(blockModel);
-        this.module.getLog().debug("stored block-model #{}", blockModel.key);
+        this.ebean.save(blockModel);
+        this.module.getLog().debug("stored block-model #{}", blockModel.getId());
+    }
+
+    public void update(SignMarketBlockModel blockItemModel)
+    {
+        this.ebean.update(blockItemModel);
     }
 }

@@ -48,12 +48,12 @@ public class IgnoreList
     @Attribute(type = AttrType.BIGINT)
     public long id; // Ebean requires this
     @Column(name = "userid")
-    @ManyToOne(cascade = {CascadeType.REFRESH, CascadeType.REMOVE})
-    @JoinColumn(name = "senderId") // ebean needs this
+    @ManyToOne(optional = false, cascade = {CascadeType.REFRESH, CascadeType.REMOVE})
+    @JoinColumn(name = "userid") // ebean needs this
     @Attribute(type = AttrType.INT, unsigned = true)
     public UserEntity userEntity;
     @Column(name = "ignoreid", nullable = false)
-    @ManyToOne(cascade = {CascadeType.REFRESH, CascadeType.REMOVE})
+    @ManyToOne(optional = false, cascade = {CascadeType.REFRESH, CascadeType.REMOVE})
     @JoinColumn(name = "ignoreid") // ebean needs this
     @Attribute(type = AttrType.INT, unsigned = true)
     public UserEntity ignore;

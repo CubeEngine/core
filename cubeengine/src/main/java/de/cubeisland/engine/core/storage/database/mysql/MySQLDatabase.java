@@ -154,10 +154,22 @@ public class MySQLDatabase extends AbstractPooledDatabase
                     }
                     else
                     {
-                        dbUpdater.value().newInstance().update(connection, modelClass, dbVersion, version);
+                        try
+                        {
+                            connection.setAutoCommit(false);
+                            dbUpdater.value().newInstance().update(connection, modelClass, dbVersion, version);
+                            connection.commit();
+                        }
+                        catch (SQLException ex)
+                        {
+                            connection.rollback();
+                            throw ex;
+                        }
+                        connection.setAutoCommit(true);
                         this.core.getLog().info(tableName + " got updated to " + version.toString());
                     }
-                    this.bindValues(this.prepareStatement("ALTER TABLE " + prepareTableName(tableName) + " COMMENT = ?", connection), version.toString()).execute();
+                    this.bindValues(this.prepareStatement("ALTER TABLE " + prepareTableName(tableName) + " COMMENT = ?", connection), version
+                        .toString()).execute();
                     connection.close(); // return the connection to the pool
                 }
                 return true;
@@ -243,7 +255,7 @@ public class MySQLDatabase extends AbstractPooledDatabase
                     }
                     else
                     {
-                        throw new IllegalStateException("Missing Column Annotation!");
+                        throw new IllegalStateException("Missing Column Annotation! " + field.getName());
                     }
                     if (field.isAnnotationPresent(ManyToOne.class))
                     {
@@ -473,17 +485,6 @@ public class MySQLDatabase extends AbstractPooledDatabase
         {
             TableName tableName = super.getTableName(beanClass);
             return new TableName(tableName.getCatalog(), tableName.getSchema(), prepareTableName(tableName.getName()));
-        }
-
-        @Override
-        public String getColumnFromProperty(Class<?> beanClass, String propertyName)
-        {
-            String columnFromProperty = super.getColumnFromProperty(beanClass, propertyName);
-            if (columnFromProperty.equalsIgnoreCase("key"))
-            {
-                return "`key`"; // Ebean does not add quotes all the time (WHY?)
-            }
-            return columnFromProperty;
         }
     }
 

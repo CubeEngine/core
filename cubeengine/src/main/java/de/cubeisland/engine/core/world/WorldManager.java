@@ -46,4 +46,6 @@ public interface WorldManager extends Cleanable
     ChunkGenerator getGenerator(Module module, String id);
     void removeGenerator(Module module, String id);
     void removeGenerators(Module module);
+
+    WorldEntity getWorldEntity(World world);
 }

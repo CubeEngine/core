@@ -41,7 +41,7 @@ public class BasicsUser
     public BasicsUser(EbeanServer ebeanServer, User user)
     {
         this.ebeanServer = ebeanServer;
-        this.bUEntity = ebeanServer.find(BasicsUserEntity.class, user.getEntity().getId());
+        this.bUEntity = ebeanServer.find(BasicsUserEntity.class).where().eq("userid", user.getEntity().getId()).findUnique();
         if (bUEntity == null)
         {
             this.bUEntity = new BasicsUserEntity(user);

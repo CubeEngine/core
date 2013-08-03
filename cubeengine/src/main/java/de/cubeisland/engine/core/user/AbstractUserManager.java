@@ -34,7 +34,6 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-import com.avaje.ebean.Expr;
 import de.cubeisland.engine.core.Core;
 import de.cubeisland.engine.core.command.CommandSender;
 import de.cubeisland.engine.core.filesystem.FileManager;
@@ -498,7 +497,7 @@ public abstract class AbstractUserManager implements UserManager
     public void clean()
     {
         Timestamp time = new Timestamp(System.currentTimeMillis() - core.getConfiguration().userManagerCleanupDatabase.toMillis());
-        this.database.getEbeanServer().delete(UserEntity.class, this.database.getEbeanServer().find(UserEntity.class).where().and(Expr.le("lasteen", time),Expr.eq("nogc",false)).findIds());
+        this.database.getEbeanServer().delete(UserEntity.class, this.database.getEbeanServer().find(UserEntity.class).where().le("lastseen", time).eq("nogc",false).findIds());
     }
 
     protected final class DefaultAttachment

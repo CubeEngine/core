@@ -37,9 +37,9 @@ public class UserEntity
     public static final Long NO_ID = -1L;
 
     @Id
-    @Column(name = "key") // TODO change to Id
+    @Column(name = "`key`") // TODO change to Id
     @Attribute(type = AttrType.INT, unsigned = true)
-    private long id;
+    private Long id;
     @Column(name = "player", nullable = false, length = 16, unique = true)
     @Attribute(type = AttrType.VARCHAR)
     private String playerName;
@@ -72,12 +72,12 @@ public class UserEntity
         this.passwd = new byte[0];
     }
 
-    public long getId()
+    public Long getId()
     {
         return id;
     }
 
-    public void setId(long id)
+    public void setId(Long id)
     {
         this.id = id;
     }

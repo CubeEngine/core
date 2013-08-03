@@ -22,12 +22,21 @@ import java.util.concurrent.TimeUnit;
 import de.cubeisland.engine.core.config.Configuration;
 import de.cubeisland.engine.core.module.Module;
 import de.cubeisland.engine.core.util.Profiler;
+import de.cubeisland.engine.signmarket.storage.SignMarketBlockModel;
+import de.cubeisland.engine.signmarket.storage.SignMarketItemModel;
 
 public class Signmarket extends Module
 {
     private MarketSignFactory marketSignFactory;
     private SignMarketConfig config;
     private EditModeListener editModeListener;
+
+    @Override
+    public void onLoad()
+    {
+        this.getCore().getDB().registerEntity(SignMarketItemModel.class);
+        this.getCore().getDB().registerEntity(SignMarketBlockModel.class);
+    }
 
     @Override
     public void onEnable()

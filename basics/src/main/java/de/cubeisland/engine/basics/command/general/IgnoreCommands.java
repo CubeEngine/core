@@ -22,7 +22,6 @@ import java.util.List;
 import java.util.Random;
 
 import com.avaje.ebean.EbeanServer;
-import com.avaje.ebean.Expr;
 import de.cubeisland.engine.basics.Basics;
 import de.cubeisland.engine.basics.BasicsPerm;
 import de.cubeisland.engine.basics.storage.IgnoreList;
@@ -60,8 +59,8 @@ public class IgnoreCommands
     {
         if (checkIgnored(user, ignored))
         {
-            IgnoreList ignore = this.ebeanServer.find(IgnoreList.class).where()
-                                                .and(Expr.eq("key", user.getId()), Expr.eq("ignore", ignored.getId()))
+            IgnoreList ignore = this.ebeanServer.find(IgnoreList.class).where().eq("userid", user.getId())
+                                                .eq("ignore", ignored.getId())
                                                 .findUnique();
             this.ebeanServer.delete(ignore);
             return true;
@@ -72,8 +71,8 @@ public class IgnoreCommands
     public boolean checkIgnored(User user, User ignored)
     {
         IgnoreList ignore = this.ebeanServer.find(IgnoreList.class).where()
-                                            .and(Expr.eq("key", user.getId()), Expr.eq("ignore", ignored.getId()))
-                                            .findUnique();
+        .eq("userid.key", user.getEntity().getId())
+        .eq("ignore.key", ignored.getEntity().getId()).findUnique();
         return ignore != null;
     }
 

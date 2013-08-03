@@ -17,73 +17,108 @@
  */
 package de.cubeisland.engine.signmarket.storage;
 
+import java.sql.Connection;
+import java.sql.SQLException;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
+import javax.persistence.Transient;
+import javax.persistence.UniqueConstraint;
+
 import org.bukkit.Location;
 
 import de.cubeisland.engine.core.CubeEngine;
-import de.cubeisland.engine.core.storage.Model;
 import de.cubeisland.engine.core.storage.database.AttrType;
 import de.cubeisland.engine.core.storage.database.Attribute;
-import de.cubeisland.engine.core.storage.database.Index;
-import de.cubeisland.engine.core.storage.database.SingleKeyEntity;
+import de.cubeisland.engine.core.storage.database.DBUpdater;
+import de.cubeisland.engine.core.storage.database.DatabaseUpdater;
 import de.cubeisland.engine.core.user.User;
+import de.cubeisland.engine.core.user.UserEntity;
+import de.cubeisland.engine.core.util.Version;
+import de.cubeisland.engine.core.world.WorldEntity;
+import de.cubeisland.engine.signmarket.storage.SignMarketBlockModel.SignMarketBlockUpdater;
 
-@SingleKeyEntity(autoIncrement = true, primaryKey = "key", tableName = "signmarketblocks", indices = {
-        @Index(value = Index.IndexType.FOREIGN_KEY, fields = "world", f_field = "key", f_table = "worlds", onDelete = "CASCADE"),
-        @Index(value = Index.IndexType.FOREIGN_KEY, fields = "itemKey", f_field = "key", f_table = "signmarketitem", onDelete = "CASCADE"),
-        @Index(value = Index.IndexType.FOREIGN_KEY, fields = "owner", f_field = "key", f_table = "user"),
-        @Index(value = Index.IndexType.INDEX, fields = {"x", "y", "z"})
-})
-public class SignMarketBlockModel implements Model<Long>
+@Entity
+@Table(name = "signmarketblocks", uniqueConstraints = @UniqueConstraint(columnNames = {"world", "x", "y", "z"}))
+@DBUpdater(SignMarketBlockUpdater.class)
+public class SignMarketBlockModel
 {
-    @Attribute(type = AttrType.INT, unsigned = true)
-    public long key = -1;
+    @javax.persistence.Version
+    static final Version version = new Version(2);
 
+    @Id
     @Attribute(type = AttrType.INT, unsigned = true)
-    public long world;
-    @Attribute(type = AttrType.INT)
-    public int x;
-    @Attribute(type = AttrType.INT)
-    public int y;
-    @Attribute(type = AttrType.INT)
-    public int z;
+    private long id = 0;
 
+    @Column(name = "world", nullable = false)
+    @JoinColumn(name = "world")
+    @ManyToOne(optional = false, cascade = {CascadeType.REFRESH, CascadeType.REMOVE})
+    @Attribute(type = AttrType.INT, unsigned = true)
+    private WorldEntity world;
+    @Column(nullable = false)
+    @Attribute(type = AttrType.INT)
+    private int x;
+    @Column(nullable = false)
+    @Attribute(type = AttrType.INT)
+    private int y;
+    @Column(nullable = false)
+    @Attribute(type = AttrType.INT)
+    private int z;
+
+    @Column(nullable = false)
     @Attribute(type = AttrType.BOOLEAN)
-    public Boolean signType; // null - invalid | true - buy | false - sell
+    private Boolean signType; // null - invalid | true - buy | false - sell
+    @Column(name = "owner")
+    @JoinColumn(name = "owner")
+    @ManyToOne(optional = false, cascade = {CascadeType.REFRESH, CascadeType.REMOVE})
     @Attribute(type = AttrType.INT, unsigned = true, notnull = false)
-    public Long owner; // null - admin-shop | else user-key
+    private UserEntity owner; // null - admin-shop | else user-key
 
+    @Column(name = "itemKey", nullable = false)
+    @JoinColumn(name = "itemKey")
+    @ManyToOne(optional = false, cascade = {CascadeType.REFRESH, CascadeType.REMOVE})
     @Attribute(type = AttrType.INT, unsigned = true)
-    public long itemKey = -1;
-
+    private SignMarketItemModel itemModel;
+    @Column(nullable = false)
     @Attribute(type = AttrType.SMALLINT, unsigned = true)
-    public int amount = 0;
-    @Attribute(type = AttrType.MEDIUMINT, unsigned = true, notnull = false)
-    public Integer demand;
-
+    private int amount = 0;
+    @Column
+    @Attribute(type = AttrType.MEDIUMINT, unsigned = true)
+    private Integer demand;
+    @Column(nullable = false)
     @Attribute(type = AttrType.INT, unsigned = true)
-    public long price;
+    private long price;
 
     // Helper-methods:
+    @Transient
     private Location location;
 
     public SignMarketBlockModel(Location location)
     {
-        this.world = CubeEngine.getCore().getWorldManager().getWorldId(location.getWorld());
+        this.world = CubeEngine.getCore().getWorldManager().getWorldEntity(location.getWorld());
         this.x = location.getBlockX();
         this.y = location.getBlockY();
         this.z = location.getBlockZ();
     }
 
+    /**
+     * Copies the values from an other BlockModel into this one
+     *
+     * @param blockInfo the model to copy the values from
+     */
     public void copyValuesFrom(SignMarketBlockModel blockInfo)
     {
         this.signType = blockInfo.signType;
         this.owner = blockInfo.owner;
-        this.itemKey = blockInfo.itemKey;
+        this.itemModel = blockInfo.itemModel;
         this.amount = blockInfo.amount;
         this.demand = blockInfo.demand;
         this.price = blockInfo.price;
     }
-
 
     /**
      * Returns the location of this sign
@@ -95,37 +130,169 @@ public class SignMarketBlockModel implements Model<Long>
     {
         if (this.location == null)
         {
-            this.location = new Location(CubeEngine.getCore().getWorldManager().getWorld(world), x, y, z);
+            this.location = new Location(CubeEngine.getCore().getWorldManager().getWorld(world.getWorldName()), x, y, z);
         }
         return this.location;
     }
 
     /**
-     * Sets the owner
+     * Returns true if given user is the owner
      *
-     * @param owner null for admin-signs
+     * @param user
+     * @return
      */
-    public void setOwner(User owner)
-    {
-        this.owner = owner == null ? null : owner.getId();
-    }
-
     public boolean isOwner(User user)
     {
-        return user.getId().equals(this.owner);
+        if (this.owner == null) return user == null;
+        if (user == null) return false;
+        return user.getId().equals(this.owner.getId());
     }
 
-    //for database:
-    @Override
-    public Long getId()
-    {
-        return key;
-    }
-    @Override
-    public void setId(Long id)
-    {
-        this.key = id;
-    }
     public SignMarketBlockModel()
     {}
+
+    public long getId()
+    {
+        return id;
+    }
+
+    public void setId(long id)
+    {
+        this.id = id;
+    }
+
+    public WorldEntity getWorld()
+    {
+        return world;
+    }
+
+    public void setWorld(WorldEntity world)
+    {
+        this.world = world;
+    }
+
+    public int getX()
+    {
+        return x;
+    }
+
+    public void setX(int x)
+    {
+        this.x = x;
+    }
+
+    public int getY()
+    {
+        return y;
+    }
+
+    public void setY(int y)
+    {
+        this.y = y;
+    }
+
+    public int getZ()
+    {
+        return z;
+    }
+
+    public void setZ(int z)
+    {
+        this.z = z;
+    }
+
+    public Boolean getSignType()
+    {
+        return signType;
+    }
+
+    public void setSignType(Boolean signType)
+    {
+        this.signType = signType;
+    }
+
+    public UserEntity getOwner()
+    {
+        return owner;
+    }
+
+    public void setOwner(UserEntity owner)
+    {
+        this.owner = owner;
+    }
+
+    public SignMarketItemModel getItemModel()
+    {
+        return itemModel;
+    }
+
+    public void setItemModel(SignMarketItemModel itemModel)
+    {
+        this.itemModel = itemModel;
+    }
+
+    public int getAmount()
+    {
+        return amount;
+    }
+
+    public void setAmount(int amount)
+    {
+        this.amount = amount;
+    }
+
+    public Integer getDemand()
+    {
+        return demand;
+    }
+
+    public void setDemand(Integer demand)
+    {
+        this.demand = demand;
+    }
+
+    public long getPrice()
+    {
+        return price;
+    }
+
+    public void setPrice(long price)
+    {
+        this.price = price;
+    }
+
+    public static class SignMarketBlockUpdater implements DatabaseUpdater
+    {
+        @Override
+        public void update(Connection connection, Class<?> entityClass, Version dbVersion, Version codeVersion) throws SQLException
+        {
+            if (codeVersion.getMajor() == 2)
+            {
+                connection.prepareStatement("RENAME TABLE cube_signmarketblocks TO old_signmarketblocks").execute();
+                connection.prepareStatement("CREATE TABLE `cube_signmarketblocks` (  " +
+                                                "`id` int(10) unsigned NOT NULL AUTO_INCREMENT,  " +
+                                                "`world` int(10) unsigned NOT NULL,  " +
+                                                "`x` int(11) NOT NULL,  " +
+                                                "`y` int(11) NOT NULL,  " +
+                                                "`z` int(11) NOT NULL,  " +
+                                                "`signType` tinyint(1) NOT NULL,  " +
+                                                "`owner` int(10) unsigned DEFAULT NULL, " +
+                                                "`itemKey` int(10) unsigned NOT NULL,  " +
+                                                "`amount` smallint(5) unsigned NOT NULL,  " +
+                                                "`demand` mediumint(8) unsigned DEFAULT NULL,  " +
+                                                "`price` int(10) unsigned NOT NULL,  " +
+                                                "PRIMARY KEY (`id`),  " +
+                                                "KEY `loc` (`world`,`x`,`y`,`z`),  " +
+                                                "FOREIGN KEY f_worldid(`world`) REFERENCES `cube_worlds` (`key`) ON DELETE CASCADE,  " +
+                                                "FOREIGN KEY f_signitemid(`itemKey`) REFERENCES `cube_signmarketitem` (`id`) ON DELETE CASCADE,  " +
+                                                "FOREIGN KEY f_ownerid(`owner`) REFERENCES `cube_user` (`key`) ON DELETE CASCADE)" +
+                                                "DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT = '2.0.0'").execute() ;
+                connection.prepareStatement("INSERT INTO `cube_signmarketblocks` (`id`, `world`, `x`,`y`,`z`,`signType`,`owner`,`itemKey`,`amount`,`demand`,`price`) " +
+                                                "SELECT `key`, `world`, `x`,`y`,`z`,`signType`,`owner`,`itemKey`,`amount`,`demand`,`price` FROM `old_signmarketblocks`").execute();
+                connection.prepareStatement("DROP TABLE old_signmarketblocks").execute();
+                // DROP old related table
+                connection.prepareStatement("DROP TABLE old_signmarketitem").execute();
+            }
+        }
+    }
 }

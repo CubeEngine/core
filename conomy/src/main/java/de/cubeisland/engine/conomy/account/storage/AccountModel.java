@@ -194,7 +194,7 @@ public class AccountModel
                                                 "UNIQUE  KEY  `userId` (  `userId` ,  `accountId`  ) ,\n" +
                                                 "KEY  `accountId` (  `accountId`  )  ) " +
                                                 "ENGINE  = InnoDB  DEFAULT CHARSET  = utf8").execute();
-                connection.prepareStatement("INSERT INTO `old_account_access` SELECT * FROM `cube_account_access`");
+                connection.prepareStatement("INSERT INTO `old_account_access` SELECT * FROM `cube_account_access`").execute();
                 // Drop related table and refill data
                 connection.prepareStatement("DROP TABLE cube_account_access").execute();
                 connection.prepareStatement("CREATE  TABLE  `cube_account_access` \n" +
@@ -207,9 +207,9 @@ public class AccountModel
                                                 "FOREIGN KEY f_accountId (`accountId`) REFERENCES `cube_accounts`(  `id`  ) ON DELETE CASCADE ON UPDATE CASCADE, \n" +
                                                 "FOREIGN KEY f_userId (`userId`) REFERENCES `cube_user` (`key`) ON DELETE CASCADE  ON UPDATE CASCADE )\n" +
                                                 "DEFAULT CHARSET  = utf8 COLLATE=utf8_unicode_ci COMMENT ='1.0.0'").execute();
-                connection.prepareStatement("INSERT INTO `cube_account_access` SELECT * FROM `old_account_access`");
+                connection.prepareStatement("INSERT INTO `cube_account_access` SELECT * FROM `old_account_access`").execute();
                 // drop temp_tables
-                connection.prepareStatement("DROP TABLE old_account_access");
+                connection.prepareStatement("DROP TABLE old_account_access").execute();
                 connection.prepareStatement("DROP TABLE old_accounts").execute();
             }
         }

@@ -52,6 +52,12 @@ public abstract class AbstractWorldManager implements WorldManager
         {
             throw new IllegalArgumentException("the world given is null!");
         }
+        return this.getWorldEntity(world).getId();
+    }
+
+    @Override
+    public WorldEntity getWorldEntity(World world)
+    {
         WorldEntity worldEntity = this.worlds.get(world.getName());
         if (worldEntity == null)
         {
@@ -64,7 +70,7 @@ public abstract class AbstractWorldManager implements WorldManager
             this.worlds.put(world.getName(), worldEntity);
             this.worldIds.put(worldEntity.getId(), world);
         }
-        return worldEntity.getId();
+        return worldEntity;
     }
 
     public synchronized Long getWorldId(String name)

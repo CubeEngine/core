@@ -17,32 +17,31 @@
  */
 package de.cubeisland.engine.signmarket.storage;
 
-import de.cubeisland.engine.core.storage.SingleKeyStorage;
+import com.avaje.ebean.EbeanServer;
 import de.cubeisland.engine.signmarket.Signmarket;
 import gnu.trove.map.hash.TLongObjectHashMap;
 import gnu.trove.set.hash.TLongHashSet;
 
-public class SignMarketItemManager extends SingleKeyStorage<Long, SignMarketItemModel>
+public class SignMarketItemManager
 {
-    private static final int REVISION = 1;
-
     private TLongObjectHashMap<SignMarketItemModel> itemInfoModels;
 
     private Signmarket module;
 
+    private EbeanServer ebean;
+
     public SignMarketItemManager(Signmarket module)
     {
-        super(module.getCore().getDB(), SignMarketItemModel.class, REVISION);
+        this.ebean = module.getCore().getDB().getEbeanServer();
         this.module = module;
-        this.initialize();
     }
 
     public void load()
     {
-        this.itemInfoModels = new TLongObjectHashMap<SignMarketItemModel>();
-        for (SignMarketItemModel model : this.getAll())
+        this.itemInfoModels = new TLongObjectHashMap<>();
+        for (SignMarketItemModel model : this.ebean.find(SignMarketItemModel.class).findList())
         {
-            this.itemInfoModels.put(model.key, model);
+            this.itemInfoModels.put(model.getId(), model);
         }
         this.module.getLog().debug("{} item-models loaded", this.itemInfoModels.size());
     }
@@ -52,12 +51,11 @@ public class SignMarketItemManager extends SingleKeyStorage<Long, SignMarketItem
         return this.itemInfoModels.get(key);
     }
 
-    @Override
     public void store(SignMarketItemModel itemInfo)
     {
-        super.store(itemInfo);
-        this.itemInfoModels.put(itemInfo.key, itemInfo);
-        this.module.getLog().debug("stored item-model #{}", itemInfo.key);
+        this.ebean.save(itemInfo);
+        this.itemInfoModels.put(itemInfo.getId(), itemInfo);
+        this.module.getLog().debug("stored item-model #{}", itemInfo.getId());
     }
 
     public void deleteUnusedModels(TLongHashSet usedKeys)
@@ -66,18 +64,21 @@ public class SignMarketItemManager extends SingleKeyStorage<Long, SignMarketItem
         {
             if (!usedKeys.contains(key))
             {
-                this.deleteByKey(key);
-                this.itemInfoModels.remove(key);
+                this.ebean.delete(this.itemInfoModels.remove(key));
                 this.module.getLog().debug("deleted unused item-model #{}", key);
             }
         }
     }
 
-    @Override
     public void delete(SignMarketItemModel itemInfo)
     {
-        this.itemInfoModels.remove(itemInfo.key);
-        super.delete(itemInfo);
-        this.module.getLog().debug("deleted item-model #{}", itemInfo.key);
+        this.itemInfoModels.remove(itemInfo.getId());
+        this.ebean.delete(itemInfo);
+        this.module.getLog().debug("deleted item-model #{}", itemInfo.getId());
+    }
+
+    public void update(SignMarketItemModel itemInfo)
+    {
+        this.ebean.update(itemInfo);
     }
 }
