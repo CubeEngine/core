@@ -40,9 +40,9 @@ public class UserEntity
     @Column(name = "key") // TODO change to Id
     @Attribute(type = AttrType.INT, unsigned = true)
     private long id;
-    @Column(nullable = false, length = 16, unique = true)
+    @Column(name = "player", nullable = false, length = 16, unique = true)
     @Attribute(type = AttrType.VARCHAR)
-    private String player;
+    private String playerName;
     @Column(nullable = false)
     @Attribute(type = AttrType.BOOLEAN)
     private boolean nogc = false;
@@ -66,7 +66,7 @@ public class UserEntity
     UserEntity(String playerName)
     {
         this.id = NO_ID;
-        this.player = playerName;
+        this.playerName = playerName;
         this.lastseen = new Timestamp(System.currentTimeMillis());
         this.firstseen = this.lastseen;
         this.passwd = new byte[0];
@@ -82,14 +82,14 @@ public class UserEntity
         this.id = id;
     }
 
-    public String getPlayer()
+    public String getPlayerName()
     {
-        return player;
+        return playerName;
     }
 
-    public void setPlayer(String player)
+    public void setPlayerName(String playerName)
     {
-        this.player = player;
+        this.playerName = playerName;
     }
 
     public boolean isNogc()

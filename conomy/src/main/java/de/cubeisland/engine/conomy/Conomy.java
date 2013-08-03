@@ -18,6 +18,7 @@
 package de.cubeisland.engine.conomy;
 
 import de.cubeisland.engine.conomy.account.storage.AccountModel;
+import de.cubeisland.engine.conomy.account.storage.BankAccessModel;
 import de.cubeisland.engine.core.command.CommandManager;
 import de.cubeisland.engine.core.config.Configuration;
 import de.cubeisland.engine.core.module.Module;
@@ -36,6 +37,7 @@ public class Conomy extends Module
     public void onLoad()
     {
         this.getCore().getDB().registerEntity(AccountModel.class);
+        this.getCore().getDB().registerEntity(BankAccessModel.class);
     }
 
     @Override

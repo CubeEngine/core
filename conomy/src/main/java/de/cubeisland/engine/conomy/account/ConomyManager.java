@@ -19,6 +19,7 @@ package de.cubeisland.engine.conomy.account;
 
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
@@ -27,7 +28,7 @@ import com.avaje.ebean.EbeanServer;
 import de.cubeisland.engine.conomy.Conomy;
 import de.cubeisland.engine.conomy.ConomyConfiguration;
 import de.cubeisland.engine.conomy.account.storage.AccountModel;
-import de.cubeisland.engine.conomy.account.storage.BankAccessStorage;
+import de.cubeisland.engine.conomy.account.storage.BankAccessModel;
 import de.cubeisland.engine.core.service.Economy;
 import de.cubeisland.engine.core.storage.database.mysql.MySQLDatabase;
 import de.cubeisland.engine.core.user.User;
@@ -38,11 +39,10 @@ import org.slf4j.LoggerFactory;
 public class ConomyManager
 {
     protected final Conomy module;
-    protected BankAccessStorage bankAccessStorage; // TODO remove
     protected final EbeanServer ebean;
 
-    private Map<String,BankAccount> bankaccounts;
-    private Map<Long,BankAccount> bankaccountsID;
+    private Map<String,BankAccount> bankaccounts = new THashMap<>();
+    private Map<Long,BankAccount> bankaccountsID = new THashMap<>();
 
     protected final Logger logger;
     protected final ConomyConfiguration config;
@@ -53,11 +53,7 @@ public class ConomyManager
         this.module = module;
         this.ebean = module.getCore().getDB().getEbeanServer();
 
-        //this.bankAccessStorage = new BankAccessStorage(module.getCore().getDB()); // TODO remove
-
         this.config = module.getConfig();
-        this.bankaccounts = new THashMap<String, BankAccount>();
-        this.bankaccountsID = new THashMap<Long, BankAccount>();
 
         this.logger =  LoggerFactory.getLogger("cubeengine.conomy.transactions");
         if (!this.module.getConfig().enableLogging)
@@ -470,19 +466,19 @@ public class ConomyManager
 
     public Set<BankAccount> getBankAccounts(User user)
     {
-        Set<Long> accountIds = this.bankAccessStorage.getBankAccounts(user);
-        Set<BankAccount> accounts = new HashSet<BankAccount>();
-        for (Long accountId : accountIds)
+        List<BankAccessModel> list = this.ebean.find(BankAccessModel.class).
+            select("accountId").where().eq("userId", user.getEntity().getId()).findList();
+        Set<BankAccount> accounts = new HashSet<>();
+        for (BankAccessModel access : list)
         {
-            BankAccount acc = this.bankaccountsID.get(accountId);
-            if (acc == null)
+            BankAccount account = this.bankaccountsID.get(access.getAccountModel().getId());
+            if (account == null)
             {
-                AccountModel model = this.ebean.find(AccountModel.class, accountId);
-                acc = new BankAccount(this, model);
-                this.bankaccountsID.put(accountId, acc);
-                this.bankaccounts.put(acc.getName(), acc);
+                account = new BankAccount(this, access.getAccountModel());
+                this.bankaccountsID.put(access.getAccountModel().getId(), account);
+                this.bankaccounts.put(account.getName(), account);
             }
-            accounts.add(acc);
+            accounts.add(account);
         }
         return accounts;
     }
@@ -534,5 +530,10 @@ public class ConomyManager
     protected AccountModel loadUserAccount(User holder)
     {
         return this.ebean.find(AccountModel.class).where().eq("user_id",holder.getEntity().getId()).findUnique();
+    }
+
+    public List<BankAccessModel> getBankAccess(AccountModel model)
+    {
+        return this.ebean.find(BankAccessModel.class).where().eq("accountId", model.getId()).findList();
     }
 }

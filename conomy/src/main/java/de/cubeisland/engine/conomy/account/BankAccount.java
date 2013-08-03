@@ -40,18 +40,19 @@ public class BankAccount extends Account
         this.owner = new HashMap<>();
         this.member = new HashMap<>();
         this.invites = new HashMap<>();
-        for (BankAccessModel access : this.manager.bankAccessStorage.getBankAccess(this.model))
+
+        for (BankAccessModel access : this.manager.getBankAccess(this.model))
         {
-            switch (access.accessLevel)
+            switch (access.getAccessLevel())
             {
                case OWNER:
-                   this.owner.put(access.userId, access);
+                   this.owner.put(access.getUserEntity().getId(), access);
                    break;
                case MEMBER:
-                   this.member.put(access.userId, access);
+                   this.member.put(access.getUserEntity().getId(), access);
                    break;
                case INVITED:
-                   this.invites.put(access.userId, access);
+                   this.invites.put(access.getUserEntity().getId(), access);
             }
         }
     }
@@ -108,13 +109,13 @@ public class BankAccount extends Account
         BankAccessModel access = this.member.remove(user.getId());
         if (access != null) // promote new owner
         {
-            access.accessLevel = OWNER;
-            this.manager.bankAccessStorage.update(access);
+            access.setAccessLevel(OWNER);
+            this.manager.ebean.update(access);
         }
         else // create new owner
         {
             access = new BankAccessModel(this.model, user, OWNER);
-            this.manager.bankAccessStorage.store(access);
+            this.manager.ebean.save(access);
         }
         this.owner.put(user.getId(), access);
         return true;
@@ -131,8 +132,8 @@ public class BankAccount extends Account
         if (this.isOwner(user))
         {
             BankAccessModel access = this.owner.remove(user.getId());
-            access.accessLevel = MEMBER;
-            this.manager.bankAccessStorage.update(access);
+            access.setAccessLevel(MEMBER);
+            this.manager.ebean.update(access);
             this.member.put(user.getId(), access);
             return true;
         }
@@ -152,12 +153,12 @@ public class BankAccount extends Account
         if (access == null)
         {
             access = new BankAccessModel(this.model, user, MEMBER);
-            this.manager.bankAccessStorage.store(access);
+            this.manager.ebean.save(access);
         }
         else
         {
-            access.accessLevel = MEMBER;
-            this.manager.bankAccessStorage.update(access);
+            access.setAccessLevel(MEMBER);
+            this.manager.ebean.update(access);
         }
         this.member.put(user.getId(), access);
         return true;
@@ -178,7 +179,7 @@ public class BankAccount extends Account
         }
         if (oldAccess != null)
         {
-            this.manager.bankAccessStorage.delete(oldAccess);
+            this.manager.ebean.delete(oldAccess);
             return true;
         }
         return false; // is not member OR moderator
@@ -214,7 +215,7 @@ public class BankAccount extends Account
     {
         if (!needsInvite() || this.hasAccess(user) || this.invites.get(user.getId()) != null) return false;
         BankAccessModel invite = new BankAccessModel(this.model, user, INVITED);
-        this.manager.bankAccessStorage.store(invite);
+        this.manager.ebean.save(invite);
         this.invites.put(user.getId(), invite);
         return true;
     }
@@ -223,7 +224,7 @@ public class BankAccount extends Account
     {
         if (!needsInvite() || this.hasAccess(user) || this.invites.get(user.getId()) == null) return false;
         BankAccessModel invite = this.invites.remove(user.getId());
-        this.manager.bankAccessStorage.delete(invite);
+        this.manager.ebean.delete(invite);
         return true;
     }
 
@@ -244,33 +245,30 @@ public class BankAccount extends Account
 
     public Set<String> getInvites()
     {
-        Set<String> invites = new HashSet<String>();
-        for (Long userId : this.invites.keySet())
+        Set<String> invites = new HashSet<>();
+        for (BankAccessModel bankAccessModel : this.invites.values())
         {
-            invites.add(this.manager.module.getCore().getUserManager().getUser(userId).getName());
-            // TODO do not cache all those users!
+             invites.add(bankAccessModel.getUserEntity().getPlayerName());
         }
         return invites;
     }
 
     public Set<String> getOwners()
     {
-        Set<String> owners = new HashSet<String>();
-        for (Long userId : this.owner.keySet())
+        Set<String> owners = new HashSet<>();
+        for (BankAccessModel bankAccessModel : this.owner.values())
         {
-            owners.add(this.manager.module.getCore().getUserManager().getUser(userId).getName());
-            // TODO do not cache all those users!
+            owners.add(bankAccessModel.getUserEntity().getPlayerName());
         }
         return owners;
     }
 
     public Set<String> getMembers()
     {
-        Set<String> members = new HashSet<String>();
-        for (Long userId : this.member.keySet())
+        Set<String> members = new HashSet<>();
+        for (BankAccessModel bankAccessModel : this.member.values())
         {
-            members.add(this.manager.module.getCore().getUserManager().getUser(userId).getName());
-            // TODO do not cache all those users!
+            members.add(bankAccessModel.getUserEntity().getPlayerName());
         }
         return members;
     }

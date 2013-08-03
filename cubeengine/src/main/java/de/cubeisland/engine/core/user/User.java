@@ -94,7 +94,7 @@ public class User extends UserBase implements CommandSender, AttachmentHolder<Us
 
     public User(UserEntity entity)
     {
-        super(entity.getPlayer());
+        super(entity.getPlayerName());
         this.core = CubeEngine.getCore();
         this.entity = entity;
         this.attachments = new THashMap<>();

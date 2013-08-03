@@ -38,10 +38,10 @@ public class WorldEntity
     @Column(name = "key") // TODO change to Id
     @Attribute(type = AttrType.INT, unsigned = true)
     private Long id = -1L;
-    @Column(length = 64)
+    @Column(length = 64, nullable = false)
     @Attribute(type = AttrType.VARCHAR)
     private String worldName;
-    @Column(length = 64, unique = true)
+    @Column(length = 64, unique = true, nullable = false)
     @Attribute(type = AttrType.VARCHAR)
     private String worldUUID;
 

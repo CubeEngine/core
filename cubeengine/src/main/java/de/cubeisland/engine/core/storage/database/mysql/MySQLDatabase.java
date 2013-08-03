@@ -33,7 +33,6 @@ import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
-import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 
@@ -114,7 +113,6 @@ public class MySQLDatabase extends AbstractPooledDatabase
             classLoader.addClassLoader(module.getClassLoader());
         }
         Thread.currentThread().setContextClassLoader(classLoader);
-        System.out.print(BootupClassPathSearch.class.getClassLoader());
         ebeanServer = EbeanServerFactory.create(serverConfig);
         Thread.currentThread().setContextClassLoader(previous);
     }
@@ -274,16 +272,13 @@ public class MySQLDatabase extends AbstractPooledDatabase
             builder.append("ENGINE InnoDB,\n");
             builder.append("COLLATE utf8_unicode_ci,\n");
             builder.append("COMMENT ").append(prepareString(version.toString()));
-            // TODO multi unique uses UniqueConstraint in table annotation
             try
             {
                 this.execute(builder.toString());
-//                System.out.print("\n" + builder.toString());
             }
             catch (SQLException e)
             {
-
-                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+                throw new IllegalStateException("Error while creating table for " + table.name() + "! Query:\n" + builder.toString());
             }
             return;
         }
@@ -482,6 +477,17 @@ public class MySQLDatabase extends AbstractPooledDatabase
         {
             TableName tableName = super.getTableName(beanClass);
             return new TableName(tableName.getCatalog(), tableName.getSchema(), prepareTableName(tableName.getName()));
+        }
+
+        @Override
+        public String getColumnFromProperty(Class<?> beanClass, String propertyName)
+        {
+            String columnFromProperty = super.getColumnFromProperty(beanClass, propertyName);
+            if (columnFromProperty.equalsIgnoreCase("key"))
+            {
+                return "`key`"; // Ebean does not add quotes all the time (WHY?)
+            }
+            return columnFromProperty;
         }
     }
 
