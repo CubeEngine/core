@@ -65,6 +65,7 @@ import de.cubeisland.engine.core.module.Module;
 import de.cubeisland.engine.core.service.ServiceManager;
 import de.cubeisland.engine.core.storage.database.Database;
 import de.cubeisland.engine.core.storage.database.mysql.MySQLDatabase;
+import de.cubeisland.engine.core.user.TableUser;
 import de.cubeisland.engine.core.util.InventoryGuardFactory;
 import de.cubeisland.engine.core.util.Profiler;
 import de.cubeisland.engine.core.util.Version;
@@ -74,6 +75,7 @@ import de.cubeisland.engine.core.util.worker.CubeThreadFactory;
 import de.cubeisland.engine.core.webapi.ApiConfig;
 import de.cubeisland.engine.core.webapi.ApiServer;
 import de.cubeisland.engine.core.webapi.exception.ApiStartupException;
+import de.cubeisland.engine.core.world.TableWorld;
 import org.slf4j.LoggerFactory;
 
 import static de.cubeisland.engine.core.util.ReflectionUtils.findFirstField;
@@ -422,6 +424,8 @@ public final class BukkitCore extends JavaPlugin implements Core
             this.database.shutdown();
             this.database = null;
         }
+        this.database.registerTable(TableUser.initTable(this.database));
+        this.database.registerTable(TableWorld.initTable(this.database));
 
         if (this.taskManager != null)
         {

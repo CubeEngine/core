@@ -44,23 +44,26 @@ public class TableUser extends TableImpl<UserEntity> implements TableCreator<Use
     private TableUser(String prefix)
     {
         super(prefix + "user");
-        INDENTIFY_USER = Keys.identity(this, this.KEY);
+        IDENTITY = Keys.identity(this, this.KEY);
         PRIMARY_KEY = Keys.uniqueKey(this, this.KEY);
         UNIQUE_PLAYER = Keys.uniqueKey(this, this.PLAYER);
     }
 
     public static TableUser initTable(Database database)
     {
-        if (TABLE_USER != null) throw new IllegalStateException();
-        MySQLDatabaseConfiguration config = (MySQLDatabaseConfiguration)database.getDatabaseConfig();
-        TABLE_USER = new TableUser(config.tablePrefix);
-        return TABLE_USER;
+        if (TABLE_USER == null)
+        {
+            MySQLDatabaseConfiguration config = (MySQLDatabaseConfiguration)database.getDatabaseConfig();
+            TABLE_USER = new TableUser(config.tablePrefix);
+            return TABLE_USER;
+        }
+        throw new IllegalStateException();
     }
 
     @Override
-         public void createTable(Connection connection) throws SQLException
-{
-    connection.prepareStatement("CREATE TABLE IF NOT EXISTS " + this.getName()+ " (\n" +
+    public void createTable(Connection connection) throws SQLException
+    {
+        connection.prepareStatement("CREATE TABLE IF NOT EXISTS " + this.getName()+ " (\n" +
                                     "`key` int(10) unsigned NOT NULL AUTO_INCREMENT,\n" +
                                     "`player` varchar(16) NOT NULL,\n" +
                                     "`nogc` tinyint(1) NOT NULL,\n" +
@@ -82,7 +85,7 @@ public class TableUser extends TableImpl<UserEntity> implements TableCreator<Use
         return version;
     }
 
-    public final Identity<UserEntity, UInteger> INDENTIFY_USER;
+    public final Identity<UserEntity, UInteger> IDENTITY;
     public final UniqueKey<UserEntity> PRIMARY_KEY;
     public final UniqueKey<UserEntity> UNIQUE_PLAYER;
 
@@ -95,9 +98,9 @@ public class TableUser extends TableImpl<UserEntity> implements TableCreator<Use
     public final TableField<UserEntity, String> LANGUAGE = createField("language", SQLDataType.VARCHAR.length(5), this);
 
     @Override
-    public Identity<UserEntity, ? extends Number> getIdentity()
+    public Identity<UserEntity, UInteger> getIdentity()
     {
-        return INDENTIFY_USER;
+        return IDENTITY;
     }
 
     @Override

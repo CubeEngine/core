@@ -48,7 +48,7 @@ public abstract class Account
      */
     protected void update()
     {
-        this.manager.update(this.model);
+        this.model.update();
     }
 
     /**

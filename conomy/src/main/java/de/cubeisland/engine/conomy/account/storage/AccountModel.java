@@ -17,196 +17,185 @@
  */
 package de.cubeisland.engine.conomy.account.storage;
 
-import java.sql.Connection;
-import java.sql.SQLException;
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
-import javax.persistence.UniqueConstraint;
-
-import de.cubeisland.engine.core.storage.database.AttrType;
-import de.cubeisland.engine.core.storage.database.Attribute;
 import de.cubeisland.engine.core.user.User;
-import de.cubeisland.engine.core.user.UserEntity;
-import de.cubeisland.engine.core.util.Version;
+import org.jooq.Field;
+import org.jooq.Record1;
+import org.jooq.Record5;
+import org.jooq.Row5;
+import org.jooq.impl.UpdatableRecordImpl;
+import org.jooq.types.UInteger;
 
-@Entity
-@Table(name = "accounts", uniqueConstraints = @UniqueConstraint(columnNames = {"user_id", "name"}))
-public class AccountModel
+import static de.cubeisland.engine.conomy.account.storage.TableAccount.TABLE_ACCOUNT;
+
+public class AccountModel extends UpdatableRecordImpl<AccountModel> implements Record5<UInteger, UInteger, String, Long, Byte>
 {
-    @javax.persistence.Version
-    static final Version version = new Version(2);
-
-    @Id
-    @Column()
-    @Attribute(type = AttrType.INT, unsigned = true)
-    private long id;
-    @Column(name = "user_id")
-    @ManyToOne(cascade = {CascadeType.REFRESH, CascadeType.REMOVE})
-    @JoinColumn(name = "user_id")
-    @Attribute(type = AttrType.INT, unsigned = true)
-    private UserEntity userEntity;
-    @Column(length = 64)
-    @Attribute(type = AttrType.VARCHAR)
-    private String name;
-    @Column(nullable = false)
-    @Attribute(type = AttrType.BIGINT)
-    private long value;
-    @Column()
-    @Attribute(type = AttrType.TINYINT)
-    private int mask = 0;
-
     public AccountModel()
-    {}
-
-    public AccountModel(User user, String name, long balance, boolean hidden, boolean needsInvite)
     {
-        this.userEntity = user == null ? null : user.getEntity();
-        this.name = name;
-        this.value = balance;
-        this.mask = (byte)((hidden ? 1 : 0) + (needsInvite ? 2 : 0));
+        super(TABLE_ACCOUNT);
     }
 
-    public AccountModel(User user, String name, long balance, boolean hidden)
+    public AccountModel newAccount(User user, String name, long balance, boolean hidden, boolean needsInvite)
     {
-        this(user, name, balance, hidden, false);
+        this.setUserId(user == null ? null : user.getEntity().getKey());
+        this.setName(name);
+        this.setValue(balance);
+        this.setMask((byte)((hidden ? 1 : 0) + (needsInvite ? 2 : 0)));
+        return this;
+    }
+
+    public AccountModel newAccount(User user, String name, long balance, boolean hidden)
+    {
+        return this.newAccount(user, name, balance, hidden, false);
     }
 
     public boolean needsInvite()
     {
-        return (this.mask & 2) == 2;
+        return (this.getMask() & 2) == 2;
     }
 
     public boolean isHidden()
     {
-        return (this.mask & 1) == 1;
+        return (this.getMask() & 1) == 1;
     }
 
     public void setNeedsInvite(boolean set)
     {
+        Byte mask = this.getMask();
         if (set)
         {
-            this.mask |= 2;
+            mask |= 2;
         }
         else
         {
-            this.mask &= ~2;
+            mask &= ~2;
         }
+        this.setMask(mask);
     }
 
     public void setHidden(boolean set)
     {
+        Byte mask = this.getMask();
         if (set)
         {
-            this.mask |= 1;
+            mask |= 1;
         }
         else
         {
-            this.mask &= ~1;
+            mask &= ~1;
         }
+        this.setMask(mask);
     }
 
-    public long getId()
-    {
-        return id;
+    public void setKey(UInteger value) {
+        setValue(0, value);
     }
 
-    public void setId(long id)
-    {
-        this.id = id;
+    public UInteger getKey() {
+        return (UInteger) getValue(0);
     }
 
-    public UserEntity getUserEntity()
-    {
-        return userEntity;
+    public void setUserId(UInteger value) {
+        setValue(1, value);
     }
 
-    public void setUserEntity(UserEntity userEntity)
-    {
-        this.userEntity = userEntity;
+    public UInteger getUserId() {
+        return (UInteger) getValue(1);
     }
 
-    public String getName()
-    {
-        return name;
+    public void setName(String value) {
+        setValue(2, value);
     }
 
-    public void setName(String name)
-    {
-        this.name = name;
+    public String getName() {
+        return (String) getValue(2);
     }
 
-    public long getValue()
-    {
-        return value;
+    public void setValue(Long value) {
+        setValue(3, value);
     }
 
-    public void setValue(long value)
-    {
-        this.value = value;
+    public Long getValue() {
+        return (Long) getValue(3);
     }
 
-    public int getMask()
-    {
-        return mask;
+    public void setMask(Byte value) {
+        setValue(4, value);
     }
 
-    public void setMask(int mask)
-    {
-        this.mask = mask;
+    public Byte getMask() {
+        return (Byte) getValue(4);
     }
 
-    public static class AccountUpdater
-    {
-        public void update(Connection connection, Class<?> entityClass, Version dbVersion, Version codeVersion) throws SQLException
-        {
-            if (codeVersion.getMajor() == 2)
-            {
-                // Copy Table but do not delete temp_table yet
-                connection.prepareStatement("RENAME TABLE cube_accounts TO old_accounts").execute();
-                connection.prepareStatement("CREATE TABLE `cube_accounts` (  " +
-                                                "`id` int(10) unsigned NOT NULL AUTO_INCREMENT,\n  " +
-                                                "`user_id` int(10) unsigned DEFAULT NULL,\n  " +
-                                                "`name` varchar(64) DEFAULT NULL,\n  " +
-                                                "`value` bigint(20) NOT NULL,\n  " +
-                                                "`mask` tinyint(4) DEFAULT NULL,\n  " +
-                                                "PRIMARY KEY (`id`),  \n  " +
-                                                "UNIQUE KEY `user_id` (`user_id`,`name`),  \n  " +
-                                                "FOREIGN KEY f_userid(`user_id`) REFERENCES `cube_user` (`key`) ON DELETE CASCADE) \n  " +
-                                                "DEFAULT CHARSET=utf8 COMMENT='2.0.0'").execute() ;
-                connection.prepareStatement("INSERT INTO cube_accounts (id, user_id, name, value, mask) SELECT `key`, user_id, name, value, mask FROM old_accounts").execute();
-                // Save data from related table
-                connection.prepareStatement("CREATE  TABLE  `old_account_access` \n" +
-                                                "(`id` int( 10  )  unsigned NOT  NULL  AUTO_INCREMENT ,\n" +
-                                                "`userId` int( 10  )  unsigned NOT  NULL ,\n" +
-                                                "`accountId` int( 10  )  unsigned NOT  NULL ,\n" +
-                                                "`accessLevel` tinyint( 4  )  NOT  NULL ,\n" +
-                                                "PRIMARY  KEY (  `id`  ) ,\n" +
-                                                "UNIQUE  KEY  `userId` (  `userId` ,  `accountId`  ) ,\n" +
-                                                "KEY  `accountId` (  `accountId`  )  ) " +
-                                                "ENGINE  = InnoDB  DEFAULT CHARSET  = utf8").execute();
-                connection.prepareStatement("INSERT INTO `old_account_access` SELECT * FROM `cube_account_access`").execute();
-                // Drop related table and refill data
-                connection.prepareStatement("DROP TABLE cube_account_access").execute();
-                connection.prepareStatement("CREATE  TABLE  `cube_account_access` \n" +
-                                                "(`id` int( 10  )  unsigned NOT  NULL  AUTO_INCREMENT ,\n" +
-                                                "`userId` int( 10  )  unsigned NOT  NULL ,\n" +
-                                                "`accountId` int( 10  )  unsigned NOT  NULL ,\n" +
-                                                "`accessLevel` tinyint( 4  )  NOT  NULL ,\n" +
-                                                "PRIMARY  KEY (  `id`  ) ,\n" +
-                                                "UNIQUE  KEY  `userId` (  `userId` ,  `accountId`  ) ,\n" +
-                                                "FOREIGN KEY f_accountId (`accountId`) REFERENCES `cube_accounts`(  `id`  ) ON DELETE CASCADE ON UPDATE CASCADE, \n" +
-                                                "FOREIGN KEY f_userId (`userId`) REFERENCES `cube_user` (`key`) ON DELETE CASCADE  ON UPDATE CASCADE )\n" +
-                                                "DEFAULT CHARSET  = utf8 COLLATE=utf8_unicode_ci COMMENT ='1.0.0'").execute();
-                connection.prepareStatement("INSERT INTO `cube_account_access` SELECT * FROM `old_account_access`").execute();
-                // drop temp_tables
-                connection.prepareStatement("DROP TABLE old_account_access").execute();
-                connection.prepareStatement("DROP TABLE old_accounts").execute();
-            }
-        }
+    // -------------------------------------------------------------------------
+    // Primary key information
+    // -------------------------------------------------------------------------
+
+    @Override
+    public Record1<UInteger> key() {
+        return (Record1) super.key();
+    }
+
+    // -------------------------------------------------------------------------
+    // Record5 type implementation
+    // -------------------------------------------------------------------------
+
+    @Override
+    public Row5<UInteger, UInteger, String, Long, Byte> fieldsRow() {
+        return (Row5) super.fieldsRow();
+    }
+
+    @Override
+    public Row5<UInteger, UInteger, String, Long, Byte> valuesRow() {
+        return (Row5) super.valuesRow();
+    }
+
+    @Override
+    public Field<UInteger> field1() {
+        return TABLE_ACCOUNT.KEY;
+    }
+
+    @Override
+    public Field<UInteger> field2() {
+        return TABLE_ACCOUNT.USER_ID;
+    }
+
+    @Override
+    public Field<String> field3() {
+        return TABLE_ACCOUNT.NAME;
+    }
+
+    @Override
+    public Field<Long> field4() {
+        return TABLE_ACCOUNT.VALUE;
+    }
+
+    @Override
+    public Field<Byte> field5() {
+        return TABLE_ACCOUNT.MASK;
+    }
+
+    @Override
+    public UInteger value1() {
+        return getKey();
+    }
+
+    @Override
+    public UInteger value2() {
+        return getUserId();
+    }
+
+    @Override
+    public String value3() {
+        return getName();
+    }
+
+    @Override
+    public Long value4() {
+        return getValue();
+    }
+
+    @Override
+    public Byte value5() {
+        return getMask();
     }
 }

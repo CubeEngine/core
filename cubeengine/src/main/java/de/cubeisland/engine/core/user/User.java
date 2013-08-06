@@ -65,6 +65,7 @@ import de.cubeisland.engine.core.util.ChatFormat;
 import gnu.trove.map.hash.THashMap;
 import gnu.trove.set.hash.THashSet;
 
+import static de.cubeisland.engine.core.user.TableUser.TABLE_USER;
 import static de.cubeisland.engine.core.util.BlockUtil.isInvertedStep;
 
 /**
@@ -81,7 +82,7 @@ public class User extends UserBase implements CommandSender, AttachmentHolder<Us
     User(Core core, String playerName)
     {
         super(playerName);
-        this.entity = core.getDB().getDSL().newRecord(TableUser.TABLE_USER).newUser(playerName);
+        this.entity = core.getDB().getDSL().newRecord(TABLE_USER).newUser(playerName);
         this.attachments = new THashMap<>();
         this.core = core;
     }
