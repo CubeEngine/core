@@ -29,6 +29,9 @@ import de.cubeisland.engine.core.module.Module;
 import de.cubeisland.engine.core.storage.database.Database;
 import gnu.trove.map.hash.THashMap;
 import gnu.trove.map.hash.TLongObjectHashMap;
+import org.jooq.DSLContext;
+
+import static de.cubeisland.engine.core.world.TableWorld.TABLE_WORLD;
 
 public abstract class AbstractWorldManager implements WorldManager
 {
@@ -52,23 +55,24 @@ public abstract class AbstractWorldManager implements WorldManager
         {
             throw new IllegalArgumentException("the world given is null!");
         }
-        return this.getWorldEntity(world).getId();
+        return this.getWorldEntity(world).getKey().longValue();
     }
 
     @Override
     public WorldEntity getWorldEntity(World world)
     {
+        DSLContext dsl = this.database.getDSL();
         WorldEntity worldEntity = this.worlds.get(world.getName());
         if (worldEntity == null)
         {
-            worldEntity = this.database.getEbeanServer().find(WorldEntity.class).where().eq("worldUUID", world.getUID().toString()).findUnique();
+            worldEntity = dsl.select().from(TABLE_WORLD).where(TABLE_WORLD.WORLDUUID.eq(world.getUID().toString())).fetchOne().into(TABLE_WORLD);
             if (worldEntity == null)
             {
-                worldEntity = new WorldEntity(world);
-                this.database.getEbeanServer().save(worldEntity);
+                worldEntity = dsl.newRecord(TABLE_WORLD).newWorld(world);
+                worldEntity.insert();
             }
             this.worlds.put(world.getName(), worldEntity);
-            this.worldIds.put(worldEntity.getId(), world);
+            this.worldIds.put(worldEntity.getKey().longValue(), world);
         }
         return worldEntity;
     }
@@ -82,7 +86,7 @@ public abstract class AbstractWorldManager implements WorldManager
             if (world == null) return null;
             return this.getWorldId(world);
         }
-        return entity.getId();
+        return entity.getKey().longValue();
     }
 
     public synchronized long[] getAllWorldIds()

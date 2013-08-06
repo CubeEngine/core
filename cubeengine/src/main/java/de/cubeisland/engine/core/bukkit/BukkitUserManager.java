@@ -46,6 +46,7 @@ import gnu.trove.map.TObjectIntMap;
 import gnu.trove.map.hash.TObjectIntHashMap;
 import gnu.trove.procedure.TObjectIntProcedure;
 
+import static de.cubeisland.engine.core.user.TableUser.TABLE_USER;
 
 
 public class BukkitUserManager extends AbstractUserManager
@@ -62,7 +63,7 @@ public class BukkitUserManager extends AbstractUserManager
         final long delay = (long)core.getConfiguration().userManagerCleanup;
         this.nativeScheduler = Executors.newSingleThreadScheduledExecutor(core.getTaskManager().getThreadFactory());
         this.nativeScheduler.scheduleAtFixedRate(new UserCleanupTask(), delay, delay, TimeUnit.MINUTES);
-        this.scheduledForRemoval = new TObjectIntHashMap<String>(Constants.DEFAULT_CAPACITY, Constants.DEFAULT_LOAD_FACTOR, -1);
+        this.scheduledForRemoval = new TObjectIntHashMap<>(Constants.DEFAULT_CAPACITY, Constants.DEFAULT_LOAD_FACTOR, -1);
 
         this.core.addInitHook(new Runnable() {
             @Override
@@ -98,7 +99,7 @@ public class BukkitUserManager extends AbstractUserManager
             String foundUser = Match.string().matchString(name, onlinePlayerList);
             if (foundUser == null)
             {
-                UserEntity entity = this.database.getEbeanServer().find(UserEntity.class).where().eq("player", name).findUnique();
+                UserEntity entity = this.database.getDSL().select().from(TABLE_USER).where(TABLE_USER.PLAYER.eq(name)).fetchOne().into(UserEntity.class);
                 //Looking up saved users
                 if (entity != null)
                 {
@@ -176,7 +177,7 @@ public class BukkitUserManager extends AbstractUserManager
                 {
                     scheduledForRemoval.remove(user.getName());
                     user.getEntity().setLastseen(new Timestamp(System.currentTimeMillis()));
-                    database.getEbeanServer().update(user.getEntity());
+                    user.getEntity().update();
                     if (!user.isOnline())
                     {
                         return;

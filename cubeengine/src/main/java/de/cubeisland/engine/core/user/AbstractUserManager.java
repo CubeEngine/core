@@ -40,12 +40,16 @@ import de.cubeisland.engine.core.filesystem.FileManager;
 import de.cubeisland.engine.core.module.Module;
 import de.cubeisland.engine.core.permission.Permission;
 import de.cubeisland.engine.core.storage.database.Database;
-import de.cubeisland.engine.core.storage.database.mysql.MySQLDatabase;
 import de.cubeisland.engine.core.util.ChatFormat;
 import de.cubeisland.engine.core.util.StringUtils;
 import de.cubeisland.engine.core.util.Triplet;
 import gnu.trove.map.hash.TLongObjectHashMap;
 import gnu.trove.set.hash.THashSet;
+import org.jooq.Record1;
+import org.jooq.impl.DSL;
+import org.jooq.types.UInteger;
+
+import static de.cubeisland.engine.core.user.TableUser.TABLE_USER;
 
 /**
  * This Manager provides methods to access the Users and saving/loading from
@@ -116,30 +120,30 @@ public abstract class AbstractUserManager implements UserManager
             password += this.salt;
             password += user.getEntity().getFirstseen().toString();
             user.getEntity().setPasswd(this.messageDigest.digest(password.getBytes()));
-            this.database.getEbeanServer().update(user.getEntity());
+            user.getEntity().update();
         }
     }
 
     public void resetPassword(User user)
     {
         user.getEntity().setPasswd(null);
-        this.database.getEbeanServer().update(user.getEntity());
+        user.getEntity().update();
     }
 
     public void resetAllPasswords()
     {
-        this.database.getEbeanServer().createUpdate(UserEntity.class, "UPDATE :table SET passwd = :passwd")
-                .setParameter("passwd", null)
-                .setParameter("table", MySQLDatabase.prepareTableName("user")).execute();
+        this.database.getDSL().update(TABLE_USER)
+            .set(DSL.row(TABLE_USER.PASSWD), DSL.row(new byte[0]))
+            .execute();
         for (User user : this.getLoadedUsers())
         {
-            this.database.getEbeanServer().refresh(user.getEntity());
+            user.getEntity().refresh();
         }
     }
 
     public void removeUser(final User user)
     {
-        this.database.getEbeanServer().delete(user.getEntity());
+        user.getEntity().delete();
         this.removeCachedUser(user);
     }
 
@@ -168,7 +172,7 @@ public abstract class AbstractUserManager implements UserManager
         {
             return user;
         }
-        UserEntity entity = this.database.getEbeanServer().find(UserEntity.class, id);
+        UserEntity entity = this.database.getDSL().select().from(TABLE_USER).where(TABLE_USER.KEY.eq(UInteger.valueOf(id))).fetchOne().into(TABLE_USER);
         if (entity == null)
         {
             return null;
@@ -203,7 +207,7 @@ public abstract class AbstractUserManager implements UserManager
 
     protected synchronized User loadUser(String name)
     {
-        UserEntity entity = this.database.getEbeanServer().find(UserEntity.class).where().eq("player", name).findUnique();
+        UserEntity entity = this.database.getDSL().select().from(TABLE_USER).where(TABLE_USER.PLAYER.eq(name)).fetchOne().into(TABLE_USER);
         if (entity != null)
         {
             User user = new User(entity);
@@ -227,7 +231,7 @@ public abstract class AbstractUserManager implements UserManager
             return user;
         }
         user = new User(this.core, name);
-        this.database.getEbeanServer().save(user.getEntity());
+        user.getEntity().insert();
         this.cacheUser(user);
 
         return user;
@@ -458,9 +462,9 @@ public abstract class AbstractUserManager implements UserManager
     public Set<Long> getAllIds()
     {
         Set<Long> ids = new HashSet<>();
-        for (Object o : this.database.getEbeanServer().find(UserEntity.class).findIds())
+        for (Record1<UInteger> id : this.database.getDSL().select(TABLE_USER.KEY).from(TABLE_USER).fetch())
         {
-            ids.add((Long)o);
+            ids.add(id.value1().longValue());
         }
         return ids;
     }
@@ -497,7 +501,7 @@ public abstract class AbstractUserManager implements UserManager
     public void clean()
     {
         Timestamp time = new Timestamp(System.currentTimeMillis() - core.getConfiguration().userManagerCleanupDatabase.toMillis());
-        this.database.getEbeanServer().delete(UserEntity.class, this.database.getEbeanServer().find(UserEntity.class).where().le("lastseen", time).eq("nogc",false).findIds());
+        this.database.getDSL().delete(TABLE_USER).where(TABLE_USER.LASTSEEN.le(time), TABLE_USER.NOGC.isFalse()).execute();
     }
 
     protected final class DefaultAttachment

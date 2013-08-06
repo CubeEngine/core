@@ -72,7 +72,6 @@ import static de.cubeisland.engine.core.util.BlockUtil.isInvertedStep;
  */
 public class User extends UserBase implements CommandSender, AttachmentHolder<UserAttachment>
 {
-
     private UserEntity entity;
 
     boolean loggedInState = false;
@@ -82,7 +81,7 @@ public class User extends UserBase implements CommandSender, AttachmentHolder<Us
     User(Core core, String playerName)
     {
         super(playerName);
-        this.entity = new UserEntity(playerName);
+        this.entity = core.getDB().getDSL().newRecord(TableUser.TABLE_USER).newUser(playerName);
         this.attachments = new THashMap<>();
         this.core = core;
     }
@@ -94,7 +93,7 @@ public class User extends UserBase implements CommandSender, AttachmentHolder<Us
 
     public User(UserEntity entity)
     {
-        super(entity.getPlayerName());
+        super(entity.getPlayer());
         this.core = CubeEngine.getCore();
         this.entity = entity;
         this.attachments = new THashMap<>();
@@ -196,7 +195,7 @@ public class User extends UserBase implements CommandSender, AttachmentHolder<Us
 
     public Long getId()
     {
-        return this.entity.getId();
+        return this.entity.getKey().longValue();
     }
 
     @Override

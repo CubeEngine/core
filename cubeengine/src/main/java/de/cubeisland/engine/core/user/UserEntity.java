@@ -19,126 +19,212 @@ package de.cubeisland.engine.core.user;
 
 import java.sql.Timestamp;
 import java.util.Locale;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
 
-import de.cubeisland.engine.core.storage.database.AttrType;
-import de.cubeisland.engine.core.storage.database.Attribute;
-import de.cubeisland.engine.core.util.Version;
+import javax.persistence.Transient;
 
-@Entity
-@Table(name = "user")
-public class UserEntity
+import org.jooq.Record7;
+import org.jooq.Row7;
+import org.jooq.impl.UpdatableRecordImpl;
+import org.jooq.types.UInteger;
+
+import static de.cubeisland.engine.core.user.TableUser.TABLE_USER;
+
+public class UserEntity extends UpdatableRecordImpl<UserEntity>
+    implements Record7<UInteger, String, Byte, Timestamp, byte[], Timestamp, String>
 {
-    @javax.persistence.Version
-    static final Version version = new Version(1);
-    public static final Long NO_ID = -1L;
-
-    @Id
-    @Column(name = "`key`") // TODO change to Id
-    @Attribute(type = AttrType.INT, unsigned = true)
-    private Long id;
-    @Column(name = "player", nullable = false, length = 16, unique = true)
-    @Attribute(type = AttrType.VARCHAR)
-    private String playerName;
-    @Column(nullable = false)
-    @Attribute(type = AttrType.BOOLEAN)
-    private boolean nogc = false;
-    @Column(nullable = false)
-    @Attribute(type = AttrType.DATETIME)
-    private Timestamp lastseen;
-    @Column(length = 128)
-    @Attribute(type = AttrType.VARBINARY)
-    private byte[] passwd;
-    @Column(nullable = false)
-    @Attribute(type = AttrType.DATETIME)
-    private Timestamp firstseen;
-    @Column(name = "language", length = 5)
-    @Attribute(type = AttrType.VARCHAR)
-    private Locale locale = null;
-
-    public UserEntity()
+    public UserEntity(org.jooq.Table<UserEntity> table)
     {
+        super(table);
     }
 
-    UserEntity(String playerName)
+    /**
+     * Fills in Information for a new User
+     *
+     * @param player
+     * @return
+     */
+    public UserEntity newUser(String player)
     {
-        this.id = NO_ID;
-        this.playerName = playerName;
-        this.lastseen = new Timestamp(System.currentTimeMillis());
-        this.firstseen = this.lastseen;
-        this.passwd = new byte[0];
+        this.setKey(UInteger.valueOf(0));
+        this.setPlayer(player);
+        this.setLastseen(new Timestamp(System.currentTimeMillis()));
+        this.setFirstseen(this.getLastseen());
+        this.setPasswd(new byte[0]);
+        return this;
     }
 
-    public Long getId()
+    public UInteger getKey()
     {
-        return id;
+        return (UInteger)getValue(0);
     }
 
-    public void setId(Long id)
+    public void setKey(UInteger value)
     {
-        this.id = id;
+        setValue(0, value);
     }
 
-    public String getPlayerName()
+    public String getPlayer()
     {
-        return playerName;
+        return (String)getValue(1);
     }
 
-    public void setPlayerName(String playerName)
+    public void setPlayer(String value)
     {
-        this.playerName = playerName;
+        setValue(1, value);
     }
 
     public boolean isNogc()
     {
-        return nogc;
+        return getValue(2).equals(1);
     }
 
-    public void setNogc(boolean nogc)
+    public void setNogc(boolean value)
     {
-        this.nogc = nogc;
+        setValue(2, value ? 1 : 0);
     }
 
     public Timestamp getLastseen()
     {
-        return lastseen;
+        return (Timestamp) getValue(3);
     }
 
-    public void setLastseen(Timestamp lastseen)
+    public void setLastseen(Timestamp value)
     {
-        this.lastseen = lastseen;
+        setValue(3, value);
     }
 
     public byte[] getPasswd()
     {
-        return passwd;
+        return (byte[]) getValue(4);
     }
 
-    public void setPasswd(byte[] passwd)
+    public void setPasswd(byte[] value)
     {
-        this.passwd = passwd;
+        setValue(4, value);
     }
 
     public Timestamp getFirstseen()
     {
-        return firstseen;
+        return (Timestamp) getValue(5);
     }
 
-    public void setFirstseen(Timestamp firstseen)
+    public void setFirstseen(Timestamp value)
     {
-        this.firstseen = firstseen;
+        setValue(5, value);
     }
+
+    @Transient
+    private Locale locale;
 
     public Locale getLocale()
     {
+        if (getValue(6) == null)
+        {
+            return null;
+        }
+        if (locale == null)
+        {
+            locale = Locale.forLanguageTag((String)getValue(6));
+        }
         return locale;
     }
 
     public void setLocale(Locale locale)
     {
         this.locale = locale;
+        setValue(6, locale.toString());
+    }
+
+    // -------------------------------------------------------------------------
+    // Primary key information
+    // -------------------------------------------------------------------------
+
+    @Override
+    public org.jooq.Record1<org.jooq.types.UInteger> key() {
+        return (org.jooq.Record1) super.key();
+    }
+
+    // -------------------------------------------------------------------------
+    // Record7 type implementation
+    // -------------------------------------------------------------------------
+
+    @Override
+    public Row7<UInteger, String, Byte, Timestamp, byte[], Timestamp, String> fieldsRow() {
+        return (Row7) super.fieldsRow();
+    }
+
+    @Override
+    public Row7<UInteger, String, Byte, Timestamp, byte[], Timestamp, String> valuesRow() {
+        return (Row7) super.valuesRow();
+    }
+
+    @Override
+    public org.jooq.Field<org.jooq.types.UInteger> field1() {
+        return TABLE_USER.KEY;
+    }
+
+    @Override
+    public org.jooq.Field<java.lang.String> field2() {
+        return TABLE_USER.PLAYER;
+    }
+
+    @Override
+    public org.jooq.Field<java.lang.Byte> field3() {
+        return TABLE_USER.NOGC;
+    }
+
+    @Override
+    public org.jooq.Field<java.sql.Timestamp> field4() {
+        return TABLE_USER.LASTSEEN;
+    }
+
+    @Override
+    public org.jooq.Field<byte[]> field5() {
+        return TABLE_USER.PASSWD;
+    }
+
+    @Override
+    public org.jooq.Field<java.sql.Timestamp> field6() {
+        return TABLE_USER.FIRSTSEEN;
+    }
+
+    @Override
+    public org.jooq.Field<java.lang.String> field7() {
+        return TABLE_USER.LANGUAGE;
+    }
+
+    @Override
+    public org.jooq.types.UInteger value1() {
+        return getKey();
+    }
+
+    @Override
+    public java.lang.String value2() {
+        return getPlayer();
+    }
+
+    @Override
+    public java.lang.Byte value3() {
+        return (Byte)getValue(3);
+    }
+
+    @Override
+    public java.sql.Timestamp value4() {
+        return getLastseen();
+    }
+
+    @Override
+    public byte[] value5() {
+        return getPasswd();
+    }
+
+    @Override
+    public java.sql.Timestamp value6() {
+        return getFirstseen();
+    }
+
+    @Override
+    public java.lang.String value7() {
+        return (String)getValue(6);
     }
 }

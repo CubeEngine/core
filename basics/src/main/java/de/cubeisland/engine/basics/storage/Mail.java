@@ -108,11 +108,11 @@ public class Mail
 
     public String readMail()
     {
-        if (this.getSenderEntity() == null || this.getSenderEntity().getId() == 0)
+        if (this.getSenderEntity() == null || this.getSenderEntity().getKey().longValue() == 0)
         {
             return "&cCONSOLE&f: " + this.getMessage();
         }
-        User user = CubeEngine.getUserManager().getUser(this.getSenderEntity().getId());
+        User user = CubeEngine.getUserManager().getUser(this.getSenderEntity().getKey().longValue());
         return "&2" + user.getName() + "&f: " + this.getMessage();
     }
 }

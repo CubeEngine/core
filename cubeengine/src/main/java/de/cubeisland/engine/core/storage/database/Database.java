@@ -25,6 +25,7 @@ import java.sql.SQLException;
 
 import com.avaje.ebean.EbeanServer;
 import de.cubeisland.engine.core.storage.Storage;
+import org.jooq.DSLContext;
 
 /**
  * The Database interface.
@@ -259,11 +260,9 @@ public interface Database
 
     void shutdown();
 
-    EbeanServer getEbeanServer();
-
-    public void registerEntity(Class<?> modelClass);
+    public <T extends TableCreator> void registerTable(T table);
 
     public DatabaseConfiguration getDatabaseConfig();
 
-    void enable(ClassLoader coreLoader);
+    DSLContext getDSL();
 }

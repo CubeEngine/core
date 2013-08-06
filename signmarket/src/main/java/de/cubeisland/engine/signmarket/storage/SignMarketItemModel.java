@@ -38,8 +38,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 
 import de.cubeisland.engine.core.storage.database.AttrType;
 import de.cubeisland.engine.core.storage.database.Attribute;
-import de.cubeisland.engine.core.storage.database.DBUpdater;
-import de.cubeisland.engine.core.storage.database.DatabaseUpdater;
+import de.cubeisland.engine.core.storage.database.TableUpdateCreator;
 import de.cubeisland.engine.core.util.StringUtils;
 import de.cubeisland.engine.core.util.Version;
 import de.cubeisland.engine.signmarket.MarketSign;
@@ -48,7 +47,6 @@ import gnu.trove.set.hash.THashSet;
 
 @Entity
 @Table(name = "signmarketitem")
-@DBUpdater(SignMarketItemUpdater.class)
 public class SignMarketItemModel implements InventoryHolder,Cloneable
 {
     @javax.persistence.Version
@@ -317,9 +315,8 @@ public class SignMarketItemModel implements InventoryHolder,Cloneable
         this.size = size;
     }
 
-    public static class SignMarketItemUpdater implements DatabaseUpdater
+    public static class SignMarketItemUpdater
     {
-        @Override
         public void update(Connection connection, Class<?> entityClass, Version dbVersion, Version codeVersion) throws SQLException
         {
             if (codeVersion.getMajor() == 2)

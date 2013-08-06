@@ -21,11 +21,11 @@ import java.sql.Connection;
 import java.sql.SQLException;
 
 import de.cubeisland.engine.core.util.Version;
+import org.jooq.Record;
+import org.jooq.Table;
 
-/**
- * The update method will be called automatically when the dbVersion is lower than the codeVersion
- */
-public interface DatabaseUpdater
+public interface TableCreator<T extends Record> extends Table<T>
 {
-    public void update(Connection connection, Class<?> entityClass, Version dbVersion, Version codeVersion) throws SQLException;
+    void createTable(Connection connection) throws SQLException;
+    Version getTableVersion();
 }

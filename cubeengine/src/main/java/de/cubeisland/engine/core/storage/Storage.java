@@ -22,7 +22,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Collection;
 
-import de.cubeisland.engine.core.storage.database.DatabaseUpdater;
+import de.cubeisland.engine.core.storage.database.TableUpdateCreator;
 
 /**
  * This interface provides basic access-methods for accessing the model V with a Key K
@@ -138,7 +138,7 @@ public interface Storage<K, M extends Model<K>>
      * @param updater      the updater
      * @param fromRevision the revision to update from with this updater
      */
-    public void registerUpdater(DatabaseUpdater updater, int... fromRevision);
+    public void registerUpdater(TableUpdateCreator updater, int... fromRevision);
 
     /**
      * Creates a model for the resultSet values

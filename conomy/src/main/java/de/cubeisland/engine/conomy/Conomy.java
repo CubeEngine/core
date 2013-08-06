@@ -34,13 +34,6 @@ public class Conomy extends Module
     private ConomyManager manager;
 
     @Override
-    public void onLoad()
-    {
-        this.getCore().getDB().registerEntity(AccountModel.class);
-        this.getCore().getDB().registerEntity(BankAccessModel.class);
-    }
-
-    @Override
     public void onEnable()
     {
         this.config = Configuration.load(ConomyConfiguration.class, this);

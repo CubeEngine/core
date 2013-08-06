@@ -18,43 +18,26 @@
 package de.cubeisland.engine.core.storage.database.mysql;
 
 import java.io.File;
-import java.lang.reflect.Field;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.EmbeddedId;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
-import javax.persistence.UniqueConstraint;
 
 import com.avaje.ebean.EbeanServer;
-import com.avaje.ebean.EbeanServerFactory;
 import com.avaje.ebean.config.MatchingNamingConvention;
 import com.avaje.ebean.config.ServerConfig;
 import com.avaje.ebean.config.TableName;
 import com.jolbox.bonecp.BoneCPDataSource;
 import de.cubeisland.engine.core.Core;
 import de.cubeisland.engine.core.config.Configuration;
-import de.cubeisland.engine.core.storage.DatabaseClassloader;
 import de.cubeisland.engine.core.storage.database.AbstractPooledDatabase;
-import de.cubeisland.engine.core.storage.database.AttrType;
-import de.cubeisland.engine.core.storage.database.Attribute;
-import de.cubeisland.engine.core.storage.database.DBUpdater;
 import de.cubeisland.engine.core.storage.database.DatabaseConfiguration;
-import de.cubeisland.engine.core.storage.database.Index;
-import de.cubeisland.engine.core.util.StringUtils;
+import de.cubeisland.engine.core.storage.database.TableCreator;
+import de.cubeisland.engine.core.storage.database.TableUpdateCreator;
 import de.cubeisland.engine.core.util.Version;
-
-import static de.cubeisland.engine.core.storage.database.AttrType.DataTypeInfo.*;
+import org.jooq.DSLContext;
+import org.jooq.SQLDialect;
+import org.jooq.impl.DSL;
 
 public class MySQLDatabase extends AbstractPooledDatabase
 {
@@ -67,6 +50,8 @@ public class MySQLDatabase extends AbstractPooledDatabase
     private final BoneCPDataSource dataSource;
     private EbeanServer ebeanServer;
     private final ServerConfig serverConfig;
+
+    private DatabaseSchema schema;
 
     public MySQLDatabase(Core core, MySQLDatabaseConfiguration config) throws SQLException
     {
@@ -88,6 +73,8 @@ public class MySQLDatabase extends AbstractPooledDatabase
         dataSource.setMaxConnectionsPerPartition(10);
         dataSource.setPartitionCount(1);
 
+        this.schema = new DatabaseSchema(config.database);
+
         tableprefix = this.config.tablePrefix;
         serverConfig = new ServerConfig();
         serverConfig.setDataSource(dataSource);
@@ -96,20 +83,6 @@ public class MySQLDatabase extends AbstractPooledDatabase
         namingConvention.setUseForeignKeyPrefix(false); // Use the column names we declare!
         serverConfig.setNamingConvention(namingConvention);
         serverConfig.setRegister(false);
-        this.databaseClassloader = new DatabaseClassloader();
-
-    }
-
-    private DatabaseClassloader databaseClassloader;
-
-    public void enable(ClassLoader coreLoader)
-    {
-        ClassLoader previous = Thread.currentThread().getContextClassLoader();
-        databaseClassloader.addClassLoader(coreLoader);
-        databaseClassloader.addClassLoader(previous);
-        Thread.currentThread().setContextClassLoader(databaseClassloader);
-        ebeanServer = EbeanServerFactory.create(serverConfig);
-        Thread.currentThread().setContextClassLoader(previous);
     }
 
     public static MySQLDatabase loadFromConfig(Core core, File file)
@@ -126,7 +99,7 @@ public class MySQLDatabase extends AbstractPooledDatabase
         return null;
     }
 
-    private boolean updateTableStructure(Version version, String tableName, Class<?> modelClass)
+    private boolean updateTableStructure(TableUpdateCreator updater)
     {
         try
         {
@@ -135,41 +108,35 @@ public class MySQLDatabase extends AbstractPooledDatabase
                                              "WHERE table_schema = ?" +
                                              "\nAND table_name = ?",
                                              this.config.database,
-                                             this.config.tablePrefix + tableName);
+                                             updater.getName());
             if (resultSet.next())
             {
                 Version dbVersion = Version.fromString(resultSet.getString("table_comment"));
+                Version version = updater.getTableVersion();
                 if (dbVersion.isNewerThan(version))
                 {
-                    this.core.getLog().info("table-version is newer than expected! " + tableName + ":" + dbVersion.toString() + " expected version: " + version.toString());
+                    this.core.getLog().info("table-version is newer than expected! {}: {} expected version: {}",
+                                            updater.getName(), dbVersion.toString(), version.toString());
                 }
-                else if (dbVersion.isOlderThan(version))
+                else if (dbVersion.isOlderThan(updater.getTableVersion()))
                 {
                     Connection connection = this.getConnection();
-                    this.core.getLog().info("table-version is too old! Updating " + tableName + " from " +dbVersion.toString()+ " to " + version.toString());
-                    DBUpdater dbUpdater = modelClass.getAnnotation(DBUpdater.class);
-                    if (dbUpdater == null)
+                    this.core.getLog().info("table-version is too old! Updating {} from {} to {}",
+                                            updater.getName(), dbVersion.toString(), version.toString());
+                    try
                     {
-                        this.core.getLog().warn("No Updater declared!");
+                        connection.setAutoCommit(false);
+                        updater.update(connection, dbVersion);
+                        connection.commit();
                     }
-                    else
+                    catch (SQLException ex)
                     {
-                        try
-                        {
-                            connection.setAutoCommit(false);
-                            dbUpdater.value().newInstance().update(connection, modelClass, dbVersion, version);
-                            connection.commit();
-                        }
-                        catch (SQLException ex)
-                        {
-                            connection.rollback();
-                            throw ex;
-                        }
-                        connection.setAutoCommit(true);
-                        this.core.getLog().info(tableName + " got updated to " + version.toString());
+                        connection.rollback();
+                        throw ex;
                     }
-                    this.bindValues(this.prepareStatement("ALTER TABLE " + prepareTableName(tableName) + " COMMENT = ?", connection), version
-                        .toString()).execute();
+                    connection.setAutoCommit(true);
+                    this.core.getLog().info("{} got updated to {}", updater.getName(), version.toString());
+                    this.bindValues(this.prepareStatement("ALTER TABLE " + updater.getName() + " COMMENT = ?", connection), version.toString()).execute();
                     connection.close(); // return the connection to the pool
                 }
                 return true;
@@ -177,7 +144,7 @@ public class MySQLDatabase extends AbstractPooledDatabase
         }
         catch (Exception e)
         {
-            this.core.getLog().warn("Could not execute structure update for the table " + tableName, e);
+            this.core.getLog().warn("Could not execute structure update for the table {}", updater.getName(), e);
         }
         return false;
     }
@@ -185,231 +152,23 @@ public class MySQLDatabase extends AbstractPooledDatabase
     /**
      * Creates or updates the table for given entity
      *
-     * @param entityClass the entity to register
+     * @param table
+     * @param <T>
      */
-    public void registerEntity(Class<?> entityClass)
+    public <T extends TableCreator> void registerTable(T table)
     {
-        this.serverConfig.addClass(entityClass);
-        this.databaseClassloader.addClassLoader(entityClass.getClassLoader());
-        if (entityClass.isAnnotationPresent(Entity.class) && entityClass.isAnnotationPresent(Table.class))
+        if (table instanceof TableUpdateCreator && this.updateTableStructure((TableUpdateCreator)table)) return;
+        try
         {
-            Table table = entityClass.getAnnotation(Table.class);
-            Version version = new Version(0);
-            for (Field field : entityClass.getDeclaredFields())
-            {
-                if (field.isAnnotationPresent(javax.persistence.Version.class) && field.getType().equals(Version.class))
-                {
-                    try
-                    {
-                        field.setAccessible(true);
-                        version = (Version)field.get(null);
-                    }
-                    catch (IllegalAccessException e)
-                    {
-                        throw new IllegalStateException("Version was not accessible!",e);
-                    }
-                }
-            }
-            if (this.updateTableStructure(version, table.name(), entityClass)) return;
-            this.core.getLog().debug("Creating table {} for {}", table.name(), entityClass.getName());
-            StringBuilder builder = new StringBuilder("CREATE");
-            // TODO TEMPORARY and alternativ name for temp-table (or just append _temp)
-            builder.append(" TABLE");
-            builder.append(" IF NOT EXISTS "); // TODO
-            builder.append(prepareTableName(table.name())).append("\n(");
-            boolean first = true;
-            boolean autoIncrement = false;
-            for (Field field : entityClass.getDeclaredFields())
-            {
-                if (field.isAnnotationPresent(Attribute.class))
-                {
-                    if (!first) builder.append(",\n");
-                    first = false;
-                    Attribute attribute = field.getAnnotation(Attribute.class);
-                    Column column = field.getAnnotation(Column.class);
-                    Id id = field.getAnnotation(Id.class);
-                    if (id != null)
-                    {
-                        autoIncrement = true;
-                    }
-                    if (field.isAnnotationPresent(EmbeddedId.class)) // Multiple Col as Primary Key
-                    {
-                        Set<String> embededId = new HashSet<String>();
-                        for (Field embeddedField : field.getType().getDeclaredFields())
-                        {
-
-                        }
-                        // TODO MultiKey
-                    }
-                    else if (field.isAnnotationPresent(ManyToOne.class)
-                        || id != null || column != null) // Primary Key OR Column
-                    {
-                        builder.append(getColName(field, column)).append(" ") // col_name
-                               .append(attribute.type().name()) // data_type
-                               .append(getDataTypeDef(field, column, attribute)) // data_type info
-                               .append(getNullOrNotNull(column)) // [NOT NULL | NULL]
-                               // TODO DEFAULT //[DEFAULT default_value]
-                               .append(getAutoIncrement(id))
-                               .append(getKeyType(id, column))
-                               .append(getComment(attribute));
-                    }
-                    else
-                    {
-                        throw new IllegalStateException("Missing Column Annotation! " + field.getName());
-                    }
-                    if (field.isAnnotationPresent(ManyToOne.class))
-                    {
-                        ManyToOne foreignKey = field.getAnnotation(ManyToOne.class);
-                        builder.append(",\n").append(getForeignKey(field, column, foreignKey.cascade(), field.getType()));
-                    }
-                    if (field.isAnnotationPresent(Index.class))
-                    {
-                        builder.append(",\nINDEX (").append(getColName(field, column)).append(")");
-                    }
-                }
-            }
-            if (table.uniqueConstraints().length != 0)
-            {
-                for (UniqueConstraint uniqueConstraint : table.uniqueConstraints())
-                {
-                    builder.append(",\nUNIQUE (").append(MySQLQueryBuilder.fields(uniqueConstraint.columnNames())).append(")");
-                }
-            }
-            builder.append(")\n");
-            if (autoIncrement) builder.append("AUTO_INCREMENT 1,\n");
-            builder.append("ENGINE InnoDB,\n");
-            builder.append("COLLATE utf8_unicode_ci,\n");
-            builder.append("COMMENT ").append(prepareString(version.toString()));
-            try
-            {
-                this.execute(builder.toString());
-            }
-            catch (SQLException e)
-            {
-                throw new IllegalStateException("Error while creating table for " + table.name() + "! Query:\n" + builder.toString());
-            }
-            return;
+            Connection connection = this.getConnection();
+            table.createTable(connection);
+            connection.close();
         }
-        throw new IllegalArgumentException("The entityClass " + entityClass + " is not a valid DatabaseEntity");
-    }
-
-    static String getForeignKey(Field field, Column column, CascadeType[] cascades, Class<?> entityClass)
-    {
-        Table annotation = entityClass.getAnnotation(Table.class);
-        String tableName = MySQLDatabase.prepareTableName(annotation.name());
-        StringBuilder builder = new StringBuilder(" FOREIGN KEY ");
-        for (Field foreignField : entityClass.getDeclaredFields())
+        catch (SQLException ex)
         {
-            if (foreignField.isAnnotationPresent(Id.class))
-            {
-                builder.append("(").append(getColName(field, column)).append(") REFERENCES ")
-                    .append(tableName).append("(")
-                    .append(getColName(foreignField, foreignField.getAnnotation(Column.class)))
-                    .append(")");
-                for (CascadeType cascade : cascades)
-                {
-                    switch (cascade)
-                    {
-                        case REMOVE:
-                            builder.append(" ON DELETE CASCADE");
-                            break;
-                        case REFRESH:
-                            builder.append(" ON UPDATE CASCADE");
-                    }
-                }
-                return builder.toString();
-            }
+            throw new IllegalStateException("Cannot create table " + table.getName(), ex);
         }
-        throw new IllegalStateException("No Primary Key found for a foreign key");
-
-    }
-
-    static String getDataTypeDef(Field field, Column column, Attribute attribute)
-    {
-        StringBuilder builder = new StringBuilder();
-        AttrType type = attribute.type();
-        if (type.can(LENGTH))
-        {
-            if (column != null && column.length() != 255)
-            {
-                builder.append("(").append(column.length());
-                if (type.can(DECIMALS))
-                {
-                    if (column.precision() != 0)
-                    {
-                        builder.append(", ").append(column.precision());
-                    }
-                }
-                builder.append(")");
-            }
-        }
-        if (type.can(UNSIGNED) && attribute.unsigned())
-        {
-            builder.append(" UNSIGNED ");
-        }
-        if (type.can(ZEROFILL) && false) // TODO ZEROFILL
-        {
-            builder.append(" ZEROFILL ");
-        }
-        if (type.can(BINARY) && false)
-        {
-            builder.append(" BINARY ");
-        }
-        if (type.can(VALUES))
-        {
-            if (!field.getType().isEnum())
-            {
-                throw new IllegalStateException("Illegal Field Type for the attribute " + type.name());
-            }
-            List<String> list = new ArrayList<String>();
-            for (Enum e : ((Class<? extends Enum<?>>)field.getType()).getEnumConstants())
-            {
-                list.add(e.name());
-            }
-            builder.append("(").append(StringUtils.implode(", ", list)).append(")");
-        }
-        if (type.can(CHARSET) && false)
-        {
-            builder.append(" CHARACTER SET "); // TODO CHARSET
-        }
-        if (type.can(COLLATE)) // TODO COLLATE configurable
-        {
-            builder.append(" COLLATE ").append("utf8_unicode_ci");
-        }
-        return builder.toString();
-    }
-
-    static String getComment(Attribute attribute)
-    {
-        return attribute.comment().isEmpty() ? "" : " COMMENT " + prepareString(attribute.comment());
-    }
-
-    static String getKeyType(Id id, Column column)
-    {
-        return id == null ? (column != null && column.unique() ? " UNIQUE KEY " : "") : " PRIMARY KEY ";
-    }
-
-    static String getAutoIncrement(Id id)
-    {
-        return id == null ? "" : " AUTO_INCREMENT ";
-    }
-
-    // TODO move into QueryBuilder class
-    static String getColName(Field field, Column column)
-    {
-        if (column != null && !column.name().isEmpty())
-        {
-            return prepareColumnName(column.name());
-        }
-        else
-        {
-            return prepareColumnName(field.getName());
-        }
-    }
-
-    static String getNullOrNotNull(Column column)
-    {
-        return column == null || !column.nullable() ? " NOT NULL " : " NULL ";
+        this.schema.addTable(table);
     }
 
     @Override
@@ -422,6 +181,12 @@ public class MySQLDatabase extends AbstractPooledDatabase
     public DatabaseMetaData getMetaData() throws SQLException
     {
         return this.getConnection().getMetaData();
+    }
+
+    @Override
+    public DSLContext getDSL()
+    {
+        return DSL.using(this.dataSource, SQLDialect.MYSQL);
     }
 
     /**
@@ -486,13 +251,6 @@ public class MySQLDatabase extends AbstractPooledDatabase
             TableName tableName = super.getTableName(beanClass);
             return new TableName(tableName.getCatalog(), tableName.getSchema(), prepareTableName(tableName.getName()));
         }
-    }
-
-    @Override
-    public EbeanServer getEbeanServer()
-    {
-        if (ebeanServer == null) throw new IllegalStateException("The Ebean-Server is not accessible at this point!");
-        return this.ebeanServer;
     }
 
     @Override

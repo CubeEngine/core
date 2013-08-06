@@ -28,18 +28,14 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 
-import de.cubeisland.engine.conomy.account.storage.AccountModel.AccountUpdater;
 import de.cubeisland.engine.core.storage.database.AttrType;
 import de.cubeisland.engine.core.storage.database.Attribute;
-import de.cubeisland.engine.core.storage.database.DBUpdater;
-import de.cubeisland.engine.core.storage.database.DatabaseUpdater;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.user.UserEntity;
 import de.cubeisland.engine.core.util.Version;
 
 @Entity
 @Table(name = "accounts", uniqueConstraints = @UniqueConstraint(columnNames = {"user_id", "name"}))
-@DBUpdater(AccountUpdater.class)
 public class AccountModel
 {
     @javax.persistence.Version
@@ -164,9 +160,8 @@ public class AccountModel
         this.mask = mask;
     }
 
-    public static class AccountUpdater implements DatabaseUpdater
+    public static class AccountUpdater
     {
-        @Override
         public void update(Connection connection, Class<?> entityClass, Version dbVersion, Version codeVersion) throws SQLException
         {
             if (codeVersion.getMajor() == 2)

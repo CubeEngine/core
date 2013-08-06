@@ -34,17 +34,13 @@ import org.bukkit.Location;
 import de.cubeisland.engine.core.CubeEngine;
 import de.cubeisland.engine.core.storage.database.AttrType;
 import de.cubeisland.engine.core.storage.database.Attribute;
-import de.cubeisland.engine.core.storage.database.DBUpdater;
-import de.cubeisland.engine.core.storage.database.DatabaseUpdater;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.user.UserEntity;
 import de.cubeisland.engine.core.util.Version;
 import de.cubeisland.engine.core.world.WorldEntity;
-import de.cubeisland.engine.signmarket.storage.SignMarketBlockModel.SignMarketBlockUpdater;
 
 @Entity
 @Table(name = "signmarketblocks", uniqueConstraints = @UniqueConstraint(columnNames = {"world", "x", "y", "z"}))
-@DBUpdater(SignMarketBlockUpdater.class)
 public class SignMarketBlockModel
 {
     @javax.persistence.Version
@@ -145,7 +141,7 @@ public class SignMarketBlockModel
     {
         if (this.owner == null) return user == null;
         if (user == null) return false;
-        return user.getId().equals(this.owner.getId());
+        return user.getId().equals(this.owner.getKey());
     }
 
     public SignMarketBlockModel()
@@ -261,9 +257,8 @@ public class SignMarketBlockModel
         this.price = price;
     }
 
-    public static class SignMarketBlockUpdater implements DatabaseUpdater
+    public static class SignMarketBlockUpdater
     {
-        @Override
         public void update(Connection connection, Class<?> entityClass, Version dbVersion, Version codeVersion) throws SQLException
         {
             if (codeVersion.getMajor() == 2)

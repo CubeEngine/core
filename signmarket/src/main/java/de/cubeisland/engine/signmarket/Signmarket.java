@@ -32,13 +32,6 @@ public class Signmarket extends Module
     private EditModeListener editModeListener;
 
     @Override
-    public void onLoad()
-    {
-        this.getCore().getDB().registerEntity(SignMarketItemModel.class);
-        this.getCore().getDB().registerEntity(SignMarketBlockModel.class);
-    }
-
-    @Override
     public void onEnable()
     {
         Profiler.startProfiling("marketSignEnable");

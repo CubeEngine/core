@@ -46,13 +46,13 @@ public class BankAccount extends Account
             switch (access.getAccessLevel())
             {
                case OWNER:
-                   this.owner.put(access.getUserEntity().getId(), access);
+                   this.owner.put(access.getUserEntity().getKey().longValue(), access);
                    break;
                case MEMBER:
-                   this.member.put(access.getUserEntity().getId(), access);
+                   this.member.put(access.getUserEntity().getKey().longValue(), access);
                    break;
                case INVITED:
-                   this.invites.put(access.getUserEntity().getId(), access);
+                   this.invites.put(access.getUserEntity().getKey().longValue(), access);
             }
         }
     }
@@ -248,7 +248,7 @@ public class BankAccount extends Account
         Set<String> invites = new HashSet<>();
         for (BankAccessModel bankAccessModel : this.invites.values())
         {
-             invites.add(bankAccessModel.getUserEntity().getPlayerName());
+             invites.add(bankAccessModel.getUserEntity().getPlayer());
         }
         return invites;
     }
@@ -258,7 +258,7 @@ public class BankAccount extends Account
         Set<String> owners = new HashSet<>();
         for (BankAccessModel bankAccessModel : this.owner.values())
         {
-            owners.add(bankAccessModel.getUserEntity().getPlayerName());
+            owners.add(bankAccessModel.getUserEntity().getPlayer());
         }
         return owners;
     }
@@ -268,7 +268,7 @@ public class BankAccount extends Account
         Set<String> members = new HashSet<>();
         for (BankAccessModel bankAccessModel : this.member.values())
         {
-            members.add(bankAccessModel.getUserEntity().getPlayerName());
+            members.add(bankAccessModel.getUserEntity().getPlayer());
         }
         return members;
     }

@@ -17,70 +17,101 @@
  */
 package de.cubeisland.engine.core.world;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
-
 import org.bukkit.World;
 
-import de.cubeisland.engine.core.storage.database.AttrType;
-import de.cubeisland.engine.core.storage.database.Attribute;
+import org.jooq.Record1;
+import org.jooq.Record3;
+import org.jooq.Row3;
+import org.jooq.impl.UpdatableRecordImpl;
+import org.jooq.types.UInteger;
+
+import static de.cubeisland.engine.core.world.TableWorld.TABLE_WORLD;
 
 
-@Entity
-@Table(name = "worlds")
 // TODO change from String UUID -> 2 Longs
-// TODO updater
-public class WorldEntity
+public class WorldEntity extends UpdatableRecordImpl<WorldEntity> implements Record3<UInteger, String, String>
 {
-    @Id
-    @Column(name = "key") // TODO change to Id
-    @Attribute(type = AttrType.INT, unsigned = true)
-    private Long id = -1L;
-    @Column(length = 64, nullable = false)
-    @Attribute(type = AttrType.VARCHAR)
-    private String worldName;
-    @Column(length = 64, unique = true, nullable = false)
-    @Attribute(type = AttrType.VARCHAR)
-    private String worldUUID;
-
-    public WorldEntity()
-    {}
-
-    public WorldEntity(World world)
-    {
-        this.worldName = world.getName();
-        this.worldUUID = world.getUID().toString();
+    public WorldEntity() {
+        super(TABLE_WORLD);
     }
 
-    public Long getId()
+    public WorldEntity newWorld(World world)
     {
-        return id;
+        this.setWorldname(world.getName());
+        this.setWorldUUID(world.getUID().toString());
+        return this;
     }
 
-    public void setId(Long id)
-    {
-        this.id = id;
+    public void setKey(UInteger value) {
+        setValue(0, value);
     }
 
-    public String getWorldName()
-    {
-        return worldName;
+    public UInteger getKey() {
+        return (UInteger) getValue(0);
     }
 
-    public void setWorldName(String worldName)
-    {
-        this.worldName = worldName;
+    public void setWorldname(String value) {
+        setValue(1, value);
     }
 
-    public String getWorldUUID()
-    {
-        return worldUUID;
+    public String getWorldname() {
+        return (String) getValue(1);
     }
 
-    public void setWorldUUID(String worldUUID)
-    {
-        this.worldUUID = worldUUID;
+    public void setWorldUUID(String value) {
+        setValue(2, value);
+    }
+
+    public String getWorldUUID() {
+        return (String) getValue(2);
+    }
+
+    @Override
+    public org.jooq.Record1<UInteger> key() {
+        return (Record1) super.key();
+    }
+
+    // -------------------------------------------------------------------------
+    // Record3 type implementation
+    // -------------------------------------------------------------------------
+
+    @Override
+    public org.jooq.Row3<UInteger, String, String> fieldsRow() {
+        return (Row3) super.fieldsRow();
+    }
+
+    @Override
+    public org.jooq.Row3<UInteger, String, String> valuesRow() {
+        return (Row3) super.valuesRow();
+    }
+
+    @Override
+    public org.jooq.Field<UInteger> field1() {
+        return TABLE_WORLD.KEY;
+    }
+
+    @Override
+    public org.jooq.Field<String> field2() {
+        return TABLE_WORLD.WORLDNAME;
+    }
+
+    @Override
+    public org.jooq.Field<String> field3() {
+        return TABLE_WORLD.WORLDUUID;
+    }
+
+    @Override
+    public UInteger value1() {
+        return getKey();
+    }
+
+    @Override
+    public String value2() {
+        return getWorldname();
+    }
+
+    @Override
+    public String value3() {
+        return getWorldUUID();
     }
 }

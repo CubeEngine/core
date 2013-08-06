@@ -127,9 +127,9 @@ public class NormalLanguage implements Cleanable, Language
 
             for (Map.Entry<String, String> translation : moduleMessages.entrySet())
             {
-                if (!this.messages.containsKey(translation.getId()))
+                if (!this.messages.containsKey(translation.getKey()))
                 {
-                    this.messages.put(translation.getId(), ChatFormat.parseFormats(translation.getValue()));
+                    this.messages.put(translation.getKey(), ChatFormat.parseFormats(translation.getValue()));
                 }
             }
             return moduleMessages;

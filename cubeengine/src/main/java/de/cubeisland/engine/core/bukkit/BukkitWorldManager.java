@@ -18,7 +18,6 @@
 package de.cubeisland.engine.core.bukkit;
 
 import java.io.IOException;
-import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
@@ -34,6 +33,10 @@ import de.cubeisland.engine.core.filesystem.FileManager;
 import de.cubeisland.engine.core.world.AbstractWorldManager;
 import de.cubeisland.engine.core.world.WorldEntity;
 import gnu.trove.set.hash.THashSet;
+import org.jooq.DSLContext;
+import org.jooq.Result;
+
+import static de.cubeisland.engine.core.world.TableWorld.TABLE_WORLD;
 
 public class BukkitWorldManager extends AbstractWorldManager
 {
@@ -48,26 +51,28 @@ public class BukkitWorldManager extends AbstractWorldManager
             @Override
             public void run()
             {
-                Collection<WorldEntity> entities = database.getEbeanServer().find(WorldEntity.class).findList();
+                DSLContext dsl = database.getDSL();
+                Result<WorldEntity> worldEntities = dsl.select().from(TABLE_WORLD).fetchInto(TABLE_WORLD);
                 List<World> loadedWorlds = server.getWorlds();
-                for (WorldEntity entity : entities)
+                for (WorldEntity entity : worldEntities)
                 {
                     World world = server.getWorld(UUID.fromString(entity.getWorldUUID()));
                     if (loadedWorlds.contains(world))
                     {
                         loadedWorlds.remove(world);
                         worlds.put(world.getName(), entity);
-                        worldIds.put(entity.getId(), world);
+                        worldIds.put(entity.getKey().longValue(), world);
                     }
                 }
                 if (!loadedWorlds.isEmpty()) // new worlds?
                 {
+
                     for (World world : loadedWorlds)
                     {
-                        WorldEntity entity = new WorldEntity(world);
-                        database.getEbeanServer().save(entity);
+                        WorldEntity entity = dsl.newRecord(TABLE_WORLD).newWorld(world);
+                        entity.insert();
                         worlds.put(world.getName(), entity);
-                        worldIds.put(entity.getId(), world);
+                        worldIds.put(entity.getKey().longValue(), world);
                     }
                 }
             }

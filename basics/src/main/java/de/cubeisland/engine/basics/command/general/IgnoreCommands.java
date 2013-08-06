@@ -71,8 +71,8 @@ public class IgnoreCommands
     public boolean checkIgnored(User user, User ignored)
     {
         IgnoreList ignore = this.ebeanServer.find(IgnoreList.class).where()
-        .eq("userid.key", user.getEntity().getId())
-        .eq("ignore.key", ignored.getEntity().getId()).findUnique();
+        .eq("userid.key", user.getEntity().getKey())
+        .eq("ignore.key", ignored.getEntity().getKey()).findUnique();
         return ignore != null;
     }
 

@@ -39,7 +39,6 @@ import org.slf4j.LoggerFactory;
 public class ConomyManager
 {
     protected final Conomy module;
-    protected final EbeanServer ebean;
 
     private Map<String,BankAccount> bankaccounts = new THashMap<>();
     private Map<Long,BankAccount> bankaccountsID = new THashMap<>();
@@ -51,8 +50,6 @@ public class ConomyManager
     public ConomyManager(Conomy module)
     {
         this.module = module;
-        this.ebean = module.getCore().getDB().getEbeanServer();
-
         this.config = module.getConfig();
 
         this.logger =  LoggerFactory.getLogger("cubeengine.conomy.transactions");
@@ -467,7 +464,7 @@ public class ConomyManager
     public Set<BankAccount> getBankAccounts(User user)
     {
         List<BankAccessModel> list = this.ebean.find(BankAccessModel.class).
-            select("accountId").where().eq("userId", user.getEntity().getId()).findList();
+            select("accountId").where().eq("userId", user.getEntity().getKey()).findList();
         Set<BankAccount> accounts = new HashSet<>();
         for (BankAccessModel access : list)
         {
@@ -529,7 +526,7 @@ public class ConomyManager
 
     protected AccountModel loadUserAccount(User holder)
     {
-        return this.ebean.find(AccountModel.class).where().eq("user_id",holder.getEntity().getId()).findUnique();
+        return this.ebean.find(AccountModel.class).where().eq("user_id",holder.getEntity().getKey()).findUnique();
     }
 
     public List<BankAccessModel> getBankAccess(AccountModel model)

@@ -71,14 +71,6 @@ public class Basics extends Module
     private LagTimer lagTimer;
 
     @Override
-    public void onLoad()
-    {
-        this.getCore().getDB().registerEntity(BasicsUserEntity.class);
-        this.getCore().getDB().registerEntity(Mail.class);
-        this.getCore().getDB().registerEntity(IgnoreList.class);
-    }
-
-    @Override
     public void onEnable()
     {
         Profiler.startProfiling("basicsEnable");

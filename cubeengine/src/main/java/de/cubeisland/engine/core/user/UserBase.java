@@ -2518,6 +2518,27 @@ public class UserBase implements Player
     }
 
     @Override
+    public boolean isLeashed()
+    {
+        final Player player = this.getOfflinePlayer().getPlayer();
+        return player != null && player.isLeashed();
+    }
+
+    @Override
+    public Entity getLeashHolder() throws IllegalStateException
+    {
+        final Player player = this.getOfflinePlayer().getPlayer();
+        return player == null ? null : player.getLeashHolder();
+    }
+
+    @Override
+    public boolean setLeashHolder(Entity entity)
+    {
+        final Player player = this.getOfflinePlayer().getPlayer();
+        return player != null && player.setLeashHolder(entity);
+    }
+
+    @Override
     public void setPlayerWeather(WeatherType wt)
     {
         final Player player = this.getOfflinePlayer().getPlayer();

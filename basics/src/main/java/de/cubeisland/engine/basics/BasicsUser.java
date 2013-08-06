@@ -41,7 +41,7 @@ public class BasicsUser
     public BasicsUser(EbeanServer ebeanServer, User user)
     {
         this.ebeanServer = ebeanServer;
-        this.bUEntity = ebeanServer.find(BasicsUserEntity.class).where().eq("userid", user.getEntity().getId()).findUnique();
+        this.bUEntity = ebeanServer.find(BasicsUserEntity.class).where().eq("userid", user.getEntity().getKey()).findUnique();
         if (bUEntity == null)
         {
             this.bUEntity = new BasicsUserEntity(user);
@@ -51,7 +51,7 @@ public class BasicsUser
 
     public void loadMails()
     {
-        this.mailbox = this.ebeanServer.find(Mail.class).where().eq("senderId", bUEntity.getEntity().getId()).findList();
+        this.mailbox = this.ebeanServer.find(Mail.class).where().eq("senderId", bUEntity.getEntity().getKey()).findList();
     }
 
     public List<Mail> getMails()
@@ -68,7 +68,7 @@ public class BasicsUser
         List<Mail> mails = new ArrayList<>();
         for (Mail mail : this.getMails())
         {
-            if (mail.getSenderEntity().getId() == sender.getId())
+            if (mail.getSenderEntity().getKey().longValue() == sender.getId())
             {
                 mails.add(mail);
             }

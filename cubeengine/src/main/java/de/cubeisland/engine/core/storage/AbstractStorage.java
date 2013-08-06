@@ -31,7 +31,7 @@ import java.util.Map;
 import de.cubeisland.engine.core.storage.database.Attribute;
 import de.cubeisland.engine.core.storage.database.Database;
 import de.cubeisland.engine.core.storage.database.DatabaseConstructor;
-import de.cubeisland.engine.core.storage.database.DatabaseUpdater;
+import de.cubeisland.engine.core.storage.database.TableUpdateCreator;
 import de.cubeisland.engine.core.storage.database.mysql.MySQLDatabase;
 import gnu.trove.map.hash.TIntObjectHashMap;
 
@@ -52,7 +52,7 @@ public abstract class AbstractStorage<K, M extends Model<K>, T> implements Stora
     protected String[] allFields;
     //Updaters:
     public final int revision;
-    protected TIntObjectHashMap<DatabaseUpdater> updaters;
+    protected TIntObjectHashMap<TableUpdateCreator> updaters;
     private boolean initialized = false;
 
     @SuppressWarnings("unchecked")
@@ -103,7 +103,7 @@ public abstract class AbstractStorage<K, M extends Model<K>, T> implements Stora
             }
         }
         this.allFields = this.fieldNames.values().toArray(new String[this.fieldNames.size()]);
-        this.updaters = new TIntObjectHashMap<DatabaseUpdater>();
+        this.updaters = new TIntObjectHashMap<TableUpdateCreator>();
     }
 
     @Override
@@ -133,7 +133,7 @@ public abstract class AbstractStorage<K, M extends Model<K>, T> implements Stora
     }
 
     @Override
-    public void registerUpdater(DatabaseUpdater updater, int... fromRevision)
+    public void registerUpdater(TableUpdateCreator updater, int... fromRevision)
     {
         for (int i : fromRevision)
         {

@@ -15,24 +15,32 @@
  * You should have received a copy of the GNU General Public License
  * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
-package de.cubeisland.engine.core.storage.database;
+package de.cubeisland.engine.core.storage.database.mysql;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import java.util.ArrayList;
+import java.util.List;
 
-/**
- * Declares a DatabaseUpdater
- */
-@Retention(RetentionPolicy.RUNTIME)
-@Target(value = {ElementType.TYPE})
-public @interface DBUpdater
+import org.jooq.Table;
+import org.jooq.impl.SchemaImpl;
+
+class DatabaseSchema extends SchemaImpl
 {
-    public Class<? extends DatabaseUpdater> value();
-}
+    private List<Table<?>> tables;
 
+    DatabaseSchema(String name)
+    {
+        super(name);
+        this.tables = new ArrayList<>();
+    }
+
+    @Override
+    public List<Table<?>> getTables()
+    {
+        return this.tables;
+    }
+
+    public void addTable(Table<?> table)
+    {
+        this.tables.add(table);
+    }
+}

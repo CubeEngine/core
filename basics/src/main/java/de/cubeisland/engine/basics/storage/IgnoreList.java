@@ -30,15 +30,13 @@ import javax.persistence.Table;
 import de.cubeisland.engine.basics.storage.IgnoreList.IgnoreListUpdater;
 import de.cubeisland.engine.core.storage.database.AttrType;
 import de.cubeisland.engine.core.storage.database.Attribute;
-import de.cubeisland.engine.core.storage.database.DBUpdater;
-import de.cubeisland.engine.core.storage.database.DatabaseUpdater;
+import de.cubeisland.engine.core.storage.database.TableUpdateCreator;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.user.UserEntity;
 import de.cubeisland.engine.core.util.Version;
 
 @Entity
 @Table(name = "ignorelist")
-@DBUpdater(IgnoreListUpdater.class)
 public class IgnoreList
 {
     @javax.persistence.Version
@@ -98,9 +96,8 @@ public class IgnoreList
         this.ignore = ignore;
     }
 
-    public static class IgnoreListUpdater implements DatabaseUpdater
+    public static class IgnoreListUpdater
     {
-        @Override
         public void update(Connection connection, Class<?> entityClass, Version dbVersion, Version codeVersion) throws SQLException
         {
             if (codeVersion.getMajor() == 2)

@@ -32,15 +32,13 @@ import com.avaje.ebean.EbeanServer;
 import de.cubeisland.engine.basics.storage.BasicsUserEntity.BasicsUserUpdater;
 import de.cubeisland.engine.core.storage.database.AttrType;
 import de.cubeisland.engine.core.storage.database.Attribute;
-import de.cubeisland.engine.core.storage.database.DBUpdater;
-import de.cubeisland.engine.core.storage.database.DatabaseUpdater;
+import de.cubeisland.engine.core.storage.database.TableUpdateCreator;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.user.UserEntity;
 import de.cubeisland.engine.core.util.Version;
 
 @Entity
 @Table(name = "basicuser")
-@DBUpdater(BasicsUserUpdater.class)
 public class BasicsUserEntity
 {
     @javax.persistence.Version
@@ -123,9 +121,8 @@ public class BasicsUserEntity
         this.godMode = godMode;
     }
 
-    public static class BasicsUserUpdater implements DatabaseUpdater
+    public static class BasicsUserUpdater
     {
-        @Override
         public void update(Connection connection, Class<?> entityClass, Version dbVersion, Version codeVersion) throws SQLException
         {
             if (codeVersion.getMajor() == 2)
