@@ -17,6 +17,9 @@
  */
 package de.cubeisland.engine.conomy.account.storage;
 
+import java.lang.Byte;
+import java.lang.Long;
+import java.lang.String;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Arrays;
@@ -30,7 +33,9 @@ import de.cubeisland.engine.core.user.UserEntity;
 import de.cubeisland.engine.core.util.Version;
 import org.jooq.ForeignKey;
 import org.jooq.Identity;
+import org.jooq.TableField;
 import org.jooq.UniqueKey;
+import org.jooq.impl.SQLDataType;
 import org.jooq.impl.TableImpl;
 import org.jooq.types.UInteger;
 
@@ -88,11 +93,11 @@ public class TableAccount extends TableImpl<AccountModel> implements TableCreato
     public final UniqueKey<AccountModel> UNIQUE_USERID_NAME;
     public final ForeignKey<AccountModel, UserEntity> FOREIGN_USER;
 
-    public final org.jooq.TableField<AccountModel, org.jooq.types.UInteger> KEY = createField("key", org.jooq.impl.SQLDataType.INTEGERUNSIGNED, this);
-    public final org.jooq.TableField<AccountModel, org.jooq.types.UInteger> USER_ID = createField("user_id", org.jooq.impl.SQLDataType.INTEGERUNSIGNED, this);
-    public final org.jooq.TableField<AccountModel, java.lang.String> NAME = createField("name", org.jooq.impl.SQLDataType.VARCHAR.length(64), this);
-    public final org.jooq.TableField<AccountModel, java.lang.Long> VALUE = createField("value", org.jooq.impl.SQLDataType.BIGINT, this);
-    public final org.jooq.TableField<AccountModel, java.lang.Byte> MASK = createField("mask", org.jooq.impl.SQLDataType.TINYINT, this);
+    public final TableField<AccountModel, UInteger> KEY = createField("key", SQLDataType.INTEGERUNSIGNED, this);
+    public final TableField<AccountModel, UInteger> USER_ID = createField("user_id", SQLDataType.INTEGERUNSIGNED, this);
+    public final TableField<AccountModel, String> NAME = createField("name", SQLDataType.VARCHAR.length(64), this);
+    public final TableField<AccountModel, Long> VALUE = createField("value", SQLDataType.BIGINT, this);
+    public final TableField<AccountModel, Byte> MASK = createField("mask", SQLDataType.TINYINT, this);
 
     @Override
     public Identity<AccountModel, UInteger> getIdentity()

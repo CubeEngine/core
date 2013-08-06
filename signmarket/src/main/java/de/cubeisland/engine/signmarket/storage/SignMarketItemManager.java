@@ -17,10 +17,12 @@
  */
 package de.cubeisland.engine.signmarket.storage;
 
-import com.avaje.ebean.EbeanServer;
 import de.cubeisland.engine.signmarket.Signmarket;
 import gnu.trove.map.hash.TLongObjectHashMap;
 import gnu.trove.set.hash.TLongHashSet;
+import org.jooq.DSLContext;
+
+import static de.cubeisland.engine.signmarket.storage.TableSignItem.TABLE_SIGN_ITEM;
 
 public class SignMarketItemManager
 {
@@ -28,20 +30,20 @@ public class SignMarketItemManager
 
     private Signmarket module;
 
-    private EbeanServer ebean;
+    private DSLContext dsl;
 
     public SignMarketItemManager(Signmarket module)
     {
-        this.ebean = module.getCore().getDB().getEbeanServer();
+        this.dsl = module.getCore().getDB().getDSL();
         this.module = module;
     }
 
     public void load()
     {
         this.itemInfoModels = new TLongObjectHashMap<>();
-        for (SignMarketItemModel model : this.ebean.find(SignMarketItemModel.class).findList())
+        for (SignMarketItemModel model : this.dsl.select().from(TABLE_SIGN_ITEM).fetchInto(TABLE_SIGN_ITEM))
         {
-            this.itemInfoModels.put(model.getId(), model);
+            this.itemInfoModels.put(model.getKey().longValue(), model);
         }
         this.module.getLog().debug("{} item-models loaded", this.itemInfoModels.size());
     }
@@ -53,9 +55,9 @@ public class SignMarketItemManager
 
     public void store(SignMarketItemModel itemInfo)
     {
-        this.ebean.save(itemInfo);
-        this.itemInfoModels.put(itemInfo.getId(), itemInfo);
-        this.module.getLog().debug("stored item-model #{}", itemInfo.getId());
+        itemInfo.insert();
+        this.itemInfoModels.put(itemInfo.getKey().longValue(), itemInfo);
+        this.module.getLog().debug("stored item-model #{}", itemInfo.getKey());
     }
 
     public void deleteUnusedModels(TLongHashSet usedKeys)
@@ -64,7 +66,7 @@ public class SignMarketItemManager
         {
             if (!usedKeys.contains(key))
             {
-                this.ebean.delete(this.itemInfoModels.remove(key));
+                this.itemInfoModels.remove(key).delete();
                 this.module.getLog().debug("deleted unused item-model #{}", key);
             }
         }
@@ -72,13 +74,12 @@ public class SignMarketItemManager
 
     public void delete(SignMarketItemModel itemInfo)
     {
-        this.itemInfoModels.remove(itemInfo.getId());
-        this.ebean.delete(itemInfo);
-        this.module.getLog().debug("deleted item-model #{}", itemInfo.getId());
+        this.itemInfoModels.remove(itemInfo.getKey().longValue()).delete();
+        this.module.getLog().debug("deleted item-model #{}", itemInfo.getKey());
     }
 
     public void update(SignMarketItemModel itemInfo)
     {
-        this.ebean.update(itemInfo);
+        itemInfo.update();
     }
 }

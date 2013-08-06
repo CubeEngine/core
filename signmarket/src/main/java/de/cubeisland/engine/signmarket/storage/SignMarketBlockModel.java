@@ -17,88 +17,36 @@
  */
 package de.cubeisland.engine.signmarket.storage;
 
-import java.sql.Connection;
-import java.sql.SQLException;
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
 import javax.persistence.Transient;
-import javax.persistence.UniqueConstraint;
 
 import org.bukkit.Location;
 
 import de.cubeisland.engine.core.CubeEngine;
-import de.cubeisland.engine.core.storage.database.AttrType;
-import de.cubeisland.engine.core.storage.database.Attribute;
 import de.cubeisland.engine.core.user.User;
-import de.cubeisland.engine.core.user.UserEntity;
-import de.cubeisland.engine.core.util.Version;
-import de.cubeisland.engine.core.world.WorldEntity;
+import org.jooq.Field;
+import org.jooq.Record1;
+import org.jooq.Record11;
+import org.jooq.Row11;
+import org.jooq.impl.UpdatableRecordImpl;
+import org.jooq.types.UInteger;
+import org.jooq.types.UShort;
 
-@Entity
-@Table(name = "signmarketblocks", uniqueConstraints = @UniqueConstraint(columnNames = {"world", "x", "y", "z"}))
-public class SignMarketBlockModel
+import static de.cubeisland.engine.signmarket.storage.TableSignBlock.TABLE_SIGN_BLOCK;
+
+public class SignMarketBlockModel extends UpdatableRecordImpl<SignMarketBlockModel> 
+    implements Record11<UInteger, UInteger, Integer, Integer, Integer, Byte, UInteger, UInteger, UShort, UInteger, UInteger>
 {
-    @javax.persistence.Version
-    static final Version version = new Version(2);
-
-    @Id
-    @Attribute(type = AttrType.INT, unsigned = true)
-    private long id = 0;
-
-    @Column(name = "world", nullable = false)
-    @JoinColumn(name = "world")
-    @ManyToOne(optional = false, cascade = {CascadeType.REFRESH, CascadeType.REMOVE})
-    @Attribute(type = AttrType.INT, unsigned = true)
-    private WorldEntity world;
-    @Column(nullable = false)
-    @Attribute(type = AttrType.INT)
-    private int x;
-    @Column(nullable = false)
-    @Attribute(type = AttrType.INT)
-    private int y;
-    @Column(nullable = false)
-    @Attribute(type = AttrType.INT)
-    private int z;
-
-    @Column(nullable = false)
-    @Attribute(type = AttrType.BOOLEAN)
-    private Boolean signType; // null - invalid | true - buy | false - sell
-    @Column(name = "owner")
-    @JoinColumn(name = "owner")
-    @ManyToOne(optional = false, cascade = {CascadeType.REFRESH, CascadeType.REMOVE})
-    @Attribute(type = AttrType.INT, unsigned = true, notnull = false)
-    private UserEntity owner; // null - admin-shop | else user-key
-
-    @Column(name = "itemKey", nullable = false)
-    @JoinColumn(name = "itemKey")
-    @ManyToOne(optional = false, cascade = {CascadeType.REFRESH, CascadeType.REMOVE})
-    @Attribute(type = AttrType.INT, unsigned = true)
-    private SignMarketItemModel itemModel;
-    @Column(nullable = false)
-    @Attribute(type = AttrType.SMALLINT, unsigned = true)
-    private int amount = 0;
-    @Column
-    @Attribute(type = AttrType.MEDIUMINT, unsigned = true)
-    private Integer demand;
-    @Column(nullable = false)
-    @Attribute(type = AttrType.INT, unsigned = true)
-    private long price;
-
     // Helper-methods:
     @Transient
     private Location location;
 
-    public SignMarketBlockModel(Location location)
+    public SignMarketBlockModel newBlockModel(Location location)
     {
-        this.world = CubeEngine.getCore().getWorldManager().getWorldEntity(location.getWorld());
-        this.x = location.getBlockX();
-        this.y = location.getBlockY();
-        this.z = location.getBlockZ();
+        this.setWorld(CubeEngine.getCore().getWorldManager().getWorldEntity(location.getWorld()).getKey());
+        this.setX(location.getBlockX());
+        this.setY(location.getBlockY());
+        this.setZ(location.getBlockZ());
+        return this;
     }
 
     /**
@@ -108,12 +56,12 @@ public class SignMarketBlockModel
      */
     public void copyValuesFrom(SignMarketBlockModel blockInfo)
     {
-        this.signType = blockInfo.signType;
-        this.owner = blockInfo.owner;
-        this.itemModel = blockInfo.itemModel;
-        this.amount = blockInfo.amount;
-        this.demand = blockInfo.demand;
-        this.price = blockInfo.price;
+        this.setSigntype(blockInfo.getSigntype());
+        this.setOwner(blockInfo.getOwner());
+        this.setItemkey(blockInfo.getItemkey());
+        this.setAmount(blockInfo.getAmount());
+        this.setDemand(blockInfo.getDemand());
+        this.setPrice(blockInfo.getPrice());
     }
 
     /**
@@ -126,7 +74,7 @@ public class SignMarketBlockModel
     {
         if (this.location == null)
         {
-            this.location = new Location(CubeEngine.getCore().getWorldManager().getWorld(world.getWorldName()), x, y, z);
+            this.location = new Location(CubeEngine.getCore().getWorldManager().getWorld(this.getWorld().longValue()), this.getX(), this.getY(), this.getZ());
         }
         return this.location;
     }
@@ -139,155 +87,235 @@ public class SignMarketBlockModel
      */
     public boolean isOwner(User user)
     {
-        if (this.owner == null) return user == null;
+        if (this.getOwner() == null) return user == null;
         if (user == null) return false;
-        return user.getId().equals(this.owner.getKey());
+        return user.getEntity().getKey().equals(this.getOwner());
     }
 
     public SignMarketBlockModel()
-    {}
-
-    public long getId()
     {
-        return id;
+        super(TABLE_SIGN_BLOCK);
+        this.setKey(UInteger.valueOf(0));
     }
 
-    public void setId(long id)
-    {
-        this.id = id;
+    public void setKey(UInteger value) {
+        setValue(0, value);
     }
 
-    public WorldEntity getWorld()
-    {
-        return world;
+    public UInteger getKey() {
+        return (UInteger) getValue(0);
     }
 
-    public void setWorld(WorldEntity world)
-    {
-        this.world = world;
+    public void setWorld(UInteger value) {
+        setValue(1, value);
     }
 
-    public int getX()
-    {
-        return x;
+    public UInteger getWorld() {
+        return (UInteger) getValue(1);
     }
 
-    public void setX(int x)
-    {
-        this.x = x;
+    public void setX(Integer value) {
+        setValue(2, value);
     }
 
-    public int getY()
-    {
-        return y;
+    public Integer getX() {
+        return (Integer) getValue(2);
     }
 
-    public void setY(int y)
-    {
-        this.y = y;
+    public void setY(Integer value) {
+        setValue(3, value);
     }
 
-    public int getZ()
-    {
-        return z;
+    public Integer getY() {
+        return (Integer) getValue(3);
     }
 
-    public void setZ(int z)
-    {
-        this.z = z;
+    public void setZ(Integer value) {
+        setValue(4, value);
     }
 
-    public Boolean getSignType()
-    {
-        return signType;
+    public Integer getZ() {
+        return (Integer) getValue(4);
     }
 
-    public void setSignType(Boolean signType)
-    {
-        this.signType = signType;
+    public void setSigntype(Byte value) {
+        setValue(5, value);
     }
 
-    public UserEntity getOwner()
-    {
-        return owner;
+    public Byte getSigntype() {
+        return (Byte) getValue(5);
     }
 
-    public void setOwner(UserEntity owner)
-    {
-        this.owner = owner;
+    public void setOwner(UInteger value) {
+        setValue(6, value);
     }
 
-    public SignMarketItemModel getItemModel()
-    {
-        return itemModel;
+    public UInteger getOwner() {
+        return (UInteger) getValue(6);
     }
 
-    public void setItemModel(SignMarketItemModel itemModel)
-    {
-        this.itemModel = itemModel;
+    public void setItemkey(UInteger value) {
+        setValue(7, value);
     }
 
-    public int getAmount()
-    {
-        return amount;
+    public UInteger getItemkey() {
+        return (UInteger) getValue(7);
     }
 
-    public void setAmount(int amount)
-    {
-        this.amount = amount;
+    public void setAmount(UShort value) {
+        setValue(8, value);
     }
 
-    public Integer getDemand()
-    {
-        return demand;
+    public UShort getAmount() {
+        return (UShort) getValue(8);
     }
 
-    public void setDemand(Integer demand)
-    {
-        this.demand = demand;
+    public void setDemand(UInteger value) {
+        setValue(9, value);
     }
 
-    public long getPrice()
-    {
-        return price;
+    public UInteger getDemand() {
+        return (UInteger) getValue(9);
     }
 
-    public void setPrice(long price)
-    {
-        this.price = price;
+    public void setPrice(UInteger value) {
+        setValue(10, value);
     }
 
-    public static class SignMarketBlockUpdater
-    {
-        public void update(Connection connection, Class<?> entityClass, Version dbVersion, Version codeVersion) throws SQLException
-        {
-            if (codeVersion.getMajor() == 2)
-            {
-                connection.prepareStatement("RENAME TABLE cube_signmarketblocks TO old_signmarketblocks").execute();
-                connection.prepareStatement("CREATE TABLE `cube_signmarketblocks` (  " +
-                                                "`id` int(10) unsigned NOT NULL AUTO_INCREMENT,  " +
-                                                "`world` int(10) unsigned NOT NULL,  " +
-                                                "`x` int(11) NOT NULL,  " +
-                                                "`y` int(11) NOT NULL,  " +
-                                                "`z` int(11) NOT NULL,  " +
-                                                "`signType` tinyint(1) NOT NULL,  " +
-                                                "`owner` int(10) unsigned DEFAULT NULL, " +
-                                                "`itemKey` int(10) unsigned NOT NULL,  " +
-                                                "`amount` smallint(5) unsigned NOT NULL,  " +
-                                                "`demand` mediumint(8) unsigned DEFAULT NULL,  " +
-                                                "`price` int(10) unsigned NOT NULL,  " +
-                                                "PRIMARY KEY (`id`),  " +
-                                                "KEY `loc` (`world`,`x`,`y`,`z`),  " +
-                                                "FOREIGN KEY f_worldid(`world`) REFERENCES `cube_worlds` (`key`) ON DELETE CASCADE,  " +
-                                                "FOREIGN KEY f_signitemid(`itemKey`) REFERENCES `cube_signmarketitem` (`id`) ON DELETE CASCADE,  " +
-                                                "FOREIGN KEY f_ownerid(`owner`) REFERENCES `cube_user` (`key`) ON DELETE CASCADE)" +
-                                                "DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT = '2.0.0'").execute() ;
-                connection.prepareStatement("INSERT INTO `cube_signmarketblocks` (`id`, `world`, `x`,`y`,`z`,`signType`,`owner`,`itemKey`,`amount`,`demand`,`price`) " +
-                                                "SELECT `key`, `world`, `x`,`y`,`z`,`signType`,`owner`,`itemKey`,`amount`,`demand`,`price` FROM `old_signmarketblocks`").execute();
-                connection.prepareStatement("DROP TABLE old_signmarketblocks").execute();
-                // DROP old related table
-                connection.prepareStatement("DROP TABLE old_signmarketitem").execute();
-            }
-        }
+    public UInteger getPrice() {
+        return (UInteger) getValue(10);
+    }
+
+    // -------------------------------------------------------------------------
+    // Primary key information
+    // -------------------------------------------------------------------------
+
+    @Override
+    public Record1<UInteger> key() {
+        return (Record1) super.key();
+    }
+
+    // -------------------------------------------------------------------------
+    // Record11 type implementation
+    // -------------------------------------------------------------------------
+
+    @Override
+    public Row11<UInteger, UInteger, Integer, Integer, Integer, Byte, UInteger, UInteger, UShort, UInteger, UInteger> fieldsRow() {
+        return (Row11) super.fieldsRow();
+    }
+
+    @Override
+    public Row11<UInteger, UInteger, Integer, Integer, Integer, Byte, UInteger, UInteger, UShort, UInteger, UInteger> valuesRow() {
+        return (Row11) super.valuesRow();
+    }
+
+    @Override
+    public Field<UInteger> field1() {
+        return TABLE_SIGN_BLOCK.KEY;
+    }
+
+    @Override
+    public Field<UInteger> field2() {
+        return TABLE_SIGN_BLOCK.WORLD;
+    }
+
+    @Override
+    public org.jooq.Field<Integer> field3() {
+        return TABLE_SIGN_BLOCK.X;
+    }
+
+    @Override
+    public org.jooq.Field<Integer> field4() {
+        return TABLE_SIGN_BLOCK.Y;
+    }
+
+    @Override
+    public org.jooq.Field<Integer> field5() {
+        return TABLE_SIGN_BLOCK.Z;
+    }
+
+    @Override
+    public org.jooq.Field<Byte> field6() {
+        return TABLE_SIGN_BLOCK.SIGNTYPE;
+    }
+
+    @Override
+    public Field<UInteger> field7() {
+        return TABLE_SIGN_BLOCK.OWNER;
+    }
+
+    @Override
+    public Field<UInteger> field8() {
+        return TABLE_SIGN_BLOCK.ITEMKEY;
+    }
+
+    @Override
+    public org.jooq.Field<UShort> field9() {
+        return TABLE_SIGN_BLOCK.AMOUNT;
+    }
+
+    @Override
+    public Field<UInteger> field10() {
+        return TABLE_SIGN_BLOCK.DEMAND;
+    }
+
+    @Override
+    public Field<UInteger> field11() {
+        return TABLE_SIGN_BLOCK.PRICE;
+    }
+
+    @Override
+    public UInteger value1() {
+        return getKey();
+    }
+
+    @Override
+    public UInteger value2() {
+        return getWorld();
+    }
+
+    @Override
+    public Integer value3() {
+        return getX();
+    }
+
+    @Override
+    public Integer value4() {
+        return getY();
+    }
+
+    @Override
+    public Integer value5() {
+        return getZ();
+    }
+
+    @Override
+    public Byte value6() {
+        return getSigntype();
+    }
+
+    @Override
+    public UInteger value7() {
+        return getOwner();
+    }
+
+    @Override
+    public UInteger value8() {
+        return getItemkey();
+    }
+
+    @Override
+    public UShort value9() {
+        return getAmount();
+    }
+
+    @Override
+    public UInteger value10() {
+        return getDemand();
+    }
+
+    @Override
+    public UInteger value11() {
+        return getPrice();
     }
 }
