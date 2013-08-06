@@ -17,104 +17,136 @@
  */
 package de.cubeisland.engine.conomy.account.storage;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
-import javax.persistence.UniqueConstraint;
-
-import de.cubeisland.engine.core.storage.database.AttrType;
-import de.cubeisland.engine.core.storage.database.Attribute;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.user.UserEntity;
-import de.cubeisland.engine.core.util.Version;
+import org.jooq.Field;
+import org.jooq.Record4;
+import org.jooq.impl.UpdatableRecordImpl;
+import org.jooq.types.UInteger;
 
-@Entity
-@Table(name = "account_access", uniqueConstraints = @UniqueConstraint(columnNames = {"user_id", "accountId"}))
-public class BankAccessModel
+import static de.cubeisland.engine.conomy.account.storage.TableBankAccess.TABLE_BANK_ACCESS;
+
+public class BankAccessModel extends UpdatableRecordImpl<BankAccessModel> implements Record4<UInteger, UInteger, UInteger, Byte>
 {
-    @javax.persistence.Version
-    static final Version version = new Version(1);
-
-    @Id
-    @Attribute(type = AttrType.INT, unsigned = true)
-    private long id;
-    @Column(name = "userId", nullable = false)
-    @ManyToOne(cascade = {CascadeType.REFRESH, CascadeType.REMOVE})
-    @JoinColumn(name = "userId")
-    @Attribute(type = AttrType.INT, unsigned = true)
-    private UserEntity userEntity;
-    @Column(name = "accountId", nullable = false)
-    @ManyToOne(cascade = {CascadeType.REFRESH, CascadeType.REMOVE})
-    @JoinColumn(name = "accountId")
-    @Attribute(type = AttrType.INT, unsigned = true)
-    private AccountModel accountModel;
-    @Column(nullable = false)
-    @Attribute(type = AttrType.TINYINT)
-    private byte accessLevel;
-
     public static final byte OWNER = 1;
     public static final byte MEMBER = 2;
     public static final byte INVITED = 4;
 
-    public BankAccessModel(long id, UserEntity userEntity, AccountModel accountModel, byte accessLevel, String name)
+    // TODO remove ?
+    public BankAccessModel newAccess(long id, UserEntity userEntity, AccountModel accountModel, byte accessLevel, String name)
     {
-        this.id = id;
-        this.userEntity = userEntity;
-        this.accountModel = accountModel;
-        this.accessLevel = accessLevel;
+        this.setId(UInteger.valueOf(id));
+        this.setUserid(userEntity.getKey());
+        this.setAccountid(accountModel.getKey());
+        this.setAccesslevel(accessLevel);
+        return this;
     }
 
-    public BankAccessModel(AccountModel accountModel, User user, byte type)
+    public BankAccessModel newAccess(AccountModel accountModel, User user, byte type)
     {
-        this.userEntity = user.getEntity();
-        this.accountModel = accountModel;
-        this.accessLevel = type;
+        this.setUserid(user.getEntity().getKey());
+        this.setAccountid(accountModel.getKey());
+        this.setAccesslevel(type);
+        return this;
     }
 
     public BankAccessModel()
-    {}
-
-    public long getId()
     {
-        return id;
+        super(TABLE_BANK_ACCESS);
     }
 
-    public void setId(long id)
-    {
-        this.id = id;
+    public void setId(UInteger value) {
+        setValue(0, value);
     }
 
-    public UserEntity getUserEntity()
-    {
-        return userEntity;
+    public UInteger getId() {
+        return (UInteger) getValue(0);
     }
 
-    public void setUserEntity(UserEntity userEntity)
-    {
-        this.userEntity = userEntity;
+    public void setUserid(UInteger value) {
+        setValue(1, value);
     }
 
-    public AccountModel getAccountModel()
-    {
-        return accountModel;
+    public UInteger getUserid() {
+        return (UInteger) getValue(1);
     }
 
-    public void setAccountModel(AccountModel accountModel)
-    {
-        this.accountModel = accountModel;
+    public void setAccountid(UInteger value) {
+        setValue(2, value);
     }
 
-    public byte getAccessLevel()
-    {
-        return accessLevel;
+    public UInteger getAccountid() {
+        return (UInteger) getValue(2);
     }
 
-    public void setAccessLevel(byte accessLevel)
-    {
-        this.accessLevel = accessLevel;
+    public void setAccesslevel(Byte value) {
+        setValue(3, value);
+    }
+
+    public Byte getAccesslevel() {
+        return (Byte) getValue(3);
+    }
+
+    // -------------------------------------------------------------------------
+    // Primary key information
+    // -------------------------------------------------------------------------
+
+    @Override
+    public org.jooq.Record1<org.jooq.types.UInteger> key() {
+        return (org.jooq.Record1) super.key();
+    }
+
+    // -------------------------------------------------------------------------
+    // Record4 type implementation
+    // -------------------------------------------------------------------------
+
+    @Override
+    public org.jooq.Row4<org.jooq.types.UInteger, org.jooq.types.UInteger, org.jooq.types.UInteger, java.lang.Byte> fieldsRow() {
+        return (org.jooq.Row4) super.fieldsRow();
+    }
+
+    @Override
+    public org.jooq.Row4<org.jooq.types.UInteger, org.jooq.types.UInteger, org.jooq.types.UInteger, java.lang.Byte> valuesRow() {
+        return (org.jooq.Row4) super.valuesRow();
+    }
+
+    @Override
+    public Field<UInteger> field1() {
+        return TABLE_BANK_ACCESS.ID;
+    }
+
+    @Override
+    public Field<UInteger> field2() {
+        return TABLE_BANK_ACCESS.USERID;
+    }
+
+    @Override
+    public Field<UInteger> field3() {
+        return TABLE_BANK_ACCESS.ACCOUNTID;
+    }
+
+    @Override
+    public Field<Byte> field4() {
+        return TABLE_BANK_ACCESS.ACCESSLEVEL;
+    }
+
+    @Override
+    public UInteger value1() {
+        return getId();
+    }
+
+    @Override
+    public UInteger value2() {
+        return getUserid();
+    }
+
+    @Override
+    public UInteger value3() {
+        return getAccountid();
+    }
+
+    @Override
+    public Byte value4() {
+        return getAccesslevel();
     }
 }

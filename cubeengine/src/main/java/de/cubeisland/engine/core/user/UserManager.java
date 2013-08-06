@@ -61,6 +61,8 @@ public interface UserManager extends Cleanable
     User getUser(String name);
     User getUser(String name, boolean create);
 
+    String getUserName(long key);
+
     /**
      * Returns all the users that are currently online
      *

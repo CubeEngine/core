@@ -60,7 +60,7 @@ public class AccountModel extends UpdatableRecordImpl<AccountModel> implements R
 
     public void setNeedsInvite(boolean set)
     {
-        Byte mask = this.getMask();
+        byte mask = this.getMask();
         if (set)
         {
             mask |= 2;
@@ -74,7 +74,7 @@ public class AccountModel extends UpdatableRecordImpl<AccountModel> implements R
 
     public void setHidden(boolean set)
     {
-        Byte mask = this.getMask();
+        byte mask = this.getMask();
         if (set)
         {
             mask |= 1;

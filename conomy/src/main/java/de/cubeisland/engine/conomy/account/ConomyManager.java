@@ -28,9 +28,10 @@ import de.cubeisland.engine.conomy.Conomy;
 import de.cubeisland.engine.conomy.ConomyConfiguration;
 import de.cubeisland.engine.conomy.account.storage.AccountModel;
 import de.cubeisland.engine.conomy.account.storage.BankAccessModel;
+import de.cubeisland.engine.conomy.account.storage.TableBankAccess;
 import de.cubeisland.engine.core.service.Economy;
-import de.cubeisland.engine.core.storage.database.mysql.MySQLDatabase;
 import de.cubeisland.engine.core.user.User;
+import de.cubeisland.engine.core.user.UserManager;
 import gnu.trove.map.hash.THashMap;
 import org.jooq.DSLContext;
 import org.jooq.Record1;
@@ -40,6 +41,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import static de.cubeisland.engine.conomy.account.storage.TableAccount.TABLE_ACCOUNT;
+import static de.cubeisland.engine.conomy.account.storage.TableBankAccess.TABLE_BANK_ACCESS;
 
 public class ConomyManager
 {
@@ -52,7 +54,9 @@ public class ConomyManager
     protected final ConomyConfiguration config;
     private Economy conomyInterface;
 
-    private final DSLContext dsl;
+    protected final DSLContext dsl;
+
+    protected UserManager um;
 
     public ConomyManager(Conomy module)
     {
@@ -67,6 +71,7 @@ public class ConomyManager
             ((ch.qos.logback.classic.Logger)logger).getAppender("conomy.transactions-file").stop();
         }
 
+        this.um = this.module.getCore().getUserManager();
         this.conomyInterface = new ConomyInterface(this);
     }
 
@@ -109,7 +114,7 @@ public class ConomyManager
 
     public UserAccount getUserAccount(String playerName, boolean create)
     {
-        User user = this.module.getCore().getUserManager().getExactUser(playerName);
+        User user = this.um.getExactUser(playerName);
         return this.getUserAccount(user, create);
     }
 
@@ -167,7 +172,7 @@ public class ConomyManager
 
     public boolean transactionAllOnline(final double value)
     {
-        final Set<User> onlineUsers = this.module.getCore().getUserManager().getOnlineUsers();
+        final Set<User> onlineUsers = this.um.getOnlineUsers();
         return this.startThread(new Runnable()
         {
             @Override
@@ -184,7 +189,7 @@ public class ConomyManager
 
     public boolean scaleAllOnline(final float factor)
     {
-        final Set<User> onlineUsers = this.module.getCore().getUserManager().getOnlineUsers();
+        final Set<User> onlineUsers = this.um.getOnlineUsers();
         return this.startThread(new Runnable()
         {
             @Override
@@ -210,7 +215,7 @@ public class ConomyManager
         // update all loaded accounts...
         if (userAcc)
         {
-            for (User user : this.module.getCore().getUserManager().getOnlineUsers())
+            for (User user : this.um.getOnlineUsers())
             {
                 UserAccount userAccount = ConomyManager.this.getUserAccount(user, false);
                 if (userAccount != null)
@@ -237,7 +242,7 @@ public class ConomyManager
         // update all loaded accounts...
         if (userAcc)
         {
-            for (User user : this.module.getCore().getUserManager().getOnlineUsers())
+            for (User user : this.um.getOnlineUsers())
             {
                 UserAccount userAccount = ConomyManager.this.getUserAccount(user, false);
                 if (userAccount != null)
@@ -265,7 +270,7 @@ public class ConomyManager
         // update all loaded accounts...
         if (userAcc)
         {
-            for (User user : this.module.getCore().getUserManager().getOnlineUsers())
+            for (User user : this.um.getOnlineUsers())
             {
                 UserAccount userAccount = ConomyManager.this.getUserAccount(user, false);
                 if (userAccount != null)
@@ -328,7 +333,7 @@ public class ConomyManager
                         bind(1, userAcc).bind(2, bankAcc).execute();
         if (userAcc)
         {
-            for (User user : this.module.getCore().getUserManager().getOnlineUsers())
+            for (User user : this.um.getOnlineUsers())
             {
                 UserAccount userAccount = ConomyManager.this.getUserAccount(user, false);
                 if (userAccount != null)
@@ -353,7 +358,7 @@ public class ConomyManager
                         bind(1, userAcc).bind(2, bankAcc).execute();
         if (userAcc)
         {
-            for (User user : this.module.getCore().getUserManager().getOnlineUsers())
+            for (User user : this.um.getOnlineUsers())
             {
                 UserAccount userAccount = ConomyManager.this.getUserAccount(user, false);
                 if (userAccount != null)
@@ -449,16 +454,21 @@ public class ConomyManager
 
     public Set<BankAccount> getBankAccounts(User user)
     {
-        List<BankAccessModel> list = this.ebean.find(BankAccessModel.class).
-            select("accountId").where().eq("userId", user.getEntity().getKey()).findList();
+        Result<AccountModel> accountModels = this.dsl.select().from(TABLE_ACCOUNT)
+                                             .where(TABLE_ACCOUNT.KEY.eq(this.dsl.select(TABLE_BANK_ACCESS.ACCOUNTID)
+                                                                                 .from(TABLE_BANK_ACCESS)
+                                                                                 .where(TABLE_BANK_ACCESS.USERID
+                                                                                                         .eq(user.getEntity()
+                                                                                                                 .getKey()))))
+                                             .fetchInto(TABLE_ACCOUNT);
         Set<BankAccount> accounts = new HashSet<>();
-        for (BankAccessModel access : list)
+        for (AccountModel accountModel : accountModels)
         {
-            BankAccount account = this.bankaccountsID.get(access.getAccountModel().getId());
+            BankAccount account = this.bankaccountsID.get(accountModel.getKey().longValue());
             if (account == null)
             {
-                account = new BankAccount(this, access.getAccountModel());
-                this.bankaccountsID.put(access.getAccountModel().getId(), account);
+                account = new BankAccount(this, accountModel);
+                this.bankaccountsID.put(accountModel.getKey().longValue(), account);
                 this.bankaccounts.put(account.getName(), account);
             }
             accounts.add(account);
@@ -508,11 +518,14 @@ public class ConomyManager
 
     protected AccountModel loadUserAccount(User holder)
     {
-        return this.ebean.find(AccountModel.class).where().eq("user_id",holder.getEntity().getKey()).findUnique();
+        return this.dsl.select().from(TABLE_ACCOUNT).where(TABLE_ACCOUNT.USER_ID.eq(holder.getEntity()
+                                                                                          .getKey())).fetchOneInto(TABLE_ACCOUNT);
     }
 
     public List<BankAccessModel> getBankAccess(AccountModel model)
     {
-        return this.ebean.find(BankAccessModel.class).where().eq("accountId", model.getId()).findList();
+       return this.dsl.select().from(TABLE_BANK_ACCESS)
+           .where(TABLE_BANK_ACCESS.ACCOUNTID.eq(model.getKey()))
+           .fetchInto(TABLE_BANK_ACCESS);
     }
 }

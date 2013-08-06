@@ -22,11 +22,12 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.conomy.account.storage.AccountModel;
 import de.cubeisland.engine.conomy.account.storage.BankAccessModel;
+import de.cubeisland.engine.core.user.User;
 
 import static de.cubeisland.engine.conomy.account.storage.BankAccessModel.*;
+import static de.cubeisland.engine.conomy.account.storage.TableBankAccess.TABLE_BANK_ACCESS;
 
 public class BankAccount extends Account
 {
@@ -43,16 +44,16 @@ public class BankAccount extends Account
 
         for (BankAccessModel access : this.manager.getBankAccess(this.model))
         {
-            switch (access.getAccessLevel())
+            switch (access.getAccesslevel())
             {
                case OWNER:
-                   this.owner.put(access.getUserEntity().getKey().longValue(), access);
+                   this.owner.put(access.getUserid().longValue(), access);
                    break;
                case MEMBER:
-                   this.member.put(access.getUserEntity().getKey().longValue(), access);
+                   this.member.put(access.getUserid().longValue(), access);
                    break;
                case INVITED:
-                   this.invites.put(access.getUserEntity().getKey().longValue(), access);
+                   this.invites.put(access.getUserid().longValue(), access);
             }
         }
     }
@@ -109,13 +110,13 @@ public class BankAccount extends Account
         BankAccessModel access = this.member.remove(user.getId());
         if (access != null) // promote new owner
         {
-            access.setAccessLevel(OWNER);
-            this.manager.ebean.update(access);
+            access.setAccesslevel(OWNER);
+            access.update();
         }
         else // create new owner
         {
-            access = new BankAccessModel(this.model, user, OWNER);
-            this.manager.ebean.save(access);
+            access = this.manager.dsl.newRecord(TABLE_BANK_ACCESS).newAccess(this.model, user, OWNER);
+            access.insert();
         }
         this.owner.put(user.getId(), access);
         return true;
@@ -132,8 +133,8 @@ public class BankAccount extends Account
         if (this.isOwner(user))
         {
             BankAccessModel access = this.owner.remove(user.getId());
-            access.setAccessLevel(MEMBER);
-            this.manager.ebean.update(access);
+            access.setAccesslevel(MEMBER);
+            access.update();
             this.member.put(user.getId(), access);
             return true;
         }
@@ -152,13 +153,13 @@ public class BankAccount extends Account
         BankAccessModel access = this.invites.remove(user.getId());
         if (access == null)
         {
-            access = new BankAccessModel(this.model, user, MEMBER);
-            this.manager.ebean.save(access);
+            access = this.manager.dsl.newRecord(TABLE_BANK_ACCESS).newAccess(this.model, user, MEMBER);
+            access.insert();
         }
         else
         {
-            access.setAccessLevel(MEMBER);
-            this.manager.ebean.update(access);
+            access.setAccesslevel(MEMBER);
+            access.update();
         }
         this.member.put(user.getId(), access);
         return true;
@@ -179,7 +180,7 @@ public class BankAccount extends Account
         }
         if (oldAccess != null)
         {
-            this.manager.ebean.delete(oldAccess);
+            oldAccess.delete();
             return true;
         }
         return false; // is not member OR moderator
@@ -214,8 +215,8 @@ public class BankAccount extends Account
     public boolean invite(User user)
     {
         if (!needsInvite() || this.hasAccess(user) || this.invites.get(user.getId()) != null) return false;
-        BankAccessModel invite = new BankAccessModel(this.model, user, INVITED);
-        this.manager.ebean.save(invite);
+        BankAccessModel invite = this.manager.dsl.newRecord(TABLE_BANK_ACCESS).newAccess(this.model, user, INVITED);
+        invite.insert();
         this.invites.put(user.getId(), invite);
         return true;
     }
@@ -224,7 +225,7 @@ public class BankAccount extends Account
     {
         if (!needsInvite() || this.hasAccess(user) || this.invites.get(user.getId()) == null) return false;
         BankAccessModel invite = this.invites.remove(user.getId());
-        this.manager.ebean.delete(invite);
+        invite.delete();
         return true;
     }
 
@@ -248,7 +249,7 @@ public class BankAccount extends Account
         Set<String> invites = new HashSet<>();
         for (BankAccessModel bankAccessModel : this.invites.values())
         {
-             invites.add(bankAccessModel.getUserEntity().getPlayer());
+            invites.add(this.manager.um.getUser(bankAccessModel.getUserid().longValue()).getName());
         }
         return invites;
     }
@@ -258,7 +259,7 @@ public class BankAccount extends Account
         Set<String> owners = new HashSet<>();
         for (BankAccessModel bankAccessModel : this.owner.values())
         {
-            owners.add(bankAccessModel.getUserEntity().getPlayer());
+            owners.add(this.manager.um.getUser(bankAccessModel.getUserid().longValue()).getName());
         }
         return owners;
     }
@@ -268,7 +269,7 @@ public class BankAccount extends Account
         Set<String> members = new HashSet<>();
         for (BankAccessModel bankAccessModel : this.member.values())
         {
-            members.add(bankAccessModel.getUserEntity().getPlayer());
+            members.add(this.manager.um.getUser(bankAccessModel.getUserid().longValue()).getName());
         }
         return members;
     }
