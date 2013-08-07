@@ -22,28 +22,29 @@ import java.sql.Timestamp;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 
+import com.vexsoftware.votifier.model.VotifierEvent;
 import de.cubeisland.engine.core.config.Configuration;
 import de.cubeisland.engine.core.module.Module;
 import de.cubeisland.engine.core.service.Economy;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.util.ChatFormat;
-import de.cubeisland.engine.vote.storage.VoteManager;
 import de.cubeisland.engine.vote.storage.VoteModel;
+import org.jooq.DSLContext;
+import org.jooq.types.UShort;
 
-import com.vexsoftware.votifier.model.VotifierEvent;
+import static de.cubeisland.engine.vote.storage.TableVote.TABLE_VOTE;
 
 public class Vote extends Module implements Listener
 {
     private VoteConfiguration config;
-
-    private VoteManager manager;
+    private DSLContext dsl;
 
     @Override
     public void onEnable()
     {
         this.config = Configuration.load(VoteConfiguration.class, this);
         this.getCore().getEventManager().registerListener(this, this);
-        this.manager = new VoteManager(this);
+        this.dsl = this.getCore().getDB().getDSL();
     }
 
     @EventHandler
@@ -54,37 +55,38 @@ public class Vote extends Module implements Listener
         {
             User user = this.getCore().getUserManager().getUser(vote.getUsername());
             Economy economy = this.getCore().getServiceManager().getServiceProvider(Economy.class);
-            VoteModel voteModel = this.manager.get(user.getId());
+            VoteModel voteModel = this.dsl.select().from(TABLE_VOTE).where(TABLE_VOTE.USERID.eq(user.getEntity().getKey())).fetchOneInto(TABLE_VOTE);
             if (voteModel == null)
             {
-                voteModel = new VoteModel(user);
-                this.manager.store(voteModel);
+                voteModel = this.dsl.newRecord(TABLE_VOTE).newVote(user);
+                voteModel.insert();
             }
             else
             {
-                if (System.currentTimeMillis() - voteModel.lastvote.getTime() > this.config.votebonustime.toMillis())
+                if (System.currentTimeMillis() - voteModel.getLastvote().getTime() > this.config.votebonustime.toMillis())
                 {
-                    voteModel.voteamount = 1;
+                    voteModel.setVoteamount(UShort.valueOf(1));
                 }
                 else
                 {
-                    voteModel.voteamount++;
+                    voteModel.setVoteamount(UShort.valueOf(voteModel.getVoteamount().intValue() + 1));
                 }
-                voteModel.lastvote = new Timestamp(System.currentTimeMillis());
-                this.manager.update(voteModel);
+                voteModel.setLastvote(new Timestamp(System.currentTimeMillis()));
+                voteModel.update();
             }
             economy.createPlayerAccount(vote.getUsername());
-            double money = this.config.votereward * (Math.pow(1+1.5/voteModel.voteamount, voteModel.voteamount-1));
+            int voteamount = voteModel.getVoteamount().intValue();
+            double money = this.config.votereward * (Math.pow(1+1.5/voteamount, voteamount-1));
             economy.deposit(vote.getUsername(), money);
             String moneyFormat = economy.format(money);
             this.getCore().getUserManager().broadcastMessage(this.config.votebroadcast.
                 replace("{PLAYER}", vote.getUsername()).
                 replace("{MONEY}", moneyFormat).
-                replace("{AMOUNT}", String.valueOf(voteModel.voteamount)));
+                replace("{AMOUNT}", String.valueOf(voteamount)));
             user.sendMessage(ChatFormat.parseFormats(this.config.votemessage.
                 replace("{PLAYER}", vote.getUsername()).
                 replace("{MONEY}", moneyFormat).
-                replace("{AMOUNT}", String.valueOf(voteModel.voteamount))));
+                replace("{AMOUNT}", String.valueOf(voteamount))));
         }
     }
 }
