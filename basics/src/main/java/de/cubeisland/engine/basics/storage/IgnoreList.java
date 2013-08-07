@@ -17,104 +17,85 @@
  */
 package de.cubeisland.engine.basics.storage;
 
-import java.sql.Connection;
-import java.sql.SQLException;
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
-
-import de.cubeisland.engine.basics.storage.IgnoreList.IgnoreListUpdater;
-import de.cubeisland.engine.core.storage.database.AttrType;
-import de.cubeisland.engine.core.storage.database.Attribute;
-import de.cubeisland.engine.core.storage.database.TableUpdateCreator;
 import de.cubeisland.engine.core.user.User;
-import de.cubeisland.engine.core.user.UserEntity;
-import de.cubeisland.engine.core.util.Version;
+import org.jooq.Field;
+import org.jooq.Record2;
+import org.jooq.Row2;
+import org.jooq.impl.UpdatableRecordImpl;
+import org.jooq.types.UInteger;
 
-@Entity
-@Table(name = "ignorelist")
-public class IgnoreList
+import static de.cubeisland.engine.basics.storage.TableIgnorelist.TABLE_IGNORE_LIST;
+
+public class IgnoreList extends UpdatableRecordImpl<IgnoreList> implements Record2<UInteger, UInteger>
 {
-    @javax.persistence.Version
-    static final Version version = new Version(2);
-
-    @Id
-    @Attribute(type = AttrType.BIGINT)
-    public long id; // Ebean requires this
-    @Column(name = "userid")
-    @ManyToOne(optional = false, cascade = {CascadeType.REFRESH, CascadeType.REMOVE})
-    @JoinColumn(name = "userid") // ebean needs this
-    @Attribute(type = AttrType.INT, unsigned = true)
-    public UserEntity userEntity;
-    @Column(name = "ignoreid", nullable = false)
-    @ManyToOne(optional = false, cascade = {CascadeType.REFRESH, CascadeType.REMOVE})
-    @JoinColumn(name = "ignoreid") // ebean needs this
-    @Attribute(type = AttrType.INT, unsigned = true)
-    public UserEntity ignore;
-
     public IgnoreList()
     {
+        super(TABLE_IGNORE_LIST);
     }
 
-    public long getId()
+    public IgnoreList newIgnore(User user, User ignore)
     {
-        return id;
+        this.setKey(user.getEntity().getKey());
+        this.setIgnore(ignore.getEntity().getKey());
+        return this;
     }
 
-    public void setId(long id)
-    {
-        this.id = id;
+    public void setKey(UInteger value) {
+        setValue(0, value);
     }
 
-    public IgnoreList(User user, User ignore)
-    {
-        this.userEntity = user.getEntity();
-        this.ignore = ignore.getEntity();
+    public UInteger getKey() {
+        return (UInteger) getValue(0);
     }
 
-    public UserEntity getUserEntity()
-    {
-        return userEntity;
+    public void setIgnore(UInteger value) {
+        setValue(1, value);
     }
 
-    public void setUserEntity(UserEntity userEntity)
-    {
-        this.userEntity = userEntity;
+    public UInteger getIgnore() {
+        return (UInteger) getValue(1);
     }
 
-    public UserEntity getIgnore()
-    {
-        return ignore;
+    // -------------------------------------------------------------------------
+    // Primary key information
+    // -------------------------------------------------------------------------
+
+    @Override
+    public Record2<UInteger, UInteger> key() {
+        return (Record2) super.key();
     }
 
-    public void setIgnore(UserEntity ignore)
-    {
-        this.ignore = ignore;
+    // -------------------------------------------------------------------------
+    // Record2 type implementation
+    // -------------------------------------------------------------------------
+
+    @Override
+    public Row2<UInteger, UInteger> fieldsRow() {
+        return (Row2) super.fieldsRow();
     }
 
-    public static class IgnoreListUpdater
-    {
-        public void update(Connection connection, Class<?> entityClass, Version dbVersion, Version codeVersion) throws SQLException
-        {
-            if (codeVersion.getMajor() == 2)
-            {
-                connection.prepareStatement("RENAME TABLE cube_ignorelist TO old_ignorelist").execute();
-                connection.prepareStatement("CREATE TABLE IF NOT EXISTS cube_ignorelist \n(" +
-                                                "id bigint(20) NOT NULL AUTO_INCREMENT,\n" +
-                                                "userid int(10) unsigned NOT NULL,\n" +
-                                                "ignoreid int(10) unsigned NOT NULL,\n" +
-                                                "PRIMARY KEY (id),\n" +
-                                                "FOREIGN KEY f_userid (userid) REFERENCES cube_user(`key`) ON DELETE CASCADE ON UPDATE CASCADE,\n" +
-                                                "FOREIGN KEY f_ignoreid (ignoreid) REFERENCES cube_user(`key`) ON DELETE CASCADE ON UPDATE CASCADE)\n" +
-                                                "DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci\n" +
-                                                "COMMENT '2.0.0'").execute() ;
-                connection.prepareStatement("INSERT INTO cube_ignorelist (userid, ignoreid) SELECT `key`, `ignore` FROM old_ignorelist").execute();
-                connection.prepareStatement("DROP TABLE old_ignorelist").execute();
-            }
-        }
+    @Override
+    public Row2<UInteger, UInteger> valuesRow() {
+        return (Row2) super.valuesRow();
+    }
+
+    @Override
+    public Field<UInteger> field1() {
+        return TABLE_IGNORE_LIST.KEY;
+    }
+
+    @Override
+    public Field<UInteger> field2() {
+        return TABLE_IGNORE_LIST.IGNORE;
+    }
+
+    @Override
+    public UInteger value1() {
+        return getKey();
+    }
+
+    @Override
+    public UInteger value2() {
+        return getIgnore();
     }
 }

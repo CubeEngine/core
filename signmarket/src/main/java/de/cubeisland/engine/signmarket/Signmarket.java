@@ -21,9 +21,10 @@ import java.util.concurrent.TimeUnit;
 
 import de.cubeisland.engine.core.config.Configuration;
 import de.cubeisland.engine.core.module.Module;
+import de.cubeisland.engine.core.storage.database.Database;
 import de.cubeisland.engine.core.util.Profiler;
-import de.cubeisland.engine.signmarket.storage.SignMarketBlockModel;
-import de.cubeisland.engine.signmarket.storage.SignMarketItemModel;
+import de.cubeisland.engine.signmarket.storage.TableSignBlock;
+import de.cubeisland.engine.signmarket.storage.TableSignItem;
 
 public class Signmarket extends Module
 {
@@ -35,6 +36,9 @@ public class Signmarket extends Module
     public void onEnable()
     {
         Profiler.startProfiling("marketSignEnable");
+        Database db = this.getCore().getDB();
+        db.registerTable(TableSignItem.initTable(db)); // Init Item-table first!!!
+        db.registerTable(TableSignBlock.initTable(db));
         this.config = Configuration.load(SignMarketConfig.class, this);
         this.getLog().trace("{} ms - MarketSignFactory", Profiler.getCurrentDelta("marketSignEnable", TimeUnit.MILLISECONDS));
         this.marketSignFactory = new MarketSignFactory(this);

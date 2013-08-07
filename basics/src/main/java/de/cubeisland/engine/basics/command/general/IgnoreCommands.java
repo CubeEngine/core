@@ -21,7 +21,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-import com.avaje.ebean.EbeanServer;
 import de.cubeisland.engine.basics.Basics;
 import de.cubeisland.engine.basics.BasicsPerm;
 import de.cubeisland.engine.basics.storage.IgnoreList;
@@ -30,18 +29,21 @@ import de.cubeisland.engine.core.command.reflected.Command;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.user.UserManager;
 import de.cubeisland.engine.core.util.StringUtils;
+import org.jooq.DSLContext;
+
+import static de.cubeisland.engine.basics.storage.TableIgnorelist.TABLE_IGNORE_LIST;
 
 public class IgnoreCommands
 {
     private final Basics module;
     private final UserManager um;
-    private final EbeanServer ebeanServer;
+    private DSLContext dsl;
 
     public IgnoreCommands(Basics basics)
     {
         this.module = basics;
         this.um = basics.getCore().getUserManager();
-        this.ebeanServer = module.getCore().getDB().getEbeanServer();
+        this.dsl = module.getCore().getDB().getDSL();
     }
 
     private boolean addIgnore(User user, User ignored)
@@ -50,8 +52,8 @@ public class IgnoreCommands
         {
             return false;
         }
-        IgnoreList ignoreList = new IgnoreList(user, ignored);
-        this.ebeanServer.save(ignoreList);
+        IgnoreList ignoreList = this.dsl.newRecord(TABLE_IGNORE_LIST).newIgnore(user, ignored);
+        ignoreList.insert();
         return true;
     }
 
@@ -59,10 +61,9 @@ public class IgnoreCommands
     {
         if (checkIgnored(user, ignored))
         {
-            IgnoreList ignore = this.ebeanServer.find(IgnoreList.class).where().eq("userid", user.getId())
-                                                .eq("ignore", ignored.getId())
-                                                .findUnique();
-            this.ebeanServer.delete(ignore);
+            this.dsl.delete(TABLE_IGNORE_LIST).
+                where(TABLE_IGNORE_LIST.KEY.eq(user.getEntity().getKey())).
+                and(TABLE_IGNORE_LIST.IGNORE.eq(ignored.getEntity().getKey())).execute();
             return true;
         }
         return true;
@@ -70,9 +71,10 @@ public class IgnoreCommands
 
     public boolean checkIgnored(User user, User ignored)
     {
-        IgnoreList ignore = this.ebeanServer.find(IgnoreList.class).where()
-        .eq("userid.key", user.getEntity().getKey())
-        .eq("ignore.key", ignored.getEntity().getKey()).findUnique();
+        IgnoreList ignore =
+            this.dsl.select().from(TABLE_IGNORE_LIST).
+                where(TABLE_IGNORE_LIST.KEY.eq(user.getEntity().getKey())).
+                and(TABLE_IGNORE_LIST.IGNORE.eq(ignored.getEntity().getKey())).fetchOneInto(TABLE_IGNORE_LIST);
         return ignore != null;
     }
 

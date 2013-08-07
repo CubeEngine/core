@@ -20,15 +20,19 @@ package de.cubeisland.engine.basics;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.avaje.ebean.EbeanServer;
 import de.cubeisland.engine.basics.storage.BasicsUserEntity;
 import de.cubeisland.engine.basics.storage.Mail;
 import de.cubeisland.engine.core.command.CommandSender;
+import de.cubeisland.engine.core.storage.database.Database;
 import de.cubeisland.engine.core.user.User;
+import org.jooq.DSLContext;
+
+import static de.cubeisland.engine.basics.storage.TableBasicsUser.TABLE_BASIC_USER;
+import static de.cubeisland.engine.basics.storage.TableMail.TABLE_MAIL;
 
 public class BasicsUser
 {
-    private EbeanServer ebeanServer;
+    private DSLContext dsl;
 
     public BasicsUserEntity getbUEntity()
     {
@@ -38,20 +42,20 @@ public class BasicsUser
     private BasicsUserEntity bUEntity;
     private List<Mail> mailbox = new ArrayList<>();
 
-    public BasicsUser(EbeanServer ebeanServer, User user)
+    public BasicsUser(Database database, User user)
     {
-        this.ebeanServer = ebeanServer;
-        this.bUEntity = ebeanServer.find(BasicsUserEntity.class).where().eq("userid", user.getEntity().getKey()).findUnique();
+        this.dsl = database.getDSL();
+        this.bUEntity = dsl.select().from(TABLE_BASIC_USER).where(TABLE_BASIC_USER.KEY.eq(user.getEntity().getKey())).fetchOneInto(TABLE_BASIC_USER);
         if (bUEntity == null)
         {
-            this.bUEntity = new BasicsUserEntity(user);
-            ebeanServer.save(this.bUEntity);
+            this.bUEntity = this.dsl.newRecord(TABLE_BASIC_USER).newBasicUser(user);
+            this.bUEntity.insert();
         }
     }
 
     public void loadMails()
     {
-        this.mailbox = this.ebeanServer.find(Mail.class).where().eq("senderId", bUEntity.getEntity().getKey()).findList();
+        this.mailbox = this.dsl.select().from(TABLE_MAIL).where(TABLE_MAIL.USERID.eq(bUEntity.getKey())).fetchInto(TABLE_MAIL);
     }
 
     public List<Mail> getMails()
@@ -68,7 +72,7 @@ public class BasicsUser
         List<Mail> mails = new ArrayList<>();
         for (Mail mail : this.getMails())
         {
-            if (mail.getSenderEntity().getKey().longValue() == sender.getId())
+            if (mail.getSenderid().longValue() == sender.getId())
             {
                 mails.add(mail);
             }
@@ -82,14 +86,14 @@ public class BasicsUser
         Mail mail;
         if (from instanceof User)
         {
-            mail = new Mail(this.bUEntity.getEntity(), ((User)from).getEntity(), message);
+            mail = this.dsl.newRecord(TABLE_MAIL).newMail(this.bUEntity.getKey(), ((User)from).getEntity().getKey(), message);
         }
         else
         {
-            mail = new Mail(this.bUEntity.getEntity(), null, message);
+            mail = this.dsl.newRecord(TABLE_MAIL).newMail(this.bUEntity.getKey(), null, message);
         }
         this.mailbox.add(mail);
-        this.ebeanServer.save(mail);
+        mail.insert();
     }
 
     public int countMail()
@@ -99,7 +103,7 @@ public class BasicsUser
 
     public void clearMail()
     {
-        this.ebeanServer.delete(this.getMails());
+        this.dsl.delete(TABLE_MAIL).where(TABLE_MAIL.USERID.eq(this.bUEntity.getKey())).execute();
         this.mailbox = new ArrayList<>();
     }
 
@@ -107,6 +111,9 @@ public class BasicsUser
     {
         List<Mail> mailsFrom = this.getMailsFrom(sender);
         this.mailbox.removeAll(mailsFrom);
-        this.ebeanServer.delete(mailsFrom);
+        for (Mail mail : mailsFrom)
+        {
+            mail.delete(); // TODO better
+        }
     }
 }

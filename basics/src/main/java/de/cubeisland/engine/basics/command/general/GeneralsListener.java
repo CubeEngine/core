@@ -79,7 +79,7 @@ public class GeneralsListener implements Listener
         {
             bUser.setGodMode(false);
         }
-        bUser.update(this.basics.getCore().getDB().getEbeanServer());
+        bUser.update();
         if (!BasicsPerm.COMMAND_GAMEMODE_KEEP.isAuthorized(event.getPlayer()))
         {
             event.getPlayer().setGameMode(Bukkit.getServer().getDefaultGameMode()); // reset gamemode to default on the server
@@ -94,7 +94,7 @@ public class GeneralsListener implements Listener
         {
             bUser.setGodMode(false);
         }
-        bUser.update(this.basics.getCore().getDB().getEbeanServer());
+        bUser.update();
         if (!BasicsPerm.COMMAND_GAMEMODE_KEEP.isAuthorized(event.getPlayer()))
         {
             event.getPlayer().setGameMode(Bukkit.getServer().getDefaultGameMode()); // reset gamemode to default on the server

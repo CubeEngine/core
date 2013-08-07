@@ -141,4 +141,9 @@ public class TableSignBlock extends TableImpl<SignMarketBlockModel> implements T
     public List<ForeignKey<SignMarketBlockModel, ?>> getReferences() {
         return Arrays.<ForeignKey<SignMarketBlockModel, ?>>asList(FOREIGN_ITEM, FOREIGN_OWNER, FOREIGN_WORLD);
     }
+
+    @Override
+    public Class<SignMarketBlockModel> getRecordType() {
+        return SignMarketBlockModel.class;
+    }
 }

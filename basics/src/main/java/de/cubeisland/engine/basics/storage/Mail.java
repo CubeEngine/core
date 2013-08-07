@@ -17,102 +17,141 @@
  */
 package de.cubeisland.engine.basics.storage;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 import de.cubeisland.engine.core.CubeEngine;
-import de.cubeisland.engine.core.storage.database.AttrType;
-import de.cubeisland.engine.core.storage.database.Attribute;
 import de.cubeisland.engine.core.user.User;
-import de.cubeisland.engine.core.user.UserEntity;
-import de.cubeisland.engine.core.util.Version;
+import org.jooq.Field;
+import org.jooq.Record4;
+import org.jooq.Row4;
+import org.jooq.impl.UpdatableRecordImpl;
+import org.jooq.types.UInteger;
+
+import static de.cubeisland.engine.basics.storage.TableMail.TABLE_MAIL;
 
 @Entity
 @Table(name = "mail")
-public class Mail
+public class Mail extends UpdatableRecordImpl<Mail> implements Record4<UInteger, String, UInteger, UInteger>
 {
-    @javax.persistence.Version
-    static final Version version = new Version(1);
-
-    @Id
-    @Attribute(type = AttrType.INT, unsigned = true)
-    private Long key;
-    @Column(length = 100, nullable = false)
-    @Attribute(type = AttrType.VARCHAR)
-    private String message;
-
-    @Column(name = "userId", nullable = false)
-    @JoinColumn(name = "userid") // ebean needs this
-    @ManyToOne(optional = false, cascade = {CascadeType.REFRESH, CascadeType.REMOVE})
-    @Attribute(type = AttrType.INT, unsigned = true)
-    private UserEntity userEntity;
-    @Column(name = "senderId")
-    @JoinColumn(name = "senderId") // ebean needs this
-    @ManyToOne(cascade = {CascadeType.REFRESH, CascadeType.REMOVE})
-    @Attribute(type = AttrType.INT, unsigned = true)
-    private UserEntity senderEntity;
-
-    public Mail(UserEntity userId, UserEntity senderId, String message)
+    public Mail newMail(UInteger userId, UInteger senderId, String message)
     {
-        this.message = message;
-        this.userEntity = userId;
-        this.senderEntity = senderId;
+        this.setMessage(message);
+        this.setUserid(userId);
+        this.setSenderid(senderId);
+        return this;
     }
 
-    public Mail() {}
-
-    public Long getKey()
+    public Mail()
     {
-        return key;
-    }
-
-    public void setKey(Long key)
-    {
-        this.key = key;
-    }
-
-    public String getMessage()
-    {
-        return message;
-    }
-
-    public void setMessage(String message)
-    {
-        this.message = message;
-    }
-
-    public UserEntity getUserEntity()
-    {
-        return userEntity;
-    }
-
-    public void setUserEntity(UserEntity userEntity)
-    {
-        this.userEntity = userEntity;
-    }
-
-    public UserEntity getSenderEntity()
-    {
-        return senderEntity;
-    }
-
-    public void setSenderEntity(UserEntity senderEntity)
-    {
-        this.senderEntity = senderEntity;
+        super(TABLE_MAIL);
     }
 
     public String readMail()
     {
-        if (this.getSenderEntity() == null || this.getSenderEntity().getKey().longValue() == 0)
+        if (this.getSenderid() == null || this.getSenderid().longValue() == 0)
         {
             return "&cCONSOLE&f: " + this.getMessage();
         }
-        User user = CubeEngine.getUserManager().getUser(this.getSenderEntity().getKey().longValue());
+        User user = CubeEngine.getUserManager().getUser(this.getSenderid().longValue());
         return "&2" + user.getName() + "&f: " + this.getMessage();
+    }
+
+    public void setKey(UInteger value) {
+        setValue(0, value);
+    }
+
+    public UInteger getKey() {
+        return (UInteger) getValue(0);
+    }
+
+    public void setMessage(String value) {
+        setValue(1, value);
+    }
+
+    public String getMessage() {
+        return (String) getValue(1);
+    }
+
+    public void setUserid(UInteger value) {
+        setValue(2, value);
+    }
+
+    public UInteger getUserid() {
+        return (UInteger) getValue(2);
+    }
+
+    public void setSenderid(UInteger value) {
+        setValue(3, value);
+    }
+
+    public UInteger getSenderid() {
+        return (UInteger) getValue(3);
+    }
+
+    // -------------------------------------------------------------------------
+    // Primary key information
+    // -------------------------------------------------------------------------
+
+    @Override
+    public org.jooq.Record1<UInteger> key() {
+        return (org.jooq.Record1) super.key();
+    }
+
+    // -------------------------------------------------------------------------
+    // Record4 type implementation
+    // -------------------------------------------------------------------------
+
+    @Override
+    public Row4<UInteger, String, UInteger, UInteger> fieldsRow() {
+        return (Row4) super.fieldsRow();
+    }
+
+    @Override
+    public Row4<UInteger, String, UInteger, UInteger> valuesRow() {
+        return (Row4) super.valuesRow();
+    }
+
+    @Override
+    public Field<UInteger> field1() {
+        return TABLE_MAIL.KEY;
+    }
+
+    @Override
+    public Field<String> field2() {
+        return TABLE_MAIL.MESSAGE;
+    }
+
+    @Override
+    public Field<UInteger> field3() {
+        return TABLE_MAIL.USERID;
+    }
+
+    @Override
+    public Field<UInteger> field4() {
+        return TABLE_MAIL.SENDERID;
+    }
+
+    @Override
+    public UInteger value1() {
+        return getKey();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String value2() {
+        return getMessage();
+    }
+
+    @Override
+    public UInteger value3() {
+        return getUserid();
+    }
+
+    @Override
+    public UInteger value4() {
+        return getSenderid();
     }
 }

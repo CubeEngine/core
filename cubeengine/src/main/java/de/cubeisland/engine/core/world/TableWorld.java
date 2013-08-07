@@ -17,6 +17,7 @@
  */
 package de.cubeisland.engine.core.world;
 
+import java.lang.Class;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Arrays;
@@ -61,8 +62,7 @@ public class TableWorld extends TableImpl<WorldEntity> implements TableCreator<W
                                         "`key` int(10) unsigned NOT NULL AUTO_INCREMENT,\n" +
                                         "`worldName` varchar(64) NOT NULL,\n" +
                                         "`worldUUID` varchar(64) UNIQUE NOT NULL,\n" +
-                                        "PRIMARY KEY (`key`)\n" +
-                                        "UNIQUE KEY `worldUUID` (`worldUUID`)) " +
+                                        "PRIMARY KEY (`key`)) " +
                                         "ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci\n" +
                                         "COMMENT='1.0.0'").execute();
     }
@@ -97,5 +97,10 @@ public class TableWorld extends TableImpl<WorldEntity> implements TableCreator<W
     public List<UniqueKey<WorldEntity>> getKeys()
     {
         return Arrays.asList(PRIMARY_KEY, UNIQUE_UUID);
+    }
+
+    @Override
+    public Class<WorldEntity> getRecordType() {
+        return WorldEntity.class;
     }
 }

@@ -263,6 +263,10 @@ public final class BukkitCore extends JavaPlugin implements Core
             return;
         }
 
+        // depends on: database
+        this.database.registerTable(TableUser.initTable(this.database));
+        this.database.registerTable(TableWorld.initTable(this.database));
+
         // depends on: plugin manager
         this.eventRegistration = new EventManager(this);
 
@@ -424,8 +428,6 @@ public final class BukkitCore extends JavaPlugin implements Core
             this.database.shutdown();
             this.database = null;
         }
-        this.database.registerTable(TableUser.initTable(this.database));
-        this.database.registerTable(TableWorld.initTable(this.database));
 
         if (this.taskManager != null)
         {

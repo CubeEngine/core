@@ -17,6 +17,8 @@
  */
 package de.cubeisland.engine.basics.command.general;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
@@ -29,12 +31,15 @@ import de.cubeisland.engine.core.command.CommandSender;
 import de.cubeisland.engine.core.command.ContainerCommand;
 import de.cubeisland.engine.core.command.reflected.Alias;
 import de.cubeisland.engine.core.command.reflected.Command;
-import de.cubeisland.engine.core.storage.database.mysql.MySQLDatabase;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.util.ChatFormat;
 import gnu.trove.set.TLongSet;
 import gnu.trove.set.hash.TLongHashSet;
+import org.jooq.DSLContext;
+import org.jooq.Query;
+import org.jooq.types.UInteger;
 
+import static de.cubeisland.engine.basics.storage.TableMail.TABLE_MAIL;
 import static de.cubeisland.engine.core.command.ArgBounds.NO_MAX;
 
 public class MailCommand extends ContainerCommand
@@ -182,24 +187,21 @@ public class MailCommand extends ContainerCommand
             user.attachOrGet(BasicsAttachment.class, module).getBasicsUser().addMail(sender, message);
             alreadySend.add(user.getId());
         }
-        final Long senderId = sender == null ? null : sender.getId();
+        final UInteger senderId = sender == null ? null : sender.getEntity().getKey();
         this.module.getCore().getTaskManager().runAsynchronousTaskDelayed(this.getModule(),new Runnable()
         {
             public void run() // Async sending to all Users ever
             {
+                DSLContext dsl = module.getCore().getDB().getDSL();
+                Collection<Query> queries = new ArrayList<Query>();
                 for (Long userId : module.getCore().getUserManager().getAllIds())
                 {
                     if (!alreadySend.contains(userId))
                     {
-                        module.getCore().getDB().getEbeanServer().createUpdate(Mail.class,
-                            "INSERT INTO :table (message, userId, senderId) \nVALUES (:message, :userId, :senderId)")
-                              .setParameter("message", message)
-                              .setParameter("userId", userId)
-                              .setParameter("senderId", senderId)
-                              .setParameter("table", MySQLDatabase.prepareTableName("mail")).execute();
-
+                        queries.add(dsl.insertInto(TABLE_MAIL, TABLE_MAIL.MESSAGE, TABLE_MAIL.USERID, TABLE_MAIL.SENDERID).values(message, UInteger.valueOf(userId), senderId));
                     }
                 }
+                dsl.batch(queries).execute();
             }
         },0);
         context.sendTranslated("&aMail send to everyone!");

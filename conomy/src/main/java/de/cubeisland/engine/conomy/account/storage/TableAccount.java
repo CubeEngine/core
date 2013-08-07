@@ -121,4 +121,9 @@ public class TableAccount extends TableImpl<AccountModel> implements TableCreato
     public List<ForeignKey<AccountModel, ?>> getReferences() {
         return Arrays.<ForeignKey<AccountModel, ?>>asList(FOREIGN_USER);
     }
+
+    @Override
+    public Class<AccountModel> getRecordType() {
+        return AccountModel.class;
+    }
 }

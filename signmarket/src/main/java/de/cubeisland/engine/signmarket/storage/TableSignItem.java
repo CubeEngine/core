@@ -108,4 +108,9 @@ public class TableSignItem extends TableImpl<SignMarketItemModel> implements Tab
     {
         return Arrays.asList(PRIMARY_KEY);
     }
+
+    @Override
+    public Class<SignMarketItemModel> getRecordType() {
+        return SignMarketItemModel.class;
+    }
 }

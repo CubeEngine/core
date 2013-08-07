@@ -120,4 +120,9 @@ public class TableBankAccess extends TableImpl<BankAccessModel> implements Table
     public List<ForeignKey<BankAccessModel, ?>> getReferences() {
         return Arrays.<ForeignKey<BankAccessModel, ?>>asList(FOREIGN_USER, FOREIGN_ACCOUNT);
     }
+
+    @Override
+    public Class<BankAccessModel> getRecordType() {
+        return BankAccessModel.class;
+    }
 }

@@ -84,7 +84,7 @@ public class BasicsAttachment extends UserAttachment
     public BasicsUser getBasicsUser() {
         if (basicUser == null)
         {
-            this.basicUser = new BasicsUser(this.getModule().getCore().getDB().getEbeanServer(), this.getHolder());
+            this.basicUser = new BasicsUser(this.getModule().getCore().getDB(), this.getHolder());
         }
         return basicUser;
     }

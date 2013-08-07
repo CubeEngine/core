@@ -138,13 +138,6 @@
         <scope>compile</scope>
       </dependency>
       <dependency>
-        <groupId>javax.persistence</groupId>
-        <artifactId>persistence-api</artifactId>
-        <version>1.0.2</version>
-        <type>jar</type>
-        <scope>compile</scope>
-      </dependency>
-      <dependency>
         <groupId>org.bukkit</groupId>
         <artifactId>bukkit</artifactId>
         <version>${bukkitVersion}</version>
@@ -166,14 +159,6 @@
           <exclusion>
             <groupId>commons-lang</groupId>
             <artifactId>commons-lang</artifactId>
-          </exclusion>
-          <exclusion>
-            <groupId>javax.persistence</groupId>
-            <artifactId>persistence-api</artifactId>
-          </exclusion>
-          <exclusion>
-            <groupId>org.avaje</groupId>
-            <artifactId>ebean</artifactId>
           </exclusion>
         </exclusions>
       </dependency>
