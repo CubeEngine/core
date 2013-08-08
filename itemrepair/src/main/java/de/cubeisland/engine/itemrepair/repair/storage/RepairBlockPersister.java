@@ -24,18 +24,20 @@ import java.util.Map;
 import org.bukkit.block.Block;
 
 import de.cubeisland.engine.core.module.Module;
-import de.cubeisland.engine.core.storage.SingleKeyStorage;
+import org.jooq.DSLContext;
 
-public class RepairBlockPersister extends SingleKeyStorage<Long,RepairBlockModel>
+import static de.cubeisland.engine.itemrepair.repair.storage.TableRepairBlock.TABLE_REPAIR_BLOCK;
+
+public class RepairBlockPersister
 {
-    private Map<Block,RepairBlockModel> models = new HashMap<Block, RepairBlockModel>();
+    private Map<Block,RepairBlockModel> models = new HashMap<>();
     private final Module module;
+    private DSLContext dsl;
 
     public RepairBlockPersister(Module module)
     {
-        super(module.getCore().getDB(), RepairBlockModel.class, 1);
+        this.dsl = module.getCore().getDB().getDSL();
         this.module = module;
-        this.initialize();
     }
 
     public void deleteByBlock(Block block)
@@ -43,7 +45,7 @@ public class RepairBlockPersister extends SingleKeyStorage<Long,RepairBlockModel
         RepairBlockModel repairBlockModel = this.models.remove(block);
         if (repairBlockModel != null)
         {
-            this.delete(repairBlockModel);
+            repairBlockModel.delete();
         }
         else
         {
@@ -51,10 +53,9 @@ public class RepairBlockPersister extends SingleKeyStorage<Long,RepairBlockModel
         }
     }
 
-    @Override
     public Collection<RepairBlockModel> getAll()
     {
-        Collection<RepairBlockModel> all = super.getAll();
+        Collection<RepairBlockModel> all = this.dsl.select().from(TABLE_REPAIR_BLOCK).fetchInto(TABLE_REPAIR_BLOCK);
         for (RepairBlockModel repairBlockModel : all)
         {
             this.models.put(repairBlockModel.getBlock(this.module.getCore().getWorldManager()),repairBlockModel);
@@ -64,7 +65,7 @@ public class RepairBlockPersister extends SingleKeyStorage<Long,RepairBlockModel
 
     public void storeBlock(Block block, RepairBlockModel repairBlockModel)
     {
-        this.store(repairBlockModel);
+        repairBlockModel.insert();
         this.models.put(block,repairBlockModel);
     }
 }

@@ -30,13 +30,15 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
-
 import de.cubeisland.engine.itemrepair.Itemrepair;
 import de.cubeisland.engine.itemrepair.material.RepairItemContainer;
 import de.cubeisland.engine.itemrepair.repair.blocks.RepairBlock;
 import de.cubeisland.engine.itemrepair.repair.blocks.RepairBlockConfig;
 import de.cubeisland.engine.itemrepair.repair.storage.RepairBlockModel;
 import de.cubeisland.engine.itemrepair.repair.storage.RepairBlockPersister;
+import org.jooq.DSLContext;
+
+import static de.cubeisland.engine.itemrepair.repair.storage.TableRepairBlock.TABLE_REPAIR_BLOCK;
 
 public class RepairBlockManager
 {
@@ -47,10 +49,13 @@ public class RepairBlockManager
     protected final Itemrepair module;
     private RepairItemContainer itemProvider;
 
+    private DSLContext dsl;
+
     public RepairBlockManager(Itemrepair module)
     {
+        this.dsl = module.getCore().getDB().getDSL();
         this.module = module;
-        this.repairBlocks = new EnumMap<Material, RepairBlock>(Material.class);
+        this.repairBlocks = new EnumMap<>(Material.class);
         this.itemProvider = new RepairItemContainer(module.getConfig().baseMaterials);
 
         for (Entry<String, RepairBlockConfig> entry : module.getConfig().repairBlockConfigs.entrySet())
@@ -58,7 +63,7 @@ public class RepairBlockManager
             RepairBlock repairBlock = new RepairBlock(module,this,entry.getKey(),entry.getValue());
             this.addRepairBlock(repairBlock);
         }
-        this.blockMap = new HashMap<Block, Material>();
+        this.blockMap = new HashMap<>();
         this.persister = new RepairBlockPersister(module);
         this.loadBlocks();
     }
@@ -73,7 +78,7 @@ public class RepairBlockManager
         for (RepairBlockModel model : this.persister.getAll())
         {
             Block block = model.getBlock(this.module.getCore().getWorldManager());
-            if (block.getType().name().equals(model.type))
+            if (block.getType().name().equals(model.getType()))
             {
                 if (this.repairBlocks.containsKey(block.getType()))
                 {
@@ -162,7 +167,7 @@ public class RepairBlockManager
             if (this.repairBlocks.containsKey(material))
             {
                 this.blockMap.put(block, material);
-                this.persister.storeBlock(block,new RepairBlockModel(block, this.module.getCore().getWorldManager()));
+                this.persister.storeBlock(block, this.dsl.newRecord(TABLE_REPAIR_BLOCK).newRepairBlock(block, this.module.getCore().getWorldManager()));
                 return true;
             }
         }
