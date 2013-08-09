@@ -19,7 +19,6 @@ package de.cubeisland.engine.log.storage;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
-import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -34,6 +33,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
+import de.cubeisland.engine.core.CubeEngine;
 import de.cubeisland.engine.core.command.CommandSender;
 import de.cubeisland.engine.core.storage.database.Database;
 import de.cubeisland.engine.core.user.User;
@@ -73,20 +73,21 @@ public class QueryManager
     private long timeSpendFullLoad = 0;
     private long logsLoggedFullLoad = 1;
 
-    private CountDownLatch latch = null;
+    private CountDownLatch latch = new CountDownLatch(0);
 
     private int cleanUpTaskId;
-
-    private String mainTable = "log_entries";
-    private String tempTable = "log_entries_temp";
 
     private Connection insertConnection = null;
     private DSLContext dsl;
     private DSLContext cleanUpDsl;
     private Database database;
 
+    private TableLogEntry CURRENT_TABLE;
+    private TableLogEntry OPTIMIZE_TABLE;
+
     public QueryManager(Log module)
     {
+        this.CURRENT_TABLE = TABLE_LOG_ENTRY;
         this.database = module.getCore().getDB();
         this.dsl = this.database.getDSL();
         this.cleanUpDsl = this.database.getDSL();
@@ -128,33 +129,48 @@ public class QueryManager
         }, this.module.getConfiguration().cleanUpDelay.toTicks(), this.module.getConfiguration().cleanUpDelay.toTicks());
         this.cleanUpLogs();
     }
-    /*
-        sql = builder.insert().into(table)
-                     .cols("date", "action", "world", "x", "y", "z", "causer",
-                           "block", "data", "newBlock", "newData", "additionalData")
-                     .end().end();
-        this.database.storeStatement(this.getClass(), "storeLog", sql);
-    }
-    */
+
     /**
-     * ONLY execute async this could take a LONG time
+     * Cannot be executed in the main-thread!
      */
     private void optimizeTable(final CommandSender sender)
     {
-        //if (true) return;// TODO do test if this locks the server
+        if (CubeEngine.isMainThread()) throw new IllegalStateException("ONLY use Asynchronously!");
         try
         {
-            this.database.execute("OPTIMIZE TABLE cube_"+ this.mainTable);
-            sender.sendTranslated("&aOptimization finished! Copy temp-table...");
-            this.database.startTransaction();
-            this.database.execute("INSERT INTO cube_" + this.mainTable + " (date, action, world, x, y, z, causer, block, data, newBlock, newData, additionalData)"
-                                      + " SELECT date, action, world, x, y, z, causer, block, data, newBlock, newData, additionalData FROM cube_" + this.tempTable);
-            this.database.commit();
+            this.module.getLog().debug("Optimize - Step 1/6: Wait for inserts to finish then pause inserts");
+            latch.await(); // Wait for batch insert to finish!
+            latch = new CountDownLatch(1);
         }
-        catch (SQLException e)
+        catch (InterruptedException e)
         {
-            this.module.getLog().error("Error during optimization of log-tables", e);
+            this.module.getLog().error("Could not start optimizing!", e);
         }
+        this.module.getLog().debug("Optimize - Step 2/6: Create temporary table and swap tables");
+        TableLogEntry temporaryTable = TableLogEntry.initTempTable(this.database);
+        this.OPTIMIZE_TABLE = this.CURRENT_TABLE;
+        this.CURRENT_TABLE = temporaryTable;
+        this.module.getLog().debug("Optimize - Step 3/6: Optimize Table and continue logging into temporary table");
+        latch.countDown();
+        this.cleanUpDsl.execute("OPTIMIZE TABLE " + OPTIMIZE_TABLE.getName());
+        sender.sendTranslated("&aOptimization finished! Copy temp-table...");
+        try
+        {
+            this.module.getLog().debug("Optimize - Step 4/6: Wait for inserts to finish then pause inserts");
+            latch.await(); // Wait for batch insert to finish!
+            latch = new CountDownLatch(1); // Block normal inserts
+        }
+        catch (InterruptedException e)
+        {
+            this.module.getLog().error("Could not start copying back to optimized table!", e);
+        }
+        this.module.getLog().debug("Optimize - Step 5/6: Insert data from temporary table into the optimized table and drop temporary table");
+        this.cleanUpDsl.insertInto(OPTIMIZE_TABLE).select(this.cleanUpDsl.selectFrom(CURRENT_TABLE)).execute();
+        this.dsl.execute("DROP TABLE " + temporaryTable.getName());
+        this.module.getLog().debug("Optimize - Step 6/6: Return back to normal logging. Table optimized!");
+        this.CURRENT_TABLE = this.OPTIMIZE_TABLE;
+        latch.countDown(); // Start normal logging again
+
     }
 
     private boolean optimizeRunning = false;
@@ -166,56 +182,21 @@ public class QueryManager
      */
     public void optimize(final CommandSender sender)
     {
-        //TODO DATABASE
-        /*
-        if (true)
-        {
-            // TODO do this with a separate connection
-            sender.sendMessage("NOT YET FINISHED");
-            return;
-        }
         if (optimizeRunning)
         {
             sender.sendTranslated("&cThe database is already busy optimizing.");
             return;
         }
-        try
+        optimizeRunning = true;
+        this.module.getCore().getTaskManager().getThreadFactory().newThread(new Runnable()
         {
-            optimizeRunning = true;
-            Profiler.startProfiling("log_optimize");
-            sender.sendTranslated("&aStarted optimizing! This may take a while.");
-            this.createTableWithInsertQuery(this.database.getQueryBuilder(), this.tempTable); // Create temp table & log into that table
-            this.module.getCore().getTaskManager().getThreadFactory().newThread(new Runnable()
+            @Override
+            public void run()
             {
-                @Override
-                public void run()
-                {
-                    optimizeTable(sender);
-                    module.getCore().getTaskManager().runTask(module, new Runnable()
-                    {
-                        @Override
-                        public void run()
-                        {
-                            try
-                            {
-                                createTableWithInsertQuery(database.getQueryBuilder(), mainTable);
-                                database.execute(database.getQueryBuilder().dropTable(tempTable).end());
-                                sender.sendTranslated("&adone in %d seconds! Indices are now optimized!", Profiler.endProfiling("log_optimize", TimeUnit.SECONDS));
-                                optimizeRunning = false;
-                            }
-                            catch (SQLException e)
-                            {
-                                module.getLog().error("Error during optimization of log-tables", e);
-                            }
-                        }
-                    });
-                }
-            }).start();
-        }
-        catch (SQLException e)
-        {
-            this.module.getLog().error("Error during optimization of log-tables", e);
-        }*/
+                optimizeTable(sender);
+                optimizeRunning = false;
+            }
+        }).start();
     }
 
     private void cleanUpLogs()
@@ -308,6 +289,8 @@ public class QueryManager
     {
         try
         {
+            this.latch.await(); // Wait if still doing inserts
+            this.latch = new CountDownLatch(1);
             if (queuedLogs.isEmpty())
             {
                 return;
@@ -375,6 +358,7 @@ public class QueryManager
         catch (Exception ex)
         {
             Profiler.endProfiling("logging"); // end profiling so we can start again later
+            latch = new CountDownLatch(0); // and reset latch
             throw new IllegalStateException("Error while logging", ex);
         }
     }
@@ -395,7 +379,6 @@ public class QueryManager
         {
             this.batchSize = this.batchSize * 5;
             this.lookupExecutor.shutdown();
-            latch = new CountDownLatch(1);
             try {
                 latch.await(3, TimeUnit.MINUTES); // wait for all logs to be logged (stop after 3 min)
             } catch (InterruptedException e) {

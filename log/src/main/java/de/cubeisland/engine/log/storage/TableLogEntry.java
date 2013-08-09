@@ -42,11 +42,21 @@ import static de.cubeisland.engine.log.storage.TableActionTypes.TABLE_ACTION_TYP
 
 public class TableLogEntry extends TableImpl<LogEntry> implements TableCreator<LogEntry>
 {
+    private static TableLogEntry TEMP_TABLE_LOG_ENTRY;
     public static TableLogEntry TABLE_LOG_ENTRY;
 
     private TableLogEntry(String prefix)
     {
         super(prefix + "log_entries");
+        IDENTITY = Keys.identity(this, this.ID);
+        PRIMARY_KEY = Keys.uniqueKey(this, this.ID);
+        FOREIGN_WORLD = Keys.foreignKey(TABLE_WORLD.PRIMARY_KEY, this, this.WORLD);
+        FOREIGN_TYPE = Keys.foreignKey(TABLE_ACTION_TYPE.PRIMARY_KEY, this, this.ACTION);
+    }
+
+    private TableLogEntry(String prefix, String tempTable)
+    {
+        super(prefix + tempTable);
         IDENTITY = Keys.identity(this, this.ID);
         PRIMARY_KEY = Keys.uniqueKey(this, this.ID);
         FOREIGN_WORLD = Keys.foreignKey(TABLE_WORLD.PRIMARY_KEY, this, this.WORLD);
@@ -59,6 +69,17 @@ public class TableLogEntry extends TableImpl<LogEntry> implements TableCreator<L
         MySQLDatabaseConfiguration config = (MySQLDatabaseConfiguration)database.getDatabaseConfig();
         TABLE_LOG_ENTRY = new TableLogEntry(config.tablePrefix);
         return TABLE_LOG_ENTRY;
+    }
+
+    protected static TableLogEntry initTempTable(Database database)
+    {
+        if (TEMP_TABLE_LOG_ENTRY == null)
+        {
+            MySQLDatabaseConfiguration config = (MySQLDatabaseConfiguration)database.getDatabaseConfig();
+            TEMP_TABLE_LOG_ENTRY = new TableLogEntry(config.tablePrefix, "TEMP_log_entries");
+        }
+        database.registerTable(TEMP_TABLE_LOG_ENTRY); // recreate Table
+        return TEMP_TABLE_LOG_ENTRY;
     }
 
     @Override
