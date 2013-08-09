@@ -34,7 +34,6 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
 import de.cubeisland.engine.core.CubeEngine;
-import de.cubeisland.engine.core.command.CommandSender;
 import de.cubeisland.engine.core.storage.database.Database;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.util.Profiler;
@@ -128,18 +127,17 @@ public class QueryManager
                 cleanUpLogs();
             }
         }, this.module.getConfiguration().cleanUpDelay.toTicks(), this.module.getConfiguration().cleanUpDelay.toTicks());
-        this.cleanUpLogs();
     }
 
     /**
      * Cannot be executed in the main-thread!
      */
-    private void optimizeTable(final CommandSender sender)
+    private void optimizeTable()
     {
         if (CubeEngine.isMainThread()) throw new IllegalStateException("ONLY use Asynchronously!");
         try
         {
-            this.module.getLog().debug("Optimize - Step 1/6: Wait for inserts to finish then pause inserts");
+            this.module.getLog().debug("Analyze - Step 1/6: Wait for inserts to finish then pause inserts");
             latch.await(); // Wait for batch insert to finish!
             latch = new CountDownLatch(1);
         }
@@ -147,17 +145,16 @@ public class QueryManager
         {
             this.module.getLog().error("Could not start optimizing!", e);
         }
-        this.module.getLog().debug("Optimize - Step 2/6: Create temporary table and swap tables");
+        this.module.getLog().debug("Analyze - Step 2/6: Create temporary table and swap tables");
         TableLogEntry temporaryTable = TableLogEntry.initTempTable(this.database);
         this.OPTIMIZE_TABLE = this.CURRENT_TABLE;
         this.CURRENT_TABLE = temporaryTable;
-        this.module.getLog().debug("Optimize - Step 3/6: Optimize Table and continue logging into temporary table");
+        this.module.getLog().debug("Analyze - Step 3/6: Optimize Table and continue logging into temporary table");
         latch.countDown();
-        this.cleanUpDsl.execute("OPTIMIZE TABLE " + OPTIMIZE_TABLE.getName());
-        sender.sendTranslated("&aOptimization finished! Copy temp-table...");
+        this.cleanUpDsl.execute("ANALYZE TABLE " + OPTIMIZE_TABLE.getName());
         try
         {
-            this.module.getLog().debug("Optimize - Step 4/6: Wait for inserts to finish then pause inserts");
+            this.module.getLog().debug("Analyze - Step 4/6: Wait for inserts to finish then pause inserts");
             latch.await(); // Wait for batch insert to finish!
             latch = new CountDownLatch(1); // Block normal inserts
         }
@@ -165,10 +162,10 @@ public class QueryManager
         {
             this.module.getLog().error("Could not start copying back to optimized table!", e);
         }
-        this.module.getLog().debug("Optimize - Step 5/6: Insert data from temporary table into the optimized table and drop temporary table");
+        this.module.getLog().debug("Analyze - Step 5/6: Insert data from temporary table into the optimized table and drop temporary table");
         this.cleanUpDsl.insertInto(OPTIMIZE_TABLE).select(this.cleanUpDsl.selectFrom(CURRENT_TABLE)).execute();
         this.dsl.execute("DROP TABLE " + temporaryTable.getName());
-        this.module.getLog().debug("Optimize - Step 6/6: Return back to normal logging. Table optimized!");
+        this.module.getLog().debug("Analyze - Step 6/6: Return back to normal logging. Table optimized!");
         this.CURRENT_TABLE = this.OPTIMIZE_TABLE;
         latch.countDown(); // Start normal logging again
 
@@ -177,24 +174,17 @@ public class QueryManager
     private boolean optimizeRunning = false;
 
     /**
-     * Optimizes the indices of the log table
-     *
-     * @param sender
+     * Analyse the indices of the log table
      */
-    public void optimize(final CommandSender sender)
+    public void analyze()
     {
-        if (optimizeRunning)
-        {
-            sender.sendTranslated("&cThe database is already busy optimizing.");
-            return;
-        }
-        optimizeRunning = true;
+        if (optimizeRunning) return;
         this.module.getCore().getTaskManager().getThreadFactory().newThread(new Runnable()
         {
             @Override
             public void run()
             {
-                optimizeTable(sender);
+                optimizeTable();
                 optimizeRunning = false;
             }
         }).start();
@@ -202,9 +192,22 @@ public class QueryManager
 
     private void cleanUpLogs()
     {
-        // if (true) return;// TODO do this with a separate db-connection
-        Profiler.endProfiling("log_cleanUp");
-        Profiler.startProfiling("log_cleanUp");
+        try
+        {
+            this.module.getLog().debug("CleanUp - Step 1/7: Wait for inserts to finish then pause inserts");
+            latch.await(); // Wait for batch insert to finish!
+            latch = new CountDownLatch(1);
+        }
+        catch (InterruptedException e)
+        {
+            this.module.getLog().error("Could not start optimizing!", e);
+        }
+        this.module.getLog().debug("CleanUp - Step 2/7: Create temporary table and swap tables");
+        TableLogEntry temporaryTable = TableLogEntry.initTempTable(this.database);
+        this.OPTIMIZE_TABLE = this.CURRENT_TABLE;
+        this.CURRENT_TABLE = temporaryTable;
+        this.module.getLog().debug("CleanUp - Step 3/7: CleanUp of deleted worlds");
+        latch.countDown();
         if (this.module.getConfiguration().cleanUpDeletedWorlds)
         {
             long[] worlds = this.module.getCore().getWorldManager().getAllWorldIds();
@@ -213,27 +216,32 @@ public class QueryManager
             {
                 values[i] = UInteger.valueOf(worlds[i]);
             }
-            this.module.getCore().getTaskManager().getThreadFactory().newThread(new Runnable()
-            {
-                @Override
-                public void run()
-                {
-                    cleanUpDsl.delete(TABLE_LOG_ENTRY).where(TABLE_LOG_ENTRY.WORLD.notIn(values)).execute();
-                }
-            }).start();
+            cleanUpDsl.delete(TABLE_LOG_ENTRY).where(TABLE_LOG_ENTRY.WORLD.notIn(values)).execute();
         }
+        this.module.getLog().debug("CleanUp - Step 4/7: CleanUp of old logs");
         if (this.module.getConfiguration().cleanUpOldLogs)
         {
-            this.module.getCore().getTaskManager().getThreadFactory().newThread(new Runnable()
-            {
-                @Override
-                public void run()
-                {
-                    cleanUpDsl.delete(TABLE_LOG_ENTRY).where(
-                        TABLE_LOG_ENTRY.DATE.le(new Timestamp(System.currentTimeMillis() - module.getConfiguration().cleanUpOldLogsTime.toMillis()))).execute();
-                }
-            }).start();
+            cleanUpDsl.delete(TABLE_LOG_ENTRY).where(TABLE_LOG_ENTRY.DATE.le(new Timestamp(System
+                                                                                               .currentTimeMillis() - module
+                .getConfiguration().cleanUpOldLogsTime.toMillis()))).execute();
         }
+        try
+        {
+            this.module.getLog().debug("CleanUp - Step 5/7: Wait for inserts to finish then pause inserts");
+            latch.await(); // Wait for batch insert to finish!
+            latch = new CountDownLatch(1); // Block normal inserts
+        }
+        catch (InterruptedException e)
+        {
+            this.module.getLog().error("Could not start copying back to clean table!", e);
+        }
+        this.module.getLog().debug("Optimize - Step 6/7: Insert data from temporary table into the optimized table and drop temporary table");
+        this.cleanUpDsl.insertInto(OPTIMIZE_TABLE).select(this.cleanUpDsl.selectFrom(CURRENT_TABLE)).execute();
+        this.dsl.execute("DROP TABLE " + temporaryTable.getName());
+        this.module.getLog().debug("Optimize - Step 7/7: Re-Analyze Indices and then return back to normal logging. Table cleaned up!");
+        this.CURRENT_TABLE = this.OPTIMIZE_TABLE;
+        latch.countDown(); // Start normal logging again
+        this.analyze();
     }
 
     private void doQueryLookup()
