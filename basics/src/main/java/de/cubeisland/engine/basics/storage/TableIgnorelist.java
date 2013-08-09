@@ -53,13 +53,9 @@ public class TableIgnorelist extends TableImpl<IgnoreList> implements TableCreat
 
     public static TableIgnorelist initTable(Database database)
     {
-        if (TABLE_IGNORE_LIST == null)
-        {
-            MySQLDatabaseConfiguration config = (MySQLDatabaseConfiguration)database.getDatabaseConfig();
-            TABLE_IGNORE_LIST = new TableIgnorelist(config.tablePrefix);
-            return TABLE_IGNORE_LIST;
-        }
-        throw new IllegalStateException();
+        MySQLDatabaseConfiguration config = (MySQLDatabaseConfiguration)database.getDatabaseConfig();
+        TABLE_IGNORE_LIST = new TableIgnorelist(config.tablePrefix);
+        return TABLE_IGNORE_LIST;
     }
 
     @Override

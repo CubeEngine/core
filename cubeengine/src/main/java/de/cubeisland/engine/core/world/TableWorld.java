@@ -49,7 +49,6 @@ public class TableWorld extends TableImpl<WorldEntity> implements TableCreator<W
 
     public static TableWorld initTable(Database database)
     {
-        if (TABLE_WORLD != null) throw new IllegalStateException();
         MySQLDatabaseConfiguration config = (MySQLDatabaseConfiguration)database.getDatabaseConfig();
         TABLE_WORLD = new TableWorld(config.tablePrefix);
         return TABLE_WORLD;

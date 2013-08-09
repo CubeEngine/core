@@ -56,7 +56,6 @@ public class TableBankAccess extends TableImpl<BankAccessModel> implements Table
 
     public static TableBankAccess initTable(Database database)
     {
-        if (TABLE_BANK_ACCESS != null) throw new IllegalStateException();
         MySQLDatabaseConfiguration config = (MySQLDatabaseConfiguration)database.getDatabaseConfig();
         TABLE_BANK_ACCESS = new TableBankAccess(config.tablePrefix);
         return TABLE_BANK_ACCESS;

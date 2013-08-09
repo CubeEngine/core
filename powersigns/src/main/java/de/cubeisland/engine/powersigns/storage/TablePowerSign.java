@@ -57,7 +57,6 @@ public class TablePowerSign extends TableImpl<PowerSignModel> implements TableCr
 
     public static TablePowerSign initTable(Database database)
     {
-        if (TABLE_POWER_SIGN != null) throw new IllegalStateException();
         MySQLDatabaseConfiguration config = (MySQLDatabaseConfiguration)database.getDatabaseConfig();
         TABLE_POWER_SIGN = new TablePowerSign(config.tablePrefix);
         return TABLE_POWER_SIGN;

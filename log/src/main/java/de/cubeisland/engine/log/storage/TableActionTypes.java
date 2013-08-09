@@ -48,7 +48,6 @@ public class TableActionTypes extends TableImpl<ActionTypeModel> implements Tabl
 
     public static TableActionTypes initTable(Database database)
     {
-        if (TABLE_ACTION_TYPE != null) throw new IllegalStateException();
         MySQLDatabaseConfiguration config = (MySQLDatabaseConfiguration)database.getDatabaseConfig();
         TABLE_ACTION_TYPE = new TableActionTypes(config.tablePrefix);
         return TABLE_ACTION_TYPE;

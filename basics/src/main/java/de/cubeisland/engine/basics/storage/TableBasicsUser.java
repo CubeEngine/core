@@ -53,13 +53,9 @@ public class TableBasicsUser extends TableImpl<BasicsUserEntity> implements Tabl
 
     public static TableBasicsUser initTable(Database database)
     {
-        if (TABLE_BASIC_USER == null)
-        {
-            MySQLDatabaseConfiguration config = (MySQLDatabaseConfiguration)database.getDatabaseConfig();
-            TABLE_BASIC_USER = new TableBasicsUser(config.tablePrefix);
-            return TABLE_BASIC_USER;
-        }
-        throw new IllegalStateException();
+        MySQLDatabaseConfiguration config = (MySQLDatabaseConfiguration)database.getDatabaseConfig();
+        TABLE_BASIC_USER = new TableBasicsUser(config.tablePrefix);
+        return TABLE_BASIC_USER;
     }
 
     @Override

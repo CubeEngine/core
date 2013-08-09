@@ -53,13 +53,9 @@ public class TableMail extends TableImpl<Mail> implements TableCreator<Mail>
 
     public static TableMail initTable(Database database)
     {
-        if (TABLE_MAIL == null)
-        {
-            MySQLDatabaseConfiguration config = (MySQLDatabaseConfiguration)database.getDatabaseConfig();
-            TABLE_MAIL = new TableMail(config.tablePrefix);
-            return TABLE_MAIL;
-        }
-        throw new IllegalStateException();
+        MySQLDatabaseConfiguration config = (MySQLDatabaseConfiguration)database.getDatabaseConfig();
+        TABLE_MAIL = new TableMail(config.tablePrefix);
+        return TABLE_MAIL;
     }
 
     @Override

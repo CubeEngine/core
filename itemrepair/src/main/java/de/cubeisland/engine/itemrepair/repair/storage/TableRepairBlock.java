@@ -53,7 +53,6 @@ public class TableRepairBlock extends TableImpl<RepairBlockModel> implements Tab
 
     public static TableRepairBlock initTable(Database database)
     {
-        if (TABLE_REPAIR_BLOCK != null) throw new IllegalStateException();
         MySQLDatabaseConfiguration config = (MySQLDatabaseConfiguration)database.getDatabaseConfig();
         TABLE_REPAIR_BLOCK = new TableRepairBlock(config.tablePrefix);
         return TABLE_REPAIR_BLOCK;

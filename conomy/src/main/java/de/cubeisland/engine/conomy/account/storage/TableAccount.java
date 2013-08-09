@@ -56,7 +56,6 @@ public class TableAccount extends TableImpl<AccountModel> implements TableCreato
 
     public static TableAccount initTable(Database database)
     {
-        if (TABLE_ACCOUNT != null) throw new IllegalStateException();
         MySQLDatabaseConfiguration config = (MySQLDatabaseConfiguration)database.getDatabaseConfig();
         TABLE_ACCOUNT = new TableAccount(config.tablePrefix);
         return TABLE_ACCOUNT;

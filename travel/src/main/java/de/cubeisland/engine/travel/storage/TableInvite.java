@@ -49,7 +49,6 @@ public class TableInvite extends TableImpl<TeleportInvite> implements TableCreat
 
     public static TableInvite initTable(Database database)
     {
-        if (TABLE_INVITE != null) throw new IllegalStateException();
         MySQLDatabaseConfiguration config = (MySQLDatabaseConfiguration)database.getDatabaseConfig();
         TABLE_INVITE = new TableInvite(config.tablePrefix);
         return TABLE_INVITE;

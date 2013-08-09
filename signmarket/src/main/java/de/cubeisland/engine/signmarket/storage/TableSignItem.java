@@ -48,7 +48,6 @@ public class TableSignItem extends TableImpl<SignMarketItemModel> implements Tab
 
     public static TableSignItem initTable(Database database)
     {
-        if (TABLE_SIGN_ITEM != null) throw new IllegalStateException();
         MySQLDatabaseConfiguration config = (MySQLDatabaseConfiguration)database.getDatabaseConfig();
         TABLE_SIGN_ITEM = new TableSignItem(config.tablePrefix);
         return TABLE_SIGN_ITEM;

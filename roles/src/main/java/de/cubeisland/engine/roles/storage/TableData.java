@@ -54,7 +54,6 @@ public class TableData extends TableImpl<UserMetaData> implements TableCreator<U
 
     public static TableData initTable(Database database)
     {
-        if (TABLE_META != null) throw new IllegalStateException();
         MySQLDatabaseConfiguration config = (MySQLDatabaseConfiguration)database.getDatabaseConfig();
         TABLE_META = new TableData(config.tablePrefix);
         return TABLE_META;

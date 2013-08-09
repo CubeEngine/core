@@ -55,9 +55,9 @@ public class TableUser extends TableImpl<UserEntity> implements TableCreator<Use
         {
             MySQLDatabaseConfiguration config = (MySQLDatabaseConfiguration)database.getDatabaseConfig();
             TABLE_USER = new TableUser(config.tablePrefix);
-            return TABLE_USER;
+
         }
-        throw new IllegalStateException();
+        return TABLE_USER;
     }
 
     @Override

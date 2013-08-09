@@ -65,7 +65,6 @@ public class TableLogEntry extends TableImpl<LogEntry> implements TableCreator<L
 
     public static TableLogEntry initTable(Database database)
     {
-        if (TABLE_LOG_ENTRY != null) throw new IllegalStateException();
         MySQLDatabaseConfiguration config = (MySQLDatabaseConfiguration)database.getDatabaseConfig();
         TABLE_LOG_ENTRY = new TableLogEntry(config.tablePrefix);
         return TABLE_LOG_ENTRY;

@@ -56,7 +56,6 @@ public class TableTeleportPoint extends TableImpl<TeleportPointModel> implements
 
     public static TableTeleportPoint initTable(Database database)
     {
-        if (TABLE_TP_POINT != null) throw new IllegalStateException();
         MySQLDatabaseConfiguration config = (MySQLDatabaseConfiguration)database.getDatabaseConfig();
         TABLE_TP_POINT = new TableTeleportPoint(config.tablePrefix);
         return TABLE_TP_POINT;

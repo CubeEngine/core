@@ -55,7 +55,6 @@ public class TablePerm extends TableImpl<UserPermission> implements TableCreator
 
     public static TablePerm initTable(Database database)
     {
-        if (TABLE_PERM != null) throw new IllegalStateException();
         MySQLDatabaseConfiguration config = (MySQLDatabaseConfiguration)database.getDatabaseConfig();
         TABLE_PERM = new TablePerm(config.tablePrefix);
         return TABLE_PERM;

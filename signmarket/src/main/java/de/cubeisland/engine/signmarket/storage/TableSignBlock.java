@@ -58,13 +58,9 @@ public class TableSignBlock extends TableImpl<SignMarketBlockModel> implements T
 
     public static TableSignBlock initTable(Database database)
     {
-        if (TABLE_SIGN_BLOCK == null)
-        {
-            MySQLDatabaseConfiguration config = (MySQLDatabaseConfiguration)database.getDatabaseConfig();
-            TABLE_SIGN_BLOCK = new TableSignBlock(config.tablePrefix);
-            return TABLE_SIGN_BLOCK;
-        }
-        throw new IllegalStateException();
+        MySQLDatabaseConfiguration config = (MySQLDatabaseConfiguration)database.getDatabaseConfig();
+        TABLE_SIGN_BLOCK = new TableSignBlock(config.tablePrefix);
+        return TABLE_SIGN_BLOCK;
     }
 
     @Override

@@ -53,7 +53,6 @@ public class TableRole extends TableImpl<AssignedRole> implements TableCreator<A
 
     public static TableRole initTable(Database database)
     {
-        if (TABLE_ROLE != null) throw new IllegalStateException();
         MySQLDatabaseConfiguration config = (MySQLDatabaseConfiguration)database.getDatabaseConfig();
         TABLE_ROLE = new TableRole(config.tablePrefix);
         return TABLE_ROLE;

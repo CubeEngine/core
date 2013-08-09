@@ -47,7 +47,6 @@ public class TableKitsGiven extends TableImpl<KitsGiven> implements TableCreator
 
     public static TableKitsGiven initTable(Database database)
     {
-        if (TABLE_KITS != null) throw new IllegalStateException();
         MySQLDatabaseConfiguration config = (MySQLDatabaseConfiguration)database.getDatabaseConfig();
         TABLE_KITS = new TableKitsGiven(config.tablePrefix);
         return TABLE_KITS;

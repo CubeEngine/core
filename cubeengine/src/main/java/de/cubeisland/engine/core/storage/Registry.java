@@ -90,7 +90,6 @@ public class Registry extends TableImpl<RegistryModel>implements TableCreator<Re
 
     public static Registry initTable(Database database)
     {
-        if (TABLE_REGISTRY != null) throw new IllegalStateException();
         MySQLDatabaseConfiguration config = (MySQLDatabaseConfiguration)database.getDatabaseConfig();
         TABLE_REGISTRY = new Registry(config.tablePrefix, database);
         database.registerTable(TABLE_REGISTRY);
