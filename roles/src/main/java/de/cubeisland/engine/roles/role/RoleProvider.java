@@ -25,16 +25,16 @@ import java.util.Set;
 import java.util.Stack;
 
 import de.cubeisland.engine.core.config.Configuration;
-
 import de.cubeisland.engine.core.permission.Permission;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.util.StringUtils;
 import de.cubeisland.engine.roles.Roles;
 import de.cubeisland.engine.roles.config.RoleConfig;
 import de.cubeisland.engine.roles.exception.CircularRoleDependencyException;
-
 import gnu.trove.map.hash.THashMap;
+import org.jooq.types.UInteger;
 
+import static de.cubeisland.engine.roles.storage.TableRole.TABLE_ROLE;
 
 
 public abstract class RoleProvider
@@ -252,7 +252,8 @@ public abstract class RoleProvider
         this.roles.remove(role.getName());
         this.configs.remove(role.getName());
 
-        this.manager.rm.deleteRole(this.mainWorldId, role.getName());
+        this.manager.dsl.delete(TABLE_ROLE).where(TABLE_ROLE.WORLDID.eq(UInteger.valueOf(mainWorldId)),
+                                                  TABLE_ROLE.ROLENAME.eq(role.getName())).execute();
     }
 
     /**

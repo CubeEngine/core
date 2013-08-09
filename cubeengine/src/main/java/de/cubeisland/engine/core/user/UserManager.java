@@ -61,6 +61,13 @@ public interface UserManager extends Cleanable
     User getUser(String name);
     User getUser(String name, boolean create);
 
+    /**
+     * Queries the database directly if the user is not loaded to get its name.
+     * <p>Only use with valid key!
+     *
+     * @param key the users key
+     * @return
+     */
     String getUserName(long key);
 
     /**

@@ -29,7 +29,10 @@ import de.cubeisland.engine.roles.config.RoleMirror;
 
 import gnu.trove.map.hash.TLongObjectHashMap;
 import gnu.trove.procedure.TLongObjectProcedure;
+import org.jooq.impl.DSL;
+import org.jooq.types.UInteger;
 
+import static de.cubeisland.engine.roles.storage.TableRole.TABLE_ROLE;
 
 
 public class WorldRoleProvider extends RoleProvider
@@ -152,7 +155,8 @@ public class WorldRoleProvider extends RoleProvider
             {
                 if (mirrors.getFirst() && !mirrors.getSecond()) // roles are mirrored but not assigned roles
                 {
-                    manager.rm.deleteRole(worldID, role.getName());
+                    manager.dsl.delete(TABLE_ROLE).where(TABLE_ROLE.WORLDID.eq(UInteger.valueOf(worldID)),
+                                                              TABLE_ROLE.ROLENAME.eq(role.getName())).execute();
                 }
                 return true;
             }
@@ -162,10 +166,16 @@ public class WorldRoleProvider extends RoleProvider
     @Override
     protected boolean renameRole(Role role, String newName)
     {
-        String name = role.getName();
         if (super.renameRole(role,newName))
         {
-            this.manager.rm.rename(this,name,newName);
+            Set<UInteger> worldMirrors = new HashSet<>();
+            for (long mirrored : this.getWorldMirrors().keys())
+            {
+                worldMirrors.add(UInteger.valueOf(mirrored));
+            }
+            this.manager.dsl.update(TABLE_ROLE).set(DSL.row(TABLE_ROLE.ROLENAME), DSL.row(newName)).
+                where(TABLE_ROLE.ROLENAME.eq(role.getName()),
+                      TABLE_ROLE.WORLDID.in(worldMirrors)).execute();
             return true;
         }
         return false;

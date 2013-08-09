@@ -27,6 +27,7 @@ import de.cubeisland.engine.roles.Roles;
 
 import gnu.trove.map.hash.THashMap;
 import gnu.trove.set.hash.THashSet;
+import org.jooq.types.UInteger;
 
 public class UserDataStore implements RawDataStore
 {
@@ -189,9 +190,9 @@ public class UserDataStore implements RawDataStore
         return this.worldID;
     }
 
-    public Long getUserID()
+    public UInteger getUserID()
     {
-        return this.attachment.getHolder().getId();
+        return this.attachment.getHolder().getEntity().getKey();
     }
 
     @Override

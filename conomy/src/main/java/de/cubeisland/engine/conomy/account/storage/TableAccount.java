@@ -72,12 +72,10 @@ public class TableAccount extends TableImpl<AccountModel> implements TableCreato
                                         "`value` bigint(20) NOT NULL,\n" +
                                         "`mask` tinyint(4) DEFAULT NULL,\n" +
                                         "PRIMARY KEY (`key`),\n" +
-                                        "UNIQUE KEY `user_id` (`user_id`,`name`))\n" +
+                                        "UNIQUE KEY `user_id` (`user_id`,`name`),\n" +
+                                        "FOREIGN KEY `f_user`(`user_id`) REFERENCES " + TABLE_USER.getName() + "(`key`) ON UPDATE CASCADE ON DELETE CASCADE)\n" +
                                         "ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci\n" +
                                         "COMMENT='1.0.0'").execute();
-        connection.prepareStatement("ALTER TABLE " + this.getName() +
-                                        "\nADD FOREIGN KEY `f_user`(`user_id`) " +
-                                        "REFERENCES " + TABLE_USER.getName() + "(`key`) ON UPDATE CASCADE ON DELETE CASCADE;");
     }
 
     private static final Version version = new Version(1);

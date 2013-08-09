@@ -172,7 +172,7 @@ public abstract class AbstractUserManager implements UserManager
         {
             return user;
         }
-        UserEntity entity = this.database.getDSL().selectFrom(TABLE_USER).where(TABLE_USER.KEY.eq(UInteger.valueOf(id))).fetchOne().into(TABLE_USER);
+        UserEntity entity = this.database.getDSL().selectFrom(TABLE_USER).where(TABLE_USER.KEY.eq(UInteger.valueOf(id))).fetchOne();
         if (entity == null)
         {
             return null;

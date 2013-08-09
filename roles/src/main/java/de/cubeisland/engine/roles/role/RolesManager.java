@@ -35,13 +35,11 @@ import de.cubeisland.engine.roles.Roles;
 import de.cubeisland.engine.roles.RolesConfig;
 import de.cubeisland.engine.roles.config.RoleConfig;
 import de.cubeisland.engine.roles.config.RoleMirror;
-import de.cubeisland.engine.roles.storage.AssignedRoleManager;
-import de.cubeisland.engine.roles.storage.UserMetaDataManager;
-import de.cubeisland.engine.roles.storage.UserPermissionsManager;
 
 import gnu.trove.map.hash.TLongLongHashMap;
 import gnu.trove.map.hash.TLongObjectHashMap;
 import gnu.trove.set.hash.TLongHashSet;
+import org.jooq.DSLContext;
 
 public class RolesManager
 {
@@ -56,19 +54,14 @@ public class RolesManager
 
     private final File rolesFolder;
 
-    protected AssignedRoleManager rm;
-    protected UserMetaDataManager mdm;
-    protected UserPermissionsManager pm;
+    protected DSLContext dsl;
 
     public RolesManager(Roles module)
     {
         this.module = module;
+        this.dsl = module.getCore().getDB().getDSL();
         this.wm = module.getCore().getWorldManager();
         this.rolesFolder = new File(module.getFolder(),"roles");
-
-        this.rm = new AssignedRoleManager(module.getCore().getDB());
-        this.mdm = new UserMetaDataManager(module.getCore().getDB());
-        this.pm = new UserPermissionsManager(module.getCore().getDB());
     }
 
     public void initRoleProviders()
