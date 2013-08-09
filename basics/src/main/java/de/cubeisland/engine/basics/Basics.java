@@ -44,7 +44,7 @@ import de.cubeisland.engine.basics.command.moderation.kit.KitCommand;
 import de.cubeisland.engine.basics.command.moderation.kit.KitItem;
 import de.cubeisland.engine.basics.command.moderation.kit.KitItemConverter;
 import de.cubeisland.engine.basics.command.moderation.kit.KitManager;
-import de.cubeisland.engine.basics.command.moderation.kit.KitsGivenManager;
+import de.cubeisland.engine.basics.command.moderation.kit.TableKitsGiven;
 import de.cubeisland.engine.basics.command.moderation.spawnmob.SpawnMobCommand;
 import de.cubeisland.engine.basics.command.teleport.MovementCommands;
 import de.cubeisland.engine.basics.command.teleport.SpawnCommands;
@@ -66,7 +66,6 @@ import de.cubeisland.engine.core.util.convert.Convert;
 public class Basics extends Module
 {
     private BasicsConfiguration config;
-    private KitsGivenManager kitGivenManager;
     private KitManager kitManager;
     private LagTimer lagTimer;
 
@@ -79,6 +78,7 @@ public class Basics extends Module
         db.registerTable(TableBasicsUser.initTable(db));
         db.registerTable(TableIgnorelist.initTable(db));
         db.registerTable(TableMail.initTable(db));
+        db.registerTable(TableKitsGiven.initTable(db));
         final CommandManager cm = this.getCore().getCommandManager();
         final EventManager em = this.getCore().getEventManager();
         this.getLog().trace("{} ms - Basics.Permission", Profiler.getCurrentDelta("basicsEnable", TimeUnit.MILLISECONDS));
@@ -119,7 +119,6 @@ public class Basics extends Module
 
         this.kitManager = new KitManager(this);
         this.kitManager.loadKits();
-        this.kitGivenManager = new KitsGivenManager(db);
         this.getLog().trace("{} ms - Teleport-Commands", Profiler.getCurrentDelta("basicsEnable", TimeUnit.MILLISECONDS));
         //Teleport:
         cm.registerCommands(this, new MovementCommands(this), ReflectedCommand.class);
@@ -144,11 +143,6 @@ public class Basics extends Module
     public BasicsConfiguration getConfiguration()
     {
         return this.config;
-    }
-
-    public KitsGivenManager getKitGivenManager()
-    {
-        return this.kitGivenManager;
     }
 
     public KitManager getKitManager() {
