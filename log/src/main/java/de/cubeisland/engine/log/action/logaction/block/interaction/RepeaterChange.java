@@ -54,11 +54,11 @@ public class RepeaterChange extends BlockActionType
     protected void showLogEntry(User user, LogEntry logEntry, String time, String loc)
     {
         Long oldTicks = (logEntry.getData() >> 2) +1;
-        Integer newTicks = (logEntry.getNewData() >> 2) +1;
+        Integer newTicks = (logEntry.getNewdata() >> 2) +1;
         if (logEntry.hasAttached())
         {
             LogEntry last = logEntry.getAttached().last();
-            newTicks = (last.getNewData() >> 2) +1;
+            newTicks = (last.getNewdata() >> 2) +1;
         }
         if (logEntry.hasAttached() && oldTicks.intValue() == newTicks)
         {
@@ -81,6 +81,6 @@ public class RepeaterChange extends BlockActionType
     @Override
     protected boolean nearTimeFrame(LogEntry logEntry, LogEntry other)
     {
-        return Math.abs(TimeUnit.MILLISECONDS.toMinutes(logEntry.timestamp.getTime() - other.timestamp.getTime())) < 2;
+        return Math.abs(TimeUnit.MILLISECONDS.toMinutes(logEntry.getTimestamp().getTime() - other.getTimestamp().getTime())) < 2;
     }
 }

@@ -23,11 +23,8 @@ import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-import com.avaje.ebean.EbeanServer;
 import com.avaje.ebean.config.MatchingNamingConvention;
-import com.avaje.ebean.config.ServerConfig;
 import com.avaje.ebean.config.TableName;
-import com.jolbox.bonecp.BoneCPDataSource;
 import de.cubeisland.engine.core.Core;
 import de.cubeisland.engine.core.config.Configuration;
 import de.cubeisland.engine.core.storage.database.AbstractPooledDatabase;
@@ -38,6 +35,7 @@ import de.cubeisland.engine.core.util.Version;
 import org.jooq.DSLContext;
 import org.jooq.SQLDialect;
 import org.jooq.impl.DSL;
+import snaq.db.DBPoolDataSource;
 
 public class MySQLDatabase extends AbstractPooledDatabase
 {
@@ -47,9 +45,7 @@ public class MySQLDatabase extends AbstractPooledDatabase
     private static final char STRING_QUOTE = '\'';
     private static String tableprefix;
 
-    private final BoneCPDataSource dataSource;
-    private EbeanServer ebeanServer;
-    private final ServerConfig serverConfig;
+    private final DBPoolDataSource datasource;
 
     private DatabaseSchema schema;
 
@@ -65,24 +61,19 @@ public class MySQLDatabase extends AbstractPooledDatabase
             throw new IllegalStateException(e);
         }
         this.config = config;
-        dataSource = new BoneCPDataSource();
-        dataSource.setJdbcUrl("jdbc:mysql://" + config.host + ":" + config.port + "/" + config.database);
-        dataSource.setUsername(config.user);
-        dataSource.setPassword(config.pass);
-        dataSource.setMinConnectionsPerPartition(5);
-        dataSource.setMaxConnectionsPerPartition(10);
-        dataSource.setPartitionCount(1);
+
+        datasource = new DBPoolDataSource();
+        datasource.setDriverClassName("com.mysql.jdbc.Driver");
+        datasource.setUrl("jdbc:mysql://" + config.host + ":" + config.port + "/" + config.database);
+        datasource.setUser(config.user);
+        datasource.setPassword(config.pass);
+        datasource.setMinPool(5);
+        datasource.setMaxPool(20);
+        datasource.setIdleTimeout(60);
+        datasource.setName("CubeEngine");
 
         this.schema = new DatabaseSchema(config.database);
-
         tableprefix = this.config.tablePrefix;
-        serverConfig = new ServerConfig();
-        serverConfig.setDataSource(dataSource);
-        serverConfig.setName("cubeengine");
-        NamingConvention namingConvention = new NamingConvention();
-        namingConvention.setUseForeignKeyPrefix(false); // Use the column names we declare!
-        serverConfig.setNamingConvention(namingConvention);
-        serverConfig.setRegister(false);
     }
 
     public static MySQLDatabase loadFromConfig(Core core, File file)
@@ -169,12 +160,13 @@ public class MySQLDatabase extends AbstractPooledDatabase
             throw new IllegalStateException("Cannot create table " + table.getName(), ex);
         }
         this.schema.addTable(table);
+        this.core.getLog().debug("Database-Table {} registered!", table.getName());
     }
 
     @Override
     public Connection getConnection() throws SQLException
     {
-        return this.dataSource.getConnection();
+        return this.datasource.getConnection();
     }
 
     @Override
@@ -186,7 +178,7 @@ public class MySQLDatabase extends AbstractPooledDatabase
     @Override
     public DSLContext getDSL()
     {
-        return DSL.using(this.dataSource, SQLDialect.MYSQL);
+        return DSL.using(this.datasource, SQLDialect.MYSQL);
     }
 
     /**

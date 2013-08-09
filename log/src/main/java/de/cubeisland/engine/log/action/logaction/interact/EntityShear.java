@@ -80,9 +80,9 @@ public class EntityShear extends SimpleLogActionType
     public boolean isSimilar(LogEntry logEntry, LogEntry other)
     {
         if (!super.isSimilar(logEntry, other)) return false;
-        return logEntry.causer == other.causer
-            && logEntry.data == other.data
-            && logEntry.world == other.world;
+        return logEntry.getCauser().equals(other.getCauser())
+            && logEntry.getData() == other.getData()
+            && logEntry.getWorld() == other.getWorld();
     }
 
 

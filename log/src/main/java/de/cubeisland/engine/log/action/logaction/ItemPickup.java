@@ -93,8 +93,8 @@ public class ItemPickup extends SimpleLogActionType
     public boolean isSimilar(LogEntry logEntry, LogEntry other)
     {
         if (!super.isSimilar(logEntry, other)) return false;
-        return logEntry.world == other.world
-            && logEntry.causer == other.causer
+        return logEntry.getCauser().equals(other.getCauser())
+            && logEntry.getWorld() == other.getWorld()
             && logEntry.getItemData().equals(other.getItemData());
     }
 

@@ -172,7 +172,7 @@ public abstract class AbstractUserManager implements UserManager
         {
             return user;
         }
-        UserEntity entity = this.database.getDSL().select().from(TABLE_USER).where(TABLE_USER.KEY.eq(UInteger.valueOf(id))).fetchOne().into(TABLE_USER);
+        UserEntity entity = this.database.getDSL().selectFrom(TABLE_USER).where(TABLE_USER.KEY.eq(UInteger.valueOf(id))).fetchOne().into(TABLE_USER);
         if (entity == null)
         {
             return null;
@@ -215,7 +215,7 @@ public abstract class AbstractUserManager implements UserManager
 
     protected synchronized User loadUser(String name)
     {
-        UserEntity entity = this.database.getDSL().select().from(TABLE_USER).where(TABLE_USER.PLAYER.eq(name)).fetchOne().into(TABLE_USER);
+        UserEntity entity = this.database.getDSL().selectFrom(TABLE_USER).where(TABLE_USER.PLAYER.eq(name)).fetchOne();
         if (entity != null)
         {
             User user = new User(entity);

@@ -72,7 +72,7 @@ public class IgnoreCommands
     public boolean checkIgnored(User user, User ignored)
     {
         IgnoreList ignore =
-            this.dsl.select().from(TABLE_IGNORE_LIST).
+            this.dsl.selectFrom(TABLE_IGNORE_LIST).
                 where(TABLE_IGNORE_LIST.KEY.eq(user.getEntity().getKey())).
                 and(TABLE_IGNORE_LIST.IGNORE.eq(ignored.getEntity().getKey())).fetchOneInto(TABLE_IGNORE_LIST);
         return ignore != null;

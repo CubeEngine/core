@@ -66,12 +66,11 @@ public class TableVote extends TableImpl<VoteModel> implements TableCreator<Vote
         connection.prepareStatement("CREATE TABLE IF NOT EXISTS " + this.getName()+ " (\n" +
                                         "`userid` int(10) unsigned NOT NULL,\n" +
                                         "`lastvote` datetime NOT NULL,\n" +
-                                        "`voteamount` smallint(5) unsigned NOT NULL,)\n" +
+                                        "`voteamount` smallint(5) unsigned NOT NULL,\n" +
+                                        "PRIMARY KEY (`userid`)," +
+                                        "FOREIGN KEY `f_user`(`user_id`) REFERENCES " + TABLE_USER.getName() +" (`userid`) ON UPDATE CASCADE ON DELETE CASCADE)\n" +
                                         "ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci\n" +
                                         "COMMENT='1.0.0'").execute();
-        connection.prepareStatement("ALTER TABLE " + this.getName() +
-                                        "\nADD FOREIGN KEY `f_user`(`user_id`) " +
-                                        "REFERENCES " + TABLE_USER.getName() + "(`userid`) ON UPDATE CASCADE ON DELETE CASCADE;");
     }
 
     private static final Version version = new Version(1);

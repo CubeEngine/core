@@ -32,7 +32,7 @@ public class ActionTypeContainer extends LogActionType
     private String name;
     public ActionTypeContainer(String name)
     {
-        this.setID(-1);
+        this.setModel(null);
         this.name = name;
     }
 
@@ -64,5 +64,11 @@ public class ActionTypeContainer extends LogActionType
     public boolean isActive(World world)
     {
         throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public boolean needsModel()
+    {
+        return false;
     }
 }

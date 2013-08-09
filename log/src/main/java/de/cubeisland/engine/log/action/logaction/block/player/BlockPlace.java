@@ -54,7 +54,7 @@ public class BlockPlace extends BlockActionType
     @Override
     protected Set<ActionTypeCategory> getCategories()
     {
-        return new HashSet<ActionTypeCategory>(Arrays.asList(BLOCK, PLAYER));
+        return new HashSet<>(Arrays.asList(BLOCK, PLAYER));
     }
 
     @Override
@@ -91,7 +91,7 @@ public class BlockPlace extends BlockActionType
                 BlockState state = event.getBlock().getRelative(BlockFace.UP).getState();
                 BlockData oldData = BlockData.of(state);
                 ObjectNode json = this.om.createObjectNode();
-                json.put("break-cause", this.getID());
+                json.put("break-cause", this.getModel().getId().longValue());
                 blockBreak.logBlockChange(state.getLocation(),event.getPlayer(),oldData,AIR,json.toString());
             }
         }

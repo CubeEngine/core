@@ -41,14 +41,12 @@ import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 
 import de.cubeisland.engine.core.bukkit.BukkitUtils;
-
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.log.LoggingConfiguration;
 import de.cubeisland.engine.log.action.logaction.ActionTypeContainer;
 import de.cubeisland.engine.log.action.logaction.SimpleLogActionType;
 import de.cubeisland.engine.log.storage.ItemData;
 import de.cubeisland.engine.log.storage.LogEntry;
-
 import gnu.trove.map.hash.TLongObjectHashMap;
 import gnu.trove.map.hash.TObjectIntHashMap;
 
@@ -449,14 +447,14 @@ public class ContainerActionType extends ActionTypeContainer
 
     static boolean isSubActionSimilar(LogEntry logEntry, LogEntry other)
     {
-        if (logEntry.actionType == other.actionType ||
-            ((logEntry.actionType instanceof ItemInsert || logEntry.actionType instanceof  ItemRemove)
-          && (other.actionType instanceof ItemInsert || other.actionType instanceof  ItemRemove)))
+        if (logEntry.getActionType() == other.getActionType() ||
+            ((logEntry.getActionType() instanceof ItemInsert || logEntry.getActionType() instanceof  ItemRemove)
+          && (other.getActionType() instanceof ItemInsert || other.getActionType() instanceof  ItemRemove)))
         {
-            if (logEntry.causer == other.causer
-                && logEntry.world == other.world
-                && logEntry.location.equals(other.location)
-                && (logEntry.block == other.block || logEntry.block.equals(other.block))) // InventoryType
+            if (logEntry.getCauser().equals(other.getCauser())
+                && logEntry.getWorld() == other.getWorld()
+                && logEntry.getVector().equals(other.getVector())
+                && (logEntry.getBlock() == other.getBlock() || logEntry.getBlock().equals(other.getBlock()))) // InventoryType
             {
                 ItemData itemData1 = logEntry.getItemData();
                 ItemData itemData2 = other.getItemData();

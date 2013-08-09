@@ -32,9 +32,9 @@ import static de.cubeisland.engine.core.user.TableUser.TABLE_USER;
 public class UserEntity extends UpdatableRecordImpl<UserEntity>
     implements Record7<UInteger, String, Byte, Timestamp, byte[], Timestamp, String>
 {
-    public UserEntity(org.jooq.Table<UserEntity> table)
+    public UserEntity()
     {
-        super(table);
+        super(TABLE_USER);
     }
 
     /**
@@ -50,6 +50,7 @@ public class UserEntity extends UpdatableRecordImpl<UserEntity>
         this.setLastseen(new Timestamp(System.currentTimeMillis()));
         this.setFirstseen(this.getLastseen());
         this.setPasswd(new byte[0]);
+        this.setNogc(false);
         return this;
     }
 

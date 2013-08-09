@@ -15,66 +15,44 @@
  * You should have received a copy of the GNU General Public License
  * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-package de.cubeisland.engine.basics.storage;
+package de.cubeisland.engine.log.storage;
 
-import java.sql.Timestamp;
-
-import de.cubeisland.engine.core.user.User;
 import org.jooq.Field;
 import org.jooq.Record1;
-import org.jooq.Record3;
-import org.jooq.Row3;
+import org.jooq.Record2;
+import org.jooq.Row2;
 import org.jooq.impl.UpdatableRecordImpl;
 import org.jooq.types.UInteger;
 
-import static de.cubeisland.engine.basics.storage.TableBasicsUser.TABLE_BASIC_USER;
+import static de.cubeisland.engine.log.storage.TableActionTypes.TABLE_ACTION_TYPE;
 
-public class BasicsUserEntity extends UpdatableRecordImpl<BasicsUserEntity> implements Record3<UInteger, Timestamp, Byte>
+public class ActionTypeModel  extends UpdatableRecordImpl<ActionTypeModel> implements Record2<UInteger, String>
 {
-    public BasicsUserEntity()
+    public ActionTypeModel()
     {
-        super(TABLE_BASIC_USER);
+        super(TABLE_ACTION_TYPE);
     }
 
-    public BasicsUserEntity newBasicUser(User user)
+    public ActionTypeModel newActionType(String name)
     {
-        this.setKey(user.getEntity().getKey());
-        this.setGodMode(false);
+        this.setName(name);
         return this;
     }
 
-    public void setGodMode(boolean set)
-    {
-        this.setGodmode((byte)(set ? 1 : 0));
-    }
-
-    public boolean isGodMode()
-    {
-        return this.getGodmode() == 1;
-    }
-
-    public void setKey(UInteger value) {
+    public void setId(UInteger value) {
         setValue(0, value);
     }
 
-    public UInteger getKey() {
+    public UInteger getId() {
         return (UInteger) getValue(0);
     }
 
-    public void setMuted(Timestamp value) {
+    public void setName(String value) {
         setValue(1, value);
     }
 
-    public Timestamp getMuted() {
-        return (Timestamp) getValue(1);
-    }
-
-    public void setGodmode(Byte value) {
-        setValue(2, value);
-    }
-
-    public Byte getGodmode() {
-        return (Byte) getValue(2);
+    public String getName() {
+        return (String) getValue(1);
     }
 
     // -------------------------------------------------------------------------
@@ -87,46 +65,36 @@ public class BasicsUserEntity extends UpdatableRecordImpl<BasicsUserEntity> impl
     }
 
     // -------------------------------------------------------------------------
-    // Record3 type implementation
+    // Record2 type implementation
     // -------------------------------------------------------------------------
 
     @Override
-    public Row3<UInteger, Timestamp, Byte> fieldsRow() {
-        return (Row3) super.fieldsRow();
+    public Row2<UInteger, String> fieldsRow() {
+        return (Row2) super.fieldsRow();
     }
 
     @Override
-    public Row3<UInteger, Timestamp, Byte> valuesRow() {
-        return (Row3) super.valuesRow();
+    public Row2<UInteger, String> valuesRow() {
+        return (Row2) super.valuesRow();
     }
 
     @Override
     public Field<UInteger> field1() {
-        return TABLE_BASIC_USER.KEY;
+        return TABLE_ACTION_TYPE.ID;
     }
 
     @Override
-    public Field<Timestamp> field2() {
-        return TABLE_BASIC_USER.MUTED;
-    }
-
-    @Override
-    public Field<Byte> field3() {
-        return TABLE_BASIC_USER.GODMODE;
+    public Field<String> field2() {
+        return TABLE_ACTION_TYPE.NAME;
     }
 
     @Override
     public UInteger value1() {
-        return getKey();
+        return getId();
     }
 
     @Override
-    public Timestamp value2() {
-        return getMuted();
-    }
-
-    @Override
-    public Byte value3() {
-        return getGodmode();
+    public String value2() {
+        return getName();
     }
 }

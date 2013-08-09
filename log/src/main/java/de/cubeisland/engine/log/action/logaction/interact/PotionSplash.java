@@ -122,7 +122,7 @@ public class PotionSplash extends SimpleLogActionType
     protected void showLogEntry(User user, LogEntry logEntry, String time, String loc)
     {
         String effects;
-        Iterator<JsonNode> it = logEntry.additional.get("effects").elements();
+        Iterator<JsonNode> it = logEntry.getAdditional().get("effects").elements();
         effects = "&6"+it.next().iterator().next().asText();
         while (it.hasNext())
         {
@@ -132,9 +132,9 @@ public class PotionSplash extends SimpleLogActionType
         }
         effects = ChatFormat.parseFormats(effects);
         int amountAffected = 0;
-        if (logEntry.additional.get("amount") != null)
+        if (logEntry.getAdditional().get("amount") != null)
         {
-            amountAffected = logEntry.additional.get("amount").asInt();
+            amountAffected = logEntry.getAdditional().get("amount").asInt();
         }
         user.sendTranslated("%s&2%s&a used a &6splash potion&a &f(%s&f)&a onto &6%d&a entities%s", time, logEntry
             .getCauserUser().getName(), effects, amountAffected, loc);

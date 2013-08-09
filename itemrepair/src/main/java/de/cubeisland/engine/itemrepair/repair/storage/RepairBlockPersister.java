@@ -55,7 +55,7 @@ public class RepairBlockPersister
 
     public Collection<RepairBlockModel> getAll()
     {
-        Collection<RepairBlockModel> all = this.dsl.select().from(TABLE_REPAIR_BLOCK).fetchInto(TABLE_REPAIR_BLOCK);
+        Collection<RepairBlockModel> all = this.dsl.selectFrom(TABLE_REPAIR_BLOCK).fetch();
         for (RepairBlockModel repairBlockModel : all)
         {
             this.models.put(repairBlockModel.getBlock(this.module.getCore().getWorldManager()),repairBlockModel);

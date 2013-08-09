@@ -17,13 +17,13 @@
  */
 package de.cubeisland.engine.log.storage;
 
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.LinkedList;
-import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.CountDownLatch;
@@ -33,16 +33,25 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
 import de.cubeisland.engine.core.command.CommandSender;
-import de.cubeisland.engine.core.storage.StorageException;
 import de.cubeisland.engine.core.storage.database.Database;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.util.Profiler;
+import de.cubeisland.engine.core.util.math.BlockVector3;
 import de.cubeisland.engine.log.Log;
-import gnu.trove.map.hash.THashMap;
+import de.cubeisland.engine.log.action.ActionType;
+import org.jooq.Condition;
+import org.jooq.DSLContext;
+import org.jooq.Query;
+import org.jooq.Result;
+import org.jooq.SelectConditionStep;
+import org.jooq.SelectWhereStep;
+import org.jooq.types.UInteger;
+
+import static de.cubeisland.engine.log.storage.TableActionTypes.TABLE_ACTION_TYPE;
+import static de.cubeisland.engine.log.storage.TableLogEntry.TABLE_LOG_ENTRY;
 
 public class QueryManager
 {
-    private final Database database;
     private final Log module;
 
     private final ExecutorService storeExecutor;
@@ -50,8 +59,8 @@ public class QueryManager
     private final ExecutorService lookupExecutor;
     private final Runnable lookupRunner;
 
-    Queue<QueuedLog> queuedLogs = new ConcurrentLinkedQueue<QueuedLog>();
-    Queue<QueuedSqlParams> queuedLookups = new ConcurrentLinkedQueue<QueuedSqlParams>();
+    Queue<QueuedLog> queuedLogs = new ConcurrentLinkedQueue<>();
+    Queue<QueuedSqlParams> queuedLookups = new ConcurrentLinkedQueue<>();
 
     private int batchSize;
     private Future<?> futureStore = null;
@@ -70,43 +79,15 @@ public class QueryManager
     private String mainTable = "log_entries";
     private String tempTable = "log_entries_temp";
 
+    private DSLContext dsl;
+    private Database database;
+
     public QueryManager(Log module)
     {
         this.database = module.getCore().getDB();
+        this.dsl = this.database.getDSL();
         this.module = module;
         this.batchSize = module.getConfiguration().loggingBatchSize;
- /*
-        try
-        {
-            //TODO DATABASE
-
-            QueryBuilder builder = database.getQueryBuilder();
-            String sql = builder.createTable("log_actiontypes",true).beginFields()
-                .field("id",AttrType.INT,true).autoIncrement()
-                .field("name", AttrType.VARCHAR, 32)
-                .unique("name")
-                .primaryKey("id")
-                .endFields()
-                .engine("innoDB").defaultcharset("utf8")
-                .end().end();
-            this.database.execute(sql);
-            this.mainTable = "log_entries";
-            sql = builder.insert().into("log_actiontypes")
-                         .cols("name")
-                         .end().end();
-            this.database.storeStatement(this.getClass(), "registerAction", sql);
-            sql = builder.deleteFrom("log_actiontypes")
-                         .where().field("name").isEqual().value()
-                         .end().end();
-            this.database.storeStatement(this.getClass(), "unregisterAction", sql);
-            sql = builder.select().wildcard().from("log_actiontypes").end().end();
-            this.database.storeStatement(this.getClass(), "getAllActions", sql);
-            this.createTableWithInsertQuery(builder, this.mainTable);
-        }
-        catch (SQLException ex)
-        {
-            throw new StorageException("Error during initialization of log-tables", ex);
-        }*/
 
         this.storeRunner = new Runnable() {
             @Override
@@ -143,34 +124,7 @@ public class QueryManager
         }, this.module.getConfiguration().cleanUpDelay.toTicks(), this.module.getConfiguration().cleanUpDelay.toTicks());
         this.cleanUpLogs();
     }
-//TODO DATABASE
     /*
-    private void createTableWithInsertQuery(QueryBuilder builder, String table) throws SQLException
-    {
-        String sql = builder.createTable(table, true).beginFields()
-                     .field("id", AttrType.INT, true).autoIncrement()
-                     .field("date", AttrType.DATETIME)
-                     .field("world", AttrType.INT, true, false)
-                     .field("x", AttrType.INT, false, false)
-                     .field("y", AttrType.INT, false, false)
-                     .field("z", AttrType.INT, false, false)
-                     .field("action", AttrType.INT, true)
-                     .field("causer", AttrType.BIGINT, false, false)
-                     .field("block",AttrType.VARCHAR, 255, false)
-            .field("data",AttrType.BIGINT,false,false) // in kill logs this is the killed entity
-            .field("newBlock", AttrType.VARCHAR, 255, false)
-            .field("newData",AttrType.TINYINT, false,false)
-            .field("additionalData",AttrType.VARCHAR,255, false)
-            .foreignKey("world").references("worlds", "key")
-            .foreignKey("action").references("log_actiontypes","id").onDelete("CASCADE")
-            .index("x","y","z","world","date")
-            .index("causer")
-            .index("block")
-            .index("newBlock")
-            .primaryKey("id").endFields()
-            .engine("innoDB").defaultcharset("utf8")
-            .end().end();
-        this.database.execute(sql);
         sql = builder.insert().into(table)
                      .cols("date", "action", "world", "x", "y", "z", "causer",
                            "block", "data", "newBlock", "newData", "additionalData")
@@ -183,7 +137,7 @@ public class QueryManager
      */
     private void optimizeTable(final CommandSender sender)
     {
-        if (true) return;// TODO do this with a separate db-connection
+        //if (true) return;// TODO do test if this locks the server
         try
         {
             this.database.execute("OPTIMIZE TABLE cube_"+ this.mainTable);
@@ -262,134 +216,83 @@ public class QueryManager
 
     private void cleanUpLogs()
     {
-        //TODO DATABASE
-        /*
-        if (true) return;// TODO do this with a separate db-connection
+        // if (true) return;// TODO do this with a separate db-connection
         Profiler.endProfiling("log_cleanUp");
         Profiler.startProfiling("log_cleanUp");
         if (this.module.getConfiguration().cleanUpDeletedWorlds)
         {
             long[] worlds = this.module.getCore().getWorldManager().getAllWorldIds();
-            Long[] values = new Long[worlds.length];
+            final UInteger[] values = new UInteger[worlds.length];
             for (int i = 0 ; i < worlds.length; i++)
             {
-                values[i] = worlds[i];
+                values[i] = UInteger.valueOf(worlds[i]);
             }
-            final String query = this.database.getQueryBuilder().deleteFrom("log_entries").where().field("world").not().in()
-                                      .valuesInBrackets(values).end().end();
             this.module.getCore().getTaskManager().getThreadFactory().newThread(new Runnable()
             {
                 @Override
                 public void run()
                 {
-                    try
-                    {
-                        database.execute(query);
-                        module.getLog().debug("Deleted logs from deleted worlds! {} ms", Profiler.getCurrentDelta("log_cleanUp", TimeUnit.MILLISECONDS));
-                    }
-                    catch (SQLException e)
-                    {
-                        module.getLog().error("Could not clean up deleted world logs!", e);
-                    }
+                    dsl.delete(TABLE_LOG_ENTRY).where(TABLE_LOG_ENTRY.WORLD.notIn(values)).execute();
                 }
             }).start();
         }
         if (this.module.getConfiguration().cleanUpOldLogs)
         {
-            final String query = this.database.getQueryBuilder().deleteFrom("log_entries")
-                              .where().field("date").is(ComponentBuilder.LESS)
-                              .value(new Timestamp(System.currentTimeMillis() - this.module.getConfiguration()
-                                  .cleanUpOldLogsTime.toMillis())).end().end();
             this.module.getCore().getTaskManager().getThreadFactory().newThread(new Runnable()
             {
                 @Override
                 public void run()
                 {
-                    try
-                    {
-                        database.execute(query);
-                        module.getLog().debug("Deleted old logs! {} ms",Profiler.getCurrentDelta("log_cleanUp", TimeUnit.MILLISECONDS));
-                    }
-                    catch (SQLException e)
-                    {
-                        module.getLog().error("Could not clean up old logs!", e);
-                    }
+                    dsl.delete(TABLE_LOG_ENTRY).where(
+                        TABLE_LOG_ENTRY.DATE.le(new Timestamp(System.currentTimeMillis() - module.getConfiguration().cleanUpOldLogsTime.toMillis()))).execute();
                 }
             }).start();
         }
-        */
     }
 
     private void doQueryLookup()
     {
-        try
+        if (queuedLookups.isEmpty())
         {
-            if (queuedLookups.isEmpty())
-            {
-                return;
-            }
-            QueuedSqlParams poll = this.queuedLookups.poll();
-            final QueryAction queryAction = poll.action;
-            final Lookup lookup = poll.lookup;
-            final User user = poll.user;
-            PreparedStatement stmt = this.database.prepareStatement(poll.sql);
-            for (int i = 0 ; i <  poll.sqlData.size() ; ++i)
-            {
-                stmt.setObject(i+1, poll.sqlData.get(i));
-            }
-            ResultSet resultSet = stmt.executeQuery();
-            QueryResults results = new QueryResults(lookup);
-            while (resultSet.next())
-            {
-                long entryID = resultSet.getLong("id");
-                Timestamp timestamp = resultSet.getTimestamp("date");
-                int action = resultSet.getInt("action");
-                long worldId = resultSet.getLong("world");
-                int x = resultSet.getInt("x");
-                int y = resultSet.getInt("y");
-                int z = resultSet.getInt("z");
-                long causer = resultSet.getLong("causer");
-                String block = resultSet.getString("block");
-                long data = resultSet.getLong("data");
-                String newBlock = resultSet.getString("newBlock");
-                int newData = resultSet.getInt("newData");
-                String additionalData = resultSet.getString("additionalData");
-                LogEntry logEntry = new LogEntry(module,entryID,timestamp,action,worldId,x,y,z,causer,block,data,newBlock,newData,additionalData);
-                results.addResult(logEntry);
-            }
-            lookup.setQueryResults(results);
-
-            if (user != null && user.isOnline())
-            {
-                module.getCore().getTaskManager().runTask(module, new Runnable()
-                {
-                    @Override
-                    public void run()
-                    {
-                        switch (queryAction)
-                        {
-                            case SHOW:
-                                lookup.show(user);
-                                   return;
-                            case ROLLBACK:
-                                lookup.rollback(user, false);
-                                return;
-                            case ROLLBACK_PREVIEW:
-                                lookup.rollback(user, true);
-                                return;
-                            case REDO:
-                                user.sendMessage("REDO is not finished yet"); // TODO
-                                return;
-                            case REDO_PREVIEW:
-                                user.sendMessage("REDO_PREVIEW is not finished yet"); // TODO
-                        }
-                    }
-                });
-            }
+            return;
         }
-        catch (SQLException e)
+        QueuedSqlParams poll = this.queuedLookups.poll();
+        final QueryAction queryAction = poll.action;
+        final Lookup lookup = poll.lookup;
+        final User user = poll.user;
+        Result<LogEntry> entries = poll.query.fetch();
+        QueryResults results = new QueryResults(lookup);
+        for (LogEntry entry : entries)
         {
-            throw new StorageException("Error while getting logs from database!", e);
+            results.addResult(entry.init(module));
+        }
+        lookup.setQueryResults(results);
+        if (user != null && user.isOnline())
+        {
+            module.getCore().getTaskManager().runTask(module, new Runnable()
+            {
+                @Override
+                public void run()
+                {
+                    switch (queryAction)
+                    {
+                        case SHOW:
+                            lookup.show(user);
+                               return;
+                        case ROLLBACK:
+                            lookup.rollback(user, false);
+                            return;
+                        case ROLLBACK_PREVIEW:
+                            lookup.rollback(user, true);
+                            return;
+                        case REDO:
+                            user.sendMessage("REDO is not finished yet"); // TODO
+                            return;
+                        case REDO_PREVIEW:
+                            user.sendMessage("REDO_PREVIEW is not finished yet"); // TODO
+                    }
+                }
+            });
         }
         if (!queuedLookups.isEmpty())
         {
@@ -417,25 +320,14 @@ public class QueryManager
             }
             Profiler.startProfiling("logging");
             int logSize = logs.size();
-            this.database.getConnection().setAutoCommit(false);
-            PreparedStatement stmt = this.database.getStoredStatement(this.getClass(), "storeLog");
-            try
+            // --- SQL ---
+            Collection<Query> inserts = new ArrayList<>();
+            for (QueuedLog log : logs)
             {
-                for (QueuedLog log : logs)
-                {
-                    log.addDataToBatch(stmt);
-                }
-                stmt.executeBatch();
-                this.database.getConnection().commit();
+                inserts.add(log.createInsert(dsl));
             }
-            catch (SQLException ex)
-            {
-                throw new StorageException("Error while storing log-entries", ex, stmt);
-            }
-            finally
-            {
-                this.database.getConnection().setAutoCommit(true);
-            }
+            this.dsl.batch(inserts).execute();
+            // --- --- ---
             long nanos = Profiler.endProfiling("logging");
             timeSpend += nanos;
             logsLogged += logSize;
@@ -505,70 +397,51 @@ public class QueryManager
 
     public void prepareLookupQuery(final Lookup lookup, final User user, QueryAction action)
     {
-        //TODO DATABASE
-        /*
         final QueryParameter params = lookup.getQueryParameter();
-        SelectBuilder selectBuilder =
-            this.database.getQueryBuilder().select("id","date","action",
-                                                   "world","x","y","z","causer",
-                                                   "block","data","newBlock","newData",
-                                                   "additionalData")
-                         .from("log_entries").where();
+        SelectWhereStep<LogEntry> whereStep = this.dsl.selectFrom(TABLE_LOG_ENTRY);
         boolean needAnd = false;
-        ArrayList<Object> dataToInsert = new ArrayList<Object>();
+        ArrayList<Condition> conditions = new ArrayList<>();
+
+
+        ArrayList<Object> dataToInsert = new ArrayList<>();
         if (!params.actions.isEmpty())
         {
-            selectBuilder.beginSub().field("action");
             boolean include = params.includeActions();
-            if (!include)
+            Collection<UInteger> actions = new HashSet<>();
+            for (Entry<ActionType, Boolean> entry : params.actions.entrySet())
             {
-                selectBuilder.not();
-            }
-            selectBuilder.in().valuesInBrackets(params.actions.size()).endSub();
-            for (Entry<ActionType,Boolean> type : params.actions.entrySet())
-            {
-                if (!include || type.getValue()) // all exclude OR only include
+                if (!include || entry.getValue())
                 {
-                    dataToInsert.add(type.getKey().getID());
+                    actions.add(entry.getKey().getModel().getId());
                 }
             }
-            needAnd = true;
+            if (!include)
+            {
+                conditions.add(TABLE_LOG_ENTRY.ACTION.notIn(actions));
+            }
+            else
+            {
+                conditions.add(TABLE_LOG_ENTRY.ACTION.in(actions));
+            }
         }
         if (params.hasTime()) // has since / before / from-to
         {
-            if (needAnd)
+            if (params.from_since == null) // before
             {
-                selectBuilder.and();
+                conditions.add(TABLE_LOG_ENTRY.DATE.le(new Timestamp(params.to_before)));
             }
-            selectBuilder.beginSub();
-            Long from_since = params.from_since;
-            Long to_before = params.to_before;
-            if (from_since == null) // before
+            else if (params.to_before == null) // since
             {
-                selectBuilder.field("date").is(ComponentBuilder.LESS).value();
-                dataToInsert.add(new Timestamp(to_before));
-            }
-            else if (to_before == null) // since
-            {
-                selectBuilder.field("date").is(ComponentBuilder.GREATER).value();
-                dataToInsert.add(new Timestamp(from_since));
+                conditions.add(TABLE_LOG_ENTRY.DATE.greaterThan(new Timestamp(params.from_since)));
             }
             else // from - to
             {
-                selectBuilder.field("date").between();
-                dataToInsert.add(new Timestamp(from_since));
-                dataToInsert.add(new Timestamp(to_before));
+                conditions.add(TABLE_LOG_ENTRY.DATE.between(new Timestamp(params.from_since), new Timestamp(params.to_before)));
             }
-            selectBuilder.endSub();
-            needAnd = true;
         }
         if (params.worldID != null) // has world
         {
-            if (needAnd)
-            {
-                selectBuilder.and();
-            }
-            selectBuilder.beginSub().field("world").isEqual().value(params.worldID);
+            conditions.add(TABLE_LOG_ENTRY.WORLD.eq(UInteger.valueOf(params.worldID)));
             if (params.location1 != null)
             {
                 BlockVector3 loc1 = params.location1;
@@ -578,169 +451,124 @@ public class QueryManager
                     boolean locX = loc1.x < loc2.x;
                     boolean locY = loc1.y < loc2.y;
                     boolean locZ = loc1.z < loc2.z;
-                    selectBuilder.and().beginSub()
-                        .field("x").between(locX ? loc1.x : loc2.x, locX ? loc2.x : loc1.x)
-                        .and().field("y").between(locY ? loc1.y : loc2.y, locY ? loc2.y : loc1.y)
-                        .and().field("z").between(locZ ? loc1.z : loc2.z, locZ ? loc2.z : loc1.z)
-                        .endSub();
+                    conditions.add(TABLE_LOG_ENTRY.X.between(locX ? loc1.x : loc2.x, locX ? loc2.x : loc1.x));
+                    conditions.add(TABLE_LOG_ENTRY.Y.between(locY ? loc1.y : loc2.y, locY ? loc2.y : loc1.y));
+                    conditions.add(TABLE_LOG_ENTRY.Z.between(locZ ? loc1.z : loc2.z, locZ ? loc2.z : loc1.z));
                 }
                 else if (params.radius == null)// has single location
                 {
-                    selectBuilder.and().beginSub()
-                         .field("x").isEqual().value(loc1.x)
-                         .and().field("y").isEqual().value(loc1.y)
-                         .and().field("z").isEqual().value(loc1.z)
-                         .endSub();
+                    conditions.add(TABLE_LOG_ENTRY.X.eq(loc1.x));
+                    conditions.add(TABLE_LOG_ENTRY.Y.eq(loc1.y));
+                    conditions.add(TABLE_LOG_ENTRY.Z.eq(loc1.z));
                 }
                 else // has radius
                 {
-                    selectBuilder.and().beginSub()
-                                 .field("x").between(loc1.x-params.radius,loc1.x+params.radius)
-                                 .and().field("y").between(loc1.y-params.radius,loc1.y+params.radius)
-                                 .and().field("z").between(loc1.z-params.radius,loc1.z+params.radius)
-                                 .endSub();
+                    conditions.add(TABLE_LOG_ENTRY.X.between(loc1.x-params.radius,loc1.x+params.radius));
+                    conditions.add(TABLE_LOG_ENTRY.Y.between(loc1.y-params.radius,loc1.y+params.radius));
+                    conditions.add(TABLE_LOG_ENTRY.Z.between(loc1.z-params.radius,loc1.z+params.radius));
                 }
             }
-            selectBuilder.endSub();
-            needAnd = true;
         }
         if (!params.blocks.isEmpty())
         {
-            if (needAnd)
-            {
-                selectBuilder.and();
-            }
-            selectBuilder.beginSub();
             // make sure there is data for blocks first
-            selectBuilder.not().beginSub().field("block").is(IS).value(null).or()
-                         .field("data").is(IS).value(null).or()
-                         .field("newBlock").is(IS).value(null).or()
-                         .field("newData").is(IS).value(null).endSub();
+            conditions.add(TABLE_LOG_ENTRY.BLOCK.isNotNull().
+                        or(TABLE_LOG_ENTRY.DATA.isNotNull()).
+                        or(TABLE_LOG_ENTRY.NEWBLOCK.isNotNull()).
+                        or(TABLE_LOG_ENTRY.NEWDATA.isNotNull()));
             // Start filter blocks:
-            selectBuilder.and();
             boolean include = params.includeBlocks();
-            if (!include)
-            {
-                selectBuilder.not();
-            }
-            selectBuilder.beginSub();
-            boolean or = false;
+            Condition blockCondition = null;
             for (Entry<ImmutableBlockData,Boolean> data : params.blocks.entrySet())
             {
                 if (!include || data.getValue()) // all exclude OR only include
                 {
-                    if (or)
+                    String mat = data.getKey().material.name();
+                    Condition condition = TABLE_LOG_ENTRY.BLOCK.eq(mat).or(TABLE_LOG_ENTRY.NEWBLOCK.eq(mat));
+                    Byte metadata = data.getKey().data;
+                    if (metadata != null)
                     {
-                        selectBuilder.or();
+                        condition = condition.and(TABLE_LOG_ENTRY.DATA.eq(metadata.longValue()).or(TABLE_LOG_ENTRY.NEWDATA.eq(metadata)));
                     }
-                    selectBuilder.beginSub();
-                    selectBuilder.field("block").isEqual().value(data.getKey().material.name()).or().field("newBlock").isEqual().value(data.getKey().material.name());
-                    if (data.getKey().data != null)
+                    if (!include)
                     {
-                        selectBuilder.and().beginSub().field("data").isEqual().value(data.getKey().data).or().field("newData").isEqual().value(data.getKey().data).endSub();
+                        condition = condition.not();
                     }
-                    selectBuilder.endSub();
-                    or = true;
+                    if (blockCondition == null)
+                    {
+                        blockCondition = condition;
+                    }
+                    else
+                    {
+                        blockCondition = blockCondition.or(condition);
+                    }
                 }
             }
-            selectBuilder.endSub().endSub();
-            needAnd = true;
+            if (blockCondition != null)
+            {
+                conditions.add(blockCondition);
+            }
         }
         if (!params.users.isEmpty())
         {
-            if (needAnd)
-            {
-                selectBuilder.and();
-            }
             // Start filter users:
             boolean include = params.includeUsers();
-            if (!include)
-            {
-                selectBuilder.not();
-            }
-            selectBuilder.beginSub();
-            boolean or = false;
+            Collection<Long> users = new HashSet<>();
             for (Entry<Long,Boolean> data : params.users.entrySet())
             {
                 if (!include || data.getValue()) // all exclude OR only include
                 {
-                    if (or)
-                    {
-                        selectBuilder.or();
-                    }
-                    selectBuilder.field("causer").isEqual().value(data.getKey());
-                    or = true;
+                    users.add(data.getKey());
                 }
             }
-            selectBuilder.endSub();
-            needAnd = true;
+            if (include)
+            {
+                conditions.add(TABLE_LOG_ENTRY.CAUSER.in(users));
+            }
+            else
+            {
+                conditions.add(TABLE_LOG_ENTRY.CAUSER.notIn(users));
+            }
         }
         // TODO finish queryParams
-        String sql = selectBuilder.end().end();
-        this.module.getLog().debug("{}: Lookup queued!", user.getName());
-        this.queuedLookups.offer(new QueuedSqlParams(lookup,user,sql,dataToInsert, action));
+
+        SelectConditionStep<LogEntry> query = whereStep.where(conditions);
+        this.module.getLog().debug("{}: Select Query queued!", user.getName());
+        this.queuedLookups.offer(new QueuedSqlParams(lookup,user,query, action));
         if (this.futureLookup == null || this.futureLookup.isDone())
         {
             this.futureLookup = lookupExecutor.submit(lookupRunner);
         }
-        */
     }
 
-    public Map<String,Long> getActionTypesFromDatabase()
+    public Collection<ActionTypeModel> getActionTypesFromDatabase()
     {
-        try
-        {
-            Map<String,Long> map = new THashMap<String, Long>();
-            ResultSet resultSet = this.database.preparedQuery(this.getClass(),"getAllActions");
-            while (resultSet.next())
-            {
-                map.put(resultSet.getString("name"),resultSet.getLong("id"));
-            }
-            return map;
-        }
-        catch (SQLException e)
-        {
-            throw new StorageException("Could not get actionTypes from db!",e,this.database.getStoredStatement(this.getClass(), "getAllActions"));
-        }
+        return this.dsl.selectFrom(TABLE_ACTION_TYPE).fetch();
     }
 
-    public long registerActionType(String name)
+    public ActionTypeModel registerActionType(String name)
     {
-        try
-        {
-            return (Long)this.database.getLastInsertedId(this.getClass(),"registerAction",name);
-        }
-        catch (SQLException e)
-        {
-            throw new StorageException("Could not get register ActionType!",e,this.database.getStoredStatement(this.getClass(), "registerAction"));
-        }
+        ActionTypeModel actionTypeModel = this.dsl.newRecord(TABLE_ACTION_TYPE).newActionType(name);
+        actionTypeModel.insert();
+        return actionTypeModel;
     }
 
     public void unregisterActionType(String name)
     {
-        try
-        {
-           this.database.preparedExecute(this.getClass(),"unregisterAction",name);
-        }
-        catch (SQLException e)
-        {
-            throw new StorageException("Could not get unregister ActionType!",e,this.database.getStoredStatement(this.getClass(), "unregisterAction"));
-        }
+        this.dsl.delete(TABLE_ACTION_TYPE).where(TABLE_ACTION_TYPE.NAME.eq(name)).execute();
     }
 
     public static class QueuedSqlParams
     {
         public final Lookup lookup;
-        public final String sql;
-        public final ArrayList sqlData;
         private final User user;
         public final QueryAction action;
+        public final SelectConditionStep<LogEntry> query;
 
-        public QueuedSqlParams(Lookup lookup, User user, String sql, ArrayList sqlData, QueryAction action)
+        public QueuedSqlParams(Lookup lookup, User user, SelectConditionStep<LogEntry> query, QueryAction action)
         {
             this.lookup = lookup;
-            this.sql = sql;
-            this.sqlData = sqlData;
+            this.query = query;
             this.user = user;
             this.action = action;
         }

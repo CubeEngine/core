@@ -87,9 +87,9 @@ public class VehicleExit extends SimpleLogActionType
     public boolean isSimilar(LogEntry logEntry, LogEntry other)
     {
         if (!super.isSimilar(logEntry, other)) return false;
-        return logEntry.world == other.world
-            && logEntry.causer == other.causer
-            && logEntry.data == other.data;
+        return logEntry.getWorld() == other.getWorld()
+            && logEntry.getCauser().equals(other.getCauser())
+            && logEntry.getData() == other.getData();
     }
 
     @Override

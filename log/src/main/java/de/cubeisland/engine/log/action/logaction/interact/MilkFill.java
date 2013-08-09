@@ -58,8 +58,8 @@ public class MilkFill extends SimpleLogActionType
     public boolean isSimilar(LogEntry logEntry, LogEntry other)
     {
         if (!super.isSimilar(logEntry, other)) return false;
-        return logEntry.causer == other.causer
-            && logEntry.world == other.world;
+        return logEntry.getCauser().equals(other.getCauser())
+            && logEntry.getWorld() == other.getWorld();
     }
 
     @Override

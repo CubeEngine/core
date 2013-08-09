@@ -91,8 +91,8 @@ public class PlayerCommand extends SimpleLogActionType
     public boolean isSimilar(LogEntry logEntry, LogEntry other)
     {
         if (!super.isSimilar(logEntry, other)) return false;
-        return logEntry.causer == other.causer
-            && logEntry.additional.iterator().next().asText().equals(other.additional.iterator().next().asText());
+        return logEntry.getCauser().equals(other.getCauser())
+            && logEntry.getAdditional().iterator().next().asText().equals(other.getAdditional().iterator().next().asText());
     }
 
 

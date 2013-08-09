@@ -114,4 +114,10 @@ public class TableUser extends TableImpl<UserEntity> implements TableCreator<Use
     {
         return Arrays.asList(PRIMARY_KEY, UNIQUE_PLAYER);
     }
+
+    @Override
+    public Class<UserEntity> getRecordType()
+    {
+        return UserEntity.class;
+    }
 }

@@ -52,7 +52,7 @@ public class BukkitWorldManager extends AbstractWorldManager
             public void run()
             {
                 DSLContext dsl = database.getDSL();
-                Result<WorldEntity> worldEntities = dsl.select().from(TABLE_WORLD).fetchInto(TABLE_WORLD);
+                Result<WorldEntity> worldEntities = dsl.selectFrom(TABLE_WORLD).fetch();
                 List<World> loadedWorlds = server.getWorlds();
                 for (WorldEntity entity : worldEntities)
                 {

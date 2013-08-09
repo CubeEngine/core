@@ -119,11 +119,6 @@
       <artifactId>slf4j-api</artifactId>
       <version>1.7.5</version>
     </dependency>
-    <dependency>
-      <groupId>com.jolbox</groupId>
-      <artifactId>bonecp</artifactId>
-      <version>0.8.0-rc1</version>
-    </dependency>
 
     <!-- Test dependencies -->
     <dependency>
@@ -147,6 +142,11 @@
       <groupId>org.jooq</groupId>
       <artifactId>jooq-codegen</artifactId>
       <version>3.0.0-RC3</version>
+    </dependency>
+    <dependency>
+      <groupId>net.snaq</groupId>
+      <artifactId>dbpool</artifactId>
+      <version>5.1</version>
     </dependency>
   </dependencies>
 

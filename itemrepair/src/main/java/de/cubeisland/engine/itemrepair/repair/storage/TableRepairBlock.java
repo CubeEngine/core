@@ -36,7 +36,6 @@ import org.jooq.impl.SQLDataType;
 import org.jooq.impl.TableImpl;
 import org.jooq.types.UInteger;
 
-import static de.cubeisland.engine.core.user.TableUser.TABLE_USER;
 import static de.cubeisland.engine.core.world.TableWorld.TABLE_WORLD;
 
 public class TableRepairBlock extends TableImpl<RepairBlockModel> implements TableCreator<RepairBlockModel>
@@ -71,12 +70,10 @@ public class TableRepairBlock extends TableImpl<RepairBlockModel> implements Tab
                                         "`z` int(11) DEFAULT NULL,\n" +
                                         "`type` varchar(64) DEFAULT NULL,\n" +
                                         "PRIMARY KEY (`id`),\n" +
-                                        "UNIQUE KEY `loc` (`world`,`x`,`y`,`z`))\n" +
+                                        "UNIQUE KEY `loc` (`world`,`x`,`y`,`z`),\n" +
+                                        "FOREIGN KEY `f_world`(`world`) REFERENCES " + TABLE_WORLD.getName() + "(`key`) ON UPDATE CASCADE ON DELETE CASCADE)\n" +
                                         "ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci\n" +
                                         "COMMENT='1.0.0'").execute();
-        connection.prepareStatement("ALTER TABLE " + this.getName() +
-                                        "\nADD FOREIGN KEY `f_user`(`user_id`) " +
-                                        "REFERENCES " + TABLE_USER.getName() + "(`key`) ON UPDATE CASCADE ON DELETE CASCADE;");
     }
 
     private static final Version version = new Version(1);

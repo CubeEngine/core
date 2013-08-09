@@ -51,7 +51,7 @@ public class MarketSignFactory
         TLongHashSet usedItemKeys = new TLongHashSet();
         for (SignMarketBlockModel blockModel : this.signMarketBlockManager.getLoadedModels())
         {
-            SignMarketItemModel itemModel = this.signMarketItemManager.getInfoModel(blockModel.getKey().longValue());
+            SignMarketItemModel itemModel = this.signMarketItemManager.getInfoModel(blockModel.getItemkey().longValue());
             if (itemModel == null)
             {
                 this.module.getLog().warn("Inconsistent Data! BlockInfo without Marketsigninfo!");
@@ -130,7 +130,7 @@ public class MarketSignFactory
 
     public void syncAndSaveSign(MarketSign marketSign)
     {
-        if (marketSign.getItemInfo().getKey().longValue() == 0) // de-synced sign
+        if (marketSign.getItemInfo().getKey().longValue() == 0 || marketSign.getItemInfo().getReferenced().size() == 1) // de-synced sign OR possibly sync-able sign
         {
             for (MarketSign sign : this.marketSigns.values())
             {

@@ -55,11 +55,11 @@ public class NoteBlockChange extends BlockActionType
     protected void showLogEntry(User user, LogEntry logEntry, String time, String loc)
     {
         Long oldClicks = logEntry.getData();
-        Integer newClicks = logEntry.getNewData();
+        Integer newClicks = logEntry.getNewdata().intValue();
         if (logEntry.hasAttached())
         {
             LogEntry last = logEntry.getAttached().last();
-            newClicks = last.getNewData();
+            newClicks = last.getNewdata().intValue();
         }
         if (oldClicks.intValue() == newClicks)
         {
@@ -82,6 +82,6 @@ public class NoteBlockChange extends BlockActionType
     @Override
     protected boolean nearTimeFrame(LogEntry logEntry, LogEntry other)
     {
-        return Math.abs(TimeUnit.MILLISECONDS.toMinutes(logEntry.timestamp.getTime() - other.timestamp.getTime())) < 2;
+        return Math.abs(TimeUnit.MILLISECONDS.toMinutes(logEntry.getTimestamp().getTime() - other.getTimestamp().getTime())) < 2;
     }
 }

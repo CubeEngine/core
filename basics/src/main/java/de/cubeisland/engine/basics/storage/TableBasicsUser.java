@@ -69,11 +69,10 @@ public class TableBasicsUser extends TableImpl<BasicsUserEntity> implements Tabl
                                         "`key` int(10) unsigned NOT NULL,\n" +
                                         "`muted` timestamp NULL DEFAULT NULL,\n" +
                                         "`godMode` tinyint(1) NOT NULL,\n" +
-                                        "PRIMARY KEY (`key`))\n" +
+                                        "PRIMARY KEY (`key`)," +
+                                        "FOREIGN KEY f_user (`key`) REFERENCES " + TABLE_USER.getName() + " (`key`) ON UPDATE CASCADE ON DELETE CASCADE)\n" +
                                         "ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci\n" +
                                         "COMMENT='1.0.0'").execute();
-        connection.prepareStatement("ALTER TABLE " + this.getName() +
-                                        "\nADD FOREIGN KEY f_user (`key`) REFERENCES `cube_user` (`key`) ON UPDATE CASCADE ON DELETE CASCADE;");
     }
 
     private static final Version version = new Version(1);

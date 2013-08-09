@@ -43,7 +43,7 @@ public class CraftItem extends SimpleLogActionType
     @Override
     protected Set<ActionTypeCategory> getCategories()
     {
-        return new HashSet<ActionTypeCategory>(Arrays.asList(PLAYER, ITEM));
+        return new HashSet<>(Arrays.asList(PLAYER, ITEM));
     }
 
     @Override
@@ -79,8 +79,8 @@ public class CraftItem extends SimpleLogActionType
     public boolean isSimilar(LogEntry logEntry, LogEntry other)
     {
         if (!super.isSimilar(logEntry, other)) return false;
-        return logEntry.causer == other.causer
-            && logEntry.world == other.world
+        return logEntry.getCauser().equals(logEntry.getCauser())
+            && logEntry.getWorld() == other.getWorld()
             && logEntry.getItemData().equals(other.getItemData()); // ignoring amount
     }
 

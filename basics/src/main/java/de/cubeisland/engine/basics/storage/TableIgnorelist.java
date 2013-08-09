@@ -66,14 +66,13 @@ public class TableIgnorelist extends TableImpl<IgnoreList> implements TableCreat
     public void createTable(Connection connection) throws SQLException
     {
         connection.prepareStatement("CREATE TABLE IF NOT EXISTS " + this.getName()+ " (\n" +
-                                        "  `key` int(10) unsigned NOT NULL,\n" +
-                                        "  `ignore` int(10) unsigned NOT NULL,\n" +
-                                        "  PRIMARY KEY (`key`,`ignore`))\n" +
+                                        "`key` int(10) unsigned NOT NULL,\n" +
+                                        "`ignore` int(10) unsigned NOT NULL,\n" +
+                                        "PRIMARY KEY (`key`,`ignore`)," +
+                                        "FOREIGN KEY f_user (`key`) REFERENCES `cube_user` (`key`) ON UPDATE CASCADE ON DELETE CASCADE," +
+                                        "FOREIGN KEY f_ignore (`ignore`) REFERENCES " +TABLE_USER.getName() +" (`key`) ON UPDATE CASCADE ON DELETE CASCADE)\n" +
                                         "ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci\n" +
                                         "COMMENT='1.0.0'").execute();
-        connection.prepareStatement("ALTER TABLE " + this.getName() +
-                                        "\nADD FOREIGN KEY f_user (`key`) REFERENCES `cube_user` (`key`) ON UPDATE CASCADE ON DELETE CASCADE," +
-                                        "\nADD FOREIGN KEY f_ignore (`ignore`) REFERENCES `cube_user` (`key`) ON UPDATE CASCADE ON DELETE CASCADE");
     }
 
     private static final Version version = new Version(1);

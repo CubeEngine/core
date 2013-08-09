@@ -66,9 +66,9 @@ public class NaturalSpawn extends SimpleLogActionType
     public boolean isSimilar(LogEntry logEntry, LogEntry other)
     {
         if (!super.isSimilar(logEntry, other)) return false;
-        return logEntry.causer == other.causer
-            && logEntry.world == other.world
-            && logEntry.location.equals(other.location);
+        return logEntry.getCauser().equals(other.getCauser())
+            && logEntry.getWorld() == other.getWorld()
+            && logEntry.getVector().equals(other.getVector());
     }
 
 

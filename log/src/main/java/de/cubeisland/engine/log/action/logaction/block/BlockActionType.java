@@ -227,27 +227,27 @@ public abstract class BlockActionType extends LogActionType
     public boolean isSimilar(LogEntry logEntry, LogEntry other)
     {
         if (!super.isSimilar(logEntry, other)) return false;
-        if ((logEntry.newBlock == other.newBlock || logEntry.newBlock.equals(other.newBlock))
-            && logEntry.world == other.world
-            && logEntry.causer == other.causer
-            && logEntry.additional == other.additional) // additional
+        if ((logEntry.getNewblock() == other.getNewblock() || logEntry.getNewblock().equals(other.getNewblock()))
+            && logEntry.getWorld() == other.getWorld()
+            && logEntry.getCauser().equals(other.getCauser())
+            && logEntry.getAdditional() == other.getAdditional()) // additional
         {
-            if (logEntry.block.equals(other.block))
+            if (logEntry.getBlock().equals(other.getBlock()))
             {
                 return nearTimeFrame(logEntry,other);
             }
             else
             {
-                if (logEntry.block.equals("LAVA") || logEntry.block.equals("STATIONARY_LAVA"))
+                if (logEntry.getBlock().equals("LAVA") || logEntry.getBlock().equals("STATIONARY_LAVA"))
                 {
-                    if (other.block.equals("LAVA") || other.block.equals("STATIONARY_LAVA"))
+                    if (other.getBlock().equals("LAVA") || other.getBlock().equals("STATIONARY_LAVA"))
                     {
                         return nearTimeFrame(logEntry,other);
                     }
                 }
-                else if (logEntry.block.equals("WATER") || logEntry.block.equals("STATIONARY_WATER"))
+                else if (logEntry.getBlock().equals("WATER") || logEntry.getBlock().equals("STATIONARY_WATER"))
                 {
-                    if (other.block.equals("WATER") || other.block.equals("STATIONARY_WATER"))
+                    if (other.getBlock().equals("WATER") || other.getBlock().equals("STATIONARY_WATER"))
                     {
                         return nearTimeFrame(logEntry,other);
                     }
@@ -259,8 +259,8 @@ public abstract class BlockActionType extends LogActionType
 
     protected boolean nearTimeFrame(LogEntry logEntry, LogEntry other)
     {
-        return logEntry.causer <= 0 ||
-            Math.abs(TimeUnit.MILLISECONDS.toSeconds(logEntry.timestamp.getTime() - other.timestamp.getTime())) < 5;
+        return logEntry.getCauser() <= 0 ||
+            Math.abs(TimeUnit.MILLISECONDS.toSeconds(logEntry.getTimestamp().getTime() - other.getTimestamp().getTime())) < 5;
     }
 
     @Override

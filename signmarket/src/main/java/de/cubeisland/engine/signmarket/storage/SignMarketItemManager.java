@@ -41,7 +41,7 @@ public class SignMarketItemManager
     public void load()
     {
         this.itemInfoModels = new TLongObjectHashMap<>();
-        for (SignMarketItemModel model : this.dsl.select().from(TABLE_SIGN_ITEM).fetchInto(TABLE_SIGN_ITEM))
+        for (SignMarketItemModel model : this.dsl.selectFrom(TABLE_SIGN_ITEM).fetch())
         {
             this.itemInfoModels.put(model.getKey().longValue(), model);
         }

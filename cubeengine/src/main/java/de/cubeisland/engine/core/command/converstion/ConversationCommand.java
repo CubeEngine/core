@@ -66,7 +66,7 @@ public abstract class ConversationCommand extends CubeCommand implements Listene
         User user = this.getModule().getCore().getUserManager().getExactUser(event.getPlayer().getName());
         if (this.hasUser(user))
         {
-            user.sendMessage(ChatFormat.parseFormats("&5[&fChatCommand&5]&f ") + String.format(event.getFormat(), event.getPlayer().getDisplayName(), event.getMessage()));
+            user.sendMessage(ChatFormat.parseFormats("&5[&fChatCommand&5]&f ") + event.getMessage());
             this.execute(event.getPlayer(), "", StringUtils.explode(" ", event.getMessage()));
             event.setCancelled(true);
         }

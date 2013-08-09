@@ -73,9 +73,9 @@ public class EntityDye extends SimpleLogActionType
     public boolean isSimilar(LogEntry logEntry, LogEntry other)
     {
         if (!super.isSimilar(logEntry, other)) return false;
-        return logEntry.causer == other.causer
-            && logEntry.world == other.world
-            && logEntry.data == other.data; //same entity
+        return logEntry.getCauser().equals(other.getCauser())
+            && logEntry.getWorld() == other.getWorld()
+            && logEntry.getData() == other.getData(); //same entity
     }
 
 

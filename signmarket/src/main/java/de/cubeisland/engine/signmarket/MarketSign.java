@@ -584,15 +584,15 @@ public class MarketSign
         {
             if (!this.hasDemand() && this.hasInfiniteSize())
             {
-                user.sendTranslated("&3In stock: &6%d&f/&6Infinite", this.itemInfo.getStock());
+                user.sendTranslated("&3In stock: &6%d&f/&6Infinite", this.getStock());
             }
             else if (this.getItem() == null || this.getAmount() == 0)
             {
-                user.sendTranslated("&3In stock: &6%d&f/&cUnkown", this.itemInfo.getStock());
+                user.sendTranslated("&3In stock: &6%d&f/&cUnkown", this.getStock());
             }
             else
             {
-                user.sendTranslated("&3In stock: &6%d&f/&6%d", this.itemInfo.getStock(), this.getMaxItemAmount());
+                user.sendTranslated("&3In stock: &6%d&f/&6%d", this.getStock(), this.getMaxItemAmount());
             }
         }
     }
@@ -627,7 +627,7 @@ public class MarketSign
 
     private String parsePrice()
     {
-        if (this.blockInfo.getPrice().longValue() == 0)
+        if (this.blockInfo.getPrice() == null || this.blockInfo.getPrice().longValue() == 0)
         {
             if (this.isInEditMode())
             {
@@ -913,13 +913,13 @@ public class MarketSign
                 user.sendTranslated("&cNo sign-type given!");
             result = false;
         }
-        if (this.blockInfo.getAmount().longValue() <= 0)
+        if (this.blockInfo.getAmount() == null || this.blockInfo.getAmount().longValue() <= 0)
         {
             if (user != null)
                 user.sendTranslated("&cInvalid amount!");
             result = false;
         }
-        if (this.blockInfo.getPrice().longValue() <= 0)
+        if (this.blockInfo.getPrice() == null || this.blockInfo.getPrice().longValue() <= 0)
         {
             if (user != null)
                 user.sendTranslated("&cInvalid price!");
@@ -1175,7 +1175,7 @@ public class MarketSign
 
     public int getAmount()
     {
-        return this.blockInfo.getAmount().intValue();
+        return this.blockInfo.getAmount() == null ? 0 : this.blockInfo.getAmount().intValue();
     }
 
     /**

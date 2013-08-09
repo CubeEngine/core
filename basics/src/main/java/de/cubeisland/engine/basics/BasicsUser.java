@@ -45,7 +45,7 @@ public class BasicsUser
     public BasicsUser(Database database, User user)
     {
         this.dsl = database.getDSL();
-        this.bUEntity = dsl.select().from(TABLE_BASIC_USER).where(TABLE_BASIC_USER.KEY.eq(user.getEntity().getKey())).fetchOneInto(TABLE_BASIC_USER);
+        this.bUEntity = dsl.selectFrom(TABLE_BASIC_USER).where(TABLE_BASIC_USER.KEY.eq(user.getEntity().getKey())).fetchOneInto(TABLE_BASIC_USER);
         if (bUEntity == null)
         {
             this.bUEntity = this.dsl.newRecord(TABLE_BASIC_USER).newBasicUser(user);
@@ -55,7 +55,7 @@ public class BasicsUser
 
     public void loadMails()
     {
-        this.mailbox = this.dsl.select().from(TABLE_MAIL).where(TABLE_MAIL.USERID.eq(bUEntity.getKey())).fetchInto(TABLE_MAIL);
+        this.mailbox = this.dsl.selectFrom(TABLE_MAIL).where(TABLE_MAIL.USERID.eq(bUEntity.getKey())).fetch();
     }
 
     public List<Mail> getMails()

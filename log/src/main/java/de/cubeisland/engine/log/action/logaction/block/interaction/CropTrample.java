@@ -77,10 +77,10 @@ public class CropTrample extends BlockActionType
     @Override
     public boolean isSimilar(LogEntry logEntry, LogEntry other)
     {
-        if (logEntry.actionType == other.actionType
-            && logEntry.world == other.world
-            && logEntry.causer == other.causer
-            && logEntry.additional == other.additional
+        if (logEntry.getActionType() == other.getActionType()
+            && logEntry.getWorld() == other.getWorld()
+            && logEntry.getCauser().equals(other.getCauser())
+            && logEntry.getAdditional() == other.getAdditional()
             && nearTimeFrame(logEntry, other))
         {
             Location loc1 = logEntry.getLocation();
@@ -98,6 +98,6 @@ public class CropTrample extends BlockActionType
     @Override
     protected boolean nearTimeFrame(LogEntry logEntry, LogEntry other)
     {
-        return Math.abs(logEntry.timestamp.getTime() - other.timestamp.getTime()) < 50;
+        return Math.abs(logEntry.getTimestamp().getTime() - other.getTimestamp().getTime()) < 50;
     }
 }

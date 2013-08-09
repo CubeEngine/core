@@ -40,7 +40,7 @@ public class SoupFill extends SimpleLogActionType
     @Override
     protected Set<ActionTypeCategory> getCategories()
     {
-        return new HashSet<ActionTypeCategory>(Arrays.asList(PLAYER, ENTITY));
+        return new HashSet<>(Arrays.asList(PLAYER, ENTITY));
     }
 
     @Override
@@ -66,8 +66,8 @@ public class SoupFill extends SimpleLogActionType
     public boolean isSimilar(LogEntry logEntry, LogEntry other)
     {
         if (!super.isSimilar(logEntry, other)) return false;
-        return logEntry.world == other.world
-            && logEntry.causer == other.causer;
+        return logEntry.getWorld() == other.getWorld()
+            && logEntry.getCauser().equals(other.getCauser());
     }
 
 

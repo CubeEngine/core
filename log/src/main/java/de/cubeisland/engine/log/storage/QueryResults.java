@@ -139,7 +139,7 @@ public class QueryResults
         {
             if (cpage == show.page)
             {
-                logEntry.actionType.showLogEntry(user,parameter,logEntry, show);
+                logEntry.getActionType().showLogEntry(user,parameter,logEntry, show);
             }
             i++;
             if (i % show.pagelimit == 0)
@@ -163,15 +163,15 @@ public class QueryResults
         TreeSet<LogEntry> filteredLogs = new TreeSet<LogEntry>();
         for (LogEntry logEntry : this.logEntries.descendingSet())
         {
-            if (logEntry.actionType.canRollback()) // can rollback
+            if (logEntry.getActionType().canRollback()) // can rollback
             {
-                if (logEntry.actionType instanceof MonsterDeath && !this.lookup.getQueryParameter().containsAction(logEntry.actionType))
+                if (logEntry.getActionType() instanceof MonsterDeath && !this.lookup.getQueryParameter().containsAction(logEntry.getActionType()))
                 {
                     continue; // ignoring Monster-respawning when not explicitly wanted
                 }
-                if (logEntry.actionType.isBlockBound())
+                if (logEntry.getActionType().isBlockBound())
                 {
-                    if (logEntry.actionType.isStackable())
+                    if (logEntry.getActionType().isStackable())
                     {
                         LinkedList<LogEntry> changes = blockChanges.get(logEntry.getLocation());
                         if (changes == null)
@@ -215,7 +215,7 @@ public class QueryResults
             if (!logEntry.rollback(attachment, true, preview))
             {
                 attachment.getHolder().sendTranslated("&cCould not Rollback:");
-                logEntry.actionType.showLogEntry(attachment.getHolder(), null, logEntry, show);
+                logEntry.getActionType().showLogEntry(attachment.getHolder(), null, logEntry, show);
                 CubeEngine.getLog().warn("Could not rollback!");
             }
         }

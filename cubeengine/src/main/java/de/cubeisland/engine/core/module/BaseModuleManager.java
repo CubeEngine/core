@@ -75,11 +75,11 @@ public abstract class BaseModuleManager implements ModuleManager
         this.core = core;
         this.logger = core.getLog();
         this.loader = new ModuleLoader(core, parentClassLoader, loggerFactory);
-        this.modules = new LinkedHashMap<String, Module>();
-        this.moduleInfos = new THashMap<String, ModuleInfo>();
-        this.classMap = new THashMap<Class<? extends Module>, Module>();
+        this.modules = new LinkedHashMap<>();
+        this.moduleInfos = new THashMap<>();
+        this.classMap = new THashMap<>();
         this.coreModule = new CoreModule();
-                this.serviceProviders = new HashMap<String, String>();
+                this.serviceProviders = new HashMap<>();
         this.coreModule.initialize(core, new ModuleInfo(core), core.getFileManager().getDataFolder(), null, null, logger);
     }
 

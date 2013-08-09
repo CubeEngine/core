@@ -44,7 +44,7 @@ public class TableMail extends TableImpl<Mail> implements TableCreator<Mail>
 
     private TableMail(String prefix)
     {
-        super(prefix + "basicuser");
+        super(prefix + "mail");
         IDENTITY = Keys.identity(this, this.KEY);
         PRIMARY_KEY = Keys.uniqueKey(this, this.KEY);
         FOREIGN_USER = Keys.foreignKey(TABLE_USER.PRIMARY_KEY, this, this.USERID);
@@ -66,14 +66,15 @@ public class TableMail extends TableImpl<Mail> implements TableCreator<Mail>
     public void createTable(Connection connection) throws SQLException
     {
         connection.prepareStatement("CREATE TABLE IF NOT EXISTS " + this.getName()+ " (\n" +
-                                        "`key` int(10) unsigned NOT NULL,\n" +
-                                        "`muted` timestamp NULL DEFAULT NULL,\n" +
-                                        "`godMode` tinyint(1) NOT NULL,\n" +
-                                        "PRIMARY KEY (`key`))\n" +
+                                        "`key` int(10) unsigned NOT NULL AUTO_INCREMENT,\n" +
+                                        "`message` varchar(100) NOT NULL,\n" +
+                                        "`userId` int(10) unsigned NOT NULL,\n" +
+                                        "`senderId` int(10) unsigned DEFAULT NULL,\n" +
+                                        "PRIMARY KEY (`key`),\n" +
+                                        "FOREIGN KEY f_user (`key`) REFERENCES " + TABLE_USER.getName() + " (`key`) ON UPDATE CASCADE ON DELETE CASCADE,\n" +
+                                        "FOREIGN KEY f_sender (`senderId`) REFERENCES " + TABLE_USER.getName() + " (`key`) ON UPDATE CASCADE ON DELETE CASCADE)" +
                                         "ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci\n" +
                                         "COMMENT='1.0.0'").execute();
-        connection.prepareStatement("ALTER TABLE " + this.getName() +
-                                        "\nADD FOREIGN KEY f_user (`key`) REFERENCES `cube_user` (`key`) ON UPDATE CASCADE ON DELETE CASCADE;");
     }
 
     private static final Version version = new Version(1);

@@ -67,16 +67,15 @@ public class TableBankAccess extends TableImpl<BankAccessModel> implements Table
     {
         connection.prepareStatement("CREATE TABLE IF NOT EXISTS " + this.getName()+ " (\n" +
                                         "`id` int(10) unsigned NOT NULL AUTO_INCREMENT,\n" +
-                                        "  `userId` int(10) unsigned NOT NULL,\n" +
-                                        "  `accountId` int(10) unsigned NOT NULL,\n" +
-                                        "  `accessLevel` tinyint(4) NOT NULL,\n" +
-                                        "  PRIMARY KEY (`id`),\n" +
-                                        "  UNIQUE KEY `userId` (`userId`,`accountId`))\n" +
+                                        "`userId` int(10) unsigned NOT NULL,\n" +
+                                        "`accountId` int(10) unsigned NOT NULL,\n" +
+                                        "`accessLevel` tinyint(4) NOT NULL,\n" +
+                                        "PRIMARY KEY (`id`),\n" +
+                                        "UNIQUE KEY `userId` (`userId`,`accountId`),\n" +
+                                        "FOREIGN KEY `f_user`(`userId`) REFERENCES " + TABLE_USER.getName() + "(`key`) ON UPDATE CASCADE ON DELETE CASCADE,\n" +
+                                        "FOREIGN KEY `f_account`(`accountId`) REFERENCES " + TABLE_ACCOUNT.getName() + "(`key`) ON UPDATE CASCADE ON DELETE CASCADE)\n" +
                                         "ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci\n" +
                                         "COMMENT='1.0.0'").execute();
-        connection.prepareStatement("ALTER TABLE " + this.getName() +
-                        "\nADD FOREIGN KEY `f_user`(`userId`) REFERENCES " + TABLE_USER.getName() + "(`key`) ON UPDATE CASCADE ON DELETE CASCADE" +
-                        "\nADD FOREIGN KEY `f_account`(`accountId`) REFERENCES " + TABLE_ACCOUNT.getName() + "(`key`) ON UPDATE CASCADE ON DELETE CASCADE;");
     }
 
     private static final Version version = new Version(1);

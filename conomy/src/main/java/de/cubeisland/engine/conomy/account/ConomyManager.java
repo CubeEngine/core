@@ -28,7 +28,6 @@ import de.cubeisland.engine.conomy.Conomy;
 import de.cubeisland.engine.conomy.ConomyConfiguration;
 import de.cubeisland.engine.conomy.account.storage.AccountModel;
 import de.cubeisland.engine.conomy.account.storage.BankAccessModel;
-import de.cubeisland.engine.conomy.account.storage.TableBankAccess;
 import de.cubeisland.engine.core.service.Economy;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.user.UserManager;
@@ -80,7 +79,7 @@ public class ConomyManager
         BankAccount bankAccount = this.bankaccounts.get(name);
         if (bankAccount == null)
         {
-            AccountModel model = this.dsl.select().from(TABLE_ACCOUNT).where(TABLE_ACCOUNT.NAME.eq(name)).fetchOneInto(TABLE_ACCOUNT);
+            AccountModel model = this.dsl.selectFrom(TABLE_ACCOUNT).where(TABLE_ACCOUNT.NAME.eq(name)).fetchOneInto(TABLE_ACCOUNT);
             if (model == null)
             {
                 if (!create) return null;
@@ -319,11 +318,11 @@ public class ConomyManager
 
     public Collection<AccountModel> getTopAccounts(boolean user, boolean bank, int fromRank, int toRank, boolean showHidden)
     {
-        return this.dsl.select().from(TABLE_ACCOUNT).
+        return this.dsl.selectFrom(TABLE_ACCOUNT).
             where(DSL.condition("((mask & 1) = 0 OR ((mask & 1) = 1) = " + showHidden + ")")).
             and(DSL.condition("(name IS NULL) = " + user + " OR " + "(user_id IS NULL) = " + bank)).
             orderBy(TABLE_ACCOUNT.VALUE.desc()).limit(fromRank -1, toRank - fromRank +1).
-            fetchInto(TABLE_ACCOUNT);
+            fetch();
     }
 
     public void hideAll(boolean userAcc, boolean bankAcc)
@@ -454,13 +453,13 @@ public class ConomyManager
 
     public Set<BankAccount> getBankAccounts(User user)
     {
-        Result<AccountModel> accountModels = this.dsl.select().from(TABLE_ACCOUNT)
+        Result<AccountModel> accountModels = this.dsl.selectFrom(TABLE_ACCOUNT)
                                              .where(TABLE_ACCOUNT.KEY.eq(this.dsl.select(TABLE_BANK_ACCESS.ACCOUNTID)
                                                                                  .from(TABLE_BANK_ACCESS)
                                                                                  .where(TABLE_BANK_ACCESS.USERID
                                                                                                          .eq(user.getEntity()
                                                                                                                  .getKey()))))
-                                             .fetchInto(TABLE_ACCOUNT);
+                                             .fetch();
         Set<BankAccount> accounts = new HashSet<>();
         for (AccountModel accountModel : accountModels)
         {
@@ -518,14 +517,14 @@ public class ConomyManager
 
     protected AccountModel loadUserAccount(User holder)
     {
-        return this.dsl.select().from(TABLE_ACCOUNT).where(TABLE_ACCOUNT.USER_ID.eq(holder.getEntity()
+        return this.dsl.selectFrom(TABLE_ACCOUNT).where(TABLE_ACCOUNT.USER_ID.eq(holder.getEntity()
                                                                                           .getKey())).fetchOneInto(TABLE_ACCOUNT);
     }
 
     public List<BankAccessModel> getBankAccess(AccountModel model)
     {
-       return this.dsl.select().from(TABLE_BANK_ACCESS)
+       return this.dsl.selectFrom(TABLE_BANK_ACCESS)
            .where(TABLE_BANK_ACCESS.ACCOUNTID.eq(model.getKey()))
-           .fetchInto(TABLE_BANK_ACCESS);
+           .fetch();
     }
 }

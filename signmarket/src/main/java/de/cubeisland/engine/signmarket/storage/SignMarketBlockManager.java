@@ -19,11 +19,8 @@ package de.cubeisland.engine.signmarket.storage;
 
 import java.util.Collection;
 
-import javax.swing.plaf.nimbus.NimbusLookAndFeel;
-
 import org.bukkit.Location;
 
-import com.avaje.ebean.EbeanServer;
 import de.cubeisland.engine.signmarket.Signmarket;
 import gnu.trove.map.hash.THashMap;
 import org.jooq.DSLContext;
@@ -46,7 +43,7 @@ public class SignMarketBlockManager
     public void load()
     {
         this.blockModels = new THashMap<>();
-        for (SignMarketBlockModel model : this.dsl.select().from(TABLE_SIGN_BLOCK).fetchInto(TABLE_SIGN_BLOCK))
+        for (SignMarketBlockModel model : this.dsl.selectFrom(TABLE_SIGN_BLOCK).fetch())
         {
             this.blockModels.put(model.getLocation(),model);
         }

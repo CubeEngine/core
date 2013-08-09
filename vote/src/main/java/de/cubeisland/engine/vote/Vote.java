@@ -55,7 +55,7 @@ public class Vote extends Module implements Listener
         {
             User user = this.getCore().getUserManager().getUser(vote.getUsername());
             Economy economy = this.getCore().getServiceManager().getServiceProvider(Economy.class);
-            VoteModel voteModel = this.dsl.select().from(TABLE_VOTE).where(TABLE_VOTE.USERID.eq(user.getEntity().getKey())).fetchOneInto(TABLE_VOTE);
+            VoteModel voteModel = this.dsl.selectFrom(TABLE_VOTE).where(TABLE_VOTE.USERID.eq(user.getEntity().getKey())).fetchOne();
             if (voteModel == null)
             {
                 voteModel = this.dsl.newRecord(TABLE_VOTE).newVote(user);

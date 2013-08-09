@@ -72,24 +72,23 @@ public class TableSignBlock extends TableImpl<SignMarketBlockModel> implements T
     {
         connection.prepareStatement("CREATE TABLE IF NOT EXISTS " + this.getName()+ " (\n" +
                                     "`key`int(10) unsigned NOT NULL AUTO_INCREMENT,\n " +
-                                    "  `world` int(10) unsigned NOT NULL,\n" +
-                                    "  `x` int(11) NOT NULL,\n" +
-                                    "  `y` int(11) NOT NULL,\n" +
-                                    "  `z` int(11) NOT NULL,\n" +
-                                    "  `signType` tinyint(1) NOT NULL,\n" +
-                                    "  `owner` int(10) unsigned DEFAULT NULL,\n" +
-                                    "  `itemKey` int(10) unsigned NOT NULL,\n" +
-                                    "  `amount` smallint(5) unsigned NOT NULL,\n" +
-                                    "  `demand` mediumint(8) unsigned DEFAULT NULL,\n" +
-                                    "  `price` int(10) unsigned NOT NULL,\n" +
-                                    "  PRIMARY KEY (`key`),\n" +
-                                    "  KEY `loc` (`world`,`x`,`y`,`z`))\n" +
-                                        "ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci\n" +
-                                        "COMMENT='1.0.0'").execute();
-        connection.prepareStatement("ALTER TABLE " + this.getName() +
-                                        "\nADD FOREIGN KEY `f_owner`(`user_id`) REFERENCES " + TABLE_USER.getName() + "(`key`) ON UPDATE CASCADE ON DELETE CASCADE," +
-                                        "\nADD FOREIGN KEY `f_world`(`world`) REFERENCES " + TABLE_WORLD.getName() + "(`key`) ON UPDATE CASCADE ON DELETE CASCADE," +
-                                        "\nADD FOREIGN KEY `f_world`(`itemKey`) REFERENCES " + TABLE_SIGN_ITEM.getName() + "(`key`) ON UPDATE CASCADE ON DELETE CASCADE;");
+                                    "`world` int(10) unsigned NOT NULL,\n" +
+                                    "`x` int(11) NOT NULL,\n" +
+                                    "`y` int(11) NOT NULL,\n" +
+                                    "`z` int(11) NOT NULL,\n" +
+                                    "`signType` tinyint(1) NOT NULL,\n" +
+                                    "`owner` int(10) unsigned DEFAULT NULL,\n" +
+                                    "`itemKey` int(10) unsigned NOT NULL,\n" +
+                                    "`amount` smallint(5) unsigned NOT NULL,\n" +
+                                    "`demand` mediumint(8) unsigned DEFAULT NULL,\n" +
+                                    "`price` int(10) unsigned NOT NULL,\n" +
+                                    "PRIMARY KEY (`key`),\n" +
+                                    "KEY `loc` (`world`,`x`,`y`,`z`),\n" +
+                                    "FOREIGN KEY `f_owner`(`owner`) REFERENCES " + TABLE_USER.getName() + "(`key`) ON UPDATE CASCADE ON DELETE CASCADE,\n" +
+                                    "FOREIGN KEY `f_world`(`world`) REFERENCES " + TABLE_WORLD.getName() + "(`key`) ON UPDATE CASCADE ON DELETE CASCADE,\n" +
+                                    "FOREIGN KEY `f_world`(`itemKey`) REFERENCES " + TABLE_SIGN_ITEM.getName() + "(`key`) ON UPDATE CASCADE ON DELETE CASCADE)\n" +
+                                    "ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci\n" +
+                                    "COMMENT='1.0.0'").execute();
     }
 
     private static final Version version = new Version(1);
