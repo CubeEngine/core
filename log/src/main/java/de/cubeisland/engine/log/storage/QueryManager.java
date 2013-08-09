@@ -17,6 +17,8 @@
  */
 package de.cubeisland.engine.log.storage;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
@@ -41,7 +43,6 @@ import de.cubeisland.engine.log.Log;
 import de.cubeisland.engine.log.action.ActionType;
 import org.jooq.Condition;
 import org.jooq.DSLContext;
-import org.jooq.Query;
 import org.jooq.Result;
 import org.jooq.SelectConditionStep;
 import org.jooq.SelectWhereStep;
@@ -79,13 +80,16 @@ public class QueryManager
     private String mainTable = "log_entries";
     private String tempTable = "log_entries_temp";
 
+    private Connection insertConnection = null;
     private DSLContext dsl;
+    private DSLContext cleanUpDsl;
     private Database database;
 
     public QueryManager(Log module)
     {
         this.database = module.getCore().getDB();
         this.dsl = this.database.getDSL();
+        this.cleanUpDsl = this.database.getDSL();
         this.module = module;
         this.batchSize = module.getConfiguration().loggingBatchSize;
 
@@ -232,7 +236,7 @@ public class QueryManager
                 @Override
                 public void run()
                 {
-                    dsl.delete(TABLE_LOG_ENTRY).where(TABLE_LOG_ENTRY.WORLD.notIn(values)).execute();
+                    cleanUpDsl.delete(TABLE_LOG_ENTRY).where(TABLE_LOG_ENTRY.WORLD.notIn(values)).execute();
                 }
             }).start();
         }
@@ -243,7 +247,7 @@ public class QueryManager
                 @Override
                 public void run()
                 {
-                    dsl.delete(TABLE_LOG_ENTRY).where(
+                    cleanUpDsl.delete(TABLE_LOG_ENTRY).where(
                         TABLE_LOG_ENTRY.DATE.le(new Timestamp(System.currentTimeMillis() - module.getConfiguration().cleanUpOldLogsTime.toMillis()))).execute();
                 }
             }).start();
@@ -308,7 +312,7 @@ public class QueryManager
             {
                 return;
             }
-            final Queue<QueuedLog> logs = new LinkedList<QueuedLog>();
+            final Queue<QueuedLog> logs = new LinkedList<>();
             for (int i = 0; i < amount; i++) // log <amount> next logs...
             {
                 QueuedLog toLog = this.queuedLogs.poll();
@@ -321,12 +325,21 @@ public class QueryManager
             Profiler.startProfiling("logging");
             int logSize = logs.size();
             // --- SQL ---
-            Collection<Query> inserts = new ArrayList<>();
+            String sql = dsl
+                .insertInto(TABLE_LOG_ENTRY, TABLE_LOG_ENTRY.DATE, TABLE_LOG_ENTRY.ACTION, TABLE_LOG_ENTRY.WORLD, TABLE_LOG_ENTRY.X, TABLE_LOG_ENTRY.Y, TABLE_LOG_ENTRY.Z, TABLE_LOG_ENTRY.CAUSER, TABLE_LOG_ENTRY.BLOCK, TABLE_LOG_ENTRY.DATA, TABLE_LOG_ENTRY.NEWBLOCK, TABLE_LOG_ENTRY.NEWDATA, TABLE_LOG_ENTRY.ADDITIONALDATA)
+                .values((Timestamp)null, null, null, null, null, null, null, null, null, null, null, null).getSQL();
+            if (this.insertConnection == null)
+            {
+                this.insertConnection = this.database.getConnection();
+                this.insertConnection.setAutoCommit(false);
+            }
+            PreparedStatement statement = this.insertConnection.prepareStatement(sql);
             for (QueuedLog log : logs)
             {
-                inserts.add(log.createInsert(dsl));
+                log.bindTo(statement);
             }
-            this.dsl.batch(inserts).execute();
+            statement.executeBatch();
+            this.insertConnection.commit();
             // --- --- ---
             long nanos = Profiler.endProfiling("logging");
             timeSpend += nanos;
@@ -354,6 +367,8 @@ public class QueryManager
             }
             else if (this.latch != null)
             {
+                this.insertConnection.close();
+                this.insertConnection = null;
                 this.latch.countDown();
             }
         }
@@ -399,11 +414,7 @@ public class QueryManager
     {
         final QueryParameter params = lookup.getQueryParameter();
         SelectWhereStep<LogEntry> whereStep = this.dsl.selectFrom(TABLE_LOG_ENTRY);
-        boolean needAnd = false;
         ArrayList<Condition> conditions = new ArrayList<>();
-
-
-        ArrayList<Object> dataToInsert = new ArrayList<>();
         if (!params.actions.isEmpty())
         {
             boolean include = params.includeActions();
@@ -574,3 +585,4 @@ public class QueryManager
         }
     }
 }
+

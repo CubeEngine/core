@@ -17,13 +17,9 @@
  */
 package de.cubeisland.engine.log.storage;
 
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.sql.Timestamp;
-import java.util.Arrays;
-
-import org.jooq.DSLContext;
-import org.jooq.Query;
-
-import static de.cubeisland.engine.log.storage.TableLogEntry.TABLE_LOG_ENTRY;
 
 public class QueuedLog
 {
@@ -39,13 +35,12 @@ public class QueuedLog
         this(timestamp, action, worldID, x, y, z, causer, block, data, newBlock, newData, additionalData);
     }
 
-    public Query createInsert(DSLContext dsl)
+    public void bindTo(PreparedStatement stmt) throws SQLException
     {
-        return dsl.insertInto(TABLE_LOG_ENTRY, TABLE_LOG_ENTRY.DATE, TABLE_LOG_ENTRY.ACTION,
-                              TABLE_LOG_ENTRY.WORLD, TABLE_LOG_ENTRY.X, TABLE_LOG_ENTRY.Y, TABLE_LOG_ENTRY.Z,
-                              TABLE_LOG_ENTRY.CAUSER,
-                              TABLE_LOG_ENTRY.BLOCK, TABLE_LOG_ENTRY.DATA,
-                              TABLE_LOG_ENTRY.NEWBLOCK, TABLE_LOG_ENTRY.NEWDATA, TABLE_LOG_ENTRY.ADDITIONALDATA)
-            .values(Arrays.asList(logdata));
+        for (int i = 0; i < logdata.length; ++i)
+        {
+            stmt.setObject(i + 1, logdata[i]);
+        }
+        stmt.addBatch();
     }
 }
