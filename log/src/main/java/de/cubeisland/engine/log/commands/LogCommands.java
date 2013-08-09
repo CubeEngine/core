@@ -64,12 +64,6 @@ public class LogCommands extends ContainerCommand
         }
     }
 
-    @Command(desc = "Optimizes the log-tables to allow faster lookups (This may take some time)")
-    public void optimize(CommandContext context)
-    {
-       this.module.getLogManager().getQueryManager().analyze(context.getSender());
-    }
-
     //TODO add rollback tool
     //TODO loghand (cmd hand) -> toggles general lookup with bare hands
 
