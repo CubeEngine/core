@@ -51,12 +51,10 @@ import de.cubeisland.engine.core.module.Module;
 import de.cubeisland.engine.core.user.UserManager;
 import de.cubeisland.engine.core.util.matcher.Match;
 import de.cubeisland.engine.test.commands.TestCommands;
-import de.cubeisland.engine.test.database.TestManager;
 
 public class Test extends Module
 {
     public static final String TEST_WORLD_NAME = "world_test";
-    public TestManager manager;
     public UserManager uM;
     protected TestConfig config;
     public static List<String> aListOfPlayers;

@@ -17,11 +17,14 @@
  */
 package de.cubeisland.engine.powersigns;
 
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 
+import org.bukkit.Chunk;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.World;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
@@ -29,16 +32,16 @@ import org.bukkit.event.block.SignChangeEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.world.ChunkLoadEvent;
 
-
 import de.cubeisland.engine.core.CubeEngine;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.powersigns.signtype.LiftSign;
 import de.cubeisland.engine.powersigns.signtype.SignType;
 import de.cubeisland.engine.powersigns.signtype.SignTypeInfo;
 import de.cubeisland.engine.powersigns.storage.PowerSignModel;
-import de.cubeisland.engine.powersigns.storage.PowerSignStorage;
-
 import gnu.trove.map.hash.THashMap;
+import org.jooq.DSLContext;
+
+import static de.cubeisland.engine.powersigns.storage.TablePowerSign.TABLE_POWER_SIGN;
 
 public class SignManager implements Listener
 {
@@ -47,28 +50,30 @@ public class SignManager implements Listener
     private Map<Location,PowerSign> loadedPowerSigns = new THashMap<Location, PowerSign>();
     protected Powersigns module;
 
-    public PowerSignStorage getStorage()
-    {
-        return storage;
-    }
-
-    private PowerSignStorage storage;
+    public final DSLContext dsl;
 
     public SignManager(Powersigns module)
     {
         this.module = module;
-        this.storage = new PowerSignStorage(module);
+        this.dsl = module.getCore().getDB().getDSL();
     }
 
     public void init()
     {
         this.module.getCore().getEventManager().registerListener(this.module,this);
         this.registerSignType(new LiftSign());
-        Set<PowerSignModel> powerSignModels = this.storage
-            .loadFromLoadedChunks(this.module.getCore().getWorldManager().getWorlds());
+        Collection<PowerSignModel> powerSignModels = new HashSet<>();
+        for (World world : this.module.getCore().getWorldManager().getWorlds())
+        {
+            for (Chunk chunk : world.getLoadedChunks())
+            {
+                powerSignModels.addAll(this.dsl.selectFrom(TABLE_POWER_SIGN).
+                    where(TABLE_POWER_SIGN.CHUNKX.eq(chunk.getX()), TABLE_POWER_SIGN.CHUNKX.eq(chunk.getZ())).fetch());
+            }
+        }
         for (PowerSignModel powerSignModel : powerSignModels)
         {
-            SignType signType = this.registerdSignTypes.get(powerSignModel.PSID);
+            SignType signType = this.registerdSignTypes.get(powerSignModel.getPSID());
             SignTypeInfo info = signType.createInfo(powerSignModel);
             if (info == null)
             {
@@ -100,11 +105,11 @@ public class SignManager implements Listener
     @EventHandler
     public void onChunkLoad(ChunkLoadEvent event)
     {
-        Set<PowerSignModel> powerSignModels = this.storage
-            .loadFromChunk(event.getChunk());
+        Collection<PowerSignModel> powerSignModels = this.dsl.selectFrom(TABLE_POWER_SIGN).
+            where(TABLE_POWER_SIGN.CHUNKX.eq(event.getChunk().getX()), TABLE_POWER_SIGN.CHUNKX.eq(event.getChunk().getZ())).fetch();
         for (PowerSignModel powerSignModel : powerSignModels)
         {
-            SignType signType = this.registerdSignTypes.get(powerSignModel.PSID);
+            SignType signType = this.registerdSignTypes.get(powerSignModel.getPSID());
             SignTypeInfo info = signType.createInfo(powerSignModel);
             PowerSign<?, ?> powerSign = new PowerSign(signType,info);
             this.loadedPowerSigns.put(powerSign.getLocation(),powerSign);
@@ -113,7 +118,7 @@ public class SignManager implements Listener
 
     public void onChunkUnload(ChunkLoadEvent event)
     {
-
+        //TODO
     }
 
     @EventHandler

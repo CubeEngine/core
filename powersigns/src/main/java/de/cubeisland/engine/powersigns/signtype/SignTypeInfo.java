@@ -25,6 +25,8 @@ import de.cubeisland.engine.powersigns.Powersigns;
 import de.cubeisland.engine.powersigns.SignManager;
 import de.cubeisland.engine.powersigns.storage.PowerSignModel;
 
+import static de.cubeisland.engine.powersigns.storage.TablePowerSign.TABLE_POWER_SIGN;
+
 public abstract class SignTypeInfo<T extends SignType>
 {
     protected final T signType;
@@ -79,15 +81,12 @@ public abstract class SignTypeInfo<T extends SignType>
     {
         if (this.model == null)
         {
-            this.model = new PowerSignModel(this);
-        }
-        if (this.model.id == -1)
-        {
-            this.manager.getStorage().store(this.model);
+            this.model = this.manager.dsl.newRecord(TABLE_POWER_SIGN).newPSign(this);
+            this.model.insert();
         }
         else
         {
-            this.manager.getStorage().update(this.model);
+            model.update();
         }
     }
 
