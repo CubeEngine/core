@@ -17,6 +17,8 @@
  */
 package de.cubeisland.engine.log.action;
 
+import java.sql.Timestamp;
+
 import org.bukkit.event.Listener;
 
 import de.cubeisland.engine.core.user.User;
@@ -40,7 +42,21 @@ public abstract class LogActionType extends ActionType implements Listener
         String time = "";
         if (show.showDate)
         {
-            time = "&7"+ logEntry.getTimestamp().toString() + " - ";
+            if (logEntry.hasAttached())
+            {
+                Timestamp first = logEntry.getTimestamp();
+                Timestamp last = logEntry.getAttached().last().getTimestamp();
+                if (first.getTime() > last.getTime())
+                {
+                    first = last;
+                    last = logEntry.getTimestamp();
+                }
+                time = "&7" + first.toString() + " &6-&7 " + last.toString() + "\n";
+            }
+            else
+            {
+                time = "&7"+ logEntry.getTimestamp().toString() + " - ";
+            }
             //TODO time-frame if attached
         }
         String loc = "";

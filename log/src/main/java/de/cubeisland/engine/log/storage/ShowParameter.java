@@ -28,5 +28,5 @@ public class ShowParameter
     /**
      * oldest entries first
      */
-    public boolean reverseOrder = false;
+    public boolean reverseOrder = true;
 }

@@ -264,7 +264,7 @@ public class QueryManager
         final QueryAction queryAction = poll.action;
         final Lookup lookup = poll.lookup;
         final User user = poll.user;
-        Result<LogEntry> entries = poll.query.fetch();
+        Result<LogEntry> entries = poll.query.limit(10000).fetch();
         QueryResults results = new QueryResults(lookup);
         for (LogEntry entry : entries)
         {

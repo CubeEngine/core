@@ -61,6 +61,7 @@ public class QueryResults
         {
             show.pagelimit = 80;
         }
+
         int totalPages = (this.logEntries.size()+show.pagelimit-1) / show.pagelimit; // rounded up
         user.sendTranslated("&6%d&a distinct logs (&6%d&a pages)", this.logEntries.size(), totalPages);
         Iterator<LogEntry> entries = this.logEntries.iterator();
