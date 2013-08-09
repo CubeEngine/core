@@ -74,6 +74,7 @@ public class QueryManager
     private long logsLoggedFullLoad = 1;
 
     private CountDownLatch latch = new CountDownLatch(0);
+    private CountDownLatch shutDownLatch = new CountDownLatch(0);
 
     private int cleanUpTaskId;
 
@@ -311,7 +312,7 @@ public class QueryManager
             String sql = dsl
                 .insertInto(TABLE_LOG_ENTRY, TABLE_LOG_ENTRY.DATE, TABLE_LOG_ENTRY.ACTION, TABLE_LOG_ENTRY.WORLD, TABLE_LOG_ENTRY.X, TABLE_LOG_ENTRY.Y, TABLE_LOG_ENTRY.Z, TABLE_LOG_ENTRY.CAUSER, TABLE_LOG_ENTRY.BLOCK, TABLE_LOG_ENTRY.DATA, TABLE_LOG_ENTRY.NEWBLOCK, TABLE_LOG_ENTRY.NEWDATA, TABLE_LOG_ENTRY.ADDITIONALDATA)
                 .values((Timestamp)null, null, null, null, null, null, null, null, null, null, null, null).getSQL();
-            if (this.insertConnection == null)
+            if (this.insertConnection == null || this.insertConnection.isClosed())
             {
                 this.insertConnection = this.database.getConnection();
                 this.insertConnection.setAutoCommit(false);
@@ -334,31 +335,30 @@ public class QueryManager
             }
             if (logSize > this.module.getConfiguration().showLogInfoInConsole)
             {
-                this.module.getLog().debug("{} logged in: {} ms | remaining logs: {}",
-                                         logSize, TimeUnit.NANOSECONDS.toMillis(nanos), queuedLogs.size());
-                this.module.getLog().debug("Average logtime per log: {} micros",
-                                           TimeUnit.NANOSECONDS.toMicros(timeSpend / logsLogged));
-                if (timeSpendFullLoad != 0)
-                {
-                    this.module.getLog().debug("Average logtime per log in full load: {} micros",
-                                               TimeUnit.NANOSECONDS.toMicros(timeSpendFullLoad / logsLoggedFullLoad));
-                }
+                this.module.getLog().debug("{} logged in: {} ms | remaining logs: {} | AVG/AVG-FULL {} / {} micros",
+                                         logSize, TimeUnit.NANOSECONDS.toMillis(nanos), queuedLogs.size(),
+                                         TimeUnit.NANOSECONDS.toMicros(timeSpend / logsLogged),
+                            TimeUnit.NANOSECONDS.toMicros(timeSpendFullLoad / logsLoggedFullLoad));
             }
+            latch.countDown();
             if (!queuedLogs.isEmpty())
             {
                 this.futureStore = this.storeExecutor.submit(this.storeRunner);
             }
-            else if (this.latch != null)
+            else
             {
+                this.insertConnection.setAutoCommit(true);
                 this.insertConnection.close();
                 this.insertConnection = null;
-                this.latch.countDown();
+                this.shutDownLatch.countDown();
             }
         }
         catch (Exception ex)
         {
             Profiler.endProfiling("logging"); // end profiling so we can start again later
             latch = new CountDownLatch(0); // and reset latch
+            module.getLog().error("Error while logging!", ex);
+            ex.printStackTrace();
             throw new IllegalStateException("Error while logging", ex);
         }
     }
@@ -377,14 +377,35 @@ public class QueryManager
         this.module.getCore().getTaskManager().cancelTask(this.module, cleanUpTaskId);
         if (!this.queuedLogs.isEmpty())
         {
-            this.batchSize = this.batchSize * 5;
             this.lookupExecutor.shutdown();
-            try {
-                latch.await(3, TimeUnit.MINUTES); // wait for all logs to be logged (stop after 3 min)
-            } catch (InterruptedException e) {
-                this.module.getLog().warn("Error while waiting! " + e.getLocalizedMessage(), e);
-            }
+            this.batchSize = this.batchSize * 5;
+            this.awaitPendingInserts(this.queuedLogs.size());
             this.storeExecutor.shutdown();
+        }
+    }
+
+    private void awaitPendingInserts(final int size)
+    {
+        this.module.getLog().info("Waiting for {} more logs to be logged!", size);
+        this.shutDownLatch = new CountDownLatch(1);
+        try {
+            shutDownLatch.await(1, TimeUnit.MINUTES); // wait for all logs to be logged (stop after 3 min)
+        }
+        catch (InterruptedException e)
+        {
+            this.module.getLog().warn("Error while waiting! " + e.getLocalizedMessage(), e);
+            return;
+        }
+        if (this.queuedLogs.size() != 0)
+        {
+            if (this.queuedLogs.size() < size) // Wait another 3 min
+            {
+                awaitPendingInserts(this.queuedLogs.size());
+            }
+            else
+            {
+                this.module.getLog().warn("Logging doesn't seem to progress! Aborting...", new Exception());
+            }
         }
     }
 

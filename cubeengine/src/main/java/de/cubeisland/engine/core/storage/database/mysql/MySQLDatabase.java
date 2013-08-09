@@ -69,7 +69,7 @@ public class MySQLDatabase extends AbstractPooledDatabase
         datasource.setPassword(config.pass);
         datasource.setMinPool(5);
         datasource.setMaxPool(20);
-        datasource.setIdleTimeout(60); // TODO more
+        datasource.setIdleTimeout(60*10);
         datasource.setName("CubeEngine");
 
         this.schema = new DatabaseSchema(config.database);
