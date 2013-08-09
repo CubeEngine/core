@@ -17,98 +17,52 @@
  */
 package de.cubeisland.engine.core.storage;
 
-import java.sql.ResultSet;
+import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.Arrays;
+import java.util.List;
 
 import de.cubeisland.engine.core.module.Module;
 import de.cubeisland.engine.core.storage.database.Database;
+import de.cubeisland.engine.core.storage.database.TableCreator;
+import de.cubeisland.engine.core.storage.database.mysql.Keys;
+import de.cubeisland.engine.core.storage.database.mysql.MySQLDatabaseConfiguration;
+import de.cubeisland.engine.core.util.Version;
 import gnu.trove.map.hash.THashMap;
+import org.jooq.DSLContext;
+import org.jooq.TableField;
+import org.jooq.UniqueKey;
+import org.jooq.impl.SQLDataType;
+import org.jooq.impl.TableImpl;
 
-public class Registry
+public class Registry extends TableImpl<RegistryModel>implements TableCreator<RegistryModel>
 {
-    private String TABLENAME = "registry";
-    private THashMap<String, THashMap<String, String>> data = new THashMap<String, THashMap<String, String>>();
-    private final Database database;
-
-    public Registry(Database database)
-    {
-        this.database = database;/*
-        try
-        {
-             //TODO DATABASE
-            QueryBuilder builder = database.getQueryBuilder();
-            String sql = builder.createTable(TABLENAME, true).beginFields()
-                    .field("key", AttrType.VARCHAR, 16)
-                    .field("module", AttrType.VARCHAR, 16)
-                    .field("value", AttrType.VARCHAR, 256)
-                    .primaryKey("key", "module")
-                    // TODO module thingy... foreignKey("module").references("modules", "key")
-                    .endFields()
-                    .engine("InnoDB").defaultcharset("utf8").end().end();
-            database.execute(sql);
-            database.storeStatement(this.getClass(), "getAllByModule", builder.select("key", "value").from(TABLENAME).where().field("module").isEqual().value().end().end());
-            database.storeStatement(this.getClass(), "merge", builder.merge().into(TABLENAME).cols("key", "module", "value").updateCols("value").end().end());
-            database.storeStatement(this.getClass(), "delete", builder.deleteFrom(TABLENAME).where().field("key").isEqual().value().and().field("module").isEqual().value().end().end());
-            database.storeStatement(this.getClass(), "clear", builder.deleteFrom(TABLENAME).where().field("module").isEqual().value().end().end());
-
-        }
-        catch (SQLException ex)
-        {
-            throw new StorageException("Error while creating Registry-Statements");
-        }
-        */
-    }
+    private THashMap<String, THashMap<String, String>> data = new THashMap<>();
 
     public void merge(Module module, String key, String value)
     {
-        try
-        {
-            this.loadForModule(module);
-            this.database.preparedExecute(this.getClass(), "merge", key, module.getId(), value);
-            this.data.get(module.getId()).put(key, value);
-        }
-        catch (SQLException ex)
-        {
-            throw new StorageException("Error while merging Registry");
-        }
+        this.loadForModule(module);
+        this.dsl.insertInto(this, this.KEY, this.MODULE, this.VALUE).values(key, module.getId(), value)
+                .onDuplicateKeyUpdate().set(VALUE, value).execute();
+        this.data.get(module.getId()).put(key, value);
     }
 
     public String delete(Module module, String key)
     {
-        try
-        {
-            this.loadForModule(module);
-            this.database.preparedExecute(this.getClass(), "delete", key, module.getId());
-            return this.data.get(module.getId()).remove(key);
-        }
-        catch (SQLException ex)
-        {
-            throw new StorageException("Error while deleting Registry");
-        }
+        this.loadForModule(module);
+        this.dsl.delete(this).where(MODULE.eq(module.getId()), KEY.eq(key)).execute();
+        return this.data.get(module.getId()).remove(key);
     }
 
     public void loadForModule(Module module)
     {
         if (this.data.get(module.getId()) == null)
         {
-            try
+            THashMap<String, String> map = this.data.get(module.getId());
+            this.data.put(module.getId(), map);
+            for (RegistryModel registryModel : this.dsl.selectFrom(this).where(MODULE.eq(module.getId())).fetch())
             {
-                ResultSet result = this.database.preparedQuery(this.getClass(), "getAllByModule", module.getId());
-                THashMap<String, String> map = this.data.get(module.getId());
-                if (map == null)
-                {
-                    map = new THashMap<String, String>();
-                    this.data.put(module.getId(), map);
-                }
-                map.clear();
-                while (result.next())
-                {
-                    map.put(result.getString("key"), result.getString("value"));
-                }
-            }
-            catch (SQLException ex)
-            {
-                throw new StorageException("Error while loading Registry");
+                map.put(registryModel.getKey(), registryModel.getValue());
             }
         }
     }
@@ -121,13 +75,68 @@ public class Registry
 
     public void clear(Module module)
     {
-        try
-        {
-            this.database.preparedExecute(this.getClass(), "clear", module.getId());
-        }
-        catch (SQLException ex)
-        {
-            throw new StorageException("Error while clearing Registry");
-        }
+        this.dsl.delete(this).where(MODULE.eq(module.getId())).execute();
+    }
+
+    public static Registry TABLE_REGISTRY;
+    private DSLContext dsl;
+
+    private Registry(String prefix, Database database)
+    {
+        super(prefix + "registry");
+        this.dsl = database.getDSL();
+        PRIMARY_KEY = Keys.uniqueKey(this, this.KEY, this.MODULE);
+    }
+
+    public static Registry initTable(Database database)
+    {
+        if (TABLE_REGISTRY != null) throw new IllegalStateException();
+        MySQLDatabaseConfiguration config = (MySQLDatabaseConfiguration)database.getDatabaseConfig();
+        TABLE_REGISTRY = new Registry(config.tablePrefix, database);
+        database.registerTable(TABLE_REGISTRY);
+        return TABLE_REGISTRY;
+    }
+
+    @Override
+    public void createTable(Connection connection) throws SQLException
+    {
+        connection.prepareStatement("CREATE TABLE IF NOT EXISTS " + this.getName()+ " (\n" +
+                                        "`key` varchar(16) NOT NULL,\n" +
+                                        "`module` varchar(16) NOT NULL,\n" +
+                                        "`value` varchar(256) NOT NULL,\n" +
+                                        "PRIMARY KEY (`key`,`module`))\n" +
+                                        "ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci\n" +
+                                        "COMMENT='1.0.0'").execute();
+    }
+
+    private static final Version version = new Version(1);
+
+    @Override
+    public Version getTableVersion()
+    {
+        return version;
+    }
+
+    public final UniqueKey<RegistryModel> PRIMARY_KEY;
+
+    public final TableField<RegistryModel, String> KEY = createField("key", SQLDataType.VARCHAR.length(16), this);
+    public final TableField<RegistryModel, String> MODULE = createField("module", SQLDataType.VARCHAR.length(16), this);
+    public final TableField<RegistryModel, String> VALUE = createField("value", SQLDataType.VARCHAR.length(256), this);
+
+    @Override
+    public UniqueKey<RegistryModel> getPrimaryKey()
+    {
+        return PRIMARY_KEY;
+    }
+
+    @Override
+    public List<UniqueKey<RegistryModel>> getKeys()
+    {
+        return Arrays.asList(PRIMARY_KEY);
+    }
+
+    @Override
+    public Class<RegistryModel> getRecordType() {
+        return RegistryModel.class;
     }
 }

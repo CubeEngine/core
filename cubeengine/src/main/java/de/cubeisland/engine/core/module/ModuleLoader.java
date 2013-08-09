@@ -64,7 +64,7 @@ public class ModuleLoader
         this.classLoaders = new HashMap<String, ModuleClassLoader>();
         this.infoFileName = "module.yml";
         this.tempFolder = new File(core.getFileManager().getTempDir(), "modules");
-        this.registry = new Registry(core.getDB());
+        this.registry = Registry.initTable(core.getDB());
         this.loggerFactory = loggerFactory;
         if (!this.tempFolder.exists() && !this.tempFolder.mkdir())
         {

@@ -23,8 +23,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-import com.avaje.ebean.EbeanServer;
-import de.cubeisland.engine.core.storage.Storage;
 import org.jooq.DSLContext;
 
 /**
@@ -46,54 +44,6 @@ public interface Database
      * @throws SQLException
      */
     Connection getConnection() throws SQLException;
-
-    /**
-     * Returns the database metadata.
-     *
-     * @return the metadata
-     * @throws SQLException
-     */
-    DatabaseMetaData getMetaData() throws SQLException;
-
-
-
-    /**
-     * Gets a stored statement by name
-     *
-     * @param owner the owner of the statement
-     * @param name  the name of the statement
-     * @return the prepared Statement
-     */
-    PreparedStatement getStoredStatement(Class owner, String name);
-
-    /**
-     * Gets a stored statement by name with given connection
-     *
-     * @param owner the owner of the statement
-     * @param name  the name of the statement
-     * @param connection the connection to get the statement with
-     * @return the prepared Statement
-     */
-    PreparedStatement getStoredStatement(Class owner, String name, Connection connection);
-
-    /**
-     * Gets the raw string used for a stored statement
-     *
-     * @param owner the owner of the statement
-     * @param name the name of the statement
-     * @return the stored String
-     */
-    String getRawStoredStatement(Class owner, String name);
-
-    /**
-     * Prepares and stores a statement for given name.
-     *
-     * @param owner     the owner
-     * @param name      the name
-     * @param statement the statment to store
-     * @throws SQLException
-     */
-    void storeStatement(Class owner, String name, String statement) throws SQLException;
 
     /**
      * Prepares the statement
@@ -126,17 +76,6 @@ public interface Database
     ResultSet query(String query, Object... params) throws SQLException;
 
     /**
-     * Executes a prepared query.
-     *
-     * @param owner  the owner
-     * @param name   the stored name
-     * @param params the params
-     * @return the ResultSet
-     * @throws SQLException
-     */
-    ResultSet preparedQuery(Class owner, String name, Object... params) throws SQLException;
-
-    /**
      * Executes a query.
      *
      * @param query  the query
@@ -147,32 +86,12 @@ public interface Database
     boolean execute(String query, Object... params) throws SQLException;
 
     /**
-     * Executes a prepared query.
-     *
-     * @param owner  the owner
-     * @param name   the name
-     * @param params the params
-     * @return true if it succeeded
-     * @throws SQLException
-     */
-    boolean preparedExecute(Class owner, String name, Object... params) throws SQLException;
-
-    /**
      * Executes a query asynchronous.
      *
      * @param query  the query
      * @param params the params
      */
     void asyncExecute(String query, Object... params);
-
-    /**
-     * Executes a prepared query asynchronous.
-     *
-     * @param owner  the owner
-     * @param name   the name
-     * @param params the params
-     */
-    void asyncPreparedExecute(Class owner, String name, Object... params);
 
     /**
      * Executes an update query.
@@ -185,71 +104,12 @@ public interface Database
     int update(String query, Object... params) throws SQLException;
 
     /**
-     * Executes a prepared update query.
-     *
-     * @param owner  the owner
-     * @param name   the name
-     * @param params the params
-     * @return the affected rows
-     * @throws SQLException
-     */
-    int preparedUpdate(Class owner, String name, Object... params) throws SQLException;
-
-    /**
      * Executes an update query asynchronous.
      *
      * @param query  the query
      * @param params the params
      */
     void asyncUpdate(String query, Object... params);
-
-    /**
-     * Executes a prepared update query asynchronous.
-     *
-     * @param owner  the owner
-     * @param name   the name
-     * @param params the params
-     */
-    void asnycPreparedUpdate(Class owner, String name, Object... params);
-
-    /**
-     * Starts a transaction
-     *
-     * @throws SQLException
-     */
-    void startTransaction() throws SQLException;
-
-    /**
-     * Commits and ends an transaction.
-     *
-     * @throws SQLException
-     */
-    void commit() throws SQLException;
-
-    /**
-     * Rollbacks a transaction.
-     *
-     * @throws SQLException
-     */
-    void rollback() throws SQLException;
-
-    /**
-     * Updates a table.
-     *
-     * @param manager the manager
-     */
-    void updateStructure(Storage manager);
-
-    /**
-     * Executes an insert query and returns the last inserted id.
-     *
-     * @param owner  the owner
-     * @param name   the name
-     * @param params the params
-     * @return the last inserted id
-     * @throws SQLException
-     */
-    Object getLastInsertedId(Class owner, String name, Object... params) throws SQLException;
 
     /**
      * Queues in an operation to execute later.
@@ -259,6 +119,8 @@ public interface Database
     void queueOperation(Runnable runnable);
 
     void shutdown();
+
+    DatabaseMetaData getMetaData() throws SQLException;
 
     public <T extends TableCreator> void registerTable(T table);
 
