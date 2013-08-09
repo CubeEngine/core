@@ -17,13 +17,9 @@
  */
 package de.cubeisland.engine.travel.storage;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
@@ -32,19 +28,20 @@ import org.bukkit.Location;
 
 import de.cubeisland.engine.core.CubeEngine;
 import de.cubeisland.engine.core.command.CommandSender;
-import de.cubeisland.engine.core.storage.SingleKeyStorage;
-import de.cubeisland.engine.core.storage.StorageException;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.util.matcher.Match;
 import de.cubeisland.engine.travel.Travel;
-import de.cubeisland.engine.travel.storage.TeleportPoint.Visibility;
+import org.jooq.DSLContext;
+import org.jooq.Record2;
+import org.jooq.Result;
+import org.jooq.types.UInteger;
 
-import static de.cubeisland.engine.travel.storage.TeleportPoint.Type.HOME;
-import static de.cubeisland.engine.travel.storage.TeleportPoint.Type.WARP;
+import static de.cubeisland.engine.travel.storage.TableTeleportPoint.TABLE_TP_POINT;
+import static de.cubeisland.engine.travel.storage.TeleportPointModel.*;
 
-public class TelePointManager extends SingleKeyStorage<Long, TeleportPoint>
+public class TelePointManager
 {
-    private static final int REVISION = 6;
+    private final DSLContext dsl;
 
     private InviteManager inviteManager;
     private final Map<String, Home> homes;
@@ -54,48 +51,11 @@ public class TelePointManager extends SingleKeyStorage<Long, TeleportPoint>
 
     public TelePointManager(Travel module)
     {
-        super(module.getCore().getDB(), TeleportPoint.class, REVISION);
+        this.dsl = module.getCore().getDB().getDSL();
         this.module = module;
-        this.initialize();
         this.homes = new HashMap<String, Home>();
         this.publicHomes = new HashMap<String, Home>();
         this.warps = new HashMap<String, Warp>();
-    }
-
-    @Override
-    protected void prepareStatements() throws SQLException
-    {
-        super.prepareStatements();
-        //TODO DATABASE
-        /*
-        QueryBuilder builder = this.database.getQueryBuilder();
-
-        // List statements
-        this.database.storeStatement(this.modelClass, "filtered_getAll",
-                                     builder.select(this.tableName+".key","name","owner","player").from(this.tableName)
-                                            .joinOnEqual("user", "key", tableName, "owner")
-                                     .where().field("type").isEqual().value() // First value TeleportPoint.Type.<>.ordinal() (home/warp)
-                                     .and().field("visibility").isEqual().value() // Second value Visibility.<>.ordinal() (public/private)
-            .end().end());
-        this.database.storeStatement(this.modelClass, "filtered_getAll_owned",
-                                     builder.select(this.tableName+".key","name","owner","player").from(this.tableName)
-                                            .joinOnEqual("user", "key", tableName, "owner")
-                                            .where().field("type").isEqual().value() // First value TeleportPoint.Type.<>.ordinal() (home/warp)
-                                         .and().field("visibility").isEqual().value() // Second value Visibility.<>.ordinal() (public/private)
-                                         .and().field("owner").isEqual().value() // Third value owner key
-                                         .end().end());
-        // Override getAll and get Statements
-        this.database.storeStatement(this.modelClass, "getall", builder.select().
-            fields(tableName + ".key", "owner", "type", "visibility", "world", "x", "y", "z", "yaw", "pitch", "name", "welcomemsg", "player")
-           .from(tableName).joinOnEqual("user", "key", tableName, "owner")
-           .end().end());
-
-        this.database.storeStatement(this.modelClass, "get", builder.select().
-            fields(tableName + ".key", "owner", "type", "visibility", "world", "x", "y", "z", "yaw", "pitch", "name", "welcomemsg", "player")
-               .from(tableName).joinOnEqual("user", "key", tableName, "owner")
-            .where().field(tableName + ".key").isEqual().value()
-               .end().end());
-               */
     }
 
     /**
@@ -104,9 +64,9 @@ public class TelePointManager extends SingleKeyStorage<Long, TeleportPoint>
     public void load(InviteManager inviteManager)
     {
         this.inviteManager = inviteManager;
-        for (TeleportPoint teleportPoint : this.getAll())
+        for (TeleportPointModel teleportPoint : this.getAll())
         {
-            if (teleportPoint.type.equals(HOME))
+            if (teleportPoint.getType() == TYPE_HOME)
             {
                 Home home = new Home(teleportPoint, this, inviteManager, this.module);
                 if (home.isPublic())
@@ -123,63 +83,14 @@ public class TelePointManager extends SingleKeyStorage<Long, TeleportPoint>
         }
     }
 
-    @Override
-    public Collection<TeleportPoint> getAll()
+    public Collection<TeleportPointModel> getAll()
     {
-        Collection<TeleportPoint> loadedModels = new ArrayList<TeleportPoint>();
-        try
-        {
-            ResultSet resulsSet = this.database.preparedQuery(this.modelClass, "getall");
-            while (resulsSet.next())
-            {
-                Map<String, Object> values = new LinkedHashMap<String, Object>();
-                for (String name : this.reverseFieldNames.keySet())
-                {
-                    values.put(name, resulsSet.getObject(name));
-                }
-                values.put("player", resulsSet.getObject("player"));
-                TeleportPoint tpPoint = this.modelConstructor.newInstance(values);
-                loadedModels.add(tpPoint);
-            }
-        }
-        catch (SQLException ex)
-        {
-            throw new StorageException("Error while getting Model from Database", ex, this.database.getStoredStatement(this.modelClass, "getall"));
-        }
-        catch (Exception ex)
-        {
-            throw new IllegalStateException("Error while creating fresh Model from Database", ex);
-        }
-        return loadedModels;
+        return this.dsl.selectFrom(TABLE_TP_POINT).fetch();
     }
 
-    @Override
-    public TeleportPoint get(Long key)
+    public TeleportPointModel get(Long key)
     {
-        try
-        {
-            ResultSet resulsSet = this.database.preparedQuery(this.modelClass, "getall");
-            if (resulsSet.next())
-            {
-                Map<String, Object> values = new HashMap<String, Object>();
-                for (String name : this.reverseFieldNames.keySet())
-                {
-                    values.put(name, resulsSet.getObject(name));
-                }
-                values.put("player", resulsSet.getObject("player"));
-                TeleportPoint tpPoint = this.modelConstructor.newInstance(values);
-                return tpPoint;
-            }
-            return null;
-        }
-        catch (SQLException ex)
-        {
-            throw new StorageException("Error while getting Model from Database", ex, this.database.getStoredStatement(this.modelClass, "get"));
-        }
-        catch (Exception ex)
-        {
-            throw new IllegalStateException("Error while creating fresh Model from Database", ex);
-        }
+        return this.dsl.selectFrom(TABLE_TP_POINT).where(TABLE_TP_POINT.KEY.eq(UInteger.valueOf(key))).fetchOne();
     }
 
     /**
@@ -446,10 +357,11 @@ public class TelePointManager extends SingleKeyStorage<Long, TeleportPoint>
      *
      * @return the newly generated home
      */
-    public Home createHome(Location location, String name, User owner, TeleportPoint.Visibility visibility)
+    public Home createHome(Location location, String name, User owner, short visibility)
     {
-        Home home = new Home(new TeleportPoint(location, name, owner, null, HOME, visibility), this, inviteManager, this.module);
-        this.store(home.getModel());
+        TeleportPointModel model = this.dsl.newRecord(TABLE_TP_POINT).newTPPoint(location, name, owner, null, TYPE_HOME, visibility);
+        Home home = new Home(model, this, inviteManager, this.module);
+        model.insert();
         this.putHomeToUser(home, home.getOwner());
         this.homes.put(home.getStorageName(), home);
         for (User user : home.getInvitedUsers())
@@ -465,7 +377,7 @@ public class TelePointManager extends SingleKeyStorage<Long, TeleportPoint>
      */
     public void deleteHome(Home home)
     {
-        if (home.getVisibility() == TeleportPoint.Visibility.PRIVATE)
+        if (home.getVisibility() == VISIBILITY_PRIVATE)
         {
             this.removeHomeFromUser(home, home.getOwner());
             for (User user : home.getInvitedUsers())
@@ -480,7 +392,7 @@ public class TelePointManager extends SingleKeyStorage<Long, TeleportPoint>
                 removeHomeFromUser(home, user);
             }
         }
-        this.delete(home.getModel());
+        home.getModel().delete();
         this.homes.remove(home.getStorageName());
         if (home.isPublic())
         {
@@ -687,11 +599,11 @@ public class TelePointManager extends SingleKeyStorage<Long, TeleportPoint>
      *
      * @return the newly generated warp
      */
-    public Warp createWarp(Location location, String name, User owner, TeleportPoint.Visibility visibility)
+    public Warp createWarp(Location location, String name, User owner, short visibility)
     {
-        Warp warp = new Warp(new TeleportPoint(location, name, owner, null, TeleportPoint.Type.WARP, visibility),
-                this, inviteManager, this.module);
-        this.store(warp.getModel());
+        TeleportPointModel model = this.dsl.newRecord(TABLE_TP_POINT).newTPPoint(location, name, owner, null, TYPE_WARP, visibility);
+        Warp warp = new Warp(model, this, inviteManager, this.module);
+        model.insert();
         this.putWarpToUser(warp, warp.getOwner());
         this.warps.put(warp.getStorageName(), warp);
         for (User user : warp.getInvitedUsers())
@@ -746,7 +658,7 @@ public class TelePointManager extends SingleKeyStorage<Long, TeleportPoint>
             }
         }
         this.warps.remove(warp.getStorageName());
-        this.delete(warp.getModel());
+        warp.getModel().delete();
     }
 
     public final int ALL = -1;
@@ -760,29 +672,24 @@ public class TelePointManager extends SingleKeyStorage<Long, TeleportPoint>
         Set<Home> homes = new HashSet<Home>();
         if ((mask & PUBLIC) == PUBLIC)
         {
-            try
+            Result<Record2<String,UInteger>> fetch = this.dsl.select(TABLE_TP_POINT.NAME, TABLE_TP_POINT.OWNER)
+                                                     .from(TABLE_TP_POINT)
+                                                     .where(TABLE_TP_POINT.TYPE.eq(TYPE_HOME),
+                                                            TABLE_TP_POINT.VISIBILITY.eq(VISIBILITY_PUBLIC)).fetch();
+            for (Record2<String, UInteger> record2 : fetch)
             {
-                ResultSet resultSet = database.preparedQuery(this.modelClass, "filtered_getAll", HOME.ordinal(), Visibility.PUBLIC.ordinal());
-                homes.addAll(this.getHomes(resultSet));
-                resultSet.close();
-            }
-            catch (SQLException e)
-            {
-                throw new StorageException("Failed getting all public homes", e);
+                homes.add(this.homes.get(record2.value2().longValue() + ":" + record2.value1()));
             }
         }
-
         if ((mask & PRIVATE) == PRIVATE)
         {
-            try
+            Result<Record2<String,UInteger>> fetch = this.dsl.select(TABLE_TP_POINT.NAME, TABLE_TP_POINT.OWNER)
+                                                             .from(TABLE_TP_POINT)
+                                                             .where(TABLE_TP_POINT.TYPE.eq(TYPE_HOME),
+                                                                    TABLE_TP_POINT.VISIBILITY.eq(VISIBILITY_PRIVATE)).fetch();
+            for (Record2<String, UInteger> record2 : fetch)
             {
-                ResultSet resultSet = database.preparedQuery(this.modelClass, "filtered_getAll", HOME.ordinal(), Visibility.PRIVATE.ordinal());
-                homes.addAll(this.getHomes(resultSet));
-                resultSet.close();
-            }
-            catch (SQLException e)
-            {
-                throw new StorageException("Failed getting all private homes", e);
+                homes.add(this.homes.get(record2.value2().longValue() + ":" + record2.value1()));
             }
         }
         return homes;
@@ -790,7 +697,7 @@ public class TelePointManager extends SingleKeyStorage<Long, TeleportPoint>
 
     public Set<Home> listHomes(User user, int mask)
     {
-        Set<Home> homes = new HashSet<Home>();
+        Set<Home> homes = new HashSet<>();
         if (mask == -1)
         {
             homes.addAll(this.listHomes(PUBLIC));
@@ -812,42 +719,39 @@ public class TelePointManager extends SingleKeyStorage<Long, TeleportPoint>
 
         if ((mask & (PUBLIC | OWNED)) == (PUBLIC | OWNED))
         {
-            try
+            Result<Record2<String,UInteger>> fetch = this.dsl.select(TABLE_TP_POINT.NAME, TABLE_TP_POINT.OWNER)
+                                                             .from(TABLE_TP_POINT)
+                                                             .where(TABLE_TP_POINT.TYPE.eq(TYPE_HOME),
+                                                                    TABLE_TP_POINT.VISIBILITY.eq(VISIBILITY_PUBLIC),
+                                                                    TABLE_TP_POINT.OWNER.eq(user.getEntity().getKey())).fetch();
+            for (Record2<String, UInteger> record2 : fetch)
             {
-                ResultSet resultSet = database.preparedQuery(this.modelClass, "filtered_getAll_owned", HOME.ordinal(), Visibility.PUBLIC.ordinal(), user.getId());
-                homes.addAll(this.getHomes(resultSet));
-                resultSet.close();
-            }
-            catch (SQLException e)
-            {
-                throw new StorageException("Failed getting public homes owned by " + user.getName(), e);
+                homes.add(this.homes.get(record2.value2().longValue() + ":" + record2.value1()));
             }
         }
         if ((mask & (PRIVATE | OWNED)) == (PRIVATE | OWNED))
         {
-            try
+            Result<Record2<String,UInteger>> fetch = this.dsl.select(TABLE_TP_POINT.NAME, TABLE_TP_POINT.OWNER)
+                                                             .from(TABLE_TP_POINT)
+                                                             .where(TABLE_TP_POINT.TYPE.eq(TYPE_HOME),
+                                                                    TABLE_TP_POINT.VISIBILITY.eq(VISIBILITY_PRIVATE),
+                                                                    TABLE_TP_POINT.OWNER.eq(user.getEntity().getKey())).fetch();
+            for (Record2<String, UInteger> record2 : fetch)
             {
-                ResultSet resultSet = database.preparedQuery(this.modelClass, "filtered_getAll_owned", HOME.ordinal(), Visibility.PRIVATE.ordinal(), user.getId());
-                homes.addAll(this.getHomes(resultSet));
-                resultSet.close();
-            }
-            catch (SQLException e)
-            {
-                throw new StorageException("Failed getting private homes owned by " + user.getName(), e);
+                homes.add(this.homes.get(record2.value2().longValue() + ":" + record2.value1()));
             }
         }
         if ((mask & INVITED) == INVITED)
         {
             for (TeleportInvite invite : this.inviteManager.getInvites(user))
             {
-                TeleportPoint point = this.get(invite.teleportPoint);
-                if (point.type == HOME)
+                TeleportPointModel point = this.get(invite.getTeleportpoint().longValue());
+                if (point.getType() == TYPE_HOME)
                 {
-                    Home home = this.homes.get(point.ownerName + ":" + point.name);
+                    Home home = this.homes.get(point.getOwnerKey().longValue() + ":" + point.getName());
                     if (home != null)
                     {
-                        if ((home.isPublic() && (mask & PUBLIC) == PUBLIC) || (!home
-                            .isPublic() && (mask & PRIVATE) == PRIVATE))
+                        if ((home.isPublic() && (mask & PUBLIC) == PUBLIC) || (!home.isPublic() && (mask & PRIVATE) == PRIVATE))
                         {
                             homes.add(home);
                         }
@@ -860,32 +764,27 @@ public class TelePointManager extends SingleKeyStorage<Long, TeleportPoint>
 
     public Set<Warp> listWarps(int mask)
     {
-        Set<Warp> warps = new HashSet<Warp>();
+        Set<Warp> warps = new HashSet<>();
         if ((mask & PUBLIC) == PUBLIC)
         {
-            try
+            Result<Record2<String,UInteger>> fetch = this.dsl.select(TABLE_TP_POINT.NAME, TABLE_TP_POINT.OWNER)
+                                                             .from(TABLE_TP_POINT)
+                                                             .where(TABLE_TP_POINT.TYPE.eq(TYPE_WARP),
+                                                                    TABLE_TP_POINT.VISIBILITY.eq(VISIBILITY_PUBLIC)).fetch();
+            for (Record2<String, UInteger> record2 : fetch)
             {
-                ResultSet resultSet = database.preparedQuery(this.modelClass, "filtered_getAll", WARP.ordinal(), Visibility.PUBLIC.ordinal());
-                warps.addAll(this.getWarps(resultSet));
-                resultSet.close();
-            }
-            catch (SQLException e)
-            {
-                throw new StorageException("Failed getting all public warps", e);
+                warps.add(this.warps.get(record2.value2().longValue() + ":" + record2.value1()));
             }
         }
-
         if ((mask & PRIVATE) == PRIVATE)
         {
-            try
+            Result<Record2<String,UInteger>> fetch = this.dsl.select(TABLE_TP_POINT.NAME, TABLE_TP_POINT.OWNER)
+                                                             .from(TABLE_TP_POINT)
+                                                             .where(TABLE_TP_POINT.TYPE.eq(TYPE_WARP),
+                                                                    TABLE_TP_POINT.VISIBILITY.eq(VISIBILITY_PRIVATE)).fetch();
+            for (Record2<String, UInteger> record2 : fetch)
             {
-                ResultSet resultSet = database.preparedQuery(this.modelClass, "filtered_getAll", WARP.ordinal(), Visibility.PRIVATE.ordinal());
-                warps.addAll(this.getWarps(resultSet));
-                resultSet.close();
-            }
-            catch (SQLException e)
-            {
-                throw new StorageException("Failed getting all private warps", e);
+                warps.add(this.warps.get(record2.value2().longValue() + ":" + record2.value1()));
             }
         }
         return warps;
@@ -915,42 +814,39 @@ public class TelePointManager extends SingleKeyStorage<Long, TeleportPoint>
 
         if ((mask & (PUBLIC | OWNED)) == (PUBLIC | OWNED))
         {
-            try
+            Result<Record2<String,UInteger>> fetch = this.dsl.select(TABLE_TP_POINT.NAME, TABLE_TP_POINT.OWNER)
+                                                             .from(TABLE_TP_POINT)
+                                                             .where(TABLE_TP_POINT.TYPE.eq(TYPE_WARP),
+                                                                    TABLE_TP_POINT.VISIBILITY.eq(VISIBILITY_PUBLIC),
+                                                                    TABLE_TP_POINT.OWNER.eq(user.getEntity().getKey())).fetch();
+            for (Record2<String, UInteger> record2 : fetch)
             {
-                ResultSet resultSet = database.preparedQuery(this.modelClass, "filtered_getAll_owned", WARP.ordinal(), Visibility.PUBLIC.ordinal(), user.getId());
-                warps.addAll(this.getWarps(resultSet));
-                resultSet.close();
-            }
-            catch (SQLException e)
-            {
-                throw new StorageException("Failed getting public warps owned by " + user.getName(), e);
+                warps.add(this.warps.get("public:" + record2.value1()));
             }
         }
         if ((mask & (PRIVATE | OWNED)) == (PRIVATE | OWNED))
         {
-            try
+            Result<Record2<String,UInteger>> fetch = this.dsl.select(TABLE_TP_POINT.NAME, TABLE_TP_POINT.OWNER)
+                                                             .from(TABLE_TP_POINT)
+                                                             .where(TABLE_TP_POINT.TYPE.eq(TYPE_WARP),
+                                                                    TABLE_TP_POINT.VISIBILITY.eq(VISIBILITY_PRIVATE),
+                                                                    TABLE_TP_POINT.OWNER.eq(user.getEntity().getKey())).fetch();
+            for (Record2<String, UInteger> record2 : fetch)
             {
-                ResultSet resultSet = database.preparedQuery(this.modelClass, "filtered_getAll_owned", WARP.ordinal(), Visibility.PRIVATE.ordinal(), user.getId());
-                warps.addAll(this.getWarps(resultSet));
-                resultSet.close();
-            }
-            catch (SQLException e)
-            {
-                throw new StorageException("Failed getting private warps owned by " + user.getName(), e);
+                warps.add(this.warps.get(record2.value2().longValue() + ":" + record2.value1()));
             }
         }
         if ((mask & INVITED) == INVITED)
         {
             for (TeleportInvite invite : this.inviteManager.getInvites(user))
             {
-                TeleportPoint point = this.get(invite.teleportPoint);
-                if (point.type == HOME)
+                TeleportPointModel point = this.get(invite.getTeleportpoint().longValue());
+                if (point.getType() == TYPE_WARP)
                 {
-                    Warp warp = this.warps.get(point.ownerName + ":" + point.name);
+                    Warp warp = this.warps.get(point.getOwnerKey().longValue() + ":" + point.getName());
                     if (warp != null)
                     {
-                        if ((warp.isPublic() && (mask & PUBLIC) == PUBLIC) || (!warp
-                            .isPublic() && (mask & PRIVATE) == PRIVATE))
+                        if ((warp.isPublic() && (mask & PUBLIC) == PUBLIC) || (!warp.isPublic() && (mask & PRIVATE) == PRIVATE))
                         {
                             warps.add(warp);
                         }
@@ -997,46 +893,4 @@ public class TelePointManager extends SingleKeyStorage<Long, TeleportPoint>
         }
     }
 
-    private Set<Home> getHomes(ResultSet resultSet) throws SQLException
-    {
-        Set<Home> homes = new HashSet<Home>();
-        while (resultSet.next())
-        {
-            String name = resultSet.getString("name");
-            String ownerName = resultSet.getString("player");
-            Home home;
-            if (ownerName == null)
-            {
-                home = this.homes.get("Unknown" + ":" + name);
-            }
-            else
-            {
-                home = this.homes.get(ownerName + ":" + name);
-            }
-            homes.add(home);
-        }
-        return homes;
-    }
-
-    private Set<Warp> getWarps(ResultSet resultSet) throws SQLException
-    {
-        Set<Warp> warps = new HashSet<Warp>();
-        while (resultSet.next())
-        {
-            String name = resultSet.getString("name");
-            String ownerName = resultSet.getString("player");
-            int visibility = resultSet.getInt("visibility");
-            Warp warp;
-            if (visibility == TeleportPoint.Visibility.PRIVATE.ordinal())
-            {
-                warp = this.warps.get(ownerName + ":" + name);
-            }
-            else
-            {
-                warp = this.warps.get("public:" + name);
-            }
-            warps.add(warp);
-        }
-        return warps;
-    }
 }

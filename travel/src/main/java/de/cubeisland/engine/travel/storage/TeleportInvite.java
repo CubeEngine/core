@@ -17,60 +17,90 @@
  */
 package de.cubeisland.engine.travel.storage;
 
-import java.util.Map;
+import org.jooq.Field;
+import org.jooq.Record2;
+import org.jooq.Row2;
+import org.jooq.impl.UpdatableRecordImpl;
+import org.jooq.types.UInteger;
 
-import de.cubeisland.engine.core.storage.TwoKeyModel;
-import de.cubeisland.engine.core.storage.database.AttrType;
-import de.cubeisland.engine.core.storage.database.Attribute;
-import de.cubeisland.engine.core.storage.database.DatabaseConstructor;
-import de.cubeisland.engine.core.storage.database.Index;
-import de.cubeisland.engine.core.storage.database.TwoKeyEntity;
-import de.cubeisland.engine.core.util.Pair;
-import de.cubeisland.engine.core.util.convert.ConversionException;
+import static de.cubeisland.engine.travel.storage.TableInvite.TABLE_INVITE;
 
-@TwoKeyEntity(tableName = "teleportinvites", firstPrimaryKey = "teleportpoint", secondPrimaryKey = "userkey",
-              indices = {
-                  @Index(value = Index.IndexType.FOREIGN_KEY, fields = "teleportpoint", f_table = "teleportpoints", f_field = "key"), @Index(value = Index.IndexType.FOREIGN_KEY, fields = "userkey", f_table = "user", f_field = "key")
-              })
-public class TeleportInvite implements TwoKeyModel<Long, Long>
+public class TeleportInvite extends UpdatableRecordImpl<TeleportInvite> implements Record2<UInteger, UInteger>
 {
-    @Attribute(type = AttrType.INT, unsigned = true, name = "teleportpoint")
-    public Long teleportPoint;
-    @Attribute(type = AttrType.INT, unsigned = true, name = "userkey")
-    public Long userKey;
-
-    @DatabaseConstructor
-    public TeleportInvite(Map<String, Object> args) throws ConversionException
+    public TeleportInvite()
     {
-        this.teleportPoint = Long.valueOf(args.get("teleportpoint").toString());
-        this.userKey = Long.valueOf(args.get("userkey").toString());
+        super(TABLE_INVITE);
     }
 
-    public TeleportInvite(Long teleportPoint, Long userKey)
+    public TeleportInvite newInvite(UInteger teleportPoint, UInteger userKey)
     {
-        this.teleportPoint = teleportPoint;
-        this.userKey = userKey;
+        this.setTeleportpoint(teleportPoint);
+        this.setUserkey(userKey);
+        return this;
     }
 
-    /**
-     * Check if the current and the teleportinvite supplied is equal in their contents.
-     * This does not care if they are the same instance of TeleportInvite
-     */
-    public boolean semiEquals(TeleportInvite tpI)
-    {
-        return tpI.teleportPoint.equals(this.teleportPoint) && tpI.userKey.equals(this.userKey);
+    public void setTeleportpoint(UInteger value) {
+        setValue(0, value);
     }
+
+    public UInteger getTeleportpoint() {
+        return (UInteger) getValue(0);
+    }
+
+    public void setUserkey(UInteger value) {
+        setValue(1, value);
+    }
+
+    public UInteger getUserkey() {
+        return (UInteger) getValue(1);
+    }
+
+    // -------------------------------------------------------------------------
+    // Primary key information
+    // -------------------------------------------------------------------------
 
     @Override
-    public Pair<Long, Long> getId()
-    {
-        return new Pair<Long, Long>(teleportPoint, userKey);
+    public Record2<UInteger, UInteger> key() {
+        return (Record2) super.key();
     }
 
+    // -------------------------------------------------------------------------
+    // Record2 type implementation
+    // -------------------------------------------------------------------------
+
+    
     @Override
-    public void setId(Pair<Long, Long> id)
-    {
-        this.teleportPoint = id.getLeft();
-        this.userKey = id.getRight();
+    public Row2<UInteger, UInteger> fieldsRow() {
+        return (Row2) super.fieldsRow();
+    }
+
+    
+    @Override
+    public Row2<UInteger, UInteger> valuesRow() {
+        return (Row2) super.valuesRow();
+    }
+
+    
+    @Override
+    public Field<UInteger> field1() {
+        return TABLE_INVITE.TELEPORTPOINT;
+    }
+
+    
+    @Override
+    public Field<UInteger> field2() {
+        return TABLE_INVITE.USERKEY;
+    }
+
+    
+    @Override
+    public UInteger value1() {
+        return getTeleportpoint();
+    }
+
+    
+    @Override
+    public UInteger value2() {
+        return getUserkey();
     }
 }

@@ -28,7 +28,7 @@ import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.travel.Travel;
 import de.cubeisland.engine.travel.storage.Home;
 import de.cubeisland.engine.travel.storage.TelePointManager;
-import de.cubeisland.engine.travel.storage.TeleportPoint;
+import de.cubeisland.engine.travel.storage.TeleportPointModel;
 
 public class HomeListener implements Listener
 {
@@ -56,7 +56,6 @@ public class HomeListener implements Listener
                         Home home = tpManager.getHome(user, "home");
                         home.setLocation(user.getLocation());
                         home.update();
-                        tpManager.update(home.getModel());
                         user.sendTranslated("&aYour home have been set!");
                     }
                     else
@@ -67,7 +66,7 @@ public class HomeListener implements Listener
                             user.sendTranslated("&cYou have to delete a home to make a new one");
                             return;
                         }
-                        Home home = tpManager.createHome(user.getLocation(), "home", user, TeleportPoint.Visibility.PRIVATE);
+                        Home home = tpManager.createHome(user.getLocation(), "home", user, TeleportPointModel.VISIBILITY_PRIVATE);
                         user.sendTranslated("&aYour home has been created!");
                         event.setCancelled(true);
                     }

@@ -37,8 +37,10 @@ import de.cubeisland.engine.core.permission.PermDefault;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.travel.Travel;
 import de.cubeisland.engine.travel.storage.TelePointManager;
-import de.cubeisland.engine.travel.storage.TeleportPoint;
 import de.cubeisland.engine.travel.storage.Warp;
+
+import static de.cubeisland.engine.travel.storage.TeleportPointModel.VISIBILITY_PRIVATE;
+import static de.cubeisland.engine.travel.storage.TeleportPointModel.VISIBILITY_PUBLIC;
 
 public class WarpCommand extends ContainerCommand
 {
@@ -111,8 +113,7 @@ public class WarpCommand extends ContainerCommand
                 return;
             }
             Location loc = sender.getLocation();
-            Warp warp = telePointManager.createWarp(loc, name, sender, (context
-                                                                            .hasFlag("priv") ? TeleportPoint.Visibility.PRIVATE : TeleportPoint.Visibility.PUBLIC));
+            Warp warp = telePointManager.createWarp(loc, name, sender, (context.hasFlag("priv") ? VISIBILITY_PRIVATE : VISIBILITY_PUBLIC));
             context.sendTranslated("&aYour warp have been created");
             return;
         }

@@ -29,6 +29,8 @@ import de.cubeisland.engine.travel.interactions.HomeListener;
 import de.cubeisland.engine.travel.interactions.WarpAdminCommand;
 import de.cubeisland.engine.travel.interactions.WarpCommand;
 import de.cubeisland.engine.travel.storage.InviteManager;
+import de.cubeisland.engine.travel.storage.TableInvite;
+import de.cubeisland.engine.travel.storage.TableTeleportPoint;
 import de.cubeisland.engine.travel.storage.TelePointManager;
 
 public class Travel extends Module
@@ -43,6 +45,8 @@ public class Travel extends Module
     {
         Profiler.startProfiling("travelEnable");
         this.config = Configuration.load(TravelConfig.class, this);
+        this.getCore().getDB().registerTable(TableTeleportPoint.initTable(this.getCore().getDB()));
+        this.getCore().getDB().registerTable(TableInvite.initTable(this.getCore().getDB()));
         this.getLog().trace("{} ms - TelePointManager", Profiler.getCurrentDelta("travelEnable", TimeUnit.MILLISECONDS));
         this.telePointManager = new TelePointManager(this);
         this.getLog().trace("{} ms - InviteManager", Profiler.getCurrentDelta("travelEnable", TimeUnit.MILLISECONDS));
