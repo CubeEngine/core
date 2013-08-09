@@ -310,7 +310,9 @@ public class QueryManager
             int logSize = logs.size();
             // --- SQL ---
             String sql = dsl
-                .insertInto(TABLE_LOG_ENTRY, TABLE_LOG_ENTRY.DATE, TABLE_LOG_ENTRY.ACTION, TABLE_LOG_ENTRY.WORLD, TABLE_LOG_ENTRY.X, TABLE_LOG_ENTRY.Y, TABLE_LOG_ENTRY.Z, TABLE_LOG_ENTRY.CAUSER, TABLE_LOG_ENTRY.BLOCK, TABLE_LOG_ENTRY.DATA, TABLE_LOG_ENTRY.NEWBLOCK, TABLE_LOG_ENTRY.NEWDATA, TABLE_LOG_ENTRY.ADDITIONALDATA)
+                .insertInto(CURRENT_TABLE, CURRENT_TABLE.DATE, CURRENT_TABLE.ACTION, CURRENT_TABLE.WORLD,
+                            CURRENT_TABLE.X, CURRENT_TABLE.Y, CURRENT_TABLE.Z, CURRENT_TABLE.CAUSER,
+                            CURRENT_TABLE.BLOCK, CURRENT_TABLE.DATA, CURRENT_TABLE.NEWBLOCK, CURRENT_TABLE.NEWDATA, CURRENT_TABLE.ADDITIONALDATA)
                 .values((Timestamp)null, null, null, null, null, null, null, null, null, null, null, null).getSQL();
             if (this.insertConnection == null || this.insertConnection.isClosed())
             {
