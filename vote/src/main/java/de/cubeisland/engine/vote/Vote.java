@@ -28,6 +28,7 @@ import de.cubeisland.engine.core.module.Module;
 import de.cubeisland.engine.core.service.Economy;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.util.ChatFormat;
+import de.cubeisland.engine.vote.storage.TableVote;
 import de.cubeisland.engine.vote.storage.VoteModel;
 import org.jooq.DSLContext;
 import org.jooq.types.UShort;
@@ -42,6 +43,7 @@ public class Vote extends Module implements Listener
     @Override
     public void onEnable()
     {
+        this.getCore().getDB().registerTable(TableVote.initTable(this.getCore().getDB()));
         this.config = Configuration.load(VoteConfiguration.class, this);
         this.getCore().getEventManager().registerListener(this, this);
         this.dsl = this.getCore().getDB().getDSL();

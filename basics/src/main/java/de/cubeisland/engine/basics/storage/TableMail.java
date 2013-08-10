@@ -67,7 +67,7 @@ public class TableMail extends TableImpl<Mail> implements TableCreator<Mail>
                                         "`userId` int(10) unsigned NOT NULL,\n" +
                                         "`senderId` int(10) unsigned DEFAULT NULL,\n" +
                                         "PRIMARY KEY (`key`),\n" +
-                                        "FOREIGN KEY f_user (`key`) REFERENCES " + TABLE_USER.getName() + " (`key`) ON UPDATE CASCADE ON DELETE CASCADE,\n" +
+                                        "FOREIGN KEY f_user (`userId`) REFERENCES " + TABLE_USER.getName() + " (`key`) ON UPDATE CASCADE ON DELETE CASCADE,\n" +
                                         "FOREIGN KEY f_sender (`senderId`) REFERENCES " + TABLE_USER.getName() + " (`key`) ON UPDATE CASCADE ON DELETE CASCADE)" +
                                         "ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci\n" +
                                         "COMMENT='1.0.0'").execute();
