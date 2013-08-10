@@ -61,7 +61,7 @@ public class TableInvite extends TableImpl<TeleportInvite> implements TableCreat
                                         "`teleportpoint` int(10) unsigned NOT NULL,\n" +
                                         "`userkey` int(10) unsigned NOT NULL,\n" +
                                         "PRIMARY KEY (`teleportpoint`,`userkey`),\n" +
-                                        "FOREIGN KEY `f_tppoint`(`teleportpoint`) REFERENCES " + TABLE_USER.getName() + "(`key`) ON UPDATE CASCADE ON DELETE CASCADE,\n" +
+                                        "FOREIGN KEY `f_tppoint`(`teleportpoint`) REFERENCES " + TABLE_TP_POINT.getName() + "(`key`) ON UPDATE CASCADE ON DELETE CASCADE,\n" +
                                         "FOREIGN KEY `f_user`(`userkey`) REFERENCES " + TABLE_USER.getName() + "(`key`) ON UPDATE CASCADE ON DELETE CASCADE)\n" +
                                         "ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci\n" +
                                         "COMMENT='1.0.0'").execute();
