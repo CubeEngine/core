@@ -55,7 +55,7 @@ public class BlockFall extends BlockActionType
     @Override
     protected Set<ActionTypeCategory> getCategories()
     {
-        return new HashSet<ActionTypeCategory>(Arrays.asList(BLOCK, ENVIRONEMENT, PLAYER));
+        return new HashSet<>(Arrays.asList(BLOCK, ENVIRONEMENT, PLAYER));
     }
 
     @Override
@@ -78,7 +78,7 @@ public class BlockFall extends BlockActionType
                 if (cause != null)
                 {
                     ObjectNode json = this.om.createObjectNode();
-                    json.put("fall-cause",cause.getRight().getID());
+                    json.put("fall-cause",cause.getRight().getModel().getId().longValue());
                     this.logBlockChange(loc, cause.getLeft(), BlockData.of(state), AIR, json.toString());
 
                     Block onTop = state.getBlock().getRelative(BlockFace.UP);
@@ -91,10 +91,10 @@ public class BlockFall extends BlockActionType
         }
     }
 
-    private Map<Location,Pair<Entity,BlockActionType>> plannedFall = new ConcurrentHashMap<Location, Pair<Entity, BlockActionType>>();
+    private Map<Location,Pair<Entity,BlockActionType>> plannedFall = new ConcurrentHashMap<>();
     public void preplanBlockFall(final Location location, Entity player, BlockActionType reason)
     {
-        plannedFall.put(location, new Pair<Entity, BlockActionType>(player, reason));
+        plannedFall.put(location, new Pair<>(player, reason));
         BlockFall.this.logModule.getCore().getTaskManager().runTaskDelayed(logModule, new Runnable()
         {
             @Override
@@ -131,10 +131,10 @@ public class BlockFall extends BlockActionType
     @Override
     public boolean isSimilar(LogEntry logEntry, LogEntry other)
     {
-        return logEntry.newBlock.equals(other.newBlock)
-            && logEntry.world == other.world
-            && logEntry.causer == other.causer
-            && logEntry.additional.equals(other.additional) // additional
-            && logEntry.block == other.block;
+        return logEntry.getNewblock().equals(other.getNewblock())
+            && logEntry.getWorld() == other.getWorld()
+            && logEntry.getCauser().equals(other.getCauser())
+            && logEntry.getAdditional().equals(other.getAdditional()) // additional
+            && logEntry.getBlock() == other.getBlock();
     }
 }

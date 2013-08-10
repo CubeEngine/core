@@ -17,6 +17,8 @@
  */
 package de.cubeisland.engine.log.action;
 
+import java.sql.Timestamp;
+
 import org.bukkit.event.Listener;
 
 import de.cubeisland.engine.core.user.User;
@@ -40,7 +42,21 @@ public abstract class LogActionType extends ActionType implements Listener
         String time = "";
         if (show.showDate)
         {
-            time = "&7"+ logEntry.timestamp.toString() + " - ";
+            if (logEntry.hasAttached())
+            {
+                Timestamp first = logEntry.getTimestamp();
+                Timestamp last = logEntry.getAttached().last().getTimestamp();
+                if (first.getTime() > last.getTime())
+                {
+                    first = last;
+                    last = logEntry.getTimestamp();
+                }
+                time = "&7" + first.toString() + " &6-&7 " + last.toString() + "\n";
+            }
+            else
+            {
+                time = "&7"+ logEntry.getTimestamp().toString() + " - ";
+            }
             //TODO time-frame if attached
         }
         String loc = "";
@@ -48,54 +64,54 @@ public abstract class LogActionType extends ActionType implements Listener
         {
             if (logEntry.hasAttached())
             {
-                int xMin = logEntry.location.x;
-                int yMin = logEntry.location.y;
-                int zMin = logEntry.location.z;
-                int xMax = logEntry.location.x;
-                int yMax = logEntry.location.y;
-                int zMax = logEntry.location.z;
+                int xMin = logEntry.getVector().x;
+                int yMin = logEntry.getVector().y;
+                int zMin = logEntry.getVector().z;
+                int xMax = logEntry.getVector().x;
+                int yMax = logEntry.getVector().y;
+                int zMax = logEntry.getVector().z;
                 for (LogEntry entry : logEntry.getAttached())
                 {
-                    if (entry.location.x < xMin)
+                    if (entry.getVector().x < xMin)
                     {
-                        xMin = entry.location.x;
+                        xMin = entry.getVector().x;
                     }
-                    else if (entry.location.x > xMax)
+                    else if (entry.getVector().x > xMax)
                     {
-                        xMax = entry.location.x;
+                        xMax = entry.getVector().x;
                     }
-                    if (entry.location.y < yMin)
+                    if (entry.getVector().y < yMin)
                     {
-                        yMin = entry.location.y;
+                        yMin = entry.getVector().y;
                     }
-                    else if (entry.location.y > yMax)
+                    else if (entry.getVector().y > yMax)
                     {
-                        yMax = entry.location.y;
+                        yMax = entry.getVector().y;
                     }
-                    if (entry.location.z < zMin)
+                    if (entry.getVector().z < zMin)
                     {
-                        zMin = entry.location.z;
+                        zMin = entry.getVector().z;
                     }
-                    else if (entry.location.z > zMax)
+                    else if (entry.getVector().z > zMax)
                     {
-                        zMax = entry.location.z;
+                        zMax = entry.getVector().z;
                     }
                 }
                 if (xMax == xMin && yMax == yMin && zMax == zMin)
                 {
                     loc = "\n&a   at &3%s&f:&3%d&f:&3%d&f:&3%d&a";
-                    loc = String.format(loc,logEntry.world.getName(),xMax,yMax,zMax);
+                    loc = String.format(loc,logEntry.getWorld().getName(),xMax,yMax,zMax);
                 }
                 else
                 {
                     loc = "\n&a   in between &3%d&f:&3%d&f:&3%d&a and &3%d&f:&3%d&f:&3%d&a in &3%s";
-                    loc = String.format(loc,xMin, yMin, zMin, xMax,yMax,zMax,logEntry.world.getName());
+                    loc = String.format(loc,xMin, yMin, zMin, xMax,yMax,zMax,logEntry.getWorld().getName());
                 }
             }
             else
             {
                 loc = "\n&a   at &3%s&f:&3%d&f:&3%d&f:&3%d&a";
-                loc = String.format(loc,logEntry.world.getName(),logEntry.location.x,logEntry.location.y,logEntry.location.z);
+                loc = String.format(loc,logEntry.getWorld().getName(),logEntry.getVector().x,logEntry.getVector().y,logEntry.getVector().z);
             }
         }
         this.showLogEntry(user,logEntry,time,loc);
@@ -103,6 +119,12 @@ public abstract class LogActionType extends ActionType implements Listener
 
     @Override
     public boolean canRollback()
+    {
+        return true;
+    }
+
+    @Override
+    public boolean needsModel()
     {
         return true;
     }

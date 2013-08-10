@@ -125,23 +125,29 @@ import de.cubeisland.engine.log.action.logaction.spawn.OtherSpawn;
 import de.cubeisland.engine.log.action.logaction.spawn.SpawnerSpawn;
 import de.cubeisland.engine.log.action.logaction.worldedit.WorldEditActionType;
 
+import de.cubeisland.engine.log.storage.ActionTypeModel;
 import gnu.trove.map.hash.TLongObjectHashMap;
 
 public class ActionTypeManager
 {
-    private Map<Class<? extends ActionType>,ActionType> registeredActionTypes = new ConcurrentHashMap<Class<? extends ActionType>, ActionType>();
-    private Map<String, ActionType> actionTypesByName = new ConcurrentHashMap<String, ActionType>();
-    private TLongObjectHashMap<ActionType> registeredIds = new TLongObjectHashMap<ActionType>();
-    private Map<String, ActionTypeCategory> categories = new HashMap<String, ActionTypeCategory>();
+    private Map<Class<? extends ActionType>,ActionType> registeredActionTypes = new ConcurrentHashMap<>();
+    private Map<String, ActionType> actionTypesByName = new ConcurrentHashMap<>();
+    private TLongObjectHashMap<ActionType> registeredIds = new TLongObjectHashMap<>();
+    private Map<String, ActionTypeCategory> categories = new HashMap<>();
     private final Log module;
 
-    private Map<String,Long> actionIDs;
+    private Map<String,ActionTypeModel> actionTypeModels;
 
     public ActionTypeManager(Log module)
     {
         this.module = module;
-        this.actionIDs = this.module.getLogManager().getQueryManager().getActionTypesFromDatabase();
+        this.actionTypeModels = new HashMap<>();
+        for (ActionTypeModel actionTypeModel : this.module.getLogManager().getQueryManager().getActionTypesFromDatabase())
+        {
+            this.actionTypeModels.put(actionTypeModel.getName(), actionTypeModel);
+        }
         ActionTypeCompleter.manager = this;
+        this.registerLogActionTypes();
     }
 
     public void registerLogActionTypes()
@@ -245,30 +251,27 @@ public class ActionTypeManager
 
     public ActionTypeManager registerActionType(ActionType actionType)
     {
-        if (actionType.getID() != -1)
+        if (actionType.needsModel())
         {
-            Long actionTypeId = this.actionIDs.get(actionType.getName());
-            if (actionTypeId == null)
+            ActionTypeModel actionTypeModel = this.actionTypeModels.get(actionType.getName());
+            if (actionTypeModel == null)
             {
-                actionTypeId = this.module.getLogManager().getQueryManager().registerActionType(actionType.getName());
-                this.actionIDs.put(actionType.getName(),actionTypeId);
+                actionTypeModel = this.module.getLogManager().getQueryManager().registerActionType(actionType.getName());
+                this.actionTypeModels.put(actionType.getName(), actionTypeModel);
             }
-            actionType.setID(actionTypeId);
+            actionType.setModel(actionTypeModel);
+            registeredIds.put(actionType.getModel().getId().longValue(), actionType);
         }
-        registeredIds.put(actionType.getID(), actionType);
         registeredActionTypes.put(actionType.getClass(), actionType);
         actionTypesByName.put(actionType.getName(), actionType);
-        actionType.initialize(module);
-        if (actionType.getID() != -1)
+        actionType.initialize(module, this);
+        if (actionType.getModel() != null)
         {
             for (ActionTypeCategory category : actionType.getCategories())
             {
                 this.categories.put(category.name, category);
             }
-        }
-        if (actionType.getID() != -1)
-        {
-            this.module.getLog().debug("ActionType registered: " + actionType.getID() + " " + actionType.getName());
+            this.module.getLog().debug("ActionType registered: " + actionType.getModel().getId() + " " + actionType.getName());
         }
         return this;
     }
@@ -286,7 +289,7 @@ public class ActionTypeManager
 
     public String getActionTypesAsString()
     {
-        TreeSet<String> actionTypes = new TreeSet<String>();
+        TreeSet<String> actionTypes = new TreeSet<>();
         for (ActionType actionType : this.registeredActionTypes.values())
         {
             actionTypes.add(actionType.getName().replace("-","&f-&7"));
@@ -302,7 +305,7 @@ public class ActionTypeManager
         {
             String match = Match.string().matchString(actionString, this.actionTypesByName.keySet());
             if (match == null) return null;
-            HashSet<ActionType> actionTypes = new HashSet<ActionType>();
+            HashSet<ActionType> actionTypes = new HashSet<>();
             actionTypes.add(this.actionTypesByName.get(match));
             return actionTypes;
         }
@@ -314,7 +317,7 @@ public class ActionTypeManager
 
     public Set<String> getAllActionAndCategoryStrings()
     {
-        HashSet<String> strings = new HashSet<String>();
+        HashSet<String> strings = new HashSet<>();
         strings.addAll(this.categories.keySet());
         strings.addAll(this.actionTypesByName.keySet());
         return strings;

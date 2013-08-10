@@ -36,6 +36,9 @@ import de.cubeisland.engine.roles.config.RoleMirrorConverter;
 import de.cubeisland.engine.roles.role.RolesAttachment;
 import de.cubeisland.engine.roles.role.RolesEventHandler;
 import de.cubeisland.engine.roles.role.RolesManager;
+import de.cubeisland.engine.roles.storage.TableData;
+import de.cubeisland.engine.roles.storage.TablePerm;
+import de.cubeisland.engine.roles.storage.TableRole;
 
 public class Roles extends Module
 {
@@ -52,6 +55,10 @@ public class Roles extends Module
     @Override
     public void onEnable()
     {
+        this.getCore().getDB().registerTable(TableRole.initTable(this.getCore().getDB()));
+        this.getCore().getDB().registerTable(TablePerm.initTable(this.getCore().getDB()));
+        this.getCore().getDB().registerTable(TableData.initTable(this.getCore().getDB()));
+
         this.rolesManager = new RolesManager(this);
 
         this.getCore().getUserManager().addDefaultAttachment(RolesAttachment.class, this);

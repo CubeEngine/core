@@ -18,7 +18,6 @@
 package de.cubeisland.engine.core.user;
 
 import java.net.InetSocketAddress;
-import java.sql.Timestamp;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.Date;
@@ -61,83 +60,44 @@ import de.cubeisland.engine.core.bukkit.BukkitUtils;
 import de.cubeisland.engine.core.command.CommandSender;
 import de.cubeisland.engine.core.i18n.Language;
 import de.cubeisland.engine.core.module.Module;
-import de.cubeisland.engine.core.storage.Model;
-import de.cubeisland.engine.core.storage.database.AttrType;
-import de.cubeisland.engine.core.storage.database.Attribute;
-import de.cubeisland.engine.core.storage.database.DatabaseConstructor;
-import de.cubeisland.engine.core.storage.database.Index;
-import de.cubeisland.engine.core.storage.database.SingleKeyEntity;
 import de.cubeisland.engine.core.util.BlockUtil;
 import de.cubeisland.engine.core.util.ChatFormat;
-import de.cubeisland.engine.core.util.convert.ConversionException;
-
 import gnu.trove.map.hash.THashMap;
 import gnu.trove.set.hash.THashSet;
 
-import static de.cubeisland.engine.core.storage.database.Index.IndexType.UNIQUE;
+import static de.cubeisland.engine.core.user.TableUser.TABLE_USER;
 import static de.cubeisland.engine.core.util.BlockUtil.isInvertedStep;
 
 /**
  * A CubeEngine User (can exist offline too).
  */
-@SingleKeyEntity(tableName = "user", primaryKey = "key", autoIncrement = true, indices = {
-    @Index(value = UNIQUE, fields = "player")
-})
-public class User extends UserBase implements Model<Long>, CommandSender, AttachmentHolder<UserAttachment>
+public class User extends UserBase implements CommandSender, AttachmentHolder<UserAttachment>
 {
-    public static Long NO_ID = -1L;
-    @Attribute(type = AttrType.INT, unsigned = true)
-    public Long key;
-    @Attribute(type = AttrType.VARCHAR, length = 16)
-    public final String player;
-    @Attribute(type = AttrType.BOOLEAN)
-    public boolean nogc = false;
-    @Attribute(type = AttrType.DATETIME)
-    public Timestamp lastseen;
-    @Attribute(type = AttrType.VARBINARY, length = 128, notnull = false)
-    public byte[] passwd;
-    @Attribute(type = AttrType.DATETIME)
-    public final Timestamp firstseen;
-    @Attribute(name = "language", type = AttrType.VARCHAR, length = 5, notnull = false)
-    public Locale locale = null; // TODO this is not used at all
+    private UserEntity entity;
+
     boolean loggedInState = false;
     private final Map<Class<? extends UserAttachment>, UserAttachment> attachments;
     private final Core core;
 
-    @DatabaseConstructor
-    User(Map<String, Object> args) throws ConversionException
-    {
-        super((String)args.get("player"));
-        this.key = (Long)args.get("key");
-        this.player = this.getOfflinePlayer().getName();
-        this.nogc = (Boolean)args.get("nogc");
-        this.lastseen = (Timestamp)args.get("lastseen");
-        this.firstseen = (Timestamp)args.get("firstseen");
-        this.passwd = (byte[])args.get("passwd");
-        this.attachments = new THashMap<Class<? extends UserAttachment>, UserAttachment>();
-        this.core = CubeEngine.getCore();
-    }
-
-    User(Core core, Long key, String playerName)
+    User(Core core, String playerName)
     {
         super(playerName);
-        this.key = key;
-        this.player = playerName;
-        this.lastseen = new Timestamp(System.currentTimeMillis());
-        this.firstseen = this.lastseen;
-        this.passwd = new byte[0];
-        this.attachments = new THashMap<Class<? extends UserAttachment>, UserAttachment>();
+        this.entity = core.getDB().getDSL().newRecord(TABLE_USER).newUser(playerName);
+        this.attachments = new THashMap<>();
         this.core = core;
     }
 
     User(Core core, OfflinePlayer player)
     {
-        this(core, NO_ID, player.getName());
+        this(core, player.getName());
     }
 
-    User(Core core, String name)
+    public User(UserEntity entity)
     {
-        this(core, NO_ID, name);
+        super(entity.getPlayer());
+        this.core = CubeEngine.getCore();
+        this.entity = entity;
+        this.attachments = new THashMap<>();
     }
 
     public Core getCore()
@@ -186,7 +146,7 @@ public class User extends UserBase implements Model<Long>, CommandSender, Attach
 
     public synchronized Set<UserAttachment> getAll()
     {
-        return new THashSet<UserAttachment>(this.attachments.values());
+        return new THashSet<>(this.attachments.values());
     }
 
     @Override
@@ -234,16 +194,9 @@ public class User extends UserBase implements Model<Long>, CommandSender, Attach
         }
     }
 
-    @Override
     public Long getId()
     {
-        return this.key;
-    }
-
-    @Override
-    public void setId(Long id)
-    {
-        this.key = id;
+        return this.entity.getKey().longValue();
     }
 
     @Override
@@ -260,6 +213,7 @@ public class User extends UserBase implements Model<Long>, CommandSender, Attach
         super.sendMessage(ChatFormat.parseFormats(string));
     }
 
+    @Override
     public String translate(String message, Object... params)
     {
         return this.core.getI18n().translate(this.getLocale(), message, params);
@@ -271,6 +225,7 @@ public class User extends UserBase implements Model<Long>, CommandSender, Attach
      * @param message the message to translate
      * @param params optional parameter
      */
+    @Override
     public void sendTranslated(String message, Object... params)
     {
         this.sendMessage(this.translate(message, params));
@@ -289,9 +244,9 @@ public class User extends UserBase implements Model<Long>, CommandSender, Attach
      */
     public Locale getLocale()
     {
-        if (this.locale != null)
+        if (this.entity.getLocale() != null)
         {
-            return this.locale;
+            return this.entity.getLocale();
         }
         Language language = null;
         Player onlinePlayer = this.getOfflinePlayer().getPlayer();
@@ -313,7 +268,7 @@ public class User extends UserBase implements Model<Long>, CommandSender, Attach
         {
             throw new NullPointerException();
         }
-        this.locale = locale;
+        this.entity.setLocale(locale);
     }
 
     public int getPing()
@@ -336,7 +291,7 @@ public class User extends UserBase implements Model<Long>, CommandSender, Attach
         {
             return 0;
         }
-        return this.lastseen.getTime();
+        return this.entity.getLastseen().getTime();
     }
 
     public void safeTeleport(Location location, TeleportCause cause, boolean keepDirection)
@@ -408,7 +363,7 @@ public class User extends UserBase implements Model<Long>, CommandSender, Attach
 
     public boolean isPasswordSet()
     {
-        return this.passwd.length > 0;
+        return this.entity.getPasswd().length > 0;
     }
 
     public void logout()
@@ -566,7 +521,7 @@ public class User extends UserBase implements Model<Long>, CommandSender, Attach
                     this.getLocation().toVector(),
                     this.getEyeLocation().getDirection(),
                     0, distance);
-            TreeSet<Entity> targets = new TreeSet<Entity>(compare);
+            TreeSet<Entity> targets = new TreeSet<>(compare);
             Collection<Entity> list = this.getNearbyEntities(distance, distance, distance);
             double detectDistance = 1;
             while (iterator.hasNext())
@@ -660,5 +615,10 @@ public class User extends UserBase implements Model<Long>, CommandSender, Attach
     public void ban(CommandSender source, String reason, Date created, Date expire)
     {
         this.getCore().getBanManager().addBan(new UserBan(this.getName(), source.getName(), reason, created, expire));
+    }
+
+    public UserEntity getEntity()
+    {
+        return entity;
     }
 }

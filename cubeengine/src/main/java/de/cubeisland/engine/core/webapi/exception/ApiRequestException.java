@@ -79,7 +79,7 @@ public class ApiRequestException extends RuntimeException
      */
     public Object serialize()
     {
-        HashMap<String, Object> data = new HashMap<String, Object>(2);
+        HashMap<String, Object> data = new HashMap<>(2);
         data.put("code", this.code);
         data.put("message", this.getMessage());
         return data;

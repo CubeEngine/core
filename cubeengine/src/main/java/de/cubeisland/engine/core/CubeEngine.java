@@ -17,12 +17,9 @@
  */
 package de.cubeisland.engine.core;
 
-import java.io.File;
-
 import de.cubeisland.engine.core.filesystem.FileManager;
 import de.cubeisland.engine.core.i18n.I18n;
 import de.cubeisland.engine.core.user.UserManager;
-
 import org.slf4j.Logger;
 
 /**
@@ -30,7 +27,6 @@ import org.slf4j.Logger;
  */
 public final class CubeEngine
 {
-    private static final boolean WINDOWS = File.separatorChar == '\\' && File.pathSeparatorChar == ';';
     private static Core core = null;
     private static Thread mainThread;
 
@@ -39,11 +35,6 @@ public final class CubeEngine
      */
     private CubeEngine()
     {}
-
-    public static boolean runsOnWindows()
-    {
-        return WINDOWS;
-    }
 
     /**
      * Checks whether the CubeEngine class has been initialized.

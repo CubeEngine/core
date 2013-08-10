@@ -57,7 +57,7 @@ public class UserAccount extends Account
         {
             return true;
         }
-        return (this.model.value - amount * this.manager.fractionalDigitsFactor()) >= this.getMinBalance();
+        return (this.model.getValue() - amount * this.manager.fractionalDigitsFactor()) >= this.getMinBalance();
     }
 
     @Override

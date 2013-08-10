@@ -39,7 +39,7 @@ public class WaterBucket extends BlockActionType
     @Override
     protected Set<ActionTypeCategory> getCategories()
     {
-        return new HashSet<ActionTypeCategory>(Arrays.asList(BUCKET, BUCKET_EMPTY, BLOCK, PLAYER));
+        return new HashSet<>(Arrays.asList(BUCKET, BUCKET_EMPTY, BLOCK, PLAYER));
     }
 
     @Override

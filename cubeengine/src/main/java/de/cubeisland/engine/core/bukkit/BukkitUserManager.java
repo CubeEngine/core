@@ -39,13 +39,14 @@ import org.bukkit.scheduler.BukkitTask;
 import de.cubeisland.engine.core.user.AbstractUserManager;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.user.UserAttachment;
+import de.cubeisland.engine.core.user.UserEntity;
 import de.cubeisland.engine.core.util.matcher.Match;
-
 import gnu.trove.impl.Constants;
 import gnu.trove.map.TObjectIntMap;
 import gnu.trove.map.hash.TObjectIntHashMap;
 import gnu.trove.procedure.TObjectIntProcedure;
 
+import static de.cubeisland.engine.core.user.TableUser.TABLE_USER;
 
 
 public class BukkitUserManager extends AbstractUserManager
@@ -62,7 +63,7 @@ public class BukkitUserManager extends AbstractUserManager
         final long delay = (long)core.getConfiguration().userManagerCleanup;
         this.nativeScheduler = Executors.newSingleThreadScheduledExecutor(core.getTaskManager().getThreadFactory());
         this.nativeScheduler.scheduleAtFixedRate(new UserCleanupTask(), delay, delay, TimeUnit.MINUTES);
-        this.scheduledForRemoval = new TObjectIntHashMap<String>(Constants.DEFAULT_CAPACITY, Constants.DEFAULT_LOAD_FACTOR, -1);
+        this.scheduledForRemoval = new TObjectIntHashMap<>(Constants.DEFAULT_CAPACITY, Constants.DEFAULT_LOAD_FACTOR, -1);
 
         this.core.addInitHook(new Runnable() {
             @Override
@@ -90,7 +91,7 @@ public class BukkitUserManager extends AbstractUserManager
         if (user == null)
         {
             //Get all online Player and searching for similar names
-            ArrayList<String> onlinePlayerList = new ArrayList<String>();
+            ArrayList<String> onlinePlayerList = new ArrayList<>();
             for (Player player : this.core.getServer().getOnlinePlayers())
             {
                 onlinePlayerList.add(player.getName());
@@ -98,10 +99,11 @@ public class BukkitUserManager extends AbstractUserManager
             String foundUser = Match.string().matchString(name, onlinePlayerList);
             if (foundUser == null)
             {
+                UserEntity entity = this.database.getDSL().selectFrom(TABLE_USER).where(TABLE_USER.PLAYER.eq(name)).fetchOne();
                 //Looking up saved users
-                user = this.storage.loadUser(name);
-                if (user != null)
+                if (entity != null)
                 {
+                    user = new User(entity);
                     this.cacheUser(user);
                 }
             }
@@ -174,8 +176,8 @@ public class BukkitUserManager extends AbstractUserManager
                 public void run()
                 {
                     scheduledForRemoval.remove(user.getName());
-                    user.lastseen = new Timestamp(System.currentTimeMillis());
-                    storage.update(user); // is async
+                    user.getEntity().setLastseen(new Timestamp(System.currentTimeMillis()));
+                    user.getEntity().update();
                     if (!user.isOnline())
                     {
                         return;

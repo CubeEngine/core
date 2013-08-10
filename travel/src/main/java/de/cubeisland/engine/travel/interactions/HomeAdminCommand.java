@@ -33,7 +33,7 @@ import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.travel.Travel;
 import de.cubeisland.engine.travel.storage.Home;
 import de.cubeisland.engine.travel.storage.TelePointManager;
-import de.cubeisland.engine.travel.storage.TeleportPoint;
+import de.cubeisland.engine.travel.storage.TeleportPointModel;
 
 public class HomeAdminCommand extends ContainerCommand
 {
@@ -268,7 +268,7 @@ public class HomeAdminCommand extends ContainerCommand
             context.sendTranslated("&6%s&c is already private!", context.getString(0));
             return;
         }
-        home.setVisibility(TeleportPoint.Visibility.PRIVATE);
+        home.setVisibility(TeleportPointModel.VISIBILITY_PRIVATE);
         context.sendTranslated("&6%s&a is now private", context.getString(0));
     }
 
@@ -291,7 +291,7 @@ public class HomeAdminCommand extends ContainerCommand
             context.sendTranslated("&6%s &cis already public!", context.getString(0));
             return;
         }
-        home.setVisibility(TeleportPoint.Visibility.PUBLIC);
+        home.setVisibility(TeleportPointModel.VISIBILITY_PUBLIC);
         context.sendTranslated("&6%s&a is now public", context.getString(0));
     }
 }

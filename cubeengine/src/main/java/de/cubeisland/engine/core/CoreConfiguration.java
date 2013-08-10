@@ -18,6 +18,7 @@
 package de.cubeisland.engine.core;
 
 import java.util.Locale;
+import java.util.concurrent.TimeUnit;
 
 import de.cubeisland.engine.core.config.Configuration;
 import de.cubeisland.engine.core.config.annotations.Codec;
@@ -26,6 +27,7 @@ import de.cubeisland.engine.core.config.annotations.Option;
 import de.cubeisland.engine.core.config.annotations.Revision;
 
 import ch.qos.logback.classic.Level;
+import de.cubeisland.engine.core.util.time.Duration;
 
 /**
  * This Configuration holds all basic settings for CubeEngine.
@@ -61,15 +63,11 @@ public class CoreConfiguration extends Configuration
 
     @Option("usermanager.garbage-collection")
     @Comment("After which time should CubeEngine delete all of a users data from database")
-    public String userManagerCleanupDatabase = "3M";
+    public Duration userManagerCleanupDatabase = new Duration(TimeUnit.DAYS.toMillis(90));
 
     @Option("usermanager.keep-in-memory")
     @Comment("How many Ticks after disconnecting a user should stay in the user manager")
     public Integer userManagerKeepUserLoaded = 300;
-
-    @Option("database")
-    @Comment("Currently available: mysql")
-    public String database = "mysql";
 
     @Option("logging.console-Level")
     @Comment("Logging into Console \nALL > TRACE > DEBUG > INFO > WARN > ERROR > OFF")

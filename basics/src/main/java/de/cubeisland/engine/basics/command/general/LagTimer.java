@@ -25,7 +25,7 @@ import de.cubeisland.engine.basics.Basics;
 public class LagTimer implements Runnable
 {
     private long lastTick = System.currentTimeMillis();
-    private final LinkedList<Float> tpsHistory = new LinkedList<Float>();
+    private final LinkedList<Float> tpsHistory = new LinkedList<>();
     private final Basics module;
 
     private float lowestTPS = 20;
@@ -85,7 +85,7 @@ public class LagTimer implements Runnable
 
     public Pair<Long,Float> getLowestTPS()
     {
-        return new Pair<Long, Float>(this.lowestTPSTime,this.lowestTPS);
+        return new Pair<>(this.lowestTPSTime,this.lowestTPS);
     }
 
     public long getLastLowTPS()

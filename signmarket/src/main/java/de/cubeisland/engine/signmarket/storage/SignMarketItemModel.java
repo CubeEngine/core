@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import javax.persistence.Transient;
 
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
@@ -29,58 +30,43 @@ import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
-import de.cubeisland.engine.core.storage.Model;
-import de.cubeisland.engine.core.storage.database.AttrType;
-import de.cubeisland.engine.core.storage.database.Attribute;
-import de.cubeisland.engine.core.storage.database.SingleKeyEntity;
+import de.cubeisland.engine.core.CubeEngine;
 import de.cubeisland.engine.core.util.StringUtils;
 import de.cubeisland.engine.signmarket.MarketSign;
-
 import gnu.trove.set.hash.THashSet;
+import org.jooq.Field;
+import org.jooq.Record1;
+import org.jooq.Record8;
+import org.jooq.Row8;
+import org.jooq.impl.UpdatableRecordImpl;
+import org.jooq.types.UInteger;
+import org.jooq.types.UShort;
 
-@SingleKeyEntity(autoIncrement = true, primaryKey = "key", tableName = "signmarketitem", indices = {
+import static de.cubeisland.engine.signmarket.storage.TableSignItem.TABLE_SIGN_ITEM;
 
-})
-public class SignMarketItemModel implements Model<Long>,InventoryHolder,Cloneable
+public class SignMarketItemModel extends UpdatableRecordImpl<SignMarketItemModel>
+    implements Record8<UInteger, UInteger, String, UShort, String, String, String, Byte> ,InventoryHolder,Cloneable
 {
-    @Attribute(type = AttrType.INT, unsigned = true)
-    public long key = -1;
-
-    @Attribute(type = AttrType.MEDIUMINT, unsigned = true, notnull = false)
-    public Integer stock; // can be null if infinite stock
-
-    //ITEM-data:
-    @Attribute(type = AttrType.VARCHAR, length = 32)
-    public String item;
-    @Attribute(type = AttrType.SMALLINT, unsigned = true)
-    public Integer damageValue;
-    @Attribute(type = AttrType.VARCHAR, length = 100, notnull = false)
-    public String customName;
-    @Attribute(type = AttrType.VARCHAR, length = 1000, notnull = false)
-    public String lore;
-    @Attribute(type = AttrType.VARCHAR, length = 255, notnull = false)
-    public String enchantments;
-    @Attribute(type = AttrType.TINYINT)
-    public int size = 6;
-
+    @Transient
     private ItemStack itemStack;
 
-    public void setItem(ItemStack item)
+    public void setItemStack(ItemStack item)
     {
-        this.item = item.getType().name();
-        this.damageValue = (int)item.getDurability();
-        this.enchantments = this.getEnchantmentsAsString(item);
-        this.customName = null;
-        this.lore = null;
+        this.setItem(item.getType().name());
+        this.setDamagevalue(UShort.valueOf(item.getDurability()));
+        this.setEnchantments(this.getEnchantmentsAsString(item));
+        this.setCustomname(null);
+        this.setLore(null);
         ItemMeta meta = item.getItemMeta();
         if (meta.hasDisplayName())
         {
-            this.customName = meta.getDisplayName();
+            this.setCustomname(meta.getDisplayName());
         }
         if (meta.hasLore())
         {
-            this.lore = StringUtils.implode("\n", meta.getLore());
+            this.setLore(StringUtils.implode("\n", meta.getLore()));
         }
+        // Transient Fields:
         this.itemStack = null;
         this.inventory = null;
     }
@@ -90,7 +76,7 @@ public class SignMarketItemModel implements Model<Long>,InventoryHolder,Cloneabl
         Map<Enchantment, Integer> enchs = item.getEnchantments();
         if (!enchs.isEmpty())
         {
-            List<String> enchStrings = new ArrayList<String>();
+            List<String> enchStrings = new ArrayList<>();
             for (Enchantment ench : enchs.keySet())
             {
                 enchStrings.add(ench.getId() + ":" + enchs.get(ench));
@@ -102,7 +88,7 @@ public class SignMarketItemModel implements Model<Long>,InventoryHolder,Cloneabl
 
     public boolean matchesItem(ItemStack itemInHand)
     {
-        return this.getItem().isSimilar(itemInHand);
+        return this.getItemStack().isSimilar(itemInHand);
     }
 
     /**
@@ -110,26 +96,26 @@ public class SignMarketItemModel implements Model<Long>,InventoryHolder,Cloneabl
      *
      * @return
      */
-    public ItemStack getItem()
+    public ItemStack getItemStack()
     {
         if (this.itemStack == null)
         {
-            if (this.item == null)
+            if (this.getItem() == null)
                 return null;
-            this.itemStack = new ItemStack(Material.valueOf(this.item), 0, this.damageValue.shortValue());
+            this.itemStack = new ItemStack(Material.valueOf(this.getItem()), 0, this.getDamagevalue().shortValue());
             ItemMeta meta = this.itemStack.getItemMeta();
-            if (this.customName != null)
+            if (this.getCustomname() != null)
             {
-                meta.setDisplayName(this.customName);
+                meta.setDisplayName(this.getCustomname());
             }
-            if (this.lore != null)
+            if (this.getLore() != null)
             {
-                meta.setLore(Arrays.asList(StringUtils.explode("\n", this.lore)));
+                meta.setLore(Arrays.asList(StringUtils.explode("\n", this.getLore())));
             }
             itemStack.setItemMeta(meta);
-            if (this.enchantments != null)
+            if (this.getEnchantments() != null)
             {
-                String[] enchStrings = StringUtils.explode(",", this.enchantments);
+                String[] enchStrings = StringUtils.explode(",", this.getEnchantments());
                 for (String enchString : enchStrings)
                 {
                     String[] split = StringUtils.explode(":", enchString);
@@ -142,7 +128,8 @@ public class SignMarketItemModel implements Model<Long>,InventoryHolder,Cloneabl
         return itemStack;
     }
 
-    private THashSet<MarketSign> sharedStockSigns = new THashSet<MarketSign>();
+    @Transient
+    private THashSet<MarketSign> sharedStockSigns = new THashSet<>();
 
     public void removeSign(MarketSign marketSign)
     {
@@ -172,7 +159,9 @@ public class SignMarketItemModel implements Model<Long>,InventoryHolder,Cloneabl
         }
     }
 
+    @Transient
     public Inventory inventory;
+
     @Override
     public Inventory getInventory()
     {
@@ -191,34 +180,195 @@ public class SignMarketItemModel implements Model<Long>,InventoryHolder,Cloneabl
 
     public SignMarketItemModel clone()
     {
-        SignMarketItemModel itemInfo = new SignMarketItemModel();
+        SignMarketItemModel itemInfo = CubeEngine.getCore().getDB().getDSL().newRecord(TABLE_SIGN_ITEM);
         itemInfo.copyValuesFrom(this);
         return itemInfo;
     }
 
     public void copyValuesFrom(SignMarketItemModel itemInfo)
     {
-        this.stock = itemInfo.stock;
-        this.item = itemInfo.item;
-        this.damageValue = itemInfo.damageValue;
-        this.customName = itemInfo.customName;
-        this.lore = itemInfo.lore;
-        this.enchantments = itemInfo.enchantments;
-        this.size = itemInfo.size;
+        this.setStock(itemInfo.getStock());
+        this.setItem(itemInfo.getItem());
+        this.setDamagevalue(itemInfo.getDamagevalue());
+        this.setCustomname(itemInfo.getCustomname());
+        this.setLore(itemInfo.getLore());
+        this.setEnchantments(itemInfo.getEnchantments());
+        this.setSize(itemInfo.getSize());
+        // Transient field:
+        this.inventory = null;
         this.itemStack = null;
     }
 
-    //for database:
-    @Override
-    public Long getId()
-    {
-        return this.key;
-    }
-    @Override
-    public void setId(Long id)
-    {
-        this.key = id;
-    }
     public SignMarketItemModel()
-    {}
+    {
+        super(TABLE_SIGN_ITEM);
+        this.setKey(UInteger.valueOf(0));
+    }
+
+    public void setKey(UInteger value) {
+        setValue(0, value);
+    }
+
+    public UInteger getKey() {
+        return (UInteger) getValue(0);
+    }
+
+    public void setStock(UInteger value) {
+        setValue(1, value);
+    }
+
+    public UInteger getStock() {
+        return (UInteger) getValue(1);
+    }
+
+    public void setItem(String value) {
+        setValue(2, value);
+    }
+
+    public String getItem() {
+        return (String) getValue(2);
+    }
+
+    public void setDamagevalue(UShort value) {
+        setValue(3, value);
+    }
+
+    public UShort getDamagevalue() {
+        return (UShort) getValue(3);
+    }
+
+    public void setCustomname(String value) {
+        setValue(4, value);
+    }
+
+    public String getCustomname() {
+        return (String) getValue(4);
+    }
+
+    public void setLore(String value) {
+        setValue(5, value);
+    }
+
+    public String getLore() {
+        return (String) getValue(5);
+    }
+
+    public void setEnchantments(String value) {
+        setValue(6, value);
+    }
+
+    public String getEnchantments() {
+        return (String) getValue(6);
+    }
+
+    public void setSize(Byte value) {
+        setValue(7, value);
+    }
+
+    public Byte getSize() {
+        return (Byte) getValue(7);
+    }
+
+    // -------------------------------------------------------------------------
+    // Primary key information
+    // -------------------------------------------------------------------------
+
+    @Override
+    public Record1<UInteger> key() {
+        return (Record1) super.key();
+    }
+
+    // -------------------------------------------------------------------------
+    // Record8 type implementation
+    // -------------------------------------------------------------------------
+
+    @Override
+    public Row8<UInteger, UInteger, String, UShort, String, String, String, Byte> fieldsRow() {
+        return (Row8) super.fieldsRow();
+    }
+
+    @Override
+    public Row8<UInteger, UInteger, String, UShort, String, String, String, Byte> valuesRow() {
+        return (Row8) super.valuesRow();
+    }
+
+    @Override
+    public Field<UInteger> field1() {
+        return TABLE_SIGN_ITEM.KEY;
+    }
+
+    @Override
+    public Field<UInteger> field2() {
+        return TABLE_SIGN_ITEM.STOCK;
+    }
+
+    @Override
+    public Field<String> field3() {
+        return TABLE_SIGN_ITEM.ITEM;
+    }
+
+    @Override
+    public Field<UShort> field4() {
+        return TABLE_SIGN_ITEM.DAMAGEVALUE;
+    }
+
+    @Override
+    public Field<String> field5() {
+        return TABLE_SIGN_ITEM.CUSTOMNAME;
+    }
+
+    @Override
+    public Field<String> field6() {
+        return TABLE_SIGN_ITEM.LORE;
+    }
+
+    @Override
+    public Field<String> field7() {
+        return TABLE_SIGN_ITEM.ENCHANTMENTS;
+    }
+
+    @Override
+    public org.jooq.Field<Byte> field8() {
+        return TABLE_SIGN_ITEM.SIZE;
+    }
+
+    @Override
+    public UInteger value1() {
+        return getKey();
+    }
+
+    @Override
+    public UInteger value2() {
+        return getStock();
+    }
+
+    @Override
+    public String value3() {
+        return getItem();
+    }
+
+    @Override
+    public UShort value4() {
+        return getDamagevalue();
+    }
+
+    @Override
+    public String value5() {
+        return getCustomname();
+    }
+
+    @Override
+    public String value6() {
+        return getLore();
+    }
+
+    @Override
+    public String value7() {
+        return getEnchantments();
+    }
+
+    @Override
+    public Byte value8() {
+        return getSize();
+    }
 }

@@ -48,8 +48,8 @@ public class ItemRepairCommands extends ContainerCommand implements Listener
         this.module = module;
         module.getCore().getEventManager().registerListener(this.module,this);
         this.rbm = module.getRepairBlockManager();
-        this.addRequests = new HashSet<String>();
-        this.removeRequests = new HashSet<String>();
+        this.addRequests = new HashSet<>();
+        this.removeRequests = new HashSet<>();
     }
 
     @Command(desc = "Adds a new RepairBlock")

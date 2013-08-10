@@ -24,17 +24,19 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 
+import de.cubeisland.engine.basics.storage.BasicsUserEntity;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.basics.Basics;
-import de.cubeisland.engine.basics.storage.BasicUser;
 
 public class MuteListener implements Listener
 {
     private final Basics basics;
+    private IgnoreCommands ignore;
 
-    public MuteListener(Basics basics)
+    public MuteListener(Basics basics, IgnoreCommands ignore)
     {
         this.basics = basics;
+        this.ignore = ignore;
     }
 
     @EventHandler
@@ -46,19 +48,19 @@ public class MuteListener implements Listener
             User sender = this.basics.getCore().getUserManager().getExactUser(event.getPlayer().getName());
             if (sender != null)
             {
-                BasicUser bUser = this.basics.getBasicUserManager().getBasicUser(sender);
-                if (bUser.muted != null && System.currentTimeMillis() < bUser.muted.getTime())
+                BasicsUserEntity bUser = basics.getBasicsUser(sender).getbUEntity();
+                if (bUser.getMuted() != null && System.currentTimeMillis() < bUser.getMuted().getTime())
                 {
                     event.setCancelled(true);
                     sender.sendTranslated("&cYou try to speak but nothing happens!");
                 }
             }
             // ignored?
-            ArrayList<Player> ignore = new ArrayList<Player>();
+            ArrayList<Player> ignore = new ArrayList<>();
             for (Player player : event.getRecipients())
             {
                 User user = this.basics.getCore().getUserManager().getExactUser(player.getName());
-                if (this.basics.getIgnoreListManager().checkIgnore(user, sender))
+                if (this.ignore.checkIgnored(user, sender))
                 {
                     ignore.add(player);
                 }

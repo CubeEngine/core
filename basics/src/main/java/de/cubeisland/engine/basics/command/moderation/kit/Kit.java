@@ -41,6 +41,10 @@ import de.cubeisland.engine.core.util.time.Duration;
 import de.cubeisland.engine.basics.Basics;
 import de.cubeisland.engine.basics.BasicsAttachment;
 import de.cubeisland.engine.basics.BasicsPerm;
+import org.jooq.DSLContext;
+import org.jooq.Record1;
+
+import static de.cubeisland.engine.basics.command.moderation.kit.TableKitsGiven.TABLE_KITS;
 
 /**
  * A Kit of Items a User can receive
@@ -56,10 +60,12 @@ public class Kit
     private String customMessage;
     private List<String> commands;
     private Basics module;
+    private DSLContext dsl;
 
     public Kit(Basics module, final String name, boolean giveKitOnFirstJoin, int limitUsagePerPlayer, long limitUsageDelay, boolean usePermission, String customMessage, List<String> commands, List<KitItem> items)
     {
         this.module = module;
+        this.dsl = module.getCore().getDB().getDSL();
         this.name = name;
         this.items = items;
         this.commands = commands;
@@ -89,24 +95,26 @@ public class Kit
                 throw new PermissionDeniedException();
             }
         }
-        if (module.getKitGivenManager().reachedUsageLimit(user, this.name, this.limitUsagePerPlayer))
+        Record1<Integer> record1 = this.dsl.select(TABLE_KITS.AMOUNT).from(TABLE_KITS).
+            where(TABLE_KITS.KITNAME.like(this.name), TABLE_KITS.USERID.eq(user.getEntity().getKey())).fetchOne();
+        if (record1 != null && record1.value1() >= this.limitUsagePerPlayer)
         {
             sender.sendTranslated("&cKit-limit reached.");
             throw new PermissionDeniedException();
         }
-        //TODO check how many times user got his kit
         if (limitUsageDelay != 0)
         {
             Long lastUsage = user.get(BasicsAttachment.class).getKitUsage(this.name);
             if (lastUsage != null && System.currentTimeMillis() - lastUsage < limitUsageDelay)
             {
-                sender.sendTranslated("&eThis kit not availiable at the moment. &aTry again later!");
+                sender.sendTranslated("&eThis kit not available at the moment. &aTry again later!");
                 throw new PermissionDeniedException();
             }
         }
         List<ItemStack> list = this.getItems();
         if (InventoryUtil.giveItemsToUser(user, list.toArray(new ItemStack[list.size()])))
         {
+            // TODO save new kitamount in db!
             this.executeCommands(user);
             if (limitUsageDelay != 0)
             {
@@ -142,7 +150,7 @@ public class Kit
 
     private List<ItemStack> getItems()
     {
-        List<ItemStack> list = new ArrayList<ItemStack>();
+        List<ItemStack> list = new ArrayList<>();
         for (KitItem kitItem : this.items)
         {
             ItemStack item = new ItemStack(kitItem.mat, kitItem.amount, kitItem.dura);
@@ -308,7 +316,7 @@ public class Kit
         @Override
         public Set<PermissionAttachmentInfo> getEffectivePermissions()
         {
-            return new HashSet<PermissionAttachmentInfo>();
+            return new HashSet<>();
         }
 
         @Override

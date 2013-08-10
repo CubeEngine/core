@@ -45,7 +45,7 @@ public class PlayerTeleport extends SimpleLogActionType
     @Override
     protected Set<ActionTypeCategory> getCategories()
     {
-        return new HashSet<ActionTypeCategory>(Arrays.asList(PLAYER));
+        return new HashSet<>(Arrays.asList(PLAYER));
     }
 
     @Override
@@ -87,7 +87,7 @@ public class PlayerTeleport extends SimpleLogActionType
     @Override
     protected void showLogEntry(User user, LogEntry logEntry, String time, String loc)
     {
-        JsonNode json = logEntry.additional;
+        JsonNode json = logEntry.getAdditional();
         World world = this.logModule.getCore().getWorldManager().getWorld(json.get("world").asLong());
         if (logEntry.hasAttached())
         {
@@ -130,8 +130,8 @@ public class PlayerTeleport extends SimpleLogActionType
     @Override
     public boolean isSimilar(LogEntry logEntry, LogEntry other)
     {
-        if (super.isSimilar(logEntry, other) && logEntry.causer == other.causer &&
-            Math.abs(logEntry.timestamp.getTime() - other.timestamp.getTime()) < 5)
+        if (super.isSimilar(logEntry, other) && logEntry.getCauser() == other.getCauser() &&
+            Math.abs(logEntry.getTimestamp().getTime() - other.getTimestamp().getTime()) < 5)
         {
             if (logEntry.getAdditional().get("dir").asText().equals(other.getAdditional().get("dir").asText()))
             {
@@ -141,10 +141,10 @@ public class PlayerTeleport extends SimpleLogActionType
             int y = logEntry.getAdditional().get("y").asInt();
             int z = logEntry.getAdditional().get("z").asInt();
             long worldID = logEntry.getAdditional().get("world").asLong();
-            if (x == other.location.x
-                && y == other.location.y
-                && z == other.location.z
-                && worldID == this.logModule.getCore().getWorldManager().getWorldId(other.world))
+            if (x == other.getVector().x
+                && y == other.getVector().y
+                && z == other.getVector().z
+                && worldID == other.getWorldID().longValue())
             {
                 return true;
             }

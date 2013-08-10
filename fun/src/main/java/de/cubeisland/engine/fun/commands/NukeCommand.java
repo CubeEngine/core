@@ -218,7 +218,7 @@ public class NukeCommand
 
         public NukeListener()
         {
-            this.noBlockDamageSet = new HashSet<TNTPrimed>();
+            this.noBlockDamageSet = new HashSet<>();
         }
 
         public void add(TNTPrimed tnt)

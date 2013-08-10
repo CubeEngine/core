@@ -33,6 +33,8 @@ import de.cubeisland.engine.log.action.logaction.worldedit.LogEditSessionFactory
 import de.cubeisland.engine.log.commands.LogCommands;
 import de.cubeisland.engine.log.commands.LookupCommands;
 import de.cubeisland.engine.log.storage.LogManager;
+import de.cubeisland.engine.log.storage.TableActionTypes;
+import de.cubeisland.engine.log.storage.TableLogEntry;
 import de.cubeisland.engine.log.tool.ToolListener;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -49,11 +51,13 @@ public class Log extends Module implements Listener
     @Override
     public void onEnable()
     {
+        this.getCore().getDB().registerTable(TableActionTypes.initTable(this.getCore().getDB()));
+        this.getCore().getDB().registerTable(TableLogEntry.initTable(this.getCore().getDB()));
+
         this.config = Configuration.load(LogConfiguration.class, this);
         Convert.registerConverter(ContainerType.class, new ContainerTypeConverter());
         this.logManager = new LogManager(this);
         this.actionTypeManager = new ActionTypeManager(this);
-        this.actionTypeManager.registerLogActionTypes();
 
         final CommandManager cm = this.getCore().getCommandManager();
         cm.registerCommands(this, new LookupCommands(this), ReflectedCommand.class);

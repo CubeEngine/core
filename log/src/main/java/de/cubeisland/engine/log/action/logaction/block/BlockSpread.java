@@ -43,7 +43,7 @@ public class BlockSpread extends BlockActionType
     @Override
     protected Set<ActionTypeCategory> getCategories()
     {
-        return new HashSet<ActionTypeCategory>(Arrays.asList(BLOCK, ENVIRONEMENT));
+        return new HashSet<>(Arrays.asList(BLOCK, ENVIRONEMENT));
     }
 
     @Override

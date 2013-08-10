@@ -45,7 +45,7 @@ public class ItemRepairListener implements Listener
     {
         this.module = module;
         this.rbm = module.getRepairBlockManager();
-        this.repairRequests = new HashMap<String, RepairRequest>();
+        this.repairRequests = new HashMap<>();
     }
 
     @EventHandler(priority = EventPriority.MONITOR)

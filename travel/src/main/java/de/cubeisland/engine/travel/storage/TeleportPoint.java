@@ -17,173 +17,171 @@
  */
 package de.cubeisland.engine.travel.storage;
 
-import java.util.Map;
+import java.util.Set;
 
 import org.bukkit.Location;
 
-import de.cubeisland.engine.core.CubeEngine;
-import de.cubeisland.engine.core.storage.Model;
-import de.cubeisland.engine.core.storage.database.AttrType;
-import de.cubeisland.engine.core.storage.database.Attribute;
-import de.cubeisland.engine.core.storage.database.DatabaseConstructor;
-import de.cubeisland.engine.core.storage.database.Index;
-import de.cubeisland.engine.core.storage.database.SingleKeyEntity;
+import de.cubeisland.engine.core.permission.Permission;
 import de.cubeisland.engine.core.user.User;
-import de.cubeisland.engine.core.util.convert.ConversionException;
+import de.cubeisland.engine.travel.Travel;
 
-import org.apache.commons.lang.Validate;
+import static de.cubeisland.engine.travel.storage.TeleportPointModel.VISIBILITY_PUBLIC;
 
-@SingleKeyEntity(tableName = "teleportpoints", primaryKey = "key", autoIncrement = true,
-                 indices = {
-                     @Index(value = Index.IndexType.FOREIGN_KEY, fields = "owner", f_table = "user", f_field = "key"), @Index(value = Index.IndexType.FOREIGN_KEY, fields = "world", f_table = "worlds", f_field = "key"), @Index(value = Index.IndexType.UNIQUE, fields = {"owner", "name", "type"})
-                 })
-public class TeleportPoint implements Model<Long>
+public abstract class TeleportPoint
 {
-    // Database values
-    @Attribute(type = AttrType.INT, unsigned = true)
-    public Long key;
-    @Attribute(type = AttrType.INT, unsigned = true, name = "owner")
-    public Long ownerKey;
-    @Attribute(type = AttrType.SMALLINT, length = 1, name = "type")
-    public int typeId;
-    @Attribute(type = AttrType.SMALLINT, length = 1, name = "visibility")
-    public int visibilityId;
-    @Attribute(type = AttrType.INT, unsigned = true, name = "world")
-    public Long worldKey;
-    @Attribute(type = AttrType.DOUBLE, name = "x")
-    public double x;
-    @Attribute(type = AttrType.DOUBLE, name = "y")
-    public double y;
-    @Attribute(type = AttrType.DOUBLE, name = "z")
-    public double z;
-    @Attribute(type = AttrType.FLOAT, name = "yaw")
-    public float yaw;
-    @Attribute(type = AttrType.FLOAT, name = "pitch")
-    public float pitch;
+    protected final TeleportPointModel parent;
+    protected final Travel module;
+    protected final TelePointManager telePointManager;
+    protected final InviteManager inviteManager;
 
-    // Database and "normal" values
-    @Attribute(type = AttrType.VARCHAR, length = 32)
-    public String name;
-    @Attribute(type = AttrType.LONGTEXT, notnull = false, name = "welcomemsg")
-    public String welcomeMsg = "";
+    protected Permission permission;
+    protected Set<String> invited;
 
-    public String ownerName;
+    protected String ownerName = null;
 
-    // "Normal" values
-    protected Location location;
-    protected User owner;
-    public Type type;
-    public Visibility visibility;
-
-    @DatabaseConstructor
-    public TeleportPoint(Map<String, Object> args) throws ConversionException
+    public TeleportPoint(TeleportPointModel teleportPoint, TelePointManager telePointManager, InviteManager inviteManager, Travel module)
     {
-        this.key = Long.valueOf(args.get("key").toString());
-        this.ownerKey = Long.valueOf(args.get("owner").toString());
-        this.typeId = Integer.valueOf(args.get("type").toString());
-        this.visibilityId = Integer.valueOf(args.get("visibility").toString());
-        this.worldKey = Long.valueOf(args.get("world").toString());
-        this.x = Double.valueOf(args.get("x").toString());
-        this.y = Double.valueOf(args.get("y").toString());
-        this.z = Double.valueOf(args.get("z").toString());
-        this.yaw = Float.valueOf(args.get("yaw").toString());
-        this.pitch = Float.valueOf(args.get("pitch").toString());
-        this.name = args.get("name").toString();
-        if (args.get("welcomemsg") != null)
-        {
-            this.welcomeMsg = args.get("welcomemsg").toString();
-        }
-        if (args.get("player") != null)
-        {
-            this.ownerName = args.get("player").toString();
-        }
-
-        this.type = Type.values()[typeId];
-        this.visibility = Visibility.values()[visibilityId];
+        this.parent = teleportPoint;
+        this.telePointManager = telePointManager;
+        this.inviteManager = inviteManager;
+        this.module = module;
     }
 
-    public TeleportPoint(Location location, String name, User owner, String welcomeMsg, Type type, Visibility visibility)
+    public void update()
     {
-        Validate.notNull(location);
-        Validate.notEmpty(name);
-        Validate.notNull(owner);
-        Validate.notNull(type);
-        Validate.notNull(visibility);
-        if (welcomeMsg == null)
+        parent.update();
+    }
+
+    public Location getLocation()
+    {
+        return parent.getLocation();
+    }
+
+    public void setLocation(Location location)
+    {
+        parent.setLocation(location);
+    }
+
+    public User getOwner()
+    {
+        return this.module.getCore().getUserManager().getUser(parent.getOwnerKey().longValue());
+    }
+
+    public void setOwner(User owner)
+    {
+        this.parent.setOwnerKey(owner.getEntity().getKey());
+    }
+
+    public boolean isOwner(User user)
+    {
+        return parent.getOwnerKey().equals(user.getEntity().getKey());
+    }
+
+
+    public void invite(User user)
+    {
+        if (this.invited == null)
         {
-            welcomeMsg = "";
+            this.invited = inviteManager.getInvited(parent);
         }
-
-        // Load the "normal" values
-        this.location = location;
-        this.name = name;
-        this.owner = owner;
-        this.ownerName = owner.getName();
-        this.welcomeMsg = welcomeMsg;
-        this.type = type;
-        this.visibility = visibility;
-
-        // Load the values used in the DB
-        this.ownerKey = owner.getId();
-        this.typeId = type.ordinal();
-        this.visibilityId = visibility.ordinal();
-        this.worldKey = owner.getCore().getWorldManager().getWorldId(location.getWorld());
-        this.x = location.getX();
-        this.y = location.getY();
-        this.z = location.getZ();
-        this.yaw = location.getYaw();
-        this.pitch = location.getPitch();
+        this.invited.add(user.getName());
+        inviteManager.invite(this.getModel(), user);
     }
 
-    @Override
-    public Long getId()
+    public void unInvite(User user)
     {
-        return key;
-    }
-
-    @Override
-    public void setId(Long id)
-    {
-        this.key = id;
-    }
-
-    protected User getOwner()
-    {
-        if (this.owner == null)
+        if (this.invited == null)
         {
-            this.owner = CubeEngine.getCore().getUserManager().getUser(ownerKey);
+            this.invited = inviteManager.getInvited(parent);
         }
-        return this.owner;
+        this.invited.remove(user.getName());
+        inviteManager.updateInvited(this.parent, this.invited);
+    }
+
+    public boolean isInvited(User user)
+    {
+        return this.getInvited().contains(user.getName()) || this.isPublic();
+    }
+
+    public void setVisibility(short visibility)
+    {
+        parent.setVisibility(visibility);
+    }
+
+    public short getVisibility()
+    {
+        return parent.getVisibility();
+    }
+
+    public Set<String> getInvited()
+    {
+        if (this.invited == null)
+        {
+            this.invited = inviteManager.getInvited(parent);
+        }
+        return this.invited;
+    }
+
+    public Set<User> getInvitedUsers()
+    {
+        return inviteManager.getInvitedUsers(parent);
+    }
+
+    public TeleportPointModel getModel()
+    {
+        return parent;
+    }
+
+    public Long getKey()
+    {
+        return this.parent.getKey().longValue();
     }
 
     public String getOwnerName()
     {
+        if (this.ownerName == null)
+        {
+            this.ownerName = this.module.getCore().getUserManager().getUserName(parent.getKey().longValue());
+        }
         return this.ownerName;
     }
 
-    protected Location getLocation()
+    public String getName()
     {
-        if (this.location == null)
-        {
-            this.location = new Location(CubeEngine.getCore().getWorldManager().getWorld(worldKey), x, y, z, yaw, pitch);
-        }
-        return this.location;
-    }
-    /**
-     * Enum to reflect the type a teleport point is
-     */
-    public enum Type
-    {
-        HOME,
-        WARP
+        return parent.getName();
     }
 
-    /**
-     * Enum to reflect whether the teleport point is public or private
-     */
-    public enum Visibility
+    public void setName(String name)
     {
-        PUBLIC,
-        PRIVATE
+        parent.setName(name);
+    }
+
+    public String getWelcomeMsg()
+    {
+        if (parent.getWelcomemsg().isEmpty())
+        {
+            return null;
+        }
+        return parent.getWelcomemsg();
+    }
+
+    public void setWelcomeMsg(String welcomeMsg)
+    {
+        parent.setWelcomemsg(welcomeMsg);
+    }
+
+    public boolean isPublic()
+    {
+        return this.getVisibility() == VISIBILITY_PUBLIC;
+    }
+
+    public boolean canAccess(User user)
+    {
+        return this.isPublic() ? this.permission.isAuthorized(user) : (this.isInvited(user) || this.isOwner(user));
+    }
+
+    public String getStorageName()
+    {
+        return parent.getOwnerKey().longValue() + ":" + this.getName();
     }
 }

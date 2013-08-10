@@ -38,7 +38,7 @@ public enum RequestMethod
 
     static
     {
-        BY_NAME = new HashMap<String, RequestMethod>(values().length);
+        BY_NAME = new HashMap<>(values().length);
 
         for (RequestMethod method : values())
         {

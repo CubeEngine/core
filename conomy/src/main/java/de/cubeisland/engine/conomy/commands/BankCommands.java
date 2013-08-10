@@ -56,22 +56,21 @@ public class BankCommands extends ContainerCommand
             if (bankAccount == null)
             {
                 context.sendTranslated("&cThere is no bank-account named &6%s&c!", context.getString(0));
+                return;
             }
-            else
+            boolean showHidden = context.hasFlag("f") && ConomyPermissions.COMMAND_BANK_BALANCE_SHOWHIDDEN.isAuthorized(context.getSender());
+            if (!showHidden && bankAccount.isHidden())
             {
-                boolean showHidden = context.hasFlag("f") && ConomyPermissions.COMMAND_BANK_BALANCE_SHOWHIDDEN.isAuthorized(context.getSender());
-                if (!showHidden && bankAccount.isHidden())
+                if (context.getSender() instanceof User && !bankAccount.hasAccess((User)context.getSender()))
                 {
-                    if (context.getSender() instanceof User && !bankAccount.hasAccess((User)context.getSender()))
-                    {
-                        context.sendTranslated("&cThere is no bank-account named &6%s&c!", context.getString(0));
-                        return;
-                    }
+                    context.sendTranslated("&cThere is no bank-account named &6%s&c!", context.getString(0));
+                    return;
                 }
-                context.sendTranslated("&aBank &6%s&a Balance: &6%s", bankAccount.getName(), this.manager.format(bankAccount.balance()));
             }
+            context.sendTranslated("&aBank &6%s&a Balance: &6%s", bankAccount.getName(), this.manager.format(bankAccount.balance()));
+            return;
         }
-        else if (context.getSender() instanceof User)
+        if (context.getSender() instanceof User)
         {
             Set<BankAccount> bankAccounts = this.manager.getBankAccounts((User)context.getSender());
             if (bankAccounts.size() == 1)
@@ -80,6 +79,7 @@ public class BankCommands extends ContainerCommand
                 context.sendTranslated("&aBank &6%s&a Balance: &6%s", bankAccount.getName(), this.manager.format(bankAccount.balance()));
                 return;
             }
+            // else more than 1 bank possible
         }
         context.sendTranslated("&cPlease do specify the bank you want to show the balance of!");
     }
@@ -109,7 +109,7 @@ public class BankCommands extends ContainerCommand
             }
             return;
         }
-        Set<String> allBanks = this.manager.getAllBanks(ConomyPermissions.BANK_SHOWHIDDEN.isAuthorized(context.getSender()));
+        Set<String> allBanks = this.manager.getBankNames(ConomyPermissions.BANK_SHOWHIDDEN.isAuthorized(context.getSender()));
         if (allBanks.isEmpty())
         {
             context.sendTranslated("&eThere are no banks currently!");
@@ -329,6 +329,7 @@ public class BankCommands extends ContainerCommand
             }
             context.sendTranslated("&cYou are not a member if that bank!");
         }
+        context.sendTranslated("&eYou have to specify a bank to leave!");
     }
 
     @Command(desc = "Removes a player from the invite-list",

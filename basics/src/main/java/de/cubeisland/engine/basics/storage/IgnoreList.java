@@ -17,44 +17,85 @@
  */
 package de.cubeisland.engine.basics.storage;
 
-import de.cubeisland.engine.core.storage.TwoKeyModel;
-import de.cubeisland.engine.core.storage.database.AttrType;
-import de.cubeisland.engine.core.storage.database.Attribute;
-import de.cubeisland.engine.core.storage.database.Index;
-import de.cubeisland.engine.core.storage.database.TwoKeyEntity;
 import de.cubeisland.engine.core.user.User;
-import de.cubeisland.engine.core.util.Pair;
+import org.jooq.Field;
+import org.jooq.Record2;
+import org.jooq.Row2;
+import org.jooq.impl.UpdatableRecordImpl;
+import org.jooq.types.UInteger;
 
-import static de.cubeisland.engine.core.storage.database.Index.IndexType.FOREIGN_KEY;
+import static de.cubeisland.engine.basics.storage.TableIgnorelist.TABLE_IGNORE_LIST;
 
-@TwoKeyEntity(tableName = "ignorelist", firstPrimaryKey = "key", secondPrimaryKey = "ignore", indices = {
-    @Index(value = FOREIGN_KEY, fields = "key", f_table = "user", f_field = "key"),
-    @Index(value = FOREIGN_KEY, fields = "ignore", f_table = "user", f_field = "key")
-})
-public class IgnoreList implements TwoKeyModel<Long, Long>
+public class IgnoreList extends UpdatableRecordImpl<IgnoreList> implements Record2<UInteger, UInteger>
 {
-
-    @Attribute(type = AttrType.INT, unsigned = true)
-    public long key;
-    @Attribute(type = AttrType.INT, unsigned = true)
-    public long ignore;
-
-    IgnoreList(User user, User ignore)
+    public IgnoreList()
     {
-        this.key = user.key;
-        this.ignore = ignore.key;
+        super(TABLE_IGNORE_LIST);
+    }
+
+    public IgnoreList newIgnore(User user, User ignore)
+    {
+        this.setKey(user.getEntity().getKey());
+        this.setIgnore(ignore.getEntity().getKey());
+        return this;
+    }
+
+    public void setKey(UInteger value) {
+        setValue(0, value);
+    }
+
+    public UInteger getKey() {
+        return (UInteger) getValue(0);
+    }
+
+    public void setIgnore(UInteger value) {
+        setValue(1, value);
+    }
+
+    public UInteger getIgnore() {
+        return (UInteger) getValue(1);
+    }
+
+    // -------------------------------------------------------------------------
+    // Primary key information
+    // -------------------------------------------------------------------------
+
+    @Override
+    public Record2<UInteger, UInteger> key() {
+        return (Record2) super.key();
+    }
+
+    // -------------------------------------------------------------------------
+    // Record2 type implementation
+    // -------------------------------------------------------------------------
+
+    @Override
+    public Row2<UInteger, UInteger> fieldsRow() {
+        return (Row2) super.fieldsRow();
     }
 
     @Override
-    public Pair<Long, Long> getId()
-    {
-        return new Pair<Long, Long>(key, ignore);
+    public Row2<UInteger, UInteger> valuesRow() {
+        return (Row2) super.valuesRow();
     }
 
     @Override
-    public void setId(Pair<Long, Long> id)
-    {
-        this.key = id.getLeft();
-        this.ignore = id.getRight();
+    public Field<UInteger> field1() {
+        return TABLE_IGNORE_LIST.KEY;
+    }
+
+    @Override
+    public Field<UInteger> field2() {
+        return TABLE_IGNORE_LIST.IGNORE;
+    }
+
+    @Override
+    public UInteger value1() {
+        return getKey();
+    }
+
+    @Override
+    public UInteger value2() {
+        return getIgnore();
     }
 }

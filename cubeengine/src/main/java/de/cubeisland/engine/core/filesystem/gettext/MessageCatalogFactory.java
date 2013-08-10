@@ -17,12 +17,13 @@
  */
 package de.cubeisland.engine.core.filesystem.gettext;
 
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 public class MessageCatalogFactory
 {
@@ -31,10 +32,10 @@ public class MessageCatalogFactory
 
     public MessageCatalog newMessageCatalog(String path)
     {
-        return this.newMessageCatalog(new File(path));
+        return this.newMessageCatalog(Paths.get(path));
     }
 
-    public MessageCatalog newMessageCatalog(File file)
+    public MessageCatalog newMessageCatalog(Path file)
     {
         try
         {
@@ -44,27 +45,23 @@ public class MessageCatalogFactory
             }
             return new PlaintextMessageCatalog(file);
         }
-        catch (FileNotFoundException ignored)
+        catch (IOException ignored)
         {}
-        if (file.getName().endsWith(".mo"))
+        if (file.endsWith(".mo"))
         {
             return new BinaryMessageCatalog(file);
         }
         return new PlaintextMessageCatalog(file);
     }
 
-    public boolean isBinaryCatalog(File file) throws FileNotFoundException
+    public boolean isBinaryCatalog(Path file) throws IOException
     {
-        if (!file.exists())
+        if (!Files.exists(file))
         {
-            throw new FileNotFoundException(file.getName());
+            throw new FileNotFoundException(file.toString());
         }
-        FileInputStream stream = null;
-        FileChannel channel = null;
-        try
+        try (FileChannel channel = FileChannel.open(file))
         {
-            stream = new FileInputStream(file);
-            channel = stream.getChannel();
             ByteBuffer buf = ByteBuffer.allocateDirect(4);
             int bytesRead = channel.read(buf);
             if (bytesRead < 4)
@@ -80,29 +77,6 @@ public class MessageCatalogFactory
             else if (signature == BinaryMessageCatalog.SIGNATURE_BIG)
             {
                 return true;
-            }
-        }
-        catch (Exception ignored)
-        {}
-        finally
-        {
-            if (channel != null)
-            {
-                try
-                {
-                    channel.close();
-                }
-                catch (IOException ignored)
-                {}
-            }
-            if (stream != null)
-            {
-                try
-                {
-                    stream.close();
-                }
-                catch (IOException ignored)
-                {}
             }
         }
         return false;

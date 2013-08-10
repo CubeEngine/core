@@ -32,6 +32,7 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageEvent;
 
+import de.cubeisland.engine.basics.storage.BasicsUserEntity;
 import de.cubeisland.engine.core.ban.UserBan;
 import de.cubeisland.engine.core.command.CommandContext;
 import de.cubeisland.engine.core.command.CommandSender;
@@ -48,7 +49,6 @@ import de.cubeisland.engine.core.util.time.Duration;
 import de.cubeisland.engine.basics.Basics;
 import de.cubeisland.engine.basics.BasicsAttachment;
 import de.cubeisland.engine.basics.BasicsPerm;
-import de.cubeisland.engine.basics.storage.BasicUser;
 
 import static de.cubeisland.engine.core.command.ArgBounds.NO_MAX;
 import static java.text.DateFormat.SHORT;
@@ -121,7 +121,7 @@ public class PlayerCommands
                 return;
             }
             String[] userNames = StringUtils.explode(",",context.getString(0));
-            List<String> fed = new ArrayList<String>();
+            List<String> fed = new ArrayList<>();
             for (String name : userNames)
             {
                 User user = this.um.findUser(name);
@@ -191,7 +191,7 @@ public class PlayerCommands
                 return;
             }
             String[] userNames = StringUtils.explode(",",context.getString(0));
-            List<String> starved = new ArrayList<String>();
+            List<String> starved = new ArrayList<>();
             for (String name : userNames)
             {
                 User user = this.um.findUser(name);
@@ -260,7 +260,7 @@ public class PlayerCommands
                 return;
             }
             String[] userNames = StringUtils.explode(",",context.getString(0));
-            List<String> healed = new ArrayList<String>();
+            List<String> healed = new ArrayList<>();
             for (String name : userNames)
             {
                 User user = this.um.findUser(name);
@@ -329,17 +329,23 @@ public class PlayerCommands
         if (context.hasArg(0))
         {
             String mode = context.getString(0);
-            if (mode.equals("survival") || mode.equals("s") || mode.equals("0"))
+            switch (mode)
             {
-                user.setGameMode(GameMode.SURVIVAL);
-            }
-            else if (mode.equals("creative") || mode.equals("c") || mode.equals("1"))
-            {
-                user.setGameMode(GameMode.CREATIVE);
-            }
-            else if (mode.equals("adventure") || mode.equals("a")|| mode.equals("2"))
-            {
-                user.setGameMode(GameMode.ADVENTURE);
+                case "survival":
+                case "s":
+                case "0":
+                    user.setGameMode(GameMode.SURVIVAL);
+                    break;
+                case "creative":
+                case "c":
+                case "1":
+                    user.setGameMode(GameMode.CREATIVE);
+                    break;
+                case "adventure":
+                case "a":
+                case "2":
+                    user.setGameMode(GameMode.ADVENTURE);
+                    break;
             }
         }
         else
@@ -382,7 +388,7 @@ public class PlayerCommands
         if (context.hasArg(0))
         {
             String[] names = StringUtils.explode(",",context.getString(0));
-            List<String> killed = new ArrayList<String>();
+            List<String> killed = new ArrayList<>();
             if ("*".equals(names[0]))
             {
                 if (!BasicsPerm.COMMAND_KILL_ALL.isAuthorized(context.getSender()))
@@ -464,7 +470,7 @@ public class PlayerCommands
     {
         if (!force)
         {
-            if (BasicsPerm.COMMAND_KILL_PREVENT.isAuthorized(user) || this.module.getBasicUserManager().getBasicUser(user).godMode)
+            if (BasicsPerm.COMMAND_KILL_PREVENT.isAuthorized(user) || this.module.getBasicsUser(user).getbUEntity().isGodMode())
             {
                 context.sendTranslated("&cYou cannot kill &2%s&c!", user.getDisplayName());
                 return false;
@@ -642,7 +648,7 @@ public class PlayerCommands
             {
                 context.sendTranslated("&eOP: &atrue");
             }
-            Timestamp muted = this.module.getBasicUserManager().getBasicUser(user).muted;
+            Timestamp muted = module.getBasicsUser(user).getbUEntity().getMuted();
             if (muted != null && muted.getTime() > System.currentTimeMillis())
             {
                 context.sendTranslated("&eMuted until &6%s", DateFormat.getDateTimeInstance(SHORT, SHORT, context.getSender().getLocale()).format(muted));
@@ -704,9 +710,9 @@ public class PlayerCommands
             context.sendTranslated("&aYou are god already!");
             return;
         }
-        BasicUser bUser = this.module.getBasicUserManager().getBasicUser(user);
-        bUser.godMode = !bUser.godMode;
-        if (bUser.godMode)
+        BasicsUserEntity bUser = module.getBasicsUser(user).getbUEntity();
+        bUser.setGodMode(!bUser.isGodMode());
+        if (bUser.isGodMode())
         {
             if (other)
             {

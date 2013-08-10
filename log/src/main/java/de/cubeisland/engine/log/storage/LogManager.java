@@ -17,23 +17,21 @@
  */
 package de.cubeisland.engine.log.storage;
 
-import java.io.File;
-import java.sql.Timestamp;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.bukkit.Location;
 import org.bukkit.World;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import de.cubeisland.engine.core.bukkit.BukkitCore;
 import de.cubeisland.engine.core.config.Configuration;
-import de.cubeisland.engine.core.storage.database.querybuilder.SelectBuilder;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.log.Log;
 import de.cubeisland.engine.log.LoggingConfiguration;
 import de.cubeisland.engine.log.storage.QueryManager.QueryAction;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class LogManager
 {
@@ -41,8 +39,8 @@ public class LogManager
     private final Log module;
 
     private final LoggingConfiguration globalConfig;
-    private final File worldsFolder;
-    private Map<World, LoggingConfiguration> worldConfigs = new HashMap<World, LoggingConfiguration>();
+    private final Path worldsFolder;
+    private Map<World, LoggingConfiguration> worldConfigs = new HashMap<>();
 
     private final QueryManager queryManager;
 
@@ -50,34 +48,40 @@ public class LogManager
     {
         this.module = module;
         this.mapper = new ObjectMapper();
-        this.worldsFolder = new File(module.getFolder(), "worlds");
-        if (!this.worldsFolder.exists() && !this.worldsFolder.mkdir())
+        this.worldsFolder = module.getFolder().resolve("worlds");
+        try
         {
-            throw new FolderNotFoundException("Couldn't create the worlds folder: " + this.worldsFolder.getAbsolutePath());
+            Files.createDirectories(this.worldsFolder);
         }
-        else
+        catch (IOException e)
         {
-            this.globalConfig = Configuration.load(LoggingConfiguration.class, new File(module.getFolder(), "globalconfig.yml"));
-            for (World world : ((BukkitCore)module.getCore()).getServer().getWorlds())
-            {
-                this.initWorldConfig(world);
-            }
+            throw new FolderNotFoundException("Couldn't create the worlds folder: " + this.worldsFolder.toAbsolutePath(), e);
+        }
+        this.globalConfig = Configuration.load(LoggingConfiguration.class, module.getFolder().resolve("globalconfig.yml"));
+        for (World world : ((BukkitCore)module.getCore()).getServer().getWorlds())
+        {
+            this.initWorldConfig(world);
         }
         this.queryManager = new QueryManager(module);
     }
 
     private LoggingConfiguration initWorldConfig(World world)
     {
-        File worldFolder = new File(this.worldsFolder, world.getName());
-        if (!worldFolder.exists() && !worldFolder.mkdir())
+        Path worldFolder = this.worldsFolder.resolve(world.getName());
+        try
         {
-            throw new FolderNotFoundException("Failed to create the world folder for " + world.getName());
+            Files.createDirectories(worldFolder);
         }
-        LoggingConfiguration config = this.globalConfig.loadChild(new File(worldFolder, "config.yml"));
+        catch (IOException e)
+        {
+            throw new FolderNotFoundException("Failed to create the world folder for " + world.getName(), e);
+        }
+        LoggingConfiguration config = this.globalConfig.loadChild(worldFolder.resolve("config.yml"));
         this.worldConfigs.put(world, config);
         return config;
     }
-
+// TODO DATABASE
+    /*
     private void buildWorldAndLocation(SelectBuilder builder, World world, Location loc1, Location loc2)
     {
         if (world != null)
@@ -101,11 +105,11 @@ public class LogManager
             builder.and();
         }
     }
-
     private void buildDates(SelectBuilder builder, Timestamp fromDate, Timestamp toDate)
     {
         builder.beginSub().field("date").between(fromDate, toDate).endSub();
     }
+    */
 
     public void disable()
     {

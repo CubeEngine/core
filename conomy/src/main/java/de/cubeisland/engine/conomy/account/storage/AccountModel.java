@@ -17,91 +17,185 @@
  */
 package de.cubeisland.engine.conomy.account.storage;
 
-import de.cubeisland.engine.core.storage.Model;
-import de.cubeisland.engine.core.storage.database.AttrType;
-import de.cubeisland.engine.core.storage.database.Attribute;
-import de.cubeisland.engine.core.storage.database.Index;
-import de.cubeisland.engine.core.storage.database.SingleKeyEntity;
+import de.cubeisland.engine.core.user.User;
+import org.jooq.Field;
+import org.jooq.Record1;
+import org.jooq.Record5;
+import org.jooq.Row5;
+import org.jooq.impl.UpdatableRecordImpl;
+import org.jooq.types.UInteger;
 
-import static de.cubeisland.engine.core.storage.database.Index.IndexType.FOREIGN_KEY;
-import static de.cubeisland.engine.core.storage.database.Index.IndexType.UNIQUE;
+import static de.cubeisland.engine.conomy.account.storage.TableAccount.TABLE_ACCOUNT;
 
-@SingleKeyEntity(tableName = "accounts", primaryKey = "key", autoIncrement = true, indices = {
-    @Index(value = FOREIGN_KEY, fields = "user_id", f_table = "user", f_field = "key"),
-    @Index(value = UNIQUE, fields = { "user_id", "name"})
-})
-public class AccountModel implements Model<Long>
+public class AccountModel extends UpdatableRecordImpl<AccountModel> implements Record5<UInteger, UInteger, String, Long, Byte>
 {
-    @Attribute(type = AttrType.INT, unsigned = true)
-    public long key;
-    @Attribute(type = AttrType.INT, unsigned = true, notnull = false)
-    public Long user_id;
-    @Attribute(type = AttrType.VARCHAR, length = 64, notnull = false)
-    public String name;
-    @Attribute(type = AttrType.BIGINT)
-    public long value;
-    @Attribute(type = AttrType.TINYINT)
-    public int mask = 0;
-
-    @Override
-    public Long getId()
-    {
-        return key;
-    }
-
-    @Override
-    public void setId(Long id)
-    {
-        this.key = id;
-    }
-
     public AccountModel()
-    {}
-
-    public AccountModel(Long user_id, String name, long balance, boolean hidden, boolean needsInvite)
     {
-        this.user_id = user_id;
-        this.name = name;
-        this.value = balance;
-        this.mask = (byte)((hidden ? 1 : 0) + (needsInvite ? 2 : 0));
+        super(TABLE_ACCOUNT);
     }
 
-    public AccountModel(Long user_id, String name, long balance, boolean hidden)
+    public AccountModel newAccount(User user, String name, long balance, boolean hidden, boolean needsInvite)
     {
-        this(user_id, name, balance, hidden, false);
+        this.setUserId(user == null ? null : user.getEntity().getKey());
+        this.setName(name);
+        this.setValue(balance);
+        this.setMask((byte)((hidden ? 1 : 0) + (needsInvite ? 2 : 0)));
+        return this;
+    }
+
+    public AccountModel newAccount(User user, String name, long balance, boolean hidden)
+    {
+        return this.newAccount(user, name, balance, hidden, false);
     }
 
     public boolean needsInvite()
     {
-        return (this.mask & 2) == 2;
+        return (this.getMask() & 2) == 2;
     }
 
     public boolean isHidden()
     {
-        return (this.mask & 1) == 1;
+        return (this.getMask() & 1) == 1;
     }
 
     public void setNeedsInvite(boolean set)
     {
+        byte mask = this.getMask();
         if (set)
         {
-            this.mask |= 2;
+            mask |= 2;
         }
         else
         {
-            this.mask &= ~2;
+            mask &= ~2;
         }
+        this.setMask(mask);
     }
 
     public void setHidden(boolean set)
     {
+        byte mask = this.getMask();
         if (set)
         {
-            this.mask |= 1;
+            mask |= 1;
         }
         else
         {
-            this.mask &= ~1;
+            mask &= ~1;
         }
+        this.setMask(mask);
+    }
+
+    public void setKey(UInteger value) {
+        setValue(0, value);
+    }
+
+    public UInteger getKey() {
+        return (UInteger) getValue(0);
+    }
+
+    public void setUserId(UInteger value) {
+        setValue(1, value);
+    }
+
+    public UInteger getUserId() {
+        return (UInteger) getValue(1);
+    }
+
+    public void setName(String value) {
+        setValue(2, value);
+    }
+
+    public String getName() {
+        return (String) getValue(2);
+    }
+
+    public void setValue(Long value) {
+        setValue(3, value);
+    }
+
+    public Long getValue() {
+        return (Long) getValue(3);
+    }
+
+    public void setMask(Byte value) {
+        setValue(4, value);
+    }
+
+    public Byte getMask() {
+        return (Byte) getValue(4);
+    }
+
+    // -------------------------------------------------------------------------
+    // Primary key information
+    // -------------------------------------------------------------------------
+
+    @Override
+    public Record1<UInteger> key() {
+        return (Record1) super.key();
+    }
+
+    // -------------------------------------------------------------------------
+    // Record5 type implementation
+    // -------------------------------------------------------------------------
+
+    @Override
+    public Row5<UInteger, UInteger, String, Long, Byte> fieldsRow() {
+        return (Row5) super.fieldsRow();
+    }
+
+    @Override
+    public Row5<UInteger, UInteger, String, Long, Byte> valuesRow() {
+        return (Row5) super.valuesRow();
+    }
+
+    @Override
+    public Field<UInteger> field1() {
+        return TABLE_ACCOUNT.KEY;
+    }
+
+    @Override
+    public Field<UInteger> field2() {
+        return TABLE_ACCOUNT.USER_ID;
+    }
+
+    @Override
+    public Field<String> field3() {
+        return TABLE_ACCOUNT.NAME;
+    }
+
+    @Override
+    public Field<Long> field4() {
+        return TABLE_ACCOUNT.VALUE;
+    }
+
+    @Override
+    public Field<Byte> field5() {
+        return TABLE_ACCOUNT.MASK;
+    }
+
+    @Override
+    public UInteger value1() {
+        return getKey();
+    }
+
+    @Override
+    public UInteger value2() {
+        return getUserId();
+    }
+
+    @Override
+    public String value3() {
+        return getName();
+    }
+
+    @Override
+    public Long value4() {
+        return getValue();
+    }
+
+    @Override
+    public Byte value5() {
+        return getMask();
     }
 }

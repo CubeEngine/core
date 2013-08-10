@@ -25,21 +25,21 @@ import org.bukkit.World;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.user.UserManager;
 import de.cubeisland.engine.log.Log;
 import de.cubeisland.engine.log.LogAttachment;
+import de.cubeisland.engine.log.storage.ActionTypeModel;
 import de.cubeisland.engine.log.storage.LogEntry;
 import de.cubeisland.engine.log.storage.LogManager;
 import de.cubeisland.engine.log.storage.QueryParameter;
 import de.cubeisland.engine.log.storage.QueuedLog;
 import de.cubeisland.engine.log.storage.ShowParameter;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 public abstract class ActionType
 {
-    private long actionTypeID;
+    private ActionTypeModel model;
 
     protected Log logModule;
     protected UserManager um;
@@ -68,7 +68,7 @@ public abstract class ActionType
         }
         else if (causer instanceof Player)
         {
-            causerID = this.um.getExactUser(((Player)causer).getName()).key;
+            causerID = this.um.getExactUser(((Player)causer).getName()).getId();
         }
         else
         {
@@ -79,21 +79,21 @@ public abstract class ActionType
 
     public void queueLog(long worldID, int x, int y, int z, Long causer, String block, Long data, String newBlock, Byte newData, String additionalData)
     {
-        QueuedLog log = new QueuedLog(new Timestamp(System.currentTimeMillis()),worldID,x,y,z,this.actionTypeID,causer,block,data,newBlock,newData,additionalData);
+        QueuedLog log = new QueuedLog(new Timestamp(System.currentTimeMillis()),worldID,x,y,z,this.model.getId().longValue(),causer,block,data,newBlock,newData,additionalData);
         this.lm.queueLog(log);
     }
 
     /**
      * Register your events here
      */
-    public final void initialize(Log module)
+    public final void initialize(Log module, ActionTypeManager manager)
     {
         this.logModule = module;
         this.um = module.getCore().getUserManager();
         this.om = module.getObjectMapper();
-        this.manager = module.getActionTypeManager();
+        this.manager = manager;
         this.lm = module.getLogManager();
-        if (this.getID() != -1)
+        if (this.getModel() != null)
         {
             for (ActionTypeCategory category : this.getCategories())
             {
@@ -135,25 +135,25 @@ public abstract class ActionType
      */
     public boolean isSimilar(LogEntry logEntry, LogEntry other)
     {
-        return logEntry.actionType == other.actionType;
+        return logEntry.getActionType() == other.getActionType();
     }
 
-    public void setID(long id)
+    public void setModel(ActionTypeModel model)
     {
-        this.actionTypeID = id;
+        this.model = model;
     }
 
-    public long getID()
+    public ActionTypeModel getModel()
     {
-        return this.actionTypeID;
+        return this.model;
     }
 
     public boolean rollback(LogAttachment attachment, LogEntry logEntry, boolean force, boolean preview)
     {
         if (this.canRollback())
         {
-            attachment.getHolder().sendTranslated("&4Encountered an unimplemented LogAction-Rollback: &6%s", logEntry.actionType.getName());
-            throw new UnsupportedOperationException("Not yet implemented! " + logEntry.actionType.getName());
+            attachment.getHolder().sendTranslated("&4Encountered an unimplemented LogAction-Rollback: &6%s", logEntry.getActionType().getName());
+            throw new UnsupportedOperationException("Not yet implemented! " + logEntry.getActionType().getName());
         }
         return false;
     }
@@ -183,5 +183,5 @@ public abstract class ActionType
         return false;
     }
 
-
+    public abstract boolean needsModel();
 }

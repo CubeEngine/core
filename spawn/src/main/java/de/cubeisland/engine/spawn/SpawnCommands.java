@@ -339,7 +339,7 @@ public class SpawnCommands
         @Override
         public List<String> complete(CommandSender sender, String token)
         {
-            List<String> roles = new ArrayList<String>();
+            List<String> roles = new ArrayList<>();
             if (sender instanceof User)
             {
                 if (((User)sender).get(RolesAttachment.class).getWorkingWorldId() != null)

@@ -38,6 +38,16 @@ FIREWORK:
 #Vehicles
 MINECART:
     Minecart
+MINECART_CHEST
+    ChestMinecart
+MINECART_FURNACE
+    FurnaceMinecart
+MINECART_TNT
+    TNTMinecart
+MINECART_HOPPER
+    HopperMinecart
+MINECART_MOB_SPAWNER
+    SpawnerMinecart
 BOAT:
     Boat
 #Hostile mobs

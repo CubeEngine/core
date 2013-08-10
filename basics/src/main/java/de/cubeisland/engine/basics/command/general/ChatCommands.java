@@ -18,23 +18,19 @@
 package de.cubeisland.engine.basics.command.general;
 
 import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
+import de.cubeisland.engine.basics.Basics;
+import de.cubeisland.engine.basics.BasicsAttachment;
+import de.cubeisland.engine.basics.storage.BasicsUserEntity;
 import de.cubeisland.engine.core.command.CommandContext;
 import de.cubeisland.engine.core.command.reflected.Command;
 import de.cubeisland.engine.core.command.sender.ConsoleCommandSender;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.user.UserManager;
 import de.cubeisland.engine.core.util.ChatFormat;
-import de.cubeisland.engine.core.util.StringUtils;
 import de.cubeisland.engine.core.util.time.Duration;
-import de.cubeisland.engine.basics.Basics;
-import de.cubeisland.engine.basics.BasicsAttachment;
-import de.cubeisland.engine.basics.BasicsPerm;
-import de.cubeisland.engine.basics.storage.BasicUser;
 
 import static de.cubeisland.engine.core.command.ArgBounds.NO_MAX;
 
@@ -48,75 +44,6 @@ public class ChatCommands
     {
         this.module = basics;
         this.um = basics.getCore().getUserManager();
-    }
-
-    @Command(desc = "Ignores all messages from players", min = 1, max = 1, usage = "<player>")
-    // other usages: <player>[,<player>]...
-    public void ignore(CommandContext context)
-    {
-        if (context.getSender() instanceof User)
-        {
-            User sender = (User)context.getSender();
-            String[] userNames = StringUtils.explode(",",context.getString(0));
-            List<String> added = new ArrayList<String>();
-            for (String name : userNames)
-            {
-                User user = this.um.findUser(name);
-                if (user == null)
-                {
-                    context.sendTranslated("&cUser &2%s &cnot found!",name);
-                }
-                else if (!this.module.getIgnoreListManager().addIgnore(sender, user))
-                {
-                    if (BasicsPerm.COMMAND_IGNORE_PREVENT.isAuthorized(user))
-                    {
-                        context.sendTranslated("&cYou are not allowed to ignore &2%s&c!",user.getName());
-                        continue;
-                    }
-                    context.sendTranslated("&2%s&c is already on your ignore list!", user.getName());
-                }
-                else
-                {
-                    added.add(name);
-                }
-            }
-            context.sendTranslated("&aYou added &2%s&a to your ignore list!", StringUtils.implode("&f, &2", added));
-            return;
-        }
-        int rand1 = new Random().nextInt(6)+1;
-        int rand2 = new Random().nextInt(6-rand1+1)+1;
-        context.sendTranslated("&eIgnore (&f8+&e): %d + %d = %d -> &cfailed", rand1, rand2, rand1 + rand2);
-    }
-
-    @Command(desc = "Stops ignoring all messages from a player", min = 1, max = 1, usage = "<player>")
-    // other usages: <player>[,<player>]...
-    public void unignore(CommandContext context)
-    {
-        if (context.getSender() instanceof User)
-        {
-            User sender = (User)context.getSender();
-            String[] userNames = StringUtils.explode(",",context.getString(0));
-            List<String> added = new ArrayList<String>();
-            for (String name : userNames)
-            {
-                User user = this.um.findUser(name);
-                if (user == null)
-                {
-                    context.sendTranslated("&cUser &2%s &cnot found!",name);
-                }
-                else if (!this.module.getIgnoreListManager().removeIgnore(sender, user))
-                {
-                    context.sendTranslated("&cYou haven't ignored &2%s&c!", user.getName());
-                }
-                else
-                {
-                    added.add(name);
-                }
-            }
-            context.sendTranslated("&aYou removed &2%s&a from your ignore list!", StringUtils.implode("&f, &2", added));
-            return;
-        }
-        context.sendTranslated("&cCongratulations! You are now looking at this text!");
     }
 
     @Command(desc = "Allows you to emote", min = 1, max = NO_MAX, usage = "<message>")
@@ -238,8 +165,8 @@ public class ChatCommands
             context.sendTranslated("&cUser &2%s &cnot found!", context.getString(0));
             return;
         }
-        BasicUser bUser = this.module.getBasicUserManager().getBasicUser(user);
-        if (bUser.muted != null && bUser.muted.getTime() < System.currentTimeMillis())
+        BasicsUserEntity basicsUserEntity = user.attachOrGet(BasicsAttachment.class, module).getBasicsUser().getbUEntity();
+        if (basicsUserEntity.getMuted() != null && basicsUserEntity.getMuted().getTime() < System.currentTimeMillis())
         {
             context.sendTranslated("&2%s &ewas already muted!", user.getName());
         }
@@ -256,8 +183,8 @@ public class ChatCommands
                 return;
             }
         }
-        bUser.muted = new Timestamp(System.currentTimeMillis() + (dura.toMillis() == -1 ? TimeUnit.DAYS.toMillis(9001) : dura.toMillis()));
-        this.module.getBasicUserManager().update(bUser);
+        basicsUserEntity.setMuted(new Timestamp(System.currentTimeMillis() + (dura.toMillis() == -1 ? TimeUnit.DAYS.toMillis(9001) : dura.toMillis())));
+        basicsUserEntity.update();
         String timeString = dura.toMillis() == -1 ? "ever" : dura.format("%www %ddd %hhh %mmm %sss");
         user.sendTranslated("&cYou are now muted for &6%s&c!", timeString);
         context.sendTranslated("&eYou muted &2%s &eglobally for &6%s&c!", user.getName(), timeString);
@@ -270,10 +197,11 @@ public class ChatCommands
         if (user == null)
         {
             context.sendTranslated("&cUser &2%s &cnot found!", context.getString(0));
+            return;
         }
-        BasicUser bUser = this.module.getBasicUserManager().getBasicUser(user);
-        bUser.muted = null;
-        this.module.getBasicUserManager().update(bUser);
+        BasicsUserEntity basicsUserEntity = user.attachOrGet(BasicsAttachment.class, module).getBasicsUser().getbUEntity();
+        basicsUserEntity.setMuted(null);
+        basicsUserEntity.update();
         context.sendTranslated("&2%s &ais no longer muted!", user.getName());
     }
 

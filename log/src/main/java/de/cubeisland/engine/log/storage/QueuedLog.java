@@ -35,11 +35,11 @@ public class QueuedLog
         this(timestamp, action, worldID, x, y, z, causer, block, data, newBlock, newData, additionalData);
     }
 
-    public void addDataToBatch(PreparedStatement stmt) throws SQLException
+    public void bindTo(PreparedStatement stmt) throws SQLException
     {
-        for (int i = 0; i < this.logdata.length; ++i)
+        for (int i = 0; i < logdata.length; ++i)
         {
-            stmt.setObject(i + 1, this.logdata[i]);
+            stmt.setObject(i + 1, logdata[i]);
         }
         stmt.addBatch();
     }

@@ -36,7 +36,7 @@ import de.cubeisland.engine.log.action.logaction.kill.MonsterDeath;
 public class QueryResults
 {
     private Lookup lookup;
-    private TreeSet<LogEntry> logEntries = new TreeSet<LogEntry>();
+    private TreeSet<LogEntry> logEntries = new TreeSet<>();
 
     public QueryResults(Lookup lookup)
     {
@@ -61,12 +61,13 @@ public class QueryResults
         {
             show.pagelimit = 80;
         }
+
         int totalPages = (this.logEntries.size()+show.pagelimit-1) / show.pagelimit; // rounded up
         user.sendTranslated("&6%d&a distinct logs (&6%d&a pages)", this.logEntries.size(), totalPages);
         Iterator<LogEntry> entries = this.logEntries.iterator();
         LogEntry entry = entries.next();
         LogEntry lastAttach = entry;
-        TreeSet<LogEntry> compressedEntries = new TreeSet<LogEntry>();
+        TreeSet<LogEntry> compressedEntries = new TreeSet<>();
         if (show.compress)
         {
             compressedEntries.add(entry); // add first entry
@@ -139,7 +140,7 @@ public class QueryResults
         {
             if (cpage == show.page)
             {
-                logEntry.actionType.showLogEntry(user,parameter,logEntry, show);
+                logEntry.getActionType().showLogEntry(user,parameter,logEntry, show);
             }
             i++;
             if (i % show.pagelimit == 0)
@@ -158,25 +159,25 @@ public class QueryResults
     public void rollback(LogAttachment attachment, boolean preview)
     {
         // Find the oldest entry at a location
-        Map<Location,LogEntry> finalBlock = new HashMap<Location, LogEntry>();
-        Map<Location,LinkedList<LogEntry>> blockChanges = new HashMap<Location, LinkedList<LogEntry>>();
-        TreeSet<LogEntry> filteredLogs = new TreeSet<LogEntry>();
+        Map<Location,LogEntry> finalBlock = new HashMap<>();
+        Map<Location,LinkedList<LogEntry>> blockChanges = new HashMap<>();
+        TreeSet<LogEntry> filteredLogs = new TreeSet<>();
         for (LogEntry logEntry : this.logEntries.descendingSet())
         {
-            if (logEntry.actionType.canRollback()) // can rollback
+            if (logEntry.getActionType().canRollback()) // can rollback
             {
-                if (logEntry.actionType instanceof MonsterDeath && !this.lookup.getQueryParameter().containsAction(logEntry.actionType))
+                if (logEntry.getActionType() instanceof MonsterDeath && !this.lookup.getQueryParameter().containsAction(logEntry.getActionType()))
                 {
                     continue; // ignoring Monster-respawning when not explicitly wanted
                 }
-                if (logEntry.actionType.isBlockBound())
+                if (logEntry.getActionType().isBlockBound())
                 {
-                    if (logEntry.actionType.isStackable())
+                    if (logEntry.getActionType().isStackable())
                     {
                         LinkedList<LogEntry> changes = blockChanges.get(logEntry.getLocation());
                         if (changes == null)
                         {
-                            changes = new LinkedList<LogEntry>();
+                            changes = new LinkedList<>();
                             blockChanges.put(logEntry.getLocation(), changes);
                         }
                         changes.add(logEntry);
@@ -200,7 +201,7 @@ public class QueryResults
         }
         filteredLogs.addAll(finalBlock.values());
         // Start Rollback 1st Round
-        Set <LogEntry> rollbackRound2 = new LinkedHashSet<LogEntry>();
+        Set <LogEntry> rollbackRound2 = new LinkedHashSet<>();
         for (LogEntry logEntry : filteredLogs.descendingSet()) // Rollback normal blocks
         {
             if (!logEntry.rollback(attachment, false, preview)) // Rollback failed (cannot set yet (torches etc)) try again later
@@ -215,7 +216,7 @@ public class QueryResults
             if (!logEntry.rollback(attachment, true, preview))
             {
                 attachment.getHolder().sendTranslated("&cCould not Rollback:");
-                logEntry.actionType.showLogEntry(attachment.getHolder(), null, logEntry, show);
+                logEntry.getActionType().showLogEntry(attachment.getHolder(), null, logEntry, show);
                 CubeEngine.getLog().warn("Could not rollback!");
             }
         }

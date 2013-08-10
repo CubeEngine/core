@@ -46,14 +46,14 @@ public class ConversationContextFactory extends ParameterizedContextFactory
     public ConversationContextFactory()
     {
         super(new ArgBounds(0, NO_MAX));
-        this.args = new LinkedList<String>();
+        this.args = new LinkedList<>();
     }
 
     @Override
     public ParameterizedContext parse(CubeCommand command, CommandSender sender, Stack<String> labels, String[] commandLine)
     {
-        final Set<String> flags = new THashSet<String>();
-        final Map<String, Object> params = new THashMap<String, Object>();
+        final Set<String> flags = new THashSet<>();
+        final Map<String, Object> params = new THashMap<>();
         if (commandLine.length > 0)
         {
             for (int offset = 0; offset < commandLine.length;)

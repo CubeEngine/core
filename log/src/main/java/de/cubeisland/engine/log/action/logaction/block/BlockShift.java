@@ -45,7 +45,7 @@ public class BlockShift extends BlockActionType
     @Override
     protected Set<ActionTypeCategory> getCategories()
     {
-        return new HashSet<ActionTypeCategory>(Arrays.asList(BLOCK));
+        return new HashSet<>(Arrays.asList(BLOCK));
     }
 
     @Override

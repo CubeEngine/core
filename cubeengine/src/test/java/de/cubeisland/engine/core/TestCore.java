@@ -17,9 +17,9 @@
  */
 package de.cubeisland.engine.core;
 
-import java.io.File;
 import java.io.IOException;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import de.cubeisland.engine.core.ban.BanManager;
 import de.cubeisland.engine.core.bukkit.EventManager;
 import de.cubeisland.engine.core.command.ArgumentReader;
@@ -32,7 +32,6 @@ import de.cubeisland.engine.core.module.ModuleManager;
 import de.cubeisland.engine.core.module.TestModuleManager;
 import de.cubeisland.engine.core.permission.PermissionManager;
 import de.cubeisland.engine.core.service.ServiceManager;
-import de.cubeisland.engine.core.storage.TableManager;
 import de.cubeisland.engine.core.storage.database.Database;
 import de.cubeisland.engine.core.task.TaskManager;
 import de.cubeisland.engine.core.user.UserManager;
@@ -41,8 +40,6 @@ import de.cubeisland.engine.core.util.Version;
 import de.cubeisland.engine.core.util.matcher.Match;
 import de.cubeisland.engine.core.webapi.ApiServer;
 import de.cubeisland.engine.core.world.WorldManager;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -74,7 +71,7 @@ public class TestCore implements Core
     @Override
     public String getSourceVersion()
     {
-        return "";
+        return "unknown-testing";
     }
 
     @Override
@@ -94,7 +91,7 @@ public class TestCore implements Core
     {
         if (this.config == null)
         {
-            this.config = Configuration.load(CoreConfiguration.class, new File(this.getFileManager().getDataFolder(), "core.yml"));
+            this.config = Configuration.load(CoreConfiguration.class, this.getFileManager().getDataPath().resolve("core.yml"));
         }
         return this.config;
     }
@@ -148,12 +145,6 @@ public class TestCore implements Core
             this.moduleManager = new TestModuleManager(this);
         }
         return this.moduleManager;
-    }
-
-    @Override
-    public TableManager getTableManger()
-    {
-        throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override

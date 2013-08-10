@@ -17,7 +17,6 @@
  */
 package de.cubeisland.engine.core.webapi;
 
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.EnumSet;
@@ -108,16 +107,9 @@ public final class ApiHandler
     /**
      * This method handles the request.
      */
-    public void execute(final ApiRequest request, final ApiResponse response) throws Throwable
+    public void execute(final ApiRequest request, final ApiResponse response) throws Exception
     {
-        try
-        {
-            this.method.invoke(this.holder, request, response);
-        }
-        catch (InvocationTargetException e)
-        {
-            throw e.getCause();
-        }
+        this.method.invoke(this.holder, request, response);
     }
 
     @Override

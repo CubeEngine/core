@@ -40,7 +40,7 @@ public class PermissionTreeConverter implements Converter<PermissionTree>
     @Override
     public Node toNode(PermissionTree permTree) throws ConversionException
     {
-        Map<String, Object> easyMap = new LinkedHashMap<String, Object>();
+        Map<String, Object> easyMap = new LinkedHashMap<>();
         for (Map.Entry<String, Boolean> entry : permTree.getPermissions().entrySet())
         {
             this.easyMapValue(easyMap, entry.getKey(), entry.getValue());
@@ -110,7 +110,7 @@ public class PermissionTreeConverter implements Converter<PermissionTree>
         Map<String, Object> subMap = (Map<String, Object>)map.get(base); // this should never give an exception if it does something went wrong!
         if (subMap == null) // sub map not yet existant?
         {
-            subMap = new LinkedHashMap<String, Object>();
+            subMap = new LinkedHashMap<>();
             map.put(base, subMap);
         }
         this.easyMapValue(subMap, this.getSubPath(path, base), value); // create map for subPath

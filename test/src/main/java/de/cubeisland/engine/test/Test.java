@@ -17,7 +17,6 @@
  */
 package de.cubeisland.engine.test;
 
-import java.io.File;
 import java.io.IOException;
 import java.sql.Date;
 import java.sql.SQLException;
@@ -39,6 +38,7 @@ import org.bukkit.WorldType;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 
+import de.cubeisland.engine.basics.Basics;
 import de.cubeisland.engine.core.CubeEngine;
 import de.cubeisland.engine.core.bukkit.BukkitCore;
 import de.cubeisland.engine.core.bukkit.PlayerLanguageReceivedEvent;
@@ -47,18 +47,13 @@ import de.cubeisland.engine.core.config.Configuration;
 import de.cubeisland.engine.core.filesystem.FileUtil;
 import de.cubeisland.engine.core.module.Inject;
 import de.cubeisland.engine.core.module.Module;
-import de.cubeisland.engine.core.storage.database.Database;
 import de.cubeisland.engine.core.user.UserManager;
 import de.cubeisland.engine.core.util.matcher.Match;
-import de.cubeisland.engine.basics.Basics;
 import de.cubeisland.engine.test.commands.TestCommands;
-import de.cubeisland.engine.test.database.TestManager;
-import de.cubeisland.engine.test.database.TestModel;
 
 public class Test extends Module
 {
     public static final String TEST_WORLD_NAME = "world_test";
-    public TestManager manager;
     public UserManager uM;
     protected TestConfig config;
     public static List<String> aListOfPlayers;
@@ -92,8 +87,8 @@ public class Test extends Module
     public void onEnable()
     {
         this.config = Configuration.load(TestConfig.class, this);
-        this.config.loadChild(new File(this.getFolder(), "childConfig.yml"));
-        Configuration.load(TestConfig2.class, new File(this.getFolder(), "updateConfig.yml"));
+        this.config.loadChild(this.getFolder().resolve("childConfig.yml"));
+        Configuration.load(TestConfig2.class, this.getFolder().resolve("updateConfig.yml"));
         // this.getCore().getFileManager().dropResources(TestRecource.values());
         this.uM = this.getCore().getUserManager();
         try
@@ -141,7 +136,8 @@ public class Test extends Module
     }
 
     public void initializeDatabase() throws SQLException
-    {
+    {//TODO DATABASE
+        /*
         Database db = this.getCore().getDB();
         try
         {
@@ -149,7 +145,7 @@ public class Test extends Module
         }
         catch (Exception ignore)
         {}
-        this.manager = new TestManager(db);
+        this.manager = new TestManager(db);*/
     }
 
     @Override
@@ -177,6 +173,8 @@ public class Test extends Module
 
     public void testDatabase() throws SQLException
     {
+        //TODO DATABASE
+        /*
         Database database = this.getCore().getDB();
 
         try
@@ -199,6 +197,7 @@ public class Test extends Module
         model.orderPrice = 100;
         model.customer = "Paul";
         this.manager.update(model);
+        */
     }
 
     public void testl18n()
@@ -233,7 +232,7 @@ public class Test extends Module
     {
         try
         {
-            aListOfPlayers = FileUtil.readStringList(new File(this.getFolder(), "testdata" + File.separatorChar + "player.txt"));
+            aListOfPlayers = FileUtil.readStringList(this.getFolder().resolve("testdata").resolve("player.txt"));
         }
         catch (Exception ex)
         {

@@ -30,7 +30,7 @@ import gnu.trove.set.hash.TLongHashSet;
 
 public class MarketSignFactory
 {
-    private THashMap<Location, MarketSign> marketSigns = new THashMap<Location, MarketSign>();
+    private THashMap<Location, MarketSign> marketSigns = new THashMap<>();
 
     private SignMarketItemManager signMarketItemManager;
     private SignMarketBlockManager signMarketBlockManager;
@@ -51,14 +51,14 @@ public class MarketSignFactory
         TLongHashSet usedItemKeys = new TLongHashSet();
         for (SignMarketBlockModel blockModel : this.signMarketBlockManager.getLoadedModels())
         {
-            SignMarketItemModel itemModel = this.signMarketItemManager.getInfoModel(blockModel.itemKey);
+            SignMarketItemModel itemModel = this.signMarketItemManager.getInfoModel(blockModel.getItemkey().longValue());
             if (itemModel == null)
             {
                 this.module.getLog().warn("Inconsistent Data! BlockInfo without Marketsigninfo!");
                 continue;
             }
             MarketSign marketSign = new MarketSign(module, itemModel, blockModel);
-            usedItemKeys.add(blockModel.itemKey);
+            usedItemKeys.add(blockModel.getItemkey().intValue());
             this.marketSigns.put(blockModel.getLocation(),marketSign);
         }
         this.signMarketItemManager.deleteUnusedModels(usedItemKeys);
@@ -130,33 +130,37 @@ public class MarketSignFactory
 
     public void syncAndSaveSign(MarketSign marketSign)
     {
-        for (MarketSign sign : this.marketSigns.values())
+        if (marketSign.getItemInfo().getKey().longValue() == 0 || marketSign.getItemInfo().getReferenced().size() == 1) // de-synced sign OR possibly sync-able sign
         {
-            if (sign.hasDemand()) // skip if limited demand
+            for (MarketSign sign : this.marketSigns.values())
             {
-                continue;
-            }
-            if ((marketSign.getRawOwner() == sign.getRawOwner() && marketSign != sign)  // same owner (but not same sign)
-                && marketSign.canSync(sign)) // both have stock AND same item -> doSync
-            {
-                // apply the found item-info to the marketsign
-                SignMarketItemModel itemModel = marketSign.setItemInfo(sign.getItemInfo());
-                if (marketSign.syncOnMe) // stock OR stock-size change
+                if (sign.hasDemand()) // skip if limited demand
                 {
-                    marketSign.setStock(itemModel.stock);
-                    marketSign.setSize(itemModel.size);
-                    marketSign.syncOnMe = false;
+                    continue;
                 }
-                this.saveOrUpdate(marketSign);
-                this.module.getLog().debug("block-model #{} synced onto the item-model #{} (size: {})" ,
-                                           marketSign.getBlockInfo().key, marketSign.getItemInfo().key, marketSign.getItemInfo().getReferenced().size());
-                if (itemModel.key != -1 && itemModel.isNotReferenced())
+                if ((marketSign.getRawOwner() == sign.getRawOwner() && marketSign != sign)  // same owner (but not same sign)
+                    && marketSign.canSync(sign)) // both have stock AND same item -> doSync
                 {
-                    this.signMarketItemManager.delete(itemModel); // delete if no more referenced
+                    // apply the found item-info to the marketsign
+                    SignMarketItemModel itemModel = marketSign.setItemInfo(sign.getItemInfo());
+                    if (marketSign.syncOnMe) // stock OR stock-size change
+                    {
+                        marketSign.setStock(itemModel.getStock().intValue());
+                        marketSign.setSize(itemModel.getSize().intValue());
+                        marketSign.syncOnMe = false;
+                    }
+                    this.saveOrUpdate(marketSign);
+                    this.module.getLog().debug("block-model #{} synced onto the item-model #{} (size: {})" ,
+                                               marketSign.getBlockInfo().getKey(), marketSign.getItemInfo().getKey(), marketSign.getItemInfo().getReferenced().size());
+                    if (itemModel.getKey().longValue() != 0 && itemModel.isNotReferenced())
+                    {
+                        this.signMarketItemManager.delete(itemModel); // delete if no more referenced
+                    }
+                    marketSign.getItemInfo().updateSignTexts(); // update all signs that use the same itemInfo
+                    return;
                 }
-                marketSign.getItemInfo().updateSignTexts(); // update all signs that use the same itemInfo
-                return;
             }
+            // no sync -> new ItemModel
         }
         this.saveOrUpdate(marketSign);
         marketSign.getItemInfo().updateSignTexts(); // update all signs that use the same itemInfo
@@ -164,17 +168,17 @@ public class MarketSignFactory
 
     private void saveOrUpdate(MarketSign marketSign)
     {
-        if (marketSign.getItemInfo().key == -1) // itemInfo not saved in database
+        if (marketSign.getItemInfo().getKey().longValue() == 0) // itemInfo not saved in database
         {
             this.signMarketItemManager.store(marketSign.getItemInfo());
             // set freshly assigned itemData reference in BlockInfo
-            marketSign.getBlockInfo().itemKey = marketSign.getItemInfo().key;
+            marketSign.getBlockInfo().setItemkey(marketSign.getItemInfo().getKey());
         }
         else // update
         {
             this.signMarketItemManager.update(marketSign.getItemInfo());
         }
-        if (marketSign.getBlockInfo().key == -1) // blockInfo not saved in database
+        if (marketSign.getBlockInfo().getKey().longValue() == 0) // blockInfo not saved in database
         {
             this.signMarketBlockManager.store(marketSign.getBlockInfo());
         }

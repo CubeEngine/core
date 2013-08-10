@@ -282,10 +282,10 @@ public class KillActionType extends ActionTypeContainer
 
     public static boolean isSimilarSubAction(LogEntry logEntry, LogEntry other)
     {
-        if (logEntry.actionType != other.actionType) return false;
-        return logEntry.causer == other.causer
-            && logEntry.data == other.data
-            && logEntry.world == other.world;
+        if (logEntry.getActionType() != other.getActionType()) return false;
+        return logEntry.getCauser().equals(other.getCauser())
+            && logEntry.getData() == other.getData()
+            && logEntry.getWorld() == other.getWorld();
     }
 
     public static boolean rollbackDeath(LogAttachment attachment, LogEntry logEntry, boolean force, boolean preview)

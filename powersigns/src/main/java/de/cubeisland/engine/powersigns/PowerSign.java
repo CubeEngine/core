@@ -31,7 +31,7 @@ public class PowerSign<T extends SignType, I extends SignTypeInfo>
     public PowerSign(T signType, Location location, User user, String[] lines)
     {
         this.signType = signType;
-        this.signInfo = (I)signType.createInfo(user.key,location,lines[0],lines[1],lines[2],lines[3]);
+        this.signInfo = (I)signType.createInfo(user.getId(),location,lines[0],lines[1],lines[2],lines[3]);
         //this.signInfo.saveData();
     }
 

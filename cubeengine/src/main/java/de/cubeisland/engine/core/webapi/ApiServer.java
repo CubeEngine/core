@@ -78,10 +78,10 @@ public class ApiServer
     {
         this.core = core;
         this.logger = core.getLog();
-        this.bootstrap = new AtomicReference<ServerBootstrap>(null);
-        this.eventLoopGroup = new AtomicReference<EventLoopGroup>(null);
-        this.channel = new AtomicReference<Channel>(null);
-        this.bindAddress = new AtomicReference<InetAddress>(null);
+        this.bootstrap = new AtomicReference<>(null);
+        this.eventLoopGroup = new AtomicReference<>(null);
+        this.channel = new AtomicReference<>(null);
+        this.bindAddress = new AtomicReference<>(null);
         this.maxThreads = new AtomicInteger(2);
         try
         {
@@ -99,14 +99,14 @@ public class ApiServer
         this.windowBits = new AtomicInteger(15);
         this.memoryLevel = new AtomicInteger(9);
 
-        this.disabledRoutes = new CopyOnWriteArraySet<String>();
+        this.disabledRoutes = new CopyOnWriteArraySet<>();
         this.enableWhitelist = new AtomicBoolean(false);
-        this.whitelist = new CopyOnWriteArraySet<String>();
+        this.whitelist = new CopyOnWriteArraySet<>();
         this.enableBlacklist = new AtomicBoolean(false);
-        this.blacklist = new CopyOnWriteArraySet<String>();
+        this.blacklist = new CopyOnWriteArraySet<>();
 
-        this.handlers = new ConcurrentHashMap<String, ApiHandler>();
-        this.subscriptions = new ConcurrentHashMap<String, List<ApiRequestHandler>>();
+        this.handlers = new ConcurrentHashMap<>();
+        this.subscriptions = new ConcurrentHashMap<>();
     }
 
     public void configure(final ApiConfig config)
@@ -618,7 +618,7 @@ public class ApiServer
         List<ApiRequestHandler> subscribedHandlers = this.subscriptions.get(event);
         if (subscribedHandlers == null)
         {
-            this.subscriptions.put(event, subscribedHandlers = new CopyOnWriteArrayList<ApiRequestHandler>());
+            this.subscriptions.put(event, subscribedHandlers = new CopyOnWriteArrayList<>());
         }
         subscribedHandlers.add(requestHandler);
     }

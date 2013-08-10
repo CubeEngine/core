@@ -17,9 +17,13 @@
  */
 package de.cubeisland.engine.roles.role;
 
-import java.io.File;
+import java.io.IOException;
+import java.nio.file.Path;
 
 import de.cubeisland.engine.roles.Roles;
+import org.jooq.impl.DSL;
+
+import static de.cubeisland.engine.roles.storage.TableRole.TABLE_ROLE;
 
 public class GlobalRoleProvider extends RoleProvider
 {
@@ -30,7 +34,7 @@ public class GlobalRoleProvider extends RoleProvider
     }
 
     @Override
-    public File getFolder()
+    public Path getFolder()
     {
         return this.manager.getRolesFolder();
     }
@@ -51,7 +55,8 @@ public class GlobalRoleProvider extends RoleProvider
     {
         if (super.renameRole(role,newName))
         {
-            this.manager.rm.renameGlobal(role.getName(),newName);
+            this.manager.dsl.update(TABLE_ROLE).set(DSL.row(TABLE_ROLE.ROLENAME), DSL.row("g:" + newName)).
+                where(TABLE_ROLE.ROLENAME.eq("g:" + role.getName())).execute();
             return true;
         }
         return false;

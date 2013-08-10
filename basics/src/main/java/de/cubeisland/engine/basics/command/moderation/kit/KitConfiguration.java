@@ -17,15 +17,16 @@
  */
 package de.cubeisland.engine.basics.command.moderation.kit;
 
-import java.io.File;
+import java.nio.file.Path;
 import java.util.LinkedList;
 import java.util.List;
 
+import de.cubeisland.engine.basics.Basics;
 import de.cubeisland.engine.core.config.YamlConfiguration;
 import de.cubeisland.engine.core.config.annotations.Comment;
 import de.cubeisland.engine.core.config.annotations.Option;
+import de.cubeisland.engine.core.util.StringUtils;
 import de.cubeisland.engine.core.util.time.Duration;
-import de.cubeisland.engine.basics.Basics;
 
 public class KitConfiguration extends YamlConfiguration
 {
@@ -39,9 +40,9 @@ public class KitConfiguration extends YamlConfiguration
     @Comment("amount*itemName/Id:Data customName\n"
         + "example: 64*1:0 MyFirstStoneBlocks")
     @Option("items")
-    public List<KitItem> kitItems = new LinkedList<KitItem>();
+    public List<KitItem> kitItems = new LinkedList<>();
     @Option("commands")
-    public List<String> kitCommands = new LinkedList<String>();
+    public List<String> kitCommands = new LinkedList<>();
     @Comment("If a permission is generated the user needs the permission to bew able to receive this kit")
     @Option("generate-permission")
     public boolean usePerm = false;
@@ -53,10 +54,9 @@ public class KitConfiguration extends YamlConfiguration
     public int limitUsage = 0;
 
     @Override
-    public void onLoaded(File loadFrom)
+    public void onLoaded(Path loadFrom)
     {
-        String fileName = this.getFile().getName();
-        this.kitName = fileName.substring(0, fileName.indexOf(".yml"));
+        this.kitName = StringUtils.stripFileExtension(this.getPath().getFileName().toString());
         if (this.kitName.length() > 50)
         {
             this.kitName = this.kitName.substring(0, 50); // limit for db
@@ -65,8 +65,7 @@ public class KitConfiguration extends YamlConfiguration
 
     public Kit getKit(Basics module)
     {
-        Kit kit = new Kit(module, this.kitName, this.giveOnFirstJoin, this.limitUsage, this.limitUsageDelay.toMillis(), this.usePerm, this.customReceiveMsg, this.kitCommands, this.kitItems);
-        return kit;
+        return new Kit(module, this.kitName, this.giveOnFirstJoin, this.limitUsage, this.limitUsageDelay.toMillis(), this.usePerm, this.customReceiveMsg, this.kitCommands, this.kitItems);
     }
 
 

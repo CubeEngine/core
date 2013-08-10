@@ -17,46 +17,104 @@
  */
 package de.cubeisland.engine.roles.storage;
 
-import de.cubeisland.engine.core.storage.TripletKeyModel;
-import de.cubeisland.engine.core.storage.database.AttrType;
-import de.cubeisland.engine.core.storage.database.Attribute;
-import de.cubeisland.engine.core.storage.database.Index;
-import de.cubeisland.engine.core.storage.database.TripletKeyEntity;
-import de.cubeisland.engine.core.util.Triplet;
+import org.jooq.Field;
+import org.jooq.Record3;
+import org.jooq.Row3;
+import org.jooq.impl.UpdatableRecordImpl;
+import org.jooq.types.UInteger;
 
-import static de.cubeisland.engine.core.storage.database.Index.IndexType.FOREIGN_KEY;
+import static de.cubeisland.engine.roles.storage.TableRole.TABLE_ROLE;
 
-@TripletKeyEntity(tableName = "roles", firstPrimaryKey = "userId", secondPrimaryKey = "worldId", thirdPrimaryKey = "roleName", indices = {
-    @Index(value = FOREIGN_KEY, fields = "userId", f_table = "user", f_field = "key"),
-    @Index(value = FOREIGN_KEY, fields = "worldId", f_table = "worlds", f_field = "key")
-})
-public class AssignedRole implements TripletKeyModel<Long, Long, String>
+public class AssignedRole extends UpdatableRecordImpl<AssignedRole> implements Record3<UInteger, UInteger, String>
 {
-    @Attribute(type = AttrType.INT, unsigned = true)
-    public long userId;
-    @Attribute(type = AttrType.INT, unsigned = true)
-    public long worldId;
-    @Attribute(type = AttrType.VARCHAR, length = 255)
-    public String roleName;
-
-    public AssignedRole(long userId, long worldId, String roleName)
+    public AssignedRole()
     {
-        this.userId = userId;
-        this.worldId = worldId;
-        this.roleName = roleName;
+        super(TABLE_ROLE);
+    }
+
+    public AssignedRole newAssignedRole(UInteger userId, long worldId, String roleName)
+    {
+        this.setUserid(userId);
+        this.setWorldid(UInteger.valueOf(worldId));
+        this.setRolename(roleName);
+        return this;
+    }
+
+    public void setUserid(UInteger value) {
+        setValue(0, value);
+    }
+
+    public UInteger getUserid() {
+        return (UInteger) getValue(0);
+    }
+
+    public void setWorldid(UInteger value) {
+        setValue(1, value);
+    }
+
+    public UInteger getWorldid() {
+        return (UInteger) getValue(1);
+    }
+
+    public void setRolename(String value) {
+        setValue(2, value);
+    }
+
+    public String getRolename() {
+        return (String) getValue(2);
+    }
+
+    // -------------------------------------------------------------------------
+    // Primary key information
+    // -------------------------------------------------------------------------
+
+    @Override
+    public Record3<UInteger, UInteger, String> key() {
+        return (Record3) super.key();
+    }
+
+    // -------------------------------------------------------------------------
+    // Record3 type implementation
+    // -------------------------------------------------------------------------
+
+    @Override
+    public Row3<UInteger, UInteger, String> fieldsRow() {
+        return (Row3) super.fieldsRow();
     }
 
     @Override
-    public Triplet<Long, Long, String> getId()
-    {
-        return new Triplet<Long, Long, String>(this.userId, this.worldId, this.roleName);
+    public Row3<UInteger, UInteger, String> valuesRow() {
+        return (Row3) super.valuesRow();
+    }
+
+    
+    @Override
+    public Field<UInteger> field1() {
+        return TABLE_ROLE.USERID;
     }
 
     @Override
-    public void setId(Triplet<Long, Long, String> id)
-    {
-        this.userId = id.getFirst();
-        this.worldId = id.getSecond();
-        this.roleName = id.getThird();
+    public Field<UInteger> field2() {
+        return TABLE_ROLE.WORLDID;
+    }
+
+    @Override
+    public Field<String> field3() {
+        return TABLE_ROLE.ROLENAME;
+    }
+
+    @Override
+    public UInteger value1() {
+        return getUserid();
+    }
+
+    @Override
+    public UInteger value2() {
+        return getWorldid();
+    }
+
+    @Override
+    public String value3() {
+        return getRolename();
     }
 }

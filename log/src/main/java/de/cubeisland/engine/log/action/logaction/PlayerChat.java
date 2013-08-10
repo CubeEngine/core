@@ -44,7 +44,7 @@ public class PlayerChat extends SimpleLogActionType
     @Override
     protected Set<ActionTypeCategory> getCategories()
     {
-        return new HashSet<ActionTypeCategory>(Arrays.asList(PLAYER));
+        return new HashSet<>(Arrays.asList(PLAYER));
     }
 
     @Override
@@ -105,9 +105,9 @@ public class PlayerChat extends SimpleLogActionType
     public boolean isSimilar(LogEntry logEntry, LogEntry other)
     {
         if (!super.isSimilar(logEntry, other)) return false;
-        return logEntry.causer == other.causer &&
-        Math.abs(TimeUnit.MILLISECONDS.toSeconds(logEntry.timestamp.getTime() - other.timestamp.getTime())) < 30
-            && logEntry.additional.iterator().next().asText().equals(other.additional.iterator().next().asText());
+        return logEntry.getCauser().equals(other.getCauser()) &&
+        Math.abs(TimeUnit.MILLISECONDS.toSeconds(logEntry.getTimestamp().getTime() - other.getTimestamp().getTime())) < 30
+            && logEntry.getAdditional().iterator().next().asText().equals(other.getAdditional().iterator().next().asText());
     }
 
 

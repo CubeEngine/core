@@ -17,9 +17,12 @@
  */
 package de.cubeisland.engine.conomy.account;
 
+import de.cubeisland.engine.conomy.account.storage.TableAccount;
 import de.cubeisland.engine.core.user.UserAttachment;
 import de.cubeisland.engine.conomy.Conomy;
 import de.cubeisland.engine.conomy.account.storage.AccountModel;
+
+import static de.cubeisland.engine.conomy.account.storage.TableAccount.TABLE_ACCOUNT;
 
 public class AccountAttachment extends UserAttachment
 {
@@ -41,8 +44,8 @@ public class AccountAttachment extends UserAttachment
     {
         if (this.getModule() instanceof Conomy)
         {
-            this.manager =  ((Conomy)this.getModule()).getManager();
-            AccountModel model = manager.storage.getUserAccount(this.getHolder().key);
+            this.manager = ((Conomy)this.getModule()).getManager();
+            AccountModel model = manager.loadUserAccount(this.getHolder());
             if (model != null)
             {
                 this.userAccount = new UserAccount(this, manager, model);
@@ -63,9 +66,9 @@ public class AccountAttachment extends UserAttachment
     public UserAccount createAccount()
     {
         if (this.userAccount != null) return this.getAccount();
-        AccountModel model = new AccountModel(this.getHolder().key, null,
-              (long) (this.manager.config.defaultBalance * this.manager.config.fractionalDigitsFactor()), false);
-        this.manager.storage.store(model);
+        AccountModel model = this.getModule().getCore().getDB().getDSL().newRecord(TABLE_ACCOUNT).
+            newAccount(this.getHolder(), null,(long) (this.manager.config.defaultBalance * this.manager.config.fractionalDigitsFactor()), false);
+        model.insert();
         this.userAccount = new UserAccount(this, this.manager, model);
         this.manager.logger.debug("NEW User:" + this.getHolder().getName() + " :: " + userAccount.balance());
         return this.userAccount;

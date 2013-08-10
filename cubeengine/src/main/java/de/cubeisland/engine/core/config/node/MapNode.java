@@ -30,9 +30,9 @@ import gnu.trove.map.hash.THashMap;
 public class MapNode extends ParentNode
 {
 
-    private LinkedHashMap<String, Node> mappedNodes = new LinkedHashMap<String, Node>();
-    private THashMap<String, String> keys = new THashMap<String, String>(); // LowerCase trimmed -> Original
-    private LinkedHashMap<Node, String> reverseMappedNodes = new LinkedHashMap<Node, String>();
+    private LinkedHashMap<String, Node> mappedNodes = new LinkedHashMap<>();
+    private THashMap<String, String> keys = new THashMap<>(); // LowerCase trimmed -> Original
+    private LinkedHashMap<Node, String> reverseMappedNodes = new LinkedHashMap<>();
 
     /**
      * Creates a MapNode with given map as values.
@@ -154,7 +154,7 @@ public class MapNode extends ParentNode
     @Override
     public void cleanUpEmptyNodes()
     {
-        Set<String> nodesToRemove = new HashSet<String>();
+        Set<String> nodesToRemove = new HashSet<>();
         for (String key : this.mappedNodes.keySet())
         {
             if (this.mappedNodes.get(key) instanceof ParentNode)

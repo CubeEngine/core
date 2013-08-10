@@ -18,32 +18,39 @@
 package de.cubeisland.engine.core.user;
 
 import java.io.BufferedReader;
-import java.io.File;
+import java.io.BufferedWriter;
 import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.FileWriter;
+import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
+import java.sql.Timestamp;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Random;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import de.cubeisland.engine.core.Core;
 import de.cubeisland.engine.core.command.CommandSender;
-import de.cubeisland.engine.core.filesystem.FileManager;
-
+import de.cubeisland.engine.core.filesystem.FileUtil;
 import de.cubeisland.engine.core.module.Module;
 import de.cubeisland.engine.core.permission.Permission;
+import de.cubeisland.engine.core.storage.database.Database;
 import de.cubeisland.engine.core.util.ChatFormat;
 import de.cubeisland.engine.core.util.StringUtils;
 import de.cubeisland.engine.core.util.Triplet;
-
 import gnu.trove.map.hash.TLongObjectHashMap;
 import gnu.trove.set.hash.THashSet;
+import org.jooq.Record1;
+import org.jooq.impl.DSL;
+import org.jooq.types.UInteger;
+
+import static de.cubeisland.engine.core.user.TableUser.TABLE_USER;
 
 /**
  * This Manager provides methods to access the Users and saving/loading from
@@ -52,25 +59,25 @@ import gnu.trove.set.hash.THashSet;
 public abstract class AbstractUserManager implements UserManager
 {
     private final Core core;
-    protected UserStorage storage;
     protected List<User> onlineUsers;
     protected ConcurrentHashMap<Object, User> cachedUsers;
     protected Set<DefaultAttachment> defaultAttachments;
     protected String salt;
     protected MessageDigest messageDigest;
-    private Random random;
+
+    protected Database database;
 
     public AbstractUserManager(final Core core)
     {
-        this.storage = new UserStorage(core);
+        this.database = core.getDB();
+
         this.core = core;
 
-        this.cachedUsers = new ConcurrentHashMap<Object, User>();
-        this.onlineUsers = new CopyOnWriteArrayList<User>();
+        this.cachedUsers = new ConcurrentHashMap<>();
+        this.onlineUsers = new CopyOnWriteArrayList<>();
 
-        this.defaultAttachments = new THashSet<DefaultAttachment>();
+        this.defaultAttachments = new THashSet<>();
 
-        this.random = new Random();
         this.loadSalt();
 
         try
@@ -99,8 +106,8 @@ public abstract class AbstractUserManager implements UserManager
         {
             messageDigest.reset();
             password += this.salt;
-            password += user.firstseen.toString();
-            return Arrays.equals(user.passwd, messageDigest.digest(password.getBytes()));
+            password += user.getEntity().getFirstseen().toString();
+            return Arrays.equals(user.getEntity().getPasswd(), messageDigest.digest(password.getBytes()));
         }
     }
 
@@ -110,26 +117,32 @@ public abstract class AbstractUserManager implements UserManager
         {
             this.messageDigest.reset();
             password += this.salt;
-            password += user.firstseen.toString();
-            user.passwd = this.messageDigest.digest(password.getBytes());
-            this.storage.update(user);
+            password += user.getEntity().getFirstseen().toString();
+            user.getEntity().setPasswd(this.messageDigest.digest(password.getBytes()));
+            user.getEntity().update();
         }
     }
 
     public void resetPassword(User user)
     {
-        user.passwd = null;
-        this.storage.update(user);
+        user.getEntity().setPasswd(null);
+        user.getEntity().update();
     }
 
     public void resetAllPasswords()
     {
-        this.storage.resetAllPasswords();
+        this.database.getDSL().update(TABLE_USER)
+            .set(DSL.row(TABLE_USER.PASSWD), DSL.row(new byte[0]))
+            .execute();
+        for (User user : this.getLoadedUsers())
+        {
+            user.getEntity().refresh();
+        }
     }
 
     public void removeUser(final User user)
     {
-        this.storage.delete(user); //this is async
+        user.getEntity().delete();
         this.removeCachedUser(user);
     }
 
@@ -151,18 +164,19 @@ public abstract class AbstractUserManager implements UserManager
         return null;
     }
 
-    public synchronized User getUser(long key)
+    public synchronized User getUser(long id)
     {
-        User user = this.cachedUsers.get(key);
+        User user = this.cachedUsers.get(id);
         if (user != null)
         {
             return user;
         }
-        user = this.storage.get(key);
-        if (user == null)
+        UserEntity entity = this.database.getDSL().selectFrom(TABLE_USER).where(TABLE_USER.KEY.eq(UInteger.valueOf(id))).fetchOne();
+        if (entity == null)
         {
             return null;
         }
+        user = new User(entity);
         this.cacheUser(user);
         return user;
     }
@@ -170,6 +184,14 @@ public abstract class AbstractUserManager implements UserManager
     public User getUser(String name)
     {
         return this.getUser(name, false);
+    }
+
+    @Override
+    public String getUserName(long key)
+    {
+        Record1<String> record1 = this.database.getDSL().select(TABLE_USER.PLAYER).from(TABLE_USER)
+                                 .where(TABLE_USER.KEY.eq(UInteger.valueOf(key))).fetchOne();
+        return record1 == null ? null : record1.value1();
     }
 
     public synchronized User getUser(String name, boolean create)
@@ -190,14 +212,16 @@ public abstract class AbstractUserManager implements UserManager
         return user;
     }
 
-    protected synchronized User loadUser(String playerName)
+    protected synchronized User loadUser(String name)
     {
-        User user = this.storage.loadUser(playerName);
-        if (user != null)
+        UserEntity entity = this.database.getDSL().selectFrom(TABLE_USER).where(TABLE_USER.PLAYER.eq(name)).fetchOne();
+        if (entity != null)
         {
+            User user = new User(entity);
             this.cacheUser(user);
+            return user;
         }
-        return user;
+        return null;
     }
 
     /**
@@ -214,7 +238,7 @@ public abstract class AbstractUserManager implements UserManager
             return user;
         }
         user = new User(this.core, name);
-        this.storage.store(user, false);
+        user.getEntity().insert();
         this.cacheUser(user);
 
         return user;
@@ -246,12 +270,12 @@ public abstract class AbstractUserManager implements UserManager
 
     public synchronized Set<User> getOnlineUsers()
     {
-        return new THashSet<User>(this.onlineUsers);
+        return new THashSet<>(this.onlineUsers);
     }
 
     public synchronized Set<User> getLoadedUsers()
     {
-        return new THashSet<User>(this.cachedUsers.values());
+        return new THashSet<>(this.cachedUsers.values());
     }
 
     public User findOnlineUser(String name)
@@ -302,43 +326,39 @@ public abstract class AbstractUserManager implements UserManager
 
     private void loadSalt()
     {
-        File file = new File(this.core.getFileManager().getDataFolder(), ".salt");
-        try
+        Path file = this.core.getFileManager().getDataPath().resolve(".salt");
+        try (BufferedReader reader = Files.newBufferedReader(file, Charset.defaultCharset()))
         {
-            BufferedReader reader = new BufferedReader(new FileReader(file));
             this.salt = reader.readLine();
-            reader.close();
         }
         catch (FileNotFoundException e)
         {
-            if (this.salt == null)
+            try
             {
-                try
+                this.salt = StringUtils.randomString(new SecureRandom(), 32);
+                try (BufferedWriter writer = Files.newBufferedWriter(file, Charset.defaultCharset()))
                 {
-                    this.salt = StringUtils.randomString(this.random, 32);
-                    FileWriter fileWriter = new FileWriter(file);
-                    fileWriter.write(this.salt);
-                    fileWriter.close();
+                    writer.write(this.salt);
                 }
-                catch (Exception inner)
-                {
-                    throw new IllegalStateException("Could not store the static salt in '" + file.getAbsolutePath() + "'!", inner);
-                }
+            }
+            catch (Exception inner)
+            {
+                throw new IllegalStateException("Could not store the static salt in '" + file + "'!", inner);
             }
         }
         catch (Exception e)
         {
-            throw new IllegalStateException("Could not store the static salt in '" + file.getAbsolutePath() + "'!", e);
+            throw new IllegalStateException("Could not store the static salt in '" + file + "'!", e);
         }
-        FileManager.hideFile(file);
-        file.setReadOnly();
+        FileUtil.hideFile(file);
+        FileUtil.setReadOnly(file);
     }
 
-    private TLongObjectHashMap<Triplet<Long, String, Integer>> failedLogins = new TLongObjectHashMap<Triplet<Long, String, Integer>>();
+    private TLongObjectHashMap<Triplet<Long, String, Integer>> failedLogins = new TLongObjectHashMap<>();
 
     public Triplet<Long, String, Integer> getFailedLogin(User user)
     {
-        return this.failedLogins.get(user.key);
+        return this.failedLogins.get(user.getId());
     }
 
     protected void addFailedLogin(User user)
@@ -347,7 +367,7 @@ public abstract class AbstractUserManager implements UserManager
         if (loginFail == null)
         {
             loginFail = new Triplet<Long, String, Integer>(System.currentTimeMillis(), user.getAddress().getAddress().getHostAddress(), 1);
-            this.failedLogins.put(user.key, loginFail);
+            this.failedLogins.put(user.getId(), loginFail);
         }
         else
         {
@@ -359,7 +379,7 @@ public abstract class AbstractUserManager implements UserManager
 
     protected void removeFailedLogins(User user)
     {
-        this.failedLogins.remove(user.key);
+        this.failedLogins.remove(user.getId());
     }
 
     public synchronized void kickAll(String message)
@@ -442,9 +462,14 @@ public abstract class AbstractUserManager implements UserManager
         this.defaultAttachments.clear();
     }
 
-    public Set<Long> getAllKeys()
+    public Set<Long> getAllIds()
     {
-        return this.storage.getAllKeys();
+        Set<Long> ids = new HashSet<>();
+        for (Record1<UInteger> id : this.database.getDSL().select(TABLE_USER.KEY).from(TABLE_USER).fetch())
+        {
+            ids.add(id.value1().longValue());
+        }
+        return ids;
     }
 
     public synchronized void cleanup(Module module)
@@ -457,7 +482,6 @@ public abstract class AbstractUserManager implements UserManager
     public void shutdown()
     {
         this.clean();
-        this.storage = null;
 
         this.onlineUsers.clear();
         this.onlineUsers = null;
@@ -472,14 +496,14 @@ public abstract class AbstractUserManager implements UserManager
         this.salt = null;
 
         this.messageDigest = null;
-
-        this.random = null;
     }
 
     @Override
     public void clean()
     {
-        this.storage.cleanup();
+        Timestamp time = new Timestamp(System.currentTimeMillis() - core.getConfiguration().userManagerCleanupDatabase.toMillis());
+        this.database.getDSL().delete(TABLE_USER).where(TABLE_USER.LASTSEEN.le(time), TABLE_USER.NOGC
+                                                                                                .isFalse()).execute();
     }
 
     protected final class DefaultAttachment

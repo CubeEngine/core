@@ -30,7 +30,7 @@ public class ActionTypeCompleter implements Completer
     @Override
     public List<String> complete(CommandSender sender, String token)
     {
-        List<String> result = new ArrayList<String>();
+        List<String> result = new ArrayList<>();
         String lastToken = token;
         String firstTokens = "";
         if (lastToken.contains(","))

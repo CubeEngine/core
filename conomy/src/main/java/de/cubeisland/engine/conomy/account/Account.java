@@ -48,7 +48,7 @@ public abstract class Account
      */
     protected void update()
     {
-        this.manager.storage.update(this.model);
+        this.model.update();
     }
 
     /**
@@ -66,7 +66,7 @@ public abstract class Account
 
     private void set0(long amount)
     {
-        this.model.value = amount;
+        this.model.setValue(amount);
         this.update();
     }
 
@@ -77,9 +77,8 @@ public abstract class Account
      */
     public void deposit(double amount)
     {
-        this.set0(this.model.value + (long)(amount * this.manager.fractionalDigitsFactor()));
+        this.set0(this.model.getValue() + (long)(amount * this.manager.fractionalDigitsFactor()));
         this.log("DEPOSIT", amount);
-
     }
 
     /**
@@ -89,7 +88,7 @@ public abstract class Account
      */
     public void withdraw(double amount)
     {
-        this.set0(this.model.value - (long)(amount * this.manager.fractionalDigitsFactor()));
+        this.set0(this.model.getValue() - (long)(amount * this.manager.fractionalDigitsFactor()));
         this.log("WITHDRAW" , amount);
     }
 
@@ -111,7 +110,7 @@ public abstract class Account
      */
     public void scale(float factor)
     {
-        this.set0((long)(this.model.value * factor));
+        this.set0((long)(this.model.getValue() * factor));
         this.log("SCALE" , factor);
     }
 
@@ -152,7 +151,7 @@ public abstract class Account
      */
     public double balance()
     {
-        return (double)this.model.value / this.manager.fractionalDigitsFactor();
+        return (double)this.model.getValue() / this.manager.fractionalDigitsFactor();
     }
 
     /**

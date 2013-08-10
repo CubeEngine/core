@@ -17,7 +17,8 @@
  */
 package de.cubeisland.engine.core.command.commands;
 
-import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
@@ -163,16 +164,16 @@ public class ModuleCommands extends ContainerCommand
             return;
         }
 
-        File modulesDir = context.getCore().getFileManager().getModulesDir();
+        Path modulesPath = context.getCore().getFileManager().getModulesPath();
 
-        File moduleFile = new File(modulesDir, context.getString(0) + ".jar");
-        if (!moduleFile.exists())
+        Path modulePath = modulesPath.resolve(context.getString(0) + ".jar");
+        if (!Files.exists(modulePath))
         {
             context.sendTranslated("&cThe given module file was not found! The name might be case sensitive.");
             return;
         }
 
-        if (!moduleFile.canRead())
+        if (!Files.isReadable(modulePath))
         {
             context.sendTranslated("&cThe module exists, but cannot be read! Check the file permissions.");
             return;
@@ -180,13 +181,13 @@ public class ModuleCommands extends ContainerCommand
 
         try
         {
-            Module module = context.getCore().getModuleManager().loadModule(moduleFile);
+            Module module = context.getCore().getModuleManager().loadModule(modulePath);
             context.sendTranslated("&aThe module &6%s&a has been successfully loaded!", module.getName());
         }
         catch (ModuleException e)
         {
             context.sendTranslated("&cThe module failed to load! Check the server log for info.");
-            context.getCore().getLog().error("Failed to load a module from file " + moduleFile.getPath() + ": "
+            context.getCore().getLog().error("Failed to load a module from file " + modulePath + ": "
                                                  + e.getLocalizedMessage(), e);
         }
     }

@@ -52,7 +52,7 @@ public class SignChange extends BlockActionType
     @Override
     protected Set<ActionTypeCategory> getCategories()
     {
-        return new HashSet<ActionTypeCategory>(Arrays.asList(BLOCK, PLAYER));
+        return new HashSet<>(Arrays.asList(BLOCK, PLAYER));
     }
 
     @Override
@@ -99,8 +99,8 @@ public class SignChange extends BlockActionType
         Iterator<JsonNode> oldSignIterator = logEntry.getAdditional().get("oldSign").iterator();
         Iterator<JsonNode> newSignIterator = logEntry.getAdditional().get("sign").iterator();
         boolean oldEmpty = true;
-        ArrayList<String> oldLines = new ArrayList<String>();
-        ArrayList<String> newLines = new ArrayList<String>();
+        ArrayList<String> oldLines = new ArrayList<>();
+        ArrayList<String> newLines = new ArrayList<>();
         while (oldSignIterator.hasNext())
         {
             String line = oldSignIterator.next().asText();

@@ -48,7 +48,7 @@ public class ArrayConverter
         Class<V> valueType = (Class<V>)arrayType.getComponentType();
         try
         {
-            Collection<V> result = new LinkedList<V>();
+            Collection<V> result = new LinkedList<>();
             for (Node node : listNode.getListedNodes())
             {
                 V value = Convert.fromNode(node, valueType);

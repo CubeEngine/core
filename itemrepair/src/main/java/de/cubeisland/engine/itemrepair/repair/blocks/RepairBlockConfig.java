@@ -17,7 +17,7 @@
  */
 package de.cubeisland.engine.itemrepair.repair.blocks;
 
-import java.io.File;
+import java.nio.file.Path;
 
 import org.bukkit.Material;
 
@@ -65,7 +65,7 @@ public class RepairBlockConfig extends YamlConfiguration
     }
 
     @Override
-    public void onLoaded(File loadFrom)
+    public void onLoaded(Path loadFrom)
     {
         if (!this.blockType.isBlock())
         {

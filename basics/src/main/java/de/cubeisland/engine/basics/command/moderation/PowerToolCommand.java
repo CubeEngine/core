@@ -185,7 +185,7 @@ public class PowerToolCommand extends ContainerCommand implements Listener
             List<String> powerTools;
             if (context.hasFlag("r"))
             {
-                powerTools = new ArrayList<String>(1);
+                powerTools = new ArrayList<>(1);
             }
             else
             {
@@ -261,7 +261,7 @@ public class PowerToolCommand extends ContainerCommand implements Listener
     private void setPowerTool(ItemStack item, List<String> newPowerTools)
     {
         ItemMeta meta = item.getItemMeta();
-        List<String> newLore = new ArrayList<String>();
+        List<String> newLore = new ArrayList<>();
         if (meta.hasLore())
         {
             for (String line : meta.getLore())
@@ -291,7 +291,7 @@ public class PowerToolCommand extends ContainerCommand implements Listener
     private List<String> getPowerTools(ItemStack item)
     {
         ItemMeta meta = item.getItemMeta();
-        List<String> powerTool = new ArrayList<String>();
+        List<String> powerTool = new ArrayList<>();
         if (meta.hasLore())
         {
             boolean ptStart = false;

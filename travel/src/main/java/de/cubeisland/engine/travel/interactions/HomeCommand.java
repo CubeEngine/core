@@ -39,7 +39,9 @@ import de.cubeisland.engine.travel.storage.Home;
 import de.cubeisland.engine.travel.storage.InviteManager;
 import de.cubeisland.engine.travel.storage.TelePointManager;
 import de.cubeisland.engine.travel.storage.TeleportInvite;
-import de.cubeisland.engine.travel.storage.TeleportPoint;
+
+import static de.cubeisland.engine.travel.storage.TeleportPointModel.VISIBILITY_PRIVATE;
+import static de.cubeisland.engine.travel.storage.TeleportPointModel.VISIBILITY_PUBLIC;
 
 public class HomeCommand extends ContainerCommand
 {
@@ -192,16 +194,16 @@ public class HomeCommand extends ContainerCommand
                     sender.sendTranslated("&cYou already have a home! Maybe you need /home move?");
                     return;
                 }
-                this.tpManager.createHome(location, "home", sender, TeleportPoint.Visibility.PRIVATE);
+                this.tpManager.createHome(location, "home", sender, VISIBILITY_PRIVATE);
                 sender.sendTranslated("&aYour home has been created!");
             }
             else if (this.module.getConfig().multipleHomes)
             {
                 String name = context.getString(0).toLowerCase();
-                TeleportPoint.Visibility visibility = TeleportPoint.Visibility.PRIVATE;
+                short visibility = VISIBILITY_PRIVATE;
                 if (context.hasFlag("pub"))
                 {
-                    visibility = TeleportPoint.Visibility.PUBLIC;
+                    visibility = VISIBILITY_PUBLIC;
                     if (this.tpManager.getHome(name) != null)
                     {
                         if (this.tpManager.getHome(name).isPublic())
@@ -448,7 +450,9 @@ public class HomeCommand extends ContainerCommand
                         context.sendTranslated("  &6%s&e:", home.getName());
                         for (TeleportInvite invite : invites)
                         {
-                            context.sendMessage("    &2" + CubeEngine.getUserManager().getUser(invite.userKey).getName());
+                            context.sendMessage("    &2" + this.module.getCore().getUserManager()
+                                                                      .getUser(invite.getUserkey().longValue())
+                                                                      .getName());
                         }
                     }
                 }
@@ -667,7 +671,7 @@ public class HomeCommand extends ContainerCommand
                 context.sendTranslated("&cYour home is already private!");
                 return;
             }
-            home.setVisibility(TeleportPoint.Visibility.PRIVATE);
+            home.setVisibility(VISIBILITY_PRIVATE);
             context.sendTranslated("&aYour home is now private");
             return;
         }
@@ -703,7 +707,7 @@ public class HomeCommand extends ContainerCommand
                 context.sendTranslated("&cYour home is already public!");
                 return;
             }
-            home.setVisibility(TeleportPoint.Visibility.PUBLIC);
+            home.setVisibility(VISIBILITY_PUBLIC);
             context.sendTranslated("&aYour home is now public");
             return;
         }

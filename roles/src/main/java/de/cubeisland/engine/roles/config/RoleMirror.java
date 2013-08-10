@@ -26,7 +26,7 @@ public class RoleMirror
 {
     public final String mainWorld;
     private TLongObjectHashMap<Triplet<Boolean, Boolean, Boolean>> worlds =
-        new TLongObjectHashMap<Triplet<Boolean, Boolean, Boolean>>(); //mirror roles / assigned / users
+        new TLongObjectHashMap<>(); //mirror roles / assigned / users
     private Roles module;
 
     public RoleMirror(Roles module, String mainWorld)
@@ -40,7 +40,7 @@ public class RoleMirror
         }
         else
         {
-            this.worlds.put(worldId, new Triplet<Boolean, Boolean, Boolean>(true, true, true));
+            this.worlds.put(worldId, new Triplet<>(true, true, true));
         }
     }
 
@@ -52,7 +52,7 @@ public class RoleMirror
     public RoleMirror(Roles module, long worldId)
     {
         this.module = module;
-        this.worlds.put(worldId, new Triplet<Boolean, Boolean, Boolean>(true, true, true));
+        this.worlds.put(worldId, new Triplet<>(true, true, true));
         this.mainWorld = module.getCore().getWorldManager().getWorld(worldId).getName();
     }
 
@@ -75,6 +75,6 @@ public class RoleMirror
             module.getLog().warn("Unknown world {}! Removing from config...", worldName);
             return;
         }
-        this.worlds.put(world, new Triplet<Boolean, Boolean, Boolean>(roles, assigned, users));
+        this.worlds.put(world, new Triplet<>(roles, assigned, users));
     }
 }

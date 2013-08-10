@@ -17,15 +17,13 @@
  */
 package de.cubeisland.engine.core.filesystem.gettext;
 
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
-import java.nio.channels.Channels;
+import java.nio.channels.FileChannel;
 import java.nio.channels.ReadableByteChannel;
+import java.nio.file.Path;
 import java.util.Map;
 
 import gnu.trove.map.TIntIntMap;
@@ -33,12 +31,12 @@ import gnu.trove.map.hash.TIntIntHashMap;
 
 public class BinaryMessageCatalog implements MessageCatalog
 {
-    private final File file;
+    private final Path file;
     protected static final int HEADER_SIZE = 28;
     protected static final int SIGNATURE_BIG = 0x950412DE;
     protected static final int SIGNATURE_LITTLE = 0xDE120495;
 
-    public BinaryMessageCatalog(File file)
+    public BinaryMessageCatalog(Path file)
     {
         this.file = file;
     }
@@ -46,21 +44,15 @@ public class BinaryMessageCatalog implements MessageCatalog
     @Override
     public Map<String, String> read() throws IOException
     {
-        return this.read(new FileInputStream(this.file));
+        try (FileChannel in = FileChannel.open(this.file))
+        {
+            return this.read(in);
+        }
     }
 
     @Override
-    public Map<String, String> read(InputStream inputStream) throws IOException
+    public Map<String, String> read(ReadableByteChannel channel) throws IOException
     {
-        ReadableByteChannel channel;
-        if (inputStream instanceof FileInputStream)
-        {
-            channel = ((FileInputStream)inputStream).getChannel();
-        }
-        else
-        {
-            channel = Channels.newChannel(inputStream);
-        }
         ByteBuffer buf = ByteBuffer.allocateDirect(HEADER_SIZE);
 
         int bytesRead = channel.read(buf);

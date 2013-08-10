@@ -54,7 +54,7 @@ public class CoreCommands extends ContainerCommand
 
     private final BukkitCore core;
     private final BanManager banManager;
-    private ConcurrentHashMap<String, Long> fails = new ConcurrentHashMap<String, Long>();
+    private ConcurrentHashMap<String, Long> fails = new ConcurrentHashMap<>();
 
     public CoreCommands(Core core)
     {
@@ -140,10 +140,6 @@ public class CoreCommands extends ContainerCommand
             {
                 final UserManager um = this.getModule().getCore().getUserManager();
                 um.resetAllPasswords();
-                for (User user : um.getLoadedUsers())
-                {
-                    user.passwd = null; //update loaded users
-                }
                 sender.sendTranslated("&All passwords reset!");
             }
             else

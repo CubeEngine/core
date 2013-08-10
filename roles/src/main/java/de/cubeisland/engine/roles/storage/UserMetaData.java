@@ -17,49 +17,123 @@
  */
 package de.cubeisland.engine.roles.storage;
 
-import de.cubeisland.engine.core.storage.TripletKeyModel;
-import de.cubeisland.engine.core.storage.database.AttrType;
-import de.cubeisland.engine.core.storage.database.Attribute;
-import de.cubeisland.engine.core.storage.database.Index;
-import de.cubeisland.engine.core.storage.database.TripletKeyEntity;
-import de.cubeisland.engine.core.util.Triplet;
+import org.jooq.Field;
+import org.jooq.Record3;
+import org.jooq.Record4;
+import org.jooq.Row4;
+import org.jooq.impl.UpdatableRecordImpl;
+import org.jooq.types.UInteger;
 
-import static de.cubeisland.engine.core.storage.database.Index.IndexType.FOREIGN_KEY;
+import static de.cubeisland.engine.roles.storage.TableData.TABLE_META;
 
-@TripletKeyEntity(tableName = "userdata", firstPrimaryKey = "userId", secondPrimaryKey = "worldId", thirdPrimaryKey = "key", indices = {
-    @Index(value = FOREIGN_KEY, fields = "userId", f_table = "user", f_field = "key"),
-    @Index(value = FOREIGN_KEY, fields = "worldId", f_table = "worlds", f_field = "key")
-})
-public class UserMetaData implements TripletKeyModel<Long, Long, String>
+public class UserMetaData extends UpdatableRecordImpl<UserMetaData> implements Record4<UInteger, UInteger, String, String>
 {
-    @Attribute(type = AttrType.INT, unsigned = true)
-    public long userId;
-    @Attribute(type = AttrType.INT, unsigned = true)
-    public long worldId;
-    @Attribute(type = AttrType.VARCHAR, length = 255)
-    public String key;
-    @Attribute(type = AttrType.VARCHAR, length = 255)
-    public String value;
-
-    public UserMetaData(long userId, long worldId, String key, String value)
+    public UserMetaData()
     {
-        this.userId = userId;
-        this.worldId = worldId;
-        this.key = key;
-        this.value = value;
+        super(TABLE_META);
+    }
+
+    public UserMetaData newMeta(UInteger userId, long worldId, String key, String value)
+    {
+        this.setUserid(userId);
+        this.setWorldid(UInteger.valueOf(worldId));
+        this.setKey(key);
+        this.setValue(value);
+        return this;
+    }
+
+    public void setUserid(UInteger value) {
+        setValue(0, value);
+    }
+
+    public UInteger getUserid() {
+        return (UInteger) getValue(0);
+    }
+
+    public void setWorldid(UInteger value) {
+        setValue(1, value);
+    }
+
+    public UInteger getWorldid() {
+        return (UInteger) getValue(1);
+    }
+
+    public void setKey(String value) {
+        setValue(2, value);
+    }
+
+    public String getKey() {
+        return (String) getValue(2);
+    }
+
+    public void setValue(String value) {
+        setValue(3, value);
+    }
+
+    public String getValue() {
+        return (String) getValue(3);
+    }
+
+    // -------------------------------------------------------------------------
+    // Primary key information
+    // -------------------------------------------------------------------------
+
+    @Override
+    public Record3<UInteger, UInteger, String> key() {
+        return (Record3) super.key();
+    }
+
+    // -------------------------------------------------------------------------
+    // Record4 type implementation
+    // -------------------------------------------------------------------------
+
+    @Override
+    public Row4<UInteger, UInteger, String, String> fieldsRow() {
+        return (Row4) super.fieldsRow();
     }
 
     @Override
-    public Triplet<Long, Long, String> getId()
-    {
-        return new Triplet<Long, Long, String>(userId, worldId, key);
+    public Row4<UInteger, UInteger, String, String> valuesRow() {
+        return (Row4) super.valuesRow();
     }
 
     @Override
-    public void setId(Triplet<Long, Long, String> id)
-    {
-        this.userId = id.getFirst();
-        this.worldId = id.getSecond();
-        this.key = id.getThird();
+    public Field<UInteger> field1() {
+        return TABLE_META.USERID;
+    }
+
+    @Override
+    public Field<UInteger> field2() {
+        return TABLE_META.WORLDID;
+    }
+
+    @Override
+    public Field<String> field3() {
+        return TABLE_META.KEY;
+    }
+
+    @Override
+    public Field<String> field4() {
+        return TABLE_META.VALUE;
+    }
+
+    @Override
+    public UInteger value1() {
+        return getUserid();
+    }
+
+    @Override
+    public UInteger value2() {
+        return getWorldid();
+    }
+
+    @Override
+    public String value3() {
+        return getKey();
+    }
+
+    @Override
+    public String value4() {
+        return getValue();
     }
 }

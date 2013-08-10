@@ -17,8 +17,9 @@
  */
 package de.cubeisland.engine.core.util.matcher;
 
-import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Path;
 import java.util.List;
 import java.util.Locale;
 import java.util.TreeMap;
@@ -43,14 +44,14 @@ public class EnchantMatcher
 
     EnchantMatcher()
     {
-        this.bukkitnames = new THashMap<String, Enchantment>();
+        this.bukkitnames = new THashMap<>();
         for (Enchantment enchantment : Enchantment.values())
         {
             this.bukkitnames.put(enchantment.getName(), enchantment);
         }
 
-        this.enchantments = new THashMap<String, Enchantment>();
-        this.enchantmentName = new THashMap<Enchantment, String>();
+        this.enchantments = new THashMap<>();
+        this.enchantmentName = new THashMap<>();
 
         TreeMap<String, List<String>> enchs = this.readEnchantments();
         for (String bukkitName : enchs.keySet())
@@ -94,15 +95,18 @@ public class EnchantMatcher
     {
         try
         {
-            File file = new File(CubeEngine.getFileManager().getDataFolder(), CoreResource.ENCHANTMENTS.getTarget());
-            TreeMap<String, List<String>> enchantments = new TreeMap<String, List<String>>();
+            Path file = CubeEngine.getFileManager().getDataPath().resolve(CoreResource.ENCHANTMENTS.getTarget());
+            TreeMap<String, List<String>> enchantments = new TreeMap<>();
             AliasMapFormat.parseStringList(file, enchantments, false);
-            if (AliasMapFormat.parseStringList(CubeEngine.getFileManager().getSourceOf(file), enchantments, true))
+            try (InputStream stream = CubeEngine.getFileManager().getSourceOf(file))
             {
-                CubeEngine.getLog().info("Updated enchantments.txt");
-                AliasMapFormat.parseAndSaveStringListMap(enchantments, file);
+                if (AliasMapFormat.parseStringList(stream, enchantments, true))
+                {
+                    CubeEngine.getLog().info("Updated enchantments.txt");
+                    AliasMapFormat.parseAndSaveStringListMap(enchantments, file);
+                }
+                return enchantments;
             }
-            return enchantments;
         }
         catch (IOException ex)
         {

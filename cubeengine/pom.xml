@@ -31,20 +31,10 @@
     </dependency>
     <dependency>
       <groupId>io.netty</groupId>
-      <artifactId>netty-all</artifactId>
-      <version>4.0.0.CR3</version>
+      <artifactId>netty-codec-http</artifactId>
+      <version>4.0.4.Final</version>
       <type>jar</type>
       <scope>compile</scope>
-      <exclusions>
-        <exclusion>
-          <groupId>io.netty</groupId>
-          <artifactId>netty-example</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>io.netty</groupId>
-          <artifactId>netty-testsuite</artifactId>
-        </exclusion>
-      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.yaml</groupId>
@@ -74,6 +64,13 @@
     <dependency>
       <groupId>net.sf.trove4j</groupId>
       <artifactId>trove4j</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.google.guava</groupId>
+      <artifactId>guava</artifactId>
+      <version>14.0.1</version>
+      <type>jar</type>
+      <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>org.bukkit</groupId>
@@ -135,6 +132,16 @@
     <dependency>
       <groupId>org.powermock</groupId>
       <artifactId>powermock-module-junit4</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.jooq</groupId>
+      <artifactId>jooq</artifactId>
+      <version>3.1.0</version>
+    </dependency>
+    <dependency>
+      <groupId>net.snaq</groupId>
+      <artifactId>dbpool</artifactId>
+      <version>5.1</version>
     </dependency>
   </dependencies>
 
@@ -198,6 +205,14 @@
             <relocation>
               <pattern>io.netty</pattern>
               <shadedPattern>${externalPackage}.netty</shadedPattern>
+            </relocation>
+            <relocation>
+              <pattern>com.google</pattern>
+              <shadedPattern>${externalPackage}.guava</shadedPattern>
+            </relocation>
+            <relocation>
+              <pattern>com.jolbox.bonecp</pattern>
+              <shadedPattern>${externalPackage}.bonecp</shadedPattern>
             </relocation>
             <relocation>
               <pattern>org.yaml.snakeyaml</pattern>

@@ -82,7 +82,7 @@ public class ParameterizedContextFactoryTest extends TestCase
             Arrays.asList(new CommandParameter("test", String.class))
         );
 
-        Stack<String> labels = new Stack<String>();
+        Stack<String> labels = new Stack<>();
         labels.add("testCommand");
         CommandSender sender = new TestConsoleSender(this.core);
         Module module = this.mm.getModule("test");

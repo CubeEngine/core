@@ -39,7 +39,7 @@ public class FireballExplode extends BlockActionType
     @Override
     protected Set<ActionTypeCategory> getCategories()
     {
-        return new HashSet<ActionTypeCategory>(Arrays.asList(BLOCK, BLOCK_ENTITY, EXPLOSION, PLAYER));
+        return new HashSet<>(Arrays.asList(BLOCK, BLOCK_ENTITY, EXPLOSION, PLAYER));
     }
 
     @Override

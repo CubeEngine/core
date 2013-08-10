@@ -41,14 +41,12 @@ import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 
 import de.cubeisland.engine.core.bukkit.BukkitUtils;
-
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.log.LoggingConfiguration;
 import de.cubeisland.engine.log.action.logaction.ActionTypeContainer;
 import de.cubeisland.engine.log.action.logaction.SimpleLogActionType;
 import de.cubeisland.engine.log.storage.ItemData;
 import de.cubeisland.engine.log.storage.LogEntry;
-
 import gnu.trove.map.hash.TLongObjectHashMap;
 import gnu.trove.map.hash.TObjectIntHashMap;
 
@@ -70,7 +68,7 @@ public class ContainerActionType extends ActionTypeContainer
         super("CONTAINER");
     }
 
-    private TLongObjectHashMap<TObjectIntHashMap<ItemData>> inventoryChanges = new TLongObjectHashMap<TObjectIntHashMap<ItemData>>();
+    private TLongObjectHashMap<TObjectIntHashMap<ItemData>> inventoryChanges = new TLongObjectHashMap<>();
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onInventoryClose(InventoryCloseEvent event)
@@ -78,7 +76,7 @@ public class ContainerActionType extends ActionTypeContainer
         if (event.getPlayer() instanceof Player)
         {
             User user = this.um.getExactUser(event.getPlayer().getName());
-            TObjectIntHashMap<ItemData> itemDataMap = this.inventoryChanges.get(user.key);
+            TObjectIntHashMap<ItemData> itemDataMap = this.inventoryChanges.get(user.getId());
             if (itemDataMap != null)
             {
                 Location location = this.getLocationForHolder(event.getInventory().getHolder());
@@ -101,7 +99,7 @@ public class ContainerActionType extends ActionTypeContainer
                     actionType.logSimple(location,event.getPlayer(),new ContainerType(event.getInventory().getHolder()),additional);
                 }
             }
-            this.inventoryChanges.remove(user.key);
+            this.inventoryChanges.remove(user.getId());
         }
     }
 
@@ -140,7 +138,7 @@ public class ContainerActionType extends ActionTypeContainer
                 if (!config.CONTAINER_ignore.contains(type))
                 {
                     User user = this.um.getExactUser(event.getPlayer().getName());
-                    this.inventoryChanges.put(user.key,new TObjectIntHashMap<ItemData>());
+                    this.inventoryChanges.put(user.getId(),new TObjectIntHashMap<ItemData>());
                 }
             }
         }
@@ -152,7 +150,7 @@ public class ContainerActionType extends ActionTypeContainer
         if (event.getWhoClicked() instanceof Player)
         {
             final User user = this.um.getExactUser(event.getWhoClicked().getName());
-            if (!this.inventoryChanges.containsKey(user.key)) return;
+            if (!this.inventoryChanges.containsKey(user.getId())) return;
             Inventory inventory = event.getInventory();
             int amount = 0;
             for (Entry<Integer, ItemStack> entry : event.getNewItems().entrySet())
@@ -177,7 +175,7 @@ public class ContainerActionType extends ActionTypeContainer
         {
             // TODO use the new inventoryStuff
             final User user = this.um.getExactUser(event.getWhoClicked().getName());
-            if (!this.inventoryChanges.containsKey(user.key)) return;
+            if (!this.inventoryChanges.containsKey(user.getId())) return;
             Inventory inventory = event.getInventory();
             InventoryHolder holder = inventory.getHolder();
             ItemStack inventoryItem = event.getCurrentItem();
@@ -402,11 +400,11 @@ public class ContainerActionType extends ActionTypeContainer
 
     private void prepareForLogging(User user, ItemData itemData, int amount)
     {
-        TObjectIntHashMap<ItemData> itemDataMap = this.inventoryChanges.get(user.key);
+        TObjectIntHashMap<ItemData> itemDataMap = this.inventoryChanges.get(user.getId());
         if (itemDataMap == null)
         {
             itemDataMap = new TObjectIntHashMap<ItemData>();
-            this.inventoryChanges.put(user.key,itemDataMap);
+            this.inventoryChanges.put(user.getId(),itemDataMap);
         }
         int oldAmount = itemDataMap.get(itemData); // if not yet set this returns 0
         itemDataMap.put(itemData,oldAmount + amount);
@@ -449,14 +447,14 @@ public class ContainerActionType extends ActionTypeContainer
 
     static boolean isSubActionSimilar(LogEntry logEntry, LogEntry other)
     {
-        if (logEntry.actionType == other.actionType ||
-            ((logEntry.actionType instanceof ItemInsert || logEntry.actionType instanceof  ItemRemove)
-          && (other.actionType instanceof ItemInsert || other.actionType instanceof  ItemRemove)))
+        if (logEntry.getActionType() == other.getActionType() ||
+            ((logEntry.getActionType() instanceof ItemInsert || logEntry.getActionType() instanceof  ItemRemove)
+          && (other.getActionType() instanceof ItemInsert || other.getActionType() instanceof  ItemRemove)))
         {
-            if (logEntry.causer == other.causer
-                && logEntry.world == other.world
-                && logEntry.location.equals(other.location)
-                && (logEntry.block == other.block || logEntry.block.equals(other.block))) // InventoryType
+            if (logEntry.getCauser().equals(other.getCauser())
+                && logEntry.getWorld() == other.getWorld()
+                && logEntry.getVector().equals(other.getVector())
+                && (logEntry.getBlock() == other.getBlock() || logEntry.getBlock().equals(other.getBlock()))) // InventoryType
             {
                 ItemData itemData1 = logEntry.getItemData();
                 ItemData itemData2 = other.getItemData();

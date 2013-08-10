@@ -57,7 +57,7 @@ public class BlockUtil
      */
     public static Collection<Block> getAttachedBlocks(Block block)
     {
-        Collection<Block> blocks = new HashSet<Block>();
+        Collection<Block> blocks = new HashSet<>();
         for (BlockFace bf : BLOCK_FACES)
         {
             if (block.getRelative(bf).getState().getData() instanceof Attachable)
@@ -129,7 +129,7 @@ public class BlockUtil
 
     public static Collection<Block> getDetachableBlocksOnTop(Block block)
     {
-        Collection<Block> blocks = new HashSet<Block>();
+        Collection<Block> blocks = new HashSet<>();
         Block onTop = block.getRelative(BlockFace.UP);
         if (onTop.getType().equals(Material.SUGAR_CANE_BLOCK) || onTop.getType().equals(Material.CACTUS))
         {

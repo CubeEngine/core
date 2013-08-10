@@ -22,11 +22,12 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.conomy.account.storage.AccountModel;
 import de.cubeisland.engine.conomy.account.storage.BankAccessModel;
+import de.cubeisland.engine.core.user.User;
 
 import static de.cubeisland.engine.conomy.account.storage.BankAccessModel.*;
+import static de.cubeisland.engine.conomy.account.storage.TableBankAccess.TABLE_BANK_ACCESS;
 
 public class BankAccount extends Account
 {
@@ -37,21 +38,22 @@ public class BankAccount extends Account
     protected BankAccount(ConomyManager manager, AccountModel model)
     {
         super(manager, model);
-        this.owner = new HashMap<Long, BankAccessModel>();
-        this.member = new HashMap<Long, BankAccessModel>();
-        this.invites = new HashMap<Long, BankAccessModel>();
-        for (BankAccessModel access : this.manager.bankAccessStorage.getBankAccess(this.model))
+        this.owner = new HashMap<>();
+        this.member = new HashMap<>();
+        this.invites = new HashMap<>();
+
+        for (BankAccessModel access : this.manager.getBankAccess(this.model))
         {
-            switch (access.accessLevel)
+            switch (access.getAccesslevel())
             {
                case OWNER:
-                   this.owner.put(access.userId, access);
+                   this.owner.put(access.getUserid().longValue(), access);
                    break;
                case MEMBER:
-                   this.member.put(access.userId, access);
+                   this.member.put(access.getUserid().longValue(), access);
                    break;
                case INVITED:
-                   this.invites.put(access.userId, access);
+                   this.invites.put(access.getUserid().longValue(), access);
             }
         }
     }
@@ -59,7 +61,7 @@ public class BankAccount extends Account
     @Override
     public String getName()
     {
-        return this.model.name;
+        return this.model.getName();
     }
 
     @Override
@@ -79,7 +81,7 @@ public class BankAccount extends Account
     @Override
     public boolean has(double amount)
     {
-        return (this.model.value - amount * this.manager.fractionalDigitsFactor()) >= this.manager.getMinimumBankBalance();
+        return (this.model.getValue() - amount * this.manager.fractionalDigitsFactor()) >= this.manager.getMinimumBankBalance();
     }
 
     @Override
@@ -105,18 +107,18 @@ public class BankAccount extends Account
     {
         if (this.isOwner(user)) return false;
         // Search if new owner is moderator OR member
-        BankAccessModel access = this.member.remove(user.key);
+        BankAccessModel access = this.member.remove(user.getId());
         if (access != null) // promote new owner
         {
-            access.accessLevel = OWNER;
-            this.manager.bankAccessStorage.update(access);
+            access.setAccesslevel(OWNER);
+            access.update();
         }
         else // create new owner
         {
-            access = new BankAccessModel(this.model, user, OWNER);
-            this.manager.bankAccessStorage.store(access);
+            access = this.manager.dsl.newRecord(TABLE_BANK_ACCESS).newAccess(this.model, user, OWNER);
+            access.insert();
         }
-        this.owner.put(user.key, access);
+        this.owner.put(user.getId(), access);
         return true;
     }
 
@@ -130,10 +132,10 @@ public class BankAccount extends Account
     {
         if (this.isOwner(user))
         {
-            BankAccessModel access = this.owner.remove(user.key);
-            access.accessLevel = MEMBER;
-            this.manager.bankAccessStorage.update(access);
-            this.member.put(user.key, access);
+            BankAccessModel access = this.owner.remove(user.getId());
+            access.setAccesslevel(MEMBER);
+            access.update();
+            this.member.put(user.getId(), access);
             return true;
         }
         return false;
@@ -148,18 +150,18 @@ public class BankAccount extends Account
     public boolean promoteToMember(User user)
     {
         if (this.hasAccess(user)) return false;
-        BankAccessModel access = this.invites.remove(user.key);
+        BankAccessModel access = this.invites.remove(user.getId());
         if (access == null)
         {
-            access = new BankAccessModel(this.model, user, MEMBER);
-            this.manager.bankAccessStorage.store(access);
+            access = this.manager.dsl.newRecord(TABLE_BANK_ACCESS).newAccess(this.model, user, MEMBER);
+            access.insert();
         }
         else
         {
-            access.accessLevel = MEMBER;
-            this.manager.bankAccessStorage.update(access);
+            access.setAccesslevel(MEMBER);
+            access.update();
         }
-        this.member.put(user.key, access);
+        this.member.put(user.getId(), access);
         return true;
     }
 
@@ -171,14 +173,14 @@ public class BankAccount extends Account
      */
     public boolean kickUser(User user)
     {
-        BankAccessModel oldAccess = this.owner.remove(user.key);
+        BankAccessModel oldAccess = this.owner.remove(user.getId());
         if (oldAccess == null)
         {
-            oldAccess = this.member.remove(user.key);
+            oldAccess = this.member.remove(user.getId());
         }
         if (oldAccess != null)
         {
-            this.manager.bankAccessStorage.delete(oldAccess);
+            oldAccess.delete();
             return true;
         }
         return false; // is not member OR moderator
@@ -192,17 +194,17 @@ public class BankAccount extends Account
      */
     public boolean isOwner(User user)
     {
-        return this.owner.get(user.key) != null;
+        return this.owner.get(user.getId()) != null;
     }
 
     public boolean isMember(User user)
     {
-        return this.member.get(user.key) != null;
+        return this.member.get(user.getId()) != null;
     }
 
     public boolean isInvited(User user)
     {
-        return this.invites.get(user.key) != null;
+        return this.invites.get(user.getId()) != null;
     }
 
     public boolean hasAccess(User user)
@@ -212,18 +214,18 @@ public class BankAccount extends Account
 
     public boolean invite(User user)
     {
-        if (!needsInvite() || this.hasAccess(user) || this.invites.get(user.key) != null) return false;
-        BankAccessModel invite = new BankAccessModel(this.model, user, INVITED);
-        this.manager.bankAccessStorage.store(invite);
-        this.invites.put(user.key, invite);
+        if (!needsInvite() || this.hasAccess(user) || this.invites.get(user.getId()) != null) return false;
+        BankAccessModel invite = this.manager.dsl.newRecord(TABLE_BANK_ACCESS).newAccess(this.model, user, INVITED);
+        invite.insert();
+        this.invites.put(user.getId(), invite);
         return true;
     }
 
     public boolean uninvite(User user)
     {
-        if (!needsInvite() || this.hasAccess(user) || this.invites.get(user.key) == null) return false;
-        BankAccessModel invite = this.invites.remove(user.key);
-        this.manager.bankAccessStorage.delete(invite);
+        if (!needsInvite() || this.hasAccess(user) || this.invites.get(user.getId()) == null) return false;
+        BankAccessModel invite = this.invites.remove(user.getId());
+        invite.delete();
         return true;
     }
 
@@ -244,33 +246,30 @@ public class BankAccount extends Account
 
     public Set<String> getInvites()
     {
-        Set<String> invites = new HashSet<String>();
-        for (Long userId : this.invites.keySet())
+        Set<String> invites = new HashSet<>();
+        for (BankAccessModel bankAccessModel : this.invites.values())
         {
-            invites.add(this.manager.module.getCore().getUserManager().getUser(userId).getName());
-            // TODO do not cache all those users!
+            invites.add(this.manager.um.getUser(bankAccessModel.getUserid().longValue()).getName());
         }
         return invites;
     }
 
     public Set<String> getOwners()
     {
-        Set<String> owners = new HashSet<String>();
-        for (Long userId : this.owner.keySet())
+        Set<String> owners = new HashSet<>();
+        for (BankAccessModel bankAccessModel : this.owner.values())
         {
-            owners.add(this.manager.module.getCore().getUserManager().getUser(userId).getName());
-            // TODO do not cache all those users!
+            owners.add(this.manager.um.getUser(bankAccessModel.getUserid().longValue()).getName());
         }
         return owners;
     }
 
     public Set<String> getMembers()
     {
-        Set<String> members = new HashSet<String>();
-        for (Long userId : this.member.keySet())
+        Set<String> members = new HashSet<>();
+        for (BankAccessModel bankAccessModel : this.member.values())
         {
-            members.add(this.manager.module.getCore().getUserManager().getUser(userId).getName());
-            // TODO do not cache all those users!
+            members.add(this.manager.um.getUser(bankAccessModel.getUserid().longValue()).getName());
         }
         return members;
     }

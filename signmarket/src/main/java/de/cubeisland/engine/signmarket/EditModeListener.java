@@ -68,20 +68,20 @@ public class EditModeListener extends ConversationCommand
         ;
     }
 //TODO itemblacklist?
-    private TLongObjectHashMap<Location> currentSignLocation = new TLongObjectHashMap<Location>();
-    private TLongObjectHashMap<MarketSign> previousMarketSign = new TLongObjectHashMap<MarketSign>();
+    private TLongObjectHashMap<Location> currentSignLocation = new TLongObjectHashMap<>();
+    private TLongObjectHashMap<MarketSign> previousMarketSign = new TLongObjectHashMap<>();
 
     // TODO CE-420 shift-click to edit multiple signs at the same time
 
     private boolean setEditingSign(User user, MarketSign marketSign)
     {
-        Location previous = this.currentSignLocation.put(user.key, marketSign.getLocation());
+        Location previous = this.currentSignLocation.put(user.getId(), marketSign.getLocation());
         if (!marketSign.getLocation().equals(previous))
         {
             MarketSign previousSign = this.signFactory.getSignAt(previous);
             if (previousSign != null)
             {
-                this.previousMarketSign.put(user.key, previousSign);
+                this.previousMarketSign.put(user.getId(), previousSign);
                 previousSign.exitEditMode(user);
             }
             marketSign.enterEditMode();
@@ -103,7 +103,7 @@ public class EditModeListener extends ConversationCommand
     {
         User user = (User)runContext.getSender();
         ParameterizedContext context = (ParameterizedContext) runContext;
-        Location loc = this.currentSignLocation.get(user.key);
+        Location loc = this.currentSignLocation.get(user.getId());
         if (loc == null)
         {
             if (context.hasFlag("exit"))
@@ -123,7 +123,7 @@ public class EditModeListener extends ConversationCommand
         this.setEditingSign(user, marketSign);
         if (context.hasFlag("copy"))
         {
-            MarketSign prevMarketSign = this.previousMarketSign.get(user.key);
+            MarketSign prevMarketSign = this.previousMarketSign.get(user.getId());
             if (prevMarketSign == null)
             {
                 user.sendTranslated("&cNo market-sign at previous position.");
@@ -434,8 +434,8 @@ public class EditModeListener extends ConversationCommand
         if (context.hasFlag("exit"))
         {
             this.removeUser(user);
-            this.previousMarketSign.put(user.key, marketSign);
-            this.currentSignLocation.remove(user.key);
+            this.previousMarketSign.put(user.getId(), marketSign);
+            this.currentSignLocation.remove(user.getId());
             marketSign.exitEditMode(user);
             return null;
         }
@@ -460,7 +460,7 @@ public class EditModeListener extends ConversationCommand
                 event.setCancelled(true);
                 event.setUseItemInHand(Event.Result.DENY);
                 Location newLoc = event.getClickedBlock().getLocation();
-                if (!newLoc.equals(this.currentSignLocation.get(user.key)))
+                if (!newLoc.equals(this.currentSignLocation.get(user.getId())))
                 {
                     if (this.currentSignLocation.valueCollection().contains(newLoc))
                     {
@@ -484,8 +484,8 @@ public class EditModeListener extends ConversationCommand
                 {
                     if (curSign.tryBreak(user))
                     {
-                        this.previousMarketSign.put(user.key, curSign);
-                        this.currentSignLocation.remove(user.key);
+                        this.previousMarketSign.put(user.getId(), curSign);
+                        this.currentSignLocation.remove(user.getId());
                     }
                     return;
                 }
@@ -563,7 +563,7 @@ public class EditModeListener extends ConversationCommand
         if (this.hasUser(user))
         {
             Location loc = event.getBlock().getLocation();
-            if (loc.equals(this.currentSignLocation.get(user.key)))
+            if (loc.equals(this.currentSignLocation.get(user.getId())))
             {
                 event.setCancelled(true);
             }

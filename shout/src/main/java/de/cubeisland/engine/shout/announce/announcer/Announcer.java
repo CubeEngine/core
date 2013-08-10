@@ -41,8 +41,8 @@ public class Announcer
     {
         this.taskManager = taskManager;
         this.executor = Executors.newSingleThreadScheduledExecutor(taskManager.getThreadFactory());
-        this.dynamicTasks = new ConcurrentHashMap<String, ScheduledFuture>();
-        this.fixedTasks = new ConcurrentHashMap<String, ScheduledFuture>();
+        this.dynamicTasks = new ConcurrentHashMap<>();
+        this.fixedTasks = new ConcurrentHashMap<>();
         this.initDelay = initDelay;
     }
 
@@ -127,7 +127,7 @@ public class Announcer
     {
         this.shutdown();
         this.executor = Executors.newSingleThreadScheduledExecutor(taskManager.getThreadFactory());
-        this.dynamicTasks = new ConcurrentHashMap<String, ScheduledFuture>();
-        this.fixedTasks = new ConcurrentHashMap<String, ScheduledFuture>();
+        this.dynamicTasks = new ConcurrentHashMap<>();
+        this.fixedTasks = new ConcurrentHashMap<>();
     }
 }

@@ -28,5 +28,5 @@ import de.cubeisland.engine.core.config.annotations.Option;
 public class PluginConfig extends Configuration
 {
     @Option("source-version")
-    public String sourceVersion;
+    public String sourceVersion = "unknown";
 }

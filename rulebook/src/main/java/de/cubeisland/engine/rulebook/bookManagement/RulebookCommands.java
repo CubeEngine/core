@@ -77,7 +77,7 @@ public class RulebookCommands extends ContainerCommand
         }
         
         Locale locale;
-        User user = null;
+        User user;
         if(context.hasParam("player"))
         {
             if(!getPermission.isAuthorized(context.getSender()))
@@ -209,17 +209,12 @@ public class RulebookCommands extends ContainerCommand
         
         try
         {
-            if(this.rulebookManager.removeBook(language.getLocale()))
-            {
-                context.sendTranslated("&aThe languagefiles of %s was deleted", language.getLocale().getDisplayLanguage(context.getSender().getLocale()));
-            }
-            else
-            {
-                context.sendTranslated("%cThe languagefile of %s couldn't be deleted", language.getLocale().getDisplayLanguage(context.getSender().getLocale()));
-            }
+            this.rulebookManager.removeBook(language.getLocale());
+            context.sendTranslated("&aThe languagefiles of %s was deleted", language.getLocale().getDisplayLanguage(context.getSender().getLocale()));
         }
         catch(IOException ex)
         {
+            context.sendTranslated("%cThe language file of %s couldn't be deleted", language.getLocale().getDisplayLanguage(context.getSender().getLocale()));
             this.getModule().getLog().error("Error when deleting the files: " + ex.getLocalizedMessage(), ex);
         }
 
@@ -260,18 +255,14 @@ public class RulebookCommands extends ContainerCommand
         {
             try
             {
-                if(this.rulebookManager.removeBook(locale))
-                {
-                    this.rulebookManager.addBook(item, locale);
-                    context.sendTranslated("&aThe rulebook %s was succesful modified.", locale.getDisplayLanguage(context.getSender().getLocale()));
-                }
-                else
-                {
-                    context.sendTranslated("&eAn error ocurred by deleting the old rulebook");
-                }
+                this.rulebookManager.removeBook(locale);
+                this.rulebookManager.addBook(item, locale);
+                context.sendTranslated("&aThe rulebook %s was succesful modified.", locale
+                    .getDisplayLanguage(context.getSender().getLocale()));
             }
             catch(IOException ex)
             {
+                context.sendTranslated("&eAn error ocurred by deleting the old rulebook");
                 this.getModule().getLog().error("Error when deleting the files: " + ex.getLocalizedMessage(), ex);
             }
         }

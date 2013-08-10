@@ -37,7 +37,7 @@ public class CommandParameter
     {
         assert ArgumentReader.hasReader(type): "The named parameter '" + name + "' has an unreadable type: " + type.getName();
         this.name = name;
-        this.aliases = new HashSet<String>(0);
+        this.aliases = new HashSet<>(0);
         this.type = type;
         this.required = false;
         this.completer = null;

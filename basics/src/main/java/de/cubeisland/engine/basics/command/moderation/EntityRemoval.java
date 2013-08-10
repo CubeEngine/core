@@ -22,23 +22,45 @@ import java.util.Map;
 
 import org.bukkit.entity.Ambient;
 import org.bukkit.entity.Animals;
+import org.bukkit.entity.Bat;
+import org.bukkit.entity.Blaze;
+import org.bukkit.entity.CaveSpider;
+import org.bukkit.entity.Chicken;
+import org.bukkit.entity.Cow;
+import org.bukkit.entity.Creeper;
 import org.bukkit.entity.EnderDragon;
+import org.bukkit.entity.Enderman;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Ghast;
+import org.bukkit.entity.Giant;
 import org.bukkit.entity.Golem;
 import org.bukkit.entity.Horse;
+import org.bukkit.entity.IronGolem;
+import org.bukkit.entity.MagmaCube;
 import org.bukkit.entity.Monster;
+import org.bukkit.entity.MushroomCow;
 import org.bukkit.entity.Ocelot;
+import org.bukkit.entity.Pig;
+import org.bukkit.entity.PigZombie;
+import org.bukkit.entity.Sheep;
+import org.bukkit.entity.Silverfish;
+import org.bukkit.entity.Skeleton;
 import org.bukkit.entity.Slime;
+import org.bukkit.entity.Snowman;
+import org.bukkit.entity.Spider;
+import org.bukkit.entity.Squid;
 import org.bukkit.entity.Tameable;
+import org.bukkit.entity.Villager;
 import org.bukkit.entity.WaterMob;
+import org.bukkit.entity.Witch;
 import org.bukkit.entity.Wither;
 import org.bukkit.entity.Wolf;
+import org.bukkit.entity.Zombie;
 import org.bukkit.permissions.Permissible;
 
-import de.cubeisland.engine.core.permission.Permission;
 import de.cubeisland.engine.basics.BasicsPerm;
+import de.cubeisland.engine.core.permission.Permission;
 
 public class EntityRemoval
 {
@@ -56,7 +78,7 @@ public class EntityRemoval
         if (interfaces.length == 0) return this.extra(entity);
         for (Class<?> anInterface : interfaces)
         {
-            if (entity.getClass().isAssignableFrom(anInterface))
+            if (anInterface.isAssignableFrom(entity.getClass()))
             {
                 return this.extra(entity);
             }
@@ -109,29 +131,29 @@ public class EntityRemoval
     static final Map<EntityType, EntityRemoval> DIRECT_ENTITY_REMOVAL = new HashMap<EntityType, EntityRemoval>()
     {
         {
-            this.put(EntityType.CREEPER, new EntityRemoval(BasicsPerm.COMMAND_BUTCHER_FLAG_MONSTER));
-            this.put(EntityType.SKELETON, new EntityRemoval(BasicsPerm.COMMAND_BUTCHER_FLAG_MONSTER));
-            this.put(EntityType.SPIDER, new EntityRemoval(BasicsPerm.COMMAND_BUTCHER_FLAG_MONSTER));
-            this.put(EntityType.GIANT, new EntityRemoval(BasicsPerm.COMMAND_BUTCHER_FLAG_BOSS));
-            this.put(EntityType.ZOMBIE, new EntityRemoval(BasicsPerm.COMMAND_BUTCHER_FLAG_MONSTER));
-            this.put(EntityType.SLIME, new EntityRemoval(BasicsPerm.COMMAND_BUTCHER_FLAG_MONSTER));
-            this.put(EntityType.GHAST, new EntityRemoval(BasicsPerm.COMMAND_BUTCHER_FLAG_MONSTER));
-            this.put(EntityType.PIG_ZOMBIE, new EntityRemoval(BasicsPerm.COMMAND_BUTCHER_FLAG_MONSTER));
-            this.put(EntityType.ENDERMAN, new EntityRemoval(BasicsPerm.COMMAND_BUTCHER_FLAG_MONSTER));
-            this.put(EntityType.CAVE_SPIDER, new EntityRemoval(BasicsPerm.COMMAND_BUTCHER_FLAG_MONSTER));
-            this.put(EntityType.SILVERFISH, new EntityRemoval(BasicsPerm.COMMAND_BUTCHER_FLAG_MONSTER));
-            this.put(EntityType.BLAZE, new EntityRemoval(BasicsPerm.COMMAND_BUTCHER_FLAG_MONSTER));
-            this.put(EntityType.MAGMA_CUBE, new EntityRemoval(BasicsPerm.COMMAND_BUTCHER_FLAG_MONSTER));
-            this.put(EntityType.ENDER_DRAGON, new EntityRemoval(BasicsPerm.COMMAND_BUTCHER_FLAG_BOSS));
-            this.put(EntityType.WITHER, new EntityRemoval(BasicsPerm.COMMAND_BUTCHER_FLAG_BOSS));
-            this.put(EntityType.BAT, new EntityRemoval(BasicsPerm.COMMAND_BUTCHER_FLAG_OTHER));
-            this.put(EntityType.WITCH, new EntityRemoval(BasicsPerm.COMMAND_BUTCHER_FLAG_MONSTER));
-            this.put(EntityType.PIG, new EntityRemoval(BasicsPerm.COMMAND_BUTCHER_FLAG_ANIMAL));
-            this.put(EntityType.SHEEP, new EntityRemoval(BasicsPerm.COMMAND_BUTCHER_FLAG_ANIMAL));
-            this.put(EntityType.COW, new EntityRemoval(BasicsPerm.COMMAND_BUTCHER_FLAG_ANIMAL));
-            this.put(EntityType.CHICKEN, new EntityRemoval(BasicsPerm.COMMAND_BUTCHER_FLAG_ANIMAL));
-            this.put(EntityType.SQUID, new EntityRemoval(BasicsPerm.COMMAND_BUTCHER_FLAG_OTHER));
-            this.put(EntityType.WOLF, new EntityRemoval(BasicsPerm.COMMAND_BUTCHER_FLAG_ANIMAL)
+            this.put(EntityType.CREEPER, new EntityRemoval(BasicsPerm.COMMAND_BUTCHER_FLAG_MONSTER, Creeper.class));
+            this.put(EntityType.SKELETON, new EntityRemoval(BasicsPerm.COMMAND_BUTCHER_FLAG_MONSTER, Skeleton.class));
+            this.put(EntityType.SPIDER, new EntityRemoval(BasicsPerm.COMMAND_BUTCHER_FLAG_MONSTER, Spider.class));
+            this.put(EntityType.GIANT, new EntityRemoval(BasicsPerm.COMMAND_BUTCHER_FLAG_BOSS, Giant.class));
+            this.put(EntityType.ZOMBIE, new EntityRemoval(BasicsPerm.COMMAND_BUTCHER_FLAG_MONSTER, Zombie.class));
+            this.put(EntityType.SLIME, new EntityRemoval(BasicsPerm.COMMAND_BUTCHER_FLAG_MONSTER, Slime.class));
+            this.put(EntityType.GHAST, new EntityRemoval(BasicsPerm.COMMAND_BUTCHER_FLAG_MONSTER, Ghast.class));
+            this.put(EntityType.PIG_ZOMBIE, new EntityRemoval(BasicsPerm.COMMAND_BUTCHER_FLAG_MONSTER, PigZombie.class));
+            this.put(EntityType.ENDERMAN, new EntityRemoval(BasicsPerm.COMMAND_BUTCHER_FLAG_MONSTER, Enderman.class));
+            this.put(EntityType.CAVE_SPIDER, new EntityRemoval(BasicsPerm.COMMAND_BUTCHER_FLAG_MONSTER, CaveSpider.class));
+            this.put(EntityType.SILVERFISH, new EntityRemoval(BasicsPerm.COMMAND_BUTCHER_FLAG_MONSTER, Silverfish.class));
+            this.put(EntityType.BLAZE, new EntityRemoval(BasicsPerm.COMMAND_BUTCHER_FLAG_MONSTER, Blaze.class));
+            this.put(EntityType.MAGMA_CUBE, new EntityRemoval(BasicsPerm.COMMAND_BUTCHER_FLAG_MONSTER, MagmaCube.class));
+            this.put(EntityType.ENDER_DRAGON, new EntityRemoval(BasicsPerm.COMMAND_BUTCHER_FLAG_BOSS, EnderDragon.class));
+            this.put(EntityType.WITHER, new EntityRemoval(BasicsPerm.COMMAND_BUTCHER_FLAG_BOSS, Wither.class));
+            this.put(EntityType.BAT, new EntityRemoval(BasicsPerm.COMMAND_BUTCHER_FLAG_OTHER, Bat.class));
+            this.put(EntityType.WITCH, new EntityRemoval(BasicsPerm.COMMAND_BUTCHER_FLAG_MONSTER, Witch.class));
+            this.put(EntityType.PIG, new EntityRemoval(BasicsPerm.COMMAND_BUTCHER_FLAG_ANIMAL, Pig.class));
+            this.put(EntityType.SHEEP, new EntityRemoval(BasicsPerm.COMMAND_BUTCHER_FLAG_ANIMAL, Sheep.class));
+            this.put(EntityType.COW, new EntityRemoval(BasicsPerm.COMMAND_BUTCHER_FLAG_ANIMAL, Cow.class));
+            this.put(EntityType.CHICKEN, new EntityRemoval(BasicsPerm.COMMAND_BUTCHER_FLAG_ANIMAL, Chicken.class));
+            this.put(EntityType.SQUID, new EntityRemoval(BasicsPerm.COMMAND_BUTCHER_FLAG_OTHER, Squid.class));
+            this.put(EntityType.WOLF, new EntityRemoval(BasicsPerm.COMMAND_BUTCHER_FLAG_ANIMAL, Wolf.class)
             {
                 @Override
                 public boolean extra(Entity entity)
@@ -139,9 +161,9 @@ public class EntityRemoval
                     return !((Wolf)entity).isTamed();
                 }
             });
-            this.put(EntityType.MUSHROOM_COW, new EntityRemoval(BasicsPerm.COMMAND_BUTCHER_FLAG_ANIMAL));
-            this.put(EntityType.SNOWMAN, new EntityRemoval(BasicsPerm.COMMAND_BUTCHER_FLAG_GOLEM));
-            this.put(EntityType.OCELOT, new EntityRemoval(BasicsPerm.COMMAND_BUTCHER_FLAG_ANIMAL)
+            this.put(EntityType.MUSHROOM_COW, new EntityRemoval(BasicsPerm.COMMAND_BUTCHER_FLAG_ANIMAL, MushroomCow.class));
+            this.put(EntityType.SNOWMAN, new EntityRemoval(BasicsPerm.COMMAND_BUTCHER_FLAG_GOLEM, Snowman.class));
+            this.put(EntityType.OCELOT, new EntityRemoval(BasicsPerm.COMMAND_BUTCHER_FLAG_ANIMAL, Ocelot.class)
             {
                 @Override
                 public boolean extra(Entity entity)
@@ -149,8 +171,8 @@ public class EntityRemoval
                     return !((Ocelot)entity).isTamed();
                 }
             });
-            this.put(EntityType.IRON_GOLEM, new EntityRemoval(BasicsPerm.COMMAND_BUTCHER_FLAG_GOLEM));
-            this.put(EntityType.HORSE, new EntityRemoval(BasicsPerm.COMMAND_BUTCHER_FLAG_ANIMAL)
+            this.put(EntityType.IRON_GOLEM, new EntityRemoval(BasicsPerm.COMMAND_BUTCHER_FLAG_GOLEM, IronGolem.class));
+            this.put(EntityType.HORSE, new EntityRemoval(BasicsPerm.COMMAND_BUTCHER_FLAG_ANIMAL, Horse.class)
             {
                 @Override
                 public boolean extra(Entity entity)
@@ -158,7 +180,7 @@ public class EntityRemoval
                     return !((Horse)entity).isTamed();
                 }
             });
-            this.put(EntityType.VILLAGER, new EntityRemoval(BasicsPerm.COMMAND_BUTCHER_FLAG_NPC));
+            this.put(EntityType.VILLAGER, new EntityRemoval(BasicsPerm.COMMAND_BUTCHER_FLAG_NPC, Villager.class));
         }
     };
 }

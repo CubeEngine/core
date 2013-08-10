@@ -29,7 +29,7 @@ public class ProfessionMatcher
 
     public ProfessionMatcher()
     {
-        this.professions = new ArrayList<String>();
+        this.professions = new ArrayList<>();
         for (Profession profession : Profession.values())
         {
             this.professions.add(profession.toString());

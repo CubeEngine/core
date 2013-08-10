@@ -21,30 +21,29 @@ import java.util.Collection;
 
 import org.bukkit.Location;
 
-import de.cubeisland.engine.core.storage.SingleKeyStorage;
 import de.cubeisland.engine.signmarket.Signmarket;
-
 import gnu.trove.map.hash.THashMap;
+import org.jooq.DSLContext;
 
-public class SignMarketBlockManager extends SingleKeyStorage<Long, SignMarketBlockModel>
+import static de.cubeisland.engine.signmarket.storage.TableSignBlock.TABLE_SIGN_BLOCK;
+
+public class SignMarketBlockManager
 {
-    private static final int REVISION = 1;
-
     private THashMap<Location,SignMarketBlockModel> blockModels;
 
     private Signmarket module;
+    private DSLContext dsl;
 
     public SignMarketBlockManager(Signmarket module)
     {
-        super(module.getCore().getDB(), SignMarketBlockModel.class, REVISION);
         this.module = module;
-        this.initialize();
+        this.dsl = module.getCore().getDB().getDSL();
     }
 
     public void load()
     {
-        this.blockModels = new THashMap<Location, SignMarketBlockModel>();
-        for (SignMarketBlockModel model : this.getAll())
+        this.blockModels = new THashMap<>();
+        for (SignMarketBlockModel model : this.dsl.selectFrom(TABLE_SIGN_BLOCK).fetch())
         {
             this.blockModels.put(model.getLocation(),model);
         }
@@ -56,19 +55,23 @@ public class SignMarketBlockManager extends SingleKeyStorage<Long, SignMarketBlo
         return this.blockModels.values();
     }
 
-    @Override
     public void delete(SignMarketBlockModel model)
     {
         this.blockModels.remove(model.getLocation());
-        super.delete(model);
-        this.module.getLog().debug("deleted block-model #{}", model.key);
+        if (model.getKey().longValue() == 0) return; // unsaved model
+        model.delete();
+        this.module.getLog().debug("deleted block-model #{}", model.getKey());
     }
 
-    @Override
     public void store(SignMarketBlockModel blockModel)
     {
         this.blockModels.put(blockModel.getLocation(),blockModel);
-        super.store(blockModel);
-        this.module.getLog().debug("stored block-model #{}", blockModel.key);
+        blockModel.insert();
+        this.module.getLog().debug("stored block-model #{}", blockModel.getKey());
+    }
+
+    public void update(SignMarketBlockModel blockItemModel)
+    {
+        blockItemModel.update();
     }
 }

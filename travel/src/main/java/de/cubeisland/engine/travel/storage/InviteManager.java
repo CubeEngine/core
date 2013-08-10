@@ -17,8 +17,6 @@
  */
 package de.cubeisland.engine.travel.storage;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -26,36 +24,38 @@ import java.util.Map;
 import java.util.Set;
 
 import de.cubeisland.engine.core.CubeEngine;
-
-import de.cubeisland.engine.core.storage.TwoKeyStorage;
 import de.cubeisland.engine.core.storage.database.Database;
-import de.cubeisland.engine.core.storage.database.querybuilder.QueryBuilder;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.travel.Travel;
+import org.jooq.DSLContext;
+import org.jooq.Record1;
+import org.jooq.types.UInteger;
 
-import static de.cubeisland.engine.core.storage.database.querybuilder.ComponentBuilder.EQUAL;
+import static de.cubeisland.engine.core.user.TableUser.TABLE_USER;
+import static de.cubeisland.engine.travel.storage.TableInvite.TABLE_INVITE;
 
-public class InviteManager extends TwoKeyStorage<Long, Long, TeleportInvite>
+public class InviteManager
 {
-    private static final int REVISION = 2;
     private final Travel module;
+    private final DSLContext dsl;
     private Collection<TeleportInvite> invites;
-    private final Map<TeleportPoint, Set<String>> cachedInvites;
+    private final Map<TeleportPointModel, Set<String>> cachedInvites;
 
     public InviteManager(Database database, Travel module)
     {
-        super(database, TeleportInvite.class, REVISION);
-        this.initialize();
+        this.dsl = database.getDSL();
         this.module = module;
-        this.cachedInvites = new HashMap<TeleportPoint, Set<String>>();
-        this.invites = this.getAll();
+        this.cachedInvites = new HashMap<>();
+        this.invites = this.dsl.selectFrom(TABLE_INVITE).fetch();
     }
 
     public void initialize()
-    {
+    {/*
         try
         {
             super.initialize();
+            //TODO DATABASE
+
             QueryBuilder builder = database.getQueryBuilder();
             this.database.storeStatement(this.modelClass, "getInvitedTo", builder.select().cols("teleportpoint")
                                                                                  .from(this.tableName).where()
@@ -71,13 +71,14 @@ public class InviteManager extends TwoKeyStorage<Long, Long, TeleportInvite>
             module.getLog().error("An error occurred while preparing the database statements for table " +
                                   this.tableName + ": " + ex.getMessage(), ex);
         }
+        */
     }
 
-    public void invite(TeleportPoint tPP, User user)
+    public void invite(TeleportPointModel tPP, User user)
     {
-        TeleportInvite invite = new TeleportInvite(tPP.key, user.getId());
+        TeleportInvite invite = this.dsl.newRecord(TABLE_INVITE).newInvite(tPP.getKey(), user.getEntity().getKey());
         this.invites.add(invite);
-        this.store(invite);
+        invite.insert();
     }
 
     /**
@@ -85,9 +86,9 @@ public class InviteManager extends TwoKeyStorage<Long, Long, TeleportInvite>
      *
      * @return A set of User objects invited to the home
      */
-    public Set<User> getInvitedUsers(TeleportPoint tPP)
+    public Set<User> getInvitedUsers(TeleportPointModel tPP)
     {
-        Set<User> invitedUsers = new HashSet<User>();
+        Set<User> invitedUsers = new HashSet<>();
         for (String name : getInvited(tPP))
         {
             User user = CubeEngine.getUserManager().findOnlineUser(name);
@@ -104,35 +105,26 @@ public class InviteManager extends TwoKeyStorage<Long, Long, TeleportInvite>
      *
      * @return A set of User names invited to the home
      */
-    public Set<String> getInvited(TeleportPoint tPP)
+    public Set<String> getInvited(TeleportPointModel tPP)
     {
         if (this.cachedInvites.containsKey(tPP))
         {
             return this.cachedInvites.get(tPP);
         }
-        Set<String> invitedUsers = new HashSet<String>();
-        Set<Long> keys = new HashSet<Long>();
+        Set<String> invitedUsers = new HashSet<>();
+        Set<UInteger> keys = new HashSet<>();
         for (TeleportInvite tpI : getInvites(tPP))
         {
-            keys.add(tpI.userKey);
+            keys.add(tpI.getUserkey());
         }
         if (keys.isEmpty())
         {
             return invitedUsers;
         }
-        try
+        for (Record1<String> record1 : this.dsl.select(TABLE_USER.PLAYER).from(TABLE_USER)
+                                               .where(TABLE_USER.KEY.in(keys)).fetch())
         {
-            ResultSet names = database.query(database.getQueryBuilder().select("player").from("user").where().field("key").in()
-                                   .valuesInBrackets(keys.toArray()).end().end());
-            while (names.next())
-            {
-                invitedUsers.add(names.getString("player"));
-            }
-        }
-        catch (SQLException ex)
-        {
-            module.getLog().warn("Something wrong happened while getting usernames for some users: {}",  ex.getLocalizedMessage());
-            module.getLog().debug(ex.getLocalizedMessage(), ex);
+            invitedUsers.add(record1.value1());
         }
         this.cachedInvites.put(tPP, invitedUsers);
         return invitedUsers;
@@ -146,10 +138,10 @@ public class InviteManager extends TwoKeyStorage<Long, Long, TeleportInvite>
      */
     public Set<TeleportInvite> getInvites(User user)
     {
-        Set<TeleportInvite> invites = new HashSet<TeleportInvite>();
+        Set<TeleportInvite> invites = new HashSet<>();
         for (TeleportInvite invite : this.invites)
         {
-            if (invite.userKey.equals(user.getId()))
+            if (invite.getUserkey().equals(user.getEntity().getKey()))
             {
                 invites.add(invite);
             }
@@ -163,12 +155,12 @@ public class InviteManager extends TwoKeyStorage<Long, Long, TeleportInvite>
      *
      * @return A set of TeleportInvites
      */
-    public Set<TeleportInvite> getInvites(TeleportPoint tPP)
+    public Set<TeleportInvite> getInvites(TeleportPointModel tPP)
     {
-        Set<TeleportInvite> invites = new HashSet<TeleportInvite>();
+        Set<TeleportInvite> invites = new HashSet<>();
         for (TeleportInvite invite : this.invites)
         {
-            if (invite.teleportPoint.equals(tPP.getId()))
+            if (invite.getTeleportpoint().equals(tPP.getKey()))
             {
                 invites.add(invite);
             }
@@ -182,29 +174,28 @@ public class InviteManager extends TwoKeyStorage<Long, Long, TeleportInvite>
      * @param tPP        The local teleport point
      * @param newInvited The users that is currently invited to the teleportpoint locally
      */
-    public void updateInvited(TeleportPoint tPP, Set<String> newInvited)
+    public void updateInvited(TeleportPointModel tPP, Set<String> newInvited)
     {
         Set<TeleportInvite> invites = getInvites(tPP);
-        Set<String> old = getInvited(tPP);
-        Set<String> removed = old;
-        removed.removeAll(newInvited);
-        Set<String> added = newInvited;
-        newInvited.removeAll(old);
-
-        for (String user : added)
+        Set<UInteger> invitedUsers = new HashSet<>();
+        for (String userName : newInvited)
         {
-            this.store(new TeleportInvite(tPP.getId(), CubeEngine.getUserManager().getUser(user, false).getId()));
+            invitedUsers.add(this.module.getCore().getUserManager().getUser(userName, false).getEntity().getKey());
         }
-        for (String user : removed)
+        for (TeleportInvite invite : invites)
         {
-            for (TeleportInvite invite : invites)
+            if (invitedUsers.contains(invite.getUserkey()))
             {
-                if (invite.semiEquals(new TeleportInvite(tPP.getId(), CubeEngine.getUserManager().getUser(user, false)
-                                                                                 .getId())))
-                {
-                    this.delete(invite);
-                }
+                invitedUsers.remove(invite.getUserkey()); // already invited
             }
+            else
+            {
+                invite.delete(); // no longer invited
+            }
+        }
+        for (UInteger invitedUser : invitedUsers)
+        {
+            this.dsl.newRecord(TABLE_INVITE).newInvite(tPP.getKey(), invitedUser).insert(); // not yet invited
         }
     }
 }

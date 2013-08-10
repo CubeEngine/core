@@ -26,23 +26,27 @@ import org.bukkit.generator.ChunkGenerator;
 
 import de.cubeisland.engine.core.Core;
 import de.cubeisland.engine.core.module.Module;
-
+import de.cubeisland.engine.core.storage.database.Database;
 import gnu.trove.map.hash.THashMap;
 import gnu.trove.map.hash.TLongObjectHashMap;
+import org.jooq.DSLContext;
+
+import static de.cubeisland.engine.core.world.TableWorld.TABLE_WORLD;
 
 public abstract class AbstractWorldManager implements WorldManager
 {
-    protected final WorldStorage storage;
-    protected final Map<String, WorldModel> worlds;
+    protected final Map<String, WorldEntity> worlds;
     protected final TLongObjectHashMap<World> worldIds;
     private final Map<String, Map<String, ChunkGenerator>> generatorMap;
 
+    protected Database database;
+
     public AbstractWorldManager(Core core)
     {
-        this.storage = new WorldStorage(core.getDB());
-        this.worlds = new THashMap<String, WorldModel>();
-        this.worldIds = new TLongObjectHashMap<World>();
-        this.generatorMap = new THashMap<String, Map<String, ChunkGenerator>>();
+        this.database = core.getDB();
+        this.worlds = new THashMap<>();
+        this.worldIds = new TLongObjectHashMap<>();
+        this.generatorMap = new THashMap<>();
     }
 
     public synchronized long getWorldId(World world)
@@ -51,31 +55,38 @@ public abstract class AbstractWorldManager implements WorldManager
         {
             throw new IllegalArgumentException("the world given is null!");
         }
-        WorldModel model = this.worlds.get(world.getName());
-        if (model == null)
+        return this.getWorldEntity(world).getKey().longValue();
+    }
+
+    @Override
+    public WorldEntity getWorldEntity(World world)
+    {
+        DSLContext dsl = this.database.getDSL();
+        WorldEntity worldEntity = this.worlds.get(world.getName());
+        if (worldEntity == null)
         {
-            model = this.storage.get(world);
-            if (model == null)
+            worldEntity = dsl.selectFrom(TABLE_WORLD).where(TABLE_WORLD.WORLDUUID.eq(world.getUID().toString())).fetchOne().into(TABLE_WORLD);
+            if (worldEntity == null)
             {
-                model = new WorldModel(world);
-                this.storage.store(model);
+                worldEntity = dsl.newRecord(TABLE_WORLD).newWorld(world);
+                worldEntity.insert();
             }
-            this.worlds.put(world.getName(), model);
-            this.worldIds.put(model.key, world);
+            this.worlds.put(world.getName(), worldEntity);
+            this.worldIds.put(worldEntity.getKey().longValue(), world);
         }
-        return model.key;
+        return worldEntity;
     }
 
     public synchronized Long getWorldId(String name)
     {
-        WorldModel model = this.worlds.get(name);
-        if (model == null)
+        WorldEntity entity = this.worlds.get(name);
+        if (entity == null)
         {
             World world = this.getWorld(name);
             if (world == null) return null;
             return this.getWorldId(world);
         }
-        return model.key;
+        return entity.getKey().longValue();
     }
 
     public synchronized long[] getAllWorldIds()
@@ -96,7 +107,7 @@ public abstract class AbstractWorldManager implements WorldManager
         Map<String, ChunkGenerator> moduleGenerators = this.generatorMap.get(module.getId());
         if (moduleGenerators == null)
         {
-            this.generatorMap.put(module.getId(), moduleGenerators = new THashMap<String, ChunkGenerator>(1));
+            this.generatorMap.put(module.getId(), moduleGenerators = new THashMap<>(1));
         }
         moduleGenerators.put(id.toLowerCase(Locale.ENGLISH), generator);
     }

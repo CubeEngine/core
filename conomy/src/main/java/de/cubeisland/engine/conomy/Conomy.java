@@ -17,14 +17,17 @@
  */
 package de.cubeisland.engine.conomy;
 
+import de.cubeisland.engine.conomy.account.ConomyManager;
+import de.cubeisland.engine.conomy.account.storage.TableAccount;
+import de.cubeisland.engine.conomy.account.storage.TableBankAccess;
+import de.cubeisland.engine.conomy.commands.BankCommands;
+import de.cubeisland.engine.conomy.commands.EcoCommands;
+import de.cubeisland.engine.conomy.commands.MoneyCommand;
 import de.cubeisland.engine.core.command.CommandManager;
 import de.cubeisland.engine.core.config.Configuration;
 import de.cubeisland.engine.core.module.Module;
 import de.cubeisland.engine.core.service.Economy;
-import de.cubeisland.engine.conomy.account.ConomyManager;
-import de.cubeisland.engine.conomy.commands.BankCommands;
-import de.cubeisland.engine.conomy.commands.EcoCommands;
-import de.cubeisland.engine.conomy.commands.MoneyCommand;
+import de.cubeisland.engine.core.storage.database.Database;
 
 public class Conomy extends Module
 {
@@ -34,6 +37,10 @@ public class Conomy extends Module
     @Override
     public void onEnable()
     {
+        Database db = this.getCore().getDB();
+        db.registerTable(TableAccount.initTable(db));
+        db.registerTable(TableBankAccess.initTable(db));
+
         this.config = Configuration.load(ConomyConfiguration.class, this);
         this.manager = new ConomyManager(this);
         new ConomyPermissions(this);

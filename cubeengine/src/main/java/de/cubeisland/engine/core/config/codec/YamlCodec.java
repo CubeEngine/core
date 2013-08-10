@@ -18,6 +18,7 @@
 package de.cubeisland.engine.core.config.codec;
 
 import java.io.InputStream;
+import java.io.Reader;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -53,14 +54,14 @@ public class YamlCodec extends MultiConfigurationCodec
 
     @Override
     @SuppressWarnings("unchecked")
-    public void loadFromInputStream(CodecContainer container, InputStream is)
+    public void loadFromReader(CodecContainer container, Reader reader)
     {
-        if (is == null)
+        if (reader == null)
         {
             container.values = MapNode.emptyMap(); // InputStream null -> config was not existent
             return;
         }
-        Map<Object, Object> map = (Map<Object, Object>)yaml.load(is);
+        Map<Object, Object> map = (Map<Object, Object>)yaml.load(reader);
         if (map == null)
         {
             container.values = MapNode.emptyMap(); // loadValues null -> config exists but was empty

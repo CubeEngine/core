@@ -26,7 +26,7 @@ import de.cubeisland.engine.core.util.convert.Convert;
 public class ListNode extends ParentNode
 {
 
-    private ArrayList<Node> listedNodes = new ArrayList<Node>();
+    private ArrayList<Node> listedNodes = new ArrayList<>();
 
     public ListNode(Iterable list)
     {
@@ -163,7 +163,7 @@ public class ListNode extends ParentNode
     @Override
     public void cleanUpEmptyNodes()
     {
-        Set<Node> nodesToRemove = new HashSet<Node>();
+        Set<Node> nodesToRemove = new HashSet<>();
         for (Node node : this.getListedNodes())
         {
             if (node instanceof ParentNode)

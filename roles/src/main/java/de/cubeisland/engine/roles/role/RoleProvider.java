@@ -17,7 +17,10 @@
  */
 package de.cubeisland.engine.roles.role;
 
-import java.io.File;
+import java.io.IOException;
+import java.nio.file.DirectoryStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Locale;
@@ -25,16 +28,17 @@ import java.util.Set;
 import java.util.Stack;
 
 import de.cubeisland.engine.core.config.Configuration;
-
 import de.cubeisland.engine.core.permission.Permission;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.util.StringUtils;
 import de.cubeisland.engine.roles.Roles;
 import de.cubeisland.engine.roles.config.RoleConfig;
 import de.cubeisland.engine.roles.exception.CircularRoleDependencyException;
-
 import gnu.trove.map.hash.THashMap;
+import org.jooq.types.UInteger;
 
+import static de.cubeisland.engine.core.filesystem.FileExtensionFilter.YAML;
+import static de.cubeisland.engine.roles.storage.TableRole.TABLE_ROLE;
 
 
 public abstract class RoleProvider
@@ -45,7 +49,7 @@ public abstract class RoleProvider
     protected THashMap<String, RoleConfig> configs;
     protected THashMap<String, Role> roles;
     protected Permission basePerm;
-    protected File folder;
+    protected Path folder;
     protected final long mainWorldId;
 
     protected RoleProvider(Roles module, RolesManager manager, long mainWorldId)
@@ -86,15 +90,15 @@ public abstract class RoleProvider
      *
      * @return
      */
-    protected abstract File getFolder();
+    protected abstract Path getFolder();
 
     /**
      * Loads in the configurations. Also removes all currently loaded roles.
      */
     protected void loadConfigurations()
     {
-        this.configs = new THashMap<String, RoleConfig>();
-        this.roles = new THashMap<String, Role>();
+        this.configs = new THashMap<>();
+        this.roles = new THashMap<>();
         for (User user : this.module.getCore().getUserManager().getLoadedUsers())
         {
             RolesAttachment rolesAttachment = user.get(RolesAttachment.class);
@@ -103,18 +107,28 @@ public abstract class RoleProvider
                 rolesAttachment.flushResolvedData();
             }
         }
-        this.getFolder().mkdir(); // Creates folder for this provider if not existent
+
         int i = 0;
-        for (File configFile : this.getFolder().listFiles())
+        try
         {
-            if (configFile.getName().endsWith(".yml"))
+            Path folder = this.getFolder(); // Creates folder for this provider if not existent
+            Files.createDirectories(folder);
+            try (DirectoryStream<Path> directory = Files.newDirectoryStream(folder, YAML))
             {
-                ++i;
-                RoleConfig config = Configuration.load(RoleConfig.class, configFile);
-                this.configs.put(config.roleName.toLowerCase(), config);
+                for (Path configFile : directory)
+                {
+                    ++i;
+                    RoleConfig config = Configuration.load(RoleConfig.class, configFile);
+                    this.configs.put(config.roleName.toLowerCase(), config);
+                }
             }
         }
-        this.module.getLog().debug("{}: {} role-configs read!", this.getFolder().getName(), i);
+        catch (IOException e)
+        {
+            this.module.getLog().warn("Failed to load the configurat");
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        }
+        this.module.getLog().debug("{}: {} role-configs read!", this.getFolder().getFileName(), i);
     }
 
     /**
@@ -134,7 +148,7 @@ public abstract class RoleProvider
      */
     public void recalculateRoles()
     {
-        Stack<String> roleStack = new Stack<String>(); // stack for detecting circular dependencies
+        Stack<String> roleStack = new Stack<>(); // stack for detecting circular dependencies
         for (Role role : this.roles.values())
         {
             this.calculateRole(role, roleStack);
@@ -171,7 +185,7 @@ public abstract class RoleProvider
                     this.calculateRole(parentRole,roleStack);
                 }
                 // now all parent roles should be loaded
-                Set<Role> parentRoles = new HashSet<Role>();
+                Set<Role> parentRoles = new HashSet<>();
                 for (String parentName : role.getRawAssignedRoles())
                 {
                     Role parentRole = this.getRole(parentName);
@@ -230,7 +244,7 @@ public abstract class RoleProvider
         config.roleName = roleName;
         this.configs.put(roleName,config);
         config.onLoaded(null);
-        config.setFile(new File(this.folder, roleName + ".yml"));
+        config.setPath(this.folder.resolve(roleName + ".yml")); // TODO it's not guaranteed implementations set the folder
         config.save();
         Role role = new Role(this, config);
         this.roles.put(roleName,role);
@@ -245,14 +259,15 @@ public abstract class RoleProvider
      */
     protected void deleteRole(Role role)
     {
-        for (ResolvedDataStore crole : role.resolvedData.dependentData)
+        for (ResolvedDataStore dataStore : role.resolvedData.dependentData)
         {
-            crole.rawDataStore.removeRole(role);
+            dataStore.rawDataStore.removeRole(role);
         }
         this.roles.remove(role.getName());
         this.configs.remove(role.getName());
 
-        this.manager.rm.deleteRole(this.mainWorldId, role.getName());
+        this.manager.dsl.delete(TABLE_ROLE).where(TABLE_ROLE.WORLDID.eq(UInteger.valueOf(mainWorldId)),
+                                                  TABLE_ROLE.ROLENAME.eq(role.getName())).execute();
     }
 
     /**
@@ -281,7 +296,16 @@ public abstract class RoleProvider
         {
             resolvedDataStore.rawDataStore.assignRole(role);
         }
-        role.saveConfigToNewFile();
+        try
+        {
+            role.saveConfigToNewFile();
+        }
+        catch (IOException e)
+        {
+            this.module.getLog().warn("Failed to save the the config after renaming for {}:", role.getName());
+            this.module.getLog().warn(e.getLocalizedMessage(), e);
+            return false;
+        }
 
         return true;
     }

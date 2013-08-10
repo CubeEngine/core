@@ -17,37 +17,97 @@
  */
 package de.cubeisland.engine.basics.command.moderation.kit;
 
-import de.cubeisland.engine.core.storage.TwoKeyModel;
-import de.cubeisland.engine.core.storage.database.AttrType;
-import de.cubeisland.engine.core.storage.database.Attribute;
-import de.cubeisland.engine.core.storage.database.Index;
-import de.cubeisland.engine.core.storage.database.TwoKeyEntity;
-import de.cubeisland.engine.core.util.Pair;
+import org.jooq.Field;
+import org.jooq.Record2;
+import org.jooq.Record3;
+import org.jooq.Row3;
+import org.jooq.impl.UpdatableRecordImpl;
+import org.jooq.types.UInteger;
 
-import static de.cubeisland.engine.core.storage.database.Index.IndexType.FOREIGN_KEY;
+import static de.cubeisland.engine.basics.command.moderation.kit.TableKitsGiven.TABLE_KITS;
 
-@TwoKeyEntity(tableName = "kitsgiven", firstPrimaryKey = "userId", secondPrimaryKey = "kitName", indices = {
-    @Index(value = FOREIGN_KEY, fields = "userId", f_table = "user", f_field = "key")
-})
-public class KitsGiven implements TwoKeyModel<Long, String>
+public class KitsGiven extends UpdatableRecordImpl<KitsGiven> implements Record3<UInteger, String, Integer>
 {
-    @Attribute(type = AttrType.INT, unsigned = true)
-    public long userId;
-    @Attribute(type = AttrType.VARCHAR, length = 50)
-    public String kitName;
-    @Attribute(type = AttrType.INT)
-    public int amount;
+    public KitsGiven()
+    {
+        super(TABLE_KITS);
+    }
+
+    public void setUserid(UInteger value) {
+        setValue(0, value);
+    }
+
+    public UInteger getUserid() {
+        return (UInteger) getValue(0);
+    }
+
+    public void setKitname(String value) {
+        setValue(1, value);
+    }
+
+    public String getKitname() {
+        return (String) getValue(1);
+    }
+
+    public void setAmount(Integer value) {
+        setValue(2, value);
+    }
+
+    public Integer getAmount() {
+        return (Integer) getValue(2);
+    }
+
+    // -------------------------------------------------------------------------
+    // Primary key information
+    // -------------------------------------------------------------------------
 
     @Override
-    public Pair<Long, String> getId()
-    {
-        return new Pair<Long, String>(userId, kitName);
+    public Record2<UInteger, String> key() {
+        return (Record2) super.key();
+    }
+
+    // -------------------------------------------------------------------------
+    // Record3 type implementation
+    // -------------------------------------------------------------------------
+
+    @Override
+    public Row3<UInteger, String, Integer> fieldsRow() {
+        return (Row3) super.fieldsRow();
     }
 
     @Override
-    public void setId(Pair<Long, String> id)
-    {
-        this.userId = id.getLeft();
-        this.kitName = id.getRight();
+    public Row3<UInteger, String, Integer> valuesRow() {
+        return (Row3) super.valuesRow();
     }
+
+    @Override
+    public Field<UInteger> field1() {
+        return TABLE_KITS.USERID;
+    }
+
+    @Override
+    public Field<String> field2() {
+        return TABLE_KITS.KITNAME;
+    }
+
+    @Override
+    public Field<Integer> field3() {
+        return TABLE_KITS.AMOUNT;
+    }
+
+    @Override
+    public UInteger value1() {
+        return getUserid();
+    }
+
+    @Override
+    public String value2() {
+        return getKitname();
+    }
+
+    @Override
+    public Integer value3() {
+        return getAmount();
+    }
+
 }

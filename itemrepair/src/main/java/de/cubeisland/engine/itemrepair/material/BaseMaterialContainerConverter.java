@@ -51,7 +51,7 @@ public class BaseMaterialContainerConverter implements Converter<BaseMaterialCon
     @Override
     public Node toNode(BaseMaterialContainer object) throws ConversionException
     {
-        Map<Material,Double> result = new TreeMap<Material, Double>(new Comparator<Material>()
+        Map<Material,Double> result = new TreeMap<>(new Comparator<Material>()
         {
             @Override
             public int compare(Material o1, Material o2)

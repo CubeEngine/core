@@ -28,7 +28,7 @@ public class WarpAttachment extends UserAttachment
 
     public WarpAttachment()
     {
-        warps = new HashMap<String, Warp>();
+        warps = new HashMap<>();
     }
 
     /**

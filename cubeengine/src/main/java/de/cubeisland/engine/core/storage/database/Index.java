@@ -30,30 +30,34 @@ import java.lang.annotation.Target;
  * Identifies a field as a ForeignKey for the database.
  */
 @Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.TYPE)
+@Target(value = {ElementType.TYPE, ElementType.FIELD})
 public @interface Index
 {
-    public IndexType value();
+    public String[] fields() default {};
 
-    public String[] fields();
 
+    // TODO remove
+    public IndexType value() default IndexType.INDEX;
     /**
      * Needed for FOREIGN_KEY
      */
+    // TODO remove
     public String f_table() default "";
 
     /**
      * Needed for FOREIGN_KEY
      */
+    // TODO remove
     public String[] f_field() default {};
 
     /**
      * Needed for FOREIGN_KEY.
-     * default: CASCADE. 
+     * default: CASCADE.
      * other: SET NULL; RESTRICT; NO ACTION
      *
      * @return the delete action
      */
+// TODO remove
     public String onDelete() default "CASCADE";
 
     public static enum IndexType

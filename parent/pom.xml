@@ -96,27 +96,6 @@
         <type>jar</type>
         <scope>provided</scope>
         <exclusions>
-          <!-- Netty -->
-          <exclusion>
-            <groupId>io.netty</groupId>
-            <artifactId>netty-example</artifactId>
-          </exclusion>
-          <exclusion>
-            <groupId>io.netty</groupId>
-            <artifactId>netty-testsuite</artifactId>
-          </exclusion>
-          <exclusion>
-            <groupId>io.netty</groupId>
-            <artifactId>netty-parent</artifactId>
-          </exclusion>
-          <exclusion>
-            <groupId>io.netty</groupId>
-            <artifactId>netty-metrics-yammer</artifactId>
-          </exclusion>
-          <exclusion>
-            <groupId>io.netty</groupId>
-            <artifactId>netty-build</artifactId>
-          </exclusion>
           <exclusion>
             <groupId>org.yaml</groupId>
             <artifactId>snakeyaml</artifactId>
@@ -154,7 +133,7 @@
       <dependency>
         <groupId>com.fasterxml.jackson.core</groupId>
         <artifactId>jackson-databind</artifactId>
-        <version>2.2.1</version>
+        <version>2.2.2</version>
         <type>jar</type>
         <scope>compile</scope>
       </dependency>
@@ -208,7 +187,7 @@
       <dependency>
         <groupId>org.powermock</groupId>
         <artifactId>powermock-module-junit4</artifactId>
-        <version>1.5</version>
+        <version>1.5.1</version>
         <type>jar</type>
         <scope>test</scope>
       </dependency>
@@ -247,6 +226,15 @@
       <plugin>
         <groupId>com.mycila.maven-license-plugin</groupId>
         <artifactId>maven-license-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>add-license-headers</id>
+            <phase>generate-sources</phase>
+            <goals>
+              <goal>format</goal>
+            </goals>
+          </execution>
+        </executions>
       </plugin>
     </plugins>
 
@@ -391,6 +379,16 @@
       <build>
         <plugins>
           <plugin>
+            <groupId>com.mycila.maven-license-plugin</groupId>
+            <artifactId>maven-license-plugin</artifactId>
+            <executions>
+              <execution>
+                <id>add-license-headers</id>
+                <phase>none</phase>
+              </execution>
+            </executions>
+          </plugin>
+          <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-dependency-plugin</artifactId>
             <configuration>
@@ -451,6 +449,11 @@
             <artifactId>maven-license-plugin</artifactId>
             <executions>
               <execution>
+                <id>add-license-headers</id>
+                <phase>none</phase>
+              </execution>
+              <execution>
+                <id>check-license-headers</id>
                 <phase>generate-sources</phase>
                 <goals>
                   <goal>check</goal>

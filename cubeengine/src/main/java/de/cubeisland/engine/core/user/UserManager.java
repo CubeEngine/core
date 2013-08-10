@@ -62,6 +62,15 @@ public interface UserManager extends Cleanable
     User getUser(String name, boolean create);
 
     /**
+     * Queries the database directly if the user is not loaded to get its name.
+     * <p>Only use with valid key!
+     *
+     * @param key the users key
+     * @return
+     */
+    String getUserName(long key);
+
+    /**
      * Returns all the users that are currently online
      *
      * @return a unmodifiable List of players
@@ -100,6 +109,6 @@ public interface UserManager extends Cleanable
     void removeDefaultAttachment(Class<? extends UserAttachment> attachmentClass);
     void removeDefaultAttachments(Module module);
     void removeDefaultAttachments();
-    Set<Long> getAllKeys();
+    Set<Long> getAllIds();
     void cleanup(Module module);
 }

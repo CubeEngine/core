@@ -82,8 +82,8 @@ public abstract class CubeCommand extends Command
         this.module = module;
         this.contextFactory = contextFactory;
 
-        this.children = new THashMap<String, CubeCommand>();
-        this.childrenAliases = new ArrayList<String>();
+        this.children = new THashMap<>();
+        this.childrenAliases = new ArrayList<>();
         this.loggable = true;
         this.generatePermission = false;
         this.generatedPermissionDefault = PermDefault.DEFAULT;
@@ -135,7 +135,7 @@ public abstract class CubeCommand extends Command
     protected Permission generatePermissionNode()
     {
         Permission commandBase = this.getModule().getBasePermission().createAbstractChild("command");
-        LinkedList<String> cmds = new LinkedList<String>();
+        LinkedList<String> cmds = new LinkedList<>();
         CubeCommand cmd = this;
         do
         {
@@ -195,11 +195,8 @@ public abstract class CubeCommand extends Command
         List<String> aliases = Collections.emptyList();
         if (names.length > 1)
         {
-            aliases = new ArrayList<String>(names.length - 1);
-            for (int i = 1; i < names.length; ++i)
-            {
-                aliases.add(names[i]);
-            }
+            aliases = new ArrayList<>(names.length - 1);
+            aliases.addAll(Arrays.asList(names).subList(1, names.length));
         }
         this.getModule().getCore().getCommandManager().registerCommand(new AliasCommand(this, names[0], aliases, prefix, suffix), parents);
     }
@@ -217,7 +214,7 @@ public abstract class CubeCommand extends Command
      */
     protected final String implodeCommandParentNames(String delimiter)
     {
-        LinkedList<String> cmds = new LinkedList<String>();
+        LinkedList<String> cmds = new LinkedList<>();
         CubeCommand cmd = this;
         do
         {
@@ -282,10 +279,8 @@ public abstract class CubeCommand extends Command
      */
     public String getUsage(CommandSender sender)
     {
-        StringBuilder usage = new StringBuilder(sender instanceof User ? "/" : "")
-            .append(this.implodeCommandParentNames(" ")).append(' ')
-            .append(replaceSemiOptionalArgs(sender, sender.translate(super.getUsage())));
-        return usage.toString();
+        return (sender instanceof User ? "/" : "") + this
+            .implodeCommandParentNames(" ") + ' ' + replaceSemiOptionalArgs(sender, sender.translate(super.getUsage()));
     }
 
     /**
@@ -298,10 +293,9 @@ public abstract class CubeCommand extends Command
     public String getUsage(CommandContext context)
     {
         final CommandSender sender = context.getSender();
-        StringBuilder usage = new StringBuilder(sender instanceof User ? "/" : "")
-            .append(StringUtils.implode(" ", context.getLabels())).append(' ')
-            .append(replaceSemiOptionalArgs(sender, sender.translate(super.getUsage())));
-        return usage.toString();
+        return (sender instanceof User ? "/" : "") + StringUtils
+            .implode(" ", context.getLabels()) + ' ' + replaceSemiOptionalArgs(sender, sender
+            .translate(super.getUsage()));
     }
 
     /**
@@ -395,7 +389,7 @@ public abstract class CubeCommand extends Command
      */
     public Set<CubeCommand> getChildren()
     {
-        return new THashSet<CubeCommand>(this.children.values());
+        return new THashSet<>(this.children.values());
     }
 
     /**
@@ -405,7 +399,7 @@ public abstract class CubeCommand extends Command
      */
     public Set<String> getChildrenNames()
     {
-        return new THashSet<String>(this.children.keySet());
+        return new THashSet<>(this.children.keySet());
     }
 
     /**
@@ -571,7 +565,7 @@ public abstract class CubeCommand extends Command
     {
         if (this.hasChildren() && args.length == 1 && !((this instanceof ParameterizedCommand) && !args[0].isEmpty() && args[0].charAt(0) == '-'))
         {
-            List<String> actions = new ArrayList<String>();
+            List<String> actions = new ArrayList<>();
             String token = args[0].toLowerCase(Locale.ENGLISH);
 
             Set<CubeCommand> names = this.getChildren();

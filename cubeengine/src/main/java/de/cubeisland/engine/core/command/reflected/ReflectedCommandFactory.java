@@ -37,12 +37,9 @@ import de.cubeisland.engine.core.command.parameterized.Completer;
 import de.cubeisland.engine.core.command.parameterized.Flag;
 import de.cubeisland.engine.core.command.parameterized.Param;
 import de.cubeisland.engine.core.command.parameterized.ParameterizedContextFactory;
-
 import de.cubeisland.engine.core.module.Module;
 
 import static de.cubeisland.engine.core.command.ArgBounds.NO_MAX;
-
-import static de.cubeisland.engine.core.util.Misc.arr;
 
 public class ReflectedCommandFactory<T extends CubeCommand> implements CommandFactory<T>
 {
@@ -63,7 +60,7 @@ public class ReflectedCommandFactory<T extends CubeCommand> implements CommandFa
         if (methodParams.length != 1 || !CommandContext.class.isAssignableFrom(methodParams[0]))
         {
             module.getLog().warn("The method ''{}.{}'' does not match the required method signature: public void {}(CommandContext context)",
-                                 arr(holder.getClass().getSimpleName(), method.getName(), method.getName()));
+                                 holder.getClass().getSimpleName(), method.getName(), method.getName());
             return false;
         }
         return true;
@@ -83,19 +80,19 @@ public class ReflectedCommandFactory<T extends CubeCommand> implements CommandFa
         }
 
         String name = commandNames[0].trim().toLowerCase(Locale.ENGLISH);
-        List<String> aliases = new ArrayList<String>(commandNames.length - 1);
+        List<String> aliases = new ArrayList<>(commandNames.length - 1);
         for (int i = 1; i < commandNames.length; ++i)
         {
             aliases.add(commandNames[i].toLowerCase(Locale.ENGLISH));
         }
 
-        Set<CommandFlag> flags = new HashSet<CommandFlag>(annotation.flags().length);
+        Set<CommandFlag> flags = new HashSet<>(annotation.flags().length);
         for (Flag flag : annotation.flags())
         {
             flags.add(new CommandFlag(flag.name(), flag.longName()));
         }
 
-        Set<CommandParameter> params = new HashSet<CommandParameter>(annotation.params().length);
+        Set<CommandParameter> params = new HashSet<>(annotation.params().length);
         for (Param param : annotation.params())
         {
             String[] names = param.names();
@@ -135,7 +132,7 @@ public class ReflectedCommandFactory<T extends CubeCommand> implements CommandFa
         if (annotation.max() > NO_MAX && annotation.max() < annotation.min())
         {
             module.getLog().error("{}.{}: The the maximum args must not be less than the minimum",
-                                  arr(holder.getClass().getSimpleName(), method.getName()));
+                                  holder.getClass().getSimpleName(), method.getName());
             return null;
         }
         ReflectedCommand cmd = new ReflectedCommand(
@@ -176,7 +173,7 @@ public class ReflectedCommandFactory<T extends CubeCommand> implements CommandFa
     @Override
     public List<T> parseCommands(Module module, Object holder)
     {
-        List<T> commands = new ArrayList<T>();
+        List<T> commands = new ArrayList<>();
 
         for (Method method : holder.getClass().getDeclaredMethods())
         {

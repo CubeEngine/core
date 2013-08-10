@@ -27,7 +27,6 @@ import de.cubeisland.engine.core.i18n.I18n;
 import de.cubeisland.engine.core.module.ModuleManager;
 import de.cubeisland.engine.core.permission.PermissionManager;
 import de.cubeisland.engine.core.service.ServiceManager;
-import de.cubeisland.engine.core.storage.TableManager;
 import de.cubeisland.engine.core.storage.database.Database;
 import de.cubeisland.engine.core.task.TaskManager;
 import de.cubeisland.engine.core.user.UserManager;
@@ -145,13 +144,6 @@ public interface Core
      * @return the debugMode
      */
     boolean isDebug();
-
-    /**
-     * This method returns the TableManager
-     *
-     * @return the TableManager
-     */
-    TableManager getTableManger();
 
     /**
      * This method returns the web API server
