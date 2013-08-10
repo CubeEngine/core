@@ -73,13 +73,11 @@ public class BukkitFileManager extends FileManager
                         try (FileChannel inputChannel = FileChannel.open(file))
                         {
                             ByteBuffer buffer = ByteBuffer.allocate(4096);
-                            while (inputChannel.read(buffer) >= 0 || buffer.position() > 0)
+                            while (inputChannel.read(buffer) != -1)
                             {
-                                buffer.flip();
                                 zip.write(buffer.array(), 0, buffer.position());
-                                buffer.compact();
+                                buffer.flip();
                             }
-
                             zip.closeEntry();
                         }
                     }

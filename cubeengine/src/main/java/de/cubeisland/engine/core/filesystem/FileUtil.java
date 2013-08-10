@@ -207,11 +207,10 @@ public class FileUtil
     {
         final ByteBuffer buffer = ByteBuffer.allocateDirect(1024 * 4);
         // TODO test if this works
-        while (in.read(buffer) >= 0 || buffer.position() > 0)
+        while (in.read(buffer) != -1)
         {
-            buffer.flip();
             out.write(buffer);
-            buffer.compact();
+            buffer.flip();
         }
     }
 

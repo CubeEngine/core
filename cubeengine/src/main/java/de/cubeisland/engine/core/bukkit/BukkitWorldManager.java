@@ -129,6 +129,8 @@ public class BukkitWorldManager extends AbstractWorldManager
         {
             return false;
         }
+        // TODO this sometimes throws java.nio.file.FileSystemException when world-files are still used WHY??? should be unloaded
+        // a Stacktrace: http://pastie.org/private/2xxfktrhnr3r7dw3vc42ua
         FileUtil.deleteRecursive(world.getWorldFolder().toPath());
         return true;
     }
