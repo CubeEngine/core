@@ -145,13 +145,11 @@ public class FileUtil
         StringBuilder builder = new StringBuilder();
 
         ByteBuffer buffer = ByteBuffer.allocate(2048);
-        while (in.read(buffer) >= 0 || buffer.position() > 0)
+        while (in.read(buffer) != -1)
         {
-            buffer.flip();
             builder.append(new String(buffer.array(), 0, buffer.position(), charset));
-            buffer.compact();
+            buffer.flip();
         }
-
         return builder.toString();
     }
 
@@ -208,7 +206,7 @@ public class FileUtil
     public static void copy(ReadableByteChannel in, WritableByteChannel out) throws IOException
     {
         final ByteBuffer buffer = ByteBuffer.allocateDirect(1024 * 4);
-
+        // TODO test if this works
         while (in.read(buffer) >= 0 || buffer.position() > 0)
         {
             buffer.flip();
