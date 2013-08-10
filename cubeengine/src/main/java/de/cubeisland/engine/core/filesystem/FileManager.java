@@ -23,18 +23,20 @@ import java.io.InputStream;
 import java.nio.channels.Channels;
 import java.nio.channels.FileChannel;
 import java.nio.channels.ReadableByteChannel;
-import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.attribute.FileAttribute;
+import java.nio.file.attribute.PosixFileAttributeView;
+import java.nio.file.attribute.PosixFilePermissions;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
-import de.cubeisland.engine.core.Core;
 import de.cubeisland.engine.core.CubeEngine;
 import de.cubeisland.engine.core.filesystem.FileUtil.RecursiveDirectoryDeleter;
 import de.cubeisland.engine.core.util.Cleanable;
-import org.slf4j.Logger;
 
 /**
  * Manages all the configurations of the CubeEngine.
@@ -49,24 +51,34 @@ public class FileManager implements Cleanable
     private final Path tempPath;
     private ConcurrentMap<Path, Resource> fileSources;
 
-    public FileManager(Core core, Path dataPath) throws IOException
+    public FileManager(Logger logger, Path dataPath) throws IOException
     {
         assert dataPath != null : "The CubeEngine plugin folder must not be null!";
         dataPath = dataPath.toAbsolutePath().toRealPath();
 
-        this.logger = core.getLog();
+        this.logger = logger;
 
-        this.dataPath = Files.createDirectories(dataPath, FileUtil.DEFAULT_FOLDER_PERMS);
+        FileAttribute<?>[] attributes;
+        if (Files.getFileAttributeView(dataPath, PosixFileAttributeView.class) != null)
+        {
+            attributes = new FileAttribute[] {PosixFilePermissions.asFileAttribute(FileUtil.DEFAULT_FOLDER_PERMS)};
+        }
+        else
+        {
+            attributes = new FileAttribute[0];
+        }
+
+        this.dataPath = Files.createDirectories(dataPath, attributes);
 
         final Path linkSource = Paths.get(System.getProperty("user.dir", "."), CubeEngine.class.getSimpleName());
 
-        this.languagePath = Files.createDirectories(dataPath.resolve("language"), FileUtil.DEFAULT_FOLDER_PERMS);
+        this.languagePath = Files.createDirectories(dataPath.resolve("language"), attributes);
 
-        this.logPath = Files.createDirectories(dataPath.resolve("log"), FileUtil.DEFAULT_FOLDER_PERMS);
+        this.logPath = Files.createDirectories(dataPath.resolve("log"), attributes);
 
-        this.modulesPath = Files.createDirectories(dataPath.resolve("modules"), FileUtil.DEFAULT_FOLDER_PERMS);
+        this.modulesPath = Files.createDirectories(dataPath.resolve("modules"), attributes);
 
-        this.tempPath = Files.createDirectories(dataPath.resolve("language"), FileUtil.DEFAULT_FOLDER_PERMS);
+        this.tempPath = Files.createDirectories(dataPath.resolve("temp"), attributes);
 
         this.fileSources = new ConcurrentHashMap<>();
 
@@ -135,14 +147,14 @@ public class FileManager implements Cleanable
 
     public void clearTempDir()
     {
-        logger.debug("Clearing the temporary folder '{}'...", this.tempPath.toAbsolutePath());
+        logger.log(Level.INFO, "Clearing the temporary folder '%s'...", this.tempPath.toAbsolutePath());
         if (!Files.exists(this.tempPath))
         {
             return;
         }
         if (!Files.isDirectory(this.tempPath))
         {
-            logger.warn("The path '{}' is not a directory!", this.tempPath.toAbsolutePath());
+            logger.log(Level.WARNING, "The path '%s' is not a directory!", this.tempPath.toAbsolutePath());
             return;
         }
 
@@ -152,11 +164,11 @@ public class FileManager implements Cleanable
         }
         catch (IOException e)
         {
-            this.logger.warn("Failed to clear the temp directory!", e);
+            this.logger.log(Level.WARNING, "Failed to clear the temp directory!", e);
             return;
         }
 
-        logger.debug("Temporary folder cleared!");
+        logger.info("Temporary folder cleared!");
     }
 
     private static String getSaneSource(Resource resource)
@@ -205,6 +217,7 @@ public class FileManager implements Cleanable
         }
         catch (IOException e)
         {
+            e.printStackTrace();
             return null;
         }
     }
@@ -245,7 +258,7 @@ public class FileManager implements Cleanable
         }
         if (Files.exists(file) && !overwrite)
         {
-            throw new FileAlreadyExistsException(file.toString());
+            return file; // return corresponding file
         }
 
         Files.createDirectories(file.getParent());
@@ -263,7 +276,7 @@ public class FileManager implements Cleanable
                 }
                 catch (IOException e)
                 {
-                    logger.error(e.getMessage(), e);
+                    logger.log(Level.SEVERE, e.getMessage(), e);
                 }
             }
         }

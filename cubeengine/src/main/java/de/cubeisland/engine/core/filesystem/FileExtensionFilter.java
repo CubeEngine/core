@@ -50,13 +50,13 @@ public class FileExtensionFilter implements Filter<Path>, FileFilter, FilenameFi
     @Override
     public boolean accept(Path entry) throws IOException
     {
-        return Files.isRegularFile(entry) && entry.endsWith(this.extention);
+        return Files.isRegularFile(entry) && entry.toString().endsWith(this.extention); // Path.endsWith() does not only check the extension but the whole fileName
     }
 
     @Override
     public boolean accept(File file)
     {
-        return (file.isFile() && file.getPath().endsWith(this.extention));
+        return (file.isFile() && file.toString().endsWith(this.extention));
     }
 
     @Override

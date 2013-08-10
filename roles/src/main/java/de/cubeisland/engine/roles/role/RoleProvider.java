@@ -37,6 +37,7 @@ import de.cubeisland.engine.roles.exception.CircularRoleDependencyException;
 import gnu.trove.map.hash.THashMap;
 import org.jooq.types.UInteger;
 
+import static de.cubeisland.engine.core.filesystem.FileExtensionFilter.YAML;
 import static de.cubeisland.engine.roles.storage.TableRole.TABLE_ROLE;
 
 

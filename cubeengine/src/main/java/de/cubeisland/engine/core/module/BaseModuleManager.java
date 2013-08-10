@@ -135,7 +135,7 @@ public abstract class BaseModuleManager implements ModuleManager
     public synchronized void loadModules(Path directory)
     {
         assert directory != null: "The directory must not be null!";
-        assert directory.isDirectory(): "The given File is no directory!";
+        assert Files.isDirectory(directory): "The given File is no directory!";
 
         Module module;
         ModuleInfo info;

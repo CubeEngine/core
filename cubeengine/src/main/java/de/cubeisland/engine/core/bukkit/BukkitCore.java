@@ -73,6 +73,7 @@ import de.cubeisland.engine.core.service.ServiceManager;
 import de.cubeisland.engine.core.storage.database.Database;
 import de.cubeisland.engine.core.storage.database.mysql.MySQLDatabase;
 import de.cubeisland.engine.core.user.TableUser;
+import de.cubeisland.engine.core.util.FreezeDetection;
 import de.cubeisland.engine.core.util.InventoryGuardFactory;
 import de.cubeisland.engine.core.util.Profiler;
 import de.cubeisland.engine.core.util.Version;
@@ -254,10 +255,6 @@ public final class BukkitCore extends JavaPlugin implements Core
         }
 
         this.packetEventManager = new PacketEventManager(this.logger);
-        if (!PacketHookInjector.register(this))
-        {
-            this.logger.warn("Failed to register the packet hook, some features might not work.");
-        }
 
         // depends on: object mapper
         this.apiServer = new ApiServer(this);
@@ -279,7 +276,7 @@ public final class BukkitCore extends JavaPlugin implements Core
         }
 
         // depends on: core config, file manager, task manager
-        this.database = MySQLDatabase.loadFromConfig(this, new File(this.fileManager.getDataFolder(), "database.yml"));
+        this.database = MySQLDatabase.loadFromConfig(this, this.fileManager.getDataPath().resolve("database.yml"));
         if (this.database == null)
         {
             return;
@@ -363,6 +360,10 @@ public final class BukkitCore extends JavaPlugin implements Core
         {
             this.getServer().getPluginManager().disablePlugin(this);
             return;
+        }
+        if (!PacketHookInjector.register(this))
+        {
+            this.logger.warn("Failed to register the packet hook, some features might not work.");
         }
         Iterator< Runnable > it = this.initHooks.iterator();
         while (it.hasNext())

@@ -25,6 +25,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
 import java.sql.Timestamp;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -36,7 +37,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 import de.cubeisland.engine.core.Core;
 import de.cubeisland.engine.core.command.CommandSender;
-import de.cubeisland.engine.core.filesystem.FileManager;
+import de.cubeisland.engine.core.filesystem.FileUtil;
 import de.cubeisland.engine.core.module.Module;
 import de.cubeisland.engine.core.permission.Permission;
 import de.cubeisland.engine.core.storage.database.Database;

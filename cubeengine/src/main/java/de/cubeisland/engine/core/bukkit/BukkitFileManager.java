@@ -41,7 +41,7 @@ public class BukkitFileManager extends FileManager
 
     public BukkitFileManager(BukkitCore core) throws IOException
     {
-        super(core, core.getDataFolder().toPath());
+        super(core.getLogger(), core.getDataFolder().toPath());
         this.core = core;
     }
 

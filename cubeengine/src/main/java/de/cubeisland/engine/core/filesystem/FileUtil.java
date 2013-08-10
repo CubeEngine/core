@@ -32,7 +32,6 @@ import java.nio.file.Path;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.nio.file.attribute.DosFileAttributeView;
-import java.nio.file.attribute.FileAttribute;
 import java.nio.file.attribute.PosixFileAttributeView;
 import java.nio.file.attribute.PosixFilePermission;
 import java.nio.file.attribute.PosixFilePermissions;
@@ -43,7 +42,6 @@ import java.util.Set;
 import de.cubeisland.engine.core.Core;
 import de.cubeisland.engine.core.CubeEngine;
 
-import static java.nio.file.attribute.PosixFilePermissions.asFileAttribute;
 import static java.nio.file.attribute.PosixFilePermissions.fromString;
 
 
@@ -53,8 +51,8 @@ import static java.nio.file.attribute.PosixFilePermissions.fromString;
  */
 public class FileUtil
 {
-    public static final FileAttribute<Set<PosixFilePermission>> DEFAULT_FOLDER_PERMS = asFileAttribute(fromString("rwxrwxr-x"));
-    private static final Set<PosixFilePermission> READ_ONLY_PERM = PosixFilePermissions.fromString("--r--r---");
+    public static final Set<PosixFilePermission> DEFAULT_FOLDER_PERMS = fromString("rwxrwxr-x");
+    private static final Set<PosixFilePermission> READ_ONLY_PERM = PosixFilePermissions.fromString("r--r-----");
     private static final RecursiveDirectoryDeleter TREE_WALKER = new RecursiveDirectoryDeleter();
 
     /**

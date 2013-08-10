@@ -17,7 +17,7 @@
  */
 package de.cubeisland.engine.core.storage.database.mysql;
 
-import java.io.File;
+import java.nio.file.Path;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
@@ -76,7 +76,7 @@ public class MySQLDatabase extends AbstractPooledDatabase
         tableprefix = this.config.tablePrefix;
     }
 
-    public static MySQLDatabase loadFromConfig(Core core, File file)
+    public static MySQLDatabase loadFromConfig(Core core, Path file)
     {
         MySQLDatabaseConfiguration config = Configuration.load(MySQLDatabaseConfiguration.class, file);
         try

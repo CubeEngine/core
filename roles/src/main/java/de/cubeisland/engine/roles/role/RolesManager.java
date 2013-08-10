@@ -29,6 +29,7 @@ import java.util.concurrent.TimeUnit;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
 
+import de.cubeisland.engine.core.module.ModuleManager;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.util.Profiler;
 import de.cubeisland.engine.core.util.Triplet;
@@ -63,7 +64,7 @@ public class RolesManager
         this.module = module;
         this.dsl = module.getCore().getDB().getDSL();
         this.wm = module.getCore().getWorldManager();
-        this.rolesFolder = new File(module.getFolder(),"roles");
+        this.rolesFolder = module.getFolder().resolve("roles");
     }
 
     public void initRoleProviders()
