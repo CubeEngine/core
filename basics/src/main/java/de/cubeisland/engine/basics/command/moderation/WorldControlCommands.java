@@ -18,7 +18,6 @@
 package de.cubeisland.engine.basics.command.moderation;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import org.bukkit.Location;
@@ -30,6 +29,9 @@ import org.bukkit.entity.Item;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 
+import de.cubeisland.engine.basics.Basics;
+import de.cubeisland.engine.basics.BasicsConfiguration;
+import de.cubeisland.engine.basics.BasicsPerm;
 import de.cubeisland.engine.core.command.parameterized.Flag;
 import de.cubeisland.engine.core.command.parameterized.Param;
 import de.cubeisland.engine.core.command.parameterized.ParameterizedContext;
@@ -38,9 +40,6 @@ import de.cubeisland.engine.core.command.reflected.Command;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.util.StringUtils;
 import de.cubeisland.engine.core.util.matcher.Match;
-import de.cubeisland.engine.basics.Basics;
-import de.cubeisland.engine.basics.BasicsConfiguration;
-import de.cubeisland.engine.basics.BasicsPerm;
 
 import static de.cubeisland.engine.basics.command.moderation.EntityRemoval.DIRECT_ENTITY_REMOVAL;
 import static de.cubeisland.engine.basics.command.moderation.EntityRemoval.GROUPED_ENTITY_REMOVAL;
@@ -321,7 +320,7 @@ public class WorldControlCommands
             lightning = true;
         }
         List<Entity> list;
-        if (context.getSender() instanceof User)
+        if (context.getSender() instanceof User && !(radius == -1))
         {
             list = ((User)context.getSender()).getNearbyEntities(radius, radius, radius);
         }
@@ -364,17 +363,17 @@ public class WorldControlCommands
                     }
                     if (DIRECT_ENTITY_REMOVAL.get(directEntityMatch) == null) throw new IllegalStateException("Missing Entity? " + directEntityMatch);
                 }
+                EntityRemoval entityRemoval;
+                if (directEntityMatch != null)
+                {
+                    entityRemoval = DIRECT_ENTITY_REMOVAL.get(directEntityMatch);
+                }
+                else
+                {
+                    entityRemoval = GROUPED_ENTITY_REMOVAL.get(match);
+                }
                 for (Entity entity : list)
                 {
-                    EntityRemoval entityRemoval;
-                    if (directEntityMatch != null)
-                    {
-                        entityRemoval = DIRECT_ENTITY_REMOVAL.get(directEntityMatch);
-                    }
-                    else
-                    {
-                        entityRemoval = GROUPED_ENTITY_REMOVAL.get(match);
-                    }
                     if (entityRemoval.doesMatch(entity) && entityRemoval.isAllowed(context.getSender()))
                     {
                         remList.add(entity);
@@ -386,16 +385,15 @@ public class WorldControlCommands
         {
             remList.addAll(list);
         }
-        Iterator<Entity> iterator = remList.iterator();
-        while (iterator.hasNext())
+        list = new ArrayList<>();
+        for (Entity entity : remList)
         {
-            Entity next = iterator.next();
-            if (!next.getType().isAlive())
+            if (entity.getType().isAlive())
             {
-                remList.remove(next);
+                list.add(entity);
             }
         }
-        removed = this.removeEntities(remList, loc, radius, lightning);
+        removed = this.removeEntities(list, loc, radius, lightning);
         context.sendTranslated(removed == 0 ? "&eNothing to butcher!" : "&aYou just slaughtered &e%d &aliving entities!", removed);
     }
 

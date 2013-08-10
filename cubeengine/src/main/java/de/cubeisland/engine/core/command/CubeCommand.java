@@ -279,7 +279,7 @@ public abstract class CubeCommand extends Command
      */
     public String getUsage(CommandSender sender)
     {
-        return sender instanceof User ? "/" : "" + this
+        return (sender instanceof User ? "/" : "") + this
             .implodeCommandParentNames(" ") + ' ' + replaceSemiOptionalArgs(sender, sender.translate(super.getUsage()));
     }
 
@@ -293,7 +293,7 @@ public abstract class CubeCommand extends Command
     public String getUsage(CommandContext context)
     {
         final CommandSender sender = context.getSender();
-        return sender instanceof User ? "/" : "" + StringUtils
+        return (sender instanceof User ? "/" : "") + StringUtils
             .implode(" ", context.getLabels()) + ' ' + replaceSemiOptionalArgs(sender, sender
             .translate(super.getUsage()));
     }
