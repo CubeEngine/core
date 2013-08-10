@@ -65,7 +65,7 @@ public abstract class AbstractWorldManager implements WorldManager
         WorldEntity worldEntity = this.worlds.get(world.getName());
         if (worldEntity == null)
         {
-            worldEntity = dsl.selectFrom(TABLE_WORLD).where(TABLE_WORLD.WORLDUUID.eq(world.getUID().toString())).fetchOne().into(TABLE_WORLD);
+            worldEntity = dsl.selectFrom(TABLE_WORLD).where(TABLE_WORLD.WORLDUUID.eq(world.getUID().toString())).fetchOne();
             if (worldEntity == null)
             {
                 worldEntity = dsl.newRecord(TABLE_WORLD).newWorld(world);
