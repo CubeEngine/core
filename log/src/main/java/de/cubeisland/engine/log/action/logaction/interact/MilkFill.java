@@ -39,7 +39,7 @@ public class MilkFill extends SimpleLogActionType
     @Override
     protected Set<ActionTypeCategory> getCategories()
     {
-        return new HashSet<ActionTypeCategory>(Arrays.asList(BUCKET, PLAYER, ENTITY));
+        return new HashSet<>(Arrays.asList(BUCKET, PLAYER, ENTITY));
     }
 
     @Override

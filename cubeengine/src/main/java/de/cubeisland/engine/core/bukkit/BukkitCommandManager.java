@@ -57,7 +57,7 @@ public class BukkitCommandManager implements CommandManager
         this.server = core.getServer();
         this.consoleSender = new ConsoleCommandSender(core);
         this.commandBackend = commandBackend;
-        this.commandFactories = new THashMap<Class<? extends CubeCommand>, CommandFactory>();
+        this.commandFactories = new THashMap<>();
 
         this.commandLogger = LoggerFactory.getLogger("cubeengine.commands");
         // TODO

@@ -150,7 +150,7 @@ public class Kit
 
     private List<ItemStack> getItems()
     {
-        List<ItemStack> list = new ArrayList<ItemStack>();
+        List<ItemStack> list = new ArrayList<>();
         for (KitItem kitItem : this.items)
         {
             ItemStack item = new ItemStack(kitItem.mat, kitItem.amount, kitItem.dura);
@@ -316,7 +316,7 @@ public class Kit
         @Override
         public Set<PermissionAttachmentInfo> getEffectivePermissions()
         {
-            return new HashSet<PermissionAttachmentInfo>();
+            return new HashSet<>();
         }
 
         @Override

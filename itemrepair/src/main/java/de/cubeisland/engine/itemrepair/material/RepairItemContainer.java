@@ -29,7 +29,7 @@ import static org.bukkit.Material.*;
 
 public class RepairItemContainer
 {
-    private final Map<Material, RepairItem> repairItems = new EnumMap<Material, RepairItem>(Material.class);
+    private final Map<Material, RepairItem> repairItems = new EnumMap<>(Material.class);
     private final BaseMaterialContainer baseMat;
 
     public RepairItemContainer(BaseMaterialContainer baseMat)
@@ -104,7 +104,7 @@ public class RepairItemContainer
 
     public Map<Integer, ItemStack> getRepairableItems(Inventory inventory)
     {
-        Map<Integer, ItemStack> items = new HashMap<Integer, ItemStack>();
+        Map<Integer, ItemStack> items = new HashMap<>();
 
         ItemStack item;
         for (int i = 0; i < inventory.getSize(); ++i)

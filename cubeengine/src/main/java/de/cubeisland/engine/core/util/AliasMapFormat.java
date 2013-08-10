@@ -17,9 +17,9 @@
  */
 package de.cubeisland.engine.core.util;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.TreeMap;
@@ -31,7 +31,7 @@ import de.cubeisland.engine.core.filesystem.FileUtil;
  */
 public class AliasMapFormat
 {
-    public static boolean parseStringList(File file, TreeMap<String, List<String>> map, boolean update) throws IOException
+    public static boolean parseStringList(Path file, TreeMap<String, List<String>> map, boolean update) throws IOException
     {
         return parseStringList(FileUtil.readStringList(file), map, update);
     }
@@ -46,7 +46,7 @@ public class AliasMapFormat
         assert input != null: "Invalid input! File or Reader was null!";
         assert map != null: "Map to parse into was null!";
         boolean updated = false;
-        ArrayList<String> names = new ArrayList<String>();
+        ArrayList<String> names = new ArrayList<>();
         for (String line : input)
         {
             line = line.trim();
@@ -57,7 +57,7 @@ public class AliasMapFormat
             if (line.endsWith(":"))
             {
                 String key = line.substring(0, line.length() - 1);
-                names = new ArrayList<String>();
+                names = new ArrayList<>();
                 if (!update)
                 {
                     map.put(key, names);
@@ -79,7 +79,7 @@ public class AliasMapFormat
         return updated;
     }
 
-    public static void parseAndSaveStringListMap(TreeMap<String, List<String>> map, File file) throws IOException
+    public static void parseAndSaveStringListMap(TreeMap<String, List<String>> map, Path file) throws IOException
     {
         StringBuilder sb = new StringBuilder();
         for (String key : map.keySet())

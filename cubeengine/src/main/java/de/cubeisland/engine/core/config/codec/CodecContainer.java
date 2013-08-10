@@ -17,20 +17,21 @@
  */
 package de.cubeisland.engine.core.config.codec;
 
-import java.io.File;
-import java.io.FileOutputStream;
+import java.io.BufferedWriter;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStreamWriter;
+import java.io.Reader;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import de.cubeisland.engine.core.Core;
 import de.cubeisland.engine.core.config.Configuration;
 import de.cubeisland.engine.core.config.InvalidConfigurationException;
 import de.cubeisland.engine.core.config.annotations.Comment;
@@ -45,7 +46,6 @@ import de.cubeisland.engine.core.config.node.StringNode;
 import de.cubeisland.engine.core.util.StringUtils;
 import de.cubeisland.engine.core.util.convert.Convert;
 import de.cubeisland.engine.core.util.convert.converter.generic.MapConverter;
-
 import gnu.trove.map.hash.THashMap;
 
 /**
@@ -67,7 +67,7 @@ public class CodecContainer<ConfigCodec extends ConfigurationCodec>
      */
     public CodecContainer(ConfigCodec codec)
     {
-        this.comments = new THashMap<String, String>();
+        this.comments = new THashMap<>();
         this.codec = codec;
     }
 
@@ -86,11 +86,11 @@ public class CodecContainer<ConfigCodec extends ConfigurationCodec>
     /**
      * Fills the map with values form the inputStream
      *
-     * @param is an InputStream
+     * @param reader an InputStream
      */
-    public void fillFromInputStream(InputStream is)
+    public void fillFromReader(Reader reader)
     {
-        codec.loadFromInputStream(this, is);
+        codec.loadFromReader(this, reader);
     }
 
     protected static final int NORMAL_FIELD = 0;
@@ -303,12 +303,12 @@ public class CodecContainer<ConfigCodec extends ConfigurationCodec>
      * @param file the file to save to
      * @throws java.io.IOException
      */
-    protected void saveIntoFile(Configuration config, File file) throws IOException
+    protected void saveIntoFile(Configuration config, Path file) throws IOException
     {
-        OutputStreamWriter writer = new OutputStreamWriter(new FileOutputStream(file), "UTF-8");
-        writer.append(this.dumpIntoString(config));
-        writer.flush();
-        writer.close();
+        try (BufferedWriter writer = Files.newBufferedWriter(file, Core.CHARSET))
+        {
+            writer.append(this.dumpIntoString(config));
+        }
     }
 
     /**
@@ -454,7 +454,7 @@ public class CodecContainer<ConfigCodec extends ConfigurationCodec>
                 {
                     throw InvalidConfigurationException.of(
                         "Error while dumping loaded config into fields!" ,
-                        config.getFile(), path, config.getClass(), field, e);
+                        config.getPath(), path, config.getClass(), field, e);
                 }
             }
 

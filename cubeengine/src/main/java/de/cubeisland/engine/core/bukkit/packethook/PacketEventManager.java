@@ -43,8 +43,8 @@ public class PacketEventManager implements Cleanable
     public PacketEventManager(Logger logger)
     {
         this.logger = logger;
-        this.receivedListeners = new TIntObjectHashMap<List<PacketReceivedListener>>();
-        this.sentListeners = new TIntObjectHashMap<List<PacketSentListener>>();
+        this.receivedListeners = new TIntObjectHashMap<>();
+        this.sentListeners = new TIntObjectHashMap<>();
         this.addReceivedListener(204, new PacketReceivedListener()
         {
             @Override
@@ -68,7 +68,7 @@ public class PacketEventManager implements Cleanable
         List<PacketReceivedListener> listeners = this.receivedListeners.get(packetId);
         if (listeners == null)
         {
-            this.receivedListeners.put(packetId, listeners = new LinkedList<PacketReceivedListener>());
+            this.receivedListeners.put(packetId, listeners = new LinkedList<>());
         }
         listeners.add(listener);
     }
@@ -86,7 +86,7 @@ public class PacketEventManager implements Cleanable
         List<PacketSentListener> listeners = this.sentListeners.get(packetId);
         if (listeners == null)
         {
-            this.sentListeners.put(packetId, listeners = new LinkedList<PacketSentListener>());
+            this.sentListeners.put(packetId, listeners = new LinkedList<>());
         }
         listeners.add(listener);
     }

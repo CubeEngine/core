@@ -37,7 +37,7 @@ import de.cubeisland.engine.core.user.UserManager;
 public class FlyListener implements Listener
 {
     private UserManager usermanager;
-    private HashMap<Player, Task> tasks = new HashMap<Player, Task>();
+    private HashMap<Player, Task> tasks = new HashMap<>();
     private Fly fly;
     private final Location helperLocation = new Location(null, 0, 0, 0);
 

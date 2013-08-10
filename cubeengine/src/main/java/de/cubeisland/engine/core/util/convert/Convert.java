@@ -94,7 +94,7 @@ public class Convert
             return;
         }
 
-        converters = new ConcurrentHashMap<Class, Converter>();
+        converters = new ConcurrentHashMap<>();
         mapConverter = new MapConverter();
         arrayConverter = new ArrayConverter();
         collectionConverter = new CollectionConverter();

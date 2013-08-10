@@ -40,8 +40,8 @@ public class ConfirmManager
     public ConfirmManager(CommandManager commandManager, Core core)
     {
         this.core = core;
-        this.pendingConfirmations = new HashMap<CommandSender, Queue<ConfirmResult>>();
-        confirmationTimeoutTasks = new HashMap<CommandSender, Queue<Pair<Module, Integer>>>();
+        this.pendingConfirmations = new HashMap<>();
+        confirmationTimeoutTasks = new HashMap<>();
         commandManager.registerCommand(new ConfirmCommand(core.getModuleManager()
                                                               .getCoreModule(), new BasicContextFactory(new ArgBounds(0, 0)), this));
     }
@@ -60,7 +60,7 @@ public class ConfirmManager
         Queue<ConfirmResult> pendingConfirmations = this.pendingConfirmations.get(sender);
         if (pendingConfirmations == null)
         {
-            pendingConfirmations = new LinkedList<ConfirmResult>();
+            pendingConfirmations = new LinkedList<>();
         }
         pendingConfirmations.add(confirmResult);
         this.pendingConfirmations.put(sender, pendingConfirmations);
@@ -68,9 +68,9 @@ public class ConfirmManager
         Queue<Pair<Module, Integer>> confirmationTimeoutTasks = this.confirmationTimeoutTasks.get(sender);
         if (confirmationTimeoutTasks == null)
         {
-            confirmationTimeoutTasks = new LinkedList<Pair<Module, Integer>>();
+            confirmationTimeoutTasks = new LinkedList<>();
         }
-        confirmationTimeoutTasks.add(new Pair<Module, Integer>(module, this.core.getTaskManager()
+        confirmationTimeoutTasks.add(new Pair<>(module, this.core.getTaskManager()
                                                                                 .runTaskDelayed(module, new ConfirmationTimeoutTask(sender), CONFIRM_TIMEOUT)));
         this.confirmationTimeoutTasks.put(sender, confirmationTimeoutTasks);
     }
@@ -107,7 +107,7 @@ public class ConfirmManager
         Queue<Pair<Module, Integer>> confirmationTimeoutTasks = this.confirmationTimeoutTasks.get(sender);
         if (confirmationTimeoutTasks == null)
         {
-            confirmationTimeoutTasks = new LinkedList<Pair<Module, Integer>>();
+            confirmationTimeoutTasks = new LinkedList<>();
         }
         Pair<Module, Integer> pair = confirmationTimeoutTasks.poll();
         this.confirmationTimeoutTasks.put(sender, confirmationTimeoutTasks);
@@ -116,7 +116,7 @@ public class ConfirmManager
         Queue<ConfirmResult> pendingConfirmations = this.pendingConfirmations.get(sender);
         if (pendingConfirmations == null)
         {
-            pendingConfirmations = new LinkedList<ConfirmResult>();
+            pendingConfirmations = new LinkedList<>();
         }
         this.pendingConfirmations.put(sender, pendingConfirmations);
         return pendingConfirmations.poll();

@@ -88,7 +88,7 @@ public class InviteManager
      */
     public Set<User> getInvitedUsers(TeleportPointModel tPP)
     {
-        Set<User> invitedUsers = new HashSet<User>();
+        Set<User> invitedUsers = new HashSet<>();
         for (String name : getInvited(tPP))
         {
             User user = CubeEngine.getUserManager().findOnlineUser(name);

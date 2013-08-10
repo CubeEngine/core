@@ -40,7 +40,7 @@ public class ChatFormatEvent extends Event
         this.player = player;
         this.message = message;
         this.format = format;
-        this.variables = new HashMap<String, String>();
+        this.variables = new HashMap<>();
     }
 
     public Player getPlayer()

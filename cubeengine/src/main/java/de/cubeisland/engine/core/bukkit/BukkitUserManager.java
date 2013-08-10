@@ -91,7 +91,7 @@ public class BukkitUserManager extends AbstractUserManager
         if (user == null)
         {
             //Get all online Player and searching for similar names
-            ArrayList<String> onlinePlayerList = new ArrayList<String>();
+            ArrayList<String> onlinePlayerList = new ArrayList<>();
             for (Player player : this.core.getServer().getOnlinePlayers())
             {
                 onlinePlayerList.add(player.getName());

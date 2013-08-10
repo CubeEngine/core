@@ -17,13 +17,12 @@
  */
 package de.cubeisland.engine.core.i18n;
 
-import java.io.File;
+import java.nio.file.Path;
 import java.util.Locale;
 import java.util.Map;
 
 import de.cubeisland.engine.core.Core;
 import de.cubeisland.engine.core.util.Cleanable;
-
 import gnu.trove.map.hash.THashMap;
 
 /**
@@ -36,10 +35,10 @@ public class NormalLanguage implements Cleanable, Language
     private final String localName;
     private final Language parent;
     private final Map<String, String> messages;
-    private final File messageDir;
+    private final Path messageDir;
     private final Locale locale;
 
-    public NormalLanguage(Core core, LocaleConfig config, File languageDir, Language parent)
+    public NormalLanguage(Core core, LocaleConfig config, Path languagePath, Language parent)
     {
         assert config.locale != null: "The code must not be null!";
         assert config.name != null: "The name must not be null!";
@@ -51,8 +50,8 @@ public class NormalLanguage implements Cleanable, Language
         this.localName = config.localName;
         this.locale = config.locale;
         this.parent = parent;
-        this.messageDir = new File(languageDir, I18n.localeToString(this.locale));
-        this.messages = new THashMap<String, String>();
+        this.messageDir = languagePath.resolve(I18n.localeToString(this.locale));
+        this.messages = new THashMap<>();
     }
 
     @Override
@@ -102,7 +101,7 @@ public class NormalLanguage implements Cleanable, Language
     @Override
     public Map<String, String> getMessages()
     {
-        return new THashMap<String, String>(this.messages);
+        return new THashMap<>(this.messages);
     }
 
     /**
@@ -146,7 +145,7 @@ public class NormalLanguage implements Cleanable, Language
     }
 
     @SuppressWarnings("unchecked")
-    private Map<String, String> updateMessages(File messageFile, Map<String, String> catMessages)
+    private Map<String, String> updateMessages(Path messageFile, Map<String, String> catMessages)
     {
         /*
         InputStream resource = CubeEngine.getFileManager().getSourceOf(messageFile);

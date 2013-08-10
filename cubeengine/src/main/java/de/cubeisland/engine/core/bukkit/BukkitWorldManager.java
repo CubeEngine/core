@@ -29,7 +29,7 @@ import org.bukkit.World;
 import org.bukkit.WorldCreator;
 
 import de.cubeisland.engine.core.CubeEngine;
-import de.cubeisland.engine.core.filesystem.FileManager;
+import de.cubeisland.engine.core.filesystem.FileUtil;
 import de.cubeisland.engine.core.world.AbstractWorldManager;
 import de.cubeisland.engine.core.world.WorldEntity;
 import gnu.trove.set.hash.THashSet;
@@ -129,7 +129,7 @@ public class BukkitWorldManager extends AbstractWorldManager
         {
             return false;
         }
-        FileManager.deleteRecursive(world.getWorldFolder());
+        FileUtil.deleteRecursive(world.getWorldFolder().toPath());
         return true;
     }
 

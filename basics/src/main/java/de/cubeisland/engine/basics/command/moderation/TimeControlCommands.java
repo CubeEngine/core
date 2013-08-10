@@ -97,8 +97,8 @@ public class TimeControlCommands
         public static final int LIGHT_SHIFT = HALF_DAY / 2;
         public static final double TICKS_TO_MINUTES = (double)TICKS_PER_DAY / 1440D;
         private static final Pattern PARSE_TIME_PATTERN = Pattern.compile("^([012]?\\d)(?::(\\d{2}))?(pm|am)?$", Pattern.CASE_INSENSITIVE);
-        private static final THashMap<String, Time> times = new THashMap<String, Time>(values().length);
-        private static final TLongObjectHashMap<String> timeNames = new TLongObjectHashMap<String>();
+        private static final THashMap<String, Time> times = new THashMap<>(values().length);
+        private static final TLongObjectHashMap<String> timeNames = new TLongObjectHashMap<>();
         private final String[] names;
         private final long time;
 
@@ -267,7 +267,7 @@ public class TimeControlCommands
                 else
                 {
                     String[] worldNames = StringUtils.explode(",", context.getString(1));
-                    worlds = new ArrayList<World>();
+                    worlds = new ArrayList<>();
                     for (String worldName : worldNames)
                     {
                         World world = Bukkit.getWorld(worldName);
@@ -290,7 +290,7 @@ public class TimeControlCommands
             }
             else
             {
-                worlds = new ArrayList<World>();
+                worlds = new ArrayList<>();
                 worlds.add(sender.getWorld());
             }
             if (worlds.size() == 1)
@@ -421,7 +421,7 @@ public class TimeControlCommands
     private final class LockTask implements Runnable
     {
 
-        private final Map<String, Long> worlds = new HashMap<String, Long>();
+        private final Map<String, Long> worlds = new HashMap<>();
         private int taskid = -1;
 
         public void add(World world)

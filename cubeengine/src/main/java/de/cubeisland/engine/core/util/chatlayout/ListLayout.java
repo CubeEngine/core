@@ -50,17 +50,17 @@ public class ListLayout extends AbstractChatLayout<List<String>>
         }
 
         final int maxLen = MAX_CHAT_WIDTH - this.bullet.length();
-        List<String> lines = new LinkedList<String>();
+        List<String> lines = new LinkedList<>();
         final String spacer = StringUtils.repeat(" ", this.bullet.length());
 
         for (String entry : data)
         {
             List<String> parts = this.splitUp(entry, maxLen);
-            Iterator<String> iter = parts.iterator();
-            lines.add(this.bullet + iter.next());
-            while (iter.hasNext())
+            Iterator<String> it = parts.iterator();
+            lines.add(this.bullet + it.next());
+            while (it.hasNext())
             {
-                lines.add(spacer + iter.next());
+                lines.add(spacer + it.next());
             }
         }
 

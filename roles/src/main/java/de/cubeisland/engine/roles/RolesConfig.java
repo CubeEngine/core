@@ -45,7 +45,7 @@ public class RolesConfig extends Configuration
                  "      - guest\n" +
                  "    world_the_end\n" +
                  "      - guest_in_the_end")
-    public Map<String, Set<String>> defaultRoles = new HashMap<String, Set<String>>();
+    public Map<String, Set<String>> defaultRoles = new HashMap<>();
     @Comment("The following configuration would mirror \n" +
              "roles, assigned roles and directly assigned data\n" +
              "to the user from world to the end and the nether:\n"+
@@ -60,5 +60,5 @@ public class RolesConfig extends Configuration
              "      - assigned\n" +
              "      - users\n")
     @Option("mirrors")
-    public List<RoleMirror> mirrors = new ArrayList<RoleMirror>();
+    public List<RoleMirror> mirrors = new ArrayList<>();
 }

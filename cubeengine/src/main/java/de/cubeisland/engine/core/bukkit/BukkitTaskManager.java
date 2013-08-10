@@ -45,7 +45,7 @@ public class BukkitTaskManager implements TaskManager
         this.corePlugin = (BukkitCore)core;
         this.threadFactory = threadFactory;
         this.bukkitScheduler = bukkitScheduler;
-        this.moduleTasks = new ConcurrentHashMap<Module, TIntSet>();
+        this.moduleTasks = new ConcurrentHashMap<>();
     }
 
     private TIntSet getModuleIDs(Module module)

@@ -17,8 +17,8 @@
  */
 package de.cubeisland.engine.core.util.matcher;
 
-import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
 import java.util.EnumMap;
 import java.util.List;
 import java.util.Locale;
@@ -35,9 +35,7 @@ import org.bukkit.entity.Projectile;
 
 import de.cubeisland.engine.core.CoreResource;
 import de.cubeisland.engine.core.CubeEngine;
-
 import de.cubeisland.engine.core.util.AliasMapFormat;
-
 import gnu.trove.map.hash.THashMap;
 
 /**
@@ -45,8 +43,8 @@ import gnu.trove.map.hash.THashMap;
  */
 public class EntityMatcher
 {
-    private final Map<EntityType, String> reverseNameMap = new EnumMap<EntityType, String>(EntityType.class);
-    private final Map<String, EntityType> nameMap = new THashMap<String, EntityType>();
+    private final Map<EntityType, String> reverseNameMap = new EnumMap<>(EntityType.class);
+    private final Map<String, EntityType> nameMap = new THashMap<>();
 
     EntityMatcher()
     {
@@ -83,8 +81,8 @@ public class EntityMatcher
     {
         try
         {
-            File file = new File(CubeEngine.getFileManager().getDataFolder(), CoreResource.ENTITIES.getTarget());
-            TreeMap<String, List<String>> entityList = new TreeMap<String, List<String>>();
+            Path file = CubeEngine.getFileManager().getDataPath().resolve(CoreResource.ENTITIES.getTarget());
+            TreeMap<String, List<String>> entityList = new TreeMap<>();
             AliasMapFormat.parseStringList(file, entityList, false);
             if (AliasMapFormat.parseStringList(CubeEngine.getFileManager().getSourceOf(file), entityList, true))
             {

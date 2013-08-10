@@ -17,11 +17,14 @@
  */
 package de.cubeisland.engine.core.module;
 
-import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -30,14 +33,12 @@ import java.util.jar.JarFile;
 
 import de.cubeisland.engine.core.Core;
 import de.cubeisland.engine.core.config.Configuration;
-import de.cubeisland.engine.core.filesystem.FileManager;
 import de.cubeisland.engine.core.module.event.ModuleLoadedEvent;
 import de.cubeisland.engine.core.module.exception.IncompatibleCoreException;
 import de.cubeisland.engine.core.module.exception.IncompatibleDependencyException;
 import de.cubeisland.engine.core.module.exception.InvalidModuleException;
 import de.cubeisland.engine.core.module.exception.MissingDependencyException;
 import de.cubeisland.engine.core.storage.Registry;
-
 import gnu.trove.set.hash.THashSet;
 import org.slf4j.Logger;
 
@@ -52,7 +53,7 @@ public class ModuleLoader
     private final LibraryClassLoader libClassLoader;
     private final Map<String, ModuleClassLoader> classLoaders;
     protected final String infoFileName;
-    private final File tempFolder;
+    private final Path tempPath;
     private final ModuleLoggerFactory loggerFactory;
     private Registry registry;
 
@@ -61,14 +62,18 @@ public class ModuleLoader
         this.core = core;
         this.parentClassLoader = parentClassLoader;
         this.libClassLoader = new LibraryClassLoader(this.getClass().getClassLoader());
-        this.classLoaders = new HashMap<String, ModuleClassLoader>();
+        this.classLoaders = new HashMap<>();
         this.infoFileName = "module.yml";
-        this.tempFolder = new File(core.getFileManager().getTempDir(), "modules");
+        this.tempPath = core.getFileManager().getTempPath().resolve("modules");
         this.registry = Registry.initTable(core.getDB());
         this.loggerFactory = loggerFactory;
-        if (!this.tempFolder.exists() && !this.tempFolder.mkdir())
+        try
         {
-            throw new RuntimeException("Failed to create a temporary folder for the modules!");
+            Files.createDirectories(this.tempPath);
+        }
+        catch (IOException e)
+        {
+            throw new RuntimeException("Failed to create a temporary folder for the modules!", e);
         }
     }
 
@@ -91,7 +96,7 @@ public class ModuleLoader
      * @throws IncompatibleCoreException if the module depends on a newer core
      * version
      */
-    public synchronized Module loadModule(File file) throws InvalidModuleException, MissingDependencyException, IncompatibleDependencyException, IncompatibleCoreException
+    public synchronized Module loadModule(Path file) throws InvalidModuleException, MissingDependencyException, IncompatibleDependencyException, IncompatibleCoreException
     {
         return this.loadModule(this.loadModuleInfo(file));
     }
@@ -122,17 +127,15 @@ public class ModuleLoader
 
         try
         {
-            File tempFile = new File(this.tempFolder, System.nanoTime() + "_" + info.getFile().getName());
-            tempFile.delete();
-            tempFile.createNewFile();
-            FileManager.copyFile(info.getFile(), tempFile);
+            Path tempFile = this.tempPath.resolve(System.nanoTime() + "_" + info.getPath().getFileName());
+            Files.copy(info.getPath(), tempFile, StandardCopyOption.REPLACE_EXISTING);
 
-            ModuleClassLoader classLoader = new ModuleClassLoader(this, tempFile.toURI().toURL(), info, this.parentClassLoader);
+            ModuleClassLoader classLoader = new ModuleClassLoader(this, tempFile.toUri().toURL(), info, this.parentClassLoader);
             Class<? extends Module> moduleClass = Class.forName(info.getMain(), true, classLoader).asSubclass(Module.class);
             Module module = moduleClass.getConstructor().newInstance();
             Logger logger = this.loggerFactory.getLogger(info);
 
-            module.initialize(this.core, info, new File(info.getFile().getParentFile(), name), this, classLoader, logger);
+            module.initialize(this.core, info, info.getPath().getParent().resolve(name), this, classLoader, logger);
             module.onLoad();
 
             this.core.getEventManager().fireEvent(new ModuleLoadedEvent(this.core, module));
@@ -170,11 +173,11 @@ public class ModuleLoader
      *
      * @throws InvalidModuleException if the file is not a valid module
      */
-    public synchronized ModuleInfo loadModuleInfo(File file) throws InvalidModuleException
+    public synchronized ModuleInfo loadModuleInfo(Path file) throws InvalidModuleException
     {
         assert file != null: "The file most not be null!";
 
-        if (!file.exists())
+        if (!Files.exists(file))
         {
             throw new IllegalArgumentException("The file must exist!");
         }
@@ -182,31 +185,22 @@ public class ModuleLoader
         JarFile jarFile = null;
         try
         {
-            jarFile = new JarFile(file);
+            jarFile = new JarFile(file.toFile());
 
             JarEntry entry = jarFile.getJarEntry(this.infoFileName);
             if (entry == null)
             {
-                throw new InvalidModuleException("The file '" + file.getPath() + "' does not contain a module.yml!");
+                throw new InvalidModuleException("The file '" + file + "' does not contain a module.yml!");
             }
-            InputStream configStream = jarFile.getInputStream(entry);
-            try
+
+            try (Reader reader = new InputStreamReader(jarFile.getInputStream(entry), Core.CHARSET))
             {
-                info = new ModuleInfo(file, Configuration.load(ModuleConfig.class, configStream, null));
-            }
-            finally
-            {
-                try
-                {
-                    configStream.close();
-                }
-                catch (IOException ignored)
-                {}
+                info = new ModuleInfo(file, Configuration.load(ModuleConfig.class, reader, null));
             }
         }
         catch (IOException e)
         {
-            throw new InvalidModuleException("File: " + file.getPath(), e);
+            throw new InvalidModuleException("File: " + file, e);
         }
         finally
         {
@@ -249,7 +243,7 @@ public class ModuleLoader
             return clazz;
         }
 
-        Set<String> alreadyChecked = new THashSet<String>(this.classLoaders.size() / 2);
+        Set<String> alreadyChecked = new THashSet<>(this.classLoaders.size() / 2);
         alreadyChecked.add(info.getId());
 
         for (String dep : info.getSoftDependencies().keySet())
@@ -316,11 +310,11 @@ public class ModuleLoader
      * @param file the file to add
      * @throws MalformedURLException if the file is invalid
      */
-    public void registerLibraryClassPath(File file) throws MalformedURLException
+    public void registerLibraryClassPath(Path file) throws MalformedURLException
     {
         assert file != null: "The file must not be null!";
 
-        this.registerLibraryClassPath(file.toURI().toURL());
+        this.registerLibraryClassPath(file.toUri().toURL());
     }
 
     /**

@@ -17,18 +17,20 @@
  */
 package de.cubeisland.engine.basics.command.moderation.kit;
 
-import java.io.File;
-import java.io.FileFilter;
+import java.io.IOException;
+import java.nio.file.DirectoryStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Locale;
 import java.util.Set;
 
+import de.cubeisland.engine.basics.Basics;
 import de.cubeisland.engine.core.config.Configuration;
-
 import de.cubeisland.engine.core.util.StringUtils;
 import de.cubeisland.engine.core.util.matcher.Match;
-import de.cubeisland.engine.basics.Basics;
-
 import gnu.trove.map.hash.THashMap;
+
+import static de.cubeisland.engine.core.filesystem.FileExtensionFilter.YAML;
 
 public class KitManager
 {
@@ -38,8 +40,8 @@ public class KitManager
         this.module = module;
     }
 
-    private THashMap<String, Kit> kitMap = new THashMap<String, Kit>();
-    private THashMap<Kit, KitConfiguration> kitConfigMap = new THashMap<Kit, KitConfiguration>();
+    private THashMap<String, Kit> kitMap = new THashMap<>();
+    private THashMap<Kit, KitConfiguration> kitConfigMap = new THashMap<>();
 
 
     public Kit getKit(String name)
@@ -62,15 +64,15 @@ public class KitManager
             kitMap.put(kit.getKitName(), kit);
         }
         kit.applyToConfig(config);
-        config.save(new File(module.getFolder(), File.separator + "kits" + File.separator + config.kitName + ".yml"));
+        config.save(module.getFolder().resolve("kits").resolve(config.kitName + ".yml"));
     }
 
-    public void loadKit(File file)
+    public void loadKit(Path file)
     {
         try
         {
             KitConfiguration config = Configuration.load(KitConfiguration.class, file);
-            config.kitName = StringUtils.stripFileExtension(file.getName());
+            config.kitName = StringUtils.stripFileExtension(file.getFileName().toString());
             Kit kit = config.getKit(module);
             kitConfigMap.put(kit, config);
             kitMap.put(config.kitName.toLowerCase(Locale.ENGLISH), kit);
@@ -87,22 +89,21 @@ public class KitManager
 
     public void loadKits()
     {
-        File folder = new File(module.getFolder(), "kits");
-        folder.mkdir();
-        for (File file : folder.listFiles(new FileFilter()
+        Path folder = this.module.getFolder().resolve("kits");
+        try
         {
-            @Override
-            public boolean accept(File pathname)
+            Files.createDirectories(folder);
+            try (DirectoryStream<Path> directory = Files.newDirectoryStream(folder, YAML))
             {
-                if (pathname.getName().endsWith(".yml"))
+                for (Path file : directory)
                 {
-                    return true;
+                    loadKit(file);
                 }
-                return false;
             }
-        }))
+        }
+        catch (IOException e)
         {
-            loadKit(file);
+            this.module.getLog().warn("Failed load the modules!", e);
         }
     }
 

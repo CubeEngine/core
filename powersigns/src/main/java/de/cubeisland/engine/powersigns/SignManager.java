@@ -45,9 +45,9 @@ import static de.cubeisland.engine.powersigns.storage.TablePowerSign.TABLE_POWER
 
 public class SignManager implements Listener
 {
-    private Map<String,SignType> registerdSignTypes = new THashMap<String, SignType>();
+    private Map<String,SignType> registerdSignTypes = new THashMap<>();
 
-    private Map<Location,PowerSign> loadedPowerSigns = new THashMap<Location, PowerSign>();
+    private Map<Location,PowerSign> loadedPowerSigns = new THashMap<>();
     protected Powersigns module;
 
     public final DSLContext dsl;

@@ -24,7 +24,7 @@ import java.util.TreeMap;
 
 public class PermissionTree
 {
-    private Map<String, Boolean> permissions = new TreeMap<String, Boolean>();
+    private Map<String, Boolean> permissions = new TreeMap<>();
 
     private void loadFromMap(Map<String, ?> map, String path)
     {

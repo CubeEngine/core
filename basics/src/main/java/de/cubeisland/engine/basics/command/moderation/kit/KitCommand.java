@@ -73,7 +73,7 @@ public class KitCommand extends ContainerCommand
             context.sendTranslated("&cJust log in or use the config!");
             return;
         }
-        List<KitItem> itemList = new ArrayList<KitItem>();
+        List<KitItem> itemList = new ArrayList<>();
         if (context.hasFlag("t"))
         {
             ItemStack[] items = sender.getInventory().getContents();

@@ -17,182 +17,70 @@
  */
 package de.cubeisland.engine.core.filesystem;
 
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
+import java.nio.channels.Channels;
+import java.nio.channels.FileChannel;
+import java.nio.channels.ReadableByteChannel;
+import java.nio.file.FileAlreadyExistsException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
 import de.cubeisland.engine.core.Core;
 import de.cubeisland.engine.core.CubeEngine;
-import de.cubeisland.engine.core.bukkit.BukkitCore;
+import de.cubeisland.engine.core.filesystem.FileUtil.RecursiveDirectoryDeleter;
 import de.cubeisland.engine.core.util.Cleanable;
 import org.slf4j.Logger;
-
-import static de.cubeisland.engine.core.CubeEngine.runsOnWindows;
 
 /**
  * Manages all the configurations of the CubeEngine.
  */
 public class FileManager implements Cleanable
 {
-    private Logger logger;
-    private final File dataFolder;
-    private final File languageDir;
-    private final File logDir;
-    private final File modulesDir;
-    private final File tempDir;
-    private ConcurrentMap<File, Resource> fileSources;
+    private final Logger logger;
+    private final Path dataPath;
+    private final Path languagePath;
+    private final Path logPath;
+    private final Path modulesPath;
+    private final Path tempPath;
+    private ConcurrentMap<Path, Resource> fileSources;
 
-    public FileManager(Core core, File dataFolder) throws IOException
+    public FileManager(Core core, Path dataPath) throws IOException
     {
-        java.util.logging.Logger logger = ((BukkitCore)core).getLogger();
-        assert dataFolder != null : "The CubeEngine plugin folder must not be null!";
-        if (!dataFolder.exists())
-        {
-            if (!dataFolder.mkdirs())
-            {
-                throw new IOException("The CubeEngine plugin folder could not be created: " + dataFolder
-                    .getAbsolutePath());
-            }
-            dataFolder.setWritable(true, true);
-        }
-        else if (!dataFolder.isDirectory())
-        {
-            throw new IOException("The CubeEngine plugin folder was found, but it doesn't seem to be directory: " + dataFolder
-                .getAbsolutePath());
-        }
-        if (!dataFolder.canWrite() && !dataFolder.setWritable(true, true))
-        {
-            throw new IOException("The CubeEngine plugin folder is not writable: " + dataFolder.getAbsolutePath());
-        }
-        this.dataFolder = dataFolder;
+        assert dataPath != null : "The CubeEngine plugin folder must not be null!";
+        dataPath = dataPath.toAbsolutePath().toRealPath();
 
-        final File linkSource = new File(System.getProperty("user.dir", "."), CubeEngine.class.getSimpleName());
-        if (!isSymLink(linkSource) && !createSymLink(linkSource, this.dataFolder))
-        {
-            logger.info("Linking to the CubeEngine directory failed! This can be ignored.");
-        }
+        this.logger = core.getLog();
 
-        this.languageDir = new File(this.dataFolder, "language");
-        if (!this.languageDir.isDirectory() && !this.languageDir.mkdirs())
-        {
-            throw new IOException("Failed to create the language folder: " + this.languageDir.getAbsolutePath());
-        }
-        if (!this.languageDir.canWrite() && !this.languageDir.setWritable(true, true))
-        {
-            throw new IOException("The language folder is not writable!");
-        }
+        this.dataPath = Files.createDirectories(dataPath, FileUtil.DEFAULT_FOLDER_PERMS);
 
-        this.logDir = new File(this.dataFolder, "log");
-        if (!this.logDir.isDirectory() && !this.logDir.mkdirs())
-        {
-            throw new IOException("Failed to create the log folder: " + this.logDir.getAbsolutePath());
-        }
-        if (!this.logDir.canWrite() && !this.logDir.setWritable(true, true))
-        {
-            throw new IOException("The log folder is not writable!: " + this.logDir.getAbsolutePath());
-        }
+        final Path linkSource = Paths.get(System.getProperty("user.dir", "."), CubeEngine.class.getSimpleName());
 
-        this.modulesDir = new File(this.dataFolder, "modules");
-        if (!this.modulesDir.isDirectory() && !this.modulesDir.mkdirs())
-        {
-            throw new IOException("Failed to create the modules folder: " + this.modulesDir.getAbsolutePath());
-        }
-        if (!this.modulesDir.canWrite() && !this.modulesDir.setWritable(true, true))
-        {
-            throw new IOException("The modules folder is not writable: " + this.modulesDir.getAbsolutePath());
-        }
+        this.languagePath = Files.createDirectories(dataPath.resolve("language"), FileUtil.DEFAULT_FOLDER_PERMS);
 
-        this.tempDir = new File(this.dataFolder, "temp");
-        if (!this.tempDir.isDirectory() && !this.tempDir.mkdirs())
+        this.logPath = Files.createDirectories(dataPath.resolve("log"), FileUtil.DEFAULT_FOLDER_PERMS);
+
+        this.modulesPath = Files.createDirectories(dataPath.resolve("modules"), FileUtil.DEFAULT_FOLDER_PERMS);
+
+        this.tempPath = Files.createDirectories(dataPath.resolve("language"), FileUtil.DEFAULT_FOLDER_PERMS);
+
+        this.fileSources = new ConcurrentHashMap<>();
+
+        try
         {
-            throw new IOException("Failed to create the temp folder: " + this.tempDir.getAbsolutePath());
+            Files.createSymbolicLink(linkSource, this.dataPath);
         }
-        if (!this.tempDir.canWrite() && !this.tempDir.setWritable(true, true))
-        {
-            throw new IOException("The temp folder is not writable: " + this.tempDir.getAbsolutePath());
-        }
-        if (!hideFile(this.tempDir))
+        catch (IOException ignored)
+        {}
+
+        if (!FileUtil.hideFile(this.tempPath))
         {
             logger.info("Hiding the temp folder failed! This can be ignored!");
         }
-
-        this.fileSources = new ConcurrentHashMap<File, Resource>();
-    }
-
-    public void setLogger(Logger logger)
-    {
-        this.logger = logger;
-    }
-
-    public static boolean hideFile(File file)
-    {
-        if (runsOnWindows())
-        {
-            try
-            {
-                return Runtime.getRuntime().exec(new String[]{
-                    "attrib", "+H", file.getAbsolutePath()
-                }).waitFor() == 0;
-            }
-            catch (Exception e)
-            {
-            }
-        }
-        return false;
-    }
-
-    public static boolean createSymLink(File source, File target)
-    {
-        final String[] command;
-        if (runsOnWindows())
-        {
-            if (target.isDirectory())
-            {
-                command = new String[]{
-                    "cmd", "/c", "mklink", "/d", source.getAbsolutePath(), target.getAbsolutePath()
-                };
-            }
-            else
-            {
-                command = new String[]{
-                    "cmd", "/c", "mklink", source.getAbsolutePath(), target.getAbsolutePath()
-                };
-            }
-        }
-        else
-        {
-            command = new String[]{
-                "ln", "-s", target.getAbsolutePath(), source.getAbsolutePath()
-            };
-        }
-        try
-        {
-            return Runtime.getRuntime().exec(command).waitFor() == 0;
-        }
-        catch (Exception e)
-        {
-        }
-        return false;
-    }
-
-    public static boolean isSymLink(File file) throws IOException
-    {
-        final File canon;
-        if (file.getParent() == null)
-        {
-            canon = file;
-        }
-        else
-        {
-            canon = new File(file.getParentFile().getCanonicalFile(), file.getName());
-        }
-        return !canon.getCanonicalFile().equals(canon.getAbsoluteFile());
     }
 
     /**
@@ -200,9 +88,9 @@ public class FileManager implements Cleanable
      *
      * @return a file
      */
-    public File getDataFolder()
+    public Path getDataPath()
     {
-        return this.dataFolder;
+        return this.dataPath;
     }
 
     /**
@@ -210,9 +98,9 @@ public class FileManager implements Cleanable
      *
      * @return the directory
      */
-    public File getLanguageDir()
+    public Path getLanguagePath()
     {
-        return this.languageDir;
+        return this.languagePath;
     }
 
     /**
@@ -220,9 +108,9 @@ public class FileManager implements Cleanable
      *
      * @return the directory
      */
-    public File getLogDir()
+    public Path getLogPath()
     {
-        return this.logDir;
+        return this.logPath;
     }
 
     /**
@@ -230,9 +118,9 @@ public class FileManager implements Cleanable
      *
      * @return the directory
      */
-    public File getModulesDir()
+    public Path getModulesPath()
     {
-        return this.modulesDir;
+        return this.modulesPath;
     }
 
     /**
@@ -240,135 +128,35 @@ public class FileManager implements Cleanable
      *
      * @return the directory
      */
-    public File getTempDir()
+    public Path getTempPath()
     {
-        return this.tempDir;
+        return this.tempPath;
     }
 
     public void clearTempDir()
     {
-        logger.debug("Clearing the temporary folder '{}'...", this.tempDir.getAbsolutePath());
-        File[] files = this.tempDir.listFiles();
-        if (files == null)
-        {
-            logger.info("Failed to list the temp folder for '{}'", this.getTempDir().getAbsolutePath());
-            return;
-        }
-        for (File file : files)
-        {
-            try
-            {
-                deleteRecursive(file);
-            }
-            catch (IOException e)
-            {
-                logger.info("Failed to remove the file '{}'", file.getAbsolutePath());
-            }
-        }
-        logger.debug("Temporary folder cleared!");
-    }
-
-    public static void deleteRecursive(File file) throws IOException
-    {
-        if (file == null)
+        logger.debug("Clearing the temporary folder '{}'...", this.tempPath.toAbsolutePath());
+        if (!Files.exists(this.tempPath))
         {
             return;
         }
-        if (file.isDirectory())
+        if (!Files.isDirectory(this.tempPath))
         {
-            File[] files = file.listFiles();
-            if (files == null)
-            {
-                if (!file.canRead() && !file.setReadable(true) && (files = file.listFiles()) == null)
-                {
-                    throw new IOException("Failed to list the folder '" + file
-                        .getAbsolutePath() + "' due to missing read permissions");
-                }
-                if (files == null)
-                {
-                    throw new IOException("Failed to list the folder '" + file.getAbsolutePath() + "'");
-                }
-            }
-            for (File f : files)
-            {
-                try
-                {
-                    deleteRecursive(f);
-                }
-                catch (FileNotFoundException ignored)
-                {
-                }
-            }
-        }
-        if (!file.exists())
-        {
+            logger.warn("The path '{}' is not a directory!", this.tempPath.toAbsolutePath());
             return;
         }
-        if (!file.delete())
-        {
-            if (!file.canWrite())
-            {
-                if (file.setWritable(true) && file.delete())
-                {
-                    return;
-                }
-                throw new IOException("Failed to delete the file '" + file
-                    .getAbsolutePath() + "' due to missing write permissions");
-            }
-            if (!file.renameTo(file))
-            {
-                throw new IOException("Failed to delete the file '" + file
-                    .getAbsolutePath() + "' due to a possible lock");
-            }
-            throw new IOException("Failed to delete the file '" + file.getAbsolutePath() + "'");
-        }
-    }
-
-    public static boolean copyFile(File source, File target) throws FileNotFoundException
-    {
-        final InputStream is = new FileInputStream(source);
-        final OutputStream os = new FileOutputStream(target);
 
         try
         {
-            copyFile(is, os);
-            return true;
+            Files.walkFileTree(this.tempPath, new RecursiveDirectoryDeleter());
         }
-        catch (IOException ignored)
+        catch (IOException e)
         {
+            this.logger.warn("Failed to clear the temp directory!", e);
+            return;
         }
-        finally
-        {
-            try
-            {
-                is.close();
-            }
-            catch (IOException e)
-            {
-                CubeEngine.getLog().warn("Failed to close a file stream!", e);
-            }
 
-            try
-            {
-                os.close();
-            }
-            catch (IOException e)
-            {
-                CubeEngine.getLog().warn("Failed to close a file stream!", e);
-            }
-        }
-        return false;
-    }
-
-    public static void copyFile(InputStream is, OutputStream os) throws IOException
-    {
-        final byte[] buffer = new byte[1024 * 4];
-        int bytesRead;
-
-        while ((bytesRead = is.read(buffer, 0, buffer.length)) > 0)
-        {
-            os.write(buffer, 0, bytesRead);
-        }
+        logger.debug("Temporary folder cleared!");
     }
 
     private static String getSaneSource(Resource resource)
@@ -405,13 +193,20 @@ public class FileManager implements Cleanable
      *
      * @return a file
      */
-    public File getResourceFile(Resource resource)
+    public Path getResourceFile(Resource resource)
     {
         assert resource != null : "The resource must not be null!";
 
-        File file = this.dropResource(resource.getClass(), getSaneSource(resource), resource.getTarget(), false);
-        this.fileSources.put(file, resource);
-        return file;
+        try
+        {
+            Path file = this.dropResource(resource.getClass(), getSaneSource(resource), this.dataPath.resolve(resource.getTarget()), false);
+            this.fileSources.put(file.toRealPath(), resource);
+            return file;
+        }
+        catch (IOException e)
+        {
+            return null;
+        }
     }
 
     /**
@@ -434,91 +229,43 @@ public class FileManager implements Cleanable
      *
      * @param clazz     the class of the resource
      * @param resPath   the resource path
-     * @param filePath  the target file path
-     * @param overwrite wheter to overwrite an existing file
-     *
-     * @return a file
-     */
-    public File dropResource(Class clazz, String resPath, String filePath, boolean overwrite)
-    {
-        assert filePath != null : "The file path must not be null!";
-        assert resPath != null : "The resource path must not be null!";
-
-        if (filePath.startsWith("/"))
-        {
-            filePath = filePath.substring(1);
-        }
-        return this.dropResource(clazz, resPath, new File(this.dataFolder, filePath.replace('\\', File.separatorChar)
-                                                                                   .replace('/', File.separatorChar)), overwrite);
-    }
-
-    /**
-     * Drops an resource
-     *
-     * @param clazz     the class of the resource
-     * @param resPath   the resource path
      * @param file      the target file
      * @param overwrite whether to overwrite an existing file
      *
      * @return a file
      */
-    public File dropResource(Class clazz, String resPath, File file, boolean overwrite)
+    public Path dropResource(Class clazz, String resPath, Path file, boolean overwrite) throws IOException
     {
         assert clazz != null : "The class must not be null!";
         assert resPath != null : "The resource path must not be null!";
         assert file != null : "The file must not be null!";
-        if (file.exists() && !file.isFile())
+        if (Files.exists(file) && !Files.isRegularFile(file))
         {
-            throw new IllegalArgumentException("The given file exists, but is no file!");
+            throw new IOException("The given file exists, but is no file!");
         }
-        if (file.exists() && !overwrite)
+        if (Files.exists(file) && !overwrite)
         {
-            return file;
+            throw new FileAlreadyExistsException(file.toString());
         }
-        InputStream reader = clazz.getResourceAsStream(resPath);
-        if (reader != null)
+
+        Files.createDirectories(file.getParent());
+        try (ReadableByteChannel sourceChannel = Channels.newChannel(clazz.getResourceAsStream(resPath)))
         {
-            OutputStream writer = null;
-            try
+            if (sourceChannel == null)
             {
-                file.getParentFile().mkdirs();
-                writer = new FileOutputStream(file);
-                final byte[] buffer = new byte[4096];
-                int bytesRead;
-                while ((bytesRead = reader.read(buffer)) > 0)
-                {
-                    writer.write(buffer, 0, bytesRead);
-                }
-                writer.flush();
+                throw new FileNotFoundException("Could not find the resource '" + resPath + "'!");
             }
-            catch (IOException e)
+            else
             {
-                logger.error(e.getMessage(), e);
-            }
-            finally
-            {
-                try
+                try (FileChannel fileChannel = FileChannel.open(file))
                 {
-                    reader.close();
+                    FileUtil.copy(sourceChannel, fileChannel);
                 }
-                catch (IOException ignored)
+                catch (IOException e)
                 {
-                }
-                if (writer != null)
-                {
-                    try
-                    {
-                        writer.close();
-                    }
-                    catch (IOException ignored)
-                    {
-                    }
+                    logger.error(e.getMessage(), e);
                 }
             }
-        }
-        else
-        {
-            throw new RuntimeException("Could not find the resource '" + resPath + "'!");
         }
         return file;
     }
@@ -530,8 +277,14 @@ public class FileManager implements Cleanable
      *
      * @return stream of the resource
      */
-    public InputStream getSourceOf(File file)
+    public InputStream getSourceOf(Path file)
     {
+        try
+        {
+            file = file.toRealPath();
+        }
+        catch (IOException ignored)
+        {}
         return this.getResourceStream(this.fileSources.get(file));
     }
 

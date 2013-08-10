@@ -33,7 +33,7 @@ public final class SourceLanguage implements Language
     private final Locale locale = Locale.US;
     private final String name = "English";
     private final String localName = "English";
-    private final Map<String, String> messages = new THashMap<String, String>();
+    private final Map<String, String> messages = new THashMap<>();
 
     SourceLanguage()
     {}
@@ -71,7 +71,7 @@ public final class SourceLanguage implements Language
     @Override
     public Map<String, String> getMessages()
     {
-        return new THashMap<String, String>(this.messages);
+        return new THashMap<>(this.messages);
     }
 
     @Override

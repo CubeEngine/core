@@ -45,7 +45,7 @@ public class EntityBreak extends BlockActionType
     @Override
     protected Set<ActionTypeCategory> getCategories()
     {
-        return new HashSet<ActionTypeCategory>(Arrays.asList(BLOCK, BLOCK_ENTITY));
+        return new HashSet<>(Arrays.asList(BLOCK, BLOCK_ENTITY));
     }
 
     @Override

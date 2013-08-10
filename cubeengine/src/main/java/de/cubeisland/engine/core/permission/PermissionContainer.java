@@ -49,7 +49,7 @@ public abstract class PermissionContainer<T extends Module>
     // TODO what about caching the result?
     public Set<Permission> getPermissions()
     {
-        THashSet<Permission> perms = new THashSet<Permission>();
+        THashSet<Permission> perms = new THashSet<>();
         for (Field field : this.getClass().getFields())
         {
             int mask = field.getModifiers();
@@ -65,9 +65,8 @@ public abstract class PermissionContainer<T extends Module>
                             perms.add(perm);
                         }
                     }
-                    catch (IllegalAccessException e)
-                    {
-                    }
+                    catch (IllegalAccessException ignored)
+                    {}
                 }
             }
         }

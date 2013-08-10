@@ -37,7 +37,7 @@ public class WorldEditActionType extends BlockActionType
     @Override
     protected Set<ActionTypeCategory> getCategories()
     {
-        return new HashSet<ActionTypeCategory>(Arrays.asList(PLAYER, BLOCK));
+        return new HashSet<>(Arrays.asList(PLAYER, BLOCK));
     }
 
     @Override

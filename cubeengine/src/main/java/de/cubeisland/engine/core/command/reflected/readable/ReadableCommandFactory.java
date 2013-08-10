@@ -29,8 +29,6 @@ import de.cubeisland.engine.core.command.reflected.ReflectedCommandFactory;
 
 import de.cubeisland.engine.core.module.Module;
 
-import static de.cubeisland.engine.core.util.Misc.arr;
-
 public class ReadableCommandFactory extends ReflectedCommandFactory<ReadableCommand>
 {
     public Class<ReadableCommand> getCommandType()
@@ -50,11 +48,11 @@ public class ReadableCommandFactory extends ReflectedCommandFactory<ReadableComm
         String[] commandNames = annotation.names();
         if (commandNames.length == 0)
         {
-            commandNames = arr(method.getName());
+            commandNames = new String[] {method.getName()};
         }
 
         String name = commandNames[0].trim().toLowerCase(Locale.ENGLISH);
-        List<String> aliases = new ArrayList<String>(commandNames.length - 1);
+        List<String> aliases = new ArrayList<>(commandNames.length - 1);
         for (int i = 1; i < commandNames.length; ++i)
         {
             aliases.add(commandNames[i].toLowerCase(Locale.ENGLISH));

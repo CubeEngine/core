@@ -30,14 +30,14 @@ public class RepairItem
     private RepairItem(Material material, BaseMaterial baseMaterial, int baseMaterialCount)
     {
         this.material = material;
-        this.baseMaterials = new HashMap<BaseMaterial, Integer>();
+        this.baseMaterials = new HashMap<>();
         this.baseMaterials.put(baseMaterial,baseMaterialCount);
     }
 
     public RepairItem(Material material, Map<BaseMaterial,Integer> baseMaterials)
     {
         this.material = material;
-        this.baseMaterials = new HashMap<BaseMaterial, Integer>(baseMaterials);
+        this.baseMaterials = new HashMap<>(baseMaterials);
     }
 
     public static RepairItem of(Material material, BaseMaterial baseMaterial, int baseMaterialCount)

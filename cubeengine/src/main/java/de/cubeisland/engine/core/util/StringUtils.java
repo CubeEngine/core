@@ -85,7 +85,7 @@ public final class StringUtils
     public static String[] explode(String delim, String string, boolean keepEmptyParts)
     {
         int pos, offset = 0, delimLen = delim.length();
-        List<String> tokens = new ArrayList<String>();
+        List<String> tokens = new ArrayList<>();
         String part;
 
         while ((pos = string.indexOf(delim, offset)) > -1)
@@ -121,11 +121,11 @@ public final class StringUtils
     /**
      * This method merges an array of strings to a single string
      *
-     * @param delim   the delimiter
+     * @param delimiter   the delimiter
      * @param strings the strings to implode
      * @return the imploded string
      */
-    public static String implode(String delim, Iterable<String> strings)
+    public static String implode(String delimiter, Iterable<String> strings)
     {
         Iterator<String> iterator = strings.iterator();
         if (!iterator.hasNext())
@@ -138,7 +138,7 @@ public final class StringUtils
 
             while (iterator.hasNext())
             {
-                sb.append(delim).append(iterator.next());
+                sb.append(delimiter).append(iterator.next());
             }
 
             return sb.toString();
@@ -453,6 +453,27 @@ public final class StringUtils
         }
 
         return sb.toString();
+    }
+
+    public static boolean isNumeric(String string)
+    {
+        if (string == null)
+        {
+            throw new NullPointerException("The string must not be null!");
+        }
+        final int len = string.length();
+        if (len == 0)
+        {
+            return false;
+        }
+        for (int i = 0; i < len; ++i)
+        {
+            if (!Character.isDigit(string.charAt(i)))
+            {
+                return false;
+            }
+        }
+        return true;
     }
 
     public static interface ReplaceCallback

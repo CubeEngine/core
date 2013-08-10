@@ -230,7 +230,7 @@ public class UserDatabaseStore extends UserDataStore
     @Override
     public Map<String, Boolean> getAllRawPermissions()
     {
-        Map<String,Boolean> result = new THashMap<String, Boolean>();
+        Map<String,Boolean> result = new THashMap<>();
         for (Role assignedRole : this.attachment.getResolvedData(this.worldID).assignedRoles)
         {
             result.putAll(assignedRole.getAllRawPermissions());
@@ -242,7 +242,7 @@ public class UserDatabaseStore extends UserDataStore
     @Override
     public Map<String, String> getAllRawMetadata()
     {
-        Map<String,String> result = new THashMap<String, String>();
+        Map<String,String> result = new THashMap<>();
         for (Role assignedRole : this.attachment.getResolvedData(this.worldID).assignedRoles)
         {
             result.putAll(assignedRole.getAllRawMetadata());

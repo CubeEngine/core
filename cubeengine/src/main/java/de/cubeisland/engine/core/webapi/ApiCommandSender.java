@@ -47,7 +47,7 @@ public class ApiCommandSender implements CommandSender
     {
         this.name = name;
         this.core = core;
-        this.messages = new ArrayList<String>();
+        this.messages = new ArrayList<>();
     }
 
     public Core getCore()

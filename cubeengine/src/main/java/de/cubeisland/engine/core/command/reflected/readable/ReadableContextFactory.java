@@ -38,8 +38,8 @@ import static de.cubeisland.engine.core.command.ArgBounds.NO_MAX;
 
 public class ReadableContextFactory extends BasicContextFactory
 {
-    private static final Set<String> NO_FLAGS = new THashSet<String>(0);
-    private static final Map<String, Object> NO_NAMED = new THashMap<String, Object>(0);
+    private static final Set<String> NO_FLAGS = new THashSet<>(0);
+    private static final Map<String, Object> NO_NAMED = new THashMap<>(0);
     private final Pattern pattern;
 
     public ReadableContextFactory(Pattern pattern)
@@ -53,7 +53,7 @@ public class ReadableContextFactory extends BasicContextFactory
     {
         Matcher matcher = this.pattern.matcher(StringUtils.implode(" ", commandLine));
         final int groupCount = matcher.groupCount();
-        LinkedList<String> indexed = new LinkedList<String>();
+        LinkedList<String> indexed = new LinkedList<>();
         for (int i = 1; i <= groupCount; ++i)
         {
             indexed.add(matcher.group(i));

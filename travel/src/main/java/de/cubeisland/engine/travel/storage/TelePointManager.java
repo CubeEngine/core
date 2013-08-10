@@ -328,7 +328,7 @@ public class TelePointManager
         }
 
         // If another home the player has can be taken away it's prefix, do it
-        Set<Home> prefixed = new HashSet<Home>();
+        Set<Home> prefixed = new HashSet<>();
         for (String name : attachment.allHomes().keySet())
         {
             String[] parts = name.split(":");
@@ -515,7 +515,7 @@ public class TelePointManager
      */
     public TreeMap<String, Integer> searchWarp(String search, CommandSender sender)
     {
-        Set<String> warps = new HashSet<String>();
+        Set<String> warps = new HashSet<>();
         if (sender instanceof User)
         {
             User user = (User)sender;
@@ -669,7 +669,7 @@ public class TelePointManager
 
     public Set<Home> listHomes(int mask)
     {
-        Set<Home> homes = new HashSet<Home>();
+        Set<Home> homes = new HashSet<>();
         if ((mask & PUBLIC) == PUBLIC)
         {
             Result<Record2<String,UInteger>> fetch = this.dsl.select(TABLE_TP_POINT.NAME, TABLE_TP_POINT.OWNER)
@@ -792,7 +792,7 @@ public class TelePointManager
 
     public Set<Warp> listWarps(User user, int mask)
     {
-        Set<Warp> warps = new HashSet<Warp>();
+        Set<Warp> warps = new HashSet<>();
         if (mask == -1)
         {
             warps.addAll(this.listWarps(PUBLIC));

@@ -49,7 +49,7 @@ public class XpPickup extends SimpleLogActionType
     @Override
     protected Set<ActionTypeCategory> getCategories()
     {
-        return new HashSet<ActionTypeCategory>(Arrays.asList(PLAYER));
+        return new HashSet<>(Arrays.asList(PLAYER));
     }
 
     @Override

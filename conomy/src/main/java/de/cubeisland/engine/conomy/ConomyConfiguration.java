@@ -17,7 +17,7 @@
  */
 package de.cubeisland.engine.conomy;
 
-import java.io.File;
+import java.nio.file.Path;
 
 import de.cubeisland.engine.core.config.Configuration;
 import de.cubeisland.engine.core.config.annotations.Codec;
@@ -65,7 +65,7 @@ public class ConomyConfiguration extends Configuration
 
 
     @Override
-    public void onLoaded(File loadFrom)
+    public void onLoaded(Path loadFrom)
     {
         this.fractionalDigitsFactor = (int)Math.pow(10, this.fractionalDigits);
     }

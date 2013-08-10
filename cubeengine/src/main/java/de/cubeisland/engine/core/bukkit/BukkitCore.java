@@ -17,13 +17,19 @@
  */
 package de.cubeisland.engine.core.bukkit;
 
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map.Entry;
 
 import org.bukkit.Server;
 import org.bukkit.command.CommandMap;
@@ -50,6 +56,7 @@ import de.cubeisland.engine.core.bukkit.command.FallbackCommandBackend;
 import de.cubeisland.engine.core.bukkit.command.SimpleCommandBackend;
 import de.cubeisland.engine.core.bukkit.metrics.MetricsInitializer;
 import de.cubeisland.engine.core.bukkit.packethook.PacketEventManager;
+import de.cubeisland.engine.core.bukkit.packethook.PacketHookInjector;
 import de.cubeisland.engine.core.command.ArgumentReader;
 import de.cubeisland.engine.core.command.commands.CoreCommands;
 import de.cubeisland.engine.core.command.commands.ModuleCommands;
@@ -80,12 +87,14 @@ import org.slf4j.LoggerFactory;
 
 import static de.cubeisland.engine.core.util.ReflectionUtils.findFirstField;
 import static de.cubeisland.engine.core.util.ReflectionUtils.getFieldValue;
+import static java.util.logging.Level.WARNING;
 
 /**
  * This represents the Bukkit-JavaPlugin that gets loaded and implements the Core
  */
 public final class BukkitCore extends JavaPlugin implements Core
 {
+    //region Core fields
     private Version version;
     private Database database;
     private BukkitPermissionManager permissionManager;
@@ -106,9 +115,12 @@ public final class BukkitCore extends JavaPlugin implements Core
     private CorePerms corePerms;
     private BukkitBanManager banManager;
     private ServiceManager serviceManager;
+    //endregion
 
     private List<Runnable> initHooks;
     private LoggerContext loggerContext;
+    private PluginConfig pluginConfig;
+    private FreezeDetection freezeDetection;
 
     @Override
     public void onLoad()
@@ -129,6 +141,15 @@ public final class BukkitCore extends JavaPlugin implements Core
         CubeEngine.initialize(this);
         Convert.init(this);
 
+        try (Reader reader = new InputStreamReader(this.getResource("plugin.yml")))
+        {
+            this.pluginConfig = Configuration.load(PluginConfig.class, reader);
+        }
+        catch (IOException e)
+        {
+            pluginConfig = Configuration.createInstance(PluginConfig.class);
+        }
+
         this.initHooks = Collections.synchronizedList(new LinkedList<Runnable>());
 
         try
@@ -145,7 +166,7 @@ public final class BukkitCore extends JavaPlugin implements Core
 
         try
         {
-            System.setProperty("cubeengine.logger.default-path", System.getProperty("cubeengine.log", fileManager.getLogDir().getCanonicalPath()));
+            System.setProperty("cubeengine.logger.default-path", System.getProperty("cubeengine.log", fileManager.getLogPath().toRealPath().toString()));
             System.setProperty("cubeengine.logger.max-size", System.getProperty("cubeengine.log.max-size", "10MB"));
             System.setProperty("cubeengine.logger.max-file-count", System.getProperty("cubeengine.log.max-file-count", "10"));
         }
@@ -172,11 +193,10 @@ public final class BukkitCore extends JavaPlugin implements Core
                 logbackConfigurator.doConfigure(new ContextInitializer((LoggerContext)LoggerFactory.getILoggerFactory()).findURLOfDefaultConfigurationFile(true));
             }
         }
-        catch (JoranException ex)
+        catch (JoranException e)
         {
-            this.getLogger().log(java.util.logging.Level.WARNING,
-                                 "An error occured when loading a logback.xml file from the CubeEngine folder: "
-                                     + ex.getLocalizedMessage(), ex);
+            this.getLogger().log(WARNING, "An error occurred when loading a logback.xml file from the CubeEngine folder: " + e
+                .getLocalizedMessage(), e);
         }
         // Configure the logger
         Logger parentLogger = (Logger)LoggerFactory.getLogger("cubeengine");
@@ -197,14 +217,13 @@ public final class BukkitCore extends JavaPlugin implements Core
         this.logger.setLevel(Level.INFO);
         ColorConverter.setANSISupport(BukkitUtils.isANSISupported());
 
-        this.fileManager.setLogger(this.logger);
         this.fileManager.clearTempDir();
 
         this.banManager = new BukkitBanManager(this);
         this.serviceManager = new ServiceManager(this);
 
         // depends on: file manager
-        this.config = Configuration.load(BukkitCoreConfiguration.class, new File(this.fileManager.getDataFolder(), "core.yml"));
+        this.config = Configuration.load(BukkitCoreConfiguration.class, this.fileManager.getDataPath().resolve("core.yml"));
 
         // Set the level for the parent logger to the lowest of either the file or console
         // subloggers inherit this by default, but can override
@@ -235,11 +254,14 @@ public final class BukkitCore extends JavaPlugin implements Core
         }
 
         this.packetEventManager = new PacketEventManager(this.logger);
-        //TODO this is not working atm BukkitUtils.registerPacketHookInjector(this);
+        if (!PacketHookInjector.register(this))
+        {
+            this.logger.warn("Failed to register the packet hook, some features might not work.");
+        }
 
         // depends on: object mapper
         this.apiServer = new ApiServer(this);
-        this.apiServer.configure(Configuration.load(ApiConfig.class, new File(this.fileManager.getDataFolder(), "webapi.yml")));
+        this.apiServer.configure(Configuration.load(ApiConfig.class, this.fileManager.getDataPath().resolve("webapi.yml")));
 
         // depends on: core config, server
         this.taskManager = new BukkitTaskManager(this, new CubeThreadFactory("CubeEngine"), this.getServer().getScheduler());
@@ -329,7 +351,7 @@ public final class BukkitCore extends JavaPlugin implements Core
         MetricsInitializer metricsInit = new MetricsInitializer(BukkitCore.this);
 
         // depends on: file manager
-        this.moduleManager.loadModules(this.fileManager.getModulesDir());
+        this.moduleManager.loadModules(this.fileManager.getModulesPath());
 
         metricsInit.start();
     }
@@ -366,6 +388,16 @@ public final class BukkitCore extends JavaPlugin implements Core
         this.moduleManager.init();
         this.moduleManager.enableModules();
         this.permissionManager.calculatePermissions();
+
+        this.freezeDetection = new FreezeDetection(this);
+        this.freezeDetection.addListener(new Runnable() {
+            @Override
+            public void run()
+            {
+                dumpThreads();
+            }
+        });
+        this.freezeDetection.start();
     }
 
     @Override
@@ -373,6 +405,12 @@ public final class BukkitCore extends JavaPlugin implements Core
     {
         this.logger.debug("utils cleanup");
         BukkitUtils.cleanup();
+
+        if (freezeDetection != null)
+        {
+            this.freezeDetection.shutdown();
+            this.freezeDetection = null;
+        }
 
         if (this.packetEventManager != null)
         {
@@ -465,7 +503,49 @@ public final class BukkitCore extends JavaPlugin implements Core
         this.initHooks.add(runnable);
     }
 
+    public void dumpThreads()
+    {
+        Path threadDumpFolder = this.getDataFolder().toPath().resolve("thread-dumps");
+        try
+        {
+            Files.createDirectories(threadDumpFolder);
+        }
+        catch (IOException e)
+        {
+            this.getLog().warn("Failed to create the folder for the thread dumps!", e);
+            return;
+        }
+        try (BufferedWriter writer = Files.newBufferedWriter(threadDumpFolder.resolve(System.currentTimeMillis() + ".dump"), Core.CHARSET))
+        {
+            Thread t;
+            int i = 0;
+            for (Entry<Thread, StackTraceElement[]> entry : Thread.getAllStackTraces().entrySet())
+            {
+                t = entry.getKey();
 
+                writer.write("Thread #" + ++i + "\n");
+                writer.write("ID: " + t.getId() + "\n");
+                writer.write("Name: " + t.getName() + "\n");
+                writer.write("State: " + t.getState().name() + "\n");
+                writer.write("Stacktrace:\n");
+
+                int j = 0;
+                for (StackTraceElement e : entry.getValue())
+                {
+                    writer.write("#" + ++j + " " + e.getClassName() + '.' + e.getMethodName() + '(' + e.getFileName() + ':' + e.getLineNumber() + ')');
+                }
+
+                writer.write("\n\n\n");
+            }
+        }
+        catch (IOException e)
+        {
+            this.getLog().warn("Failed to write a thread dump!", e);
+        }
+    }
+
+
+    //region Plugin overrides
     @Override
     public ChunkGenerator getDefaultWorldGenerator(String worldName, String id)
     {
@@ -488,7 +568,9 @@ public final class BukkitCore extends JavaPlugin implements Core
 
         return this.getWorldManager().getGenerator(module, parts[1].toLowerCase(Locale.ENGLISH));
     }
+    //endregion
 
+    //region Core getters
     @Override
     public Version getVersion()
     {
@@ -498,7 +580,7 @@ public final class BukkitCore extends JavaPlugin implements Core
     @Override
     public String getSourceVersion()
     {
-        return this.moduleManager.getCoreModule().getInfo().getSourceVersion();
+        return this.pluginConfig.sourceVersion;
     }
 
     @Override
@@ -613,4 +695,5 @@ public final class BukkitCore extends JavaPlugin implements Core
     {
         return this.serviceManager;
     }
+    //endregion
 }

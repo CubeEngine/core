@@ -45,7 +45,7 @@ public class LocationConverter implements Converter<Location>
     @Override
     public Node toNode(Location location) throws ConversionException
     {
-        Map<String, Object> loc = new LinkedHashMap<String, Object>();
+        Map<String, Object> loc = new LinkedHashMap<>();
         loc.put("world", location.getWorld().getName());
         loc.put("x", location.getX());
         loc.put("y", location.getY());

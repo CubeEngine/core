@@ -48,7 +48,7 @@ public class BucketFill extends BlockActionType
     @Override
     protected Set<ActionTypeCategory> getCategories()
     {
-        return new HashSet<ActionTypeCategory>(Arrays.asList(BUCKET, BLOCK, PLAYER));
+        return new HashSet<>(Arrays.asList(BUCKET, BLOCK, PLAYER));
     }
     @Override
     public String getName()

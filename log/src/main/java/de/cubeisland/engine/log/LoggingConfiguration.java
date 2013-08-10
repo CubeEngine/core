@@ -67,7 +67,7 @@ public class LoggingConfiguration extends YamlConfiguration
     public boolean BLOCK_FADE_enable = false;
     @Comment("The blocks not to log when fading away (ICE, SNOW, GRASS)")
     @Option("logging.block.break.fade.ignore")
-    public Set<Material> BLOCK_FADE_ignore = new LinkedHashSet<Material>();
+    public Set<Material> BLOCK_FADE_ignore = new LinkedHashSet<>();
 
     @Comment("Leaves decaying after breaking the wood nearby")
     @Option("logging.block.break.decay")
@@ -102,7 +102,7 @@ public class LoggingConfiguration extends YamlConfiguration
 
     @Comment("A List of all materials that will not be logged when destroyed.")
     @Option("logging.block.break.no-logging")
-    public Set<Material> breakNoLogging = new LinkedHashSet<Material>();
+    public Set<Material> breakNoLogging = new LinkedHashSet<>();
 
     @Option("logging.block.explode.creeper")
     public boolean CREEPER_EXPLODE_enable = true;
@@ -133,7 +133,7 @@ public class LoggingConfiguration extends YamlConfiguration
     public boolean BLOCK_FORM_enable = true;
     @Comment("The blocks not to log when forming away (ICE, SNOW, COBBLESTONE, STONE, OBSIDIAN, GRASS?)")
     @Option("logging.block.form.ignore")
-    public Set<Material> BLOCK_FORM_ignore = new LinkedHashSet<Material>();
+    public Set<Material> BLOCK_FORM_ignore = new LinkedHashSet<>();
 
     @Option("logging.block.enderman.place")
     public boolean ENDERMAN_PLACE_enable = true;
@@ -143,7 +143,7 @@ public class LoggingConfiguration extends YamlConfiguration
 
     @Comment("A List of all materials that will not be logged when placed.")
     @Option("logging.block.place.no-logging")
-    public Collection<Material> placeNoLogging = new LinkedList<Material>();
+    public Collection<Material> placeNoLogging = new LinkedList<>();
 
     @Option("logging.block.spread.fire")
     public boolean FIRE_SPREAD_enable = true;
@@ -321,7 +321,7 @@ public class LoggingConfiguration extends YamlConfiguration
 
     @Comment("InventoryTypes to ignore (chest,furnace,dispenser,dropper,hopper,brewing-stand,storage-minecart)")
     @Option("logging.container.ignored-types")
-    public Set<ContainerType> CONTAINER_ignore = new LinkedHashSet<ContainerType>();
+    public Set<ContainerType> CONTAINER_ignore = new LinkedHashSet<>();
 
     @Comment("Commands used by a player")
     @Option("logging.command.player")
@@ -329,7 +329,7 @@ public class LoggingConfiguration extends YamlConfiguration
 
     @Comment("Commands to ignore when logging")
     @Option("logging.command.ignore-commands")
-    public List<String> PLAYER_COMMAND_ignoreRegex = new ArrayList<String>();{
+    public List<String> PLAYER_COMMAND_ignoreRegex = new ArrayList<>();{
     {
         PLAYER_COMMAND_ignoreRegex.add("(ce|cubeengine) (login|setpassword|setpw) .+");
     }}

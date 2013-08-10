@@ -55,7 +55,6 @@ import de.cubeisland.engine.core.util.Profiler;
 import static de.cubeisland.engine.core.command.ArgBounds.NO_MAX;
 import static de.cubeisland.engine.core.permission.PermDefault.FALSE;
 import static de.cubeisland.engine.core.util.ChatFormat.*;
-import static de.cubeisland.engine.core.util.Misc.arr;
 import static java.text.DateFormat.SHORT;
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 
@@ -240,7 +239,7 @@ public class VanillaCommands implements CommandHolder
             onlineUser.sendTranslated("&eUser &2%s &ehas been opped by &2%s&e!", offlinePlayer.getName(), context.getSender().getName());
         }
 
-        this.core.getLog().info("Player {} has been opped by {}", arr(offlinePlayer.getName(), context.getSender().getName()));
+        this.core.getLog().info("Player {} has been opped by {}", offlinePlayer.getName(), context.getSender().getName());
     }
 
     @Command(
@@ -291,7 +290,7 @@ public class VanillaCommands implements CommandHolder
             onlineUser.sendTranslated("&eUser &2%s&a has been opped by &2%s&a!", offlinePlayer.getName(), context.getSender().getName());
         }
 
-        this.core.getLog().info("Player {} has been deopped by {}", arr(offlinePlayer.getName(), context.getSender().getName()));
+        this.core.getLog().info("Player {} has been deopped by {}", offlinePlayer.getName(), context.getSender().getName());
     }
 
     @Command(desc = "Lists all loaded plugins")

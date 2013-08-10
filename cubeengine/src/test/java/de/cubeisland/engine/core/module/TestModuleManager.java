@@ -17,7 +17,7 @@
  */
 package de.cubeisland.engine.core.module;
 
-import java.io.File;
+import java.nio.file.Path;
 import java.util.Collection;
 import java.util.Collections;
 
@@ -64,13 +64,13 @@ public class TestModuleManager implements ModuleManager
     }
 
     @Override
-    public Module loadModule(File moduleFile) throws InvalidModuleException, CircularDependencyException, MissingDependencyException, IncompatibleDependencyException, IncompatibleCoreException, MissingPluginDependencyException
+    public Module loadModule(Path moduleFile) throws InvalidModuleException, CircularDependencyException, MissingDependencyException, IncompatibleDependencyException, IncompatibleCoreException, MissingPluginDependencyException
     {
-        return this.getModule(StringUtils.stripFileExtension(moduleFile.getName()));
+        return this.getModule(StringUtils.stripFileExtension(moduleFile.getFileName().toString()));
     }
 
     @Override
-    public void loadModules(File directory)
+    public void loadModules(Path directory)
     {}
 
     @Override

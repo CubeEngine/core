@@ -52,7 +52,7 @@ import de.cubeisland.engine.core.user.User;
 
 public abstract class ArgumentReader
 {
-    private static final Map<Class<?>, ArgumentReader> READERS = new ConcurrentHashMap<Class<?>, ArgumentReader>();
+    private static final Map<Class<?>, ArgumentReader> READERS = new ConcurrentHashMap<>();
 
     /**
      *

@@ -54,8 +54,8 @@ public class Announcement
 
         this.name = acm.name;
         this.permNode = acm.permNode;
-        this.worlds = new ArrayList<String>(acm.getWorlds());
-        this.messages = new THashMap<Locale, String[]>(acm.messages);
+        this.worlds = new ArrayList<>(acm.getWorlds());
+        this.messages = new THashMap<>(acm.messages);
         this.delay = acm.delay;
         this.fixedCycle = acm.fixedCycle;
     }

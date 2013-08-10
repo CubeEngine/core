@@ -18,14 +18,14 @@
 package de.cubeisland.engine.core.filesystem.gettext;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.channels.ReadableByteChannel;
 import java.util.Map;
 
 public interface MessageCatalog
 {
     Map<String, String> read() throws IOException;
-    Map<String, String> read(InputStream inputStream) throws IOException;
+    Map<String, String> read(ReadableByteChannel channel) throws IOException;
     void write(Map<String, String> messages) throws IOException;
     void write(OutputStream outputStream, Map<String, String> messages) throws IOException;
 }

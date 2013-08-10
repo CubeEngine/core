@@ -43,7 +43,7 @@ public class VehicleExit extends SimpleLogActionType
     @Override
     protected Set<ActionTypeCategory> getCategories()
     {
-        return new HashSet<ActionTypeCategory>(Arrays.asList(VEHICLE, PLAYER, ENTITY));
+        return new HashSet<>(Arrays.asList(VEHICLE, PLAYER, ENTITY));
     }
 
     @Override

@@ -18,10 +18,11 @@
 package de.cubeisland.engine.core.user;
 
 import java.io.BufferedReader;
-import java.io.File;
+import java.io.BufferedWriter;
 import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.FileWriter;
+import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.sql.Timestamp;
@@ -29,7 +30,6 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Random;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -63,7 +63,6 @@ public abstract class AbstractUserManager implements UserManager
     protected Set<DefaultAttachment> defaultAttachments;
     protected String salt;
     protected MessageDigest messageDigest;
-    private Random random;
 
     protected Database database;
 
@@ -78,7 +77,6 @@ public abstract class AbstractUserManager implements UserManager
 
         this.defaultAttachments = new THashSet<>();
 
-        this.random = new Random();
         this.loadSalt();
 
         try
@@ -271,12 +269,12 @@ public abstract class AbstractUserManager implements UserManager
 
     public synchronized Set<User> getOnlineUsers()
     {
-        return new THashSet<User>(this.onlineUsers);
+        return new THashSet<>(this.onlineUsers);
     }
 
     public synchronized Set<User> getLoadedUsers()
     {
-        return new THashSet<User>(this.cachedUsers.values());
+        return new THashSet<>(this.cachedUsers.values());
     }
 
     public User findOnlineUser(String name)
@@ -327,39 +325,35 @@ public abstract class AbstractUserManager implements UserManager
 
     private void loadSalt()
     {
-        File file = new File(this.core.getFileManager().getDataFolder(), ".salt");
-        try
+        Path file = this.core.getFileManager().getDataPath().resolve(".salt");
+        try (BufferedReader reader = Files.newBufferedReader(file, Charset.defaultCharset()))
         {
-            BufferedReader reader = new BufferedReader(new FileReader(file));
             this.salt = reader.readLine();
-            reader.close();
         }
         catch (FileNotFoundException e)
         {
-            if (this.salt == null)
+            try
             {
-                try
+                this.salt = StringUtils.randomString(new SecureRandom(), 32);
+                try (BufferedWriter writer = Files.newBufferedWriter(file, Charset.defaultCharset()))
                 {
-                    this.salt = StringUtils.randomString(this.random, 32);
-                    FileWriter fileWriter = new FileWriter(file);
-                    fileWriter.write(this.salt);
-                    fileWriter.close();
+                    writer.write(this.salt);
                 }
-                catch (Exception inner)
-                {
-                    throw new IllegalStateException("Could not store the static salt in '" + file.getAbsolutePath() + "'!", inner);
-                }
+            }
+            catch (Exception inner)
+            {
+                throw new IllegalStateException("Could not store the static salt in '" + file + "'!", inner);
             }
         }
         catch (Exception e)
         {
-            throw new IllegalStateException("Could not store the static salt in '" + file.getAbsolutePath() + "'!", e);
+            throw new IllegalStateException("Could not store the static salt in '" + file + "'!", e);
         }
-        FileManager.hideFile(file);
-        file.setReadOnly();
+        FileUtil.hideFile(file);
+        FileUtil.setReadOnly(file);
     }
 
-    private TLongObjectHashMap<Triplet<Long, String, Integer>> failedLogins = new TLongObjectHashMap<Triplet<Long, String, Integer>>();
+    private TLongObjectHashMap<Triplet<Long, String, Integer>> failedLogins = new TLongObjectHashMap<>();
 
     public Triplet<Long, String, Integer> getFailedLogin(User user)
     {
@@ -501,8 +495,6 @@ public abstract class AbstractUserManager implements UserManager
         this.salt = null;
 
         this.messageDigest = null;
-
-        this.random = null;
     }
 
     @Override

@@ -17,7 +17,6 @@
  */
 package de.cubeisland.engine.test;
 
-import java.io.File;
 import java.io.IOException;
 import java.sql.Date;
 import java.sql.SQLException;
@@ -88,8 +87,8 @@ public class Test extends Module
     public void onEnable()
     {
         this.config = Configuration.load(TestConfig.class, this);
-        this.config.loadChild(new File(this.getFolder(), "childConfig.yml"));
-        Configuration.load(TestConfig2.class, new File(this.getFolder(), "updateConfig.yml"));
+        this.config.loadChild(this.getFolder().resolve("childConfig.yml"));
+        Configuration.load(TestConfig2.class, this.getFolder().resolve("updateConfig.yml"));
         // this.getCore().getFileManager().dropResources(TestRecource.values());
         this.uM = this.getCore().getUserManager();
         try
@@ -233,7 +232,7 @@ public class Test extends Module
     {
         try
         {
-            aListOfPlayers = FileUtil.readStringList(new File(this.getFolder(), "testdata" + File.separatorChar + "player.txt"));
+            aListOfPlayers = FileUtil.readStringList(this.getFolder().resolve("testdata").resolve("player.txt"));
         }
         catch (Exception ex)
         {

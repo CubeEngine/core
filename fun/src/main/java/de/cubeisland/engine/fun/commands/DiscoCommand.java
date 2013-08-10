@@ -39,7 +39,7 @@ public class DiscoCommand
     public DiscoCommand(Fun module)
     {
         this.module = module;
-        this.activeTasks = new THashMap<String, DiscoTask>();
+        this.activeTasks = new THashMap<>();
     }
 
     @Command(desc = "Changes from day to night and vice verca", usage = "[world] [delay <value>]", max = 1, params = @Param(names = {

@@ -17,12 +17,14 @@
  */
 package de.cubeisland.engine.core.config;
 
-import java.io.File;
-import java.io.FileInputStream;
+import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.lang.reflect.Field;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.HashSet;
 
+import de.cubeisland.engine.core.Core;
 import de.cubeisland.engine.core.config.codec.MultiConfigurationCodec;
 
 /**
@@ -49,19 +51,18 @@ public class MultiConfiguration<ConfigCodec extends MultiConfigurationCodec> ext
     }
 
     @SuppressWarnings("unchecked")
-    public <T extends Configuration> T loadChild(File sourceFile) //and save
+    public <T extends Configuration> T loadChild(Path sourcePath) //and save
     {
         MultiConfiguration<ConfigCodec> childConfig;
         try
         {
             childConfig = (MultiConfiguration) this.configurationClass.newInstance();
-            childConfig.inheritedFields = new HashSet<Field>();
-            childConfig.setFile(sourceFile);
+            childConfig.inheritedFields = new HashSet<>();
+            childConfig.setPath(sourcePath);
             childConfig.parent = this;
-            try
+            try (BufferedReader reader = Files.newBufferedReader(sourcePath, Core.CHARSET))
             {
-                FileInputStream is = new FileInputStream(sourceFile);
-                childConfig.getCodec().loadChildConfig(childConfig, is);
+                childConfig.getCodec().loadChildConfig(childConfig, reader);
             }
             catch (FileNotFoundException ignored) // not found load from parent / save child
             {

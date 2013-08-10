@@ -17,8 +17,9 @@
  */
 package de.cubeisland.engine.rulebook.bookManagement;
 
-import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -45,18 +46,18 @@ public final class RulebookManager
     {
         this.module = module;
 
-        this.rulebooks = new HashMap<Locale, String[]>();
+        this.rulebooks = new HashMap<>();
 
-        for(File book : RuleBookFile.getLanguageFiles(this.module.getFolder()))
+        for(Path book : RuleBookFile.getLanguageFiles(this.module.getFolder()))
         {
-            Language language = this.getLanguage(StringUtils.stripFileExtension(book.getName()));
+            Language language = this.getLanguage(StringUtils.stripFileExtension(book.getFileName().toString()));
             try
             {
                 rulebooks.put(language.getLocale(), RuleBookFile.convertToPages(book));
             }
             catch(IOException ex)
             {
-                this.module.getLog().error("Can't read the file {}", book.getName());
+                this.module.getLog().error("Can't read the file {}", book.getFileName());
             }
         }
     }
@@ -89,11 +90,7 @@ public final class RulebookManager
     public boolean contains(String languageName, int editDistance)
     {
         Language language = this.getLanguage(languageName, editDistance);
-        if(language != null)
-        {
-            return this.contains(language.getLocale());
-        }
-        return false;
+        return language != null && this.contains(language.getLocale());
     }
 
     public boolean contains(Locale locale)
@@ -116,7 +113,7 @@ public final class RulebookManager
             meta.setTitle(this.module.getCore().getI18n().translate(locale, "rulebook", "Rulebook"));
             meta.setPages(this.getPages(locale));
 
-            List<String> lore = new ArrayList<String>();
+            List<String> lore = new ArrayList<>();
             lore.add(locale.getLanguage());
 
             meta.setLore(lore);
@@ -127,27 +124,18 @@ public final class RulebookManager
         return null;
     }
 
-    public boolean removeBook(Locale locale) throws IOException
+    public void removeBook(Locale locale) throws IOException
     {
-        boolean value = false;
-
-        for(File file : RuleBookFile.getLanguageFiles(this.module.getFolder()))
+        for(Path file : RuleBookFile.getLanguageFiles(this.module.getFolder()))
         {
-            Locale fileLocale = this.getLanguage(StringUtils.stripFileExtension(file.getName())).getLocale();
+            Locale fileLocale = this.getLanguage(StringUtils.stripFileExtension(file.getFileName().toString())).getLocale();
             if(fileLocale.equals(locale))
             {
-                value = file.delete();
-                if(!value)
-                {
-                    throw new IOException("Can't delete the file " + file.getName());
-                }
+                Files.delete(file);
             }
         }
-        if(value)
-        {
-            this.rulebooks.remove(locale);
-        }
-        return value;
+
+        this.rulebooks.remove(locale);
     }
 
     public void addBook(ItemStack book, Locale locale)
@@ -156,7 +144,7 @@ public final class RulebookManager
         {
             try
             {
-                File file = new File(this.module.getFolder().getAbsoluteFile(), locale.getDisplayLanguage() + ".txt");
+                Path file = this.module.getFolder().resolve(locale.getDisplayLanguage() + ".txt");
                 List<String> pages = ((BookMeta) book.getItemMeta()).getPages();
                 RuleBookFile.createFile(file, pages.toArray(new String[pages.size()]));
 

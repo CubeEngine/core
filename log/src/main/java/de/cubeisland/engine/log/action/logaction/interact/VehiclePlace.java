@@ -48,7 +48,7 @@ public class VehiclePlace extends SimpleLogActionType
     @Override
     protected Set<ActionTypeCategory> getCategories()
     {
-        return new HashSet<ActionTypeCategory>(Arrays.asList(VEHICLE, PLAYER, ENTITY));
+        return new HashSet<>(Arrays.asList(VEHICLE, PLAYER, ENTITY));
     }
 
     @Override
@@ -80,7 +80,7 @@ public class VehiclePlace extends SimpleLogActionType
     }
 
     private volatile boolean clearPlanned = false;
-    private Map<Location,Entity> plannedVehiclePlace = new ConcurrentHashMap<Location,Entity>();
+    private Map<Location,Entity> plannedVehiclePlace = new ConcurrentHashMap<>();
 
     public void preplanVehiclePlacement(Location location, Player player)
     {

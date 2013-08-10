@@ -44,15 +44,15 @@ public class ModuleConfig extends Configuration
     @Option("core-version")
     public Version minCoreRevision = Version.ZERO;
     @Option("dependencies")
-    public Set<String> dependencies = new HashSet<String>(0);
+    public Set<String> dependencies = new HashSet<>(0);
     @Option("soft-dependencies")
-    public Set<String> softDependencies = new HashSet<String>(0);
+    public Set<String> softDependencies = new HashSet<>(0);
     @Option("plugin-dependencies")
-    public Set<String> pluginDependencies = new HashSet<String>(0);
+    public Set<String> pluginDependencies = new HashSet<>(0);
     @Option("load-after")
-    public Set<String> loadAfter = new HashSet<String>(0);
+    public Set<String> loadAfter = new HashSet<>(0);
     @Option("services")
-    public Set<String> services = new HashSet<String>(0);
+    public Set<String> services = new HashSet<>(0);
     @Option("service-providers")
-    public Set<String> serviceProviders = new HashSet<String>(0);
+    public Set<String> serviceProviders = new HashSet<>(0);
 }

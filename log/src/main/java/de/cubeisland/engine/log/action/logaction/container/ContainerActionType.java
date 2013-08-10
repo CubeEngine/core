@@ -68,7 +68,7 @@ public class ContainerActionType extends ActionTypeContainer
         super("CONTAINER");
     }
 
-    private TLongObjectHashMap<TObjectIntHashMap<ItemData>> inventoryChanges = new TLongObjectHashMap<TObjectIntHashMap<ItemData>>();
+    private TLongObjectHashMap<TObjectIntHashMap<ItemData>> inventoryChanges = new TLongObjectHashMap<>();
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onInventoryClose(InventoryCloseEvent event)

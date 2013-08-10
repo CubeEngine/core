@@ -54,10 +54,10 @@ public class StringMatcher
         if (maxDistance < 1)
         {
             CubeEngine.getLog().warn("Checking EditDistance lower than 1!", new Throwable());
-            return new TreeMap<String, Integer>();
+            return new TreeMap<>();
         }
-        THashMap<String, Integer> matches = new THashMap<String, Integer>();
-        Ordering comparator = Ordering.natural().onResultOf(Functions.forMap(matches)).compound(Ordering.natural());
+        THashMap<String, Integer> matches = new THashMap<>();
+        Ordering<String> comparator = Ordering.natural().onResultOf(Functions.forMap(matches)).compound(Ordering.natural());
         for (String target : in)
         {
             int distance = target.length() - search.length();
@@ -78,7 +78,7 @@ public class StringMatcher
                 matches.put(target, distance);
             }
         }
-        TreeMap<String, Integer> result = new TreeMap<String, Integer>(comparator);
+        TreeMap<String, Integer> result = new TreeMap<>(comparator);
         result.putAll(matches);
         return result;
     }

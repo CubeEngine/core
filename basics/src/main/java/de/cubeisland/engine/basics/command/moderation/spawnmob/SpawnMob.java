@@ -64,7 +64,7 @@ public class SpawnMob
     {
         String entityName = mobString;
         EntityType entityType;
-        List<String> entityData = new ArrayList<String>();
+        List<String> entityData = new ArrayList<>();
         if (entityName.isEmpty())
         {
             return null;
@@ -119,7 +119,7 @@ public class SpawnMob
         }
         for (String data : datas)
         {
-            Map<EntityDataChanger, Object> changers = new HashMap<EntityDataChanger, Object>();
+            Map<EntityDataChanger, Object> changers = new HashMap<>();
             for (EntityDataChanger entityDataChanger : EntityDataChanger.entityDataChangers)
             {
                 if (entityDataChanger.canApply(entities[0]))

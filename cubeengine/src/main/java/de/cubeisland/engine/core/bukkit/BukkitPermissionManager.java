@@ -79,8 +79,8 @@ public class BukkitPermissionManager implements PermissionManager
             core.getLog().info("Couldn't access the permission manager internals for fast permission registration, falling back to normal registration.");
             this.startup = false;
         }
-        this.wildcards = new THashMap<String, org.bukkit.permissions.Permission>(0);
-        this.modulePermissionMap = new THashMap<Module, Set<String>>(0);
+        this.wildcards = new THashMap<>(0);
+        this.modulePermissionMap = new THashMap<>(0);
         this.logger = LoggerFactory.getLogger("cubeengine.permissions");
 
         this.registerBukkitPermission(CUBEENGINE_WILDCARD);
@@ -137,7 +137,7 @@ public class BukkitPermissionManager implements PermissionManager
         Set<String> perms = this.modulePermissionMap.get(module);
         if (perms == null)
         {
-            this.modulePermissionMap.put(module, perms = new THashSet<String>(1));
+            this.modulePermissionMap.put(module, perms = new THashSet<>(1));
         }
         return perms;
     }
@@ -201,7 +201,7 @@ public class BukkitPermissionManager implements PermissionManager
         {
             parent = permission.getParent().getName();
         }
-        Set<String> bundles = new THashSet<String>();
+        Set<String> bundles = new THashSet<>();
         if (permission.hasBundles())
         {
             for (Permission bundle : permission.getBundles())
@@ -224,7 +224,7 @@ public class BukkitPermissionManager implements PermissionManager
             // next parent-permission
             registeredPerm = parentPerm;
             permission = parentpermission;
-            //TODO detect circular dependen permissions and throw Exception for it
+            //TODO detect circular depending permissions and throw Exception for it
         }
     }
 

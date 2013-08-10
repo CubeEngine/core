@@ -146,7 +146,7 @@ public class User extends UserBase implements CommandSender, AttachmentHolder<Us
 
     public synchronized Set<UserAttachment> getAll()
     {
-        return new THashSet<UserAttachment>(this.attachments.values());
+        return new THashSet<>(this.attachments.values());
     }
 
     @Override
@@ -521,7 +521,7 @@ public class User extends UserBase implements CommandSender, AttachmentHolder<Us
                     this.getLocation().toVector(),
                     this.getEyeLocation().getDirection(),
                     0, distance);
-            TreeSet<Entity> targets = new TreeSet<Entity>(compare);
+            TreeSet<Entity> targets = new TreeSet<>(compare);
             Collection<Entity> list = this.getNearbyEntities(distance, distance, distance);
             double detectDistance = 1;
             while (iterator.hasNext())

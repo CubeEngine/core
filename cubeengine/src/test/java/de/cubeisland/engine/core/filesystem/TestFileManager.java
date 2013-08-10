@@ -17,8 +17,8 @@
  */
 package de.cubeisland.engine.core.filesystem;
 
-import java.io.File;
 import java.io.IOException;
+import java.nio.file.Paths;
 
 import de.cubeisland.engine.core.Core;
 
@@ -26,6 +26,6 @@ public class TestFileManager extends FileManager
 {
     public TestFileManager(Core core) throws IOException
     {
-        super(core, new File("test-data"));
+        super(core, Paths.get("test-data"));
     }
 }

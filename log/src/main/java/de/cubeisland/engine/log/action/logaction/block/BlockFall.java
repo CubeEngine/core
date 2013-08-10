@@ -55,7 +55,7 @@ public class BlockFall extends BlockActionType
     @Override
     protected Set<ActionTypeCategory> getCategories()
     {
-        return new HashSet<ActionTypeCategory>(Arrays.asList(BLOCK, ENVIRONEMENT, PLAYER));
+        return new HashSet<>(Arrays.asList(BLOCK, ENVIRONEMENT, PLAYER));
     }
 
     @Override
@@ -91,10 +91,10 @@ public class BlockFall extends BlockActionType
         }
     }
 
-    private Map<Location,Pair<Entity,BlockActionType>> plannedFall = new ConcurrentHashMap<Location, Pair<Entity, BlockActionType>>();
+    private Map<Location,Pair<Entity,BlockActionType>> plannedFall = new ConcurrentHashMap<>();
     public void preplanBlockFall(final Location location, Entity player, BlockActionType reason)
     {
-        plannedFall.put(location, new Pair<Entity, BlockActionType>(player, reason));
+        plannedFall.put(location, new Pair<>(player, reason));
         BlockFall.this.logModule.getCore().getTaskManager().runTaskDelayed(logModule, new Runnable()
         {
             @Override

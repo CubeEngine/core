@@ -37,7 +37,7 @@ public class TestCommands
     @Command(desc = "Time-parsing")
     public void parsetime(CommandContext context)
     {
-        LinkedList<String> list = new LinkedList<String>();
+        LinkedList<String> list = new LinkedList<>();
         int i = 0;
         while (context.hasArg(i))
         {

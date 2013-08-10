@@ -51,8 +51,8 @@ public class ResolvedDataStore
 
     private void inheritFrom(Set<Role> assignedRoles)
     {
-        this.assignedRoles = new TreeSet<Role>(assignedRoles);
-        this.dependentData = new HashSet<ResolvedDataStore>();
+        this.assignedRoles = new TreeSet<>(assignedRoles);
+        this.dependentData = new HashSet<>();
         for (Role role : assignedRoles)
         {
              if (role.isDirty())
@@ -78,12 +78,12 @@ public class ResolvedDataStore
     {
         this.inheritFrom(assignedRoles);
         // First calculate/apply direct Perm & Metadata
-        this.permissions = new THashMap<String, ResolvedPermission>();
+        this.permissions = new THashMap<>();
         for (Entry<String, Boolean> entry : perms.entrySet())
         {
             if (entry.getKey().endsWith("*"))
             {
-                Map<String, Boolean> subperms = new HashMap<String, Boolean>();
+                Map<String, Boolean> subperms = new HashMap<>();
                 this.resolveBukkitPermission(entry.getKey(), entry.getValue(), subperms);
                 for (Entry<String, Boolean> subEntry : subperms.entrySet())
                 {
@@ -92,7 +92,7 @@ public class ResolvedDataStore
             }
             this.permissions.put(entry.getKey(), new ResolvedPermission(rawDataStore,entry.getKey(),entry.getValue()));
         }
-        this.metadata = new THashMap<String, ResolvedMetadata>();
+        this.metadata = new THashMap<>();
         for (Entry<String, String> entry : metadata.entrySet())
         {
             this.metadata.put(entry.getKey(), new ResolvedMetadata(this.rawDataStore, entry.getKey(), entry.getValue()));
@@ -100,8 +100,8 @@ public class ResolvedDataStore
         // Then merge inheritance Perm & Metadata
         if (assignedRoles != null && !assignedRoles.isEmpty())
         {
-            Map<String, ResolvedPermission> mergePerm = new HashMap<String, ResolvedPermission>();
-            Map<String, ResolvedMetadata> mergeMeta = new HashMap<String, ResolvedMetadata>();
+            Map<String, ResolvedPermission> mergePerm = new HashMap<>();
+            Map<String, ResolvedMetadata> mergeMeta = new HashMap<>();
             for (Role toMerge : assignedRoles)
             {
                 for (Entry<String, ResolvedPermission> entry : toMerge.resolvedData.permissions.entrySet())
@@ -149,7 +149,7 @@ public class ResolvedDataStore
         {
             if (entry.getKey().endsWith("*"))
             {
-                Map<String, Boolean> subperms = new HashMap<String, Boolean>();
+                Map<String, Boolean> subperms = new HashMap<>();
                 this.resolveBukkitPermission(entry.getKey(), entry.getValue(), subperms);
                 for (Entry<String, Boolean> subEntry : subperms.entrySet())
                 {
@@ -244,7 +244,7 @@ public class ResolvedDataStore
 
     public Map<String, Boolean> getResolvedPermissions()
     {
-        Map <String, Boolean> result = new HashMap<String, Boolean>();
+        Map <String, Boolean> result = new HashMap<>();
         for (ResolvedPermission perm : this.permissions.values())
         {
             result.put(perm.getKey(), perm.isSet());
@@ -254,7 +254,7 @@ public class ResolvedDataStore
 
     public Map<String, String> getResolvedMetadata()
     {
-        Map <String, String> result = new HashMap<String, String>();
+        Map <String, String> result = new HashMap<>();
         for (ResolvedMetadata metadata : this.metadata.values())
         {
             result.put(metadata.getKey(), metadata.getValue());

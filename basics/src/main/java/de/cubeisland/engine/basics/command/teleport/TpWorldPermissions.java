@@ -38,7 +38,7 @@ import static de.cubeisland.engine.basics.BasicsPerm.COMMAND;
 public class TpWorldPermissions extends PermissionContainer<Basics>
 {
     private static final Permission COMMAND_TPWORLD = COMMAND.createAbstractChild("tpworld");
-    private static Map<String, Permission> permissions = new THashMap<String, Permission>();
+    private static Map<String, Permission> permissions = new THashMap<>();
     private static Module module;
 
     public TpWorldPermissions(Basics module)
@@ -62,7 +62,7 @@ public class TpWorldPermissions extends PermissionContainer<Basics>
     @Override
     public Set<Permission> getPermissions()
     {
-        return new THashSet<Permission>(permissions.values());
+        return new THashSet<>(permissions.values());
     }
 
     public static Permission getPermission(String world)

@@ -17,8 +17,8 @@
  */
 package de.cubeisland.engine.core.util.matcher;
 
-import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -36,7 +36,6 @@ import de.cubeisland.engine.core.CoreResource;
 import de.cubeisland.engine.core.CubeEngine;
 import de.cubeisland.engine.core.filesystem.FileUtil;
 import de.cubeisland.engine.core.util.StringUtils;
-
 import gnu.trove.map.hash.TByteObjectHashMap;
 import gnu.trove.map.hash.THashMap;
 import gnu.trove.map.hash.TObjectByteHashMap;
@@ -64,13 +63,13 @@ public class MaterialDataMatcher
     {
         if (!update)
         {
-            this.reverseItemData = new THashMap<Material, TShortObjectHashMap<Set<String>>>();
-            this.reverseBlockData = new THashMap<Material, TByteObjectHashMap<Set<String>>>();
-            this.itemData = new THashMap<Material, TObjectShortHashMap<String>>();
-            this.blockData = new THashMap<Material, TObjectByteHashMap<String>>();
+            this.reverseItemData = new THashMap<>();
+            this.reverseBlockData = new THashMap<>();
+            this.itemData = new THashMap<>();
+            this.blockData = new THashMap<>();
         }
         boolean updated = false;
-        File file = new File(CubeEngine.getFileManager().getDataFolder(), CoreResource.DATAVALUES.getTarget());
+        Path file = CubeEngine.getFileManager().getDataPath().resolve(CoreResource.DATAVALUES.getTarget());
         List<String> input;
         if (update)
         {
@@ -84,7 +83,7 @@ public class MaterialDataMatcher
         TByteObjectHashMap<Set<String>> reverseCurrentBlockData = null;
         TObjectShortHashMap<String> currentItemData = null;
         TObjectByteHashMap<String> currentBlockData = null;
-        Set<Material> currentMaterials = new HashSet<Material>();
+        Set<Material> currentMaterials = new HashSet<>();
         for (String line : input)
         {
             line = line.trim();
@@ -107,21 +106,20 @@ public class MaterialDataMatcher
                         currentMaterials.add(material);
                         if (first)
                         {
-                            reverseCurrentItemData = new TShortObjectHashMap<Set<String>>();
-                            reverseCurrentBlockData = new TByteObjectHashMap<Set<String>>();
-                            currentItemData = new TObjectShortHashMap<String>();
-                            currentBlockData = new TObjectByteHashMap<String>();
+                            reverseCurrentItemData = new TShortObjectHashMap<>();
+                            reverseCurrentBlockData = new TByteObjectHashMap<>();
+                            currentItemData = new TObjectShortHashMap<>();
+                            currentBlockData = new TObjectByteHashMap<>();
                             first = false;
                         }
                     }
                     catch (IllegalArgumentException ex)
                     {
                         CubeEngine.getLog().warn("Unknown Material for Data: {}", key);
-                        reverseCurrentItemData = new TShortObjectHashMap<Set<String>>();
-                        reverseCurrentBlockData = new TByteObjectHashMap<Set<String>>();
-                        currentItemData = new TObjectShortHashMap<String>();
-                        currentBlockData = new TObjectByteHashMap<String>();
-                        continue;
+                        reverseCurrentItemData = new TShortObjectHashMap<>();
+                        reverseCurrentBlockData = new TByteObjectHashMap<>();
+                        currentItemData = new TObjectShortHashMap<>();
+                        currentBlockData = new TObjectByteHashMap<>();
                     }
                 }
             }
@@ -141,7 +139,7 @@ public class MaterialDataMatcher
                             names = reverseCurrentBlockData.get(blockDataVal);
                             if (names == null)
                             {
-                                names = new HashSet<String>();
+                                names = new HashSet<>();
                                 reverseCurrentBlockData.put(blockDataVal, names);
                             }
                         }
@@ -151,7 +149,7 @@ public class MaterialDataMatcher
                             names = reverseCurrentItemData.get(itemDataVal);
                             if (names == null)
                             {
-                                names = new HashSet<String>();
+                                names = new HashSet<>();
                                 reverseCurrentItemData.put(itemDataVal, names);
                             }
                         }
@@ -186,7 +184,7 @@ public class MaterialDataMatcher
         {
             CubeEngine.getLog().info("Updated datavalues.txt");
             StringBuilder sb = new StringBuilder();
-            HashMap<TShortObjectHashMap<Set<String>>, String> itemMap = new HashMap<TShortObjectHashMap<Set<String>>, String>();
+            HashMap<TShortObjectHashMap<Set<String>>, String> itemMap = new HashMap<>();
             for (Material material : this.reverseItemData.keySet()) // make serializable...
             {
                 TShortObjectHashMap<Set<String>> map = this.reverseItemData.get(material);
@@ -214,7 +212,7 @@ public class MaterialDataMatcher
                     sb.append("    ").append(StringUtils.implode(",", map.get(value))).append(": ").append(value).append("\n");
                 }
             }
-            HashMap<TByteObjectHashMap<Set<String>>, String> blockMap = new HashMap<TByteObjectHashMap<Set<String>>, String>();
+            HashMap<TByteObjectHashMap<Set<String>>, String> blockMap = new HashMap<>();
             for (Material material : this.reverseBlockData.keySet()) // make serializable...
             {
                 TByteObjectHashMap<Set<String>> map = this.reverseBlockData.get(material);
@@ -337,7 +335,7 @@ public class MaterialDataMatcher
                 return color;
             }
         }
-        catch (NumberFormatException e)
+        catch (NumberFormatException ignored)
         {}
         TObjectShortHashMap<String> woolData = this.itemData.get(Material.WOOL);
         if (woolData == null)

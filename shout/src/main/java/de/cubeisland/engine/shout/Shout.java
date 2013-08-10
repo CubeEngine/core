@@ -17,8 +17,9 @@
  */
 package de.cubeisland.engine.shout;
 
-import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
 import de.cubeisland.engine.core.command.reflected.ReflectedCommand;
 import de.cubeisland.engine.core.config.Configuration;
@@ -40,13 +41,11 @@ public class Shout extends Module
     private AnnouncementManager announcementManager;
     private Announcer announcer;
     private ShoutConfiguration config;
-    private File announcementFolder;
 
     @Override
     public void onEnable()
     {
         this.config = Configuration.load(ShoutConfiguration.class, this);
-        this.announcementFolder = this.getFolder();
         // this.getCore().getFileManager().dropResources(ShoutResource.values());
 
         if (this.getCore().getModuleManager().getModule(Roles.class) == null)
@@ -56,7 +55,7 @@ public class Shout extends Module
         }
 
         this.announcer = new Announcer(this.getCore().getTaskManager(), this.config.initDelay);
-        this.announcementManager = new AnnouncementManager(this, this.announcementFolder);
+        this.announcementManager = new AnnouncementManager(this, this.getFolder());
 
         if (isFirstRun())
         {
@@ -71,7 +70,7 @@ public class Shout extends Module
                                        ex.getLocalizedMessage(), ex);
             }
         }
-        this.announcementManager.loadAnnouncements(this.announcementFolder);
+        this.announcementManager.loadAnnouncements(this.getFolder());
         this.getCore().getEventManager().registerListener(this, new ShoutListener(this));
         this.getCore().getCommandManager().registerCommands(this, new ShoutCommand(this), ReflectedCommand.class);
         this.getCore().getCommandManager().registerCommands(this, new ShoutSubCommands(this), ReflectedCommand.class, "shout");
@@ -97,23 +96,20 @@ public class Shout extends Module
 
     private boolean isFirstRun()
     {
-        File file = new File(this.getFolder(), ".shout");
-        if (file.exists())
+        Path file = this.getFolder().resolve(".shout");
+        if (Files.exists(file))
         {
             return false;
         }
         try
         {
-            file.createNewFile();
-            return true;
+            Files.createFile(file);
         }
-        catch (IOException ex)
+        catch (IOException e)
         {
-            if (this.getCore().isDebug())
-            {
-                this.getLog().warn("There was an error creating a file: " + ex.getLocalizedMessage(), ex);
-            }
-            return false;
+            this.getLog().debug("There was an error creating a file: {}", file);
+            this.getLog().debug(e.getLocalizedMessage(), e);
         }
+        return true;
     }
 }

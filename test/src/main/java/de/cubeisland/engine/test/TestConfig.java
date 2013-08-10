@@ -123,7 +123,7 @@ public class TestConfig extends YamlConfiguration
 
     {
         {
-            locs = new LinkedHashMap<String, Location>();
+            locs = new LinkedHashMap<>();
             locs.put("loc1", new Location(server.getWorld("world"), 1, 2, 3, 0, 0));
             locs.put("loc2", new Location(server.getWorld("world"), 1, 2, 3, 0, 0));
             locs.put("loc3", new Location(server.getWorld("world"), 1, 2, 3, 0, 0));

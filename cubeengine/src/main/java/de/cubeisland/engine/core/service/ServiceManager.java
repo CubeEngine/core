@@ -28,7 +28,7 @@ public class ServiceManager
 {
     private Core core;
 
-    private final Map<Class, RegisteredServiceProvider> providers = new HashMap<Class, RegisteredServiceProvider>();
+    private final Map<Class, RegisteredServiceProvider> providers = new HashMap<>();
 
     public ServiceManager(Core core)
     {
@@ -45,7 +45,7 @@ public class ServiceManager
 
     public <S> void registerService(Class<S> service, S provider, Module module)
     {
-        RegisteredServiceProvider<?> replaced = this.providers.put(service, new RegisteredServiceProvider<S>(service, provider, module));
+        RegisteredServiceProvider<?> replaced = this.providers.put(service, new RegisteredServiceProvider<>(service, provider, module));
         if (replaced == null)
         {
             module.getLog().info("Registered ServiceProvider " + provider.getClass().getName()

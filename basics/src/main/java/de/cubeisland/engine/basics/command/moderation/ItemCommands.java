@@ -120,7 +120,7 @@ public class ItemCommands
             ItemMeta meta = item.getItemMeta();
             String name = ChatFormat.parseFormats(context.getString(0));
             meta.setDisplayName(name);
-            ArrayList<String> list = new ArrayList<String>();
+            ArrayList<String> list = new ArrayList<>();
             for (int i = 1; i < context.getArgCount(); ++i)
             {
                 list.add(ChatFormat.parseFormats(context.getString(i)));
@@ -473,7 +473,7 @@ public class ItemCommands
             User sender = (User)context.getSender();
             if (context.hasFlag("a"))
             {
-                List<ItemStack> list = new ArrayList<ItemStack>();
+                List<ItemStack> list = new ArrayList<>();
                 list.addAll(Arrays.asList(sender.getInventory().getArmorContents()));
                 list.addAll(Arrays.asList(sender.getInventory().getContents()));
                 int repaired = 0;

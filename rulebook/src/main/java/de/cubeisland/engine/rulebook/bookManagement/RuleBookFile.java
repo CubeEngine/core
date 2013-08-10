@@ -17,18 +17,21 @@
  */
 package de.cubeisland.engine.rulebook.bookManagement;
 
-import java.io.BufferedReader;
 import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.channels.FileChannel;
+import java.nio.file.DirectoryStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import de.cubeisland.engine.core.Core;
 import de.cubeisland.engine.core.CubeEngine;
+import de.cubeisland.engine.core.filesystem.FileUtil;
 import de.cubeisland.engine.core.i18n.Language;
 import de.cubeisland.engine.core.util.StringUtils;
 
@@ -37,19 +40,19 @@ public class RuleBookFile
     private final static int NumberOfCharsPerPage = 260;
     private final static int NumberOfCharsPerLine = 20;
 
-    public static File loadFile(String parent, String child)
+    public static Path loadFile(String parent, String child)
     {
-        return new File(parent, child);
+        return Paths.get(parent, child);
     }
 
-    public static Set<File> getLanguageFiles(File directory)
+    public static Set<Path> getLanguageFiles(Path directory)
     {
-        Set<File> files = new HashSet<File>();
-        if (directory.isDirectory())
+        Set<Path> files = new HashSet<>();
+        try (DirectoryStream<Path> directoryStream = Files.newDirectoryStream(directory))
         {
-            for (File file : directory.listFiles())
+            for (Path file : directoryStream)
             {
-                Set<Language> languages = CubeEngine.getI18n().searchLanguages(StringUtils.stripFileExtension(file.getName()));
+                Set<Language> languages = CubeEngine.getI18n().searchLanguages(StringUtils.stripFileExtension(file.getFileName().toString()));
 
                 if (languages.size() == 1)
                 {
@@ -57,53 +60,46 @@ public class RuleBookFile
                 }
             }
         }
+        catch (IOException ignored)
+        {}
         return files;
     }
 
-    public static String[] convertToPages(File file) throws IOException
+    public static String[] convertToPages(Path file) throws IOException
     {
         return convertToBookPageArray(convertToLines(readFile(file)));
     }
 
-    private static String readFile(File file) throws IOException
+    private static String readFile(Path file) throws IOException
     {
-        if (!file.exists())
+        if (!Files.exists(file))
         {
-            createFile(file, "");
+            Files.createFile(file);
+            return "";
         }
 
-        String text = "";
-        String line;
-        BufferedReader reader = new BufferedReader(new FileReader(file));
-        while ((line = reader.readLine()) != null)
+        try (FileChannel in = FileChannel.open(file))
         {
-            text += (line + "\n");
+            return FileUtil.readToString(in, Core.CHARSET);
         }
-        reader.close();
-
-        return text;
     }
 
-    public static void createFile(File file, String[] txt) throws IOException
+    public static void createFile(Path file, String[] txt) throws IOException
     {
-        BufferedWriter writer = new BufferedWriter(new FileWriter(file));
-        for (String page : txt)
-        {
-            writer.write(page);
-        }
-        writer.close();
+        createFile(file, StringUtils.implode("\n", txt));
     }
 
-    public static void createFile(File file, String txt) throws IOException
+    public static void createFile(Path file, String txt) throws IOException
     {
-        BufferedWriter writer = new BufferedWriter(new FileWriter(file));
-        writer.write(txt);
-        writer.close();
+        try (BufferedWriter writer = Files.newBufferedWriter(file, Core.CHARSET))
+        {
+            writer.write(txt);
+        }
     }
 
     private static String[] convertToBookPageArray(List<String> lines)
     {
-        List<String> pages = new ArrayList<String>();
+        List<String> pages = new ArrayList<>();
         pages.add("");
         int page = 0;
 
@@ -129,7 +125,7 @@ public class RuleBookFile
 
     private static List<String> convertToLines(String text)
     {
-        List<String> lines = new ArrayList<String>();
+        List<String> lines = new ArrayList<>();
         for (String line : text.split("\n"))
         {
             line = line.trim();

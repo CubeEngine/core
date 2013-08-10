@@ -34,7 +34,7 @@ class ModuleListener implements Listener
     ModuleListener(Graph moduleGraph)
     {
         this.moduleGraph = moduleGraph;
-        this.plotters = new THashMap<String, ModulePlotter>();
+        this.plotters = new THashMap<>();
     }
 
     @EventHandler

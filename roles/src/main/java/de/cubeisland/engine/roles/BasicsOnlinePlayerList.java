@@ -56,7 +56,7 @@ public class BasicsOnlinePlayerList implements Listener
                 List<User> users = grouped.get(noRole);
                 if (users == null)
                 {
-                    users = new ArrayList<User>();
+                    users = new ArrayList<>();
                     grouped.put(noRole,users);
                 }
                 users.add(user);
@@ -77,7 +77,7 @@ public class BasicsOnlinePlayerList implements Listener
                 List<User> users = grouped.get(display);
                 if (users == null)
                 {
-                    users = new ArrayList<User>();
+                    users = new ArrayList<>();
                     grouped.put(display,users);
                 }
                 users.add(user);

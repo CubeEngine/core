@@ -43,9 +43,9 @@ public class UserDataStore implements RawDataStore
         this.attachment = attachment;
         this.worldID = worldID;
 
-        this.roles = new HashSet<String>();
-        this.permissions = new HashMap<String, Boolean>();
-        this.metadata = new HashMap<String, String>();
+        this.roles = new HashSet<>();
+        this.permissions = new HashMap<>();
+        this.metadata = new HashMap<>();
     }
 
     @Override
@@ -141,35 +141,35 @@ public class UserDataStore implements RawDataStore
     @Override
     public void clearPermissions()
     {
-      this.permissions = new THashMap<String, Boolean>();
+      this.permissions = new THashMap<>();
         this.makeDirty();
     }
 
     @Override
     public void clearMetadata()
     {
-        this.metadata = new THashMap<String, String>();
+        this.metadata = new THashMap<>();
         this.makeDirty();
     }
 
     @Override
     public void clearAssignedRoles()
     {
-        this.roles = new THashSet<String>();
+        this.roles = new THashSet<>();
         this.makeDirty();
     }
 
     @Override
     public void setPermissions(Map<String, Boolean> perms)
     {
-       this.permissions = new THashMap<String, Boolean>(perms);
+       this.permissions = new THashMap<>(perms);
         this.makeDirty();
     }
 
     @Override
     public void setMetadata(Map<String, String> metadata)
     {
-        this.metadata = new THashMap<String, String>(metadata);
+        this.metadata = new THashMap<>(metadata);
         this.makeDirty();
     }
 

@@ -17,9 +17,9 @@
  */
 package de.cubeisland.engine.core;
 
-import java.io.File;
 import java.io.IOException;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import de.cubeisland.engine.core.ban.BanManager;
 import de.cubeisland.engine.core.bukkit.EventManager;
 import de.cubeisland.engine.core.command.ArgumentReader;
@@ -40,8 +40,6 @@ import de.cubeisland.engine.core.util.Version;
 import de.cubeisland.engine.core.util.matcher.Match;
 import de.cubeisland.engine.core.webapi.ApiServer;
 import de.cubeisland.engine.core.world.WorldManager;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -73,7 +71,7 @@ public class TestCore implements Core
     @Override
     public String getSourceVersion()
     {
-        return "";
+        return "unknown-testing";
     }
 
     @Override
@@ -93,7 +91,7 @@ public class TestCore implements Core
     {
         if (this.config == null)
         {
-            this.config = Configuration.load(CoreConfiguration.class, new File(this.getFileManager().getDataFolder(), "core.yml"));
+            this.config = Configuration.load(CoreConfiguration.class, this.getFileManager().getDataPath().resolve("core.yml"));
         }
         return this.config;
     }

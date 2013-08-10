@@ -120,7 +120,7 @@ public class SimpleCommandBackend implements CommandBackend
     public void removeCommands(Module module)
     {
         CubeCommand cubeCommand;
-        for (Command command : new THashSet<Command>(this.commandMap.getCommands()))
+        for (Command command : new THashSet<>(this.commandMap.getCommands()))
         {
             if (command instanceof CubeCommand)
             {
@@ -163,7 +163,7 @@ public class SimpleCommandBackend implements CommandBackend
     @Override
     public void removeCommands()
     {
-        for (Command command : new THashSet<Command>(this.commandMap.getCommands()))
+        for (Command command : new THashSet<>(this.commandMap.getCommands()))
         {
             if (command instanceof CubeCommand)
             {

@@ -22,8 +22,8 @@ import gnu.trove.map.hash.TIntObjectHashMap;
 
 public class Priority
 {
-    private static final TIntObjectHashMap<Priority> prio = new TIntObjectHashMap<Priority>();
-    private static final THashMap<String, Priority> prioNames = new THashMap<String, Priority>();
+    private static final TIntObjectHashMap<Priority> prio = new TIntObjectHashMap<>();
+    private static final THashMap<String, Priority> prioNames = new THashMap<>();
     public static final Priority ABSULTEZERO = new Priority(-273, "ABSULTEZERO");
     public static final Priority MINIMUM = new Priority(0, "MINIMUM");
     public static final Priority LOWEST = new Priority(125, "LOWEST");

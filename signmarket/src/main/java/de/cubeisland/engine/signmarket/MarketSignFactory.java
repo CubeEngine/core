@@ -30,7 +30,7 @@ import gnu.trove.set.hash.TLongHashSet;
 
 public class MarketSignFactory
 {
-    private THashMap<Location, MarketSign> marketSigns = new THashMap<Location, MarketSign>();
+    private THashMap<Location, MarketSign> marketSigns = new THashMap<>();
 
     private SignMarketItemManager signMarketItemManager;
     private SignMarketBlockManager signMarketBlockManager;

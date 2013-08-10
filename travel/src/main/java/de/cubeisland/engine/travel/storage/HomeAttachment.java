@@ -28,7 +28,7 @@ public class HomeAttachment extends UserAttachment
 
     public HomeAttachment()
     {
-        homes = new HashMap<String, Home>();
+        homes = new HashMap<>();
     }
 
     /**

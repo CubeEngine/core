@@ -193,7 +193,7 @@ public class TeleportCommands
             context.sendTranslated("&cYou are not allowed to teleport to %s!", user.getName());
             return;
         }
-        ArrayList<String> noTp = new ArrayList<String>();
+        ArrayList<String> noTp = new ArrayList<>();
         for (Player player : context.getSender().getServer().getOnlinePlayers())
         {
             if (!force && BasicsPerm.TELEPORT_PREVENT_TP.isAuthorized(player))
@@ -277,7 +277,7 @@ public class TeleportCommands
         {
             force = true; // if not allowed ignore flag
         }
-        ArrayList<String> noTp = new ArrayList<String>();
+        ArrayList<String> noTp = new ArrayList<>();
         for (Player player : context.getSender().getServer().getOnlinePlayers())
         {
             if (!force && BasicsPerm.TELEPORT_PREVENT_TP.isAuthorized(player))

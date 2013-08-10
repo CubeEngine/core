@@ -27,7 +27,7 @@ import de.cubeisland.engine.core.user.User;
 
 public class Preview
 {
-    private Queue<BlockState> states = new LinkedList<BlockState>();
+    private Queue<BlockState> states = new LinkedList<>();
 
     public void add(BlockState state)
     {

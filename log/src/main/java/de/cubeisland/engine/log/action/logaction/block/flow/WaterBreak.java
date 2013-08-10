@@ -39,7 +39,7 @@ public class WaterBreak extends BlockActionType
     @Override
     protected Set<ActionTypeCategory> getCategories()
     {
-        return new HashSet<ActionTypeCategory>(Arrays.asList(BLOCK, ENVIRONEMENT, FLOW));
+        return new HashSet<>(Arrays.asList(BLOCK, ENVIRONEMENT, FLOW));
     }
     @Override
     public String getName()
