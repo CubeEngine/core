@@ -52,6 +52,10 @@ public class Version implements Comparable<Version>
 
     public Version(int major, int minor, int patch, String qualifier, int buildNumber)
     {
+        if (buildNumber < 0)
+        {
+            throw new IllegalArgumentException("The build number must be greater or equal than 0");
+        }
         this.major = major;
         this.minor = minor;
         this.patch = patch;
@@ -172,17 +176,24 @@ public class Version implements Comparable<Version>
     public String toString()
     {
         String version = this.getMajor() + "." + this.getMinor() + "." + this.getPatch();
-        if (this.getQualifier() != null)
+        if (this.getBuildNumber() > 0)
+        {
+            if (this.getQualifier() != null)
+            {
+                version += "-" + this.getQualifier().toUpperCase(Locale.US);
+            }
+            version += "-" + this.getBuildNumber();
+        }
+        else if (this.getQualifier() != null)
         {
             version += "-" + this.getQualifier().toUpperCase(Locale.US);
         }
-        version += this.getBuildNumber();
         return version;
     }
 
     /**
      * This method parses a string into a Version object.
-     * A Version instance will be returend in <b>any</b> case!
+     * A Version instance will be returned in <b>any</b> case!
      *
      * @param string the string to parse
      * @return a Version representation of the input string
