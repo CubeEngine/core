@@ -19,6 +19,9 @@ package de.cubeisland.engine.travel.interactions;
 
 import java.util.Set;
 
+import org.bukkit.Location;
+import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
+
 import de.cubeisland.engine.core.command.ArgBounds;
 import de.cubeisland.engine.core.command.CommandContext;
 import de.cubeisland.engine.core.command.CommandResult;
@@ -82,8 +85,13 @@ public class HomeAdminCommand extends ContainerCommand
                     return null;
                 }
             }
-
-            sender.teleport(home.getLocation());
+            Location location = home.getLocation();
+            if (location == null)
+            {
+                context.sendTranslated("&cThis home is in a world that no longer exists!");
+                return null;
+            }
+            sender.teleport(location, TeleportCause.COMMAND);
             if (home.getWelcomeMsg() != null)
             {
                 sender.sendMessage(home.getWelcomeMsg());

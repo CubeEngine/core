@@ -54,7 +54,13 @@ public abstract class TeleportPoint
 
     public Location getLocation()
     {
-        return parent.getLocation();
+        Location location = parent.getLocation();
+        if (location.getWorld() == null)
+        {
+            this.module.getLog().warn("Tried to get location from TeleportPoint in deleted world!");
+            return null;
+        }
+        return location;
     }
 
     public void setLocation(Location location)
@@ -76,7 +82,6 @@ public abstract class TeleportPoint
     {
         return parent.getOwnerKey().equals(user.getEntity().getKey());
     }
-
 
     public void invite(User user)
     {
@@ -141,7 +146,7 @@ public abstract class TeleportPoint
     {
         if (this.ownerName == null)
         {
-            this.ownerName = this.module.getCore().getUserManager().getUserName(parent.getKey().longValue());
+            this.ownerName = this.module.getCore().getUserManager().getUserName(parent.getOwnerKey().longValue());
         }
         return this.ownerName;
     }
@@ -158,7 +163,7 @@ public abstract class TeleportPoint
 
     public String getWelcomeMsg()
     {
-        if (parent.getWelcomemsg().isEmpty())
+        if (parent.getWelcomemsg() == null || parent.getWelcomemsg().isEmpty())
         {
             return null;
         }

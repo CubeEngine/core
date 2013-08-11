@@ -97,8 +97,13 @@ public class HomeCommand extends ContainerCommand
                     sender.sendTranslated("&cYou don't have a home! do &6/setHome");
                     return null;
                 }
-
-                sender.teleport(home.getLocation(), PlayerTeleportEvent.TeleportCause.COMMAND);
+                Location location = home.getLocation();
+                if (location == null)
+                {
+                    context.sendTranslated("&cThis home is in a world that no longer exists!");
+                    return null;
+                }
+                sender.teleport(location, PlayerTeleportEvent.TeleportCause.COMMAND);
                 if (home.getWelcomeMsg() != null)
                 {
                     context.sendMessage(home.getWelcomeMsg());
@@ -116,7 +121,13 @@ public class HomeCommand extends ContainerCommand
                     Home home = this.tpManager.getHome(user, "home");
                     if (home != null && home.canAccess(sender))
                     {
-                        sender.teleport(home.getLocation(), PlayerTeleportEvent.TeleportCause.COMMAND);
+                        Location location = home.getLocation();
+                        if (location == null)
+                        {
+                            context.sendTranslated("&cThis home is in a world that no longer exists!");
+                            return null;
+                        }
+                        sender.teleport(location, PlayerTeleportEvent.TeleportCause.COMMAND);
                         if (home.getWelcomeMsg() != null)
                         {
                             context.sendMessage(home.getWelcomeMsg());
@@ -136,7 +147,13 @@ public class HomeCommand extends ContainerCommand
                     return null;
                 }
 
-                sender.teleport(home.getLocation(), PlayerTeleportEvent.TeleportCause.COMMAND);
+                Location location = home.getLocation();
+                if (location == null)
+                {
+                    context.sendTranslated("&cThis home is in a world that no longer exists!");
+                    return null;
+                }
+                sender.teleport(location, PlayerTeleportEvent.TeleportCause.COMMAND);
                 if (home.getWelcomeMsg() != null)
                 {
                     context.sendMessage(home.getWelcomeMsg());
@@ -218,7 +235,7 @@ public class HomeCommand extends ContainerCommand
                     sender.sendTranslated("&cHomes may not have names that are longer then 32 characters nor contain colon(:)'s!");
                     return;
                 }
-                if (this.tpManager.hasHome(context.getString(0).toLowerCase(), sender))
+                if (this.tpManager.hasHome(name, sender))
                 {
                     sender.sendTranslated("&cYou already have a home by that name! Maybe you need /home move?");
                     return;
@@ -660,6 +677,7 @@ public class HomeCommand extends ContainerCommand
             else if (this.module.getConfig().multipleHomes)
             {
                 home = this.tpManager.getHome(sender, context.getString(0));
+                //TODO can change this home? you could get a from another person with this!!!
             }
             else
             {
@@ -696,6 +714,7 @@ public class HomeCommand extends ContainerCommand
             else if (this.module.getConfig().multipleHomes)
             {
                 home = this.tpManager.getHome(sender, context.getString(0));
+                //TODO can change this home? you could get a from another person with this!!!
             }
             else
             {

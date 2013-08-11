@@ -69,7 +69,13 @@ public class WarpCommand extends ContainerCommand
                 return null;
             }
 
-            sender.teleport(warp.getLocation(), PlayerTeleportEvent.TeleportCause.COMMAND);
+            Location location = warp.getLocation();
+            if (location == null)
+            {
+                context.sendTranslated("&cThis warp is in a world that no longer exists!");
+                return null;
+            }
+            sender.teleport(location, PlayerTeleportEvent.TeleportCause.COMMAND);
             context.sendTranslated("&aYou have been teleported to the warp &6%s", context.getString(0));
         }
         else

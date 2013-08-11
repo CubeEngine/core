@@ -45,7 +45,6 @@ public class TelePointManager
 
     private InviteManager inviteManager;
     private final Map<String, Home> homes;
-    private final Map<String, Home> publicHomes;
     private final Map<String, Warp> warps;
     private final Travel module;
 
@@ -54,7 +53,6 @@ public class TelePointManager
         this.dsl = module.getCore().getDB().getDSL();
         this.module = module;
         this.homes = new HashMap<String, Home>();
-        this.publicHomes = new HashMap<String, Home>();
         this.warps = new HashMap<String, Warp>();
     }
 
@@ -71,9 +69,12 @@ public class TelePointManager
                 Home home = new Home(teleportPoint, this, inviteManager, this.module);
                 if (home.isPublic())
                 {
-                    this.publicHomes.put(home.getName(), home);
+                     this.homes.put(home.getName(), home);
                 }
-                homes.put(home.getStorageName(), home);
+                else
+                {
+                    homes.put(home.getStorageName(), home);
+                }
             }
             else
             {
@@ -112,9 +113,9 @@ public class TelePointManager
         }
 
         HomeAttachment attachment = user.attachOrGet(HomeAttachment.class, this.module);
-        if ((name.equals("home") || name.equals(user.getName())) && this.homes.containsKey(user.getName()+":home"))
+        if ((name.equals("home") || name.equals(user.getName())) && this.homes.containsKey(user.getId()+":home"))
         {
-            return this.homes.get(user.getName()+":home");
+            return this.homes.get(user.getId()+":home");
         }
         if (attachment.hasHome(name))
         {
@@ -122,10 +123,10 @@ public class TelePointManager
         }
         else if (name.startsWith("public:"))
         {
-            name.replaceFirst("public:", "");
-            if (publicHomes.containsKey(name))
+            name = name.replaceFirst("public:", "");
+            if (homes.containsKey(name))
             {
-                Home home = this.publicHomes.get(name);
+                Home home = this.homes.get(name);
                 if (home.canAccess(user))
                 {
                     return home;
@@ -133,25 +134,28 @@ public class TelePointManager
             }
             else
             {
-                Set<String> matches = Match.string().getBestMatches(name, publicHomes.keySet(), 2);
+                Set<String> matches = Match.string().getBestMatches(name, homes.keySet(), 2);
                 if (!matches.isEmpty())
                 {
-                    Home home = publicHomes.get(matches.iterator().next());
-                    if (home.canAccess(user))
+                    for (String match : matches)
                     {
-                        return home;
+                        if (match.contains(":")) continue;
+                        return homes.get(match);
                     }
                 }
             }
         }
         else if (name.contains(":"))
         {
+            User userOfHome = this.module.getCore().getUserManager().getUser(name.substring(0, name.indexOf(":")));
+            if (userOfHome == null) return null;
+            name = name.replaceFirst(userOfHome.getName(), userOfHome.getId().toString());
             if (homes.containsKey(name))
             {
                 Home home = homes.get(name);
-                if (home.canAccess(user))
+                if (home.canAccess(userOfHome))
                 {
-                    this.putHomeToUser(home, user);
+                    this.putHomeToUser(home, userOfHome);
                     return home;
                 }
             }
@@ -166,15 +170,15 @@ public class TelePointManager
         }
         else
         {
-            if (homes.containsKey(user.getName() + ":" + name))
+            if (homes.containsKey(user.getId() + ":" + name))
             {
-                Home home = homes.get(user.getName() + ":" + name);
+                Home home = homes.get(user.getId() + ":" + name);
                 this.putHomeToUser(home, user);
                 return home;
             }
-            else if (publicHomes.containsKey(name))
+            else if (homes.containsKey(name))
             {
-                Home home = this.publicHomes.get(name);
+                Home home = this.homes.get(name);
                 if (home.canAccess(user))
                 {
                     return home;
@@ -188,14 +192,12 @@ public class TelePointManager
                     return attachment.getHome(matches.iterator().next());
                 }
 
-                Set<String> publicMatches = Match.string().getBestMatches(name, publicHomes.keySet(), 2);
-                if (!publicMatches.isEmpty())
+                Set<String> publicMatches = Match.string().getBestMatches(name, homes.keySet(), 2);
+                for (String match : publicMatches)
                 {
-                    Home home = publicHomes.get(publicMatches.iterator().next());
-                    if (home.canAccess(user))
-                    {
-                        return home;
-                    }
+                    if (match.contains(":")) continue;
+                    Home home = homes.get(match);
+                    if (home.canAccess(user)) return home;
                 }
 
                 for (Home home : homes.values())
@@ -213,38 +215,24 @@ public class TelePointManager
 
     /**
      * Get a home by its name.
-     * this have to be in the format owner:home if the home is not public
+     * this have to be in the format owner:home or just home if public
      *
      * @return the home if found
      */
     public Home getHome(String name)
     {
-        Home home = homes.get(name);
-        if (home == null)
+        if (name.contains(":"))
         {
-            home = publicHomes.get(name);
+            User userOfWarp = this.module.getCore().getUserManager().getUser(name.substring(0, name.indexOf(":")));
+            if (userOfWarp == null) return null;
+            name = name.replaceFirst(userOfWarp.getName(), userOfWarp.getId().toString());
         }
-        return home;
+        return homes.get(name);
     }
 
     public int getNumberOfHomes(User user)
     {
-        int homes = 0;
-        for (Home home : this.homes.values())
-        {
-            if (home.isOwner(user))
-            {
-                homes++;
-            }
-        }
-        for (Home home : this.publicHomes.values())
-        {
-            if (home.isOwner(user))
-            {
-                homes++;
-            }
-        }
-        return homes;
+        return this.dsl.selectFrom(TABLE_TP_POINT).where(TABLE_TP_POINT.OWNER.eq(user.getEntity().getKey())).fetchCount();
     }
 
     /**
@@ -393,10 +381,13 @@ public class TelePointManager
             }
         }
         home.getModel().delete();
-        this.homes.remove(home.getStorageName());
         if (home.isPublic())
         {
-            this.publicHomes.remove(home.getName());
+            this.homes.remove(home.getName());
+        }
+        else
+        {
+            this.homes.remove(home.getStorageName());
         }
     }
 
@@ -432,6 +423,9 @@ public class TelePointManager
         }
         else if (name.contains(":"))
         {
+            User userOfWarp = this.module.getCore().getUserManager().getUser(name.substring(0, name.indexOf(":")));
+            if (userOfWarp == null) return null;
+            name = name.replaceFirst(userOfWarp.getName(), userOfWarp.getId().toString());
             if (warps.containsKey(name))
             {
                 Warp warp = warps.get(name);
@@ -449,9 +443,9 @@ public class TelePointManager
         }
         else
         {
-            if (warps.containsKey(user.getName() + ":" + name))
+            if (warps.containsKey(user.getId() + ":" + name))
             {
-                Warp warp = warps.get(user.getName() + ":" + name);
+                Warp warp = warps.get(user.getId()  + ":" + name);
                 this.putWarpToUser(warp, user);
                 return warp;
             }
