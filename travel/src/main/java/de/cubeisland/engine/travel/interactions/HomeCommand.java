@@ -677,6 +677,7 @@ public class HomeCommand extends ContainerCommand
             else if (this.module.getConfig().multipleHomes)
             {
                 home = this.tpManager.getHome(sender, context.getString(0));
+                //TODO can change this home? you could get a from another person with this!!!
             }
             else
             {
@@ -713,6 +714,7 @@ public class HomeCommand extends ContainerCommand
             else if (this.module.getConfig().multipleHomes)
             {
                 home = this.tpManager.getHome(sender, context.getString(0));
+                //TODO can change this home? you could get a from another person with this!!!
             }
             else
             {

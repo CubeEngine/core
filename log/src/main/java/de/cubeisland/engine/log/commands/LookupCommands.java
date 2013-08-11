@@ -123,6 +123,7 @@ public class LookupCommands
         }
         else if (context.getSender() instanceof User)
         {
+            // TODO /lookup show
             if (context.getParams().isEmpty())
             {
                 try

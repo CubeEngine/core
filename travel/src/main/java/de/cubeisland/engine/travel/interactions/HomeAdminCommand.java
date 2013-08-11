@@ -266,7 +266,6 @@ public class HomeAdminCommand extends ContainerCommand
     {
         Home home;
         home = tpManager.getHome(context.getString(0));
-        //TODO can change this home?
         if (home == null)
         {
             context.sendTranslated("&cCouldn't find &6%s", context.getString(0));
@@ -290,7 +289,6 @@ public class HomeAdminCommand extends ContainerCommand
     {
         Home home;
         home = tpManager.getHome(context.getString(0));
-        //TODO can change this home?
         if (home == null)
         {
             context.sendTranslated("&cCouldn't find &6%s", context.getString(0));

@@ -20,7 +20,6 @@ package de.cubeisland.engine.travel.storage;
 import javax.persistence.Transient;
 
 import org.bukkit.Location;
-import org.bukkit.World;
 
 import de.cubeisland.engine.core.CubeEngine;
 import de.cubeisland.engine.core.user.User;
@@ -75,7 +74,7 @@ public class TeleportPointModel extends UpdatableRecordImpl<TeleportPointModel> 
     {
         if (this.location == null)
         {
-            this.location = new Location(CubeEngine.getCore().getWorldManager().getWorld(getWorld().longValue());, getX(), getY(), getZ(), getYaw().floatValue(), getPitch().floatValue());
+            this.location = new Location(CubeEngine.getCore().getWorldManager().getWorld(getWorld().longValue()), getX(), getY(), getZ(), getYaw().floatValue(), getPitch().floatValue());
         }
         return this.location;
     }
