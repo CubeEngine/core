@@ -20,6 +20,7 @@ package de.cubeisland.engine.core.world;
 import java.io.IOException;
 import java.util.Locale;
 import java.util.Map;
+import java.util.UUID;
 
 import org.bukkit.World;
 import org.bukkit.generator.ChunkGenerator;
@@ -65,7 +66,9 @@ public abstract class AbstractWorldManager implements WorldManager
         WorldEntity worldEntity = this.worlds.get(world.getName());
         if (worldEntity == null)
         {
-            worldEntity = dsl.selectFrom(TABLE_WORLD).where(TABLE_WORLD.WORLDUUID.eq(world.getUID().toString())).fetchOne();
+            UUID uid = world.getUID();
+            worldEntity = dsl.selectFrom(TABLE_WORLD).where(TABLE_WORLD.LEAST.eq(uid.getLeastSignificantBits()),
+                                                            TABLE_WORLD.MOST.eq(uid.getMostSignificantBits())).fetchOne();
             if (worldEntity == null)
             {
                 worldEntity = dsl.newRecord(TABLE_WORLD).newWorld(world);

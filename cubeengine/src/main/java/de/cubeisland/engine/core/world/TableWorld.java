@@ -17,14 +17,16 @@
  */
 package de.cubeisland.engine.core.world;
 
-import java.lang.Class;
 import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.List;
+import java.util.UUID;
 
 import de.cubeisland.engine.core.storage.database.Database;
-import de.cubeisland.engine.core.storage.database.TableCreator;
+import de.cubeisland.engine.core.storage.database.TableUpdateCreator;
 import de.cubeisland.engine.core.storage.database.mysql.Keys;
 import de.cubeisland.engine.core.storage.database.mysql.MySQLDatabaseConfiguration;
 import de.cubeisland.engine.core.util.Version;
@@ -35,7 +37,7 @@ import org.jooq.impl.SQLDataType;
 import org.jooq.impl.TableImpl;
 import org.jooq.types.UInteger;
 
-public class TableWorld extends TableImpl<WorldEntity> implements TableCreator<WorldEntity>
+public class TableWorld extends TableImpl<WorldEntity> implements TableUpdateCreator<WorldEntity>
 {
     public static TableWorld TABLE_WORLD;
 
@@ -44,7 +46,7 @@ public class TableWorld extends TableImpl<WorldEntity> implements TableCreator<W
         super(prefix + "worlds");
         INDENTIFY_WORLD = Keys.identity(this, this.KEY);
         PRIMARY_KEY = Keys.uniqueKey(this, this.KEY);
-        UNIQUE_UUID = Keys.uniqueKey(this, this.WORLDUUID);
+        UNIQUE_UUID = Keys.uniqueKey(this, this.LEAST, this.MOST);
     }
 
     public static TableWorld initTable(Database database)
@@ -60,13 +62,47 @@ public class TableWorld extends TableImpl<WorldEntity> implements TableCreator<W
         connection.prepareStatement("CREATE TABLE IF NOT EXISTS " + this.getName()+ " ("+
                                         "`key` int(10) unsigned NOT NULL AUTO_INCREMENT,\n" +
                                         "`worldName` varchar(64) NOT NULL,\n" +
-                                        "`worldUUID` varchar(64) UNIQUE NOT NULL,\n" +
-                                        "PRIMARY KEY (`key`)) " +
+                                        "`UUIDleast` bigint NOT NULL,\n" +
+                                        "`UUIDmost` bigint NOT NULL,\n" +
+                                        "PRIMARY KEY (`key`)," +
+                                        "UNIQUE `u_UUID` (`UUIDleast`, `UUIDmost`)) " +
                                         "ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci\n" +
                                         "COMMENT='1.0.0'").execute();
     }
 
-    private static final Version version = new Version(1);
+    @Override
+    public void update(Connection connection, Version dbVersion) throws SQLException
+    {
+        if (dbVersion.getMajor() == 1)
+        {
+            connection.prepareStatement("ALTER TABLE " + this.getName() +
+                                              "\nADD COLUMN `UUIDleast` BIGINT NOT NULL," +
+                                              "\nADD COLUMN `UUIDmost` BIGINT NOT NULL").execute();
+            ResultSet resultSet = connection.prepareStatement("SELECT `key`, `worldUUID` FROM " + this.getName()).executeQuery();
+            connection.setAutoCommit(false);
+            PreparedStatement updateBatch = connection.prepareStatement("UPDATE " + this.getName() +
+                            "\nSET `UUIDleast` = ?, `UUIDmost` = ?" +
+                            "\nWHERE `key` = ?");
+            while (resultSet.next())
+            {
+                UUID uuid = UUID.fromString(resultSet.getString("worldUUID"));
+                updateBatch.setObject(1, uuid.getLeastSignificantBits());
+                updateBatch.setObject(2, uuid.getMostSignificantBits());
+                updateBatch.setObject(3, resultSet.getLong("key"));
+                updateBatch.addBatch();
+            }
+            updateBatch.executeBatch();
+            connection.setAutoCommit(true);
+            connection.prepareStatement("ALTER TABLE " + this.getName() + " ADD UNIQUE `uuid` ( `UUIDleast` , `UUIDmost` )").execute();
+            connection.prepareStatement("ALTER TABLE " + this.getName() + " DROP `worldUUID`").execute();
+        }
+        else
+        {
+            throw new IllegalStateException("Unknown old TableVersion!");
+        }
+    }
+
+    private static final Version version = new Version(2);
 
     @Override
     public Version getTableVersion()
@@ -80,7 +116,9 @@ public class TableWorld extends TableImpl<WorldEntity> implements TableCreator<W
 
     public final TableField<WorldEntity, UInteger> KEY = createField("key", SQLDataType.INTEGERUNSIGNED, this);
     public final TableField<WorldEntity, String> WORLDNAME = createField("worldName", SQLDataType.VARCHAR.length(64), this);
-    public final TableField<WorldEntity, String> WORLDUUID = createField("worldUUID", SQLDataType.VARCHAR.length(64), this);
+
+    public final TableField<WorldEntity, Long> LEAST = createField("UUIDleast", SQLDataType.BIGINT, this);
+    public final TableField<WorldEntity, Long> MOST = createField("UUIDmost", SQLDataType.BIGINT, this);
 
     @Override
     public Identity<WorldEntity, UInteger> getIdentity() {

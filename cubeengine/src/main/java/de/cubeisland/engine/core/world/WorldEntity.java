@@ -17,19 +17,21 @@
  */
 package de.cubeisland.engine.core.world;
 
+import java.util.UUID;
+
 import org.bukkit.World;
 
+import org.jooq.Field;
 import org.jooq.Record1;
-import org.jooq.Record3;
-import org.jooq.Row3;
+import org.jooq.Record4;
+import org.jooq.Row4;
 import org.jooq.impl.UpdatableRecordImpl;
 import org.jooq.types.UInteger;
 
 import static de.cubeisland.engine.core.world.TableWorld.TABLE_WORLD;
 
 
-// TODO change from String UUID -> 2 Longs
-public class WorldEntity extends UpdatableRecordImpl<WorldEntity> implements Record3<UInteger, String, String>
+public class WorldEntity extends UpdatableRecordImpl<WorldEntity> implements Record4<UInteger, String, Long, Long>
 {
     public WorldEntity() {
         super(TABLE_WORLD);
@@ -38,8 +40,26 @@ public class WorldEntity extends UpdatableRecordImpl<WorldEntity> implements Rec
     public WorldEntity newWorld(World world)
     {
         this.setWorldname(world.getName());
-        this.setWorldUUID(world.getUID().toString());
+        this.setWorldUUID(world.getUID());
         return this;
+    }
+
+    private UUID uid = null;
+
+    public UUID getWorldUUID()
+    {
+        if (uid == null)
+        {
+            uid = new UUID(this.getWorldUUIDMost(), this.getWorldUUIDLeast());
+        }
+        return uid;
+    }
+
+    public void setWorldUUID(UUID uid)
+    {
+        this.uid = uid;
+        this.setWorldUUIDLeast(uid.getLeastSignificantBits());
+        this.setWorldUUIDMost(uid.getMostSignificantBits());
     }
 
     public void setKey(UInteger value) {
@@ -58,16 +78,24 @@ public class WorldEntity extends UpdatableRecordImpl<WorldEntity> implements Rec
         return (String) getValue(1);
     }
 
-    public void setWorldUUID(String value) {
+    public void setWorldUUIDLeast(Long value) {
         setValue(2, value);
     }
 
-    public String getWorldUUID() {
-        return (String) getValue(2);
+    public Long getWorldUUIDLeast() {
+        return (Long) getValue(2);
+    }
+
+    public void setWorldUUIDMost(Long value) {
+        setValue(3, value);
+    }
+
+    public Long getWorldUUIDMost() {
+        return (Long) getValue(3);
     }
 
     @Override
-    public org.jooq.Record1<UInteger> key() {
+    public Record1<UInteger> key() {
         return (Record1) super.key();
     }
 
@@ -76,28 +104,33 @@ public class WorldEntity extends UpdatableRecordImpl<WorldEntity> implements Rec
     // -------------------------------------------------------------------------
 
     @Override
-    public org.jooq.Row3<UInteger, String, String> fieldsRow() {
-        return (Row3) super.fieldsRow();
+    public Row4<UInteger, String, Long, Long> fieldsRow() {
+        return (Row4) super.fieldsRow();
     }
 
     @Override
-    public org.jooq.Row3<UInteger, String, String> valuesRow() {
-        return (Row3) super.valuesRow();
+    public Row4<UInteger, String, Long, Long> valuesRow() {
+        return (Row4) super.valuesRow();
     }
 
     @Override
-    public org.jooq.Field<UInteger> field1() {
+    public Field<UInteger> field1() {
         return TABLE_WORLD.KEY;
     }
 
     @Override
-    public org.jooq.Field<String> field2() {
+    public Field<String> field2() {
         return TABLE_WORLD.WORLDNAME;
     }
 
     @Override
-    public org.jooq.Field<String> field3() {
-        return TABLE_WORLD.WORLDUUID;
+    public Field<Long> field3() {
+        return TABLE_WORLD.LEAST;
+    }
+
+    @Override
+    public Field<Long> field4() {
+        return TABLE_WORLD.MOST;
     }
 
     @Override
@@ -111,7 +144,12 @@ public class WorldEntity extends UpdatableRecordImpl<WorldEntity> implements Rec
     }
 
     @Override
-    public String value3() {
-        return getWorldUUID();
+    public Long value3() {
+        return getWorldUUIDLeast();
+    }
+
+    @Override
+    public Long value4() {
+        return getWorldUUIDMost();
     }
 }

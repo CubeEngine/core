@@ -56,7 +56,7 @@ public class BukkitWorldManager extends AbstractWorldManager
                 List<World> loadedWorlds = server.getWorlds();
                 for (WorldEntity entity : worldEntities)
                 {
-                    World world = server.getWorld(UUID.fromString(entity.getWorldUUID()));
+                    World world = server.getWorld(entity.getWorldUUID());
                     if (loadedWorlds.contains(world))
                     {
                         loadedWorlds.remove(world);
@@ -66,7 +66,6 @@ public class BukkitWorldManager extends AbstractWorldManager
                 }
                 if (!loadedWorlds.isEmpty()) // new worlds?
                 {
-
                     for (World world : loadedWorlds)
                     {
                         WorldEntity entity = dsl.newRecord(TABLE_WORLD).newWorld(world);

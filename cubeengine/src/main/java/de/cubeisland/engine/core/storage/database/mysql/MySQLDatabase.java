@@ -20,6 +20,7 @@ package de.cubeisland.engine.core.storage.database.mysql;
 import java.nio.file.Path;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
@@ -94,12 +95,12 @@ public class MySQLDatabase extends AbstractPooledDatabase
     {
         try
         {
-            ResultSet resultSet = this.query("SELECT table_name, table_comment \n" +
-                                             "FROM INFORMATION_SCHEMA.TABLES \n" +
-                                             "WHERE table_schema = ?" +
-                                             "\nAND table_name = ?",
-                                             this.config.database,
-                                             updater.getName());
+            Connection connection = this.getConnection();
+            PreparedStatement stmt = connection.prepareStatement("SELECT table_name, table_comment \n" +
+                                                                          "FROM INFORMATION_SCHEMA.TABLES \n" +
+                                                                          "WHERE table_schema = ?" +
+                                                                          "\nAND table_name = ?");
+            ResultSet resultSet = this.bindValues(stmt, this.config.database, updater.getName()).executeQuery();
             if (resultSet.next())
             {
                 Version dbVersion = Version.fromString(resultSet.getString("table_comment"));
@@ -111,21 +112,17 @@ public class MySQLDatabase extends AbstractPooledDatabase
                 }
                 else if (dbVersion.isOlderThan(updater.getTableVersion()))
                 {
-                    Connection connection = this.getConnection();
+
                     this.core.getLog().info("table-version is too old! Updating {} from {} to {}",
                                             updater.getName(), dbVersion.toString(), version.toString());
                     try
                     {
-                        connection.setAutoCommit(false);
                         updater.update(connection, dbVersion);
-                        connection.commit();
                     }
                     catch (SQLException ex)
                     {
-                        connection.rollback();
-                        throw ex;
+                        throw new IllegalStateException(ex);
                     }
-                    connection.setAutoCommit(true);
                     this.core.getLog().info("{} got updated to {}", updater.getName(), version.toString());
                     this.bindValues(this.prepareStatement("ALTER TABLE " + updater.getName() + " COMMENT = ?", connection), version.toString()).execute();
                     connection.close(); // return the connection to the pool
