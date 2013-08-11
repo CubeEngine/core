@@ -17,11 +17,22 @@
  */
 package de.cubeisland.engine.cguard;
 
+import de.cubeisland.engine.cguard.storage.TableAccessList;
+import de.cubeisland.engine.cguard.storage.TableGuardLocations;
+import de.cubeisland.engine.cguard.storage.TableGuards;
 import de.cubeisland.engine.core.module.Module;
 
 public class Cguard extends Module
 {
     private CguardConfig config;
+
+    @Override
+    public void onEnable()
+    {
+        this.getCore().getDB().registerTable(TableGuards.initTable(this.getCore().getDB()));
+        this.getCore().getDB().registerTable(TableGuardLocations.initTable(this.getCore().getDB()));
+        this.getCore().getDB().registerTable(TableAccessList.initTable(this.getCore().getDB()));
+    }
 
     /*
     Features:
