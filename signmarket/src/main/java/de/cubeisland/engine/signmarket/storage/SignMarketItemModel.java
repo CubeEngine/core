@@ -73,6 +73,8 @@ public class SignMarketItemModel extends UpdatableRecordImpl<SignMarketItemModel
 
     private String getEnchantmentsAsString(ItemStack item)
     {
+        // TODO if item is enchanted book find enchantments ALSO set this data for enchbooks when loading from db
+        //EnchantmentStorageMeta
         Map<Enchantment, Integer> enchs = item.getEnchantments();
         if (!enchs.isEmpty())
         {
