@@ -48,6 +48,7 @@ public class Home extends TeleportPoint
     public void setVisibility(short visibility)
     {
         parent.setVisibility(visibility);
+        parent.update();
         telePointManager.removeHomeFromUser(this, this.getOwner());
         if (this.invited != null)
         {
