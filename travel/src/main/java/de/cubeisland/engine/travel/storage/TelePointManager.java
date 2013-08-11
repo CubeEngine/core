@@ -32,6 +32,7 @@ import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.util.matcher.Match;
 import de.cubeisland.engine.travel.Travel;
 import org.jooq.DSLContext;
+import org.jooq.Record1;
 import org.jooq.Record2;
 import org.jooq.Result;
 import org.jooq.types.UInteger;
@@ -666,13 +667,13 @@ public class TelePointManager
         Set<Home> homes = new HashSet<>();
         if ((mask & PUBLIC) == PUBLIC)
         {
-            Result<Record2<String,UInteger>> fetch = this.dsl.select(TABLE_TP_POINT.NAME, TABLE_TP_POINT.OWNER)
+            Result<Record1<String>> fetch = this.dsl.select(TABLE_TP_POINT.NAME)
                                                      .from(TABLE_TP_POINT)
                                                      .where(TABLE_TP_POINT.TYPE.eq(TYPE_HOME),
                                                             TABLE_TP_POINT.VISIBILITY.eq(VISIBILITY_PUBLIC)).fetch();
-            for (Record2<String, UInteger> record2 : fetch)
+            for (Record1<String> record2 : fetch)
             {
-                homes.add(this.homes.get(record2.value2().longValue() + ":" + record2.value1()));
+                homes.add(this.homes.get(record2.value1()));
             }
         }
         if ((mask & PRIVATE) == PRIVATE)
@@ -713,14 +714,14 @@ public class TelePointManager
 
         if ((mask & (PUBLIC | OWNED)) == (PUBLIC | OWNED))
         {
-            Result<Record2<String,UInteger>> fetch = this.dsl.select(TABLE_TP_POINT.NAME, TABLE_TP_POINT.OWNER)
+            Result<Record1<String>> fetch = this.dsl.select(TABLE_TP_POINT.NAME)
                                                              .from(TABLE_TP_POINT)
                                                              .where(TABLE_TP_POINT.TYPE.eq(TYPE_HOME),
                                                                     TABLE_TP_POINT.VISIBILITY.eq(VISIBILITY_PUBLIC),
                                                                     TABLE_TP_POINT.OWNER.eq(user.getEntity().getKey())).fetch();
-            for (Record2<String, UInteger> record2 : fetch)
+            for (Record1<String> record1 : fetch)
             {
-                homes.add(this.homes.get(record2.value2().longValue() + ":" + record2.value1()));
+                homes.add(this.homes.get(record1.value1()));
             }
         }
         if ((mask & (PRIVATE | OWNED)) == (PRIVATE | OWNED))
