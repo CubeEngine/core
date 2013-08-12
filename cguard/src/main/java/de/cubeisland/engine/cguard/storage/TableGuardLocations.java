@@ -37,7 +37,6 @@ import org.jooq.impl.TableImpl;
 import org.jooq.types.UInteger;
 
 import static de.cubeisland.engine.cguard.storage.TableGuards.TABLE_GUARD;
-import static de.cubeisland.engine.core.user.TableUser.TABLE_USER;
 import static de.cubeisland.engine.core.world.TableWorld.TABLE_WORLD;
 
 public class TableGuardLocations extends TableImpl<GuardLocationModel>implements TableCreator<GuardLocationModel>
@@ -65,13 +64,16 @@ public class TableGuardLocations extends TableImpl<GuardLocationModel>implements
     public void createTable(Connection connection) throws SQLException
     {
         connection.prepareStatement("CREATE TABLE IF NOT EXISTS " + this.getName()+ " (\n" +
-                                        "`id` int(10) unsigned NOT NULL,\n" +
+                                        "`id` int(10) unsigned NOT NULL AUTO_INCREMENT,\n" +
                                         "`world_id` int(10) unsigned NOT NULL,\n" +
                                         "`x` int(11) NOT NULL,\n" +
                                         "`y` int(11) NOT NULL,\n" +
                                         "`z` int(11) NOT NULL,\n" +
+                                        "`chunkX` int(11) NOT NULL,\n" +
+                                        "`chunkZ` int(11) NOT NULL,\n" +
                                         "`guard_id` int(10) unsigned NOT NULL,\n" +
                                         "PRIMARY KEY (`id`),\n" +
+                                        "KEY `i_chunk` (`chunkX`, `chunkZ`),\n" +
                                         "UNIQUE KEY (`world_id`, `x`, `y`, `z`),\n" +
                                         "FOREIGN KEY f_world (`world_id`) REFERENCES " + TABLE_WORLD.getName() + " (`key`) ON UPDATE CASCADE ON DELETE CASCADE,\n" +
                                         "FOREIGN KEY f_guard (`guard_id`) REFERENCES " + TABLE_GUARD.getName() + " (`id`) ON UPDATE CASCADE ON DELETE CASCADE)\n" +
@@ -98,6 +100,8 @@ public class TableGuardLocations extends TableImpl<GuardLocationModel>implements
     public final TableField<GuardLocationModel, Integer> X = createField("x", SQLDataType.INTEGER, this);
     public final TableField<GuardLocationModel, Integer> Y = createField("y", SQLDataType.INTEGER, this);
     public final TableField<GuardLocationModel, Integer> Z = createField("z", SQLDataType.INTEGER, this);
+    public final TableField<GuardLocationModel, Integer> CHUNKX = createField("chunkX", SQLDataType.INTEGER, this);
+    public final TableField<GuardLocationModel, Integer> CHUNKZ = createField("chunkZ", SQLDataType.INTEGER, this);
     public final TableField<GuardLocationModel, UInteger> GUARD_ID = createField("guard_id", SQLDataType.INTEGERUNSIGNED, this);
 
     @Override

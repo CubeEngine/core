@@ -33,6 +33,20 @@ public class AccessListModel extends UpdatableRecordImpl<AccessListModel> implem
         super(TABLE_ACCESS_LIST);
     }
 
+    public boolean canIn()
+    {
+        return (this.getLevel() & ACCESS_PUT) == ACCESS_PUT;
+    }
+
+    public boolean canOut()
+    {
+        return (this.getLevel() & ACCESS_TAKE) == ACCESS_TAKE;
+    }
+
+    public static final short ACCESS_TAKE = 1 << 0; // put items in chest
+    public static final short ACCESS_PUT = 1 << 1; // take items out of chest
+    public static final short ACCESS_ADMIN = 1 << 2; // manage accesslist
+
     public void setId(UInteger value) {
         setValue(0, value);
     }

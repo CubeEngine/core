@@ -17,6 +17,9 @@
  */
 package de.cubeisland.engine.cguard.storage;
 
+import java.util.UUID;
+
+import de.cubeisland.engine.core.user.User;
 import org.jooq.Field;
 import org.jooq.Record1;
 import org.jooq.Record9;
@@ -28,10 +31,41 @@ import static de.cubeisland.engine.cguard.storage.TableGuards.TABLE_GUARD;
 
 public class GuardModel extends UpdatableRecordImpl<GuardModel> implements Record9<UInteger, UInteger, Short, Byte, Byte, byte[], Byte, Long, Long>
 {
-
     public GuardModel()
     {
         super(TABLE_GUARD);
+    }
+
+    public GuardModel newGuard(User user, byte guardType, byte type)
+    {
+        return this.newGuard(user, guardType, type, null);
+    }
+
+    public GuardModel newGuard(User user, byte guardType, byte type, UUID entityUUID)
+    {
+        this.setOwnerId(user.getEntity().getKey());
+        this.setGuardType(guardType);
+        this.setFlags((short)0); // none
+        this.setType(type);
+        this.setDroptransfer((byte)0);
+        if (entityUUID != null)
+        {
+            this.setEntityUidLeast(entityUUID.getLeastSignificantBits());
+            this.setEntityUidMost(entityUUID.getMostSignificantBits());
+        }
+        return this;
+    }
+
+    private UUID uuid = null;
+
+    public UUID getUUID()
+    {
+        if (this.uuid == null)
+        {
+            if (this.getEntityUidLeast() == null) return null;
+            this.uuid = new UUID(this.getEntityUidMost(), this.getEntityUidLeast());
+        }
+        return this.uuid;
     }
 
     public void setId(UInteger value) {

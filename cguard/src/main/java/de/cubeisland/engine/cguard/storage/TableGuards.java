@@ -62,7 +62,7 @@ public class TableGuards extends TableImpl<GuardModel> implements TableCreator<G
     public void createTable(Connection connection) throws SQLException
     {
         connection.prepareStatement("CREATE TABLE IF NOT EXISTS " + this.getName()+ " (\n" +
-                                        "`id` int(10) unsigned NOT NULL,\n" +
+                                        "`id` int(10) unsigned NOT NULL AUTO_INCREMENT,\n" +
                                         "`owner_id` int(10) unsigned NOT NULL,\n" +
                                         "`flags` smallint NOT NULL,\n" +
                                         "`type` tinyint NOT NULL,\n" +
@@ -102,19 +102,14 @@ public class TableGuards extends TableImpl<GuardModel> implements TableCreator<G
 
     // Possible guarded Types: container (chest,dispenser,hopper etc...) / door(+trapdoor,fencegate) / entities/wContainer(mule,minecart) / entity
     public final TableField<GuardModel, Byte> GUARDED_TYPE = createField("type", SQLDataType.TINYINT, this);
-    public static final byte TYPE_CONTAINER = 0;
-    public static final byte TYPE_DOOR = 1;
-    public static final byte TYPE_ENTITY_CONTAINER = 2;
-    public static final byte TYPE_ENTITY = 3;
-    // TODO more ?
 
     // Possible guard Types: private / public / guarded(readonly) / donation(input only) / free(output only)
     public final TableField<GuardModel, Byte> GUARD_TYPE = createField("guard_type", SQLDataType.TINYINT, this);
-    public static final byte GUARDTYPE_PRIVATE = 0;
-    public static final byte GUARDTYPE_PUBLIC = 1;
-    public static final byte GUARDTYPE_GUARDED = 2;
-    public static final byte GUARDTYPE_DONATION = 3;
-    public static final byte GUARDTYPE_FREE = 4;
+    public static final byte GUARDTYPE_PRIVATE = 1;
+    public static final byte GUARDTYPE_PUBLIC = 2;
+    public static final byte GUARDTYPE_GUARDED = 3;
+    public static final byte GUARDTYPE_DONATION = 4;
+    public static final byte GUARDTYPE_FREE = 5;
 
     // eg. /cguarded [pass <password>] (flag to create pw book/key?)
     public final TableField<GuardModel, byte[]> PASSWORD = createField("password", SQLDataType.VARBINARY.length(128), this);

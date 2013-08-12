@@ -64,7 +64,7 @@ public class TableAccessList extends TableImpl<AccessListModel> implements Table
     public void createTable(Connection connection) throws SQLException
     {
         connection.prepareStatement("CREATE TABLE IF NOT EXISTS " + this.getName()+ " (\n" +
-                                        "`id` int(10) unsigned NOT NULL,\n" +
+                                        "`id` int(10) unsigned NOT NULL AUTO_INCREMENT,\n" +
                                         "`user_id` int(10) unsigned NOT NULL,\n" +
                                         "`guard_id` int(10) unsigned DEFAULT NULL,\n" +
                                         "`level` smallint NOT NULL,\n" +
@@ -95,11 +95,7 @@ public class TableAccessList extends TableImpl<AccessListModel> implements Table
     public final TableField<AccessListModel, UInteger> GUARD_ID = createField("guard_id", SQLDataType.INTEGERUNSIGNED, this);
     // BitMask granting the user access to a protection (this is NOT restricting) (if ACCESS_PUT is not set on a donation chest it does not matter)
     public final TableField<AccessListModel, Short> GUARDLEVEL = createField("level", SQLDataType.SMALLINT, this);
-    public static final short ACCESS_TAKE = 1 << 0; // put items in chest
-    public static final short ACCESS_PUT = 1 << 1; // take items out of chest
-    public static final short ACCESS_ADMIN = 1 << 2; // manage accesslist
-    public static final short ACCESS_FULL = ACCESS_TAKE | ACCESS_PUT; // Default on /cmodify
-    public static final short ACCESS_ALL = ACCESS_FULL | ACCESS_ADMIN;
+
 
     @Override
     public Identity<AccessListModel, UInteger> getIdentity()

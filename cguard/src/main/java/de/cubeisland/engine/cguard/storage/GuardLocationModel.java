@@ -17,20 +17,40 @@
  */
 package de.cubeisland.engine.cguard.storage;
 
+import org.bukkit.Location;
+
+import de.cubeisland.engine.core.CubeEngine;
 import org.jooq.Field;
 import org.jooq.Record1;
-import org.jooq.Record6;
-import org.jooq.Row6;
+import org.jooq.Record8;
+import org.jooq.Row8;
 import org.jooq.impl.UpdatableRecordImpl;
 import org.jooq.types.UInteger;
 
 import static de.cubeisland.engine.cguard.storage.TableGuardLocations.TABLE_GUARD_LOCATION;
 
-public class GuardLocationModel extends UpdatableRecordImpl<GuardLocationModel> implements Record6<UInteger, UInteger, Integer, Integer, Integer, UInteger>
+public class GuardLocationModel extends UpdatableRecordImpl<GuardLocationModel> implements Record8<UInteger, UInteger, Integer, Integer, Integer, Integer, Integer, UInteger>
 {
     public GuardLocationModel()
     {
         super(TABLE_GUARD_LOCATION);
+    }
+
+    public GuardLocationModel newLocation(GuardModel model, Location location)
+    {
+        this.setLocation(location);
+        this.setGuardId(model.getId());
+        return this;
+    }
+
+    private void setLocation(Location location)
+    {
+        this.setWorldId(UInteger.valueOf(CubeEngine.getCore().getWorldManager().getWorldId(location.getWorld())));
+        this.setX(location.getBlockX());
+        this.setY(location.getBlockY());
+        this.setZ(location.getBlockZ());
+        this.setChunkX(location.getChunk().getX());
+        this.setChunkZ(location.getChunk().getZ());
     }
 
     public void setId(UInteger value) {
@@ -73,12 +93,28 @@ public class GuardLocationModel extends UpdatableRecordImpl<GuardLocationModel> 
         return (Integer) getValue(4);
     }
 
-    public void setGuardId(UInteger value) {
+    public void setChunkX(Integer value) {
         setValue(5, value);
     }
 
+    public Integer getChunkX() {
+        return (Integer) getValue(5);
+    }
+
+    public void setChunkZ(Integer value) {
+        setValue(6, value);
+    }
+
+    public Integer getChunkZ() {
+        return (Integer) getValue(6);
+    }
+
+    public void setGuardId(UInteger value) {
+        setValue(7, value);
+    }
+
     public UInteger getGuardId() {
-        return (UInteger) getValue(5);
+        return (UInteger) getValue(7);
     }
 
     // -------------------------------------------------------------------------
@@ -95,13 +131,13 @@ public class GuardLocationModel extends UpdatableRecordImpl<GuardLocationModel> 
     // -------------------------------------------------------------------------
 
     @Override
-    public Row6<UInteger, UInteger, Integer, Integer, Integer, UInteger> fieldsRow() {
-        return (Row6) super.fieldsRow();
+    public Row8<UInteger, UInteger, Integer, Integer, Integer, Integer, Integer, UInteger> fieldsRow() {
+        return (Row8) super.fieldsRow();
     }
 
     @Override
-    public Row6<UInteger, UInteger, Integer, Integer, Integer, UInteger> valuesRow() {
-        return (Row6) super.valuesRow();
+    public Row8<UInteger, UInteger, Integer, Integer, Integer, Integer, Integer, UInteger> valuesRow() {
+        return (Row8) super.valuesRow();
     }
 
     @Override
@@ -130,7 +166,17 @@ public class GuardLocationModel extends UpdatableRecordImpl<GuardLocationModel> 
     }
 
     @Override
-    public Field<UInteger> field6() {
+    public Field<Integer> field6() {
+        return TABLE_GUARD_LOCATION.CHUNKX;
+    }
+
+    @Override
+    public Field<Integer> field7() {
+        return TABLE_GUARD_LOCATION.CHUNKZ;
+    }
+
+    @Override
+    public Field<UInteger> field8() {
         return TABLE_GUARD_LOCATION.GUARD_ID;
     }
 
@@ -160,7 +206,17 @@ public class GuardLocationModel extends UpdatableRecordImpl<GuardLocationModel> 
     }
 
     @Override
-    public UInteger value6() {
+    public Integer value6() {
+        return getChunkX();
+    }
+
+    @Override
+    public Integer value7() {
+        return getChunkZ();
+    }
+
+    @Override
+    public UInteger value8() {
         return getGuardId();
     }
 }

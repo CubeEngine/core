@@ -17,6 +17,9 @@
  */
 package de.cubeisland.engine.cguard;
 
+import de.cubeisland.engine.cguard.commands.GuardCommands;
+import de.cubeisland.engine.cguard.commands.GuardCreateCommands;
+import de.cubeisland.engine.cguard.storage.GuardManager;
 import de.cubeisland.engine.cguard.storage.TableAccessList;
 import de.cubeisland.engine.cguard.storage.TableGuardLocations;
 import de.cubeisland.engine.cguard.storage.TableGuards;
@@ -32,6 +35,12 @@ public class Cguard extends Module
         this.getCore().getDB().registerTable(TableGuards.initTable(this.getCore().getDB()));
         this.getCore().getDB().registerTable(TableGuardLocations.initTable(this.getCore().getDB()));
         this.getCore().getDB().registerTable(TableAccessList.initTable(this.getCore().getDB()));
+        GuardManager manager = new GuardManager(this);
+        GuardCommands mainCmd = new GuardCommands(this, manager);
+        this.getCore().getCommandManager().registerCommand(mainCmd);
+        GuardCreateCommands createCmds = new GuardCreateCommands(this, manager);
+        this.getCore().getCommandManager().registerCommand(createCmds, "cguard");
+        new GuardListener(this, manager);
     }
 
     /*
