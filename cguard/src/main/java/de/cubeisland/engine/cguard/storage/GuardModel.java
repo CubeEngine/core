@@ -20,6 +20,7 @@ package de.cubeisland.engine.cguard.storage;
 import java.util.UUID;
 
 import de.cubeisland.engine.core.user.User;
+import de.cubeisland.engine.core.util.ChatFormat;
 import org.jooq.Field;
 import org.jooq.Record1;
 import org.jooq.Record9;
@@ -57,6 +58,16 @@ public class GuardModel extends UpdatableRecordImpl<GuardModel> implements Recor
     }
 
     private UUID uuid = null;
+
+    public String getColorPass()
+    {
+        StringBuilder builder = new StringBuilder();
+        for (char c : new String(this.getPassword()).toCharArray())
+        {
+            builder.append("&").append(c);
+        }
+        return ChatFormat.parseFormats(builder.toString());
+    }
 
     public UUID getUUID()
     {

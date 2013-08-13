@@ -22,11 +22,13 @@ import java.util.Arrays;
 import de.cubeisland.engine.cguard.Cguard;
 import de.cubeisland.engine.cguard.commands.CommandListener.CommandType;
 import de.cubeisland.engine.cguard.storage.GuardManager;
-import de.cubeisland.engine.core.command.CommandContext;
 import de.cubeisland.engine.core.command.ContainerCommand;
+import de.cubeisland.engine.core.command.parameterized.Flag;
+import de.cubeisland.engine.core.command.parameterized.ParameterizedContext;
 import de.cubeisland.engine.core.command.reflected.Alias;
 import de.cubeisland.engine.core.command.reflected.Command;
 import de.cubeisland.engine.core.user.User;
+import de.cubeisland.engine.core.util.StringUtils;
 
 public class GuardCommands extends ContainerCommand
 {
@@ -40,57 +42,111 @@ public class GuardCommands extends ContainerCommand
 
     @Alias(names = "cinfo")
     @Command(desc = "Shows information about a protection")
-    public void info(CommandContext context)
+    public void info(ParameterizedContext context)
     {
-        if (!(context.getSender() instanceof User))
-        {
-            context.sendTranslated("&cThis command can only be used ingame");
-            return;
-        }
-        manager.commandListener.setCommandType((User)context.getSender(), CommandType.INFO);
+        if (isNotUser(context)) return;
+        // TODO if keybook in hand show info
+        manager.commandListener.setCommandType((User)context.getSender(), CommandType.INFO, null, false);
         context.sendTranslated("&aRightclock to show protection-info");
     }
 
     @Alias(names = "cpersist")
     @Command(desc = "persists your last container guard command")
-    public void persist(CommandContext context)
+    public void persist(ParameterizedContext context)
     {
-        if (!(context.getSender() instanceof User))
-        {
-            context.sendTranslated("&cThis command can only be used ingame");
-            return;
-        }
+        if (isNotUser(context)) return;
         if (this.manager.commandListener.persist((User)context.getSender()))
         {
-
+            context.sendTranslated("&aYour commands will now persist!");
         }
         else
         {
-            // TODO msg
+            context.sendTranslated("&aYour commands will now no longer persist!");
         }
     }
 
-    public void cRemove(CommandContext context)
+    @Alias(names = "cremove")
+    @Command(desc = "Shows information about a protection")
+    public void remove(ParameterizedContext context)
+    {
+        if (isNotUser(context)) return;
+        this.manager.commandListener.setCommandType((User)context.getSender(), CommandType.REMOVE, null);
+        context.sendTranslated("&aRightclick a protection to remove it!");
+    }
+
+    @Alias(names = "cunlock")
+    @Command(desc = "Unlocks a password protected chest", max = 1, min = 1)
+    public void unlock(ParameterizedContext context)
+    {
+        if (isNotUser(context)) return;
+        this.manager.commandListener.setCommandType((User)context.getSender(), CommandType.UNLOCK, context.getString(0));
+        context.sendTranslated("&aRightclick to unlock a password protected chest!");
+    }
+
+    @Alias(names = "cmodify")
+    @Command(names = "modify",
+             desc = "adds or removes player from the accesslist",
+                usage = "<players...>",
+    flags = @Flag(longName = "admin", name = "a"), min = 1, max = 1)
+    public void modify(ParameterizedContext context) // global flag to allow a user to access ALL your protections
+    {
+        if (isNotUser(context)) return;
+        String[] explode = StringUtils.explode(",", context.getString(0));
+        for (String name : explode)
+        {
+            if (name.startsWith("-"))
+            {
+                name = name.substring(1);
+            }
+            User user = this.getModule().getCore().getUserManager().getUser(name, false);
+            if (user == null)
+            {
+                context.sendTranslated("&cUser &2%s&c not found!", name);
+                return;
+            }
+        } // All users do exist!
+        this.manager.commandListener.setCommandType((User)context.getSender(), CommandType.MODIFY, context.getString(0));
+        context.sendTranslated("&aRightclick a protection to modify it!");
+    }
+
+    public void cGive(ParameterizedContext context)
     {
 
     }
 
-    public void cUnlock(CommandContext context)
+    // TODO master
+
+    @Alias(names = "ckey")
+    @Command(names = "key",
+             desc = "creates a KeyBook or invalidates previous KeyBooks",
+             usage = "[-invalidate]",
+             flags = @Flag(longName = "invalidate", name = "i"))
+    public void key(ParameterizedContext context)
     {
-
-    }
-
-    public void cModify(CommandContext context) // global flag to allow a user to access ALL your protections
-    {
-
-    }
-
-    public void cgive(CommandContext context)
-    {
-
+        if (isNotUser(context)) return;
+        if (context.hasFlag("i"))
+        {
+            this.manager.commandListener.setCommandType((User)context.getSender(), CommandType.INVALIDATE_KEYS, context.getString(0));
+            context.sendTranslated("&aRightclick a protection to invalidate old KeyBooks for it!");
+        }
+        else
+        {
+            this.manager.commandListener.setCommandType((User)context.getSender(), CommandType.KEYS, context.getString(0), true);
+            context.sendTranslated("&aRightclick a protection to with a book to create a new KeyBook!");
+        }
     }
 
     // TODO subcmd for flags
     // TODO subcmd for droptransfer
     // TODO subcmd for admin stuff
+
+    public static boolean isNotUser(ParameterizedContext context)
+    {
+        if (!(context.getSender() instanceof User))
+        {
+            context.sendTranslated("&cThis command can only be used ingame");
+            return true;
+        }
+        return false;
+    }
 }

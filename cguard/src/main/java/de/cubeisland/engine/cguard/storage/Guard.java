@@ -23,8 +23,10 @@ import org.bukkit.event.inventory.InventoryOpenEvent;
 
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.util.InventoryGuardFactory;
+import org.jooq.Record1;
 import org.jooq.Result;
 
+import static de.cubeisland.engine.cguard.storage.AccessListModel.ACCESS_ADMIN;
 import static de.cubeisland.engine.cguard.storage.TableAccessList.TABLE_ACCESS_LIST;
 import static de.cubeisland.engine.cguard.storage.TableGuards.*;
 
@@ -168,7 +170,7 @@ public class Guard
 
     public void delete(User user)
     {
-        this.manager.delete(this);
+        this.manager.removeGuard(this);
         user.sendTranslated("&aRemoved Guard!");
     }
 
@@ -177,7 +179,39 @@ public class Guard
         return false; // TODO
     }
 
+    public boolean isOwner(User user)
+    {
+        return this.model.getOwnerId().equals(user.getEntity().getKey());
+    }
 
+    public boolean hasAdmin(User user)
+    {
+        Record1<Short> record1 = this.manager.dsl.select(TABLE_ACCESS_LIST.LEVEL).from(TABLE_ACCESS_LIST)
+                                                  .where(TABLE_ACCESS_LIST.USER_ID.eq(user.getEntity().getKey()),
+                                                         TABLE_ACCESS_LIST.GUARD_ID.eq(this.model.getId())).fetchOne();
+        return record1 != null && (record1.value1() & ACCESS_ADMIN) == ACCESS_ADMIN;
+    }
+
+    public String getColorPass()
+    {
+        return this.model.getColorPass();
+    }
+
+    public Long getId()
+    {
+        return this.model.getId().longValue();
+    }
+
+    public boolean hasPass()
+    {
+        return this.model.getPassword().length > 4;
+    }
+
+    public void notifyKeyUsage(User user)
+    {
+        User owner = this.manager.um.getUser(this.model.getOwnerId().longValue());
+        owner.sendTranslated("&2%s&e just opened one of your chests with a KeyBook!", user.getName()); // TODO do not spam
+    }
 }
 
 

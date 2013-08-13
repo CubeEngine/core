@@ -17,7 +17,11 @@
  */
 package de.cubeisland.engine.cguard;
 
+import java.util.Arrays;
+
 import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.Sound;
 import org.bukkit.block.BlockState;
 import org.bukkit.block.DoubleChest;
 import org.bukkit.entity.Entity;
@@ -27,10 +31,14 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.inventory.InventoryHolder;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.util.Vector;
 
 import de.cubeisland.engine.cguard.storage.Guard;
 import de.cubeisland.engine.cguard.storage.GuardManager;
 import de.cubeisland.engine.core.user.User;
+import de.cubeisland.engine.core.util.ChatFormat;
 
 public class GuardListener implements Listener
 {
@@ -50,9 +58,11 @@ public class GuardListener implements Listener
         if (!(event.getPlayer() instanceof Player)) return;
         Guard guard;
         InventoryHolder holder = event.getInventory().getHolder();
+        Location holderLoc;
         if (holder instanceof Entity)
         {
             guard = this.manager.getGuardForEntityUID(((Entity)holder).getUniqueId());
+            holderLoc = ((Entity)holder).getLocation();
         }
         else
         {
@@ -60,10 +70,12 @@ public class GuardListener implements Listener
             if (holder instanceof BlockState)
             {
                 location = ((BlockState)holder).getLocation();
+                holderLoc = ((BlockState)holder).getLocation();
             }
             else if (holder instanceof DoubleChest)
             {
-                location = ((DoubleChest)holder).getLocation();
+                location = ((BlockState)((DoubleChest)holder).getRightSide()).getLocation();
+                holderLoc = ((DoubleChest)holder).getLocation();
             }
             else return;
             guard = this.manager.getGuardAtLocation(location);
@@ -71,6 +83,62 @@ public class GuardListener implements Listener
         if (guard != null)
         {
             User user = this.module.getCore().getUserManager().getExactUser(event.getPlayer().getName());
+            if (guard.isOwner(user)) return;
+            if (user.getItemInHand().getType().equals(Material.ENCHANTED_BOOK) && user.getItemInHand().getItemMeta().getDisplayName().contains("KeyBook"))
+            {
+                String keyBookName = user.getItemInHand().getItemMeta().getDisplayName();
+                try
+                {
+                    long id = Long.valueOf(keyBookName.substring(keyBookName.indexOf('#')+1, keyBookName.length()));
+                    if (guard.getId().equals(id)) // Id matches ?
+                    {
+                        // Validate book
+                        if (keyBookName.startsWith(guard.getColorPass()))
+                        {
+                            user.sendTranslated("&aAs you approach with your KeyBook the magic lock disappears!");
+                            user.playSound(holderLoc, Sound.PISTON_EXTEND, 1, 2);
+                            user.playSound(holderLoc, Sound.PISTON_EXTEND, 1, (float)1.5);
+                            guard.notifyKeyUsage(user);
+                            return;
+                        }
+                        else
+                        {
+                            user.sendTranslated("&cYou try to open the container with your KeyBook\n" +
+                                                    "but forcefully get pushed away!");
+                            ItemStack itemInHand = user.getItemInHand();
+                            ItemMeta itemMeta = itemInHand.getItemMeta();
+                            itemMeta.setDisplayName(ChatFormat.parseFormats("&4Broken KeyBook"));
+                            itemMeta.setLore(Arrays.asList(ChatFormat.parseFormats(user.translate("&eThis KeyBook")),
+                                                           ChatFormat.parseFormats(user.translate("&elooks old and")),
+                                                           ChatFormat.parseFormats(user.translate("&eused up. It")),
+                                                           ChatFormat.parseFormats(user.translate("&ewont let you")),
+                                                           ChatFormat.parseFormats(user.translate("&eopen any containers!"))));
+                            itemInHand.setItemMeta(itemMeta);
+                            itemInHand.setType(Material.PAPER);
+                            user.updateInventory();
+                            user.playSound(holderLoc, Sound.GHAST_SCREAM, 1, 1);
+                            final Vector userDirection = user.getLocation().getDirection();
+                            user.damage(1);
+                            user.setVelocity(userDirection.multiply(-3));
+                            event.setCancelled(true);
+                            return;
+                        }
+                    }
+                    else
+                    {
+                        user.sendTranslated("&eYou try to open the container with your KeyBook but nothing happens!");
+                        user.playSound(holderLoc, Sound.BLAZE_HIT, 1, 1);
+                        user.playSound(holderLoc, Sound.BLAZE_HIT, 1, (float)0.8);
+                    }
+                }
+                catch (NumberFormatException|IndexOutOfBoundsException ignore) // invalid book / we do not care
+                {}
+            }
+            GuardAttachment guardAttachment = user.get(GuardAttachment.class);
+            if (guardAttachment != null && guardAttachment.hasUnlocked(guard))
+            {
+                return;
+            }
             guard.handleInventoryOpen(event, user);
         }
     }

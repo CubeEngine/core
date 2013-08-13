@@ -54,7 +54,7 @@ public class ChatCommands
     }
 
     @Command(desc = "Sends a private message to someone", names = {
-        "message", "msg", "tell", "pm", "m", "t", "whisper"
+        "message", "msg", "tell", "pm", "m", "t", "whisper", "w"
     }, min = 2, max = NO_MAX, usage = "<player> <message>")
     public void msg(CommandContext context)
     {

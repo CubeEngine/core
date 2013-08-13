@@ -17,6 +17,10 @@
  */
 package de.cubeisland.engine.cguard.storage;
 
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -35,16 +39,19 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.world.ChunkLoadEvent;
 import org.bukkit.event.world.ChunkUnloadEvent;
+import org.bukkit.material.Door;
 
 import de.cubeisland.engine.cguard.Cguard;
 import de.cubeisland.engine.cguard.commands.CommandListener;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.user.UserManager;
+import de.cubeisland.engine.core.util.StringUtils;
 import de.cubeisland.engine.core.world.WorldManager;
 import org.jooq.DSLContext;
 import org.jooq.Result;
 import org.jooq.types.UInteger;
 
+import static de.cubeisland.engine.cguard.storage.TableAccessList.TABLE_ACCESS_LIST;
 import static de.cubeisland.engine.cguard.storage.TableGuardLocations.TABLE_GUARD_LOCATION;
 import static de.cubeisland.engine.cguard.storage.TableGuards.TABLE_GUARD;
 
@@ -62,8 +69,18 @@ public class GuardManager implements Listener
     private final Map<Chunk, Set<Guard>> loadedGuardsInChunk = new HashMap<>();
     private final Map<UUID, Guard> loadedEntityGuards = new HashMap<>();
 
+    public final MessageDigest messageDigest;
+
     public GuardManager(Cguard module)
     {
+        try
+        {
+            messageDigest = MessageDigest.getInstance("SHA-1");
+        }
+        catch (NoSuchAlgorithmException e)
+        {
+            throw new RuntimeException("SHA-1 hash algorithm not available!");
+        }
         this.commandListener = new CommandListener(module, this);
         this.module = module;
         this.wm = module.getCore().getWorldManager();
@@ -140,11 +157,13 @@ public class GuardManager implements Listener
     private void loadChunk(Chunk chunk)
     {
         UInteger world_id = UInteger.valueOf(this.wm.getWorldId(chunk.getWorld()));
-        Result<GuardModel> models = this.dsl.selectFrom(TABLE_GUARD).where(TABLE_GUARD.ID.in(
-            this.dsl.select(TABLE_GUARD_LOCATION.GUARD_ID).from(TABLE_GUARD_LOCATION).
-                where(TABLE_GUARD_LOCATION.WORLD_ID.eq(world_id),
-                      TABLE_GUARD_LOCATION.CHUNKX.eq(chunk.getX()),
-                      TABLE_GUARD_LOCATION.CHUNKZ.eq(chunk.getZ())))).fetch();
+        Result<GuardModel> models = this.dsl.selectFrom(TABLE_GUARD).where(
+                    TABLE_GUARD.ID.in(this.dsl
+                     .select(TABLE_GUARD_LOCATION.GUARD_ID)
+                     .from(TABLE_GUARD_LOCATION)
+                     .where(TABLE_GUARD_LOCATION.WORLD_ID.eq(world_id), TABLE_GUARD_LOCATION.CHUNKX.eq(chunk
+                                                                                                           .getX()), TABLE_GUARD_LOCATION
+                                .CHUNKZ.eq(chunk.getZ())))).fetch();
         Map<UInteger, Result<GuardLocationModel>> locations = this.dsl.selectFrom(TABLE_GUARD_LOCATION)
                                                                       .where(TABLE_GUARD_LOCATION.GUARD_ID.in(models.getValues(TABLE_GUARD.ID)))
                                                                       .fetch().intoGroups(TABLE_GUARD_LOCATION.GUARD_ID);
@@ -214,7 +233,7 @@ public class GuardManager implements Listener
         }
     }
 
-    protected void delete(Guard guard)
+    public void removeGuard(Guard guard)
     {
         guard.model.delete();
         if (guard.isBlockGuard())
@@ -243,9 +262,38 @@ public class GuardManager implements Listener
         }
     }
 
-    public Guard createGuard(Material material, Location location, User user, byte guardType)
+    public void invalidateKeyBooks(Guard guard)
+    {
+        this.createPassword(guard.model, null);
+        guard.model.update();
+    }
+
+    /**
+     * Sets a new password for given guard-model
+     *
+     * @param model
+     * @param pass
+     */
+    private void createPassword(GuardModel model, String pass)
+    {
+        if (pass != null)
+        {
+            synchronized (this.messageDigest)
+            {
+                this.messageDigest.reset();
+                model.setPassword(this.messageDigest.digest(pass.getBytes()));
+            }
+        }
+        else
+        {
+            model.setPassword(StringUtils.randomString(new SecureRandom(), 4, "0123456789abcdefklmnor").getBytes());
+        }
+    }
+
+    public Guard createGuard(Material material, Location location, User user, byte guardType, String password)
     {
         GuardModel model = this.dsl.newRecord(TABLE_GUARD).newGuard(user, guardType, this.getProtecedType(material));
+        this.createPassword(model, password);
         GuardLocationModel loc1 = null;
         GuardLocationModel loc2 = null;
         model.insert();
@@ -265,7 +313,20 @@ public class GuardManager implements Listener
             break;
             case WOODEN_DOOR:
             case IRON_DOOR_BLOCK:
-                // TODO
+                Location location2;
+                if (location.getBlock().getState() instanceof Door)
+                {
+                    if (((Door)location.getBlock().getState()).isTopHalf())
+                    {
+                        location2 = location.clone().add(0, -1, 0);
+                    }
+                    else
+                    {
+                        location2 = location.clone().add(0, 1, 0);
+                    }
+                    loc1 = this.dsl.newRecord(TABLE_GUARD_LOCATION).newLocation(model, location);
+                    loc2 = this.dsl.newRecord(TABLE_GUARD_LOCATION).newLocation(model, location2);
+                }
         }
         if (loc1 == null)
         {
@@ -317,6 +378,53 @@ public class GuardManager implements Listener
 
     public Guard createGuard(Entity entity, User user, byte guardType)
     {
-return null; // TODO
+        return null; // TODO
+    }
+
+    /**
+     *
+     * @param guard
+     * @param modifyUser
+     * @param add
+     * @param level
+     * @return false when updating or not deleting <p>true when inserting or deleting
+     */
+    public boolean setAccess(Guard guard, User modifyUser, boolean add, short level)
+    {
+        AccessListModel model =this.dsl.selectFrom(TABLE_ACCESS_LIST).
+            where(TABLE_ACCESS_LIST.GUARD_ID.eq(guard.model.getId()),
+                  TABLE_ACCESS_LIST.USER_ID.eq(modifyUser.getEntity().getKey())).fetchOne();
+        if (add)
+        {
+            if (model == null)
+            {
+                model = this.dsl.newRecord(TABLE_ACCESS_LIST).newAccess(guard.model, modifyUser);
+                model.setLevel(level);
+                model.insert();
+            }
+            else
+            {
+                model.setLevel(level);
+                model.update();
+                return false;
+            }
+        }
+        else // remove guard
+        {
+            if (model == null) return false;
+            model.delete();
+        }
+        return true;
+    }
+
+    public boolean checkPass(Guard guard, String pass)
+    {
+        if (!guard.hasPass()) return false;
+
+        synchronized (this.messageDigest)
+        {
+            this.messageDigest.reset();
+            return Arrays.equals(this.messageDigest.digest(pass.getBytes()),guard.model.getPassword());
+        }
     }
 }

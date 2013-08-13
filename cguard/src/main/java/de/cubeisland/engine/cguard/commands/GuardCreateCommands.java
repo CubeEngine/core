@@ -18,14 +18,17 @@
 package de.cubeisland.engine.cguard.commands;
 
 import de.cubeisland.engine.cguard.Cguard;
+import de.cubeisland.engine.cguard.commands.CommandListener.CommandType;
 import de.cubeisland.engine.cguard.storage.GuardManager;
-import de.cubeisland.engine.core.command.CommandContext;
 import de.cubeisland.engine.core.command.ContainerCommand;
+import de.cubeisland.engine.core.command.parameterized.Flag;
+import de.cubeisland.engine.core.command.parameterized.ParameterizedContext;
 import de.cubeisland.engine.core.command.reflected.Alias;
 import de.cubeisland.engine.core.command.reflected.Command;
 import de.cubeisland.engine.core.user.User;
 
-import static de.cubeisland.engine.cguard.commands.CommandListener.CommandType.C_PRIVATE;
+import static de.cubeisland.engine.cguard.commands.CommandListener.CommandType.*;
+import static de.cubeisland.engine.cguard.commands.GuardCommands.isNotUser;
 
 public class GuardCreateCommands extends ContainerCommand
 {
@@ -37,44 +40,75 @@ public class GuardCreateCommands extends ContainerCommand
         this.manager = manager;
     }
 
-// TODO pass parameter for creating
-    // flag for creating key-book -> can open chest when in hand
+    private void setCreateProtection(User user, CommandType type, String password, boolean createKeyBook)
+    {
+        this.manager.commandListener.setCommandType(user, type, password, createKeyBook);
+        if (createKeyBook)
+        {
+            user.sendTranslated("&aRightclick the block with a book in your hand to protect the block and create a keybook for it!");
+        }
+        else
+        {
+            user.sendTranslated("&aRightclick the block to protect!");
+        }
+    }
 
     @Alias(names = "cprivate")
     @Command(names = "private",
-    desc = "creates a private protection")
-    public void cPrivate(CommandContext context)
+    desc = "creates a private protection", max = 1, usage = "[password]",
+    flags = @Flag(name = "key", longName = "keybook"))
+    public void cPrivate(ParameterizedContext context)
     {
-        if (!(context.getSender() instanceof User))
-        {
-            context.sendTranslated("&cThis command can only be used ingame");
-            return;
-        }
-        this.manager.commandListener.setCommandType((User)context.getSender(), C_PRIVATE);
-        context.sendTranslated("&aRightclick the block to protect!");
+        if (isNotUser(context)) return;
+        this.setCreateProtection((User)context.getSender(), C_PRIVATE, context.getString(0), context.hasFlag("key"));
     }
 
-    public void cPublic(CommandContext context)
+    @Alias(names = "cpublic")
+    @Command(names = "public",
+             desc = "creates a public protection")
+    public void cPublic(ParameterizedContext context)
     {
-
+        if (isNotUser(context)) return;
+        this.setCreateProtection((User)context.getSender(), C_PUBLIC, null, false);
     }
 
-    public void cDonation(CommandContext context)
+    @Alias(names = "cdonation")
+    @Command(names = "donation",
+             desc = "creates a donation protection", max = 1, usage = "[password]",
+             flags = @Flag(name = "key", longName = "keybook"))
+    public void cDonation(ParameterizedContext context)
     {
-
+        if (isNotUser(context)) return;
+        this.setCreateProtection((User)context.getSender(), C_DONATION, context.getString(0), context.hasFlag("key"));
     }
 
-    public void cFree(CommandContext context)
+    @Alias(names = "cfree")
+    @Command(names = "free",
+             desc = "creates a free protection", max = 1, usage = "[password]",
+             flags = @Flag(name = "key", longName = "keybook"))
+    public void cFree(ParameterizedContext context)
     {
-
+        if (isNotUser(context)) return;
+        this.setCreateProtection((User)context.getSender(), C_FREE, context.getString(0), context.hasFlag("key"));
     }
 
-
-
-    public void cPassword(CommandContext context) // same as private but with pw
+    @Alias(names = "cpassword")
+    @Command(names = "password",
+             desc = "creates a donation protection", min = 1, max = 1, usage = "<password>",
+             flags = @Flag(name = "key", longName = "keybook"))
+    public void cPassword(ParameterizedContext context) // same as private but with pw
     {
-
+        if (isNotUser(context)) return;
+        this.setCreateProtection((User)context.getSender(), C_PRIVATE, context.getString(0), context.hasFlag("key"));
     }
 
-
+    @Alias(names = "cguarded")
+    @Command(names = "guarded",
+             desc = "creates a guarded protection", min = 0, max = 1, usage = "[password]",
+             flags = @Flag(name = "key", longName = "keybook"))
+    public void cguarded(ParameterizedContext context) // same as private but with pw
+    {
+        if (isNotUser(context)) return;
+        this.setCreateProtection((User)context.getSender(), C_GUARDED, context.getString(0), context.hasFlag("key"));
+    }
 }

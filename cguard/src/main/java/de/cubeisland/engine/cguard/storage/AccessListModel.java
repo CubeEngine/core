@@ -17,6 +17,7 @@
  */
 package de.cubeisland.engine.cguard.storage;
 
+import de.cubeisland.engine.core.user.User;
 import org.jooq.Field;
 import org.jooq.Record1;
 import org.jooq.Record4;
@@ -33,6 +34,14 @@ public class AccessListModel extends UpdatableRecordImpl<AccessListModel> implem
         super(TABLE_ACCESS_LIST);
     }
 
+    public AccessListModel newAccess(GuardModel model, User modifyUser)
+    {
+        this.setGuardId(model.getId());
+        this.setUserId(modifyUser.getEntity().getKey());
+        this.setLevel(ACCESS_FULL);
+        return this;
+    }
+
     public boolean canIn()
     {
         return (this.getLevel() & ACCESS_PUT) == ACCESS_PUT;
@@ -46,6 +55,9 @@ public class AccessListModel extends UpdatableRecordImpl<AccessListModel> implem
     public static final short ACCESS_TAKE = 1 << 0; // put items in chest
     public static final short ACCESS_PUT = 1 << 1; // take items out of chest
     public static final short ACCESS_ADMIN = 1 << 2; // manage accesslist
+
+    public static final short ACCESS_FULL = ACCESS_TAKE | ACCESS_PUT;
+    public static final short ACCESS_ALL = ACCESS_FULL | ACCESS_ADMIN;
 
     public void setId(UInteger value) {
         setValue(0, value);
@@ -119,7 +131,7 @@ public class AccessListModel extends UpdatableRecordImpl<AccessListModel> implem
 
     @Override
     public Field<Short> field4() {
-        return TABLE_ACCESS_LIST.GUARDLEVEL;
+        return TABLE_ACCESS_LIST.LEVEL;
     }
 
     @Override

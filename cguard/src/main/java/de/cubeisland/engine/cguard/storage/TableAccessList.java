@@ -94,7 +94,7 @@ public class TableAccessList extends TableImpl<AccessListModel> implements Table
     public final TableField<AccessListModel, UInteger> USER_ID = createField("user_id", SQLDataType.INTEGERUNSIGNED, this);
     public final TableField<AccessListModel, UInteger> GUARD_ID = createField("guard_id", SQLDataType.INTEGERUNSIGNED, this);
     // BitMask granting the user access to a protection (this is NOT restricting) (if ACCESS_PUT is not set on a donation chest it does not matter)
-    public final TableField<AccessListModel, Short> GUARDLEVEL = createField("level", SQLDataType.SMALLINT, this);
+    public final TableField<AccessListModel, Short> LEVEL = createField("level", SQLDataType.SMALLINT, this);
 
 
     @Override
