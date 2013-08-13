@@ -77,7 +77,7 @@ public class PlayerCommands
         {
             if(!FunPerm.COMMAND_HAT_OTHER.isAuthorized( context.getSender() ) )
             {
-                context.sendTranslated("&cYou can't set the had of an other player.");
+                context.sendTranslated("&cYou can't set the hat of an other player.");
                 return;
             }
             
@@ -115,7 +115,8 @@ public class PlayerCommands
         }
         else if(console)
         {
-            context.sendTranslated("&cYou has to specify an item!");
+            context.sendTranslated("&cTrying to be Notch? No hat for you!");
+            context.sendTranslated("&ePlease specify an item!");
             return;
         }
         else
@@ -123,7 +124,11 @@ public class PlayerCommands
             senderInventory = ((User)context.getSender()).getInventory();
             head = senderInventory.getItemInHand().clone();
         }
-        
+        if (head.getTypeId() == 0)
+        {
+            context.sendTranslated("&cYou do not have any item in your hand!");
+            return;
+        }
         userInventory = user.getInventory();
         
         int amount = head.getAmount();
