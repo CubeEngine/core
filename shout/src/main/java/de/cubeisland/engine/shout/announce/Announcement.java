@@ -71,11 +71,11 @@ public class Announcement
      */
     public Announcement(Shout module, String name, String permName, List<String> worlds, Map<Locale, String[]> messages, long delay, boolean fixedCycle)
     {
-        Validate.notEmpty(name, "The announcement must have a name");
-        Validate.notEmpty(permName, "The announcement must have a permission name");
-        Validate.notEmpty(worlds, "The announcement must have a world");
-        Validate.notEmpty(messages, "The announcement must have one or more messages");
-        Validate.isTrue(delay > 0, "The announcement needs a valid delay");
+        if (name == null || name.isEmpty()) throw new IllegalArgumentException("The announcement must have a name");
+        if (permName == null || permName.isEmpty()) throw new IllegalArgumentException("The announcement must have a permission name");
+        if (worlds == null || worlds.isEmpty()) throw new IllegalArgumentException("The announcement must have a world");
+        if (messages == null || messages.isEmpty()) throw new IllegalArgumentException("The announcement must have one or more messages");
+        if (delay < 0) throw new IllegalArgumentException("The announcement must have a valid delay");
 
         this.name = name;
         if (!permName.equalsIgnoreCase("*"))
