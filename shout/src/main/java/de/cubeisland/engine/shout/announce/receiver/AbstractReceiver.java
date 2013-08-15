@@ -46,7 +46,7 @@ public abstract class AbstractReceiver implements Receiver
         if (!motdShown && motd != null)
         {
             this.motdShown = true;
-            return new Pair<Announcement, Integer>(motd, (int)(motd.getDelay() / announcementManager.getGreatestCommonDivisor(this)));
+            return new Pair<Announcement, Integer>(motd, (int)(motd.getDelay() / announcementManager.getGCD(this)));
         }
         for (int x = 0; x < this.announcements.size(); x++)
         {
@@ -54,10 +54,15 @@ public abstract class AbstractReceiver implements Receiver
             this.announcements.add(announcement);
             if (this.canReceive(announcement))
             {
-                return new Pair<>(announcement, (int)(announcement.getDelay() / announcementManager.getGreatestCommonDivisor(this)));
+                return new Pair<>(announcement, (int)(announcement.getDelay() / announcementManager.getGCD(this)));
             }
         }
         return null;
+    }
+
+    public void addAnnouncement(Announcement announcement)
+    {
+        this.announcements.add(announcement);
     }
 
     public Queue<Announcement> getAllAnnouncements()

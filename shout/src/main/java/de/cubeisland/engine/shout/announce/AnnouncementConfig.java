@@ -37,11 +37,8 @@ public class AnnouncementConfig extends Configuration
     @Option("permission")
     public String permNode = "*";
 
-    @Option("group")
-    public String group = "*";
-
-    @Comment("An announcement with fixed cycle will be run for instance every 10 minutes.\n" +
-                 "Not after the last announcements delay. It will also be shown at the same time to all users.")
+    @Comment("An announcement with fixed cycle will be broadcast at a fixed cycle.\n" +
+                 "In opposite to it being displayed to each user after their last announcement.")
     @Option("fixed-cycle")
     public boolean fixedCycle = false;
 }

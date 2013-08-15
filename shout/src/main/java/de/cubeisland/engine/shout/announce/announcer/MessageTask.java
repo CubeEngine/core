@@ -17,6 +17,7 @@
  */
 package de.cubeisland.engine.shout.announce.announcer;
 
+import de.cubeisland.engine.core.CubeEngine;
 import de.cubeisland.engine.core.task.TaskManager;
 import de.cubeisland.engine.core.util.Pair;
 import de.cubeisland.engine.shout.announce.Announcement;
@@ -24,28 +25,30 @@ import de.cubeisland.engine.shout.announce.receiver.Receiver;
 
 public class MessageTask implements Runnable
 {
-    private final TaskManager tm;
+    private final TaskManager taskManager;
     private final Receiver receiver;
-    private int runs;
-    private int nextExecution;
+    private int runs = 0;
+    private int nextExecution = 0;
+    private long lastTime;
 
     public MessageTask(TaskManager taskManager, Receiver receiver)
     {
-        this.tm = taskManager;
+        this.taskManager = taskManager;
         this.receiver = receiver;
-        this.runs = 0;
-        this.nextExecution = 0;
+        lastTime = System.currentTimeMillis();
     }
 
     @Override
     public void run()
     {
+        long tmpTime = System.currentTimeMillis();
+        CubeEngine.getLog().trace(receiver.getName() + " time since last: " + (tmpTime - lastTime));
         if (this.runs == this.nextExecution)
         {
             Pair<Announcement, Integer> pair = receiver.getNextDelayAndAnnouncement();
             if (pair != null && pair.getLeft() != null && pair.getRight() != null)
             {
-                this.tm.callSync(new SenderTask(pair.getLeft().getMessage(receiver.getLocale()), this.receiver));
+                this.taskManager.callSync(new SenderTask(pair.getLeft().getMessage(receiver.getLocale()), this.receiver));
                 this.nextExecution = this.runs + pair.getRight();
             }
             else
@@ -53,6 +56,7 @@ public class MessageTask implements Runnable
                 this.nextExecution = this.runs + 1;
             }
         }
-        ++this.runs;
+        this.runs++;
+        lastTime = tmpTime;
     }
 }

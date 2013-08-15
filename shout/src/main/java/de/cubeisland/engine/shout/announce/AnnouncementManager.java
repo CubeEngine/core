@@ -18,6 +18,7 @@
 package de.cubeisland.engine.shout.announce;
 
 import java.io.BufferedWriter;
+import java.io.File;
 import java.io.IOException;
 import java.nio.channels.FileChannel;
 import java.nio.file.DirectoryStream;
@@ -55,12 +56,13 @@ import de.cubeisland.engine.shout.announce.receiver.Receiver;
 import de.cubeisland.engine.shout.announce.receiver.UserReceiver;
 import org.apache.commons.lang.Validate;
 import org.slf4j.Logger;
+import sun.swing.BakedArrayList;
 
 import static de.cubeisland.engine.core.filesystem.FileExtensionFilter.TXT;
 import static de.cubeisland.engine.core.filesystem.FileExtensionFilter.YAML;
 
 /**
- * Class to manage all the dynamicAnnouncements and their receivers
+ * Class to manage all the announcements and their receivers
  */
 public class AnnouncementManager
 {
@@ -102,11 +104,11 @@ public class AnnouncementManager
     }
 
     /**
-     * Get all the dynamicAnnouncements
+     * Get all the announcements registered
      *
-     * @return All dynamicAnnouncements
+     * @return All announcements currently registered
      */
-    public Collection<Announcement> getDynamicAnnouncements()
+    public Collection<Announcement> getAllAnnouncements()
     {
         Collection<Announcement> announcements = new HashSet<>();
         announcements.addAll(this.dynamicAnnouncements.values());
@@ -118,7 +120,7 @@ public class AnnouncementManager
      * Get announcement by name
      *
      * @param   name    Name of the announcement
-     * @return The announcement with this name, or null if not exist
+     * @return  The announcement with this name, or null if not exist
      */
     public Announcement getAnnouncement(String name)
     {
@@ -131,7 +133,7 @@ public class AnnouncementManager
         {
             Set<String> matches = Match.string().getBestMatches(name, announcements.keySet(), 3);
 
-            if (matches.size() == 1)
+            if (matches.size() > 0)
             {
                 announcement = announcements.get(matches.iterator().next());
             }
@@ -147,7 +149,8 @@ public class AnnouncementManager
      */
     public boolean hasAnnouncement(String name)
     {
-        return this.dynamicAnnouncements.containsKey(name.toLowerCase(Locale.ENGLISH)) || this.fixedCycleAnnouncements.containsKey(name.toLowerCase(Locale.ENGLISH));
+        return this.dynamicAnnouncements.containsKey(name.toLowerCase(Locale.ENGLISH))
+            || this.fixedCycleAnnouncements.containsKey(name.toLowerCase(Locale.ENGLISH));
     }
 
     /**
@@ -157,7 +160,7 @@ public class AnnouncementManager
      * @param   receiver	The user to get the gcd of their dynamicAnnouncements.
      * @return	The gcd of the users dynamicAnnouncements.
      */
-    public long getGreatestCommonDivisor(Receiver receiver)
+    public long getGCD(Receiver receiver)
     {
         List<Announcement> tmpAnnouncements = this.getAnnouncements(receiver.getName());
         long[] delays;
@@ -174,16 +177,16 @@ public class AnnouncementManager
         {
             delays[x] = tmpAnnouncements.get(x).getDelay();
         }
-        return this.greatestCommonDivisor(delays);
+        return this.gcd(delays);
     }
 
     /**
-     * Get the greatest common divisor of a list of integers.
+     * Calculate the greatest common divisor of a list of integers.
      *
      * @param	integers	The list to get the gcd from.
      * @return	gcd of all the integers in the list.
      */
-    private long greatestCommonDivisor(long[] integers)
+    private long gcd(long[] integers)
     {
         long result = integers[0];
 
@@ -224,7 +227,7 @@ public class AnnouncementManager
             receiver.setMOTD(this.motd);
         }
 
-        // Load what dynamicAnnouncements should be displayed to the user
+        // Load what dynamic time announcements should be displayed to the user
         for (Announcement announcement : this.dynamicAnnouncements.values())
         {
             if (receiver.couldReceive(announcement))
@@ -234,13 +237,15 @@ public class AnnouncementManager
         }
 
         if (messages.isEmpty())
+        {
             return;
+        }
 
         receiver.setAllAnnouncements(messages);
 
         this.receivers.put(receiver.getName(), receiver);
         this.announcer.scheduleDynamicTask(receiver.getName(),
-            new MessageTask(this.module.getCore().getTaskManager(), receiver), this.getGreatestCommonDivisor(receiver));
+            new MessageTask(this.module.getCore().getTaskManager(), receiver), this.getGCD(receiver));
     }
 
     /**
@@ -299,18 +304,32 @@ public class AnnouncementManager
         if (announcement.hasFixedCycle())
         {
             this.fixedCycleAnnouncements.put(announcement.getName().toLowerCase(Locale.ENGLISH), announcement);
-            this.announcer.scheduleFixedTask(announcement.getName().toLowerCase(Locale.ENGLISH), new FixedCycleTask(this.module, announcement), announcement.getDelay());
+            this.announcer.scheduleFixedTask(announcement.getName().toLowerCase(Locale.ENGLISH),
+                                             new FixedCycleTask(this.module.getCore().getUserManager(),
+                                                                this.module.getCore().getTaskManager(), announcement),
+                                             announcement.getDelay());
         }
         else
         {
             this.dynamicAnnouncements.put(announcement.getName().toLowerCase(Locale.ENGLISH), announcement);
+            for (Receiver receiver : this.receivers.values())
+            {
+                if (receiver.couldReceive(announcement))
+                {
+                    this.announcer.cancelDynamicTask(receiver.getName());
+                    receiver.addAnnouncement(announcement);
+                    this.announcer.scheduleDynamicTask(receiver.getName(),
+                                                       new MessageTask(this.module.getCore().getTaskManager(), receiver),
+                                                       this.getGCD(receiver));
+                }
+            }
         }
     }
 
     /**
-     * Load dynamicAnnouncements
+     * Load announcements
      *
-     * @param	announcementFolder	The folder to load the dynamicAnnouncements from
+     * @param	announcementFolder	The folder to load the announcements from
      */
     public void loadAnnouncements(Path announcementFolder)
     {
@@ -328,6 +347,7 @@ public class AnnouncementManager
                     // this might be the message of the day
                     try
                     {
+                        this.logger.debug("Loading the MOTD");
                         this.motd = this.loadMotd(path);
                         motdLoaded = true;
                         continue;
@@ -361,7 +381,7 @@ public class AnnouncementManager
     }
 
     /**
-     * Load an specific announcement
+     * Load a specific announcement
      *
      * @param announcementFolder the folder to load the announcement from
      * @throws ShoutException if folder is not an folder or don't contain
@@ -390,7 +410,7 @@ public class AnnouncementManager
                     catch (IOException e)
                     {
                         this.module.getLog().info("Failed to rename the meta file, using it anyway: {}", alternative.getFileName());
-                        this.module.getLog().info(e.getLocalizedMessage(), e);
+                        this.module.getLog().debug(e.getLocalizedMessage(), e);
                         metaFile = alternative;
                     }
                 }
@@ -430,8 +450,9 @@ public class AnnouncementManager
                 }
                 Language language;
                 Set<Language> langs = this.i18n.searchLanguages(name);
-                if (langs.size() != 1)
+                if (langs.size() < 1)
                 {
+                    this.module.getLog().info("Tried to load a lang-file with an invalid locale: {}", name);
                     continue;
                 }
 
@@ -448,14 +469,14 @@ public class AnnouncementManager
                 catch (IOException e)
                 {
                     this.module.getLog().info("Failed to load an announcement file: {}", langFile);
-                    this.module.getLog().info(e.getLocalizedMessage(), e);
+                    this.module.getLog().debug(e.getLocalizedMessage(), e);
                 }
             }
         }
         catch (IOException e)
         {
             this.module.getLog().warn("Failed to read an announcement folder: {}", announcementFolder);
-            this.module.getLog().warn(e.getLocalizedMessage(), e);
+            this.module.getLog().debug(e.getLocalizedMessage(), e);
         }
 
 
@@ -463,7 +484,6 @@ public class AnnouncementManager
         this.logger.trace("Worlds: {}", config.worlds);
         this.logger.trace("Delay(in milliseconds): {}", delay);
         this.logger.trace("Permission: {}", config.permNode);
-        this.logger.trace("Group: {}", config.group);
         this.logger.trace("FixedCycle: {}", config.fixedCycle);
 
         try
@@ -525,14 +545,13 @@ public class AnnouncementManager
      * This will not load the announcement into the plugin
      *
      */
-    public void createAnnouncement(String name, Locale locale, String message, String delay, String world, String group, String permNode, boolean fc) throws IOException, IllegalArgumentException
+    public Announcement createAnnouncement(String name, Locale locale, String message, String delay, String world, String permNode, boolean fc) throws IOException, IllegalArgumentException
     {
         Validate.notEmpty(name);
         Validate.notNull(locale);
         Validate.notEmpty(message);
         Validate.notEmpty(delay);
         Validate.notEmpty(world);
-        Validate.notEmpty(group);
         Validate.notEmpty(permNode);
 
         Path folder = this.announcementFolder.resolve(name);
@@ -544,7 +563,6 @@ public class AnnouncementManager
         config.delay = delay;
         config.worlds = Arrays.asList(world);
         config.permNode = permNode;
-        config.group = group;
         config.fixedCycle = fc;
         config.save();
 
@@ -552,5 +570,8 @@ public class AnnouncementManager
         {
             writer.write(message);
         }
+        Map<Locale, String[]> messages = new HashMap<>();
+        messages.put(locale, StringUtils.explode("\n", message));
+        return new Announcement(name,permNode, Arrays.asList(world), messages, parseDelay(delay), fc);
     }
 }

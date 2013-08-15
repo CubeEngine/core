@@ -22,6 +22,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerQuitEvent;
 
+import de.cubeisland.engine.core.bukkit.AfterJoinEvent;
 import de.cubeisland.engine.core.bukkit.PlayerLanguageReceivedEvent;
 
 import de.cubeisland.engine.core.user.User;
@@ -40,7 +41,7 @@ public class ShoutListener implements Listener
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
-    public void onLanguageReceived(PlayerLanguageReceivedEvent event)
+    public void afterPlayerJoin(AfterJoinEvent event)
     {
         User user = this.module.getCore().getUserManager().getExactUser(event.getPlayer().getName());
 

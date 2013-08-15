@@ -27,7 +27,9 @@ import java.util.concurrent.TimeUnit;
 import de.cubeisland.engine.core.task.TaskManager;
 
 /**
- * Class to manage dynamicTasks based on the system time.
+ * Class to manage announcers. It's bound to system time, not the server.
+ * This class does not time the tasks, it will only schedule them at the supplied delay.
+ * Dynamic and fixed tasks are only separated for convenience, and is treated equal.
  */
 public class Announcer
 {
@@ -47,37 +49,41 @@ public class Announcer
     }
 
     /**
-     * Schedule a task based on the system time.
+     * Schedule a dynamic time task.
+     * A dynamic time task is run after the last task and will display at different times for each player.
      *
+     * @param   id       The identification of the task, could be the name of the receiver
      * @param	task	 The task to schedule
      * @param	delay	 Delay between each time this task in run.
      */
-    public void scheduleDynamicTask(String receiver, Runnable task, long delay)
+    public void scheduleDynamicTask(String id, Runnable task, long delay)
     {
-        this.dynamicTasks.put(receiver, this.executor
+        this.dynamicTasks.put(id, this.executor
             .scheduleAtFixedRate(task, this.initDelay, delay, TimeUnit.MILLISECONDS));
     }
 
     /**
-     * Schedule a task based on the system time.
+     * Schedule a fixed time task.
+     * A fixed time task will display at the same time for all users.
      *
+     * @param   id       The identification of the task, could be the name of the announcement
      * @param	task	 The task to schedule
      * @param	delay	 Delay between each time this task in run.
      */
-    public void scheduleFixedTask(String announcement, Runnable task, long delay)
+    public void scheduleFixedTask(String id, Runnable task, long delay)
     {
-        this.fixedTasks.put(announcement, this.executor
+        this.fixedTasks.put(id, this.executor
             .scheduleAtFixedRate(task, this.initDelay, delay, TimeUnit.MILLISECONDS));
     }
 
     /**
-     * Stops a receiver from receiving any more announcements
+     * Cancels a dynamic time task.
      *
-     * @param receiver the receiver the task should be stopped for
+     * @param id The identification of the task to stop
      */
-    public void cancelDynamicTask(String receiver)
+    public void cancelDynamicTask(String id)
     {
-        ScheduledFuture future = this.dynamicTasks.remove(receiver);
+        ScheduledFuture future = this.dynamicTasks.remove(id);
         if (future != null)
         {
             future.cancel(false);
@@ -85,13 +91,13 @@ public class Announcer
     }
 
     /**
-     * Stops a receiver from receiving any more announcements
+     * Cancels a fixed time task.
      *
-     * @param name the receiver the task should be stopped for
+     * @param id The identification of the task to stop
      */
-    public void cancelFixedTask(String name)
+    public void cancelFixedTask(String id)
     {
-        ScheduledFuture future = this.fixedTasks.remove(name);
+        ScheduledFuture future = this.fixedTasks.remove(id);
         if (future != null)
         {
             future.cancel(false);
@@ -99,7 +105,7 @@ public class Announcer
     }
 
     /**
-     * Stop all announcements to all receivers
+     * Cancel all tasks and shut down the internal executor
      */
     public void shutdown()
     {
@@ -123,6 +129,9 @@ public class Announcer
         this.fixedTasks = null;
     }
 
+    /**
+     * Cancel all tasks and replace the executor with a new one.
+     */
     public void restart()
     {
         this.shutdown();

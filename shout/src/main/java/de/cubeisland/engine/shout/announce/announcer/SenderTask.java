@@ -19,6 +19,7 @@ package de.cubeisland.engine.shout.announce.announcer;
 
 import java.util.concurrent.Callable;
 
+import de.cubeisland.engine.core.CubeEngine;
 import de.cubeisland.engine.shout.announce.receiver.Receiver;
 
 class SenderTask implements Callable<Void>
@@ -39,6 +40,7 @@ class SenderTask implements Callable<Void>
         receiver.sendMessage(newline);
         receiver.sendMessage(this.message);
         receiver.sendMessage(newline);
+        CubeEngine.getLog().trace("Sent a message to {}", receiver.getName());
         return null;
     }
 }

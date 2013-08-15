@@ -24,22 +24,25 @@ import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
 
+import de.cubeisland.engine.core.task.TaskManager;
 import de.cubeisland.engine.core.user.User;
+import de.cubeisland.engine.core.user.UserManager;
 import de.cubeisland.engine.core.util.ChatFormat;
 import de.cubeisland.engine.core.util.Pair;
-import de.cubeisland.engine.shout.Shout;
 import de.cubeisland.engine.shout.announce.Announcement;
 import de.cubeisland.engine.shout.announce.MessageOfTheDay;
 import de.cubeisland.engine.shout.announce.receiver.Receiver;
 
 public class FixedCycleTask implements Runnable
 {
-    private final Shout module;
+    private final UserManager userManager;
+    private final TaskManager taskManager;
     private final Announcement announcement;
 
-    public FixedCycleTask(Shout module, Announcement announcement)
+    public FixedCycleTask(UserManager userManager, TaskManager taskManager, Announcement announcement)
     {
-        this.module = module;
+        this.userManager = userManager;
+        this.taskManager = taskManager;
         this.announcement = announcement;
     }
 
@@ -49,10 +52,9 @@ public class FixedCycleTask implements Runnable
     {
         if (announcement.getFirstWorld().equals("*"))
         {
-            for (User user : module.getCore().getUserManager().getOnlineUsers())
+            for (User user : userManager.getOnlineUsers())
             {
-                module.getCore().getTaskManager().callSync(new SenderTask(announcement
-                                                                              .getMessage(user.getLocale()), new CleanReceiver(user)));
+                taskManager.callSync(new SenderTask(announcement.getMessage(user.getLocale()), new SimpleReceiver(user)));
             }
         }
         else
@@ -64,20 +66,22 @@ public class FixedCycleTask implements Runnable
                 {
                     for (Player player : world.getPlayers())
                     {
-                        User user = module.getCore().getUserManager().getUser(player.getName());
-                        module.getCore().getTaskManager().callSync(new SenderTask(announcement
-                                                                                      .getMessage(user.getLocale()), new CleanReceiver(user)));
+                        if (this.announcement.canAccess(player))
+                        {
+                            User user = userManager.getUser(player.getName());
+                            taskManager.callSync(new SenderTask(announcement.getMessage(user.getLocale()), new SimpleReceiver(user)));
+                        }
                     }
                 }
             }
         }
     }
 
-    private final class CleanReceiver implements Receiver
+    private final class SimpleReceiver implements Receiver
     {
         private final User user;
 
-        protected CleanReceiver(User user)
+        protected SimpleReceiver(User user)
         {
             this.user = user;
         }
@@ -109,6 +113,10 @@ public class FixedCycleTask implements Runnable
 
         @Override
         public void setAllAnnouncements(Queue<Announcement> announcements)
+        {}
+
+        @Override
+        public void addAnnouncement(Announcement announcement)
         {}
 
         @Override

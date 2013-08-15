@@ -60,7 +60,7 @@ public class UserReceiver extends AbstractReceiver
     @Override
     public boolean canReceive(Announcement announcement)
     {
-        return announcement.hasWorld(this.user.getWorld().getName());
+        return announcement.hasWorld(this.user.getWorld().getName()) && this.couldReceive(announcement);
     }
 
     @Override

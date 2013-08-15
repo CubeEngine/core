@@ -21,7 +21,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-import de.cubeisland.engine.core.command.reflected.ReflectedCommand;
 import de.cubeisland.engine.core.config.Configuration;
 
 import de.cubeisland.engine.core.module.Inject;
@@ -31,11 +30,9 @@ import de.cubeisland.engine.shout.announce.AnnouncementManager;
 import de.cubeisland.engine.shout.announce.announcer.Announcer;
 import de.cubeisland.engine.shout.interactions.ShoutCommand;
 import de.cubeisland.engine.shout.interactions.ShoutListener;
-import de.cubeisland.engine.shout.interactions.ShoutSubCommands;
 
 public class Shout extends Module
 {
-    @Inject private Roles roles;
     public boolean usingRoles = false;
 
     private AnnouncementManager announcementManager;
@@ -46,13 +43,6 @@ public class Shout extends Module
     public void onEnable()
     {
         this.config = Configuration.load(ShoutConfiguration.class, this);
-        // this.getCore().getFileManager().dropResources(ShoutResource.values());
-
-        if (this.getCore().getModuleManager().getModule(Roles.class) == null)
-        {
-            this.usingRoles = true;
-            this.roles = this.getCore().getModuleManager().getModule(Roles.class);
-        }
 
         this.announcer = new Announcer(this.getCore().getTaskManager(), this.config.initDelay);
         this.announcementManager = new AnnouncementManager(this, this.getFolder());
@@ -62,7 +52,7 @@ public class Shout extends Module
             try
             {
                 this.announcementManager.createAnnouncement("Example", this.getCore().getConfiguration().defaultLocale,
-                        "This is an example announcement", "10 minutes", "*", "*", "*", false);
+                        "This is an example announcement", "10 minutes", "*", "*", false);
             }
             catch (Exception ex)
             {
@@ -72,8 +62,7 @@ public class Shout extends Module
         }
         this.announcementManager.loadAnnouncements(this.getFolder());
         this.getCore().getEventManager().registerListener(this, new ShoutListener(this));
-        this.getCore().getCommandManager().registerCommands(this, new ShoutCommand(this), ReflectedCommand.class);
-        this.getCore().getCommandManager().registerCommands(this, new ShoutSubCommands(this), ReflectedCommand.class, "shout");
+        this.getCore().getCommandManager().registerCommand(new ShoutCommand(this));
 
         this.announcementManager.initUsers();
     }

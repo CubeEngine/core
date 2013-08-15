@@ -47,10 +47,7 @@ public class Announcement
 
     public Announcement(Announcement acm)
     {
-        if (acm == null)
-        {
-            throw new NullPointerException("The announcement must not be null!");
-        }
+        Validate.notNull(acm, "The announcement must not be null!");
 
         this.name = acm.name;
         this.permNode = acm.permNode;
@@ -64,10 +61,10 @@ public class Announcement
      * Constructor of announcement
      *
      * @param name          This announcements unique name
-     * @param permNode      This announcements permNode
-     * @param worlds        This announcements worlds
-     * @param messages      This announcements messages
-     * @param delay         This announcements delay
+     * @param permNode      This permission node for this announcement
+     * @param worlds        The worlds this announcement should be displayed in. Can be just a * to indicate all worlds
+     * @param messages      The messages of this announcement
+     * @param delay         The delay of the announcement
      */
     public Announcement(String name, String permNode, List<String> worlds, Map<Locale, String[]> messages, long delay, boolean fixedCycle)
     {
@@ -75,7 +72,7 @@ public class Announcement
         Validate.notEmpty(permNode, "The announcement must have a permission");
         Validate.notEmpty(worlds, "The announcement must have a world");
         Validate.notEmpty(messages, "The announcement must have one or more messages");
-        Validate.isTrue(delay > 0, "The announcement needs a delay");
+        Validate.isTrue(delay > 0, "The announcement needs a valid delay");
 
         this.name = name;
         this.permNode = permNode;
@@ -88,8 +85,8 @@ public class Announcement
     /**
      * Get the message from this announcement in a specified language
      *
-     * @param locale	The language to get the message in
-     * @return	The message in that language if exist.
+     * @param   locale  The language to get the message in
+     * @return	The message in that language if exist, else the message in the default locale will be returned
      */
     public String[] getMessage(Locale locale)
     {
@@ -121,7 +118,7 @@ public class Announcement
     }
 
     /**
-     * Get the delay after this message
+     * Get the delay
      *
      * @return The delay in milliseconds
      */
