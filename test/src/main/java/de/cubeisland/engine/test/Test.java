@@ -87,7 +87,14 @@ public class Test extends Module
     public void onEnable()
     {
         this.config = Configuration.load(TestConfig.class, this);
-        this.config.loadChild(this.getFolder().resolve("childConfig.yml"));
+        try
+        {
+            this.config.loadChild(this.getFolder().resolve("childConfig.yml"));
+        }
+        catch (IllegalStateException ex)
+        {
+            this.getLog().info("{} does not exist.", this.getFolder().resolve("childConfig.yml"));
+        }
         Configuration.load(TestConfig2.class, this.getFolder().resolve("updateConfig.yml"));
         // this.getCore().getFileManager().dropResources(TestRecource.values());
         this.uM = this.getCore().getUserManager();
