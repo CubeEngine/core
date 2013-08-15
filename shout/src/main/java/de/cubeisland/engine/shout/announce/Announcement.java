@@ -34,7 +34,6 @@ import de.cubeisland.engine.core.permission.PermDefault;
 import de.cubeisland.engine.core.permission.Permission;
 import de.cubeisland.engine.shout.Shout;
 import gnu.trove.map.hash.THashMap;
-import org.apache.commons.lang.Validate;
 
 /**
  * Class to represent an announcement.
@@ -50,7 +49,7 @@ public class Announcement
 
     public Announcement(Announcement acm)
     {
-        Validate.notNull(acm, "The announcement must not be null!");
+        if (acm == null) throw new IllegalArgumentException("The announcement must not be null!");
 
         this.name = acm.name;
         this.permission = acm.permission;
