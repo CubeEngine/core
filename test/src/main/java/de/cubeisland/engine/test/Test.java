@@ -18,6 +18,7 @@
 package de.cubeisland.engine.test;
 
 import java.io.IOException;
+import java.nio.file.Path;
 import java.sql.Date;
 import java.sql.SQLException;
 import java.util.Calendar;
@@ -87,13 +88,14 @@ public class Test extends Module
     public void onEnable()
     {
         this.config = Configuration.load(TestConfig.class, this);
+        Path childConfig = this.getFolder().resolve("childConfig.yml");
         try
         {
-            this.config.loadChild(this.getFolder().resolve("childConfig.yml"));
+            this.config.loadChild(childConfig);
         }
         catch (IllegalStateException ex)
         {
-            this.getLog().info("{} does not exist.", this.getFolder().resolve("childConfig.yml"));
+            this.getLog().info("{} does not exist.", childConfig);
         }
         Configuration.load(TestConfig2.class, this.getFolder().resolve("updateConfig.yml"));
         // this.getCore().getFileManager().dropResources(TestRecource.values());
