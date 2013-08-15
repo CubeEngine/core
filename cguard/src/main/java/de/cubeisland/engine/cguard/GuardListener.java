@@ -350,9 +350,11 @@ public class GuardListener implements Listener
                     Guard guard = this.manager.getGuardAtLocation(relativeLoc);
                     if (guard != null)
                     {
+                        if (!(relativeLoc.getBlock().getState().getData() instanceof Door)) return; // door is above
+                        Door botRelative = (Door)relativeLoc.getBlock().getState().getData();
+                        if (botRelative.isTopHalf()) return; // door is below
                         Door botDoor = (Door)placed.getState().getData();
                         Door topDoor = new Door(placed.getType(), BlockUtil.getTopDoorDataOnPlace(placed.getType(), loc, event.getPlayer()));
-                        Door botRelative = (Door)relativeLoc.getBlock().getState().getData();
                         Door topRelative = (Door)relativeLoc.getBlock().getRelative(BlockFace.UP).getState().getData();
                         if (botDoor.getFacing().equals(botRelative.getFacing()))// Doors are facing the same direction
                         {

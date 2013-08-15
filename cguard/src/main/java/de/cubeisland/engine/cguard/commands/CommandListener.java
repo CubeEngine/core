@@ -153,31 +153,31 @@ public class CommandListener implements Listener
             {
             case C_PRIVATE:
                 guard = this.manager.createGuard(event.getClickedBlock().getType(), location, user, C_PRIVATE.guardType, triplet.getSecond());
-                user.sendTranslated("&cPrivate Protection Created!");
+                user.sendTranslated("&aPrivate Protection created!");
                 this.attemptCreatingKeyBook(guard, user, triplet.getThird());
                 // TODO print short info
                 break;
             case C_PUBLIC:
                 guard = this.manager.createGuard(event.getClickedBlock().getType(), location, user, C_PUBLIC.guardType, triplet.getSecond());
-                user.sendTranslated("&cPublic Protection Created!");
+                user.sendTranslated("&cPublic Protection created!");
                 break;
             case C_DONATION:
                 guard = this.manager.createGuard(event.getClickedBlock().getType(), location, user, C_DONATION.guardType, triplet.getSecond());
-                user.sendTranslated("&cDonation Protection Created!");
+                user.sendTranslated("&aDonation Protection created!");
                 this.attemptCreatingKeyBook(guard, user, triplet.getThird());
                 break;
             case C_FREE:
                 guard = this.manager.createGuard(event.getClickedBlock().getType(), location, user, C_FREE.guardType, triplet.getSecond());
-                user.sendTranslated("&cFree Protection Created!");
+                user.sendTranslated("&aFree Protection created!");
                 this.attemptCreatingKeyBook(guard, user, triplet.getThird());
                 break;
             case C_GUARDED:
                 guard = this.manager.createGuard(event.getClickedBlock().getType(), location, user, C_GUARDED.guardType, triplet.getSecond());
-                user.sendTranslated("&cGuard Protection Created!");
+                user.sendTranslated("&aGuard Protection created!");
                 this.attemptCreatingKeyBook(guard, user, triplet.getThird());
                 break;
             case INFO:
-                user.sendTranslated("PROTECTION FOUND: TODO INFO"); // TODO
+                user.sendTranslated("PROTECTION FOUND: TODO INFO #" + guard.getId()); // TODO
                 break;
             case MODIFY:
                 // TODO separate in & out for containers

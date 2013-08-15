@@ -34,6 +34,8 @@ import org.bukkit.Chunk;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
+import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
 import org.bukkit.block.BlockState;
 import org.bukkit.block.Chest;
 import org.bukkit.block.DoubleChest;
@@ -51,6 +53,7 @@ import de.cubeisland.engine.cguard.Cguard;
 import de.cubeisland.engine.cguard.commands.CommandListener;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.user.UserManager;
+import de.cubeisland.engine.core.util.BlockUtil;
 import de.cubeisland.engine.core.util.StringUtils;
 import de.cubeisland.engine.core.world.WorldManager;
 import org.jooq.DSLContext;
@@ -170,11 +173,10 @@ public class GuardManager implements Listener
 
     private void addLoadedLocationGuard(Guard guard)
     {
-        if (!guard.isSingleBlockGuard())
+        for (Location location : guard.getLocations())
         {
-            this.addLoadedLocationGuard(guard.getLocation2(), guard);
+            this.addLoadedLocationGuard(location, guard);
         }
-        this.addLoadedLocationGuard(guard.getLocation(), guard);
     }
 
     private void addLoadedLocationGuard(Location loc, Guard guard)
@@ -291,12 +293,13 @@ public class GuardManager implements Listener
         this.createPassword(model, password);
         model.insert();
         List<Location> locations = new ArrayList<>();
+        Block block = location.getBlock();
         switch (material) // Double Block Protections
         {
             case CHEST:
-            if (location.getBlock().getState() instanceof Chest)
+            if (block.getState() instanceof Chest)
             {
-                Chest chest = (Chest)location.getBlock().getState();
+                Chest chest = (Chest)block.getState();
                 if (chest.getInventory().getHolder() instanceof DoubleChest)
                 {
                     DoubleChest dc = (DoubleChest)chest.getInventory().getHolder();
@@ -309,24 +312,50 @@ public class GuardManager implements Listener
             break;
             case WOODEN_DOOR:
             case IRON_DOOR_BLOCK:
-                // TODO doubleDoor detection
                 locations.add(location);
-                if (location.getBlock().getState().getData() instanceof Door)
+                if (block.getState().getData() instanceof Door)
                 {
-                    if (((Door)location.getBlock().getState().getData()).isTopHalf())
+                    Block botBlock;
+                    if (((Door)block.getState().getData()).isTopHalf())
                     {
                         locations.add(location.clone().add(0, -1, 0));
+                        botBlock = locations.get(1).getBlock();
                         locations.add(locations.get(1).clone().add(0, -1, 0));
                     }
                     else
                     {
+                        botBlock = location.getBlock();
                         locations.add(location.clone().add(0, 1, 0));
                         locations.add(location.clone().add(0, -1, 0));
                     }
                     this.dsl.newRecord(TABLE_GUARD_LOCATION).newLocation(model, locations.get(0)).insert();
                     this.dsl.newRecord(TABLE_GUARD_LOCATION).newLocation(model, locations.get(1)).insert();
                     this.dsl.newRecord(TABLE_GUARD_LOCATION).newLocation(model, locations.get(2)).insert();
+                    for (BlockFace blockFace : BlockUtil.CARDINAL_DIRECTIONS)
+                    {
+                        if (botBlock.getRelative(blockFace).getType().equals(block.getType())) // same door type
+                        {
+                            Door relativeBot = (Door)botBlock.getRelative(blockFace).getState().getData();
+                            if (!relativeBot.isTopHalf())
+                            {
+                                Door botDoor = (Door)botBlock.getState().getData();
+                                Door topDoor = (Door)botBlock.getRelative(BlockFace.UP).getState().getData();
+                                Door relativeTop = (Door)botBlock.getRelative(blockFace).getRelative(BlockFace.UP).getState().getData();
+                                if (botDoor.getFacing() == relativeBot.getFacing() && topDoor.getData() != relativeTop.getData()) // Facing same & opposite hinge
+                                {
+                                    locations.add(botBlock.getRelative(blockFace).getLocation());
+                                    locations.add(locations.get(3).clone().add(0,1,0));
+                                    locations.add(locations.get(3).clone().add(0,-1,0));
+                                    this.dsl.newRecord(TABLE_GUARD_LOCATION).newLocation(model, locations.get(3)).insert();
+                                    this.dsl.newRecord(TABLE_GUARD_LOCATION).newLocation(model, locations.get(4)).insert();
+                                    this.dsl.newRecord(TABLE_GUARD_LOCATION).newLocation(model, locations.get(5)).insert();
+                                    break;
+                                }
 
+                            } // else ignore
+
+                        }
+                    }
                 }
         }
         if (locations.isEmpty())
