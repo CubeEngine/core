@@ -574,4 +574,9 @@ public class AnnouncementManager
         messages.put(locale, StringUtils.explode("\n", message));
         return new Announcement(name,permNode, Arrays.asList(world), messages, parseDelay(delay), fc);
     }
+
+    public Receiver getReceiver(String name)
+    {
+        return this.receivers.get(name);
+    }
 }
