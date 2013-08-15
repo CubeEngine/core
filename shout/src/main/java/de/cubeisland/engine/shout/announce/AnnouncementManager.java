@@ -483,14 +483,14 @@ public class AnnouncementManager
         this.logger.trace("Languages: {}", messages.keySet().toString());
         this.logger.trace("Worlds: {}", config.worlds);
         this.logger.trace("Delay(in milliseconds): {}", delay);
-        this.logger.trace("Permission: {}", config.permNode);
+        this.logger.trace("Permission: {}", config.permName);
         this.logger.trace("FixedCycle: {}", config.fixedCycle);
 
         try
         {
-            return new Announcement(
+            return new Announcement(this.module,
                 announcementFolder.getFileName().toString().toLowerCase(Locale.US),
-                config.permNode,
+                config.permName,
                 config.worlds,
                 messages,
                 delay,
@@ -545,14 +545,14 @@ public class AnnouncementManager
      * This will not load the announcement into the plugin
      *
      */
-    public Announcement createAnnouncement(String name, Locale locale, String message, String delay, String world, String permNode, boolean fc) throws IOException, IllegalArgumentException
+    public Announcement createAnnouncement(String name, Locale locale, String message, String delay, String world, String permName, boolean fc) throws IOException, IllegalArgumentException
     {
         Validate.notEmpty(name);
         Validate.notNull(locale);
         Validate.notEmpty(message);
         Validate.notEmpty(delay);
         Validate.notEmpty(world);
-        Validate.notEmpty(permNode);
+        Validate.notEmpty(permName);
 
         Path folder = this.announcementFolder.resolve(name);
 
@@ -562,7 +562,7 @@ public class AnnouncementManager
         config.setPath(folder.resolve(META_FILE_NAME));
         config.delay = delay;
         config.worlds = Arrays.asList(world);
-        config.permNode = permNode;
+        config.permName = permName;
         config.fixedCycle = fc;
         config.save();
 
@@ -572,7 +572,7 @@ public class AnnouncementManager
         }
         Map<Locale, String[]> messages = new HashMap<>();
         messages.put(locale, StringUtils.explode("\n", message));
-        return new Announcement(name,permNode, Arrays.asList(world), messages, parseDelay(delay), fc);
+        return new Announcement(this.module, name,permName, Arrays.asList(world), messages, parseDelay(delay), fc);
     }
 
     public Receiver getReceiver(String name)

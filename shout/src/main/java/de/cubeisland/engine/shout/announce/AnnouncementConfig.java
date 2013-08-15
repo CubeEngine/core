@@ -34,8 +34,10 @@ public class AnnouncementConfig extends Configuration
     @Option("worlds")
     public List<String> worlds = Arrays.asList("*");
 
-    @Option("permission")
-    public String permNode = "*";
+    @Comment("The name that should be used in the permission. It'll end up like this: " +
+                 "cubeengine.shout.announcement.permission-name")
+    @Option("permission-name")
+    public String permName = "*";
 
     @Comment("An announcement with fixed cycle will be broadcast at a fixed cycle.\n" +
                  "In opposite to it being displayed to each user after their last announcement.")
