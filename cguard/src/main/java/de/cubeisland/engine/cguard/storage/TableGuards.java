@@ -19,6 +19,7 @@ package de.cubeisland.engine.cguard.storage;
 
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.util.Arrays;
 import java.util.List;
 
@@ -67,10 +68,12 @@ public class TableGuards extends TableImpl<GuardModel> implements TableCreator<G
                                         "`flags` smallint NOT NULL,\n" +
                                         "`type` tinyint NOT NULL,\n" +
                                         "`guard_type` tinyint NOT NULL,\n" +
-                                        "`password` varbinary(128) DEFAULT NULL,\n" +
+                                        "`password` varbinary(128) NOT NULL,\n" +
                                         "`droptransfer` tinyint(1) NOT NULL,\n" +
                                         "`entity_uid_least` bigint DEFAULT NULL,\n" +
                                         "`entity_uid_most` bigint DEFAULT NULL,\n" +
+                                        "`last_access` DATETIME NOT NULL,\n" +
+                                        "`created` DATETIME NOT NULL,\n" +
                                         "PRIMARY KEY (`id`),\n" +
                                         "UNIQUE KEY (`entity_uid_least`, `entity_uid_most`),\n" +
                                         "FOREIGN KEY f_owner (`owner_id`) REFERENCES " + TABLE_USER.getName() + " (`key`) ON UPDATE CASCADE ON DELETE CASCADE)\n" +
@@ -120,6 +123,9 @@ public class TableGuards extends TableImpl<GuardModel> implements TableCreator<G
     // optional for entity protection:
     public final TableField<GuardModel, Long> ENTITY_UID_LEAST = createField("entity_uid_least", SQLDataType.BIGINT, this);
     public final TableField<GuardModel, Long> ENTITY_UID_MOST = createField("entity_uid_most", SQLDataType.BIGINT, this);
+
+    public final TableField<GuardModel, Timestamp> LAST_ACCESS = createField("last_access", SQLDataType.TIMESTAMP, this);
+    public final TableField<GuardModel, Timestamp> CREATED = createField("created", SQLDataType.TIMESTAMP, this);
 
     @Override
     public Identity<GuardModel, UInteger> getIdentity()

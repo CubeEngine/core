@@ -20,9 +20,12 @@ package de.cubeisland.engine.cguard.storage;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
+import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
@@ -35,10 +38,13 @@ import org.bukkit.block.BlockState;
 import org.bukkit.block.Chest;
 import org.bukkit.block.DoubleChest;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.EntityType;
+import org.bukkit.entity.Vehicle;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.world.ChunkLoadEvent;
 import org.bukkit.event.world.ChunkUnloadEvent;
+import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.material.Door;
 
 import de.cubeisland.engine.cguard.Cguard;
@@ -105,7 +111,9 @@ public class GuardManager implements Listener
      */
     public Guard getGuardAtLocation(Location location)
     {
-        return this.loadedGuards.get(location);
+        Guard guard = this.loadedGuards.get(location);
+        if (guard != null) guard.model.setLastAccess(new Timestamp(System.currentTimeMillis()));
+        return guard;
     }
 
     public Guard getGuardForEntityUID(UUID uniqueId)
@@ -121,31 +129,17 @@ public class GuardManager implements Listener
                 this.loadedEntityGuards.put(uniqueId, guard);
             }
         }
+        if (guard != null) guard.model.setLastAccess(new Timestamp(System.currentTimeMillis()));
         return guard;
         // TODO handle unloading & garbage collection e.g. when entities got removed by WE
     }
 
-    /**
-     * Gets the guard at given location
-     *
-     * @param location
-     * @return the guard or null if there is no guard
-     */
-    public Guard loadGuardAtLocation(Location location)
+    public void extendGuard(Guard guard, Location location)
     {
-        Guard guard = this.loadedGuards.get(location);
-        if (guard == null)
-        {
-            UInteger world_id = UInteger.valueOf(this.wm.getWorldId(location.getWorld()));
-            GuardModel model = this.dsl.selectFrom(TABLE_GUARD).where(TABLE_GUARD.ID.eq(
-                this.dsl.select(TABLE_GUARD_LOCATION.GUARD_ID).from(TABLE_GUARD_LOCATION).where(
-                    TABLE_GUARD_LOCATION.WORLD_ID.eq(world_id),
-                    TABLE_GUARD_LOCATION.X.eq(location.getBlockX()),
-                    TABLE_GUARD_LOCATION.Y.eq(location.getBlockY()),
-                    TABLE_GUARD_LOCATION.Z.eq(location.getBlockZ())))).fetchOne();
-            guard = new Guard(this, model, this.dsl.selectFrom(TABLE_GUARD_LOCATION).where(TABLE_GUARD_LOCATION.GUARD_ID.eq(model.getId())).fetch());
-        }
-        return guard;
+        guard.locations.add(location);
+        GuardLocationModel model = this.dsl.newRecord(TABLE_GUARD_LOCATION).newLocation(guard.model, location);
+        model.insert();
+        this.loadedGuards.put(location.clone(), guard);
     }
 
     @EventHandler
@@ -230,6 +224,7 @@ public class GuardManager implements Listener
                     // else the other chunk is still loaded -> do not remove!
                 }
             }
+            guard.model.update(); // updates if changed (last_access timestamp)
         }
     }
 
@@ -292,11 +287,10 @@ public class GuardManager implements Listener
 
     public Guard createGuard(Material material, Location location, User user, byte guardType, String password)
     {
-        GuardModel model = this.dsl.newRecord(TABLE_GUARD).newGuard(user, guardType, this.getProtecedType(material));
+        GuardModel model = this.dsl.newRecord(TABLE_GUARD).newGuard(user, guardType, this.getProtectedType(material));
         this.createPassword(model, password);
-        GuardLocationModel loc1 = null;
-        GuardLocationModel loc2 = null;
         model.insert();
+        List<Location> locations = new ArrayList<>();
         switch (material) // Double Block Protections
         {
             case CHEST:
@@ -306,40 +300,46 @@ public class GuardManager implements Listener
                 if (chest.getInventory().getHolder() instanceof DoubleChest)
                 {
                     DoubleChest dc = (DoubleChest)chest.getInventory().getHolder();
-                    loc1 = this.dsl.newRecord(TABLE_GUARD_LOCATION).newLocation(model, ((BlockState)dc.getLeftSide()).getLocation());
-                    loc2 = this.dsl.newRecord(TABLE_GUARD_LOCATION).newLocation(model, ((BlockState)dc.getRightSide()).getLocation());
+                    locations.add(((BlockState)dc.getLeftSide()).getLocation());
+                    locations.add(((BlockState)dc.getRightSide()).getLocation());
+                    this.dsl.newRecord(TABLE_GUARD_LOCATION).newLocation(model, locations.get(0)).insert();
+                    this.dsl.newRecord(TABLE_GUARD_LOCATION).newLocation(model, locations.get(1)).insert();
                 }
             }
             break;
             case WOODEN_DOOR:
             case IRON_DOOR_BLOCK:
-                Location location2;
-                if (location.getBlock().getState() instanceof Door)
+                // TODO doubleDoor detection
+                locations.add(location);
+                if (location.getBlock().getState().getData() instanceof Door)
                 {
-                    if (((Door)location.getBlock().getState()).isTopHalf())
+                    if (((Door)location.getBlock().getState().getData()).isTopHalf())
                     {
-                        location2 = location.clone().add(0, -1, 0);
+                        locations.add(location.clone().add(0, -1, 0));
+                        locations.add(locations.get(1).clone().add(0, -1, 0));
                     }
                     else
                     {
-                        location2 = location.clone().add(0, 1, 0);
+                        locations.add(location.clone().add(0, 1, 0));
+                        locations.add(location.clone().add(0, -1, 0));
                     }
-                    loc1 = this.dsl.newRecord(TABLE_GUARD_LOCATION).newLocation(model, location);
-                    loc2 = this.dsl.newRecord(TABLE_GUARD_LOCATION).newLocation(model, location2);
+                    this.dsl.newRecord(TABLE_GUARD_LOCATION).newLocation(model, locations.get(0)).insert();
+                    this.dsl.newRecord(TABLE_GUARD_LOCATION).newLocation(model, locations.get(1)).insert();
+                    this.dsl.newRecord(TABLE_GUARD_LOCATION).newLocation(model, locations.get(2)).insert();
+
                 }
         }
-        if (loc1 == null)
+        if (locations.isEmpty())
         {
-            loc1 = this.dsl.newRecord(TABLE_GUARD_LOCATION).newLocation(model, location);
+            locations.add(location);
+            this.dsl.newRecord(TABLE_GUARD_LOCATION).newLocation(model, location).insert();
         }
-        loc1.insert();
-        if (loc2 != null) loc2.insert();
-        Guard guard = new Guard(this, model, loc1, loc2);
+        Guard guard = new Guard(this, model, locations);
         this.addLoadedLocationGuard(guard);
         return guard;
     }
 
-    private byte getProtecedType(Material material)
+    private byte getProtectedType(Material material)
     {
         switch (material)
         {
@@ -360,12 +360,23 @@ public class GuardManager implements Listener
             default:
                 if (material.getId() < 256) return TYPE_BLOCK;
         }
-        return 0;
+        throw new IllegalStateException("Material of block is an item!?");
     }
 
     private byte getProtectedType(Entity entity)
     {
-        return 0; // TODO
+        switch (entity.getType())
+        {
+        case MINECART_CHEST:
+        case MINECART_HOPPER:
+            return TYPE_ENTITY_CONTAINER;
+        case HORSE:
+            if (entity instanceof InventoryHolder) return TYPE_ENTITY_CONTAINER;
+        default:
+            if (entity.getType().isAlive()) return TYPE_ENTITY_LIVING;
+            if (entity instanceof Vehicle) return TYPE_ENTITY_VEHICLE;
+            return TYPE_ENTITY;
+        }
     }
 
     public static final byte TYPE_CONTAINER = 1;
@@ -373,12 +384,19 @@ public class GuardManager implements Listener
     public static final byte TYPE_BLOCK = 3;
     public static final byte TYPE_ENTITY_CONTAINER = 4;
     public static final byte TYPE_ENTITY_LIVING = 5;
-    public static final byte TYPE_ENTITY = 6;
+    public static final byte TYPE_ENTITY_VEHICLE = 6;
+    public static final byte TYPE_ENTITY = 7;
+
     // TODO more ?
 
-    public Guard createGuard(Entity entity, User user, byte guardType)
+    public Guard createGuard(Entity entity, User user, byte guardType, String password)
     {
-        return null; // TODO
+        GuardModel model = this.dsl.newRecord(TABLE_GUARD).newGuard(user, guardType, this.getProtectedType(entity), entity.getUniqueId());
+        this.createPassword(model, password);
+        model.insert();
+        Guard guard = new Guard(this, model);
+        this.loadedEntityGuards.put(entity.getUniqueId(), guard);
+        return guard;
     }
 
     /**
@@ -426,5 +444,15 @@ public class GuardManager implements Listener
             this.messageDigest.reset();
             return Arrays.equals(this.messageDigest.digest(pass.getBytes()),guard.model.getPassword());
         }
+    }
+
+    public boolean canProtect(Material type)
+    {
+        return true; // TODO config can protect?
+    }
+
+    public boolean canProtect(EntityType type)
+    {
+        return true;
     }
 }

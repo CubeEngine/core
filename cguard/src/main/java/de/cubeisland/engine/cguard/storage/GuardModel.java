@@ -17,25 +17,28 @@
  */
 package de.cubeisland.engine.cguard.storage;
 
+import java.sql.Timestamp;
 import java.util.UUID;
 
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.util.ChatFormat;
 import org.jooq.Field;
 import org.jooq.Record1;
-import org.jooq.Record9;
-import org.jooq.Row9;
+import org.jooq.Record11;
+import org.jooq.Row11;
 import org.jooq.impl.UpdatableRecordImpl;
 import org.jooq.types.UInteger;
 
 import static de.cubeisland.engine.cguard.storage.TableGuards.TABLE_GUARD;
 
-public class GuardModel extends UpdatableRecordImpl<GuardModel> implements Record9<UInteger, UInteger, Short, Byte, Byte, byte[], Byte, Long, Long>
+public class GuardModel extends UpdatableRecordImpl<GuardModel> implements Record11<UInteger, UInteger, Short, Byte, Byte, byte[], Byte, Long, Long, Timestamp, Timestamp>
 {
     public GuardModel()
     {
         super(TABLE_GUARD);
     }
+
+    // TODO timestamp with last access
 
     public GuardModel newGuard(User user, byte guardType, byte type)
     {
@@ -54,6 +57,8 @@ public class GuardModel extends UpdatableRecordImpl<GuardModel> implements Recor
             this.setEntityUidLeast(entityUUID.getLeastSignificantBits());
             this.setEntityUidMost(entityUUID.getMostSignificantBits());
         }
+        this.setLastAccess(new Timestamp(System.currentTimeMillis()));
+        this.setCreated(new Timestamp(System.currentTimeMillis()));
         return this;
     }
 
@@ -62,7 +67,21 @@ public class GuardModel extends UpdatableRecordImpl<GuardModel> implements Recor
     public String getColorPass()
     {
         StringBuilder builder = new StringBuilder();
-        for (char c : new String(this.getPassword()).toCharArray())
+        String stringPass;
+        if (this.getPassword().length != 4)
+        {
+            for (byte b : this.getPassword())
+            {
+                builder.append(String.format("%02X", b));
+            }
+            stringPass = builder.toString();
+            builder = new StringBuilder();
+        }
+        else
+        {
+            stringPass = new String(this.getPassword());
+        }
+        for (char c : stringPass.toCharArray())
         {
             builder.append("&").append(c);
         }
@@ -151,6 +170,22 @@ public class GuardModel extends UpdatableRecordImpl<GuardModel> implements Recor
         return (Long) getValue(8);
     }
 
+    public void setLastAccess(Timestamp value) {
+        setValue(9, value);
+    }
+
+    public Timestamp getLastAccess() {
+        return (Timestamp) getValue(9);
+    }
+
+    public void setCreated(Timestamp value) {
+        setValue(10, value);
+    }
+
+    public Timestamp getCreated() {
+        return (Timestamp) getValue(10);
+    }
+
     // -------------------------------------------------------------------------
     // Primary key information
     // -------------------------------------------------------------------------
@@ -165,13 +200,13 @@ public class GuardModel extends UpdatableRecordImpl<GuardModel> implements Recor
     // -------------------------------------------------------------------------
 
     @Override
-    public Row9<UInteger, UInteger, Short, Byte, Byte, byte[], Byte, Long, Long> fieldsRow() {
-        return (Row9) super.fieldsRow();
+    public Row11<UInteger, UInteger, Short, Byte, Byte, byte[], Byte, Long, Long, Timestamp, Timestamp> fieldsRow() {
+        return (Row11) super.fieldsRow();
     }
 
     @Override
-    public Row9<UInteger, UInteger, Short, Byte, Byte, byte[], Byte, Long, Long> valuesRow() {
-        return (Row9) super.valuesRow();
+    public Row11<UInteger, UInteger, Short, Byte, Byte, byte[], Byte, Long, Long, Timestamp, Timestamp> valuesRow() {
+        return (Row11) super.valuesRow();
     }
 
     @Override
@@ -220,6 +255,18 @@ public class GuardModel extends UpdatableRecordImpl<GuardModel> implements Recor
     }
 
     @Override
+    public Field<Timestamp> field10()
+    {
+        return TABLE_GUARD.LAST_ACCESS;
+    }
+
+    @Override
+    public Field<Timestamp> field11()
+    {
+        return TABLE_GUARD.CREATED;
+    }
+
+    @Override
     public UInteger value1() {
         return getId();
     }
@@ -262,5 +309,17 @@ public class GuardModel extends UpdatableRecordImpl<GuardModel> implements Recor
     @Override
     public Long value9() {
         return getEntityUidMost();
+    }
+
+    @Override
+    public Timestamp value10()
+    {
+        return getLastAccess();
+    }
+
+    @Override
+    public Timestamp value11()
+    {
+        return getCreated();
     }
 }

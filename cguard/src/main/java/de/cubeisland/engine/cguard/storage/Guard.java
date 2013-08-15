@@ -17,9 +17,14 @@
  */
 package de.cubeisland.engine.cguard.storage;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.bukkit.Location;
+import org.bukkit.entity.Entity;
+import org.bukkit.event.Cancellable;
 import org.bukkit.event.block.BlockBreakEvent;
-import org.bukkit.event.inventory.InventoryOpenEvent;
+import org.bukkit.inventory.Inventory;
 
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.util.InventoryGuardFactory;
@@ -34,8 +39,7 @@ public class Guard
 {
     private GuardManager manager;
     protected final GuardModel model;
-    protected final Location location;
-    protected final Location location2;
+    protected final ArrayList<Location> locations = new ArrayList<>();
 
     /**
      * EntityGuard
@@ -47,8 +51,6 @@ public class Guard
     {
         this.manager = manager;
         this.model = model;
-        this.location = null;
-        this.location2 = null;
     }
 
     /**
@@ -56,26 +58,21 @@ public class Guard
      *
      * @param manager
      * @param model
-     * @param guardLoc
+     * @param guardLocs
      */
-    public Guard(GuardManager manager, GuardModel model, Result<GuardLocationModel> guardLoc)
+    public Guard(GuardManager manager, GuardModel model, Result<GuardLocationModel> guardLocs)
     {
-        this.manager = manager;
-        this.model = model;
-        this.location = this.getLocation(guardLoc.get(0));
-        if (guardLoc.size() == 2)
+        this(manager, model);
+        for (GuardLocationModel guardLoc : guardLocs)
         {
-            this.location2 = this.getLocation(guardLoc.get(1));
+            this.locations.add(this.getLocation(guardLoc));
         }
-        else this.location2 = null;
     }
 
-    public Guard(GuardManager manager, GuardModel model, GuardLocationModel loc1, GuardLocationModel loc2)
+    public Guard(GuardManager manager, GuardModel model, List<Location> locations)
     {
-        this.manager = manager;
-        this.model = model;
-        this.location = this.getLocation(loc1);
-        this.location2 = loc2 == null ? null : this.getLocation(loc2);
+        this(manager, model);
+        this.locations.addAll(locations);
     }
 
     private Location getLocation(GuardLocationModel model)
@@ -85,27 +82,64 @@ public class Guard
 
     public boolean isBlockGuard()
     {
-        return location != null;
+        return !this.locations.isEmpty();
     }
 
     public boolean isSingleBlockGuard()
     {
-        return this.isBlockGuard() && location2 == null;
+        return this.locations.size() == 1;
     }
 
     public Location getLocation()
     {
-        return location;
+        return this.locations.get(0);
     }
 
     public Location getLocation2()
     {
-        return location2;
+        return this.locations.get(1);
     }
 
-    public void handleInventoryOpen(InventoryOpenEvent event, User user)
+    public ArrayList<Location> getLocations()
     {
-        // TODO password protected ? check for PW-Key_book in hand
+        return this.locations;
+    }
+
+    public void handleBlockDoorUse(Cancellable event, User user)
+    {
+        if (this.model.getOwnerId().equals(user.getEntity().getKey())) return; // Its the owner
+        switch (this.model.getGuardType())
+        {
+            case GUARDTYPE_PUBLIC: return; // Allow everything
+            case GUARDTYPE_PRIVATE: // block changes
+                break;
+            case GUARDTYPE_GUARDED:
+            case GUARDTYPE_DONATION:
+            case GUARDTYPE_FREE:
+            default: // Not Allowed for doors
+                throw new IllegalStateException();
+        }
+        AccessListModel access = this.getAccess(user);
+        if (access == null || !(access.canIn() && access.canOut())) // No access Or not full access
+        {
+            event.setCancelled(true);
+            user.sendTranslated("&cA magical lock prevents you from using this door!");
+            return;
+        } // else has access
+        // TODO handle autoclose ??
+        // TODO message to user that door is protected(allow to disable the message)
+        user.sendTranslated("&eThis door is protected by &2%s", this.getOwner().getName());
+    }
+
+    private AccessListModel getAccess(User user)
+    {
+        return this.manager.dsl.selectFrom(TABLE_ACCESS_LIST).
+            where(TABLE_ACCESS_LIST.GUARD_ID.eq(this.model.getId()),
+                  TABLE_ACCESS_LIST.USER_ID.eq(user.getEntity().getKey())).fetchOne();
+    }
+
+    public void handleInventoryOpen(Cancellable event, Inventory guardedInventory, User user)
+    {
         if (this.model.getOwnerId().equals(user.getEntity().getKey())) return; // Its the owner
         boolean in;
         boolean out;
@@ -126,9 +160,7 @@ public class Guard
                 in = false;
                 out = true;
         }
-        AccessListModel access = this.manager.dsl.selectFrom(TABLE_ACCESS_LIST).
-            where(TABLE_ACCESS_LIST.GUARD_ID.eq(this.model.getId()),
-                    TABLE_ACCESS_LIST.USER_ID.eq(user.getEntity().getKey())).fetchOne();
+        AccessListModel access = this.getAccess(user);
         if (access == null && this.model.getGuardType() == GUARDTYPE_PRIVATE)
         {
             event.setCancelled(true); // private & no access
@@ -143,7 +175,8 @@ public class Guard
                 out = out || access.canOut();
             }
             if (in && out) return; // Has full access
-            InventoryGuardFactory inventoryGuardFactory = InventoryGuardFactory.prepareInventory(event.getInventory(), user);
+            if (guardedInventory == null) return; // Just checking else do guard
+            InventoryGuardFactory inventoryGuardFactory = InventoryGuardFactory.prepareInventory(guardedInventory, user);
             if (!in)
             {
                 inventoryGuardFactory.blockPutInAll();
@@ -154,6 +187,34 @@ public class Guard
             }
             inventoryGuardFactory.submitInventory(this.manager.module, false);
             // TODO message to user that inventory is protected and how (allow to disable the message)
+            // TODO change message for entity stuffs
+            user.sendTranslated("&eThis %s is protected by &2%s", "container", this.getOwner().getName());
+        }
+    }
+
+    public void handleEntityInteract(Cancellable event, Entity entity, User user)
+    {
+        if (this.model.getOwnerId().equals(user.getEntity().getKey())) return; // Its the owner
+        switch (this.model.getGuardType())
+        {
+            case GUARDTYPE_PUBLIC: return; // Allow everything
+            case GUARDTYPE_PRIVATE:
+                break;// block changes
+            case GUARDTYPE_GUARDED:
+            case GUARDTYPE_DONATION:
+            case GUARDTYPE_FREE:
+            default: throw new IllegalStateException();
+        }
+        AccessListModel access = this.getAccess(user);
+        if (access == null && this.model.getGuardType() == GUARDTYPE_PRIVATE)
+        {
+            event.setCancelled(true); // private & no access
+            // TODO perm show protection owner
+            user.sendTranslated("&cMagic repelled your attempts to reach this entity!");
+        }
+        else // has access
+        {
+            // TODO messages
         }
     }
 
@@ -168,10 +229,32 @@ public class Guard
         user.sendTranslated("&cMagic prevents you from breaking this inventory!");
     }
 
+
+    public void handleEntityDamage(Cancellable event, User user)
+    {
+        if (this.model.getOwnerId().equals(user.getEntity().getKey())) return;
+        AccessListModel access = this.getAccess(user);
+        if (access == null && this.model.getGuardType() == GUARDTYPE_PRIVATE)
+        {
+            event.setCancelled(true); // private & no access
+            // TODO perm show protection owner
+            user.sendTranslated("&cMagic repelled your attempts to hurt this entity!");
+        }
+        else // has access
+        {
+            // TODO messages
+        }
+    }
+
+    public void handleEntityDestroy(User user)
+    {
+        this.delete(user);
+    }
+
     public void delete(User user)
     {
         this.manager.removeGuard(this);
-        user.sendTranslated("&aRemoved Guard!");
+        if (user != null) user.sendTranslated("&aRemoved Guard!");
     }
 
     private boolean checkFlag()
@@ -210,7 +293,17 @@ public class Guard
     public void notifyKeyUsage(User user)
     {
         User owner = this.manager.um.getUser(this.model.getOwnerId().longValue());
-        owner.sendTranslated("&2%s&e just opened one of your chests with a KeyBook!", user.getName()); // TODO do not spam
+        owner.sendTranslated("&2%s&e just used a KeyBook one of your protections!", user.getName()); // TODO do not spam
+    }
+
+    public User getOwner()
+    {
+        return this.manager.module.getCore().getUserManager().getUser(this.model.getOwnerId().longValue());
+    }
+
+    public boolean isPublic()
+    {
+        return this.model.getGuardType().equals(GUARDTYPE_PUBLIC);
     }
 }
 

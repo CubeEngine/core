@@ -45,11 +45,11 @@ public class GuardCreateCommands extends ContainerCommand
         this.manager.commandListener.setCommandType(user, type, password, createKeyBook);
         if (createKeyBook)
         {
-            user.sendTranslated("&aRightclick the block with a book in your hand to protect the block and create a keybook for it!");
+            user.sendTranslated("&aRightclick what you want to protect with a book in your hand!");
         }
         else
         {
-            user.sendTranslated("&aRightclick the block to protect!");
+            user.sendTranslated("&aRightclick what you want to protect!");
         }
     }
 
