@@ -79,6 +79,7 @@ public class Permission
      */
     private Permission(boolean registrable, String name, PermDefault def)
     {
+        assert !name.contains("*") : "* permissions are generated automatically!";
         this.permission = name.toLowerCase();
         this.registrable = registrable;
         this.def = def;
