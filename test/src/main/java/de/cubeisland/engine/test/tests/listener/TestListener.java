@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-package de.cubeisland.engine.test;
+package de.cubeisland.engine.test.tests.listener;
 
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -23,6 +23,7 @@ import org.bukkit.event.player.AsyncPlayerChatEvent;
 
 import de.cubeisland.engine.core.CubeEngine;
 import de.cubeisland.engine.core.user.User;
+import de.cubeisland.engine.test.Test;
 
 public class TestListener implements Listener
 {

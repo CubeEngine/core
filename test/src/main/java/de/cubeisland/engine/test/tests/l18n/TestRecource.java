@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-package de.cubeisland.engine.test.l18n;
+package de.cubeisland.engine.test.tests.l18n;
 
 import de.cubeisland.engine.core.filesystem.Resource;
 
