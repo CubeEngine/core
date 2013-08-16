@@ -20,15 +20,14 @@ package de.cubeisland.engine.cguard.commands;
 import de.cubeisland.engine.cguard.Cguard;
 import de.cubeisland.engine.cguard.commands.CommandListener.CommandType;
 import de.cubeisland.engine.cguard.storage.GuardManager;
+import de.cubeisland.engine.core.command.CommandSender;
 import de.cubeisland.engine.core.command.ContainerCommand;
 import de.cubeisland.engine.core.command.parameterized.Flag;
 import de.cubeisland.engine.core.command.parameterized.ParameterizedContext;
 import de.cubeisland.engine.core.command.reflected.Alias;
 import de.cubeisland.engine.core.command.reflected.Command;
-import de.cubeisland.engine.core.user.User;
 
 import static de.cubeisland.engine.cguard.commands.CommandListener.CommandType.*;
-import static de.cubeisland.engine.cguard.commands.GuardCommands.isNotUser;
 
 public class GuardCreateCommands extends ContainerCommand
 {
@@ -40,16 +39,16 @@ public class GuardCreateCommands extends ContainerCommand
         this.manager = manager;
     }
 
-    private void setCreateProtection(User user, CommandType type, String password, boolean createKeyBook)
+    private void setCreateProtection(CommandSender sender, CommandType type, String password, boolean createKeyBook)
     {
-        this.manager.commandListener.setCommandType(user, type, password, createKeyBook);
+        this.manager.commandListener.setCommandType(sender, type, password, createKeyBook);
         if (createKeyBook)
         {
-            user.sendTranslated("&aRightclick what you want to protect with a book in your hand!");
+            sender.sendTranslated("&aRightclick what you want to protect with a book in your hand!");
         }
         else
         {
-            user.sendTranslated("&aRightclick what you want to protect!");
+            sender.sendTranslated("&aRightclick what you want to protect!");
         }
     }
 
@@ -59,8 +58,7 @@ public class GuardCreateCommands extends ContainerCommand
     flags = @Flag(name = "key", longName = "keybook"))
     public void cPrivate(ParameterizedContext context)
     {
-        if (isNotUser(context)) return;
-        this.setCreateProtection((User)context.getSender(), C_PRIVATE, context.getString(0), context.hasFlag("key"));
+        this.setCreateProtection(context.getSender(), C_PRIVATE, context.getString(0), context.hasFlag("key"));
     }
 
     @Alias(names = "cpublic")
@@ -68,8 +66,7 @@ public class GuardCreateCommands extends ContainerCommand
              desc = "creates a public protection")
     public void cPublic(ParameterizedContext context)
     {
-        if (isNotUser(context)) return;
-        this.setCreateProtection((User)context.getSender(), C_PUBLIC, null, false);
+        this.setCreateProtection(context.getSender(), C_PUBLIC, null, false);
     }
 
     @Alias(names = "cdonation")
@@ -78,8 +75,7 @@ public class GuardCreateCommands extends ContainerCommand
              flags = @Flag(name = "key", longName = "keybook"))
     public void cDonation(ParameterizedContext context)
     {
-        if (isNotUser(context)) return;
-        this.setCreateProtection((User)context.getSender(), C_DONATION, context.getString(0), context.hasFlag("key"));
+        this.setCreateProtection(context.getSender(), C_DONATION, context.getString(0), context.hasFlag("key"));
     }
 
     @Alias(names = "cfree")
@@ -88,8 +84,7 @@ public class GuardCreateCommands extends ContainerCommand
              flags = @Flag(name = "key", longName = "keybook"))
     public void cFree(ParameterizedContext context)
     {
-        if (isNotUser(context)) return;
-        this.setCreateProtection((User)context.getSender(), C_FREE, context.getString(0), context.hasFlag("key"));
+        this.setCreateProtection(context.getSender(), C_FREE, context.getString(0), context.hasFlag("key"));
     }
 
     @Alias(names = "cpassword")
@@ -98,8 +93,7 @@ public class GuardCreateCommands extends ContainerCommand
              flags = @Flag(name = "key", longName = "keybook"))
     public void cPassword(ParameterizedContext context) // same as private but with pw
     {
-        if (isNotUser(context)) return;
-        this.setCreateProtection((User)context.getSender(), C_PRIVATE, context.getString(0), context.hasFlag("key"));
+        this.setCreateProtection(context.getSender(), C_PRIVATE, context.getString(0), context.hasFlag("key"));
     }
 
     @Alias(names = "cguarded")
@@ -108,7 +102,6 @@ public class GuardCreateCommands extends ContainerCommand
              flags = @Flag(name = "key", longName = "keybook"))
     public void cguarded(ParameterizedContext context) // same as private but with pw
     {
-        if (isNotUser(context)) return;
-        this.setCreateProtection((User)context.getSender(), C_GUARDED, context.getString(0), context.hasFlag("key"));
+        this.setCreateProtection(context.getSender(), C_GUARDED, context.getString(0), context.hasFlag("key"));
     }
 }

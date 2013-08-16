@@ -40,17 +40,17 @@ public class GuardModel extends UpdatableRecordImpl<GuardModel> implements Recor
 
     // TODO timestamp with last access
 
-    public GuardModel newGuard(User user, byte guardType, byte type)
+    public GuardModel newGuard(User user, GuardType guardType, ProtectedType type)
     {
         return this.newGuard(user, guardType, type, null);
     }
 
-    public GuardModel newGuard(User user, byte guardType, byte type, UUID entityUUID)
+    public GuardModel newGuard(User user, GuardType guardType, ProtectedType type, UUID entityUUID)
     {
         this.setOwnerId(user.getEntity().getKey());
-        this.setGuardType(guardType);
+        this.setGuardType(guardType.id);
         this.setFlags((short)0); // none
-        this.setType(type);
+        this.setType(type.id);
         this.setDroptransfer((byte)0);
         if (entityUUID != null)
         {

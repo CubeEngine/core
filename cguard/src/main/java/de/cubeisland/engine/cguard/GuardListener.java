@@ -37,10 +37,15 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.event.block.BlockBurnEvent;
+import org.bukkit.event.block.BlockPistonExtendEvent;
+import org.bukkit.event.block.BlockPistonRetractEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
+import org.bukkit.event.block.BlockRedstoneEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
+import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
@@ -57,6 +62,8 @@ import de.cubeisland.engine.cguard.storage.GuardManager;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.util.BlockUtil;
 import de.cubeisland.engine.core.util.ChatFormat;
+
+import static de.cubeisland.engine.cguard.storage.ProtectionFlags.REDSTONE;
 
 public class GuardListener implements Listener
 {
@@ -75,34 +82,41 @@ public class GuardListener implements Listener
     {
         if (event.useInteractedBlock().equals(Result.DENY)) return;
         if (!event.getAction().equals(Action.RIGHT_CLICK_BLOCK)) return;
+        User user = this.module.getCore().getUserManager().getExactUser(event.getPlayer().getName());
+        Location location = event.getClickedBlock().getLocation();
+        Guard guard = this.manager.getGuardAtLocation(location);
         if (event.getClickedBlock() != null && event.getClickedBlock().getState() instanceof InventoryHolder)
         {
             // TODO deny permission protects ALL containers
-            Guard guard = this.manager.getGuardAtLocation(event.getClickedBlock().getLocation());
-            if (guard == null) return;
-            User user = this.module.getCore().getUserManager().getExactUser(event.getPlayer().getName());
-            if (guard.isOwner(user)) return;
-            if (this.checkForKeyBook(guard, user, null, event))  return;
-            if (this.checkForUnlocked(guard, user)) return;
+            if (this.handleAccess(guard, user, null, event)) return;
             guard.handleInventoryOpen(event, null, user);
-            if (event.isCancelled()) event.setUseInteractedBlock(Result.DENY);
         }
         else if (event.getClickedBlock().getState().getData() instanceof Openable)
         {
-
             // TODO deny permission protects ALL doors
-            Location location = event.getClickedBlock().getLocation();
-            Guard guard = this.manager.getGuardAtLocation(location);
-            if (guard == null) return;
-            User user = this.module.getCore().getUserManager().getExactUser(event.getPlayer().getName());
-            if (guard.isOwner(user)) return;
-            // TODO open doubledoor
-            // TODO autoclose later
-            if (this.checkForKeyBook(guard, user, location, event))  return;
-            if (this.checkForUnlocked(guard, user)) return;
+            if (this.handleAccess(guard, user, location, event))
+            {
+                if (guard == null) return;
+                // TODO open doubledoor
+                // TODO autoclose later
+                return;
+            }
             guard.handleBlockDoorUse(event, user);
-            if (event.isCancelled()) event.setUseInteractedBlock(Result.DENY);
         }
+        if (event.isCancelled()) event.setUseInteractedBlock(Result.DENY);
+    }
+
+    private boolean handleAccess(Guard guard, User user, Location soundLocation, Cancellable event)
+    {
+        if (guard == null) return true;
+        if (guard.isOwner(user)) return true;
+        Boolean keyBookUsed = this.checkForKeyBook(guard, user, soundLocation);
+        if (keyBookUsed == null)
+        {
+            event.setCancelled(true);
+            return false;
+        }
+        return keyBookUsed || this.checkForUnlocked(guard, user);
     }
 
     @EventHandler(ignoreCancelled = true)
@@ -113,9 +127,7 @@ public class GuardListener implements Listener
         Guard guard = this.manager.getGuardForEntityUID(entity.getUniqueId());
         if (guard == null) return;
         User user = this.module.getCore().getUserManager().getExactUser(event.getPlayer().getName());
-        if (guard.isOwner(user)) return;
-        if (this.checkForKeyBook(guard, user, null, event))  return;
-        if (this.checkForUnlocked(guard, user)) return;
+        if (this.handleAccess(guard, user, null, event)) return;
         if (entity instanceof StorageMinecart || entity instanceof HopperMinecart
             || (entity.getType().equals(EntityType.HORSE) && entity instanceof InventoryHolder && event.getPlayer().isSneaking()))
         {
@@ -158,9 +170,7 @@ public class GuardListener implements Listener
         if (guard != null)
         {
             User user = this.module.getCore().getUserManager().getExactUser(event.getPlayer().getName());
-            if (guard.isOwner(user)) return;
-            if (this.checkForKeyBook(guard, user, holderLoc, event))  return;
-            if (this.checkForUnlocked(guard, user)) return;
+            if (this.handleAccess(guard, user, holderLoc, event)) return;
             guard.handleInventoryOpen(event, event.getInventory(), user);
         }
 
@@ -172,7 +182,17 @@ public class GuardListener implements Listener
         return guardAttachment != null && guardAttachment.hasUnlocked(guard);
     }
 
-    private boolean checkForKeyBook(Guard guard, User user, Location effectLocation, Cancellable event)
+    /**
+     * Returns true if the chest could open
+     * <p>null if the chest cannot be opened with the KeyBook
+     * <p>false if the user has no KeyBook in hand
+     *
+     * @param guard
+     * @param user
+     * @param effectLocation
+     * @return
+     */
+    private Boolean checkForKeyBook(Guard guard, User user, Location effectLocation)
     {
         if (user.getItemInHand().getType().equals(Material.ENCHANTED_BOOK) && user.getItemInHand().getItemMeta().getDisplayName().contains("KeyBook"))
         {
@@ -210,8 +230,7 @@ public class GuardListener implements Listener
                         final Vector userDirection = user.getLocation().getDirection();
                         user.damage(1);
                         user.setVelocity(userDirection.multiply(-3));
-                        event.setCancelled(true);
-                        return true;
+                        return null;
                     }
                 }
                 else
@@ -219,8 +238,7 @@ public class GuardListener implements Listener
                     user.sendTranslated("&eYou try to open the container with your KeyBook but nothing happens!");
                     user.playSound(effectLocation, Sound.BLAZE_HIT, 1, 1);
                     user.playSound(effectLocation, Sound.BLAZE_HIT, 1, (float)0.8);
-                    event.setCancelled(true);
-                    return true;
+                    return null;
                 }
             }
             catch (NumberFormatException|IndexOutOfBoundsException ignore) // invalid book / we do not care
@@ -228,18 +246,6 @@ public class GuardListener implements Listener
         }
         return false;
     }
-
-    @EventHandler(ignoreCancelled = true)
-    public void onBlockBreak(BlockBreakEvent event)
-    {
-        Guard guard = this.manager.getGuardAtLocation(event.getBlock().getLocation());
-        if (guard != null)
-        {
-            User user = this.module.getCore().getUserManager().getExactUser(event.getPlayer().getName());
-            guard.handleBlockBreak(event, user);
-        }
-    }
-
 
     public void onPlayerDamageEntity(EntityDamageByEntityEvent event)
     {
@@ -312,6 +318,7 @@ public class GuardListener implements Listener
     public void onPlace(BlockPlaceEvent event)
     {
         Block placed = event.getBlockPlaced();
+        User user = this.module.getCore().getUserManager().getExactUser(event.getPlayer().getName());
         if (placed.getType().equals(Material.CHEST) || placed.getType().equals(Material.TRAPPED_CHEST))
         {
             Location relativeLoc = new Location(null,0,0,0);
@@ -323,7 +330,6 @@ public class GuardListener implements Listener
                     Guard guard = this.manager.getGuardAtLocation(relativeLoc);
                     if (guard != null)
                     {
-                        User user = this.module.getCore().getUserManager().getExactUser(event.getPlayer().getName());
                         if (guard.isOwner(user))
                         {
                             this.manager.extendGuard(guard, event.getBlockPlaced().getLocation());
@@ -360,7 +366,6 @@ public class GuardListener implements Listener
                         {
                             if (topDoor.getData() != topRelative.getData()) // This is a doubleDoor!
                             {
-                                User user = this.module.getCore().getUserManager().getExactUser(event.getPlayer().getName());
                                 if (guard.isOwner(user))
                                 {
                                     this.manager.extendGuard(guard, loc); // bot half
@@ -380,8 +385,106 @@ public class GuardListener implements Listener
                 }
             }
         }
-        // TODO placing chest next to protected chest merge OR prevent
     }
 
-    // TODO placig door next to other door / double door protect merge
+    @EventHandler
+    public void onBlockRedstone(BlockRedstoneEvent event)
+    {
+        Block block = event.getBlock();
+        Guard guard = this.manager.getGuardAtLocation(block.getLocation());
+        if (guard != null)
+        {
+            if (guard.hasFlag(REDSTONE))
+            {
+                event.setNewCurrent(0);
+            }
+        }
+    }
+
+    @EventHandler(ignoreCancelled = true)
+    public void onBlockPistonExtend(BlockPistonExtendEvent event)
+    {
+        Location location = new Location(null,0,0,0);
+        for (Block block : event.getBlocks())
+        {
+            Guard guard = this.manager.getGuardAtLocation(block.getLocation(location));
+            if (guard != null)
+            {
+                event.setCancelled(true);
+                return;
+            }
+        }
+        Guard guard = this.manager.getGuardAtLocation(location.getBlock().getRelative(event.getDirection()).getLocation(location));
+        if (guard != null)
+        {
+            event.setCancelled(true);
+            return;
+        }
+    }
+
+    @EventHandler(ignoreCancelled = true)
+    public void onBlockPistonRetract(BlockPistonRetractEvent event)
+    {
+        Guard guard = this.manager.getGuardAtLocation(event.getRetractLocation());
+        if (guard != null)
+        {
+            event.setCancelled(true);
+            return;
+        }
+    }
+
+    @EventHandler(ignoreCancelled = true)
+    public void onBlockBreak(BlockBreakEvent event)
+    {
+        Guard guard = this.manager.getGuardAtLocation(event.getBlock().getLocation());
+        if (guard != null)
+        {
+            User user = this.module.getCore().getUserManager().getExactUser(event.getPlayer().getName());
+            guard.handleBlockBreak(event, user);
+        }
+        else
+        {
+            Location location = new Location(null,0,0,0);
+            for (Block block : BlockUtil.getDetachableBlocks(event.getBlock()))
+            {
+                guard = this.manager.getGuardAtLocation(block.getLocation(location));
+                if (guard != null)
+                {
+                    User user = this.module.getCore().getUserManager().getExactUser(event.getPlayer().getName());
+                    guard.handleBlockBreak(event, user);
+                    return;
+                }
+            }
+        }
+    }
+
+    @EventHandler(ignoreCancelled = true)
+    public void onBlockExplode(EntityExplodeEvent event)
+    {
+        Location location = new Location(null,0,0,0);
+        for (Block block : event.blockList())
+        {
+            Guard guard = this.manager.getGuardAtLocation(block.getLocation(location));
+            if (guard != null)
+            {
+                event.setCancelled(true);
+                return;
+            }
+        }
+    }
+
+    @EventHandler(ignoreCancelled = true)
+    public void onBlockBurn(BlockBurnEvent event)
+    {
+        Location location = new Location(null,0,0,0);
+        for (Block block : BlockUtil.getDetachableBlocks(event.getBlock()))
+        {
+            Guard guard = this.manager.getGuardAtLocation(block.getLocation(location));
+            if (guard != null)
+            {
+                event.setCancelled(true);
+                return;
+            }
+        }
+    }
 }

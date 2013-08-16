@@ -22,6 +22,7 @@ import java.util.Arrays;
 import de.cubeisland.engine.cguard.Cguard;
 import de.cubeisland.engine.cguard.commands.CommandListener.CommandType;
 import de.cubeisland.engine.cguard.storage.GuardManager;
+import de.cubeisland.engine.core.command.CommandSender;
 import de.cubeisland.engine.core.command.ContainerCommand;
 import de.cubeisland.engine.core.command.parameterized.Flag;
 import de.cubeisland.engine.core.command.parameterized.ParameterizedContext;
@@ -44,9 +45,8 @@ public class GuardCommands extends ContainerCommand
     @Command(desc = "Shows information about a protection")
     public void info(ParameterizedContext context)
     {
-        if (isNotUser(context)) return;
         // TODO if keybook in hand show info
-        manager.commandListener.setCommandType((User)context.getSender(), CommandType.INFO, null, false);
+        manager.commandListener.setCommandType(context.getSender(), CommandType.INFO, null, false);
         context.sendTranslated("&aRightclock to show protection-info");
     }
 
@@ -54,7 +54,6 @@ public class GuardCommands extends ContainerCommand
     @Command(desc = "persists your last container guard command")
     public void persist(ParameterizedContext context)
     {
-        if (isNotUser(context)) return;
         if (this.manager.commandListener.persist((User)context.getSender()))
         {
             context.sendTranslated("&aYour commands will now persist!");
@@ -69,8 +68,7 @@ public class GuardCommands extends ContainerCommand
     @Command(desc = "Shows information about a protection")
     public void remove(ParameterizedContext context)
     {
-        if (isNotUser(context)) return;
-        this.manager.commandListener.setCommandType((User)context.getSender(), CommandType.REMOVE, null);
+        this.manager.commandListener.setCommandType(context.getSender(), CommandType.REMOVE, null);
         context.sendTranslated("&aRightclick a protection to remove it!");
     }
 
@@ -78,8 +76,7 @@ public class GuardCommands extends ContainerCommand
     @Command(desc = "Unlocks a password protected chest", max = 1, min = 1)
     public void unlock(ParameterizedContext context)
     {
-        if (isNotUser(context)) return;
-        this.manager.commandListener.setCommandType((User)context.getSender(), CommandType.UNLOCK, context.getString(0));
+        this.manager.commandListener.setCommandType(context.getSender(), CommandType.UNLOCK, context.getString(0));
         context.sendTranslated("&aRightclick to unlock a password protected chest!");
     }
 
@@ -90,7 +87,6 @@ public class GuardCommands extends ContainerCommand
     flags = @Flag(longName = "admin", name = "a"), min = 1, max = 1)
     public void modify(ParameterizedContext context) // global flag to allow a user to access ALL your protections
     {
-        if (isNotUser(context)) return;
         String[] explode = StringUtils.explode(",", context.getString(0));
         for (String name : explode)
         {
@@ -105,7 +101,7 @@ public class GuardCommands extends ContainerCommand
                 return;
             }
         } // All users do exist!
-        this.manager.commandListener.setCommandType((User)context.getSender(), CommandType.MODIFY, context.getString(0));
+        this.manager.commandListener.setCommandType(context.getSender(), CommandType.MODIFY, context.getString(0));
         context.sendTranslated("&aRightclick a protection to modify it!");
     }
 
@@ -123,15 +119,14 @@ public class GuardCommands extends ContainerCommand
              flags = @Flag(longName = "invalidate", name = "i"))
     public void key(ParameterizedContext context)
     {
-        if (isNotUser(context)) return;
         if (context.hasFlag("i"))
         {
-            this.manager.commandListener.setCommandType((User)context.getSender(), CommandType.INVALIDATE_KEYS, context.getString(0));
+            this.manager.commandListener.setCommandType(context.getSender(), CommandType.INVALIDATE_KEYS, context.getString(0));
             context.sendTranslated("&aRightclick a protection to invalidate old KeyBooks for it!");
         }
         else
         {
-            this.manager.commandListener.setCommandType((User)context.getSender(), CommandType.KEYS, context.getString(0), true);
+            this.manager.commandListener.setCommandType(context.getSender(), CommandType.KEYS, context.getString(0), true);
             context.sendTranslated("&aRightclick a protection to with a book to create a new KeyBook!");
         }
     }
@@ -140,11 +135,11 @@ public class GuardCommands extends ContainerCommand
     // TODO subcmd for droptransfer
     // TODO subcmd for admin stuff
 
-    public static boolean isNotUser(ParameterizedContext context)
+    public static boolean isNotUser(CommandSender sender)
     {
-        if (!(context.getSender() instanceof User))
+        if (!(sender instanceof User))
         {
-            context.sendTranslated("&cThis command can only be used ingame");
+            sender.sendTranslated("&cThis command can only be used ingame");
             return true;
         }
         return false;

@@ -21,19 +21,21 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.bukkit.Location;
+import org.bukkit.Sound;
 import org.bukkit.entity.Entity;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.inventory.Inventory;
 
+import de.cubeisland.engine.cguard.GuardAttachment;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.util.InventoryGuardFactory;
 import org.jooq.Record1;
 import org.jooq.Result;
 
 import static de.cubeisland.engine.cguard.storage.AccessListModel.ACCESS_ADMIN;
+import static de.cubeisland.engine.cguard.storage.GuardType.PUBLIC;
 import static de.cubeisland.engine.cguard.storage.TableAccessList.TABLE_ACCESS_LIST;
-import static de.cubeisland.engine.cguard.storage.TableGuards.*;
 
 public class Guard
 {
@@ -51,6 +53,7 @@ public class Guard
     {
         this.manager = manager;
         this.model = model;
+        this.checkGuardType();
     }
 
     /**
@@ -108,14 +111,14 @@ public class Guard
     public void handleBlockDoorUse(Cancellable event, User user)
     {
         if (this.model.getOwnerId().equals(user.getEntity().getKey())) return; // Its the owner
-        switch (this.model.getGuardType())
+        switch (this.getGuardType())
         {
-            case GUARDTYPE_PUBLIC: return; // Allow everything
-            case GUARDTYPE_PRIVATE: // block changes
+            case PUBLIC: return; // Allow everything
+            case PRIVATE: // block changes
                 break;
-            case GUARDTYPE_GUARDED:
-            case GUARDTYPE_DONATION:
-            case GUARDTYPE_FREE:
+            case GUARDED:
+            case DONATION:
+            case FREE:
             default: // Not Allowed for doors
                 throw new IllegalStateException();
         }
@@ -143,25 +146,25 @@ public class Guard
         if (this.model.getOwnerId().equals(user.getEntity().getKey())) return; // Its the owner
         boolean in;
         boolean out;
-        switch (this.model.getGuardType())
+        switch (this.getGuardType())
         {
             default: throw new IllegalStateException();
-            case GUARDTYPE_PUBLIC: return; // Allow everything
-            case GUARDTYPE_PRIVATE: // block changes
-            case GUARDTYPE_GUARDED:
+            case PUBLIC: return; // Allow everything
+            case PRIVATE: // block changes
+            case GUARDED:
                 in = false;
                 out = false;
                 break;
-            case GUARDTYPE_DONATION:
+            case DONATION:
                 in = true;
                 out = false;
                 break;
-            case GUARDTYPE_FREE:
+            case FREE:
                 in = false;
                 out = true;
         }
         AccessListModel access = this.getAccess(user);
-        if (access == null && this.model.getGuardType() == GUARDTYPE_PRIVATE)
+        if (access == null && this.getGuardType() == GuardType.PRIVATE)
         {
             event.setCancelled(true); // private & no access
             // TODO perm show protection owner
@@ -195,18 +198,9 @@ public class Guard
     public void handleEntityInteract(Cancellable event, Entity entity, User user)
     {
         if (this.model.getOwnerId().equals(user.getEntity().getKey())) return; // Its the owner
-        switch (this.model.getGuardType())
-        {
-            case GUARDTYPE_PUBLIC: return; // Allow everything
-            case GUARDTYPE_PRIVATE:
-                break;// block changes
-            case GUARDTYPE_GUARDED:
-            case GUARDTYPE_DONATION:
-            case GUARDTYPE_FREE:
-            default: throw new IllegalStateException();
-        }
+        if (this.getGuardType().equals(PUBLIC)) return;
         AccessListModel access = this.getAccess(user);
-        if (access == null && this.model.getGuardType() == GUARDTYPE_PRIVATE)
+        if (access == null && this.getGuardType() == GuardType.PRIVATE)
         {
             event.setCancelled(true); // private & no access
             // TODO perm show protection owner
@@ -216,6 +210,22 @@ public class Guard
         {
             // TODO messages
         }
+    }
+
+    private void checkGuardType()
+    {
+        if (this.getProtectedType().supportedTypes.contains(this.getGuardType())) return;
+        throw new IllegalStateException("GuardType is not supported for " + this.getProtectedType().name() + ":" + this.getGuardType().name());
+    }
+
+    public ProtectedType getProtectedType()
+    {
+        return ProtectedType.forByte(this.model.getType());
+    }
+
+    public GuardType getGuardType()
+    {
+        return GuardType.forByte(this.model.getGuardType());
     }
 
     public void handleBlockBreak(BlockBreakEvent event, User user)
@@ -234,7 +244,7 @@ public class Guard
     {
         if (this.model.getOwnerId().equals(user.getEntity().getKey())) return;
         AccessListModel access = this.getAccess(user);
-        if (access == null && this.model.getGuardType() == GUARDTYPE_PRIVATE)
+        if (access == null && this.getGuardType() == GuardType.PRIVATE)
         {
             event.setCancelled(true); // private & no access
             // TODO perm show protection owner
@@ -303,7 +313,42 @@ public class Guard
 
     public boolean isPublic()
     {
-        return this.model.getGuardType().equals(GUARDTYPE_PUBLIC);
+        return this.getGuardType().equals(PUBLIC);
+    }
+
+    public boolean hasFlag(ProtectionFlags redstone)
+    {
+        // TODO
+        return true;
+    }
+
+    public void showInfo(User user)
+    {
+        // TODO
+        user.sendTranslated("Protection: #" + this.getId());
+    }
+
+    public void unlock(User user, Location soundLoc, String pass)
+    {
+        if (this.hasPass())
+        {
+            if (this.manager.checkPass(this, pass))
+            {
+                user.sendTranslated("&aUpon hearing the right pass-phrase the magic surrounding the container gets thinner and lets you pass!");
+                user.playSound(soundLoc, Sound.PISTON_EXTEND, 1, 2);
+                user.playSound(soundLoc, Sound.PISTON_EXTEND, 1, (float)1.5);
+                user.attachOrGet(GuardAttachment.class, this.manager.module).addUnlock(this);
+            }
+            else
+            {
+                user.sendTranslated("&eSudden pain makes you realize this was not the right pass-phrase!");
+                user.damage(0);
+            }
+        }
+        else
+        {
+            user.sendTranslated("&eYou try to open the container with a pass-phrase but nothing changes!");
+        }
     }
 }
 

@@ -124,6 +124,8 @@ public class BlockUtil
             case YELLOW_FLOWER:
             case SUGAR_CANE_BLOCK:
             case CACTUS:
+            case SAND:
+            case GRAVEL:
             return true;
             default: return false;
         }
@@ -133,20 +135,29 @@ public class BlockUtil
     {
         Collection<Block> blocks = new HashSet<>();
         Block onTop = block.getRelative(BlockFace.UP);
-        if (onTop.getType().equals(Material.SUGAR_CANE_BLOCK) || onTop.getType().equals(Material.CACTUS))
+        while (isDetachableFromBelow(onTop.getType()))
         {
             blocks.add(onTop);
-            onTop = onTop.getRelative(BlockFace.UP);
-            while (onTop.getType().equals(Material.SUGAR_CANE_BLOCK) || onTop.getType().equals(Material.CACTUS))
+            for (Block attachedBlock : getAttachedBlocks(onTop))
             {
-                blocks.add(onTop);
-                onTop = onTop.getRelative(BlockFace.UP);
+                blocks.add(attachedBlock);
+                blocks.addAll(getDetachableBlocksOnTop(attachedBlock));
             }
+            onTop = onTop.getRelative(BlockFace.UP);
         }
-        else if (isDetachableFromBelow(onTop.getType()))
+        return blocks;
+    }
+
+    public static Collection<Block> getDetachableBlocks(Block block)
+    {
+        Collection<Block> blocks = new HashSet<>();
+
+        for (Block attachedBlock : getAttachedBlocks(block))
         {
-            blocks.add(onTop);
+            blocks.add(attachedBlock);
+            blocks.addAll(getDetachableBlocksOnTop(attachedBlock));
         }
+        blocks.addAll(getDetachableBlocksOnTop(block));
         return blocks;
     }
 
