@@ -215,7 +215,7 @@ public final class BukkitCore extends JavaPlugin implements Core
 
         this.logger = (Logger)LoggerFactory.getLogger("cubeengine.core");
         // TODO RemoteHandler is not yet implemented this.logger.addHandler(new RemoteHandler(LogLevel.ERROR, this));
-        this.logger.setLevel(Level.INFO);
+        this.logger.setLevel(Level.DEBUG);
         ColorConverter.setANSISupport(BukkitUtils.isANSISupported());
 
         this.fileManager.clearTempDir();
@@ -226,11 +226,8 @@ public final class BukkitCore extends JavaPlugin implements Core
         // depends on: file manager
         this.config = Configuration.load(BukkitCoreConfiguration.class, this.fileManager.getDataPath().resolve("core.yml"));
 
-        // Set the level for the parent logger to the lowest of either the file or console
-        // subloggers inherit this by default, but can override
-        parentLogger.setLevel((config.loggingConsoleLevel.toInt() > config.loggingFileLevel
-                                                                          .toInt()) ? this.config.loggingFileLevel
-                                                                                    : this.config.loggingConsoleLevel);
+
+        parentLogger.setLevel(Level.ALL);
         this.logger.setLevel(parentLogger.getLevel());
         // Set a filter for the console log, so sub loggers don't write logs with lower level than the user wants
         ThresholdFilter consoleFilter = new ThresholdFilter();
