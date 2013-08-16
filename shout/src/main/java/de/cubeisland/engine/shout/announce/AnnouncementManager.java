@@ -354,7 +354,8 @@ public class AnnouncementManager
                     }
                     catch (ShoutException e)
                     {
-                        this.logger.debug("An announcement that looked like the MOTD failed to load.", e);
+                        this.logger.info("An announcement that looked like the MOTD failed to load.");
+                        this.logger.debug(e.getLocalizedMessage(), e);
                     }
                 }
                 this.logger.debug("Loading announcement {}", path);
@@ -371,7 +372,8 @@ public class AnnouncementManager
         }
         catch (IOException e)
         {
-            this.logger.warn("Reading the announcement folder failed! No dynamic announcements will be loaded!", e);
+            this.logger.warn("An error occured while loading announcements.");
+            this.logger.debug(e.getLocalizedMessage(), e);
         }
     }
 

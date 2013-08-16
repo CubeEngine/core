@@ -56,8 +56,8 @@ public class Shout extends Module
             }
             catch (Exception ex)
             {
-                this.getLog().warn("An exception occured when creating the example announcement: " +
-                                       ex.getLocalizedMessage(), ex);
+                this.getLog().warn("An exception occured when creating the example announcement!");
+                this.getLog().debug(ex.getLocalizedMessage(), ex);
             }
         }
         this.announcementManager.loadAnnouncements(this.getFolder());

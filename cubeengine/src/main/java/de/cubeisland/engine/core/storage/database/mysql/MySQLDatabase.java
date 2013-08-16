@@ -86,7 +86,8 @@ public class MySQLDatabase extends AbstractPooledDatabase
         }
         catch (SQLException e)
         {
-            core.getLog().error("Could not establish connection with the database!", e);
+            core.getLog().error("Could not establish connection with the database!");
+            core.getLog().debug(e.getLocalizedMessage(), e);
         }
         return null;
     }

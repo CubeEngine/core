@@ -271,7 +271,8 @@ public final class BukkitCore extends JavaPlugin implements Core
             }
             catch (ApiStartupException e)
             {
-                this.logger.error("The web API will not be available as the server failed to start properly...", e);
+                this.logger.error("The web API will not be available as the server failed to start properly...");
+                this.logger.debug(e.getLocalizedMessage(), e);
             }
         }
 
@@ -374,7 +375,8 @@ public final class BukkitCore extends JavaPlugin implements Core
             }
             catch (Exception e)
             {
-                this.getLog().error("An error occurred during startup: " + e.getLocalizedMessage(), e);
+                this.getLog().error("An error occurred during startup!");
+                this.getLog().debug(e.getLocalizedMessage(), e);
             }
             it.remove();
         }
@@ -513,7 +515,8 @@ public final class BukkitCore extends JavaPlugin implements Core
         }
         catch (IOException e)
         {
-            this.getLog().warn("Failed to create the folder for the thread dumps!", e);
+            this.getLog().warn("Failed to create the folder for the thread dumps!");
+            this.getLog().debug(e.getLocalizedMessage(), e);
             return;
         }
         try (BufferedWriter writer = Files.newBufferedWriter(threadDumpFolder.resolve(System.currentTimeMillis() + ".dump"), Core.CHARSET))
@@ -541,7 +544,8 @@ public final class BukkitCore extends JavaPlugin implements Core
         }
         catch (IOException e)
         {
-            this.getLog().warn("Failed to write a thread dump!", e);
+            this.getLog().warn("Failed to write a thread dump!");
+            this.getLog().debug(e.getLocalizedMessage(), e);
         }
     }
 

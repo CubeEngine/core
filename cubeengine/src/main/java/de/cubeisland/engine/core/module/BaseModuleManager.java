@@ -165,13 +165,15 @@ public abstract class BaseModuleManager implements ModuleManager
                 }
                 catch (InvalidModuleException e)
                 {
-                    this.logger.error(e.getLocalizedMessage(), e);
+                    this.logger.error("Failed to load the modules!");
+                    this.logger.debug(e.getLocalizedMessage(), e);
                 }
             }
         }
         catch (IOException e)
         {
-            this.core.getLog().error("Failed to load modules!", e);
+            this.core.getLog().error("Failed to load modules!");
+            this.core.getLog().debug(e.getLocalizedMessage(), e);
             return;
         }
         Collection<String> moduleNames = new HashSet<>(this.moduleInfos.keySet());
@@ -194,12 +196,14 @@ public abstract class BaseModuleManager implements ModuleManager
             catch (InvalidModuleException e)
             {
                 this.moduleInfos.remove(moduleName);
-                this.logger.debug("Failed to load the module '" + moduleName + "'", e);
+                this.logger.debug("Failed to load the module '{}'", moduleName);
+                this.logger.debug(e.getLocalizedMessage(), e);
             }
             catch (ModuleException e)
             {
                 this.moduleInfos.remove(moduleName);
-                this.logger.error("Failed to load the module '" + moduleName + "'", e);
+                this.logger.error("Failed to load the module '{}'", moduleName);
+                this.logger.debug(e.getLocalizedMessage(), e);
             }
         }
         this.logger.info("Finished loading modules!");
@@ -302,7 +306,8 @@ public abstract class BaseModuleManager implements ModuleManager
         {} // This should never happen
         catch (JoranException ex)
         {
-            module.getLog().warn("An error occured while loading the modules logback.xml config: " + ex.getLocalizedMessage(), ex);
+            module.getLog().warn("An error occured while loading the modules logback.xml config");
+            module.getLog().debug(ex.getLocalizedMessage(), ex);
         }
 
         module = this.loader.loadModule(info);
@@ -318,7 +323,8 @@ public abstract class BaseModuleManager implements ModuleManager
         }
         catch (NoClassDefFoundError e)
         {
-            module.getLog().warn("Failed to get the fields of the main class: " + e.getLocalizedMessage(), e);
+            module.getLog().warn("Failed to get the fields of the main class");
+            module.getLog().debug(e.getLocalizedMessage(), e);
         }
         for (Field field : fields)
         {
@@ -508,7 +514,7 @@ public abstract class BaseModuleManager implements ModuleManager
             catch (ModuleException e)
             {
                 this.logger.error("Failed to reload ''{}''", module.getName());
-                this.logger.error(e.getLocalizedMessage(), e);
+                this.logger.debug(e.getLocalizedMessage(), e);
             }
             ++modules;
         }

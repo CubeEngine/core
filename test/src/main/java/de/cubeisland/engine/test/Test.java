@@ -107,7 +107,8 @@ public class Test extends Module
         }
         catch (Exception ex)
         {
-            this.getLog().error("Error while Enabling the TestModule: " + ex.getLocalizedMessage(), ex);
+            this.getLog().error("Error while Enabling the TestModule!");
+            this.getLog().debug(ex.getLocalizedMessage(), ex);
         }
         this.getCore().getEventManager().registerListener(this, new TestListener(this));
 
@@ -139,6 +140,9 @@ public class Test extends Module
         this.getLog().info("Info log on test's logger");
         this.getLog().warn("Warn log on test's logger");
         this.getLog().error("Error log on test's logger");
+        Exception ex = new Exception("Nothing dangerous!");
+
+        this.getLog().debug(ex.getLocalizedMessage(), ex);
 
         this.timer = new Timer("keepAliveTimer");
         this.timer.schedule(new KeepAliveTimer(), 2 * 1000, 2 * 1000);
@@ -167,7 +171,8 @@ public class Test extends Module
         }
         catch (IOException e)
         {
-            this.getLog().warn("Failed to delete the test world: " + e.getLocalizedMessage(), e);
+            this.getLog().warn("Failed to delete the test world!");
+            this.getLog().debug(e.getLocalizedMessage(), e);
         }
 
         this.timer = null;
@@ -245,7 +250,8 @@ public class Test extends Module
         }
         catch (Exception ex)
         {
-            this.getLog().error("Error in testsomeutils: " + ex.getLocalizedMessage(), ex);
+            this.getLog().error("Error in testsomeutils!");
+            this.getLog().debug(ex.getLocalizedMessage(), ex);
         }
     }
 

@@ -100,7 +100,8 @@ public class QueryManager
                 try {
                     doEmptyLogs(batchSize);
                 } catch (Exception ex) {
-                    QueryManager.this.module.getLog().error("Error while logging!", ex);
+                    QueryManager.this.module.getLog().error("Error while logging!");
+                    QueryManager.this.module.getLog().debug(ex.getLocalizedMessage(), ex);
                 }
             }
         };
@@ -113,7 +114,8 @@ public class QueryManager
                 try {
                     doQueryLookup();
                 } catch (Exception ex) {
-                    QueryManager.this.module.getLog().error("Error while lookup!", ex);
+                    QueryManager.this.module.getLog().error("Error while lookup!");
+                    QueryManager.this.module.getLog().debug(ex.getLocalizedMessage(), ex);
                 }
             }
         };
@@ -143,7 +145,8 @@ public class QueryManager
         }
         catch (InterruptedException e)
         {
-            this.module.getLog().error("Could not start optimizing!", e);
+            this.module.getLog().error("Could not start optimizing!");
+            this.module.getLog().debug(e.getLocalizedMessage(), e);
         }
         this.module.getLog().debug("Analyze - Step 2/6: Create temporary table and swap tables");
         TableLogEntry temporaryTable = TableLogEntry.initTempTable(this.database);
@@ -160,7 +163,8 @@ public class QueryManager
         }
         catch (InterruptedException e)
         {
-            this.module.getLog().error("Could not start copying back to optimized table!", e);
+            this.module.getLog().error("Could not start copying back to optimized table!");
+            this.module.getLog().error(e.getLocalizedMessage(), e);
         }
         this.module.getLog().debug("Analyze - Step 5/6: Insert data from temporary table into the optimized table and drop temporary table");
         this.cleanUpDsl.insertInto(OPTIMIZE_TABLE).select(this.cleanUpDsl.selectFrom(CURRENT_TABLE)).execute();
@@ -200,7 +204,8 @@ public class QueryManager
         }
         catch (InterruptedException e)
         {
-            this.module.getLog().error("Could not start optimizing!", e);
+            this.module.getLog().error("Could not start optimizing!");
+            this.module.getLog().debug(e.getLocalizedMessage(), e);
         }
         this.module.getLog().debug("CleanUp - Step 2/7: Create temporary table and swap tables");
         TableLogEntry temporaryTable = TableLogEntry.initTempTable(this.database);
@@ -233,7 +238,8 @@ public class QueryManager
         }
         catch (InterruptedException e)
         {
-            this.module.getLog().error("Could not start copying back to clean table!", e);
+            this.module.getLog().error("Could not start copying back to clean table!");
+            this.module.getLog().debug(e.getLocalizedMessage(), e);
         }
         this.module.getLog().debug("Optimize - Step 6/7: Insert data from temporary table into the optimized table and drop temporary table");
         this.cleanUpDsl.insertInto(OPTIMIZE_TABLE).select(this.cleanUpDsl.selectFrom(CURRENT_TABLE)).execute();
@@ -367,8 +373,7 @@ public class QueryManager
         {
             Profiler.endProfiling("logging"); // end profiling so we can start again later
             latch = new CountDownLatch(0); // and reset latch
-            module.getLog().error("Error while logging!", ex);
-            ex.printStackTrace();
+            module.getLog().error("Error while logging!");
             throw new IllegalStateException("Error while logging", ex);
         }
     }
@@ -403,7 +408,8 @@ public class QueryManager
         }
         catch (InterruptedException e)
         {
-            this.module.getLog().warn("Error while waiting! " + e.getLocalizedMessage(), e);
+            this.module.getLog().warn("Error while waiting! ");
+            this.module.getLog().debug(e.getLocalizedMessage(), e);
             return;
         }
         if (this.queuedLogs.size() != 0)
@@ -414,7 +420,9 @@ public class QueryManager
             }
             else
             {
-                this.module.getLog().warn("Logging doesn't seem to progress! Aborting...", new Exception());
+                this.module.getLog().warn("Logging doesn't seem to progress! Aborting...");
+                Exception ex = new Exception();
+                this.module.getLog().debug(ex.getLocalizedMessage(), ex);
             }
         }
     }

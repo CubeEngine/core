@@ -125,7 +125,8 @@ public class BukkitModuleManager extends BaseModuleManager
         }
         catch (NoClassDefFoundError e)
         {
-            module.getLog().warn("Failed to get the fields of the main class: " + e.getLocalizedMessage(), e);
+            module.getLog().warn("Failed to get the fields of the main class!");
+            module.getLog().debug(e.getLocalizedMessage(), e);
         }
         return module;
     }
