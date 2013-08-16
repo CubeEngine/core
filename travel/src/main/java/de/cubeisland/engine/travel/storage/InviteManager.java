@@ -198,4 +198,9 @@ public class InviteManager
             this.dsl.newRecord(TABLE_INVITE).newInvite(tPP.getKey(), invitedUser).insert(); // not yet invited
         }
     }
+
+    public void removeInvites(TeleportPoint tPP)
+    {
+        this.updateInvited(tPP.getModel(), new HashSet<String>());
+    }
 }

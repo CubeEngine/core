@@ -47,7 +47,7 @@ public class Home extends TeleportPoint
 
     public void setVisibility(short visibility)
     {
-        parent.setVisibility(visibility);
+        super.setVisibility(visibility);
         parent.update();
         telePointManager.removeHomeFromUser(this, this.getOwner());
         if (this.invited != null)
@@ -67,6 +67,7 @@ public class Home extends TeleportPoint
                 createAbstractChild("publichomes").createAbstractChild("access").
                                         createChild(parent.getName().toLowerCase(Locale.ENGLISH), PermDefault.TRUE);
             module.getCore().getPermissionManager().registerPermission(module, this.permission);
+            this.inviteManager.removeInvites(this);
         }
         else
         {
