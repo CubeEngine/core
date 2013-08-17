@@ -20,4 +20,7 @@ package de.cubeisland.engine.cguard;
 import de.cubeisland.engine.core.config.YamlConfiguration;
 
 public class CguardConfig extends YamlConfiguration
-{}
+{
+    //@Option()
+    //public int
+}

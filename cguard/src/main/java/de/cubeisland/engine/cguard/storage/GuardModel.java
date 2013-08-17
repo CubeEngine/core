@@ -38,8 +38,6 @@ public class GuardModel extends UpdatableRecordImpl<GuardModel> implements Recor
         super(TABLE_GUARD);
     }
 
-    // TODO timestamp with last access
-
     public GuardModel newGuard(User user, GuardType guardType, ProtectedType type)
     {
         return this.newGuard(user, guardType, type, null);

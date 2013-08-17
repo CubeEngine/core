@@ -741,6 +741,11 @@ public class TelePointManager
             for (TeleportInvite invite : this.inviteManager.getInvites(user))
             {
                 TeleportPointModel point = this.get(invite.getTeleportpoint().longValue());
+                if (point == null)
+                {
+                    this.module.getLog().warn("TeleportPointModel is null for #" + invite.getTeleportpoint().longValue());
+                    continue;
+                }
                 if (point.getType() == TYPE_HOME)
                 {
                     Home home = this.homes.get(point.getOwnerKey().longValue() + ":" + point.getName());

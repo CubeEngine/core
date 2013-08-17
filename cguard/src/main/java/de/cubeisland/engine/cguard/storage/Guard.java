@@ -138,9 +138,7 @@ public class Guard
             user.sendTranslated("&cA magical lock prevents you from using this door!");
             return;
         } // else has access
-        // TODO handle autoclose ??
-        // TODO message to user that door is protected(allow to disable the message)
-        user.sendTranslated("&eThis door is protected by &2%s", this.getOwner().getName());
+        user.sendTranslated("&eThis door is protected by &2%s", this.getOwner().getName()); // TODO better
         this.doorUse(user, clickedDoor);
     }
 
@@ -177,8 +175,7 @@ public class Guard
         if (access == null && this.getGuardType() == GuardType.PRIVATE)
         {
             event.setCancelled(true); // private & no access
-            // TODO perm show protection owner
-            user.sendTranslated("&cA magical lock prevents you from accessing this inventory!");
+            user.sendTranslated("&cA magical lock prevents you from accessing this inventory!"); // TODO better
         }
         else // Has access access -> new InventoryGuard
         {
@@ -199,9 +196,7 @@ public class Guard
                 inventoryGuardFactory.blockTakeOutAll();
             }
             inventoryGuardFactory.submitInventory(this.manager.module, false);
-            // TODO message to user that inventory is protected and how (allow to disable the message)
-            // TODO change message for entity stuffs
-            user.sendTranslated("&eThis %s is protected by &2%s", "container", this.getOwner().getName());
+            user.sendTranslated("&eThis %s is protected by &2%s", "container", this.getOwner().getName()); // TODO better
         }
     }
 
@@ -213,8 +208,7 @@ public class Guard
         if (access == null && this.getGuardType() == GuardType.PRIVATE)
         {
             event.setCancelled(true); // private & no access
-            // TODO perm show protection owner
-            user.sendTranslated("&cMagic repelled your attempts to reach this entity!");
+            user.sendTranslated("&cMagic repelled your attempts to reach this entity!"); // TODO better
         }
         else // has access
         {
@@ -257,8 +251,7 @@ public class Guard
         if (access == null && this.getGuardType() == GuardType.PRIVATE)
         {
             event.setCancelled(true); // private & no access
-            // TODO perm show protection owner
-            user.sendTranslated("&cMagic repelled your attempts to hurt this entity!");
+            user.sendTranslated("&cMagic repelled your attempts to hurt this entity!"); // TODO better
         }
         else // has access
         {
@@ -275,11 +268,6 @@ public class Guard
     {
         this.manager.removeGuard(this);
         if (user != null) user.sendTranslated("&aRemoved Guard!");
-    }
-
-    private boolean checkFlag()
-    {
-        return false; // TODO
     }
 
     public boolean isOwner(User user)
