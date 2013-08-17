@@ -437,6 +437,13 @@ public class QueryManager
         }
     }
 
+    public void logStatus()
+    {
+        this.module.getLog().info("{} logs queued!", this.queuedLogs.size());
+        this.module.getLog().info("Latch: {}", this.latch.getCount(), this.latch.toString());
+        this.module.getLog().info("FutureStore is {}done! {}", this.futureStore.isDone() ? "" : "NOT ", this.futureStore.toString());
+    }
+
     public enum QueryAction
     {
         SHOW, ROLLBACK, REDO, ROLLBACK_PREVIEW, REDO_PREVIEW;
