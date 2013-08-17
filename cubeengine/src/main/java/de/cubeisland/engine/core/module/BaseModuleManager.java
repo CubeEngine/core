@@ -142,7 +142,7 @@ public abstract class BaseModuleManager implements ModuleManager
         this.logger.info("Loading modules...");
         try (DirectoryStream<Path> directoryStream = Files.newDirectoryStream(directory, JAR))
         {
-            for (Path file : directoryStream )
+            for (Path file : directoryStream)
             {
                 try
                 {
@@ -165,7 +165,7 @@ public abstract class BaseModuleManager implements ModuleManager
                 }
                 catch (InvalidModuleException e)
                 {
-                    this.logger.error("Failed to load the modules!");
+                    this.logger.error("Failed to load the module from {}!", file);
                     this.logger.debug(e.getLocalizedMessage(), e);
                 }
             }
