@@ -163,7 +163,12 @@ public class QueryManager
             this.module.getLog().error("Could not start copying back to optimized table!", e);
         }
         this.module.getLog().debug("Analyze - Step 5/6: Insert data from temporary table into the optimized table and drop temporary table");
-        this.cleanUpDsl.insertInto(OPTIMIZE_TABLE).select(this.cleanUpDsl.selectFrom(CURRENT_TABLE)).execute();
+        this.cleanUpDsl.insertInto(OPTIMIZE_TABLE, OPTIMIZE_TABLE.DATE, OPTIMIZE_TABLE.WORLD, OPTIMIZE_TABLE.X, OPTIMIZE_TABLE.Y, OPTIMIZE_TABLE.Z,
+                                   OPTIMIZE_TABLE.ACTION, OPTIMIZE_TABLE.CAUSER,OPTIMIZE_TABLE.BLOCK, OPTIMIZE_TABLE.DATA,
+                                   OPTIMIZE_TABLE.NEWBLOCK, OPTIMIZE_TABLE.NEWDATA, OPTIMIZE_TABLE.ADDITIONALDATA).
+                           select(this.cleanUpDsl.select(CURRENT_TABLE.DATE, CURRENT_TABLE.WORLD, CURRENT_TABLE.X, CURRENT_TABLE.Y, CURRENT_TABLE.Z,
+                                                         CURRENT_TABLE.ACTION, CURRENT_TABLE.CAUSER,CURRENT_TABLE.BLOCK, CURRENT_TABLE.DATA,
+                                                         CURRENT_TABLE.NEWBLOCK, CURRENT_TABLE.NEWDATA, CURRENT_TABLE.ADDITIONALDATA).from(CURRENT_TABLE)).execute();
         this.dsl.execute("DROP TABLE " + temporaryTable.getName());
         this.module.getLog().debug("Analyze - Step 6/6: Return back to normal logging. Table optimized!");
         this.CURRENT_TABLE = this.OPTIMIZE_TABLE;
@@ -236,7 +241,12 @@ public class QueryManager
             this.module.getLog().error("Could not start copying back to clean table!", e);
         }
         this.module.getLog().debug("Optimize - Step 6/7: Insert data from temporary table into the optimized table and drop temporary table");
-        this.cleanUpDsl.insertInto(OPTIMIZE_TABLE).select(this.cleanUpDsl.selectFrom(CURRENT_TABLE)).execute();
+        this.cleanUpDsl.insertInto(OPTIMIZE_TABLE, OPTIMIZE_TABLE.DATE, OPTIMIZE_TABLE.WORLD, OPTIMIZE_TABLE.X, OPTIMIZE_TABLE.Y, OPTIMIZE_TABLE.Z,
+                                   OPTIMIZE_TABLE.ACTION, OPTIMIZE_TABLE.CAUSER,OPTIMIZE_TABLE.BLOCK, OPTIMIZE_TABLE.DATA,
+                                   OPTIMIZE_TABLE.NEWBLOCK, OPTIMIZE_TABLE.NEWDATA, OPTIMIZE_TABLE.ADDITIONALDATA).
+                           select(this.cleanUpDsl.select(CURRENT_TABLE.DATE, CURRENT_TABLE.WORLD, CURRENT_TABLE.X, CURRENT_TABLE.Y, CURRENT_TABLE.Z,
+                                                         CURRENT_TABLE.ACTION, CURRENT_TABLE.CAUSER,CURRENT_TABLE.BLOCK, CURRENT_TABLE.DATA,
+                                                         CURRENT_TABLE.NEWBLOCK, CURRENT_TABLE.NEWDATA, CURRENT_TABLE.ADDITIONALDATA).from(CURRENT_TABLE)).execute();
         this.dsl.execute("DROP TABLE " + temporaryTable.getName());
         this.module.getLog().debug("Optimize - Step 7/7: Re-Analyze Indices and then return back to normal logging. Table cleaned up!");
         this.CURRENT_TABLE = this.OPTIMIZE_TABLE;
