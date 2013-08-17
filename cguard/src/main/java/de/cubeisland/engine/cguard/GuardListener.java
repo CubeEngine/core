@@ -87,21 +87,30 @@ public class GuardListener implements Listener
         Guard guard = this.manager.getGuardAtLocation(location);
         if (event.getClickedBlock() != null && event.getClickedBlock().getState() instanceof InventoryHolder)
         {
-            // TODO deny permission protects ALL containers
+            if (GuardPerm.DENY_CONTAINER.isAuthorized(user))
+            {
+                user.sendTranslated("&cStrong magic prevents you from accessing any inventory!");
+                event.setCancelled(true);
+                return;
+            }
             if (this.handleAccess(guard, user, null, event)) return;
             guard.handleInventoryOpen(event, null, user);
         }
         else if (event.getClickedBlock().getState().getData() instanceof Openable)
         {
-            // TODO deny permission protects ALL doors
+            if (GuardPerm.DENY_DOOR.isAuthorized(user))
+            {
+                user.sendTranslated("&cStrong magic prevents you from accessing any door!");
+                event.setCancelled(true);
+                return;
+            }
             if (this.handleAccess(guard, user, location, event))
             {
                 if (guard == null) return;
-                // TODO open doubledoor
-                // TODO autoclose later
+                guard.doorUse(user, location);
                 return;
             }
-            guard.handleBlockDoorUse(event, user);
+            guard.handleBlockDoorUse(event, user, location);
         }
         if (event.isCancelled()) event.setUseInteractedBlock(Result.DENY);
     }
@@ -414,7 +423,7 @@ public class GuardListener implements Listener
                 return;
             }
         }
-        Guard guard = this.manager.getGuardAtLocation(location.getBlock().getRelative(event.getDirection()).getLocation(location));
+        Guard guard = this.manager.getGuardAtLocation(location.getBlock().getRelative(event.getDirection()).getLocation(location)); // TODO NPE here why?
         if (guard != null)
         {
             event.setCancelled(true);
@@ -487,4 +496,6 @@ public class GuardListener implements Listener
             }
         }
     }
+
+    // TODO protect against water & lava-flow
 }

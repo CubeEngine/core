@@ -21,11 +21,16 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.Sound;
+import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
+import org.bukkit.block.BlockState;
 import org.bukkit.entity.Entity;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.inventory.Inventory;
+import org.bukkit.material.Door;
 
 import de.cubeisland.engine.cguard.GuardAttachment;
 import de.cubeisland.engine.core.user.User;
@@ -42,6 +47,8 @@ public class Guard
     private GuardManager manager;
     protected final GuardModel model;
     protected final ArrayList<Location> locations = new ArrayList<>();
+
+    private Integer taskId = null; // for autoclosing doors
 
     /**
      * EntityGuard
@@ -108,12 +115,14 @@ public class Guard
         return this.locations;
     }
 
-    public void handleBlockDoorUse(Cancellable event, User user)
+    public void handleBlockDoorUse(Cancellable event, User user, Location clickedDoor)
     {
         if (this.model.getOwnerId().equals(user.getEntity().getKey())) return; // Its the owner
         switch (this.getGuardType())
         {
-            case PUBLIC: return; // Allow everything
+            case PUBLIC:
+                this.doorUse(user, clickedDoor);
+                return; // Allow everything
             case PRIVATE: // block changes
                 break;
             case GUARDED:
@@ -132,6 +141,7 @@ public class Guard
         // TODO handle autoclose ??
         // TODO message to user that door is protected(allow to disable the message)
         user.sendTranslated("&eThis door is protected by &2%s", this.getOwner().getName());
+        this.doorUse(user, clickedDoor);
     }
 
     private AccessListModel getAccess(User user)
@@ -236,7 +246,7 @@ public class Guard
             return;
         }
         event.setCancelled(true);
-        user.sendTranslated("&cMagic prevents you from breaking this inventory!");
+        user.sendTranslated("&cMagic prevents you from breaking this protection!");
     }
 
 
@@ -350,6 +360,129 @@ public class Guard
             user.sendTranslated("&eYou try to open the container with a pass-phrase but nothing changes!");
         }
     }
+
+    /**
+     * If this guard protects a double-door this will open/close the second door too.
+     * Also this will schedule auto-closing the door according to the configuration
+     *
+     * @param user
+     */
+    public void doorUse(User user, Location doorClicked)
+    {
+        // TODO config iron-door
+        Block block = doorClicked.getBlock();
+        if (block.getState().getData() instanceof Door)
+        {
+            Door door;
+            if (((Door)block.getState().getData()).isTopHalf())
+            {
+                block = block.getRelative(BlockFace.DOWN);
+                door = (Door)block.getState().getData();
+            }
+            else
+            {
+                door = (Door)block.getState().getData();
+            }
+            Sound sound;
+            if (door.isOpen())
+            {
+                sound = Sound.DOOR_CLOSE;
+            }
+            else
+            {
+                sound = Sound.DOOR_OPEN;
+            }
+            Door door2 = null;
+            Location loc2 = null;
+            for (Location location : locations)
+            {
+                if (location.getBlockY() == block.getY() && !location.equals(block.getLocation(doorClicked)))
+                {
+                    door2 = (Door)location.getBlock().getState().getData();
+                    loc2 = location;
+                    break;
+                }
+            }
+            if (door2 == null)
+            {
+                if (door.getItemType().equals(Material.IRON_DOOR_BLOCK))
+                {
+                    doorClicked.getWorld().playSound(doorClicked, sound, 1, 1);
+                    door.setOpen(!door.isOpen());
+                    block.setData(door.getData());
+                }
+                if (taskId != null) this.manager.module.getCore().getTaskManager().cancelTask(this.manager.module, taskId);
+                if (sound.equals(Sound.DOOR_OPEN)) this.scheduleAutoClose(door, block.getState(), null, null);
+                return;
+            }
+            boolean old = door.isOpen();
+            door2.setOpen(!door.isOpen()); // Flip
+            if (old != door2.isOpen())
+            {
+
+                doorClicked.getWorld().playSound(loc2, sound, 1, 1);
+                loc2.getBlock().setData(door2.getData());
+                if (door.getItemType().equals(Material.IRON_DOOR_BLOCK))
+                {
+                    doorClicked.getWorld().playSound(doorClicked, sound, 1, 1);
+                    door.setOpen(door2.isOpen());
+                    block.setData(door.getData());
+                }
+            }
+            if (taskId != null) this.manager.module.getCore().getTaskManager().cancelTask(this.manager.module, taskId);
+            if (sound.equals(Sound.DOOR_OPEN)) this.scheduleAutoClose(door, block.getState(), door2, loc2.getBlock().getState());
+        }
+    }
+
+    private void scheduleAutoClose(final Door door1, final BlockState state1, final Door door2, final BlockState state2)
+    {
+        Runnable run;
+        if (door2 == null)
+        {
+            run = new Runnable()
+            {
+                @Override
+                public void run()
+                {
+                    door1.setOpen(false);
+                    state1.setData(door1);
+                    if (state1.update())
+                    {
+                        Location location = state1.getLocation();
+                        location.getWorld().playSound(location, Sound.DOOR_CLOSE, 1, 1);
+                    }
+                }
+            };
+        }
+        else
+        {
+            run = new Runnable()
+            {
+                @Override
+                public void run()
+                {
+                    door1.setOpen(false);
+                    state1.setData(door1);
+                    if (state1.update())
+                    {
+                        Location location = state1.getLocation();
+                        location.getWorld().playSound(location, Sound.DOOR_CLOSE, 1, 1);
+                    }
+                    door2.setOpen(false);
+                    state2.setData(door2);
+                    if (state2.update())
+                    {
+                        Location location = state2.getLocation();
+                        location.getWorld().playSound(location, Sound.DOOR_CLOSE, 1, 1);
+                    }
+                }
+            };
+        }
+        taskId = this.manager.module.getCore().getTaskManager()
+                            .runTaskDelayed(this.manager.module, run, 60);// TODO config!!!
+    }
+
+
 }
 
 

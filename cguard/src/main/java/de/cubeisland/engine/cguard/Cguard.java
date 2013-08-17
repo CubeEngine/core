@@ -32,6 +32,7 @@ public class Cguard extends Module
     @Override
     public void onEnable()
     {
+        new GuardPerm(this);
         this.getCore().getDB().registerTable(TableGuards.initTable(this.getCore().getDB()));
         this.getCore().getDB().registerTable(TableGuardLocations.initTable(this.getCore().getDB()));
         this.getCore().getDB().registerTable(TableAccessList.initTable(this.getCore().getDB()));

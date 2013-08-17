@@ -144,4 +144,6 @@ public class GuardCommands extends ContainerCommand
         }
         return false;
     }
+
+    // TODO add buttons to door-protection to open door for x-sec = autoclose time BUT deny redstone so ONLY that button can open the door/doubledoor
 }

@@ -172,10 +172,11 @@ public class CommandListener implements Listener
                 {
                     // TODO perm
                     user.sendTranslated("&cThis protection is not yours!");
-                    this.cmdUsed(user);
-                    return;
                 }
-                this.manager.removeGuard(guard);
+                else
+                {
+                    this.manager.removeGuard(guard);
+                }
                 break;
             case UNLOCK:
                 guard.unlock(user, location, triplet.getSecond());

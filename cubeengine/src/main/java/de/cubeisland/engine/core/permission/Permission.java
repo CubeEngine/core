@@ -163,6 +163,23 @@ public class Permission
     }
 
     /**
+     * Prepends the parent-permission-name to this permission and all child permissions.
+     * <p>This permission will not be included in the parents * permission!
+     *
+     * @param prependPermission the permission to prepend
+     * @return fluent interface
+     */
+    public Permission prepend(Permission prependPermission)
+    {
+        this.permission = prependPermission.permission + "." + this.permission;
+        for (Permission child : this.children)
+        {
+            child.prepend(prependPermission.permission);
+        }
+        return this;
+    }
+
+    /**
      * Sets the given permission as child of this parent-permission.
      * The child-permission and all its children will prepend the parents-permission
      *
