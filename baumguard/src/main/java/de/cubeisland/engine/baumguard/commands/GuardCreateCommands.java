@@ -15,11 +15,11 @@
  * You should have received a copy of the GNU General Public License
  * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-package de.cubeisland.engine.cguard.commands;
+package de.cubeisland.engine.baumguard.commands;
 
-import de.cubeisland.engine.cguard.Cguard;
-import de.cubeisland.engine.cguard.commands.CommandListener.CommandType;
-import de.cubeisland.engine.cguard.storage.GuardManager;
+import de.cubeisland.engine.baumguard.Baumguard;
+import de.cubeisland.engine.baumguard.commands.CommandListener.CommandType;
+import de.cubeisland.engine.baumguard.storage.GuardManager;
 import de.cubeisland.engine.core.command.CommandSender;
 import de.cubeisland.engine.core.command.ContainerCommand;
 import de.cubeisland.engine.core.command.parameterized.Flag;
@@ -27,13 +27,13 @@ import de.cubeisland.engine.core.command.parameterized.ParameterizedContext;
 import de.cubeisland.engine.core.command.reflected.Alias;
 import de.cubeisland.engine.core.command.reflected.Command;
 
-import static de.cubeisland.engine.cguard.commands.CommandListener.CommandType.*;
+import static de.cubeisland.engine.baumguard.commands.CommandListener.CommandType.*;
 
 public class GuardCreateCommands extends ContainerCommand
 {
     private GuardManager manager;
 
-    public GuardCreateCommands(Cguard module, GuardManager manager)
+    public GuardCreateCommands(Baumguard module, GuardManager manager)
     {
         super(module, "create", "Creates various protections");
         this.manager = manager;

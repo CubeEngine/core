@@ -15,18 +15,12 @@
  * You should have received a copy of the GNU General Public License
  * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-package de.cubeisland.engine.cguard.storage;
+package de.cubeisland.engine.baumguard;
 
-public enum ProtectionFlags
+import de.cubeisland.engine.core.config.YamlConfiguration;
+
+public class GuardConfig extends YamlConfiguration
 {
-    REDSTONE(1 << 0), // Door/Container
-    MAGNET(1 << 1), // ContainerType only
-    AUTOCLOSE(1 << 2);  // DoorType only
-
-    public final short flagValue;
-
-    private ProtectionFlags(int flag)
-    {
-        this.flagValue = (short)flag;
-    }
+    //@Option()
+    //public int
 }

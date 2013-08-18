@@ -15,38 +15,18 @@
  * You should have received a copy of the GNU General Public License
  * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-package de.cubeisland.engine.cguard.storage;
+package de.cubeisland.engine.baumguard.storage;
 
-import gnu.trove.map.TByteObjectMap;
-import gnu.trove.map.hash.TByteObjectHashMap;
-
-public enum GuardType
+public enum ProtectionFlags
 {
-    PRIVATE(1),
-    PUBLIC(2),
-    GUARDED(3),
-    DONATION(4),
-    FREE(5);
+    REDSTONE(1 << 0), // Door/Container
+    MAGNET(1 << 1), // ContainerType only
+    AUTOCLOSE(1 << 2);  // DoorType only
 
-    public final byte id;
+    public final short flagValue;
 
-    private static TByteObjectMap<GuardType> guardTypes = new TByteObjectHashMap<>();
-
-    static
+    private ProtectionFlags(int flag)
     {
-        for (GuardType guardType : GuardType.values())
-        {
-            guardTypes.put(guardType.id, guardType);
-        }
-    }
-
-    private GuardType(int id)
-    {
-        this.id = (byte)id;
-    }
-
-    public static GuardType forByte(Byte guardType)
-    {
-        return guardTypes.get(guardType);
+        this.flagValue = (short)flag;
     }
 }

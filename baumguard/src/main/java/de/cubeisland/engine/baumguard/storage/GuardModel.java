@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-package de.cubeisland.engine.cguard.storage;
+package de.cubeisland.engine.baumguard.storage;
 
 import java.sql.Timestamp;
 import java.util.UUID;
@@ -29,7 +29,7 @@ import org.jooq.Row11;
 import org.jooq.impl.UpdatableRecordImpl;
 import org.jooq.types.UInteger;
 
-import static de.cubeisland.engine.cguard.storage.TableGuards.TABLE_GUARD;
+import static de.cubeisland.engine.baumguard.storage.TableGuards.TABLE_GUARD;
 
 public class GuardModel extends UpdatableRecordImpl<GuardModel> implements Record11<UInteger, UInteger, Short, Byte, Byte, byte[], Byte, Long, Long, Timestamp, Timestamp>
 {

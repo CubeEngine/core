@@ -15,15 +15,15 @@
  * You should have received a copy of the GNU General Public License
  * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-package de.cubeisland.engine.cguard;
+package de.cubeisland.engine.baumguard;
 
 import de.cubeisland.engine.core.permission.PermDefault;
 import de.cubeisland.engine.core.permission.Permission;
 import de.cubeisland.engine.core.permission.PermissionContainer;
 
-public class GuardPerm extends PermissionContainer<Cguard>
+public class GuardPerm extends PermissionContainer<Baumguard>
 {
-    public GuardPerm(Cguard module)
+    public GuardPerm(Baumguard module)
     {
         super(module);
         this.bindToModule(PROTECT, ADMIN);

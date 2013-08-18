@@ -8,10 +8,10 @@
     <relativePath>../parent/pom.xml</relativePath>
   </parent>
 
-  <artifactId>cguard</artifactId>
-  <name>CGuard</name>
+  <artifactId>baumguard</artifactId>
+  <name>BaumGuard</name>
   <version>1.0.0-SNAPSHOT</version>
-  <description>Protects your containers</description>
+  <description>Let the tree protect your stuff</description>
 
   <dependencies>
     <dependency>

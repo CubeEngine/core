@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-package de.cubeisland.engine.cguard.commands;
+package de.cubeisland.engine.baumguard.commands;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -30,27 +30,27 @@ import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.InventoryHolder;
 
-import de.cubeisland.engine.cguard.Cguard;
-import de.cubeisland.engine.cguard.storage.Guard;
-import de.cubeisland.engine.cguard.storage.GuardManager;
-import de.cubeisland.engine.cguard.storage.GuardType;
+import de.cubeisland.engine.baumguard.Baumguard;
+import de.cubeisland.engine.baumguard.storage.Guard;
+import de.cubeisland.engine.baumguard.storage.GuardManager;
+import de.cubeisland.engine.baumguard.storage.GuardType;
 import de.cubeisland.engine.core.command.CommandSender;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.util.Triplet;
 
-import static de.cubeisland.engine.cguard.commands.CommandListener.CommandType.*;
-import static de.cubeisland.engine.cguard.commands.GuardCommands.isNotUser;
-import static de.cubeisland.engine.cguard.storage.GuardType.*;
+import static de.cubeisland.engine.baumguard.commands.CommandListener.CommandType.*;
+import static de.cubeisland.engine.baumguard.commands.GuardCommands.isNotUser;
+import static de.cubeisland.engine.baumguard.storage.GuardType.*;
 
 public class CommandListener implements Listener
 {
     private Map<String, Triplet<CommandType, String, Boolean>> map = new HashMap<>();
     private Set<String> persist = new HashSet<>();
 
-    private Cguard module;
+    private Baumguard module;
     private GuardManager manager;
 
-    public CommandListener(Cguard module, GuardManager manager)
+    public CommandListener(Baumguard module, GuardManager manager)
     {
         this.module = module;
         this.manager = manager;
