@@ -181,8 +181,11 @@ public class ModuleCommands extends ContainerCommand
 
         try
         {
-            Module module = context.getCore().getModuleManager().loadModule(modulePath);
-            context.sendTranslated("&aThe module &6%s&a has been successfully loaded!", module.getName());
+            ModuleManager mm = context.getCore().getModuleManager();
+            Module module = mm.loadModule(modulePath);
+            mm.enableModule(module);
+
+            context.sendTranslated("&aThe module &6%s&a has been successfully loaded and enabled!", module.getName());
         }
         catch (ModuleException e)
         {

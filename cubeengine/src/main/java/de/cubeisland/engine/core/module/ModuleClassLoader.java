@@ -17,7 +17,7 @@
  */
 package de.cubeisland.engine.core.module;
 
-import java.lang.reflect.Method;
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
@@ -102,25 +102,24 @@ public class ModuleClassLoader extends URLClassLoader
     void shutdown()
     {
         Class clazz;
-        final Iterator<Map.Entry<String, Class>> iter = this.classMap.entrySet().iterator();
-        while (iter.hasNext())
+        final Iterator<Map.Entry<String, Class>> it = this.classMap.entrySet().iterator();
+        while (it.hasNext())
         {
-            clazz = iter.next().getValue();
+            clazz = it.next().getValue();
             Convert.removeConverter(clazz);
             ArgumentReader.removeReader(clazz);
             this.moduleLoader.getCore().getCommandManager().removeCommandFactory(clazz);
-            iter.remove();
+            it.remove();
         }
 
         try
         {
-            Method method = this.getClass().getMethod("close");
-            method.setAccessible(true);
-            method.invoke(this);
+            this.close();
         }
-        catch (Exception ignored)
+        catch (IOException e)
         {
             CubeEngine.getLog().warn("Failed to close the class loader of the module '{}'", this.moduleInfo.getName());
+            CubeEngine.getLog().debug(e.getLocalizedMessage(), e);
         }
 
         this.moduleInfo = null;
