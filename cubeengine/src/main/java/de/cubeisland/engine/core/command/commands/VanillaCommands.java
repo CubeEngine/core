@@ -97,7 +97,7 @@ public class VanillaCommands implements CommandHolder
         final String message = context.getStrings(0);
         if (message != null)
         {
-            context.getCore().getUserManager().broadcastMessage(message, CorePerms.COMMAND_RELOAD_NOTIFY);
+            context.getCore().getUserManager().broadcastMessageWithPerm(message, CorePerms.COMMAND_RELOAD_NOTIFY);
         }
 
         if (context.hasFlag("m"))

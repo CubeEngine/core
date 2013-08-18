@@ -288,7 +288,7 @@ public abstract class AbstractUserManager implements UserManager
         return null;
     }
 
-    public void broadcastMessage(String message, Permission perm, Object... params)
+    public void broadcastMessageWithPerm(String message, Permission perm, Object... params)
     {
         for (User user : this.onlineUsers)
         {
@@ -302,7 +302,7 @@ public abstract class AbstractUserManager implements UserManager
 
     public void broadcastMessage(String message, Object... args)
     {
-        this.broadcastMessage(message, null, args);
+        this.broadcastMessageWithPerm(message, null, args);
     }
 
     public void broadcastStatus(ChatFormat starColor, String message, CommandSender sender, Object... args)
