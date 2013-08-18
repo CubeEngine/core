@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-package de.cubeisland.engine.cguard.storage;
+package de.cubeisland.engine.baumguard.storage;
 
 import de.cubeisland.engine.core.user.User;
 import org.jooq.Field;
@@ -25,7 +25,7 @@ import org.jooq.Row4;
 import org.jooq.impl.UpdatableRecordImpl;
 import org.jooq.types.UInteger;
 
-import static de.cubeisland.engine.cguard.storage.TableAccessList.TABLE_ACCESS_LIST;
+import static de.cubeisland.engine.baumguard.storage.TableAccessList.TABLE_ACCESS_LIST;
 
 public class AccessListModel extends UpdatableRecordImpl<AccessListModel> implements Record4<UInteger, UInteger, UInteger, Short>
 {

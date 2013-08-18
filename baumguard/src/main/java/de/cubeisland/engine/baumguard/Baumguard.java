@@ -15,19 +15,19 @@
  * You should have received a copy of the GNU General Public License
  * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-package de.cubeisland.engine.cguard;
+package de.cubeisland.engine.baumguard;
 
-import de.cubeisland.engine.cguard.commands.GuardCommands;
-import de.cubeisland.engine.cguard.commands.GuardCreateCommands;
-import de.cubeisland.engine.cguard.storage.GuardManager;
-import de.cubeisland.engine.cguard.storage.TableAccessList;
-import de.cubeisland.engine.cguard.storage.TableGuardLocations;
-import de.cubeisland.engine.cguard.storage.TableGuards;
+import de.cubeisland.engine.baumguard.commands.GuardCommands;
+import de.cubeisland.engine.baumguard.commands.GuardCreateCommands;
+import de.cubeisland.engine.baumguard.storage.GuardManager;
+import de.cubeisland.engine.baumguard.storage.TableAccessList;
+import de.cubeisland.engine.baumguard.storage.TableGuardLocations;
+import de.cubeisland.engine.baumguard.storage.TableGuards;
 import de.cubeisland.engine.core.module.Module;
 
-public class Cguard extends Module
+public class Baumguard extends Module
 {
-    private CguardConfig config;
+    private GuardConfig config;
 
     @Override
     public void onEnable()
@@ -41,7 +41,7 @@ public class Cguard extends Module
         this.getCore().getCommandManager().registerCommand(mainCmd);
         GuardCreateCommands createCmds = new GuardCreateCommands(this, manager);
         this.getCore().getCommandManager().registerCommand(createCmds, "cguard");
-        new GuardListener(this, manager);
+        new de.cubeisland.engine.baumguard.GuardListener(this, manager);
     }
 
     /*

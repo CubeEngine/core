@@ -28,6 +28,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
 
+import de.cubeisland.engine.core.command.ArgBounds;
 import de.cubeisland.engine.core.command.CommandContext;
 import de.cubeisland.engine.core.command.CommandResult;
 import de.cubeisland.engine.core.command.ContainerCommand;
@@ -53,7 +54,7 @@ public class ShoutCommand extends ContainerCommand
         this.module = module;
 
         this.setUsage("<announcement>");
-
+        this.getContextFactory().setArgBounds(new ArgBounds(1, 1));
     }
 
     public CommandResult run(CommandContext context)

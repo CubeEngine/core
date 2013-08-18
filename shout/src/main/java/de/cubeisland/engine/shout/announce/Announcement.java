@@ -79,7 +79,7 @@ public class Announcement
         this.name = name;
         if (!permName.equalsIgnoreCase("*"))
         {
-            this.permission = module.getBasePermission().createChild(permName, PermDefault.TRUE);
+            this.permission = module.getAnnouncePerm().createChild(permName, PermDefault.FALSE);
             module.getCore().getPermissionManager().registerPermission(module, permission);
         }
         else

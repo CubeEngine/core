@@ -33,7 +33,7 @@ public class BasicsPerm extends PermissionContainer<Basics>
     {
         super(module);
         module.getLog().trace("{} ms - Basics.Permission-register", Profiler.getCurrentDelta("basicsEnable", TimeUnit.MILLISECONDS));
-        this.bindToModule(KITS,COMMAND,ITEM_BLACKLIST,TELEPORT,COMPASS_JUMPTO,POWERTOOL_USE,SIGN_COLORED,CHANGEPAINTING,KICK_RECEIVEMESSAGE,
+        this.bindToModule(KITS,COMMAND,ITEM_BLACKLIST,TELEPORT,COMPASS_JUMPTO,POWERTOOL_USE,SIGN_COLORED,CHANGEPAINTING,KICK_RECEIVEMESSAGE, BAN_RECEIVEMESSAGE,
                           COMMAND_KILL_PREVENT, COMMAND_CLEARINVENTORY_PREVENT, COMMAND_INVSEE_MODIFY_PREVENT, COMMAND_KICK_NOREASON, TELEPORT_PREVENT, COMMAND_AFK_PREVENT);
         this.registerAllPermissions();
 
@@ -284,4 +284,5 @@ public class BasicsPerm extends PermissionContainer<Basics>
     public static final Permission SIGN_COLORED = Permission.createPermission("sign.colored"); //TODO permission for each color
     public static final Permission CHANGEPAINTING = Permission.createPermission("changepainting");
     public static final Permission KICK_RECEIVEMESSAGE = Permission.createPermission("kick.receivemessage");
+    public static final Permission BAN_RECEIVEMESSAGE = Permission.createPermission("ban.receivemessage");
 }

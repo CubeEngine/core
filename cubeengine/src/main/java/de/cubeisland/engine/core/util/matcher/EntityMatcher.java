@@ -18,6 +18,7 @@
 package de.cubeisland.engine.core.util.matcher;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Path;
 import java.util.EnumMap;
 import java.util.List;
@@ -84,10 +85,13 @@ public class EntityMatcher
             Path file = CubeEngine.getFileManager().getDataPath().resolve(CoreResource.ENTITIES.getTarget());
             TreeMap<String, List<String>> entityList = new TreeMap<>();
             AliasMapFormat.parseStringList(file, entityList, false);
-            if (AliasMapFormat.parseStringList(CubeEngine.getFileManager().getSourceOf(file), entityList, true))
+            try (InputStream is = CubeEngine.getFileManager().getSourceOf(file))
             {
-                CubeEngine.getLog().info("Updated entities.txt");
-                AliasMapFormat.parseAndSaveStringListMap(entityList, file);
+                if (AliasMapFormat.parseStringList(is, entityList, true))
+                {
+                    CubeEngine.getLog().info("Updated entities.txt");
+                    AliasMapFormat.parseAndSaveStringListMap(entityList, file);
+                }
             }
             return entityList;
         }

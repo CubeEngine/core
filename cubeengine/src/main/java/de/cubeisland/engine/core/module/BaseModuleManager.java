@@ -437,6 +437,7 @@ public abstract class BaseModuleManager implements ModuleManager
         this.disableModule(module);
         this.loader.unloadModule(module);
         this.moduleInfos.remove(module.getId());
+        ((ch.qos.logback.classic.Logger)module.getLog()).detachAndStopAllAppenders();
 
         this.logger.debug(Profiler.getCurrentDelta("unload-" + module.getId(), TimeUnit.MILLISECONDS)+ "ms - null fields");
         // null all the fields referencing this module

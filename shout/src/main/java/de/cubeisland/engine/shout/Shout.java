@@ -22,10 +22,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 
 import de.cubeisland.engine.core.config.Configuration;
-
-import de.cubeisland.engine.core.module.Inject;
 import de.cubeisland.engine.core.module.Module;
-import de.cubeisland.engine.roles.Roles;
+import de.cubeisland.engine.core.permission.Permission;
 import de.cubeisland.engine.shout.announce.AnnouncementManager;
 import de.cubeisland.engine.shout.announce.announcer.Announcer;
 import de.cubeisland.engine.shout.interactions.ShoutCommand;
@@ -39,9 +37,18 @@ public class Shout extends Module
     private Announcer announcer;
     private ShoutConfiguration config;
 
+    private Permission announcePerm;
+
+    public Permission getAnnouncePerm()
+    {
+        return announcePerm;
+    }
+
     @Override
     public void onEnable()
     {
+        this.announcePerm = this.getBasePermission().createAbstract("announcement");
+
         this.config = Configuration.load(ShoutConfiguration.class, this);
 
         this.announcer = new Announcer(this.getCore().getTaskManager(), this.config.initDelay);

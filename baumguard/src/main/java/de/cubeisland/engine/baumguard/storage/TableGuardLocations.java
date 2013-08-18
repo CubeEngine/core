@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-package de.cubeisland.engine.cguard.storage;
+package de.cubeisland.engine.baumguard.storage;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -36,7 +36,7 @@ import org.jooq.impl.SQLDataType;
 import org.jooq.impl.TableImpl;
 import org.jooq.types.UInteger;
 
-import static de.cubeisland.engine.cguard.storage.TableGuards.TABLE_GUARD;
+import static de.cubeisland.engine.baumguard.storage.TableGuards.TABLE_GUARD;
 import static de.cubeisland.engine.core.world.TableWorld.TABLE_WORLD;
 
 public class TableGuardLocations extends TableImpl<GuardLocationModel>implements TableCreator<GuardLocationModel>

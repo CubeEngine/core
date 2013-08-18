@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-package de.cubeisland.engine.cguard.storage;
+package de.cubeisland.engine.baumguard.storage;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -23,8 +23,8 @@ import java.util.Collection;
 import gnu.trove.map.TByteObjectMap;
 import gnu.trove.map.hash.TByteObjectHashMap;
 
-import static de.cubeisland.engine.cguard.storage.GuardType.PRIVATE;
-import static de.cubeisland.engine.cguard.storage.GuardType.PUBLIC;
+import static de.cubeisland.engine.baumguard.storage.GuardType.PRIVATE;
+import static de.cubeisland.engine.baumguard.storage.GuardType.PUBLIC;
 
 public enum ProtectedType
 {

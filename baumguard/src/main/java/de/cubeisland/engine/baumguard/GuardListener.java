@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-package de.cubeisland.engine.cguard;
+package de.cubeisland.engine.baumguard;
 
 import java.util.Arrays;
 
@@ -57,20 +57,20 @@ import org.bukkit.material.Door;
 import org.bukkit.material.Openable;
 import org.bukkit.util.Vector;
 
-import de.cubeisland.engine.cguard.storage.Guard;
-import de.cubeisland.engine.cguard.storage.GuardManager;
+import de.cubeisland.engine.baumguard.storage.Guard;
+import de.cubeisland.engine.baumguard.storage.GuardManager;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.util.BlockUtil;
 import de.cubeisland.engine.core.util.ChatFormat;
 
-import static de.cubeisland.engine.cguard.storage.ProtectionFlags.REDSTONE;
+import static de.cubeisland.engine.baumguard.storage.ProtectionFlags.REDSTONE;
 
 public class GuardListener implements Listener
 {
     private GuardManager manager;
-    private Cguard module;
+    private Baumguard module;
 
-    public GuardListener(Cguard module, GuardManager manager)
+    public GuardListener(Baumguard module, GuardManager manager)
     {
         this.module = module;
         this.manager = manager;

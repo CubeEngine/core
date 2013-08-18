@@ -17,6 +17,7 @@
  */
 package de.cubeisland.engine.test.tests;
 
+import java.io.IOException;
 import java.util.List;
 
 import de.cubeisland.engine.core.filesystem.FileUtil;
@@ -34,7 +35,12 @@ public class UtilTest extends Test
     @Override
     public void onEnable()
     {
-        aListOfPlayers = FileUtil.readStringList(module.getFolder().resolve("testdata").resolve("player.txt"));
+        try
+        {
+            aListOfPlayers = FileUtil.readStringList(module.getFolder().resolve("testdata").resolve("player.txt"));
+        }
+        catch (IOException ignored)
+        {}
         this.setSuccess(true);
     }
 }

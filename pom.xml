@@ -49,7 +49,7 @@
     <module>itemrepair</module>
     <module>hideme</module>
     <module>horselocker</module>
-    <module>cguard</module>
+    <module>baumguard</module>
   </modules>
 
   <build>

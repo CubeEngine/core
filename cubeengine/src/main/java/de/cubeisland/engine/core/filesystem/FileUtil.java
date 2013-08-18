@@ -61,16 +61,12 @@ public class FileUtil
      * @param file the file
      * @return a list of lines
      */
-    public static List<String> readStringList(Path file)
+    public static List<String> readStringList(Path file) throws IOException
     {
         assert file != null: "The file must not be null!";
         try (BufferedReader reader = Files.newBufferedReader(file, Core.CHARSET))
         {
             return readStringList(reader);
-        }
-        catch (IOException ex)
-        {
-            return null;
         }
     }
 
@@ -80,11 +76,14 @@ public class FileUtil
      * @param stream the InputStream
      * @return a list of lines
      */
-    public static List<String> readStringList(InputStream stream)
+    public static List<String> readStringList(InputStream stream) throws IOException
     {
         assert stream != null: "The stream may not be null!";
 
-        return readStringList(new BufferedReader(new InputStreamReader(stream)));
+        try (BufferedReader br = new BufferedReader(new InputStreamReader(stream)))
+        {
+            return readStringList(br);
+        }
     }
 
     /**

@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-package de.cubeisland.engine.cguard.storage;
+package de.cubeisland.engine.baumguard.storage;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -51,8 +51,8 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.material.Door;
 
-import de.cubeisland.engine.cguard.Cguard;
-import de.cubeisland.engine.cguard.commands.CommandListener;
+import de.cubeisland.engine.baumguard.Baumguard;
+import de.cubeisland.engine.baumguard.commands.CommandListener;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.user.UserManager;
 import de.cubeisland.engine.core.util.BlockUtil;
@@ -63,18 +63,18 @@ import org.jooq.DSLContext;
 import org.jooq.Result;
 import org.jooq.types.UInteger;
 
-import static de.cubeisland.engine.cguard.storage.AccessListModel.ACCESS_ALL;
-import static de.cubeisland.engine.cguard.storage.AccessListModel.ACCESS_FULL;
-import static de.cubeisland.engine.cguard.storage.GuardType.PUBLIC;
-import static de.cubeisland.engine.cguard.storage.ProtectedType.*;
-import static de.cubeisland.engine.cguard.storage.TableAccessList.TABLE_ACCESS_LIST;
-import static de.cubeisland.engine.cguard.storage.TableGuardLocations.TABLE_GUARD_LOCATION;
-import static de.cubeisland.engine.cguard.storage.TableGuards.TABLE_GUARD;
+import static de.cubeisland.engine.baumguard.storage.AccessListModel.ACCESS_ALL;
+import static de.cubeisland.engine.baumguard.storage.AccessListModel.ACCESS_FULL;
+import static de.cubeisland.engine.baumguard.storage.GuardType.PUBLIC;
+import static de.cubeisland.engine.baumguard.storage.ProtectedType.*;
+import static de.cubeisland.engine.baumguard.storage.TableAccessList.TABLE_ACCESS_LIST;
+import static de.cubeisland.engine.baumguard.storage.TableGuardLocations.TABLE_GUARD_LOCATION;
+import static de.cubeisland.engine.baumguard.storage.TableGuards.TABLE_GUARD;
 
 public class GuardManager implements Listener
 {
     protected final DSLContext dsl;
-    protected final Cguard module;
+    protected final Baumguard module;
 
     protected WorldManager wm;
     protected UserManager um;
@@ -87,7 +87,7 @@ public class GuardManager implements Listener
 
     public final MessageDigest messageDigest;
 
-    public GuardManager(Cguard module)
+    public GuardManager(Baumguard module)
     {
         try
         {

@@ -95,7 +95,7 @@ public interface UserManager extends Cleanable
      * @return a User
      */
     User findUser(String name);
-    void broadcastMessage(String message, Permission perm, Object... params);
+    void broadcastMessageWithPerm(String message, Permission perm, Object... params);
     void broadcastMessage(String message, Object... args);
     void broadcastStatus(ChatFormat starColor, String message, CommandSender sender, Object... args);
     void broadcastStatus(String message, CommandSender sender, Object... args);

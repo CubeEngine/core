@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-package de.cubeisland.engine.cguard.storage;
+package de.cubeisland.engine.baumguard.storage;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,15 +32,15 @@ import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.material.Door;
 
-import de.cubeisland.engine.cguard.GuardAttachment;
+import de.cubeisland.engine.baumguard.GuardAttachment;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.util.InventoryGuardFactory;
 import org.jooq.Record1;
 import org.jooq.Result;
 
-import static de.cubeisland.engine.cguard.storage.AccessListModel.ACCESS_ADMIN;
-import static de.cubeisland.engine.cguard.storage.GuardType.PUBLIC;
-import static de.cubeisland.engine.cguard.storage.TableAccessList.TABLE_ACCESS_LIST;
+import static de.cubeisland.engine.baumguard.storage.AccessListModel.ACCESS_ADMIN;
+import static de.cubeisland.engine.baumguard.storage.GuardType.PUBLIC;
+import static de.cubeisland.engine.baumguard.storage.TableAccessList.TABLE_ACCESS_LIST;
 
 public class Guard
 {

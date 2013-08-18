@@ -15,12 +15,12 @@
  * You should have received a copy of the GNU General Public License
  * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-package de.cubeisland.engine.cguard;
+package de.cubeisland.engine.baumguard;
 
 import java.util.HashSet;
 import java.util.Set;
 
-import de.cubeisland.engine.cguard.storage.Guard;
+import de.cubeisland.engine.baumguard.storage.Guard;
 import de.cubeisland.engine.core.user.UserAttachment;
 
 public class GuardAttachment extends UserAttachment

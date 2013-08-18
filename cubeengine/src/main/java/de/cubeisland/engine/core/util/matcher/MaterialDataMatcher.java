@@ -18,6 +18,7 @@
 package de.cubeisland.engine.core.util.matcher;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -73,11 +74,29 @@ public class MaterialDataMatcher
         List<String> input;
         if (update)
         {
-            input = FileUtil.readStringList(CubeEngine.getFileManager().getSourceOf(file));
+            try (InputStream is = CubeEngine.getFileManager().getSourceOf(file))
+            {
+                input = FileUtil.readStringList(is);
+            }
+            catch (IOException ex)
+            {
+                CubeEngine.getLog().warn("Could not update data values");
+                CubeEngine.getLog().debug(ex.getLocalizedMessage(), ex);
+                return;
+            }
         }
         else
         {
-            input = FileUtil.readStringList(file);
+            try
+            {
+                input = FileUtil.readStringList(file);
+            }
+            catch (IOException ex)
+            {
+                CubeEngine.getLog().warn("Could not update data values");
+                CubeEngine.getLog().debug(ex.getLocalizedMessage(), ex);
+                return;
+            }
         }
         TShortObjectHashMap<Set<String>> reverseCurrentItemData = null;
         TByteObjectHashMap<Set<String>> reverseCurrentBlockData = null;
