@@ -97,22 +97,27 @@ public class BukkitModuleManager extends BaseModuleManager
             for (Field field : fields)
             {
                 fieldType = field.getType();
-                if (Plugin.class.isAssignableFrom(fieldType) && field.isAnnotationPresent(Inject.class))
+                Inject injectAnnotation = field.getAnnotation(Inject.class);
+                if (Plugin.class.isAssignableFrom(fieldType) && injectAnnotation != null)
                 {
                     Plugin plugin = pluginClassMap.get(fieldType);
-                    if (plugin == null)
+                    if (plugin != null)
                     {
-                        continue;
+                        this.pluginManager.enablePlugin(plugin); // what their about dependencies?
+                        field.setAccessible(true);
+                        try
+                        {
+                            field.set(module, plugin);
+                            continue;
+                        }
+                        catch (Exception e)
+                        {
+                            module.getLog().warn("Failed to inject a plugin dependency: {}", String.valueOf(plugin));
+                        }
                     }
-                    this.pluginManager.enablePlugin(plugin); // what their about dependencies?
-                    field.setAccessible(true);
-                    try
+                    if (injectAnnotation.require())
                     {
-                        field.set(module, plugin);
-                    }
-                    catch (Exception e)
-                    {
-                        module.getLog().warn("Failed to inject a plugin dependency: {}", String.valueOf(plugin));
+                        throw new MissingPluginDependencyException(fieldType.getName());
                     }
                 }
             }

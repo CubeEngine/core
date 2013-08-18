@@ -28,4 +28,5 @@ import java.lang.annotation.Target;
 @Target(ElementType.FIELD)
 public @interface Inject
 {
+    public boolean require() default false;
 }

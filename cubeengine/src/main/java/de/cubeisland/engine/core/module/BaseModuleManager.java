@@ -337,20 +337,26 @@ public abstract class BaseModuleManager implements ModuleManager
         for (Field field : fields)
         {
             fieldType = field.getType();
-            if (Module.class.isAssignableFrom(fieldType) && field.isAnnotationPresent(Inject.class))
+            Inject injectAnnotation = field.getAnnotation(Inject.class);
+
+            if (Module.class.isAssignableFrom(fieldType) && injectAnnotation != null)
             {
                 injectedModule = this.classMap.get((Class<? extends Module>)fieldType);
-                if (injectedModule == null)
+                if (injectedModule == null || fieldType == module.getClass())
                 {
-                    continue;
-                }
-                if (fieldType == module.getClass())
-                {
+                    if (injectAnnotation.require())
+                    {
+                        throw new MissingDependencyException(fieldType.getName());
+                    }
                     continue;
                 }
                 requiredVersion = module.getInfo().getSoftDependencies().get(injectedModule.getId());
                 if (requiredVersion != null && requiredVersion.isNewerThan(Version.ZERO) && injectedModule.getInfo().getVersion().isOlderThan(requiredVersion))
                 {
+                    if (injectAnnotation.require())
+                    {
+                        throw new MissingDependencyException(injectedModule.getName());
+                    }
                     continue;
                 }
                 field.setAccessible(true);
@@ -363,6 +369,10 @@ public abstract class BaseModuleManager implements ModuleManager
                 }
                 catch (Exception e)
                 {
+                    if (injectAnnotation.require())
+                    {
+                        throw new MissingDependencyException(injectedModule.getName());
+                    }
                     module.getLog().warn("Failed to inject a dependency: {}", injectedModule.getName());
                 }
             }
