@@ -87,7 +87,16 @@ public class MaterialDataMatcher
         }
         else
         {
-            input = FileUtil.readStringList(file);
+            try
+            {
+                input = FileUtil.readStringList(file);
+            }
+            catch (IOException ex)
+            {
+                CubeEngine.getLog().warn("Could not update data values");
+                CubeEngine.getLog().debug(ex.getLocalizedMessage(), ex);
+                return;
+            }
         }
         TShortObjectHashMap<Set<String>> reverseCurrentItemData = null;
         TByteObjectHashMap<Set<String>> reverseCurrentBlockData = null;
