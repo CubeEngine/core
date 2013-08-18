@@ -391,7 +391,7 @@ public class QueryManager
     protected void queueLog(QueuedLog log)
     {
         this.queuedLogs.offer(log);
-        if (this.futureStore == null || this.futureStore.isDone())
+        if (this.latch.getCount() != 1 && (this.futureStore == null || this.futureStore.isDone()))
         {
             this.futureStore = storeExecutor.submit(storeRunner);
         }
