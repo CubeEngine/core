@@ -148,8 +148,8 @@ public class ModuleCommands extends ContainerCommand
             {
                 context.sendTranslated("&cFailed to reload the module!");
                 context.sendTranslated("&eCheck the server log for info.");
-                context.getCore().getLog().error("Failed to reload the module " + module.getName() +": "
-                                                     + e.getLocalizedMessage(), e);
+                context.getCore().getLog().error("Failed to reload the module {}!", module.getName());
+                context.getCore().getLog().debug(e.getLocalizedMessage(), e);
             }
         }
     }
@@ -187,8 +187,8 @@ public class ModuleCommands extends ContainerCommand
         catch (ModuleException e)
         {
             context.sendTranslated("&cThe module failed to load! Check the server log for info.");
-            context.getCore().getLog().error("Failed to load a module from file " + modulePath + ": "
-                                                 + e.getLocalizedMessage(), e);
+            context.getCore().getLog().error("Failed to load a module from file {}!", modulePath);
+            context.getCore().getLog().debug(e.getLocalizedMessage(), e);
         }
     }
 

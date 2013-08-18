@@ -79,6 +79,7 @@ public class Permission
      */
     private Permission(boolean registrable, String name, PermDefault def)
     {
+        assert !name.contains("*") : "* permissions are generated automatically!";
         this.permission = name.toLowerCase();
         this.registrable = registrable;
         this.def = def;
@@ -157,6 +158,23 @@ public class Permission
             {
                 childPerm.prepend(parentPermission.permission);
             }
+        }
+        return this;
+    }
+
+    /**
+     * Prepends the parent-permission-name to this permission and all child permissions.
+     * <p>This permission will not be included in the parents * permission!
+     *
+     * @param prependPermission the permission to prepend
+     * @return fluent interface
+     */
+    public Permission prepend(Permission prependPermission)
+    {
+        this.permission = prependPermission.permission + "." + this.permission;
+        for (Permission child : this.children)
+        {
+            child.prepend(prependPermission.permission);
         }
         return this;
     }

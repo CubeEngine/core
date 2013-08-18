@@ -144,7 +144,8 @@ public abstract class Module
         }
         catch (IOException e)
         {
-            this.log.error("Failed to create the data folder!", e);
+            this.log.error("Failed to create the data folder!");
+            this.log.debug(e.getLocalizedMessage(), e);
         }
         return this.folder;
     }
@@ -249,7 +250,8 @@ public abstract class Module
             }
             catch (Throwable t)
             {
-                this.getLog().error(t.getClass().getSimpleName() + " while enabling: " + t.getLocalizedMessage(), t);
+                this.getLog().error("{} while enabling!", t.getClass().getSimpleName());
+                this.getLog().debug(t.getLocalizedMessage(), t);
             }
         }
         return this.enabled;
@@ -273,7 +275,8 @@ public abstract class Module
             }
             catch (Throwable t)
             {
-                this.getLog().warn(t.getClass().getSimpleName() + " while disabling: " + t.getLocalizedMessage(), t);
+                this.getLog().warn("{} while disabling!", t.getClass().getSimpleName());
+                this.getLog().debug(t.getLocalizedMessage(), t);
             }
             this.enabled = false;
         }

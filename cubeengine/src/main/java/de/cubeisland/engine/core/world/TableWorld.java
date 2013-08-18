@@ -67,7 +67,7 @@ public class TableWorld extends TableImpl<WorldEntity> implements TableUpdateCre
                                         "PRIMARY KEY (`key`)," +
                                         "UNIQUE `u_UUID` (`UUIDleast`, `UUIDmost`)) " +
                                         "ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci\n" +
-                                        "COMMENT='1.0.0'").execute();
+                                        "COMMENT='2.0.0'").execute();
     }
 
     @Override

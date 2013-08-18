@@ -61,6 +61,7 @@ public class LogCommands extends ContainerCommand
         else
         {
             context.sendTranslated("&a%d logs are currently queued!",size);
+            this.module.getLogManager().getQueryManager().logStatus();
         }
     }
 

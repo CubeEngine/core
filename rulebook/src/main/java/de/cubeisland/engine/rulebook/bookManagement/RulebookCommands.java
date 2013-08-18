@@ -215,7 +215,8 @@ public class RulebookCommands extends ContainerCommand
         catch(IOException ex)
         {
             context.sendTranslated("%cThe language file of %s couldn't be deleted", language.getLocale().getDisplayLanguage(context.getSender().getLocale()));
-            this.getModule().getLog().error("Error when deleting the files: " + ex.getLocalizedMessage(), ex);
+            this.getModule().getLog().error("Error when deleting the files!");
+            this.getModule().getLog().debug(ex.getLocalizedMessage(), ex);
         }
 
     }
@@ -263,7 +264,8 @@ public class RulebookCommands extends ContainerCommand
             catch(IOException ex)
             {
                 context.sendTranslated("&eAn error ocurred by deleting the old rulebook");
-                this.getModule().getLog().error("Error when deleting the files: " + ex.getLocalizedMessage(), ex);
+                this.getModule().getLog().error("Error when deleting the files!");
+                this.getModule().getLog().debug(ex.getLocalizedMessage(), ex);
             }
         }
         else

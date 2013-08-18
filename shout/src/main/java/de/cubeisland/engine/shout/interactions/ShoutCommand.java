@@ -17,39 +17,52 @@
  */
 package de.cubeisland.engine.shout.interactions;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 
 import org.bukkit.Bukkit;
+import org.bukkit.World;
 import org.bukkit.entity.Player;
 
 import de.cubeisland.engine.core.command.CommandContext;
+import de.cubeisland.engine.core.command.CommandResult;
+import de.cubeisland.engine.core.command.ContainerCommand;
+import de.cubeisland.engine.core.command.parameterized.Flag;
+import de.cubeisland.engine.core.command.parameterized.Param;
+import de.cubeisland.engine.core.command.parameterized.ParameterizedContext;
+import de.cubeisland.engine.core.command.reflected.Alias;
 import de.cubeisland.engine.core.command.reflected.Command;
+import de.cubeisland.engine.core.i18n.I18n;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.util.ChatFormat;
 import de.cubeisland.engine.shout.Shout;
 import de.cubeisland.engine.shout.announce.Announcement;
+import de.cubeisland.engine.shout.announce.MessageOfTheDay;
 
-public class ShoutCommand
+public class ShoutCommand extends ContainerCommand
 {
     private Shout module;
 
     public ShoutCommand(Shout module)
     {
+        super(module, "shout", "Announce a message to players on the server", Arrays.asList(new String[]{"announce"}));
         this.module = module;
+
+        this.setUsage("<announcement>");
+
     }
 
-    @Command(names = {
-        "shout", "announce"
-    }, min = 1, max = 1, desc = "Announce a message to players on the server", usage = "<announcement name>")
-    public void shout(CommandContext context)
+    public CommandResult run(CommandContext context)
     {
         Announcement announcement = this.module.getAnnouncementManager().getAnnouncement(context.getString(0));
         if (announcement == null)
         {
             context.sendTranslated("&c%s was not found!", context.getString(0));
-            return;
+            return null;
         }
         List<Player> players;
 
@@ -62,7 +75,11 @@ public class ShoutCommand
             players = new ArrayList<>();
             for (String world : announcement.getWorlds())
             {
-                players.addAll(Bukkit.getWorld(world).getPlayers());
+                World w = Bukkit.getWorld(world);
+                if (w != null)
+                {
+                    players.addAll(Bukkit.getWorld(world).getPlayers());
+                }
             }
         }
 
@@ -72,12 +89,139 @@ public class ShoutCommand
             String[] message = announcement.getMessage(u.getLocale());
             if (message != null)
             {
+                u.sendMessage("");
                 for (String line : message)
                 {
                     u.sendMessage(ChatFormat.parseFormats(line));
                 }
+                u.sendMessage("");
             }
         }
         context.sendTranslated("&aThe announcement &e%s&a has been announced!", announcement.getName());
+        return null;
+    }
+
+    @Alias(names = {
+        "announcements"
+    })
+    @Command(names = {
+        "list", "announcements"
+    }, desc = "List all announcements")
+    public void list(CommandContext context)
+    {
+        Iterator<Announcement> iter = this.module.getAnnouncementManager().getAllAnnouncements().iterator();
+        if (iter.hasNext())
+        {
+            context.sendTranslated("Here is the list of announcements:");
+            while (iter.hasNext())
+            {
+                context.sendMessage(" - " + iter.next().getName());
+            }
+        }
+        else
+        {
+            context.sendTranslated("There are no announcements loaded!");
+        }
+    }
+
+    @Command(desc = "Creates a new announcement", min = 1, max = 1, params = {
+        @Param(names =
+                   {
+                       "delay", "d"
+                   }),
+        @Param(names =
+                   {
+                       "world", "w"
+                   }),
+        @Param(names = {
+            "permission", "p"
+        }),
+        @Param(names =
+                   {
+                       "group", "g"
+                   }),
+        @Param(names =
+                   {
+                       "message", "m"
+                   }),
+        @Param(names =
+                   {
+                       "locale", "l"
+                   })
+    }, flags = {
+        @Flag(name = "fc", longName = "fixed-cycle")
+    }, usage = "<name> message \"<message>\" [delay \"<x minutes|hours|days>\"] [world <world>] " +
+        "[permission <permission node>] [locale <locale>] [-fixed-cycle]")
+    public void create(ParameterizedContext context)
+    {
+        if (!context.hasParam("message"))
+        {
+            context.sendTranslated("You have to include a message!");
+            return;
+        }
+
+        String message = context.getString("message");
+        Locale locale = context.getSender().getLocale();
+        if (context.hasParam("locale"))
+        {
+            locale = I18n.stringToLocale(context.getString("locale"));
+        }
+        if (locale == null)
+        {
+            context.sendTranslated("%s isn't a valid locale!", context.getString("locale"));
+        }
+
+        try
+        {
+            this.module.getAnnouncementManager().addAnnouncement(
+                this.module.getAnnouncementManager().createAnnouncement(
+                    context.getString(0),
+                    locale,
+                    message,
+                    context.getString("delay", "10 minutes"),
+                    context.getString("world", "*"),
+                    context.getString("permission", "*"),
+                    context.hasFlag("fc")));
+        }
+        catch (IllegalArgumentException ex)
+        {
+            context.sendTranslated("Some of your arguments are not valid.");
+            context.sendTranslated("The error message was: %s", ex.getLocalizedMessage());
+        }
+        catch (IOException ex)
+        {
+            context.sendTranslated("There was an error creating some of the files.");
+            context.sendTranslated("The error message was: %s", ex.getLocalizedMessage());
+        }
+
+        module.getAnnouncementManager().reload();
+
+        context.sendTranslated("Your announcement have been created and loaded into the plugin");
+    }
+
+    @Command(desc = "clean all loaded announcements form memory and load from disk")
+    public void reload(CommandContext context)
+    {
+        module.getAnnouncementManager().reload();
+        context.sendTranslated("All the announcements have now been reloaded, and the players have been re-added");
+    }
+
+    @Alias(names = "motd")
+    @Command(desc = "Prints out the message of the day.")
+    public void motd(CommandContext context)
+    {
+        MessageOfTheDay motd = this.module.getAnnouncementManager().getMotd();
+        if (motd != null)
+        {
+            context.sendMessage(" ");
+            for (String line : motd.getMessage(context.getSender().getLocale()))
+            {
+                context.sendMessage(line);
+            }
+        }
+        else
+        {
+            context.sendTranslated("&eThere is no message of the day.");
+        }
     }
 }

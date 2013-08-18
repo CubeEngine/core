@@ -83,7 +83,8 @@ public class KitManager
         }
         catch (Exception ex)
         {
-            module.getLog().warn("Could not load the kit configuration!", ex);
+            module.getLog().warn("Could not load the kit configuration!");
+            module.getLog().debug(ex.getLocalizedMessage(), ex);
         }
     }
 
@@ -103,7 +104,8 @@ public class KitManager
         }
         catch (IOException e)
         {
-            this.module.getLog().warn("Failed load the modules!", e);
+            this.module.getLog().warn("Failed load the modules!");
+            this.module.getLog().debug(e.getLocalizedMessage(), e);
         }
     }
 

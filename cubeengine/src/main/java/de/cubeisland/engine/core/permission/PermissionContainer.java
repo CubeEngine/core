@@ -46,6 +46,15 @@ public abstract class PermissionContainer<T extends Module>
         }
     }
 
+    protected final void prependModulePerm(Permission... perms)
+    {
+        Permission modulePerm = this.module.getBasePermission();
+        for (Permission perm : perms)
+        {
+            perm.prepend(modulePerm);
+        }
+    }
+
     // TODO what about caching the result?
     public Set<Permission> getPermissions()
     {

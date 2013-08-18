@@ -302,8 +302,8 @@ public abstract class RoleProvider
         }
         catch (IOException e)
         {
-            this.module.getLog().warn("Failed to save the the config after renaming for {}:", role.getName());
-            this.module.getLog().warn(e.getLocalizedMessage(), e);
+            this.module.getLog().warn("Failed to save the the config after renaming for {}!", role.getName());
+            this.module.getLog().debug(e.getLocalizedMessage(), e);
             return false;
         }
 

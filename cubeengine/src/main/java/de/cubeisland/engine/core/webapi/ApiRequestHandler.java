@@ -78,7 +78,8 @@ public class ApiRequestHandler extends SimpleChannelInboundHandler<Object>
     public void exceptionCaught(ChannelHandlerContext context, Throwable t)
     {
         this.error(context, UNKNOWN_ERROR);
-        this.logger.error("An error occurred while processing an API request: " + t.getMessage(), t);
+        this.logger.error("An error occurred while processing an API request!");
+        this.logger.debug(t.getLocalizedMessage(), t);
     }
 
     @Override
@@ -113,7 +114,9 @@ public class ApiRequestHandler extends SimpleChannelInboundHandler<Object>
         if (request.getDecoderResult().isFailure())
         {
             this.error(context, UNKNOWN_ERROR);
-            this.logger.info("the decoder failed on this request...", request.getDecoderResult().cause());
+            this.logger.info("The decoder failed on this request...");
+            Throwable cause = request.getDecoderResult().cause();
+            this.logger.debug(cause.getLocalizedMessage(), cause);
             return;
         }
 
@@ -186,7 +189,8 @@ public class ApiRequestHandler extends SimpleChannelInboundHandler<Object>
             }
             catch (Exception e)
             {
-                this.logger.debug("Failed to parse the request body!", e);
+                this.logger.debug("Failed to parse the request body!");
+                this.logger.debug(e.getLocalizedMessage(), e);
                 this.error(context, MALFORMED_DATA);
                 return;
             }
@@ -374,7 +378,8 @@ public class ApiRequestHandler extends SimpleChannelInboundHandler<Object>
             }
             catch (JsonProcessingException e)
             {
-                this.logger.error("Failed to generate the JSON code for a response!", e);
+                this.logger.error("Failed to generate the JSON code for a response!");
+                this.logger.debug(e.getLocalizedMessage(), e);
                 return "null";
             }
         }

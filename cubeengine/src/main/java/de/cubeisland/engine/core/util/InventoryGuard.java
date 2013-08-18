@@ -193,12 +193,10 @@ public class InventoryGuard implements Listener
                     }
                     else if (this.hasDenyIn(event.getOldCursor()))
                     {
-                        this.runOnChange();
+                        event.setCancelled(true);
+                        user.updateInventory();
                         return;
                     }
-                    event.setCancelled(true);
-                    user.updateInventory();
-                    return;
                 }
                 this.runOnChange();
             }

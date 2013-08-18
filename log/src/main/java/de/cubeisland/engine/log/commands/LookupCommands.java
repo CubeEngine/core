@@ -63,7 +63,7 @@ public class LookupCommands
         context.sendMessage("");
         context.sendTranslated("&6Lookup&f/&6Rollback&f/&6Restore&f-&6Parameters:");
         context.sendMessage("");
-        context.sendTranslated(" &f-&6 action &7<actionType> &flike &3block-break &f(See full list below)");
+        context.sendTranslated(" &f-&6 action &7<actionType> &flike &3a block-break &f(See full list above)");
         context.sendTranslated(" &f-&6 radius &7<radius>&f or &3sel&f, &3global&f, &3player:<radius>");
         context.sendTranslated(" &f-&6 player &7<users>&f like &3p Faithcaio ");
         context.sendTranslated(" &f-&6 entity &7<entities>&f like &3e sheep");

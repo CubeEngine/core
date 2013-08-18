@@ -28,6 +28,7 @@ import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
 
 
+import ch.qos.logback.classic.Level;
 import de.cubeisland.engine.core.CubeEngine;
 import de.cubeisland.engine.core.logger.JULAppender;
 import de.cubeisland.engine.core.module.BaseModuleManager;
@@ -125,7 +126,8 @@ public class BukkitModuleManager extends BaseModuleManager
         }
         catch (NoClassDefFoundError e)
         {
-            module.getLog().warn("Failed to get the fields of the main class: " + e.getLocalizedMessage(), e);
+            module.getLog().warn("Failed to get the fields of the main class!");
+            module.getLog().debug(e.getLocalizedMessage(), e);
         }
         return module;
     }
@@ -179,6 +181,7 @@ public class BukkitModuleManager extends BaseModuleManager
         {
             ch.qos.logback.classic.Logger logger = (ch.qos.logback.classic.Logger)LoggerFactory
                 .getLogger("cubeengine." + module.getName().toLowerCase());
+            logger.setLevel(Level.ALL);
             //The module has it's own logger
             logger.setAdditive(false);
             // Setup the module's console logger

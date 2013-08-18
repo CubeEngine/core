@@ -30,8 +30,10 @@ import de.cubeisland.engine.core.i18n.I18n;
 import de.cubeisland.engine.core.i18n.Language;
 import de.cubeisland.engine.core.i18n.NormalLanguage;
 
+import de.cubeisland.engine.core.permission.PermDefault;
+import de.cubeisland.engine.core.permission.Permission;
+import de.cubeisland.engine.shout.Shout;
 import gnu.trove.map.hash.THashMap;
-import org.apache.commons.lang.Validate;
 
 /**
  * Class to represent an announcement.
@@ -39,7 +41,7 @@ import org.apache.commons.lang.Validate;
 public class Announcement
 {
     private final String name;
-    private final String permNode;
+    private final Permission permission;
     private final List<String> worlds;
     private final Map<Locale, String[]> messages;
     private final long delay;
@@ -47,13 +49,10 @@ public class Announcement
 
     public Announcement(Announcement acm)
     {
-        if (acm == null)
-        {
-            throw new NullPointerException("The announcement must not be null!");
-        }
+        if (acm == null) throw new IllegalArgumentException("The announcement must not be null!");
 
         this.name = acm.name;
-        this.permNode = acm.permNode;
+        this.permission = acm.permission;
         this.worlds = new ArrayList<>(acm.getWorlds());
         this.messages = new THashMap<>(acm.messages);
         this.delay = acm.delay;
@@ -64,21 +63,29 @@ public class Announcement
      * Constructor of announcement
      *
      * @param name          This announcements unique name
-     * @param permNode      This announcements permNode
-     * @param worlds        This announcements worlds
-     * @param messages      This announcements messages
-     * @param delay         This announcements delay
+     * @param permName      This permission node for this announcement
+     * @param worlds        The worlds this announcement should be displayed in. Can be just a * to indicate all worlds
+     * @param messages      The messages of this announcement
+     * @param delay         The delay of the announcement
      */
-    public Announcement(String name, String permNode, List<String> worlds, Map<Locale, String[]> messages, long delay, boolean fixedCycle)
+    public Announcement(Shout module, String name, String permName, List<String> worlds, Map<Locale, String[]> messages, long delay, boolean fixedCycle)
     {
-        Validate.notEmpty(name, "The announcement must have a name");
-        Validate.notEmpty(permNode, "The announcement must have a permission");
-        Validate.notEmpty(worlds, "The announcement must have a world");
-        Validate.notEmpty(messages, "The announcement must have one or more messages");
-        Validate.isTrue(delay > 0, "The announcement needs a delay");
+        if (name == null || name.isEmpty()) throw new IllegalArgumentException("The announcement must have a name");
+        if (permName == null || permName.isEmpty()) throw new IllegalArgumentException("The announcement must have a permission name");
+        if (worlds == null || worlds.isEmpty()) throw new IllegalArgumentException("The announcement must have a world");
+        if (messages == null || messages.isEmpty()) throw new IllegalArgumentException("The announcement must have one or more messages");
+        if (delay < 0) throw new IllegalArgumentException("The announcement must have a valid delay");
 
         this.name = name;
-        this.permNode = permNode;
+        if (!permName.equalsIgnoreCase("*"))
+        {
+            this.permission = module.getBasePermission().createChild(permName, PermDefault.TRUE);
+            module.getCore().getPermissionManager().registerPermission(module, permission);
+        }
+        else
+        {
+            this.permission = null;
+        }
         this.worlds = worlds;
         this.messages = messages;
         this.delay = delay;
@@ -88,8 +95,8 @@ public class Announcement
     /**
      * Get the message from this announcement in a specified language
      *
-     * @param locale	The language to get the message in
-     * @return	The message in that language if exist.
+     * @param   locale  The language to get the message in
+     * @return	The message in that language if exist, else the message in the default locale will be returned
      */
     public String[] getMessage(Locale locale)
     {
@@ -121,7 +128,7 @@ public class Announcement
     }
 
     /**
-     * Get the delay after this message
+     * Get the delay
      *
      * @return The delay in milliseconds
      */
@@ -135,9 +142,9 @@ public class Announcement
      *
      * @return	the permission node for this announcement
      */
-    public String getPermNode()
+    public Permission getPermission()
     {
-        return this.permNode;
+        return this.permission;
     }
 
     /**
@@ -178,6 +185,6 @@ public class Announcement
     public boolean canAccess(Permissible permissible)
     {
         // TODO check the group
-        return this.getPermNode().equals("*") || permissible.hasPermission(this.getPermNode());
+        return this.getPermission() == null || this.getPermission().isAuthorized(permissible);
     }
 }

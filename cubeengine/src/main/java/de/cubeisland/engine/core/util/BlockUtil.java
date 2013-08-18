@@ -21,9 +21,11 @@ import java.util.Collection;
 import java.util.EnumSet;
 import java.util.HashSet;
 
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
+import org.bukkit.entity.Player;
 import org.bukkit.material.Attachable;
 import org.bukkit.material.MaterialData;
 
@@ -122,6 +124,8 @@ public class BlockUtil
             case YELLOW_FLOWER:
             case SUGAR_CANE_BLOCK:
             case CACTUS:
+            case SAND:
+            case GRAVEL:
             return true;
             default: return false;
         }
@@ -131,20 +135,29 @@ public class BlockUtil
     {
         Collection<Block> blocks = new HashSet<>();
         Block onTop = block.getRelative(BlockFace.UP);
-        if (onTop.getType().equals(Material.SUGAR_CANE_BLOCK) || onTop.getType().equals(Material.CACTUS))
+        while (isDetachableFromBelow(onTop.getType()))
         {
             blocks.add(onTop);
-            onTop = onTop.getRelative(BlockFace.UP);
-            while (onTop.getType().equals(Material.SUGAR_CANE_BLOCK) || onTop.getType().equals(Material.CACTUS))
+            for (Block attachedBlock : getAttachedBlocks(onTop))
             {
-                blocks.add(onTop);
-                onTop = onTop.getRelative(BlockFace.UP);
+                blocks.add(attachedBlock);
+                blocks.addAll(getDetachableBlocksOnTop(attachedBlock));
             }
+            onTop = onTop.getRelative(BlockFace.UP);
         }
-        else if (isDetachableFromBelow(onTop.getType()))
+        return blocks;
+    }
+
+    public static Collection<Block> getDetachableBlocks(Block block)
+    {
+        Collection<Block> blocks = new HashSet<>();
+
+        for (Block attachedBlock : getAttachedBlocks(block))
         {
-            blocks.add(onTop);
+            blocks.add(attachedBlock);
+            blocks.addAll(getDetachableBlocksOnTop(attachedBlock));
         }
+        blocks.addAll(getDetachableBlocksOnTop(block));
         return blocks;
     }
 
@@ -198,5 +211,47 @@ public class BlockUtil
     public static boolean isNonObstructingSolidBlock(Material material)
     {
         return NON_OBSTRUCTING_SOLID_BLOCKS.contains(material);
+    }
+
+    public static boolean isPowerSource(Material type)
+    {
+        return net.minecraft.server.v1_6_R2.Block.byId[type.getId()].isPowerSource();
+    }
+
+    /**
+     * On BlockPlaceEvent a door will orientate its hinge according to the returned data for the top door-half
+     *
+     * @param placeLocation the location where the lower door half is placed
+     * @param player the player placing the door
+     * @return the top-data
+     */
+    public static byte getTopDoorDataOnPlace(Material doorType, Location placeLocation, Player player)
+    {
+        byte dir1 = 0;
+        byte dir2 = 0;
+        switch ((int) Math.floor(((player.getLocation().getYaw() + 180.0F) * 4.0F / 360.0F) - 0.5D) & 3)
+        {
+            case 0: dir2 = 1; break;
+            case 1: dir1 = -1; break;
+            case 2: dir2 = -1; break;
+            case 3: dir1 = 1; break;
+        }
+        Material negLocType = placeLocation.clone().add(-dir1, 0, -dir2).getBlock().getType();
+        Material negLocUpType = placeLocation.clone().add(-dir1, 1, -dir2).getBlock().getType();
+        Material posgLocType = placeLocation.clone().add(dir1, 0, dir2).getBlock().getType();
+        Material posLocUpType = placeLocation.clone().add(dir1, 1, dir2).getBlock().getType();
+        int hingeBlockSide1 = (isHingeBlock(negLocType) ? 1 : 0) + (isHingeBlock(negLocUpType) ? 1 : 0);
+        int hingeBlockSide2 = (isHingeBlock(posgLocType) ? 1 : 0) + (isHingeBlock(posLocUpType) ? 1 : 0);
+        boolean foundDoorSide1 = negLocType == doorType || negLocUpType == doorType;
+        boolean foundDoorSide2 =  posgLocType == doorType || posLocUpType == doorType;
+        return (byte)(8 | (((foundDoorSide1 && !foundDoorSide2) || (hingeBlockSide2 > hingeBlockSide1)) ? 1 : 0));
+    }
+
+    private static boolean isHingeBlock(Material material)
+    {
+        // cb uses: Block.l(...)
+        // return block == null ? false : block.material.k() && block.b() && !block.isPowerSource();
+        // which is  material.isOccluding && ...
+        return material.isOccluding() && net.minecraft.server.v1_6_R2.Block.byId[material.getId()].b() && !isPowerSource(material);
     }
 }

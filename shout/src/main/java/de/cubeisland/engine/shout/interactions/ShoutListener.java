@@ -22,6 +22,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerQuitEvent;
 
+import de.cubeisland.engine.core.bukkit.AfterJoinEvent;
 import de.cubeisland.engine.core.bukkit.PlayerLanguageReceivedEvent;
 
 import de.cubeisland.engine.core.user.User;
@@ -42,13 +43,31 @@ public class ShoutListener implements Listener
     @EventHandler(priority = EventPriority.MONITOR)
     public void onLanguageReceived(PlayerLanguageReceivedEvent event)
     {
-        User user = this.module.getCore().getUserManager().getExactUser(event.getPlayer().getName());
-
-        if (this.module.getCore().isDebug())
+        if (am.getReceiver(event.getPlayer().getName()) == null)
         {
-            this.module.getLog().debug("Loading user: {}", user.getName());
+            User user = this.module.getCore().getUserManager().getExactUser(event.getPlayer().getName());
+
+            if (this.module.getCore().isDebug())
+            {
+                this.module.getLog().debug("Loading user: {}", user.getName());
+            }
+            this.am.initializeUser(user);
         }
-        this.am.initializeUser(user);
+    }
+
+    @EventHandler(priority = EventPriority.MONITOR)
+    public void afterPlayerJoin(AfterJoinEvent event)
+    {
+        if (am.getReceiver(event.getPlayer().getName()) == null)
+        {
+            User user = this.module.getCore().getUserManager().getExactUser(event.getPlayer().getName());
+
+            if (this.module.getCore().isDebug())
+            {
+                this.module.getLog().debug("Loading user: {}", user.getName());
+            }
+            this.am.initializeUser(user);
+        }
     }
 
     @EventHandler(priority = EventPriority.MONITOR)

@@ -122,7 +122,8 @@ public class ReflectedCommandFactory<T extends CubeCommand> implements CommandFa
                 }
                 catch (Exception e)
                 {
-                    module.getLog().error("Failed to create the completer '" + completerClass.getName() + "'", e);
+                    module.getLog().error("Failed to create the completer '{}'", completerClass.getName());
+                    module.getLog().debug(e.getLocalizedMessage(), e);
                 }
             }
 

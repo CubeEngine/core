@@ -24,6 +24,11 @@ import de.cubeisland.engine.core.util.Pair;
 import de.cubeisland.engine.shout.announce.Announcement;
 import de.cubeisland.engine.shout.announce.MessageOfTheDay;
 
+/**
+ * A class that represents a receiver of announcements.
+ * This class only handles the order of the announcements, and the delay after each,
+ * but does not handle the timing.
+ */
 public interface Receiver
 {
     /**
@@ -42,9 +47,10 @@ public interface Receiver
 
     /**
      * Get the next announcement and delay for this receiver
-     * NOTE: the delay is not in ms, but in this receivers execution format
+     * NOTE: the delay is not in ms, but in executions of the receivers
+     * announcer.
      *
-     * @return The next announcement and delay for this user
+     * @return The next announcement and delay for this receiver
      */
     public Pair<Announcement, Integer> getNextDelayAndAnnouncement();
 
@@ -70,6 +76,12 @@ public interface Receiver
      * @param announcements The new announcements for this receiver
      */
     public void setAllAnnouncements(Queue<Announcement> announcements);
+
+    /**
+     * Add a new announcement that this receiver should receive
+     * @param announcement
+     */
+    public void addAnnouncement(Announcement announcement);
 
     /**
      * If the receiver could receive this announcement now

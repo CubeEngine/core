@@ -15,36 +15,38 @@
  * You should have received a copy of the GNU General Public License
  * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-package de.cubeisland.engine.test.l18n;
+package de.cubeisland.engine.cguard.storage;
 
-import de.cubeisland.engine.core.filesystem.Resource;
+import gnu.trove.map.TByteObjectMap;
+import gnu.trove.map.hash.TByteObjectHashMap;
 
-public enum TestRecource implements Resource
+public enum GuardType
 {
-    GERMAN_MESSAGES(
-        "resources/language/messages/de_DE.json",
-        "language/de_DE/test.json"),
-    FRENCH_MESSAGES(
-        "resources/language/messages/fr_FR.json",
-        "language/fr_FR/test.json"), ;
-    private final String target;
-    private final String source;
+    PRIVATE(1),
+    PUBLIC(2),
+    GUARDED(3),
+    DONATION(4),
+    FREE(5);
 
-    private TestRecource(String source, String target)
+    public final byte id;
+
+    private static TByteObjectMap<GuardType> guardTypes = new TByteObjectHashMap<>();
+
+    static
     {
-        this.source = source;
-        this.target = target;
+        for (GuardType guardType : GuardType.values())
+        {
+            guardTypes.put(guardType.id, guardType);
+        }
     }
 
-    @Override
-    public String getSource()
+    private GuardType(int id)
     {
-        return this.source;
+        this.id = (byte)id;
     }
 
-    @Override
-    public String getTarget()
+    public static GuardType forByte(Byte guardType)
     {
-        return this.target;
+        return guardTypes.get(guardType);
     }
 }

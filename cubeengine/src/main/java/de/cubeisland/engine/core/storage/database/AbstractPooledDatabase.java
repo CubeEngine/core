@@ -87,7 +87,8 @@ public abstract class AbstractPooledDatabase implements Database
                 }
                 catch (SQLException e)
                 {
-                    core.getLog().error("An asynchronous query failed!", e);
+                    core.getLog().error("An asynchronous query failed!");
+                    core.getLog().debug(e.getLocalizedMessage(), e);
                 }
             }
         });
@@ -120,7 +121,8 @@ public abstract class AbstractPooledDatabase implements Database
                 }
                 catch (SQLException e)
                 {
-                    core.getLog().error("An asynchronous query failed!", e);
+                    core.getLog().error("An asynchronous query failed!");
+                    core.getLog().debug(e.getLocalizedMessage(), e);
                 }
             }
         });

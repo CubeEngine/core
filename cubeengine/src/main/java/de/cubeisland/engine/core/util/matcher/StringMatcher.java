@@ -53,7 +53,9 @@ public class StringMatcher
     {
         if (maxDistance < 1)
         {
-            CubeEngine.getLog().warn("Checking EditDistance lower than 1!", new Throwable());
+            CubeEngine.getLog().warn("Checking EditDistance lower than 1!");
+            Throwable t = new Throwable();
+            CubeEngine.getLog().debug(t.getLocalizedMessage(), t);
             return new TreeMap<>();
         }
         THashMap<String, Integer> matches = new THashMap<>();

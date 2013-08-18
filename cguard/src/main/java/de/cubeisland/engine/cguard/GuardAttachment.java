@@ -15,33 +15,25 @@
  * You should have received a copy of the GNU General Public License
  * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-package de.cubeisland.engine.shout;
+package de.cubeisland.engine.cguard;
 
-import de.cubeisland.engine.core.filesystem.Resource;
+import java.util.HashSet;
+import java.util.Set;
 
-public enum ShoutResource implements Resource
+import de.cubeisland.engine.cguard.storage.Guard;
+import de.cubeisland.engine.core.user.UserAttachment;
+
+public class GuardAttachment extends UserAttachment
 {
-    NORWEGIAN_MESSAGES(
-        "resources/language/messages/nb_NO.json",
-        "language/nb_NO/writer.json");
-    private final String target;
-    private final String source;
+    private Set<Long> unlockedProtections = new HashSet<>();
 
-    private ShoutResource(String source, String target)
+    public void addUnlock(Guard guard)
     {
-        this.source = source;
-        this.target = target;
+        unlockedProtections.add(guard.getId());
     }
 
-    @Override
-    public String getSource()
+    public boolean hasUnlocked(Guard guard)
     {
-        return this.source;
-    }
-
-    @Override
-    public String getTarget()
-    {
-        return this.target;
+        return this.unlockedProtections.contains(guard.getId());
     }
 }

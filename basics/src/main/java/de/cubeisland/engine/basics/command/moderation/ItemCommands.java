@@ -20,10 +20,12 @@ package de.cubeisland.engine.basics.command.moderation;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.EnchantmentStorageMeta;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
 
@@ -246,6 +248,13 @@ public class ItemCommands
             {
                 if (BasicsPerm.COMMAND_ENCHANT_UNSAFE.isAuthorized(sender))
                 {
+                    if (item.getItemMeta() instanceof EnchantmentStorageMeta)
+                    {
+                        EnchantmentStorageMeta itemMeta = (EnchantmentStorageMeta)item.getItemMeta();
+                        itemMeta.addStoredEnchant(ench, level, true);
+                        item.setItemMeta(itemMeta);
+                        return;
+                    }
                     item.addUnsafeEnchantment(ench, level);
                     context.sendTranslated("&aAdded unsafe enchantment: &6%s %d &ato your item!",
                                            Match.enchant().nameFor(ench), level);

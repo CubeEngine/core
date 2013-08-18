@@ -65,7 +65,8 @@ public class BukkitUtils
         }
         catch (Exception e)
         {
-            core.getLog().error("Failed to initialize the required hacks!", e);
+            core.getLog().error("Failed to initialize the required hacks!");
+            core.getLog().debug(e.getLocalizedMessage(), e);
             return false;
         }
         return true;

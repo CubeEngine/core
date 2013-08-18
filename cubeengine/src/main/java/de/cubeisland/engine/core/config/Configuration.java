@@ -103,7 +103,8 @@ public abstract class Configuration<ConfigCodec extends ConfigurationCodec>
         }
         catch (Exception e)
         {
-            CubeEngine.getLog().error("Failed to load the configuration " + this.file, e);
+            CubeEngine.getLog().error("Failed to load the configuration for {}", this.file);
+            CubeEngine.getLog().debug(e.getLocalizedMessage(), e);
         }
     }
 
