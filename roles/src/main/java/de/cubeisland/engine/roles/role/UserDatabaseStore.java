@@ -86,8 +86,7 @@ public class UserDatabaseStore extends UserDataStore
         else
         {
             UserPermission userPerm = manager.dsl.newRecord(TABLE_PERM).newPerm(this.getUserID(), this.worldID, perm, set);
-            userPerm.changed(true); // Force update on key
-            userPerm.insert();
+            manager.dsl.insertInto(TABLE_PERM).set(userPerm).onDuplicateKeyUpdate().set(userPerm).execute();
         }
         super.setPermission(perm,set);
     }
@@ -104,8 +103,7 @@ public class UserDatabaseStore extends UserDataStore
         else
         {
             UserMetaData userMeta = manager.dsl.newRecord(TABLE_META).newMeta(this.getUserID(), this.worldID, key, value);
-            userMeta.changed(true); // Force update on key
-            userMeta.insert();
+            manager.dsl.insertInto(TABLE_META).set(userMeta).onDuplicateKeyUpdate().set(userMeta).execute();
         }
         super.setMetadata(key,value);
     }

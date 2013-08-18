@@ -21,6 +21,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Tameable;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
@@ -36,15 +37,17 @@ import de.cubeisland.engine.basics.BasicsUser;
 import de.cubeisland.engine.basics.storage.BasicsUserEntity;
 import de.cubeisland.engine.core.bukkit.AfterJoinEvent;
 import de.cubeisland.engine.core.user.User;
+import de.cubeisland.engine.core.util.ChatFormat;
 import de.cubeisland.engine.core.util.matcher.Match;
+import de.cubeisland.engine.roles.RoleAppliedEvent;
 
 public class GeneralsListener implements Listener
 {
-    private Basics basics;
+    private Basics module;
 
     public GeneralsListener(Basics basics)
     {
-        this.basics = basics;
+        this.module = basics;
     }
 
     @EventHandler
@@ -52,7 +55,7 @@ public class GeneralsListener implements Listener
     {
         if (event.getEntity() instanceof Player)
         {
-            BasicsUserEntity bUser = this.basics.getBasicsUser((Player)event.getEntity()).getbUEntity();
+            BasicsUserEntity bUser = this.module.getBasicsUser((Player)event.getEntity()).getbUEntity();
             if (bUser.isGodMode())
             {
                 event.setCancelled(true);
@@ -63,7 +66,7 @@ public class GeneralsListener implements Listener
     @EventHandler
     public void blockplace(final BlockPlaceEvent event)
     {
-        User user = basics.getCore().getUserManager().getExactUser(event.getPlayer().getName());
+        User user = module.getCore().getUserManager().getExactUser(event.getPlayer().getName());
         if (user.get(BasicsAttachment.class).hasUnlimitedItems())
         {
             ItemStack itemInHand = event.getPlayer().getItemInHand();
@@ -74,7 +77,7 @@ public class GeneralsListener implements Listener
     @EventHandler
     public void onLeave(PlayerQuitEvent event)
     {
-        BasicsUserEntity bUser = this.basics.getBasicsUser(event.getPlayer()).getbUEntity();
+        BasicsUserEntity bUser = this.module.getBasicsUser(event.getPlayer()).getbUEntity();
         if (!BasicsPerm.COMMAND_GOD_KEEP.isAuthorized(event.getPlayer()))
         {
             bUser.setGodMode(false);
@@ -89,7 +92,7 @@ public class GeneralsListener implements Listener
     @EventHandler
     public void onWorldChange(PlayerChangedWorldEvent event)
     {
-        BasicsUserEntity bUser = this.basics.getBasicsUser(event.getPlayer()).getbUEntity();
+        BasicsUserEntity bUser = this.module.getBasicsUser(event.getPlayer()).getbUEntity();
         if (!BasicsPerm.COMMAND_GOD_KEEP.isAuthorized(event.getPlayer()))
         {
             bUser.setGodMode(false);
@@ -104,8 +107,8 @@ public class GeneralsListener implements Listener
     @EventHandler
     public void onAfterJoin(AfterJoinEvent event)
     {
-        User user = this.basics.getCore().getUserManager().getExactUser(event.getPlayer().getName());
-        BasicsUser bUser = this.basics.getBasicsUser(user);
+        User user = this.module.getCore().getUserManager().getExactUser(event.getPlayer().getName());
+        BasicsUser bUser = this.module.getBasicsUser(user);
         int amount = bUser.countMail();
         if (amount > 0)
         {
@@ -125,9 +128,19 @@ public class GeneralsListener implements Listener
             Tameable tamed = (Tameable) event.getRightClicked();
             if (tamed.getOwner() != null && !event.getPlayer().equals(tamed.getOwner()))
             {
-                User clicker = this.basics.getCore().getUserManager().getExactUser(event.getPlayer().getName());
+                User clicker = this.module.getCore().getUserManager().getExactUser(event.getPlayer().getName());
                 clicker.sendTranslated("&aThis &6%s &abelongs to &2%s&a!", Match.entity().getNameFor(event.getRightClicked().getType()),tamed.getOwner().getName());
             }
+        }
+    }
+
+    @EventHandler(priority = EventPriority.MONITOR)
+    public void onPlayerJoin(RoleAppliedEvent event)
+    {
+        String meta = event.getAttachment().getCurrentMetadata("tablist-prefix");
+        if (meta != null)
+        {
+            event.getUser().setPlayerListName(ChatFormat.parseFormats(meta) + event.getUser().getDisplayName());
         }
     }
 }

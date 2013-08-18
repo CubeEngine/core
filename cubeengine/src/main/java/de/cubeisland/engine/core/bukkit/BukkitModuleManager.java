@@ -27,23 +27,7 @@ import java.util.Stack;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
 
-
 import ch.qos.logback.classic.Level;
-import de.cubeisland.engine.core.CubeEngine;
-import de.cubeisland.engine.core.logger.JULAppender;
-import de.cubeisland.engine.core.module.BaseModuleManager;
-import de.cubeisland.engine.core.module.Inject;
-import de.cubeisland.engine.core.module.Module;
-import de.cubeisland.engine.core.module.ModuleInfo;
-import de.cubeisland.engine.core.module.ModuleLoggerFactory;
-import de.cubeisland.engine.core.module.exception.CircularDependencyException;
-import de.cubeisland.engine.core.module.exception.IncompatibleCoreException;
-import de.cubeisland.engine.core.module.exception.IncompatibleDependencyException;
-import de.cubeisland.engine.core.module.exception.InvalidModuleException;
-import de.cubeisland.engine.core.module.exception.MissingDependencyException;
-import de.cubeisland.engine.core.module.exception.MissingPluginDependencyException;
-import de.cubeisland.engine.core.module.exception.MissingProviderException;
-
 import ch.qos.logback.classic.PatternLayout;
 import ch.qos.logback.classic.encoder.PatternLayoutEncoder;
 import ch.qos.logback.classic.filter.ThresholdFilter;
@@ -51,6 +35,15 @@ import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.rolling.FixedWindowRollingPolicy;
 import ch.qos.logback.core.rolling.RollingFileAppender;
 import ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy;
+import de.cubeisland.engine.core.CubeEngine;
+import de.cubeisland.engine.core.logger.JULAppender;
+import de.cubeisland.engine.core.module.BaseModuleManager;
+import de.cubeisland.engine.core.module.Inject;
+import de.cubeisland.engine.core.module.Module;
+import de.cubeisland.engine.core.module.ModuleInfo;
+import de.cubeisland.engine.core.module.ModuleLoggerFactory;
+import de.cubeisland.engine.core.module.exception.MissingPluginDependencyException;
+import de.cubeisland.engine.core.module.exception.ModuleException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -93,7 +86,7 @@ public class BukkitModuleManager extends BaseModuleManager
     }
 
     @Override
-    protected Module loadModule(String name, Map<String, ModuleInfo> moduleInfos, Stack<String> loadStack) throws CircularDependencyException, MissingDependencyException, InvalidModuleException, IncompatibleDependencyException, IncompatibleCoreException, MissingPluginDependencyException, MissingProviderException
+    protected Module loadModule(String name, Map<String, ModuleInfo> moduleInfos, Stack<String> loadStack) throws ModuleException
     {
         Module module = super.loadModule(name, moduleInfos, loadStack);
         try
@@ -104,22 +97,27 @@ public class BukkitModuleManager extends BaseModuleManager
             for (Field field : fields)
             {
                 fieldType = field.getType();
-                if (Plugin.class.isAssignableFrom(fieldType) && field.isAnnotationPresent(Inject.class))
+                Inject injectAnnotation = field.getAnnotation(Inject.class);
+                if (Plugin.class.isAssignableFrom(fieldType) && injectAnnotation != null)
                 {
                     Plugin plugin = pluginClassMap.get(fieldType);
-                    if (plugin == null)
+                    if (plugin != null)
                     {
-                        continue;
+                        this.pluginManager.enablePlugin(plugin); // what their about dependencies?
+                        field.setAccessible(true);
+                        try
+                        {
+                            field.set(module, plugin);
+                            continue;
+                        }
+                        catch (Exception e)
+                        {
+                            module.getLog().warn("Failed to inject a plugin dependency: {}", String.valueOf(plugin));
+                        }
                     }
-                    this.pluginManager.enablePlugin(plugin); // what their about dependencies?
-                    field.setAccessible(true);
-                    try
+                    if (injectAnnotation.require())
                     {
-                        field.set(module, plugin);
-                    }
-                    catch (Exception e)
-                    {
-                        module.getLog().warn("Failed to inject a plugin dependency: {}", String.valueOf(plugin));
+                        throw new MissingPluginDependencyException(fieldType.getName());
                     }
                 }
             }

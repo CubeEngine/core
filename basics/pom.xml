@@ -24,5 +24,12 @@
       <version>2.8.1</version>
       <scope>provided</scope>
     </dependency>
+    <dependency>
+      <groupId>${project.parent.groupId}</groupId>
+      <artifactId>roles</artifactId>
+      <version>1.0.0-SNAPSHOT</version>
+      <type>jar</type>
+      <scope>provided</scope>
+    </dependency>
   </dependencies>
 </project>

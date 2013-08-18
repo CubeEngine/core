@@ -72,12 +72,6 @@ public class Roles extends Module
         cm.registerCommand(new ManagementCommands(this), "roles");
 
         this.getCore().getEventManager().registerListener(this, new RolesEventHandler(this));
-
-        Module basicsModule = this.getCore().getModuleManager().getModule("basics");
-        if (basicsModule != null)
-        {
-            this.getCore().getEventManager().registerListener(this, new BasicsOnlinePlayerList(this));
-        }
     }
 
     @Override

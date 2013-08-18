@@ -25,6 +25,7 @@ import java.util.Set;
 
 import de.cubeisland.engine.core.command.CommandContext;
 import de.cubeisland.engine.core.command.ContainerCommand;
+import de.cubeisland.engine.core.command.exception.ModuleAlreadyLoadedException;
 import de.cubeisland.engine.core.command.parameterized.Flag;
 import de.cubeisland.engine.core.command.parameterized.ParameterizedContext;
 import de.cubeisland.engine.core.command.reflected.Alias;
@@ -181,8 +182,15 @@ public class ModuleCommands extends ContainerCommand
 
         try
         {
-            Module module = context.getCore().getModuleManager().loadModule(modulePath);
-            context.sendTranslated("&aThe module &6%s&a has been successfully loaded!", module.getName());
+            ModuleManager mm = context.getCore().getModuleManager();
+            Module module = mm.loadModule(modulePath);
+            mm.enableModule(module);
+
+            context.sendTranslated("&aThe module &6%s&a has been successfully loaded and enabled!", module.getName());
+        }
+        catch (ModuleAlreadyLoadedException e)
+        {
+            context.sendTranslated("&eThis module is already loaded, try reloading it.");
         }
         catch (ModuleException e)
         {

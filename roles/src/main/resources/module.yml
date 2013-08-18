@@ -2,5 +2,3 @@ name: ${project.name}
 description: ${project.description}
 version: ${project.version}
 source-version: ${githead.branch}-${githead.commit}
-load-after:
-- basics

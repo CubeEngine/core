@@ -40,7 +40,7 @@ public class Baumguard extends Module
         GuardCommands mainCmd = new GuardCommands(this, manager);
         this.getCore().getCommandManager().registerCommand(mainCmd);
         GuardCreateCommands createCmds = new GuardCreateCommands(this, manager);
-        this.getCore().getCommandManager().registerCommand(createCmds, "cguard");
+        this.getCore().getCommandManager().registerCommand(createCmds, "bguard");
         new de.cubeisland.engine.baumguard.GuardListener(this, manager);
     }
 

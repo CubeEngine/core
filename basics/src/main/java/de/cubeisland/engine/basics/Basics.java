@@ -58,16 +58,21 @@ import de.cubeisland.engine.core.bukkit.EventManager;
 import de.cubeisland.engine.core.command.CommandManager;
 import de.cubeisland.engine.core.command.reflected.ReflectedCommand;
 import de.cubeisland.engine.core.config.Configuration;
+import de.cubeisland.engine.core.module.Inject;
 import de.cubeisland.engine.core.module.Module;
 import de.cubeisland.engine.core.storage.database.Database;
 import de.cubeisland.engine.core.util.Profiler;
 import de.cubeisland.engine.core.util.convert.Convert;
+import de.cubeisland.engine.roles.Roles;
 
 public class Basics extends Module
 {
     private BasicsConfiguration config;
     private KitManager kitManager;
     private LagTimer lagTimer;
+
+    @Inject
+    private Roles rolesModule;
 
     @Override
     public void onEnable()
@@ -156,5 +161,10 @@ public class Basics extends Module
     public BasicsUser getBasicsUser(Player player)
     {
         return this.getCore().getUserManager().getExactUser(player.getName()).attachOrGet(BasicsAttachment.class, this).getBasicsUser();
+    }
+
+    public Roles getRolesModule()
+    {
+        return rolesModule;
     }
 }

@@ -15,18 +15,14 @@
  * You should have received a copy of the GNU General Public License
  * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-package de.cubeisland.engine.core.module;
+package de.cubeisland.engine.core.command.exception;
 
-import java.lang.annotation.Documented;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import de.cubeisland.engine.core.module.exception.ModuleException;
 
-@Documented
-@Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.FIELD)
-public @interface Inject
+public class ModuleAlreadyLoadedException extends ModuleException
 {
-    public boolean require() default false;
+    public ModuleAlreadyLoadedException(String message)
+    {
+        super(message);
+    }
 }
