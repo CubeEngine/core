@@ -84,7 +84,14 @@ public class FileUtil
     {
         assert stream != null: "The stream may not be null!";
 
-        return readStringList(new BufferedReader(new InputStreamReader(stream)));
+        try (BufferedReader br = new BufferedReader(new InputStreamReader(stream)))
+        {
+            return readStringList(br);
+        }
+        catch (IOException ex)
+        {
+            return null;
+        }
     }
 
     /**

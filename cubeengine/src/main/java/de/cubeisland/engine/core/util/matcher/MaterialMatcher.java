@@ -18,6 +18,7 @@
 package de.cubeisland.engine.core.util.matcher;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -225,24 +226,27 @@ public class MaterialMatcher
             TreeMap<String, TreeMap<Short, List<String>>> readItems = new TreeMap<>();
             this.readItems(readItems, input, false);
 
-            List<String> jarinput = FileUtil.readStringList(CubeEngine.getFileManager().getSourceOf(file));
-            if (jarinput != null && this.readItems(readItems, jarinput, true))
+            try (InputStream is = CubeEngine.getFileManager().getSourceOf(file))
             {
-                CubeEngine.getLog().info("Updated items.txt");
-                StringBuilder sb = new StringBuilder();
-                for (String itemName : readItems.keySet())
+                List<String> jarinput = FileUtil.readStringList(is);
+                if (jarinput != null && this.readItems(readItems, jarinput, true))
                 {
-                    for (short data : readItems.get(itemName).keySet())
+                    CubeEngine.getLog().info("Updated items.txt");
+                    StringBuilder sb = new StringBuilder();
+                    for (String itemName : readItems.keySet())
                     {
-                        sb.append(itemName).append(":").append(data).append("\n");
-                        List<String> list = readItems.get(itemName).get(data);
-                        for (String itemname : list)
+                        for (short data : readItems.get(itemName).keySet())
                         {
-                            sb.append("  ").append(itemname).append("\n");
+                            sb.append(itemName).append(":").append(data).append("\n");
+                            List<String> list = readItems.get(itemName).get(data);
+                            for (String itemname : list)
+                            {
+                                sb.append("  ").append(itemname).append("\n");
+                            }
                         }
                     }
+                    FileUtil.saveFile(sb.toString(), file);
                 }
-                FileUtil.saveFile(sb.toString(), file);
             }
             return readItems;
         }
