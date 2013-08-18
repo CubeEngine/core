@@ -34,9 +34,9 @@ import de.cubeisland.engine.core.util.convert.Convert;
  */
 public class ModuleClassLoader extends URLClassLoader
 {
-    private ModuleLoader moduleLoader;
-    private Map<String, Class> classMap;
-    private ModuleInfo moduleInfo;
+    private final ModuleLoader moduleLoader;
+    private final Map<String, Class> classMap;
+    private final ModuleInfo moduleInfo;
 
     public ModuleClassLoader(ModuleLoader moduleLoader, URL jarURL, ModuleInfo info, ClassLoader parent) throws MalformedURLException
     {
@@ -121,8 +121,5 @@ public class ModuleClassLoader extends URLClassLoader
             CubeEngine.getLog().warn("Failed to close the class loader of the module '{}'", this.moduleInfo.getName());
             CubeEngine.getLog().debug(e.getLocalizedMessage(), e);
         }
-
-        this.moduleInfo = null;
-        this.moduleLoader = null;
     }
 }
