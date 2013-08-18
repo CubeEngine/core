@@ -41,6 +41,7 @@ import ch.qos.logback.classic.LoggerContext;
 import ch.qos.logback.classic.joran.JoranConfigurator;
 import ch.qos.logback.core.joran.spi.JoranException;
 import de.cubeisland.engine.core.Core;
+import de.cubeisland.engine.core.command.exception.ModuleAlreadyLoadedException;
 import de.cubeisland.engine.core.module.event.ModuleDisabledEvent;
 import de.cubeisland.engine.core.module.event.ModuleEnabledEvent;
 import de.cubeisland.engine.core.module.exception.CircularDependencyException;
@@ -120,16 +121,12 @@ public abstract class BaseModuleManager implements ModuleManager
             throw new InvalidModuleException("Failed to load the module info for file '" + modulePath.getFileName() + "'!");
         }
 
-        ModuleInfo oldInfo = this.moduleInfos.put(info.getId(), info);
-        if (oldInfo != null)
+        if (this.moduleInfos.containsKey(info.getId()))
         {
-            Module oldModule = this.modules.get(oldInfo.getId());
-            if (oldModule != null)
-            {
-                this.unloadModule(oldModule);
-            }
+            throw new ModuleAlreadyLoadedException(info.getName());
         }
 
+        this.moduleInfos.put(info.getId(), info);
         return this.loadModule(info.getName(), this.moduleInfos);
     }
 
@@ -385,7 +382,7 @@ public abstract class BaseModuleManager implements ModuleManager
         final long enableTime = Profiler.endProfiling("enable-module", TimeUnit.MICROSECONDS);
         if (!result)
         {
-            module.getLog().error(" Module failed to load.");
+            module.getLog().error("Module failed to load.");
         }
         else
         {
@@ -519,8 +516,7 @@ public abstract class BaseModuleManager implements ModuleManager
         if (fromFile)
         {
             this.unloadModule(module);
-            this.loadModule(module.getInfo().getPath());
-            this.enableModule(module);
+            this.enableModule(this.loadModule(module.getInfo().getPath()));
         }
         else
         {
