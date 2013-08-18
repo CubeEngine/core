@@ -27,6 +27,7 @@ import org.bukkit.Bukkit;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.user.UserAttachment;
 import de.cubeisland.engine.core.util.Triplet;
+import de.cubeisland.engine.roles.RoleAppliedEvent;
 import de.cubeisland.engine.roles.Roles;
 import de.cubeisland.engine.roles.RolesConfig;
 import de.cubeisland.engine.roles.role.resolved.ResolvedMetadata;
@@ -248,6 +249,7 @@ public class RolesAttachment extends UserAttachment
                 this.getModule().getLog().debug(" - {}", assignedRole.getName());
             }
         }
+        this.getModule().getCore().getEventManager().fireEvent(new RoleAppliedEvent((Roles)this.getModule(), user, this));
         // else user is offline ignore
     }
 
