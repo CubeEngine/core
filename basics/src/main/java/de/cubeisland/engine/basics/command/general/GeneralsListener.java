@@ -140,7 +140,12 @@ public class GeneralsListener implements Listener
         String meta = event.getAttachment().getCurrentMetadata("tablist-prefix");
         if (meta != null)
         {
-            event.getUser().setPlayerListName(ChatFormat.parseFormats(meta) + event.getUser().getDisplayName());
+            String colored = ChatFormat.parseFormats(meta) + event.getUser().getDisplayName();
+            if (colored.length() > 16)
+            {
+                colored = colored.substring(0,16);
+            }
+            event.getUser().setPlayerListName(colored);
         }
     }
 }
