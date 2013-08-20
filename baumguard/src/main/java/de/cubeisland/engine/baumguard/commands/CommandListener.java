@@ -182,6 +182,7 @@ public class CommandListener implements Listener
                 guard.unlock(user, location, triplet.getSecond());
                 break;
             case INVALIDATE_KEYS:
+                // TODO close opened inventories
                 if (!guard.isOwner(user))
                 {
                     user.sendTranslated("&cThis is not your protection!");
