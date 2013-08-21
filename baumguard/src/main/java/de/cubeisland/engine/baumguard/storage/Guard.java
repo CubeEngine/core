@@ -218,7 +218,7 @@ public class Guard
 
     private void checkGuardType()
     {
-        if (this.getProtectedType().supportedTypes.contains(this.getGuardType())) return;
+        if (this.getGuardType().supportedTypes.contains(this.getProtectedType())) return;
         throw new IllegalStateException("GuardType is not supported for " + this.getProtectedType().name() + ":" + this.getGuardType().name());
     }
 
@@ -259,7 +259,7 @@ public class Guard
         }
     }
 
-    public void handleEntityDestroy(User user)
+    public void handleEntityDeletion(User user)
     {
         this.delete(user);
     }
@@ -314,10 +314,9 @@ public class Guard
         return this.getGuardType().equals(PUBLIC);
     }
 
-    public boolean hasFlag(ProtectionFlags redstone)
+    public boolean hasFlag(ProtectionFlags flag)
     {
-        // TODO
-        return true;
+        return flag.flagValue == (this.model.getFlags() & flag.flagValue);
     }
 
     public void showInfo(User user)
@@ -469,8 +468,4 @@ public class Guard
         taskId = this.manager.module.getCore().getTaskManager()
                             .runTaskDelayed(this.manager.module, run, 60);// TODO config!!!
     }
-
-
 }
-
-

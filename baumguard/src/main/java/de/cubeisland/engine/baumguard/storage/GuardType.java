@@ -17,20 +17,27 @@
  */
 package de.cubeisland.engine.baumguard.storage;
 
+import java.util.Arrays;
+import java.util.Collection;
+
 import gnu.trove.map.TByteObjectMap;
 import gnu.trove.map.hash.TByteObjectHashMap;
 
+import static de.cubeisland.engine.baumguard.storage.ProtectedType.*;
+
 public enum GuardType
 {
-    PRIVATE(1),
-    PUBLIC(2),
-    GUARDED(3),
-    DONATION(4),
-    FREE(5);
-
-    public final byte id;
+    PRIVATE(1, CONTAINER, DOOR, BLOCK, ENTITY_CONTAINER, ENTITY_LIVING, ENTITY_VEHICLE, ENTITY),
+    PUBLIC(2, CONTAINER, DOOR, BLOCK, ENTITY_CONTAINER, ENTITY_LIVING, ENTITY_VEHICLE, ENTITY),
+    GUARDED(3, CONTAINER, ENTITY_CONTAINER),
+    DONATION(4, CONTAINER, ENTITY_CONTAINER),
+    FREE(5, CONTAINER, ENTITY_CONTAINER);
 
     private static TByteObjectMap<GuardType> guardTypes = new TByteObjectHashMap<>();
+
+    public final byte id;
+    public final Collection<ProtectedType> supportedTypes;
+
 
     static
     {
@@ -40,9 +47,10 @@ public enum GuardType
         }
     }
 
-    private GuardType(int id)
+    private GuardType(int id, ProtectedType... supportedTypes)
     {
         this.id = (byte)id;
+        this.supportedTypes = Arrays.asList(supportedTypes);
     }
 
     public static GuardType forByte(Byte guardType)

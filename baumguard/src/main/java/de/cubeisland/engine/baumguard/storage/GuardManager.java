@@ -41,12 +41,10 @@ import org.bukkit.block.Chest;
 import org.bukkit.block.DoubleChest;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
-import org.bukkit.entity.Vehicle;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.world.ChunkLoadEvent;
 import org.bukkit.event.world.ChunkUnloadEvent;
-import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.material.Door;
@@ -66,7 +64,7 @@ import org.jooq.types.UInteger;
 import static de.cubeisland.engine.baumguard.storage.AccessListModel.ACCESS_ALL;
 import static de.cubeisland.engine.baumguard.storage.AccessListModel.ACCESS_FULL;
 import static de.cubeisland.engine.baumguard.storage.GuardType.PUBLIC;
-import static de.cubeisland.engine.baumguard.storage.ProtectedType.*;
+import static de.cubeisland.engine.baumguard.storage.ProtectedType.getProtectedType;
 import static de.cubeisland.engine.baumguard.storage.TableAccessList.TABLE_ACCESS_LIST;
 import static de.cubeisland.engine.baumguard.storage.TableGuardLocations.TABLE_GUARD_LOCATION;
 import static de.cubeisland.engine.baumguard.storage.TableGuards.TABLE_GUARD;
@@ -288,7 +286,7 @@ public class GuardManager implements Listener
 
     public Guard createGuard(Material material, Location location, User user, GuardType guardType, String password, boolean createKeyBook)
     {
-        GuardModel model = this.dsl.newRecord(TABLE_GUARD).newGuard(user, guardType, this.getProtectedType(material));
+        GuardModel model = this.dsl.newRecord(TABLE_GUARD).newGuard(user, guardType, getProtectedType(material));
         this.createPassword(model, password);
         model.insert();
         List<Location> locations = new ArrayList<>();
@@ -370,7 +368,7 @@ public class GuardManager implements Listener
 
     public Guard createGuard(Entity entity, User user, GuardType guardType, String password, boolean createKeyBook)
     {
-        GuardModel model = this.dsl.newRecord(TABLE_GUARD).newGuard(user, guardType, this.getProtectedType(entity), entity.getUniqueId());
+        GuardModel model = this.dsl.newRecord(TABLE_GUARD).newGuard(user, guardType, getProtectedType(entity.getType()), entity.getUniqueId());
         this.createPassword(model, password);
         model.insert();
         Guard guard = new Guard(this, model);
@@ -432,49 +430,6 @@ public class GuardManager implements Listener
             }
         }
     }
-
-    private ProtectedType getProtectedType(Material material)
-    {
-        switch (material)
-        {
-            case CHEST:
-            case TRAPPED_CHEST:
-            case DISPENSER:
-            case DROPPER:
-            case FURNACE:
-            case BURNING_FURNACE:
-            case BREWING_STAND:
-            // TODO missing ?
-                return CONTAINER;
-            case WOODEN_DOOR:
-            case IRON_DOOR_BLOCK:
-            case FENCE_GATE:
-            case TRAP_DOOR:
-                return DOOR;
-            default:
-                if (material.getId() < 256) return BLOCK;
-        }
-        throw new IllegalStateException("Material of block is an item!?");
-    }
-
-    private ProtectedType getProtectedType(Entity entity)
-    {
-        switch (entity.getType())
-        {
-        case MINECART_CHEST:
-        case MINECART_HOPPER:
-            return ENTITY_CONTAINER;
-        case HORSE:
-            if (entity instanceof InventoryHolder) return ENTITY_CONTAINER;
-        default:
-            if (entity.getType().isAlive()) return ENTITY_LIVING;
-            if (entity instanceof Vehicle) return ENTITY_VEHICLE;
-            return ENTITY;
-        }
-    }
-
-
-    // TODO more ?
 
     /**
      *

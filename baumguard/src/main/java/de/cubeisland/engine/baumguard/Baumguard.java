@@ -23,15 +23,27 @@ import de.cubeisland.engine.baumguard.storage.GuardManager;
 import de.cubeisland.engine.baumguard.storage.TableAccessList;
 import de.cubeisland.engine.baumguard.storage.TableGuardLocations;
 import de.cubeisland.engine.baumguard.storage.TableGuards;
+import de.cubeisland.engine.core.config.Configuration;
 import de.cubeisland.engine.core.module.Module;
+import de.cubeisland.engine.core.util.convert.Convert;
+
+import static de.cubeisland.engine.baumguard.DefaultGuardConfiguration.DefaultGuardConfigConverter;
 
 public class Baumguard extends Module
 {
     private GuardConfig config;
 
+    static
+    {
+
+    }
+
+
     @Override
     public void onEnable()
     {
+        Convert.registerConverter(DefaultGuardConfiguration.class, new DefaultGuardConfigConverter());
+        this.config = Configuration.load(GuardConfig.class, this);
         new GuardPerm(this);
         this.getCore().getDB().registerTable(TableGuards.initTable(this.getCore().getDB()));
         this.getCore().getDB().registerTable(TableGuardLocations.initTable(this.getCore().getDB()));

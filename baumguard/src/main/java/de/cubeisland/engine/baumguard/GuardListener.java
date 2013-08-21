@@ -26,6 +26,7 @@ import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.BlockState;
 import org.bukkit.block.DoubleChest;
+import org.bukkit.block.Hopper;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
@@ -38,6 +39,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockBurnEvent;
+import org.bukkit.event.block.BlockFromToEvent;
 import org.bukkit.event.block.BlockPistonExtendEvent;
 import org.bukkit.event.block.BlockPistonRetractEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
@@ -46,10 +48,12 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
+import org.bukkit.event.inventory.InventoryMoveItemEvent;
 import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.vehicle.VehicleDestroyEvent;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -63,7 +67,7 @@ import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.util.BlockUtil;
 import de.cubeisland.engine.core.util.ChatFormat;
 
-import static de.cubeisland.engine.baumguard.storage.ProtectionFlags.REDSTONE;
+import static de.cubeisland.engine.baumguard.storage.ProtectionFlags.*;
 
 public class GuardListener implements Listener
 {
@@ -152,37 +156,51 @@ public class GuardListener implements Listener
     public void onInventoryOpen(InventoryOpenEvent event)
     {
         if (!(event.getPlayer() instanceof Player)) return;
-        Guard guard;
-        InventoryHolder holder = event.getInventory().getHolder();
-        Location holderLoc;
-        if (holder instanceof Entity)
-        {
-            guard = this.manager.getGuardForEntityUID(((Entity)holder).getUniqueId());
-            holderLoc = ((Entity)holder).getLocation();
-        }
-        else
-        {
-            Location location;
-            if (holder instanceof BlockState)
-            {
-                location = ((BlockState)holder).getLocation();
-                holderLoc = ((BlockState)holder).getLocation();
-            }
-            else if (holder instanceof DoubleChest)
-            {
-                location = ((BlockState)((DoubleChest)holder).getRightSide()).getLocation();
-                holderLoc = ((DoubleChest)holder).getLocation();
-            }
-            else return;
-            guard = this.manager.getGuardAtLocation(location);
-        }
+        Location holderLoc = new Location(null, 0,0,0);
+        Guard guard = this.getGuardOfInventory(event.getInventory(), holderLoc);
         if (guard != null)
         {
             User user = this.module.getCore().getUserManager().getExactUser(event.getPlayer().getName());
             if (this.handleAccess(guard, user, holderLoc, event)) return;
             guard.handleInventoryOpen(event, event.getInventory(), user);
         }
+    }
 
+    /**
+     * Returns the guard for given inventory it exists, also sets the location to the holders location if not null
+     *
+     * @param inventory
+     * @param holderLoc a location object to hold the GuardLocation
+     * @return the guard for given inventory
+     */
+    public Guard getGuardOfInventory(Inventory inventory, Location holderLoc)
+    {
+        InventoryHolder holder = inventory.getHolder();
+        Guard guard;
+        if (holderLoc == null)
+        {
+            holderLoc = new Location(null, 0, 0, 0);
+        }
+        if (holder instanceof Entity)
+        {
+            guard = this.manager.getGuardForEntityUID(((Entity)holder).getUniqueId());
+            ((Entity)holder).getLocation(holderLoc);
+        }
+        else
+        {
+            Location guardLoc;
+            if (holder instanceof BlockState)
+            {
+                guardLoc = ((BlockState)holder).getLocation(holderLoc);
+            }
+            else if (holder instanceof DoubleChest)
+            {
+                guardLoc = ((BlockState)((DoubleChest)holder).getRightSide()).getLocation(holderLoc);
+            }
+            else return null;
+            guard = this.manager.getGuardAtLocation(guardLoc);
+        }
+        return guard;
     }
 
     private boolean checkForUnlocked(Guard guard, User user)
@@ -269,6 +287,9 @@ public class GuardListener implements Listener
             if (this.checkForUnlocked(guard, user)) return;
             guard.handleEntityDamage(event, user);
         }
+        // TODO if TNT set of by player same as above
+        // TODO else see config
+
     }
 
     @EventHandler(ignoreCancelled = true)
@@ -300,7 +321,7 @@ public class GuardListener implements Listener
         {
             user = this.module.getCore().getUserManager().getExactUser(((Player)((EntityDamageByEntityEvent)lastDamage).getDamager()).getName());
         }
-        guard.handleEntityDestroy(user);
+        guard.handleEntityDeletion(user);
     }
 
     @EventHandler(ignoreCancelled = true)
@@ -317,7 +338,7 @@ public class GuardListener implements Listener
         User user = this.module.getCore().getUserManager().getExactUser(((Player)event.getAttacker()).getName());
         if (guard.isOwner(user))
         {
-            guard.handleEntityDestroy(user);
+            guard.handleEntityDeletion(user);
             return;
         }
         event.setCancelled(true);
@@ -403,7 +424,7 @@ public class GuardListener implements Listener
         Guard guard = this.manager.getGuardAtLocation(block.getLocation());
         if (guard != null)
         {
-            if (guard.hasFlag(REDSTONE))
+            if (guard.hasFlag(BLOCK_REDSTONE))
             {
                 event.setNewCurrent(0);
             }
@@ -497,5 +518,39 @@ public class GuardListener implements Listener
         }
     }
 
-    // TODO protect against water & lava-flow
+    @EventHandler(ignoreCancelled = true)
+    public void onHopperItemMove(InventoryMoveItemEvent event)
+    {
+        Inventory inventory = event.getSource();
+        Guard guard = this.getGuardOfInventory(inventory, null);
+        if (guard != null)
+        {
+            InventoryHolder dest = event.getDestination().getHolder();
+            if ((dest instanceof Hopper && guard.hasFlag(BLOCK_HOPPER_OUT))
+             || (dest instanceof HopperMinecart && guard.hasFlag(BLOCK_HOPPER_MINECART_OUT)))
+            {
+                event.setCancelled(true);
+            }
+        }
+        if (event.isCancelled()) return;
+        inventory = event.getDestination();
+        guard = this.getGuardOfInventory(inventory, null);
+        if (guard != null && guard.hasFlag(BLOCK_HOPPER_ANY_IN))
+        {
+            event.setCancelled(true);
+        }
+    }
+
+    @EventHandler(ignoreCancelled = true)
+    public void onWaterLavaFlow(BlockFromToEvent event)
+    {
+        if (BlockUtil.isNonFluidProofBlock(event.getToBlock().getType()))
+        {
+            Guard guard = this.manager.getGuardAtLocation(event.getToBlock().getLocation());
+            if (guard != null)
+            {
+                event.setCancelled(true);
+            }
+        }
+    }
 }
