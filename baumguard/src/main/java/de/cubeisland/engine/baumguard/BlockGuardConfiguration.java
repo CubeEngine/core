@@ -34,6 +34,7 @@ import de.cubeisland.engine.core.config.node.NullNode;
 import de.cubeisland.engine.core.config.node.StringNode;
 import de.cubeisland.engine.core.util.convert.ConversionException;
 import de.cubeisland.engine.core.util.convert.Converter;
+import de.cubeisland.engine.core.util.matcher.Match;
 
 /**
  * Example:
@@ -109,8 +110,26 @@ public class BlockGuardConfiguration
 
         private BlockGuardConfiguration fromString(String s) throws ConversionException
         {
-            Material material = Material.getMaterial(s);
-            // TODO from id
+            Material material;
+            try
+            {
+                material = Material.valueOf(s);
+            }
+            catch (IllegalArgumentException ignore)
+            {
+                try
+                {
+                    material = Material.getMaterial(Integer.valueOf(s));
+                }
+                catch (NumberFormatException ignoreToo)
+                {
+                    material = Match.material().material(s);
+                }
+            }
+            if (material == null)
+            {
+                throw new ConversionException(s + " is not a valid BlockType!");
+            }
             return new BlockGuardConfiguration(material);
         }
 

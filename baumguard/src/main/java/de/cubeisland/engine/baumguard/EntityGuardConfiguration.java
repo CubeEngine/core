@@ -19,6 +19,7 @@ package de.cubeisland.engine.baumguard;
 
 import java.util.Map.Entry;
 
+import org.bukkit.Material;
 import org.bukkit.entity.EntityType;
 
 import de.cubeisland.engine.baumguard.storage.ProtectedType;
@@ -29,6 +30,7 @@ import de.cubeisland.engine.core.config.node.NullNode;
 import de.cubeisland.engine.core.config.node.StringNode;
 import de.cubeisland.engine.core.util.convert.ConversionException;
 import de.cubeisland.engine.core.util.convert.Converter;
+import de.cubeisland.engine.core.util.matcher.Match;
 
 public class EntityGuardConfiguration
 {
@@ -73,8 +75,26 @@ public class EntityGuardConfiguration
 
         private EntityGuardConfiguration fromString(String s) throws ConversionException
         {
-            EntityType entityType = EntityType.valueOf(s);
-            // TODO from id
+            EntityType entityType;
+            try
+            {
+                entityType = EntityType.valueOf(s);
+            }
+            catch (IllegalArgumentException ignore)
+            {
+                try
+                {
+                    entityType = EntityType.fromId(Integer.valueOf(s));
+                }
+                catch (NumberFormatException ignoreToo)
+                {
+                    entityType = Match.entity().any(s);
+                }
+            }
+            if (entityType == null)
+            {
+                throw new ConversionException(s + " is not a valid EntityType!");
+            }
             return new EntityGuardConfiguration(entityType);
         }
 

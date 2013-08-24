@@ -107,10 +107,10 @@ public class GuardCommands extends ContainerCommand
 
     public void cGive(ParameterizedContext context)
     {
-
+        // TODO
     }
 
-    // TODO master
+    // TODO masterKeys / multiKeys
 
     @Alias(names = "ckey")
     @Command(names = "key",
