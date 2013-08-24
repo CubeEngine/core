@@ -22,7 +22,7 @@ package de.cubeisland.engine.core.config.node;
  */
 public abstract class Node
 {
-
+    // TODO override toString()
     private ParentNode parentNode;
 
     public ParentNode getParentNode()

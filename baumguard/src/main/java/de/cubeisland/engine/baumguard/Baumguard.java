@@ -17,6 +17,8 @@
  */
 package de.cubeisland.engine.baumguard;
 
+import de.cubeisland.engine.baumguard.BlockGuardConfiguration.BlockGuardConfigConverter;
+import de.cubeisland.engine.baumguard.EntityGuardConfiguration.EntityGuardConfigConverter;
 import de.cubeisland.engine.baumguard.commands.GuardCommands;
 import de.cubeisland.engine.baumguard.commands.GuardCreateCommands;
 import de.cubeisland.engine.baumguard.storage.GuardManager;
@@ -27,22 +29,15 @@ import de.cubeisland.engine.core.config.Configuration;
 import de.cubeisland.engine.core.module.Module;
 import de.cubeisland.engine.core.util.convert.Convert;
 
-import static de.cubeisland.engine.baumguard.DefaultGuardConfiguration.DefaultGuardConfigConverter;
-
 public class Baumguard extends Module
 {
     private GuardConfig config;
 
-    static
-    {
-
-    }
-
-
     @Override
     public void onEnable()
     {
-        Convert.registerConverter(DefaultGuardConfiguration.class, new DefaultGuardConfigConverter());
+        Convert.registerConverter(BlockGuardConfiguration.class, new BlockGuardConfigConverter());
+        Convert.registerConverter(EntityGuardConfiguration.class, new EntityGuardConfigConverter());
         this.config = Configuration.load(GuardConfig.class, this);
         new GuardPerm(this);
         this.getCore().getDB().registerTable(TableGuards.initTable(this.getCore().getDB()));
@@ -54,6 +49,11 @@ public class Baumguard extends Module
         GuardCreateCommands createCmds = new GuardCreateCommands(this, manager);
         this.getCore().getCommandManager().registerCommand(createCmds, "bguard");
         new de.cubeisland.engine.baumguard.GuardListener(this, manager);
+    }
+
+    public GuardConfig getConfig()
+    {
+        return this.config;
     }
 
     /*
@@ -98,3 +98,4 @@ public class Baumguard extends Module
 mass protect e.g. railtracks
      */
 }
+

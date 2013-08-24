@@ -50,6 +50,8 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.material.Door;
 
 import de.cubeisland.engine.baumguard.Baumguard;
+import de.cubeisland.engine.baumguard.BlockGuardConfiguration;
+import de.cubeisland.engine.baumguard.EntityGuardConfiguration;
 import de.cubeisland.engine.baumguard.commands.CommandListener;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.user.UserManager;
@@ -480,12 +482,26 @@ public class GuardManager implements Listener
 
     public boolean canProtect(Material type)
     {
-        return true; // TODO config can protect?
+        for (BlockGuardConfiguration blockprotection : this.module.getConfig().blockprotections)
+        {
+            if (blockprotection.isType(type))
+            {
+                return true;
+            }
+        }
+        return false;
     }
 
     public boolean canProtect(EntityType type)
     {
-        return true;// TODO config can protect?
+        for (EntityGuardConfiguration entityProtection : this.module.getConfig().entityProtections)
+        {
+            if (entityProtection.isType(type))
+            {
+                return true;
+            }
+        }
+        return false;
     }
 
     public void modifyGuard(Guard guard, User user, String usersString, Boolean adminAccess)

@@ -120,7 +120,7 @@ public class ListNode extends ParentNode
         }
         else
         {
-            throw new IllegalArgumentException("Cannot get Node! ListPath has to start with [!");
+            throw new IllegalArgumentException("Cannot get Node! ListPath has to start with [! | " + key);
         }
     }
 

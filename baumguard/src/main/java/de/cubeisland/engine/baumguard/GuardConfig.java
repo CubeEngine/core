@@ -25,6 +25,7 @@ import org.bukkit.Material;
 import org.bukkit.entity.EntityType;
 
 import de.cubeisland.engine.core.config.YamlConfiguration;
+import de.cubeisland.engine.core.config.annotations.Comment;
 import de.cubeisland.engine.core.config.annotations.Option;
 
 import static de.cubeisland.engine.baumguard.storage.GuardType.PRIVATE;
@@ -37,9 +38,20 @@ public class GuardConfig extends YamlConfiguration
     public boolean openIronDoorWithClick = false;
 
     public boolean protectEntityFromEnvironementalDamage = false;
-    // List of DefaultGuardConfigs
-    @Option("protections")
-    public List<DefaultGuardConfiguration> protections;
+
+    @Comment("A List of all blocks that can be protected with Baumguard\n" +
+                 "use the auto-protect option to automatically create a protection when placing the block\n" +
+                 "additionally you can set default flags which will also be automatically applied")
+    @Option("protections.blocks")
+    public List<BlockGuardConfiguration> blockprotections;
+
+    @Comment("Set this to false if you wish to disable EntityProtection completely")
+    @Option("protections.entities-enable")
+    public boolean protEntityEnable = true;
+
+    @Comment("A list of all entities that can be protected with Baumguard")
+    @Option("protections.entities")
+    public List<EntityGuardConfiguration> entityProtections;
 
     // TODO allow keybooks
     // TODO allow masterkeyBooks
@@ -51,20 +63,24 @@ public class GuardConfig extends YamlConfiguration
     @Override
     public void onLoaded(Path loadFrom)
     {
-        if (protections == null || protections.isEmpty())
+        if (blockprotections == null || blockprotections.isEmpty())
         {
-            protections = new ArrayList<>();
-            protections.add(new DefaultGuardConfiguration(Material.CHEST).autoProtect(PRIVATE));
-            protections.add(new DefaultGuardConfiguration(Material.TRAPPED_CHEST).autoProtect(PRIVATE));
-            protections.add(new DefaultGuardConfiguration(Material.FURNACE));
-            protections.add(new DefaultGuardConfiguration(Material.DISPENSER));
-            protections.add(new DefaultGuardConfiguration(Material.SIGN_POST));
-            protections.add(new DefaultGuardConfiguration(Material.WALL_SIGN));
-            protections.add(new DefaultGuardConfiguration(Material.WOODEN_DOOR));
-            protections.add(new DefaultGuardConfiguration(Material.IRON_DOOR_BLOCK));
-            protections.add(new DefaultGuardConfiguration(Material.TRAP_DOOR));
-            protections.add(new DefaultGuardConfiguration(Material.FENCE_GATE));
-            protections.add(new DefaultGuardConfiguration(EntityType.HORSE));
+            blockprotections = new ArrayList<>();
+            blockprotections.add(new BlockGuardConfiguration(Material.CHEST).autoProtect(PRIVATE));
+            blockprotections.add(new BlockGuardConfiguration(Material.TRAPPED_CHEST).autoProtect(PRIVATE));
+            blockprotections.add(new BlockGuardConfiguration(Material.FURNACE));
+            blockprotections.add(new BlockGuardConfiguration(Material.DISPENSER));
+            blockprotections.add(new BlockGuardConfiguration(Material.SIGN_POST));
+            blockprotections.add(new BlockGuardConfiguration(Material.WALL_SIGN));
+            blockprotections.add(new BlockGuardConfiguration(Material.WOODEN_DOOR));
+            blockprotections.add(new BlockGuardConfiguration(Material.IRON_DOOR_BLOCK));
+            blockprotections.add(new BlockGuardConfiguration(Material.TRAP_DOOR));
+            blockprotections.add(new BlockGuardConfiguration(Material.FENCE_GATE));
+        }
+        if (protEntityEnable && (entityProtections == null || entityProtections.isEmpty()))
+        {
+            entityProtections = new ArrayList<>();
+            entityProtections.add(new EntityGuardConfiguration(EntityType.HORSE));
         }
     }
 }

@@ -29,7 +29,6 @@ import gnu.trove.map.hash.THashMap;
 
 public class MapNode extends ParentNode
 {
-
     private LinkedHashMap<String, Node> mappedNodes = new LinkedHashMap<>();
     private THashMap<String, String> keys = new THashMap<>(); // LowerCase trimmed -> Original
     private LinkedHashMap<Node, String> reverseMappedNodes = new LinkedHashMap<>();

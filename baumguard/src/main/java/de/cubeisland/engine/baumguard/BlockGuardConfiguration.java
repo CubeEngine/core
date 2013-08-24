@@ -22,7 +22,6 @@ import java.util.List;
 import java.util.Map.Entry;
 
 import org.bukkit.Material;
-import org.bukkit.entity.EntityType;
 
 import de.cubeisland.engine.baumguard.storage.GuardType;
 import de.cubeisland.engine.baumguard.storage.ProtectedType;
@@ -44,56 +43,42 @@ import de.cubeisland.engine.core.util.convert.Converter;
  *      - BLOCK_REDSTONE
  *      - AUTOCLOSE
  */
-public class DefaultGuardConfiguration
+public class BlockGuardConfiguration
 {
     protected final ProtectedType protectedType;
     protected boolean autoProtect = false;
     protected GuardType autoProtectType = GuardType.PRIVATE; // defaults to private
     protected List<ProtectionFlags> defaultFlags; // TODO validate if possible
     private final Material material;
-    private final EntityType entityType;
     private boolean enable = true;
 
-    private DefaultGuardConfiguration(ProtectedType protectedType, Material material, EntityType entityType)
+    public BlockGuardConfiguration(Material material)
     {
-        this.protectedType = protectedType;
+        this.protectedType = ProtectedType.getProtectedType(material);
         this.material = material;
-        this.entityType = entityType;
-    }
-
-    public DefaultGuardConfiguration(Material material)
-    {
-        this(ProtectedType.getProtectedType(material), material, null);
-    }
-
-    public DefaultGuardConfiguration(EntityType entityType)
-    {
-        this(ProtectedType.getProtectedType(entityType), null, entityType);
     }
 
     public String getTitle()
     {
-        if (material == null)
-        {
-            return "E_" + entityType.name();
-        }
-        else
-        {
-            return "B_" + material.name();
-        }
+        return material.name();
     }
 
-    public DefaultGuardConfiguration autoProtect(GuardType type)
+    public BlockGuardConfiguration autoProtect(GuardType type)
     {
         this.autoProtectType = type;
         this.autoProtect = type != null;
         return this;
     }
 
-    public static class DefaultGuardConfigConverter implements Converter<DefaultGuardConfiguration>
+    public boolean isType(Material type)
+    {
+        return this.material.equals(type);
+    }
+
+    public static class BlockGuardConfigConverter implements Converter<BlockGuardConfiguration>
     {
         @Override
-        public Node toNode(DefaultGuardConfiguration object) throws ConversionException
+        public Node toNode(BlockGuardConfiguration object) throws ConversionException
         {
             MapNode root = MapNode.emptyMap();
             MapNode config = MapNode.emptyMap();
@@ -122,30 +107,18 @@ public class DefaultGuardConfiguration
             return root;
         }
 
-        private DefaultGuardConfiguration fromString(String s) throws ConversionException
+        private BlockGuardConfiguration fromString(String s) throws ConversionException
         {
-            if (s.startsWith("B_"))
-            {
-                s = s.substring(2);
-                Material material = Material.getMaterial(s);
-                // TODO from id
-                return new DefaultGuardConfiguration(material);
-            }
-            else if (s.startsWith("E_"))
-            {
-                s = s.substring(2);
-                EntityType entityType = EntityType.valueOf(s);
-                // TODO from id
-                return new DefaultGuardConfiguration(entityType);
-            }
-            else throw new ConversionException("Illegal GuardType! BlockTypes must start with \"B_\" and EntityTypes with \"E_\"!");
+            Material material = Material.getMaterial(s);
+            // TODO from id
+            return new BlockGuardConfiguration(material);
         }
 
         @Override
-        public DefaultGuardConfiguration fromNode(Node node) throws ConversionException
+        public BlockGuardConfiguration fromNode(Node node) throws ConversionException
         {
             if (node instanceof NullNode) return null;
-            DefaultGuardConfiguration configuration;
+            BlockGuardConfiguration configuration;
             if (node instanceof StringNode)
             {
                 configuration = fromString(node.unwrap());

@@ -263,7 +263,7 @@ public class CommandListener implements Listener
                 {
                     this.cmdUsed(user);
                     user.sendTranslated("&cYou cannot protect this!");
-                    return; // do nothing block is not protectable
+                    return; // do nothing entity is not protectable
                 }
             }
         }
