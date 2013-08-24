@@ -5,8 +5,16 @@ EXPERIENCE_ORB:
     XPOrb
     exp
 #Immobile
+LEASH_HITCH:
+    leashknot
+    leashhitch
+    leash
+    lead
 PAINTING:
     Painting
+ITEM_FRAME:
+        ItemFrame
+        frame
 #Projectiles
 ARROW:
     Arrow
@@ -14,17 +22,16 @@ SNOWBALL:
     Snowball
 FIREBALL:
     Fireball
+    ghastfireball
 SMALL_FIREBALL:
     SmallFireball
+    blazefireball
 ENDER_PEARL:
     ThrownEnderpearl
 ENDER_SIGNAL:
     EyeOfEnderSignal
 THROWN_EXP_BOTTLE:
     ThrownExpBottle
-ITEM_FRAME:
-    ItemFrame
-    frame
 WITHER_SKULL:
     WitherSkull
 #Blocks
