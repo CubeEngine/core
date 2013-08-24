@@ -18,7 +18,10 @@
 package de.cubeisland.engine.baumguard.storage;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -298,10 +301,21 @@ public class Guard
         return this.model.getPassword().length > 4;
     }
 
+    private Map<String, Long> lastKeyNotify;
+
     public void notifyKeyUsage(User user)
     {
+        if (lastKeyNotify == null)
+        {
+            this.lastKeyNotify = new HashMap<>();
+        }
         User owner = this.manager.um.getUser(this.model.getOwnerId().longValue());
-        owner.sendTranslated("&2%s&e just used a KeyBook one of your protections!", user.getName()); // TODO do not spam
+        Long last = this.lastKeyNotify.get(owner.getName());
+        if (last == null || TimeUnit.MILLISECONDS.toSeconds(System.currentTimeMillis() - last) > 60) // 60 sec config ?
+        {
+            this.lastKeyNotify.put(owner.getName(), System.currentTimeMillis());
+            owner.sendTranslated("&2%s&e used a KeyBook to access one of your protections!", user.getName());
+        }
     }
 
     public User getOwner()
