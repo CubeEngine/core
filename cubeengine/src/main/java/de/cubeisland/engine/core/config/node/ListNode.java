@@ -200,4 +200,16 @@ public class ListNode extends ParentNode
         }
         return path;
     }
+
+    @Override
+    public String toString()
+    {
+        StringBuilder sb = new StringBuilder("ListNode=[");
+        for (Node listedNode : this.listedNodes)
+        {
+            sb.append("\n- ").append(listedNode.toString());
+        }
+        sb.append("]ListEnd");
+        return sb.toString();
+    }
 }

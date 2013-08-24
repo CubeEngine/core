@@ -47,4 +47,10 @@ public class BooleanNode extends Node
     {
         return new BooleanNode(true);
     }
+
+    @Override
+    public String toString()
+    {
+        return "BooleanNode=["+bool+"]";
+    }
 }

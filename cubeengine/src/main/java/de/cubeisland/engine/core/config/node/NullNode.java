@@ -32,4 +32,10 @@ public class NullNode extends Node
     {
         return "";
     }
+
+    @Override
+    public String toString()
+    {
+        return "NullNode";
+    }
 }
