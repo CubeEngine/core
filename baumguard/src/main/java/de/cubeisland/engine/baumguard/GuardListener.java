@@ -48,6 +48,9 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
+import org.bukkit.event.hanging.HangingBreakByEntityEvent;
+import org.bukkit.event.hanging.HangingBreakEvent;
+import org.bukkit.event.hanging.HangingBreakEvent.RemoveCause;
 import org.bukkit.event.inventory.InventoryMoveItemEvent;
 import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
@@ -547,10 +550,31 @@ public class GuardListener implements Listener
         if (BlockUtil.isNonFluidProofBlock(event.getToBlock().getType()))
         {
             Guard guard = this.manager.getGuardAtLocation(event.getToBlock().getLocation());
+            // TODO flag for waterproof ? default in config for all types of protection
             if (guard != null)
             {
                 event.setCancelled(true);
             }
         }
+    }
+
+    @EventHandler(ignoreCancelled = true)
+    public void onHangingBreak(HangingBreakEvent event) // leash / itemframe / image
+    {
+        Guard guard = this.manager.getGuardForEntityUID(event.getEntity().getUniqueId());
+        if (guard == null) return;
+        if (event.getCause().equals(RemoveCause.ENTITY) && event instanceof HangingBreakByEntityEvent)
+        {
+            if (((HangingBreakByEntityEvent)event).getRemover() instanceof Player)
+            {
+                User user = this.module.getCore().getUserManager().getExactUser(((Player)((HangingBreakByEntityEvent)event).getRemover()).getName());
+                if (guard.isOwner(user))
+                {// TODO perm
+                    guard.delete(user);
+                    return;
+                }
+            }
+        }
+        event.setCancelled(true);
     }
 }
