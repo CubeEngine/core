@@ -40,7 +40,7 @@ public class TableKitsGiven extends TableImpl<KitsGiven> implements TableCreator
 
     private TableKitsGiven(String prefix)
     {
-        super(prefix + "accounts");
+        super(prefix + "kits");
         PRIMARY_KEY = Keys.uniqueKey(this, this.USERID, this.KITNAME);
         FOREIGN_USER = Keys.foreignKey(TABLE_USER.PRIMARY_KEY, this, this.USERID);
     }
