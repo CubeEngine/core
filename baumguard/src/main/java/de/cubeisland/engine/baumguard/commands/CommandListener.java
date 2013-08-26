@@ -23,6 +23,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.bukkit.Location;
+import org.bukkit.entity.HumanEntity;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
@@ -103,8 +104,8 @@ public class CommandListener implements Listener
         {
             User user = this.module.getCore().getUserManager().getExactUser(event.getPlayer().getName());
             Location location = event.getClickedBlock().getLocation();
-            Guard guard = this.manager.getGuardAtLocation(location);
             Triplet<CommandType, String, Boolean> triplet = map.get(user.getName());
+            Guard guard = this.manager.getGuardAtLocation(location, !triplet.getFirst().equals(INFO));
             if (triplet.getFirst().isCreator())
             {
                 if (guard != null)
@@ -168,21 +169,12 @@ public class CommandListener implements Listener
                 this.manager.modifyGuard(guard, user, triplet.getSecond(), triplet.getThird());
                 break;
             case REMOVE:
-                if (!guard.isOwner(user))
-                {
-                    // TODO perm
-                    user.sendTranslated("&cThis protection is not yours!");
-                }
-                else
-                {
-                    this.manager.removeGuard(guard);
-                }
+                this.manager.removeGuard(guard, user, false);
                 break;
             case UNLOCK:
                 guard.unlock(user, location, triplet.getSecond());
                 break;
             case INVALIDATE_KEYS:
-                // TODO close opened inventories
                 if (!guard.isOwner(user))
                 {
                     user.sendTranslated("&cThis is not your protection!");
@@ -194,6 +186,13 @@ public class CommandListener implements Listener
                 else
                 {
                     this.manager.invalidateKeyBooks(guard);
+                    if (event.getClickedBlock().getState() instanceof InventoryHolder)
+                    {
+                        for (HumanEntity viewer : ((InventoryHolder)event.getClickedBlock().getState()).getInventory().getViewers())
+                        {
+                            viewer.closeInventory();
+                        }
+                    }
                 }
                 break;
             case KEYS:
@@ -233,13 +232,13 @@ public class CommandListener implements Listener
         if (!map.keySet().contains(event.getPlayer().getName())) return;
         User user = this.module.getCore().getUserManager().getExactUser(event.getPlayer().getName());
         Location location = event.getRightClicked().getLocation();
-        Guard guard = this.manager.getGuardForEntityUID(event.getRightClicked().getUniqueId());
         Triplet<CommandType, String, Boolean> triplet = map.get(user.getName());
+        Guard guard = this.manager.getGuardForEntityUID(event.getRightClicked().getUniqueId(), !triplet.getFirst().equals(INFO));
         if (triplet.getFirst().isCreator())
         {
             if (guard != null)
             {
-                user.sendTranslated("&eThis block is already protected!");
+                user.sendTranslated("&eThis entity is already protected!");
                 this.cmdUsed(user);
                 event.setCancelled(true);
                 return;
@@ -298,19 +297,13 @@ public class CommandListener implements Listener
             this.manager.modifyGuard(guard, user, triplet.getSecond(), triplet.getThird());
             break;
         case REMOVE:
-            if (!guard.isOwner(user))
-            {
-                // TODO perm
-                user.sendTranslated("&cThis protection is not yours!");
-                this.cmdUsed(user);
-                return;
-            }
-            this.manager.removeGuard(guard);
+            this.manager.removeGuard(guard, user, false);
             break;
         case UNLOCK:
             guard.unlock(user, location, triplet.getSecond());
             break;
         case INVALIDATE_KEYS:
+
             if (!guard.isOwner(user))
             {
                 user.sendTranslated("&cThis is not your protection!");
@@ -322,6 +315,13 @@ public class CommandListener implements Listener
             else
             {
                 this.manager.invalidateKeyBooks(guard);
+                if (event.getRightClicked() instanceof InventoryHolder)
+                {
+                    for (HumanEntity viewer : ((InventoryHolder)event.getRightClicked()).getInventory().getViewers())
+                    {
+                        viewer.closeInventory();
+                    }
+                }
             }
             break;
         case KEYS:

@@ -29,7 +29,10 @@ import org.bukkit.block.DoubleChest;
 import org.bukkit.block.Hopper;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.Projectile;
+import org.bukkit.entity.TNTPrimed;
 import org.bukkit.entity.minecart.HopperMinecart;
 import org.bukkit.entity.minecart.StorageMinecart;
 import org.bukkit.event.Cancellable;
@@ -139,10 +142,15 @@ public class GuardListener implements Listener
     public void onPlayerInteractEntity(PlayerInteractEntityEvent event)
     {
         Entity entity = event.getRightClicked();
-        // TODO check for deny flag
+        User user = this.module.getCore().getUserManager().getExactUser(event.getPlayer().getName());
+        if (GuardPerm.DENY_ENTITY.isAuthorized(user))
+        {
+            user.sendTranslated("&cStrong magic prevents you from reaching this Entity!");
+            event.setCancelled(true);
+            return;
+        }
         Guard guard = this.manager.getGuardForEntityUID(entity.getUniqueId());
         if (guard == null) return;
-        User user = this.module.getCore().getUserManager().getExactUser(event.getPlayer().getName());
         if (this.handleAccess(guard, user, null, event)) return;
         if (entity instanceof StorageMinecart || entity instanceof HopperMinecart
             || (entity.getType().equals(EntityType.HORSE) && entity instanceof InventoryHolder && event.getPlayer().isSneaking()))
@@ -277,22 +285,42 @@ public class GuardListener implements Listener
         return false;
     }
 
-    public void onPlayerDamageEntity(EntityDamageByEntityEvent event)
+    public void onEntityDamageEntity(EntityDamageByEntityEvent event)
     {
-        // TODO
+        Entity entity = event.getEntity();
+        Guard guard = this.manager.getGuardForEntityUID(entity.getUniqueId());
+        if (guard == null) return;
         if (event.getDamager() instanceof Player)
         {
-            Entity entity = event.getEntity();
-            Guard guard = this.manager.getGuardForEntityUID(entity.getUniqueId());
-            if (guard == null) return;
             User user = this.module.getCore().getUserManager().getExactUser(((Player)event.getDamager()).getName());
-            if (guard.isOwner(user)) return;
-            if (this.checkForUnlocked(guard, user)) return;
             guard.handleEntityDamage(event, user);
+            return;
         }
-        // TODO if TNT set of by player same as above
-        // TODO else see config
-
+        else if (event.getDamager() instanceof TNTPrimed)
+        {
+            Entity source = ((TNTPrimed)event.getDamager()).getSource();
+            if (source != null && source instanceof Player)
+            {
+                User user = this.module.getCore().getUserManager().getExactUser(((Player)source).getPlayer().getName());
+                guard.handleEntityDamage(event, user);
+                return;
+            }
+        }
+        else if (event.getDamager() instanceof Projectile)
+        {
+            LivingEntity shooter = ((Projectile)event.getDamager()).getShooter();
+            if (shooter != null && shooter instanceof Player)
+            {
+                User user = this.module.getCore().getUserManager().getExactUser(((Player)shooter).getName());
+                guard.handleEntityDamage(event, user);
+                return;
+            }
+        }
+        // else other source
+        if (module.getConfig().protectEntityFromEnvironementalDamage)
+        {
+            event.setCancelled(true);
+        }
     }
 
     @EventHandler(ignoreCancelled = true)
@@ -300,15 +328,14 @@ public class GuardListener implements Listener
     {
         if (event instanceof EntityDamageByEntityEvent)
         {
-            this.onPlayerDamageEntity((EntityDamageByEntityEvent)event);
+            this.onEntityDamageEntity((EntityDamageByEntityEvent)event);
         }
-        else
+        else if (module.getConfig().protectEntityFromEnvironementalDamage)
         {
             Entity entity = event.getEntity();
             Guard guard = this.manager.getGuardForEntityUID(entity.getUniqueId());
             if (guard == null) return;
             event.setCancelled(true);
-            // TODO config
         }
     }
 
@@ -334,8 +361,10 @@ public class GuardListener implements Listener
         if (guard == null) return;
         if (event.getAttacker() == null)
         {
-            // TODO configure if lava can destroy or else
-            event.setCancelled(true);
+            if (module.getConfig().protectVehicleFromEnvironmental)
+            {
+                event.setCancelled(true);
+            }
             return;
         }
         User user = this.module.getCore().getUserManager().getExactUser(((Player)event.getAttacker()).getName());
@@ -547,10 +576,9 @@ public class GuardListener implements Listener
     @EventHandler(ignoreCancelled = true)
     public void onWaterLavaFlow(BlockFromToEvent event)
     {
-        if (BlockUtil.isNonFluidProofBlock(event.getToBlock().getType()))
+        if (this.module.getConfig().protectBlocksFromWaterLava && BlockUtil.isNonFluidProofBlock(event.getToBlock().getType()))
         {
             Guard guard = this.manager.getGuardAtLocation(event.getToBlock().getLocation());
-            // TODO flag for waterproof ? default in config for all types of protection
             if (guard != null)
             {
                 event.setCancelled(true);
@@ -561,15 +589,20 @@ public class GuardListener implements Listener
     @EventHandler(ignoreCancelled = true)
     public void onHangingBreak(HangingBreakEvent event) // leash / itemframe / image
     {
-        Guard guard = this.manager.getGuardForEntityUID(event.getEntity().getUniqueId());
-        if (guard == null) return;
         if (event.getCause().equals(RemoveCause.ENTITY) && event instanceof HangingBreakByEntityEvent)
         {
             if (((HangingBreakByEntityEvent)event).getRemover() instanceof Player)
             {
+                Guard guard = this.manager.getGuardForEntityUID(event.getEntity().getUniqueId());
                 User user = this.module.getCore().getUserManager().getExactUser(((Player)((HangingBreakByEntityEvent)event).getRemover()).getName());
+                if (GuardPerm.DENY_HANGING.isAuthorized(user))
+                {
+                    event.setCancelled(true);
+                    return;
+                }
+                if (guard == null) return;
                 if (guard.isOwner(user))
-                {// TODO perm
+                {
                     guard.delete(user);
                     return;
                 }
@@ -577,4 +610,7 @@ public class GuardListener implements Listener
         }
         event.setCancelled(true);
     }
+
+    // TODO auto-protect
+    // TODO expand protections for hangings/attachables
 }

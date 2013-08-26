@@ -51,6 +51,12 @@ public class Baumguard extends Module
         new de.cubeisland.engine.baumguard.GuardListener(this, manager);
     }
 
+    @Override
+    public void onDisable()
+    {
+        // TODO save all loaded guardmodels!
+    }
+
     public GuardConfig getConfig()
     {
         return this.config;

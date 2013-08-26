@@ -35,9 +35,31 @@ public class GuardConfig extends YamlConfiguration
     //@Option()
     //public int
 
+    @Option("settings.open-iron-door-with-click")
     public boolean openIronDoorWithClick = false;
 
-    public boolean protectEntityFromEnvironementalDamage = false;
+    @Comment("If set to true protected living entities will receive no damage from environment in addition to damage done by players")
+    @Option("settings.protect.living-from-environment")
+    public boolean protectEntityFromEnvironementalDamage = true;
+
+    @Comment("If set to true protected vehicles will not break when receiving damage from environment in addition to the player-protection")
+    @Option("settings.protect.vehicle-from-environment")
+    public boolean protectVehicleFromEnvironmental = true;
+
+    @Option("settings.protect.blocks-from-water-and-lava")
+    public boolean protectBlocksFromWaterLava = true;
+
+    @Comment("If set to true protected doors will auto-close after the configured time")
+    @Option("settings.auto-close.enable")
+    public boolean autoCloseEnable = true;
+
+    @Comment("Doors will auto-close after this set amount of seconds.")
+    @Option("settings.auto-close.time")
+    public int autoCloseSeconds = 3;
+
+    @Option("settings.key-books.allow-single")
+    public boolean allowKeyBooks = true;
+    // TODO allow masterKeyBooks
 
     @Comment("A List of all blocks that can be protected with Baumguard\n" +
                  "use the auto-protect option to automatically create a protection when placing the block\n" +
@@ -53,13 +75,10 @@ public class GuardConfig extends YamlConfiguration
     @Option("protections.entities")
     public List<EntityGuardConfiguration> entityProtections;
 
-    // TODO allow keybooks
-    // TODO allow masterkeyBooks
     // limit protection count#
     // TODO globally disable protection from block destruction / left/right-click / Explosion / EntityBreak/Interact etc.
     // TODO protect only when online AND OR only when offline
 
-    // TODO autoclose duration in sec
     @Override
     public void onLoaded(Path loadFrom)
     {

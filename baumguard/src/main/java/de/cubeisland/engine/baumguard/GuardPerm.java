@@ -23,10 +23,11 @@ import de.cubeisland.engine.core.permission.PermissionContainer;
 
 public class GuardPerm extends PermissionContainer<Baumguard>
 {
+
     public GuardPerm(Baumguard module)
     {
         super(module);
-        this.bindToModule(PROTECT, ADMIN);
+        this.bindToModule(PROTECT, ADMIN, BGUARD_COMMAND);
         this.prependModulePerm(DENY);
         this.registerAllPermissions();
     }
@@ -35,6 +36,13 @@ public class GuardPerm extends PermissionContainer<Baumguard>
 
     public static final Permission DENY_CONTAINER = DENY.createChild("container", PermDefault.FALSE);
     public static final Permission DENY_DOOR = DENY.createChild("door", PermDefault.FALSE);
+    public static final Permission DENY_ENTITY = DENY.createChild("entity", PermDefault.FALSE);
+    public static final Permission DENY_HANGING = DENY.createChild("hanging", PermDefault.FALSE);
+
+    private static final Permission BGUARD_COMMAND = Permission.createAbstractPermission("command").createAbstractChild("bguard");
+    public static final Permission CMD_REMOVE_OTHER = BGUARD_COMMAND.createAbstractChild("remove").createChild("other");
+    public static final Permission CMD_INFO_OTHER = BGUARD_COMMAND.createAbstractChild("info").createChild("other");
+    public static final Permission CMD_MODIFY_OTHER = BGUARD_COMMAND.createAbstractChild("modify").createChild("other");
 
     public static final Permission PROTECT = Permission.createPermission("protect"); // TODO sub perms
 

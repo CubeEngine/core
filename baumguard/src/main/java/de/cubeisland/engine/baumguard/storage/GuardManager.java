@@ -52,6 +52,7 @@ import org.bukkit.material.Door;
 import de.cubeisland.engine.baumguard.Baumguard;
 import de.cubeisland.engine.baumguard.BlockGuardConfiguration;
 import de.cubeisland.engine.baumguard.EntityGuardConfiguration;
+import de.cubeisland.engine.baumguard.GuardPerm;
 import de.cubeisland.engine.baumguard.commands.CommandListener;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.user.UserManager;
@@ -121,27 +122,37 @@ public class GuardManager implements Listener
      */
     public Guard getGuardAtLocation(Location location)
     {
+        return getGuardAtLocation(location, true);
+    }
+
+    public Guard getGuardAtLocation(Location location, boolean access)
+    {
         Guard guard = this.loadedGuards.get(location);
-        if (guard != null) guard.model.setLastAccess(new Timestamp(System.currentTimeMillis()));
+        if (access && guard != null) guard.model.setLastAccess(new Timestamp(System.currentTimeMillis()));
         return guard;
     }
 
-    public Guard getGuardForEntityUID(UUID uniqueId)
+    public Guard getGuardForEntityUID(UUID uniqueId, boolean access)
     {
         Guard guard = this.loadedEntityGuards.get(uniqueId);
         if (guard == null)
         {
             GuardModel model = this.dsl.selectFrom(TABLE_GUARD).where(TABLE_GUARD.ENTITY_UID_LEAST.eq(uniqueId.getLeastSignificantBits()),
-                                                   TABLE_GUARD.ENTITY_UID_MOST.eq(uniqueId.getMostSignificantBits())).fetchOne();
+                                                                      TABLE_GUARD.ENTITY_UID_MOST.eq(uniqueId.getMostSignificantBits())).fetchOne();
             if (model != null)
             {
                 guard = new Guard(this, model);
                 this.loadedEntityGuards.put(uniqueId, guard);
             }
         }
-        if (guard != null) guard.model.setLastAccess(new Timestamp(System.currentTimeMillis()));
+        if (access && guard != null) guard.model.setLastAccess(new Timestamp(System.currentTimeMillis()));
         return guard;
         // TODO handle unloading & garbage collection e.g. when entities got removed by WE
+    }
+
+    public Guard getGuardForEntityUID(UUID uniqueId)
+    {
+        return this.getGuardForEntityUID(uniqueId, true);
     }
 
     public void extendGuard(Guard guard, Location location)
@@ -237,8 +248,16 @@ public class GuardManager implements Listener
         }
     }
 
-    public void removeGuard(Guard guard)
+    public void removeGuard(Guard guard, User user, boolean destroyed)
     {
+        if (!destroyed)
+        {
+            if (!(guard.isOwner(user) || GuardPerm.CMD_REMOVE_OTHER.isAuthorized(user)))
+            {
+                user.sendTranslated("&cThis protection is not yours!");
+                return;
+            }
+        }
         guard.model.delete();
         if (guard.isBlockGuard())
         {
@@ -256,6 +275,7 @@ public class GuardManager implements Listener
         {
             this.loadedEntityGuards.remove(guard.model.getUUID());
         }
+        if (user != null) user.sendTranslated("&aRemoved Guard!");
     }
 
     public void invalidateKeyBooks(Guard guard)
@@ -405,6 +425,11 @@ public class GuardManager implements Listener
     public void attemptCreatingKeyBook(Guard guard, User user, Boolean third)
     {
         if (guard.getGuardType().equals(PUBLIC)) return; // ignore
+        if (!this.module.getConfig().allowKeyBooks)
+        {
+            user.sendTranslated("&aKeyBooks are not enabled!");
+            return;
+        }
         if (third)
         {
             if (user.getItemInHand().getType().equals(Material.BOOK))
@@ -507,7 +532,7 @@ public class GuardManager implements Listener
     public void modifyGuard(Guard guard, User user, String usersString, Boolean adminAccess)
     {
         // TODO separate in & out for containers
-        if (guard.isOwner(user) || guard.hasAdmin(user))
+        if (guard.isOwner(user) || guard.hasAdmin(user) || GuardPerm.CMD_MODIFY_OTHER.isAuthorized(user))
         {
             if (!guard.isPublic())
             {

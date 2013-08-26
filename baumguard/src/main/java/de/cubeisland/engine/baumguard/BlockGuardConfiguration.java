@@ -26,6 +26,7 @@ import org.bukkit.Material;
 import de.cubeisland.engine.baumguard.storage.GuardType;
 import de.cubeisland.engine.baumguard.storage.ProtectedType;
 import de.cubeisland.engine.baumguard.storage.ProtectionFlags;
+import de.cubeisland.engine.core.CubeEngine;
 import de.cubeisland.engine.core.config.node.BooleanNode;
 import de.cubeisland.engine.core.config.node.ListNode;
 import de.cubeisland.engine.core.config.node.MapNode;
@@ -49,7 +50,7 @@ public class BlockGuardConfiguration
     protected final ProtectedType protectedType;
     protected boolean autoProtect = false;
     protected GuardType autoProtectType = GuardType.PRIVATE; // defaults to private
-    protected List<ProtectionFlags> defaultFlags; // TODO validate if possible
+    protected List<ProtectionFlags> defaultFlags;
     private final Material material;
     private boolean enable = true;
 
@@ -166,7 +167,15 @@ public class BlockGuardConfiguration
                         configuration.defaultFlags = new ArrayList<>();
                         for (Node listedNode : list.getListedNodes())
                         {
-                            configuration.defaultFlags.add(ProtectionFlags.valueOf(listedNode.unwrap()));
+                            ProtectionFlags flag = ProtectionFlags.valueOf(listedNode.unwrap());
+                            if (configuration.protectedType.supportedFlags.contains(flag))
+                            {
+                                configuration.defaultFlags.add(flag);
+                            }
+                            else
+                            {
+                                CubeEngine.getCore().getLog().warn("[BaumGuard] Unsupported flag for protectedType! {}: {}", configuration.protectedType.name(), flag.name());
+                            }
                         }
                     }
                 }
