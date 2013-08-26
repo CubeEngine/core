@@ -32,6 +32,7 @@ import de.cubeisland.engine.core.util.convert.Convert;
 public class Baumguard extends Module
 {
     private GuardConfig config;
+    private GuardManager manager;
 
     @Override
     public void onEnable()
@@ -43,7 +44,7 @@ public class Baumguard extends Module
         this.getCore().getDB().registerTable(TableGuards.initTable(this.getCore().getDB()));
         this.getCore().getDB().registerTable(TableGuardLocations.initTable(this.getCore().getDB()));
         this.getCore().getDB().registerTable(TableAccessList.initTable(this.getCore().getDB()));
-        GuardManager manager = new GuardManager(this);
+        manager = new GuardManager(this);
         GuardCommands mainCmd = new GuardCommands(this, manager);
         this.getCore().getCommandManager().registerCommand(mainCmd);
         GuardCreateCommands createCmds = new GuardCreateCommands(this, manager);
@@ -54,7 +55,7 @@ public class Baumguard extends Module
     @Override
     public void onDisable()
     {
-        // TODO save all loaded guardmodels!
+        this.manager.saveAll();
     }
 
     public GuardConfig getConfig()

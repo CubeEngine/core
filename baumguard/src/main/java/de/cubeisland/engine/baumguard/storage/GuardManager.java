@@ -599,4 +599,16 @@ public class GuardManager implements Listener
         }
         user.sendTranslated("&cYou are not allowed to modify the access-list of this protection!");
     }
+
+    public void saveAll()
+    {
+        for (Guard guard : this.loadedEntityGuards.values())
+        {
+            guard.model.update();
+        }
+        for (Guard guard : this.loadedGuards.values())
+        {
+            guard.model.update();
+        }
+    }
 }

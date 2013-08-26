@@ -466,7 +466,7 @@ public class GuardListener implements Listener
     @EventHandler(ignoreCancelled = true)
     public void onBlockPistonExtend(BlockPistonExtendEvent event)
     {
-        Location location = new Location(null,0,0,0);
+        Location location = event.getBlock().getLocation();
         for (Block block : event.getBlocks())
         {
             Guard guard = this.manager.getGuardAtLocation(block.getLocation(location));
@@ -476,11 +476,10 @@ public class GuardListener implements Listener
                 return;
             }
         }
-        Guard guard = this.manager.getGuardAtLocation(location.getBlock().getRelative(event.getDirection()).getLocation(location)); // TODO NPE here why?
+        Guard guard = this.manager.getGuardAtLocation(location.getBlock().getRelative(event.getDirection()).getLocation(location));
         if (guard != null)
         {
             event.setCancelled(true);
-            return;
         }
     }
 
