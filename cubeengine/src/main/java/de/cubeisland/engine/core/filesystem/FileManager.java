@@ -26,6 +26,7 @@ import java.nio.channels.ReadableByteChannel;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.nio.file.attribute.FileAttribute;
 import java.nio.file.attribute.PosixFileAttributeView;
 import java.nio.file.attribute.PosixFilePermissions;
@@ -50,6 +51,7 @@ public class FileManager implements Cleanable
     private final Path modulesPath;
     private final Path tempPath;
     private ConcurrentMap<Path, Resource> fileSources;
+    private final FileAttribute<?>[] folderCreateAttributes;
 
     public FileManager(Logger logger, Path dataPath) throws IOException
     {
@@ -58,27 +60,28 @@ public class FileManager implements Cleanable
 
         this.logger = logger;
 
-        FileAttribute<?>[] attributes;
+        this.dataPath = Files.createDirectories(dataPath);
+
         if (Files.getFileAttributeView(dataPath, PosixFileAttributeView.class) != null)
         {
-            attributes = new FileAttribute[] {PosixFilePermissions.asFileAttribute(FileUtil.DEFAULT_FOLDER_PERMS)};
+            folderCreateAttributes = new FileAttribute[] {PosixFilePermissions.asFileAttribute(FileUtil.DEFAULT_FOLDER_PERMS)};
+
+            Files.setPosixFilePermissions(this.dataPath, FileUtil.DEFAULT_FOLDER_PERMS);
         }
         else
         {
-            attributes = new FileAttribute[0];
+            folderCreateAttributes = new FileAttribute[0];
         }
-
-        this.dataPath = Files.createDirectories(dataPath, attributes);
 
         final Path linkSource = Paths.get(System.getProperty("user.dir", "."), CubeEngine.class.getSimpleName());
 
-        this.languagePath = Files.createDirectories(dataPath.resolve("language"), attributes);
+        this.languagePath = Files.createDirectories(dataPath.resolve("language"), folderCreateAttributes);
 
-        this.logPath = Files.createDirectories(dataPath.resolve("log"), attributes);
+        this.logPath = Files.createDirectories(dataPath.resolve("log"), folderCreateAttributes);
 
-        this.modulesPath = Files.createDirectories(dataPath.resolve("modules"), attributes);
+        this.modulesPath = Files.createDirectories(dataPath.resolve("modules"), folderCreateAttributes);
 
-        this.tempPath = Files.createDirectories(dataPath.resolve("temp"), attributes);
+        this.tempPath = Files.createDirectories(dataPath.resolve("temp"), folderCreateAttributes);
 
         this.fileSources = new ConcurrentHashMap<>();
 
@@ -261,7 +264,7 @@ public class FileManager implements Cleanable
             return file; // return corresponding file
         }
 
-        Files.createDirectories(file.getParent());
+        Files.createDirectories(file.getParent(), this.folderCreateAttributes);
         try (ReadableByteChannel sourceChannel = Channels.newChannel(clazz.getResourceAsStream(resPath)))
         {
             if (sourceChannel == null)
@@ -270,7 +273,7 @@ public class FileManager implements Cleanable
             }
             else
             {
-                try (FileChannel fileChannel = FileChannel.open(file))
+                try (FileChannel fileChannel = FileChannel.open(file, StandardOpenOption.CREATE))
                 {
                     FileUtil.copy(sourceChannel, fileChannel);
                 }
