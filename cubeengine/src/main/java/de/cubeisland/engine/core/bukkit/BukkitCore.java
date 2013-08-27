@@ -392,7 +392,7 @@ public final class BukkitCore extends JavaPlugin implements Core
         this.moduleManager.enableModules();
         this.permissionManager.calculatePermissions();
 
-        this.freezeDetection = new FreezeDetection(this);
+        this.freezeDetection = new FreezeDetection(this, 20);
         this.freezeDetection.addListener(new Runnable() {
             @Override
             public void run()
@@ -552,7 +552,7 @@ public final class BukkitCore extends JavaPlugin implements Core
         int j = 0;
         for (StackTraceElement e : trace)
         {
-            writer.write("#" + ++j + " " + e.getClassName() + '.' + e.getMethodName() + '(' + e.getFileName() + ':' + e.getLineNumber() + ")\n");
+            writer.write("  #" + ++j + " " + e.getClassName() + '.' + e.getMethodName() + '(' + e.getFileName() + ':' + e.getLineNumber() + ")\n");
         }
 
         writer.write("\n\n\n");
