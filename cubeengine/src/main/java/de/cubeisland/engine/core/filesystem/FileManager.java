@@ -273,7 +273,7 @@ public class FileManager implements Cleanable
             }
             else
             {
-                try (FileChannel fileChannel = FileChannel.open(file, StandardOpenOption.CREATE))
+                try (FileChannel fileChannel = FileChannel.open(file, StandardOpenOption.CREATE, StandardOpenOption.WRITE))
                 {
                     FileUtil.copy(sourceChannel, fileChannel);
                 }

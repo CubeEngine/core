@@ -403,7 +403,10 @@ public final class BukkitCore extends JavaPlugin implements Core
     @Override
     public void onDisable()
     {
-        this.logger.debug("utils cleanup");
+        if (this.logger != null)
+        {
+            this.logger.debug("utils cleanup");
+        }
         BukkitUtils.cleanup();
 
         if (freezeDetection != null)
