@@ -56,11 +56,11 @@ public class FileManager implements Cleanable
     public FileManager(Logger logger, Path dataPath) throws IOException
     {
         assert dataPath != null : "The CubeEngine plugin folder must not be null!";
-        dataPath = dataPath.toAbsolutePath().toRealPath();
+        dataPath = dataPath.toAbsolutePath();
 
         this.logger = logger;
 
-        this.dataPath = Files.createDirectories(dataPath);
+        this.dataPath = Files.createDirectories(dataPath).toRealPath();
 
         if (Files.getFileAttributeView(dataPath, PosixFileAttributeView.class) != null)
         {
