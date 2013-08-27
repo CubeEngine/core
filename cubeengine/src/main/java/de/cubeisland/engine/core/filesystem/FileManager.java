@@ -150,14 +150,14 @@ public class FileManager implements Cleanable
 
     public void clearTempDir()
     {
-        logger.log(Level.INFO, "Clearing the temporary folder '{}'...", this.tempPath.toAbsolutePath());
+        logger.log(Level.INFO, "Clearing the temporary folder ''{0}''...", this.tempPath.toAbsolutePath());
         if (!Files.exists(this.tempPath))
         {
             return;
         }
         if (!Files.isDirectory(this.tempPath))
         {
-            logger.log(Level.WARNING, "The path '{}' is not a directory!", this.tempPath.toAbsolutePath());
+            logger.log(Level.WARNING, "The path ''{0}'' is not a directory!", this.tempPath.toAbsolutePath());
             return;
         }
 
