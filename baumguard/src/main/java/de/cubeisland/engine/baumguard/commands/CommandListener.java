@@ -99,13 +99,13 @@ public class CommandListener implements Listener
     public void onRightClickBlock(PlayerInteractEvent event)
     {
         if (!map.keySet().contains(event.getPlayer().getName())) return;
-        if (!event.getAction().equals(Action.RIGHT_CLICK_BLOCK)) return;
+        if (!(event.getAction() == Action.RIGHT_CLICK_BLOCK)) return;
         if (event.getClickedBlock() != null)
         {
             User user = this.module.getCore().getUserManager().getExactUser(event.getPlayer().getName());
             Location location = event.getClickedBlock().getLocation();
             Triplet<CommandType, String, Boolean> triplet = map.get(user.getName());
-            Guard guard = this.manager.getGuardAtLocation(location, !triplet.getFirst().equals(INFO));
+            Guard guard = this.manager.getGuardAtLocation(location, triplet.getFirst() != INFO);
             if (triplet.getFirst().isCreator())
             {
                 if (guard != null && !guard.isValidType())
@@ -239,7 +239,7 @@ public class CommandListener implements Listener
         User user = this.module.getCore().getUserManager().getExactUser(event.getPlayer().getName());
         Location location = event.getRightClicked().getLocation();
         Triplet<CommandType, String, Boolean> triplet = map.get(user.getName());
-        Guard guard = this.manager.getGuardForEntityUID(event.getRightClicked().getUniqueId(), !triplet.getFirst().equals(INFO));
+        Guard guard = this.manager.getGuardForEntityUID(event.getRightClicked().getUniqueId(), triplet.getFirst() != INFO);
         if (triplet.getFirst().isCreator())
         {
             if (guard != null)

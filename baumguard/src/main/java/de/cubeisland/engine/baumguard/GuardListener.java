@@ -91,7 +91,7 @@ public class GuardListener implements Listener
     public void onPlayerInteract(PlayerInteractEvent event)
     {
         if (event.useInteractedBlock().equals(Result.DENY)) return;
-        if (!event.getAction().equals(Action.RIGHT_CLICK_BLOCK)) return;
+        if (!(event.getAction() == Action.RIGHT_CLICK_BLOCK)) return;
         User user = this.module.getCore().getUserManager().getExactUser(event.getPlayer().getName());
         Location location = event.getClickedBlock().getLocation();
         Guard guard = this.manager.getGuardAtLocation(location);
@@ -159,7 +159,7 @@ public class GuardListener implements Listener
         if (guard == null) return;
         if (this.handleAccess(guard, user, null, event)) return;
         if (entity instanceof StorageMinecart || entity instanceof HopperMinecart
-            || (entity.getType().equals(EntityType.HORSE) && entity instanceof InventoryHolder && event.getPlayer().isSneaking()))
+            || (entity.getType() == EntityType.HORSE && entity instanceof InventoryHolder && event.getPlayer().isSneaking()))
         {
             guard.handleInventoryOpen(event, null, user);
         }
@@ -238,7 +238,7 @@ public class GuardListener implements Listener
      */
     private Boolean checkForKeyBook(Guard guard, User user, Location effectLocation)
     {
-        if (user.getItemInHand().getType().equals(Material.ENCHANTED_BOOK) && user.getItemInHand().getItemMeta().getDisplayName().contains("KeyBook"))
+        if (user.getItemInHand().getType() == Material.ENCHANTED_BOOK && user.getItemInHand().getItemMeta().getDisplayName().contains("KeyBook"))
         {
             String keyBookName = user.getItemInHand().getItemMeta().getDisplayName();
             try
@@ -387,12 +387,12 @@ public class GuardListener implements Listener
     {
         Block placed = event.getBlockPlaced();
         User user = this.module.getCore().getUserManager().getExactUser(event.getPlayer().getName());
-        if (placed.getType().equals(Material.CHEST) || placed.getType().equals(Material.TRAPPED_CHEST))
+        if (placed.getType() == Material.CHEST || placed.getType() == Material.TRAPPED_CHEST)
         {
             Location relativeLoc = new Location(null,0,0,0);
             for (BlockFace blockFace : BlockUtil.CARDINAL_DIRECTIONS)
             {
-                if (placed.getType().equals(placed.getRelative(blockFace).getType())) // bindable chest
+                if (placed.getType() == placed.getRelative(blockFace).getType()) // bindable chest
                 {
                     placed.getRelative(blockFace).getLocation(relativeLoc);
                     Guard guard = this.manager.getGuardAtLocation(relativeLoc);
@@ -417,13 +417,13 @@ public class GuardListener implements Listener
                 }
             }
         }
-        else if (placed.getType().equals(Material.WOODEN_DOOR) || placed.getType().equals(Material.IRON_DOOR_BLOCK))
+        else if (placed.getType() == Material.WOODEN_DOOR || placed.getType() == Material.IRON_DOOR_BLOCK)
         {
             Location loc = placed.getLocation();
             Location relativeLoc = new Location(null,0,0,0);
             for (BlockFace blockFace : BlockUtil.CARDINAL_DIRECTIONS)
             {
-                if (placed.getType().equals(placed.getRelative(blockFace).getType()))
+                if (placed.getType() == placed.getRelative(blockFace).getType())
                 {
                     placed.getRelative(blockFace).getLocation(relativeLoc);
                     Guard guard = this.manager.getGuardAtLocation(relativeLoc);
@@ -442,7 +442,7 @@ public class GuardListener implements Listener
                             Door botDoor = (Door)placed.getState().getData();
                             Door topDoor = new Door(placed.getType(), BlockUtil.getTopDoorDataOnPlace(placed.getType(), loc, event.getPlayer()));
                             Door topRelative = (Door)relativeLoc.getBlock().getRelative(BlockFace.UP).getState().getData();
-                            if (botDoor.getFacing().equals(botRelative.getFacing()))// Doors are facing the same direction
+                            if (botDoor.getFacing() == botRelative.getFacing())// Doors are facing the same direction
                             {
                                 if (topDoor.getData() != topRelative.getData()) // This is a doubleDoor!
                                 {
@@ -664,7 +664,7 @@ public class GuardListener implements Listener
     @EventHandler(ignoreCancelled = true)
     public void onHangingBreak(HangingBreakEvent event) // leash / itemframe / image
     {
-        if (event.getCause().equals(RemoveCause.ENTITY) && event instanceof HangingBreakByEntityEvent)
+        if (event.getCause() == RemoveCause.ENTITY && event instanceof HangingBreakByEntityEvent)
         {
             if (((HangingBreakByEntityEvent)event).getRemover() instanceof Player)
             {

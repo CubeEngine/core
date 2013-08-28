@@ -349,7 +349,7 @@ public class GuardManager implements Listener
                     }
                     for (BlockFace blockFace : BlockUtil.CARDINAL_DIRECTIONS)
                     {
-                        if (botBlock.getRelative(blockFace).getType().equals(block.getType())) // same door type
+                        if (botBlock.getRelative(blockFace).getType() == block.getType()) // same door type
                         {
                             Door relativeBot = (Door)botBlock.getRelative(blockFace).getState().getData();
                             if (!relativeBot.isTopHalf())
@@ -420,7 +420,7 @@ public class GuardManager implements Listener
 
     public void attemptCreatingKeyBook(Guard guard, User user, Boolean third)
     {
-        if (guard.getGuardType().equals(PUBLIC)) return; // ignore
+        if (guard.getGuardType() == PUBLIC) return; // ignore
         if (!this.module.getConfig().allowKeyBooks)
         {
             user.sendTranslated("&aKeyBooks are not enabled!");
@@ -428,7 +428,7 @@ public class GuardManager implements Listener
         }
         if (third)
         {
-            if (user.getItemInHand().getType().equals(Material.BOOK))
+            if (user.getItemInHand().getType() == Material.BOOK)
             {
                 int amount = user.getItemInHand().getAmount() -1;
                 ItemStack itemStack = new ItemStack(Material.ENCHANTED_BOOK, 1);

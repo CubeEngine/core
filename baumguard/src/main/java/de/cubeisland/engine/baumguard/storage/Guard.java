@@ -209,7 +209,7 @@ public class Guard
     public void handleEntityInteract(Cancellable event, Entity entity, User user)
     {
         if (this.model.getOwnerId().equals(user.getEntity().getKey())) return; // Its the owner
-        if (this.getGuardType().equals(PUBLIC)) return;
+        if (this.getGuardType() == PUBLIC) return;
         AccessListModel access = this.getAccess(user);
         if (access == null && this.getGuardType() == GuardType.PRIVATE)
         {
@@ -329,7 +329,7 @@ public class Guard
 
     public boolean isPublic()
     {
-        return this.getGuardType().equals(PUBLIC);
+        return this.getGuardType() == PUBLIC;
     }
 
     public boolean hasFlag(ProtectionFlags flag)
@@ -389,9 +389,9 @@ public class Guard
 
                 if (access.canIn() && access.canOut())
                 {
-                    if (this.getProtectedType().equals(ProtectedType.CONTAINER)
-                        || this.getProtectedType().equals(ProtectedType.ENTITY_CONTAINER)
-                        || this.getProtectedType().equals(ProtectedType.ENTITY_CONTAINER_LIVING))
+                    if (this.getProtectedType() == ProtectedType.CONTAINER
+                        || this.getProtectedType() == ProtectedType.ENTITY_CONTAINER
+                        || this.getProtectedType() == ProtectedType.ENTITY_CONTAINER_LIVING)
                     {
                         user.sendTranslated("&abut is does not hinder you to put/take items in/out");
                     }
@@ -437,7 +437,7 @@ public class Guard
     public void doorUse(User user, Location doorClicked)
     {
         Block block = doorClicked.getBlock();
-        if (block.getType().equals(Material.IRON_DOOR_BLOCK) && !this.manager.module.getConfig().openIronDoorWithClick)
+        if (block.getType() == Material.IRON_DOOR_BLOCK && !this.manager.module.getConfig().openIronDoorWithClick)
         {
             user.sendTranslated("&eYou cannot open the heavy door!");
             return;
@@ -476,14 +476,14 @@ public class Guard
             }
             if (door2 == null)
             {
-                if (door.getItemType().equals(Material.IRON_DOOR_BLOCK))
+                if (door.getItemType() == Material.IRON_DOOR_BLOCK)
                 {
                     doorClicked.getWorld().playSound(doorClicked, sound, 1, 1);
                     door.setOpen(!door.isOpen());
                     block.setData(door.getData());
                 }
                 if (taskId != null) this.manager.module.getCore().getTaskManager().cancelTask(this.manager.module, taskId);
-                if (sound.equals(Sound.DOOR_OPEN)) this.scheduleAutoClose(door, block.getState(), null, null);
+                if (sound == Sound.DOOR_OPEN) this.scheduleAutoClose(door, block.getState(), null, null);
                 return;
             }
             boolean old = door.isOpen();
@@ -493,7 +493,7 @@ public class Guard
 
                 doorClicked.getWorld().playSound(loc2, sound, 1, 1);
                 loc2.getBlock().setData(door2.getData());
-                if (door.getItemType().equals(Material.IRON_DOOR_BLOCK))
+                if (door.getItemType() == Material.IRON_DOOR_BLOCK)
                 {
                     doorClicked.getWorld().playSound(doorClicked, sound, 1, 1);
                     door.setOpen(door2.isOpen());
@@ -501,7 +501,7 @@ public class Guard
                 }
             }
             if (taskId != null) this.manager.module.getCore().getTaskManager().cancelTask(this.manager.module, taskId);
-            if (sound.equals(Sound.DOOR_OPEN)) this.scheduleAutoClose(door, block.getState(), door2, loc2.getBlock().getState());
+            if (sound == Sound.DOOR_OPEN) this.scheduleAutoClose(door, block.getState(), door2, loc2.getBlock().getState());
         }
     }
 
@@ -561,7 +561,7 @@ public class Guard
 
     public void validateTypeAt(Location location)
     {
-        if (ProtectedType.getProtectedType(location.getBlock().getType()).equals(this.getProtectedType()))
+        if (ProtectedType.getProtectedType(location.getBlock().getType()) == this.getProtectedType())
         {
             this.isValidType = true;
         }
