@@ -36,4 +36,10 @@ public class CharNode extends Node
     {
         return String.valueOf(value);
     }
+
+    @Override
+    public String toString()
+    {
+        return "CharNode=["+value+"]";
+    }
 }

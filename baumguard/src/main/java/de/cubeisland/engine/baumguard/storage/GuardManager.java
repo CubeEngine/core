@@ -41,17 +41,18 @@ import org.bukkit.block.Chest;
 import org.bukkit.block.DoubleChest;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
-import org.bukkit.entity.Vehicle;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.world.ChunkLoadEvent;
 import org.bukkit.event.world.ChunkUnloadEvent;
-import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.material.Door;
 
 import de.cubeisland.engine.baumguard.Baumguard;
+import de.cubeisland.engine.baumguard.BlockGuardConfiguration;
+import de.cubeisland.engine.baumguard.EntityGuardConfiguration;
+import de.cubeisland.engine.baumguard.GuardPerm;
 import de.cubeisland.engine.baumguard.commands.CommandListener;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.user.UserManager;
@@ -66,7 +67,7 @@ import org.jooq.types.UInteger;
 import static de.cubeisland.engine.baumguard.storage.AccessListModel.ACCESS_ALL;
 import static de.cubeisland.engine.baumguard.storage.AccessListModel.ACCESS_FULL;
 import static de.cubeisland.engine.baumguard.storage.GuardType.PUBLIC;
-import static de.cubeisland.engine.baumguard.storage.ProtectedType.*;
+import static de.cubeisland.engine.baumguard.storage.ProtectedType.getProtectedType;
 import static de.cubeisland.engine.baumguard.storage.TableAccessList.TABLE_ACCESS_LIST;
 import static de.cubeisland.engine.baumguard.storage.TableGuardLocations.TABLE_GUARD_LOCATION;
 import static de.cubeisland.engine.baumguard.storage.TableGuards.TABLE_GUARD;
@@ -121,27 +122,37 @@ public class GuardManager implements Listener
      */
     public Guard getGuardAtLocation(Location location)
     {
+        return getGuardAtLocation(location, true);
+    }
+
+    public Guard getGuardAtLocation(Location location, boolean access)
+    {
         Guard guard = this.loadedGuards.get(location);
-        if (guard != null) guard.model.setLastAccess(new Timestamp(System.currentTimeMillis()));
+        if (access && guard != null) guard.model.setLastAccess(new Timestamp(System.currentTimeMillis()));
         return guard;
     }
 
-    public Guard getGuardForEntityUID(UUID uniqueId)
+    public Guard getGuardForEntityUID(UUID uniqueId, boolean access)
     {
         Guard guard = this.loadedEntityGuards.get(uniqueId);
         if (guard == null)
         {
             GuardModel model = this.dsl.selectFrom(TABLE_GUARD).where(TABLE_GUARD.ENTITY_UID_LEAST.eq(uniqueId.getLeastSignificantBits()),
-                                                   TABLE_GUARD.ENTITY_UID_MOST.eq(uniqueId.getMostSignificantBits())).fetchOne();
+                                                                      TABLE_GUARD.ENTITY_UID_MOST.eq(uniqueId.getMostSignificantBits())).fetchOne();
             if (model != null)
             {
                 guard = new Guard(this, model);
                 this.loadedEntityGuards.put(uniqueId, guard);
             }
         }
-        if (guard != null) guard.model.setLastAccess(new Timestamp(System.currentTimeMillis()));
+        if (access && guard != null) guard.model.setLastAccess(new Timestamp(System.currentTimeMillis()));
         return guard;
         // TODO handle unloading & garbage collection e.g. when entities got removed by WE
+    }
+
+    public Guard getGuardForEntityUID(UUID uniqueId)
+    {
+        return this.getGuardForEntityUID(uniqueId, true);
     }
 
     public void extendGuard(Guard guard, Location location)
@@ -237,8 +248,16 @@ public class GuardManager implements Listener
         }
     }
 
-    public void removeGuard(Guard guard)
+    public void removeGuard(Guard guard, User user, boolean destroyed)
     {
+        if (!destroyed)
+        {
+            if (!(guard.isOwner(user) || GuardPerm.CMD_REMOVE_OTHER.isAuthorized(user)))
+            {
+                user.sendTranslated("&cThis protection is not yours!");
+                return;
+            }
+        }
         guard.model.delete();
         if (guard.isBlockGuard())
         {
@@ -256,6 +275,7 @@ public class GuardManager implements Listener
         {
             this.loadedEntityGuards.remove(guard.model.getUUID());
         }
+        if (user != null) user.sendTranslated("&aRemoved Guard!");
     }
 
     public void invalidateKeyBooks(Guard guard)
@@ -288,7 +308,7 @@ public class GuardManager implements Listener
 
     public Guard createGuard(Material material, Location location, User user, GuardType guardType, String password, boolean createKeyBook)
     {
-        GuardModel model = this.dsl.newRecord(TABLE_GUARD).newGuard(user, guardType, this.getProtectedType(material));
+        GuardModel model = this.dsl.newRecord(TABLE_GUARD).newGuard(user, guardType, getProtectedType(material));
         this.createPassword(model, password);
         model.insert();
         List<Location> locations = new ArrayList<>();
@@ -370,7 +390,7 @@ public class GuardManager implements Listener
 
     public Guard createGuard(Entity entity, User user, GuardType guardType, String password, boolean createKeyBook)
     {
-        GuardModel model = this.dsl.newRecord(TABLE_GUARD).newGuard(user, guardType, this.getProtectedType(entity), entity.getUniqueId());
+        GuardModel model = this.dsl.newRecord(TABLE_GUARD).newGuard(user, guardType, getProtectedType(entity.getType()), entity.getUniqueId());
         this.createPassword(model, password);
         model.insert();
         Guard guard = new Guard(this, model);
@@ -405,6 +425,11 @@ public class GuardManager implements Listener
     public void attemptCreatingKeyBook(Guard guard, User user, Boolean third)
     {
         if (guard.getGuardType().equals(PUBLIC)) return; // ignore
+        if (!this.module.getConfig().allowKeyBooks)
+        {
+            user.sendTranslated("&aKeyBooks are not enabled!");
+            return;
+        }
         if (third)
         {
             if (user.getItemInHand().getType().equals(Material.BOOK))
@@ -432,49 +457,6 @@ public class GuardManager implements Listener
             }
         }
     }
-
-    private ProtectedType getProtectedType(Material material)
-    {
-        switch (material)
-        {
-            case CHEST:
-            case TRAPPED_CHEST:
-            case DISPENSER:
-            case DROPPER:
-            case FURNACE:
-            case BURNING_FURNACE:
-            case BREWING_STAND:
-            // TODO missing ?
-                return CONTAINER;
-            case WOODEN_DOOR:
-            case IRON_DOOR_BLOCK:
-            case FENCE_GATE:
-            case TRAP_DOOR:
-                return DOOR;
-            default:
-                if (material.getId() < 256) return BLOCK;
-        }
-        throw new IllegalStateException("Material of block is an item!?");
-    }
-
-    private ProtectedType getProtectedType(Entity entity)
-    {
-        switch (entity.getType())
-        {
-        case MINECART_CHEST:
-        case MINECART_HOPPER:
-            return ENTITY_CONTAINER;
-        case HORSE:
-            if (entity instanceof InventoryHolder) return ENTITY_CONTAINER;
-        default:
-            if (entity.getType().isAlive()) return ENTITY_LIVING;
-            if (entity instanceof Vehicle) return ENTITY_VEHICLE;
-            return ENTITY;
-        }
-    }
-
-
-    // TODO more ?
 
     /**
      *
@@ -525,18 +507,32 @@ public class GuardManager implements Listener
 
     public boolean canProtect(Material type)
     {
-        return true; // TODO config can protect?
+        for (BlockGuardConfiguration blockprotection : this.module.getConfig().blockprotections)
+        {
+            if (blockprotection.isType(type))
+            {
+                return true;
+            }
+        }
+        return false;
     }
 
     public boolean canProtect(EntityType type)
     {
-        return true;// TODO config can protect?
+        for (EntityGuardConfiguration entityProtection : this.module.getConfig().entityProtections)
+        {
+            if (entityProtection.isType(type))
+            {
+                return true;
+            }
+        }
+        return false;
     }
 
     public void modifyGuard(Guard guard, User user, String usersString, Boolean adminAccess)
     {
         // TODO separate in & out for containers
-        if (guard.isOwner(user) || guard.hasAdmin(user))
+        if (guard.isOwner(user) || guard.hasAdmin(user) || GuardPerm.CMD_MODIFY_OTHER.isAuthorized(user))
         {
             if (!guard.isPublic())
             {
@@ -602,5 +598,17 @@ public class GuardManager implements Listener
             return;
         }
         user.sendTranslated("&cYou are not allowed to modify the access-list of this protection!");
+    }
+
+    public void saveAll()
+    {
+        for (Guard guard : this.loadedEntityGuards.values())
+        {
+            guard.model.update();
+        }
+        for (Guard guard : this.loadedGuards.values())
+        {
+            guard.model.update();
+        }
     }
 }

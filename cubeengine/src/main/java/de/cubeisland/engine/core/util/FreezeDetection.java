@@ -34,9 +34,16 @@ public class FreezeDetection
     private ScheduledExecutorService executor;
     private int taskId;
     private long lastHeartbeat;
+    private final long freezeThreshold;
     private ConcurrentLinkedQueue<Runnable> listeners;
+    private volatile boolean freezeNotified = false;
 
-    public FreezeDetection(Core core)
+    public FreezeDetection(Core core, long freezeThreshold)
+    {
+        this(core, freezeThreshold, TimeUnit.SECONDS);
+    }
+
+    public FreezeDetection(Core core, long freezeThreshold, TimeUnit unit)
     {
         this.core = core;
         this.taskManager = this.core.getTaskManager();
@@ -44,6 +51,7 @@ public class FreezeDetection
         this.taskId = -1;
         this.lastHeartbeat = -1;
         this.listeners = new ConcurrentLinkedQueue<>();
+        this.freezeThreshold = unit.toMillis(freezeThreshold);
     }
 
     public void addListener(Runnable r)
@@ -64,7 +72,7 @@ public class FreezeDetection
             throw new RuntimeException("Failed to schedule the heartbeat logger for freeze detection");
         }
         this.executor = Executors.newSingleThreadScheduledExecutor(core.getTaskManager().getThreadFactory());
-        this.executor.scheduleAtFixedRate(new FreezeDetector(), 30, 30, TimeUnit.SECONDS);
+        this.executor.scheduleAtFixedRate(new FreezeDetector(), this.freezeThreshold, this.freezeThreshold, TimeUnit.MILLISECONDS);
 
         this.lastHeartbeat = System.currentTimeMillis();
     }
@@ -97,6 +105,7 @@ public class FreezeDetection
         public void run()
         {
             lastHeartbeat = System.currentTimeMillis();
+            freezeNotified = false;
         }
     }
 
@@ -105,8 +114,9 @@ public class FreezeDetection
         @Override
         public void run()
         {
-            if (System.currentTimeMillis() - lastHeartbeat > 1000 * 20)
+            if (System.currentTimeMillis() - lastHeartbeat > freezeThreshold && !freezeNotified)
             {
+                freezeNotified = true;
                 Iterator<Runnable> it = listeners.iterator();
                 while (it.hasNext())
                 {

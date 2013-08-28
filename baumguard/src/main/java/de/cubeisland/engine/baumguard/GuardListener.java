@@ -26,9 +26,13 @@ import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.BlockState;
 import org.bukkit.block.DoubleChest;
+import org.bukkit.block.Hopper;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.Projectile;
+import org.bukkit.entity.TNTPrimed;
 import org.bukkit.entity.minecart.HopperMinecart;
 import org.bukkit.entity.minecart.StorageMinecart;
 import org.bukkit.event.Cancellable;
@@ -38,6 +42,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockBurnEvent;
+import org.bukkit.event.block.BlockFromToEvent;
 import org.bukkit.event.block.BlockPistonExtendEvent;
 import org.bukkit.event.block.BlockPistonRetractEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
@@ -46,10 +51,15 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
+import org.bukkit.event.hanging.HangingBreakByEntityEvent;
+import org.bukkit.event.hanging.HangingBreakEvent;
+import org.bukkit.event.hanging.HangingBreakEvent.RemoveCause;
+import org.bukkit.event.inventory.InventoryMoveItemEvent;
 import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.vehicle.VehicleDestroyEvent;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -63,7 +73,7 @@ import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.util.BlockUtil;
 import de.cubeisland.engine.core.util.ChatFormat;
 
-import static de.cubeisland.engine.baumguard.storage.ProtectionFlags.REDSTONE;
+import static de.cubeisland.engine.baumguard.storage.ProtectionFlags.*;
 
 public class GuardListener implements Listener
 {
@@ -132,10 +142,15 @@ public class GuardListener implements Listener
     public void onPlayerInteractEntity(PlayerInteractEntityEvent event)
     {
         Entity entity = event.getRightClicked();
-        // TODO check for deny flag
+        User user = this.module.getCore().getUserManager().getExactUser(event.getPlayer().getName());
+        if (GuardPerm.DENY_ENTITY.isAuthorized(user))
+        {
+            user.sendTranslated("&cStrong magic prevents you from reaching this Entity!");
+            event.setCancelled(true);
+            return;
+        }
         Guard guard = this.manager.getGuardForEntityUID(entity.getUniqueId());
         if (guard == null) return;
-        User user = this.module.getCore().getUserManager().getExactUser(event.getPlayer().getName());
         if (this.handleAccess(guard, user, null, event)) return;
         if (entity instanceof StorageMinecart || entity instanceof HopperMinecart
             || (entity.getType().equals(EntityType.HORSE) && entity instanceof InventoryHolder && event.getPlayer().isSneaking()))
@@ -152,37 +167,51 @@ public class GuardListener implements Listener
     public void onInventoryOpen(InventoryOpenEvent event)
     {
         if (!(event.getPlayer() instanceof Player)) return;
-        Guard guard;
-        InventoryHolder holder = event.getInventory().getHolder();
-        Location holderLoc;
-        if (holder instanceof Entity)
-        {
-            guard = this.manager.getGuardForEntityUID(((Entity)holder).getUniqueId());
-            holderLoc = ((Entity)holder).getLocation();
-        }
-        else
-        {
-            Location location;
-            if (holder instanceof BlockState)
-            {
-                location = ((BlockState)holder).getLocation();
-                holderLoc = ((BlockState)holder).getLocation();
-            }
-            else if (holder instanceof DoubleChest)
-            {
-                location = ((BlockState)((DoubleChest)holder).getRightSide()).getLocation();
-                holderLoc = ((DoubleChest)holder).getLocation();
-            }
-            else return;
-            guard = this.manager.getGuardAtLocation(location);
-        }
+        Location holderLoc = new Location(null, 0,0,0);
+        Guard guard = this.getGuardOfInventory(event.getInventory(), holderLoc);
         if (guard != null)
         {
             User user = this.module.getCore().getUserManager().getExactUser(event.getPlayer().getName());
             if (this.handleAccess(guard, user, holderLoc, event)) return;
             guard.handleInventoryOpen(event, event.getInventory(), user);
         }
+    }
 
+    /**
+     * Returns the guard for given inventory it exists, also sets the location to the holders location if not null
+     *
+     * @param inventory
+     * @param holderLoc a location object to hold the GuardLocation
+     * @return the guard for given inventory
+     */
+    public Guard getGuardOfInventory(Inventory inventory, Location holderLoc)
+    {
+        InventoryHolder holder = inventory.getHolder();
+        Guard guard;
+        if (holderLoc == null)
+        {
+            holderLoc = new Location(null, 0, 0, 0);
+        }
+        if (holder instanceof Entity)
+        {
+            guard = this.manager.getGuardForEntityUID(((Entity)holder).getUniqueId());
+            ((Entity)holder).getLocation(holderLoc);
+        }
+        else
+        {
+            Location guardLoc;
+            if (holder instanceof BlockState)
+            {
+                guardLoc = ((BlockState)holder).getLocation(holderLoc);
+            }
+            else if (holder instanceof DoubleChest)
+            {
+                guardLoc = ((BlockState)((DoubleChest)holder).getRightSide()).getLocation(holderLoc);
+            }
+            else return null;
+            guard = this.manager.getGuardAtLocation(guardLoc);
+        }
+        return guard;
     }
 
     private boolean checkForUnlocked(Guard guard, User user)
@@ -256,18 +285,41 @@ public class GuardListener implements Listener
         return false;
     }
 
-    public void onPlayerDamageEntity(EntityDamageByEntityEvent event)
+    public void onEntityDamageEntity(EntityDamageByEntityEvent event)
     {
-        // TODO
+        Entity entity = event.getEntity();
+        Guard guard = this.manager.getGuardForEntityUID(entity.getUniqueId());
+        if (guard == null) return;
         if (event.getDamager() instanceof Player)
         {
-            Entity entity = event.getEntity();
-            Guard guard = this.manager.getGuardForEntityUID(entity.getUniqueId());
-            if (guard == null) return;
             User user = this.module.getCore().getUserManager().getExactUser(((Player)event.getDamager()).getName());
-            if (guard.isOwner(user)) return;
-            if (this.checkForUnlocked(guard, user)) return;
             guard.handleEntityDamage(event, user);
+            return;
+        }
+        else if (event.getDamager() instanceof TNTPrimed)
+        {
+            Entity source = ((TNTPrimed)event.getDamager()).getSource();
+            if (source != null && source instanceof Player)
+            {
+                User user = this.module.getCore().getUserManager().getExactUser(((Player)source).getPlayer().getName());
+                guard.handleEntityDamage(event, user);
+                return;
+            }
+        }
+        else if (event.getDamager() instanceof Projectile)
+        {
+            LivingEntity shooter = ((Projectile)event.getDamager()).getShooter();
+            if (shooter != null && shooter instanceof Player)
+            {
+                User user = this.module.getCore().getUserManager().getExactUser(((Player)shooter).getName());
+                guard.handleEntityDamage(event, user);
+                return;
+            }
+        }
+        // else other source
+        if (module.getConfig().protectEntityFromEnvironementalDamage)
+        {
+            event.setCancelled(true);
         }
     }
 
@@ -276,15 +328,14 @@ public class GuardListener implements Listener
     {
         if (event instanceof EntityDamageByEntityEvent)
         {
-            this.onPlayerDamageEntity((EntityDamageByEntityEvent)event);
+            this.onEntityDamageEntity((EntityDamageByEntityEvent)event);
         }
-        else
+        else if (module.getConfig().protectEntityFromEnvironementalDamage)
         {
             Entity entity = event.getEntity();
             Guard guard = this.manager.getGuardForEntityUID(entity.getUniqueId());
             if (guard == null) return;
             event.setCancelled(true);
-            // TODO config
         }
     }
 
@@ -300,7 +351,7 @@ public class GuardListener implements Listener
         {
             user = this.module.getCore().getUserManager().getExactUser(((Player)((EntityDamageByEntityEvent)lastDamage).getDamager()).getName());
         }
-        guard.handleEntityDestroy(user);
+        guard.handleEntityDeletion(user);
     }
 
     @EventHandler(ignoreCancelled = true)
@@ -310,14 +361,16 @@ public class GuardListener implements Listener
         if (guard == null) return;
         if (event.getAttacker() == null)
         {
-            // TODO configure if lava can destroy or else
-            event.setCancelled(true);
+            if (module.getConfig().protectVehicleFromEnvironmental)
+            {
+                event.setCancelled(true);
+            }
             return;
         }
         User user = this.module.getCore().getUserManager().getExactUser(((Player)event.getAttacker()).getName());
         if (guard.isOwner(user))
         {
-            guard.handleEntityDestroy(user);
+            guard.handleEntityDeletion(user);
             return;
         }
         event.setCancelled(true);
@@ -403,7 +456,7 @@ public class GuardListener implements Listener
         Guard guard = this.manager.getGuardAtLocation(block.getLocation());
         if (guard != null)
         {
-            if (guard.hasFlag(REDSTONE))
+            if (guard.hasFlag(BLOCK_REDSTONE))
             {
                 event.setNewCurrent(0);
             }
@@ -413,7 +466,7 @@ public class GuardListener implements Listener
     @EventHandler(ignoreCancelled = true)
     public void onBlockPistonExtend(BlockPistonExtendEvent event)
     {
-        Location location = new Location(null,0,0,0);
+        Location location = event.getBlock().getLocation();
         for (Block block : event.getBlocks())
         {
             Guard guard = this.manager.getGuardAtLocation(block.getLocation(location));
@@ -423,11 +476,10 @@ public class GuardListener implements Listener
                 return;
             }
         }
-        Guard guard = this.manager.getGuardAtLocation(location.getBlock().getRelative(event.getDirection()).getLocation(location)); // TODO NPE here why?
+        Guard guard = this.manager.getGuardAtLocation(location.getBlock().getRelative(event.getDirection()).getLocation(location));
         if (guard != null)
         {
             event.setCancelled(true);
-            return;
         }
     }
 
@@ -497,5 +549,67 @@ public class GuardListener implements Listener
         }
     }
 
-    // TODO protect against water & lava-flow
+    @EventHandler(ignoreCancelled = true)
+    public void onHopperItemMove(InventoryMoveItemEvent event)
+    {
+        Inventory inventory = event.getSource();
+        Guard guard = this.getGuardOfInventory(inventory, null);
+        if (guard != null)
+        {
+            InventoryHolder dest = event.getDestination().getHolder();
+            if ((dest instanceof Hopper && guard.hasFlag(BLOCK_HOPPER_OUT))
+             || (dest instanceof HopperMinecart && guard.hasFlag(BLOCK_HOPPER_MINECART_OUT)))
+            {
+                event.setCancelled(true);
+            }
+        }
+        if (event.isCancelled()) return;
+        inventory = event.getDestination();
+        guard = this.getGuardOfInventory(inventory, null);
+        if (guard != null && guard.hasFlag(BLOCK_HOPPER_ANY_IN))
+        {
+            event.setCancelled(true);
+        }
+    }
+
+    @EventHandler(ignoreCancelled = true)
+    public void onWaterLavaFlow(BlockFromToEvent event)
+    {
+        if (this.module.getConfig().protectBlocksFromWaterLava && BlockUtil.isNonFluidProofBlock(event.getToBlock().getType()))
+        {
+            Guard guard = this.manager.getGuardAtLocation(event.getToBlock().getLocation());
+            if (guard != null)
+            {
+                event.setCancelled(true);
+            }
+        }
+    }
+
+    @EventHandler(ignoreCancelled = true)
+    public void onHangingBreak(HangingBreakEvent event) // leash / itemframe / image
+    {
+        if (event.getCause().equals(RemoveCause.ENTITY) && event instanceof HangingBreakByEntityEvent)
+        {
+            if (((HangingBreakByEntityEvent)event).getRemover() instanceof Player)
+            {
+                Guard guard = this.manager.getGuardForEntityUID(event.getEntity().getUniqueId());
+                User user = this.module.getCore().getUserManager().getExactUser(((Player)((HangingBreakByEntityEvent)event).getRemover()).getName());
+                if (GuardPerm.DENY_HANGING.isAuthorized(user))
+                {
+                    event.setCancelled(true);
+                    return;
+                }
+                if (guard == null) return;
+                if (guard.isOwner(user))
+                {
+                    guard.delete(user);
+                    return;
+                }
+            }
+        }
+        event.setCancelled(true);
+    }
+
+    // TODO auto-protect
+    // TODO expand protections for hangings/attachables
 }

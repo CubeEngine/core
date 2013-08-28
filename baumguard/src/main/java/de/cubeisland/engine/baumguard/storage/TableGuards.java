@@ -97,13 +97,19 @@ public class TableGuards extends TableImpl<GuardModel> implements TableCreator<G
     public final TableField<GuardModel, UInteger> ID = createField("id", SQLDataType.INTEGERUNSIGNED, this);
     public final TableField<GuardModel, UInteger> OWNER_ID = createField("owner_id", SQLDataType.INTEGERUNSIGNED, this);
 
-    // Possible flags: redstone / magnet / autoclose / //TODO
+    /**
+     * Flags see {@link ProtectionFlags}
+     */
     public final TableField<GuardModel, Short> FLAGS = createField("flags", SQLDataType.SMALLINT, this);
 
-    // Possible guarded Types: container (chest,dispenser,hopper etc...) / door(+trapdoor,fencegate) / entities/wContainer(mule,minecart) / entity
+    /**
+     * Protected Type see {@link ProtectedType}
+     */
     public final TableField<GuardModel, Byte> GUARDED_TYPE = createField("type", SQLDataType.TINYINT, this);
 
-    // Possible guard Types: private / public / guarded(readonly) / donation(input only) / free(output only)
+    /**
+     * GuardType see {@link GuardType}
+     */
     public final TableField<GuardModel, Byte> GUARD_TYPE = createField("guard_type", SQLDataType.TINYINT, this);
 
     // eg. /cguarded [pass <password>] (flag to create pw book/key?)

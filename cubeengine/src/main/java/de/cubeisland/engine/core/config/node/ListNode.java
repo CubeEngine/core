@@ -120,7 +120,7 @@ public class ListNode extends ParentNode
         }
         else
         {
-            throw new IllegalArgumentException("Cannot get Node! ListPath has to start with [!");
+            throw new IllegalArgumentException("Cannot get Node! ListPath has to start with [! | " + key);
         }
     }
 
@@ -199,5 +199,17 @@ public class ListNode extends ParentNode
             return this.getParentNode().getPath(this, path, pathSeparator);
         }
         return path;
+    }
+
+    @Override
+    public String toString()
+    {
+        StringBuilder sb = new StringBuilder("ListNode=[");
+        for (Node listedNode : this.listedNodes)
+        {
+            sb.append("\n- ").append(listedNode.toString());
+        }
+        sb.append("]ListEnd");
+        return sb.toString();
     }
 }

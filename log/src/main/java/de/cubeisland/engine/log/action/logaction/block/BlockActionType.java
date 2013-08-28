@@ -203,7 +203,7 @@ public abstract class BlockActionType extends LogActionType
             {
                 if (entity instanceof Hanging && location.distanceSquared(entity.getLocation(entityLocation)) < 4)
                 {
-                    hangingBreak.preplanHangingBreak(entity.getLocation(),player);
+                    hangingBreak.preplanHangingBreak(entity.getLocation(), player); // TODO this produced a NPE / player was null
                 }
             }
         }

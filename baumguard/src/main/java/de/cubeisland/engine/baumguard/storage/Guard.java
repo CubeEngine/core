@@ -18,7 +18,10 @@
 package de.cubeisland.engine.baumguard.storage;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -33,6 +36,7 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.material.Door;
 
 import de.cubeisland.engine.baumguard.GuardAttachment;
+import de.cubeisland.engine.baumguard.GuardPerm;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.util.InventoryGuardFactory;
 import org.jooq.Record1;
@@ -218,7 +222,7 @@ public class Guard
 
     private void checkGuardType()
     {
-        if (this.getProtectedType().supportedTypes.contains(this.getGuardType())) return;
+        if (this.getGuardType().supportedTypes.contains(this.getProtectedType())) return;
         throw new IllegalStateException("GuardType is not supported for " + this.getProtectedType().name() + ":" + this.getGuardType().name());
     }
 
@@ -234,7 +238,7 @@ public class Guard
 
     public void handleBlockBreak(BlockBreakEvent event, User user)
     {
-        if (this.model.getOwnerId().equals(user.getEntity().getKey()))
+        if (this.model.getOwnerId().equals(user.getEntity().getKey()) || GuardPerm.CMD_REMOVE_OTHER.isAuthorized(user))
         {
             this.delete(user);
             return;
@@ -243,31 +247,32 @@ public class Guard
         user.sendTranslated("&cMagic prevents you from breaking this protection!");
     }
 
-
     public void handleEntityDamage(Cancellable event, User user)
     {
-        if (this.model.getOwnerId().equals(user.getEntity().getKey())) return;
-        AccessListModel access = this.getAccess(user);
-        if (access == null && this.getGuardType() == GuardType.PRIVATE)
+        if (this.model.getOwnerId().equals(user.getEntity().getKey()))
+        {
+            user.sendTranslated("&eThe magic surrounding this entity quivers as you hit it!");
+        }
+        else
         {
             event.setCancelled(true); // private & no access
-            user.sendTranslated("&cMagic repelled your attempts to hurt this entity!"); // TODO better
-        }
-        else // has access
-        {
-            // TODO messages
+            user.sendTranslated("&cMagic repelled your attempts to hurt this entity!");
         }
     }
 
-    public void handleEntityDestroy(User user)
+    public void handleEntityDeletion(User user)
     {
         this.delete(user);
     }
 
+    /**
+     * Deletes a protection and informs the given user
+     *
+     * @param user
+     */
     public void delete(User user)
     {
-        this.manager.removeGuard(this);
-        if (user != null) user.sendTranslated("&aRemoved Guard!");
+        this.manager.removeGuard(this, user, true);
     }
 
     public boolean isOwner(User user)
@@ -298,10 +303,21 @@ public class Guard
         return this.model.getPassword().length > 4;
     }
 
+    private Map<String, Long> lastKeyNotify;
+
     public void notifyKeyUsage(User user)
     {
+        if (lastKeyNotify == null)
+        {
+            this.lastKeyNotify = new HashMap<>();
+        }
         User owner = this.manager.um.getUser(this.model.getOwnerId().longValue());
-        owner.sendTranslated("&2%s&e just used a KeyBook one of your protections!", user.getName()); // TODO do not spam
+        Long last = this.lastKeyNotify.get(owner.getName());
+        if (last == null || TimeUnit.MILLISECONDS.toSeconds(System.currentTimeMillis() - last) > 60) // 60 sec config ?
+        {
+            this.lastKeyNotify.put(owner.getName(), System.currentTimeMillis());
+            owner.sendTranslated("&2%s&e used a KeyBook to access one of your protections!", user.getName());
+        }
     }
 
     public User getOwner()
@@ -314,16 +330,75 @@ public class Guard
         return this.getGuardType().equals(PUBLIC);
     }
 
-    public boolean hasFlag(ProtectionFlags redstone)
+    public boolean hasFlag(ProtectionFlags flag)
     {
-        // TODO
-        return true;
+        return flag.flagValue == (this.model.getFlags() & flag.flagValue);
     }
 
     public void showInfo(User user)
     {
-        // TODO
-        user.sendTranslated("Protection: #" + this.getId());
+        if (this.isOwner(user) || this.hasAdmin(user) || GuardPerm.CMD_INFO_OTHER.isAuthorized(user))
+        {
+            user.sendMessage("");
+            user.sendTranslated("&aProtection: &6#%d&a Type: &6%s&a by &6%s", this.getId(), this.getGuardType().name(), this.getOwner().getName());
+            user.sendTranslated("&aprotects &6%s&a since &6%s", this.getProtectedType().name(), this.model.getCreated().toString());
+            user.sendTranslated("&alast access was &6%s", this.model.getLastAccess().toString());
+            if (this.hasPass())
+            {
+                if (user.attachOrGet(GuardAttachment.class, this.manager.module).hasUnlocked(this))
+                {
+                    user.sendTranslated("&aHas a password and is currently unlocked");
+                }
+                else
+                {
+                    user.sendTranslated("&aHas a password and is currently locked");
+                }
+            }
+
+            if (!this.locations.isEmpty())
+            {
+                user.sendTranslated("&aThis protections covers &6%d&a blocks!", this.locations.size());
+            }
+            // TODO active flags
+            // TODO droptransfer status
+            // TODO all accessors /w accesslevel
+        }
+        else
+        {
+            user.sendTranslated("&aProtectionType: &6%s", this.getId(), this.getGuardType().name());
+            AccessListModel access = this.getAccess(user);
+            if (this.hasPass())
+            {
+                if (user.attachOrGet(GuardAttachment.class, this.manager.module).hasUnlocked(this))
+                {
+                    user.sendTranslated("&aAs you memorize the pass-phrase the magic aura protecting this allows you to interact");
+                }
+                else
+                {
+                    user.sendTranslated("&aYou sense that the strong magic aura protecting this wont let you through without the right pass-phrase");
+                }
+            }
+            else
+            {
+                user.sendTranslated("&aYou sense a strong magic aura protecting this");
+            }
+            if (access != null)
+            {
+
+                if (access.canIn() && access.canOut())
+                {
+                    if (this.getProtectedType().equals(ProtectedType.CONTAINER) || this.getProtectedType().equals(ProtectedType.ENTITY_CONTAINER))
+                    {
+                        user.sendTranslated("&abut is does not hinder you to put/take items in/out");
+                    }
+                    else
+                    {
+                        user.sendTranslated("&abut it lets you interact as if you were not there");
+                    }
+                }
+                // TODO other access-level combinations
+            }
+        }
     }
 
     public void unlock(User user, Location soundLoc, String pass)
@@ -357,8 +432,12 @@ public class Guard
      */
     public void doorUse(User user, Location doorClicked)
     {
-        // TODO config iron-door
         Block block = doorClicked.getBlock();
+        if (block.getType().equals(Material.IRON_DOOR_BLOCK) && !this.manager.module.getConfig().openIronDoorWithClick)
+        {
+            user.sendTranslated("&eYou cannot open the heavy door!");
+            return;
+        }
         if (block.getState().getData() instanceof Door)
         {
             Door door;
@@ -424,6 +503,7 @@ public class Guard
 
     private void scheduleAutoClose(final Door door1, final BlockState state1, final Door door2, final BlockState state2)
     {
+        if (!this.manager.module.getConfig().autoCloseEnable) return;
         Runnable run;
         if (door2 == null)
         {
@@ -467,10 +547,6 @@ public class Guard
             };
         }
         taskId = this.manager.module.getCore().getTaskManager()
-                            .runTaskDelayed(this.manager.module, run, 60);// TODO config!!!
+                            .runTaskDelayed(this.manager.module, run, this.manager.module.getConfig().autoCloseSeconds * 20);
     }
-
-
 }
-
-

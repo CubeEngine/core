@@ -36,4 +36,10 @@ public class FloatNode extends Node
     {
         return String.valueOf(value);
     }
+
+    @Override
+    public String toString()
+    {
+        return "FloatNode=["+value+"]";
+    }
 }

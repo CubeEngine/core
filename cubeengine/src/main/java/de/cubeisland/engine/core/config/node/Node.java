@@ -22,7 +22,6 @@ package de.cubeisland.engine.core.config.node;
  */
 public abstract class Node
 {
-
     private ParentNode parentNode;
 
     public ParentNode getParentNode()
@@ -95,4 +94,6 @@ public abstract class Node
         else
             return path;
     }
+
+    public abstract String toString();
 }

@@ -37,4 +37,10 @@ public class IntNode extends Node
     {
         return String.valueOf(value);
     }
+
+    @Override
+    public String toString()
+    {
+        return "IntNode=["+value+"]";
+    }
 }

@@ -36,4 +36,10 @@ public class LongNode extends Node
     {
         return String.valueOf(value);
     }
+
+    @Override
+    public String toString()
+    {
+        return "LongNode=["+value+"]";
+    }
 }

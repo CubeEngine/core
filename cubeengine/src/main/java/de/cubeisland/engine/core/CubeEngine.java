@@ -73,6 +73,11 @@ public final class CubeEngine
         mainThread = null;
     }
 
+    public static Thread getMainThread()
+    {
+        return mainThread;
+    }
+
     public static boolean isMainThread()
     {
         return mainThread == Thread.currentThread();

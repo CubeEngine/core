@@ -292,7 +292,8 @@ public class CodecContainer<ConfigCodec extends ConfigurationCodec>
                 throw new InvalidConfigurationException(
                         "Error while dumping loaded config into fields!" +
                                 "\ncurrent config: " + config.getClass().toString() +
-                                "\ncurrent field:" + field.getName(), e);
+                                "\ncurrent field:" + field.getName() +
+                                "\ncurrent node: " + currentNode.toString() , e);
             }
         }
     }

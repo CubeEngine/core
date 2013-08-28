@@ -20,37 +20,30 @@ package de.cubeisland.engine.baumguard.storage;
 import java.util.Arrays;
 import java.util.Collection;
 
+import org.bukkit.Material;
+import org.bukkit.entity.EntityType;
+
+import de.cubeisland.engine.core.util.matcher.Match;
 import gnu.trove.map.TByteObjectMap;
 import gnu.trove.map.hash.TByteObjectHashMap;
 
-import static de.cubeisland.engine.baumguard.storage.GuardType.PRIVATE;
-import static de.cubeisland.engine.baumguard.storage.GuardType.PUBLIC;
+import static de.cubeisland.engine.baumguard.storage.ProtectionFlags.*;
 
 public enum ProtectedType
 {
-    CONTAINER(1), // supports ALL
-    DOOR(2, PRIVATE, PUBLIC),
-    BLOCK(3, PRIVATE, PUBLIC),
-    ENTITY_CONTAINER(4),
-    ENTITY_LIVING(5, PRIVATE, PUBLIC),
-    ENTITY_VEHICLE(6, PRIVATE, PUBLIC),
-    ENTITY(7, PRIVATE, PUBLIC);
-
-    public final byte id;
+    CONTAINER(1, BLOCK_HOPPER_ANY_IN, BLOCK_HOPPER_MINECART_OUT, BLOCK_HOPPER_OUT, MAGNET),
+    DOOR(2, BLOCK_REDSTONE, AUTOCLOSE),
+    BLOCK(3, BLOCK_REDSTONE),
+    ENTITY_CONTAINER(4, BLOCK_HOPPER_ANY_IN, BLOCK_HOPPER_MINECART_OUT, BLOCK_HOPPER_OUT, MAGNET),
+    // TODO living container ?
+    ENTITY_LIVING(5),
+    ENTITY_VEHICLE(6),
+    ENTITY(7);
 
     private static TByteObjectMap<ProtectedType> protectedTypes = new TByteObjectHashMap<>();
-    public final Collection<GuardType> supportedTypes;
 
-    private ProtectedType(int id, GuardType... supportedTypes)
-    {
-        this.supportedTypes = Arrays.asList(supportedTypes);
-        this.id = (byte)id;
-    }
-
-    private ProtectedType(int id)
-    {
-        this(id, GuardType.values());
-    }
+    public final byte id;
+    public final Collection<ProtectionFlags> supportedFlags;
 
     static
     {
@@ -60,8 +53,68 @@ public enum ProtectedType
         }
     }
 
+    private ProtectedType(int id, ProtectionFlags... supportedFlags)
+    {
+        this.supportedFlags = Arrays.asList(supportedFlags);
+        this.id = (byte)id;
+    }
+
     public static ProtectedType forByte(Byte protectedType)
     {
         return protectedTypes.get(protectedType);
+    }
+
+
+    public static ProtectedType getProtectedType(Material material)
+    {
+        switch (material)
+        {
+            case CHEST:
+            case TRAPPED_CHEST:
+            case DISPENSER:
+            case DROPPER:
+            case FURNACE:
+            case BURNING_FURNACE:
+            case BREWING_STAND:
+            case BEACON:
+            case HOPPER:
+                return CONTAINER;
+            case WOODEN_DOOR:
+            case IRON_DOOR_BLOCK:
+            case FENCE_GATE:
+            case TRAP_DOOR:
+                return DOOR;
+        default:
+            if (material.getId() < 256) return BLOCK;
+        }
+        throw new IllegalStateException("Material of block is an item!?");
+    }
+
+    public static ProtectedType getProtectedType(EntityType type)
+    {
+        switch (type)
+        {
+        case MINECART_CHEST:
+        case MINECART_HOPPER:
+            return ENTITY_CONTAINER;
+        case HORSE:
+            return ENTITY_CONTAINER;
+        case LEASH_HITCH:
+        case PAINTING:
+        case ITEM_FRAME:
+        case MINECART_FURNACE:
+        case MINECART_TNT:
+        case MINECART_MOB_SPAWNER:
+            return ENTITY;
+        case BOAT:
+        case MINECART:
+            return ENTITY_VEHICLE;
+        default:
+            if (!Match.entity().isMonster(type) && type.isAlive())
+            {
+                return ENTITY_LIVING;
+            }
+            throw new IllegalArgumentException(type.name() + " is not allowed!");
+        }
     }
 }

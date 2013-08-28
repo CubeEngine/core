@@ -17,11 +17,37 @@
  */
 package de.cubeisland.engine.baumguard.storage;
 
+/**
+ * Flags that can be given to a protection.
+ * <p>Flags may not be supported by all {@link ProtectedType}
+ */
 public enum ProtectionFlags
 {
-    REDSTONE(1 << 0), // Door/Container
-    MAGNET(1 << 1), // ContainerType only
-    AUTOCLOSE(1 << 2);  // DoorType only
+    /**
+     * Ignore Redstone changes to protected block
+     */
+    BLOCK_REDSTONE(1 << 0),
+    /**
+     * Suck up items in a configured radius
+     */
+    MAGNET(1 << 1),
+    /**
+     * Autoclose doors etc. after a configured time
+     */
+    AUTOCLOSE(1 << 2),
+    /**
+     * Block items to get moved into a chest by a hopper OR hopper-minecart
+     */
+    BLOCK_HOPPER_ANY_IN(1 << 3),
+    /**
+     * Block items to get moved out of a chest by a hopper-block
+     */
+    BLOCK_HOPPER_OUT(1 << 4),
+    /**
+     * Block items to get moved out of a chest by a hopper-minecart
+     */
+    BLOCK_HOPPER_MINECART_OUT(1 << 5),
+    ;
 
     public final short flagValue;
 

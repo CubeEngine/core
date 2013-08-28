@@ -52,6 +52,6 @@ public class StringNode extends Node
     @Override
     public String toString()
     {
-        return this.getValue();
+        return "StringNode=["+value+"]";
     }
 }

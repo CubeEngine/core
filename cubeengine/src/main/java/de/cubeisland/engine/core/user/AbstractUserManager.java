@@ -19,9 +19,9 @@ package de.cubeisland.engine.core.user;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
-import java.io.FileNotFoundException;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
+import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -331,7 +331,7 @@ public abstract class AbstractUserManager implements UserManager
         {
             this.salt = reader.readLine();
         }
-        catch (FileNotFoundException e)
+        catch (NoSuchFileException e)
         {
             try
             {

@@ -22,9 +22,12 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.io.Writer;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.text.SimpleDateFormat;
 import java.util.Collections;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -389,7 +392,7 @@ public final class BukkitCore extends JavaPlugin implements Core
         this.moduleManager.enableModules();
         this.permissionManager.calculatePermissions();
 
-        this.freezeDetection = new FreezeDetection(this);
+        this.freezeDetection = new FreezeDetection(this, 20);
         this.freezeDetection.addListener(new Runnable() {
             @Override
             public void run()
@@ -516,27 +519,19 @@ public final class BukkitCore extends JavaPlugin implements Core
             this.getLog().debug(e.getLocalizedMessage(), e);
             return;
         }
-        try (BufferedWriter writer = Files.newBufferedWriter(threadDumpFolder.resolve(System.currentTimeMillis() + ".dump"), Core.CHARSET))
+
+        try (BufferedWriter writer = Files.newBufferedWriter(threadDumpFolder.resolve(new SimpleDateFormat("yyyy.MM.dd--HHmmss", Locale.US).format(new Date()) + ".dump"), Core.CHARSET))
         {
-            Thread t;
-            int i = 0;
+            Thread main = CubeEngine.getMainThread();
+            int i = 1;
+
+            dumpStackTrace(writer, main, main.getStackTrace(), i);
             for (Entry<Thread, StackTraceElement[]> entry : Thread.getAllStackTraces().entrySet())
             {
-                t = entry.getKey();
-
-                writer.write("Thread #" + ++i + "\n");
-                writer.write("ID: " + t.getId() + "\n");
-                writer.write("Name: " + t.getName() + "\n");
-                writer.write("State: " + t.getState().name() + "\n");
-                writer.write("Stacktrace:\n");
-
-                int j = 0;
-                for (StackTraceElement e : entry.getValue())
+                if (entry.getKey() != main)
                 {
-                    writer.write("#" + ++j + " " + e.getClassName() + '.' + e.getMethodName() + '(' + e.getFileName() + ':' + e.getLineNumber() + ')');
+                    dumpStackTrace(writer, entry.getKey(), entry.getValue(), ++i);
                 }
-
-                writer.write("\n\n\n");
             }
         }
         catch (IOException e)
@@ -544,6 +539,23 @@ public final class BukkitCore extends JavaPlugin implements Core
             this.getLog().warn("Failed to write a thread dump!");
             this.getLog().debug(e.getLocalizedMessage(), e);
         }
+    }
+
+    private static void dumpStackTrace(Writer writer, Thread t, StackTraceElement[] trace, int i) throws IOException
+    {
+        writer.write("Thread #" + i + "\n");
+        writer.write("ID: " + t.getId() + "\n");
+        writer.write("Name: " + t.getName() + "\n");
+        writer.write("State: " + t.getState().name() + "\n");
+        writer.write("Stacktrace:\n");
+
+        int j = 0;
+        for (StackTraceElement e : trace)
+        {
+            writer.write("  #" + ++j + " " + e.getClassName() + '.' + e.getMethodName() + '(' + e.getFileName() + ':' + e.getLineNumber() + ")\n");
+        }
+
+        writer.write("\n\n\n");
     }
 
 

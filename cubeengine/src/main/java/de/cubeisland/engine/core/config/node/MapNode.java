@@ -20,6 +20,7 @@ package de.cubeisland.engine.core.config.node;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 
 import de.cubeisland.engine.core.CubeEngine;
@@ -29,7 +30,6 @@ import gnu.trove.map.hash.THashMap;
 
 public class MapNode extends ParentNode
 {
-
     private LinkedHashMap<String, Node> mappedNodes = new LinkedHashMap<>();
     private THashMap<String, String> keys = new THashMap<>(); // LowerCase trimmed -> Original
     private LinkedHashMap<Node, String> reverseMappedNodes = new LinkedHashMap<>();
@@ -170,5 +170,17 @@ public class MapNode extends ParentNode
         {
             this.mappedNodes.remove(key);
         }
+    }
+
+    @Override
+    public String toString()
+    {
+        StringBuilder sb = new StringBuilder("MapNode=[");
+        for (Entry<String, Node> entry : this.mappedNodes.entrySet())
+        {
+            sb.append("\n").append(entry.getKey()).append(": ").append(entry.getValue().toString());
+        }
+        sb.append("]MapEnd");
+        return sb.toString();
     }
 }
