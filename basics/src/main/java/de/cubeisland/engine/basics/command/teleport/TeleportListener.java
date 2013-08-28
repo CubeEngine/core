@@ -52,7 +52,6 @@ public class TeleportListener implements Listener
         {
             case COMMAND:
             case PLUGIN:
-            case UNKNOWN:
                 user.get(BasicsAttachment.class).setLastLocation(event.getFrom());
         }
     }
