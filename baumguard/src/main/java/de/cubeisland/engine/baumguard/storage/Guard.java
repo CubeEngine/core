@@ -387,7 +387,9 @@ public class Guard
 
                 if (access.canIn() && access.canOut())
                 {
-                    if (this.getProtectedType().equals(ProtectedType.CONTAINER) || this.getProtectedType().equals(ProtectedType.ENTITY_CONTAINER))
+                    if (this.getProtectedType().equals(ProtectedType.CONTAINER)
+                        || this.getProtectedType().equals(ProtectedType.ENTITY_CONTAINER)
+                        || this.getProtectedType().equals(ProtectedType.ENTITY_CONTAINER_LIVING))
                     {
                         user.sendTranslated("&abut is does not hinder you to put/take items in/out");
                     }

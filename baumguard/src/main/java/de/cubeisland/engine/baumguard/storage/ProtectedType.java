@@ -35,10 +35,11 @@ public enum ProtectedType
     DOOR(2, BLOCK_REDSTONE, AUTOCLOSE),
     BLOCK(3, BLOCK_REDSTONE),
     ENTITY_CONTAINER(4, BLOCK_HOPPER_ANY_IN, BLOCK_HOPPER_MINECART_OUT, BLOCK_HOPPER_OUT, MAGNET),
-    // TODO living container ?
     ENTITY_LIVING(5),
     ENTITY_VEHICLE(6),
-    ENTITY(7);
+    ENTITY(7),
+    ENTITY_CONTAINER_LIVING(8, MAGNET),
+    ;
 
     private static TByteObjectMap<ProtectedType> protectedTypes = new TByteObjectHashMap<>();
 
@@ -98,7 +99,7 @@ public enum ProtectedType
         case MINECART_HOPPER:
             return ENTITY_CONTAINER;
         case HORSE:
-            return ENTITY_CONTAINER;
+            return ENTITY_CONTAINER_LIVING;
         case LEASH_HITCH:
         case PAINTING:
         case ITEM_FRAME:
