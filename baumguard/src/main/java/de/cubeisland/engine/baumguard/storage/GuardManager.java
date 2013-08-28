@@ -129,6 +129,10 @@ public class GuardManager implements Listener
     {
         Guard guard = this.loadedGuards.get(location);
         if (access && guard != null) guard.model.setLastAccess(new Timestamp(System.currentTimeMillis()));
+        if (guard != null)
+        {
+            guard.validateTypeAt(location);
+        }
         return guard;
     }
 
@@ -324,8 +328,6 @@ public class GuardManager implements Listener
                     DoubleChest dc = (DoubleChest)chest.getInventory().getHolder();
                     locations.add(((BlockState)dc.getLeftSide()).getLocation());
                     locations.add(((BlockState)dc.getRightSide()).getLocation());
-                    this.dsl.newRecord(TABLE_GUARD_LOCATION).newLocation(model, locations.get(0)).insert();
-                    this.dsl.newRecord(TABLE_GUARD_LOCATION).newLocation(model, locations.get(1)).insert();
                 }
             }
             break;
@@ -339,17 +341,12 @@ public class GuardManager implements Listener
                     {
                         locations.add(location.clone().add(0, -1, 0));
                         botBlock = locations.get(1).getBlock();
-                        locations.add(locations.get(1).clone().add(0, -1, 0));
                     }
                     else
                     {
                         botBlock = location.getBlock();
                         locations.add(location.clone().add(0, 1, 0));
-                        locations.add(location.clone().add(0, -1, 0));
                     }
-                    this.dsl.newRecord(TABLE_GUARD_LOCATION).newLocation(model, locations.get(0)).insert();
-                    this.dsl.newRecord(TABLE_GUARD_LOCATION).newLocation(model, locations.get(1)).insert();
-                    this.dsl.newRecord(TABLE_GUARD_LOCATION).newLocation(model, locations.get(2)).insert();
                     for (BlockFace blockFace : BlockUtil.CARDINAL_DIRECTIONS)
                     {
                         if (botBlock.getRelative(blockFace).getType().equals(block.getType())) // same door type
@@ -363,11 +360,7 @@ public class GuardManager implements Listener
                                 if (botDoor.getFacing() == relativeBot.getFacing() && topDoor.getData() != relativeTop.getData()) // Facing same & opposite hinge
                                 {
                                     locations.add(botBlock.getRelative(blockFace).getLocation());
-                                    locations.add(locations.get(3).clone().add(0,1,0));
-                                    locations.add(locations.get(3).clone().add(0,-1,0));
-                                    this.dsl.newRecord(TABLE_GUARD_LOCATION).newLocation(model, locations.get(3)).insert();
-                                    this.dsl.newRecord(TABLE_GUARD_LOCATION).newLocation(model, locations.get(4)).insert();
-                                    this.dsl.newRecord(TABLE_GUARD_LOCATION).newLocation(model, locations.get(5)).insert();
+                                    locations.add(locations.get(2).clone().add(0, 1, 0));
                                     break;
                                 }
 
@@ -379,7 +372,10 @@ public class GuardManager implements Listener
         if (locations.isEmpty())
         {
             locations.add(location);
-            this.dsl.newRecord(TABLE_GUARD_LOCATION).newLocation(model, location).insert();
+        }
+        for (Location loc : locations)
+        {
+            this.dsl.newRecord(TABLE_GUARD_LOCATION).newLocation(model, loc).insert();
         }
         Guard guard = new Guard(this, model, locations);
         this.addLoadedLocationGuard(guard);

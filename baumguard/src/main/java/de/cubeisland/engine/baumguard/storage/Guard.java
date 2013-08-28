@@ -81,12 +81,14 @@ public class Guard
         {
             this.locations.add(this.getLocation(guardLoc));
         }
+        this.isValidType = false;
     }
 
     public Guard(GuardManager manager, GuardModel model, List<Location> locations)
     {
         this(manager, model);
         this.locations.addAll(locations);
+        this.isValidType = false;
     }
 
     private Location getLocation(GuardLocationModel model)
@@ -550,5 +552,27 @@ public class Guard
         }
         taskId = this.manager.module.getCore().getTaskManager()
                             .runTaskDelayed(this.manager.module, run, this.manager.module.getConfig().autoCloseSeconds * 20);
+    }
+
+    /**
+     * Always true for EntityGuards
+     */
+    private boolean isValidType = true;
+
+    public void validateTypeAt(Location location)
+    {
+        if (ProtectedType.getProtectedType(location.getBlock().getType()).equals(this.getProtectedType()))
+        {
+            this.isValidType = true;
+        }
+        else
+        {
+            this.manager.module.getLog().warn("ProtectedTypes do not match for Guard at {}" ,location.toString());
+        }
+    }
+
+    public boolean isValidType()
+    {
+        return isValidType;
     }
 }

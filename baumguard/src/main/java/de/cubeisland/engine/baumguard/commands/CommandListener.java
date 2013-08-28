@@ -108,6 +108,12 @@ public class CommandListener implements Listener
             Guard guard = this.manager.getGuardAtLocation(location, !triplet.getFirst().equals(INFO));
             if (triplet.getFirst().isCreator())
             {
+                if (guard != null && !guard.isValidType())
+                {
+                    user.sendTranslated("&eExisting BlockProtection is not valid!");
+                    guard.delete(user);
+                    guard = null;
+                }
                 if (guard != null)
                 {
                     user.sendTranslated("&eThis block is already protected!");
