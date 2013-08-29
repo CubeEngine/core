@@ -64,6 +64,7 @@ public class RolesEventHandler implements Listener
         User user = this.module.getCore().getUserManager().findUser(event.getName());
         if (user != null && (user.hasPlayedBefore() || user.isOnline())) // prevent NPE for players that are banned but never joined the server
         {
+            // TODO this has to be sync
             RolesAttachment rolesAttachment = this.rolesManager.getRolesAttachment(user);
             rolesAttachment.getResolvedData(user.getWorldId()); // Pre-calculate
         }

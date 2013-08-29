@@ -18,9 +18,9 @@
 package de.cubeisland.engine.core.config;
 
 import java.io.BufferedReader;
-import java.io.FileNotFoundException;
 import java.lang.reflect.Field;
 import java.nio.file.Files;
+import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 import java.util.HashSet;
 
@@ -64,7 +64,7 @@ public class MultiConfiguration<ConfigCodec extends MultiConfigurationCodec> ext
             {
                 childConfig.getCodec().loadChildConfig(childConfig, reader);
             }
-            catch (FileNotFoundException ignored) // not found load from parent / save child
+            catch (NoSuchFileException ignored) // not found load from parent / save child
             {
                 childConfig.getCodec().loadChildConfig(childConfig, null);
             }
