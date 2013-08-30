@@ -36,7 +36,7 @@ import org.jooq.impl.SQLDataType;
 import org.jooq.impl.TableImpl;
 import org.jooq.types.UInteger;
 
-import static de.cubeisland.engine.locker.storage.TableGuards.TABLE_GUARD;
+import static de.cubeisland.engine.locker.storage.TableLocks.TABLE_GUARD;
 import static de.cubeisland.engine.core.user.TableUser.TABLE_USER;
 
 public class TableAccessList extends TableImpl<AccessListModel> implements TableCreator<AccessListModel>
@@ -45,12 +45,12 @@ public class TableAccessList extends TableImpl<AccessListModel> implements Table
 
     private TableAccessList(String prefix)
     {
-        super(prefix + "guardaccesslist");
+        super(prefix + "lockaccesslist");
         IDENTITY = Keys.identity(this, this.ID);
         PRIMARY_KEY = Keys.uniqueKey(this, this.ID);
-        UNIQUE_ACCESS = Keys.uniqueKey(this, this.USER_ID, this.GUARD_ID);
+        UNIQUE_ACCESS = Keys.uniqueKey(this, this.USER_ID, this.LOCK_ID);
         FOREIGN_USER = Keys.foreignKey(TABLE_USER.PRIMARY_KEY, this, this.USER_ID);
-        FOREIGN_GUARD = Keys.foreignKey(TABLE_GUARD.PRIMARY_KEY, this, this.GUARD_ID);
+        FOREIGN_GUARD = Keys.foreignKey(TABLE_GUARD.PRIMARY_KEY, this, this.LOCK_ID);
     }
 
     public static TableAccessList initTable(Database database)
@@ -66,12 +66,12 @@ public class TableAccessList extends TableImpl<AccessListModel> implements Table
         connection.prepareStatement("CREATE TABLE IF NOT EXISTS " + this.getName()+ " (\n" +
                                         "`id` int(10) unsigned NOT NULL AUTO_INCREMENT,\n" +
                                         "`user_id` int(10) unsigned NOT NULL,\n" +
-                                        "`guard_id` int(10) unsigned DEFAULT NULL,\n" +
+                                        "`lock_id` int(10) unsigned DEFAULT NULL,\n" +
                                         "`level` smallint NOT NULL,\n" +
                                         "PRIMARY KEY (`id`),\n" +
-                                        "UNIQUE KEY (`user_id`, `guard_id`),\n" +
+                                        "UNIQUE KEY (`user_id`, `lock_id`),\n" +
                                         "FOREIGN KEY f_user (`user_id`) REFERENCES " + TABLE_USER.getName() + " (`key`) ON UPDATE CASCADE ON DELETE CASCADE,\n" +
-                                        "FOREIGN KEY f_guard (`guard_id`) REFERENCES " + TABLE_GUARD.getName() + " (`id`) ON UPDATE CASCADE ON DELETE CASCADE)\n" +
+                                        "FOREIGN KEY f_guard (`lock_id`) REFERENCES " + TABLE_GUARD.getName() + " (`id`) ON UPDATE CASCADE ON DELETE CASCADE)\n" +
                                         "ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci\n" +
                                         "COMMENT='1.0.0'").execute();
     }
@@ -88,11 +88,11 @@ public class TableAccessList extends TableImpl<AccessListModel> implements Table
     public final UniqueKey<AccessListModel> PRIMARY_KEY;
     public final UniqueKey<AccessListModel> UNIQUE_ACCESS;
     public final ForeignKey<AccessListModel, UserEntity> FOREIGN_USER;
-    public final ForeignKey<AccessListModel, GuardModel> FOREIGN_GUARD;
+    public final ForeignKey<AccessListModel, LockModel> FOREIGN_GUARD;
 
     public final TableField<AccessListModel, UInteger> ID = createField("id", SQLDataType.INTEGERUNSIGNED, this);
     public final TableField<AccessListModel, UInteger> USER_ID = createField("user_id", SQLDataType.INTEGERUNSIGNED, this);
-    public final TableField<AccessListModel, UInteger> GUARD_ID = createField("guard_id", SQLDataType.INTEGERUNSIGNED, this);
+    public final TableField<AccessListModel, UInteger> LOCK_ID = createField("lock_id", SQLDataType.INTEGERUNSIGNED, this);
     // BitMask granting the user access to a protection (this is NOT restricting) (if ACCESS_PUT is not set on a donation chest it does not matter)
     public final TableField<AccessListModel, Short> LEVEL = createField("level", SQLDataType.SMALLINT, this);
 

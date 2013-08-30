@@ -20,20 +20,20 @@ package de.cubeisland.engine.locker;
 import java.util.HashSet;
 import java.util.Set;
 
-import de.cubeisland.engine.locker.storage.Guard;
+import de.cubeisland.engine.locker.storage.Lock;
 import de.cubeisland.engine.core.user.UserAttachment;
 
-public class GuardAttachment extends UserAttachment
+public class LockerAttachment extends UserAttachment
 {
     private Set<Long> unlockedProtections = new HashSet<>();
 
-    public void addUnlock(Guard guard)
+    public void addUnlock(Lock locker)
     {
-        unlockedProtections.add(guard.getId());
+        unlockedProtections.add(locker.getId());
     }
 
-    public boolean hasUnlocked(Guard guard)
+    public boolean hasUnlocked(Lock locker)
     {
-        return this.unlockedProtections.contains(guard.getId());
+        return this.unlockedProtections.contains(locker.getId());
     }
 }

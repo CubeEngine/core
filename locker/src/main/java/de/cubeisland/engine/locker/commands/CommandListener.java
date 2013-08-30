@@ -31,46 +31,45 @@ import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.InventoryHolder;
 
-import de.cubeisland.engine.locker.Locker;
-import de.cubeisland.engine.locker.storage.Guard;
-import de.cubeisland.engine.locker.storage.GuardManager;
-import de.cubeisland.engine.locker.storage.GuardType;
+import de.cubeisland.engine.locker.storage.Lock;
+import de.cubeisland.engine.locker.storage.LockManager;
+import de.cubeisland.engine.locker.storage.LockType;
 import de.cubeisland.engine.core.command.CommandSender;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.util.Triplet;
 
 import static de.cubeisland.engine.locker.commands.CommandListener.CommandType.*;
-import static de.cubeisland.engine.locker.commands.GuardCommands.isNotUser;
-import static de.cubeisland.engine.locker.storage.GuardType.*;
+import static de.cubeisland.engine.locker.commands.LockerCommands.isNotUser;
+import static de.cubeisland.engine.locker.storage.LockType.*;
 
 public class CommandListener implements Listener
 {
     private Map<String, Triplet<CommandType, String, Boolean>> map = new HashMap<>();
     private Set<String> persist = new HashSet<>();
 
-    private Locker module;
-    private GuardManager manager;
+    private de.cubeisland.engine.locker.Locker module;
+    private LockManager manager;
 
-    public CommandListener(Locker module, GuardManager manager)
+    public CommandListener(de.cubeisland.engine.locker.Locker module, LockManager manager)
     {
         this.module = module;
         this.manager = manager;
     }
 
-    public void setCommandType(CommandSender sender, CommandType guardtype, String pass, boolean createKeyBook)
+    public void setCommandType(CommandSender sender, CommandType commandType, String pass, boolean createKeyBook)
     {
-        this.setCommandType0(sender, guardtype, pass, createKeyBook);
+        this.setCommandType0(sender, commandType, pass, createKeyBook);
     }
 
-    public void setCommandType(CommandSender sender, CommandType modify, String players)
+    public void setCommandType(CommandSender sender, CommandType commandType, String players)
     {
-        this.setCommandType0(sender, modify, players, false);
+        this.setCommandType0(sender, commandType, players, false);
     }
 
-    private void setCommandType0(CommandSender sender, CommandType guardType, String s, boolean b)
+    private void setCommandType0(CommandSender sender, CommandType commandType, String s, boolean b)
     {
         if (isNotUser(sender)) return;
-        map.put(sender.getName(), new Triplet<>(guardType, s, b));
+        map.put(sender.getName(), new Triplet<>(commandType, s, b));
         if (persist.contains(sender.getName()))
         {
             sender.sendTranslated("&ePersist mode is active. Your command will be repeated until reusing &6/cpersist");
@@ -105,16 +104,16 @@ public class CommandListener implements Listener
             User user = this.module.getCore().getUserManager().getExactUser(event.getPlayer().getName());
             Location location = event.getClickedBlock().getLocation();
             Triplet<CommandType, String, Boolean> triplet = map.get(user.getName());
-            Guard guard = this.manager.getGuardAtLocation(location, triplet.getFirst() != INFO);
+            Lock lock = this.manager.getGuardAtLocation(location, triplet.getFirst() != INFO);
             if (triplet.getFirst().isCreator())
             {
-                if (guard != null && !guard.isValidType())
+                if (lock != null && !lock.isValidType())
                 {
                     user.sendTranslated("&eExisting BlockProtection is not valid!");
-                    guard.delete(user);
-                    guard = null;
+                    lock.delete(user);
+                    lock = null;
                 }
-                if (guard != null)
+                if (lock != null)
                 {
                     user.sendTranslated("&eThis block is already protected!");
                     this.cmdUsed(user);
@@ -144,7 +143,7 @@ public class CommandListener implements Listener
                     }
                 }
             }
-            else if (guard == null)
+            else if (lock == null)
             {
                 user.sendTranslated("&6No protection detected here!");
                 event.setCancelled(true);
@@ -154,44 +153,44 @@ public class CommandListener implements Listener
             switch (triplet.getFirst())
             {
             case C_PRIVATE:
-                this.manager.createGuard(event.getClickedBlock().getType(), location, user, C_PRIVATE.guardType, triplet.getSecond(), triplet.getThird());
+                this.manager.createGuard(event.getClickedBlock().getType(), location, user, C_PRIVATE.lockType, triplet.getSecond(), triplet.getThird());
                 break;
             case C_PUBLIC:
-                this.manager.createGuard(event.getClickedBlock().getType(), location, user, C_PUBLIC.guardType, triplet.getSecond(), false);
+                this.manager.createGuard(event.getClickedBlock().getType(), location, user, C_PUBLIC.lockType, triplet.getSecond(), false);
                 break;
             case C_DONATION:
-                this.manager.createGuard(event.getClickedBlock().getType(), location, user, C_DONATION.guardType, triplet.getSecond(), triplet.getThird());
+                this.manager.createGuard(event.getClickedBlock().getType(), location, user, C_DONATION.lockType, triplet.getSecond(), triplet.getThird());
                 break;
             case C_FREE:
-                this.manager.createGuard(event.getClickedBlock().getType(), location, user, C_FREE.guardType, triplet.getSecond(), triplet.getThird());
+                this.manager.createGuard(event.getClickedBlock().getType(), location, user, C_FREE.lockType, triplet.getSecond(), triplet.getThird());
                 break;
             case C_GUARDED:
-                this.manager.createGuard(event.getClickedBlock().getType(), location, user, C_GUARDED.guardType, triplet.getSecond(), triplet.getThird());
+                this.manager.createGuard(event.getClickedBlock().getType(), location, user, C_GUARDED.lockType, triplet.getSecond(), triplet.getThird());
                 break;
             case INFO:
-                guard.showInfo(user);
+                lock.showInfo(user);
                 break;
             case MODIFY:
-                this.manager.modifyGuard(guard, user, triplet.getSecond(), triplet.getThird());
+                this.manager.modifyLock(lock, user, triplet.getSecond(), triplet.getThird());
                 break;
             case REMOVE:
-                this.manager.removeGuard(guard, user, false);
+                this.manager.removeLock(lock, user, false);
                 break;
             case UNLOCK:
-                guard.unlock(user, location, triplet.getSecond());
+                lock.unlock(user, location, triplet.getSecond());
                 break;
             case INVALIDATE_KEYS:
-                if (!guard.isOwner(user))
+                if (!lock.isOwner(user))
                 {
                     user.sendTranslated("&cThis is not your protection!");
                 }
-                else if (guard.hasPass())
+                else if (lock.hasPass())
                 {
                     user.sendTranslated("&eYou cannot invalidate BookKeys for password protected chests. &aChange the password to invalidate them!");
                 }
                 else
                 {
-                    this.manager.invalidateKeyBooks(guard);
+                    this.manager.invalidateKeyBooks(lock);
                     if (event.getClickedBlock().getState() instanceof InventoryHolder)
                     {
                         for (HumanEntity viewer : ((InventoryHolder)event.getClickedBlock().getState()).getInventory().getViewers())
@@ -202,19 +201,19 @@ public class CommandListener implements Listener
                 }
                 break;
             case KEYS:
-                if (!guard.isOwner(user))
+                if (!lock.isOwner(user))
                 {
                     user.sendTranslated("&cThis is not your protection!");
                 }
                 else
                 {
-                    if (guard.isPublic())
+                    if (lock.isPublic())
                     {
                         user.sendTranslated("&eThis container is public!");
                     }
                     else
                     {
-                        this.manager.attemptCreatingKeyBook(guard, user, triplet.getThird());
+                        this.manager.attemptCreatingKeyBook(lock, user, triplet.getThird());
                     }
                 }
                 break;
@@ -239,10 +238,10 @@ public class CommandListener implements Listener
         User user = this.module.getCore().getUserManager().getExactUser(event.getPlayer().getName());
         Location location = event.getRightClicked().getLocation();
         Triplet<CommandType, String, Boolean> triplet = map.get(user.getName());
-        Guard guard = this.manager.getGuardForEntityUID(event.getRightClicked().getUniqueId(), triplet.getFirst() != INFO);
+        Lock lock = this.manager.getGuardForEntityUID(event.getRightClicked().getUniqueId(), triplet.getFirst() != INFO);
         if (triplet.getFirst().isCreator())
         {
-            if (guard != null)
+            if (lock != null)
             {
                 user.sendTranslated("&eThis entity is already protected!");
                 this.cmdUsed(user);
@@ -272,7 +271,7 @@ public class CommandListener implements Listener
                 }
             }
         }
-        else if (guard == null)
+        else if (lock == null)
         {
             user.sendTranslated("&6No protection detected here!");
             event.setCancelled(true);
@@ -282,45 +281,45 @@ public class CommandListener implements Listener
         switch (triplet.getFirst())
         {
         case C_PRIVATE:
-            this.manager.createGuard(event.getRightClicked(), user, C_PRIVATE.guardType, triplet.getSecond(), triplet.getThird());
+            this.manager.createGuard(event.getRightClicked(), user, C_PRIVATE.lockType, triplet.getSecond(), triplet.getThird());
             break;
         case C_PUBLIC:
-            this.manager.createGuard(event.getRightClicked(), user, C_PUBLIC.guardType, triplet.getSecond(), triplet.getThird());
+            this.manager.createGuard(event.getRightClicked(), user, C_PUBLIC.lockType, triplet.getSecond(), triplet.getThird());
             break;
         case C_DONATION:
-            this.manager.createGuard(event.getRightClicked(), user, C_DONATION.guardType, triplet.getSecond(), triplet.getThird());
+            this.manager.createGuard(event.getRightClicked(), user, C_DONATION.lockType, triplet.getSecond(), triplet.getThird());
             break;
         case C_FREE:
-            this.manager.createGuard(event.getRightClicked(), user, C_FREE.guardType, triplet.getSecond(), triplet.getThird());
+            this.manager.createGuard(event.getRightClicked(), user, C_FREE.lockType, triplet.getSecond(), triplet.getThird());
             break;
         case C_GUARDED:
-            this.manager.createGuard(event.getRightClicked(), user, C_GUARDED.guardType, triplet.getSecond(), triplet.getThird());
+            this.manager.createGuard(event.getRightClicked(), user, C_GUARDED.lockType, triplet.getSecond(), triplet.getThird());
             break;
         case INFO:
-            guard.showInfo(user);
+            lock.showInfo(user);
             break;
         case MODIFY:
-            this.manager.modifyGuard(guard, user, triplet.getSecond(), triplet.getThird());
+            this.manager.modifyLock(lock, user, triplet.getSecond(), triplet.getThird());
             break;
         case REMOVE:
-            this.manager.removeGuard(guard, user, false);
+            this.manager.removeLock(lock, user, false);
             break;
         case UNLOCK:
-            guard.unlock(user, location, triplet.getSecond());
+            lock.unlock(user, location, triplet.getSecond());
             break;
         case INVALIDATE_KEYS:
 
-            if (!guard.isOwner(user))
+            if (!lock.isOwner(user))
             {
                 user.sendTranslated("&cThis is not your protection!");
             }
-            else if (guard.hasPass())
+            else if (lock.hasPass())
             {
                 user.sendTranslated("&eYou cannot invalidate BookKeys for password protected chests. &aChange the password to invalidate them!");
             }
             else
             {
-                this.manager.invalidateKeyBooks(guard);
+                this.manager.invalidateKeyBooks(lock);
                 if (event.getRightClicked() instanceof InventoryHolder)
                 {
                     for (HumanEntity viewer : ((InventoryHolder)event.getRightClicked()).getInventory().getViewers())
@@ -331,19 +330,19 @@ public class CommandListener implements Listener
             }
             break;
         case KEYS:
-            if (!guard.isOwner(user))
+            if (!lock.isOwner(user))
             {
                 user.sendTranslated("&cThis is not your protection!");
             }
             else
             {
-                if (guard.isPublic())
+                if (lock.isPublic())
                 {
                     user.sendTranslated("&eThis container is public!");
                 }
                 else
                 {
-                    this.manager.attemptCreatingKeyBook(guard, user, triplet.getThird());
+                    this.manager.attemptCreatingKeyBook(lock, user, triplet.getThird());
                 }
             }
             break;
@@ -368,21 +367,21 @@ public class CommandListener implements Listener
         KEYS
         ;
 
-        private CommandType(GuardType guardType)
+        private CommandType(LockType lockType)
         {
-            this.guardType = guardType;
+            this.lockType = lockType;
         }
 
         private CommandType()
         {
-            guardType = null;
+            lockType = null;
         }
 
-        public final GuardType guardType;
+        public final LockType lockType;
 
         public boolean isCreator()
         {
-            return guardType != null;
+            return lockType != null;
         }
     }
 }

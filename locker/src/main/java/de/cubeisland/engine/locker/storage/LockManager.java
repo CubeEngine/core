@@ -49,10 +49,9 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.material.Door;
 
-import de.cubeisland.engine.locker.Locker;
-import de.cubeisland.engine.locker.BlockGuardConfiguration;
-import de.cubeisland.engine.locker.EntityGuardConfiguration;
-import de.cubeisland.engine.locker.GuardPerm;
+import de.cubeisland.engine.locker.BlockLockerConfiguration;
+import de.cubeisland.engine.locker.EntityLockerConfiguration;
+import de.cubeisland.engine.locker.LockerPerm;
 import de.cubeisland.engine.locker.commands.CommandListener;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.user.UserManager;
@@ -66,29 +65,29 @@ import org.jooq.types.UInteger;
 
 import static de.cubeisland.engine.locker.storage.AccessListModel.ACCESS_ALL;
 import static de.cubeisland.engine.locker.storage.AccessListModel.ACCESS_FULL;
-import static de.cubeisland.engine.locker.storage.GuardType.PUBLIC;
+import static de.cubeisland.engine.locker.storage.LockType.PUBLIC;
 import static de.cubeisland.engine.locker.storage.ProtectedType.getProtectedType;
 import static de.cubeisland.engine.locker.storage.TableAccessList.TABLE_ACCESS_LIST;
-import static de.cubeisland.engine.locker.storage.TableGuardLocations.TABLE_GUARD_LOCATION;
-import static de.cubeisland.engine.locker.storage.TableGuards.TABLE_GUARD;
+import static de.cubeisland.engine.locker.storage.TableLockLocations.TABLE_GUARD_LOCATION;
+import static de.cubeisland.engine.locker.storage.TableLocks.TABLE_GUARD;
 
-public class GuardManager implements Listener
+public class LockManager implements Listener
 {
     protected final DSLContext dsl;
-    protected final Locker module;
+    protected final de.cubeisland.engine.locker.Locker module;
 
     protected WorldManager wm;
     protected UserManager um;
 
     public final CommandListener commandListener;
 
-    private final Map<Location, Guard> loadedGuards = new HashMap<>();
-    private final Map<Chunk, Set<Guard>> loadedGuardsInChunk = new HashMap<>();
-    private final Map<UUID, Guard> loadedEntityGuards = new HashMap<>();
+    private final Map<Location, Lock> loadedLocks = new HashMap<>();
+    private final Map<Chunk, Set<Lock>> loadedGuardsInChunk = new HashMap<>();
+    private final Map<UUID, Lock> loadedEntityGuards = new HashMap<>();
 
     public final MessageDigest messageDigest;
 
-    public GuardManager(Locker module)
+    public LockManager(de.cubeisland.engine.locker.Locker module)
     {
         try
         {
@@ -118,53 +117,53 @@ public class GuardManager implements Listener
      * Returns the Guard at given location
      *
      * @param location
-     * @return the guard or null if there is no guard OR the chunk is not loaded
+     * @return the lock or null if there is no lock OR the chunk is not loaded
      */
-    public Guard getGuardAtLocation(Location location)
+    public Lock getGuardAtLocation(Location location)
     {
         return getGuardAtLocation(location, true);
     }
 
-    public Guard getGuardAtLocation(Location location, boolean access)
+    public Lock getGuardAtLocation(Location location, boolean access)
     {
-        Guard guard = this.loadedGuards.get(location);
-        if (access && guard != null) guard.model.setLastAccess(new Timestamp(System.currentTimeMillis()));
-        if (guard != null)
+        Lock lock = this.loadedLocks.get(location);
+        if (access && lock != null) lock.model.setLastAccess(new Timestamp(System.currentTimeMillis()));
+        if (lock != null)
         {
-            guard.validateTypeAt(location);
+            lock.validateTypeAt(location);
         }
-        return guard;
+        return lock;
     }
 
-    public Guard getGuardForEntityUID(UUID uniqueId, boolean access)
+    public Lock getGuardForEntityUID(UUID uniqueId, boolean access)
     {
-        Guard guard = this.loadedEntityGuards.get(uniqueId);
-        if (guard == null)
+        Lock lock = this.loadedEntityGuards.get(uniqueId);
+        if (lock == null)
         {
-            GuardModel model = this.dsl.selectFrom(TABLE_GUARD).where(TABLE_GUARD.ENTITY_UID_LEAST.eq(uniqueId.getLeastSignificantBits()),
+            LockModel model = this.dsl.selectFrom(TABLE_GUARD).where(TABLE_GUARD.ENTITY_UID_LEAST.eq(uniqueId.getLeastSignificantBits()),
                                                                       TABLE_GUARD.ENTITY_UID_MOST.eq(uniqueId.getMostSignificantBits())).fetchOne();
             if (model != null)
             {
-                guard = new Guard(this, model);
-                this.loadedEntityGuards.put(uniqueId, guard);
+                lock = new Lock(this, model);
+                this.loadedEntityGuards.put(uniqueId, lock);
             }
         }
-        if (access && guard != null) guard.model.setLastAccess(new Timestamp(System.currentTimeMillis()));
-        return guard;
+        if (access && lock != null) lock.model.setLastAccess(new Timestamp(System.currentTimeMillis()));
+        return lock;
         // TODO handle unloading & garbage collection e.g. when entities got removed by WE
     }
 
-    public Guard getGuardForEntityUID(UUID uniqueId)
+    public Lock getGuardForEntityUID(UUID uniqueId)
     {
         return this.getGuardForEntityUID(uniqueId, true);
     }
 
-    public void extendGuard(Guard guard, Location location)
+    public void extendLock(Lock lock, Location location)
     {
-        guard.locations.add(location);
-        GuardLocationModel model = this.dsl.newRecord(TABLE_GUARD_LOCATION).newLocation(guard.model, location);
+        lock.locations.add(location);
+        LockLocationModel model = this.dsl.newRecord(TABLE_GUARD_LOCATION).newLocation(lock.model, location);
         model.insert();
-        this.loadedGuards.put(location.clone(), guard);
+        this.loadedLocks.put(location.clone(), lock);
     }
 
     @EventHandler
@@ -176,125 +175,125 @@ public class GuardManager implements Listener
     private void loadChunk(Chunk chunk)
     {
         UInteger world_id = UInteger.valueOf(this.wm.getWorldId(chunk.getWorld()));
-        Result<GuardModel> models = this.dsl.selectFrom(TABLE_GUARD).where(
+        Result<LockModel> models = this.dsl.selectFrom(TABLE_GUARD).where(
                     TABLE_GUARD.ID.in(this.dsl
                      .select(TABLE_GUARD_LOCATION.GUARD_ID)
                      .from(TABLE_GUARD_LOCATION)
                      .where(TABLE_GUARD_LOCATION.WORLD_ID.eq(world_id), TABLE_GUARD_LOCATION.CHUNKX.eq(chunk
                                                                                                            .getX()), TABLE_GUARD_LOCATION
                                 .CHUNKZ.eq(chunk.getZ())))).fetch();
-        Map<UInteger, Result<GuardLocationModel>> locations = this.dsl.selectFrom(TABLE_GUARD_LOCATION)
+        Map<UInteger, Result<LockLocationModel>> locations = this.dsl.selectFrom(TABLE_GUARD_LOCATION)
                                                                       .where(TABLE_GUARD_LOCATION.GUARD_ID.in(models.getValues(TABLE_GUARD.ID)))
                                                                       .fetch().intoGroups(TABLE_GUARD_LOCATION.GUARD_ID);
-        for (GuardModel model : models)
+        for (LockModel model : models)
         {
-            Result<GuardLocationModel> guardLoc = locations.get(model.getId());
-            this.addLoadedLocationGuard(new Guard(this, model, guardLoc));
+            Result<LockLocationModel> lockLoc = locations.get(model.getId());
+            this.addLoadedLocationGuard(new Lock(this, model, lockLoc));
         }
     }
 
-    private void addLoadedLocationGuard(Guard guard)
+    private void addLoadedLocationGuard(Lock lock)
     {
-        for (Location location : guard.getLocations())
+        for (Location location : lock.getLocations())
         {
-            this.addLoadedLocationGuard(location, guard);
+            this.addLoadedLocationGuard(location, lock);
         }
     }
 
-    private void addLoadedLocationGuard(Location loc, Guard guard)
+    private void addLoadedLocationGuard(Location loc, Lock lock)
     {
         if (loc.getChunk().isLoaded())
         {
-            Set<Guard> guards = this.loadedGuardsInChunk.get(loc.getChunk());
-            if (guards == null)
+            Set<Lock> locks = this.loadedGuardsInChunk.get(loc.getChunk());
+            if (locks == null)
             {
-                guards = new HashSet<>();
-                this.loadedGuardsInChunk.put(loc.getChunk(), guards);
+                locks = new HashSet<>();
+                this.loadedGuardsInChunk.put(loc.getChunk(), locks);
             }
-            guards.add(guard);
+            locks.add(lock);
         }
-        this.loadedGuards.put(loc, guard);
+        this.loadedLocks.put(loc, lock);
     }
 
     @EventHandler
     public void onChunkUnload(ChunkUnloadEvent event)
     {
-        Set<Guard> remove = this.loadedGuardsInChunk.remove(event.getChunk());
+        Set<Lock> remove = this.loadedGuardsInChunk.remove(event.getChunk());
         if (remove == null) return; // nothing to remove
-        for (Guard guard : remove) // remove from chunks
+        for (Lock lock : remove) // remove from chunks
         {
-            if (guard.isSingleBlockGuard())
+            if (lock.isSingleBlockGuard())
             {
-                this.loadedGuards.remove(guard.getLocation()); // remove loc
+                this.loadedLocks.remove(lock.getLocation()); // remove loc
             }
             else
             {
-                if (guard.getLocation().getChunk() == guard.getLocation().getChunk()) // same chunk remove both loc
+                if (lock.getLocation().getChunk() == lock.getLocation().getChunk()) // same chunk remove both loc
                 {
-                    this.loadedGuards.remove(guard.getLocation());
-                    this.loadedGuards.remove(guard.getLocation2());
+                    this.loadedLocks.remove(lock.getLocation());
+                    this.loadedLocks.remove(lock.getLocation2());
                 }
                 else // different chunks
                 {
-                    Chunk c1 = guard.getLocation().getChunk();
-                    Chunk c2 = guard.getLocation2().getChunk();
+                    Chunk c1 = lock.getLocation().getChunk();
+                    Chunk c2 = lock.getLocation2().getChunk();
                     Chunk chunk = event.getChunk();
                     if ((!c1.isLoaded() && c2 == chunk)
                       ||(!c2.isLoaded() && c1 == chunk))
                     {// Both chunks will be unloaded remove both loc
-                        this.loadedGuards.remove(guard.getLocation());
-                        this.loadedGuards.remove(guard.getLocation2());
+                        this.loadedLocks.remove(lock.getLocation());
+                        this.loadedLocks.remove(lock.getLocation2());
                     }
                     // else the other chunk is still loaded -> do not remove!
                 }
             }
-            guard.model.update(); // updates if changed (last_access timestamp)
+            lock.model.update(); // updates if changed (last_access timestamp)
         }
     }
 
-    public void removeGuard(Guard guard, User user, boolean destroyed)
+    public void removeLock(Lock lock, User user, boolean destroyed)
     {
         if (!destroyed)
         {
-            if (!(guard.isOwner(user) || GuardPerm.CMD_REMOVE_OTHER.isAuthorized(user)))
+            if (!(lock.isOwner(user) || LockerPerm.CMD_REMOVE_OTHER.isAuthorized(user)))
             {
                 user.sendTranslated("&cThis protection is not yours!");
                 return;
             }
         }
-        guard.model.delete();
-        if (guard.isBlockGuard())
+        lock.model.delete();
+        if (lock.isBlockGuard())
         {
-            for (Location location : guard.getLocations())
+            for (Location location : lock.getLocations())
             {
-                this.loadedGuards.remove(location);
-                Set<Guard> guards = this.loadedGuardsInChunk.get(location.getChunk());
-                if (guards != null)
+                this.loadedLocks.remove(location);
+                Set<Lock> locks = this.loadedGuardsInChunk.get(location.getChunk());
+                if (locks != null)
                 {
-                    guards.remove(guard);
+                    locks.remove(lock);
                 }
             }
         }
         else
         {
-            this.loadedEntityGuards.remove(guard.model.getUUID());
+            this.loadedEntityGuards.remove(lock.model.getUUID());
         }
         if (user != null) user.sendTranslated("&aRemoved Guard!");
     }
 
-    public void invalidateKeyBooks(Guard guard)
+    public void invalidateKeyBooks(Lock lock)
     {
-        this.createPassword(guard.model, null);
-        guard.model.update();
+        this.createPassword(lock.model, null);
+        lock.model.update();
     }
 
     /**
-     * Sets a new password for given guard-model
+     * Sets a new password for given lock-model
      *
      * @param model
      * @param pass
      */
-    private void createPassword(GuardModel model, String pass)
+    private void createPassword(LockModel model, String pass)
     {
         if (pass != null)
         {
@@ -310,9 +309,9 @@ public class GuardManager implements Listener
         }
     }
 
-    public Guard createGuard(Material material, Location location, User user, GuardType guardType, String password, boolean createKeyBook)
+    public Lock createGuard(Material material, Location location, User user, LockType lockType, String password, boolean createKeyBook)
     {
-        GuardModel model = this.dsl.newRecord(TABLE_GUARD).newGuard(user, guardType, getProtectedType(material));
+        LockModel model = this.dsl.newRecord(TABLE_GUARD).newGuard(user, lockType, getProtectedType(material));
         this.createPassword(model, password);
         model.insert();
         List<Location> locations = new ArrayList<>();
@@ -377,28 +376,28 @@ public class GuardManager implements Listener
         {
             this.dsl.newRecord(TABLE_GUARD_LOCATION).newLocation(model, loc).insert();
         }
-        Guard guard = new Guard(this, model, locations);
-        this.addLoadedLocationGuard(guard);
-        this.showCreatedMessage(guard, user);
-        this.attemptCreatingKeyBook(guard, user, createKeyBook);
-        return guard;
+        Lock lock = new Lock(this, model, locations);
+        this.addLoadedLocationGuard(lock);
+        this.showCreatedMessage(lock, user);
+        this.attemptCreatingKeyBook(lock, user, createKeyBook);
+        return lock;
     }
 
-    public Guard createGuard(Entity entity, User user, GuardType guardType, String password, boolean createKeyBook)
+    public Lock createGuard(Entity entity, User user, LockType lockType, String password, boolean createKeyBook)
     {
-        GuardModel model = this.dsl.newRecord(TABLE_GUARD).newGuard(user, guardType, getProtectedType(entity.getType()), entity.getUniqueId());
+        LockModel model = this.dsl.newRecord(TABLE_GUARD).newGuard(user, lockType, getProtectedType(entity.getType()), entity.getUniqueId());
         this.createPassword(model, password);
         model.insert();
-        Guard guard = new Guard(this, model);
-        this.loadedEntityGuards.put(entity.getUniqueId(), guard);
-        this.showCreatedMessage(guard, user);
-        this.attemptCreatingKeyBook(guard, user, createKeyBook);
-        return guard;
+        Lock lock = new Lock(this, model);
+        this.loadedEntityGuards.put(entity.getUniqueId(), lock);
+        this.showCreatedMessage(lock, user);
+        this.attemptCreatingKeyBook(lock, user, createKeyBook);
+        return lock;
     }
 
-    private void showCreatedMessage(Guard guard, User user)
+    private void showCreatedMessage(Lock lock, User user)
     {
-        switch (guard.getGuardType())
+        switch (lock.getLockType())
         {
             case PRIVATE:
                 user.sendTranslated("&cPrivate Protection created!");
@@ -418,9 +417,9 @@ public class GuardManager implements Listener
         }
     }
 
-    public void attemptCreatingKeyBook(Guard guard, User user, Boolean third)
+    public void attemptCreatingKeyBook(Lock lock, User user, Boolean third)
     {
-        if (guard.getGuardType() == PUBLIC) return; // ignore
+        if (lock.getLockType() == PUBLIC) return; // ignore
         if (!this.module.getConfig().allowKeyBooks)
         {
             user.sendTranslated("&aKeyBooks are not enabled!");
@@ -433,7 +432,7 @@ public class GuardManager implements Listener
                 int amount = user.getItemInHand().getAmount() -1;
                 ItemStack itemStack = new ItemStack(Material.ENCHANTED_BOOK, 1);
                 ItemMeta itemMeta = itemStack.getItemMeta();
-                itemMeta.setDisplayName(guard.getColorPass() + ChatFormat.parseFormats("&r&6KeyBook &8#" + guard.getId()));
+                itemMeta.setDisplayName(lock.getColorPass() + ChatFormat.parseFormats("&r&6KeyBook &8#" + lock.getId()));
                 itemMeta.setLore(Arrays.asList(user.translate(ChatFormat.parseFormats("&eThis book can")),
                                                user.translate(ChatFormat.parseFormats("&eunlock a magically")),
                                                user.translate(ChatFormat.parseFormats("&elocked container"))));
@@ -456,22 +455,22 @@ public class GuardManager implements Listener
 
     /**
      *
-     * @param guard
+     * @param lock
      * @param modifyUser
      * @param add
      * @param level
      * @return false when updating or not deleting <p>true when inserting or deleting
      */
-    public boolean setAccess(Guard guard, User modifyUser, boolean add, short level)
+    public boolean setAccess(Lock lock, User modifyUser, boolean add, short level)
     {
         AccessListModel model =this.dsl.selectFrom(TABLE_ACCESS_LIST).
-            where(TABLE_ACCESS_LIST.GUARD_ID.eq(guard.model.getId()),
+            where(TABLE_ACCESS_LIST.LOCK_ID.eq(lock.model.getId()),
                   TABLE_ACCESS_LIST.USER_ID.eq(modifyUser.getEntity().getKey())).fetchOne();
         if (add)
         {
             if (model == null)
             {
-                model = this.dsl.newRecord(TABLE_ACCESS_LIST).newAccess(guard.model, modifyUser);
+                model = this.dsl.newRecord(TABLE_ACCESS_LIST).newAccess(lock.model, modifyUser);
                 model.setLevel(level);
                 model.insert();
             }
@@ -482,7 +481,7 @@ public class GuardManager implements Listener
                 return false;
             }
         }
-        else // remove guard
+        else // remove lock
         {
             if (model == null) return false;
             model.delete();
@@ -490,20 +489,20 @@ public class GuardManager implements Listener
         return true;
     }
 
-    public boolean checkPass(Guard guard, String pass)
+    public boolean checkPass(Lock lock, String pass)
     {
-        if (!guard.hasPass()) return false;
+        if (!lock.hasPass()) return false;
 
         synchronized (this.messageDigest)
         {
             this.messageDigest.reset();
-            return Arrays.equals(this.messageDigest.digest(pass.getBytes()),guard.model.getPassword());
+            return Arrays.equals(this.messageDigest.digest(pass.getBytes()), lock.model.getPassword());
         }
     }
 
     public boolean canProtect(Material type)
     {
-        for (BlockGuardConfiguration blockprotection : this.module.getConfig().blockprotections)
+        for (BlockLockerConfiguration blockprotection : this.module.getConfig().blockprotections)
         {
             if (blockprotection.isType(type))
             {
@@ -515,7 +514,7 @@ public class GuardManager implements Listener
 
     public boolean canProtect(EntityType type)
     {
-        for (EntityGuardConfiguration entityProtection : this.module.getConfig().entityProtections)
+        for (EntityLockerConfiguration entityProtection : this.module.getConfig().entityProtections)
         {
             if (entityProtection.isType(type))
             {
@@ -525,12 +524,12 @@ public class GuardManager implements Listener
         return false;
     }
 
-    public void modifyGuard(Guard guard, User user, String usersString, Boolean adminAccess)
+    public void modifyLock(Lock lock, User user, String usersString, Boolean adminAccess)
     {
         // TODO separate in & out for containers
-        if (guard.isOwner(user) || guard.hasAdmin(user) || GuardPerm.CMD_MODIFY_OTHER.isAuthorized(user))
+        if (lock.isOwner(user) || lock.hasAdmin(user) || LockerPerm.CMD_MODIFY_OTHER.isAuthorized(user))
         {
-            if (!guard.isPublic())
+            if (!lock.isPublic())
             {
                 String[] explode = StringUtils.explode(",", usersString);
                 for (String name : explode)
@@ -551,7 +550,7 @@ public class GuardManager implements Listener
                             accessType = ACCESS_ALL; // + AdminAccess
                         }
                     }
-                    if (this.setAccess(guard, modifyUser, add, accessType))
+                    if (this.setAccess(lock, modifyUser, add, accessType))
                     {
                         if (add)
                         {
@@ -598,13 +597,13 @@ public class GuardManager implements Listener
 
     public void saveAll()
     {
-        for (Guard guard : this.loadedEntityGuards.values())
+        for (Lock lock : this.loadedEntityGuards.values())
         {
-            guard.model.update();
+            lock.model.update();
         }
-        for (Guard guard : this.loadedGuards.values())
+        for (Lock lock : this.loadedLocks.values())
         {
-            guard.model.update();
+            lock.model.update();
         }
     }
 }

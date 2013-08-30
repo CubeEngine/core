@@ -28,9 +28,9 @@ import de.cubeisland.engine.core.config.YamlConfiguration;
 import de.cubeisland.engine.core.config.annotations.Comment;
 import de.cubeisland.engine.core.config.annotations.Option;
 
-import static de.cubeisland.engine.locker.storage.GuardType.PRIVATE;
+import static de.cubeisland.engine.locker.storage.LockType.PRIVATE;
 
-public class GuardConfig extends YamlConfiguration
+public class LockerConfig extends YamlConfiguration
 {
     //@Option()
     //public int
@@ -61,19 +61,19 @@ public class GuardConfig extends YamlConfiguration
     public boolean allowKeyBooks = true;
     // TODO allow masterKeyBooks
 
-    @Comment("A List of all blocks that can be protected with Baumguard\n" +
+    @Comment("A List of all blocks that can be protected with Locker\n" +
                  "use the auto-protect option to automatically create a protection when placing the block\n" +
                  "additionally you can set default flags which will also be automatically applied")
     @Option("protections.blocks")
-    public List<BlockGuardConfiguration> blockprotections;
+    public List<BlockLockerConfiguration> blockprotections;
 
     @Comment("Set this to false if you wish to disable EntityProtection completely")
     @Option("protections.entities-enable")
     public boolean protEntityEnable = true;
 
-    @Comment("A list of all entities that can be protected with Baumguard")
+    @Comment("A list of all entities that can be protected with Locker")
     @Option("protections.entities")
-    public List<EntityGuardConfiguration> entityProtections;
+    public List<EntityLockerConfiguration> entityProtections;
 
     // limit protection count#
     // TODO globally disable protection from block destruction / left/right-click / Explosion / EntityBreak/Interact etc.
@@ -85,21 +85,21 @@ public class GuardConfig extends YamlConfiguration
         if (blockprotections == null || blockprotections.isEmpty())
         {
             blockprotections = new ArrayList<>();
-            blockprotections.add(new BlockGuardConfiguration(Material.CHEST).autoProtect(PRIVATE));
-            blockprotections.add(new BlockGuardConfiguration(Material.TRAPPED_CHEST).autoProtect(PRIVATE));
-            blockprotections.add(new BlockGuardConfiguration(Material.FURNACE));
-            blockprotections.add(new BlockGuardConfiguration(Material.DISPENSER));
-            blockprotections.add(new BlockGuardConfiguration(Material.SIGN_POST));
-            blockprotections.add(new BlockGuardConfiguration(Material.WALL_SIGN));
-            blockprotections.add(new BlockGuardConfiguration(Material.WOODEN_DOOR));
-            blockprotections.add(new BlockGuardConfiguration(Material.IRON_DOOR_BLOCK));
-            blockprotections.add(new BlockGuardConfiguration(Material.TRAP_DOOR));
-            blockprotections.add(new BlockGuardConfiguration(Material.FENCE_GATE));
+            blockprotections.add(new BlockLockerConfiguration(Material.CHEST).autoProtect(PRIVATE));
+            blockprotections.add(new BlockLockerConfiguration(Material.TRAPPED_CHEST).autoProtect(PRIVATE));
+            blockprotections.add(new BlockLockerConfiguration(Material.FURNACE));
+            blockprotections.add(new BlockLockerConfiguration(Material.DISPENSER));
+            blockprotections.add(new BlockLockerConfiguration(Material.SIGN_POST));
+            blockprotections.add(new BlockLockerConfiguration(Material.WALL_SIGN));
+            blockprotections.add(new BlockLockerConfiguration(Material.WOODEN_DOOR));
+            blockprotections.add(new BlockLockerConfiguration(Material.IRON_DOOR_BLOCK));
+            blockprotections.add(new BlockLockerConfiguration(Material.TRAP_DOOR));
+            blockprotections.add(new BlockLockerConfiguration(Material.FENCE_GATE));
         }
         if (protEntityEnable && (entityProtections == null || entityProtections.isEmpty()))
         {
             entityProtections = new ArrayList<>();
-            entityProtections.add(new EntityGuardConfiguration(EntityType.HORSE));
+            entityProtections.add(new EntityLockerConfiguration(EntityType.HORSE));
         }
     }
 }

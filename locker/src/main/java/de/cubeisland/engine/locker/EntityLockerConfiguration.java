@@ -31,13 +31,13 @@ import de.cubeisland.engine.core.util.convert.ConversionException;
 import de.cubeisland.engine.core.util.convert.Converter;
 import de.cubeisland.engine.core.util.matcher.Match;
 
-public class EntityGuardConfiguration
+public class EntityLockerConfiguration
 {
     protected final ProtectedType protectedType;
     private final EntityType entityType;
     private boolean enable = true;
 
-    public EntityGuardConfiguration(EntityType entityType)
+    public EntityLockerConfiguration(EntityType entityType)
     {
         this.protectedType = ProtectedType.getProtectedType(entityType);
         this.entityType = entityType;
@@ -53,10 +53,10 @@ public class EntityGuardConfiguration
         return this.entityType.equals(type);
     }
 
-    public static class EntityGuardConfigConverter implements Converter<EntityGuardConfiguration>
+    public static class EntityGuardConfigConverter implements Converter<EntityLockerConfiguration>
     {
         @Override
-        public Node toNode(EntityGuardConfiguration object) throws ConversionException
+        public Node toNode(EntityLockerConfiguration object) throws ConversionException
         {
             MapNode root = MapNode.emptyMap();
             MapNode config = MapNode.emptyMap();
@@ -72,7 +72,7 @@ public class EntityGuardConfiguration
             return root;
         }
 
-        private EntityGuardConfiguration fromString(String s) throws ConversionException
+        private EntityLockerConfiguration fromString(String s) throws ConversionException
         {
             EntityType entityType;
             try
@@ -94,14 +94,14 @@ public class EntityGuardConfiguration
             {
                 throw new ConversionException(s + " is not a valid EntityType!");
             }
-            return new EntityGuardConfiguration(entityType);
+            return new EntityLockerConfiguration(entityType);
         }
 
         @Override
-        public EntityGuardConfiguration fromNode(Node node) throws ConversionException
+        public EntityLockerConfiguration fromNode(Node node) throws ConversionException
         {
             if (node instanceof NullNode) return null;
-            EntityGuardConfiguration configuration;
+            EntityLockerConfiguration configuration;
             if (node instanceof StringNode)
             {
                 configuration = fromString(node.unwrap());

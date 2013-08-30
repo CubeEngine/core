@@ -25,7 +25,7 @@ import gnu.trove.map.hash.TByteObjectHashMap;
 
 import static de.cubeisland.engine.locker.storage.ProtectedType.*;
 
-public enum GuardType
+public enum LockType
 {
     PRIVATE(1, CONTAINER, DOOR, BLOCK, ENTITY_CONTAINER, ENTITY_LIVING, ENTITY_VEHICLE, ENTITY, ENTITY_CONTAINER_LIVING),
     PUBLIC(2, CONTAINER, DOOR, BLOCK, ENTITY_CONTAINER, ENTITY_LIVING, ENTITY_VEHICLE, ENTITY, ENTITY_CONTAINER_LIVING),
@@ -33,7 +33,7 @@ public enum GuardType
     DONATION(4, CONTAINER, ENTITY_CONTAINER, ENTITY_CONTAINER_LIVING),
     FREE(5, CONTAINER, ENTITY_CONTAINER, ENTITY_CONTAINER_LIVING);
 
-    private static TByteObjectMap<GuardType> guardTypes = new TByteObjectHashMap<>();
+    private static TByteObjectMap<LockType> lockTypes = new TByteObjectHashMap<>();
 
     public final byte id;
     public final Collection<ProtectedType> supportedTypes;
@@ -41,20 +41,20 @@ public enum GuardType
 
     static
     {
-        for (GuardType guardType : GuardType.values())
+        for (LockType lockType : LockType.values())
         {
-            guardTypes.put(guardType.id, guardType);
+            lockTypes.put(lockType.id, lockType);
         }
     }
 
-    private GuardType(int id, ProtectedType... supportedTypes)
+    private LockType(int id, ProtectedType... supportedTypes)
     {
         this.id = (byte)id;
         this.supportedTypes = Arrays.asList(supportedTypes);
     }
 
-    public static GuardType forByte(Byte guardType)
+    public static LockType forByte(Byte lockType)
     {
-        return guardTypes.get(guardType);
+        return lockTypes.get(lockType);
     }
 }

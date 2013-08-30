@@ -35,21 +35,21 @@ import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.material.Door;
 
-import de.cubeisland.engine.locker.GuardAttachment;
-import de.cubeisland.engine.locker.GuardPerm;
+import de.cubeisland.engine.locker.LockerAttachment;
+import de.cubeisland.engine.locker.LockerPerm;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.util.InventoryGuardFactory;
 import org.jooq.Record1;
 import org.jooq.Result;
 
 import static de.cubeisland.engine.locker.storage.AccessListModel.ACCESS_ADMIN;
-import static de.cubeisland.engine.locker.storage.GuardType.PUBLIC;
+import static de.cubeisland.engine.locker.storage.LockType.PUBLIC;
 import static de.cubeisland.engine.locker.storage.TableAccessList.TABLE_ACCESS_LIST;
 
-public class Guard
+public class Lock
 {
-    private GuardManager manager;
-    protected final GuardModel model;
+    private LockManager manager;
+    protected final LockModel model;
     protected final ArrayList<Location> locations = new ArrayList<>();
 
     private Integer taskId = null; // for autoclosing doors
@@ -60,7 +60,7 @@ public class Guard
      * @param manager
      * @param model
      */
-    public Guard(GuardManager manager, GuardModel model)
+    public Lock(LockManager manager, LockModel model)
     {
         this.manager = manager;
         this.model = model;
@@ -72,26 +72,26 @@ public class Guard
      *
      * @param manager
      * @param model
-     * @param guardLocs
+     * @param lockLocs
      */
-    public Guard(GuardManager manager, GuardModel model, Result<GuardLocationModel> guardLocs)
+    public Lock(LockManager manager, LockModel model, Result<LockLocationModel> lockLocs)
     {
         this(manager, model);
-        for (GuardLocationModel guardLoc : guardLocs)
+        for (LockLocationModel lockLoc : lockLocs)
         {
-            this.locations.add(this.getLocation(guardLoc));
+            this.locations.add(this.getLocation(lockLoc));
         }
         this.isValidType = false;
     }
 
-    public Guard(GuardManager manager, GuardModel model, List<Location> locations)
+    public Lock(LockManager manager, LockModel model, List<Location> locations)
     {
         this(manager, model);
         this.locations.addAll(locations);
         this.isValidType = false;
     }
 
-    private Location getLocation(GuardLocationModel model)
+    private Location getLocation(LockLocationModel model)
     {
         return new Location(this.manager.wm.getWorld(model.getWorldId().longValue()), model.getX(), model.getY(), model.getZ());
     }
@@ -124,7 +124,7 @@ public class Guard
     public void handleBlockDoorUse(Cancellable event, User user, Location clickedDoor)
     {
         if (this.model.getOwnerId().equals(user.getEntity().getKey())) return; // Its the owner
-        switch (this.getGuardType())
+        switch (this.getLockType())
         {
             case PUBLIC:
                 this.doorUse(user, clickedDoor);
@@ -151,16 +151,16 @@ public class Guard
     private AccessListModel getAccess(User user)
     {
         return this.manager.dsl.selectFrom(TABLE_ACCESS_LIST).
-            where(TABLE_ACCESS_LIST.GUARD_ID.eq(this.model.getId()),
+            where(TABLE_ACCESS_LIST.LOCK_ID.eq(this.model.getId()),
                   TABLE_ACCESS_LIST.USER_ID.eq(user.getEntity().getKey())).fetchOne();
     }
 
-    public void handleInventoryOpen(Cancellable event, Inventory guardedInventory, User user)
+    public void handleInventoryOpen(Cancellable event, Inventory protectedInventory, User user)
     {
         if (this.model.getOwnerId().equals(user.getEntity().getKey())) return; // Its the owner
         boolean in;
         boolean out;
-        switch (this.getGuardType())
+        switch (this.getLockType())
         {
             default: throw new IllegalStateException();
             case PUBLIC: return; // Allow everything
@@ -178,7 +178,7 @@ public class Guard
                 out = true;
         }
         AccessListModel access = this.getAccess(user);
-        if (access == null && this.getGuardType() == GuardType.PRIVATE)
+        if (access == null && this.getLockType() == LockType.PRIVATE)
         {
             event.setCancelled(true); // private & no access
             user.sendTranslated("&cA magical lock prevents you from accessing this inventory!"); // TODO better
@@ -191,8 +191,8 @@ public class Guard
                 out = out || access.canOut();
             }
             if (in && out) return; // Has full access
-            if (guardedInventory == null) return; // Just checking else do guard
-            InventoryGuardFactory inventoryGuardFactory = InventoryGuardFactory.prepareInventory(guardedInventory, user);
+            if (protectedInventory == null) return; // Just checking else do lock
+            InventoryGuardFactory inventoryGuardFactory = InventoryGuardFactory.prepareInventory(protectedInventory, user);
             if (!in)
             {
                 inventoryGuardFactory.blockPutInAll();
@@ -209,9 +209,9 @@ public class Guard
     public void handleEntityInteract(Cancellable event, Entity entity, User user)
     {
         if (this.model.getOwnerId().equals(user.getEntity().getKey())) return; // Its the owner
-        if (this.getGuardType() == PUBLIC) return;
+        if (this.getLockType() == PUBLIC) return;
         AccessListModel access = this.getAccess(user);
-        if (access == null && this.getGuardType() == GuardType.PRIVATE)
+        if (access == null && this.getLockType() == LockType.PRIVATE)
         {
             event.setCancelled(true); // private & no access
             user.sendTranslated("&cMagic repelled your attempts to reach this entity!"); // TODO better
@@ -224,8 +224,8 @@ public class Guard
 
     private void checkGuardType()
     {
-        if (this.getGuardType().supportedTypes.contains(this.getProtectedType())) return;
-        throw new IllegalStateException("GuardType is not supported for " + this.getProtectedType().name() + ":" + this.getGuardType().name());
+        if (this.getLockType().supportedTypes.contains(this.getProtectedType())) return;
+        throw new IllegalStateException("GuardType is not supported for " + this.getProtectedType().name() + ":" + this.getLockType().name());
     }
 
     public ProtectedType getProtectedType()
@@ -233,14 +233,14 @@ public class Guard
         return ProtectedType.forByte(this.model.getType());
     }
 
-    public GuardType getGuardType()
+    public LockType getLockType()
     {
-        return GuardType.forByte(this.model.getGuardType());
+        return LockType.forByte(this.model.getGuardType());
     }
 
     public void handleBlockBreak(BlockBreakEvent event, User user)
     {
-        if (this.model.getOwnerId().equals(user.getEntity().getKey()) || GuardPerm.CMD_REMOVE_OTHER.isAuthorized(user))
+        if (this.model.getOwnerId().equals(user.getEntity().getKey()) || LockerPerm.CMD_REMOVE_OTHER.isAuthorized(user))
         {
             this.delete(user);
             return;
@@ -274,7 +274,7 @@ public class Guard
      */
     public void delete(User user)
     {
-        this.manager.removeGuard(this, user, true);
+        this.manager.removeLock(this, user, true);
     }
 
     public boolean isOwner(User user)
@@ -286,7 +286,7 @@ public class Guard
     {
         Record1<Short> record1 = this.manager.dsl.select(TABLE_ACCESS_LIST.LEVEL).from(TABLE_ACCESS_LIST)
                                                   .where(TABLE_ACCESS_LIST.USER_ID.eq(user.getEntity().getKey()),
-                                                         TABLE_ACCESS_LIST.GUARD_ID.eq(this.model.getId())).fetchOne();
+                                                         TABLE_ACCESS_LIST.LOCK_ID.eq(this.model.getId())).fetchOne();
         return record1 != null && (record1.value1() & ACCESS_ADMIN) == ACCESS_ADMIN;
     }
 
@@ -329,7 +329,7 @@ public class Guard
 
     public boolean isPublic()
     {
-        return this.getGuardType() == PUBLIC;
+        return this.getLockType() == PUBLIC;
     }
 
     public boolean hasFlag(ProtectionFlags flag)
@@ -339,15 +339,15 @@ public class Guard
 
     public void showInfo(User user)
     {
-        if (this.isOwner(user) || this.hasAdmin(user) || GuardPerm.CMD_INFO_OTHER.isAuthorized(user))
+        if (this.isOwner(user) || this.hasAdmin(user) || LockerPerm.CMD_INFO_OTHER.isAuthorized(user))
         {
             user.sendMessage("");
-            user.sendTranslated("&aProtection: &6#%d&a Type: &6%s&a by &6%s", this.getId(), this.getGuardType().name(), this.getOwner().getName());
+            user.sendTranslated("&aProtection: &6#%d&a Type: &6%s&a by &6%s", this.getId(), this.getLockType().name(), this.getOwner().getName());
             user.sendTranslated("&aprotects &6%s&a since &6%s", this.getProtectedType().name(), this.model.getCreated().toString());
             user.sendTranslated("&alast access was &6%s", this.model.getLastAccess().toString());
             if (this.hasPass())
             {
-                if (user.attachOrGet(GuardAttachment.class, this.manager.module).hasUnlocked(this))
+                if (user.attachOrGet(LockerAttachment.class, this.manager.module).hasUnlocked(this))
                 {
                     user.sendTranslated("&aHas a password and is currently unlocked");
                 }
@@ -367,11 +367,11 @@ public class Guard
         }
         else
         {
-            user.sendTranslated("&aProtectionType: &6%s", this.getId(), this.getGuardType().name());
+            user.sendTranslated("&aProtectionType: &6%s", this.getId(), this.getLockType().name());
             AccessListModel access = this.getAccess(user);
             if (this.hasPass())
             {
-                if (user.attachOrGet(GuardAttachment.class, this.manager.module).hasUnlocked(this))
+                if (user.attachOrGet(LockerAttachment.class, this.manager.module).hasUnlocked(this))
                 {
                     user.sendTranslated("&aAs you memorize the pass-phrase the magic aura protecting this allows you to interact");
                 }
@@ -414,7 +414,7 @@ public class Guard
                 user.sendTranslated("&aUpon hearing the right pass-phrase the magic surrounding the container gets thinner and lets you pass!");
                 user.playSound(soundLoc, Sound.PISTON_EXTEND, 1, 2);
                 user.playSound(soundLoc, Sound.PISTON_EXTEND, 1, (float)1.5);
-                user.attachOrGet(GuardAttachment.class, this.manager.module).addUnlock(this);
+                user.attachOrGet(LockerAttachment.class, this.manager.module).addUnlock(this);
             }
             else
             {
@@ -429,7 +429,7 @@ public class Guard
     }
 
     /**
-     * If this guard protects a double-door this will open/close the second door too.
+     * If this lock protects a double-door this will open/close the second door too.
      * Also this will schedule auto-closing the door according to the configuration
      *
      * @param user

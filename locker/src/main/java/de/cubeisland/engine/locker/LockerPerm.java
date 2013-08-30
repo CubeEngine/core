@@ -21,13 +21,13 @@ import de.cubeisland.engine.core.permission.PermDefault;
 import de.cubeisland.engine.core.permission.Permission;
 import de.cubeisland.engine.core.permission.PermissionContainer;
 
-public class GuardPerm extends PermissionContainer<Locker>
+public class LockerPerm extends PermissionContainer<Locker>
 {
 
-    public GuardPerm(Locker module)
+    public LockerPerm(Locker module)
     {
         super(module);
-        this.bindToModule(PROTECT, ADMIN, BGUARD_COMMAND);
+        this.bindToModule(PROTECT, ADMIN, LOCKER_COMMAND);
         this.prependModulePerm(DENY);
         this.registerAllPermissions();
     }
@@ -39,10 +39,10 @@ public class GuardPerm extends PermissionContainer<Locker>
     public static final Permission DENY_ENTITY = DENY.createChild("entity", PermDefault.FALSE);
     public static final Permission DENY_HANGING = DENY.createChild("hanging", PermDefault.FALSE);
 
-    private static final Permission BGUARD_COMMAND = Permission.createAbstractPermission("command").createAbstractChild("bguard");
-    public static final Permission CMD_REMOVE_OTHER = BGUARD_COMMAND.createAbstractChild("remove").createChild("other");
-    public static final Permission CMD_INFO_OTHER = BGUARD_COMMAND.createAbstractChild("info").createChild("other");
-    public static final Permission CMD_MODIFY_OTHER = BGUARD_COMMAND.createAbstractChild("modify").createChild("other");
+    private static final Permission LOCKER_COMMAND = Permission.createAbstractPermission("command").createAbstractChild("locker");
+    public static final Permission CMD_REMOVE_OTHER = LOCKER_COMMAND.createAbstractChild("remove").createChild("other");
+    public static final Permission CMD_INFO_OTHER = LOCKER_COMMAND.createAbstractChild("info").createChild("other");
+    public static final Permission CMD_MODIFY_OTHER = LOCKER_COMMAND.createAbstractChild("modify").createChild("other");
 
     public static final Permission PROTECT = Permission.createPermission("protect"); // TODO sub perms
 

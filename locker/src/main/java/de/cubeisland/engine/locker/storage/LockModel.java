@@ -29,24 +29,24 @@ import org.jooq.Row11;
 import org.jooq.impl.UpdatableRecordImpl;
 import org.jooq.types.UInteger;
 
-import static de.cubeisland.engine.locker.storage.TableGuards.TABLE_GUARD;
+import static de.cubeisland.engine.locker.storage.TableLocks.TABLE_GUARD;
 
-public class GuardModel extends UpdatableRecordImpl<GuardModel> implements Record11<UInteger, UInteger, Short, Byte, Byte, byte[], Byte, Long, Long, Timestamp, Timestamp>
+public class LockModel extends UpdatableRecordImpl<LockModel> implements Record11<UInteger, UInteger, Short, Byte, Byte, byte[], Byte, Long, Long, Timestamp, Timestamp>
 {
-    public GuardModel()
+    public LockModel()
     {
         super(TABLE_GUARD);
     }
 
-    public GuardModel newGuard(User user, GuardType guardType, ProtectedType type)
+    public LockModel newGuard(User user, LockType lockType, ProtectedType type)
     {
-        return this.newGuard(user, guardType, type, null);
+        return this.newGuard(user, lockType, type, null);
     }
 
-    public GuardModel newGuard(User user, GuardType guardType, ProtectedType type, UUID entityUUID)
+    public LockModel newGuard(User user, LockType lockType, ProtectedType type, UUID entityUUID)
     {
         this.setOwnerId(user.getEntity().getKey());
-        this.setGuardType(guardType.id);
+        this.setGuardType(lockType.id);
         this.setFlags((short)0); // none
         this.setType(type.id);
         this.setDroptransfer((byte)0);
@@ -224,12 +224,12 @@ public class GuardModel extends UpdatableRecordImpl<GuardModel> implements Recor
 
     @Override
     public Field<Byte> field4() {
-        return TABLE_GUARD.GUARDED_TYPE;
+        return TABLE_GUARD.PROTECTED_TYPE;
     }
 
     @Override
     public Field<Byte> field5() {
-        return TABLE_GUARD.GUARD_TYPE;
+        return TABLE_GUARD.LOCK_TYPE;
     }
 
     @Override

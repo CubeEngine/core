@@ -34,7 +34,7 @@ public class AccessListModel extends UpdatableRecordImpl<AccessListModel> implem
         super(TABLE_ACCESS_LIST);
     }
 
-    public AccessListModel newAccess(GuardModel model, User modifyUser)
+    public AccessListModel newAccess(LockModel model, User modifyUser)
     {
         this.setGuardId(model.getId());
         this.setUserId(modifyUser.getEntity().getKey());
@@ -126,7 +126,7 @@ public class AccessListModel extends UpdatableRecordImpl<AccessListModel> implem
 
     @Override
     public Field<UInteger> field3() {
-        return TABLE_ACCESS_LIST.GUARD_ID;
+        return TABLE_ACCESS_LIST.LOCK_ID;
     }
 
     @Override
