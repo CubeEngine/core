@@ -40,7 +40,6 @@ public class Locker extends Module
         Convert.registerConverter(BlockLockerConfiguration.class, new BlockLockerConfigConverter());
         Convert.registerConverter(EntityLockerConfiguration.class, new EntityLockerConfigConverter());
         this.config = Configuration.load(LockerConfig.class, this);
-        new LockerPerm(this);
         this.getCore().getDB().registerTable(TableLocks.initTable(this.getCore().getDB()));
         this.getCore().getDB().registerTable(TableLockLocations.initTable(this.getCore().getDB()));
         this.getCore().getDB().registerTable(TableAccessList.initTable(this.getCore().getDB()));
@@ -49,6 +48,7 @@ public class Locker extends Module
         this.getCore().getCommandManager().registerCommand(mainCmd);
         LockerCreateCommands createCmds = new LockerCreateCommands(this, manager);
         this.getCore().getCommandManager().registerCommand(createCmds, "locker");
+        new LockerPerm(this, mainCmd);
         new LockerListener(this, manager);
     }
 

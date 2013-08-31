@@ -32,9 +32,6 @@ import static de.cubeisland.engine.locker.storage.LockType.PRIVATE;
 
 public class LockerConfig extends YamlConfiguration
 {
-    //@Option()
-    //public int
-
     @Option("settings.open-iron-door-with-click")
     public boolean openIronDoorWithClick = false;
 
@@ -71,7 +68,8 @@ public class LockerConfig extends YamlConfiguration
     @Option("protections.entities-enable")
     public boolean protEntityEnable = true;
 
-    @Comment("A list of all entities that can be protected with Locker")
+    @Comment("A list of all entities that can be protected with Locker\n" +
+                 "auto-protect only applies onto entities that can be tamed")
     @Option("protections.entities")
     public List<EntityLockerConfiguration> entityProtections;
 
@@ -99,7 +97,7 @@ public class LockerConfig extends YamlConfiguration
         if (protEntityEnable && (entityProtections == null || entityProtections.isEmpty()))
         {
             entityProtections = new ArrayList<>();
-            entityProtections.add(new EntityLockerConfiguration(EntityType.HORSE));
+            entityProtections.add(new EntityLockerConfiguration(EntityType.HORSE).autoProtect(PRIVATE));
         }
     }
 }

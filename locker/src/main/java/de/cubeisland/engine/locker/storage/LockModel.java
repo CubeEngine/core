@@ -24,14 +24,14 @@ import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.util.ChatFormat;
 import org.jooq.Field;
 import org.jooq.Record1;
-import org.jooq.Record11;
-import org.jooq.Row11;
+import org.jooq.Record10;
+import org.jooq.Row10;
 import org.jooq.impl.UpdatableRecordImpl;
 import org.jooq.types.UInteger;
 
 import static de.cubeisland.engine.locker.storage.TableLocks.TABLE_GUARD;
 
-public class LockModel extends UpdatableRecordImpl<LockModel> implements Record11<UInteger, UInteger, Short, Byte, Byte, byte[], Byte, Long, Long, Timestamp, Timestamp>
+public class LockModel extends UpdatableRecordImpl<LockModel> implements Record10<UInteger, UInteger, Short, Byte, Byte, byte[], Long, Long, Timestamp, Timestamp>
 {
     public LockModel()
     {
@@ -49,7 +49,6 @@ public class LockModel extends UpdatableRecordImpl<LockModel> implements Record1
         this.setLockType(lockType.id);
         this.setFlags((short)0); // none
         this.setType(type.id);
-        this.setDroptransfer((byte)0);
         if (entityUUID != null)
         {
             this.setEntityUidLeast(entityUUID.getLeastSignificantBits());
@@ -144,44 +143,36 @@ public class LockModel extends UpdatableRecordImpl<LockModel> implements Record1
         return (byte[]) getValue(5);
     }
 
-    public void setDroptransfer(Byte value) {
+    public void setEntityUidLeast(Long value) {
         setValue(6, value);
     }
 
-    public Byte getDroptransfer() {
-        return (Byte) getValue(6);
-    }
-
-    public void setEntityUidLeast(Long value) {
-        setValue(7, value);
-    }
-
     public Long getEntityUidLeast() {
-        return (Long) getValue(7);
+        return (Long) getValue(6);
     }
 
     public void setEntityUidMost(Long value) {
-        setValue(8, value);
+        setValue(7, value);
     }
 
     public Long getEntityUidMost() {
-        return (Long) getValue(8);
+        return (Long) getValue(7);
     }
 
     public void setLastAccess(Timestamp value) {
-        setValue(9, value);
+        setValue(8, value);
     }
 
     public Timestamp getLastAccess() {
-        return (Timestamp) getValue(9);
+        return (Timestamp) getValue(8);
     }
 
     public void setCreated(Timestamp value) {
-        setValue(10, value);
+        setValue(9, value);
     }
 
     public Timestamp getCreated() {
-        return (Timestamp) getValue(10);
+        return (Timestamp) getValue(9);
     }
 
     // -------------------------------------------------------------------------
@@ -198,13 +189,13 @@ public class LockModel extends UpdatableRecordImpl<LockModel> implements Record1
     // -------------------------------------------------------------------------
 
     @Override
-    public Row11<UInteger, UInteger, Short, Byte, Byte, byte[], Byte, Long, Long, Timestamp, Timestamp> fieldsRow() {
-        return (Row11) super.fieldsRow();
+    public Row10<UInteger, UInteger, Short, Byte, Byte, byte[], Long, Long, Timestamp, Timestamp> fieldsRow() {
+        return (Row10) super.fieldsRow();
     }
 
     @Override
-    public Row11<UInteger, UInteger, Short, Byte, Byte, byte[], Byte, Long, Long, Timestamp, Timestamp> valuesRow() {
-        return (Row11) super.valuesRow();
+    public Row10<UInteger, UInteger, Short, Byte, Byte, byte[], Long, Long, Timestamp, Timestamp> valuesRow() {
+        return (Row10) super.valuesRow();
     }
 
     @Override
@@ -238,28 +229,23 @@ public class LockModel extends UpdatableRecordImpl<LockModel> implements Record1
     }
 
     @Override
-    public Field<Byte> field7() {
-        return TABLE_GUARD.DROPTRANSFER;
-    }
-
-    @Override
-    public Field<Long> field8() {
+    public Field<Long> field7() {
         return TABLE_GUARD.ENTITY_UID_LEAST;
     }
 
     @Override
-    public Field<Long> field9() {
+    public Field<Long> field8() {
         return TABLE_GUARD.ENTITY_UID_MOST;
     }
 
     @Override
-    public Field<Timestamp> field10()
+    public Field<Timestamp> field9()
     {
         return TABLE_GUARD.LAST_ACCESS;
     }
 
     @Override
-    public Field<Timestamp> field11()
+    public Field<Timestamp> field10()
     {
         return TABLE_GUARD.CREATED;
     }
@@ -295,28 +281,23 @@ public class LockModel extends UpdatableRecordImpl<LockModel> implements Record1
     }
 
     @Override
-    public Byte value7() {
-        return getDroptransfer();
-    }
-
-    @Override
-    public Long value8() {
+    public Long value7() {
         return getEntityUidLeast();
     }
 
     @Override
-    public Long value9() {
+    public Long value8() {
         return getEntityUidMost();
     }
 
     @Override
-    public Timestamp value10()
+    public Timestamp value9()
     {
         return getLastAccess();
     }
 
     @Override
-    public Timestamp value11()
+    public Timestamp value10()
     {
         return getCreated();
     }

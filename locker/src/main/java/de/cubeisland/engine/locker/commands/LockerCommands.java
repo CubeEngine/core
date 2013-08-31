@@ -119,6 +119,7 @@ public class LockerCommands extends ContainerCommand
              flags = @Flag(longName = "invalidate", name = "i"))
     public void key(ParameterizedContext context)
     {
+        // TODO check configuration if this is enabled
         if (context.hasFlag("i"))
         {
             this.manager.commandListener.setCommandType(context.getSender(), CommandType.INVALIDATE_KEYS, context.getString(0));

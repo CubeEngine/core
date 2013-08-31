@@ -253,13 +253,10 @@ public class LockManager implements Listener
 
     public void removeLock(Lock lock, User user, boolean destroyed)
     {
-        if (!destroyed)
+        if (!destroyed && (!(lock.isOwner(user) || LockerPerm.CMD_REMOVE_OTHER.isAuthorized(user))))
         {
-            if (!(lock.isOwner(user) || LockerPerm.CMD_REMOVE_OTHER.isAuthorized(user)))
-            {
-                user.sendTranslated("&cThis protection is not yours!");
-                return;
-            }
+            user.sendTranslated("&cThis protection is not yours!");
+            return;
         }
         lock.model.delete();
         if (lock.isBlockLock())

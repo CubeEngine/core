@@ -115,9 +115,6 @@ public class TableLocks extends TableImpl<LockModel> implements TableCreator<Loc
     // eg. /cguarded [pass <password>] (flag to create pw book/key?)
     public final TableField<LockModel, byte[]> PASSWORD = createField("password", SQLDataType.VARBINARY.length(128), this);
 
-    // 0 false 1 true
-    public final TableField<LockModel, Byte> DROPTRANSFER = createField("droptransfer", SQLDataType.TINYINT, this);
-
     // optional for entity protection:
     public final TableField<LockModel, Long> ENTITY_UID_LEAST = createField("entity_uid_least", SQLDataType.BIGINT, this);
     public final TableField<LockModel, Long> ENTITY_UID_MOST = createField("entity_uid_most", SQLDataType.BIGINT, this);

@@ -363,7 +363,6 @@ public class CommandListener implements Listener
         C_DONATION(DONATION),
         C_FREE(FREE),
         C_GUARDED(GUARDED),
-        // TODO
         INFO,
         MODIFY,
         REMOVE,

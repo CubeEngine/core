@@ -51,6 +51,7 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
+import org.bukkit.event.entity.EntityTameEvent;
 import org.bukkit.event.hanging.HangingBreakByEntityEvent;
 import org.bukkit.event.hanging.HangingBreakEvent;
 import org.bukkit.event.hanging.HangingBreakEvent.RemoveCause;
@@ -165,7 +166,7 @@ public class LockerListener implements Listener
         }
         else
         {
-            lock.handleEntityInteract(event, entity, user);
+            lock.handleEntityInteract(event, user);
         }
     }
 
@@ -403,7 +404,7 @@ public class LockerListener implements Listener
                             user.sendTranslated("&eNearby BlockProtection is not valid!");
                             lock.delete(user);
                         }
-                        else if (lock.isOwner(user) || lock.hasAdmin(user)) // TODO perm
+                        else if (lock.isOwner(user) || lock.hasAdmin(user) || LockerPerm.EXPAND_OTHER.isAuthorized(user))
                         {
                             this.manager.extendLock(lock, event.getBlockPlaced().getLocation());
                             user.sendTranslated("&aProtection expanded!");
@@ -412,6 +413,18 @@ public class LockerListener implements Listener
                         {
                             event.setCancelled(true);
                             user.sendTranslated("&cThe nearby chest is protected by someone else!");
+                        }
+                    }
+                    else
+                    {
+                        for (BlockLockerConfiguration blockprotection : this.module.getConfig().blockprotections)
+                        {
+                            if (blockprotection.isType(placed.getType()))
+                            {
+                                if (!blockprotection.autoProtect) return;
+                                this.manager.createLock(placed.getType(), placed.getLocation(), user, blockprotection.autoProtectType, null, false);
+                                return;
+                            }
                         }
                     }
                 }
@@ -446,7 +459,7 @@ public class LockerListener implements Listener
                             {
                                 if (topDoor.getData() != topRelative.getData()) // This is a doubleDoor!
                                 {
-                                    if (lock.isOwner(user) || lock.hasAdmin(user)) // TODO perm
+                                    if (lock.isOwner(user) || lock.hasAdmin(user) || LockerPerm.EXPAND_OTHER.isAuthorized(user))
                                     {
                                         this.manager.extendLock(lock, loc); // bot half
                                         this.manager.extendLock(lock, loc.clone().add(0, 1, 0)); // top half
@@ -687,6 +700,10 @@ public class LockerListener implements Listener
         event.setCancelled(true);
     }
 
-    // TODO auto-protect
+    @EventHandler(ignoreCancelled = true)
+    public void onTame(EntityTameEvent event)
+    {
+        // TODO auto-protect on tame
+    }
     // TODO expand protections for hangings/attachables
 }

@@ -29,16 +29,16 @@ import org.bukkit.Sound;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.BlockState;
-import org.bukkit.entity.Entity;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.material.Door;
 
+import de.cubeisland.engine.core.user.User;
+import de.cubeisland.engine.core.util.ChatFormat;
+import de.cubeisland.engine.core.util.InventoryGuardFactory;
 import de.cubeisland.engine.locker.LockerAttachment;
 import de.cubeisland.engine.locker.LockerPerm;
-import de.cubeisland.engine.core.user.User;
-import de.cubeisland.engine.core.util.InventoryGuardFactory;
 import org.jooq.Record1;
 import org.jooq.Result;
 
@@ -144,7 +144,6 @@ public class Lock
             user.sendTranslated("&cA magical lock prevents you from using this door!");
             return;
         } // else has access
-        user.sendTranslated("&eThis door is protected by &2%s", this.getOwner().getName()); // TODO better
         this.doorUse(user, clickedDoor);
     }
 
@@ -202,11 +201,14 @@ public class Lock
                 inventoryGuardFactory.blockTakeOutAll();
             }
             inventoryGuardFactory.submitInventory(this.manager.module, false);
-            user.sendTranslated("&eThis %s is protected by &2%s", "container", this.getOwner().getName()); // TODO better
+            if (LockerPerm.SHOW_OWNER.isAuthorized(user))
+            {
+                user.sendTranslated("&eThis container is protected by &2%s", this.getOwner().getName());
+            }
         }
     }
 
-    public void handleEntityInteract(Cancellable event, Entity entity, User user)
+    public void handleEntityInteract(Cancellable event, User user)
     {
         if (this.model.getOwnerId().equals(user.getEntity().getKey())) return; // Its the owner
         if (this.getLockType() == PUBLIC) return;
@@ -215,10 +217,11 @@ public class Lock
         {
             event.setCancelled(true); // private & no access
             user.sendTranslated("&cMagic repelled your attempts to reach this entity!"); // TODO better
+            return;
         }
-        else // has access
+        if (LockerPerm.SHOW_OWNER.isAuthorized(user))
         {
-            // TODO messages
+            user.sendTranslated("&eThis entity is protected by &2%s", this.getOwner().getName());
         }
     }
 
@@ -240,7 +243,7 @@ public class Lock
 
     public void handleBlockBreak(BlockBreakEvent event, User user)
     {
-        if (this.model.getOwnerId().equals(user.getEntity().getKey()) || LockerPerm.CMD_REMOVE_OTHER.isAuthorized(user))
+        if (this.model.getOwnerId().equals(user.getEntity().getKey()) || LockerPerm.BREAK_OTHER.isAuthorized(user))
         {
             this.delete(user);
             return;
@@ -349,21 +352,53 @@ public class Lock
             {
                 if (user.attachOrGet(LockerAttachment.class, this.manager.module).hasUnlocked(this))
                 {
-                    user.sendTranslated("&aHas a password and is currently unlocked");
+                    user.sendTranslated("&aHas a password and is currently &eunlocked");
                 }
                 else
                 {
-                    user.sendTranslated("&aHas a password and is currently locked");
+                    user.sendTranslated("&aHas a password and is currently &clocked");
                 }
             }
 
+
+            List<String> flags = new ArrayList<>();
+            for (ProtectionFlags flag : ProtectionFlags.values())
+            {
+                if (this.hasFlag(flag))
+                {
+                    flags.add(flag.flagname);
+                }
+            }
+            if (!flags.isEmpty())
+            {
+                user.sendTranslated("&aThe following flags are set:");
+                String format = ChatFormat.parseFormats("  &7- &e%s");
+                for (String flag : flags)
+                {
+                    user.sendMessage(String.format(format, flag));
+                }
+            }
+            List<AccessListModel> accessors = this.getAccessors();
+            if (!accessors.isEmpty())
+            {
+                user.sendTranslated("&aThe following users do have direct access to this protection");
+                for (AccessListModel listModel : accessors)
+                {
+                    User accessor = this.manager.module.getCore().getUserManager().getUser(listModel.getId().longValue());
+                    if ((listModel.getLevel() & ACCESS_ADMIN) == ACCESS_ADMIN)
+                    {
+                        user.sendMessage(String.format(ChatFormat.parseFormats("  &7- &2%s&6 [Admin]"), accessor.getName()));
+                    }
+                    else
+                    {
+                        user.sendMessage(String.format(ChatFormat.parseFormats("  &7- &2%s"), accessor.getName()));
+                    }
+                }
+            }
             if (!this.locations.isEmpty())
             {
                 user.sendTranslated("&aThis protections covers &6%d&a blocks!", this.locations.size());
             }
-            // TODO active flags
-            // TODO droptransfer status
-            // TODO all accessors /w accesslevel
         }
         else
         {
@@ -405,6 +440,12 @@ public class Lock
         }
     }
 
+    public List<AccessListModel> getAccessors()
+    {
+        return this.manager.dsl.selectFrom(TABLE_ACCESS_LIST).
+            where(TABLE_ACCESS_LIST.LOCK_ID.eq(this.model.getId())).fetch();
+    }
+
     public void unlock(User user, Location soundLoc, String pass)
     {
         if (this.hasPass())
@@ -433,6 +474,7 @@ public class Lock
      * Also this will schedule auto-closing the door according to the configuration
      *
      * @param user
+     * @param doorClicked
      */
     public void doorUse(User user, Location doorClicked)
     {
@@ -484,24 +526,30 @@ public class Lock
                 }
                 if (taskId != null) this.manager.module.getCore().getTaskManager().cancelTask(this.manager.module, taskId);
                 if (sound == Sound.DOOR_OPEN) this.scheduleAutoClose(door, block.getState(), null, null);
-                return;
             }
-            boolean old = door.isOpen();
-            door2.setOpen(!door.isOpen()); // Flip
-            if (old != door2.isOpen())
+            else
             {
-
-                doorClicked.getWorld().playSound(loc2, sound, 1, 1);
-                loc2.getBlock().setData(door2.getData());
-                if (door.getItemType() == Material.IRON_DOOR_BLOCK)
+                boolean old = door.isOpen();
+                door2.setOpen(!door.isOpen()); // Flip
+                if (old != door2.isOpen())
                 {
-                    doorClicked.getWorld().playSound(doorClicked, sound, 1, 1);
-                    door.setOpen(door2.isOpen());
-                    block.setData(door.getData());
+
+                    doorClicked.getWorld().playSound(loc2, sound, 1, 1);
+                    loc2.getBlock().setData(door2.getData());
+                    if (door.getItemType() == Material.IRON_DOOR_BLOCK)
+                    {
+                        doorClicked.getWorld().playSound(doorClicked, sound, 1, 1);
+                        door.setOpen(door2.isOpen());
+                        block.setData(door.getData());
+                    }
                 }
+                if (taskId != null) this.manager.module.getCore().getTaskManager().cancelTask(this.manager.module, taskId);
+                if (sound == Sound.DOOR_OPEN) this.scheduleAutoClose(door, block.getState(), door2, loc2.getBlock().getState());
             }
-            if (taskId != null) this.manager.module.getCore().getTaskManager().cancelTask(this.manager.module, taskId);
-            if (sound == Sound.DOOR_OPEN) this.scheduleAutoClose(door, block.getState(), door2, loc2.getBlock().getState());
+            if (LockerPerm.SHOW_OWNER.isAuthorized(user))
+            {
+                user.sendTranslated("&eThis door is protected by &2%s", this.getOwner().getName());
+            }
         }
     }
 

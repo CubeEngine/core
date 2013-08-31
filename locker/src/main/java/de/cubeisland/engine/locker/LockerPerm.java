@@ -17,18 +17,34 @@
  */
 package de.cubeisland.engine.locker;
 
+import de.cubeisland.engine.core.command.CubeCommand;
 import de.cubeisland.engine.core.permission.PermDefault;
 import de.cubeisland.engine.core.permission.Permission;
 import de.cubeisland.engine.core.permission.PermissionContainer;
+import de.cubeisland.engine.locker.commands.LockerCommands;
 
 public class LockerPerm extends PermissionContainer<Locker>
 {
-
-    public LockerPerm(Locker module)
+    public LockerPerm(Locker module, LockerCommands mainCmd)
     {
         super(module);
-        this.bindToModule(PROTECT, ADMIN, LOCKER_COMMAND);
+        this.bindToModule(PROTECT, ADMIN, LOCKER_COMMAND, SHOW_OWNER);
         this.prependModulePerm(DENY);
+        CubeCommand createCmd = mainCmd.getChild("create");
+        PROTECT.attach(Permission.createPermission(mainCmd.getChild("info").getPermission()),
+                       Permission.createPermission(mainCmd.getChild("persist").getPermission()),
+                       Permission.createPermission(mainCmd.getChild("remove").getPermission()),
+                       Permission.createPermission(mainCmd.getChild("unlock").getPermission()),
+                       Permission.createPermission(mainCmd.getChild("modify").getPermission()),
+                       Permission.createPermission(mainCmd.getChild("unlock").getPermission()),
+                       Permission.createPermission(mainCmd.getChild("key").getPermission()),
+                       Permission.createPermission(createCmd.getChild("private").getPermission()),
+                       Permission.createPermission(createCmd.getChild("public").getPermission()),
+                       Permission.createPermission(createCmd.getChild("donation").getPermission()),
+                       Permission.createPermission(createCmd.getChild("free").getPermission()),
+                       Permission.createPermission(createCmd.getChild("password").getPermission()),
+                       Permission.createPermission(createCmd.getChild("guarded").getPermission()),
+                       BREAK_OTHER, EXPAND_OTHER);
         this.registerAllPermissions();
     }
 
@@ -39,12 +55,16 @@ public class LockerPerm extends PermissionContainer<Locker>
     public static final Permission DENY_ENTITY = DENY.createChild("entity", PermDefault.FALSE);
     public static final Permission DENY_HANGING = DENY.createChild("hanging", PermDefault.FALSE);
 
+    public static final Permission SHOW_OWNER = Permission.createPermission("show-owner");
+
     private static final Permission LOCKER_COMMAND = Permission.createAbstractPermission("command").createAbstractChild("locker");
     public static final Permission CMD_REMOVE_OTHER = LOCKER_COMMAND.createAbstractChild("remove").createChild("other");
     public static final Permission CMD_INFO_OTHER = LOCKER_COMMAND.createAbstractChild("info").createChild("other");
     public static final Permission CMD_MODIFY_OTHER = LOCKER_COMMAND.createAbstractChild("modify").createChild("other");
 
-    public static final Permission PROTECT = Permission.createPermission("protect"); // TODO sub perms
+    private static final Permission PROTECT = Permission.createPermission("protect");
+    private static final Permission ADMIN = Permission.createPermission("admin"); // TODO sub perms
 
-    public static final Permission ADMIN = Permission.createPermission("admin"); // TODO sub perms
+    public static final Permission BREAK_OTHER = ADMIN.createNew("break-other");
+    public static final Permission EXPAND_OTHER = ADMIN.createNew("break-other");
 }
