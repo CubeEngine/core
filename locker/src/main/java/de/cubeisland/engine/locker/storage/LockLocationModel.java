@@ -39,7 +39,7 @@ public class LockLocationModel extends UpdatableRecordImpl<LockLocationModel> im
     public LockLocationModel newLocation(LockModel model, Location location)
     {
         this.setLocation(location);
-        this.setGuardId(model.getId());
+        this.setLockId(model.getId());
         return this;
     }
 
@@ -109,11 +109,11 @@ public class LockLocationModel extends UpdatableRecordImpl<LockLocationModel> im
         return (Integer) getValue(6);
     }
 
-    public void setGuardId(UInteger value) {
+    public void setLockId(UInteger value) {
         setValue(7, value);
     }
 
-    public UInteger getGuardId() {
+    public UInteger getLockId() {
         return (UInteger) getValue(7);
     }
 
@@ -217,6 +217,6 @@ public class LockLocationModel extends UpdatableRecordImpl<LockLocationModel> im
 
     @Override
     public UInteger value8() {
-        return getGuardId();
+        return getLockId();
     }
 }

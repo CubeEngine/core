@@ -94,7 +94,7 @@ public class LockerListener implements Listener
         if (!(event.getAction() == Action.RIGHT_CLICK_BLOCK)) return;
         User user = this.module.getCore().getUserManager().getExactUser(event.getPlayer().getName());
         Location location = event.getClickedBlock().getLocation();
-        Lock lock = this.manager.getGuardAtLocation(location);
+        Lock lock = this.manager.getLockAtLocation(location);
         if (lock != null && !lock.isValidType())
         {
             user.sendTranslated("&eExisting BlockProtection is not valid!");
@@ -155,7 +155,7 @@ public class LockerListener implements Listener
             event.setCancelled(true);
             return;
         }
-        Lock lock = this.manager.getGuardForEntityUID(entity.getUniqueId());
+        Lock lock = this.manager.getLockForEntityUID(entity.getUniqueId());
         if (lock == null) return;
         if (this.handleAccess(lock, user, null, event)) return;
         if (entity instanceof StorageMinecart || entity instanceof HopperMinecart
@@ -174,7 +174,7 @@ public class LockerListener implements Listener
     {
         if (!(event.getPlayer() instanceof Player)) return;
         Location holderLoc = new Location(null, 0,0,0);
-        Lock lock = this.getGuardOfInventory(event.getInventory(), holderLoc);
+        Lock lock = this.getLockOfInventory(event.getInventory(), holderLoc);
         if (lock != null)
         {
             User user = this.module.getCore().getUserManager().getExactUser(event.getPlayer().getName());
@@ -187,10 +187,10 @@ public class LockerListener implements Listener
      * Returns the lock for given inventory it exists, also sets the location to the holders location if not null
      *
      * @param inventory
-     * @param holderLoc a location object to hold the GuardLocation
+     * @param holderLoc a location object to hold the LockLocation
      * @return the lock for given inventory
      */
-    public Lock getGuardOfInventory(Inventory inventory, Location holderLoc)
+    public Lock getLockOfInventory(Inventory inventory, Location holderLoc)
     {
         InventoryHolder holder = inventory.getHolder();
         Lock lock;
@@ -200,7 +200,7 @@ public class LockerListener implements Listener
         }
         if (holder instanceof Entity)
         {
-            lock = this.manager.getGuardForEntityUID(((Entity)holder).getUniqueId());
+            lock = this.manager.getLockForEntityUID(((Entity)holder).getUniqueId());
             ((Entity)holder).getLocation(holderLoc);
         }
         else
@@ -215,7 +215,7 @@ public class LockerListener implements Listener
                 lockLoc = ((BlockState)((DoubleChest)holder).getRightSide()).getLocation(holderLoc);
             }
             else return null;
-            lock = this.manager.getGuardAtLocation(lockLoc);
+            lock = this.manager.getLockAtLocation(lockLoc);
         }
         return lock;
     }
@@ -294,7 +294,7 @@ public class LockerListener implements Listener
     public void onEntityDamageEntity(EntityDamageByEntityEvent event)
     {
         Entity entity = event.getEntity();
-        Lock lock = this.manager.getGuardForEntityUID(entity.getUniqueId());
+        Lock lock = this.manager.getLockForEntityUID(entity.getUniqueId());
         if (lock == null) return;
         if (event.getDamager() instanceof Player)
         {
@@ -339,7 +339,7 @@ public class LockerListener implements Listener
         else if (module.getConfig().protectEntityFromEnvironementalDamage)
         {
             Entity entity = event.getEntity();
-            Lock lock = this.manager.getGuardForEntityUID(entity.getUniqueId());
+            Lock lock = this.manager.getLockForEntityUID(entity.getUniqueId());
             if (lock == null) return;
             event.setCancelled(true);
         }
@@ -349,7 +349,7 @@ public class LockerListener implements Listener
     public void onEntityDeath(EntityDeathEvent event)
     {
         // no need to check if allowed to kill as this would have caused an DamageEvent before / this is only to cleanup database a bit
-        Lock lock = this.manager.getGuardForEntityUID(event.getEntity().getUniqueId());
+        Lock lock = this.manager.getLockForEntityUID(event.getEntity().getUniqueId());
         if (lock == null) return;
         EntityDamageEvent lastDamage = event.getEntity().getLastDamageCause();
         User user = null;
@@ -363,7 +363,7 @@ public class LockerListener implements Listener
     @EventHandler(ignoreCancelled = true)
     public void onVehicleBreak(VehicleDestroyEvent event)
     {
-        Lock lock = this.manager.getGuardForEntityUID(event.getVehicle().getUniqueId());
+        Lock lock = this.manager.getLockForEntityUID(event.getVehicle().getUniqueId());
         if (lock == null) return;
         if (event.getAttacker() == null)
         {
@@ -395,7 +395,7 @@ public class LockerListener implements Listener
                 if (placed.getType() == placed.getRelative(blockFace).getType()) // bindable chest
                 {
                     placed.getRelative(blockFace).getLocation(relativeLoc);
-                    Lock lock = this.manager.getGuardAtLocation(relativeLoc);
+                    Lock lock = this.manager.getLockAtLocation(relativeLoc);
                     if (lock != null)
                     {
                         if (lock.isValidType())
@@ -426,7 +426,7 @@ public class LockerListener implements Listener
                 if (placed.getType() == placed.getRelative(blockFace).getType())
                 {
                     placed.getRelative(blockFace).getLocation(relativeLoc);
-                    Lock lock = this.manager.getGuardAtLocation(relativeLoc);
+                    Lock lock = this.manager.getLockAtLocation(relativeLoc);
                     if (lock != null)
                     {
                         if (lock.isValidType())
@@ -471,7 +471,7 @@ public class LockerListener implements Listener
     public void onBlockRedstone(BlockRedstoneEvent event)
     {
         Block block = event.getBlock();
-        Lock lock = this.manager.getGuardAtLocation(block.getLocation());
+        Lock lock = this.manager.getLockAtLocation(block.getLocation());
         if (lock != null)
         {
             if (lock.isValidType())
@@ -492,7 +492,7 @@ public class LockerListener implements Listener
         Location location = event.getBlock().getLocation();
         for (Block block : event.getBlocks())
         {
-            Lock lock = this.manager.getGuardAtLocation(block.getLocation(location));
+            Lock lock = this.manager.getLockAtLocation(block.getLocation(location));
             if (lock != null)
             {
                 if (lock.isValidType())
@@ -503,7 +503,8 @@ public class LockerListener implements Listener
                 lock.delete(null);
             }
         }
-        Lock lock = this.manager.getGuardAtLocation(location.getBlock().getRelative(event.getDirection()).getLocation(location));
+        Lock lock = this.manager.getLockAtLocation(location.getBlock().getRelative(event.getDirection())
+                                                           .getLocation(location));
         if (lock != null)
         {
             if (lock.isValidType())
@@ -518,7 +519,7 @@ public class LockerListener implements Listener
     @EventHandler(ignoreCancelled = true)
     public void onBlockPistonRetract(BlockPistonRetractEvent event)
     {
-        Lock lock = this.manager.getGuardAtLocation(event.getRetractLocation());
+        Lock lock = this.manager.getLockAtLocation(event.getRetractLocation());
         if (lock != null)
         {
             if (lock.isValidType())
@@ -533,7 +534,7 @@ public class LockerListener implements Listener
     @EventHandler(ignoreCancelled = true)
     public void onBlockBreak(BlockBreakEvent event)
     {
-        Lock lock = this.manager.getGuardAtLocation(event.getBlock().getLocation());
+        Lock lock = this.manager.getLockAtLocation(event.getBlock().getLocation());
         User user = this.module.getCore().getUserManager().getExactUser(event.getPlayer().getName());
         if (lock != null)
         {
@@ -552,7 +553,7 @@ public class LockerListener implements Listener
             Location location = new Location(null,0,0,0);
             for (Block block : BlockUtil.getDetachableBlocks(event.getBlock()))
             {
-                lock = this.manager.getGuardAtLocation(block.getLocation(location));
+                lock = this.manager.getLockAtLocation(block.getLocation(location));
                 if (lock != null)
                 {
                     if (lock.isValidType())
@@ -577,7 +578,7 @@ public class LockerListener implements Listener
         Location location = new Location(null,0,0,0);
         for (Block block : event.blockList())
         {
-            Lock lock = this.manager.getGuardAtLocation(block.getLocation(location));
+            Lock lock = this.manager.getLockAtLocation(block.getLocation(location));
             if (lock != null)
             {
                 if (lock.isValidType())
@@ -595,7 +596,7 @@ public class LockerListener implements Listener
     {
         // TODO allow burn flag
         Location location = event.getBlock().getLocation();
-        Lock lock = this.manager.getGuardAtLocation(location);
+        Lock lock = this.manager.getLockAtLocation(location);
         if (lock != null)
         {
             if (lock.isValidType())
@@ -607,7 +608,7 @@ public class LockerListener implements Listener
         }
         for (Block block : BlockUtil.getDetachableBlocks(event.getBlock()))
         {
-            lock = this.manager.getGuardAtLocation(block.getLocation(location));
+            lock = this.manager.getLockAtLocation(block.getLocation(location));
             if (lock != null)
             {
                 if (lock.isValidType())
@@ -624,7 +625,7 @@ public class LockerListener implements Listener
     public void onHopperItemMove(InventoryMoveItemEvent event)
     {
         Inventory inventory = event.getSource();
-        Lock lock = this.getGuardOfInventory(inventory, null);
+        Lock lock = this.getLockOfInventory(inventory, null);
         if (lock != null)
         {
             InventoryHolder dest = event.getDestination().getHolder();
@@ -636,7 +637,7 @@ public class LockerListener implements Listener
         }
         if (event.isCancelled()) return;
         inventory = event.getDestination();
-        lock = this.getGuardOfInventory(inventory, null);
+        lock = this.getLockOfInventory(inventory, null);
         if (lock != null && lock.hasFlag(BLOCK_HOPPER_ANY_IN))
         {
             event.setCancelled(true);
@@ -648,7 +649,7 @@ public class LockerListener implements Listener
     {
         if (this.module.getConfig().protectBlocksFromWaterLava && BlockUtil.isNonFluidProofBlock(event.getToBlock().getType()))
         {
-            Lock lock = this.manager.getGuardAtLocation(event.getToBlock().getLocation());
+            Lock lock = this.manager.getLockAtLocation(event.getToBlock().getLocation());
             if (lock != null)
             {
                 if (lock.isValidType())
@@ -668,7 +669,7 @@ public class LockerListener implements Listener
         {
             if (((HangingBreakByEntityEvent)event).getRemover() instanceof Player)
             {
-                Lock lock = this.manager.getGuardForEntityUID(event.getEntity().getUniqueId());
+                Lock lock = this.manager.getLockForEntityUID(event.getEntity().getUniqueId());
                 User user = this.module.getCore().getUserManager().getExactUser(((Player)((HangingBreakByEntityEvent)event).getRemover()).getName());
                 if (LockerPerm.DENY_HANGING.isAuthorized(user))
                 {

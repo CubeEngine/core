@@ -77,7 +77,7 @@ public class BlockLockerConfiguration
         return this.material.equals(type);
     }
 
-    public static class BlockGuardConfigConverter implements Converter<BlockLockerConfiguration>
+    public static class BlockLockerConfigConverter implements Converter<BlockLockerConfiguration>
     {
         @Override
         public Node toNode(BlockLockerConfiguration object) throws ConversionException
@@ -174,7 +174,7 @@ public class BlockLockerConfiguration
                             }
                             else
                             {
-                                CubeEngine.getCore().getLog().warn("[BaumGuard] Unsupported flag for protectedType! {}: {}", configuration.protectedType.name(), flag.name());
+                                CubeEngine.getCore().getLog().warn("[Locker] Unsupported flag for protectedType! {}: {}", configuration.protectedType.name(), flag.name());
                             }
                         }
                     }

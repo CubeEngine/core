@@ -55,7 +55,7 @@ public class Lock
     private Integer taskId = null; // for autoclosing doors
 
     /**
-     * EntityGuard
+     * EntityLock
      *
      * @param manager
      * @param model
@@ -64,11 +64,11 @@ public class Lock
     {
         this.manager = manager;
         this.model = model;
-        this.checkGuardType();
+        this.checkLockType();
     }
 
     /**
-     * BlockGuard
+     * BlockLock
      *
      * @param manager
      * @param model
@@ -96,12 +96,12 @@ public class Lock
         return new Location(this.manager.wm.getWorld(model.getWorldId().longValue()), model.getX(), model.getY(), model.getZ());
     }
 
-    public boolean isBlockGuard()
+    public boolean isBlockLock()
     {
         return !this.locations.isEmpty();
     }
 
-    public boolean isSingleBlockGuard()
+    public boolean isSingleBlockLock()
     {
         return this.locations.size() == 1;
     }
@@ -222,10 +222,10 @@ public class Lock
         }
     }
 
-    private void checkGuardType()
+    private void checkLockType()
     {
         if (this.getLockType().supportedTypes.contains(this.getProtectedType())) return;
-        throw new IllegalStateException("GuardType is not supported for " + this.getProtectedType().name() + ":" + this.getLockType().name());
+        throw new IllegalStateException("LockType is not supported for " + this.getProtectedType().name() + ":" + this.getLockType().name());
     }
 
     public ProtectedType getProtectedType()
@@ -235,7 +235,7 @@ public class Lock
 
     public LockType getLockType()
     {
-        return LockType.forByte(this.model.getGuardType());
+        return LockType.forByte(this.model.getLockType());
     }
 
     public void handleBlockBreak(BlockBreakEvent event, User user)
@@ -555,7 +555,7 @@ public class Lock
     }
 
     /**
-     * Always true for EntityGuards
+     * Always true for EntityLocks
      */
     private boolean isValidType = true;
 

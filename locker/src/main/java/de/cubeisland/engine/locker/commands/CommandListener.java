@@ -104,7 +104,7 @@ public class CommandListener implements Listener
             User user = this.module.getCore().getUserManager().getExactUser(event.getPlayer().getName());
             Location location = event.getClickedBlock().getLocation();
             Triplet<CommandType, String, Boolean> triplet = map.get(user.getName());
-            Lock lock = this.manager.getGuardAtLocation(location, triplet.getFirst() != INFO);
+            Lock lock = this.manager.getLockAtLocation(location, triplet.getFirst() != INFO);
             if (triplet.getFirst().isCreator())
             {
                 if (lock != null && !lock.isValidType())
@@ -153,19 +153,19 @@ public class CommandListener implements Listener
             switch (triplet.getFirst())
             {
             case C_PRIVATE:
-                this.manager.createGuard(event.getClickedBlock().getType(), location, user, C_PRIVATE.lockType, triplet.getSecond(), triplet.getThird());
+                this.manager.createLock(event.getClickedBlock().getType(), location, user, C_PRIVATE.lockType, triplet.getSecond(), triplet.getThird());
                 break;
             case C_PUBLIC:
-                this.manager.createGuard(event.getClickedBlock().getType(), location, user, C_PUBLIC.lockType, triplet.getSecond(), false);
+                this.manager.createLock(event.getClickedBlock().getType(), location, user, C_PUBLIC.lockType, triplet.getSecond(), false);
                 break;
             case C_DONATION:
-                this.manager.createGuard(event.getClickedBlock().getType(), location, user, C_DONATION.lockType, triplet.getSecond(), triplet.getThird());
+                this.manager.createLock(event.getClickedBlock().getType(), location, user, C_DONATION.lockType, triplet.getSecond(), triplet.getThird());
                 break;
             case C_FREE:
-                this.manager.createGuard(event.getClickedBlock().getType(), location, user, C_FREE.lockType, triplet.getSecond(), triplet.getThird());
+                this.manager.createLock(event.getClickedBlock().getType(), location, user, C_FREE.lockType, triplet.getSecond(), triplet.getThird());
                 break;
             case C_GUARDED:
-                this.manager.createGuard(event.getClickedBlock().getType(), location, user, C_GUARDED.lockType, triplet.getSecond(), triplet.getThird());
+                this.manager.createLock(event.getClickedBlock().getType(), location, user, C_GUARDED.lockType, triplet.getSecond(), triplet.getThird());
                 break;
             case INFO:
                 lock.showInfo(user);
@@ -238,7 +238,7 @@ public class CommandListener implements Listener
         User user = this.module.getCore().getUserManager().getExactUser(event.getPlayer().getName());
         Location location = event.getRightClicked().getLocation();
         Triplet<CommandType, String, Boolean> triplet = map.get(user.getName());
-        Lock lock = this.manager.getGuardForEntityUID(event.getRightClicked().getUniqueId(), triplet.getFirst() != INFO);
+        Lock lock = this.manager.getLockForEntityUID(event.getRightClicked().getUniqueId(), triplet.getFirst() != INFO);
         if (triplet.getFirst().isCreator())
         {
             if (lock != null)
@@ -281,19 +281,24 @@ public class CommandListener implements Listener
         switch (triplet.getFirst())
         {
         case C_PRIVATE:
-            this.manager.createGuard(event.getRightClicked(), user, C_PRIVATE.lockType, triplet.getSecond(), triplet.getThird());
+            this.manager.createLock(event.getRightClicked(), user, C_PRIVATE.lockType, triplet.getSecond(), triplet
+                .getThird());
             break;
         case C_PUBLIC:
-            this.manager.createGuard(event.getRightClicked(), user, C_PUBLIC.lockType, triplet.getSecond(), triplet.getThird());
+            this.manager.createLock(event.getRightClicked(), user, C_PUBLIC.lockType, triplet.getSecond(), triplet
+                .getThird());
             break;
         case C_DONATION:
-            this.manager.createGuard(event.getRightClicked(), user, C_DONATION.lockType, triplet.getSecond(), triplet.getThird());
+            this.manager.createLock(event.getRightClicked(), user, C_DONATION.lockType, triplet.getSecond(), triplet
+                .getThird());
             break;
         case C_FREE:
-            this.manager.createGuard(event.getRightClicked(), user, C_FREE.lockType, triplet.getSecond(), triplet.getThird());
+            this.manager.createLock(event.getRightClicked(), user, C_FREE.lockType, triplet.getSecond(), triplet
+                .getThird());
             break;
         case C_GUARDED:
-            this.manager.createGuard(event.getRightClicked(), user, C_GUARDED.lockType, triplet.getSecond(), triplet.getThird());
+            this.manager.createLock(event.getRightClicked(), user, C_GUARDED.lockType, triplet.getSecond(), triplet
+                .getThird());
             break;
         case INFO:
             lock.showInfo(user);

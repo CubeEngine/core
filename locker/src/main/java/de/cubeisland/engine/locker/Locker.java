@@ -17,8 +17,8 @@
  */
 package de.cubeisland.engine.locker;
 
-import de.cubeisland.engine.locker.BlockLockerConfiguration.BlockGuardConfigConverter;
-import de.cubeisland.engine.locker.EntityLockerConfiguration.EntityGuardConfigConverter;
+import de.cubeisland.engine.locker.BlockLockerConfiguration.BlockLockerConfigConverter;
+import de.cubeisland.engine.locker.EntityLockerConfiguration.EntityLockerConfigConverter;
 import de.cubeisland.engine.locker.commands.LockerCommands;
 import de.cubeisland.engine.locker.commands.LockerCreateCommands;
 import de.cubeisland.engine.locker.storage.LockManager;
@@ -37,8 +37,8 @@ public class Locker extends Module
     @Override
     public void onEnable()
     {
-        Convert.registerConverter(BlockLockerConfiguration.class, new BlockGuardConfigConverter());
-        Convert.registerConverter(EntityLockerConfiguration.class, new EntityGuardConfigConverter());
+        Convert.registerConverter(BlockLockerConfiguration.class, new BlockLockerConfigConverter());
+        Convert.registerConverter(EntityLockerConfiguration.class, new EntityLockerConfigConverter());
         this.config = Configuration.load(LockerConfig.class, this);
         new LockerPerm(this);
         this.getCore().getDB().registerTable(TableLocks.initTable(this.getCore().getDB()));

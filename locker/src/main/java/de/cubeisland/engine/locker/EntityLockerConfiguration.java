@@ -53,7 +53,7 @@ public class EntityLockerConfiguration
         return this.entityType.equals(type);
     }
 
-    public static class EntityGuardConfigConverter implements Converter<EntityLockerConfiguration>
+    public static class EntityLockerConfigConverter implements Converter<EntityLockerConfiguration>
     {
         @Override
         public Node toNode(EntityLockerConfiguration object) throws ConversionException

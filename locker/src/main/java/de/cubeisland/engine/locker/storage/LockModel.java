@@ -38,15 +38,15 @@ public class LockModel extends UpdatableRecordImpl<LockModel> implements Record1
         super(TABLE_GUARD);
     }
 
-    public LockModel newGuard(User user, LockType lockType, ProtectedType type)
+    public LockModel newLock(User user, LockType lockType, ProtectedType type)
     {
-        return this.newGuard(user, lockType, type, null);
+        return this.newLock(user, lockType, type, null);
     }
 
-    public LockModel newGuard(User user, LockType lockType, ProtectedType type, UUID entityUUID)
+    public LockModel newLock(User user, LockType lockType, ProtectedType type, UUID entityUUID)
     {
         this.setOwnerId(user.getEntity().getKey());
-        this.setGuardType(lockType.id);
+        this.setLockType(lockType.id);
         this.setFlags((short)0); // none
         this.setType(type.id);
         this.setDroptransfer((byte)0);
@@ -128,11 +128,11 @@ public class LockModel extends UpdatableRecordImpl<LockModel> implements Record1
         return (Byte) getValue(3);
     }
 
-    public void setGuardType(Byte value) {
+    public void setLockType(Byte value) {
         setValue(4, value);
     }
 
-    public Byte getGuardType() {
+    public Byte getLockType() {
         return (Byte) getValue(4);
     }
 
@@ -286,7 +286,7 @@ public class LockModel extends UpdatableRecordImpl<LockModel> implements Record1
 
     @Override
     public Byte value5() {
-        return getGuardType();
+        return getLockType();
     }
 
     @Override

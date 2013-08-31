@@ -37,7 +37,7 @@ public class LockerCommands extends ContainerCommand
 
     public LockerCommands(Locker module, LockManager manager)
     {
-        super(module, "locker", "ContainerGuard Commands", Arrays.asList("l"));
+        super(module, "locker", "Locker commands", Arrays.asList("l"));
         this.manager = manager;
     }
 
