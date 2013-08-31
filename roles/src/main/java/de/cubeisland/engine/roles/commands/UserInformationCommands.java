@@ -98,7 +98,7 @@ public class UserInformationCommands extends UserCommandHelper
         }
         if (resolvedPermission == null)
         {
-            context.sendTranslated("&cPermission not declared!");
+            context.sendTranslated("&cPermission &6%s&c not set!", permission);
             return;
         }
         context.sendTranslated((resolvedPermission.isSet()
@@ -108,24 +108,9 @@ public class UserInformationCommands extends UserCommandHelper
 
         // Display origin
         RawDataStore store = resolvedPermission.getOrigin();
-        if (!store.getRawPermissions().containsKey(permission))
+        if (resolvedPermission.getOriginPermission() != null) // indirect permission
         {
-            while (!permission.equals("*"))
-            {
-                if (permission.endsWith("*"))
-                {
-                    permission = permission.substring(0, permission.lastIndexOf("."));
-                }
-                permission = permission.substring(0, permission.lastIndexOf(".") + 1) + "*";
-
-                if (store.getRawPermissions().containsKey(permission))
-                {
-                    if (store.getRawPermissions().get(permission) == resolvedPermission.isSet())
-                    {
-                        break;
-                    }
-                }
-            }
+            permission = resolvedPermission.getOriginPermission();
         }
         context.sendTranslated("&ePermission inherited from:");
         if (user.getName().equals(store.getName()))
