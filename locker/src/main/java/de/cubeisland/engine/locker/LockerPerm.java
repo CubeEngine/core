@@ -28,7 +28,7 @@ public class LockerPerm extends PermissionContainer<Locker>
     public LockerPerm(Locker module, LockerCommands mainCmd)
     {
         super(module);
-        this.bindToModule(PROTECT, ADMIN, LOCKER_COMMAND, SHOW_OWNER);
+        this.bindToModule(PROTECT, ADMIN, LOCKER_COMMAND, SHOW_OWNER, BREAK_OTHER, EXPAND_OTHER);
         this.prependModulePerm(DENY);
         CubeCommand createCmd = mainCmd.getChild("create");
         PROTECT.attach(Permission.createPermission(mainCmd.getChild("info").getPermission()),
