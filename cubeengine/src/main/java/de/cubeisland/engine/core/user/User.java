@@ -328,6 +328,7 @@ public class User extends UserBase implements CommandSender, AttachmentHolder<Us
         if (!this.isFlying())
         {
             checkLocation = location.clone();
+            if (checkLocation.getY() < 0) return;
             while (checkLocation.add(0, -1, 0).getBlock().getType() == Material.AIR)
             {
                 location.add(0, -1, 0);
